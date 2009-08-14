@@ -135,17 +135,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
-		[Conditional("DEBUG")]
-		protected static void Assert(bool condition)
+		protected static void Assert(bool condition, string message)
 		{
 			if (!condition) {
-				throw new Exception("Assertion failed");
+				throw new Exception("Assertion failed: " + message);
 			}
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
 		[Conditional("DEBUG")]
-		protected static void Assert(bool condition, string message)
+		protected static void DebugAssert(bool condition, string message)
 		{
 			if (!condition) {
 				throw new Exception("Assertion failed: " + message);
@@ -170,19 +169,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				
 				// Remove any items affected by the change
 				Log("Changed offset {0}", change.Offset);
-				// Removing will cause one of the end to be set to change.Offset
-				// FindOverlappingSegments apparently removes any segment intersecting of touching
+				// Removing will cause one of the ends to be set to change.Offset
+				// FindSegmentsContaining includes any segments touching
 				// so that conviniently takes care of the +1 byte
-				while(true) {
-					RawObject obj = parsedItems.FindOverlappingSegments(change.Offset, 0).FirstOrDefault();
-					if (obj == null) break;
-					RemoveFromCache(obj);
+				foreach(RawObject obj in parsedItems.FindSegmentsContaining(change.Offset)) {
+					RemoveFromCache(obj, false);
 				}
-				while(true) {
-					TouchedMemoryRange memory = touchedMemoryRanges.FindOverlappingSegments(change.Offset, 0).FirstOrDefault();
-					if (memory == null) break;
+				foreach(TouchedMemoryRange memory in touchedMemoryRanges.FindSegmentsContaining(change.Offset)) {
 					Log("Found that {0} dependeds on memory ({1}-{2})", memory.TouchedByObject, memory.StartOffset, memory.EndOffset);
-					RemoveFromCache(memory.TouchedByObject);
+					RemoveFromCache(memory.TouchedByObject, true);
 					touchedMemoryRanges.Remove(memory);
 				}
 			}
@@ -193,19 +188,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			inputLength = input.Length;
 			
 			RawDocument parsedDocument = ReadDocument();
+			parsedDocument.DebugCheckConsistency(true);
 			// Just in case parse method was called redundantly
 			PrintStringCacheStats();
 			RawObject.LogDom("Updating main DOM tree...");
 			userDocument.UpdateTreeFrom(parsedDocument);
-			// TODO: Bug fixing
-			// userDocument.CheckConsistency();
+			userDocument.DebugCheckConsistency(false);
 			return userDocument;
 		}
 		
 		List<RawObject> FindParents(RawObject child)
 		{
 			List<RawObject> parents = new List<RawObject>();
-			foreach(RawObject parent in parsedItems.FindOverlappingSegments(child.StartOffset, 0)) {
+			foreach(RawObject parent in parsedItems.FindSegmentsContaining(child.StartOffset)) {
 				// Parent is anyone wholy containg the child
 				if (parent.StartOffset <= child.StartOffset && child.EndOffset <= parent.EndOffset && parent != child) {
 					parents.Add(parent);
@@ -215,20 +210,22 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Remove from cache including all parents </summary>
-		internal void RemoveFromCache(RawObject obj)
+		internal void RemoveFromCache(RawObject obj, bool includeParents)
 		{
-			List<RawObject> parents = FindParents(obj);
+			if (includeParents) {
+				List<RawObject> parents = FindParents(obj);
+				
+				foreach(RawObject r in parents) {
+					if (parsedItems.Remove(r)) {
+						r.IsInCache = false;
+						Log("Removing cached item {0} (it is parent)", r);
+					}
+				}
+			}
 			
 			if (parsedItems.Remove(obj)) {
 				obj.IsInCache = false;
 				Log("Removed cached item {0}", obj);
-			}
-			
-			foreach(RawObject r in parents) {
-				if (parsedItems.Remove(r)) {
-					r.IsInCache = false;
-					Log("Removing cached item {0} (it is parent)", r);
-				}
 			}
 		}
 		
@@ -361,6 +358,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return currentLocation == inputLength;
 		}
 		
+		void AssertIsEndOfFile()
+		{
+			Assert(IsEndOfFile(), "End of file expected at this point");
+		}
+		
 		bool HasMoreData()
 		{
 			return currentLocation < inputLength;
@@ -368,9 +370,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		void AssertHasMoreData()
 		{
-			if (currentLocation == inputLength) {
-				throw new Exception("Unexpected end of file");
-			}
+			Assert(HasMoreData(), "Unexpected end of file");
 		}
 		
 		bool TryMoveNext()
@@ -776,7 +776,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			while(true) {
 				if (IsEndOfFile()) break;            // End of file
 				TryMoveToNonWhiteSpace();            // Skip whitespace
-				if (TryRead('\'')) TryMoveTo('\'');  // Skip single quoted string
+				if (TryRead('\'')) TryMoveTo('\'');  // Skip single quoted string TODO: Bug
 				if (TryRead('\"')) TryMoveTo('\"');  // Skip single quoted string
 				if (TryRead('[')) {                  // Start of nested infoset
 					// Reading infoset
@@ -936,7 +936,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		RawText MakeText(int start, int end)
 		{
-			Assert(end > start);
+			DebugAssert(end > start, "Empty text");
 			
 			RawText text = new RawText() {
 				StartOffset = start,
@@ -1284,7 +1284,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		RawObject ReadTextOrElement(IEnumerator<RawObject> objStream)
 		{
-			Assert(IsEndOfFile());
+			AssertIsEndOfFile();
 			
 			RawObject curr = objStream.Current;
 			if (curr is RawText || curr is RawElement) {
@@ -1303,14 +1303,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		RawElement ReadElement(IEnumerator<RawObject> objStream)
 		{
-			Assert(IsEndOfFile());
+			AssertIsEndOfFile();
 			
 			RawElement element = new RawElement();
 			
 			// Read start tag
 			RawTag startTag = ReadSingleObject(objStream) as RawTag;
-			Assert(startTag != null);
-			Assert(startTag.IsStartTag || startTag == StartTagPlaceholder);
+			DebugAssert(startTag != null, "Start tag expected");
+			DebugAssert(startTag.IsStartTag || startTag == StartTagPlaceholder, "Start tag expected");
 			if (startTag == StartTagPlaceholder) {
 				int offset = objStream.Current.StartOffset; // This the next object
 				element.AddChild(RawTag.MakeEmpty(offset));

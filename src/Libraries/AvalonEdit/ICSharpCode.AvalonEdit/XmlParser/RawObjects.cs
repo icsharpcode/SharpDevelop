@@ -19,7 +19,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// <summary> Holds event args for event caused by <see cref="RawObject"/> </summary>
 	public class RawObjectEventArgs: EventArgs
 	{
-		/// <summary> The object that cause the event </summary>
+		/// <summary> The object that caused the event </summary>
 		public RawObject Object { get; set; }
 	}
 	
@@ -37,25 +37,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> Namesapce for "xmlns:" prefix: "http://www.w3.org/2000/xmlns/" </summary>
 		public static readonly string XmlnsNamespace = "http://www.w3.org/2000/xmlns/";
 		
-		/// <summary>
-		/// Unique identifier for the specific call of parsing read function.  
-		/// It is used to uniquely identify all object data (including nested).
-		/// </summary>
-		internal object ReadCallID { get; private set; }
-		
-		/// <summary>
-		/// Parent node.
-		/// </summary>
+		/// <summary> Parent node. </summary>
 		/// <remarks>
-		/// New cached items start with null parent.  (inconsistent)
+		/// New cached items start with null parent.
 		/// Cache constraint:
 		///   If cached item has parent set, then the whole subtree must be consistent
 		/// </remarks>
 		public RawObject Parent { get; set; }
 		
-		/// <summary>
-		/// Gets the document owning this object or null if orphaned
-		/// </summary>
+		/// <summary> Gets the document owning this object or null if orphaned </summary>
 		public RawDocument Document {
 			get {
 				if (this.Parent != null) {
@@ -66,6 +56,12 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					return null;
 				}
 			}
+		}
+		
+		/// <summary> Creates new object </summary>
+		public RawObject()
+		{
+			this.LastUpdatedFrom = this;
 		}
 		
 		/// <summary> Occurs before the value of any local properties changes.  Nested changes do not cause the event to occur </summary>
@@ -117,29 +113,23 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		internal void AddSyntaxError(SyntaxError error)
 		{
-			Assert(error.Object == this);
+			DebugAssert(error.Object == this, "Must own the error");
 			if (this.syntaxErrors == null) this.syntaxErrors = new List<SyntaxError>();
 			syntaxErrors.Add(error);
 		}
 		
-		/// <summary> Create new object </summary>
-		protected RawObject()
-		{
-			this.ReadCallID = new object();
-		}
-		
 		/// <summary> Throws exception if condition is false </summary>
-		[Conditional("DEBUG")]
-		protected static void Assert(bool condition)
+		/// <remarks> Present in release mode - use only for very cheap aserts </remarks>
+		protected static void Assert(bool condition, string message)
 		{
 			if (!condition) {
-				throw new Exception("Assertion failed");
+				throw new Exception("Assertion failed: " + message);
 			}
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
 		[Conditional("DEBUG")]
-		protected static void Assert(bool condition, string message)
+		protected static void DebugAssert(bool condition, string message)
 		{
 			if (!condition) {
 				throw new Exception("Assertion failed: " + message);
@@ -165,34 +155,61 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> Call appropriate visit method on the given visitor </summary>
 		public abstract void AcceptVisitor(IXmlVisitor visitor);
 		
+		/// <summary> The parser tree object this object was updated from </summary>
+		internal object LastUpdatedFrom { get; private set; }
+		
+		internal bool IsInCache { get; set; }
+		
+		/// <summary> Is call to UpdateDataFrom is allowed? </summary>
+		internal bool CanUpdateDataFrom(RawObject source)
+		{
+			return
+				this.GetType() == source.GetType() &&
+				this.StartOffset == source.StartOffset &&
+				(this.LastUpdatedFrom == source || !this.IsInCache);
+		}
+		
 		/// <summary> Copy all data from the 'source' to this object </summary>
 		internal virtual void UpdateDataFrom(RawObject source)
 		{
-			if (this.IsInCache)
-				throw new Exception("Can not update cached item");
+			Assert(this.GetType() == source.GetType(), "Source has different type");
+			DebugAssert(this.StartOffset == source.StartOffset, "Source has different StartOffset");
 			
-			this.ReadCallID = source.ReadCallID;
-			// In some cases we are just updating objects of that same
-			// type and sequential position hoping to be luckily right
+			if (this.LastUpdatedFrom == source) {
+				DebugAssert(this.EndOffset == source.EndOffset, "Source has different EndOffset");
+				return;
+			}
+			
+			Assert(!this.IsInCache, "Can not update cached item");
+			Assert(source.IsInCache, "Must update from cache");
+			
+			this.LastUpdatedFrom = source;
 			this.StartOffset = source.StartOffset;
+			// In some cases we are just updating objects of that same
+			// type and position and hoping to be luckily right
 			this.EndOffset = source.EndOffset;
 			
 			// Do not bother comparing - assume changed if non-null
 			if (this.syntaxErrors != null || source.syntaxErrors != null) {
 				// May be called again in derived class - oh, well, nevermind
 				OnChanging();
-				this.syntaxErrors = new List<SyntaxError>();
-				foreach(var error in source.SyntaxErrors) {
-					// The object differs, so create our own copy
-					// The source still might need it in the future and we do not want to break it
-					this.AddSyntaxError(error.Clone(this));
+				if (source.syntaxErrors == null) {
+					this.syntaxErrors = null;
+				} else {
+					this.syntaxErrors = new List<SyntaxError>();
+					foreach(var error in source.SyntaxErrors) {
+						// The object differs, so create our own copy
+						// The source still might need it in the future and we do not want to break it
+						this.AddSyntaxError(error.Clone(this));
+					}
 				}
 				OnChanged();
 			}
 		}
 		
+		/// <summary> Verify that the item is consistent.  Only in debug build. </summary>
 		[Conditional("DEBUG")]
-		internal virtual void CheckConsistency()
+		internal virtual void DebugCheckConsistency(bool allowNullParent)
 		{
 			
 		}
@@ -208,11 +225,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			System.Diagnostics.Debug.WriteLine(string.Format("XML DOM: " + format, args));
 		}
 		
-		internal bool IsInCache { get; set; }
-		
 		#region Helpper methods
 		
-		/// <summary> The part of name before ":".  Empty string if not found </summary>
+		/// <summary> The part of name before ":" </summary>
+		/// <returns> Empty string if not found </returns>
 		protected static string GetNamespacePrefix(string name)
 		{
 			if (string.IsNullOrEmpty(name)) return string.Empty;
@@ -224,7 +240,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary> The part of name after ":".  Whole name if not found </summary>
+		/// <summary> The part of name after ":" </summary>
+		/// <returns> Whole name if ":" not found </returns>
 		protected static string GetLocalName(string name)
 		{
 			if (string.IsNullOrEmpty(name)) return string.Empty;
@@ -293,7 +310,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary>
 		/// Gets a child fully containg the given offset.
 		/// Goes recursively down the tree.
-		/// Specail case if at the end of attribute
+		/// Specail case if at the end of attribute or text
 		/// </summary>
 		public RawObject GetChildAtOffset(int offset)
 		{
@@ -312,57 +329,50 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		// Only these four methods should be used to modify the collection
 		
-		/// <summary>
-		/// To be used exlucively by the parser
-		/// </summary>
+		/// <summary> To be used exlucively by the parser </summary>
 		internal void AddChild(RawObject item)
 		{
 			// Childs can be only added to newly parsed items
-			Assert(this.Parent == null);
+			Assert(this.Parent == null, "I have to be new");
+			Assert(item.IsInCache, "Added item must be in cache");
 			// Do not set parent pointer
 			this.Children.InsertItemAt(this.Children.Count, item);
 		}
 		
-		/// <summary>
-		/// To be used exlucively by the parser
-		/// </summary>
+		/// <summary> To be used exlucively by the parser </summary>
 		internal void AddChildren(IEnumerable<RawObject> items)
 		{
 			// Childs can be only added to newly parsed items
-			Assert(this.Parent == null);
+			Assert(this.Parent == null, "I have to be new");
 			// Do not set parent pointer
 			this.Children.InsertItemsAt(this.Children.Count, items.ToList());
 		}
 		
 		/// <summary>
-		/// To be used exclusively by UpdateChildrenFrom.
-		/// Insert children and keep links consistent.
-		/// Note: If the nodes are in other part of the document, they will be moved
+		/// To be used exclusively by the children update algorithm.
+		/// Insert child and keep links consistent.
 		/// </summary>
 		void InsertChild(int index, RawObject item)
 		{
 			LogDom("Inserting {0} at index {1}", item, index);
 			
 			RawDocument document = this.Document;
-			Assert(document != null);
+			Assert(document != null, "Can not insert to dangling object");
 			Assert(item.Parent != this, "Can not own item twice");
 			
-			// Remove from the old location and set parent
-			SetParentPointersInTree(document, item);
+			SetParentPointersInTree(item);
 			
 			this.Children.InsertItemAt(index, item);
 			
 			document.OnObjectInserted(index, item);
 		}
 		
-		/// <summary>
-		/// Steal the item from parser tree or from some other node
-		/// </summary>
+		/// <summary> Recursively fix all parent pointer in a tree </summary>
 		/// <remarks>
 		/// Cache constraint:
 		///    If cached item has parent set, then the whole subtree must be consistent
 		/// </remarks>
-		void SetParentPointersInTree(RawDocument myDocument, RawObject item)
+		void SetParentPointersInTree(RawObject item)
 		{
 			// All items come from the parser cache
 			
@@ -371,21 +381,21 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				item.Parent = this;
 				if (item is RawContainer) {
 					foreach(RawObject child in ((RawContainer)item).Children) {
-						((RawContainer)item).SetParentPointersInTree(myDocument, child);
+						((RawContainer)item).SetParentPointersInTree(child);
 					}
 				}
 			} else if (item.Parent == this) {
 				// If node is attached and then deattached, it will have null parent pointer
 				//   but valid subtree - so its children will alredy have correct parent pointer
 				//   like in this case
-				item.CheckConsistency();
+				item.DebugCheckConsistency(false);
 				// Rest of the tree is consistent - do not recurse
 			} else {
 				// From cache & parent set => consitent subtree
-				item.CheckConsistency();
+				item.DebugCheckConsistency(false);
 				// The parent (or any futher parents) can not be part of parsed document
 				//   becuase otherwise this item would be included twice => safe to change parents
-				Assert(item.Document == null);
+				DebugAssert(item.Parent.Document == null, "Old parent is part of document as well");
 				// Maintain cache constraint by setting parents to null
 				foreach(RawObject ancest in item.GetAncestors().ToList()) {
 					ancest.Parent = null; 
@@ -396,8 +406,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary>
-		/// To be used exclusively by UpdateChildrenFrom.
-		/// Remove children, set parent to null for them and notify the document
+		/// To be used exclusively by the children update algorithm.
+		/// Remove child, set parent to null and notify the document
 		/// </summary>
 		void RemoveChild(int index)
 		{
@@ -405,7 +415,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			LogDom("Removing {0} at index {1}", removed, index);
 			
 			// Null parent pointer
-			Assert(removed.Parent == this);
+			Assert(removed.Parent == this, "Inconsistent child");
 			removed.Parent = null;
 			
 			this.Children.RemoveItemAt(index);
@@ -413,21 +423,25 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.Document.OnObjectRemoved(index, removed);
 		}
 		
-		internal override void CheckConsistency()
+		/// <summary> Verify that the subtree is consistent.  Only in debug build. </summary>
+		internal override void DebugCheckConsistency(bool allowNullParent)
 		{
-			base.CheckConsistency();
+			base.DebugCheckConsistency(allowNullParent);
 			RawObject prevChild = null;
+			int myStartOffset = this.StartOffset;
+			int myEndOffset = this.EndOffset;
 			foreach(RawObject child in this.Children) {
-				Assert(child.Parent != null, "Null parent reference");
-				Assert(child.Parent == this, "Inccorect parent reference");
-				Assert(this.StartOffset <= child.StartOffset && child.EndOffset <= this.EndOffset, "Child not within parent text range");
-				if (this.IsInCache) {
+				Assert(child.Length != 0, "Empty child");
+				if (!allowNullParent) {
+					Assert(child.Parent != null, "Null parent reference");
+				}
+				Assert(child.Parent == null || child.Parent == this, "Inccorect parent reference");
+				Assert(myStartOffset <= child.StartOffset && child.EndOffset <= myEndOffset, "Child not within parent text range");
+				if (this.IsInCache)
 					Assert(child.IsInCache, "Child not in cache");
-				}
-				if (prevChild != null) {
+				if (prevChild != null)
 					Assert(prevChild.EndOffset <= child.StartOffset, "Overlaping childs");
-				}
-				child.CheckConsistency();
+				child.DebugCheckConsistency(allowNullParent);
 				prevChild = child;
 			}
 		}
@@ -445,13 +459,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				RawObject child = this.Children[i];
 				RawObject srcChild;
 				
-				// Keep the item if offest and type matches and if the item is editable
-				if (srcChildren.TryGetValue(child.StartOffset, out srcChild) &&
-				    srcChild.GetType() == child.GetType() &&
-				    !child.IsInCache)
-				{
-					// Keep
-					srcChildren.Remove(child.StartOffset);  // In case we have two children with same offset
+				if (srcChildren.TryGetValue(child.StartOffset, out srcChild) && child.CanUpdateDataFrom(srcChild)) {
+					// Keep only one item with given offset (we might have several due to deletion)
+					srcChildren.Remove(child.StartOffset);
 					if (child is RawContainer)
 						((RawContainer)child).RemoveChildrenNotIn(((RawContainer)srcChild).Children);
 					i++;
@@ -472,9 +482,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				RawObject child = this.Children[i];
 				RawObject srcChild = srcList[i];
 				
-				if (child.StartOffset == srcChild.StartOffset &&
-				    child.GetType() == srcChild.GetType())
-				{
+				if (child.CanUpdateDataFrom(srcChild) /* includes offset test */) {
 					child.UpdateDataFrom(srcChild);
 					if (child is RawContainer)
 						((RawContainer)child).InsertAndUpdateChildrenFrom(((RawContainer)srcChild).Children);
@@ -482,6 +490,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					InsertChild(i, srcChild);
 				}
 			}
+			Assert(this.Children.Count == srcList.Count, "List lengths differ after update");
 		}
 	}
 	
@@ -519,9 +528,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public event EventHandler<NotifyCollectionChangedEventArgs> ObjectInserted;
 		/// <summary> Occurs when object is removed from any part of the document </summary>
 		public event EventHandler<NotifyCollectionChangedEventArgs> ObjectRemoved;
-		/// <summary> Occurs before local data of object changes </summary>
+		/// <summary> Occurs before local data of any object in the document changes </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectChanging;
-		/// <summary> Occurs after local data of object changed </summary>
+		/// <summary> Occurs after local data of any object in the document changed </summary>
 		public event EventHandler<RawObjectEventArgs> ObjectChanged;
 		
 		internal void OnObjectInserted(int index, RawObject obj)
@@ -570,13 +579,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public static readonly string[] DTDNames = new string[] {"<!DOCTYPE", "<!NOTATION", "<!ELEMENT", "<!ATTLIST", "<!ENTITY"};
 		
 		/// <summary> Opening bracket - usually "&lt;" </summary>
-		public string OpeningBracket { get; set; }
+		public string OpeningBracket { get; internal set; }
 		/// <summary> Name following the opening bracket </summary>
-		public string Name { get; set; }
+		public string Name { get; internal set; }
 		/// <summary> Opening bracket - usually "&gt;" </summary>
-		public string ClosingBracket { get; set; }
-		
-		// Exactly one of the folling will be true
+		public string ClosingBracket { get; internal set; }
 		
 		/// <summary> True if tag starts with "&lt;" </summary>
 		public bool IsStartTag              { get { return OpeningBracket == "<"; } }
@@ -593,6 +600,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> True if tag starts with "&lt;!" </summary>
 		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
 		
+		// TODO: Remove
 		internal static RawTag MakeEmpty(int offset)
 		{
 			return new RawTag() {
@@ -604,12 +612,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			};
 		}
 		
-		internal override void CheckConsistency()
+		internal override void DebugCheckConsistency(bool allowNullParent)
 		{
-			Assert(OpeningBracket != null);
-			Assert(Name != null);
-			Assert(ClosingBracket != null);
-			base.CheckConsistency();
+			Assert(OpeningBracket != null, "Null OpeningBracket");
+			Assert(Name != null, "Null Name");
+			Assert(ClosingBracket != null, "Null ClosingBracket");
+			foreach(RawObject child in this.Children) {
+				Assert(child is RawText || child is RawAttribute, "Only attribute or text children allowed");
+			}
+			base.DebugCheckConsistency(allowNullParent);
 		}
 		
 		/// <inheritdoc/>
@@ -621,8 +632,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <inheritdoc/>
 		internal override void UpdateDataFrom(RawObject source)
 		{
-			if (this.ReadCallID == source.ReadCallID) return;
-			base.UpdateDataFrom(source);
+			base.UpdateDataFrom(source); // Check asserts
+			if (this.LastUpdatedFrom == source) return;
 			RawTag src = (RawTag)source;
 			if (this.OpeningBracket != src.OpeningBracket ||
 				this.Name != src.Name ||
@@ -644,23 +655,21 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	}
 	
 	/// <summary>
-	/// Logical grouping of other nodes together.  The first child is always the start tag.
+	/// Logical grouping of other nodes together.
 	/// </summary>
 	public class RawElement: RawContainer
 	{
-		/// <summary>
-		/// StartTag of an element.
-		/// </summary>
+		/// <summary>  StartTag of an element.  </summary>
 		public RawTag StartTag {
 			get {
 				return (RawTag)this.Children[0];
 			}
 		}
 		
-		internal override void CheckConsistency()
+		internal override void DebugCheckConsistency(bool allowNullParent)
 		{
-			Assert(Children.Count > 0, "No children");
-			base.CheckConsistency();
+			DebugAssert(Children.Count > 0, "No children");
+			base.DebugCheckConsistency(allowNullParent);
 		}
 		
 		#region Helpper methods
@@ -679,6 +688,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		ObservableCollection<RawObject> attributesAndElements;
 		
+		// TODO: Identity
 		/// <summary> Gets both attributes and elements </summary>
 		public ObservableCollection<RawObject> AttributesAndElements {
 			get {
@@ -700,21 +710,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary> The part of name before ":".  Empty string if not found </summary>
+		/// <summary> The part of name before ":" </summary>
+		/// <returns> Empty string if not found </returns>
 		public string Prefix {
 			get {
 				return GetNamespacePrefix(this.StartTag.Name);
 			}
 		}
 		
-		/// <summary> The part of name after ":".  Whole name if not found </summary>
+		/// <summary> The part of name after ":" </summary>
+		/// <returns> Empty string if not found </returns>
 		public string LocalName {
 			get {
 				return GetLocalName(this.StartTag.Name);
 			}
 		}
 		
-		/// <summary> Resolved namespace of the name.  Empty string if prefix not found </summary>
+		/// <summary> Resolved namespace of the name </summary>
+		/// <returns> Empty string if prefix is not found </returns>
 		public string Namespace {
 			get {
 				string prefix = this.Prefix;
@@ -726,9 +739,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary>
-		/// Find the defualt namesapce for this context
-		/// </summary>
+		/// <summary> Find the defualt namesapce for this context </summary>
 		public string FindDefaultNamesapce()
 		{
 			RawElement current = this;
@@ -737,13 +748,13 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				if (namesapce != null) return namesapce;
 				current = current.Parent as RawElement;
 			}
-			return string.Empty; // "" namesapce
+			return string.Empty; // No namesapce
 		}
 		
 		/// <summary>
 		/// Recursively resolve given prefix in this context.  Prefix must have some value.
-		/// Returns empty string if prefix is not found.
 		/// </summary>
+		/// <returns> Empty string if prefix is not found </returns>
 		public string ReslovePrefix(string prefix)
 		{
 			if (string.IsNullOrEmpty(prefix)) throw new ArgumentException("No prefix given", "prefix");
@@ -762,25 +773,26 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary>
-		/// Get unquoted value of attribute or null if not found.
-		/// It looks in the empty "" namespace.
+		/// Get unquoted value of attribute.
+		/// It looks in the no namespace (empty string).
 		/// </summary>
+		/// <returns>Null if not found</returns>
 		public string GetAttributeValue(string localName)
 		{
 			return GetAttributeValue(NoNamespace, localName);
 		}
 		
 		/// <summary>
-		/// Get unquoted value of attribute or null if not found
+		/// Get unquoted value of attribute
 		/// </summary>
-		/// <param name="namespace">Namespace.  Can be the "" no namepace, which is default for attributes.</param>
+		/// <param name="namespace">Namespace.  Can be no namepace (empty string), which is the default for attributes.</param>
 		/// <param name="localName">Local name - text after ":"</param>
-		/// <returns></returns>
+		/// <returns>Null if not found</returns>
 		public string GetAttributeValue(string @namespace, string localName)
 		{
 			@namespace = @namespace ?? string.Empty;
 			foreach(RawAttribute attr in this.Attributes.GetByLocalName(localName)) {
-				Assert(attr.LocalName == localName);
+				DebugAssert(attr.LocalName == localName, "Bad hashtable");
 				if (attr.Namespace == @namespace) {
 					return attr.Value;
 				}
@@ -809,20 +821,21 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	public class RawAttribute: RawObject
 	{
 		/// <summary> Name with namespace prefix - exactly as in source file </summary>
-		public string Name { get; set; }
+		public string Name { get;  internal set; }
 		/// <summary> Equals sign and surrounding whitespace </summary>
-		public string EqualsSign { get; set; }
+		public string EqualsSign { get; internal set; }
 		/// <summary> The raw value - exactly as in source file (*probably* quoted and escaped) </summary>
-		public string QuotedValue { get; set; }
+		public string QuotedValue { get; internal set; }
 		/// <summary> Unquoted and dereferenced value of the attribute </summary>
-		public string Value { get; set; }
+		public string Value { get; internal set; }
 		
-		internal override void CheckConsistency()
+		internal override void DebugCheckConsistency(bool allowNullParent)
 		{
-			Assert(Name != null);
-			Assert(EqualsSign != null);
-			Assert(QuotedValue != null);
-			base.CheckConsistency();
+			DebugAssert(Name != null, "Null Name");
+			DebugAssert(EqualsSign != null, "Null EqualsSign");
+			DebugAssert(QuotedValue != null, "Null QuotedValue");
+			DebugAssert(Value != null, "Null Value");
+			base.DebugCheckConsistency(allowNullParent);
 		}
 		
 		#region Helpper methods
@@ -839,14 +852,16 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		/// <summary> The part of name before ":".  Empty string if not found </summary>
+		/// <summary> The part of name before ":"</summary>
+		/// <returns> Empty string if not found </returns>
 		public string Prefix {
 			get {
 				return GetNamespacePrefix(this.Name);
 			}
 		}
 		
-		/// <summary> The part of name after ":".  Whole name if not found </summary>
+		/// <summary> The part of name after ":" </summary>
+		/// <returns> Whole name if ":" not found </returns>
 		public string LocalName {
 			get {
 				return GetLocalName(this.Name);
@@ -887,8 +902,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <inheritdoc/>
 		internal override void UpdateDataFrom(RawObject source)
 		{
-			if (this.ReadCallID == source.ReadCallID) return;
-			base.UpdateDataFrom(source);
+			base.UpdateDataFrom(source);  // Check asserts
+			if (this.LastUpdatedFrom == source) return;
 			RawAttribute src = (RawAttribute)source;
 			if (this.Name != src.Name ||
 				this.EqualsSign != src.EqualsSign ||
@@ -957,8 +972,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <inheritdoc/>
 		internal override void UpdateDataFrom(RawObject source)
 		{
-			if (this.ReadCallID == source.ReadCallID) return;
-			base.UpdateDataFrom(source);
+			base.UpdateDataFrom(source); // Check asserts
+			if (this.LastUpdatedFrom == source) return;
 			RawText src = (RawText)source;
 			if (this.EscapedValue != src.EscapedValue ||
 			    this.Value != src.Value)
