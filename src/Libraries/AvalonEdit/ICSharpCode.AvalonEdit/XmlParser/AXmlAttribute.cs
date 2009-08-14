@@ -14,12 +14,12 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Name-value pair in a tag
 	/// </summary>
-	public class RawAttribute: RawObject
+	public class AXmlAttribute: AXmlObject
 	{
 		/// <summary> Name with namespace prefix - exactly as in source file </summary>
 		public string Name { get;  internal set; }
@@ -43,11 +43,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		/// <summary> The element containing this attribute </summary>
 		/// <returns> Null if orphaned </returns>
-		public RawElement ParentElement {
+		public AXmlElement ParentElement {
 			get {
-				RawTag tag = this.Parent as RawTag;
+				AXmlTag tag = this.Parent as AXmlTag;
 				if (tag != null) {
-					return tag.Parent as RawElement;
+					return tag.Parent as AXmlElement;
 				}
 				return null;
 			}
@@ -77,7 +77,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			get {
 				if (string.IsNullOrEmpty(this.Prefix)) return NoNamespace;
 				
-				RawElement elem = this.ParentElement;
+				AXmlElement elem = this.ParentElement;
 				if (elem != null) {
 					return elem.ReslovePrefix(this.Prefix);
 				}
@@ -95,17 +95,17 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		#endregion
 		
 		/// <inheritdoc/>
-		public override void AcceptVisitor(IXmlVisitor visitor)
+		public override void AcceptVisitor(IAXmlVisitor visitor)
 		{
 			visitor.VisitAttribute(this);
 		}
 		
 		/// <inheritdoc/>
-		internal override void UpdateDataFrom(RawObject source)
+		internal override void UpdateDataFrom(AXmlObject source)
 		{
 			base.UpdateDataFrom(source);  // Check asserts
 			if (this.LastUpdatedFrom == source) return;
-			RawAttribute src = (RawAttribute)source;
+			AXmlAttribute src = (AXmlAttribute)source;
 			if (this.Name != src.Name ||
 				this.EqualsSign != src.EqualsSign ||
 				this.QuotedValue != src.QuotedValue ||

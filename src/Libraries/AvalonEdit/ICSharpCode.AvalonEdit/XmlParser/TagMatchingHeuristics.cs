@@ -12,18 +12,18 @@ using System.Text;
 
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	class TagMatchingHeuristics
 	{
 		const int maxConfigurationCount = 10;
 		
-		XmlParser parser;
+		AXmlParser parser;
 		Cache cache;
 		string input;
-		List<RawObject> tags;
+		List<AXmlObject> tags;
 		
-		public TagMatchingHeuristics(XmlParser parser, string input, List<RawObject> tags)
+		public TagMatchingHeuristics(AXmlParser parser, string input, List<AXmlObject> tags)
 		{
 			this.parser = parser;
 			this.cache = parser.Cache;
@@ -31,14 +31,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			this.tags = tags;
 		}
 		
-		public RawDocument ReadDocument()
+		public AXmlDocument ReadDocument()
 		{
-			RawDocument doc = new RawDocument() { Parser = parser };
+			AXmlDocument doc = new AXmlDocument() { Parser = parser };
 			
-			XmlParser.Log("Flat stream: {0}", PrintObjects(tags));
-			List<RawObject> valid = MatchTags(tags);
-			XmlParser.Log("Fixed stream: {0}", PrintObjects(valid));
-			IEnumerator<RawObject> validStream = valid.GetEnumerator();
+			AXmlParser.Log("Flat stream: {0}", PrintObjects(tags));
+			List<AXmlObject> valid = MatchTags(tags);
+			AXmlParser.Log("Fixed stream: {0}", PrintObjects(valid));
+			IEnumerator<AXmlObject> validStream = valid.GetEnumerator();
 			validStream.MoveNext(); // Move to first
 			while(true) {
 				// End of stream?
@@ -55,25 +55,25 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				doc.EndOffset = doc.LastChild.EndOffset;
 			}
 			
-			XmlParser.Log("Constructed {0}", doc);
+			AXmlParser.Log("Constructed {0}", doc);
 			cache.Add(doc, null);
 			return doc;
 		}
 		
-		RawObject ReadSingleObject(IEnumerator<RawObject> objStream)
+		AXmlObject ReadSingleObject(IEnumerator<AXmlObject> objStream)
 		{
-			RawObject obj = objStream.Current;
+			AXmlObject obj = objStream.Current;
 			objStream.MoveNext();
 			return obj;
 		}
 		
-		RawObject ReadTextOrElement(IEnumerator<RawObject> objStream)
+		AXmlObject ReadTextOrElement(IEnumerator<AXmlObject> objStream)
 		{
-			RawObject curr = objStream.Current;
-			if (curr is RawText || curr is RawElement) {
+			AXmlObject curr = objStream.Current;
+			if (curr is AXmlText || curr is AXmlElement) {
 				return ReadSingleObject(objStream);
 			} else {
-				RawTag currTag = (RawTag)curr;
+				AXmlTag currTag = (AXmlTag)curr;
 				if (currTag == StartTagPlaceholder) {
 					return ReadElement(objStream);
 				} else if (currTag.IsStartOrEmptyTag) {
@@ -84,15 +84,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		RawElement ReadElement(IEnumerator<RawObject> objStream)
+		AXmlElement ReadElement(IEnumerator<AXmlObject> objStream)
 		{
-			RawElement element = new RawElement();
+			AXmlElement element = new AXmlElement();
 			element.IsProperlyNested = true;
 			
 			// Read start tag
-			RawTag startTag = ReadSingleObject(objStream) as RawTag;
-			XmlParser.DebugAssert(startTag != null, "Start tag expected");
-			XmlParser.DebugAssert(startTag.IsStartOrEmptyTag || startTag == StartTagPlaceholder, "Start tag expected");
+			AXmlTag startTag = ReadSingleObject(objStream) as AXmlTag;
+			AXmlParser.DebugAssert(startTag != null, "Start tag expected");
+			AXmlParser.DebugAssert(startTag.IsStartOrEmptyTag || startTag == StartTagPlaceholder, "Start tag expected");
 			if (startTag == StartTagPlaceholder) {
 				element.HasStartOrEmptyTag = false;
 				element.IsProperlyNested = false;
@@ -106,7 +106,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			// Read content and end tag
 			if (element.StartTag.IsStartTag || startTag == StartTagPlaceholder) {
 				while(true) {
-					RawTag currTag = objStream.Current as RawTag; // Peek
+					AXmlTag currTag = objStream.Current as AXmlTag; // Peek
 					if (currTag == EndTagPlaceholder) {
 						TagReader.OnSyntaxError(element, element.LastChild.EndOffset, element.LastChild.EndOffset,
 						                        "Expected '</{0}>'", element.StartTag.Name);
@@ -123,11 +123,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						element.HasEndTag = true;
 						break;
 					}
-					RawObject nested = ReadTextOrElement(objStream);
-					if (nested is RawElement) {
-						if (!((RawElement)nested).IsProperlyNested)
+					AXmlObject nested = ReadTextOrElement(objStream);
+					if (nested is AXmlElement) {
+						if (!((AXmlElement)nested).IsProperlyNested)
 							element.IsProperlyNested = false;
-						element.AddChildren(Split((RawElement)nested).ToList());
+						element.AddChildren(Split((AXmlElement)nested).ToList());
 					} else {
 						element.AddChild(nested);
 					}
@@ -139,20 +139,20 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			element.StartOffset = element.FirstChild.StartOffset;
 			element.EndOffset = element.LastChild.EndOffset;
 			
-			XmlParser.Log("Constructed {0}", element);
+			AXmlParser.Log("Constructed {0}", element);
 			cache.Add(element, null); // Need all elements in cache for offset tracking
 			return element;
 		}
 		
-		IEnumerable<RawObject> Split(RawElement elem)
+		IEnumerable<AXmlObject> Split(AXmlElement elem)
 		{
 			int myIndention = GetIndentLevel(elem);
 			// If has virtual end and is indented
 			if (!elem.HasEndTag && myIndention != -1) {
 				int lastAccepted = 0; // Accept start tag
 				while (lastAccepted + 1 < elem.Children.Count - 1 /* no end tag */) {
-					RawObject nextItem = elem.Children[lastAccepted + 1];
-					if (nextItem is RawText) {
+					AXmlObject nextItem = elem.Children[lastAccepted + 1];
+					if (nextItem is AXmlText) {
 						lastAccepted++; continue;  // Accept
 					} else {
 						// Include all more indented items
@@ -168,8 +168,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					yield return elem;
 					yield break;
 				}
-				XmlParser.Log("Splitting {0} - take {1} of {2} nested", elem, lastAccepted, elem.Children.Count - 2);
-				RawElement topHalf = new RawElement();
+				AXmlParser.Log("Splitting {0} - take {1} of {2} nested", elem, lastAccepted, elem.Children.Count - 2);
+				AXmlElement topHalf = new AXmlElement();
 				topHalf.HasStartOrEmptyTag = elem.HasStartOrEmptyTag;
 				topHalf.HasEndTag = elem.HasEndTag;
 				topHalf.AddChildren(elem.Children.Take(lastAccepted + 1));    // Start tag + nested
@@ -178,7 +178,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				TagReader.OnSyntaxError(topHalf, topHalf.LastChild.EndOffset, topHalf.LastChild.EndOffset,
 						                 "Expected '</{0}>'", topHalf.StartTag.Name);
 				
-				XmlParser.Log("Constructed {0}", topHalf);
+				AXmlParser.Log("Constructed {0}", topHalf);
 				cache.Add(topHalf, null);
 				yield return topHalf;
 				for(int i = lastAccepted + 1; i < elem.Children.Count - 1; i++) {
@@ -189,7 +189,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		int GetIndentLevel(RawObject obj)
+		int GetIndentLevel(AXmlObject obj)
 		{
 			int offset = obj.StartOffset - 1;
 			int level = 0;
@@ -217,9 +217,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		class Configuration
 		{
 			/// <summary> Unmatched start tags </summary>
-			public ImmutableStack<RawTag> StartTags { get; set; }
+			public ImmutableStack<AXmlTag> StartTags { get; set; }
 			/// <summary> Properly nested tags </summary>
-			public ImmutableStack<RawObject> Document { get; set; }
+			public ImmutableStack<AXmlObject> Document { get; set; }
 			/// <summary> Number of needed modificaitons to the document </summary>
 			public int Cost { get; set; }
 		}
@@ -227,7 +227,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary>
 		/// Dictionary which stores the cheapest configuration
 		/// </summary>
-		class Configurations: Dictionary<ImmutableStack<RawTag>, Configuration>
+		class Configurations: Dictionary<ImmutableStack<AXmlTag>, Configuration>
 		{
 			public Configurations()
 			{
@@ -258,7 +258,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				StringBuilder sb = new StringBuilder();
 				foreach(var kvp in this) {
 					sb.Append("\n - '");
-					foreach(RawTag startTag in kvp.Value.StartTags.Reverse()) {
+					foreach(AXmlTag startTag in kvp.Value.StartTags.Reverse()) {
 						sb.Append('<');
 						sb.Append(startTag.Name);
 						sb.Append('>');
@@ -270,21 +270,21 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		// Tags used to guide the element creation
-		readonly RawTag StartTagPlaceholder = new RawTag();
-		readonly RawTag EndTagPlaceholder = new RawTag();
+		readonly AXmlTag StartTagPlaceholder = new AXmlTag();
+		readonly AXmlTag EndTagPlaceholder = new AXmlTag();
 		
 		/// <summary>
 		/// Add start or end tag placeholders so that the documment is properly nested
 		/// </summary>
-		List<RawObject> MatchTags(IEnumerable<RawObject> objs)
+		List<AXmlObject> MatchTags(IEnumerable<AXmlObject> objs)
 		{
 			Configurations configurations = new Configurations();
 			configurations.Add(new Configuration {
-				StartTags = ImmutableStack<RawTag>.Empty,
-				Document = ImmutableStack<RawObject>.Empty,
+				StartTags = ImmutableStack<AXmlTag>.Empty,
+				Document = ImmutableStack<AXmlObject>.Empty,
 				Cost = 0,
 			});
-			foreach(RawObject obj in objs) {
+			foreach(AXmlObject obj in objs) {
 				configurations = ProcessObject(configurations, obj);
 			}
 			// Close any remaining start tags
@@ -295,22 +295,22 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					conifg.Cost += 1;
 				}
 			}
-			XmlParser.Log("Configurations after closing all remaining tags:" + configurations.ToString());
+			AXmlParser.Log("Configurations after closing all remaining tags:" + configurations.ToString());
 			Configuration bestConfig = configurations.Values.OrderBy(v => v.Cost).First();
-			XmlParser.Log("Best configuration has cost {0}", bestConfig.Cost);
+			AXmlParser.Log("Best configuration has cost {0}", bestConfig.Cost);
 			
 			return bestConfig.Document.Reverse().ToList();
 		}
 		
 		/// <summary> Get posible configurations after considering fiven object </summary>
-		Configurations ProcessObject(Configurations oldConfigs, RawObject obj)
+		Configurations ProcessObject(Configurations oldConfigs, AXmlObject obj)
 		{
-			XmlParser.Log("Processing {0}", obj);
+			AXmlParser.Log("Processing {0}", obj);
 			
-			RawTag tag = obj as RawTag;
-			XmlParser.Assert(obj is RawTag || obj is RawText || obj is RawElement, obj.GetType().Name + " not expected");
-			if (obj is RawElement)
-				XmlParser.Assert(((RawElement)obj).IsProperlyNested, "Element not proprly nested");
+			AXmlTag tag = obj as AXmlTag;
+			AXmlParser.Assert(obj is AXmlTag || obj is AXmlText || obj is AXmlElement, obj.GetType().Name + " not expected");
+			if (obj is AXmlElement)
+				AXmlParser.Assert(((AXmlElement)obj).IsProperlyNested, "Element not proprly nested");
 			
 			Configurations newConfigs = new Configurations();
 			
@@ -342,7 +342,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					int popedCount = 0;
 					var startTags = oldStartTags;
 					var doc = oldDocument;
-					foreach(RawTag poped in oldStartTags) {
+					foreach(AXmlTag poped in oldStartTags) {
 						popedCount++;
 						if (poped.Name == tag.Name) {
 							newConfigs.Add(new Configuration {             // Pop 'x' items (cost x-1) - last one is matching
@@ -370,32 +370,32 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				newConfigs.Values.OrderBy(v => v.Cost).Take(maxConfigurationCount)
 			);
 			
-			XmlParser.Log("Best new configurations:" + bestNewConfigurations.ToString());
+			AXmlParser.Log("Best new configurations:" + bestNewConfigurations.ToString());
 			
 			return bestNewConfigurations;
 		}
 		
 		#region Helper methods
 		
-		string PrintObjects(IEnumerable<RawObject> objs)
+		string PrintObjects(IEnumerable<AXmlObject> objs)
 		{
 			StringBuilder sb = new StringBuilder();
-			foreach(RawObject obj in objs) {
-				if (obj is RawTag) {
+			foreach(AXmlObject obj in objs) {
+				if (obj is AXmlTag) {
 					if (obj == StartTagPlaceholder) {
 						sb.Append("#StartTag#");
 					} else if (obj == EndTagPlaceholder) {
 						sb.Append("#EndTag#");
 					} else {
-						sb.Append(((RawTag)obj).OpeningBracket);
-						sb.Append(((RawTag)obj).Name);
-						sb.Append(((RawTag)obj).ClosingBracket);
+						sb.Append(((AXmlTag)obj).OpeningBracket);
+						sb.Append(((AXmlTag)obj).Name);
+						sb.Append(((AXmlTag)obj).ClosingBracket);
 					}
-				} else if (obj is RawElement) {
+				} else if (obj is AXmlElement) {
 					sb.Append('[');
-					sb.Append(PrintObjects(((RawElement)obj).Children));
+					sb.Append(PrintObjects(((AXmlElement)obj).Children));
 					sb.Append(']');
-				} else if (obj is RawText) {
+				} else if (obj is AXmlText) {
 					sb.Append('~');
 				} else {
 					throw new Exception("Should not be here: " + obj);

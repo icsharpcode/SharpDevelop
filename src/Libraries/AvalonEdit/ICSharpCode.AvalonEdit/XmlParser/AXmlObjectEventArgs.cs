@@ -14,12 +14,12 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
-	/// <summary> Holds event args for event caused by <see cref="RawObject"/> </summary>
-	public class RawObjectEventArgs: EventArgs
+	/// <summary> Holds event args for event caused by <see cref="AXmlObject"/> </summary>
+	public class AXmlObjectEventArgs: EventArgs
 	{
 		/// <summary> The object that caused the event </summary>
-		public RawObject Object { get; set; }
+		public AXmlObject Object { get; set; }
 	}
 }

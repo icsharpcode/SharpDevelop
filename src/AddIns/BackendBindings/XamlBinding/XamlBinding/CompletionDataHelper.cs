@@ -15,7 +15,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Xml.Linq;
 
-using ICSharpCode.AvalonEdit.XmlParser;
+using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -63,10 +63,10 @@ namespace ICSharpCode.XamlBinding
 		public static XamlContext ResolveContext(string text, string fileName, int offset)
 		{
 			ParseInformation info = string.IsNullOrEmpty(fileName) ? null : ParserService.GetParseInformation(fileName);
-			var parser = new AvalonEdit.XmlParser.XmlParser(text);
+			var parser = new AvalonEdit.Xml.AXmlParser(text);
 			var document = parser.Parse();
 			
-			RawObject currentData = document.GetChildAtOffset(offset);
+			AXmlObject currentData = document.GetChildAtOffset(offset);
 			
 			string attribute = string.Empty, attributeValue = string.Empty;
 			bool inAttributeValue = false;
@@ -74,17 +74,17 @@ namespace ICSharpCode.XamlBinding
 			bool isRoot = false;
 			int offsetFromValueStart = -1;
 			
-			List<RawElement> ancestors = new List<RawElement>();
+			List<AXmlElement> ancestors = new List<AXmlElement>();
 			Dictionary<string, string> xmlns = new Dictionary<string, string>();
 			List<string> ignored = new List<string>();
 			
 			var item = currentData;
 			
 			while (item != item.Document) {
-				if (item is RawElement) {
-					RawElement element = item as RawElement;
+				if (item is AXmlElement) {
+					AXmlElement element = item as AXmlElement;
 					ancestors.Add(element);
-					foreach (RawAttribute attr in element.StartTag.Children.OfType<RawAttribute>()) {
+					foreach (AXmlAttribute attr in element.StartTag.Children.OfType<AXmlAttribute>()) {
 						if (attr.IsNamespaceDeclaration) {
 							string prefix = (attr.Name == "xmlns") ? "" : attr.LocalName;
 							if (!xmlns.ContainsKey(prefix))
@@ -101,22 +101,22 @@ namespace ICSharpCode.XamlBinding
 			
 			XamlContextDescription description = XamlContextDescription.None;
 			
-			RawElement active = null;
-			RawElement parent = null;
+			AXmlElement active = null;
+			AXmlElement parent = null;
 			
-			if (currentData.Parent is RawTag) {
-				RawTag tag = currentData.Parent as RawTag;
+			if (currentData.Parent is AXmlTag) {
+				AXmlTag tag = currentData.Parent as AXmlTag;
 				if (tag.IsStartTag)
 					description = XamlContextDescription.InTag;
 				else if (tag.IsComment)
 					description = XamlContextDescription.InComment;
 				else if (tag.IsCData)
 					description = XamlContextDescription.InCData;
-				active = tag.Parent as RawElement;
+				active = tag.Parent as AXmlElement;
 			}
 			
-			if (currentData is RawAttribute) {
-				RawAttribute a = currentData as RawAttribute;
+			if (currentData is AXmlAttribute) {
+				AXmlAttribute a = currentData as AXmlAttribute;
 				int valueStartOffset = a.StartOffset + (a.Name ?? "").Length + (a.EqualsSign ?? "").Length + 1;
 				attribute = a.Name;
 				attributeValue = a.Value;
@@ -135,15 +135,15 @@ namespace ICSharpCode.XamlBinding
 				}
 			}
 			
-			if (currentData is RawTag) {
-				RawTag tag = currentData as RawTag;
+			if (currentData is AXmlTag) {
+				AXmlTag tag = currentData as AXmlTag;
 				if (tag.IsStartTag)
 					description = XamlContextDescription.AtTag;
 				else if (tag.IsComment)
 					description = XamlContextDescription.InComment;
 				else if (tag.IsCData)
 					description = XamlContextDescription.InCData;
-				active = tag.Parent as RawElement;
+				active = tag.Parent as AXmlElement;
 			}
 			
 			if (active != ancestors.FirstOrDefault())
@@ -159,7 +159,7 @@ namespace ICSharpCode.XamlBinding
 				ActiveElement     = active,
 				ParentElement     = parent,
 				Ancestors         = ancestors,
-				Attribute         = currentData as RawAttribute,
+				Attribute         = currentData as AXmlAttribute,
 				InRoot            = isRoot,
 				AttributeValue    = value,
 				RawAttributeValue = attributeValue,
@@ -184,7 +184,7 @@ namespace ICSharpCode.XamlBinding
 		
 		static List<ICompletionItem> CreateAttributeList(XamlCompletionContext context, bool includeEvents)
 		{
-			RawElement lastElement = context.ActiveElement;
+			AXmlElement lastElement = context.ActiveElement;
 			if (context.ParseInformation == null)
 				return emptyList;
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;

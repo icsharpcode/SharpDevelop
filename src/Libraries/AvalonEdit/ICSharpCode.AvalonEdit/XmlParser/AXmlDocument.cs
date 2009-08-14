@@ -14,51 +14,51 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// The root object of the XML document
 	/// </summary>
-	public class RawDocument: RawContainer
+	public class AXmlDocument: AXmlContainer
 	{
 		/// <summary> Parser that produced this document </summary>
-		internal XmlParser Parser { get; set; }
+		internal AXmlParser Parser { get; set; }
 		
 		/// <summary> Occurs when object is added to any part of the document </summary>
 		public event EventHandler<NotifyCollectionChangedEventArgs> ObjectInserted;
 		/// <summary> Occurs when object is removed from any part of the document </summary>
 		public event EventHandler<NotifyCollectionChangedEventArgs> ObjectRemoved;
 		/// <summary> Occurs before local data of any object in the document changes </summary>
-		public event EventHandler<RawObjectEventArgs> ObjectChanging;
+		public event EventHandler<AXmlObjectEventArgs> ObjectChanging;
 		/// <summary> Occurs after local data of any object in the document changed </summary>
-		public event EventHandler<RawObjectEventArgs> ObjectChanged;
+		public event EventHandler<AXmlObjectEventArgs> ObjectChanged;
 		
-		internal void OnObjectInserted(int index, RawObject obj)
+		internal void OnObjectInserted(int index, AXmlObject obj)
 		{
 			if (ObjectInserted != null)
-				ObjectInserted(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new RawObject[] { obj }.ToList(), index));
+				ObjectInserted(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new AXmlObject[] { obj }.ToList(), index));
 		}
 		
-		internal void OnObjectRemoved(int index, RawObject obj)
+		internal void OnObjectRemoved(int index, AXmlObject obj)
 		{
 			if (ObjectRemoved != null)
-				ObjectRemoved(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new RawObject[] { obj }.ToList(), index));
+				ObjectRemoved(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new AXmlObject[] { obj }.ToList(), index));
 		}
 		
-		internal void OnObjectChanging(RawObject obj)
+		internal void OnObjectChanging(AXmlObject obj)
 		{
 			if (ObjectChanging != null)
-				ObjectChanging(this, new RawObjectEventArgs() { Object = obj } );
+				ObjectChanging(this, new AXmlObjectEventArgs() { Object = obj } );
 		}
 		
-		internal void OnObjectChanged(RawObject obj)
+		internal void OnObjectChanged(AXmlObject obj)
 		{
 			if (ObjectChanged != null)
-				ObjectChanged(this, new RawObjectEventArgs() { Object = obj } );
+				ObjectChanged(this, new AXmlObjectEventArgs() { Object = obj } );
 		}
 		
 		/// <inheritdoc/>
-		public override void AcceptVisitor(IXmlVisitor visitor)
+		public override void AcceptVisitor(IAXmlVisitor visitor)
 		{
 			visitor.VisitDocument(this);
 		}

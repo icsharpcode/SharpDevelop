@@ -14,7 +14,7 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	static class ExtensionMethods
 	{

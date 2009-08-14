@@ -14,12 +14,12 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Logical grouping of other nodes together.
 	/// </summary>
-	public class RawElement: RawContainer
+	public class AXmlElement: AXmlContainer
 	{
 		/// <summary> No tags are missing anywhere within this element (recursive) </summary>
 		public bool IsProperlyNested { get; set; }
@@ -29,9 +29,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public bool HasEndTag { get; set; }
 		
 		/// <summary>  StartTag of an element.  </summary>
-		public RawTag StartTag {
+		public AXmlTag StartTag {
 			get {
-				return (RawTag)this.Children[0];
+				return (AXmlTag)this.Children[0];
 			}
 		}
 		
@@ -43,29 +43,29 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		#region Helpper methods
 		
-		AttributeCollection attributes;
+		AXmlAttributeCollection attributes;
 		
 		/// <summary> Gets attributes of the element </summary>
-		public AttributeCollection Attributes {
+		public AXmlAttributeCollection Attributes {
 			get {
 				if (attributes == null) {
-					attributes = new AttributeCollection(this.StartTag.Children);
+					attributes = new AXmlAttributeCollection(this.StartTag.Children);
 				}
 				return attributes;
 			}
 		}
 		
-		ObservableCollection<RawObject> attributesAndElements;
+		ObservableCollection<AXmlObject> attributesAndElements;
 		
 		// TODO: Identity
 		/// <summary> Gets both attributes and elements </summary>
-		public ObservableCollection<RawObject> AttributesAndElements {
+		public ObservableCollection<AXmlObject> AttributesAndElements {
 			get {
 				if (attributesAndElements == null) {
-					attributesAndElements = new MergedCollection<RawObject, ObservableCollection<RawObject>> (
+					attributesAndElements = new MergedCollection<AXmlObject, ObservableCollection<AXmlObject>> (
 						// New wrapper with RawObject types
-						new FilteredCollection<RawObject, ChildrenCollection<RawObject>>(this.StartTag.Children, x => x is RawAttribute),
-						new FilteredCollection<RawObject, ChildrenCollection<RawObject>>(this.Children, x => x is RawElement)
+						new FilteredCollection<AXmlObject, AXmlObjectCollection<AXmlObject>>(this.StartTag.Children, x => x is AXmlAttribute),
+						new FilteredCollection<AXmlObject, AXmlObjectCollection<AXmlObject>>(this.Children, x => x is AXmlElement)
 					);
 				}
 				return attributesAndElements;
@@ -111,11 +111,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary> Find the defualt namesapce for this context </summary>
 		public string FindDefaultNamesapce()
 		{
-			RawElement current = this;
+			AXmlElement current = this;
 			while(current != null) {
 				string namesapce = current.GetAttributeValue(NoNamespace, "xmlns");
 				if (namesapce != null) return namesapce;
-				current = current.Parent as RawElement;
+				current = current.Parent as AXmlElement;
 			}
 			return string.Empty; // No namesapce
 		}
@@ -132,11 +132,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			if (prefix == "xml") return XmlNamespace;
 			if (prefix == "xmlns") return XmlnsNamespace;
 			
-			RawElement current = this;
+			AXmlElement current = this;
 			while(current != null) {
 				string namesapce = current.GetAttributeValue(XmlnsNamespace, prefix);
 				if (namesapce != null) return namesapce;
-				current = current.Parent as RawElement;
+				current = current.Parent as AXmlElement;
 			}
 			return NoNamespace; // Can not find prefix
 		}
@@ -160,7 +160,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public string GetAttributeValue(string @namespace, string localName)
 		{
 			@namespace = @namespace ?? string.Empty;
-			foreach(RawAttribute attr in this.Attributes.GetByLocalName(localName)) {
+			foreach(AXmlAttribute attr in this.Attributes.GetByLocalName(localName)) {
 				DebugAssert(attr.LocalName == localName, "Bad hashtable");
 				if (attr.Namespace == @namespace) {
 					return attr.Value;
@@ -172,7 +172,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		#endregion
 		
 		/// <inheritdoc/>
-		public override void AcceptVisitor(IXmlVisitor visitor)
+		public override void AcceptVisitor(IAXmlVisitor visitor)
 		{
 			visitor.VisitElement(this);
 		}

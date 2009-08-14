@@ -5,7 +5,7 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.XmlParser;
+using ICSharpCode.AvalonEdit.Xml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,10 +21,10 @@ using ICSharpCode.XmlEditor;
 namespace ICSharpCode.XamlBinding
 {
 	public class XamlContext : ExpressionContext {
-		public RawElement ActiveElement { get; set; }
-		public RawElement ParentElement { get; set; }
-		public List<RawElement> Ancestors { get; set; }
-		new public RawAttribute Attribute { get; set; }
+		public AXmlElement ActiveElement { get; set; }
+		public AXmlElement ParentElement { get; set; }
+		public List<AXmlElement> Ancestors { get; set; }
+		new public AXmlAttribute Attribute { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
 		public int ValueStartOffset { get; set; }

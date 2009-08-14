@@ -12,13 +12,14 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Collection that is publicly read-only and has support 
 	/// for adding/removing multiple items at a time.
 	/// </summary>
-	public class ChildrenCollection<T>: Collection<T>, INotifyCollectionChanged
+	// TODO: Specialize
+	public class AXmlObjectCollection<T>: Collection<T>, INotifyCollectionChanged
 	{
 		/// <summary> Occurs when the collection is changed </summary>
 		public event NotifyCollectionChangedEventHandler CollectionChanged;

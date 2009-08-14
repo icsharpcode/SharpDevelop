@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.XmlParser;
+using ICSharpCode.AvalonEdit.Xml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -122,12 +122,12 @@ namespace ICSharpCode.XamlBinding
 			return items.Concat(addItems);
 		}
 		
-		public static QualifiedNameWithLocation ToQualifiedName(this RawAttribute thisValue)
+		public static QualifiedNameWithLocation ToQualifiedName(this AXmlAttribute thisValue)
 		{
 			return new QualifiedNameWithLocation(thisValue.LocalName, thisValue.Namespace, thisValue.Prefix, thisValue.StartOffset);
 		}
 		
-		public static QualifiedNameWithLocation ToQualifiedName(this RawElement thisValue)
+		public static QualifiedNameWithLocation ToQualifiedName(this AXmlElement thisValue)
 		{
 			return new QualifiedNameWithLocation(thisValue.LocalName, thisValue.Namespace, thisValue.Prefix, thisValue.StartOffset);
 		}

@@ -14,12 +14,12 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Abstact base class for all types
 	/// </summary>
-	public abstract class RawObject: TextSegment
+	public abstract class AXmlObject: TextSegment
 	{
 		/// <summary> Empty string.  The namespace used if there is no "xmlns" specified </summary>
 		public static readonly string NoNamespace = string.Empty;
@@ -36,15 +36,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// Cache constraint:
 		///   If cached item has parent set, then the whole subtree must be consistent
 		/// </remarks>
-		public RawObject Parent { get; set; }
+		public AXmlObject Parent { get; set; }
 		
 		/// <summary> Gets the document owning this object or null if orphaned </summary>
-		public RawDocument Document {
+		public AXmlDocument Document {
 			get {
 				if (this.Parent != null) {
 					return this.Parent.Document;
-				} else if (this is RawDocument) {
-					return (RawDocument)this;
+				} else if (this is AXmlDocument) {
+					return (AXmlDocument)this;
 				} else {
 					return null;
 				}
@@ -52,25 +52,25 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Creates new object </summary>
-		public RawObject()
+		public AXmlObject()
 		{
 			this.LastUpdatedFrom = this;
 		}
 		
 		/// <summary> Occurs before the value of any local properties changes.  Nested changes do not cause the event to occur </summary>
-		public event EventHandler<RawObjectEventArgs> Changing;
+		public event EventHandler<AXmlObjectEventArgs> Changing;
 		
 		/// <summary> Occurs after the value of any local properties changed.  Nested changes do not cause the event to occur </summary>
-		public event EventHandler<RawObjectEventArgs> Changed;
+		public event EventHandler<AXmlObjectEventArgs> Changed;
 		
 		/// <summary> Raises Changing event </summary>
 		protected void OnChanging()
 		{
 			LogDom("Changing {0}", this);
 			if (Changing != null) {
-				Changing(this, new RawObjectEventArgs() { Object = this } );
+				Changing(this, new AXmlObjectEventArgs() { Object = this } );
 			}
-			RawDocument doc = this.Document;
+			AXmlDocument doc = this.Document;
 			if (doc != null) {
 				doc.OnObjectChanging(this);
 			}
@@ -81,9 +81,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		{
 			LogDom("Changed {0}", this);
 			if (Changed != null) {
-				Changed(this, new RawObjectEventArgs() { Object = this } );
+				Changed(this, new AXmlObjectEventArgs() { Object = this } );
 			}
-			RawDocument doc = this.Document;
+			AXmlDocument doc = this.Document;
 			if (doc != null) {
 				doc.OnObjectChanged(this);
 			}
@@ -130,15 +130,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Recursively gets self and all nested nodes. </summary>
-		public virtual IEnumerable<RawObject> GetSelfAndAllChildren()
+		public virtual IEnumerable<AXmlObject> GetSelfAndAllChildren()
 		{
-			return new RawObject[] { this };
+			return new AXmlObject[] { this };
 		}
 		
 		/// <summary> Get all ancestors of this node </summary>
-		public IEnumerable<RawObject> GetAncestors()
+		public IEnumerable<AXmlObject> GetAncestors()
 		{
-			RawObject curr = this.Parent;
+			AXmlObject curr = this.Parent;
 			while(curr != null) {
 				yield return curr;
 				curr = curr.Parent;
@@ -146,7 +146,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Call appropriate visit method on the given visitor </summary>
-		public abstract void AcceptVisitor(IXmlVisitor visitor);
+		public abstract void AcceptVisitor(IAXmlVisitor visitor);
 		
 		/// <summary> The parser tree object this object was updated from </summary>
 		internal object LastUpdatedFrom { get; private set; }
@@ -154,7 +154,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		internal bool IsInCache { get; set; }
 		
 		/// <summary> Is call to UpdateDataFrom is allowed? </summary>
-		internal bool CanUpdateDataFrom(RawObject source)
+		internal bool CanUpdateDataFrom(AXmlObject source)
 		{
 			return
 				this.GetType() == source.GetType() &&
@@ -163,7 +163,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Copy all data from the 'source' to this object </summary>
-		internal virtual void UpdateDataFrom(RawObject source)
+		internal virtual void UpdateDataFrom(AXmlObject source)
 		{
 			Assert(this.GetType() == source.GetType(), "Source has different type");
 			DebugAssert(this.StartOffset == source.StartOffset, "Source has different StartOffset");

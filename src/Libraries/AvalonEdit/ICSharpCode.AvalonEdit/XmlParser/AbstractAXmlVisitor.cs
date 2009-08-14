@@ -7,39 +7,39 @@
 using System;
 using System.Text;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Derive from this class to create visitor for the XML tree
 	/// </summary>
-	public abstract class AbstractXmlVisitor : IXmlVisitor
+	public abstract class AbstractAXmlVisitor : IAXmlVisitor
 	{
 		/// <summary> Visit RawDocument </summary>
-		public virtual void VisitDocument(RawDocument document)
+		public virtual void VisitDocument(AXmlDocument document)
 		{
-			foreach(RawObject child in document.Children) child.AcceptVisitor(this);
+			foreach(AXmlObject child in document.Children) child.AcceptVisitor(this);
 		}
 		
 		/// <summary> Visit RawElement </summary>
-		public virtual void VisitElement(RawElement element)
+		public virtual void VisitElement(AXmlElement element)
 		{
-			foreach(RawObject child in element.Children) child.AcceptVisitor(this);
+			foreach(AXmlObject child in element.Children) child.AcceptVisitor(this);
 		}
 		
 		/// <summary> Visit RawTag </summary>
-		public virtual void VisitTag(RawTag tag)
+		public virtual void VisitTag(AXmlTag tag)
 		{
-			foreach(RawObject child in tag.Children) child.AcceptVisitor(this);
+			foreach(AXmlObject child in tag.Children) child.AcceptVisitor(this);
 		}
 		
 		/// <summary> Visit RawAttribute </summary>
-		public virtual void VisitAttribute(RawAttribute attribute)
+		public virtual void VisitAttribute(AXmlAttribute attribute)
 		{
 			
 		}
 		
 		/// <summary> Visit RawText </summary>
-		public virtual void VisitText(RawText text)
+		public virtual void VisitText(AXmlText text)
 		{
 			
 		}

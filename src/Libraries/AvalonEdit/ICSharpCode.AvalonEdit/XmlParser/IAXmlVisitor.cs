@@ -7,26 +7,26 @@
 using System;
 using System.Text;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Visitor for the XML tree
 	/// </summary>
-	public interface IXmlVisitor
+	public interface IAXmlVisitor
 	{
 		/// <summary> Visit RawDocument </summary>
-		void VisitDocument(RawDocument document);
+		void VisitDocument(AXmlDocument document);
 		
 		/// <summary> Visit RawElement </summary>
-		void VisitElement(RawElement element);
+		void VisitElement(AXmlElement element);
 		
 		/// <summary> Visit RawTag </summary>
-		void VisitTag(RawTag tag);
+		void VisitTag(AXmlTag tag);
 		
 		/// <summary> Visit RawAttribute </summary>
-		void VisitAttribute(RawAttribute attribute);
+		void VisitAttribute(AXmlAttribute attribute);
 		
 		/// <summary> Visit RawText </summary>
-		void VisitText(RawText text);
+		void VisitText(AXmlText text);
 	}
 }

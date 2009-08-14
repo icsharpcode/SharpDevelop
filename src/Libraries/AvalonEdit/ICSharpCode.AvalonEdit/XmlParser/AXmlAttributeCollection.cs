@@ -8,43 +8,43 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Specailized attribute collection with attribute name caching
 	/// </summary>
-	public class AttributeCollection: FilteredCollection<RawAttribute, ChildrenCollection<RawObject>>
+	public class AXmlAttributeCollection: FilteredCollection<AXmlAttribute, AXmlObjectCollection<AXmlObject>>
 	{
 		/// <summary> Wrap the given collection.  Non-attributes are filtered </summary>
-		public AttributeCollection(ChildrenCollection<RawObject> source): base(source) {}
+		public AXmlAttributeCollection(AXmlObjectCollection<AXmlObject> source): base(source) {}
 		
 		/// <summary> Wrap the given collection.  Non-attributes are filtered.  Items not matching the condition are filtered. </summary>
-		public AttributeCollection(ChildrenCollection<RawObject> source, Predicate<object> condition): base(source, condition) {}
+		public AXmlAttributeCollection(AXmlObjectCollection<AXmlObject> source, Predicate<object> condition): base(source, condition) {}
 		
-		Dictionary<string, List<RawAttribute>> hashtable = new Dictionary<string, List<RawAttribute>>();
+		Dictionary<string, List<AXmlAttribute>> hashtable = new Dictionary<string, List<AXmlAttribute>>();
 		
-		void AddToHashtable(RawAttribute attr)
+		void AddToHashtable(AXmlAttribute attr)
 		{
 			string localName = attr.LocalName;
 			if (!hashtable.ContainsKey(localName)) {
-				hashtable[localName] = new List<RawAttribute>(1);
+				hashtable[localName] = new List<AXmlAttribute>(1);
 			}
 			hashtable[localName].Add(attr);
 		}
 		
-		void RemoveFromHashtable(RawAttribute attr)
+		void RemoveFromHashtable(AXmlAttribute attr)
 		{
 			string localName = attr.LocalName;
 			hashtable[localName].Remove(attr);
 		}
 		
-		static List<RawAttribute> NoAttributes = new List<RawAttribute>();
+		static List<AXmlAttribute> NoAttributes = new List<AXmlAttribute>();
 		
 		/// <summary>
 		/// Get all attributes with given local name.
 		/// Hash table is used for lookup so this is cheap.
 		/// </summary>
-		public IEnumerable<RawAttribute> GetByLocalName(string localName)
+		public IEnumerable<AXmlAttribute> GetByLocalName(string localName)
 		{
 			if (hashtable.ContainsKey(localName)) {
 				return hashtable[localName];
@@ -56,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <inheritdoc/>
 		protected override void ClearItems()
 		{
-			foreach(RawAttribute item in this) {
+			foreach(AXmlAttribute item in this) {
 				RemoveFromHashtable(item);
 				item.Changing -= item_Changing;
 				item.Changed  -= item_Changed;
@@ -65,7 +65,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <inheritdoc/>
-		protected override void InsertItem(int index, RawAttribute item)
+		protected override void InsertItem(int index, AXmlAttribute item)
 		{
 			AddToHashtable(item);
 			item.Changing += item_Changing;
@@ -83,7 +83,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <inheritdoc/>
-		protected override void SetItem(int index, RawAttribute item)
+		protected override void SetItem(int index, AXmlAttribute item)
 		{
 			throw new NotSupportedException();
 		}
@@ -91,14 +91,14 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		// Every item in the collectoin should be registered to these handlers
 		// so that we can handle renames
 		
-		void item_Changing(object sender, RawObjectEventArgs e)
+		void item_Changing(object sender, AXmlObjectEventArgs e)
 		{
-			RemoveFromHashtable((RawAttribute)e.Object);
+			RemoveFromHashtable((AXmlAttribute)e.Object);
 		}
 		
-		void item_Changed(object sender, RawObjectEventArgs e)
+		void item_Changed(object sender, AXmlObjectEventArgs e)
 		{
-			AddToHashtable((RawAttribute)e.Object);
+			AddToHashtable((AXmlAttribute)e.Object);
 		}
 	}
 }

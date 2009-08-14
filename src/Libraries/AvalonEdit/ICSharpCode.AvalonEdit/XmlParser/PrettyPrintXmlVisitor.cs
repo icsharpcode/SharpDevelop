@@ -7,13 +7,13 @@
 using System;
 using System.Text;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Converts the XML tree back to text.
 	/// The text should exactly match the original.
 	/// </summary>
-	public class PrettyPrintXmlVisitor: AbstractXmlVisitor
+	public class PrettyPrintAXmlVisitor: AbstractAXmlVisitor
 	{
 		StringBuilder sb = new StringBuilder();
 		
@@ -27,19 +27,19 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Visit RawDocument </summary>
-		public override void VisitDocument(RawDocument document)
+		public override void VisitDocument(AXmlDocument document)
 		{
 			base.VisitDocument(document);
 		}
 		
 		/// <summary> Visit RawElement </summary>
-		public override void VisitElement(RawElement element)
+		public override void VisitElement(AXmlElement element)
 		{
 			base.VisitElement(element);
 		}
 		
 		/// <summary> Visit RawTag </summary>
-		public override void VisitTag(RawTag tag)
+		public override void VisitTag(AXmlTag tag)
 		{
 			sb.Append(tag.OpeningBracket);
 			sb.Append(tag.Name);
@@ -48,7 +48,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Visit RawAttribute </summary>
-		public override void VisitAttribute(RawAttribute attribute)
+		public override void VisitAttribute(AXmlAttribute attribute)
 		{
 			sb.Append(attribute.Name);
 			sb.Append(attribute.EqualsSign);
@@ -56,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		}
 		
 		/// <summary> Visit RawText </summary>
-		public override void VisitText(RawText text)
+		public override void VisitText(AXmlText text)
 		{
 			sb.Append(text.EscapedValue);
 		}

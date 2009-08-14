@@ -14,12 +14,12 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Represents any markup starting with "&lt;" and (hopefully) ending with ">"
 	/// </summary>
-	public class RawTag: RawContainer
+	public class AXmlTag: AXmlContainer
 	{
 		/// <summary> These identify the start of DTD elements </summary>
 		public static readonly string[] DTDNames = new string[] {"<!DOCTYPE", "<!NOTATION", "<!ELEMENT", "<!ATTLIST", "<!ENTITY"};
@@ -55,24 +55,24 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			Assert(OpeningBracket != null, "Null OpeningBracket");
 			Assert(Name != null, "Null Name");
 			Assert(ClosingBracket != null, "Null ClosingBracket");
-			foreach(RawObject child in this.Children) {
-				Assert(child is RawText || child is RawAttribute, "Only attribute or text children allowed");
+			foreach(AXmlObject child in this.Children) {
+				Assert(child is AXmlText || child is AXmlAttribute, "Only attribute or text children allowed");
 			}
 			base.DebugCheckConsistency(allowNullParent);
 		}
 		
 		/// <inheritdoc/>
-		public override void AcceptVisitor(IXmlVisitor visitor)
+		public override void AcceptVisitor(IAXmlVisitor visitor)
 		{
 			visitor.VisitTag(this);
 		}
 		
 		/// <inheritdoc/>
-		internal override void UpdateDataFrom(RawObject source)
+		internal override void UpdateDataFrom(AXmlObject source)
 		{
 			base.UpdateDataFrom(source); // Check asserts
 			if (this.LastUpdatedFrom == source) return;
-			RawTag src = (RawTag)source;
+			AXmlTag src = (AXmlTag)source;
 			if (this.OpeningBracket != src.OpeningBracket ||
 				this.Name != src.Name ||
 				this.ClosingBracket != src.ClosingBracket)

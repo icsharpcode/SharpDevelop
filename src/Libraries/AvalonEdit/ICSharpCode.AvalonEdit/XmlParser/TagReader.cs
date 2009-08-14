@@ -11,27 +11,27 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	class TagReader: TokenReader
 	{
-		XmlParser parser;
+		AXmlParser parser;
 		Cache cache;
 		string input;
 		
-		public TagReader(XmlParser parser, string input): base(input)
+		public TagReader(AXmlParser parser, string input): base(input)
 		{
 			this.parser = parser;
 			this.cache = parser.Cache;
 			this.input = input;
 		}
 		
-		bool TryReadFromCacheOrNew<T>(out T res) where T: RawObject, new()
+		bool TryReadFromCacheOrNew<T>(out T res) where T: AXmlObject, new()
 		{
 			return TryReadFromCacheOrNew(out res, t => true);
 		}
 		
-		bool TryReadFromCacheOrNew<T>(out T res, Predicate<T> condition) where T: RawObject, new()
+		bool TryReadFromCacheOrNew<T>(out T res, Predicate<T> condition) where T: AXmlObject, new()
 		{
 			T cached = cache.GetObject<T>(this.CurrentLocation, 0, condition);
 			if (cached != null) {
@@ -44,9 +44,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		void OnParsed(RawObject obj)
+		void OnParsed(AXmlObject obj)
 		{
-			XmlParser.Log("Parsed {0}", obj);
+			AXmlParser.Log("Parsed {0}", obj);
 			cache.Add(obj, this.MaxTouchedLocation > this.CurrentLocation ? (int?)this.MaxTouchedLocation : null);
 		}
 		
@@ -54,22 +54,22 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// Read all tags in the document in a flat sequence.
 		/// It also includes the text between tags and possibly some properly nested Elements from cache.
 		/// </summary>
-		public List<RawObject> ReadAllTags()
+		public List<AXmlObject> ReadAllTags()
 		{
-			List<RawObject> stream = new List<RawObject>();
+			List<AXmlObject> stream = new List<AXmlObject>();
 			
 			while(true) {
 				if (IsEndOfFile()) {
 					break;
 				} else if (TryPeek('<')) {
-					RawElement elem;
+					AXmlElement elem;
 					if (TryReadFromCacheOrNew(out elem, e => e.IsProperlyNested)) {
 						stream.Add(elem);
 					} else {
 						stream.Add(ReadTag());
 					}
 				} else {
-					stream.AddRange(ReadText(RawTextType.CharacterData));
+					stream.AddRange(ReadText(TextType.CharacterData));
 				}
 			}
 			
@@ -79,11 +79,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary>
 		/// Context: "&lt;"
 		/// </summary>
-		RawTag ReadTag()
+		AXmlTag ReadTag()
 		{
 			AssertHasMoreData();
 			
-			RawTag tag;
+			AXmlTag tag;
 			if (TryReadFromCacheOrNew(out tag)) return tag;
 			
 			tag.StartOffset = this.CurrentLocation;
@@ -111,7 +111,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					// Chech for all forbiden 'name' charcters first - see ReadName
 					if (IsEndOfFile()) break;
 					if (TryPeekWhiteSpace()) {
-						tag.AddChildren(ReadText(RawTextType.WhiteSpace));
+						tag.AddChildren(ReadText(TextType.WhiteSpace));
 						continue;  // End of file might be next
 					}
 					if (TryPeek('<')) break;
@@ -124,15 +124,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				tag.AddChildren(ReadContentOfDTD());
 			} else {
 				int start = this.CurrentLocation;
-				IEnumerable<RawObject> text;
+				IEnumerable<AXmlObject> text;
 				if (tag.IsComment) {
-					text = ReadText(RawTextType.Comment);
+					text = ReadText(TextType.Comment);
 				} else if (tag.IsCData) {
-					text = ReadText(RawTextType.CData);
+					text = ReadText(TextType.CData);
 				} else if (tag.IsProcessingInstruction) {
-					text = ReadText(RawTextType.ProcessingInstruction);
+					text = ReadText(TextType.ProcessingInstruction);
 				} else if (tag.IsUnknownBang) {
-					text = ReadText(RawTextType.UnknownBang);
+					text = ReadText(TextType.UnknownBang);
 				} else {
 					throw new Exception(string.Format("Unknown opening bracket '{0}'", tag.OpeningBracket));
 				}
@@ -175,8 +175,8 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 			
 			// Attribute name may not apper multiple times
-			var duplicates = tag.Children.OfType<RawAttribute>().GroupBy(attr => attr.Name).SelectMany(g => g.Skip(1));
-			foreach(RawAttribute attr in duplicates) {
+			var duplicates = tag.Children.OfType<AXmlAttribute>().GroupBy(attr => attr.Name).SelectMany(g => g.Skip(1));
+			foreach(AXmlAttribute attr in duplicates) {
 				OnSyntaxError(tag, attr.StartOffset, attr.EndOffset, "Attribute with name '{0}' already exists", attr.Name);
 			}
 			
@@ -205,7 +205,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 					} else if (TryRead("[CDATA[")) {
 						return "<![CDATA[";
 					} else {
-						foreach(string dtdName in RawTag.DTDNames) {
+						foreach(string dtdName in AXmlTag.DTDNames) {
 							// the dtdName includes "<!"
 							if (TryRead(dtdName.Remove(0, 2))) return dtdName;
 						}
@@ -243,7 +243,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			return true;
 		}
 		
-		IEnumerable<RawObject> ReadContentOfDTD()
+		IEnumerable<AXmlObject> ReadContentOfDTD()
 		{
 			int start = this.CurrentLocation;
 			while(true) {
@@ -279,11 +279,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary>
 		/// Context: name or "=\'\""
 		/// </summary>
-		RawAttribute ReadAttribulte()
+		AXmlAttribute ReadAttribulte()
 		{
 			AssertHasMoreData();
 			
-			RawAttribute attr;
+			AXmlAttribute attr;
 			if (TryReadFromCacheOrNew(out attr)) return attr;
 			
 			attr.StartOffset = this.CurrentLocation;
@@ -407,15 +407,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		RawText MakeText(int start, int end)
+		AXmlText MakeText(int start, int end)
 		{
-			XmlParser.DebugAssert(end > start, "Empty text");
+			AXmlParser.DebugAssert(end > start, "Empty text");
 			
-			RawText text = new RawText() {
+			AXmlText text = new AXmlText() {
 				StartOffset = start,
 				EndOffset = end,
 				EscapedValue = GetText(start, end),
-				Type = RawTextType.Other
+				Type = TextType.Other
 			};
 			
 			OnParsed(text);
@@ -431,11 +431,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// It can also return empty set for no appropriate text input.
 		/// Make sure you enumerate it only once
 		/// </summary>
-		IEnumerable<RawObject> ReadText(RawTextType type)
+		IEnumerable<AXmlObject> ReadText(TextType type)
 		{
 			bool lookahead = false;
 			while(true) {
-				RawText text;
+				AXmlText text;
 				if (TryReadFromCacheOrNew(out text, t => t.Type == type)) {
 					// Cached text found
 					yield return text;
@@ -451,10 +451,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				// we hit that chache point.  It is expensive so it is off for the first run
 				if (lookahead) {
 					// Note: Must fit entity
-					RawObject nextFragment = cache.GetObject<RawText>(this.CurrentLocation + maxEntityLength, lookAheadLenght - maxEntityLength, t => t.Type == type);
+					AXmlObject nextFragment = cache.GetObject<AXmlText>(this.CurrentLocation + maxEntityLength, lookAheadLenght - maxEntityLength, t => t.Type == type);
 					if (nextFragment != null) {
 						fragmentEnd = Math.Min(nextFragment.StartOffset, this.InputLength);
-						XmlParser.Log("Parsing only text ({0}-{1}) because later text was already processed", this.CurrentLocation, fragmentEnd);
+						AXmlParser.Log("Parsing only text ({0}-{1}) because later text was already processed", this.CurrentLocation, fragmentEnd);
 					}
 				}
 				lookahead = true;
@@ -463,9 +463,9 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				int start = this.CurrentLocation;
 				
 				// Try move to the terminator given by the context
-				if (type == RawTextType.WhiteSpace) {
+				if (type == TextType.WhiteSpace) {
 					TryMoveToNonWhiteSpace(fragmentEnd);
-				} else if (type == RawTextType.CharacterData) {
+				} else if (type == TextType.CharacterData) {
 					while(true) {
 						if (!TryMoveToAnyOf(new char[] {'<', ']'}, fragmentEnd)) break; // End of fragment
 						if (TryPeek('<')) break;
@@ -478,7 +478,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						}
 						throw new Exception("Infinite loop");
 					}
-				} else 	if (type == RawTextType.Comment) {
+				} else 	if (type == TextType.Comment) {
 					// Do not report too many errors
 					bool errorReported = false;
 					while(true) {
@@ -490,20 +490,20 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 						}
 						TryMoveNext();
 					}
-				} else if (type == RawTextType.CData) {
+				} else if (type == TextType.CData) {
 					while(true) {
 						// We can not use use TryMoveTo("]]>", fragmentEnd) because it may incorectly accept "]" at the end of fragment
 						if (!TryMoveTo(']', fragmentEnd)) break; // End of fragment
 						if (TryPeek("]]>")) break;
 						TryMoveNext();
 					}
-				} else if (type == RawTextType.ProcessingInstruction) {
+				} else if (type == TextType.ProcessingInstruction) {
 					while(true) {
 						if (!TryMoveTo('?', fragmentEnd)) break; // End of fragment
 						if (TryPeek("?>")) break;
 						TryMoveNext();
 					}
-				} else if (type == RawTextType.UnknownBang) {
+				} else if (type == TextType.UnknownBang) {
 					TryMoveToAnyOf(new char[] {'<', '>'}, fragmentEnd);
 				} else {
 					throw new Exception("Uknown type " + type);
@@ -528,7 +528,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 				}
 				
 				text.EscapedValue = GetText(start, this.CurrentLocation);
-				if (type == RawTextType.CharacterData) {
+				if (type == TextType.CharacterData) {
 					text.Value = Dereference(text, text.EscapedValue, start);
 				} else {
 					text.Value = text.EscapedValue;
@@ -548,15 +548,15 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		#region Helper methods
 		
-		void OnSyntaxError(RawObject obj, string message, params object[] args)
+		void OnSyntaxError(AXmlObject obj, string message, params object[] args)
 		{
 			OnSyntaxError(obj, this.CurrentLocation, this.CurrentLocation + 1, message, args);
 		}
 		
-		public static void OnSyntaxError(RawObject obj, int start, int end, string message, params object[] args)
+		public static void OnSyntaxError(AXmlObject obj, int start, int end, string message, params object[] args)
 		{
 			if (end <= start) end = start + 1;
-			XmlParser.Log("Syntax error ({0}-{1}): {2}", start, end, string.Format(message, args));
+			AXmlParser.Log("Syntax error ({0}-{1}): {2}", start, end, string.Format(message, args));
 			obj.AddSyntaxError(new SyntaxError() {
 			                   	Object = obj,
 			                   	StartOffset = start,
@@ -601,7 +601,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			}
 		}
 		
-		string Dereference(RawObject owner, string text, int textLocation)
+		string Dereference(AXmlObject owner, string text, int textLocation)
 		{
 			StringBuilder sb = null;  // The dereferenced text so far (all up to 'curr')
 			int curr = 0;

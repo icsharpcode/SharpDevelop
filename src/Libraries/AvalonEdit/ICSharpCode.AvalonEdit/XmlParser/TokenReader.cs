@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	class TokenReader
 	{
@@ -48,7 +48,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		protected void AssertIsEndOfFile()
 		{
-			XmlParser.Assert(IsEndOfFile(), "End of file expected at this point");
+			AXmlParser.Assert(IsEndOfFile(), "End of file expected at this point");
 		}
 		
 		protected bool HasMoreData()
@@ -58,7 +58,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		protected void AssertHasMoreData()
 		{
-			XmlParser.Assert(HasMoreData(), "Unexpected end of file");
+			AXmlParser.Assert(HasMoreData(), "Unexpected end of file");
 		}
 		
 		protected bool TryMoveNext()
@@ -300,7 +300,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		
 		public void PrintStringCacheStats()
 		{
-			XmlParser.Log("String cache: Requested {0} ({1} bytes);  Actaully stored {2} ({3} bytes); {4}% stored", stringCacheRequestedCount, stringCacheRequestedSize, stringCacheStoredCount, stringCacheStoredSize, stringCacheRequestedSize == 0 ? 0 : stringCacheStoredSize * 100 / stringCacheRequestedSize);
+			AXmlParser.Log("String cache: Requested {0} ({1} bytes);  Actaully stored {2} ({3} bytes); {4}% stored", stringCacheRequestedCount, stringCacheRequestedSize, stringCacheStoredCount, stringCacheStoredSize, stringCacheRequestedSize == 0 ? 0 : stringCacheStoredSize * 100 / stringCacheRequestedSize);
 		}
 	}
 }

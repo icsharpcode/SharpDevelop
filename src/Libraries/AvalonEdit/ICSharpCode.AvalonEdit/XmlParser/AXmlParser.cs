@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.XmlParser
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	/// <summary>
 	/// Creates object tree from XML document.
@@ -84,10 +84,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 	/// the context is appropriate for reading.
 	/// 
 	/// </remarks>
-	public class XmlParser
+	public class AXmlParser
 	{
 		string input;
-		RawDocument userDocument;
+		AXmlDocument userDocument;
 		TextDocument textDocument;
 		
 		List<DocumentChangeEventArgs> changesSinceLastParse = new List<DocumentChangeEventArgs>();
@@ -100,10 +100,10 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		public bool EntityReferenceIsError { get; set; }
 		
 		/// <summary> Create new parser </summary>
-		public XmlParser(string input)
+		public AXmlParser(string input)
 		{
 			this.input = input;
-			this.userDocument = new RawDocument() { Parser = this };
+			this.userDocument = new AXmlDocument() { Parser = this };
 			this.EntityReferenceIsError = true;
 			this.Cache = new Cache();
 		}
@@ -111,7 +111,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary>
 		/// Create new parser, but do not parse the text yet.
 		/// </summary>
-		public XmlParser(TextDocument textDocument): this(textDocument.Text)
+		public AXmlParser(TextDocument textDocument): this(textDocument.Text)
 		{
 			this.textDocument = textDocument;
 			this.textDocument.Changed += delegate(object sender, DocumentChangeEventArgs e) {
@@ -144,7 +144,7 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 		/// <summary>
 		/// Incrementaly parse the document
 		/// </summary>
-		public RawDocument Parse()
+		public AXmlDocument Parse()
 		{
 			// Update source text
 			if (textDocument != null) {
@@ -156,11 +156,11 @@ namespace ICSharpCode.AvalonEdit.XmlParser
 			changesSinceLastParse.Clear();
 			
 			TagReader tagReader = new TagReader(this, input);
-			List<RawObject> tags = tagReader.ReadAllTags();
-			RawDocument parsedDocument = new TagMatchingHeuristics(this, input, tags).ReadDocument();
+			List<AXmlObject> tags = tagReader.ReadAllTags();
+			AXmlDocument parsedDocument = new TagMatchingHeuristics(this, input, tags).ReadDocument();
 			parsedDocument.DebugCheckConsistency(true);
 			tagReader.PrintStringCacheStats();
-			RawObject.LogDom("Updating main DOM tree...");
+			AXmlObject.LogDom("Updating main DOM tree...");
 			userDocument.UpdateTreeFrom(parsedDocument);
 			userDocument.DebugCheckConsistency(false);
 			return userDocument;
