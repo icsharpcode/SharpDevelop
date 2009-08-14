@@ -12,10 +12,8 @@ using System.Text;
 using System.Windows;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Highlighting;
 
-namespace ICSharpCode.AvalonEdit.Utils
+namespace ICSharpCode.AvalonEdit.Highlighting
 {
 	/// <summary>
 	/// Allows copying HTML text to the clipboard.
@@ -94,28 +92,6 @@ namespace ICSharpCode.AvalonEdit.Utils
 					html.AppendLine("<br>");
 				html.Append(highlightedLine.ToHtml(s.Offset, s.EndOffset, options));
 				line = line.NextLine;
-			}
-			return html.ToString();
-		}
-		
-		/// <summary>
-		/// Creates a HTML fragment for the selected part of the document.
-		/// </summary>
-		public static string CreateHtmlFragmentForSelection(TextArea textArea, HtmlOptions options)
-		{
-			if (textArea == null)
-				throw new ArgumentNullException("textArea");
-			if (options == null)
-				throw new ArgumentNullException("options");
-			DocumentHighlighter highlighter = textArea.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
-			StringBuilder html = new StringBuilder();
-			bool first = true;
-			foreach (ISegment selectedSegment in textArea.Selection.Segments) {
-				if (first)
-					first = false;
-				else
-					html.AppendLine("<br>");
-				html.Append(CreateHtmlFragment(textArea.Document, highlighter, selectedSegment, options));
 			}
 			return html.ToString();
 		}

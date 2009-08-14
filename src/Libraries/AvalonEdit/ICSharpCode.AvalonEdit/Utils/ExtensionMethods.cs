@@ -132,35 +132,6 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		#endregion
 		
-		#region ISegment extensions
-		/// <summary>
-		/// Gets whether the segment contains the offset.
-		/// </summary>
-		/// <returns>
-		/// True, if offset is between segment.Start and segment.End (inclusive); otherwise, false.
-		/// </returns>
-		public static bool Contains(this ISegment segment, int offset)
-		{
-			int start = segment.Offset;
-			int end = start + segment.Length;
-			return offset >= start && offset <= end;
-		}
-		
-		/// <summary>
-		/// Gets the overlapping portion of the segments.
-		/// Returns SimpleSegment.Invalid if the segments don't overlap.
-		/// </summary>
-		public static SimpleSegment GetOverlap(this ISegment segment, ISegment other)
-		{
-			int start = Math.Max(segment.Offset, other.Offset);
-			int end = Math.Min(segment.EndOffset, other.EndOffset);
-			if (end < start)
-				return SimpleSegment.Invalid;
-			else
-				return new SimpleSegment(start, end - start);
-		}
-		#endregion
-		
 		#region DPI independence
 		public static Rect TransformToDevice(this Rect rect, Visual visual)
 		{

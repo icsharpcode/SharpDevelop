@@ -117,6 +117,7 @@
     </Compile>
     <Compile Include="Document\TextLocation.cs" />
     <Compile Include="Document\TextSegment.cs" />
+    <Compile Include="Document\TextUtilities.cs" />
     <Compile Include="Document\UndoOperationGroup.cs">
       <DependentUpon>UndoStack.cs</DependentUpon>
     </Compile>
@@ -182,6 +183,7 @@
     <Compile Include="Highlighting\HighlightingColorizer.cs" />
     <Compile Include="Highlighting\HighlightingDefinitionInvalidException.cs" />
     <Compile Include="Highlighting\HighlightingManager.cs" />
+    <Compile Include="Highlighting\HtmlClipboard.cs" />
     <Compile Include="Highlighting\IHighlightingDefinition.cs" />
     <Compile Include="Highlighting\HighlightingRule.cs" />
     <Compile Include="Highlighting\Resources\Resources.cs" />
@@ -301,7 +303,6 @@
     <Compile Include="Utils\Empty.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\FileReader.cs" />
-    <Compile Include="Utils\HtmlClipboard.cs" />
     <Compile Include="Utils\ImmutableStack.cs" />
     <Compile Include="Utils\NullSafeCollection.cs" />
     <Compile Include="Utils\ObserveAddRemoveCollection.cs" />
@@ -309,7 +310,6 @@
     <Compile Include="Utils\Rope.cs" />
     <Compile Include="Utils\RopeNode.cs" />
     <Compile Include="Utils\RopeTextReader.cs" />
-    <Compile Include="Utils\TextUtilities.cs" />
     <Compile Include="Utils\WeakEventManagerBase.cs" />
     <Compile Include="Utils\PixelSnapHelpers.cs" />
     <Compile Include="Utils\ThrowUtil.cs" />

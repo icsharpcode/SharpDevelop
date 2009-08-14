@@ -8,10 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Utils;
-using System.Windows;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -118,6 +118,28 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
+		/// <summary>
+		/// Creates a HTML fragment for the selected text.
+		/// </summary>
+		public string CreateHtmlFragment(TextArea textArea, HtmlOptions options)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+			if (options == null)
+				throw new ArgumentNullException("options");
+			DocumentHighlighter highlighter = textArea.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
+			StringBuilder html = new StringBuilder();
+			bool first = true;
+			foreach (ISegment selectedSegment in textArea.Selection.Segments) {
+				if (first)
+					first = false;
+				else
+					html.AppendLine("<br>");
+				html.Append(HtmlClipboard.CreateHtmlFragment(textArea.Document, highlighter, selectedSegment, options));
+			}
+			return html.ToString();
+		}
+		
 		/// <inheritdoc/>
 		public abstract override bool Equals(object obj);
 		
@@ -156,7 +178,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			// Also copy text in HTML format to clipboard - good for pasting text into Word
 			// or to the SharpDevelop forums.
-			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragmentForSelection(textArea, new HtmlOptions(textArea.Options)));
+			HtmlClipboard.SetHtml(data, CreateHtmlFragment(textArea, new HtmlOptions(textArea.Options)));
 			return data;
 		}
 	}

@@ -9,9 +9,7 @@ using System;
 using System.Globalization;
 using System.Windows.Documents;
 
-using ICSharpCode.AvalonEdit.Document;
-
-namespace ICSharpCode.AvalonEdit.Utils
+namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
 	/// Static helper methods for working with text.

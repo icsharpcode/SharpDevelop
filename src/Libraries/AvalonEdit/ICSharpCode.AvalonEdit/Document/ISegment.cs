@@ -32,6 +32,36 @@ namespace ICSharpCode.AvalonEdit.Document
 		int EndOffset { get; }
 	}
 	
+	static class SegmentExtensions
+	{
+		/// <summary>
+		/// Gets whether the segment contains the offset.
+		/// </summary>
+		/// <returns>
+		/// True, if offset is between segment.Start and segment.End (inclusive); otherwise, false.
+		/// </returns>
+		public static bool Contains(this ISegment segment, int offset)
+		{
+			int start = segment.Offset;
+			int end = start + segment.Length;
+			return offset >= start && offset <= end;
+		}
+		
+		/// <summary>
+		/// Gets the overlapping portion of the segments.
+		/// Returns SimpleSegment.Invalid if the segments don't overlap.
+		/// </summary>
+		public static SimpleSegment GetOverlap(this ISegment segment, ISegment other)
+		{
+			int start = Math.Max(segment.Offset, other.Offset);
+			int end = Math.Min(segment.EndOffset, other.EndOffset);
+			if (end < start)
+				return SimpleSegment.Invalid;
+			else
+				return new SimpleSegment(start, end - start);
+		}
+	}
+	
 	/// <summary>
 	/// Represents a simple segment (Offset,Length pair) that is not automatically updated
 	/// on document changes.

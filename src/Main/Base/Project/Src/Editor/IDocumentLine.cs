@@ -9,7 +9,7 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
-/// <summary>
+	/// <summary>
 	/// A line inside a <see cref="IDocument"/>.
 	/// </summary>
 	public interface IDocumentLine
