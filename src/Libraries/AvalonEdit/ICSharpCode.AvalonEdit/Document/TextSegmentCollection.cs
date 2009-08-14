@@ -348,7 +348,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Finds all segments that contain the given offset.
 		/// (StartOffset &lt;= offset &lt;= EndOffset)
+		/// Segments are returned in the order given by GetNextSegment/GetPreviousSegment.
 		/// </summary>
+		/// <returns>Returns a new collection containing the results of the query.
+		/// This means it is safe to modify the TextSegmentCollection while iterating through the result collection.</returns>
 		public ReadOnlyCollection<T> FindSegmentsContaining(int offset)
 		{
 			return FindOverlappingSegments(offset, 0);
@@ -357,6 +360,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Finds all segments that overlap with the given segment (including touching segments).
 		/// </summary>
+		/// <returns>Returns a new collection containing the results of the query.
+		/// This means it is safe to modify the TextSegmentCollection while iterating through the result collection.</returns>
 		public ReadOnlyCollection<T> FindOverlappingSegments(ISegment segment)
 		{
 			if (segment == null)
@@ -368,6 +373,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Finds all segments that overlap with the given segment (including touching segments).
 		/// Segments are returned in the order given by GetNextSegment/GetPreviousSegment.
 		/// </summary>
+		/// <returns>Returns a new collection containing the results of the query.
+		/// This means it is safe to modify the TextSegmentCollection while iterating through the result collection.</returns>
 		public ReadOnlyCollection<T> FindOverlappingSegments(int offset, int length)
 		{
 			ThrowUtil.CheckNotNegative(length, "length");

@@ -208,7 +208,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
-		void ReplaceSingleLineText(TextArea textArea, ISegment lineSegment, string newText)
+		static void ReplaceSingleLineText(TextArea textArea, ISegment lineSegment, string newText)
 		{
 			if (lineSegment.Length == 0) {
 				if (newText.Length > 0 && textArea.ReadOnlySectionProvider.CanInsert(lineSegment.Offset)) {

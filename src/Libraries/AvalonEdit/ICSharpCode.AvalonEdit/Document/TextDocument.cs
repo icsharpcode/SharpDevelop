@@ -215,6 +215,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// This special thread-safety guarantee is valid only for TextDocument.CreateSnapshot(), not necessarily for other
 		/// classes implementing ITextSource.CreateSnapshot().
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "Need to return snapshot and checkpoint together to ensure thread-safety")]
 		public ITextSource CreateSnapshot(out ChangeTrackingCheckpoint checkpoint)
 		{
 			lock (rope) {
