@@ -37,6 +37,13 @@ namespace ICSharpCode.PythonBinding
 				++count;
 			}
 			
+			// Append list view group creation.
+			count = 1;
+			foreach (ListViewGroup group in GetListViewGroups(Component)) {
+				AppendCreateInstance(codeBuilder, group, count, new object[0]);
+				++count;
+			}
+			
 			// Append list view creation.
 			base.AppendCreateInstance(codeBuilder);
 		}
@@ -48,7 +55,12 @@ namespace ICSharpCode.PythonBinding
 		{
 			AppendComment(codeBuilder);
 			AppendListViewItemProperties(codeBuilder);
+			AppendListViewGroupProperties(codeBuilder);
 			AppendComponentProperties(codeBuilder, true, false);
+		}
+
+		protected override bool ShouldAppendCollectionContent {
+			get { return false; }
 		}
 		
 		/// <summary>
@@ -104,6 +116,12 @@ namespace ICSharpCode.PythonBinding
 			ListView listView = (ListView)component;
 			return listView.Items;
 		}
+
+		static ListViewGroupCollection GetListViewGroups(IComponent component)
+		{
+			ListView listView = (ListView)component;
+			return listView.Groups;
+		}
 		
 		void AppendListViewItemProperties(PythonCodeBuilder codeBuilder)
 		{
@@ -113,5 +131,14 @@ namespace ICSharpCode.PythonBinding
 				++count;
 			}
 		}
+		
+		void AppendListViewGroupProperties(PythonCodeBuilder codeBuilder)
+		{
+			int count = 1;
+			foreach (ListViewGroup item in GetListViewGroups(Component)) {
+				AppendObjectProperties(codeBuilder, item, count);
+				++count;
+			}
+		}		
 	}
 }

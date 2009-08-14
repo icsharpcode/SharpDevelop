@@ -83,6 +83,20 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 			                                               out errors)));
 		}
 		
+		[Test]
+		public void ConvertFloatingPointToInteger()
+		{
+			Assert.AreEqual("CInt(Math.Truncate(-3.5))", converter.CSharpToVB("(int)(-3.5)", out errors));
+			Assert.AreEqual("CInt(Math.Truncate(-3.5F))", converter.CSharpToVB("(int)(-3.5f)", out errors));
+			Assert.AreEqual("CInt(Math.Truncate(-3.5D))", converter.CSharpToVB("(int)(-3.5m)", out errors));
+		}
+		
+		[Test]
+		public void ConvertLongToInteger()
+		{
+			Assert.AreEqual("CInt(-35L)", converter.CSharpToVB("(int)(-35L)", out errors));
+		}
+		
 		string Normalize(string text)
 		{
 			return text.Replace("\t", "  ").Replace("\r", "").Trim();

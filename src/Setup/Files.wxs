@@ -1523,6 +1523,9 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\ICSharpCode.Svn.addin" Id="ICSharpCode.Svn.addin" Name="ICSharpCode.Svn.addin" />
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SharpSvn.dll" Name="SharpSvn.dll" Id="SharpSvn.dll" />
 											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SharpSvn.UI.dll" Name="SharpSvn.UI.dll" Id="SharpSvn.UI.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SharpPlink-Win32.svnExe" Name="SharpPlink-Win32.svnExe" Id="SharpPlink_Win32.svnExe" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SharpSvn-DB44-20-Win32.dll" Name="SharpSvn-DB44-20-Win32.dll" Id="SharpSvn_DB44_20_Win32.dll" />
+											<File Source="..\..\AddIns\AddIns\Misc\SubversionAddin\SharpSvn-SASL21-23-Win32.dll" Name="SharpSvn-SASL21-23-Win32.dll" Id="SharpSvn_SASL21_23_Win32.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="UnitTestingFolder" Name="UnitTesting">

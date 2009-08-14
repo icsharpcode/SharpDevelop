@@ -124,7 +124,7 @@ namespace ICSharpCode.PythonBinding
 				return false;
 			}
 			
-			SetPropertyValue(fieldExpression, node.Value);
+			fieldExpression.SetPropertyValue(componentCreator, node.Value);
 			return false;
 		}
 		
@@ -148,7 +148,7 @@ namespace ICSharpCode.PythonBinding
 				return false;
 			}
 			
-			SetPropertyValue(fieldExpression, node.Name.ToString());
+			fieldExpression.SetPropertyValue(componentCreator, node.Name.ToString());
 			return false;
 		}
 		
@@ -170,16 +170,13 @@ namespace ICSharpCode.PythonBinding
 			MemberExpression eventHandlerExpression = node.Right as MemberExpression;
 			string eventHandlerName = eventHandlerExpression.Name.ToString();
 			
-			IComponent currentComponent = this.component;
-			if (field.VariableName.Length > 0) {
-				currentComponent = GetComponent(field.VariableName);
-			}
+			IComponent currentComponent = fieldExpression.GetObject(componentCreator) as IComponent;
 			
 			EventDescriptor eventDescriptor = TypeDescriptor.GetEvents(currentComponent).Find(eventName, false);
 			PropertyDescriptor propertyDescriptor = componentCreator.GetEventProperty(eventDescriptor);
 			propertyDescriptor.SetValue(currentComponent, eventHandlerName);
 			return false;
-		}
+		}		
 		
 		/// <summary>
 		/// Walks the binary expression which is the right hand side of an assignment statement.
@@ -187,7 +184,7 @@ namespace ICSharpCode.PythonBinding
 		void WalkAssignment(BinaryExpression binaryExpression)
 		{
 			object value = deserializer.Deserialize(binaryExpression);
-			SetPropertyValue(fieldExpression.MemberName, value);
+			fieldExpression.SetPropertyValue(componentCreator, value);
 		}
 
 		/// <summary>
@@ -198,7 +195,7 @@ namespace ICSharpCode.PythonBinding
 			MemberExpression rhsMemberExpression = rhs as MemberExpression;
 			if (rhsMemberExpression != null) {
 				object propertyValue = GetPropertyValueFromAssignmentRhs(rhsMemberExpression);
-				SetPropertyValue(fieldExpression, propertyValue);
+				fieldExpression.SetPropertyValue(componentCreator, propertyValue);
 			} else {
 				walkingAssignment = true;
 				BinaryExpression binaryExpression = rhs as BinaryExpression;
@@ -218,73 +215,6 @@ namespace ICSharpCode.PythonBinding
 		}
 
 		/// <summary>
-		/// Checks the field expression to see if it references an class instance variable (e.g. self._treeView1) 
-		/// or a variable that is local to the InitializeComponent method (e.g. treeNode1.BackColor)
-		/// </summary>
-		bool SetPropertyValue(PythonControlFieldExpression fieldExpression, object propertyValue)
-		{
-			if (fieldExpression.IsSelfReference) {
-				return SetPropertyValue(fieldExpression.GetObject(GetCurrentComponent()), fieldExpression.MemberName, propertyValue);
-			} 
-			return SetPropertyValue(componentCreator.GetInstance(fieldExpression.VariableName), fieldExpression.MemberName, propertyValue);
-		}
-		
-		/// <summary>
-		/// Sets the value of a property on the current control.
-		/// </summary>
-		bool SetPropertyValue(string name, object propertyValue)
-		{
-			return SetPropertyValue(GetCurrentComponent(), name, propertyValue);
-		}
-		
-		/// <summary>
-		/// Returns true if the current component has a property with the specified name.
-		/// </summary>
-		bool HasPropertyValue(string name)
-		{
-			return GetPropertyDescriptor(GetCurrentComponent(), name) != null;
-		}
-		
-		PropertyDescriptor GetPropertyDescriptor(object component, string name)
-		{
-			return TypeDescriptor.GetProperties(component).Find(name, true);
-		}
-		
-		/// <summary>
-		/// Sets the value of a property on the component.
-		/// </summary>
-		bool SetPropertyValue(object component, string name, object propertyValue)
-		{
-			PropertyDescriptor property = GetPropertyDescriptor(component, name);
-			if (property != null) {
-				propertyValue = ConvertPropertyValue(property, propertyValue);
-				property.SetValue(component, propertyValue);
-				return true;
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Converts the value to the property's type if required.
-		/// </summary>
-		static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
-		{
-			if (!propertyDescriptor.PropertyType.IsAssignableFrom(propertyValue.GetType())) {
-				return propertyDescriptor.Converter.ConvertFrom(propertyValue);
-			}
-			return propertyValue;
-		}
-				
-		/// <summary>
-		/// Looks for the component with the specified name in the objects that have been
-		/// created whilst processing the InitializeComponent method.
-		/// </summary>
-		IComponent GetComponent(string name)
-		{
-			return componentCreator.GetComponent(name);
-		}
-
-		/// <summary>
 		/// Adds a component to the list of created objects.
 		/// </summary>
 		void AddComponent(string name, object obj)
@@ -295,14 +225,6 @@ namespace ICSharpCode.PythonBinding
 				componentCreator.Add(component, variableName);
 			}
 		}
-				
-		/// <summary>
-		/// Gets the current control being walked.
-		/// </summary>
-		object GetCurrentComponent()
-		{
-			return fieldExpression.GetObject(componentCreator);
-		}
 		
 		/// <summary>
 		/// Gets the type for the control being walked.
@@ -310,6 +232,11 @@ namespace ICSharpCode.PythonBinding
 		Type GetComponentType()
 		{
 			string baseClass = GetBaseClassName(classDefinition);
+			Type type = componentCreator.GetType(baseClass);
+			if (type != null) {
+				return type;
+			}
+			
 			if (baseClass.Contains("UserControl")) {
 				return typeof(UserControl);
 			}
@@ -335,37 +262,25 @@ namespace ICSharpCode.PythonBinding
 		{
 			MemberExpression memberExpression = node.Target as MemberExpression;
 			if (memberExpression != null) {
-				string name = GetInstanceName(fieldExpression);
+				string name = fieldExpression.GetInstanceName(componentCreator);
 				object instance = CreateInstance(name, node);
 				if (instance != null) {
-					if (!SetPropertyValue(fieldExpression, instance)) {
+					if (!fieldExpression.SetPropertyValue(componentCreator, instance)) {
 						AddComponent(fieldExpression.MemberName, instance);
 					}
 				} else {
 					object obj = deserializer.Deserialize(node);
 					if (obj != null) {
-						SetPropertyValue(fieldExpression, obj);
+						fieldExpression.SetPropertyValue(componentCreator, obj);
 					} else if (IsResource(memberExpression)) {
-						SetPropertyValue(fieldExpression.MemberName, GetResource(node));
+						fieldExpression.SetPropertyValue(componentCreator, GetResource(node));
 					} else {
 						throw new PythonComponentWalkerException(String.Format("Could not find type '{0}'.", PythonControlFieldExpression.GetMemberName(memberExpression)));
 					}
 				}
+			} else if (node.Target is IndexExpression) {
+				WalkArrayAssignmentRhs(node);
 			}
-		}
-		
-		/// <summary>
-		/// Gets the name of the instance. If the name matches a property of the current component being created
-		/// then this method returns null.
-		/// </summary>
-		string GetInstanceName(PythonControlFieldExpression fieldExpression)
-		{
-			if (fieldExpression.IsSelfReference) {
-				if (!HasPropertyValue(fieldExpression.MemberName)) {
-					return PythonControlFieldExpression.GetVariableName(fieldExpression.MemberName);
-				}
-			}
-			return null;
 		}
 		
 		/// <summary>
@@ -443,6 +358,15 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Walks the right hand side of an assignment when the assignment is an array creation.
+		/// </summary>
+		void WalkArrayAssignmentRhs(CallExpression callExpression)
+		{
+			object array = deserializer.Deserialize(callExpression);
+			fieldExpression.SetPropertyValue(componentCreator, array);	
 		}
 	}
 }

@@ -368,8 +368,10 @@ bool SignatureReader::ReadType(byte type)
 			}
 			this->output << L">";
 			break;
-		case ELEMENT_TYPE_MVAR:
-		case ELEMENT_TYPE_VAR:
+		case ELEMENT_TYPE_MVAR: // print "!!number"
+			this->output << L"!";
+		case ELEMENT_TYPE_VAR: // print "!number"
+			this->output << L"!"; 
 			int number;
 			if (!this->ReadCompressedInt(&number))
 				return false;

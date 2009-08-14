@@ -46,5 +46,18 @@ namespace PythonBinding.Tests.Designer
 			}
 			Assert.IsNotNull(baseType);
 		}
+		
+		[Test]
+		public void MainFormClassBaseTypeFullNameIsSystemWindowsFormsForm()
+		{
+			IReturnType baseType = null;
+			foreach (IReturnType returnType in mainFormClass.BaseTypes) {
+				if (returnType.FullyQualifiedName == "System.Windows.Forms.Form") {
+					baseType = returnType;
+					break;
+				}
+			}
+			Assert.IsNotNull(baseType);
+		}
 	}
 }

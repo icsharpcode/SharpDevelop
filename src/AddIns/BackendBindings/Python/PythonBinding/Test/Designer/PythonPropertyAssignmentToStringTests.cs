@@ -105,5 +105,11 @@ namespace PythonBinding.Tests.Designer
 		{
 			Assert.AreEqual("System.Windows.Forms.Cursors.Default", PythonPropertyValueAssignment.ToString(Cursors.Default));
 		}
+		
+		[Test]
+		public void NullConversion()
+		{
+			Assert.AreEqual("None", PythonPropertyValueAssignment.ToString(null));
+		}
 	}
 }

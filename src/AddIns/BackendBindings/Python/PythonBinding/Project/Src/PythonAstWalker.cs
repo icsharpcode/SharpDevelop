@@ -169,7 +169,7 @@ namespace ICSharpCode.PythonBinding
 				if (nameExpression != null) {
 					AddBaseType(c, nameExpression.Name.ToString());
 				} else if (memberExpression != null) {
-					AddBaseType(c, memberExpression.Name.ToString());
+					AddBaseType(c, PythonControlFieldExpression.GetMemberName(memberExpression));
 				}
 			}
 		}

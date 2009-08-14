@@ -329,7 +329,6 @@
     <Compile Include="XmlParser\RawElement.cs" />
     <Compile Include="XmlParser\RawObject.cs" />
     <Compile Include="XmlParser\RawObjectEventArgs.cs" />
-    <Compile Include="XmlParser\RawObjects.cs" />
     <Compile Include="XmlParser\RawTag.cs" />
     <Compile Include="XmlParser\RawText.cs" />
     <Compile Include="XmlParser\SyntaxError.cs" />

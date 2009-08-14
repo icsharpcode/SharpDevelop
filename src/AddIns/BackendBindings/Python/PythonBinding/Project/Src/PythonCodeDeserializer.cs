@@ -165,6 +165,7 @@ namespace ICSharpCode.PythonBinding
 				ConstantExpression constantExpression = listItemExpression as ConstantExpression;
 				MemberExpression memberExpression = listItemExpression as MemberExpression;
 				NameExpression nameExpression = listItemExpression as NameExpression;
+				CallExpression listItemCallExpression = listItemExpression as CallExpression;
 				if (constantExpression != null) {
 					array.SetValue(constantExpression.Value, i);
 				} else if (memberExpression != null) {
@@ -172,6 +173,9 @@ namespace ICSharpCode.PythonBinding
 					array.SetValue(componentCreator.GetComponent(name), i);
 				} else if (nameExpression != null) {
 					array.SetValue(componentCreator.GetInstance(nameExpression.Name.ToString()), i);
+				} else if (listItemCallExpression != null) {
+					object instance = componentCreator.CreateInstance(arrayType, GetArguments(listItemCallExpression), null, false);
+					array.SetValue(instance, i);
 				}
 			}
 			return array;			
@@ -193,6 +197,12 @@ namespace ICSharpCode.PythonBinding
 							return method.Invoke(null, GetArguments(callExpression).ToArray());
 						}
 					}
+				}
+			} else {
+				// Maybe it is a call to a constructor?
+				type = componentCreator.GetType(field.FullMemberName);
+				if (type != null) {
+					return componentCreator.CreateInstance(type, GetArguments(callExpression), null, false);
 				}
 			}
 			return null;

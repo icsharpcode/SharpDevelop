@@ -38,6 +38,8 @@ namespace ICSharpCode.PythonBinding
 				return new PythonImageListComponent(parent, component);
 			} else if (component is TreeView) {
 				return new PythonTreeViewComponent(parent, component);
+			} else if (component is TableLayoutPanel) {
+				return new PythonTableLayoutPanelComponent(parent, component);
 			}
 			return new PythonDesignerComponent(parent, component);
 		}

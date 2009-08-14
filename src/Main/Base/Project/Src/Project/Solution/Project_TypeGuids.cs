@@ -5,6 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+// This file is called 'Project_TypeGuids.cs' with an underscore to work around a bug in Visual Studio:
+// http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=481981
+
 using System;
 
 namespace ICSharpCode.SharpDevelop.Project

@@ -113,6 +113,7 @@
     <Compile Include="Src\PythonProject.cs" />
     <Compile Include="Src\PythonPropertyValueAssignment.cs" />
     <Compile Include="Src\PythonResolver.cs" />
+    <Compile Include="Src\PythonTableLayoutPanelComponent.cs" />
     <Compile Include="Src\PythonTreeViewComponent.cs" />
     <Compile Include="Src\RunDebugPythonCommand.cs" />
     <Compile Include="Src\RunPythonCommand.cs" />

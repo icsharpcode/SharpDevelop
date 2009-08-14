@@ -52,7 +52,7 @@
         <File Id="CF_SSVNLICENSE_SharpSvn" Name="SharpSvn-License.txt" Vital="yes" KeyPath="yes"/>
       </Component>
       <Component Id="C_SSVNLICENSE_Subversion" Guid="F54C1220-3835-4262-9193-FDC31055BD95">
-        <File Id="C_SSVNLICENSE_Subversion" Name="Subversion-License.txt" Vital="yes" KeyPath="yes"/>
+        <File Id="CF_SSVNLICENSE_Subversion" Name="Subversion-License.txt" Vital="yes" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
   </Fragment>
@@ -66,7 +66,7 @@
   <Fragment>
     <DirectoryRef Id="DIR_SharpSvnLicenses" FileSource="$(sys.SOURCEFILEDIR)">
       <Component Id="C_SSVNLICENSE_GetTextRuntime" Guid="247F2A80-E402-4395-9165-F2479E5689C9">
-        <File Id="C_SSVNLICENSE_GetTextRuntime" Name="GetText-Runtime-License.txt" Vital="yes" KeyPath="yes"/>
+        <File Id="CF_SSVNLICENSE_GetTextRuntime" Name="GetText-Runtime-License.txt" Vital="yes" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
   </Fragment>

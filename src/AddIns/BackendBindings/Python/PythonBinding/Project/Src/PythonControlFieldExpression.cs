@@ -176,14 +176,64 @@ namespace ICSharpCode.PythonBinding
 			}
 			return names.ToArray();
 		}
+		
+		/// <summary>
+		/// Returns true if the variable has a property with the specified name.
+		/// </summary>
+		public bool HasPropertyValue(IComponentCreator componentCreator, string name)
+		{
+			object component = GetObject(componentCreator);
+			if (component != null) {
+				return TypeDescriptor.GetProperties(component).Find(name, true) != null;
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Gets the name of the instance. If the name matches a property of the current component being created
+		/// then this method returns null.
+		/// </summary>
+		public string GetInstanceName(IComponentCreator componentCreator)
+		{
+			if (IsSelfReference) {
+				if (!HasPropertyValue(componentCreator, memberName)) {
+					return variableName;
+				}
+			}
+			return null;
+		}
 
+		/// <summary>
+		/// Looks for a field in the component with the given name.
+		/// </summary>
+		public static object GetInheritedObject(string name, object component)
+		{
+			if (component != null) {
+				FieldInfo[] fields = component.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+				foreach (FieldInfo field in fields) {
+					if (String.Equals(name, field.Name, StringComparison.InvariantCultureIgnoreCase)) {
+						return field.GetValue(component);
+					}
+				}
+			}
+			return null;
+		}
+		
 		/// <summary>
 		/// Gets the object that the field expression variable refers to.
 		/// </summary>
+		/// <remarks>
+		/// This method will also check form's base class for any inherited objects that match
+		/// the object being referenced.
+		/// </remarks>
 		public object GetObject(IComponentCreator componentCreator)
 		{
 			if (variableName.Length > 0) {
-				return componentCreator.GetComponent(variableName);
+				object component = componentCreator.GetComponent(variableName);
+				if (component != null) {
+					return component;
+				}	
+				return GetInheritedObject(variableName, componentCreator.RootComponent);
 			}
 			return componentCreator.RootComponent;		
 		}
@@ -195,7 +245,7 @@ namespace ICSharpCode.PythonBinding
 		/// <remarks>The object parameter must be equivalent to the object referred to
 		/// by the variable name in this PythonControlFieldExpression 
 		/// (e.g. button1 in self._button1.FlatAppearance.BorderSize).</remarks>
-		public object GetObject(object component)
+		public object GetObjectForMemberName(object component)
 		{
 			string[] members = fullMemberName.Split('.');
 			int startIndex = GetMembersStartIndex(members);
@@ -209,8 +259,40 @@ namespace ICSharpCode.PythonBinding
 				currentComponent = propertyDescriptor.GetValue(currentComponent);
 			}
 			return currentComponent;
-		}		
+		}
 		
+		/// <summary>
+		/// Sets the property value that is referenced by this field expression.
+		/// </summary>
+		/// <remarks>
+		/// Checks the field expression to see if it references an class instance variable (e.g. self._treeView1) 
+		/// or a variable that is local to the InitializeComponent method (e.g. treeNode1.BackColor)
+		/// </remarks>
+		public bool SetPropertyValue(IComponentCreator componentCreator, object propertyValue)
+		{
+			object component = null;
+			if (IsSelfReference) {
+				component = GetObject(componentCreator);
+				component = GetObjectForMemberName(component);
+			} else {
+				component = componentCreator.GetInstance(variableName);
+			}
+			return SetPropertyValue(component, memberName, propertyValue);
+		}
+		
+		/// <summary>
+		/// Converts the value to the property's type if required.
+		/// </summary>
+		public static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
+		{
+			if (propertyValue != null) {
+				if (!propertyDescriptor.PropertyType.IsAssignableFrom(propertyValue.GetType())) {
+					return propertyDescriptor.Converter.ConvertFrom(propertyValue);
+				}
+			}
+			return propertyValue;
+		}		
+						
 		/// <summary>
 		/// Gets the member object that matches the field member.
 		/// 
@@ -227,6 +309,9 @@ namespace ICSharpCode.PythonBinding
 			object obj = componentCreator.GetComponent(variableName);
 			if (obj == null) {
 				obj = componentCreator.GetInstance(variableName);
+				if (obj == null) {
+					obj = GetInheritedObject(memberName, componentCreator.RootComponent);
+				}
 			}
 			
 			if (obj != null) {
@@ -255,17 +340,23 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Gets the member that matches the last item in the memberNames array.
 		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="memberNames"></param>
 		/// <param name="startIndex">The point at which to start looking in the memberNames.</param>
 		/// <param name="endIndex">The last memberNames item to look at.</param>
 		static object GetMember(object obj, string[] memberNames, int startIndex, int endIndex)
 		{
-			Type type = obj.GetType();
 			for (int i = startIndex; i <= endIndex; ++i) {
+				Type type = obj.GetType();
 				string name = memberNames[i];
-				BindingFlags propertyBindingFlags = BindingFlags.Public | BindingFlags.GetField | BindingFlags.Static | BindingFlags.Instance;
+				
+				// Try class members excluding inherited members first.
+				BindingFlags propertyBindingFlags = BindingFlags.Public | BindingFlags.GetField | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 				PropertyInfo property = type.GetProperty(name, propertyBindingFlags);
+				if (property == null) {
+					// Try inherited members.
+					propertyBindingFlags = propertyBindingFlags & ~BindingFlags.DeclaredOnly;
+					property = type.GetProperty(name, propertyBindingFlags);
+				}
+				
 				if (property != null) {
 					obj = property.GetValue(obj, null);
 				} else {
@@ -339,6 +430,20 @@ namespace ICSharpCode.PythonBinding
 				return 2;
 			}
 			return 1;
+		}
+		
+		/// <summary>
+		/// Sets the value of a property on the component.
+		/// </summary>
+		static bool SetPropertyValue(object component, string name, object propertyValue)
+		{
+			PropertyDescriptor property = TypeDescriptor.GetProperties(component).Find(name, true);
+			if (property != null) {
+				propertyValue = ConvertPropertyValue(property, propertyValue);
+				property.SetValue(component, propertyValue);
+				return true;
+			}
+			return false;
 		}
 	}
 }
