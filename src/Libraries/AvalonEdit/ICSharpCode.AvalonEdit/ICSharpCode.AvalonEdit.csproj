@@ -315,37 +315,37 @@
     <Compile Include="Utils\ThrowUtil.cs" />
     <Compile Include="Utils\Win32.cs" />
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
-    <Compile Include="XmlParser\AbstractAXmlVisitor.cs" />
-    <Compile Include="XmlParser\AXmlAttribute.cs" />
-    <Compile Include="XmlParser\AXmlAttributeCollection.cs" />
-    <Compile Include="XmlParser\AXmlContainer.cs" />
-    <Compile Include="XmlParser\AXmlDocument.cs" />
-    <Compile Include="XmlParser\AXmlElement.cs" />
-    <Compile Include="XmlParser\AXmlObject.cs" />
-    <Compile Include="XmlParser\AXmlObjectCollection.cs" />
-    <Compile Include="XmlParser\AXmlObjectEventArgs.cs" />
-    <Compile Include="XmlParser\AXmlParser.cs" />
-    <Compile Include="XmlParser\AXmlTag.cs" />
-    <Compile Include="XmlParser\AXmlText.cs" />
-    <Compile Include="XmlParser\Cache.cs">
+    <Compile Include="Xml\AbstractAXmlVisitor.cs" />
+    <Compile Include="Xml\AXmlAttribute.cs" />
+    <Compile Include="Xml\AXmlAttributeCollection.cs" />
+    <Compile Include="Xml\AXmlContainer.cs" />
+    <Compile Include="Xml\AXmlDocument.cs" />
+    <Compile Include="Xml\AXmlElement.cs" />
+    <Compile Include="Xml\AXmlObject.cs" />
+    <Compile Include="Xml\AXmlObjectCollection.cs" />
+    <Compile Include="Xml\AXmlObjectEventArgs.cs" />
+    <Compile Include="Xml\AXmlParser.cs" />
+    <Compile Include="Xml\AXmlTag.cs" />
+    <Compile Include="Xml\AXmlText.cs" />
+    <Compile Include="Xml\Cache.cs">
       <DependentUpon>AXmlParser.cs</DependentUpon>
     </Compile>
-    <Compile Include="XmlParser\ExtensionMethods.cs" />
-    <Compile Include="XmlParser\FilteredCollection.cs" />
-    <Compile Include="XmlParser\IAXmlVisitor.cs" />
-    <Compile Include="XmlParser\MergedCollection.cs" />
-    <Compile Include="XmlParser\PrettyPrintXmlVisitor.cs" />
-    <Compile Include="XmlParser\SyntaxError.cs" />
-    <Compile Include="XmlParser\TagMatchingHeuristics.cs">
+    <Compile Include="Xml\ExtensionMethods.cs" />
+    <Compile Include="Xml\FilteredCollection.cs" />
+    <Compile Include="Xml\IAXmlVisitor.cs" />
+    <Compile Include="Xml\MergedCollection.cs" />
+    <Compile Include="Xml\PrettyPrintXmlVisitor.cs" />
+    <Compile Include="Xml\SyntaxError.cs" />
+    <Compile Include="Xml\TagMatchingHeuristics.cs">
       <DependentUpon>AXmlParser.cs</DependentUpon>
     </Compile>
-    <Compile Include="XmlParser\TagReader.cs">
+    <Compile Include="Xml\TagReader.cs">
       <DependentUpon>AXmlParser.cs</DependentUpon>
     </Compile>
-    <Compile Include="XmlParser\TextType.cs">
+    <Compile Include="Xml\TextType.cs">
       <DependentUpon>AXmlText.cs</DependentUpon>
     </Compile>
-    <Compile Include="XmlParser\TokenReader.cs">
+    <Compile Include="Xml\TokenReader.cs">
       <DependentUpon>AXmlParser.cs</DependentUpon>
     </Compile>
     <Resource Include="themes\RightArrow.cur" />
@@ -387,7 +387,7 @@
     <Folder Include="Rendering" />
     <Folder Include="Utils" />
     <Folder Include="themes" />
-    <Folder Include="XmlParser" />
+    <Folder Include="Xml" />
     <Page Include="CodeCompletion\CompletionList.xaml" />
     <Page Include="CodeCompletion\InsightWindow.xaml" />
     <Page Include="TextEditor.xaml" />
