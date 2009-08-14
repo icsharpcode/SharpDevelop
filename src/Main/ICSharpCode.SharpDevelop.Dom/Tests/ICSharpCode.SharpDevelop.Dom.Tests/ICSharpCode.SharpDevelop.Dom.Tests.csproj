@@ -50,6 +50,7 @@
     <Compile Include="NRefactoryRefactoringProviderTests.cs" />
     <Compile Include="NUnitHelpers\SyntaxHelpers.cs" />
     <Compile Include="NUnitHelpers\Constraints.cs" />
+    <Compile Include="ProjectContentClassManagementTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

@@ -255,7 +255,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Container class that is used when multiple classes with different type parameter
 		/// count have the same class name.
 		/// </summary>
-		private class GenericClassContainer : DefaultClass
+		private sealed class GenericClassContainer : DefaultClass
 		{
 			public GenericClassContainer(string fullyQualifiedName) : base(DefaultCompilationUnit.DummyCompilationUnit, fullyQualifiedName) {}
 			
@@ -374,6 +374,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			string fullyQualifiedName = addClass.FullyQualifiedName;
 			IClass oldDictionaryClass;
 			if (GetClasses(language).TryGetValue(fullyQualifiedName, out oldDictionaryClass)) {
+				isReplacingExistingClass = true;
 				GenericClassContainer gcc = oldDictionaryClass as GenericClassContainer;
 				if (gcc != null) {
 					gcc.Set(addClass);
@@ -383,7 +384,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					gcc.Set(addClass);
 					gcc.Set(oldDictionaryClass);
 					addClass = gcc;
-					isReplacingExistingClass = true;
 				}
 			}
 			
