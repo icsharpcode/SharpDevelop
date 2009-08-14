@@ -511,7 +511,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public void SelectAll()
 		{
-			ApplicationCommands.SelectAll.Execute(null, TextArea);
+			Execute(ApplicationCommands.SelectAll);
 		}
 		
 		/// <summary>
@@ -666,7 +666,7 @@ namespace ICSharpCode.AvalonEdit
 		public int SelectionLength {
 			get {
 				TextArea textArea = this.TextArea;
-				if (textArea != null)
+				if (textArea != null && !textArea.Selection.IsEmpty)
 					return textArea.Selection.SurroundingSegment.Length;
 				else
 					return 0;

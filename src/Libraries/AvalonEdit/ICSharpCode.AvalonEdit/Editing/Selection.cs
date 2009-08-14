@@ -33,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		/// <summary>
 		/// Gets the smallest segment that contains all segments in this selection.
-		/// Returns null if the selection is empty.
+		/// May return null if the selection is empty.
 		/// </summary>
 		public abstract ISegment SurroundingSegment { get; }
 		

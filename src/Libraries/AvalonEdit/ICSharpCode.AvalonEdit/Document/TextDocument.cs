@@ -284,6 +284,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		public void BeginUpdate()
 		{
 			VerifyAccess();
+			if (inDocumentChanging)
+				throw new InvalidOperationException("Cannot change document within another document change.");
 			beginUpdateCount++;
 			if (beginUpdateCount == 1) {
 				if (UpdateStarted != null)
@@ -474,10 +476,10 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (offsetChangeMap != null)
 				offsetChangeMap.Freeze();
 			
+			// Ensure that all changes take place inside an update group.
+			// Will also take care of throwing an exception if inDocumentChanging is set.
 			BeginUpdate();
 			try {
-				if (inDocumentChanging)
-					throw new InvalidOperationException("Cannot change document within another document change.");
 				// protect document change against corruption by other changes inside the event handlers
 				inDocumentChanging = true;
 				try {
