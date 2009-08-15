@@ -66,7 +66,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> Raises Changing event </summary>
 		protected void OnChanging()
 		{
-			LogDom("Changing {0}", this);
+			AXmlParser.Log("Changing {0}", this);
 			if (Changing != null) {
 				Changing(this, new AXmlObjectEventArgs() { Object = this } );
 			}
@@ -79,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> Raises Changed event </summary>
 		protected void OnChanged()
 		{
-			LogDom("Changed {0}", this);
+			AXmlParser.Log("Changed {0}", this);
 			if (Changed != null) {
 				Changed(this, new AXmlObjectEventArgs() { Object = this } );
 			}
@@ -94,13 +94,23 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary>
 		/// The error that occured in the context of this node (excluding nested nodes)
 		/// </summary>
-		public IEnumerable<SyntaxError> SyntaxErrors {
+		public IEnumerable<SyntaxError> MySyntaxErrors {
 			get {
 				if (syntaxErrors == null) {
 					return new SyntaxError[] {};
 				} else {
 					return syntaxErrors;
 				}
+			}
+		}
+		
+		/// <summary>
+		/// The error that occured in the context of this node and all nested nodes.
+		/// It has O(n) cost.
+		/// </summary>
+		public IEnumerable<SyntaxError> SyntaxErrors {
+			get {
+				return GetSelfAndAllChildren().SelectMany(obj => obj.MySyntaxErrors);
 			}
 		}
 		
@@ -149,7 +159,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public abstract void AcceptVisitor(IAXmlVisitor visitor);
 		
 		/// <summary> The parser tree object this object was updated from </summary>
-		internal object LastUpdatedFrom { get; private set; }
+		/// <remarks> Initialized to 'this' </remarks>
+		internal AXmlObject LastUpdatedFrom { get; private set; }
 		
 		internal bool IsInCache { get; set; }
 		
@@ -163,14 +174,15 @@ namespace ICSharpCode.AvalonEdit.Xml
 		}
 		
 		/// <summary> Copy all data from the 'source' to this object </summary>
-		internal virtual void UpdateDataFrom(AXmlObject source)
+		/// <remarks> Returns true if any updates were done </remarks>
+		internal virtual bool UpdateDataFrom(AXmlObject source)
 		{
 			Assert(this.GetType() == source.GetType(), "Source has different type");
 			DebugAssert(this.StartOffset == source.StartOffset, "Source has different StartOffset");
 			
 			if (this.LastUpdatedFrom == source) {
 				DebugAssert(this.EndOffset == source.EndOffset, "Source has different EndOffset");
-				return;
+				return false;
 			}
 			
 			Assert(!this.IsInCache, "Can not update cached item");
@@ -190,7 +202,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 					this.syntaxErrors = null;
 				} else {
 					this.syntaxErrors = new List<SyntaxError>();
-					foreach(var error in source.SyntaxErrors) {
+					foreach(var error in source.MySyntaxErrors) {
 						// The object differs, so create our own copy
 						// The source still might need it in the future and we do not want to break it
 						this.AddSyntaxError(error.Clone(this));
@@ -198,6 +210,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 				}
 				OnChanged();
 			}
+			
+			return true;
 		}
 		
 		/// <summary> Verify that the item is consistent.  Only in debug build. </summary>
@@ -210,12 +224,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("{0}({1}-{2})", this.GetType().Name.Remove(0, 3), this.StartOffset, this.EndOffset);
-		}
-		
-		internal static void LogDom(string format, params object[] args)
-		{
-			System.Diagnostics.Debug.WriteLine(string.Format("XML DOM: " + format, args));
+			return string.Format("{0}({1}-{2})", this.GetType().Name.Remove(0, 4), this.StartOffset, this.EndOffset);
 		}
 		
 		#region Helpper methods

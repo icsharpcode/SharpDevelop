@@ -35,10 +35,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 		}
 		
 		/// <inheritdoc/>
-		internal override void UpdateDataFrom(AXmlObject source)
+		internal override bool UpdateDataFrom(AXmlObject source)
 		{
-			base.UpdateDataFrom(source); // Check asserts
-			if (this.LastUpdatedFrom == source) return;
+			if (!base.UpdateDataFrom(source)) return false;
 			AXmlText src = (AXmlText)source;
 			if (this.EscapedValue != src.EscapedValue ||
 			    this.Value != src.Value)
@@ -47,6 +46,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 				this.EscapedValue = src.EscapedValue;
 				this.Value = src.Value;
 				OnChanged();
+				return true;
+			} else {
+				return false;
 			}
 		}
 		

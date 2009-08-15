@@ -50,7 +50,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> True if tag starts with "&lt;!" </summary>
 		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
 		
-		internal override void DebugCheckConsistency(bool allowNullParent)
+		internal override void DebugCheckConsistency(bool checkParentPointers)
 		{
 			Assert(OpeningBracket != null, "Null OpeningBracket");
 			Assert(Name != null, "Null Name");
@@ -58,7 +58,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			foreach(AXmlObject child in this.Children) {
 				Assert(child is AXmlText || child is AXmlAttribute, "Only attribute or text children allowed");
 			}
-			base.DebugCheckConsistency(allowNullParent);
+			base.DebugCheckConsistency(checkParentPointers);
 		}
 		
 		/// <inheritdoc/>
@@ -68,10 +68,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 		}
 		
 		/// <inheritdoc/>
-		internal override void UpdateDataFrom(AXmlObject source)
+		internal override bool UpdateDataFrom(AXmlObject source)
 		{
-			base.UpdateDataFrom(source); // Check asserts
-			if (this.LastUpdatedFrom == source) return;
+			if (!base.UpdateDataFrom(source)) return false;
 			AXmlTag src = (AXmlTag)source;
 			if (this.OpeningBracket != src.OpeningBracket ||
 				this.Name != src.Name ||
@@ -82,6 +81,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 				this.Name = src.Name;
 				this.ClosingBracket = src.ClosingBracket;
 				OnChanged();
+				return true;
+			} else {
+				return false;
 			}
 		}
 		

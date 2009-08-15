@@ -114,7 +114,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// </summary>
 		void InsertChild(int index, AXmlObject item)
 		{
-			LogDom("Inserting {0} at index {1}", item, index);
+			AXmlParser.Log("Inserting {0} at index {1}", item, index);
 			
 			AXmlDocument document = this.Document;
 			Assert(document != null, "Can not insert to dangling object");
@@ -172,7 +172,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		void RemoveChild(int index)
 		{
 			AXmlObject removed = this.Children[index];
-			LogDom("Removing {0} at index {1}", removed, index);
+			AXmlParser.Log("Removing {0} at index {1}", removed, index);
 			
 			// Null parent pointer
 			Assert(removed.Parent == this, "Inconsistent child");
@@ -184,30 +184,36 @@ namespace ICSharpCode.AvalonEdit.Xml
 		}
 		
 		/// <summary> Verify that the subtree is consistent.  Only in debug build. </summary>
-		internal override void DebugCheckConsistency(bool allowNullParent)
+		/// <remarks> Parent pointers might be null or pointing somewhere else in parse tree </remarks>
+		internal override void DebugCheckConsistency(bool checkParentPointers)
 		{
-			base.DebugCheckConsistency(allowNullParent);
+			base.DebugCheckConsistency(checkParentPointers);
 			AXmlObject prevChild = null;
 			int myStartOffset = this.StartOffset;
 			int myEndOffset = this.EndOffset;
 			foreach(AXmlObject child in this.Children) {
 				Assert(child.Length != 0, "Empty child");
-				if (!allowNullParent) {
+				if (checkParentPointers) {
 					Assert(child.Parent != null, "Null parent reference");
+					Assert(child.Parent == this, "Inccorect parent reference");
 				}
-				Assert(child.Parent == null || child.Parent == this, "Inccorect parent reference");
 				Assert(myStartOffset <= child.StartOffset && child.EndOffset <= myEndOffset, "Child not within parent text range");
 				if (this.IsInCache)
 					Assert(child.IsInCache, "Child not in cache");
 				if (prevChild != null)
 					Assert(prevChild.EndOffset <= child.StartOffset, "Overlaping childs");
-				child.DebugCheckConsistency(allowNullParent);
+				child.DebugCheckConsistency(checkParentPointers);
 				prevChild = child;
 			}
 		}
 		
+		/// <remarks>
+		/// Note the the method is not called recuively.
+		/// Only the helper methods are recursive.
+		/// </remarks>
 		internal void UpdateTreeFrom(AXmlContainer srcContainer)
 		{
+			this.UpdateDataFrom(srcContainer);
 			RemoveChildrenNotIn(srcContainer.Children);
 			InsertAndUpdateChildrenFrom(srcContainer.Children);
 		}

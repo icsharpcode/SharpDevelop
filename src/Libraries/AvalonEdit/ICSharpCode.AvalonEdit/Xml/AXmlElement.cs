@@ -35,10 +35,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 		}
 		
-		internal override void DebugCheckConsistency(bool allowNullParent)
+		internal override void DebugCheckConsistency(bool checkParentPointers)
 		{
 			DebugAssert(Children.Count > 0, "No children");
-			base.DebugCheckConsistency(allowNullParent);
+			base.DebugCheckConsistency(checkParentPointers);
 		}
 		
 		#region Helpper methods

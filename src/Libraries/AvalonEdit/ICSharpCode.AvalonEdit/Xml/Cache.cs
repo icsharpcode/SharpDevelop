@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// Is used to identify what memory range was touched by object
 		/// The default is (StartOffset, EndOffset + 1) which is not stored
 		/// </summary>
-		TextSegmentCollection<TouchedMemoryRange> touchedMemoryRanges = new TextSegmentCollection<TouchedMemoryRange>();
+		TextSegmentCollection<TouchedRange> touchedRanges = new TextSegmentCollection<TouchedRange>();
 		
 		/// <summary>
 		/// Track offsets of syntax errors as well.
@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// </summary>
 		TextSegmentCollection<SyntaxError> syntaxErrors = new TextSegmentCollection<SyntaxError>();
 		
-		class TouchedMemoryRange: TextSegment
+		class TouchedRange: TextSegment
 		{
 			public AXmlObject TouchedByObject { get; set; }
 		}
@@ -42,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			foreach(DocumentChangeEventArgs change in changes) {
 				// Update offsets of all items
 				parsedItems.UpdateOffsets(change);
-				touchedMemoryRanges.UpdateOffsets(change);
+				touchedRanges.UpdateOffsets(change);
 				syntaxErrors.UpdateOffsets(change);
 				
 				// Remove any items affected by the change
@@ -53,10 +53,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 				foreach(AXmlObject obj in parsedItems.FindSegmentsContaining(change.Offset)) {
 					Remove(obj, false);
 				}
-				foreach(TouchedMemoryRange memory in touchedMemoryRanges.FindSegmentsContaining(change.Offset)) {
-					AXmlParser.Log("Found that {0} dependeds on memory ({1}-{2})", memory.TouchedByObject, memory.StartOffset, memory.EndOffset);
-					Remove(memory.TouchedByObject, true);
-					touchedMemoryRanges.Remove(memory);
+				foreach(TouchedRange range in touchedRanges.FindSegmentsContaining(change.Offset)) {
+					AXmlParser.Log("Found that {0} dependeds on ({1}-{2})", range.TouchedByObject, range.StartOffset, range.EndOffset);
+					Remove(range.TouchedByObject, true);
+					touchedRanges.Remove(range);
 				}
 			}
 		}
@@ -73,20 +73,20 @@ namespace ICSharpCode.AvalonEdit.Xml
 				}
 			}
 			parsedItems.Add(obj);
-			foreach(SyntaxError syntaxError in obj.SyntaxErrors) {
+			foreach(SyntaxError syntaxError in obj.MySyntaxErrors) {
 				syntaxErrors.Add(syntaxError);
 			}
 			obj.IsInCache = true;
 			if (maxTouchedLocation != null) {
 				// location is assumed to be read so the range ends at (location + 1)
 				// For example eg for "a_" it is (0-2)
-				TouchedMemoryRange memRange = new TouchedMemoryRange() {
+				TouchedRange range = new TouchedRange() {
 					StartOffset = obj.StartOffset,
 					EndOffset = maxTouchedLocation.Value + 1,
 					TouchedByObject = obj
 				};
-				touchedMemoryRanges.Add(memRange);
-				AXmlParser.Log("{0} touched memory range ({1}-{2})", obj, memRange.StartOffset, memRange.EndOffset);
+				touchedRanges.Add(range);
+				AXmlParser.Log("{0} touched range ({1}-{2})", obj, range.StartOffset, range.EndOffset);
 			}
 		}
 		
@@ -110,7 +110,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				
 				foreach(AXmlObject r in parents) {
 					if (parsedItems.Remove(r)) {
-						foreach(SyntaxError syntaxError in r.SyntaxErrors) {
+						foreach(SyntaxError syntaxError in r.MySyntaxErrors) {
 							syntaxErrors.Remove(syntaxError);
 						}
 						r.IsInCache = false;
@@ -120,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 			
 			if (parsedItems.Remove(obj)) {
-				foreach(SyntaxError syntaxError in obj.SyntaxErrors) {
+				foreach(SyntaxError syntaxError in obj.MySyntaxErrors) {
 					syntaxErrors.Remove(syntaxError);
 				}
 				obj.IsInCache = false;

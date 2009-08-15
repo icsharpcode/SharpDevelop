@@ -30,13 +30,13 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> Unquoted and dereferenced value of the attribute </summary>
 		public string Value { get; internal set; }
 		
-		internal override void DebugCheckConsistency(bool allowNullParent)
+		internal override void DebugCheckConsistency(bool checkParentPointers)
 		{
 			DebugAssert(Name != null, "Null Name");
 			DebugAssert(EqualsSign != null, "Null EqualsSign");
 			DebugAssert(QuotedValue != null, "Null QuotedValue");
 			DebugAssert(Value != null, "Null Value");
-			base.DebugCheckConsistency(allowNullParent);
+			base.DebugCheckConsistency(checkParentPointers);
 		}
 		
 		#region Helpper methods
@@ -101,10 +101,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 		}
 		
 		/// <inheritdoc/>
-		internal override void UpdateDataFrom(AXmlObject source)
+		internal override bool UpdateDataFrom(AXmlObject source)
 		{
-			base.UpdateDataFrom(source);  // Check asserts
-			if (this.LastUpdatedFrom == source) return;
+			if (!base.UpdateDataFrom(source)) return false;
 			AXmlAttribute src = (AXmlAttribute)source;
 			if (this.Name != src.Name ||
 				this.EqualsSign != src.EqualsSign ||
@@ -117,6 +116,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 				this.QuotedValue = src.QuotedValue;
 				this.Value = src.Value;
 				OnChanged();
+				return true;
+			} else {
+				return false;
 			}
 		}
 		

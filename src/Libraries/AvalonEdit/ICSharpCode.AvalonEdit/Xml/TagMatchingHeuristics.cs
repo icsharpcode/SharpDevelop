@@ -295,7 +295,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 					conifg.Cost += 1;
 				}
 			}
-			AXmlParser.Log("Configurations after closing all remaining tags:" + configurations.ToString());
+			// AXmlParser.Log("Configurations after closing all remaining tags:" + configurations.ToString());
 			Configuration bestConfig = configurations.Values.OrderBy(v => v.Cost).First();
 			AXmlParser.Log("Best configuration has cost {0}", bestConfig.Cost);
 			
@@ -370,7 +370,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				newConfigs.Values.OrderBy(v => v.Cost).Take(maxConfigurationCount)
 			);
 			
-			AXmlParser.Log("Best new configurations:" + bestNewConfigurations.ToString());
+			// AXmlParser.Log("Best new configurations:" + bestNewConfigurations.ToString());
 			
 			return bestNewConfigurations;
 		}

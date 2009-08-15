@@ -158,11 +158,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 			TagReader tagReader = new TagReader(this, input);
 			List<AXmlObject> tags = tagReader.ReadAllTags();
 			AXmlDocument parsedDocument = new TagMatchingHeuristics(this, input, tags).ReadDocument();
-			parsedDocument.DebugCheckConsistency(true);
+			parsedDocument.DebugCheckConsistency(false);
 			tagReader.PrintStringCacheStats();
-			AXmlObject.LogDom("Updating main DOM tree...");
+			AXmlParser.Log("Updating main DOM tree...");
 			userDocument.UpdateTreeFrom(parsedDocument);
-			userDocument.DebugCheckConsistency(false);
+			userDocument.DebugCheckConsistency(true);
 			return userDocument;
 		}
 	}
