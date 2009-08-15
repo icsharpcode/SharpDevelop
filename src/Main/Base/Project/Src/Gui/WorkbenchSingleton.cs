@@ -57,25 +57,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		/// <remarks>
-		/// This method handles the redraw all event for specific changed IDE properties
-		/// </remarks>
-		static void TrackPropertyChanges(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.OldValue != e.NewValue && workbench != null) {
-				switch (e.Key) {
-					case "ICSharpCode.SharpDevelop.Gui.StatusBarVisible":
-					case "ICSharpCode.SharpDevelop.Gui.VisualStyle":
-					case "ICSharpCode.SharpDevelop.Gui.ToolBarVisible":
-						workbench.RedrawAllComponents();
-						break;
-					case "ICSharpCode.SharpDevelop.Gui.UseProfessionalRenderer":
-						workbench.UpdateRenderer();
-						break;
-				}
-			}
-		}
-		
 		/// <summary>
 		/// Runs workbench initialization.
 		/// Is called by ICSharpCode.SharpDevelop.Sda and should not be called manually!
@@ -105,9 +86,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			WinFormsMessageService.DialogOwner = workbench.MainWin32Window;
 			WinFormsMessageService.DialogSynchronizeInvoke = workbench.SynchronizingObject;
-			
-			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
-			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };
 			
 			workbench.Initialize();
 			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));

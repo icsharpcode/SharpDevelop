@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -59,17 +59,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		internal static bool PreFilterMessage(ref Message m)
+		internal static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
 		{
-			if (m.Msg != CUSTOM_MESSAGE)
-				return false;
-			long fileNumber = m.WParam.ToInt64();
-			long openEvenIfProjectIsOpened = m.LParam.ToInt64();
+			if (msg != CUSTOM_MESSAGE) {
+				return IntPtr.Zero;
+			}
+			handled = true;
+			long fileNumber = wParam.ToInt64();
+			long openEvenIfProjectIsOpened = lParam.ToInt64();
 			LoggingService.Info("Receiving custom message...");
 			if (openEvenIfProjectIsOpened == 0 && ProjectService.OpenSolution != null) {
-				m.Result = new IntPtr(RESULT_PROJECT_IS_OPEN);
+				return new IntPtr(RESULT_PROJECT_IS_OPEN);
 			} else {
-				m.Result = new IntPtr(RESULT_FILES_HANDLED);
 				try {
 					WorkbenchSingleton.SafeThreadAsyncCall(
 						delegate { NativeMethods.SetForegroundWindow(WorkbenchSingleton.MainWin32Window.Handle) ; }
@@ -84,8 +85,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				} catch (Exception ex) {
 					LoggingService.Warn(ex);
 				}
+				return new IntPtr(RESULT_FILES_HANDLED);
 			}
-			return true;
 		}
 	}
 }

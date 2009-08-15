@@ -4,7 +4,8 @@
         xmlns:core = "http://icsharpcode.net/sharpdevelop/core"
         Title = "{core:Localize MainWindow.DialogName}"
         WindowStartupLocation = "Manual"
-        Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+        Background = "{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+        AllowDrop = "True"
 >
 	<DockPanel Name="dockPanel">
 		<Menu Name="mainMenu" DockPanel.Dock="Top"/>

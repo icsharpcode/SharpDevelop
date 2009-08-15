@@ -188,12 +188,6 @@ namespace UpdateAssemblyInfo
 				Console.WriteLine("The revision number of the SharpDevelop version being compiled could not be retrieved.");
 				Console.WriteLine();
 				Console.WriteLine("Build continues with revision number '0'...");
-				try {
-					Process[] p = Process.GetProcessesByName("msbuild");
-					if (p != null && p.Length > 0) {
-						System.Threading.Thread.Sleep(3000);
-					}
-				} catch {}
 				return "0";
 			}
 		}
@@ -220,8 +214,9 @@ namespace UpdateAssemblyInfo
 			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
 				revisionNumber = ReadRevisionFromFile();
 			}
-			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
-				throw new ApplicationException("Error reading revision number");
+			if (revisionNumber == null || revisionNumber.Length == 0) {
+				revisionNumber = "0";
+				//throw new ApplicationException("Error reading revision number");
 			}
 		}
 		#endregion

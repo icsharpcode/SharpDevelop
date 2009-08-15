@@ -158,18 +158,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void CloseAllViews();
 		
 		/// <summary>
-		/// Re-initializes all components of the workbench, should be called
-		/// when a special property is changed that affects layout stuff.
-		/// (like language change)
-		/// </summary>
-		void RedrawAllComponents();
-		
-		/// <summary>
-		/// Updates the toolstrip renderer.
-		/// </summary>
-		void UpdateRenderer();
-		
-		/// <summary>
 		/// Is called, when a workbench view was opened
 		/// </summary>
 		/// <example>

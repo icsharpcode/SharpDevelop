@@ -16,6 +16,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Navigation;
 
 using ICSharpCode.Core;
@@ -71,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			this.MainWin32Window = this.GetWin32Window();
 			base.OnSourceInitialized(e);
+			HwndSource.FromHwnd(this.MainWin32Window.Handle).AddHook(SingleInstanceHelper.WndProc);
 		}
 		
 		public void Initialize()
@@ -95,6 +97,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
 			Project.ProjectService.CurrentProjectChanged += SetProjectTitle;
+			
+			FileService.FileRemoved += CheckRemovedOrReplacedFile;
+			FileService.FileReplaced += CheckRemovedOrReplacedFile;
+			FileService.FileRenamed += CheckRenamedFile;
+			
+			FileService.FileRemoved += FileService.RecentOpen.FileRemoved;
+			FileService.FileRenamed += FileService.RecentOpen.FileRenamed;
 			
 			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
 			CommandManager.RequerySuggested += requerySuggestedEventHandler;
@@ -130,6 +139,42 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Title = e.Project.Name + " - " + ResourceService.GetString("MainWindow.DialogName");
 			} else {
 				Title = ResourceService.GetString("MainWindow.DialogName");
+			}
+		}
+		
+		void CheckRemovedOrReplacedFile(object sender, FileEventArgs e)
+		{
+			foreach (OpenedFile file in FileService.OpenedFiles) {
+				if (FileUtility.IsBaseDirectory(e.FileName, file.FileName)) {
+					foreach (IViewContent content in file.RegisteredViewContents.ToArray()) {
+						// content.WorkbenchWindow can be null if multiple view contents
+						// were in the same WorkbenchWindow and both should be closed
+						// (e.g. Windows Forms Designer, Subversion History View)
+						if (content.WorkbenchWindow != null) {
+							content.WorkbenchWindow.CloseWindow(true);
+						}
+					}
+				}
+			}
+		}
+		
+		void CheckRenamedFile(object sender, FileRenameEventArgs e)
+		{
+			if (e.IsDirectory) {
+				foreach (OpenedFile file in FileService.OpenedFiles) {
+					if (file.FileName != null && FileUtility.IsBaseDirectory(e.SourceFile, file.FileName)) {
+						file.FileName = FileUtility.RenameBaseDirectory(file.FileName, e.SourceFile, e.TargetFile);
+					}
+				}
+			} else {
+				foreach (OpenedFile file in FileService.OpenedFiles) {
+					if (file.FileName != null &&
+					    FileUtility.IsEqualFileName(file.FileName, e.SourceFile))
+					{
+						file.FileName  = e.TargetFile;
+						return;
+					}
+				}
 			}
 		}
 		
@@ -433,14 +478,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		#endregion
 		
-		public void RedrawAllComponents()
-		{
-		}
-		
-		public void UpdateRenderer()
-		{
-		}
-		
 		public Properties CreateMemento()
 		{
 			Properties prop = new Properties();
@@ -467,6 +504,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnClosing(e);
 			if (!e.Cancel) {
+				if (Project.ProjectService.IsBuilding) {
+					MessageService.ShowMessage(StringParser.Parse("${res:MainWindow.CannotCloseWithBuildInProgressMessage}"));
+					e.Cancel = true;
+					return;
+				}
+				
 				Project.ProjectService.SaveSolutionPreferences();
 				
 				while (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
@@ -488,6 +531,69 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		protected override void OnDragEnter(DragEventArgs e)
+		{
+			try {
+				base.OnDragEnter(e);
+				if (!e.Handled) {
+					e.Effects = GetEffect(e.Data);
+					e.Handled = true;
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
+		}
+		
+		protected override void OnDragOver(DragEventArgs e)
+		{
+			try {
+				base.OnDragOver(e);
+				if (!e.Handled) {
+					e.Effects = GetEffect(e.Data);
+					e.Handled = true;
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
+		}
+		
+		DragDropEffects GetEffect(IDataObject data)
+		{
+			if (data != null && data.GetDataPresent(DataFormats.FileDrop)) {
+				string[] files = (string[])data.GetData(DataFormats.FileDrop);
+				foreach (string file in files) {
+					if (File.Exists(file)) {
+						return DragDropEffects.Link;
+					}
+				}
+			}
+			return DragDropEffects.None;
+		}
+		
+		protected override void OnDrop(DragEventArgs e)
+		{
+			try {
+				base.OnDrop(e);
+				if (!e.Handled && e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop)) {
+					e.Handled = true;
+					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+					
+					foreach (string file in files) {
+						if (File.Exists(file)) {
+							Project.IProjectLoader loader = Project.ProjectService.GetProjectLoader(file);
+							if (loader != null) {
+								FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
+							} else {
+								FileService.OpenFile(file);
+							}
+						}
+					}
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
+		}
+		
 		void InitFocusTrackingEvents()
 		{
 			#if DEBUG
@@ -495,7 +601,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.PreviewGotKeyboardFocus += new KeyboardFocusChangedEventHandler(WpfWorkbench_PreviewGotKeyboardFocus);
 			#endif
 		}
-
+		
 		#if DEBUG
 		bool toggle;
 		
