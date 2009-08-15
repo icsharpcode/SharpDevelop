@@ -103,6 +103,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 					OnSyntaxError(tag, "Element name expected");
 				}
 				tag.Name = name;
+			} else {
+				tag.Name = string.Empty;
 			}
 			
 			if (tag.IsStartOrEmptyTag || tag.IsEndTag) {
@@ -429,7 +431,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		}
 		
 		const int maxEntityLength = 12; // The longest build-in one is 10 ("&#1114111;")
-		const int maxTextFragmentSize = 8;
+		const int maxTextFragmentSize = 64;
 		const int lookAheadLenght = (3 * maxTextFragmentSize) / 2; // More so that we do not get small "what was inserted" fragments
 		
 		/// <summary>

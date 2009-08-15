@@ -151,10 +151,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 		IEnumerable<AXmlObject> Split(AXmlElement elem)
 		{
 			int myIndention = GetIndentLevel(elem);
-			// If has virtual end and is indented
-			if (!elem.HasEndTag && myIndention != -1) {
+			// Has start tag and no end tag ?  (other then empty-element tag)
+			if (elem.HasStartOrEmptyTag && elem.StartTag.IsStartTag && !elem.HasEndTag && myIndention != -1) {
 				int lastAccepted = 0; // Accept start tag
-				while (lastAccepted + 1 < elem.Children.Count - 1 /* no end tag */) {
+				while (lastAccepted + 1 < elem.Children.Count) {
 					AXmlObject nextItem = elem.Children[lastAccepted + 1];
 					if (nextItem is AXmlText) {
 						lastAccepted++; continue;  // Accept
@@ -168,15 +168,15 @@ namespace ICSharpCode.AvalonEdit.Xml
 					}
 				}
 				// Accepted everything?
-				if (lastAccepted + 1 == elem.Children.Count - 1) {
+				if (lastAccepted + 1 == elem.Children.Count) {
 					yield return elem;
 					yield break;
 				}
-				AXmlParser.Log("Splitting {0} - take {1} of {2} nested", elem, lastAccepted, elem.Children.Count - 2);
+				AXmlParser.Log("Splitting {0} - take {1} of {2} nested", elem, lastAccepted, elem.Children.Count - 1);
 				AXmlElement topHalf = new AXmlElement();
 				topHalf.HasStartOrEmptyTag = elem.HasStartOrEmptyTag;
 				topHalf.HasEndTag = elem.HasEndTag;
-				topHalf.AddChildren(elem.Children.Take(lastAccepted + 1));    // Start tag + nested
+				topHalf.AddChildren(elem.Children.Take(1 + lastAccepted));    // Start tag + nested
 				topHalf.StartOffset = topHalf.FirstChild.StartOffset;
 				topHalf.EndOffset = topHalf.LastChild.EndOffset;
 				TagReader.OnSyntaxError(topHalf, topHalf.LastChild.EndOffset, topHalf.LastChild.EndOffset,
@@ -185,7 +185,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				AXmlParser.Log("Constructed {0}", topHalf);
 				trackedSegments.AddParsedObject(topHalf, null);
 				yield return topHalf;
-				for(int i = lastAccepted + 1; i < elem.Children.Count - 1; i++) {
+				for(int i = lastAccepted + 1; i < elem.Children.Count; i++) {
 					yield return elem.Children[i];
 				}
 			} else {

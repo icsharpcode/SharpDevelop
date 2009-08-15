@@ -82,7 +82,7 @@
     <Compile Include="Utils\IndentationStringTests.cs" />
     <Compile Include="Utils\RopeTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
-    <Compile Include="XmlParser\SimpleTests.cs" />
+    <Compile Include="XmlParser\XmlParserTests.cs" />
     <None Include="app.config" />
     <None Include="XmlParser\testcases.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

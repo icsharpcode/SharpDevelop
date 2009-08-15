@@ -26,6 +26,14 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 		}
 		
+		/// <summary> Create XML text from a document </summary>
+		public static string PrettyPrint(AXmlDocument doc)
+		{
+			PrettyPrintAXmlVisitor visitor = new PrettyPrintAXmlVisitor();
+			visitor.VisitDocument(doc);
+			return visitor.Output;
+		}
+		
 		/// <summary> Visit RawDocument </summary>
 		public override void VisitDocument(AXmlDocument document)
 		{

@@ -71,9 +71,6 @@ namespace ICSharpCode.AvalonEdit.Xml
 			Assert(OpeningBracket != null, "Null OpeningBracket");
 			Assert(Name != null, "Null Name");
 			Assert(ClosingBracket != null, "Null ClosingBracket");
-			foreach(AXmlObject child in this.Children) {
-				Assert(child is AXmlText || child is AXmlAttribute, "Only attribute or text children allowed");
-			}
 			base.DebugCheckConsistency(checkParentPointers);
 		}
 		
