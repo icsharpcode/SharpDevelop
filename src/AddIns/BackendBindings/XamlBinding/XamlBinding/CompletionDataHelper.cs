@@ -8,19 +8,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Windows.Markup;
 using System.Windows.Media;
-using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -62,11 +57,17 @@ namespace ICSharpCode.XamlBinding
 		
 		public static XamlContext ResolveContext(string text, string fileName, int offset)
 		{
+			return ResolveContextInternal(new AXmlParser(text), fileName, offset);
+		}
+		
+		static XamlContext ResolveContextInternal(AXmlParser parser, string fileName, int offset)
+		{
+			DebugTimer.Start();
 			ParseInformation info = string.IsNullOrEmpty(fileName) ? null : ParserService.GetParseInformation(fileName);
-			var parser = new AvalonEdit.Xml.AXmlParser(text);
 			var document = parser.Parse();
 			
 			AXmlObject currentData = document.GetChildAtOffset(offset);
+			DebugTimer.Stop("Parse & GetChildAtOffset");
 			
 			string attribute = string.Empty, attributeValue = string.Empty;
 			bool inAttributeValue = false;
@@ -84,7 +85,7 @@ namespace ICSharpCode.XamlBinding
 				if (item is AXmlElement) {
 					AXmlElement element = item as AXmlElement;
 					ancestors.Add(element);
-					foreach (AXmlAttribute attr in element.StartTag.Children.OfType<AXmlAttribute>()) {
+					foreach (var attr in element.Attributes) {
 						if (attr.IsNamespaceDeclaration) {
 							string prefix = (attr.Name == "xmlns") ? "" : attr.LocalName;
 							if (!xmlns.ContainsKey(prefix))
@@ -106,7 +107,7 @@ namespace ICSharpCode.XamlBinding
 			
 			if (currentData.Parent is AXmlTag) {
 				AXmlTag tag = currentData.Parent as AXmlTag;
-				if (tag.IsStartTag)
+				if (tag.IsStartOrEmptyTag)
 					description = XamlContextDescription.InTag;
 				else if (tag.IsComment)
 					description = XamlContextDescription.InComment;
@@ -132,12 +133,13 @@ namespace ICSharpCode.XamlBinding
 						description = XamlContextDescription.InMarkupExtension;
 					if (attributeValue.StartsWith("{}", StringComparison.Ordinal) && attributeValue.Length > 2)
 						description = XamlContextDescription.InAttributeValue;
-				}
+				} else
+					description = XamlContextDescription.InTag;
 			}
 			
 			if (currentData is AXmlTag) {
 				AXmlTag tag = currentData as AXmlTag;
-				if (tag.IsStartTag)
+				if (tag.IsStartOrEmptyTag)
 					description = XamlContextDescription.AtTag;
 				else if (tag.IsComment)
 					description = XamlContextDescription.InComment;
@@ -168,13 +170,18 @@ namespace ICSharpCode.XamlBinding
 				ParseInformation  = info,
 				IgnoredXmlns      = ignored.AsReadOnly()
 			};
-
+			
 			return context;
 		}
 		
 		public static XamlCompletionContext ResolveCompletionContext(ITextEditor editor, char typedValue)
 		{
-			var context = new XamlCompletionContext(ResolveContext(editor.Document.Text, editor.FileName, editor.Caret.Offset)) {
+			var binding = editor.GetService(typeof(XamlLanguageBinding)) as XamlLanguageBinding;
+			
+			if (binding == null)
+				throw new InvalidOperationException("Can only use ResolveCompletionContext with a XamlLanguageBinding.");
+			
+			var context = new XamlCompletionContext(ResolveContextInternal(binding.Parser, editor.FileName, editor.Caret.Offset)) {
 				PressedKey = typedValue,
 				Editor = editor
 			};
@@ -363,15 +370,17 @@ namespace ICSharpCode.XamlBinding
 					
 					XamlCodeCompletionItem item = new XamlCodeCompletionItem(c, ns.Key);
 					
-					if (item.Text == last.Name)
-						parentAdded = true;
+					parentAdded = parentAdded || (last != null && item.Text == last.Name);
 					
 					result.Add(new XamlCodeCompletionItem(c, ns.Key));
 				}
 			}
 			
-			if (!parentAdded && !last.Name.Contains("."))
-				result.Add(new XamlCodeCompletionItem(cu.CreateType(last.Namespace, last.LocalName.Trim('.')).GetUnderlyingClass(), last.Prefix));
+			if (!parentAdded && last != null && !last.Name.Contains(".")) {
+				IClass itemClass = cu.CreateType(last.Namespace, last.LocalName.Trim('.')).GetUnderlyingClass();
+				if (itemClass != null)
+					result.Add(new XamlCodeCompletionItem(itemClass, last.Prefix));
+			}
 			
 			string xamlPrefix = Utils.GetXamlNamespacePrefix(context);
 			
@@ -439,6 +448,8 @@ namespace ICSharpCode.XamlBinding
 					}
 					break;
 				case XamlContextDescription.InTag:
+					DebugTimer.Start();
+					
 					string word = context.Editor.GetWordBeforeCaretExtended();
 					
 					if (context.PressedKey == '.' || word.Contains(".")) {
@@ -464,6 +475,8 @@ namespace ICSharpCode.XamlBinding
 						list.Items.AddRange(CreateAttributeList(context, true));
 						list.Items.AddRange(standardAttributes);
 					}
+					
+					DebugTimer.Stop("CreateListForContext - InTag");
 					break;
 				case XamlContextDescription.InAttributeValue:
 					XamlCodeCompletionBinding.Instance.CtrlSpace(editor);

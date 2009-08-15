@@ -84,7 +84,6 @@ namespace ICSharpCode.XamlBinding
 				}
 			}
 			catch (XmlException ex) {
-				LoggingService.Debug("XamlParser exception: " + ex.ToString());
 				cu.ErrorsDuringCompile = true;
 			}
 			return cu;

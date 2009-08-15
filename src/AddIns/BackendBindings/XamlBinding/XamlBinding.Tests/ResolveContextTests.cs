@@ -14,7 +14,6 @@ using System.IO;
 namespace ICSharpCode.XamlBinding.Tests
 {
 	[TestFixture]
-	[Ignore("Ignore bugs in XmlParser")]
 	public class ResolveContextTests
 	{
 		[Test]
@@ -92,6 +91,33 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			string xaml = "<Grid>\n\t<CheckBox x:Name=\"asdf\" Background=\"Aqua\" Content=\"{x:Static Cursors.Arrow}\" />\n</Grid>";
 			int offset = "<Grid>\n".Length + 26;
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			
+			Assert.AreEqual(XamlContextDescription.InTag, context.Description);
+		}
+		
+		[Test]
+		public void ContextInTagDescriptionTest2()
+		{
+			string xaml = @"<Window x:Class='Vokabeltrainer.Window1'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+	Title=''>
+	<Grid>
+		<StackPanel>
+			<RadioButton
+		</StackPanel>
+	</Grid>
+</Window>";
+			
+			int offset = @"<Window x:Class='Vokabeltrainer.Window1'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+	Title=''>
+	<Grid>
+		<StackPanel>
+			<RadioButton ".Length;
+			
 			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			
 			Assert.AreEqual(XamlContextDescription.InTag, context.Description);

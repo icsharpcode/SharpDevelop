@@ -5,16 +5,12 @@
 //     <version>$Revision: 3731 $</version>
 // </file>
 
+using ICSharpCode.XmlEditor;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {

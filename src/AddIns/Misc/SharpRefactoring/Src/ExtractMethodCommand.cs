@@ -42,7 +42,6 @@ namespace SharpRefactoring
 			}
 		}
 		
-		
 		MethodExtractorBase GetCurrentExtractor(ITextEditor editor)
 		{
 			switch (ProjectBindingService.GetCodonPerCodeFileName(editor.FileName).Language) {

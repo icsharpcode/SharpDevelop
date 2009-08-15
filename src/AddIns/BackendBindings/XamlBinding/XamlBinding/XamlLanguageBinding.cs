@@ -5,26 +5,28 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Editing;
 using System;
 using System.Linq;
 using System.Windows.Controls;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
 	/// <summary>
 	/// Description of XamlLanguageBinding.
 	/// </summary>
-	public class XamlLanguageBinding : XmlLanguageBinding
+	public class XamlLanguageBinding : XmlEditor.XmlLanguageBinding
 	{
 		XamlColorizer colorizer;
 		TextView textView;
+		AXmlParser parser;
 
 		public override void Attach(ITextEditor editor)
 		{
@@ -34,14 +36,18 @@ namespace ICSharpCode.XamlBinding
 			// of this ITextEditor
 			this.textView = editor.GetService(typeof(TextView)) as TextView;
 			
+			this.parser = new AXmlParser(editor.Document.GetService(typeof(TextDocument)) as TextDocument);
+			
 			// if editor is not an AvalonEdit.TextEditor
 			// GetService returns null
 			if (textView != null) {
 				colorizer = new XamlColorizer(editor, textView);
 				// attach the colorizer
-				textView.LineTransformers.Add(colorizer);
+				//textView.LineTransformers.Add(colorizer);
 				// add the XamlOutlineContentHost, which manages the tree view
 				textView.Services.AddService(typeof(IOutlineContentHost), new XamlOutlineContentHost(editor));
+				// add ILanguageBinding
+				textView.Services.AddService(typeof(XamlLanguageBinding), this);
 			}
 		}
 
@@ -54,8 +60,13 @@ namespace ICSharpCode.XamlBinding
 				// remove and dispose everything we added
 				textView.LineTransformers.Remove(colorizer);
 				textView.Services.RemoveService(typeof(IOutlineContentHost));
+				textView.Services.RemoveService(typeof(XamlLanguageBinding));
 				colorizer.Dispose();
 			}
+		}
+		
+		public AXmlParser Parser {
+			get { return parser; }
 		}
 	}
 }

@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace ICSharpCode.AvalonEdit.Xml
 {
 	[TestFixture]
-	[Ignore("XmlParser API broken")]
+	[Ignore("XML parser API changes not complete")]
 	public class SimpleTests
 	{
 		string tmpPath;
