@@ -51,6 +51,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			{
 				// show expand button when appropriate
 				return (!this.positionedProperty.IsAtomic && !this.positionedProperty.IsNull);
+				//return true;
 			}
 		}
 		
@@ -62,7 +63,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			PropertyNode sourcePropertyNode = source as PropertyNode;
 			
 			this.Name = sourcePropertyNode.Property.Name;
-			this.Text = sourcePropertyNode.Property.Value;		// lazy evaluated
+			this.Text = sourcePropertyNode.Property.Value;		// evaluated in Evaluate()
 			this.IsNested = false;
 			this.IsExpanded = false;			// always false, property content nodes are never expanded
 			this.positionedProperty = new PositionedNodeProperty(

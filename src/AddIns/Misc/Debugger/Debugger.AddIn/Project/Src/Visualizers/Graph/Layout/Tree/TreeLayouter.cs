@@ -40,7 +40,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 
 			treeNodeFor = new Dictionary<ObjectGraphNode, PositionedGraphNode>();
 			seenNodes = new HashSet<PositionedGraphNode>();
-
+			
 			//TreeGraphNode tree = buildTreeRecursive(objectGraph.Root, expandedNodes);
 			
 			// convert ObjectGraph to PositionedGraph with TreeEdges

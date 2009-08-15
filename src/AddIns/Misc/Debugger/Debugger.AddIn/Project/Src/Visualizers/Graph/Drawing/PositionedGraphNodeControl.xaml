@@ -5,6 +5,11 @@
 	xmlns:local="clr-namespace:Debugger.AddIn.Visualizers"
     >
 	<UserControl.Resources>
+		<ResourceDictionary>
+          <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="PlusToggleButton.xaml" />
+          </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
 		<local:TooltipVisibilityConverter x:Key="toolVisConverter"></local:TooltipVisibilityConverter>
 		<DataTemplate x:Key="valueColumnTemplate">
             <TextBlock Text="{Binding Text}">
@@ -18,6 +23,7 @@
             </TextBlock>
         </DataTemplate>
 	</UserControl.Resources>
+	
     <aero:SystemDropShadowChrome>
     <Grid>
         <ListView Name="listView" AlternationCount="2" ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -65,12 +71,12 @@
                         </GridView.ColumnHeaderContainerStyle>
                         <GridView.Columns>
                         	   <!-- Expand button (either property or nested) -->
-                            <GridViewColumn Header="Plus" Width="Auto">
+                            <GridViewColumn Header="Plus" Width="20">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel>
-                                            <ToggleButton x:Name="Expander" Width="20" Margin="-4 -1 -4 -1" IsChecked="{Binding IsExpanded}" Click="NestedExpandButton_Click" Padding="0">+</ToggleButton>
-                                            <ToggleButton x:Name="PropertyExpander" Width="20" Margin="-4 -1 -4 -1" IsChecked="{Binding IsPropertyExpanded}" Click="PropertyExpandButton_Click" Padding="0">+</ToggleButton>
+                                        <StackPanel Margin="0 2 0 0">
+                                            <ToggleButton x:Name="Expander" Margin="-6 0" IsChecked="{Binding IsExpanded}" Click="NestedExpandButton_Click" Padding="0"></ToggleButton>
+                                            <ToggleButton x:Name="PropertyExpander" Margin="-6 0" IsChecked="{Binding IsPropertyExpanded}" Click="PropertyExpandButton_Click" Padding="0"></ToggleButton>
                                         </StackPanel>
                                         <DataTemplate.Triggers>
                                             <DataTrigger Binding="{Binding Path=HasChildren}" Value="False">

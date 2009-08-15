@@ -13,7 +13,7 @@ namespace Debugger.AddIn.Visualizers
 	/// <summary>
 	/// Description of ShowGridVisualizerCommand.
 	/// </summary>
-	public class ShowGridVisualizerCommand : AbstractMenuCommand
+	public class GridVisualizerMenuCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{

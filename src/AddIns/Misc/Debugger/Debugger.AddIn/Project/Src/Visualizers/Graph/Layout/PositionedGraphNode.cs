@@ -18,6 +18,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// </summary>
 	public class PositionedGraphNode
 	{
+		public static readonly double MaxHeight = 300;
+		
 		/// <summary>
 		/// Creates new PositionedNode.
 		/// </summary>
@@ -72,8 +74,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		private void initVisualControl()
 		{
-			this.nodeVisualControl = new PositionedGraphNodeControl();
-			this.nodeVisualControl.MaxHeight = 300;
+			this.nodeVisualControl = NodeControlCache.Instance.GetNodeControl();
+			this.nodeVisualControl.MaxHeight = MaxHeight;
 			
 			// propagate events from nodeVisualControl
 			this.nodeVisualControl.PropertyExpanded += new EventHandler<PositionedPropertyEventArgs>(NodeVisualControl_PropertyExpanded);

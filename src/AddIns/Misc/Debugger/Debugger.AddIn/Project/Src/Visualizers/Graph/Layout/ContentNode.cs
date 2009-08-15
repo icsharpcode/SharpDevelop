@@ -110,7 +110,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public IEnumerable<ContentNode> FlattenExpanded()
 		{
-			return Utils.TreeFlattener.FlattenSelectChildrenIf(this, (node) => { return node.IsExpanded; });
+			return Utils.TreeFlattener.FlattenSelectChildrenIf(this, node => node.IsExpanded);
 		}
 		
 		/// <summary>
@@ -119,7 +119,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <returns></returns>
 		public IEnumerable<ContentNode> FlattenChildrenExpanded()
 		{
-			return Utils.TreeFlattener.FlattenSelectChildrenIf(this.Children, (node) => { return node.IsExpanded; });
+			return Utils.TreeFlattener.FlattenSelectChildrenIf(this.Children, node => node.IsExpanded);
 		}
 		
 		/// <summary>
@@ -127,8 +127,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// </summary>
 		public IEnumerable<PositionedNodeProperty> FlattenProperties()
 		{
-			return Utils.TreeFlattener.Flatten(this).Where((node) => { return  node is ContentPropertyNode; }).
-				Select(	(propertyNode) => { return ((ContentPropertyNode)propertyNode).Property; });
+			return Utils.TreeFlattener.Flatten(this).Where(node => node is ContentPropertyNode).
+				Select(	propertyNode => ((ContentPropertyNode)propertyNode).Property);
 		}
 		
 		#region Utils.ITreeNode implementation

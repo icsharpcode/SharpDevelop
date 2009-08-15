@@ -12,7 +12,7 @@ using System.Linq;
 namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
-	/// Executes object graph visualizer for a node.
+	/// Shows object graph visualizer for a node.
 	/// </summary>
 	public class ObjectGraphVisualizerCommand : ExpressionNodeVisualizerCommand
 	{

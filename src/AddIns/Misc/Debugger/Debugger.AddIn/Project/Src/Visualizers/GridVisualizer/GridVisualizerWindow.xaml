@@ -237,9 +237,5 @@
 			</ListView>
 		
 		</StackPanel>
-		
-		<Canvas Name="canvas" Margin="4">
-		</Canvas>
-	
 	</StackPanel>
 </Window>

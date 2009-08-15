@@ -36,6 +36,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		private PositionedGraph oldPosGraph;
 		private PositionedGraph currentPosGraph;
 		private GraphDrawer graphDrawer;
+		private Layout.TreeLayouter layouter;
 		
 		/// <summary>
 		/// Long-lived map telling which graph nodes and content nodes the user expanded.
@@ -50,14 +51,34 @@ namespace Debugger.AddIn.Visualizers.Graph
 			if (debuggerService == null)
 				throw new ApplicationException("Only windows debugger is currently supported");
 			
-			debuggerService.IsProcessRunningChanged += new EventHandler(debuggerService_IsProcessRunningChanged);
-			debuggerService.DebugStopped += new EventHandler(_debuggerService_DebugStopped);
+			this.Closed += new EventHandler(VisualizerWPFWindow_Closed);
+			
+			registerEvents();
 			
 			this.layoutViewModel = new EnumViewModel<LayoutDirection>();
 			this.layoutViewModel.PropertyChanged += new PropertyChangedEventHandler(layoutViewModel_PropertyChanged);
 			this.DataContext = this.layoutViewModel;
 			
+			this.layouter = new TreeLayouter();
 			this.graphDrawer = new GraphDrawer(this.canvas);
+		}
+
+		void VisualizerWPFWindow_Closed(object sender, EventArgs e)
+		{
+			unregisterEvents();
+			NodeControlCache.Instance.Clear();
+		}
+		
+		private void registerEvents()
+		{
+			debuggerService.IsProcessRunningChanged += new EventHandler(debuggerService_IsProcessRunningChanged);
+			debuggerService.DebugStopped += new EventHandler(_debuggerService_DebugStopped);
+		}
+		
+		private void unregisterEvents()
+		{
+			debuggerService.IsProcessRunningChanged -= new EventHandler(debuggerService_IsProcessRunningChanged);
+			debuggerService.DebugStopped -= new EventHandler(_debuggerService_DebugStopped);
 		}
 		
 		public void debuggerService_IsProcessRunningChanged(object sender, EventArgs e)
@@ -71,14 +92,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public void _debuggerService_DebugStopped(object sender, EventArgs e)
 		{
-			debuggerService.IsProcessRunningChanged -= new EventHandler(debuggerService_IsProcessRunningChanged);
 			this.Close();
 		}
 		
 		private void Inspect_Button_Click(object sender, RoutedEventArgs e)
 		{
 			clearErrorMessage();
-			if (debuggerService.IsProcessRunning)		// TODO will this solve the "Process not paused" exception?
+			if (debuggerService.IsProcessRunning)		// TODO "Process not paused" exception still occurs
 			{
 				showErrorMessage("Cannot inspect when the process is running.");
 			}
@@ -90,9 +110,12 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		void layoutViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "SelectedEnumValue")	// TODO should be special event for enum value change
+			if (e.PropertyName == "SelectedEnumValue")	// TODO special event for enum value change
 			{
-				layoutGraph(this.objectGraph);
+				if (this.objectGraph != null)
+				{
+					layoutGraph(this.objectGraph);
+				}
 			}
 		}
 		
@@ -129,14 +152,22 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		void layoutGraph(ObjectGraph graph)
 		{
-			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Calculating graph layout");
-			
-			Layout.TreeLayouter layouter = new Layout.TreeLayouter();
+			if (this.oldPosGraph != null)
+			{
+				foreach (var oldNode in this.oldPosGraph.Nodes)
+				{
+					// controls from old graph would be garbage collected, reuse them
+					NodeControlCache.Instance.ReturnForReuse(oldNode.NodeVisualControl);
+				}
+			}
 			this.oldPosGraph = this.currentPosGraph;
-			this.currentPosGraph = layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expanded);
+			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Calculating graph layout");
+			this.currentPosGraph = this.layouter.CalculateLayout(graph, layoutViewModel.SelectedEnumValue, this.expanded);
+			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: Graph layout done");
 			registerExpandCollapseEvents(this.currentPosGraph);
 			
 			var graphDiff = new GraphMatcher().MatchGraphs(oldPosGraph, currentPosGraph);
+			ICSharpCode.Core.LoggingService.Debug("Debugger visualizer: starting graph animation");
 			this.graphDrawer.StartAnimation(oldPosGraph, currentPosGraph, graphDiff);
 			//this.graphDrawer.Draw(this.currentPosGraph);
 		}

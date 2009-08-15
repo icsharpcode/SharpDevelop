@@ -282,6 +282,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				if (/*!complexProperty.IsNull && we dont know yet if it's null */expandedNodes.IsExpanded(complexProperty.Expression))
 				{
 					// if expanded, evaluate this property
+					// complexProperty.Evaluate(); // consider
 					Value memberValue = complexProperty.Expression.Evaluate(this.debuggerService.DebuggedProcess);
 					if (memberValue.IsNull)
 					{

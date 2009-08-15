@@ -70,6 +70,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 				string addedSpaces = StringHelper.Repeat(' ', spaces);
 				
 				GridView gv = listView.View as GridView;
+				// hack - autosize Name column
 				gv.Columns[1].Header = "Name" + addedSpaces;
 				
 				//AutoSizeColumns();
@@ -114,6 +115,16 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 		public PositionedGraphNodeControl()
 		{
 			InitializeComponent();
+			Init();
+		}
+		
+		public void Init()
+		{
+			PropertyExpanded = null;
+			PropertyCollapsed = null;
+			ContentNodeExpanded = null;
+			ContentNodeCollapsed = null;
+			//this.listView.ItemsSource = null;
 		}
 		
 		void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)

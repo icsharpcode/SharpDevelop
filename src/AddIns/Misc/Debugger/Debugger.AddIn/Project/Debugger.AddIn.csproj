@@ -124,8 +124,8 @@
     <Compile Include="Src\Visualizers\Commands\ExpressionNodeVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\GridVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\ObjectGraphVisualizerCommand.cs" />
-    <Compile Include="Src\Visualizers\Commands\ShowGridVisualizerCommand.cs" />
-    <Compile Include="Src\Visualizers\Commands\ShowObjectGraphVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\GridVisualizerMenuCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\ObjectGraphVisualizerMenuCommand.cs" />
     <Compile Include="Src\Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Common\IEvaluate.cs" />
     <Compile Include="Src\Visualizers\Common\IListValuesProvider.cs" />
@@ -143,6 +143,7 @@
     <Compile Include="Src\Visualizers\Graph\Layout\ContentNodeEventArgs.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\ContentPropertyNode.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\ContentNode.cs" />
+    <Compile Include="Src\Visualizers\Graph\NodeControlCache.cs" />
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\AbstractNode.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\BaseClassNode.cs" />
@@ -208,9 +209,6 @@
     <Compile Include="Src\TreeModel\Utils.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\CanvasLocationAdapter.cs" />
     <Compile Include="Src\Visualizers\Graph\Drawing\GraphDrawer.cs" />
-    <Compile Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml.cs">
-      <DependentUpon>NodeControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Src\Visualizers\Graph\ExpandedPaths.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\GraphDiff.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\GraphMatcher.cs" />
@@ -323,6 +321,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Visualizers\Graph\Drawing\PlusToggleButton.xaml" />
     <Page Include="Src\Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
     <Page Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
@@ -354,7 +353,6 @@
     <Folder Include="Src\Visualizers\Utils" />
     <Folder Include="Src\Visualizers\GridVisualizer" />
     <Folder Include="Src\Visualizers\PresentationBindings" />
-    <Page Include="Src\Visualizers\Graph\Drawing\NodeControl.xaml" />
     <Page Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml" />
   </ItemGroup>
   <ItemGroup>

@@ -154,7 +154,7 @@
 		<Condition name="SolutionOpen" action="disable">
 			<MenuItem id = "DebuggerObjectGraphVisualizerShowCommand"
 			          label = "Object graph visualizer"
-			          class = "Debugger.AddIn.Visualizers.Graph.ShowObjectGraphVisualizerCommand"/>
+			          class = "Debugger.AddIn.Visualizers.ObjectGraphVisualizerMenuCommand"/>
 		</Condition>
 	</Path>
 
@@ -162,7 +162,7 @@
 		<Condition name="SolutionOpen" action="disable">
 			<MenuItem id = "DebuggerGridVisualizerShowCommand"
 			          label = "Grid visualizer"
-			          class = "Debugger.AddIn.Visualizers.GridVisualizer.ShowGridVisualizerCommand"/>
+			          class = "Debugger.AddIn.Visualizers.GridVisualizerMenuCommand"/>
 		</Condition>
 	</Path>
 

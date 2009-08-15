@@ -16,7 +16,7 @@ namespace Debugger.AddIn.Visualizers
 	/// <summary>
 	/// Command in the tools menu for showing the object graph visualizer.
 	/// </summary>
-	public class ShowObjectGraphVisualizerCommand : AbstractMenuCommand
+	public class ObjectGraphVisualizerMenuCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{

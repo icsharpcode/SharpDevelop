@@ -12,7 +12,7 @@ using System.Linq;
 namespace Debugger.AddIn.Visualizers
 {
 	/// <summary>
-	/// Executes grid visualizer for a node.
+	/// Shows grid visualizer for a node.
 	/// </summary>
 	public class GridVisualizerCommand : ExpressionNodeVisualizerCommand
 	{
