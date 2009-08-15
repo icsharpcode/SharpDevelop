@@ -13,7 +13,7 @@
 			<TextBlock Text="XML Document" Margin="2"/>
 		</HierarchicalDataTemplate>
 		<HierarchicalDataTemplate DataType="{x:Type clr:AXmlElement}" ItemsSource="{Binding AttributesAndElements}">
-			<TextBlock Text="{Binding StartTag.Name}" Margin="2" Initialized="BindElement"/>
+			<TextBlock Text="{Binding Name}" Margin="2" Initialized="BindObject"/>
 		</HierarchicalDataTemplate>
 		<HierarchicalDataTemplate DataType="{x:Type clr:AXmlAttribute}">
 			<StackPanel Orientation="Horizontal" Margin="2">

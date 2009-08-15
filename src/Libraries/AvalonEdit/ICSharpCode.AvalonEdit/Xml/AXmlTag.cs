@@ -50,6 +50,22 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> True if tag starts with "&lt;!" </summary>
 		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
 		
+		#region Helpper methods
+		
+		AXmlAttributeCollection attributes;
+		
+		/// <summary> Gets attributes of the tag (if applicable) </summary>
+		public AXmlAttributeCollection Attributes {
+			get {
+				if (attributes == null) {
+					attributes = new AXmlAttributeCollection(this.Children);
+				}
+				return attributes;
+			}
+		}
+		
+		#endregion
+		
 		internal override void DebugCheckConsistency(bool checkParentPointers)
 		{
 			Assert(OpeningBracket != null, "Null OpeningBracket");

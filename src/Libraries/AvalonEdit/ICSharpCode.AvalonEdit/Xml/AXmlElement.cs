@@ -28,10 +28,41 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <returns> True in wellformed XML </returns>
 		public bool HasEndTag { get; set; }
 		
-		/// <summary>  StartTag of an element.  </summary>
-		public AXmlTag StartTag {
+		/// <inheritdoc/>
+		internal override bool UpdateDataFrom(AXmlObject source)
+		{
+			if (!base.UpdateDataFrom(source)) return false;
+			AXmlElement src = (AXmlElement)source;
+			// Clear the cache for this - quite expensive
+			attributesAndElements = null;
+			if (this.IsProperlyNested != src.IsProperlyNested ||
+				this.HasStartOrEmptyTag != src.HasStartOrEmptyTag ||
+				this.HasEndTag != src.HasEndTag)
+			{
+				OnChanging();
+				this.IsProperlyNested = src.IsProperlyNested;
+				this.HasStartOrEmptyTag = src.HasStartOrEmptyTag;
+				this.HasEndTag = src.HasEndTag;
+				OnChanged();
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		/// <summary> The start or empty-element tag if there is any </summary>
+		internal AXmlTag StartTag {
 			get {
+				Assert(HasStartOrEmptyTag, "Does not have a start tag");
 				return (AXmlTag)this.Children[0];
+			}
+		}
+		
+		/// <summary> The end tag if there is any </summary>
+		internal AXmlTag EndTag {
+			get {
+				Assert(HasEndTag, "Does not have an end tag");
+				return (AXmlTag)this.Children[this.Children.Count - 1];
 			}
 		}
 		
@@ -43,30 +74,38 @@ namespace ICSharpCode.AvalonEdit.Xml
 		
 		#region Helpper methods
 		
-		AXmlAttributeCollection attributes;
-		
 		/// <summary> Gets attributes of the element </summary>
+		/// <remarks>
+		/// Warning: this is a cenvenience method to access the attributes of the start tag.
+		/// However, since the start tag might be moved/replaced, this property might return 
+		/// different values over time.
+		/// </remarks>
 		public AXmlAttributeCollection Attributes {
 			get {
-				if (attributes == null) {
-					attributes = new AXmlAttributeCollection(this.StartTag.Children);
+				if (this.HasStartOrEmptyTag) {
+					return this.StartTag.Attributes;
+				} else {
+					return AXmlAttributeCollection.Empty;
 				}
-				return attributes;
 			}
 		}
 		
 		ObservableCollection<AXmlObject> attributesAndElements;
 		
-		// TODO: Identity
-		/// <summary> Gets both attributes and elements </summary>
+		/// <summary> Gets both attributes and elements.  Expensive, avoid use. </summary>
+		/// <remarks> Warning: the collection will regenerate after each update </remarks>
 		public ObservableCollection<AXmlObject> AttributesAndElements {
 			get {
 				if (attributesAndElements == null) {
-					attributesAndElements = new MergedCollection<AXmlObject, ObservableCollection<AXmlObject>> (
-						// New wrapper with RawObject types
-						new FilteredCollection<AXmlObject, AXmlObjectCollection<AXmlObject>>(this.StartTag.Children, x => x is AXmlAttribute),
-						new FilteredCollection<AXmlObject, AXmlObjectCollection<AXmlObject>>(this.Children, x => x is AXmlElement)
-					);
+					if (this.HasStartOrEmptyTag) {
+						attributesAndElements = new MergedCollection<AXmlObject, ObservableCollection<AXmlObject>> (
+							// New wrapper with RawObject types
+							new FilteredCollection<AXmlObject, AXmlObjectCollection<AXmlObject>>(this.StartTag.Children, x => x is AXmlAttribute),
+							new FilteredCollection<AXmlObject, AXmlObjectCollection<AXmlObject>>(this.Children, x => x is AXmlElement)
+						);
+					} else {
+						attributesAndElements = new FilteredCollection<AXmlObject, AXmlObjectCollection<AXmlObject>>(this.Children, x => x is AXmlElement);
+					}
 				}
 				return attributesAndElements;
 			}
@@ -75,7 +114,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> Name with namespace prefix - exactly as in source </summary>
 		public string Name {
 			get {
-				return this.StartTag.Name;
+				if (this.HasStartOrEmptyTag) {
+					return this.StartTag.Name;
+				} else {
+					return this.EndTag.Name;
+				}
 			}
 		}
 		
@@ -83,7 +126,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <returns> Empty string if not found </returns>
 		public string Prefix {
 			get {
-				return GetNamespacePrefix(this.StartTag.Name);
+				return GetNamespacePrefix(this.Name);
 			}
 		}
 		
@@ -91,7 +134,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <returns> Empty string if not found </returns>
 		public string LocalName {
 			get {
-				return GetLocalName(this.StartTag.Name);
+				return GetLocalName(this.Name);
 			}
 		}
 		
@@ -180,7 +223,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("[{0} '{1}{2}{3}' Attr:{4} Chld:{5} Nest:{6}]", base.ToString(), this.StartTag.OpeningBracket, this.StartTag.Name, this.StartTag.ClosingBracket, this.StartTag.Children.Count, this.Children.Count, this.IsProperlyNested ? "Ok" : "Bad");
+			return string.Format("[{0} '{1}' Attr:{2} Chld:{3} Nest:{4}]", base.ToString(), this.Name, this.HasStartOrEmptyTag ? this.StartTag.Children.Count : 0, this.Children.Count, this.IsProperlyNested ? "Ok" : "Bad");
 		}
 	}
 }

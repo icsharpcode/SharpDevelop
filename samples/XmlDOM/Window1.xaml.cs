@@ -103,18 +103,5 @@ namespace XmlDOM
 				sb.Begin();
 			};
 		}
-		
-		void BindElement(object sender, EventArgs e)
-		{
-			TextBlock textBlock = (TextBlock)sender;
-			AXmlElement node = (AXmlElement)textBlock.DataContext;
-			node.StartTag.Changed += delegate {
-				BindingOperations.GetBindingExpression(textBlock, TextBlock.TextProperty).UpdateTarget();
-				textBlock.Background = new SolidColorBrush(Colors.LightGreen);
-				Storyboard sb = ((Storyboard)this.FindResource("anim"));
-				Storyboard.SetTarget(sb, textBlock);
-				sb.Begin();
-			};
-		}
 	}
 }

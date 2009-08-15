@@ -15,6 +15,12 @@ namespace ICSharpCode.AvalonEdit.Xml
 	/// </summary>
 	public class AXmlAttributeCollection: FilteredCollection<AXmlAttribute, AXmlObjectCollection<AXmlObject>>
 	{
+		/// <summary> Empty unbound collection </summary>
+		public static AXmlAttributeCollection Empty = new AXmlAttributeCollection();
+		
+		/// <summary> Create unbound collection </summary>
+		protected AXmlAttributeCollection() {}
+		
 		/// <summary> Wrap the given collection.  Non-attributes are filtered </summary>
 		public AXmlAttributeCollection(AXmlObjectCollection<AXmlObject> source): base(source) {}
 		

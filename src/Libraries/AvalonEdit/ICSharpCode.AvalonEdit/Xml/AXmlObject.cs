@@ -74,6 +74,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 			if (doc != null) {
 				doc.OnObjectChanging(this);
 			}
+			// As a convenience, also rasie an event for the parent element
+			AXmlTag me = this as AXmlTag;
+			if (me != null && (me.IsStartOrEmptyTag || me.IsEndTag) && me.Parent is AXmlElement) {
+				me.Parent.OnChanging();
+			}
 		}
 		
 		/// <summary> Raises Changed event </summary>
@@ -86,6 +91,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 			AXmlDocument doc = this.Document;
 			if (doc != null) {
 				doc.OnObjectChanged(this);
+			}
+			// As a convenience, also rasie an event for the parent element
+			AXmlTag me = this as AXmlTag;
+			if (me != null && (me.IsStartOrEmptyTag || me.IsEndTag) && me.Parent is AXmlElement) {
+				me.Parent.OnChanged();
 			}
 		}
 		

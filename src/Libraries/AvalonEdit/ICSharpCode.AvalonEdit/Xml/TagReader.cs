@@ -115,7 +115,12 @@ namespace ICSharpCode.AvalonEdit.Xml
 						continue;  // End of file might be next
 					}
 					if (TryPeek('<')) break;
-					if (TryPeek('>') || TryPeek('/') || TryPeek('?')) break;  // End tag
+					string endBr;
+					int endBrStart = this.CurrentLocation; // Just peek
+					if (TryReadClosingBracket(out endBr)) {  // End tag
+						GoBack(endBrStart);
+						break;
+					}
 					
 					// We have "=\'\"" or name - read attribute
 					tag.AddChild(ReadAttribulte());
@@ -383,7 +388,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 					if (TryPeek('"') || TryPeek('\'')) return;
 				}
 				// Opening/closing tag
-				if (TryPeekAnyOf('<', '/', '>')) {
+				string endBr;
+				if (TryPeek('<') || TryReadClosingBracket(out endBr)) {
 					GoBack(start);
 					return;
 				}

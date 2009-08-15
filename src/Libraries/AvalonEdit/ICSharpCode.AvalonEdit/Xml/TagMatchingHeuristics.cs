@@ -104,7 +104,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 			
 			// Read content and end tag
-			if (element.StartTag.IsStartTag || startTag == StartTagPlaceholder) {
+			if (startTag == StartTagPlaceholder || // Check first in case the start tag is null
+			    element.StartTag.IsStartTag)
+			{
 				while(true) {
 					AXmlTag currTag = objStream.Current as AXmlTag; // Peek
 					if (currTag == EndTagPlaceholder) {
@@ -115,7 +117,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 						element.IsProperlyNested = false;
 						break;
 					} else if (currTag != null && currTag.IsEndTag) {
-						if (currTag.Name != element.StartTag.Name) {
+						if (element.HasStartOrEmptyTag && currTag.Name != element.StartTag.Name) {
 							TagReader.OnSyntaxError(element, currTag.StartOffset + 2, currTag.StartOffset + 2 + currTag.Name.Length,
 							                        "Expected '{0}'.  End tag must have same name as start tag.", element.StartTag.Name);
 						}
@@ -138,6 +140,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 			
 			element.StartOffset = element.FirstChild.StartOffset;
 			element.EndOffset = element.LastChild.EndOffset;
+			
+			AXmlParser.Assert(element.HasStartOrEmptyTag || element.HasEndTag, "Must have at least start or end tag");
 			
 			AXmlParser.Log("Constructed {0}", element);
 			trackedSegments.AddParsedObject(element, null); // Need all elements in cache for offset tracking

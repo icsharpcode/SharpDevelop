@@ -23,6 +23,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 		Predicate<object> condition;
 		List<int> srcPtrs = new List<int>(); // Index to the original collection
 		
+		/// <summary> Create unbound collection </summary>
+		protected FilteredCollection() {}
+		
 		/// <summary> Wrap the given collection.  Items of type other then T are filtered </summary>
 		public FilteredCollection(C source) : this (source, x => true) { }
 		
