@@ -111,6 +111,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 			return markers[index];
 		}
 		
+		static readonly Pen grayPen = MakeFrozenPen(Brushes.Gray);
+		static readonly Pen blackPen = MakeFrozenPen(Brushes.Black);
+		
+		static Pen MakeFrozenPen(Brush brush)
+		{
+			Pen pen = new Pen(brush, 1);
+			pen.Freeze();
+			return pen;
+		}
+		
 		/// <inheritdoc/>
 		protected override void OnRender(DrawingContext drawingContext)
 		{
@@ -119,18 +129,25 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (TextView.VisualLines.Count == 0 || FoldingManager == null)
 				return;
 			
-			Pen grayPen = new Pen(Brushes.Gray, 1);
-			grayPen.Freeze();
-			Pen blackPen = new Pen(Brushes.Black, 1);
-			blackPen.Freeze();
-			
 			var allTextLines = TextView.VisualLines.SelectMany(vl => vl.TextLines).ToList();
 			Pen[] colors = new Pen[allTextLines.Count + 1];
 			Pen[] endMarker = new Pen[allTextLines.Count];
 			
+			CalculateFoldLinesForFoldingsActiveAtStart(allTextLines, colors, endMarker);
+			CalculateFoldLinesForMarkers(allTextLines, colors, endMarker);
+			DrawFoldLines(drawingContext, colors, endMarker);
+			
+			base.OnRender(drawingContext);
+		}
+
+		/// <summary>
+		/// Calculates fold lines for all folding sections that start in front of the current view
+		/// and run into the current view.
+		/// </summary>
+		void CalculateFoldLinesForFoldingsActiveAtStart(List<TextLine> allTextLines, Pen[] colors, Pen[] endMarker)
+		{
 			int viewStartOffset = TextView.VisualLines[0].FirstDocumentLine.Offset;
-			DocumentLine lastVisibleLine = TextView.VisualLines.Last().LastDocumentLine;
-			int viewEndOffset = lastVisibleLine.Offset + lastVisibleLine.Length;
+			int viewEndOffset = TextView.VisualLines.Last().LastDocumentLine.EndOffset;
 			var foldings = FoldingManager.GetFoldingsContaining(viewStartOffset);
 			int maxEndOffset = 0;
 			foreach (FoldingSection fs in foldings) {
@@ -157,7 +174,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 					}
 				}
 			}
-			
+		}
+		
+		/// <summary>
+		/// Calculates fold lines for all folding sections that start inside the current view
+		/// </summary>
+		void CalculateFoldLinesForMarkers(List<TextLine> allTextLines, Pen[] colors, Pen[] endMarker)
+		{
 			foreach (FoldingMarginMarker marker in markers) {
 				int end = marker.FoldingSection.EndOffset;
 				int endTextLineNr = GetTextLineIndexFromOffset(allTextLines, end);
@@ -177,7 +200,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 					}
 				}
 			}
-			
+		}
+		
+		/// <summary>
+		/// Draws the lines for the folding sections (vertical line with 'color', horizontal lines with 'endMarker')
+		/// Each entry in the input arrays corresponds to one TextLine.
+		/// </summary>
+		void DrawFoldLines(DrawingContext drawingContext, Pen[] colors, Pen[] endMarker)
+		{
 			double markerXPos = Math.Round(RenderSize.Width / 2);
 			double startY = 0;
 			Pen currentPen = colors[0];
@@ -186,16 +216,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 				foreach (TextLine tl in vl.TextLines) {
 					if (endMarker[tlNumber] != null) {
 						double visualPos = GetVisualPos(vl, tl);
-						drawingContext.DrawLine(endMarker[tlNumber],
-						                        new Point(markerXPos, visualPos),
-						                        new Point(RenderSize.Width, visualPos));
+						drawingContext.DrawLine(endMarker[tlNumber], new Point(markerXPos, visualPos), new Point(RenderSize.Width, visualPos));
 					}
 					if (colors[tlNumber + 1] != currentPen) {
 						double visualPos = GetVisualPos(vl, tl);
 						if (currentPen != null) {
-							drawingContext.DrawLine(currentPen,
-							                        new Point(markerXPos, startY),
-							                        new Point(markerXPos, visualPos));
+							drawingContext.DrawLine(currentPen, new Point(markerXPos, startY), new Point(markerXPos, visualPos));
 						}
 						currentPen = colors[tlNumber + 1];
 						startY = visualPos;
@@ -204,12 +230,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 				}
 			}
 			if (currentPen != null) {
-				drawingContext.DrawLine(currentPen,
-				                        new Point(markerXPos, startY),
-				                        new Point(markerXPos, RenderSize.Height));
+				drawingContext.DrawLine(currentPen, new Point(markerXPos, startY), new Point(markerXPos, RenderSize.Height));
 			}
-			
-			base.OnRender(drawingContext);
 		}
 		
 		double GetVisualPos(VisualLine vl, TextLine tl)

@@ -12,6 +12,33 @@ using System.Windows.Documents;
 namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
+	/// Specifies the mode for getting the next caret position.
+	/// </summary>
+	public enum CaretPositioningMode
+	{
+		/// <summary>
+		/// Normal positioning (stop at every caret position)
+		/// </summary>
+		Normal,
+		/// <summary>
+		/// Stop only on word borders.
+		/// </summary>
+		WordBorder,
+		/// <summary>
+		/// Stop only at the beginning of words. This is used for Ctrl+Left/Ctrl+Right.
+		/// </summary>
+		WordStart,
+		/// <summary>
+		/// Stop only at the beginning of words, and anywhere in the middle of symbols.
+		/// </summary>
+		WordStartOrSymbol,
+		/// <summary>
+		/// Stop only on word borders, and anywhere in the middle of symbols.
+		/// </summary>
+		WordBorderOrSymbol
+	}
+	
+	/// <summary>
 	/// Static helper methods for working with text.
 	/// </summary>
 	public static class TextUtilities

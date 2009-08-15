@@ -19,6 +19,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 	/// <summary>
 	/// Name-value pair in a tag
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
 	public class AXmlAttribute: AXmlObject
 	{
 		/// <summary> Name with namespace prefix - exactly as in source file </summary>

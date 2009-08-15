@@ -11,6 +11,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
 
+using ICSharpCode.AvalonEdit.Document;
+
 namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>

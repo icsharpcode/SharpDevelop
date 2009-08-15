@@ -77,7 +77,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AvalonEditCommands.cs" />
-    <Compile Include="CaretPositioningMode.cs" />
     <Compile Include="CodeCompletion\CompletionListBox.cs" />
     <Compile Include="CodeCompletion\CompletionWindowBase.cs" />
     <Compile Include="CodeCompletion\CompletionList.cs" />

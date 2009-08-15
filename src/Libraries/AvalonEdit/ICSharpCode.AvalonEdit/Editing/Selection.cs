@@ -130,7 +130,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			DocumentHighlighter highlighter = textArea.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
 			StringBuilder html = new StringBuilder();
 			bool first = true;
-			foreach (ISegment selectedSegment in textArea.Selection.Segments) {
+			foreach (ISegment selectedSegment in this.Segments) {
 				if (first)
 					first = false;
 				else

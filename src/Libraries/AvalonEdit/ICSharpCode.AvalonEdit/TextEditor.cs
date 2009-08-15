@@ -604,8 +604,10 @@ namespace ICSharpCode.AvalonEdit
 		public string SelectedText {
 			get {
 				TextArea textArea = this.TextArea;
-				if (textArea != null && textArea.Document != null)
-					return textArea.Selection.GetText(textArea.Document);
+				// We'll get the text from the whole surrounding segment.
+				// This is done to ensure that SelectedText.Length == SelectionLength.
+				if (textArea != null && textArea.Document != null && !textArea.Selection.IsEmpty)
+					return textArea.Document.GetText(textArea.Selection.SurroundingSegment);
 				else
 					return string.Empty;
 			}
@@ -614,7 +616,11 @@ namespace ICSharpCode.AvalonEdit
 					throw new ArgumentNullException("value");
 				TextArea textArea = this.TextArea;
 				if (textArea != null && textArea.Document != null) {
-					textArea.ReplaceSelectionWithText(value);
+					int offset = this.SelectionStart;
+					int length = this.SelectionLength;
+					textArea.Document.Replace(offset, length, value);
+					// keep inserted text selected
+					textArea.Selection = new SimpleSelection(offset, offset + value.Length);
 				}
 			}
 		}
