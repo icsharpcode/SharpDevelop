@@ -9,6 +9,7 @@ using System;
 using System.CodeDom;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -65,7 +66,11 @@ namespace PythonBinding.Tests.Designer
 					MockTextEditorProperties properties = new MockTextEditorProperties();
 					properties.ConvertTabsToSpaces = true;
 					properties.IndentationSize = 4;
-					PythonDesignerGenerator.Merge(form, document, compilationUnit, properties, null);
+					
+					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+					using (serializationManager.CreateSession()) {
+						PythonDesignerGenerator.Merge(host, document, compilationUnit, properties, serializationManager);
+					}
 				}
 			}
 		}
@@ -82,7 +87,6 @@ namespace PythonBinding.Tests.Designer
 									"    def InitializeComponent(self):\r\n" +
 									"        resources = System.Resources.ResourceManager(\"RootNamespace.MainForm\", System.Reflection.Assembly.GetEntryAssembly())\r\n" +
 									"        self._pictureBox1 = System.Windows.Forms.PictureBox()\r\n" +
-									"        self._pictureBox1.BeginInit()\r\n" +
 									"        self.SuspendLayout()\r\n" +
 									"        # \r\n" +
 									"        # pictureBox1\r\n" +
@@ -99,9 +103,7 @@ namespace PythonBinding.Tests.Designer
 									"        self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
 									"        self.Controls.Add(self._pictureBox1)\r\n" +
 									"        self.Name = \"MainForm\"\r\n" +
-									"        self._pictureBox1.EndInit()\r\n" +
-									"        self.ResumeLayout(False)\r\n" +
-									"        self.PerformLayout()\r\n";
+									"        self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, document.TextContent, document.TextContent);
 		}

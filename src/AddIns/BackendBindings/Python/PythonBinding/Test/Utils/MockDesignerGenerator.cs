@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -27,8 +28,8 @@ namespace PythonBinding.Tests.Utils
 	public class MockDesignerGenerator : IPythonDesignerGenerator
 	{
 		FormsDesignerViewContent viewContent;
-		IComponent mergeChangesRootComponent;
-		IResourceService mergeChangesResourceService;
+		IDesignerHost mergeChangesHost;
+		IDesignerSerializationManager mergeChangesSerializationManager;
 		
 		public MockDesignerGenerator()
 		{
@@ -62,18 +63,18 @@ namespace PythonBinding.Tests.Utils
 		{
 		}
 		
-		public void MergeRootComponentChanges(IComponent component, IResourceService resourceService)
+		public void MergeRootComponentChanges(IDesignerHost host, IDesignerSerializationManager serializationManager)
 		{
-			mergeChangesRootComponent = component;
-			mergeChangesResourceService = resourceService;
+			mergeChangesHost = host;
+			mergeChangesSerializationManager = serializationManager;
 		}
 		
-		public IComponent MergeChangesRootComponent { 
-			get { return mergeChangesRootComponent; } 
+		public IDesignerHost MergeChangesHost { 
+			get { return mergeChangesHost; } 
 		}
 		
-		public IResourceService MergeChangesResourceService {
-			get { return mergeChangesResourceService; }
+		public IDesignerSerializationManager MergeChangesSerializationManager {
+			get { return mergeChangesSerializationManager; }
 		}
 		
 		public bool InsertComponentEvent(IComponent component, System.ComponentModel.EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)

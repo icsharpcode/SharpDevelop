@@ -9,6 +9,7 @@ using System;
 using System.CodeDom;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -65,7 +66,10 @@ namespace PythonBinding.Tests.Designer
 					DerivedPythonDesignerGenerator generator = new DerivedPythonDesignerGenerator(textEditorProperties);
 					generator.ParseInfoToReturnFromParseFileMethod = parseInfo;
 					generator.Attach(viewContent);
-					generator.MergeRootComponentChanges(form, new MockResourceService());
+					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+					using (serializationManager.CreateSession()) {
+						generator.MergeRootComponentChanges(host, serializationManager);
+					}
 				}
 			}
 		}
@@ -84,8 +88,7 @@ namespace PythonBinding.Tests.Designer
 								"  # \r\n" +
 								"  self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"  self.Name = \"MainForm\"\r\n" +
-								"  self.ResumeLayout(False)\r\n" +
-								"  self.PerformLayout()\r\n";
+								"  self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, document.TextContent);
 		}

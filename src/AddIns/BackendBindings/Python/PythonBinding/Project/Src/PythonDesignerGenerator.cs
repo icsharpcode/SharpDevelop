@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Reflection;
 using System.Text;
@@ -34,7 +35,7 @@ namespace ICSharpCode.PythonBinding
 		/// Updates the python form or user control's InitializeComponent method with any 
 		/// changes to the designed form or user control.
 		/// </summary>
-		void MergeRootComponentChanges(IComponent component, IResourceService resourceService);
+		void MergeRootComponentChanges(IDesignerHost host, IDesignerSerializationManager serializationManager);
 	}
 	
 	/// <summary>
@@ -80,25 +81,25 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Updates the InitializeComponent method's body with the generated code.
 		/// </summary>
-		public void MergeRootComponentChanges(IComponent component, IResourceService resourceService)
+		public void MergeRootComponentChanges(IDesignerHost host, IDesignerSerializationManager serializationManager)
 		{
 			ParseInformation parseInfo = ParseFile();
-			Merge(component, ViewContent.DesignerCodeFileDocument, parseInfo.BestCompilationUnit, textEditorProperties, resourceService);
+			Merge(host, ViewContent.DesignerCodeFileDocument, parseInfo.BestCompilationUnit, textEditorProperties, serializationManager);
 		}
 		
 		/// <summary>
 		/// Merges the generated code into the specified document.
 		/// </summary>
-		/// <param name="component">The root component in the designer host.</param>
+		/// <param name="component">The designer host.</param>
 		/// <param name="document">The document that the generated code will be merged into.</param>
 		/// <param name="parseInfo">The current compilation unit for the <paramref name="document"/>.</param>
-		public static void Merge(IComponent component, IDocument document, ICompilationUnit compilationUnit, ITextEditorProperties textEditorProperties, IResourceService resourceService)
+		public static void Merge(IDesignerHost host, IDocument document, ICompilationUnit compilationUnit, ITextEditorProperties textEditorProperties, IDesignerSerializationManager serializationManager)
 		{
 			// Get the document's initialize components method.
 			IMethod method = GetInitializeComponents(compilationUnit);
 			
 			// Generate the python source code.
-			PythonControl pythonControl = new PythonControl(NRefactoryToPythonConverter.GetIndentString(textEditorProperties), resourceService);
+			PythonCodeDomSerializer serializer = new PythonCodeDomSerializer(NRefactoryToPythonConverter.GetIndentString(textEditorProperties));
 			int indent = method.Region.BeginColumn;
 			if (textEditorProperties.ConvertTabsToSpaces) {
 				indent = (indent / textEditorProperties.IndentationSize);
@@ -107,7 +108,7 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			string rootNamespace = GetProjectRootNamespace(compilationUnit);
-			string methodBody = pythonControl.GenerateInitializeComponentMethodBody(component as Control, rootNamespace, indent);
+			string methodBody = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, rootNamespace, indent);
 			
 			// Merge the code.
 			DomRegion methodRegion = GetBodyRegionInDocument(method);

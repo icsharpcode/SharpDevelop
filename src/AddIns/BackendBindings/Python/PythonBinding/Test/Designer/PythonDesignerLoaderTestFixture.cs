@@ -40,6 +40,7 @@ namespace PythonBinding.Tests.Designer
 		Form designedForm;
 		MockEventBindingService mockEventBindingService;
 		MockResourceService mockResourceService;
+		DesignerSerializationManager serializationManager;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -64,6 +65,8 @@ namespace PythonBinding.Tests.Designer
 			mockEventBindingService = new MockEventBindingService();
 			mockDesignerLoaderHost.AddService(typeof(IEventBindingService), mockEventBindingService);
 			
+			serializationManager = new DesignerSerializationManager(mockDesignerLoaderHost);
+			
 			System.Console.WriteLine("Before BeginLoad");
 			loader.BeginLoad(mockDesignerLoaderHost);
 			System.Console.WriteLine("After BeginLoad");
@@ -72,7 +75,7 @@ namespace PythonBinding.Tests.Designer
 			designedForm = new Form();
 			designedForm.Name = "NewMainForm";
 			mockDesignerLoaderHost.RootComponent = designedForm;	
-			loader.CallPerformFlush();
+			loader.CallPerformFlush(serializationManager);
 		}
 		
 		[TestFixtureTearDown]
@@ -127,9 +130,9 @@ namespace PythonBinding.Tests.Designer
 		}
 		
 		[Test]
-		public void PerformFlushUsesDesignedForm()
+		public void PerformFlushUsesDesignerHost()
 		{
-			Assert.AreEqual(designedForm, generator.MergeChangesRootComponent);
+			Assert.AreEqual(mockDesignerLoaderHost, generator.MergeChangesHost);
 		}
 		
 		[Test]
@@ -148,9 +151,9 @@ namespace PythonBinding.Tests.Designer
 		}
 		
 		[Test]
-		public void ResourceServicePassedToMergeRootComponentMethod()
+		public void SerializationManagerPassedToMergeRootComponentMethod()
 		{
-			Assert.IsTrue(Object.ReferenceEquals(mockResourceService, generator.MergeChangesResourceService));
+			Assert.IsTrue(Object.ReferenceEquals(serializationManager, generator.MergeChangesSerializationManager));
 		}
 				
 		/// <summary>

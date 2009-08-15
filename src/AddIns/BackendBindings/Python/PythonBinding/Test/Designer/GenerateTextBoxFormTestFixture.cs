@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -20,13 +21,6 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateTextBoxFormTestFixture
 	{
 		string generatedPythonCode;
-		string textBoxPropertyCode;
-		string textBoxSuspendLayoutCode;
-		string textBoxResumeLayoutCode;
-		string textBoxCreationCode;
-		string textBoxPropertyOwnerName;
-		string suspendLayoutCode;
-		string resumeLayoutCode;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -47,52 +41,18 @@ namespace PythonBinding.Tests.Designer
 				
 				form.Controls.Add(textBox);
 				
-				string indentString = "    ";
-				PythonControl pythonForm = new PythonControl(indentString);
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
-				
-				PythonCodeBuilder codeBuilder = new PythonCodeBuilder();
-				codeBuilder.IndentString = indentString;
-				codeBuilder.IncreaseIndent();
-				PythonDesignerComponent designerComponent = new PythonDesignerComponent(textBox);
-				designerComponent.AppendComponent(codeBuilder);
-				textBoxPropertyCode = codeBuilder.ToString();
-				
-				codeBuilder = new PythonCodeBuilder();
-				codeBuilder.IndentString = indentString;
-				designerComponent.AppendCreateInstance(codeBuilder);
-				textBoxCreationCode = codeBuilder.ToString();				
-				
-				codeBuilder = new PythonCodeBuilder();
-				codeBuilder.IndentString = indentString;
-				designerComponent.AppendSuspendLayout(codeBuilder);
-				textBoxSuspendLayoutCode = codeBuilder.ToString();
-				
-				codeBuilder = new PythonCodeBuilder();
-				codeBuilder.IndentString = indentString;
-				designerComponent.AppendResumeLayout(codeBuilder);
-				textBoxResumeLayoutCode = codeBuilder.ToString();	
-				
-				textBoxPropertyOwnerName = designerComponent.GetPropertyOwnerName();
-				
-				PythonDesignerRootComponent designerRootComponent = new PythonDesignerRootComponent(form);
-				codeBuilder = new PythonCodeBuilder();
-				codeBuilder.IndentString = indentString;
-				designerRootComponent.AppendSuspendLayout(codeBuilder);
-				suspendLayoutCode = codeBuilder.ToString();
-				
-				codeBuilder = new PythonCodeBuilder();
-				codeBuilder.IndentString = indentString;
-				designerRootComponent.AppendResumeLayout(codeBuilder);
-				resumeLayoutCode = codeBuilder.ToString();
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._textBox1 = System.Windows.Forms.TextBox()\r\n" +
+			string expectedCode = "    self._textBox1 = System.Windows.Forms.TextBox()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # textBox1\r\n" +
@@ -111,58 +71,6 @@ namespace PythonBinding.Tests.Designer
 								"    self.PerformLayout()\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode);
-		}
-		
-		[Test]
-		public void TextBoxGeneratedCode()
-		{
-			string expectedCode = "    # \r\n" +
-								"    # textBox1\r\n" +
-								"    # \r\n" +
-								"    self._textBox1.Location = System.Drawing.Point(10, 10)\r\n" +
-								"    self._textBox1.Name = \"textBox1\"\r\n" +
-								"    self._textBox1.Size = System.Drawing.Size(110, 20)\r\n" +
-								"    self._textBox1.TabIndex = 1\r\n";
-			Assert.AreEqual(expectedCode, textBoxPropertyCode);
-		}
-		
-		[Test]
-		public void SuspendLayoutCodeNotGenerated()
-		{
-			Assert.AreEqual(String.Empty, textBoxSuspendLayoutCode);
-		}
-		
-		[Test]
-		public void ResumeLayoutCodeNotGenerated()
-		{
-			Assert.AreEqual(String.Empty, textBoxResumeLayoutCode);
-		}
-		
-		[Test]
-		public void TextBoxCreationCode()
-		{
-			string expectedCode = "self._textBox1 = System.Windows.Forms.TextBox()\r\n";
-			Assert.AreEqual(expectedCode, textBoxCreationCode);
-		}
-		
-		[Test]
-		public void TextBoxPropertyOwnerName()
-		{
-			Assert.AreEqual("self._textBox1", textBoxPropertyOwnerName);
-		}
-		
-		[Test]
-		public void SuspendLayoutCode()
-		{
-			Assert.AreEqual("self.SuspendLayout()\r\n", suspendLayoutCode);
-		}
-		
-		[Test]
-		public void ResumeLayoutCode()
-		{
-			string expectedCode = "self.ResumeLayout(False)\r\n" +
-								"self.PerformLayout()\r\n";
-			Assert.AreEqual(expectedCode, resumeLayoutCode);
-		}				
+		}		
 	}
 }

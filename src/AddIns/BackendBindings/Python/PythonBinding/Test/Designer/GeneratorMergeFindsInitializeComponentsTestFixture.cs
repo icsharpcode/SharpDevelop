@@ -10,6 +10,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -60,8 +61,11 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 				namePropertyDescriptor.SetValue(form, "MainForm");
 				
-				generator.MergeRootComponentChanges(form, new MockResourceService());
-				generator.Detach();
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {
+					generator.MergeRootComponentChanges(host, serializationManager);
+					generator.Detach();
+				}
 			}
 		}
 					
@@ -104,8 +108,7 @@ namespace PythonBinding.Tests.Designer
 					"\t\t# \r\n" +
 					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
 					"\t\tself.Name = \"MainForm\"\r\n" +
-					"\t\tself.ResumeLayout(False)\r\n" +
-					"\t\tself.PerformLayout()\r\n";
+					"\t\tself.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedText, viewContent.DesignerCodeFileContent);
 		}

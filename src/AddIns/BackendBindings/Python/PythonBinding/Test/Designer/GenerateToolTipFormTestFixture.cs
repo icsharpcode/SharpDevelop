@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -37,17 +38,18 @@ namespace PythonBinding.Tests.Designer
 				ToolTip toolTip = (ToolTip)host.CreateComponent(typeof(ToolTip), "toolTip1");
 				toolTip.SetToolTip(form, "test");
 				
-				string indentString = "    ";
-				PythonControl pythonForm = new PythonControl(indentString);
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._components = System.ComponentModel.Container()\r\n" +
+			string expectedCode = "    self._components = System.ComponentModel.Container()\r\n" +
 								"    self._toolTip1 = System.Windows.Forms.ToolTip(self._components)\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
@@ -56,8 +58,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
 								"    self._toolTip1.SetToolTip(self, \"test\")\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}

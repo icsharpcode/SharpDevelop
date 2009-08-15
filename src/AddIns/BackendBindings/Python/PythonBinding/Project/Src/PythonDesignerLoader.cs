@@ -149,7 +149,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		protected override void PerformFlush(IDesignerSerializationManager serializationManager)
 		{
-			generator.MergeRootComponentChanges(LoaderHost.RootComponent, LoaderHost.GetService(typeof(IResourceService)) as IResourceService);
+			generator.MergeRootComponentChanges(LoaderHost, serializationManager);
 		}
 		
 		protected override void PerformLoad(IDesignerSerializationManager serializationManager)

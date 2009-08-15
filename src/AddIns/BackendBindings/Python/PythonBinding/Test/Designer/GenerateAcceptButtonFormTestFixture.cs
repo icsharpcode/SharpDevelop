@@ -22,8 +22,6 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateAcceptButtonFormTestFixture
 	{
 		string generatedPythonCode;
-		PythonDesignerComponent[] formChildComponents;
-		PythonDesignerComponent[] buttonChildComponents;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -48,57 +46,37 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 				namePropertyDescriptor.SetValue(form, "MainForm");
 				
-				PythonControl pythonForm = new PythonControl("    ");
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
-				
-				formChildComponents = PythonDesignerComponentFactory.CreateDesignerComponent(form).GetChildComponents();
-				buttonChildComponents = PythonDesignerComponentFactory.CreateDesignerComponent(button).GetChildComponents();
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._button1 = System.Windows.Forms.Button()\r\n" +
-								"    self.SuspendLayout()\r\n" +
-								"    # \r\n" +
-								"    # button1\r\n" +
-								"    # \r\n" +
-								"    self._button1.Location = System.Drawing.Point(0, 0)\r\n" +
-								"    self._button1.Name = \"button1\"\r\n" +
-								"    self._button1.Size = System.Drawing.Size(10, 10)\r\n" +
-								"    self._button1.TabIndex = 0\r\n" +
-								"    self._button1.Text = \"button1\"\r\n" +
-								"    # \r\n" +
-								"    # MainForm\r\n" +
-								"    # \r\n" +
-								"    self.AcceptButton = self._button1\r\n" +
-								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
-								"    self.Controls.Add(self._button1)\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+			string expectedCode = "self._button1 = System.Windows.Forms.Button()\r\n" +
+								"self.SuspendLayout()\r\n" +
+								"# \r\n" +
+								"# button1\r\n" +
+								"# \r\n" +
+								"self._button1.Location = System.Drawing.Point(0, 0)\r\n" +
+								"self._button1.Name = \"button1\"\r\n" +
+								"self._button1.Size = System.Drawing.Size(10, 10)\r\n" +
+								"self._button1.TabIndex = 0\r\n" +
+								"self._button1.Text = \"button1\"\r\n" +
+								"# \r\n" +
+								"# MainForm\r\n" +
+								"# \r\n" +
+								"self.AcceptButton = self._button1\r\n" +
+								"self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
+								"self.Controls.Add(self._button1)\r\n" +
+								"self.Name = \"MainForm\"\r\n" +
+								"self.ResumeLayout(False)\r\n";
 			
-			Assert.AreEqual(expectedCode, generatedPythonCode);
-		}
-		
-		[Test]
-		public void FormHasOneChildComponent()
-		{
-			Assert.AreEqual(1, formChildComponents.Length);
-		}
-		
-		[Test]
-		public void FormChildComponentIsButton()
-		{
-			Assert.AreEqual(typeof(Button), formChildComponents[0].GetComponentType());
-		}
-		
-		[Test]
-		public void ButtonHasNoChildComponents()
-		{
-			Assert.AreEqual(0, buttonChildComponents.Length);
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
 	}
 }

@@ -11,6 +11,8 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
+using System.Globalization;
+using System.Reflection;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
@@ -33,6 +35,8 @@ namespace PythonBinding.Tests.Designer
 			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
 				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
 				IEventBindingService eventBindingService = new MockEventBindingService(host);
+				host.AddService(typeof(IEventBindingService), eventBindingService);
+				
 				Form form = (Form)host.RootComponent;
 				form.ClientSize = new Size(200, 300);
 
@@ -46,33 +50,33 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor loadEventProperty = eventBindingService.GetEventProperty(loadEvent);
 				loadEventProperty.SetValue(form, "MainFormLoad");
 				
-				// Add a second event handler method to check that the events are sorted alphabetically
-				// before the InitializeComponent method is generated.
+				// Add a second event handler method.
 				EventDescriptor closedEvent = events.Find("FormClosed", false);
 				PropertyDescriptor closedEventProperty = eventBindingService.GetEventProperty(closedEvent);
 				closedEventProperty.SetValue(form, "MainFormClosed");
-				
-				PythonControl pythonForm = new PythonControl("    ");
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
+
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self.SuspendLayout()\r\n" +
+			string expectedCode = "    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.FormClosed += self.MainFormClosed\r\n" +
 								"    self.Load += self.MainFormLoad\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.FormClosed += self.MainFormClosed\r\n" +
+								"    self.ResumeLayout(False)\r\n";
 			
-			Assert.AreEqual(expectedCode, generatedPythonCode);
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
 	}
 }

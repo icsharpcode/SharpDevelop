@@ -9,6 +9,7 @@ using System;
 using System.CodeDom;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -56,7 +57,10 @@ namespace PythonBinding.Tests.Designer
 					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 					namePropertyDescriptor.SetValue(form, "MainForm");
 					
-					PythonDesignerGenerator.Merge(form, document, compilationUnit, new MockTextEditorProperties(), resourceService);
+					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+					using (serializationManager.CreateSession()) {
+						PythonDesignerGenerator.Merge(host, document, compilationUnit, new MockTextEditorProperties(), serializationManager);
+					}
 				}
 			}
 		}
@@ -66,12 +70,6 @@ namespace PythonBinding.Tests.Designer
 		{
 			string expectedText = GetTextEditorCode().Replace(GetTextEditorInitializeComponentMethod(), GetGeneratedInitializeComponentMethod());
 			Assert.AreEqual(expectedText, document.TextContent);
-		}
-		
-		[Test]
-		public void ResourceWriterDisposed()
-		{
-			Assert.IsTrue(resourceWriter.IsDisposed);
 		}
 
 		string GetGeneratedCode()
@@ -94,8 +92,7 @@ namespace PythonBinding.Tests.Designer
 					"\t\t# \r\n" + 
 					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
 					"\t\tself.Name = \"MainForm\"\r\n" +
-					"\t\tself.ResumeLayout(False)\r\n" +
-					"\t\tself.PerformLayout()\r\n";						
+					"\t\tself.ResumeLayout(False)\r\n";
 		}
 		
 		string GetTextEditorCode()

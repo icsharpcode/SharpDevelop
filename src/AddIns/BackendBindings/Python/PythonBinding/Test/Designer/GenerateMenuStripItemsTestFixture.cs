@@ -75,18 +75,18 @@ namespace PythonBinding.Tests.Designer
 				exitMenuItemSize = exitMenuItem.Size;
 				editMenuItemSize = editMenuItem.Size;
 
-				PythonDesignerRootComponent rootComponent = new PythonDesignerRootComponent(form);
-				
-				PythonControl pythonForm = new PythonControl("    ");
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._menuStrip1 = System.Windows.Forms.MenuStrip()\r\n" +
+			string expectedCode = "    self._menuStrip1 = System.Windows.Forms.MenuStrip()\r\n" +
 								"    self._fileToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()\r\n" +
 								"    self._openToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()\r\n" +
 								"    self._exitToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem()\r\n" +

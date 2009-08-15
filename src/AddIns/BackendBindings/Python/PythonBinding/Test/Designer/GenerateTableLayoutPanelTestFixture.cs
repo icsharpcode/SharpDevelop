@@ -50,16 +50,18 @@ namespace PythonBinding.Tests.Designer
 								
 				form.Controls.Add(tableLayoutPanel1);
 				
-				PythonControl pythonControl = new PythonControl("    ");
-				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form);
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._tableLayoutPanel1 = System.Windows.Forms.TableLayoutPanel()\r\n" +
+			string expectedCode = "    self._tableLayoutPanel1 = System.Windows.Forms.TableLayoutPanel()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # tableLayoutPanel1\r\n" +
@@ -80,8 +82,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
 								"    self.Controls.Add(self._tableLayoutPanel1)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}		

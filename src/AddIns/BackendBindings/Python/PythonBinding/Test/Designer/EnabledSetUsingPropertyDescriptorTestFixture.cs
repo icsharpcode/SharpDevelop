@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -43,25 +44,25 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor enabledPropertyDescriptor = descriptors.Find("Enabled", false);
 				enabledPropertyDescriptor.SetValue(form, false);
 				
-				string indentString = "    ";
-				PythonControl pythonForm = new PythonControl(indentString);
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self.SuspendLayout()\r\n" +
-								"    # \r\n" +
-								"    # MainForm\r\n" +
-								"    # \r\n" +
-								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
-								"    self.Enabled = False\r\n" +
-								"    self.Name = \"MainForm\"\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+			string expectedCode = "self.SuspendLayout()\r\n" +
+								"# \r\n" +
+								"# MainForm\r\n" +
+								"# \r\n" +
+								"self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
+								"self.Enabled = False\r\n" +
+								"self.Name = \"MainForm\"\r\n" +
+								"self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode);
 		}

@@ -38,6 +38,8 @@ namespace PythonBinding.Tests.Designer
 			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
 				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
 				IEventBindingService eventBindingService = new MockEventBindingService(host);
+				host.AddService(typeof(IResourceService), componentCreator);
+				
 				Form form = (Form)host.RootComponent;
 				form.ClientSize = new Size(200, 300);
 
@@ -52,8 +54,11 @@ namespace PythonBinding.Tests.Designer
 				icon = new Icon(typeof(GenerateFormResourceTestFixture), "App.ico");
 				form.Icon = icon;
 				
-				PythonControl pythonControl = new PythonControl("    ", componentCreator);
-				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form, "RootNamespace");
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, "RootNamespace", 1);
+				}
 			}
 		}
 		
@@ -67,8 +72,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    resources = System.Resources.ResourceManager(\"RootNamespace.MainForm\", System.Reflection.Assembly.GetEntryAssembly())\r\n" +
+			string expectedCode = "    resources = System.Resources.ResourceManager(\"RootNamespace.MainForm\", System.Reflection.Assembly.GetEntryAssembly())\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # MainForm\r\n" +
@@ -77,8 +81,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
 								"    self.Icon = resources.GetObject(\"$this.Icon\")\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}

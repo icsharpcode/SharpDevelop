@@ -21,9 +21,8 @@ namespace PythonBinding.Tests.Designer
 	[TestFixture]
 	public class GenerateListViewWithImageListFormTestFixture
 	{
-		string createListViewCode;
+		string generatedPythonCode;
 
-		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
@@ -56,29 +55,29 @@ namespace PythonBinding.Tests.Designer
 				imageList.Images.Add("b.ico", icon);
 				imageList.Images.Add("c.ico", icon); 
 				
-				// Add list view items.
-				ListViewItem item = new ListViewItem("aaa");
-				item.ImageIndex = 1;
-				listView.Items.Add(item);
+				DesignerSerializationManager designerSerializationManager = new DesignerSerializationManager(host);
+				IDesignerSerializationManager serializationManager = (IDesignerSerializationManager)designerSerializationManager;
+				using (designerSerializationManager.CreateSession()) {					
+					// Add list view items.
+					ListViewItem item = (ListViewItem)serializationManager.CreateInstance(typeof(ListViewItem), new object[] {"aaa"}, "listViewItem1", false);
+					item.ImageIndex = 1;
+					listView.Items.Add(item);
+					
+					ListViewItem item2 = (ListViewItem)serializationManager.CreateInstance(typeof(ListViewItem), new object[] {"bbb"}, "listViewItem2", false);
+					item2.ImageKey = "App.ico";
+					listView.Items.Add(item2);
+					
+					ListViewItem item3 = (ListViewItem)serializationManager.CreateInstance(typeof(ListViewItem), new object[0], "listViewItem3", false);
+					item3.ImageIndex = 2;
+					listView.Items.Add(item3);
+	
+					ListViewItem item4 = (ListViewItem)serializationManager.CreateInstance(typeof(ListViewItem), new object[0], "listViewItem4", false);
+					item4.ImageKey = "b.ico";
+					listView.Items.Add(item4);
 				
-				ListViewItem item2 = new ListViewItem("bbb");
-				item2.ImageKey = "App.ico";
-				listView.Items.Add(item2);
-				
-				ListViewItem item3 = new ListViewItem();
-				item3.ImageIndex = 2;
-				listView.Items.Add(item3);
-
-				ListViewItem item4 = new ListViewItem();
-				item4.ImageKey = "b.ico";
-				listView.Items.Add(item4);
-				
-				// Get list view creation code.
-				PythonCodeBuilder codeBuilder = new PythonCodeBuilder();
-				codeBuilder.IndentString = "    ";
-				PythonListViewComponent listViewComponent = new PythonListViewComponent(listView);
-				listViewComponent.AppendCreateInstance(codeBuilder);
-				createListViewCode = codeBuilder.ToString();
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager);
+				}
 			}
 		}
 				
@@ -86,14 +85,46 @@ namespace PythonBinding.Tests.Designer
 		/// Should include the column header and list view item creation.
 		/// </summary>
 		[Test]
-		public void ListViewCreationCode()
+		public void GenerateCode()
 		{
-			string expectedCode = "listViewItem1 = System.Windows.Forms.ListViewItem(\"aaa\", 1)\r\n" +
+			string expectedCode = "self._components = System.ComponentModel.Container()\r\n" +
+								"listViewItem1 = System.Windows.Forms.ListViewItem(\"aaa\", 1)\r\n" +
 								"listViewItem2 = System.Windows.Forms.ListViewItem(\"bbb\", \"App.ico\")\r\n" +
 								"listViewItem3 = System.Windows.Forms.ListViewItem(\"\", 2)\r\n" +
 								"listViewItem4 = System.Windows.Forms.ListViewItem(\"\", \"b.ico\")\r\n" +
-								"self._listView1 = System.Windows.Forms.ListView()\r\n";
-			Assert.AreEqual(expectedCode, createListViewCode, createListViewCode);
+								"resources = System.Resources.ResourceManager(\"MainForm\", System.Reflection.Assembly.GetEntryAssembly())\r\n" +
+								"self._listView1 = System.Windows.Forms.ListView()\r\n" +
+								"self._imageList1 = System.Windows.Forms.ImageList(self._components)\r\n" +
+								"self.SuspendLayout()\r\n" +
+								"# \r\n" +
+								"# listView1\r\n" +
+								"# \r\n" +
+								"self._listView1.Items.AddRange(System.Array[System.Windows.Forms.ListViewItem](\r\n" +
+								"    [listViewItem1,\r\n" +
+								"    listViewItem2,\r\n" +
+								"    listViewItem3,\r\n" +
+								"    listViewItem4]))\r\n" +
+								"self._listView1.Location = System.Drawing.Point(0, 0)\r\n" +
+								"self._listView1.Name = \"listView1\"\r\n" +
+								"self._listView1.Size = System.Drawing.Size(204, 104)\r\n" +
+								"self._listView1.TabIndex = 0\r\n" +
+								"self._listView1.View = System.Windows.Forms.View.Details\r\n" +
+								"# \r\n" +
+								"# imageList1\r\n" +
+								"# \r\n" +
+								"self._imageList1.ImageStream = resources.GetObject(\"imageList1.ImageStream\")\r\n" +
+								"self._imageList1.TransparentColor = System.Drawing.Color.Transparent\r\n" +
+								"self._imageList1.Images.SetKeyName(0, \"App.ico\")\r\n" +
+								"self._imageList1.Images.SetKeyName(1, \"b.ico\")\r\n" +
+								"self._imageList1.Images.SetKeyName(2, \"c.ico\")\r\n" +
+								"# \r\n" +
+								"# MainForm\r\n" +
+								"# \r\n" +
+								"self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
+								"self.Controls.Add(self._listView1)\r\n" +
+								"self.Name = \"MainForm\"\r\n" +
+								"self.ResumeLayout(False)\r\n";				
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
 	}
 }
