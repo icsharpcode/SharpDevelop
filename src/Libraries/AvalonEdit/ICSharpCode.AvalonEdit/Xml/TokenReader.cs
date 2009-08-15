@@ -285,7 +285,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 			stringCacheRequestedCount += 1;
 			stringCacheRequestedSize += 8 + 2 * cached.Length;
 			// Do not bother with long strings
-			if (cached.Length <= 32) return cached;
+			if (cached.Length > 32) {
+				stringCacheStoredCount += 1;
+				stringCacheStoredSize += 8 + 2 * cached.Length;
+				return cached;
+			}
 			if (stringCache.ContainsKey(cached)) {
 				// Get the instance from the cache instead
 				return stringCache[cached];

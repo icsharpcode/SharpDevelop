@@ -196,8 +196,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 			
 			// Do not bother comparing - assume changed if non-null
 			if (this.syntaxErrors != null || source.syntaxErrors != null) {
-				// May be called again in derived class - oh, well, nevermind
+				// May be called again in derived class - oh, well, does not matter
 				OnChanging();
+				this.Document.Parser.TrackedSegments.RemoveSyntaxErrorsOf(this);
 				if (source.syntaxErrors == null) {
 					this.syntaxErrors = null;
 				} else {
@@ -208,6 +209,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 						this.AddSyntaxError(error.Clone(this));
 					}
 				}
+				this.Document.Parser.TrackedSegments.AddSyntaxErrorsOf(this);
 				OnChanged();
 			}
 			

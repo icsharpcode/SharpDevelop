@@ -174,6 +174,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 			AXmlObject removed = this.Children[index];
 			AXmlParser.Log("Removing {0} at index {1}", removed, index);
 			
+			// Stop tracking if the object can not be used again
+			if (!removed.IsCached)
+				this.Document.Parser.TrackedSegments.RemoveParsedObject(removed);
+			
 			// Null parent pointer
 			Assert(removed.Parent == this, "Inconsistent child");
 			removed.Parent = null;
