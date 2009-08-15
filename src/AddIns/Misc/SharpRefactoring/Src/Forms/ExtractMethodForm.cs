@@ -4,12 +4,10 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.Core;
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
-using ICSharpCode.NRefactory;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Refactoring;

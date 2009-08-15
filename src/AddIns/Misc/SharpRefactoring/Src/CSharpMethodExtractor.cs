@@ -5,11 +5,11 @@
 //     <version>$Revision: 3287 $</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
@@ -18,7 +18,6 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor.Document;
 using SharpRefactoring.Visitors;
 using Dom = ICSharpCode.SharpDevelop.Dom;
 
@@ -28,8 +27,8 @@ namespace SharpRefactoring
 	{
 		static readonly StringComparer CSharpNameComparer = StringComparer.Ordinal;
 		
-		public CSharpMethodExtractor(ICSharpCode.TextEditor.TextEditorControl textEditor, ISelection selection)
-			: base(textEditor, selection)
+		public CSharpMethodExtractor(ITextEditor textEditor)
+			: base(textEditor)
 		{
 		}
 		
@@ -47,7 +46,7 @@ namespace SharpRefactoring
 		
 		public override bool Extract()
 		{
-			using (var parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader("class Tmp { void Test() {\n " + this.currentSelection.SelectedText + "\n}}"))) {
+			using (var parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader("class Tmp { void Test() {\n " + this.textEditor.SelectedText + "\n}}"))) {
 				parser.Parse();
 				
 				if (parser.Errors.Count > 0) {
@@ -68,17 +67,17 @@ namespace SharpRefactoring
 			List<VariableDeclaration> otherReturnValues = new List<VariableDeclaration>();
 			
 			// Initialise new method
-			newMethod.Body = GetBlock(this.currentSelection.SelectedText);
+			newMethod.Body = GetBlock(this.textEditor.SelectedText);
 			newMethod.Body.StartLocation = new Location(0,0);
-			
-			this.parentNode = GetParentMember(this.currentSelection.StartPosition.Line, this.currentSelection.StartPosition.Column, this.currentSelection.EndPosition.Line, this.currentSelection.EndPosition.Column);
+						
+			this.parentNode = GetParentMember(start, end);
 			
 			if (parentNode == null) {
 				MessageService.ShowError("${res:AddIns.SharpRefactoring.ExtractMethod.InvalidSelection}");
 				return false;
 			}
 			
-			if (!CheckForJumpInstructions(newMethod, this.currentSelection))
+			if (!CheckForJumpInstructions(newMethod))
 				return false;
 			
 			newMethod.Modifier = parentNode.Modifier;
@@ -101,12 +100,12 @@ namespace SharpRefactoring
 				bool isInitialized = (variable.Initializer != null) ? !variable.Initializer.IsNull : false;
 				bool hasAssignment = HasAssignment(newMethod, variable);
 				
-				if (IsInSel(variable.StartPos, this.currentSelection) && hasOccurrencesAfter) {
+				if (IsInCurrentSelection(variable.StartPos) && hasOccurrencesAfter) {
 					possibleReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.Type));
 					otherReturnValues.Add(new VariableDeclaration(variable.Name, variable.Initializer, variable.Type));
 				}
 				
-				if (!(IsInSel(variable.StartPos, this.currentSelection) || IsInSel(variable.EndPos, this.currentSelection))) {
+				if (!(IsInCurrentSelection(variable.StartPos) || IsInCurrentSelection(variable.EndPos))) {
 					ParameterDeclarationExpression newParam = null;
 
 					if ((hasOccurrencesAfter && isInitialized) || variable.WasRefParam)
@@ -169,7 +168,7 @@ namespace SharpRefactoring
 			Dom.ExpressionResult res = new Dom.ExpressionResult(variable.Name,
 			                                                    Dom.DomRegion.FromLocation(variable.StartPos, variable.EndPos),
 			                                                    Dom.ExpressionContext.Default, null);
-			Dom.ResolveResult result = this.GetResolver().Resolve(res, info, this.textEditor.Document.TextContent);
+			Dom.ResolveResult result = this.GetResolver().Resolve(res, info, this.textEditor.Document.Text);
 
 			if (variable.Type.Type == "var")
 				variable.Type = Dom.Refactoring.CodeGenerator.ConvertType(result.ResolvedType, new Dom.ClassFinder(result.CallingMember));

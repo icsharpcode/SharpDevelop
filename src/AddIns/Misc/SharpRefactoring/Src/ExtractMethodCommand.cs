@@ -5,18 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
 using SharpRefactoring.Forms;
 
 namespace SharpRefactoring
@@ -26,7 +22,7 @@ namespace SharpRefactoring
 		protected override void Run(ITextEditor textEditor, RefactoringProvider provider)
 		{
 			if (textEditor.SelectionLength > 0) {
-				/*
+				
 				MethodExtractorBase extractor = GetCurrentExtractor(textEditor);
 				if (extractor != null) {
 					if (extractor.Extract()) {
@@ -34,31 +30,28 @@ namespace SharpRefactoring
 						
 						if (form.ShowDialog() == DialogResult.OK) {
 							extractor.ExtractedMethod.Name = form.Text;
-							try {
-								textEditor.Document.UndoStack.StartUndoGroup();
+							using (textEditor.Document.OpenUndoGroup()) {
 								extractor.InsertAfterCurrentMethod();
 								extractor.InsertCall();
-								textEditor.Document.FormattingStrategy.IndentLines(textEditor.ActiveTextAreaControl.TextArea, 0, textEditor.Document.TotalNumberOfLines - 1);
-							} finally {
-								textEditor.Document.UndoStack.EndUndoGroup();
+								textEditor.Language.FormattingStrategy.IndentLines(textEditor, 0, textEditor.Document.TotalNumberOfLines - 1);
 							}
-							textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
+							textEditor.Select(textEditor.SelectionStart, 0);
 						}
 					}
-				}*/
+				}
 			}
 		}
 		
-		/*
-		MethodExtractorBase GetCurrentExtractor(TextEditorControl editor)
+		
+		MethodExtractorBase GetCurrentExtractor(ITextEditor editor)
 		{
 			switch (ProjectBindingService.GetCodonPerCodeFileName(editor.FileName).Language) {
 				case "C#":
-					return new CSharpMethodExtractor(editor, editor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0]);
+					return new CSharpMethodExtractor(editor);
 				default:
 					MessageService.ShowError(string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ExtractMethodNotSupported}"), ProjectBindingService.GetCodonPerCodeFileName(editor.FileName).Language));
 					return null;
 			}
-		}*/
+		}
 	}
 }

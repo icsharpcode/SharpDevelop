@@ -12,7 +12,6 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 using Dom = ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor.Document;
 
 namespace SharpRefactoring.Visitors
 {
@@ -22,7 +21,6 @@ namespace SharpRefactoring.Visitors
 	public class FindJumpInstructionsVisitor : AbstractAstVisitor
 	{
 		MethodDeclaration method;
-		ISelection selection;
 		List<LabelStatement> labels;
 		List<CaseLabel> cases;
 		bool isOk = true;
@@ -31,10 +29,9 @@ namespace SharpRefactoring.Visitors
 			get { return isOk; }
 		}
 		
-		public FindJumpInstructionsVisitor(MethodDeclaration method, ISelection selection)
+		public FindJumpInstructionsVisitor(MethodDeclaration method)
 		{
 			this.method = method;
-			this.selection = selection;
 			this.labels = new List<LabelStatement>();
 			this.cases = new List<CaseLabel>();
 		}

@@ -4,6 +4,7 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 3287 $</version>
 // </file>
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,8 +16,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Editor;
 using SharpRefactoring.Visitors;
 using Dom = ICSharpCode.SharpDevelop.Dom;
 
@@ -27,8 +27,7 @@ namespace SharpRefactoring
 	/// </summary>
 	public abstract class MethodExtractorBase
 	{
-		protected ICSharpCode.TextEditor.TextEditorControl textEditor;
-		protected ISelection currentSelection;
+		protected ITextEditor textEditor;
 		protected IDocument currentDocument;
 		protected MethodDeclaration extractedMethod;
 		protected ParametrizedNode parentNode;
@@ -50,14 +49,13 @@ namespace SharpRefactoring
 			get { return extractedMethod; }
 		}
 		
-		public MethodExtractorBase(ICSharpCode.TextEditor.TextEditorControl textEditor, ISelection selection)
+		public MethodExtractorBase(ITextEditor textEditor)
 		{
 			this.currentDocument = textEditor.Document;
 			this.textEditor = textEditor;
-			this.currentSelection = selection;
 			
-			this.start = new Location(this.currentSelection.StartPosition.Column + 1, this.currentSelection.StartPosition.Line + 1);
-			this.end = new Location(this.currentSelection.EndPosition.Column + 1, this.currentSelection.EndPosition.Line + 1);
+			this.start = this.currentDocument.OffsetToPosition(this.textEditor.SelectionStart);
+			this.end = this.currentDocument.OffsetToPosition(this.textEditor.SelectionStart + this.textEditor.SelectionLength);
 		}
 		
 		protected static Statement CreateCaller(ParametrizedNode parent, MethodDeclaration method, VariableDeclaration returnVariable)
@@ -116,7 +114,7 @@ namespace SharpRefactoring
 				builder.AppendLine(GenerateCode(v, false));
 			}
 			
-			this.currentDocument.Replace(this.currentSelection.Offset, this.currentSelection.Length, builder.ToString() + "\r\n" + call);
+			this.currentDocument.Replace(this.textEditor.SelectionStart, this.textEditor.SelectionLength, builder.ToString() + "\r\n" + call);
 		}
 		
 		public void InsertAfterCurrentMethod()
@@ -128,30 +126,32 @@ namespace SharpRefactoring
 
 				code = code.TrimEnd('\r', '\n', ' ', '\t');
 
-				Dom.IMember p = GetParentMember(this.textEditor, this.currentSelection.StartPosition.Line + 1, this.currentSelection.StartPosition.Column + 1);
+				Dom.IMember p = GetParentMember(this.textEditor, start.Line, start.Column);
 				
-				TextLocation loc = new ICSharpCode.TextEditor.TextLocation(
-					p.BodyRegion.EndColumn - 1, p.BodyRegion.EndLine - 1);
-				
-				int offset = textEditor.Document.PositionToOffset(loc);
+				int offset = textEditor.Document.PositionToOffset(p.BodyRegion.EndLine, p.BodyRegion.EndColumn);
 
 				textEditor.Document.Insert(offset, code);
 			}
 		}
 		
-		protected static bool CheckForJumpInstructions(MethodDeclaration method, ISelection selection)
+		protected static bool CheckForJumpInstructions(MethodDeclaration method)
 		{
-			FindJumpInstructionsVisitor fjiv = new FindJumpInstructionsVisitor(method, selection);
+			FindJumpInstructionsVisitor fjiv = new FindJumpInstructionsVisitor(method);
 			
 			method.AcceptVisitor(fjiv, null);
 			
 			return fjiv.IsOk;
 		}
 		
-		protected static bool IsInSel(Location location, ISelection sel)
+		protected bool IsInCurrentSelection(Location location)
 		{
-			bool result = (sel.ContainsPosition(new ICSharpCode.TextEditor.TextLocation(location.Column - 1, location.Line - 1)));
-			return result;
+			return IsInCurrentSelection(textEditor.Document.PositionToOffset(location.Line, location.Column));
+		}
+		
+		protected bool IsInCurrentSelection(int offset)
+		{
+			return (offset >= textEditor.SelectionStart &&
+			        offset < (textEditor.SelectionStart + textEditor.SelectionLength));
 		}
 		
 		protected static BlockStatement GetBlock(string data)
@@ -198,17 +198,14 @@ namespace SharpRefactoring
 			return expressions;
 		}
 
-		protected virtual string GenerateCode(INode unit, bool installSpecials)
-		{
-			throw new InvalidOperationException("Cannot use plain MethodExtractor, please use a language specific implementation!");
-		}
+		protected abstract string GenerateCode(INode unit, bool installSpecials);
 		
-		protected Dom.IMember GetParentMember(ICSharpCode.TextEditor.TextEditorControl textEditor, TextLocation location)
+		protected Dom.IMember GetParentMember(ITextEditor textEditor, Location location)
 		{
 			return GetParentMember(textEditor, location.Line, location.Column);
 		}
 		
-		protected Dom.IMember GetParentMember(ICSharpCode.TextEditor.TextEditorControl textEditor, int line, int column)
+		protected Dom.IMember GetParentMember(ITextEditor textEditor, int line, int column)
 		{
 			Dom.ParseInformation parseInfo = ParserService.GetParseInformation(textEditor.FileName);
 			if (parseInfo != null) {
@@ -230,9 +227,9 @@ namespace SharpRefactoring
 			return null;
 		}
 		
-		protected ParametrizedNode GetParentMember(int startLine, int startColumn, int endLine, int endColumn)
+		protected ParametrizedNode GetParentMember(Location start, Location end)
 		{
-			using (IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(this.currentDocument.TextContent))) {
+			using (IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(this.currentDocument.Text))) {
 				parser.Parse();
 				
 				if (parser.Errors.Count > 0) {
@@ -240,7 +237,7 @@ namespace SharpRefactoring
 					return null;
 				}
 				
-				FindMemberVisitor fmv = new FindMemberVisitor(startColumn, startLine, endColumn, endLine);
+				FindMemberVisitor fmv = new FindMemberVisitor(start, end);
 				
 				parser.CompilationUnit.AcceptVisitor(fmv, null);
 				
