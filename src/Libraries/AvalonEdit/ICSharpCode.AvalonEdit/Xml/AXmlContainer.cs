@@ -94,7 +94,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		{
 			// Childs can be only added to newly parsed items
 			Assert(this.Parent == null, "I have to be new");
-			Assert(item.IsInCache, "Added item must be in cache");
+			Assert(item.IsCached, "Added item must be in cache");
 			// Do not set parent pointer
 			this.Children.InsertItemAt(this.Children.Count, item);
 		}
@@ -198,8 +198,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 					Assert(child.Parent == this, "Inccorect parent reference");
 				}
 				Assert(myStartOffset <= child.StartOffset && child.EndOffset <= myEndOffset, "Child not within parent text range");
-				if (this.IsInCache)
-					Assert(child.IsInCache, "Child not in cache");
+				if (this.IsCached)
+					Assert(child.IsCached, "Child not in cache");
 				if (prevChild != null)
 					Assert(prevChild.EndOffset <= child.StartOffset, "Overlaping childs");
 				child.DebugCheckConsistency(checkParentPointers);

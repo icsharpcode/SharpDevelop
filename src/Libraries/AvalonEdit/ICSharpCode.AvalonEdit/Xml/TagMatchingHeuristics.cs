@@ -19,14 +19,14 @@ namespace ICSharpCode.AvalonEdit.Xml
 		const int maxConfigurationCount = 10;
 		
 		AXmlParser parser;
-		Cache cache;
+		TrackedSegmentCollection trackedSegments;
 		string input;
 		List<AXmlObject> tags;
 		
 		public TagMatchingHeuristics(AXmlParser parser, string input, List<AXmlObject> tags)
 		{
 			this.parser = parser;
-			this.cache = parser.Cache;
+			this.trackedSegments = parser.TrackedSegments;
 			this.input = input;
 			this.tags = tags;
 		}
@@ -56,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 			
 			AXmlParser.Log("Constructed {0}", doc);
-			cache.Add(doc, null);
+			trackedSegments.AddParsedObject(doc, null);
 			return doc;
 		}
 		
@@ -140,7 +140,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			element.EndOffset = element.LastChild.EndOffset;
 			
 			AXmlParser.Log("Constructed {0}", element);
-			cache.Add(element, null); // Need all elements in cache for offset tracking
+			trackedSegments.AddParsedObject(element, null); // Need all elements in cache for offset tracking
 			return element;
 		}
 		
@@ -179,7 +179,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 						                 "Expected '</{0}>'", topHalf.StartTag.Name);
 				
 				AXmlParser.Log("Constructed {0}", topHalf);
-				cache.Add(topHalf, null);
+				trackedSegments.AddParsedObject(topHalf, null);
 				yield return topHalf;
 				for(int i = lastAccepted + 1; i < elem.Children.Count - 1; i++) {
 					yield return elem.Children[i];

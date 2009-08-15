@@ -326,7 +326,7 @@
     <Compile Include="Xml\AXmlParser.cs" />
     <Compile Include="Xml\AXmlTag.cs" />
     <Compile Include="Xml\AXmlText.cs" />
-    <Compile Include="Xml\Cache.cs">
+    <Compile Include="Xml\TrackedSegmentCollection.cs">
       <DependentUpon>AXmlParser.cs</DependentUpon>
     </Compile>
     <Compile Include="Xml\ExtensionMethods.cs" />

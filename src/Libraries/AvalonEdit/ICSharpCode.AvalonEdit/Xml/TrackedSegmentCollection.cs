@@ -15,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 	/// Holds all valid parsed items.
 	/// Also tracks their offsets as document changes.
 	/// </summary>
-	class Cache
+	class TrackedSegmentCollection
 	{
 		/// <summary> Previously parsed items as long as they are valid  </summary>
 		TextSegmentCollection<AXmlObject> parsedItems = new TextSegmentCollection<AXmlObject>();
@@ -51,18 +51,18 @@ namespace ICSharpCode.AvalonEdit.Xml
 				// FindSegmentsContaining includes any segments touching
 				// so that conviniently takes care of the +1 byte
 				foreach(AXmlObject obj in parsedItems.FindSegmentsContaining(change.Offset)) {
-					Remove(obj, false);
+					InvalidateCache(obj, false);
 				}
 				foreach(TouchedRange range in touchedRanges.FindSegmentsContaining(change.Offset)) {
 					AXmlParser.Log("Found that {0} dependeds on ({1}-{2})", range.TouchedByObject, range.StartOffset, range.EndOffset);
-					Remove(range.TouchedByObject, true);
+					InvalidateCache(range.TouchedByObject, true);
 					touchedRanges.Remove(range);
 				}
 			}
 		}
 		
 		/// <summary> Add object to cache, optionally adding extra memory tracking </summary>
-		public void Add(AXmlObject obj, int? maxTouchedLocation)
+		public void AddParsedObject(AXmlObject obj, int? maxTouchedLocation)
 		{
 			AXmlParser.Assert(obj.Length > 0 || obj is AXmlDocument, string.Format("Invalid object {0}.  It has zero length.", obj));
 			if (obj is AXmlContainer) {
@@ -76,7 +76,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			foreach(SyntaxError syntaxError in obj.MySyntaxErrors) {
 				syntaxErrors.Add(syntaxError);
 			}
-			obj.IsInCache = true;
+			obj.IsCached = true;
 			if (maxTouchedLocation != null) {
 				// location is assumed to be read so the range ends at (location + 1)
 				// For example eg for "a_" it is (0-2)
@@ -102,8 +102,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			return parents;
 		}
 		
-		/// <summary> Remove from cache </summary>
-		public void Remove(AXmlObject obj, bool includeParents)
+		void InvalidateCache(AXmlObject obj, bool includeParents)
 		{
 			if (includeParents) {
 				List<AXmlObject> parents = FindParents(obj);
@@ -113,7 +112,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 						foreach(SyntaxError syntaxError in r.MySyntaxErrors) {
 							syntaxErrors.Remove(syntaxError);
 						}
-						r.IsInCache = false;
+						r.IsCached = false;
 						AXmlParser.Log("Removing cached item {0} (it is parent)", r);
 					}
 				}
@@ -123,12 +122,12 @@ namespace ICSharpCode.AvalonEdit.Xml
 				foreach(SyntaxError syntaxError in obj.MySyntaxErrors) {
 					syntaxErrors.Remove(syntaxError);
 				}
-				obj.IsInCache = false;
+				obj.IsCached = false;
 				AXmlParser.Log("Removed cached item {0}", obj);
 			}
 		}
 		
-		public T GetObject<T>(int offset, int lookaheadCount, Predicate<T> conditon) where T: AXmlObject, new()
+		public T GetCachedObject<T>(int offset, int lookaheadCount, Predicate<T> conditon) where T: AXmlObject, new()
 		{
 			AXmlObject obj = parsedItems.FindFirstSegmentWithStartAfter(offset);
 			while(obj != null && offset <= obj.StartOffset && obj.StartOffset <= offset + lookaheadCount) {

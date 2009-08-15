@@ -162,7 +162,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <remarks> Initialized to 'this' </remarks>
 		internal AXmlObject LastUpdatedFrom { get; private set; }
 		
-		internal bool IsInCache { get; set; }
+		internal bool IsCached { get; set; }
 		
 		/// <summary> Is call to UpdateDataFrom is allowed? </summary>
 		internal bool CanUpdateDataFrom(AXmlObject source)
@@ -170,7 +170,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			return
 				this.GetType() == source.GetType() &&
 				this.StartOffset == source.StartOffset &&
-				(this.LastUpdatedFrom == source || !this.IsInCache);
+				(this.LastUpdatedFrom == source || !this.IsCached);
 		}
 		
 		/// <summary> Copy all data from the 'source' to this object </summary>
@@ -185,8 +185,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 				return false;
 			}
 			
-			Assert(!this.IsInCache, "Can not update cached item");
-			Assert(source.IsInCache, "Must update from cache");
+			Assert(!this.IsCached, "Can not update cached item");
+			Assert(source.IsCached, "Must update from cache");
 			
 			this.LastUpdatedFrom = source;
 			this.StartOffset = source.StartOffset;

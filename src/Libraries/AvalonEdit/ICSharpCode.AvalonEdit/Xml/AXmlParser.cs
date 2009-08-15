@@ -92,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		
 		List<DocumentChangeEventArgs> changesSinceLastParse = new List<DocumentChangeEventArgs>();
 		
-		internal Cache Cache { get; private set; }
+		internal TrackedSegmentCollection TrackedSegments { get; private set; }
 		
 		/// <summary>
 		/// Generate syntax error when seeing enity reference other then the build-in ones
@@ -105,7 +105,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			this.input = input;
 			this.userDocument = new AXmlDocument() { Parser = this };
 			this.EntityReferenceIsError = true;
-			this.Cache = new Cache();
+			this.TrackedSegments = new TrackedSegmentCollection();
 		}
 		
 		/// <summary>
@@ -152,7 +152,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 			
 			// Use chages to invalidate cache
-			this.Cache.UpdateOffsetsAndInvalidate(changesSinceLastParse);
+			this.TrackedSegments.UpdateOffsetsAndInvalidate(changesSinceLastParse);
 			changesSinceLastParse.Clear();
 			
 			TagReader tagReader = new TagReader(this, input);

@@ -16,13 +16,13 @@ namespace ICSharpCode.AvalonEdit.Xml
 	class TagReader: TokenReader
 	{
 		AXmlParser parser;
-		Cache cache;
+		TrackedSegmentCollection trackedSegments;
 		string input;
 		
 		public TagReader(AXmlParser parser, string input): base(input)
 		{
 			this.parser = parser;
-			this.cache = parser.Cache;
+			this.trackedSegments = parser.TrackedSegments;
 			this.input = input;
 		}
 		
@@ -33,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		
 		bool TryReadFromCacheOrNew<T>(out T res, Predicate<T> condition) where T: AXmlObject, new()
 		{
-			T cached = cache.GetObject<T>(this.CurrentLocation, 0, condition);
+			T cached = trackedSegments.GetCachedObject<T>(this.CurrentLocation, 0, condition);
 			if (cached != null) {
 				Skip(cached.Length);
 				res = cached;
@@ -47,7 +47,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		void OnParsed(AXmlObject obj)
 		{
 			AXmlParser.Log("Parsed {0}", obj);
-			cache.Add(obj, this.MaxTouchedLocation > this.CurrentLocation ? (int?)this.MaxTouchedLocation : null);
+			trackedSegments.AddParsedObject(obj, this.MaxTouchedLocation > this.CurrentLocation ? (int?)this.MaxTouchedLocation : null);
 		}
 		
 		/// <summary>
@@ -451,7 +451,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				// we hit that chache point.  It is expensive so it is off for the first run
 				if (lookahead) {
 					// Note: Must fit entity
-					AXmlObject nextFragment = cache.GetObject<AXmlText>(this.CurrentLocation + maxEntityLength, lookAheadLenght - maxEntityLength, t => t.Type == type);
+					AXmlObject nextFragment = trackedSegments.GetCachedObject<AXmlText>(this.CurrentLocation + maxEntityLength, lookAheadLenght - maxEntityLength, t => t.Type == type);
 					if (nextFragment != null) {
 						fragmentEnd = Math.Min(nextFragment.StartOffset, this.InputLength);
 						AXmlParser.Log("Parsing only text ({0}-{1}) because later text was already processed", this.CurrentLocation, fragmentEnd);
