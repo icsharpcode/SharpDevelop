@@ -42,6 +42,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\AddIns\Misc\AddInManager\RequiredLibraries\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -79,11 +82,16 @@
     <Compile Include="Utils\IndentationStringTests.cs" />
     <Compile Include="Utils\RopeTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
+    <Compile Include="XmlParser\SimpleTests.cs" />
     <None Include="app.config" />
+    <None Include="XmlParser\testcases.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Document" />
     <Folder Include="Utils" />
+    <Folder Include="XmlParser" />
     <ProjectReference Include="..\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
