@@ -26,6 +26,12 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// </summary>
 		TextSegmentCollection<TouchedMemoryRange> touchedMemoryRanges = new TextSegmentCollection<TouchedMemoryRange>();
 		
+		/// <summary>
+		/// Track offsets of syntax errors as well.
+		/// Objects can not change in the cache, so not need to update it.
+		/// </summary>
+		TextSegmentCollection<SyntaxError> syntaxErrors = new TextSegmentCollection<SyntaxError>();
+		
 		class TouchedMemoryRange: TextSegment
 		{
 			public AXmlObject TouchedByObject { get; set; }
@@ -37,6 +43,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				// Update offsets of all items
 				parsedItems.UpdateOffsets(change);
 				touchedMemoryRanges.UpdateOffsets(change);
+				syntaxErrors.UpdateOffsets(change);
 				
 				// Remove any items affected by the change
 				AXmlParser.Log("Changed offset {0}", change.Offset);
@@ -66,6 +73,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 				}
 			}
 			parsedItems.Add(obj);
+			foreach(SyntaxError syntaxError in obj.SyntaxErrors) {
+				syntaxErrors.Add(syntaxError);
+			}
 			obj.IsInCache = true;
 			if (maxTouchedLocation != null) {
 				// location is assumed to be read so the range ends at (location + 1)
@@ -100,6 +110,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 				
 				foreach(AXmlObject r in parents) {
 					if (parsedItems.Remove(r)) {
+						foreach(SyntaxError syntaxError in r.SyntaxErrors) {
+							syntaxErrors.Remove(syntaxError);
+						}
 						r.IsInCache = false;
 						AXmlParser.Log("Removing cached item {0} (it is parent)", r);
 					}
@@ -107,6 +120,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 			
 			if (parsedItems.Remove(obj)) {
+				foreach(SyntaxError syntaxError in obj.SyntaxErrors) {
+					syntaxErrors.Remove(syntaxError);
+				}
 				obj.IsInCache = false;
 				AXmlParser.Log("Removed cached item {0}", obj);
 			}

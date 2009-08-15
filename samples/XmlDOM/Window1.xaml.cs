@@ -18,7 +18,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
-using ICSharpCode.AvalonEdit.XmlParser;
+using ICSharpCode.AvalonEdit.Xml;
 
 namespace XmlDOM
 {
@@ -27,7 +27,7 @@ namespace XmlDOM
 	/// </summary>
 	public partial class Window1 : Window
 	{
-		XmlParser parser;
+		AXmlParser parser;
 		
 		bool textDirty = true;
 		
@@ -45,7 +45,7 @@ namespace XmlDOM
 			editor.TextArea.TextView.MouseMove += new MouseEventHandler(editor_TextArea_TextView_MouseMove);
 			
 			editor.Document.Changed += delegate { textDirty = true; };
-			parser = new XmlParser(editor.Document);
+			parser = new AXmlParser(editor.Document);
 
 			DispatcherTimer timer = new DispatcherTimer();
 			timer.Interval = TimeSpan.FromSeconds(0.5);
@@ -72,18 +72,18 @@ namespace XmlDOM
 		void Button_Click(object sender, RoutedEventArgs e)
 		{
 			if (!textDirty) return;
-			RawDocument doc = parser.Parse();
+			AXmlDocument doc = parser.Parse();
 			if (treeView.Items.Count == 0) {
 				treeView.Items.Add(doc);
 			}
-			PrettyPrintXmlVisitor visitor = new PrettyPrintXmlVisitor();
+			PrettyPrintAXmlVisitor visitor = new PrettyPrintAXmlVisitor();
 			visitor.VisitDocument(doc);
 			string prettyPrintedText = visitor.Output;
 			if (prettyPrintedText != editor.Document.Text) {
 				MessageBox.Show("Error - Original and pretty printed version of XML differ");
 			}
 			markerService.RemoveAll(m => true);
-			foreach(var error in doc.SyntaxErrors) {
+			foreach(var error in doc.GetSelfAndAllChildren().SelectMany(c => c.SyntaxErrors)) {
 				var marker = markerService.Create(error.StartOffset, error.EndOffset - error.StartOffset);
 				marker.Tag = error.Message;
 				marker.BackgroundColor = Color.FromRgb(255, 150, 150);
@@ -94,7 +94,7 @@ namespace XmlDOM
 		void BindObject(object sender, EventArgs e)
 		{
 			TextBlock textBlock = (TextBlock)sender;
-			RawObject node = (RawObject)textBlock.DataContext;
+			AXmlObject node = (AXmlObject)textBlock.DataContext;
 			node.Changed += delegate {
 				BindingOperations.GetBindingExpression(textBlock, TextBlock.TextProperty).UpdateTarget();
 				textBlock.Background = new SolidColorBrush(Colors.LightGreen);
@@ -107,7 +107,7 @@ namespace XmlDOM
 		void BindElement(object sender, EventArgs e)
 		{
 			TextBlock textBlock = (TextBlock)sender;
-			RawElement node = (RawElement)textBlock.DataContext;
+			AXmlElement node = (AXmlElement)textBlock.DataContext;
 			node.StartTag.Changed += delegate {
 				BindingOperations.GetBindingExpression(textBlock, TextBlock.TextProperty).UpdateTarget();
 				textBlock.Background = new SolidColorBrush(Colors.LightGreen);

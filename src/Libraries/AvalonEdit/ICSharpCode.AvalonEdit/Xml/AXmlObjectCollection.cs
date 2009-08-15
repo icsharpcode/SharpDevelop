@@ -18,7 +18,6 @@ namespace ICSharpCode.AvalonEdit.Xml
 	/// Collection that is publicly read-only and has support 
 	/// for adding/removing multiple items at a time.
 	/// </summary>
-	// TODO: Specialize
 	public class AXmlObjectCollection<T>: Collection<T>, INotifyCollectionChanged
 	{
 		/// <summary> Occurs when the collection is changed </summary>
