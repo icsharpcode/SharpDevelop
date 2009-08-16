@@ -169,6 +169,7 @@
     <Compile Include="Designer\DeserializeComponentAssignmentTestFixture.cs" />
     <Compile Include="Designer\DeserializeDateTimeArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeLocalVariableTestFixture.cs" />
+    <Compile Include="Designer\DeserializeMethodParametersTestFixture.cs" />
     <Compile Include="Designer\DeserializerConstructorStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeToolStripItemArrayTestFixture.cs" />
