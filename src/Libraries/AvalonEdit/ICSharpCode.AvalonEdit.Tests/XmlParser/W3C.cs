@@ -19,6 +19,7 @@ using NUnit.Framework;
 namespace ICSharpCode.AvalonEdit.Xml.Tests
 {
 	[TestFixture]
+	[Ignore]
 	public class W3C
 	{
 		readonly string zipFileName = @"XmlParser\W3C.zip";
@@ -47,38 +48,44 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 			return new StreamReader(stream).ReadToEnd();
 		}
 		
+		/// <remarks> Also excludes "/out/" files </remarks>
 		IEnumerable<ZipEntry> GetXmlFilesStartingWith(string directory)
 		{
-			return files.Where(f => f.Name.StartsWith(directory) && f.Name.EndsWith(".xml"));
+			return files.Where(f => f.Name.StartsWith(directory) && f.Name.EndsWith(".xml") && !f.Name.Contains("/out/"));
 		}
 		
 		[Test]
 		public void Valid()
 		{
-			string exlucde = "ibm32v02"; // Too long enity name
-			TestFiles(GetXmlFilesStartingWith("ibm/valid/").Where(f => !f.Name.Contains(exlucde)), true);
+			string[] exclude = {
+			};
+			TestFiles(GetXmlFilesStartingWith("ibm/valid/"), true, exclude);
 		}
 		
 		[Test]
 		public void Invalid()
 		{
-			TestFiles(GetXmlFilesStartingWith("ibm/invalid/"), true);
+			string[] exclude = {
+			};
+			TestFiles(GetXmlFilesStartingWith("ibm/invalid/"), true, exclude);
 		}
 		
 		[Test]
-		[Ignore]
 		public void NotWellformed()
 		{
-			TestFiles(GetXmlFilesStartingWith("ibm/not-wf/"), false);
+			string[] exclude = {
+			};
+			TestFiles(GetXmlFilesStartingWith("ibm/not-wf/"), false, exclude);
 		}
 		
 		StringBuilder errorOutput;
 		
-		void TestFiles(IEnumerable<ZipEntry> files, bool areWellFormed)
+		void TestFiles(IEnumerable<ZipEntry> files, bool areWellFormed, string[] exclude)
 		{
 			errorOutput = new StringBuilder();
 			int testsRun = 0;
 			foreach (ZipEntry file in files) {
+				if (exclude.Any(exc => file.Name.Contains(exc))) continue;
 				testsRun++;
 				TestFile(file, areWellFormed);
 			}
@@ -86,7 +93,7 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 				Assert.Fail("Test files not found");
 			}
 			if (errorOutput.Length > 0) {
-				Assert.Fail(errorOutput.ToString());
+				Assert.Fail(errorOutput.Replace("]]>", "]]~NUNIT~>").ToString());
 			}
 		}
 		
@@ -107,6 +114,25 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 				errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
 				errorOutput.AppendFormat("Pretty printed:\n{0}\n", Indent(printed));
 				errorOutput.AppendLine();
+			}
+			
+			if (isWellFormed) {
+				string canonicalFilename = fileName.Replace("/ibm", "/out/ibm");
+				ZipEntry canonicalFile = files.FirstOrDefault(f => f.Name == canonicalFilename);
+				if (canonicalFile != null) {
+					string canonicalContent = Decompress(canonicalFile);
+					string canonicalPrint = CanonicalPrintAXmlVisitor.Print(document);
+					if (canonicalContent != canonicalPrint) {
+						errorOutput.AppendFormat("Canonical XML for \"{0}\" does not match the excpected.\n", fileName);
+						errorOutput.AppendFormat("Expected:\n{0}\n", Indent(canonicalContent));
+						errorOutput.AppendFormat("Seen:\n{0}\n", Indent(canonicalPrint));
+						errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
+						errorOutput.AppendLine();
+					}
+				} else {
+					errorOutput.AppendFormat("Can not find canonical file for \"{0}\"", fileName);
+					errorOutput.AppendLine();
+				}
 			}
 			
 			bool hasErrors = document.SyntaxErrors.FirstOrDefault() != null;
