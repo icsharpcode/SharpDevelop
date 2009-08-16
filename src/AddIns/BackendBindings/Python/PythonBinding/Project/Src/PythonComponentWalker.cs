@@ -148,7 +148,7 @@ namespace ICSharpCode.PythonBinding
 				return false;
 			}
 			
-			fieldExpression.SetPropertyValue(componentCreator, node.Name.ToString());
+			fieldExpression.SetPropertyValue(componentCreator, node);
 			return false;
 		}
 		

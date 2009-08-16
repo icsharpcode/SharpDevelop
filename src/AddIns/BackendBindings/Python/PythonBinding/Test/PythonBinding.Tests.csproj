@@ -246,6 +246,7 @@
     <Compile Include="Designer\LoadInheritedToolTipTestFixture.cs" />
     <Compile Include="Designer\LoadListViewFormTestFixture.cs" />
     <Compile Include="Designer\LoadLocalImageResourceTestFixture.cs" />
+    <Compile Include="Designer\LoadLocalVariablePropertyAssignmentTestFixture.cs" />
     <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\LoadMonthCalendarTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />

@@ -265,18 +265,36 @@ namespace ICSharpCode.PythonBinding
 		/// Sets the property value that is referenced by this field expression.
 		/// </summary>
 		/// <remarks>
+		/// This method checks that the name expression matches a created instance before
+		/// converting the name expression as a string and setting the property value.
+		/// </remarks>
+		public bool SetPropertyValue(IComponentCreator componentCreator, NameExpression nameExpression)
+		{
+			object component = GetComponent(componentCreator);
+			PropertyDescriptor property = GetProperty(component, memberName);
+			if (property != null) {
+				string name = nameExpression.Name.ToString();
+				if (property.PropertyType != typeof(bool)) {
+					object instance = componentCreator.GetInstance(name);
+					if (instance != null) {
+						return SetPropertyValue(component, memberName, instance);
+					}
+				}
+				return SetPropertyValue(component, memberName, name);
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Sets the property value that is referenced by this field expression.
+		/// </summary>
+		/// <remarks>
 		/// Checks the field expression to see if it references an class instance variable (e.g. self._treeView1) 
 		/// or a variable that is local to the InitializeComponent method (e.g. treeNode1.BackColor)
 		/// </remarks>
 		public bool SetPropertyValue(IComponentCreator componentCreator, object propertyValue)
 		{
-			object component = null;
-			if (IsSelfReference) {
-				component = GetObject(componentCreator);
-				component = GetObjectForMemberName(component);
-			} else {
-				component = componentCreator.GetInstance(variableName);
-			}
+			object component = GetComponent(componentCreator);
 			return SetPropertyValue(component, memberName, propertyValue);
 		}
 		
@@ -437,13 +455,33 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		static bool SetPropertyValue(object component, string name, object propertyValue)
 		{
-			PropertyDescriptor property = TypeDescriptor.GetProperties(component).Find(name, true);
+			PropertyDescriptor property = GetProperty(component, name);
 			if (property != null) {
 				propertyValue = ConvertPropertyValue(property, propertyValue);
 				property.SetValue(component, propertyValue);
 				return true;
 			}
 			return false;
+		}
+		
+		/// <summary>
+		/// Gets the component that this field refers to.
+		/// </summary>
+		object GetComponent(IComponentCreator componentCreator)
+		{
+			object component = null;
+			if (IsSelfReference) {
+				component = GetObject(componentCreator);
+				component = GetObjectForMemberName(component);
+			} else {
+				component = componentCreator.GetInstance(variableName);
+			}
+			return component;
+		}
+		
+		static PropertyDescriptor GetProperty(object component, string name)
+		{
+			return TypeDescriptor.GetProperties(component).Find(name, true);			
 		}
 	}
 }
