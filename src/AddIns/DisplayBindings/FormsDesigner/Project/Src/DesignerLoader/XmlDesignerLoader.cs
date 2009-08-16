@@ -101,8 +101,10 @@ namespace ICSharpCode.FormsDesigner
 			{
 				string name = Char.ToLower(dataType.Name[0]) + dataType.Name.Substring(1);
 				int number = 1;
-				while (container.Components[name + number.ToString()] != null) {
-					++number;
+				if (container != null) {
+					while (container.Components[name + number.ToString()] != null) {
+						++number;
+					}
 				}
 				return name + number.ToString();
 			}
