@@ -27,6 +27,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public string EscapedValue { get; set; }
 		/// <summary> The text with all entity references resloved </summary>
 		public string Value { get; set; }
+		/// <summary> True if the text contains only whitespace characters </summary>
+		public bool ContainsOnlyWhitespace { get; set; }
 		
 		/// <inheritdoc/>
 		public override void AcceptVisitor(IAXmlVisitor visitor)

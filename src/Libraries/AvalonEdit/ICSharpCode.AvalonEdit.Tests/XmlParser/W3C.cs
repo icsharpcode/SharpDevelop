@@ -57,7 +57,8 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 		public void Valid()
 		{
 			string[] exclude = {
-				"ibm02v01", "ibm03v01", "ibm85v01", "ibm86v01", "ibm87v01", "ibm88v01", "ibm89v01", // NAME in DTD infoset
+				// NAME in DTD infoset
+				"ibm02v01", "ibm03v01", "ibm85v01", "ibm86v01", "ibm87v01", "ibm88v01", "ibm89v01",
 			};
 			TestFiles(GetXmlFilesStartingWith("ibm/valid/"), true, exclude);
 		}
@@ -66,16 +67,37 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 		public void Invalid()
 		{
 			string[] exclude = {
-				"ibm56i03", // Default attribute value
+				// Default attribute value
+				"ibm56i03",
 			};
 			TestFiles(GetXmlFilesStartingWith("ibm/invalid/"), true, exclude);
 		}
 		
 		[Test]
-		[Ignore]
 		public void NotWellformed()
 		{
 			string[] exclude = {
+				// XML declaration well formed
+				"ibm23n", "ibm24n", "ibm26n01", "ibm32n", "ibm80n06", "ibm81n01", "ibm81n02", "ibm81n03", "ibm81n04", "ibm81n05", "ibm81n06", "ibm81n07", "ibm81n08", "ibm81n09",
+				// Invalid chars in a comment - do we care?
+				"ibm02n",
+				// Invalid char ref - do we care?
+				"ibm66n12", "ibm66n13", "ibm66n14", "ibm66n15",
+				// DTD in wrong location
+				"ibm27n01", "ibm43n",
+				// Entity refs depending on DTD
+				"ibm41n10", "ibm41n11", "ibm41n12", "ibm41n13", "ibm41n14", "ibm68n04", "ibm68n06", "ibm68n07", "ibm68n08", "ibm68n09", "ibm68n10",
+				// DTD Related tests
+				"ibm09n01", "ibm09n02", "ibm13n01", "ibm13n02", "ibm13n03", "ibm28n01", "ibm28n02", "ibm28n03", "ibm29n01", "ibm29n03", "ibm29n04", "ibm29n07", "ibm30n01", "ibm31n01", "ibm45n01", "ibm45n02", "ibm45n03", "ibm45n04", "ibm45n05", "ibm45n06", "ibm46n01", "ibm46n02", "ibm46n03", "ibm46n04",
+				"ibm46n05", "ibm47n01", "ibm47n02", "ibm47n03", "ibm47n04", "ibm47n05", "ibm47n06", "ibm48n01", "ibm48n02", "ibm48n03", "ibm48n04", "ibm48n05", "ibm48n06", "ibm48n07", "ibm49n01", "ibm49n02", "ibm49n03", "ibm49n04", "ibm49n05", "ibm49n06", "ibm50n01", "ibm50n02", "ibm50n03", "ibm50n04",
+				"ibm50n05", "ibm50n06", "ibm50n07", "ibm51n01", "ibm51n02", "ibm51n03", "ibm51n04", "ibm51n05", "ibm51n06", "ibm51n07", "ibm52n01", "ibm52n02", "ibm52n03", "ibm53n01", "ibm53n02", "ibm53n03", "ibm53n04", "ibm53n05", "ibm53n06", "ibm53n07", "ibm53n08", "ibm54n01", "ibm54n02", "ibm55n01",
+				"ibm55n02", "ibm55n03", "ibm56n01", "ibm56n02", "ibm56n03", "ibm56n04", "ibm56n05", "ibm56n06", "ibm56n07", "ibm57n01", "ibm58n01", "ibm58n02", "ibm58n03", "ibm58n04", "ibm58n05", "ibm58n06", "ibm58n07", "ibm58n08", "ibm59n01", "ibm59n02", "ibm59n03", "ibm59n04", "ibm59n05", "ibm59n06",
+				"ibm60n01", "ibm60n02", "ibm60n03", "ibm60n04", "ibm60n05", "ibm60n06", "ibm60n07", "ibm60n08", "ibm61n01", "ibm62n01", "ibm62n02", "ibm62n03", "ibm62n04", "ibm62n05", "ibm62n06", "ibm62n07", "ibm62n08", "ibm63n01", "ibm63n02", "ibm63n03", "ibm63n04", "ibm63n05", "ibm63n06", "ibm63n07",
+				"ibm64n01", "ibm64n02", "ibm64n03", "ibm65n01", "ibm65n02", "ibm66n01", "ibm66n03", "ibm66n05", "ibm66n07", "ibm66n09", "ibm66n11", "ibm69n01", "ibm69n02", "ibm69n03", "ibm69n04", "ibm69n05", "ibm69n06", "ibm69n07", "ibm70n01", "ibm71n01", "ibm71n02", "ibm71n03", "ibm71n04", "ibm71n05",
+				"ibm72n01", "ibm72n02", "ibm72n03", "ibm72n04", "ibm72n05", "ibm72n06", "ibm72n09", "ibm73n01", "ibm73n03", "ibm74n01", "ibm75n01", "ibm75n02", "ibm75n03", "ibm75n04", "ibm75n05", "ibm75n06", "ibm75n07", "ibm75n08", "ibm75n09", "ibm75n10", "ibm75n11", "ibm75n12", "ibm75n13", "ibm76n01",
+				"ibm76n02", "ibm76n03", "ibm76n04", "ibm76n05", "ibm76n06", "ibm76n07", "ibm77n01", "ibm77n02", "ibm77n03", "ibm77n04", "ibm78n01", "ibm78n02", "ibm79n01", "ibm79n02", "ibm82n01", "ibm82n02", "ibm82n03", "ibm82n04", "ibm82n08", "ibm83n01", "ibm83n03", "ibm83n04", "ibm83n05", "ibm83n06",
+				// No idea what this is
+				"misc/432gewf", "ibm28an01",
 			};
 			TestFiles(GetXmlFilesStartingWith("ibm/not-wf/"), false, exclude);
 		}
@@ -86,10 +108,14 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 		{
 			errorOutput = new StringBuilder();
 			int testsRun = 0;
+			int ignored = 0;
 			foreach (ZipEntry file in files) {
-				if (exclude.Any(exc => file.Name.Contains(exc))) continue;
-				testsRun++;
-				TestFile(file, areWellFormed);
+				if (exclude.Any(exc => file.Name.Contains(exc))) {
+					ignored++;
+				} else {
+					testsRun++;
+					TestFile(file, areWellFormed);
+				}
 			}
 			if (testsRun == 0) {
 				Assert.Fail("Test files not found");

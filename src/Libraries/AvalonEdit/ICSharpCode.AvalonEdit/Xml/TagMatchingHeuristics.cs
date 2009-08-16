@@ -55,6 +55,33 @@ namespace ICSharpCode.AvalonEdit.Xml
 				doc.EndOffset = doc.LastChild.EndOffset;
 			}
 			
+			// Check well formed
+			foreach(AXmlTag xmlDeclaration in doc.Children.OfType<AXmlTag>().Where(t => t.IsProcessingInstruction && t.Name.ToLower() == "xml")) {
+				if (xmlDeclaration.StartOffset != 0)
+					TagReader.OnSyntaxError(doc, xmlDeclaration.StartOffset, xmlDeclaration.StartOffset + 5,
+					                        "XML declaration must be at the start of document");
+			}
+			int elemCount = doc.Children.OfType<AXmlElement>().Count();
+			if (elemCount == 0)
+				TagReader.OnSyntaxError(doc, doc.EndOffset, doc.EndOffset,
+				                        "Root element is missing");
+			if (elemCount > 1) {
+				AXmlElement next = doc.Children.OfType<AXmlElement>().Skip(1).First();
+				TagReader.OnSyntaxError(doc, next.StartOffset, next.StartOffset,
+				                        "Only one root element is allowed");
+			}
+			foreach(AXmlTag tag in doc.Children.OfType<AXmlTag>()) {
+				if (tag.IsCData)
+					TagReader.OnSyntaxError(doc, tag.StartOffset, tag.EndOffset,
+					                        "CDATA not allowed in document root");
+			}
+			foreach(AXmlText text in doc.Children.OfType<AXmlText>()) {
+				if (!text.ContainsOnlyWhitespace)
+					TagReader.OnSyntaxError(doc, text.StartOffset, text.EndOffset,
+					                        "Only whitespace is allowed in document root");
+			}
+				
+			
 			AXmlParser.Log("Constructed {0}", doc);
 			trackedSegments.AddParsedObject(doc, null);
 			return doc;

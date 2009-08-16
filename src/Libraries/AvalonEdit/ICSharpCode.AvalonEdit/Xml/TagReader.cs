@@ -92,6 +92,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 			// It identifies the type of tag and parsing behavior for the rest of it
 			tag.OpeningBracket = ReadOpeningBracket();
 			
+			if (tag.IsUnknownBang && !TryPeekWhiteSpace())
+				OnSyntaxError(tag, tag.StartOffset, this.CurrentLocation, "Unknown tag");
+			
 			if (tag.IsStartOrEmptyTag || tag.IsEndTag || tag.IsProcessingInstruction) {
 				// Read the name
 				string name;
@@ -107,7 +110,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 				tag.Name = string.Empty;
 			}
 			
-			if (tag.IsStartOrEmptyTag || tag.IsEndTag) {
+			bool isXmlDeclr = tag.StartOffset == 0 && tag.Name == "xml";
+			
+			if (tag.IsStartOrEmptyTag || tag.IsEndTag || isXmlDeclr) {
 				// Read attributes for the tag
 				while(true) {					
 					// Chech for all forbiden 'name' charcters first - see ReadName
@@ -125,7 +130,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 					}
 					
 					// We have "=\'\"" or name - read attribute
-					tag.AddChild(ReadAttribulte());
+					AXmlAttribute attr = ReadAttribulte();
+					tag.AddChild(attr);
+					if (tag.IsEndTag)
+						OnSyntaxError(tag, attr.StartOffset, attr.EndOffset, "Attribute not allowed in end tag.");
 				}
 			} else if (tag.IsDocumentType) {
 				tag.AddChildren(ReadContentOfDTD());
@@ -470,6 +478,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 				text.StartOffset = this.CurrentLocation;
 				int start = this.CurrentLocation;
 				
+				// Whitespace would be skipped anyway by any operation
+				TryMoveToNonWhiteSpace(fragmentEnd);
+				int wsEnd = this.CurrentLocation;
+				
 				// Try move to the terminator given by the context
 				if (type == TextType.WhiteSpace) {
 					TryMoveToNonWhiteSpace(fragmentEnd);
@@ -516,6 +528,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 				} else {
 					throw new Exception("Uknown type " + type);
 				}
+				
+				text.ContainsOnlyWhitespace = (wsEnd == this.CurrentLocation);
 				
 				// Terminal found or real end was reached;
 				bool finished = this.CurrentLocation < fragmentEnd || IsEndOfFile();
@@ -664,7 +678,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 				
 				// Resolve the name
 				string replacement;
-				if (name == "amp") {
+				if (name == "") {
+					replacement = null;
+					OnSyntaxError(owner, errorLoc + 1, errorLoc + 1, "Entity name expected");
+				} else if (name == "amp") {
 					replacement = "&";
 				} else if (name == "lt") {
 					replacement = "<";
@@ -697,6 +714,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 					} else {
 						replacement = null;
 					}
+				} else if (!IsValidName(name)) {
+					replacement = null;
+					OnSyntaxError(owner, errorLoc + 1, errorLoc + 1, "Invalid entity name");
 				} else {
 					replacement = null;
 					if (parser.UknonwEntityReferenceIsError) {
