@@ -77,6 +77,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 				foreach(AXmlText text in tag.Children.OfType<AXmlText>()) {
 					sb.Append(text.Value);
 				}
+				if (tag.Children.Count == 0)
+					sb.Append(' ');
 				sb.Append("?>");
 			} else if (tag.IsCData) {
 				foreach(AXmlText text in tag.Children.OfType<AXmlText>()) {

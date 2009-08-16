@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace ICSharpCode.AvalonEdit.Xml.Tests
 {
 	[TestFixture]
-	[Ignore]
 	public class W3C
 	{
 		readonly string zipFileName = @"XmlParser\W3C.zip";
@@ -58,6 +57,7 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 		public void Valid()
 		{
 			string[] exclude = {
+				"ibm02v01", "ibm03v01", "ibm85v01", "ibm86v01", "ibm87v01", "ibm88v01", "ibm89v01", // NAME in DTD infoset
 			};
 			TestFiles(GetXmlFilesStartingWith("ibm/valid/"), true, exclude);
 		}
@@ -66,11 +66,13 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 		public void Invalid()
 		{
 			string[] exclude = {
+				"ibm56i03", // Default attribute value
 			};
 			TestFiles(GetXmlFilesStartingWith("ibm/invalid/"), true, exclude);
 		}
 		
 		[Test]
+		[Ignore]
 		public void NotWellformed()
 		{
 			string[] exclude = {
@@ -97,15 +99,25 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 			}
 		}
 		
-		void TestFile(ZipEntry zipEntry, bool isWellFormed)
+		/// <remarks>
+		/// If using DTD, canonical representation is not checked
+		/// If using DTD, uknown entiry references are not error
+		/// </remarks>
+		bool TestFile(ZipEntry zipEntry, bool isWellFormed)
 		{
+			bool passed = true;
+			
 			string fileName = zipEntry.Name;
 			Debug.WriteLine("Testing " + fileName + "...");
 			string content = Decompress(zipEntry);
 			string description = null;
 			descriptions.TryGetValue(fileName, out description);
 			AXmlParser parser = new AXmlParser(content);
-			parser.EntityReferenceIsError = false;
+			
+			bool usingDTD = content.Contains("<!DOCTYPE") && (content.Contains("<!ENTITY") || content.Contains(" SYSTEM "));
+			if (usingDTD)
+				parser.UknonwEntityReferenceIsError = false;
+			
 			var document = parser.Parse();
 			
 			string printed = PrettyPrintAXmlVisitor.PrettyPrint(document);
@@ -114,9 +126,10 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 				errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
 				errorOutput.AppendFormat("Pretty printed:\n{0}\n", Indent(printed));
 				errorOutput.AppendLine();
+				passed = false;
 			}
 			
-			if (isWellFormed) {
+			if (isWellFormed && !usingDTD) {
 				string canonicalFilename = fileName.Replace("/ibm", "/out/ibm");
 				ZipEntry canonicalFile = files.FirstOrDefault(f => f.Name == canonicalFilename);
 				if (canonicalFile != null) {
@@ -128,10 +141,12 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 						errorOutput.AppendFormat("Seen:\n{0}\n", Indent(canonicalPrint));
 						errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
 						errorOutput.AppendLine();
+						passed = false;
 					}
 				} else {
 					errorOutput.AppendFormat("Can not find canonical file for \"{0}\"", fileName);
 					errorOutput.AppendLine();
+					passed = false;
 				}
 			}
 			
@@ -147,6 +162,7 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 				}
 				errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
 				errorOutput.AppendLine();
+				passed = false;
 			}
 			
 			if (!isWellFormed && !hasErrors) {
@@ -156,7 +172,10 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 				}
 				errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
 				errorOutput.AppendLine();
+				passed = false;
 			}
+			
+			return passed;
 		}
 		
 		string Indent(string text)

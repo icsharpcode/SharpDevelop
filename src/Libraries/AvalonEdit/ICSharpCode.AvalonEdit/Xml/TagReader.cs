@@ -430,9 +430,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 			return text;
 		}
 		
-		const int maxEntityLength = 12; // The longest build-in one is 10 ("&#1114111;")
+		const int maxEntityLength = 16; // The longest build-in one is 10 ("&#1114111;")
 		const int maxTextFragmentSize = 64;
-		const int lookAheadLenght = (3 * maxTextFragmentSize) / 2; // More so that we do not get small "what was inserted" fragments
+		const int lookAheadLength = (3 * maxTextFragmentSize) / 2; // More so that we do not get small "what was inserted" fragments
 		
 		/// <summary>
 		/// Reads text and optionaly separates it into fragments.
@@ -459,7 +459,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				// we hit that chache point.  It is expensive so it is off for the first run
 				if (lookahead) {
 					// Note: Must fit entity
-					AXmlObject nextFragment = trackedSegments.GetCachedObject<AXmlText>(this.CurrentLocation + maxEntityLength, lookAheadLenght - maxEntityLength, t => t.Type == type);
+					AXmlObject nextFragment = trackedSegments.GetCachedObject<AXmlText>(this.CurrentLocation + maxEntityLength, lookAheadLength - maxEntityLength, t => t.Type == type);
 					if (nextFragment != null) {
 						fragmentEnd = Math.Min(nextFragment.StartOffset, this.InputLength);
 						AXmlParser.Log("Parsing only text ({0}-{1}) because later text was already processed", this.CurrentLocation, fragmentEnd);
@@ -537,7 +537,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 				
 				text.EscapedValue = GetText(start, this.CurrentLocation);
 				if (type == TextType.CharacterData) {
-					text.Value = Dereference(text, text.EscapedValue, start);
+					// Normalize end of line first
+					text.Value = Dereference(text, NormalizeEndOfLine(text.EscapedValue), start);
 				} else {
 					text.Value = text.EscapedValue;
 				}
@@ -607,6 +608,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 					return quoted;
 				}
 			}
+		}
+		
+		string NormalizeEndOfLine(string text)
+		{
+			return text.Replace("\r\n", "\n").Replace("\r", "\n");
 		}
 		
 		string Dereference(AXmlObject owner, string text, int textLocation)
@@ -693,7 +699,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 					}
 				} else {
 					replacement = null;
-					if (parser.EntityReferenceIsError) {
+					if (parser.UknonwEntityReferenceIsError) {
 						OnSyntaxError(owner, errorLoc, errorLoc + 1 + name.Length + 1, "Unknown entity reference '{0}'", name);
 					}
 				}

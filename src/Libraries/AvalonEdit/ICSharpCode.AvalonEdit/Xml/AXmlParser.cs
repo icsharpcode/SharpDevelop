@@ -97,14 +97,14 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary>
 		/// Generate syntax error when seeing enity reference other then the build-in ones
 		/// </summary>
-		public bool EntityReferenceIsError { get; set; }
+		public bool UknonwEntityReferenceIsError { get; set; }
 		
 		/// <summary> Create new parser </summary>
 		public AXmlParser(string input)
 		{
 			this.input = input;
 			this.userDocument = new AXmlDocument() { Parser = this };
-			this.EntityReferenceIsError = true;
+			this.UknonwEntityReferenceIsError = true;
 			this.TrackedSegments = new TrackedSegmentCollection();
 		}
 		
