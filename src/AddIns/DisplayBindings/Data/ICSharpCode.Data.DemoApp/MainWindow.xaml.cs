@@ -33,9 +33,8 @@ namespace ICSharpCode.Data.DemoApp
         private void btnCreateNewEDM_Click(object sender, RoutedEventArgs e)
         {
             //EDMWizardWindow edmWizardWindow = new EDMWizardWindow("C:\\TEMP\\test.ssdl");
-            EDMWizardWindow edmWizardWindow = new EDMWizardWindow("C:\\TEMP\\test.edmx");
-            edmWizardWindow.Owner = this;
-            edmWizardWindow.ShowDialog();
+            //EDMWizardWindow edmWizardWindow = new EDMWizardWindow(new OpenedFile()
+            //edmWizardWindow.ShowDialog();
         }
     }
 }

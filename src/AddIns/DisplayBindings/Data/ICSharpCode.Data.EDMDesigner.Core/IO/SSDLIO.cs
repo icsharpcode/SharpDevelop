@@ -154,8 +154,12 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
         public static SSDLContainer ReadXElement(XElement ssdlXElement)
         {
-            var schemaElement = ssdlXElement.Element(XName.Get("StorageModels", edmxNamespace.NamespaceName)).Element(XName.Get("Schema", ssdlNamespace.NamespaceName));
-            var entityContainerElement = schemaElement.Element(XName.Get("EntityContainer", ssdlNamespace.NamespaceName));
+            XElement schemaElement = ssdlXElement.Element(XName.Get("StorageModels", edmxNamespace.NamespaceName)).Element(XName.Get("Schema", ssdlNamespace.NamespaceName));
+            
+            if (schemaElement == null || schemaElement.IsEmpty)
+            	return null;
+            
+            XElement entityContainerElement = schemaElement.Element(XName.Get("EntityContainer", ssdlNamespace.NamespaceName));
 
             var value = new SSDLContainer { Namespace = schemaElement.Attribute("Namespace").Value, Name = entityContainerElement.Attribute("Name").Value };
             SetStringValueFromAttribute(schemaElement, "Provider", provider => value.Provider = provider);

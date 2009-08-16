@@ -48,15 +48,26 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             string edmGenPath = RuntimeEnvironment.GetRuntimeDirectory() + "\\EdmGen.exe";
             edmGenPath = @"C:\Windows\Microsoft.NET\Framework\v3.5\EdmGen.exe";
 
+            StreamReader streamReader = null;
+            
             Process process = new Process();
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.WorkingDirectory = Path.GetTempPath();
             processStartInfo.FileName = edmGenPath;
-            processStartInfo.Arguments = string.Format(@"/mode:FromSSDLGeneration /inssdl:string.empty{0}.ssdlstring.empty /outcsdl:string.empty{0}.csdlstring.empty /outmsl:string.empty{0}.mslstring.empty /outobjectlayer:string.empty{1}.Designer.csstring.empty /outviews:string.empty{1}.Views.csstring.empty /Namespace:{2} /EntityContainer:{1}",
+            processStartInfo.Arguments = string.Format(@"/mode:FromSSDLGeneration /inssdl:""{0}.ssdl"" /outcsdl:""{0}.csdl"" /outmsl:""{0}.msl"" /outobjectlayer:""{1}.Designer.cs"" /outviews:""{1}.Views.cs"" /Namespace:{2} /EntityContainer:{1}",
                 filenameRump, objectContextName, objectContextNamespace);
+            processStartInfo.UseShellExecute = false;
+            processStartInfo.ErrorDialog = false;
+            processStartInfo.RedirectStandardError = true;
             process.StartInfo = processStartInfo;
             process.Start();
             process.WaitForExit();
+            
+            if (process.ExitCode != 0)
+            {
+            	TextReader textReader = process.StandardError;
+            	throw new Exception("An error occured during generating the EDMX file.", new Exception(textReader.ReadToEnd()));
+            }
 
             XDocument csdlXDocument = XDocument.Load(filenameRump + ".csdl");
             XDocument mslXDocument = XDocument.Load(filenameRump + ".msl");

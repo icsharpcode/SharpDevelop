@@ -6,6 +6,7 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.SSDL;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
 using ICSharpCode.Data.EDMDesigner.Core.IO;
+using System.IO;
 
 #endregion
 
@@ -20,6 +21,16 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer
         public EDMView(string edmxPath, Action<XElement> readMoreAction)
         {
             EDM = EDMXIO.Read(edmxPath, readMoreAction);
+        }
+
+        public EDMView(Stream stream, Action<XElement> readMoreAction)
+        {
+            EDM = EDMXIO.Read(stream, readMoreAction);
+        }
+        
+        public EDMView(XDocument edmxDocument, Action<XElement> readMoreAction)
+        {
+        	EDM = EDMXIO.Read(edmxDocument, readMoreAction);
         }
 
         public EDM EDM { get; private set; }

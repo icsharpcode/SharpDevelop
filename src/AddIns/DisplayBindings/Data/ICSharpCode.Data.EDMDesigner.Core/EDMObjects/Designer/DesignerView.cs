@@ -19,6 +19,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer
             return new DesignerView { Name = "NewDesignerView", Zoom = 100 };
         }
 
+        public bool ArrangeTypeDesigners { get; set; } 
+        
         public string Name { get; set; }
 
         public int Zoom { get; set; }

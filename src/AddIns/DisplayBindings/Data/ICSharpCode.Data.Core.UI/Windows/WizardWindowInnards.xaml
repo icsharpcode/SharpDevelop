@@ -36,7 +36,7 @@
                 <Button x:Name="btnPrevious" Margin="3,3,1,3" Padding="3" IsEnabled="False" Click="btnPrevious_Click">Previous</Button>
                 <Button x:Name="btnNext" Margin="1,3,3,3" Padding="3" Click="btnNext_Click">Next</Button>
                 <Button x:Name="btnFinish" Margin="3" Padding="3" IsEnabled="False" Click="btnFinish_Click">Finish</Button>
-                <Button x:Name="btnCancel" Margin="3" Padding="3" Click="btnCancel_Click">Cancel</Button>
+                <Button x:Name="btnCancel" Margin="3" Padding="3" IsCancel="True" Click="btnCancel_Click">Cancel</Button>
             </StackPanel>
         </Grid>
     </Grid>

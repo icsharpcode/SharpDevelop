@@ -89,6 +89,9 @@
     <Compile Include="Pad\DatabasesTreeViewUserControl.xaml.cs">
       <DependentUpon>DatabasesTreeViewUserControl.xaml</DependentUpon>
     </Compile>
+    <None Include="Templates\Files\CSharp.EDMX.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Pad\DatabasesTreeViewUserControl.xaml">
@@ -106,6 +109,8 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="Templates" />
+    <Folder Include="Templates\Files" />
     <Folder Include="Windows\" />
   </ItemGroup>
   <ItemGroup>

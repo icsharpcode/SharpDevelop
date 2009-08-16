@@ -5,18 +5,21 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Xml.Linq;
+
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Property;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Type;
 using ICSharpCode.Data.EDMDesigner.Core.IO;
+using ICSharpCode.Data.EDMDesigner.Core.UI.Helpers;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType;
+using ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Data.EDMDesigner.Core.UI.Helpers;
 
 #endregion
 
@@ -26,6 +29,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
     {
         #region Fields
 
+        private ScrollViewer _scrollViewer = new ScrollViewer() { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
         private DesignerCanvas _designerCanvas = null;
         private PropertyContainer _propertyContainer = new PropertyContainer();
         private EDMView _edmView = null;
@@ -60,9 +64,14 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
         }
 		
 		public override object Control 
-        {
-            get { return _designerCanvas; }
+       {
+            get { return _scrollViewer; }
 		}
+		
+		public DesignerCanvas DesignerCanvas 
+       {
+            get { return _designerCanvas; }
+		}		
 
         #endregion
 
@@ -87,47 +96,56 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 
             XElement edmxElement = null;
             Action<XElement> readMoreAction = edmxElt => edmxElement = edmxElt;            
-            _edmView = new EDMView(file.FileName, readMoreAction);
+            _edmView = new EDMView(stream, readMoreAction);
+            
+            if (_edmView.EDM.IsEmpty)
+            {
+            	 edmxElement = null;
+            	 EDMWizardWindow wizard = RunWizard(file);
+                
+                if (wizard.DialogResult == true)
+                	_edmView = new EDMView(wizard.EDMXDocument, readMoreAction);
+            }
 
             EntityTypeDesigner.Init = true;
 
-            DesignerIO.Read(_edmView, edmxElement.Element("DesignerViews"), entityType => new EntityTypeDesigner(entityType), complexType => new ComplexTypeDesigner(complexType));
+            if (edmxElement != null && edmxElement.Element("DesignerViews") != null)
+            	DesignerIO.Read(_edmView, edmxElement.Element("DesignerViews"), entityType => new EntityTypeDesigner(entityType), complexType => new ComplexTypeDesigner(complexType));
             
             EntityTypeDesigner.Init = false;
 
             VisualHelper.DoEvents();
 
             _designerCanvas = DesignerCanvas.GetDesignerCanvas(this, _edmView, _edmView.DesignerViews.FirstOrDefault());
-
+			 _scrollViewer.Content = _designerCanvas;
+            
             CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Add(_edmView.CSDL);
 		}
 		
 		public override void Save(OpenedFile file, Stream stream)
 		{
 			Debug.Assert(file == this.PrimaryFile);
-            //Writer.Write(_designerCanvas.EDMView.EDM, EDMDesignerView.Writer.Write(_designerCanvas.EDMView)).Save(file.FileName);
+           //Writer.Write(_designerCanvas.EDMView.EDM, EDMDesignerView.Writer.Write(_designerCanvas.EDMView)).Save(file.FileName);
 		}
-
-        internal void ShowPropertiesTab()
-        { }
-
-        internal void ShowPropertiesTab(IUIType type)
-        { }
-
-        internal void ShowPropertiesTab(UIProperty property)
-        { }
-
-        internal void ShowMappingTab()
-        { }
-
-        internal void ShowMappingTab(IUIType type)
-        { }
+		
+		private EDMWizardWindow RunWizard(OpenedFile file)
+		{
+            EDMWizardWindow wizard = new EDMWizardWindow(file);
+            wizard.Owner = Application.Current.MainWindow;
+            wizard.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            wizard.ShowDialog();
+            
+            return wizard;
+		}
 
         public override void Dispose()
         {
             if (CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Contains(_edmView.CSDL))
                 CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Remove(_edmView.CSDL);
         }
+
+        public void ShowMappingTab(IUIType uiType)
+        { }
 
         #endregion
 

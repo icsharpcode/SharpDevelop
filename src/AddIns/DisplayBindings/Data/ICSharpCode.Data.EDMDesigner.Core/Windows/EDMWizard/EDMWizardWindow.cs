@@ -20,6 +20,7 @@ using ICSharpCode.Data.Core.UI.Windows;
 using System.IO;
 using System.Xml.Linq;
 using ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters;
+using ICSharpCode.SharpDevelop;
 
 #endregion
 
@@ -33,7 +34,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
         private IDatabase _selectedDatabase = null;
         private string _modelNamespace = string.Empty;
         private string _objectContextName = string.Empty;
-        private string _filename = string.Empty;
+        private OpenedFile _file = null;
+        private XDocument _edmxDocument = null;
 
         #endregion
 
@@ -62,9 +64,14 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
             }
         }
 
-        public string Filename
+        public OpenedFile File
         {
-            get { return _filename; }
+            get { return _file; }
+        }
+        
+        public XDocument EDMXDocument
+        {
+        	get { return _edmxDocument; }
         }
 
         public string EntityConnectionString
@@ -74,9 +81,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
                 if (_selectedDatabase == null)
                     return string.Empty;
 
-                FileInfo fileInfo = new FileInfo(_filename);
+                FileInfo fileInfo = new FileInfo(_file.FileName);
 
-                return string.Format(@"metadata=res://*/{0}.csdl|res://*/{0}.ssdl|res://*/{0}.msl;provider={1};provider connection string=string.empty{2}string.empty",
+                return string.Format(@"metadata=res://*/{0}.csdl|res://*/{0}.ssdl|res://*/{0}.msl;provider={1};provider connection string=""{2}""",
                     fileInfo.Name.Replace(fileInfo.Extension, string.Empty), _selectedDatabase.Datasource.DatabaseDriver.ProviderName, _selectedDatabase.ConnectionString);
             }
         }
@@ -127,15 +134,15 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
 
         #region Constructor
 
-        public EDMWizardWindow(string filename)
+        public EDMWizardWindow(OpenedFile file)
         {
             Title = "Entity Framework Wizard";
             Width = 640;
             Height = 480;
             AddWizardUserControl<ChooseDatabaseConnectionUserControl>();
             AddWizardUserControl<ChooseDatabaseObjectsUserControl>();
-            
-            _filename = filename;
+
+            _file = file;
         }
 
         #endregion
@@ -155,22 +162,15 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
             }
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
-        }
-
         #endregion
 
         #region Methods
 
         public override void OnFinished()
-        {
+        {          
             if (SelectedDatabase != null)
             {
-                XDocument edmxDocument = EDMConverter.CreateEDMXFromIDatabase(SelectedDatabase, ModelNamespace, "TestNamespace", ObjectContextName);
-                edmxDocument.Save(_filename);
+                _edmxDocument = EDMConverter.CreateEDMXFromIDatabase(SelectedDatabase, ModelNamespace, "TestNamespace", ObjectContextName);
             }
         }
 

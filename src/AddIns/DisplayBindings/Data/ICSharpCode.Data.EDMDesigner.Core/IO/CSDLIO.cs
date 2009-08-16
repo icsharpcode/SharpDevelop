@@ -21,19 +21,23 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
         public static CSDLContainer ReadXElement(XElement edmxRuntime)
         {
-            var schemaElement = edmxRuntime.Element(XName.Get("ConceptualModels", edmxNamespace.NamespaceName)).Element(XName.Get("Schema", csdlNamespace.NamespaceName));
-            var entityContainerElement = schemaElement.Element(XName.Get("EntityContainer", csdlNamespace.NamespaceName));
+            XElement schemaElement = edmxRuntime.Element(XName.Get("ConceptualModels", edmxNamespace.NamespaceName)).Element(XName.Get("Schema", csdlNamespace.NamespaceName));
+            
+            if (schemaElement == null || schemaElement.IsEmpty)
+            	return null;
+            
+            XElement entityContainerElement = schemaElement.Element(XName.Get("EntityContainer", csdlNamespace.NamespaceName));
 
-            var value = new CSDLContainer { Namespace = schemaElement.Attribute("Namespace").Value, Alias = schemaElement.Attribute("Alias").Value, Name = entityContainerElement.Attribute("Name").Value };
+            CSDLContainer csdlContainer = new CSDLContainer { Namespace = schemaElement.Attribute("Namespace").Value, Alias = schemaElement.Attribute("Alias").Value, Name = entityContainerElement.Attribute("Name").Value };
 
             #region EntityTypes
             while (true)
             {
                 var typesEnumerator = (from ete in schemaElement.Elements(XName.Get("EntityType", csdlNamespace.NamespaceName))
                                        let eteName = ete.Attribute("Name").Value
-                                       where !value.EntityTypes.Any(et => et.Name == eteName)
+                                       where !csdlContainer.EntityTypes.Any(et => et.Name == eteName)
                                        let baseTypeAttribute = ete.Attribute("BaseType")
-                                       let baseType = baseTypeAttribute == null ? null : value.EntityTypes.GetByName(GetName(baseTypeAttribute.Value))
+                                       let baseType = baseTypeAttribute == null ? null : csdlContainer.EntityTypes.GetByName(GetName(baseTypeAttribute.Value))
                                        where baseTypeAttribute == null || baseType != null
                                        select new { EntityTypeElement = ete, Name = eteName, BaseType = baseType }).GetEnumerator();
                 if (!typesEnumerator.MoveNext())
@@ -41,13 +45,13 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                 do
                 {
                     var current = typesEnumerator.Current;
-                    value.EntityTypes.Add(ReadCSDLEntityType(schemaElement, entityContainerElement, current.EntityTypeElement, value, current.Name, current.BaseType));
+                    csdlContainer.EntityTypes.Add(ReadCSDLEntityType(schemaElement, entityContainerElement, current.EntityTypeElement, csdlContainer, current.Name, current.BaseType));
                 } while (typesEnumerator.MoveNext());
             }
             #endregion EntityTypes
 
             #region Associations
-            foreach (var association in value.AssociationsCreated)
+            foreach (var association in csdlContainer.AssociationsCreated)
             {
                 association.AssociationSetName = entityContainerElement.Elements(XName.Get("AssociationSet", csdlNamespace.NamespaceName)).First(ae => GetName(ae.Attribute("Association").Value) == association.Name).Attribute("Name").Value;
                 if (association.PropertyEnd2.EntityType == null)
@@ -56,7 +60,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                     int dotIndex = entityTypeName.IndexOf(".");
                     if (dotIndex != -1)
                         entityTypeName = entityTypeName.Substring(dotIndex + 1);
-                    var entityType = value.EntityTypes.First(et => et.Name == entityTypeName); ;
+                    var entityType = csdlContainer.EntityTypes.First(et => et.Name == entityTypeName); ;
                     entityType.NavigationProperties.Add(association.PropertyEnd2);
                 }
             }
@@ -66,8 +70,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             foreach (var complexTypeElement in schemaElement.Elements(XName.Get("ComplexType", csdlNamespace.NamespaceName)))
             {
                 var complexType = new ComplexType { Name = complexTypeElement.Attribute("Name").Value };
-                ReadCSDLType(schemaElement, complexTypeElement, value, complexType);
-                value.ComplexTypes.Add(complexType);
+                ReadCSDLType(schemaElement, complexTypeElement, csdlContainer, complexType);
+                csdlContainer.ComplexTypes.Add(complexType);
             }
             #endregion ComplexTypes
 
@@ -82,7 +86,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                     returnTypeValue = returnTypeValue.Remove(returnTypeValue.IndexOf(")")).Substring(returnTypeValue.IndexOf("(") + 1);
                     function.ScalarReturnType = GetScalarPropertyTypeFromAttribute(returnTypeValue);
                     if (function.ScalarReturnType == null)
-                        function.EntityType = value.EntityTypes.GetByName(GetName(returnTypeValue));
+                        function.EntityType = csdlContainer.EntityTypes.GetByName(GetName(returnTypeValue));
                 }
                 SetVisibilityValueFromAttribute(functionElement, "methodAccess", visibility => function.Visibility = visibility);
 
@@ -98,11 +102,11 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                 }
                 #endregion Function parameters
 
-                value.Functions.Add(function);
+                csdlContainer.Functions.Add(function);
             }
             #endregion Functions
 
-            return value;
+            return csdlContainer;
         }
 
         #endregion

@@ -40,4 +40,9 @@
   	                fileNamePattern="\.(edmx)$"
   	                languagePattern="^Edmx$" />
   </Path>
+
+  <!--Template path -->
+  <Path name = "/SharpDevelop/BackendBindings/Templates">
+    <Directory id = "Data" path = "./Templates/Files" />
+  </Path>
 </AddIn>

@@ -22,7 +22,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
 {
     public partial class DesignerCanvas : Canvas
     {
-        static DesignerCanvas()
+    	 static DesignerCanvas()
         {
             ResourceDictionaryLoader.LoadResourceDictionary("/UserControls/DesignerCanvasResourceDictionary.xaml");
         }
@@ -31,6 +31,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
         {
             _container = container; 
             AllowDrop = true;
+            Loaded += new RoutedEventHandler(DesignerCanvas_Loaded);
             InitContextMenuCommandBindings();
         }
 
@@ -39,6 +40,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
             get { return (EDMView)GetValue(EDMViewProperty); }
             set { SetValue(EDMViewProperty, value); }
         }
+        
         public static readonly DependencyProperty EDMViewProperty =
             DependencyProperty.Register("EDMView", typeof(EDMView), typeof(DesignerCanvas), new UIPropertyMetadata(null, 
                 (sender, e) =>
@@ -61,6 +63,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
             get { return (DesignerView)GetValue(DesignerViewProperty); }
             set { SetValue(DesignerViewProperty, value); }
         }
+        
         public static readonly DependencyProperty DesignerViewProperty =
             DependencyProperty.Register("DesignerView", typeof(DesignerView), typeof(DesignerCanvas), new UIPropertyMetadata(null, (sender, e) =>
             {
@@ -78,24 +81,40 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
             }));
 
         private static Dictionary<DesignerView, DesignerCanvas> _designerCanvas = new Dictionary<DesignerView, DesignerCanvas>();
+        
         public static DesignerCanvas GetDesignerCanvas(EDMDesignerViewContent container, EDMView edmView, DesignerView designerView)
         {
-            DesignerCanvas value;
-            if (_designerCanvas.ContainsKey(designerView))
+            DesignerCanvas designerCanvas = null;
+                
+            if (designerView == null)
             {
-                value = _designerCanvas[designerView];
-                var parent = value.Parent as DesignerCanvasPreview;
+                designerView = new DesignerView();
+                designerView.ArrangeTypeDesigners = true;
+                designerView.Name = edmView.Name;
+                designerView.Zoom = 100;
+                
+                foreach(UIEntityType entityType in edmView.CSDL.EntityTypes)
+                {
+                    designerView.AddTypeDesigner(new EntityTypeDesigner(entityType) { IsExpanded = true });
+                }
+            }
+            
+            if (designerView != null && _designerCanvas.ContainsKey(designerView))
+            {
+                designerCanvas = _designerCanvas[designerView];
+                var parent = designerCanvas.Parent as DesignerCanvasPreview;
                 if (parent != null)
                     parent.Content = null;
                 else
-                    ((ContentControl)value.Parent).Content = null;
+                    ((ContentControl)designerCanvas.Parent).Content = null;
             }
             else
             {
-                value = new DesignerCanvas(container) { EDMView = edmView, DesignerView = designerView, Background = Brushes.White };
-                _designerCanvas.Add(designerView, value);
+                designerCanvas = new DesignerCanvas(container) { EDMView = edmView, DesignerView = designerView, Background = Brushes.White };
+                _designerCanvas.Add(designerView, designerCanvas);
             }
-            return value;
+            
+            return designerCanvas;
         }
         public static IEnumerable<DesignerView> DesignerInCache
         {
@@ -292,6 +311,32 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
             }
         }
 
+		private void DesignerCanvas_Loaded(object sender, RoutedEventArgs e)
+		{
+            if (DesignerView.ArrangeTypeDesigners)
+            {
+                double left = 20, top = 20;
+                double currentRowsMaxHeight = 0;
+                
+                foreach(EntityTypeDesigner entityTypeDesigner in DesignerView.TypeDesignersLocations)
+                {
+                     entityTypeDesigner.Left = left;
+                     entityTypeDesigner.Top = top;
+                     
+                     if (entityTypeDesigner.ActualHeight > currentRowsMaxHeight)
+                     		currentRowsMaxHeight = entityTypeDesigner.ActualHeight;
+                     
+                     left += entityTypeDesigner.ActualWidth + 20;
+                     
+                     if (left > ActualWidth)
+                     {
+                          top += currentRowsMaxHeight + 20;
+                          left = 20;		
+                     }
+                }
+            }
+		}
+        
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
         {
             base.OnPreviewMouseDown(e);

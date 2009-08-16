@@ -23,9 +23,23 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
         public static CSDLContainer IntegrateMSLInCSDLContainer(CSDLContainer csdlContainer, SSDLContainer ssdlContainer, XElement edmxRuntime)
         {
-            var entityContainerMappingElement = edmxRuntime.Element(XName.Get("Mappings", edmxNamespace.NamespaceName)).Element(XName.Get("Mapping", mslNamespace.NamespaceName)).Element(XName.Get("EntityContainerMapping", mslNamespace.NamespaceName));
+            XElement mappingsElement = edmxRuntime.Element(XName.Get("Mappings", edmxNamespace.NamespaceName));
+            
+            if (mappingsElement == null || mappingsElement.IsEmpty)
+            	return null;
+            
+            XElement mappingElement = mappingsElement.Element(XName.Get("Mapping", mslNamespace.NamespaceName));
+            
+            if (mappingElement == null || mappingElement.IsEmpty)
+            	return null;
 
+            XElement entityContainerMappingElement = mappingElement.Element(XName.Get("EntityContainerMapping", mslNamespace.NamespaceName));
+            
+            if (entityContainerMappingElement == null || entityContainerMappingElement.IsEmpty)
+            	return null;
+            
             #region EntityTypes
+            
             foreach (var entityTypeMappingElement in entityContainerMappingElement.Elements(XName.Get("EntitySetMapping", mslNamespace.NamespaceName)).SelectMany(entitySetElement => entitySetElement.Elements(XName.Get("EntityTypeMapping", mslNamespace.NamespaceName))))
             {
                 var typeName = entityTypeMappingElement.Attribute("TypeName").Value;
@@ -47,6 +61,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                     MapComplexProperties(mappingFragmentElement, mapping, entityType, table);
 
                     #region Conditions
+                    
                     foreach (var conditionElement in mappingFragmentElement.Elements(XName.Get("Condition", mslNamespace.NamespaceName)))
                     {
                         var columnNameAttribute = conditionElement.Attribute("ColumnName");
@@ -70,6 +85,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                         }
                         mapping.ConditionsMapping.Add(condition);
                     }
+                    
                     #endregion Conditions
                 }
                 mapping.Init = true;

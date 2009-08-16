@@ -17,6 +17,16 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects
     {
         public SSDLContainer SSDLContainer { get; set; }
         public CSDLContainer CSDLContainer { get; set; }
+        public bool IsEmpty 
+        {
+        	get 
+        	{
+        		if (SSDLContainer == null || CSDLContainer == null)
+        			return true;
+				else
+					return false;
+        	}
+        }
 
         public IEnumerable<DesignerProperty> DesignerProperties { get; internal set; }
         public IEnumerable<DesignerProperty> EDMXDesignerDesignerProperties { get; internal set; }

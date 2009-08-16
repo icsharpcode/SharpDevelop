@@ -2,9 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
+
 using ICSharpCode.Data.Core.UI.UserControls;
 
 #endregion
@@ -34,6 +36,7 @@ namespace ICSharpCode.Data.Core.UI.Windows
         {
             _wizardWindowInnards = new WizardWindowInnards(this);
             Content = _wizardWindowInnards;
+            Closing += new CancelEventHandler(WizardWindow_Closing);
         }
 
         #endregion
@@ -48,7 +51,20 @@ namespace ICSharpCode.Data.Core.UI.Windows
         }
 
         public virtual void OnFinished()
-        { }
+        {
+        	if (!DialogResult.HasValue) 
+        		DialogResult = true;
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void WizardWindow_Closing(object sender, CancelEventArgs e)
+        {
+        	if (!DialogResult.HasValue)
+        		DialogResult = false;
+        }
 
         #endregion
     }

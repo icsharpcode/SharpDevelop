@@ -385,24 +385,24 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType
                         },
                         (sender, e) => e.CanExecute = ApplyPasteVisible() && CanPaste()
                     ),
-                    new CommandBinding(PropertiesCommand,
-                        delegate
-                        {
-                            var focusedObject = VisualTreeHelperUtil.GetFocusedElement(this);
-                            if (VisualTreeHelperUtil.IsAscendant(propertiesListView, focusedObject))
-                                Designer.Container.ShowPropertiesTab((UIProperty)propertiesListView.SelectedItem);
-                            else
-                                Designer.Container.ShowPropertiesTab(UIType);
-                        },
-                        (sender, e) =>
-                        {
-                            var propertiesMenuItem = ContextMenu.GetMenuItem(MENUITEM_PROPERTIES);
-                            if (SetVisibility(propertiesMenuItem, () => ApplyNotVisibleIfMoreThanOneTypeSelected(propertiesMenuItem) && !_groupRightClick && (!PropertiesTreeViewFocused || propertiesListView.SelectedItems.Count == 1)))
-                                e.CanExecute = true;
-                            else
-                                e.CanExecute = false;
-                        }
-                    ),
+                    //new CommandBinding(PropertiesCommand,
+                    //    delegate
+                    //    {
+                    //        var focusedObject = VisualTreeHelperUtil.GetFocusedElement(this);
+                    //        if (VisualTreeHelperUtil.IsAscendant(propertiesListView, focusedObject))
+                    //            Designer.Container.ShowPropertiesTab((UIProperty)propertiesListView.SelectedItem);
+                    //        else
+                    //            Designer.Container.ShowPropertiesTab(UIType);
+                    //    },
+                    //    (sender, e) =>
+                    //    {
+                    //        var propertiesMenuItem = ContextMenu.GetMenuItem(MENUITEM_PROPERTIES);
+                    //        if (SetVisibility(propertiesMenuItem, () => ApplyNotVisibleIfMoreThanOneTypeSelected(propertiesMenuItem) && !_groupRightClick && (!PropertiesTreeViewFocused || propertiesListView.SelectedItems.Count == 1)))
+                    //            e.CanExecute = true;
+                    //        else
+                    //            e.CanExecute = false;
+                    //    }
+                    //),
                     new CommandBinding(MappingCommand,
                         delegate 
                         {
