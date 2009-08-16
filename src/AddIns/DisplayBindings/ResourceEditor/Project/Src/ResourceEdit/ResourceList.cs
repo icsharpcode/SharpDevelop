@@ -15,7 +15,6 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.SharpDevelop.Internal.Undo;
 using ICSharpCode.SharpDevelop.Widgets.ListViewSorting;
 
 namespace ResourceEditor
@@ -34,7 +33,6 @@ namespace ResourceEditor
 		Dictionary<string, ResourceItem> metadata = new Dictionary<string, ResourceItem>();
 		ImageList images = new ImageList();
 		
-		UndoStack undoStack = null;
 		bool writeProtected = false;
 		int editListViewItemIndex = -1;
 		
@@ -59,13 +57,6 @@ namespace ResourceEditor
 			}
 		}
 		
-		public UndoStack UndoStack
-		{
-			get {
-				return undoStack;
-			}
-		}
-		
 		public PrintDocument PrintDocument
 		{
 			get {
@@ -81,8 +72,6 @@ namespace ResourceEditor
 		
 		public ResourceList(ResourceEditorControl editor)
 		{
-			undoStack        = new UndoStack();
-			
 			name.Text     = ResourceService.GetString("Global.Name");
 			name.Width    = 250;
 			
