@@ -74,6 +74,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
                 designerCanvas.Loaded +=
                     delegate
                     {
+                        VisualHelper.DoEvents();
+
                         foreach (TypeBaseDesigner typeBaseDesigner in designerView)
                             typeBaseDesigner.DrawRelations();
                         designerCanvas.Zoom = designerView.Zoom;

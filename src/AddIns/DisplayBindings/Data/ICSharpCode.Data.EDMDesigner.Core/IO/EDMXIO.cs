@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Xml.Linq;
+using ICSharpCode.Data.Core.Common;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.SSDL;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.CSDL;
@@ -47,10 +48,14 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             {
                 SSDLContainer = ssdlContainer,
                 CSDLContainer = MSLIO.IntegrateMSLInCSDLContainer(csdlContainer, ssdlContainer, edmxRuntime),
-                DesignerProperties = edmxDesigner.Element(XName.Get("Connection", edmxNamespace.NamespaceName)).Element(XName.Get("DesignerInfoPropertySet", edmxNamespace.NamespaceName)).Elements(XName.Get("DesignerProperty", edmxNamespace.NamespaceName)).Select(e => new DesignerProperty { Name = e.Attribute("Name").Value, Value = e.Attribute("Value").Value }),
-                EDMXDesignerDesignerProperties = edmxDesigner.Element(XName.Get("Options", edmxNamespace.NamespaceName)).Element(XName.Get("DesignerInfoPropertySet", edmxNamespace.NamespaceName)).Elements(XName.Get("DesignerProperty", edmxNamespace.NamespaceName)).Select(e => new DesignerProperty { Name = e.Attribute("Name").Value, Value = e.Attribute("Value").Value }),
-                EDMXDesignerDiagrams = edmxDesigner.Element(XName.Get("Diagrams", edmxNamespace.NamespaceName)).Elements(XName.Get("Diagram", edmxNamespace.NamespaceName))
             };
+
+            if (edmxDesigner != null)
+            {
+                edm.DesignerProperties = edmxDesigner.Element(XName.Get("Connection", edmxNamespace.NamespaceName)).Element(XName.Get("DesignerInfoPropertySet", edmxNamespace.NamespaceName)).Elements(XName.Get("DesignerProperty", edmxNamespace.NamespaceName)).Select(e => new DesignerProperty { Name = e.Attribute("Name").Value, Value = e.Attribute("Value").Value });
+                edm.EDMXDesignerDesignerProperties = edmxDesigner.Element(XName.Get("Options", edmxNamespace.NamespaceName)).Element(XName.Get("DesignerInfoPropertySet", edmxNamespace.NamespaceName)).Elements(XName.Get("DesignerProperty", edmxNamespace.NamespaceName)).Select(e => new DesignerProperty { Name = e.Attribute("Name").Value, Value = e.Attribute("Value").Value });
+                edm.EDMXDesignerDiagrams = edmxDesigner.Element(XName.Get("Diagrams", edmxNamespace.NamespaceName)).Elements(XName.Get("Diagram", edmxNamespace.NamespaceName));
+            }
 
             readMoreAction(edmx);
             return edm;

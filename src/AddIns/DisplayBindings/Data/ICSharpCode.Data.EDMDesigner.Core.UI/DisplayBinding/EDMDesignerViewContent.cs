@@ -102,19 +102,22 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
             {
             	 edmxElement = null;
             	 EDMWizardWindow wizard = RunWizard(file);
-                
-                if (wizard.DialogResult == true)
-                	_edmView = new EDMView(wizard.EDMXDocument, readMoreAction);
+
+                 if (wizard.DialogResult == true)
+                 {
+                     _edmView = new EDMView(wizard.EDMXDocument, readMoreAction);
+                     //wizard.EDMXDocument.Save("C:\\temp\\test.edmx");
+                 }
             }
 
             EntityTypeDesigner.Init = true;
 
             if (edmxElement != null && edmxElement.Element("DesignerViews") != null)
             	DesignerIO.Read(_edmView, edmxElement.Element("DesignerViews"), entityType => new EntityTypeDesigner(entityType), complexType => new ComplexTypeDesigner(complexType));
-            
+
             EntityTypeDesigner.Init = false;
 
-            VisualHelper.DoEvents();
+            //VisualHelper.DoEvents();
 
             _designerCanvas = DesignerCanvas.GetDesignerCanvas(this, _edmView, _edmView.DesignerViews.FirstOrDefault());
 			 _scrollViewer.Content = _designerCanvas;

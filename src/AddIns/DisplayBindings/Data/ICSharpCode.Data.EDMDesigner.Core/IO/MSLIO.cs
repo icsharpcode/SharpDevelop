@@ -20,6 +20,39 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
     public class MSLIO : IO
     {
         #region Methods
+        
+        public static XDocument GenerateTypeMapping(XDocument mslDocument)
+        {
+            XElement mappingElement = mslDocument.Element(XName.Get("Mapping", mslNamespace.NamespaceName));
+
+            if (mappingElement == null || mappingElement.IsEmpty)
+                return null;
+
+            XElement entityContainerMappingElement = mappingElement.Element(XName.Get("EntityContainerMapping", mslNamespace.NamespaceName));
+
+            if (entityContainerMappingElement == null || entityContainerMappingElement.IsEmpty)
+                return null;
+
+            foreach (XElement entitySetMapping in entityContainerMappingElement.Elements(mslNamespace + "EntitySetMapping"))
+            {
+                string name = entitySetMapping.Attribute("Name").Value;
+                string storeEntitySet = entitySetMapping.Attribute("StoreEntitySet").Value;
+                string typeName = entitySetMapping.Attribute("TypeName").Value;
+
+                XElement entityTypeMapping = new XElement(mslNamespace + "EntityTypeMapping", new XAttribute("TypeName", string.Format("IsTypeOf({0})", typeName)));
+                XElement mappingFragment = null;
+                entityTypeMapping.Add(mappingFragment = new XElement(mslNamespace + "MappingFragment", new XAttribute("StoreEntitySet", storeEntitySet)));
+
+                foreach (XElement property in entitySetMapping.Elements())
+                    mappingFragment.Add(property);
+
+                entitySetMapping.RemoveAll();
+                entitySetMapping.AddAttribute("Name", name);
+                entitySetMapping.Add(entityTypeMapping);
+            }
+
+            return mslDocument;
+        }
 
         public static CSDLContainer IntegrateMSLInCSDLContainer(CSDLContainer csdlContainer, SSDLContainer ssdlContainer, XElement edmxRuntime)
         {

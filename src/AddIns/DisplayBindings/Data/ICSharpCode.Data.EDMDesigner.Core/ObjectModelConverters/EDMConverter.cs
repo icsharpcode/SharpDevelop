@@ -71,6 +71,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
 
             XDocument csdlXDocument = XDocument.Load(filenameRump + ".csdl");
             XDocument mslXDocument = XDocument.Load(filenameRump + ".msl");
+            mslXDocument = MSLIO.GenerateTypeMapping(mslXDocument);
 
             XNamespace edmxNamespace = "http://schemas.microsoft.com/ado/2007/06/edmx";
 
