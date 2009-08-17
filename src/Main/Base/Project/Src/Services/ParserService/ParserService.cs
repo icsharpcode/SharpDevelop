@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Retrieves the IParser instance that can parse the specified file.
+		/// Creates a new IParser instance that can parse the specified file.
 		/// This method is thread-safe.
 		/// </summary>
 		public static IParser CreateParser(string fileName)
@@ -321,7 +321,7 @@ namespace ICSharpCode.SharpDevelop
 		sealed class FileEntry
 		{
 			readonly string fileName;
-			readonly IParser parser;
+			internal readonly IParser parser;
 			volatile ParseInformation parseInfo;
 			ITextBufferVersion bufferVersion;
 			ICompilationUnit[] oldUnits = emptyCompilationUnitArray;
@@ -370,25 +370,22 @@ namespace ICSharpCode.SharpDevelop
 				}
 				
 				ITextBufferVersion fileContentVersion = fileContent.Version;
+				List<IProjectContent> projectContents;
 				lock (this) {
-					// unfortunaly we need this big lock to ensure that project contents are updated correctly
-					// and never move backwards in time
-					
-					if (disposed)
+					if (this.disposed)
 						return null;
 					
-					if (fileContentVersion != null && bufferVersion != null && bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
-						if (bufferVersion.CompareAge(fileContentVersion) >= 0) {
+					if (fileContentVersion != null && this.bufferVersion != null && this.bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
+						if (this.bufferVersion.CompareAge(fileContentVersion) >= 0) {
 							// Special case: (necessary due to parentProjectContent optimization)
 							// Detect when a file belongs to multiple projects but the ParserService hasn't realized
 							// that, yet. In this case, do another parse run to detect all parent projects.
-							if (!(parentProjectContent != null && oldUnits.Length == 1 && oldUnits[0].ProjectContent != parentProjectContent)) {
-								return parseInfo;
+							if (!(parentProjectContent != null && this.oldUnits.Length == 1 && this.oldUnits[0].ProjectContent != parentProjectContent)) {
+								return this.parseInfo;
 							}
 						}
 					}
 					
-					List<IProjectContent> projectContents;
 					if (parentProjectContent != null && (oldUnits.Length == 0 || (oldUnits.Length == 1 && oldUnits[0].ProjectContent == parentProjectContent))) {
 						// Optimization: if parentProjectContent is specified and doesn't conflict with what we already know,
 						// we will use it instead of doing an expensive GetProjectContents call.
@@ -397,18 +394,38 @@ namespace ICSharpCode.SharpDevelop
 					} else {
 						projectContents = GetProjectContents(fileName);
 					}
-					// parse once for each project content that contains the file
-					ICompilationUnit[] newUnits = new ICompilationUnit[projectContents.Count];
-					ICompilationUnit resultUnit = null;
+				}
+				// We now leave the lock to do the actual parsing.
+				// This is done to allow IParser implementations to invoke methods on the main thread without
+				// risking deadlocks.
+				
+				// parse once for each project content that contains the file
+				ICompilationUnit[] newUnits = new ICompilationUnit[projectContents.Count];
+				ICompilationUnit resultUnit = null;
+				for (int i = 0; i < newUnits.Length; i++) {
+					IProjectContent pc = projectContents[i];
+					newUnits[i] = parser.Parse(pc, fileName, fileContent);
+					if (i == 0 || pc == parentProjectContent)
+						resultUnit = newUnits[i];
+				}
+				lock (this) {
+					if (this.disposed)
+						return null;
+					
+					// ensure we never go backwards in time (we need to repeat this check after we've reacquired the lock)
+					if (fileContentVersion != null && this.bufferVersion != null && this.bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
+						if (this.bufferVersion.CompareAge(fileContentVersion) >= 0) {
+							return this.parseInfo;
+						}
+					}
+					
 					for (int i = 0; i < newUnits.Length; i++) {
 						IProjectContent pc = projectContents[i];
-						newUnits[i] = parser.Parse(pc, fileName, fileContent);
-						if (i == 0 || pc == parentProjectContent)
-							resultUnit = newUnits[i];
 						// update the compilation unit
 						ICompilationUnit oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
 						pc.UpdateCompilationUnit(oldUnit, newUnits[i], fileName);
 					}
+					
 					// remove all old units that don't exist anymore
 					foreach (ICompilationUnit oldUnit in oldUnits) {
 						if (!newUnits.Any(n => n.ProjectContent == oldUnit.ProjectContent))
@@ -429,15 +446,13 @@ namespace ICSharpCode.SharpDevelop
 				lock (this) {
 					// by setting the disposed flag, we'll cause all running ParseFile() calls to return null and not
 					// call into the parser anymore, so we can do the remainder of the clean-up work outside the lock
-					disposed = true;
+					this.disposed = true;
 					oldUnits = this.oldUnits;
-					bufferVersion = null;
+					this.oldUnits = null;
+					this.bufferVersion = null;
 				}
 				foreach (ICompilationUnit oldUnit in oldUnits)
 					oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
-				IDisposable d = this.parser as IDisposable;
-				if (d != null)
-					d.Dispose();
 			}
 			
 			public Task<ParseInformation> BeginParse(ITextBuffer fileContent)
@@ -659,6 +674,17 @@ namespace ICSharpCode.SharpDevelop
 			return System.Threading.Tasks.Task.Factory.StartNew<ParseInformation>(
 				delegate { return null; }
 			);
+		}
+		
+		
+		/// <summary>
+		/// Gets the parser instance that is responsible for the specified file.
+		/// Will create a new IParser instance on demand.
+		/// This method is thread-safe.
+		/// </summary>
+		public static IParser GetParser(string fileName)
+		{
+			return GetFileEntry(fileName, true).parser;
 		}
 		
 		/// <summary>
