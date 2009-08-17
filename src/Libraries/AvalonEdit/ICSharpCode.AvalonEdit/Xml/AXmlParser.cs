@@ -104,6 +104,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		{
 			this.input = input;
 			this.userDocument = new AXmlDocument() { Parser = this };
+			this.userDocument.Document = this.userDocument;
 			this.UknonwEntityReferenceIsError = true;
 			this.TrackedSegments = new TrackedSegmentCollection();
 		}
@@ -158,7 +159,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			TagReader tagReader = new TagReader(this, input);
 			List<AXmlObject> tags = tagReader.ReadAllTags();
 			AXmlDocument parsedDocument = new TagMatchingHeuristics(this, input, tags).ReadDocument();
-			parsedDocument.DebugCheckConsistency(false);
+			// parsedDocument.DebugCheckConsistency(false);
 			tagReader.PrintStringCacheStats();
 			AXmlParser.Log("Updating main DOM tree...");
 			userDocument.UpdateTreeFrom(parsedDocument);

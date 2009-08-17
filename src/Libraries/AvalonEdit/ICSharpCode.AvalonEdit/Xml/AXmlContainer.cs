@@ -116,21 +116,20 @@ namespace ICSharpCode.AvalonEdit.Xml
 		{
 			AXmlParser.Log("Inserting {0} at index {1}", item, index);
 			
-			AXmlDocument document = this.Document;
-			Assert(document != null, "Can not insert to dangling object");
+			Assert(this.Document != null, "Can not insert to dangling object");
 			Assert(item.Parent != this, "Can not own item twice");
 			
 			SetParentPointersInTree(item);
 			
 			this.Children.InsertItemAt(index, item);
 			
-			document.OnObjectInserted(index, item);
+			this.Document.OnObjectInserted(index, item);
 		}
 		
 		/// <summary> Recursively fix all parent pointer in a tree </summary>
 		/// <remarks>
 		/// Cache constraint:
-		///    If cached item has parent set, then the whole subtree must be consistent
+		///    If cached item has parent set, then the whole subtree must be consistent and document set
 		/// </remarks>
 		void SetParentPointersInTree(AXmlObject item)
 		{
@@ -139,6 +138,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			if (item.Parent == null) {
 				// Dangling object - either a new parser object or removed tree (still cached)
 				item.Parent = this;
+				item.Document = this.Document;
 				if (item is AXmlContainer) {
 					foreach(AXmlObject child in ((AXmlContainer)item).Children) {
 						((AXmlContainer)item).SetParentPointersInTree(child);
@@ -148,11 +148,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 				// If node is attached and then deattached, it will have null parent pointer
 				//   but valid subtree - so its children will alredy have correct parent pointer
 				//   like in this case
-				item.DebugCheckConsistency(false);
+				// item.DebugCheckConsistency(false);
 				// Rest of the tree is consistent - do not recurse
 			} else {
 				// From cache & parent set => consitent subtree
-				item.DebugCheckConsistency(false);
+				// item.DebugCheckConsistency(false);
 				// The parent (or any futher parents) can not be part of parsed document
 				//   becuase otherwise this item would be included twice => safe to change parents
 				DebugAssert(item.Parent.Document == null, "Old parent is part of document as well");
@@ -200,6 +200,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 				if (checkParentPointers) {
 					Assert(child.Parent != null, "Null parent reference");
 					Assert(child.Parent == this, "Inccorect parent reference");
+				}
+				if (this.Document != null) {
+					Assert(child.Document != null, "Child has null document");
+					Assert(child.Document == this.Document, "Child is in different document");
 				}
 				Assert(myStartOffset <= child.StartOffset && child.EndOffset <= myEndOffset, "Child not within parent text range");
 				if (this.IsCached)

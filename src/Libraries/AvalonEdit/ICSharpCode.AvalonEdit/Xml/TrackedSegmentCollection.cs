@@ -58,14 +58,14 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public void AddParsedObject(AXmlObject obj, int? maxTouchedLocation)
 		{
 			AXmlParser.Assert(obj.Length > 0 || obj is AXmlDocument, string.Format("Invalid object {0}.  It has zero length.", obj));
-			// TODO: Expensive check
-			if (obj is AXmlContainer) {
-				int objStartOffset = obj.StartOffset;
-				int objEndOffset = obj.EndOffset;
-				foreach(AXmlObject child in ((AXmlContainer)obj).Children) {
-					AXmlParser.Assert(objStartOffset <= child.StartOffset && child.EndOffset <= objEndOffset, "Wrong nesting");
-				}
-			}
+			// Expensive check
+//			if (obj is AXmlContainer) {
+//				int objStartOffset = obj.StartOffset;
+//				int objEndOffset = obj.EndOffset;
+//				foreach(AXmlObject child in ((AXmlContainer)obj).Children) {
+//					AXmlParser.Assert(objStartOffset <= child.StartOffset && child.EndOffset <= objEndOffset, "Wrong nesting");
+//				}
+//			}
 			segments.Add(obj);
 			AddSyntaxErrorsOf(obj);
 			obj.IsCached = true;

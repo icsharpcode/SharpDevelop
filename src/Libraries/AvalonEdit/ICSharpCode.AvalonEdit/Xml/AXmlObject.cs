@@ -38,18 +38,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// </remarks>
 		public AXmlObject Parent { get; set; }
 		
-		/// <summary> Gets the document owning this object or null if orphaned </summary>
-		public AXmlDocument Document {
-			get {
-				if (this.Parent != null) {
-					return this.Parent.Document;
-				} else if (this is AXmlDocument) {
-					return (AXmlDocument)this;
-				} else {
-					return null;
-				}
-			}
-		}
+		/// <summary>
+		/// Gets the document that has owns this object.
+		/// Once set, it is not changed.  Not even set to null.
+		/// </summary>
+		internal AXmlDocument Document { get; set; }
 		
 		/// <summary> Creates new object </summary>
 		public AXmlObject()

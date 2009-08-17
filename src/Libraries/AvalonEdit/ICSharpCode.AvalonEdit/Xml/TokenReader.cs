@@ -46,11 +46,6 @@ namespace ICSharpCode.AvalonEdit.Xml
 			return currentLocation == inputLength;
 		}
 		
-		protected void AssertIsEndOfFile()
-		{
-			AXmlParser.Assert(IsEndOfFile(), "End of file expected at this point");
-		}
-		
 		protected bool HasMoreData()
 		{
 			return currentLocation < inputLength;
