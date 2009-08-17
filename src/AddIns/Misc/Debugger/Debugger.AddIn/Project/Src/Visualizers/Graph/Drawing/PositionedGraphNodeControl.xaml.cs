@@ -124,7 +124,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Drawing
 			PropertyCollapsed = null;
 			ContentNodeExpanded = null;
 			ContentNodeCollapsed = null;
-			//this.listView.ItemsSource = null;
+			this.listView.ItemsSource = null;
 		}
 		
 		void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)

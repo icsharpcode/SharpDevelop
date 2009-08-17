@@ -25,6 +25,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	{
 		private readonly double ChildPopupOpenXOffet = 16;
 		private readonly double ChildPopupOpenYOffet = 15;
+		private readonly int InitialItemsCount = 12;
+		private readonly int VisibleItemsCount = 11;
 		
 		public DebuggerTooltipControl()
 		{
@@ -65,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			set
 			{
 				this.itemsSource = value;
-				this.lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, 12);
+				this.lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, InitialItemsCount);
 				lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(value);
 				this.dataGrid.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleScroll));
 				
@@ -73,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				{
 					// hide up/down buttons if too few items
 					btnUp.Visibility = btnDown.Visibility =
-						this.lazyGrid.ItemsSourceTotalCount.Value <= 10 ? Visibility.Collapsed : Visibility.Visible;
+						this.lazyGrid.ItemsSourceTotalCount.Value <= VisibleItemsCount ? Visibility.Collapsed : Visibility.Visible;
 				}
 			}
 			get

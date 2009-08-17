@@ -80,27 +80,30 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <returns>Object graph</returns>
 		public ObjectGraph BuildGraphForExpression(string expression, ExpandedExpressions expandedNodes)
 		{
-			if (string.IsNullOrEmpty(expression))
-			{
-				throw new DebuggerVisualizerException("Expression is empty.");
+			if (string.IsNullOrEmpty(expression)) {
+				throw new DebuggerVisualizerException("Please specify an expression.");
 			}
-			
-			resultGraph = new ObjectGraph();
-			Value rootValue = debuggerService.GetValueFromName(expression);
-			if (rootValue == null)
-			{
+
+			var debuggedProcess = this.debuggerService.DebuggedProcess;
+			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
 				throw new DebuggerVisualizerException("Please use the visualizer when debugging.");
 			}
 			
-			// empty graph for null expression
-			if (!rootValue.IsNull)
-			{
-				//resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference(), expandedNodes);
-				resultGraph.Root = createNewNode(debuggerService.GetValueFromName(expression).GetPermanentReference());
-				loadContent(resultGraph.Root);
-				loadNeighborsRecursive(resultGraph.Root, expandedNodes);
+			// TODO GetValueFromName calls evaluator with SupportedLanguage.CSharp, is that ok?
+			Value rootValue = debuggerService.GetValueFromName(expression);
+			if (rootValue.IsNull)	{
+				throw new DebuggerVisualizerException(expression + " is null.");
 			}
-			
+			return buildGraphForValue(rootValue, expandedNodes);
+		}
+		
+		private ObjectGraph buildGraphForValue(Value rootValue, ExpandedExpressions expandedNodes)
+		{
+			resultGraph = new ObjectGraph();
+			//resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference(), expandedNodes);
+			resultGraph.Root = createNewNode(rootValue.GetPermanentReference());
+			loadContent(resultGraph.Root);
+			loadNeighborsRecursive(resultGraph.Root, expandedNodes);
 			return resultGraph;
 		}
 		

@@ -123,6 +123,15 @@
 		     shortcut = "Control|Alt|W"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.WatchPad"
 		     defaultPosition = "Bottom, Hidden" />
+	  <!-- Hidden until DebuggerPad.IsVisible bug is fixed
+		<Pad id    = "ObjectGraphPad"
+		     category = "Debugger"
+		     title    = "${res:MainWindow.Windows.Debug.ObjectGraph}"
+		     icon     = "PadIcons.LocalVariables"
+		     shortcut = "Control|Alt|O"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ObjectGraphPad"
+		     defaultPosition = "Bottom, Hidden" />
+      -->
 	</Path>
 	
 	<Path name ="/SharpDevelop/Pads/WatchPad/ContextMenu">

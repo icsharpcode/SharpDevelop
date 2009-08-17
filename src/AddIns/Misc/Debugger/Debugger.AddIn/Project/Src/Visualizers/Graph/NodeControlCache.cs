@@ -33,12 +33,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public PositionedGraphNodeControl GetNodeControl()
 		{
-			return new PositionedGraphNodeControl();
-			var control = controls.Count == 0 ? new PositionedGraphNodeControl() : controls.Pop();
-			control.Init();
-			//control.InvalidateVisual();
 			controlsReturned++;
-			return control;
+			return new PositionedGraphNodeControl();
+			// bugs in drawing
+			/*var control = controls.Count == 0 ? new PositionedGraphNodeControl() : controls.Pop();
+			control.Init();
+			control.InvalidateVisual();
+			return control;*/
 		}
 		
 		public void Clear()

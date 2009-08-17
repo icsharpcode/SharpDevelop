@@ -11,12 +11,12 @@ using System.Text;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Object graph built by <see cref="ObjectGraphBuilder"/>
+	/// Object graph built by <see cref="ObjectGraphBuilder"/>. The graph is never empty.
 	/// </summary>
     public class ObjectGraph
     {
     	/// <summary>
-    	/// Root of the graph.
+    	/// Root of the graph. Should never be null.
     	/// </summary>
     	public ObjectGraphNode Root { get; internal set; }
     	
@@ -31,7 +31,7 @@ namespace Debugger.AddIn.Visualizers.Graph
     	
     	private List<ObjectGraphNode> _nodes = new List<ObjectGraphNode>();
         /// <summary>
-        /// All nodes in the graph.
+        /// All nodes in the graph. Should always contain at least one node.
         /// </summary>
         public IEnumerable<ObjectGraphNode> Nodes 
         {

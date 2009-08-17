@@ -93,6 +93,7 @@
     <Compile Include="Src\Options\DebuggingSymbolsPanel.Designer.cs">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Pads\ObjectGraphPad.cs" />
     <Compile Include="Src\Pads\WatchPadCommands.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
@@ -144,6 +145,10 @@
     <Compile Include="Src\Visualizers\Graph\Layout\ContentPropertyNode.cs" />
     <Compile Include="Src\Visualizers\Graph\Layout\ContentNode.cs" />
     <Compile Include="Src\Visualizers\Graph\NodeControlCache.cs" />
+    <Compile Include="Src\Visualizers\Graph\ObjectGraphControl.xaml.cs">
+      <DependentUpon>ObjectGraphControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\AbstractNode.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\BaseClassNode.cs" />
@@ -323,6 +328,7 @@
   <ItemGroup>
     <Page Include="Src\Visualizers\Graph\Drawing\PlusToggleButton.xaml" />
     <Page Include="Src\Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
+    <Page Include="Src\Visualizers\Graph\ObjectGraphControl.xaml" />
     <Page Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>

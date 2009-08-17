@@ -20,10 +20,7 @@ namespace Debugger.AddIn.Visualizers
 	{
 		public override void Run()
 		{
-			VisualizerWPFWindow window = new VisualizerWPFWindow();
-			window.Topmost = true;
-			window.Show();
-			//WorkbenchSingleton.Workbench.ShowView(new DebuggerVisualizerViewContent());
+			VisualizerWPFWindow.EnsureShown();
 		}
 	}
 }

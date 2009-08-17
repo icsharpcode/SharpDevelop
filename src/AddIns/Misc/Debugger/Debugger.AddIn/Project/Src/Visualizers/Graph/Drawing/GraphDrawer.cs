@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,6 +43,20 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="diff"></param>
 		public void StartAnimation(PositionedGraph oldGraph, PositionedGraph newGraph, GraphDiff diff)
 		{
+			if (oldGraph != null)
+			{
+				foreach	(var oldNode in oldGraph.Nodes)
+				{
+					foreach	(var newNode in newGraph.Nodes)
+					{
+						if (oldNode.NodeVisualControl == newNode.NodeVisualControl)
+						{
+							ClearCanvas();
+						}
+					}
+				}
+			}
+			
 			this.canvas.Width = newGraph.BoundingRect.Width;
 			this.canvas.Height = newGraph.BoundingRect.Height;
 			
@@ -112,6 +127,19 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			canvas.Children.Clear();
 			
+			/*try
+			{
+			    // why do the controls disappear?
+				var n1 = posGraph.Nodes.First().NodeVisualControl;
+				var n2 = posGraph.Nodes.Skip(1).First().NodeVisualControl;
+				var n3 = posGraph.Nodes.Skip(2).First().NodeVisualControl;
+				if (n1 == n2 || n1 == n3 || n2 == n3)
+				{
+					ClearCanvas();
+				}
+			}
+			catch{}*/
+			
 			// draw nodes
 			foreach	(PositionedGraphNode node in posGraph.Nodes)
 			{
@@ -127,6 +155,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 			edgeTooltip.Visibility = Visibility.Hidden;
 			edgeTooltip.Background = Brushes.White;
 			canvas.Children.Add(edgeTooltip);
+		}
+		
+		/// <summary>
+		/// Clears the drawing Canvas.
+		/// </summary>
+		public void ClearCanvas()
+		{
+			canvas.Children.Clear();
 		}
 		
 		private PositionedGraphNodeControl addNodeToCanvas(PositionedGraphNode node)
@@ -160,21 +196,21 @@ namespace Debugger.AddIn.Visualizers.Graph
 			pathInVisible.StrokeThickness = 16;
 			pathInVisible.Data = geometryInVisible;
 			
-			pathInVisible.MouseEnter += delegate(object sender, MouseEventArgs e) 
-			{ 
-				pathVisible.StrokeThickness = 2; 
+			pathInVisible.MouseEnter += delegate(object sender, MouseEventArgs e)
+			{
+				pathVisible.StrokeThickness = 2;
 				this.edgeTooltip.Text = ((PositionedEdge)pathVisible.Tag).Name;
 				Point mousePos = e.GetPosition(this.canvas);
 				Canvas.SetLeft(this.edgeTooltip, mousePos.X - 5);
 				Canvas.SetTop(this.edgeTooltip, mousePos.Y - 20);
 				this.edgeTooltip.Visibility = Visibility.Visible;
 			};
-			pathInVisible.MouseLeave += delegate(object sender, MouseEventArgs e) 
-			{ 
-				pathVisible.StrokeThickness = 1; 
+			pathInVisible.MouseLeave += delegate(object sender, MouseEventArgs e)
+			{
+				pathVisible.StrokeThickness = 1;
 				this.edgeTooltip.Visibility = Visibility.Hidden;
 			};
-			pathInVisible.MouseMove += delegate(object sender, MouseEventArgs e) 
+			pathInVisible.MouseMove += delegate(object sender, MouseEventArgs e)
 			{
 				Point mousePos = e.GetPosition(this.canvas);
 				Canvas.SetLeft(this.edgeTooltip, mousePos.X - 5);
