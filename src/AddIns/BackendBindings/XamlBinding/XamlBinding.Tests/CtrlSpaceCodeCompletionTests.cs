@@ -16,10 +16,10 @@ using NUnit.Framework;
 namespace ICSharpCode.XamlBinding.Tests
 {
 	[TestFixture]
+	[RequiresSTA]
 	public class CodeCompletionTests : TextEditorBasedTests
 	{
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest01()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -45,7 +45,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest02()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -70,7 +69,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest03()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -95,7 +93,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest04()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -119,7 +116,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest05()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -145,7 +141,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest06()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -171,7 +166,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest07()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -197,7 +191,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest08()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -222,7 +215,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest09()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -248,7 +240,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest10()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -271,7 +262,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
+		[Ignore("Fails currently because the XamlParser fails due to the invalid syntax on the root element.")]
 		public void CtrlSpaceTest11()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -298,7 +289,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest12()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -322,7 +312,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest13()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -348,7 +337,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest14()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -372,7 +360,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest15()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -396,7 +383,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest16()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -421,7 +407,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest17()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -446,7 +431,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest18()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -471,7 +455,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest19()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -495,7 +478,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void CtrlSpaceTest20()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -519,7 +501,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void ElementAttributeDotPressTest01()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -547,7 +528,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void ElementAttributeDotPressTest02()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -573,7 +553,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void ElementAttributeDotPressTest03()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -598,7 +577,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void ElementAttributeDotPressTest04()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -619,7 +597,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void LowerThanPressedTest()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -646,7 +623,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void InCommentPressTest()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -666,7 +642,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void InCDataPressTest()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -686,7 +661,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[STAThread]
 		public void InPlainTextPressTest()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'

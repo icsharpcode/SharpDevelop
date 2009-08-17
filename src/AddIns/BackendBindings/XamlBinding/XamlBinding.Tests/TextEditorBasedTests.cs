@@ -17,13 +17,11 @@ namespace ICSharpCode.XamlBinding.Tests
 		protected MockTextEditor textEditor;
 		
 		[SetUp]
-		[STAThread]
 		public void SetupTest()
 		{
 			this.textEditor = new MockTextEditor();
 		}
 		
-		[STAThread]
 		protected void TestCtrlSpace(string fileHeader, string fileFooter, bool expected, Action<ICompletionItemList> constraint)
 		{
 			this.textEditor.Document.Text = fileHeader + fileFooter;
@@ -39,7 +37,6 @@ namespace ICSharpCode.XamlBinding.Tests
 			constraint(list);
 		}
 		
-		[STAThread]
 		protected void TestKeyPress(string fileHeader, string fileFooter, char keyPressed, CodeCompletionKeyPressResult keyPressResult, Action<ICompletionItemList> constraint)
 		{
 			this.textEditor.Document.Text = fileHeader + fileFooter;
