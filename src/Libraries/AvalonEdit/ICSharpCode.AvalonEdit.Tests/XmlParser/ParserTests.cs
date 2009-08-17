@@ -154,7 +154,7 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 			
 			string content = testFile.Content;
 			Debug.WriteLine("Testing " + testFile.Name + "...");
-			AXmlParser parser = new AXmlParser(content);
+			AXmlParser parser = new AXmlParser();
 			
 			bool usingDTD = content.Contains("<!DOCTYPE") && (content.Contains("<!ENTITY") || content.Contains(" SYSTEM "));
 			if (usingDTD)
@@ -164,7 +164,7 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 			
 			parser.Lock.EnterWriteLock();
 			try {
-				document = parser.Parse();
+				document = parser.Parse(content, null);
 			} finally {
 				parser.Lock.ExitWriteLock();
 			}

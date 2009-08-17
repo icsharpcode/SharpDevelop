@@ -88,13 +88,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 	/// </remarks>
 	public class AXmlParser
 	{
-		string input;
 		AXmlDocument userDocument;
-		TextDocument textDocument;
 		
 		internal TrackedSegmentCollection TrackedSegments { get; private set; }
-		ChangeTrackingCheckpoint lastCheckpoint;
-		ReaderWriterLockSlim lockObject;
 		
 		/// <summary>
 		/// Generate syntax error when seeing enity reference other then the build-in ones
@@ -102,27 +98,17 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public bool UknonwEntityReferenceIsError { get; set; }
 		
 		/// <summary> Create new parser </summary>
-		public AXmlParser(string input)
+		public AXmlParser()
 		{
-			this.input = input;
 			this.UknonwEntityReferenceIsError = true;
 			this.TrackedSegments = new TrackedSegmentCollection();
-			this.lockObject = new ReaderWriterLockSlim();
+			this.Lock = new ReaderWriterLockSlim();
 			
 			this.userDocument = new AXmlDocument() { Parser = this };
 			this.userDocument.Document = this.userDocument;
 			// Track the document
 			this.TrackedSegments.AddParsedObject(this.userDocument, null);
 			this.userDocument.IsCached = false;
-		}
-		
-		/// <summary>
-		/// Create new parser, but do not parse the text yet.
-		/// </summary>
-		public AXmlParser(TextDocument textDocument)
-			: this(textDocument.Text)
-		{
-			this.textDocument = textDocument;
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
@@ -147,23 +133,19 @@ namespace ICSharpCode.AvalonEdit.Xml
 			System.Diagnostics.Debug.WriteLine(string.Format("XML: " + text, pars));
 		}
 		
-		public AXmlDocument Parse()
+		/// <summary>
+		/// Incrementaly parse the given text.
+		/// You have to hold the write lock.
+		/// 'changesSinceLastParse' can be null on the first call.
+		/// </summary>
+		public AXmlDocument Parse(string input, IEnumerable<DocumentChangeEventArgs> changesSinceLastParse)
 		{
 			if (!Lock.IsWriteLockHeld)
 				throw new InvalidOperationException("Lock needed!");
 			
-			if (textDocument != null) { // incremental parse
-				ChangeTrackingCheckpoint checkpoint;
-				input = textDocument.CreateSnapshot(out checkpoint).Text;
-				
-				// Use changes to invalidate cache
-				if (lastCheckpoint != null) {
-					var changes = lastCheckpoint.GetChangesTo(checkpoint);
-					if (!changes.Any())
-						return userDocument;
-					this.TrackedSegments.UpdateOffsetsAndInvalidate(changes);
-				}
-				lastCheckpoint = checkpoint;
+			// Use changes to invalidate cache
+			if (changesSinceLastParse != null) {
+				this.TrackedSegments.UpdateOffsetsAndInvalidate(changesSinceLastParse);
 			}
 			
 			TagReader tagReader = new TagReader(this, input);
@@ -180,8 +162,6 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary>
 		/// Makes calls to Parse() thread-safe. Use Lock everywhere Parse() is called.
 		/// </summary>
-		public ReaderWriterLockSlim Lock {
-			get { return this.lockObject; }
-		}
+		public ReaderWriterLockSlim Lock { get; private set; }
 	}
 }

@@ -5,13 +5,16 @@
 //     <version>$Revision: 2568 $</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Xml;
+using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -45,6 +48,42 @@ namespace ICSharpCode.XamlBinding
 		public bool CanParse(ICSharpCode.SharpDevelop.Project.IProject project)
 		{
 			return false;
+		}
+		
+		AXmlParser axmlParser;
+		ICSharpCode.SharpDevelop.ITextBuffer lastParsedContent;
+		
+		/// <summary>
+		/// Parse the given text and enter read lock.
+		/// No parsing is done if the text is older than seen before.
+		/// </summary>
+		public IDisposable ParseAndLock(ICSharpCode.SharpDevelop.ITextBuffer fileContent)
+		{
+			// Is fileContent newer?
+			if (lastParsedContent == null || fileContent.Version.CompareAge(lastParsedContent.Version) > 0) {
+				axmlParser.Lock.EnterWriteLock();
+				// Dobuble check, now that we are thread-safe
+				if (lastParsedContent == null) {
+					// First parse
+					axmlParser = new AXmlParser();
+					axmlParser.Parse(fileContent.Text, null);
+					lastParsedContent = fileContent;
+				} else if (fileContent.Version.CompareAge(lastParsedContent.Version) > 0) {
+					// Incremental parse
+					var changes = lastParsedContent.Version.GetChangesTo(fileContent.Version).
+						Select(c => new DocumentChangeEventArgs(c.Offset, c.RemovedText, c.InsertedText));
+					axmlParser.Parse(fileContent.Text, changes);
+					lastParsedContent = fileContent;
+				} else {
+					// fileContent is older - no need to parse
+				}
+				axmlParser.Lock.EnterReadLock();
+				axmlParser.Lock.ExitWriteLock();
+			} else {
+				// fileContent is older - no need to parse
+				axmlParser.Lock.EnterReadLock();
+			}
+			return new CallbackOnDispose(() => axmlParser.Lock.ExitReadLock());
 		}
 
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ICSharpCode.SharpDevelop.ITextBuffer fileContent)

@@ -37,6 +37,7 @@ namespace XmlDOM
 		}
 		
 		TextMarkerService markerService;
+		List<DocumentChangeEventArgs> changes = new List<DocumentChangeEventArgs>();
 		
 		protected override void OnInitialized(EventArgs e)
 		{
@@ -44,8 +45,11 @@ namespace XmlDOM
 			
 			editor.TextArea.TextView.MouseMove += new MouseEventHandler(editor_TextArea_TextView_MouseMove);
 			
-			editor.Document.Changed += delegate { textDirty = true; };
-			parser = new AXmlParser(editor.Document);
+			editor.Document.Changed += delegate(object sender, DocumentChangeEventArgs e2) {
+				textDirty = true;
+				changes.Add(e2);
+			};
+			parser = new AXmlParser();
 
 			DispatcherTimer timer = new DispatcherTimer();
 			timer.Interval = TimeSpan.FromSeconds(0.5);
@@ -75,7 +79,8 @@ namespace XmlDOM
 			AXmlDocument doc;
 			parser.Lock.EnterWriteLock();
 			try {
-				doc = parser.Parse();
+				doc = parser.Parse(editor.Document.Text, changes);
+				changes.Clear();
 			} finally {
 				parser.Lock.ExitWriteLock();
 			}
