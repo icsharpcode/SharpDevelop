@@ -36,12 +36,13 @@ namespace ICSharpCode.XamlBinding
 			// if editor is not an AvalonEdit.TextEditor
 			// GetService returns null
 			if (textView != null) {
-				colorizer = new XamlColorizer(editor, textView);
-				// attach the colorizer
-				textView.LineTransformers.Add(colorizer);
-				// add the XamlOutlineContentHost, which manages the tree view
-				if (WorkbenchSingleton.Workbench != null)
+				if (WorkbenchSingleton.Workbench != null) {
+					colorizer = new XamlColorizer(editor, textView);
+					// attach the colorizer
+					textView.LineTransformers.Add(colorizer);
+					// add the XamlOutlineContentHost, which manages the tree view
 					textView.Services.AddService(typeof(IOutlineContentHost), new XamlOutlineContentHost(editor));
+				}
 				// add ILanguageBinding
 				textView.Services.AddService(typeof(XamlLanguageBinding), this);
 			}
