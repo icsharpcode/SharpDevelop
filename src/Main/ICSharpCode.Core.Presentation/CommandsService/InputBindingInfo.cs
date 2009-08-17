@@ -6,8 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using CommandManager = System.Windows.Input.CommandManager;
-using SDCommandManager = ICSharpCode.Core.Presentation.CommandManager;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.Core.Presentation
 {

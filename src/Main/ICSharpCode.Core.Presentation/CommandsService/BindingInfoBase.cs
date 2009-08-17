@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -66,9 +66,9 @@ namespace ICSharpCode.Core.Presentation
 				
 				ICollection<UIElement> attachedInstances = null;
 				if(OwnerInstanceName != null) {
-					attachedInstances = modifiedGroups.FlatNesteGroups.GetAttachedInstances(OwnerInstances);
+					attachedInstances = modifiedGroups.FilterInstancesRegisteredInNestedGroups(OwnerInstances, true);
 				} else {
-					attachedInstances = modifiedGroups.FlatNesteGroups.GetAttachedInstances(OwnerTypes);
+					attachedInstances = modifiedGroups.FilterInstancesRegisteredInNestedGroups(OwnerTypes, true);
 				}
 				
 				SDCommandManager.InvokeBindingsChanged(this, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.GroupAttachmendsModified, modifiedGroups, attachedInstances));
@@ -254,14 +254,14 @@ namespace ICSharpCode.Core.Presentation
 				GenerateBindings();
 				
 				if(OwnerInstanceName != null) {
-					PopulateOwnerInstancesWithBindings(Groups.Count == 0 ? OwnerInstances : Groups.GetAttachedInstances(OwnerInstances));
+					PopulateOwnerInstancesWithBindings(Groups.Count == 0 ? OwnerInstances : Groups.FilterInstancesRegisteredInNestedGroups(OwnerInstances, false));
 				} else {
 					if(Groups.Count == 0) {
 						PopulateOwnerInstancesWithBindings(null);
 						PopulateOwnerTypesWithBindings(OwnerTypes);
 					} else {
 						PopulateOwnerTypesWithBindings(null);
-						PopulateOwnerInstancesWithBindings(Groups.GetAttachedInstances(OwnerTypes));
+						PopulateOwnerInstancesWithBindings(Groups.FilterInstancesRegisteredInNestedGroups(OwnerTypes, false));
 					}
 				}
 			}

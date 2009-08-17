@@ -19,9 +19,7 @@ using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
-
 using ICSharpCode.Core.Presentation;
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {

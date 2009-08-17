@@ -19,7 +19,7 @@ using System.Windows.Media.Imaging;
 using AvalonDock;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using SDCommandManager=ICSharpCode.Core.Presentation.SDCommandManager;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -108,8 +108,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 			
 			if (newActiveViewContent != null) {
-				string ownerName = newActiveViewContent.GetType().FullName;
-				CommandManager.RegisterNamedUIElement(ownerName, (UIElement)Content);
+				string ownerName = SDCommandManager.GetShortAssemblyQualifiedName(newActiveViewContent.GetType());
+				SDCommandManager.RegisterNamedUIElement(ownerName, (UIElement)Content);
 			}
 		}
 		

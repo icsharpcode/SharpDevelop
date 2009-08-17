@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -21,6 +23,36 @@ namespace ICSharpCode.Core.Presentation
 		{
 			forwardMap = new Dictionary<T1, HashSet<T2>>();
 			backwardMap = new Dictionary<T2, HashSet<T1>>();
+		}
+		
+		/// <summary>
+		/// Gets a thread-safe dictionary of forward conversions
+		/// </summary>
+		public IDictionary<T1, ICollection<T2>> ForwardMap 
+		{
+			get {
+				var dict = new Dictionary<T1, ICollection<T2>>();
+				foreach(var pair in forwardMap) {
+					dict.Add(pair.Key, new List<T2>(pair.Value));
+				}
+				
+				return dict;
+			}
+		}
+		
+		/// <summary>
+		/// Gets a thread-safe dictionary of backward conversions
+		/// </summary>
+		public IDictionary<T2, ICollection<T1>> BackwardMap 
+		{
+			get {
+				var dict = new Dictionary<T2, ICollection<T1>>();
+				foreach(var pair in backwardMap) {
+					dict.Add(pair.Key, new List<T1>(pair.Value));
+				}
+				
+				return dict;
+			}
 		}
 		
 		/// <summary>
@@ -109,5 +141,6 @@ namespace ICSharpCode.Core.Presentation
 			forwardMap.Clear();
 			backwardMap.Clear();
 		}
+		
 	}
 }

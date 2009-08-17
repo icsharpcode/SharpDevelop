@@ -6,7 +6,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Collections;
 using ICSharpCode.Core;
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -60,9 +60,9 @@ namespace ICSharpCode.Core.Presentation
 						routedCommandText = codon.Properties["label"];
 					}
 					
-					var routedCommand = CommandManager.GetRoutedUICommand(routedCommandName);
+					var routedCommand = SDCommandManager.GetRoutedUICommand(routedCommandName);
 					if(routedCommand == null) {
-						routedCommand = CommandManager.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+						routedCommand = SDCommandManager.RegisterRoutedUICommand(routedCommandName, routedCommandText);
 					}
 
 					if(!codon.Properties.Contains("command") && (codon.Properties.Contains("link") || codon.Properties.Contains("class"))) {
@@ -211,7 +211,7 @@ namespace ICSharpCode.Core.Presentation
 				} else if(!string.IsNullOrEmpty(desc.OwnerTypeName)) {
 					commandBindingInfo.OwnerTypeName = desc.OwnerTypeName;
 				} else {
-					commandBindingInfo.OwnerTypeName = CommandManager.DefaultOwnerTypeName;
+					commandBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
 				}
 				
 				commandBindingInfo.RoutedCommandName = desc.Command;
@@ -231,7 +231,7 @@ namespace ICSharpCode.Core.Presentation
 					} else if(!string.IsNullOrEmpty(desc.OwnerTypeName)) {
 						inputBindingInfo.OwnerTypeName = desc.OwnerTypeName;
 					} else {
-						inputBindingInfo.OwnerTypeName = CommandManager.DefaultOwnerTypeName;
+						inputBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
 					}
 					
 					inputBindingInfo.AddIn = desc.Codon.AddIn;
@@ -243,7 +243,7 @@ namespace ICSharpCode.Core.Presentation
 					}
 					
 					if(!string.IsNullOrEmpty(desc.Categories)) {
-						var categories = CommandManager.GetInputBindingCategoryCollection(desc.Categories, true);
+						var categories = SDCommandManager.GetInputBindingCategoryCollection(desc.Categories, true);
 						inputBindingInfo.Categories.AddRange(categories);
 					}
 					

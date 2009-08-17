@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.Core.Presentation.Tests
 {
@@ -203,7 +202,7 @@ namespace ICSharpCode.Core.Presentation.Tests
 				Groups = new BindingGroupCollection { removedGroup }
 			};
 			
-			CommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) { 
+			SDCommandManager.BindingsChanged += delegate(object sender, NotifyBindingsChangedEventArgs args) { 
 				if(args.Action == NotifyBindingsChangedAction.GroupAttachmendsModified && args.ModifiedGroups.Contains(addedGroup)) {
 					testResults.Add("GroupAdded");
 				}

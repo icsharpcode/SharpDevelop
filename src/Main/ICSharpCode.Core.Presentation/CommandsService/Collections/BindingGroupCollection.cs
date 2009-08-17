@@ -48,37 +48,19 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Gets read-only collection of attached instances
+		/// Gets single-level collection containing attached instances from this group and all nested groups
 		/// </summary>
-		public ICollection<UIElement> AttachedInstances
+		/// <param name="includeDisabledNestedGroups">Specifies whether binding groups with <see cref="BindingGroup.IsEnabled" /> attribute should be taken into account</param>
+		public ICollection<UIElement> GetInstancesRegisteredInNestedGroups(bool includeDisabledNestedGroups)
 		{
-			get {
-				var attachments = new HashSet<UIElement>();
-				foreach(var group in this) {
-					foreach(var groupAttachment in group.AttachedInstances) {
-						attachments.Add(groupAttachment);
-					}
+			var attachments = new HashSet<UIElement>();
+			foreach(var group in GetFlatNesteGroups(includeDisabledNestedGroups)) {
+				foreach(var groupAttachment in group.RegisteredInstances) {
+					attachments.Add(groupAttachment);
 				}
-				
-				return new ReadOnlyCollection<UIElement>(attachments.ToList());
 			}
-		}
-		
-		/// <summary>
-		/// Gets single-level collection containing attached instances from this group and all sub-groups
-		/// </summary>
-		public ICollection<UIElement> FlatNestedAttachedInstances
-		{
-			get {
-				var attachments = new HashSet<UIElement>();
-				foreach(var group in this.FlatNesteGroups) {
-					foreach(var groupAttachment in group.AttachedInstances) {
-						attachments.Add(groupAttachment);
-					}
-				}
-				
-				return new ReadOnlyCollection<UIElement>(attachments.ToArray());
-			}
+			
+			return new ReadOnlyCollection<UIElement>(attachments.ToArray());
 		}
 		
 		/// <inheritdoc />
@@ -103,45 +85,42 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Gets <see cref="BindingGroupCollection" /> containing all nested binding groups
 		/// </summary>
-		public BindingGroupCollection FlatNesteGroups
+		/// <param name="includeDisabledNestedGroups">Specifies whether binding groups with <see cref="BindingGroup.IsEnabled" /> attribute should be taken into account</param>
+		public BindingGroupCollection GetFlatNesteGroups(bool includeDisabledNestedGroups)
 		{
-			get {
-				var flatGroups = new HashSet<BindingGroup>();
-				foreach(var bindingGroup in this) {
-					bindingGroup.FlattenNestedGroups(bindingGroup, flatGroups);
-				}
+			var flatGroups = new BindingGroupCollection();
+			foreach(var bindingGroup in this) {
+				if(!includeDisabledNestedGroups && !bindingGroup.IsEnabled) continue;
 				
-				return new BindingGroupCollection(true, flatGroups);
+				flatGroups.AddRange(bindingGroup.GetFlatNestedGroups(includeDisabledNestedGroups));
 			}
+			
+			return new BindingGroupCollection(true, flatGroups);
 		}
 		
 		/// <summary>
-		/// Determines whether <see cref="UIElement" /> instance is handled by any group in this collection
+		/// Determines whether <see cref="UIElement" /> instance is handled by any group or any nested group in this collection
 		/// </summary>
 		/// <param name="instance">Examined instance</param>
+		/// <param name="includeDisabledNestedGroups">Specifies whether binding groups with <see cref="BindingGroup.IsEnabled" /> attribute should be taken into account</param>
 		/// <returns><code>true</code> if registered; otherwise <code>false</code></returns>
-		public bool IsInstanceRegistered(UIElement instance)
+		public bool IsInstanceRegistered(UIElement instance, bool includeDisabledNestedGroups)
 		{
-			foreach(var bindingGroup in FlatNesteGroups) {
-				if(bindingGroup.IsInstanceRegistered(instance)) {
-					return true;
-				}
-			}
-			
-			return false;
+			return GetInstancesRegisteredInNestedGroups(includeDisabledNestedGroups).Contains(instance);
 		}
 		
 		/// <summary>
 		/// Determines whether any <see cref="UIElement" /> instance from provided collection
-		/// is handled by any group in this collection
+		/// is handled by any group in this collection or any nested group
 		/// </summary>
 		/// <param name="instance">Examined instance</param>
+		/// <param name="includeDisabledNestedGroups">Specifies whether binding groups with <see cref="BindingGroup.IsEnabled" /> attribute should be taken into account</param>
 		/// <returns><code>true</code> if registered; otherwise <code>false</code></returns>
-		public bool IsAnyInstanceRegistered(ICollection<UIElement> instances)
+		public bool IsAnyInstanceRegistered(ICollection<UIElement> instances, bool includeDisabledNestedGroups)
 		{
 			if(instances != null && instances.Count > 0) {
 				foreach(var instance in instances) {
-					if(IsInstanceRegistered(instance)) {
+					if(IsInstanceRegistered(instance, includeDisabledNestedGroups)) {
 						return true;
 					}
 				}
@@ -151,16 +130,18 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// From provided <see cref="ICollection{Type}" /> generate <see cref="ICollection{UIElement}" /> containing 
+		/// From provided <see cref="ICollection{Type}" /> collection generate <see cref="ICollection{UIElement}" /> collection containing 
 		/// instances created from one of the provided types and registered in any group included in this <see cref="BindingGroupCollection" />
+		/// or any nested groups
 		/// </summary>
 		/// <param name="instances">Collection of examined types</param>
+		/// <param name="includeDisabledNestedGroups">Specifies whether binding groups with <see cref="BindingGroup.IsEnabled" /> attribute should be taken into account</param>
 		/// <returns>Generated instances</returns>
-		public ICollection<UIElement> GetAttachedInstances(ICollection<Type> types)
+		public ICollection<UIElement> FilterInstancesRegisteredInNestedGroups(ICollection<Type> types, bool includeDisabledNestedGroups)
 		{
 			var instances = new HashSet<UIElement>();
-			foreach(var group in FlatNesteGroups) {
-				foreach(var instance in group.FilterAttachedInstances(types)) {
+			foreach(var group in GetFlatNesteGroups(includeDisabledNestedGroups)) {
+				foreach(var instance in group.FilterRegisteredInstances(types, includeDisabledNestedGroups)) {
 					instances.Add(instance);
 				}
 			}
@@ -169,16 +150,17 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// From provided <see cref="ICollection{UIElement}" /> filter <see cref="ICollection{UIElement}" /> containing 
-		/// only instances registered in any group included in this <see cref="BindingGroupCollection" />
+		/// From provided <see cref="ICollection{UIElement}" /> collection filter <see cref="ICollection{UIElement}" /> collection containing 
+		/// only instances registered in any group included in this <see cref="BindingGroupCollection" /> or any nested group
 		/// </summary>
 		/// <param name="instances">Collection of examined instances</param>
+		/// <param name="includeDisabledNestedGroups">Specifies whether binding groups with <see cref="BindingGroup.IsEnabled" /> attribute should be taken into account</param>
 		/// <returns>Filtered instances</returns>
-		public ICollection<UIElement> GetAttachedInstances(ICollection<UIElement> instances)
+		public ICollection<UIElement> FilterInstancesRegisteredInNestedGroups(ICollection<UIElement> instances, bool includeDisabledNestedGroups)
 		{
 			var attachedInstances = new HashSet<UIElement>();
-			foreach(var group in FlatNesteGroups) {
-				foreach(var instance in group.GetAttachedInstances(instances)) {
+			foreach(var group in GetFlatNesteGroups(includeDisabledNestedGroups)) {
+				foreach(var instance in group.FilterRegisteredInstances(instances, includeDisabledNestedGroups)) {
 					attachedInstances.Add(instance);
 				}
 			}
@@ -239,7 +221,7 @@ namespace ICSharpCode.Core.Presentation
 				throw new ReadOnlyException("This BindingGroupCollection is read-only");
 			}
 
-			var groupsBackup = FlatNesteGroups.ToArray();
+			var groupsBackup = GetFlatNesteGroups(true).ToArray();
 			forwardEvents = false;
 			_bindingGroups.Clear();
 			forwardEvents = true;

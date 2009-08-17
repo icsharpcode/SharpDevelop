@@ -7,7 +7,7 @@
 
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core.Presentation;
-using SDCommandManager = ICSharpCode.Core.Presentation.CommandManager;
+using SDCommandManager = ICSharpCode.Core.Presentation.SDCommandManager;
 
 using System;
 using System.Collections.Generic;

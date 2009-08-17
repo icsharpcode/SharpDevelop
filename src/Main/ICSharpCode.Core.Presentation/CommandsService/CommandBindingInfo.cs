@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using SDCommandManager=ICSharpCode.Core.Presentation.SDCommandManager;
 using CommandManager=System.Windows.Input.CommandManager;
 	
 namespace ICSharpCode.Core.Presentation
@@ -37,7 +37,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Gets or sets name of named <see cref="System.Windows.Input.ICommand" /> type associated with this <see cref="CommandBindingInfo" /> 
+		/// Gets or sets full name (returned by <see cref="Type.FullName" />) of <see cref="System.Windows.Input.ICommand" /> type associated with this <see cref="CommandBindingInfo" /> 
 		/// 
 		/// Instance of this class is created as soon as user executes the command. See <see cref="IsLazy" /> for details
 		/// 
@@ -269,6 +269,11 @@ namespace ICSharpCode.Core.Presentation
 		/// <param name="sender">Event sender</param>
 		/// <param name="e">Event arguments</param>
 		internal void GenerateCanExecuteEventHandler(object sender, CanExecuteRoutedEventArgs e) {
+			if(this.CommandTypeName == "ShortcutsAPIDemo.WordCountCommand" || this.CommandTypeName == "ShortcutsAPIDemo.LineCountCommand")
+			{
+				
+			}
+			
 			if(CanExecuteEventHandler == null && ExecutedEventHandler != null) {
 				e.CanExecute = true;
 			} else if(CanExecuteEventHandler != null) {

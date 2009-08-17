@@ -12,12 +12,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
 
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
-
-using ICSharpCode.Core.Presentation;
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {

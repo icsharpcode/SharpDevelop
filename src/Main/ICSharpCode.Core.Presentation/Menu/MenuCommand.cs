@@ -15,7 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Text;
-using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using CommandManager=ICSharpCode.Core.Presentation.SDCommandManager;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -140,16 +140,16 @@ namespace ICSharpCode.Core.Presentation
 			
 			bindingTemplate = BindingInfoTemplate.Create(tplOwnerInstance, tplOwnerType, tplRoutedCommandName);
 
-			var routedCommand = CommandManager.GetRoutedUICommand(tplRoutedCommandName);
+			var routedCommand = SDCommandManager.GetRoutedUICommand(tplRoutedCommandName);
 			if(routedCommand != null) {
 				this.Command = routedCommand;
 			}
 			
-			var gestures = CommandManager.FindInputGestures(bindingTemplate, null);
+			var gestures = SDCommandManager.FindInputGestures(bindingTemplate, null);
 			
 			this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
 			
-			CommandManager.GesturesChanged += MenuCommand_GesturesChanged;
+			SDCommandManager.GesturesChanged += MenuCommand_GesturesChanged;
 		}
 		
 		private void MenuCommand_GesturesChanged(object sender, NotifyGesturesChangedEventArgs e) 
@@ -160,7 +160,7 @@ namespace ICSharpCode.Core.Presentation
 					&& (bindingTemplate.OwnerTypeName == null || bindingTemplate.OwnerTypeName == temp.OwnerTypeName)
 					&& (bindingTemplate.RoutedCommandName == null || bindingTemplate.RoutedCommandName == temp.RoutedCommandName)) {
 
-					var updatedGestures = CommandManager.FindInputGestures(bindingTemplate, null);
+					var updatedGestures = SDCommandManager.FindInputGestures(bindingTemplate, null);
 					this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 				}
 			}

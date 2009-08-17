@@ -3,7 +3,7 @@ using System.Xml;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.Core.Presentation
 {

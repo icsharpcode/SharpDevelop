@@ -75,7 +75,7 @@
     <Compile Include="CommandsService\Collections\InputBindingCategoryCollection.cs" />
     <Compile Include="CommandsService\Collections\RelationshipMap.cs" />
     <Compile Include="CommandsService\CommandBindingInfo.cs" />
-    <Compile Include="CommandsService\CommandManager.cs" />
+    <Compile Include="CommandsService\SDCommandManager.cs" />
     <Compile Include="CommandsService\CommandsService.cs" />
     <Compile Include="CommandsService\Events\NotifyBindingsChangedEvent.cs" />
     <Compile Include="CommandsService\Events\NotifyGesturesChangedEvent.cs" />

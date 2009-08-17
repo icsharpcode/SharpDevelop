@@ -19,7 +19,7 @@ namespace ICSharpCode.Core.Presentation
 	/// Provides methods to describe <see cref="CommandBinding" /> and <see cref="InputBinding" /> 
 	/// objects assigned to owners and methods to keep aware of user changes to default gestures
 	/// </summary>
-	public static class CommandManager
+	public static class SDCommandManager
 	{
 		/// <summary>
 		/// Name of the type which should be used as owner if no other 
@@ -57,7 +57,7 @@ namespace ICSharpCode.Core.Presentation
 		// Registered input binding categories
 		public static List<InputBindingCategory> InputBindingCategories = new List<InputBindingCategory>();
 		
-		static CommandManager()
+		static SDCommandManager()
 		{
 			// Load gesture profile first
 			var path = PropertyService.Get("ICSharpCode.Core.Presentation.UserDefinedGesturesManager.UserGestureProfilesDirectory");
@@ -113,8 +113,8 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			// Notify GesturesChanged and BindingsChanged events handlers about changes
-			InvokeBindingsChanged(typeof(CommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, modifiedBindingTemplates));
-			InvokeGesturesChanged(typeof(CommandManager), new NotifyGesturesChangedEventArgs(descriptions));
+			InvokeBindingsChanged(typeof(SDCommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, modifiedBindingTemplates));
+			InvokeGesturesChanged(typeof(SDCommandManager), new NotifyGesturesChangedEventArgs(descriptions));
 		}
 
 		static void Profile_GesturesChanged(object sender, NotifyGesturesChangedEventArgs args)
@@ -126,8 +126,8 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			// Notify GesturesChanged and BindingsChanged events handlers about changes
-			InvokeBindingsChanged(typeof(CommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, modifiedBindingTemplates));
-			InvokeGesturesChanged(typeof(CommandManager), args);
+			InvokeBindingsChanged(typeof(SDCommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, modifiedBindingTemplates));
+			InvokeGesturesChanged(typeof(SDCommandManager), args);
 		}
 		
 		/// <summary>
@@ -208,6 +208,28 @@ namespace ICSharpCode.Core.Presentation
 			}
 			
 			return namedUIInstances.MapForward(instanceName).Where(reference => reference.Target != null).Select(reference => (UIElement)reference.Target).ToList();
+		}
+		
+		/// <summary>
+		/// Gets all name-to-instance relationships
+		/// </summary>
+		public static IDictionary<string, ICollection<UIElement>> RegisteredNamedUIElements
+		{
+			get {
+				var dict = new Dictionary<string, ICollection<UIElement>>();
+				foreach(var pair in namedUIInstances.ForwardMap) {
+					var elements = new List<UIElement>();
+					foreach(var element in pair.Value) {
+						if(element.Target != null) {
+							elements.Add((UIElement)element.Target);
+						}
+					}
+					
+					dict.Add(pair.Key, elements);
+				}
+				
+				return dict;
+			}
 		}
 		
 		/// <summary>
@@ -305,6 +327,22 @@ namespace ICSharpCode.Core.Presentation
 			
 			return namedUITypes.MapBackward(type);
 		}
+		
+		
+		/// <summary>
+		/// Gets all name-to-typ relationships
+		/// </summary>
+		public static IDictionary<string, ICollection<Type>> RegisteredNamedUITypes
+		{
+			get {
+				var dict = new Dictionary<string, ICollection<Type>>();
+				foreach(var pair in namedUITypes.ForwardMap) {
+					dict.Add(pair.Key, new List<Type>(pair.Value));
+				}
+				
+				return dict;
+			}
+		}
 
 		/// <summary>
 		/// Register newly created <see cref="RoutedUICommand" /> with unique name
@@ -318,7 +356,7 @@ namespace ICSharpCode.Core.Presentation
 				throw new IndexOutOfRangeException("Routed UI command with name " + routedCommandName + " is already registered");
 			}
 			
-			var routedCommand = new RoutedUICommand(text, routedCommandName, typeof(CommandManager));
+			var routedCommand = new RoutedUICommand(text, routedCommandName, typeof(SDCommandManager));
 			
 			routedCommands.Add(routedCommandName, routedCommand);
 							
@@ -370,64 +408,105 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Register <see cref="CommandBindingInfo" /> instance
+		/// Gets all name-to-routed_command relationships
+		/// </summary>
+		public static IDictionary<string, RoutedUICommand> RegisteredRoutedUICommands
+		{
+			get {
+				return new Dictionary<string, RoutedUICommand>(routedCommands);
+			}
+		}
+		
+		/// <summary>
+		/// Register <see cref="CommandBindingInfo" /> instance. If <see cref="CommandBindingInfo" /> with same signature
+		/// already exist ([<see cref="CommandBindingInfo.OwnerTypeName" /> or <see cref="InputBindingInfo.OwnerInstanceName" />] + <see cref="CommandBindingInfo.RoutedCommandName" /> 
+		/// + [<see cref="CommandBindingInfo.CommandTypeName" /> or <see cref="CommandBindingInfo.CommandInstance" /> or <see cref="CommandBindingInfo.ExecutedEventHandler" />) 
+		/// updates existing <see cref="CommandBindingInfo" />
 		/// </summary>
 		/// <param name="commandBindingInfo">Binding info</param>
 		public static void RegisterCommandBindingInfo(CommandBindingInfo commandBindingInfo) {
 			if(commandBindingInfo.OwnerInstanceName == null && commandBindingInfo.OwnerTypeName == null) {
-				throw new ArgumentException("Binding owner must be specified");
+				throw new ArgumentException("OwnerTypeName or OwnerInstanceName must be specified");
 			}
 			
 			if(commandBindingInfo.RoutedCommandName == null) {
-				throw new ArgumentException("Routed command name must be specified");
+				throw new ArgumentException("RoutedCommandName must be specified");
 			}
 			
-			commandBindings.Add(BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo), commandBindingInfo);
-			commandBindingInfo.IsRegistered = true;
-				
-			CommandManager.BindingsChanged += commandBindingInfo.BindingsChangedHandler;
+			if(commandBindingInfo.CommandTypeName != null && commandBindingInfo.AddIn == null) {
+				throw new ArgumentException("CommandTypeName is specified but AddIn is not");
+			}
+			
+			var similarTemplate = BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo);
+			var similarCommandBindings = FindCommandBindingInfos(similarTemplate, null);
+			
+			if(similarCommandBindings != null && similarCommandBindings.Count > 0) {
+				foreach(var similarCommandBinding in similarCommandBindings) {
+					if((commandBindingInfo.CommandTypeName != null && commandBindingInfo.CommandTypeName == similarCommandBinding.CommandTypeName)
+					   || (commandBindingInfo.CommandTypeName == null && commandBindingInfo.CommandInstance != null && commandBindingInfo.CommandInstance == similarCommandBinding.CommandInstance)
+					   || (commandBindingInfo.ExecutedEventHandler != null && commandBindingInfo.ExecutedEventHandler == similarCommandBinding.ExecutedEventHandler && (commandBindingInfo.CanExecuteEventHandler == null || commandBindingInfo.CanExecuteEventHandler == similarCommandBinding.CanExecuteEventHandler))) {
+						
+						lock(similarCommandBinding) {
+							similarCommandBinding.IsRegistered = false;
+							similarCommandBinding.IsLazy = commandBindingInfo.IsLazy;
+							similarCommandBinding.AddIn = commandBindingInfo.AddIn;
+							similarCommandBinding.Groups.AddRange(commandBindingInfo.Groups);
+							similarCommandBinding.IsRegistered = true;
+						}
+					}
+				}
+			} else {
+				commandBindings.Add(BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo), commandBindingInfo);
+				commandBindingInfo.IsRegistered = true;
+			}
+			
+			SDCommandManager.BindingsChanged += commandBindingInfo.BindingsChangedHandler;
 			InvokeBindingsChanged(null, new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new []{ BindingInfoTemplate.CreateFromIBindingInfo(commandBindingInfo) }));
 		}
 
 		/// <summary>
-		/// Register <see cref="InputBindingInfo" /> instance
+		/// Register <see cref="InputBindingInfo" /> instance. If <see cref="InputBindingInfo" /> with same signature
+		/// already exist (<see cref="InputBindingInfo.OwnerTypeName" />/<see cref="InputBindingInfo.OwnerInstanceName" /> + <see cref="InputBindingInfo.RoutedCommandName" />) 
+		/// updates existing <see cref="InputBindingInfo" />
 		/// </summary>
 		/// <param name="inputBindingInfo">Binding info</param>
 		public static void RegisterInputBindingInfo(InputBindingInfo inputBindingInfo)
 		{
 			if(inputBindingInfo.OwnerInstanceName == null && inputBindingInfo.OwnerTypeName == null) {
-				throw new ArgumentException("Binding owner must be specified");
+				throw new ArgumentException("OwnerTypeName or OwnerInstanceName must be specified");
 			}
 			
 			if(inputBindingInfo.RoutedCommandName == null) {
 				throw new ArgumentException("Routed command name must be specified");
 			}
 			
-			if(inputBindingInfo.RoutedCommandName == "SDBuildCommands.BuildSolution")
-			{
-				
-			}
-			
 			var similarTemplate = BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo);
-			var similarInputBinding = FindInputBindingInfos(similarTemplate, null).FirstOrDefault();
+			var similarInputBindings = FindInputBindingInfos(similarTemplate, null);
 			
-			if(similarInputBinding != null) {
-				foreach(InputGesture gesture in inputBindingInfo.DefaultGestures) {
-					var existingGesture = new InputGestureCollection(similarInputBinding.DefaultGestures.ToList());
-					if(!existingGesture.ContainsTemplateFor(gesture, GestureCompareMode.ExactlyMatches)) {
-						similarInputBinding.DefaultGestures.Add(gesture);
+			if(similarInputBindings != null && similarInputBindings.Count > 0) {
+				foreach(var similarInputBinding in similarInputBindings) {
+					foreach(InputGesture gesture in inputBindingInfo.DefaultGestures) {
+						var existingGesture = new InputGestureCollection(similarInputBinding.DefaultGestures.ToList());
+						if(!existingGesture.ContainsTemplateFor(gesture, GestureCompareMode.ExactlyMatches)) {
+							similarInputBinding.DefaultGestures.Add(gesture);
+						}
+					}
+					
+					lock(similarInputBinding) {
+						similarInputBinding.IsRegistered = false;
+						similarInputBinding.AddIn = inputBindingInfo.AddIn;
+						similarInputBinding.Categories.AddRange(inputBindingInfo.Categories);
+						similarInputBinding.Groups.AddRange(inputBindingInfo.Groups);
+						similarInputBinding.IsRegistered = true;
 					}
 				}
-				
-				similarInputBinding.Categories.AddRange(inputBindingInfo.Categories);
-				similarInputBinding.Groups.AddRange(inputBindingInfo.Groups);
 			} else {
 				inputBidnings.Add(BindingInfoTemplate.CreateFromIBindingInfo(inputBindingInfo), inputBindingInfo);
 				inputBindingInfo.IsRegistered = true;
 				
-				CommandManager.BindingsChanged += inputBindingInfo.BindingsChangedHandler;
+				SDCommandManager.BindingsChanged += inputBindingInfo.BindingsChangedHandler;
 				InvokeGesturesChanged(
-					typeof(CommandManager), 
+					typeof(SDCommandManager), 
 					new NotifyGesturesChangedEventArgs(
 						new GesturesModificationDescription(
 							similarTemplate,
@@ -435,7 +514,7 @@ namespace ICSharpCode.Core.Presentation
 							inputBindingInfo.ActiveGestures)));
 			}
 			
-			InvokeBindingsChanged(typeof(CommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new [] { similarTemplate }));
+			InvokeBindingsChanged(typeof(SDCommandManager), new NotifyBindingsChangedEventArgs(NotifyBindingsChangedAction.BindingInfoModified, new [] { similarTemplate }));
 		}
 		
 		/// <summary>
@@ -565,7 +644,7 @@ namespace ICSharpCode.Core.Presentation
 		private static void UnregisterBindingInfo(BindingInfoTemplateDictionary<BindingInfoBase> bindingInfoDictionary, BindingInfoBase bindingInfo)
 		{
 			bindingInfoDictionary.Remove(bindingInfo);
-			CommandManager.BindingsChanged -= bindingInfo.BindingsChangedHandler;
+			SDCommandManager.BindingsChanged -= bindingInfo.BindingsChangedHandler;
 			bindingInfo.RemoveActiveBindings();
 			bindingInfo.IsRegistered = false;
 			

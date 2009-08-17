@@ -20,7 +20,6 @@ using System.Windows.Navigation;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -87,9 +86,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// Load all commands and and key bindings from addin tree
 			CommandsService.RegisterInputBindingCategories(this, "/SharpDevelop/CommandManager/InputBindingCategories");
 			CommandsService.RegisterRoutedUICommands(this, "/SharpDevelop/CommandManager/RoutedUICommands");
+			CommandsService.RegisterMenuBindings(this, "/SharpDevelop/CommandManager/MenuLocations");
 			CommandsService.RegisterCommandBindings(this, "/SharpDevelop/CommandManager/CommandBindings");
 			CommandsService.RegisterInputBindings(this, "/SharpDevelop/CommandManager/InputBindings");
-			CommandsService.RegisterMenuBindings(this, "/SharpDevelop/CommandManager/MenuLocations");
 				
 			// Register context and load all commands from addin
 			SDCommandManager.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));

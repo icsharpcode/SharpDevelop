@@ -22,8 +22,6 @@ using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Util;
 
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
-
 namespace ICSharpCode.SharpDevelop.Commands
 {
 	public class NavigationHistoryMenuBuilder : IMenuItemBuilder
@@ -208,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			var categoryName = StringParser.Parse("External tools");
 			externalToolsCategory = new InputBindingCategory("/MainMenu/Tools/ExternalTools", categoryName);
-			ICSharpCode.Core.Presentation.CommandManager.RegisterInputBindingCategory(externalToolsCategory);
+			ICSharpCode.Core.Presentation.SDCommandManager.RegisterInputBindingCategory(externalToolsCategory);
 		}
 		
 		private bool bindingsAssigned = false;
@@ -540,10 +538,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 						inputBindingInfo.DefaultGestures.AddRange(gestures);
 						
 						var categoryPath = "/MainMenu/View" + (Category == padContent.Category && padContent.Category != "Main" ? "/" + padContent.Category : "");
-						var category = ICSharpCode.Core.Presentation.CommandManager.GetInputBindingCategory(categoryPath, false);
+						var category = ICSharpCode.Core.Presentation.SDCommandManager.GetInputBindingCategory(categoryPath, false);
 						if(category == null) {
 							category = new InputBindingCategory(categoryPath, padContent.Category);
-							ICSharpCode.Core.Presentation.CommandManager.RegisterInputBindingCategory(category);
+							ICSharpCode.Core.Presentation.SDCommandManager.RegisterInputBindingCategory(category);
 						}
 						
 						inputBindingInfo.Categories.Add(category);

@@ -19,14 +19,12 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Indentation;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
-using ICSharpCode.Core.Presentation;
-using SDCommandManager = ICSharpCode.Core.Presentation.CommandManager;
-using CommandManager = System.Windows.Input.CommandManager;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {

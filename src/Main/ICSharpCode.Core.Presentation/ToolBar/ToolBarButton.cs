@@ -40,9 +40,9 @@ namespace ICSharpCode.Core.Presentation
 				routedCommandText = "Menu item \"" + codon.Properties["label"] + "\"";
 			}
 
-			var routedCommand = CommandManager.GetRoutedUICommand(routedCommandName);
+			var routedCommand = SDCommandManager.GetRoutedUICommand(routedCommandName);
 			if(routedCommand == null) {
-				routedCommand = CommandManager.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+				routedCommand = SDCommandManager.RegisterRoutedUICommand(routedCommandName, routedCommandText);
 			}
 			   
 			this.Command = routedCommand;
@@ -50,11 +50,11 @@ namespace ICSharpCode.Core.Presentation
 			if(!codon.Properties.Contains("command") && (codon.Properties.Contains("link") || codon.Properties.Contains("class"))) {
 				var commandBindingInfo = new CommandBindingInfo();
 				commandBindingInfo.AddIn = codon.AddIn;
-				commandBindingInfo.OwnerTypeName = CommandManager.DefaultOwnerTypeName;
+				commandBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
 				commandBindingInfo.CommandInstance = CommandWrapper.GetCommand(codon, caller, createCommand);
 				commandBindingInfo.RoutedCommandName = routedCommandName;
 				commandBindingInfo.IsLazy = true;
-				CommandManager.RegisterCommandBindingInfo(commandBindingInfo);
+				SDCommandManager.RegisterCommandBindingInfo(commandBindingInfo);
 			}
 			
 			if (codon.Properties.Contains("icon")) {

@@ -9,7 +9,7 @@ using System;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core.Presentation;
-using SDCommandManager=ICSharpCode.Core.Presentation.CommandManager;
+using SDCommandManager=ICSharpCode.Core.Presentation.SDCommandManager;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {

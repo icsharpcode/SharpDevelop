@@ -11,12 +11,10 @@ using System.Windows.Forms;
 using System.Windows.Input;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-
-using ICSharpCode.Core.Presentation;
-using SDCommandManager = ICSharpCode.Core.Presentation.CommandManager;
 
 namespace SearchAndReplace
 {

@@ -11,7 +11,6 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
 using System.Windows.Input;
-using CommandManager=ICSharpCode.Core.Presentation.CommandManager;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -25,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public void Execute(object parameter)
 		{
-			CommandManager.GetRoutedUICommand("SDBuildCommands.BuildSolution").Execute(parameter, WorkbenchSingleton.MainWindow);
+			SDCommandManager.GetRoutedUICommand("SDBuildCommands.BuildSolution").Execute(parameter, WorkbenchSingleton.MainWindow);
 			
 			System.Windows.MessageBox.Show("test");
 		}

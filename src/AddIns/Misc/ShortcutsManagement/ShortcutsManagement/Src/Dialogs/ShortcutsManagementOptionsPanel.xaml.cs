@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.ShortcutsManagement.Data;
 using Microsoft.Win32;
 using ShortcutManagement=ICSharpCode.ShortcutsManagement.Data;
-using SDCommandManager = ICSharpCode.Core.Presentation.CommandManager;
+using ICSharpCode.Core.Presentation;
 using MessageBox=System.Windows.MessageBox;
 using Shortcut=ICSharpCode.ShortcutsManagement.Data.Shortcut;
 using UserControl=System.Windows.Controls.UserControl;
@@ -193,7 +193,7 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 				
 				var shortcut = new Shortcut(shortcutText, inputBindingInfo.ActiveGestures, inputBindingInfo.DefaultGestures.InputGesturesCollection);
 				shortcutsMap.Add(shortcut, inputBindingInfo);
-				
+				 
 				// Assign shortcut to all categories it is registered in
 				var isAnyCategoriesResolved = true;
 				if (inputBindingInfo.Categories != null && inputBindingInfo.Categories.Count > 0) {
@@ -205,7 +205,9 @@ namespace ICSharpCode.ShortcutsManagement.Dialogs
 							isAnyCategoriesResolved = true;
 						}
 					}
-				} 
+				} else {
+					isAnyCategoriesResolved = false;
+				}
 				
 				if(!isAnyCategoriesResolved) {
 					rootEntries.Add(shortcut);

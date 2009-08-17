@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using ICSharpCode.Core.Presentation;
-using SDCommandManager = ICSharpCode.Core.Presentation.CommandManager;
 using NUnit.Framework;
 
 namespace ICSharpCode.Core.Presentation.Tests
