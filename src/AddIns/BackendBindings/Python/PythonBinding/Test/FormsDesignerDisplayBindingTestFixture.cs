@@ -23,17 +23,17 @@ namespace PythonBinding.Tests
 	{
 		DerivedPythonFormsDesignerDisplayBinding displayBinding;
 		MockTextEditorViewContent viewContent;
-		bool canAttachToDesignableClass;
 		ParseInformation parseInfo;
+		bool canAttachToDesignableClass;
 		
 		[SetUp]
 		public void SetUp()
 		{
 			displayBinding = new DerivedPythonFormsDesignerDisplayBinding();
 			viewContent = new MockTextEditorViewContent();
+			parseInfo = new ParseInformation(new DefaultCompilationUnit(new DefaultProjectContent()));
 			viewContent.PrimaryFileName = "test.py";
-			viewContent.TextEditorControl.Text = "text content";
-			parseInfo = new ParseInformation();
+			viewContent.TextEditor.Document.Text = "text content";
 			displayBinding.ParseServiceParseInfoToReturn = parseInfo;
 			displayBinding.IsParseInfoDesignable = true;
 			canAttachToDesignableClass = displayBinding.CanAttachTo(viewContent);
@@ -88,12 +88,6 @@ namespace PythonBinding.Tests
 		public void FileNamePassedToGetParseInfo()
 		{
 			Assert.AreEqual("test.py", displayBinding.FileNamePassedToGetParseInfo);
-		}
-		
-		[Test]
-		public void CommentTagsNotUpdated()
-		{
-			Assert.IsFalse(displayBinding.UpdateCommentTagsPassedToGetParseInfo);
 		}
 		
 		[Test]

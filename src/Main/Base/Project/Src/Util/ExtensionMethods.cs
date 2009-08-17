@@ -5,17 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Forms;
+
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
 using WinForms = System.Windows.Forms;
 
@@ -26,6 +28,13 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public static class ExtensionMethods
 	{
+		// TODO: Remove this method in .NET 4.0 Beta 2
+		public static void ThrowIfCancellationRequested(this CancellationToken ct)
+		{
+			if (ct.IsCancellationRequested)
+				throw new OperationCanceledException("The operation was canceled.", ct);
+		}
+		
 		/// <summary>
 		/// Raises the event.
 		/// Does nothing if eventHandler is null.

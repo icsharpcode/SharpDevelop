@@ -1,81 +1,65 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <owner name="Daniel Grunwald"/>
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Windows.Threading;
+using System.Threading.Tasks;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using RegistryContentPair = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDevelop.Dom.ProjectContentRegistry, ICSharpCode.SharpDevelop.Dom.IProjectContent>;
 
 namespace ICSharpCode.SharpDevelop
 {
+	/// <summary>
+	/// Stores the compilation units for files.
+	/// </summary>
 	public static class ParserService
 	{
-		static IList<ParserDescriptor> parser;
-		static IList<ProjectContentRegistryDescriptor> registries;
-		
+		static readonly object syncLock = new object();
+		static IList<ParserDescriptor> parserDescriptors;
 		static Dictionary<IProject, IProjectContent> projectContents = new Dictionary<IProject, IProjectContent>();
-		static Dictionary<string, ParseInformation> parsings = new Dictionary<string, ParseInformation>(StringComparer.OrdinalIgnoreCase);
-		static ProjectContentRegistry defaultProjectContentRegistry = new ProjectContentRegistry();
+		static Dictionary<string, FileEntry> fileEntryDict = new Dictionary<string, FileEntry>(StringComparer.OrdinalIgnoreCase);
+		static DefaultProjectContent defaultProjectContent;
 		
-		static string domPersistencePath;
-		
-		internal static void InitializeParserService()
-		{
-			if (parser == null) {
-				parser = AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false);
-				registries = AddInTree.BuildItems<ProjectContentRegistryDescriptor>("/Workspace/ProjectContentRegistry", null, false);
-				
-				if (!string.IsNullOrEmpty(domPersistencePath)) {
-					Directory.CreateDirectory(domPersistencePath);
-					defaultProjectContentRegistry.ActivatePersistence(domPersistencePath);
-				}
-				ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
-			}
-		}
-		
+		#region Manage Project Contents
 		/// <summary>
-		/// Gets/Sets the cache directory used for DOM persistence.
+		/// Fetches the current project content.
 		/// </summary>
-		public static string DomPersistencePath {
-			get {
-				return domPersistencePath;
-			}
-			set {
-				if (parser != null)
-					throw new InvalidOperationException("Cannot set DomPersistencePath after ParserService was initialized");
-				domPersistencePath = value;
-			}
-		}
-		
-		public static ProjectContentRegistry DefaultProjectContentRegistry {
-			get {
-				return defaultProjectContentRegistry;
-			}
-		}
-		
 		public static IProjectContent CurrentProjectContent {
 			[DebuggerStepThrough]
 			get {
-				if (ProjectService.CurrentProject == null || !projectContents.ContainsKey(ProjectService.CurrentProject)) {
-					return DefaultProjectContent;
+				IProject currentProject = ProjectService.CurrentProject;
+				lock (syncLock) {
+					if (currentProject == null || !projectContents.ContainsKey(currentProject)) {
+						return DefaultProjectContent;
+					}
+					return projectContents[currentProject];
 				}
-				return projectContents[ProjectService.CurrentProject];
 			}
+		}
+		
+		public static IProjectContent GetProjectContent(IProject project)
+		{
+			lock (projectContents) {
+				IProjectContent pc;
+				if (projectContents.TryGetValue(project, out pc)) {
+					return pc;
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -83,440 +67,23 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static IEnumerable<IProjectContent> AllProjectContents {
 			get {
-				return projectContents.Values;
-			}
-		}
-		
-		static void ProjectServiceSolutionClosed(object sender, EventArgs e)
-		{
-			abortLoadSolutionProjectsThread = true;
-			
-			lock (reParse1) { // clear queue of reparse thread
-				reParse1.Clear();
-				reParse2.Clear();
-			}
-			lock (projectContents) {
-				foreach (IProjectContent content in projectContents.Values) {
-					content.Dispose();
+				lock (syncLock) {
+					return projectContents.Values.ToArray();
 				}
-				projectContents.Clear();
-			}
-			lock (parsings) {
-				parsings.Clear();
-			}
-			lock (parseQueue) {
-				parseQueue.Clear();
-			}
-			lastUpdateHash.Clear();
-		}
-		
-		static Thread loadSolutionProjectsThread;
-		static bool   abortLoadSolutionProjectsThread;
-		
-		// do not use an event for this because a solution might be loaded before ParserService
-		// is initialized
-		internal static void OnSolutionLoaded()
-		{
-			if (loadSolutionProjectsThread != null) {
-				if (!abortLoadSolutionProjectsThread)
-					throw new InvalidOperationException("Cannot open new solution without closing old solution!");
-				if (!loadSolutionProjectsThread.Join(50)) {
-					// loadSolutionProjects might be waiting for main thread, so give it
-					// a chance to complete safethread calls by putting this method at
-					// the end of the invoking queue
-					WorkbenchSingleton.SafeThreadAsyncCall(OnSolutionLoaded);
-					return;
-				}
-			}
-			loadSolutionProjectsThread = new Thread(new ThreadStart(LoadSolutionProjects));
-			loadSolutionProjectsThread.Name = "loadSolutionProjects";
-			loadSolutionProjectsThread.Priority = ThreadPriority.BelowNormal;
-			loadSolutionProjectsThread.IsBackground = true;
-			loadSolutionProjectsThread.Start();
-		}
-		
-		public static bool LoadSolutionProjectsThreadRunning {
-			get {
-				return loadSolutionProjectsThread != null;
-			}
-		}
-		
-		static void LoadSolutionProjects()
-		{
-			try {
-				abortLoadSolutionProjectsThread = false;
-				LoggingService.Info("Start LoadSolutionProjects thread");
-				LoadSolutionProjectsInternal();
-			} finally {
-				LoggingService.Info("LoadSolutionProjects thread ended");
-				loadSolutionProjectsThread = null;
-				OnLoadSolutionProjectsThreadEnded(EventArgs.Empty);
-			}
-		}
-		
-		static void LoadSolutionProjectsInternal()
-		{
-			IProgressMonitor progressMonitor = StatusBarService.CreateProgressMonitor();
-			List<ParseProjectContent> createdContents = new List<ParseProjectContent>();
-			foreach (IProject project in ProjectService.OpenSolution.Projects) {
-				try {
-					ParseProjectContent newContent = project.CreateProjectContent();
-					if (newContent != null) {
-						lock (projectContents) {
-							projectContents[project] = newContent;
-						}
-						createdContents.Add(newContent);
-					}
-				} catch (Exception e) {
-					MessageService.ShowError(e, "Error while retrieving project contents from " + project);
-				}
-			}
-			WorkbenchSingleton.SafeThreadAsyncCall(ProjectService.ParserServiceCreatedProjectContents);
-			try {
-				int workAmount = 0;
-				// multiply Count with 2 so that the progress bar is only at 50% when references are done
-				progressMonitor.BeginTask("Loading references...", createdContents.Count * 2, false);
-				
-				for (int i = 0; i < createdContents.Count; i++) {
-					if (abortLoadSolutionProjectsThread) return;
-					ParseProjectContent newContent = createdContents[i];
-					progressMonitor.WorkDone = i;
-					try {
-						newContent.Initialize1(progressMonitor);
-						workAmount += newContent.GetInitializationWorkAmount();
-					} catch (Exception e) {
-						MessageService.ShowError(e, "Error while initializing project references:" + newContent);
-					}
-				}
-				
-				// multiply workamount with two and start at workAmount so that the progress bar continues
-				// from 50% towards 100%.
-				progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount * 2, false);
-				progressMonitor.WorkDone = workAmount;
-				foreach (ParseProjectContent newContent in createdContents) {
-					if (abortLoadSolutionProjectsThread) return;
-					try {
-						newContent.Initialize2(progressMonitor);
-					} catch (Exception e) {
-						MessageService.ShowError(e, "Error while initializing project contents:" + newContent);
-					}
-				}
-			} finally {
-				progressMonitor.Done();
-			}
-		}
-		
-		static void InitAddedProject(object state)
-		{
-			ParseProjectContent newContent = (ParseProjectContent)state;
-			IProgressMonitor progressMonitor = StatusBarService.CreateProgressMonitor();
-			newContent.Initialize1(progressMonitor);
-			progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", newContent.GetInitializationWorkAmount(), false);
-			newContent.Initialize2(progressMonitor);
-			progressMonitor.Done();
-		}
-		
-		#region Reparse projects
-		// queue of projects waiting to reparse references
-		static Queue<ParseProjectContent> reParse1 = new Queue<ParseProjectContent>();
-		
-		// queue of projects waiting to reparse code
-		static Queue<ParseProjectContent> reParse2 = new Queue<ParseProjectContent>();
-		static Thread reParseThread;
-		
-		static void ReparseProjects()
-		{
-			LoggingService.Info("reParse thread started");
-			Thread.Sleep(100); // enable main thread to fill the queues completely
-			try {
-				ReparseProjectsInternal();
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
-			}
-		}
-		
-		static void ReparseProjectsInternal()
-		{
-			bool parsing = false;
-			ParseProjectContent job;
-			IProgressMonitor progressMonitor = StatusBarService.CreateProgressMonitor();
-			
-			while (true) {
-				// get next job
-				lock (reParse1) {
-					if (reParse1.Count > 0) {
-						if (parsing) {
-							progressMonitor.Done();
-						}
-						parsing = false;
-						job = reParse1.Dequeue();
-					} else if (reParse2.Count > 0) {
-						if (!parsing) {
-							int workAmount = 0;
-							foreach (ParseProjectContent ppc in reParse2) {
-								workAmount += ppc.GetInitializationWorkAmount();
-							}
-							progressMonitor.BeginTask("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing}...", workAmount, false);
-						}
-						parsing = true;
-						job = reParse2.Dequeue();
-					} else {
-						// all jobs done
-						reParseThread = null;
-						if (parsing) {
-							progressMonitor.Done();
-						}
-						LoggingService.Info("reParse thread finished all jobs");
-						return;
-					}
-				}
-				
-				// execute job
-				if (parsing) {
-					LoggingService.Info("reparsing code for " + job.Project);
-					job.ReInitialize2(progressMonitor);
-				} else {
-					LoggingService.Debug("reloading references for " + job.Project);
-					job.ReInitialize1(progressMonitor);
-				}
-			}
-		}
-		
-		public static void Reparse(IProject project, bool initReferences, bool parseCode)
-		{
-			ParseProjectContent pc = GetProjectContent(project) as ParseProjectContent;
-			if (pc != null) {
-				lock (reParse1) {
-					if (initReferences && !reParse1.Contains(pc)) {
-						LoggingService.Debug("Enqueue for reinitializing references: " + project);
-						reParse1.Enqueue(pc);
-					}
-					if (parseCode && !reParse2.Contains(pc)) {
-						LoggingService.Debug("Enqueue for reparsing code: " + project);
-						reParse2.Enqueue(pc);
-					}
-					if (reParseThread == null) {
-						LoggingService.Info("Starting reParse thread");
-						reParseThread = new Thread(new ThreadStart(ReparseProjects));
-						reParseThread.Name = "reParse";
-						reParseThread.Priority = ThreadPriority.BelowNormal;
-						reParseThread.IsBackground = true;
-						reParseThread.Start();
-					}
-				}
-			}
-		}
-		#endregion
-		
-		/// <remarks>Can return null.</remarks>
-		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
-		{
-			lock (projectContents) {
-				ParseProjectContent newContent = project.CreateProjectContent();
-				if (newContent != null) {
-					projectContents[project] = newContent;
-					ThreadPool.QueueUserWorkItem(InitAddedProject, newContent);
-				}
-				return newContent;
-			}
-		}
-		
-		internal static void RemoveProjectContentForRemovedProject(IProject project)
-		{
-			lock (projectContents) {
-				projectContents.Remove(project);
-			}
-		}
-		
-		public static IProjectContent GetProjectContent(IProject project)
-		{
-			lock (projectContents) {
-				if (projectContents.ContainsKey(project)) {
-					return projectContents[project];
-				}
-			}
-			return null;
-		}
-		
-		static Queue<KeyValuePair<string, ITextBuffer>> parseQueue = new Queue<KeyValuePair<string, ITextBuffer>>();
-		
-		static void ParseQueue()
-		{
-			while (true) {
-				KeyValuePair<string, ITextBuffer> entry;
-				lock (parseQueue) {
-					if (parseQueue.Count == 0)
-						return;
-					entry = parseQueue.Dequeue();
-				}
-				ParseFile(entry.Key, entry.Value);
-			}
-		}
-		
-		public static void EnqueueForParsing(string fileName)
-		{
-			EnqueueForParsing(fileName, GetParseableFileContent(fileName));
-		}
-		
-		public static void EnqueueForParsing(string fileName, ITextBuffer fileContent)
-		{
-			fileContent = fileContent.CreateSnapshot();
-			lock (parseQueue) {
-				parseQueue.Enqueue(new KeyValuePair<string, ITextBuffer>(fileName, fileContent));
-			}
-		}
-		
-		public static void StartParserThread()
-		{
-			abortParserUpdateThread = false;
-			Thread parserThread = new Thread(new ThreadStart(ParserUpdateThread));
-			parserThread.Name = "parser";
-			parserThread.Priority = ThreadPriority.BelowNormal;
-			parserThread.IsBackground  = true;
-			parserThread.Start();
-		}
-		
-		public static void StopParserThread()
-		{
-			abortParserUpdateThread = true;
-		}
-		
-		static volatile bool abortParserUpdateThread = false;
-		
-		static Dictionary<string, int> lastUpdateHash = new Dictionary<string, int>();
-		
-		static void ParserUpdateThread()
-		{
-			LoggingService.Info("ParserUpdateThread started");
-			Thread.Sleep(750);
-			
-			// preload mscorlib, we're going to need it probably
-			IProjectContent dummyVar = defaultProjectContentRegistry.Mscorlib;
-			
-			while (!abortParserUpdateThread) {
-				try {
-					ParseQueue();
-					ParserUpdateStep();
-				} catch (Exception e) {
-					ICSharpCode.Core.MessageService.ShowError(e);
-					
-					// don't fire an exception every 2 seconds at the user, give him at least
-					// time to read the first :-)
-					Thread.Sleep(10000);
-				}
-				Thread.Sleep(2000);
-			}
-			LoggingService.Info("ParserUpdateThread stopped");
-		}
-		
-		public static void ParseCurrentViewContent()
-		{
-			ParserUpdateStep();
-		}
-		
-		static void ParserUpdateStep()
-		{
-			IViewContent activeViewContent = null;
-			string fileName = null;
-			bool isUntitled = false;
-			try {
-				WorkbenchSingleton.SafeThreadCall(
-					delegate {
-						try {
-							activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-							if (activeViewContent != null && activeViewContent.PrimaryFile != null) {
-								fileName = activeViewContent.PrimaryFileName;
-								isUntitled = activeViewContent.PrimaryFile.IsUntitled;
-							}
-						} catch (Exception ex) {
-							MessageService.ShowError(ex.ToString());
-						}
-					});
-			} catch (InvalidOperationException ex) { // includes ObjectDisposedException
-				// maybe workbench has been disposed while waiting for the SafeThreadCall
-				// can occur after workbench unload or after aborting SharpDevelop with
-				// Application.Exit()
-				LoggingService.Warn("InvalidOperationException while trying to invoke GetActiveViewContent() " + ex);
-				return; // abort this thread
-			}
-			IEditable editable = activeViewContent as IEditable;
-			if (editable != null) {
-				if (!(fileName == null || fileName.Length == 0)) {
-					ParseInformation parseInformation = null;
-					bool updated = false;
-					ITextBuffer fileContent = editable.CreateSnapshot();
-					if (fileContent == null) return;
-					parseInformation = ParseFile(fileName, fileContent, !isUntitled);
-					updated = true;
-					if (updated) {
-						if (parseInformation != null && editable is IParseInformationListener) {
-							((IParseInformationListener)editable).ParseInformationUpdated(parseInformation);
-						}
-					}
-					OnParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, fileContent, updated, parseInformation));
-				}
-			}
-		}
-		
-		public static void ParseViewContent(IViewContent viewContent)
-		{
-			ITextBuffer text = ((IEditable)viewContent).CreateSnapshot();
-			ParseInformation parseInformation = ParseFile(viewContent.PrimaryFileName,
-			                                              text, !viewContent.PrimaryFile.IsUntitled);
-			if (parseInformation != null && viewContent is IParseInformationListener) {
-				((IParseInformationListener)viewContent).ParseInformationUpdated(parseInformation);
 			}
 		}
 		
 		/// <summary>
-		/// <para>This event is called every two seconds. It is called directly after the parser has updated the
-		/// project content and it is called after the parser noticed that there is nothing to update.</para>
-		/// <para><b>WARNING: This event is called on the parser thread - You need to use Invoke if you do
-		/// anything in your event handler that could touch the GUI.</b></para>
+		/// Gets the default project content used for files outside of projects.
 		/// </summary>
-		public static event ParserUpdateStepEventHandler ParserUpdateStepFinished;
-		
-		static void OnParserUpdateStepFinished(ParserUpdateStepEventArgs e)
-		{
-			if (ParserUpdateStepFinished != null) {
-				ParserUpdateStepFinished(typeof(ParserService), e);
-			}
-		}
-		
-		public static ParseInformation ParseFile(string fileName)
-		{
-			return ParseFile(fileName, null);
-		}
-		
-		public static ParseInformation ParseFile(string fileName, ITextBuffer fileContent)
-		{
-			return ParseFile(fileName, fileContent, true);
-		}
-		
-		static IProjectContent GetProjectContent(string fileName)
-		{
-			lock (projectContents) {
-				foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
-					if (projectContent.Key.IsFileInProject(fileName)) {
-						return projectContent.Value;
-					}
-				}
-			}
-			return null;
-		}
-		
-		static DefaultProjectContent defaultProjectContent;
-		
 		public static IProjectContent DefaultProjectContent {
 			get {
-				if (defaultProjectContent == null) {
-					lock (projectContents) {
-						if (defaultProjectContent == null) {
-							CreateDefaultProjectContent();
-						}
+				lock (syncLock) {
+					if (defaultProjectContent == null) {
+						CreateDefaultProjectContent();
 					}
+					return defaultProjectContent;
 				}
-				return defaultProjectContent;
 			}
 		}
 		
@@ -525,101 +92,198 @@ namespace ICSharpCode.SharpDevelop
 			LoggingService.Info("Creating default project content");
 			//LoggingService.Debug("Stacktrace is:\n" + Environment.StackTrace);
 			defaultProjectContent = new DefaultProjectContent();
-			defaultProjectContent.AddReferencedContent(defaultProjectContentRegistry.Mscorlib);
-			Thread t = new Thread(new ThreadStart(CreateDefaultProjectContentReferences));
-			t.IsBackground = true;
-			t.Priority = ThreadPriority.BelowNormal;
-			t.Name = "CreateDefaultPC";
-			t.Start();
+			defaultProjectContent.AddReferencedContent(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
 		}
 		
-		static void CreateDefaultProjectContentReferences()
+		/// <summary>
+		/// Gets all project contents that contain the specified file.
+		/// </summary>
+		static List<IProjectContent> GetProjectContents(string fileName)
 		{
-			IList<string> defaultReferences = AddInTree.BuildItems<string>("/SharpDevelop/Services/ParserService/SingleFileGacReferences", null, false);
-			foreach (string defaultReference in defaultReferences) {
-				ReferenceProjectItem item = new ReferenceProjectItem(null, defaultReference);
-				defaultProjectContent.AddReferencedContent(ParserService.GetProjectContentForReference(item));
-			}
-			if (WorkbenchSingleton.Workbench != null) {
-				WorkbenchSingleton.Workbench.ActiveViewContentChanged += delegate {
-					if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
-						string file = WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
-						if (file != null) {
-							IParser parser = GetParser(file);
-							if (parser != null && parser.Language != null) {
-								defaultProjectContent.Language = parser.Language;
-								defaultProjectContent.DefaultImports = parser.Language.CreateDefaultImports(defaultProjectContent);
-							}
-						}
+			List<IProjectContent> result = new List<IProjectContent>();
+			lock (projectContents) {
+				foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
+					if (projectContent.Key.IsFileInProject(fileName)) {
+						result.Add(projectContent.Value);
 					}
-				};
+				}
+			}
+			if (result.Count == 0)
+				result.Add(DefaultProjectContent);
+			return result;
+		}
+		
+		internal static void RemoveProjectContentForRemovedProject(IProject project)
+		{
+			lock (projectContents) {
+				projectContents.Remove(project);
+			}
+		}
+		#endregion
+		
+		#region Initialization + ParserThread
+		internal static void InitializeParserService()
+		{
+			if (parserDescriptors == null) {
+				parserDescriptors = AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false);
+				AssemblyParserService.Initialize();
+				LoadSolutionProjects.Initialize();
 			}
 		}
 		
-		public static ParseInformation ParseFile(string fileName, ITextBuffer fileContent, bool updateCommentTags)
+		static DispatcherTimer timer;
+		
+		internal static void StartParserThread()
 		{
-			return ParseFile(null, fileName, fileContent, updateCommentTags);
+			WorkbenchSingleton.DebugAssertMainThread();
+			timer = new DispatcherTimer(DispatcherPriority.Background);
+			timer.Interval = TimeSpan.FromSeconds(2);
+			timer.Tick += new EventHandler(timer_Tick);
+			timer.Start();
+		}
+
+		internal static void StopParserThread()
+		{
+			timer.Stop();
 		}
 		
-		public static ParseInformation ParseFile(IProjectContent fileProjectContent, string fileName, ITextBuffer fileContent, bool updateCommentTags)
+		static System.Threading.Tasks.Task lastParseRun;
+		
+		static void timer_Tick(object sender, EventArgs e)
 		{
-			if (fileName == null) throw new ArgumentNullException("fileName");
+			if (lastParseRun != null) {
+				// don't start another parse run if the last one is still running
+				if (!lastParseRun.IsCompleted)
+					return;
+				lastParseRun = null;
+			}
 			
-			IParser parser = GetParser(fileName);
-			if (parser == null) {
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (viewContent == null)
+				return;
+			string fileName = viewContent.PrimaryFileName;
+			if (fileName == null)
+				return;
+			ITextBuffer snapshot;
+			IEditable editable = viewContent as IEditable;
+			if (editable != null)
+				snapshot = editable.CreateSnapshot();
+			else
+				snapshot = GetParseableFileContent(viewContent.PrimaryFileName);
+			
+			lastParseRun = BeginParse(fileName, snapshot).ContinueWith(
+				delegate(Task<ParseInformation> backgroundTask) {
+					ParseInformation parseInfo = backgroundTask.Result;
+					RaiseParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, snapshot, parseInfo));
+				});
+		}
+		#endregion
+		
+		#region GetParser / ExpressionFinder /etc.
+		static readonly string[] DefaultTaskListTokens = {"HACK", "TODO", "UNDONE", "FIXME"};
+		
+		/// <summary>
+		/// Gets/Sets the task list tokens.
+		/// This property is thread-safe.
+		/// </summary>
+		public static string[] TaskListTokens {
+			get { return PropertyService.Get("SharpDevelop.TaskListTokens", DefaultTaskListTokens); }
+			set { PropertyService.Set("SharpDevelop.TaskListTokens", value); }
+		}
+		
+		/// <summary>
+		/// Retrieves the IParser instance that can parse the specified file.
+		/// This method is thread-safe.
+		/// </summary>
+		public static IParser CreateParser(string fileName)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			if (parserDescriptors == null)
 				return null;
-			}
-			
-			ICompilationUnit parserOutput = null;
-			
-			try {
-				if (fileProjectContent == null) {
-					// GetProjectContent is expensive because it compares all file names, so
-					// we accept the project content as optional parameter.
-					fileProjectContent = GetProjectContent(fileName);
-					if (fileProjectContent == null) {
-						fileProjectContent = DefaultProjectContent;
+			foreach (ParserDescriptor descriptor in parserDescriptors) {
+				if (descriptor.CanParse(fileName)) {
+					IParser p = descriptor.CreateParser();
+					if (p != null) {
+						p.LexerTags = TaskListTokens;
+						return p;
 					}
 				}
-				
-				if (fileContent == null) {
-					if (!File.Exists(fileName)) {
-						return null;
-					}
-					fileContent = GetParseableFileContent(fileName);
-				}
-				parserOutput = parser.Parse(fileProjectContent, fileName, fileContent);
-				parserOutput.Freeze();
-				
-				ParseInformation parseInformation;
-				lock (parsings) {
-					if (!parsings.TryGetValue(fileName, out parseInformation)) {
-						parsings[fileName] = parseInformation = new ParseInformation();
-					}
-				}
-				ICompilationUnit oldUnit = parseInformation.MostRecentCompilationUnit;
-				fileProjectContent.UpdateCompilationUnit(oldUnit, parserOutput, fileName);
-				parseInformation.SetCompilationUnit(parserOutput);
-				if (updateCommentTags) {
-					TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
-				}
-				try {
-					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, fileProjectContent, oldUnit, parserOutput));
-				} catch (Exception e) {
-					MessageService.ShowError(e);
-				}
-				return parseInformation;
-			} catch (Exception e) {
-				MessageService.ShowError(e, "Error parsing " + fileName);
 			}
 			return null;
 		}
 		
 		/// <summary>
-		/// Gets the content of the file using encoding auto-detection (or DefaultFileEncoding, if that fails).
-		/// If the file is already open, gets the text in the opened view content.
+		/// Creates an IExpressionFinder instance for the specified file.
+		/// This method is thread-safe.
+		/// </summary>
+		public static IExpressionFinder GetExpressionFinder(string fileName)
+		{
+			IParser parser = CreateParser(fileName);
+			if (parser != null) {
+				return parser.CreateExpressionFinder(fileName);
+			}
+			return null;
+		}
+		
+		public static ArrayList CtrlSpace(int caretLine, int caretColumn,
+		                                  string fileName, string fileContent, ExpressionContext context)
+		{
+			IResolver resolver = CreateResolver(fileName);
+			if (resolver != null) {
+				return resolver.CtrlSpace(caretLine, caretColumn, GetParseInformation(fileName), fileContent, context);
+			}
+			return null;
+		}
+		
+		public static IResolver CreateResolver(string fileName)
+		{
+			IParser parser = CreateParser(fileName);
+			if (parser != null) {
+				return parser.CreateResolver();
+			}
+			return null;
+		}
+		
+		public static ResolveResult Resolve(ExpressionResult expressionResult,
+		                                    int caretLineNumber, int caretColumn,
+		                                    string fileName, string fileContent)
+		{
+			if (expressionResult.Region.IsEmpty) {
+				expressionResult.Region = new DomRegion(caretLineNumber, caretColumn);
+			}
+			IResolver resolver = CreateResolver(fileName);
+			if (resolver != null) {
+				ParseInformation parseInfo = GetParseInformation(fileName);
+				return resolver.Resolve(expressionResult, parseInfo, fileContent);
+			}
+			return null;
+		}
+		#endregion
+		
+		#region GetParseableFileContent
+		/// <summary>
+		/// Gets the default file encoding.
+		/// This property is thread-safe.
+		/// </summary>
+		public static Encoding DefaultFileEncoding {
+			get {
+				// TODO: how to implement without the old editor / so that it's actually thread-safe?
+				return DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.Encoding;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the content of the specified file.
+		/// This method is thread-safe. This method involves waiting for the main thread, so using it while
+		/// holding a lock can lead to deadlocks.
 		/// </summary>
 		public static ITextBuffer GetParseableFileContent(string fileName)
+		{
+			return Gui.WorkbenchSingleton.SafeThreadFunction(GetParseableFileContentInternal, fileName);
+		}
+		
+		static ITextBuffer GetParseableFileContentInternal(string fileName)
 		{
 			IViewContent viewContent = FileService.GetOpenFile(fileName);
 			IEditable editable = viewContent as IEditable;
@@ -642,32 +306,359 @@ namespace ICSharpCode.SharpDevelop
 				
 				using(Stream s = file.OpenRead()) {
 					// load file
-					Encoding encoding = DefaultFileEncoding;
-					return new StringTextBuffer(ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(s, ref encoding));
+					return new StringTextBuffer(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(s, DefaultFileEncoding));
 				}
 			}
 			
 			// load file
-			return new StringTextBuffer(ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, DefaultFileEncoding));
+			return new StringTextBuffer(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, DefaultFileEncoding));
 		}
+		#endregion
 		
-		public static Encoding DefaultFileEncoding {
-			get {
-				return DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.Encoding;
+		#region Parse Information Management
+		static readonly ICompilationUnit[] emptyCompilationUnitArray = new ICompilationUnit[0];
+		
+		sealed class FileEntry
+		{
+			readonly string fileName;
+			readonly IParser parser;
+			volatile ParseInformation parseInfo;
+			ITextBufferVersion bufferVersion;
+			ICompilationUnit[] oldUnits = emptyCompilationUnitArray;
+			bool disposed;
+			
+			public FileEntry(string fileName)
+			{
+				this.fileName = fileName;
+				this.parser = CreateParser(fileName);
+			}
+			
+			/// <summary>
+			/// for unit tests only
+			/// </summary>
+			public ParseInformation RegisterParseInformation(ICompilationUnit cu)
+			{
+				lock (this) {
+					oldUnits = new ICompilationUnit[] { cu };
+					return this.parseInfo = new ParseInformation(cu);
+				}
+			}
+			
+			public ParseInformation GetParseInformation()
+			{
+				ParseInformation p = this.parseInfo; // read volatile
+				if (p != null)
+					return p;
+				else
+					return ParseFile(null, null);
+			}
+			
+			public ParseInformation GetExistingParseInformation()
+			{
+				return this.parseInfo; // read volatile
+			}
+			
+			public ParseInformation ParseFile(IProjectContent parentProjectContent, ITextBuffer fileContent)
+			{
+				if (parser == null)
+					return null;
+				
+				if (fileContent == null) {
+					// GetParseableFileContent must not be called inside any lock
+					// (otherwise we'd risk deadlocks because GetParseableFileContent must invoke on the main thread)
+					fileContent = GetParseableFileContent(fileName);
+				}
+				
+				ITextBufferVersion fileContentVersion = fileContent.Version;
+				lock (this) {
+					// unfortunaly we need this big lock to ensure that project contents are updated correctly
+					// and never move backwards in time
+					
+					if (disposed)
+						return null;
+					
+					if (fileContentVersion != null && bufferVersion != null && bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
+						if (bufferVersion.CompareAge(fileContentVersion) >= 0) {
+							// Special case: (necessary due to parentProjectContent optimization)
+							// Detect when a file belongs to multiple projects but the ParserService hasn't realized
+							// that, yet. In this case, do another parse run to detect all parent projects.
+							if (!(parentProjectContent != null && oldUnits.Length == 1 && oldUnits[0].ProjectContent != parentProjectContent)) {
+								return parseInfo;
+							}
+						}
+					}
+					
+					List<IProjectContent> projectContents;
+					if (parentProjectContent != null && (oldUnits.Length == 0 || (oldUnits.Length == 1 && oldUnits[0].ProjectContent == parentProjectContent))) {
+						// Optimization: if parentProjectContent is specified and doesn't conflict with what we already know,
+						// we will use it instead of doing an expensive GetProjectContents call.
+						projectContents = new List<IProjectContent>();
+						projectContents.Add(parentProjectContent);
+					} else {
+						projectContents = GetProjectContents(fileName);
+					}
+					// parse once for each project content that contains the file
+					ICompilationUnit[] newUnits = new ICompilationUnit[projectContents.Count];
+					ICompilationUnit resultUnit = null;
+					for (int i = 0; i < newUnits.Length; i++) {
+						IProjectContent pc = projectContents[i];
+						newUnits[i] = parser.Parse(pc, fileName, fileContent);
+						if (i == 0 || pc == parentProjectContent)
+							resultUnit = newUnits[i];
+						// update the compilation unit
+						ICompilationUnit oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
+						pc.UpdateCompilationUnit(oldUnit, newUnits[i], fileName);
+					}
+					// remove all old units that don't exist anymore
+					foreach (ICompilationUnit oldUnit in oldUnits) {
+						if (!newUnits.Any(n => n.ProjectContent == oldUnit.ProjectContent))
+							oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
+					}
+					
+					this.bufferVersion = fileContentVersion;
+					this.oldUnits = newUnits;
+					ParseInformation newParseInfo = new ParseInformation(resultUnit);
+					this.parseInfo = newParseInfo;
+					return newParseInfo;
+				}
+			}
+			
+			public void Clear()
+			{
+				ICompilationUnit[] oldUnits;
+				lock (this) {
+					// by setting the disposed flag, we'll cause all running ParseFile() calls to return null and not
+					// call into the parser anymore, so we can do the remainder of the clean-up work outside the lock
+					disposed = true;
+					oldUnits = this.oldUnits;
+					bufferVersion = null;
+				}
+				foreach (ICompilationUnit oldUnit in oldUnits)
+					oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
+				IDisposable d = this.parser as IDisposable;
+				if (d != null)
+					d.Dispose();
+			}
+			
+			public Task<ParseInformation> BeginParse(ITextBuffer fileContent)
+			{
+				return System.Threading.Tasks.Task.Factory.StartNew(
+					delegate {
+						try {
+							return ParseFile(null, fileContent);
+						} catch (Exception ex) {
+							MessageService.ShowError(ex, "Error during async parse");
+							return null;
+						}
+					}
+				);
 			}
 		}
 		
+		static FileEntry GetFileEntry(string fileName, bool createOnDemand)
+		{
+			if (string.IsNullOrEmpty(fileName))
+				throw new ArgumentException("fileName");
+			fileName = FileUtility.NormalizePath(fileName);
+			FileEntry entry;
+			lock (syncLock) {
+				if (!fileEntryDict.TryGetValue(fileName, out entry)) {
+					if (!createOnDemand)
+						return null;
+					entry = new FileEntry(fileName);
+					fileEntryDict.Add(fileName, entry);
+				}
+			}
+			return entry;
+		}
+		
+		/// <summary>
+		/// Removes all parse information stored for the specified file.
+		/// This method is thread-safe.
+		/// </summary>
+		public static void ClearParseInformation(string fileName)
+		{
+			if (string.IsNullOrEmpty(fileName))
+				throw new ArgumentException("fileName");
+			
+			LoggingService.Info("ClearParseInformation: " + fileName);
+			
+			fileName = FileUtility.NormalizePath(fileName);
+			FileEntry entry;
+			lock (syncLock) {
+				if (fileEntryDict.TryGetValue(fileName, out entry)) {
+					fileEntryDict.Remove(fileName);
+				}
+			}
+			if (entry != null)
+				entry.Clear();
+		}
+		
+		/// <summary>
+		/// Gets parse information for the specified file.
+		/// Blocks if the file wasn't parsed yet, but may return an old parsed version.
+		/// This method is thread-safe. This method involves waiting for the main thread, so using it while
+		/// holding a lock can lead to deadlocks. You might want to use <see cref="GetExistingParseInformation"/> instead.
+		/// </summary>
+		/// <returns>Returns the ParseInformation for the specified file, or null if the file cannot be parsed.
+		/// The returned ParseInformation might be stale (re-parse is not forced).</returns>
 		public static ParseInformation GetParseInformation(string fileName)
 		{
-			if (fileName == null || fileName.Length == 0) {
+			return GetFileEntry(fileName, true).GetParseInformation();
+		}
+		
+		/// <summary>
+		/// Gets parse information for the specified file.
+		/// This method is thread-safe.
+		/// </summary>
+		/// <returns>Returns the ParseInformation for the specified file, or null if the file has not been parsed already.</returns>
+		public static ParseInformation GetExistingParseInformation(string fileName)
+		{
+			FileEntry entry = GetFileEntry(fileName, false);
+			if (entry != null)
+				return entry.GetExistingParseInformation();
+			else
 				return null;
-			}
-			ParseInformation parseInfo;
-			lock (parsings) {
-				if (parsings.TryGetValue(fileName, out parseInfo))
-					return parseInfo;
-			}
-			return ParseFile(fileName);
+		}
+		
+		/// <summary>
+		/// Gets parse information for the specified file.
+		/// Blocks until a recent copy of the parse information is available.
+		/// This method is thread-safe. This method involves waiting for the main thread, so using it while
+		/// holding a lock can lead to deadlocks. You might want to use the overload taking ITextBuffer instead.
+		/// </summary>
+		/// <returns>Returns the ParseInformation for the specified file, or null if the file cannot be parsed.
+		/// The returned ParseInformation will not be stale (re-parse is forced if required).</returns>
+		public static ParseInformation ParseFile(string fileName)
+		{
+			return GetFileEntry(fileName, true).ParseFile(null, null);
+		}
+		
+		/// <summary>
+		/// Gets parse information for the specified file.
+		/// The fileContent is taken as a hint - if a newer version than it is already available, that will be used instead.
+		/// This method is thread-safe.
+		/// </summary>
+		/// <returns>Returns the ParseInformation for the specified file, or null if the file cannot be parsed.
+		/// The returned ParseInformation will not be stale (re-parse is forced if required).</returns>
+		public static ParseInformation ParseFile(string fileName, ITextBuffer fileContent)
+		{
+			if (fileContent == null)
+				throw new ArgumentNullException("fileContent");
+			return GetFileEntry(fileName, true).ParseFile(null, fileContent);
+		}
+		
+		/// <summary>
+		/// Gets parse information for the specified file.
+		/// The fileContent is taken as a hint - if a newer version than it is already available, that will be used instead.
+		/// This method is thread-safe.
+		/// </summary>
+		/// <returns>Returns the ParseInformation for the specified file, or null if the file cannot be parsed.
+		/// The returned ParseInformation will not be stale (re-parse is forced if required).</returns>
+		public static ParseInformation ParseFile(IProjectContent parentProjectContent, string fileName, ITextBuffer fileContent)
+		{
+			if (fileContent == null)
+				throw new ArgumentNullException("fileContent");
+			return GetFileEntry(fileName, true).ParseFile(parentProjectContent, fileContent);
+		}
+		
+		/// <summary>
+		/// Begins an asynchronous reparse.
+		/// This method is thread-safe. The returned task might wait for the main thread to be ready, beware of deadlocks.
+		/// You might want to use the overload taking ITextBuffer instead.
+		/// </summary>
+		/// <returns>
+		/// Returns a task that will make the parse result available.
+		/// </returns>
+		public static Task<ParseInformation> BeginParse(string fileName)
+		{
+			return GetFileEntry(fileName, true).BeginParse(null);
+		}
+		
+		/// <summary>
+		/// Begins an asynchronous reparse.
+		/// This method is thread-safe.
+		/// </summary>
+		/// <returns>
+		/// Returns a task that will make the parse result available.
+		/// </returns>
+		public static Task<ParseInformation> BeginParse(string fileName, ITextBuffer fileContent)
+		{
+			if (fileContent == null)
+				throw new ArgumentNullException("fileContent");
+			// create snapshot (in case someone passes a mutable document to BeginParse)
+			return GetFileEntry(fileName, true).BeginParse(fileContent.CreateSnapshot());
+		}
+		
+		/// <summary>
+		/// Parses the current view content.
+		/// This method can only be called from the main thread.
+		/// </summary>
+		public static ParseInformation ParseCurrentViewContent()
+		{
+			WorkbenchSingleton.AssertMainThread();
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (viewContent != null)
+				return ParseViewContent(viewContent);
+			else
+				return null;
+		}
+		
+		/// <summary>
+		/// Parses the specified view content.
+		/// This method can only be called from the main thread.
+		/// </summary>
+		public static ParseInformation ParseViewContent(IViewContent viewContent)
+		{
+			if (viewContent == null)
+				throw new ArgumentNullException("viewContent");
+			WorkbenchSingleton.AssertMainThread();
+			if (string.IsNullOrEmpty(viewContent.PrimaryFileName))
+				return null;
+			IEditable editable = viewContent as IEditable;
+			if (editable != null)
+				return ParseFile(viewContent.PrimaryFileName, editable.CreateSnapshot());
+			else
+				return ParseFile(viewContent.PrimaryFileName);
+		}
+		
+		/// <summary>
+		/// Parses the current view content.
+		/// This method can only be called from the main thread.
+		/// </summary>
+		public static Task<ParseInformation> BeginParseCurrentViewContent()
+		{
+			WorkbenchSingleton.AssertMainThread();
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (viewContent != null)
+				return BeginParseViewContent(viewContent);
+			else
+				return NullTask();
+		}
+		
+		/// <summary>
+		/// Begins parsing the specified view content.
+		/// This method can only be called from the main thread.
+		/// </summary>
+		public static Task<ParseInformation> BeginParseViewContent(IViewContent viewContent)
+		{
+			if (viewContent == null)
+				throw new ArgumentNullException("viewContent");
+			WorkbenchSingleton.AssertMainThread();
+			if (string.IsNullOrEmpty(viewContent.PrimaryFileName))
+				return NullTask();
+			IEditable editable = viewContent as IEditable;
+			if (editable != null)
+				return BeginParse(viewContent.PrimaryFileName, editable.CreateSnapshot());
+			else
+				return BeginParse(viewContent.PrimaryFileName);
+		}
+		
+		static Task<ParseInformation> NullTask()
+		{
+			return System.Threading.Tasks.Task.Factory.StartNew<ParseInformation>(
+				delegate { return null; }
+			);
 		}
 		
 		/// <summary>
@@ -676,234 +667,119 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static ParseInformation RegisterParseInformation(string fileName, ICompilationUnit cu)
 		{
-			ParseInformation parseInformation;
-			lock (parsings) {
-				if (!parsings.TryGetValue(fileName, out parseInformation)) {
-					parsings[fileName] = parseInformation = new ParseInformation();
-				}
-			}
-			parseInformation.SetCompilationUnit(cu);
-			return parseInformation;
+			FileEntry entry = GetFileEntry(fileName, true);
+			return entry.RegisterParseInformation(cu);
 		}
+		#endregion
 		
-		public static void ClearParseInformation(string fileName)
-		{
-			if (fileName == null || fileName.Length == 0) {
-				return;
-			}
-			LoggingService.Info("ClearParseInformation: " + fileName);
-			ParseInformation parseInfo;
-			lock (parsings) {
-				if (parsings.TryGetValue(fileName, out parseInfo))
-					parsings.Remove(fileName);
-				else
-					return;
-			}
-			ICompilationUnit oldUnit = parseInfo.MostRecentCompilationUnit;
-			if (oldUnit != null) {
-				IProjectContent pc = parseInfo.MostRecentCompilationUnit.ProjectContent;
-				pc.RemoveCompilationUnit(oldUnit);
-				try {
-					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, pc, oldUnit, null));
-				} catch (Exception e) {
-					MessageService.ShowError(e);
-				}
-			}
-		}
-		
-		public static IExpressionFinder GetExpressionFinder(string fileName)
-		{
-			IParser parser = GetParser(fileName);
-			if (parser != null) {
-				return parser.CreateExpressionFinder(fileName);
-			}
-			return null;
-		}
-		
-		public static readonly string[] DefaultTaskListTokens = {"HACK", "TODO", "UNDONE", "FIXME"};
-		
-		public static IParser GetParser(string fileName)
-		{
-			if (fileName == null)
-				throw new ArgumentNullException("fileName");
-			IParser curParser = null;
-			foreach (ParserDescriptor descriptor in parser) {
-				if (descriptor.CanParse(fileName)) {
-					curParser = descriptor.Parser;
-					break;
-				}
-			}
-			
-			if (curParser != null) {
-				curParser.LexerTags = PropertyService.Get("SharpDevelop.TaskListTokens", DefaultTaskListTokens);
-			}
-			
-			return curParser;
-		}
-		
-		////////////////////////////////////
-		
-		public static ArrayList CtrlSpace(int caretLine, int caretColumn,
-		                                  string fileName, string fileContent, ExpressionContext context)
-		{
-			IResolver resolver = CreateResolver(fileName);
-			if (resolver != null) {
-				return resolver.CtrlSpace(caretLine, caretColumn, GetParseInformation(fileName), fileContent, context);
-			}
-			return null;
-		}
-		
-		public static IResolver CreateResolver(string fileName)
-		{
-			IParser parser = GetParser(fileName);
-			if (parser != null) {
-				return parser.CreateResolver();
-			}
-			return null;
-		}
-		
-		public static ResolveResult Resolve(ExpressionResult expressionResult,
-		                                    int caretLineNumber, int caretColumn,
-		                                    string fileName, string fileContent)
-		{
-			if (expressionResult.Region.IsEmpty) {
-				expressionResult.Region = new DomRegion(caretLineNumber, caretColumn);
-			}
-			IResolver resolver = CreateResolver(fileName);
-			if (resolver != null) {
-				ParseInformation parseInfo = GetParseInformation(fileName);
-				return resolver.Resolve(expressionResult, parseInfo, fileContent);
-			}
-			return null;
-		}
-
-		static void OnParseInformationUpdated(ParseInformationEventArgs e)
-		{
-			ParseInformationEventHandler handler = ParseInformationUpdated;
-			if (handler != null) {
-				handler(null, e);
-			}
-		}
-		
-		static void OnLoadSolutionProjectsThreadEnded(EventArgs e)
-		{
-			EventHandler handler = LoadSolutionProjectsThreadEnded;
-			if (handler != null) {
-				handler(null, e);
-			}
-		}
-		
-		public static event ParseInformationEventHandler ParseInformationUpdated;
-		public static event EventHandler LoadSolutionProjectsThreadEnded;
-		
-		public static ProjectContentRegistry GetRegistryForReference(ReferenceProjectItem item)
-		{
-			if (item is ProjectReferenceProjectItem || item.Project == null) {
-				return defaultProjectContentRegistry;
-			}
-			foreach (ProjectContentRegistryDescriptor registry in registries) {
-				if (registry.UseRegistryForProject(item.Project)) {
-					ProjectContentRegistry r = registry.Registry;
-					if (r != null) {
-						return r;
-					} else {
-						return defaultProjectContentRegistry; // fallback when registry class not found
-					}
-				}
-			}
-			return defaultProjectContentRegistry;
-		}
-		
-		public static IProjectContent GetExistingProjectContentForReference(ReferenceProjectItem item)
-		{
-			if (item is ProjectReferenceProjectItem) {
-				if (((ProjectReferenceProjectItem)item).ReferencedProject == null)
-				{
-					return null;
-				}
-				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
-			}
-			return GetRegistryForReference(item).GetExistingProjectContent(item.FileName);
-		}
-		
-		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
-		{
-			if (item is ProjectReferenceProjectItem) {
-				if (((ProjectReferenceProjectItem)item).ReferencedProject == null)
-				{
-					return null;
-				}
-				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
-			}
-			return GetRegistryForReference(item).GetProjectContentForReference(item.Include, item.FileName);
-		}
-		
+		#region ParseInformationUpdated / ParserUpdateStepFinished events
 		/// <summary>
-		/// Refreshes the project content for the specified reference if required.
-		/// This method does nothing if the reference is not an assembly reference, is not loaded or already is up-to-date.
+		/// Occurs whenever parse information was updated. This event is raised on the main thread.
 		/// </summary>
-		public static void RefreshProjectContentForReference(ReferenceProjectItem item)
+		public static event EventHandler<ParseInformationEventArgs> ParseInformationUpdated = delegate {};
+		
+		static void RaiseParseInformationUpdated(ParseInformationEventArgs e)
 		{
-			if (item is ProjectReferenceProjectItem) {
-				return;
-			}
-			ProjectContentRegistry registry = GetRegistryForReference(item);
-			registry.RunLocked(
+			// RaiseParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
+			// To ensure events are raised in the same order, we always invoke on the main thread.
+			Gui.WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
-					IProjectContent rpc = GetExistingProjectContentForReference(item);
-					if (rpc == null) {
-						LoggingService.Debug("RefreshProjectContentForReference: not refreshing (rpc==null) " + item.FileName);
-						return;
-					}
-					if (rpc.IsUpToDate) {
-						LoggingService.Debug("RefreshProjectContentForReference: not refreshing (rpc.IsUpToDate) " + item.FileName);
-						return;
-					}
-					LoggingService.Debug("RefreshProjectContentForReference " + item.FileName);
-					
-					HashSet<IProject> projectsToRefresh = new HashSet<IProject>();
-					HashSet<IProjectContent> unloadedReferenceContents = new HashSet<IProjectContent>();
-					UnloadReferencedContent(projectsToRefresh, unloadedReferenceContents, registry, rpc);
-					
-					foreach (IProject p in projectsToRefresh) {
-						Reparse(p, true, false);
-					}
+					ParseInformationUpdated(null, e);
 				});
 		}
 		
-		static void UnloadReferencedContent(HashSet<IProject> projectsToRefresh, HashSet<IProjectContent> unloadedReferenceContents, ProjectContentRegistry referencedContentRegistry, IProjectContent referencedContent)
+		/// <summary>
+		/// Occurs when the parse step started by a timer finishes.
+		/// This event is raised on the main thread.
+		/// </summary>
+		public static event EventHandler<ParserUpdateStepEventArgs> ParserUpdateStepFinished = delegate {};
+		
+		static void RaiseParserUpdateStepFinished(ParserUpdateStepEventArgs e)
 		{
-			LoggingService.Debug("Unload referenced content " + referencedContent);
-			
-			List<RegistryContentPair> otherContentsToUnload = new List<RegistryContentPair>();
-			foreach (ProjectContentRegistryDescriptor registry in registries) {
-				if (registry.IsRegistryLoaded) {
-					foreach (IProjectContent pc in registry.Registry.GetLoadedProjectContents()) {
-						if (pc.ReferencedContents.Contains(referencedContent)) {
-							if (unloadedReferenceContents.Add(pc)) {
-								LoggingService.Debug("Mark dependent content for unloading " + pc);
-								otherContentsToUnload.Add(new RegistryContentPair(registry.Registry, pc));
-							}
-						}
-					}
-				}
-			}
-			
-			foreach (IProjectContent pc in ParserService.AllProjectContents) {
-				IProject project = (IProject)pc.Project;
-				if (projectsToRefresh.Contains(project))
-					continue;
-				if (pc.ReferencedContents.Remove(referencedContent)) {
-					LoggingService.Debug("UnloadReferencedContent: Mark project for reparsing " + project.Name);
-					projectsToRefresh.Add(project);
-				}
-			}
-			
-			foreach (RegistryContentPair pair in otherContentsToUnload) {
-				UnloadReferencedContent(projectsToRefresh, unloadedReferenceContents, pair.Key, pair.Value);
-			}
-			
-			referencedContentRegistry.UnloadProjectContent(referencedContent);
+			Gui.WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					ParserUpdateStepFinished(null, e);
+				});
 		}
+		
+		#endregion
+		
+		#region LoadSolutionProjects
+		
+		public static void Reparse(IProject project, bool initReferences, bool parseCode)
+		{
+			if (project == null)
+				throw new ArgumentNullException("project");
+			LoadSolutionProjects.Reparse(project, initReferences, parseCode);
+		}
+		
+		/// <summary>
+		/// Gets whether the LoadSolutionProjects thread is currently running.
+		/// </summary>
+		public static bool LoadSolutionProjectsThreadRunning {
+			get { return LoadSolutionProjects.IsThreadRunning; }
+		}
+		
+		/// <summary>
+		/// Occurs when the 'load solution projects' thread has finished.
+		/// This event is not raised when the 'load solution projects' is aborted because the solution was closed.
+		/// This event is raised on the main thread.
+		/// </summary>
+		public static event EventHandler LoadSolutionProjectsThreadEnded {
+			add { LoadSolutionProjects.ThreadEnded += value; }
+			remove { LoadSolutionProjects.ThreadEnded -= value; }
+		}
+		
+		internal static void OnSolutionLoaded()
+		{
+			List<ParseProjectContent> createdContents = new List<ParseProjectContent>();
+			foreach (IProject project in ProjectService.OpenSolution.Projects) {
+				try {
+					LoggingService.Debug("Creating project content for " + project.Name);
+					ParseProjectContent newContent = project.CreateProjectContent();
+					if (newContent != null) {
+						lock (projectContents) {
+							projectContents[project] = newContent;
+						}
+						createdContents.Add(newContent);
+					}
+				} catch (Exception e) {
+					MessageService.ShowError(e, "Error while retrieving project contents from " + project);
+				}
+			}
+			LoadSolutionProjects.OnSolutionLoaded(createdContents);
+		}
+		
+		internal static void OnSolutionClosed()
+		{
+			LoadSolutionProjects.OnSolutionClosed();
+			lock (projectContents) {
+				foreach (IProjectContent content in projectContents.Values) {
+					content.Dispose();
+				}
+				projectContents.Clear();
+			}
+			FileEntry[] entries;
+			lock (fileEntryDict) {
+				entries = fileEntryDict.Values.ToArray();
+				fileEntryDict.Clear();
+			}
+			foreach (FileEntry entry in entries)
+				entry.Clear();
+		}
+		
+		/// <remarks>Can return null.</remarks>
+		internal static IProjectContent CreateProjectContentForAddedProject(IProject project)
+		{
+			ParseProjectContent newContent = project.CreateProjectContent();
+			if (newContent != null) {
+				lock (projectContents) {
+					projectContents[project] = newContent;
+				}
+				LoadSolutionProjects.InitNewProject(newContent);
+			}
+			return newContent;
+		}
+		#endregion
 	}
 }

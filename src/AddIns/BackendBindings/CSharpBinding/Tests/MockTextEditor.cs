@@ -33,7 +33,7 @@ namespace CSharpBinding.Tests
 		{
 			PropertyService.InitializeServiceForUnitTests();
 			pc = new DefaultProjectContent();
-			pc.ReferencedContents.Add(ParserService.DefaultProjectContentRegistry.Mscorlib);
+			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
 			
 			this.TextEditor.TextArea.TextView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(this.TextEditor));
 			this.TextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");

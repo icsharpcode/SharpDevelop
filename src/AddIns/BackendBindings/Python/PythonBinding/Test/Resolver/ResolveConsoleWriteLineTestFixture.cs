@@ -33,7 +33,6 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			
 			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
@@ -41,7 +40,7 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent.ClassNameForGetClass = "Console";
 			
 			compilationUnit = new DefaultCompilationUnit(mockProjectContent);
-			parseInfo.SetCompilationUnit(compilationUnit);
+			ParseInformation parseInfo = new ParseInformation(compilationUnit);
 			
 			string python = "import System\r\n" +
 							"Console.WriteLine\r\n";

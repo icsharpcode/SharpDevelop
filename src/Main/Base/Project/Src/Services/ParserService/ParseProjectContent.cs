@@ -7,11 +7,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using System.IO;
+using System.Threading;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -23,7 +25,7 @@ namespace ICSharpCode.SharpDevelop
 			newProjectContent.project = project;
 			newProjectContent.Language = project.LanguageProperties;
 			newProjectContent.initializing = true;
-			IProjectContent mscorlib = ParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
+			IProjectContent mscorlib = AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
 			newProjectContent.AddReferencedContent(mscorlib);
 			return newProjectContent;
 		}
@@ -34,6 +36,10 @@ namespace ICSharpCode.SharpDevelop
 			get {
 				return project;
 			}
+		}
+		
+		public string ProjectName {
+			get { return project.Name; }
 		}
 		
 		public override string AssemblyName {
@@ -47,22 +53,23 @@ namespace ICSharpCode.SharpDevelop
 			return string.Format("[{0}: {1}]", GetType().Name, project.Name);
 		}
 		
-		internal void Initialize1(IProgressMonitor progressMonitor)
+		internal void Initialize1(CancellationToken token)
 		{
 			ICollection<ProjectItem> items = project.Items;
 			ProjectService.ProjectItemAdded   += OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
 			UpdateDefaultImports(items);
 			// TODO: Translate me
-			progressMonitor.TaskName = "Resolving references for " + project.Name + "...";
+//			progressMonitor.TaskName = "Resolving references for " + project.Name + "...";
 			project.ResolveAssemblyReferences();
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
+				token.ThrowIfCancellationRequested();
 				if (ItemType.ReferenceItemTypes.Contains(item.ItemType)) {
 					ReferenceProjectItem reference = item as ReferenceProjectItem;
 					if (reference != null) {
 						// TODO: Translate me
-						progressMonitor.TaskName = "Loading " + reference.ShortName + "...";
+//						progressMonitor.TaskName = "Loading " + reference.ShortName + "...";
 						AddReference(reference, false);
 					}
 				}
@@ -71,18 +78,21 @@ namespace ICSharpCode.SharpDevelop
 			OnReferencedContentsChanged(EventArgs.Empty);
 		}
 		
-		internal void ReInitialize1(IProgressMonitor progressMonitor)
+		internal void ReInitialize1(CancellationToken token)
 		{
 			lock (ReferencedContents) {
 				ReferencedContents.Clear();
-				AddReferencedContent(ParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib);
+				AddReferencedContent(AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib);
 			}
 			// prevent adding event handler twice
 			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
 			initializing = true;
-			Initialize1(progressMonitor);
-			initializing = false;
+			try {
+				Initialize1(token);
+			} finally {
+				initializing = false;
+			}
 		}
 		
 		void UpdateReferenceInterDependencies()
@@ -103,7 +113,7 @@ namespace ICSharpCode.SharpDevelop
 		void AddReference(ReferenceProjectItem reference, bool updateInterDependencies)
 		{
 			try {
-				AddReferencedContent(ParserService.GetProjectContentForReference(reference));
+				AddReferencedContent(AssemblyParserService.GetProjectContentForReference(reference));
 				if (updateInterDependencies) {
 					UpdateReferenceInterDependencies();
 				}
@@ -112,7 +122,7 @@ namespace ICSharpCode.SharpDevelop
 				// Refresh the reference if required.
 				// If the user removes the reference and then re-adds it, there might be other references
 				// in the project depending on it, so we do the refresh after the old reference was added.
-				ParserService.RefreshProjectContentForReference(reference);
+				AssemblyParserService.RefreshProjectContentForReference(reference);
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 			}
@@ -165,7 +175,7 @@ namespace ICSharpCode.SharpDevelop
 				UpdateDefaultImports(project.Items);
 			} else if (e.ProjectItem.ItemType == ItemType.Compile) {
 				if (System.IO.File.Exists(e.ProjectItem.FileName)) {
-					ParserService.EnqueueForParsing(e.ProjectItem.FileName);
+					ParserService.BeginParse(e.ProjectItem.FileName);
 				}
 			}
 		}
@@ -177,7 +187,7 @@ namespace ICSharpCode.SharpDevelop
 			ReferenceProjectItem reference = e.ProjectItem as ReferenceProjectItem;
 			if (reference != null) {
 				try {
-					IProjectContent referencedContent = ParserService.GetExistingProjectContentForReference(reference);
+					IProjectContent referencedContent = AssemblyParserService.GetExistingProjectContentForReference(reference);
 					if (referencedContent != null) {
 						lock (ReferencedContents) {
 							ReferencedContents.Remove(referencedContent);
@@ -225,21 +235,19 @@ namespace ICSharpCode.SharpDevelop
 			return project.Items.Count;
 		}
 		
-		internal void ReInitialize2(IProgressMonitor progressMonitor)
+		internal void ReInitialize2(CancellationToken token)
 		{
 			if (initializing) return;
 			initializing = true;
-			Initialize2(progressMonitor);
+			Initialize2(token);
 		}
 		
-		internal void Initialize2(IProgressMonitor progressMonitor)
+		internal void Initialize2(CancellationToken token)
 		{
 			if (!initializing) return;
-			int progressStart = progressMonitor.WorkDone;
+			//int progressStart = progressMonitor.WorkDone;
 			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(project);
 			try {
-				progressMonitor.TaskName = "${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} " + project.Name + "...";
-				
 				IProjectContent[] referencedContents;
 				lock (this.ReferencedContents) {
 					referencedContents = new IProjectContent[this.ReferencedContents.Count];
@@ -254,16 +262,18 @@ namespace ICSharpCode.SharpDevelop
 				
 				while (enumerator.MoveNext()) {
 					int i = enumerator.Index;
-					if ((i % 5) == 2)
-						progressMonitor.WorkDone = progressStart + i;
+					if ((i % 4) == 2) {
+						//progressMonitor.WorkDone = progressStart + i;
+						token.ThrowIfCancellationRequested();
+					}
 					
-					ParserService.ParseFile(this, enumerator.CurrentFileName, new StringTextBuffer(enumerator.CurrentFileContent), true);
+					ParserService.ParseFile(this, enumerator.CurrentFileName, new StringTextBuffer(enumerator.CurrentFileContent));
 					
 					if (!initializing) return;
 				}
 			} finally {
 				initializing = false;
-				progressMonitor.WorkDone = progressStart + enumerator.ItemCount;
+				//progressMonitor.WorkDone = progressStart + enumerator.ItemCount;
 				enumerator.Dispose();
 			}
 		}

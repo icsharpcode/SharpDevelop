@@ -5,10 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.TextEditor;
 
 namespace PythonBinding.Tests.Utils
@@ -17,21 +18,19 @@ namespace PythonBinding.Tests.Utils
 	/// A mock IViewContent implementation that also implements the
 	/// ITextEditorControlProvider interface.
 	/// </summary>
-	public class MockTextEditorViewContent : MockViewContent, ITextEditorControlProvider
+	public class MockTextEditorViewContent : MockViewContent, ITextEditorProvider
 	{
-		TextEditorControl textEditor;
+		ITextEditor textEditor;
 		
 		public MockTextEditorViewContent()
 		{
-			textEditor = new TextEditorControl();
-		}
-		
-		public TextEditorControl TextEditorControl {
-			get { return textEditor; }
+			textEditor = new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditTextEditorAdapter(
+				new ICSharpCode.AvalonEdit.TextEditor()
+			);
 		}
 		
 		public ICSharpCode.SharpDevelop.Editor.ITextEditor TextEditor {
-			get { throw new NotImplementedException(); }
+			get { return textEditor; }
 		}
 		
 		public ICSharpCode.SharpDevelop.Editor.IDocument GetDocumentForFile(OpenedFile file)

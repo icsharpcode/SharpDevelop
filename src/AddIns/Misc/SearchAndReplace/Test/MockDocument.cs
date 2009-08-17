@@ -35,6 +35,10 @@ namespace SearchAndReplace.Tests.Utils
 			}
 		}
 		
+		public ITextBufferVersion Version {
+			get { throw new NotImplementedException(); }
+		}
+		
 		public string Text { get; set; }
 		
 		public IDocumentLine GetLine(int lineNumber)

@@ -34,25 +34,17 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			
 			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
 			mockProjectContent.ClassToReturnFromGetClass = systemConsoleClass;
 			
 			compilationUnit = CreateCompilationUnit(mockProjectContent);
-			parseInfo.SetCompilationUnit(compilationUnit);
-			
+			ParseInformation parseInfo = new ParseInformation(compilationUnit);
 			
 			string python = GetPythonScript();
 			ExpressionResult expressionResult = new ExpressionResult("System.Console", new DomRegion(3, 2), null, null);
 			resolveResult = resolver.Resolve(expressionResult, parseInfo, python);
-	
-			// Here the most recent compilation unit is modified so it has no
-			// class information. The best compilation unit (i.e. the valid one) 
-			// should be used instead by the python resolver.
-			parseInfo.SetCompilationUnit(compilationUnit);
-			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true });
 			
 			// Check that the best compilation unit is used and the resolve
 			// still works.

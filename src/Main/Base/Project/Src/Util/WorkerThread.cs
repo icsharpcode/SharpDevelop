@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Util
 	{
 		sealed class AsyncTask : IAsyncResult
 		{
-			internal readonly ManualResetEvent manualResetEvent = new ManualResetEvent(false);
+			internal readonly ManualResetEventSlim manualResetEvent = new ManualResetEventSlim(false);
 			internal readonly Action method;
 			volatile bool isCompleted;
 			
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Util
 			}
 			
 			public WaitHandle AsyncWaitHandle {
-				get { return manualResetEvent; }
+				get { return manualResetEvent.WaitHandle; }
 			}
 			
 			public object AsyncState { get; set; }
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// Runs <paramref name="method"/> on the worker thread.
 		/// </summary>
 		/// <param name="method">The method to run.</param>
-		/// <returns></returns>
+		/// <returns>IAsyncResult that gets completed when the action has executed.</returns>
 		public IAsyncResult Enqueue(Action method)
 		{
 			if (method == null)
@@ -102,9 +102,10 @@ namespace ICSharpCode.SharpDevelop.Util
 		/// <summary>
 		/// Exits running the worker thread after executing all currently enqueued methods.
 		/// </summary>
-		public void ExitWorkerThread()
+		/// <returns>IAsyncResult that gets completed when the worker thread has shut down.</returns>
+		public IAsyncResult ExitWorkerThread()
 		{
-			Enqueue(delegate { exitWorker = true; });
+			return Enqueue(delegate { exitWorker = true; });
 		}
 	}
 }

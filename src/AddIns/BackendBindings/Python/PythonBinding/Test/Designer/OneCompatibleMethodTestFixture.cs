@@ -39,8 +39,7 @@ namespace PythonBinding.Tests.Designer
 			// Create parse info.
 			PythonParser parser = new PythonParser();
 			ICompilationUnit unit = parser.Parse(new MockProjectContent(), @"C:\Projects\MyProject\test.py", GetTextEditorCode());
-			ParseInformation parseInfo = new ParseInformation();
-			parseInfo.SetCompilationUnit(unit);
+			ParseInformation parseInfo = new ParseInformation(unit);
 			generator.ParseInfoToReturnFromParseFileMethod = parseInfo;
 			
 			// Attach view content to generator.

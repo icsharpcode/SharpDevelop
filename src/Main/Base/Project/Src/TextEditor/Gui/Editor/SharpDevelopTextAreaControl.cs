@@ -276,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			SharpDevelopTextEditorProperties sdtep = base.TextEditorProperties as SharpDevelopTextEditorProperties;
 			if (sdtep != null && sdtep.ShowQuickClassBrowserPanel && FileName != null) {
 				
-				bool quickClassPanelActive = ParserService.GetParser(FileName) != null;
+				bool quickClassPanelActive = ParserService.CreateParser(FileName) != null;
 				if (quickClassPanelActive) {
 					ShowQuickClassBrowserPanel();
 				} else {

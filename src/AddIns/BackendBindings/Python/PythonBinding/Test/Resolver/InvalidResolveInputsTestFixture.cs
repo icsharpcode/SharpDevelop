@@ -20,6 +20,8 @@ namespace PythonBinding.Tests.Resolver
 	[TestFixture]
 	public class InvalidResolveInputsTestFixture
 	{
+		static readonly ParseInformation emptyParseInfo = new ParseInformation(new DefaultCompilationUnit(new DefaultProjectContent()));
+		
 		PythonResolver resolver;
 		
 		[TestFixtureSetUp]
@@ -32,14 +34,14 @@ namespace PythonBinding.Tests.Resolver
 		public void NullFileContent()
 		{
 			ExpressionResult result = new ExpressionResult("test", new DomRegion(0, 0), null, null);
-			Assert.IsNull(resolver.Resolve(result, new ParseInformation(), null));
+			Assert.IsNull(resolver.Resolve(result, emptyParseInfo, null));
 		}
 		
 		[Test]
 		public void EmptyFileContent()
 		{
 			ExpressionResult result = new ExpressionResult("test", new DomRegion(0, 0), null, null);
-			Assert.IsNull(resolver.Resolve(result, new ParseInformation(), String.Empty));
+			Assert.IsNull(resolver.Resolve(result, emptyParseInfo, String.Empty));
 		}
 		
 		[Test]

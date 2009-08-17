@@ -36,10 +36,9 @@ namespace PythonBinding.Tests.Designer
 			generator.Attach(viewContent);
 			viewContent.DesignerCodeFileContent = GetTextEditorCode();
 			
-			ParseInformation parseInfo = new ParseInformation();
 			PythonParser parser = new PythonParser();
 			ICompilationUnit parserCompilationUnit = parser.Parse(new DefaultProjectContent(), fileName, GetTextEditorCode());
-			parseInfo.SetCompilationUnit(parserCompilationUnit);
+			ParseInformation parseInfo = new ParseInformation(parserCompilationUnit);
 			generator.ParseInfoToReturnFromParseFileMethod = parseInfo;
 			
 			AfterSetUpFixture();

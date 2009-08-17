@@ -33,7 +33,6 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			
 			// Do not return any class from GetClass call. This method
@@ -47,7 +46,7 @@ namespace PythonBinding.Tests.Resolver
 			compilationUnit = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };
 			testClass = new MockClass(compilationUnit, "Test");
 			compilationUnit.Classes.Add(testClass);
-			parseInfo.SetCompilationUnit(compilationUnit);
+			ParseInformation parseInfo = new ParseInformation(compilationUnit);
 						
 			string python = "import System\r\n" +
 							"class Test:\r\n" +

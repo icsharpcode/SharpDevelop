@@ -97,6 +97,24 @@ namespace ICSharpCode.AvalonEdit.Document.Tests
 			Assert.AreSame(null, tree.FindFirstSegmentWithStartAfter(100));
 		}
 		
+		[Test]
+		public void FindFirstSegmentWithStartAfterWithDuplicates2()
+		{
+			var s1 = new TestTextSegment(5, 1);
+			var s2 = new TestTextSegment(5, 2);
+			var s3 = new TestTextSegment(5, 3);
+			var s4 = new TestTextSegment(5, 4);
+			tree.Add(s1);
+			tree.Add(s2);
+			tree.Add(s3);
+			tree.Add(s4);
+			Assert.AreSame(s1, tree.FindFirstSegmentWithStartAfter(0));
+			Assert.AreSame(s1, tree.FindFirstSegmentWithStartAfter(1));
+			Assert.AreSame(s1, tree.FindFirstSegmentWithStartAfter(4));
+			Assert.AreSame(s1, tree.FindFirstSegmentWithStartAfter(5));
+			Assert.AreSame(null, tree.FindFirstSegmentWithStartAfter(6));
+		}
+		
 		TestTextSegment AddSegment(int offset, int length)
 		{
 //			Console.WriteLine("Add " + offset + ", " + length);

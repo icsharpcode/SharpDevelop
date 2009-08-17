@@ -90,17 +90,17 @@ namespace Grunwald.BooBinding
 		{
 			if (BooCompilerPC == null) {
 				ReferenceProjectItem booCompilerItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Compiler.AbstractAstAttribute).Assembly.Location);
-				BooCompilerPC = ParserService.GetProjectContentForReference(booCompilerItem);
+				BooCompilerPC = AssemblyParserService.GetProjectContentForReference(booCompilerItem);
 			}
 			if (BooUsefulPC == null) {
 				ReferenceProjectItem booUsefulItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Useful.Attributes.SingletonAttribute).Assembly.Location);
-				BooUsefulPC = ParserService.GetRegistryForReference(booUsefulItem).GetProjectContentForReference("Boo.Lang.Useful", booUsefulItem.Include);
+				BooUsefulPC = AssemblyParserService.GetRegistryForReference(booUsefulItem).GetProjectContentForReference("Boo.Lang.Useful", booUsefulItem.Include);
 			}
 			ParseProjectContent pc = base.CreateProjectContent();
 			ReferenceProjectItem systemItem = new ReferenceProjectItem(this, "System");
-			pc.AddReferencedContent(ParserService.GetProjectContentForReference(systemItem));
+			pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(systemItem));
 			ReferenceProjectItem booLangItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Builtins).Assembly.Location);
-			pc.AddReferencedContent(ParserService.GetProjectContentForReference(booLangItem));
+			pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(booLangItem));
 			pc.DefaultImports = new DefaultUsing(pc);
 			pc.DefaultImports.Usings.Add("Boo.Lang");
 			pc.DefaultImports.Usings.Add("Boo.Lang.Builtins");

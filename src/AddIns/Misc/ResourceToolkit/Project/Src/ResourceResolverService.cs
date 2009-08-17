@@ -156,7 +156,7 @@ namespace Hornung.ResourceToolkit
 		{
 			IParser p;
 			if (presetParsersUnitTestOnly == null) {
-				p = ParserService.GetParser(fileName);
+				p = ParserService.CreateParser(fileName);
 			} else {
 				presetParsersUnitTestOnly.TryGetValue(System.IO.Path.GetExtension(fileName), out p);
 			}

@@ -119,6 +119,7 @@
     <Compile Include="Src\Editor\Search\SearchResultMatch.cs" />
     <Compile Include="Src\Editor\Search\SearchResultsPad.cs" />
     <Compile Include="Src\Editor\Search\SearchResultPadToolbarCommands.cs" />
+    <Compile Include="Src\Editor\TextChangeEventArgs.cs" />
     <Compile Include="Src\Editor\ToolTipRequestEventArgs.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
@@ -247,6 +248,9 @@
     <Compile Include="Src\Internal\Doozers\IOptionPanelDescriptor.cs" />
     <Compile Include="Src\Services\File\FileService.cs" />
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
+    <Compile Include="Src\Services\ParserService\AssemblyParserService.cs" />
+    <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
+    <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\Profiler\DefaultProfiler.cs" />
     <Compile Include="Src\Services\Profiler\IProfiler.cs" />
     <Compile Include="Src\Services\Profiler\ProfilerService.cs" />
@@ -260,7 +264,7 @@
     <Compile Include="Src\Services\ProjectBinding\IProjectBinding.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectCreateInformation.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
-    <Compile Include="Src\Services\ParserService\ParserService.cs" />
+    <None Include="Src\Services\ParserService\OldParserService.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingDoozer.cs" />
@@ -441,7 +445,7 @@
     <Compile Include="Src\Services\ProjectService\SolutionEventHandler.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectEventHandler.cs" />
     <Compile Include="Src\Commands\FileMenuCommands.cs" />
-    <Compile Include="Src\Services\ParserService\ParseInformationEventHandler.cs" />
+    <Compile Include="Src\Services\ParserService\ParseInformationEventArgs.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectConfigurationEventHandler.cs" />
     <Compile Include="Src\Commands\DebugCommands.cs" />

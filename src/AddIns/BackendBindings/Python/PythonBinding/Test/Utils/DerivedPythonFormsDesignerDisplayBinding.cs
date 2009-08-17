@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
@@ -17,7 +18,6 @@ namespace PythonBinding.Tests.Utils
 		ParseInformation parseServiceParseInfo;
 		bool isParseInfoDesignable;
 		string fileNamePassedToGetParseInfo;
-		bool updateCommentTagsPassedToGetParseInfo;
 		string textContentNamePassedToGetParseInfo;
 		
 		public DerivedPythonFormsDesignerDisplayBinding()
@@ -61,23 +61,15 @@ namespace PythonBinding.Tests.Utils
 		public string TextContentPassedToGetParseInfo {
 			get { return textContentNamePassedToGetParseInfo; }
 		}
-
-		/// <summary>
-		/// Gets the update comment tags flag passed to the GetParseInfo method.
-		/// </summary>
-		public bool UpdateCommentTagsPassedToGetParseInfo {
-			get { return updateCommentTagsPassedToGetParseInfo; }
-		}
 		
 		/// <summary>
 		/// Gets the parse information from the parse service
 		/// for the specified file.
 		/// </summary>
-		protected override ParseInformation GetParseInfo(string fileName, string textContent, bool updateCommentTags)
+		protected override ParseInformation GetParseInfo(string fileName, ITextBuffer textBuffer)
 		{
 			fileNamePassedToGetParseInfo = fileName;
-			textContentNamePassedToGetParseInfo = textContent;
-			updateCommentTagsPassedToGetParseInfo = updateCommentTags;
+			textContentNamePassedToGetParseInfo = textBuffer.Text;
 			return parseServiceParseInfo;
 		}
 		

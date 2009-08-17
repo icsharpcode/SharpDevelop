@@ -30,15 +30,10 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.NamespacesToAdd.Add("Test");
 
-			// Set the dirty compilation unit and the valid compilation unit
-			// so we make sure that the most recent compilation unit 
-			// (i.e the dirty compilation unit) is being taken.
-			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(new MockProjectContent()));
-			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true });
+			ParseInformation parseInfo = new ParseInformation(new DefaultCompilationUnit(mockProjectContent));
 			
 			results = resolver.CtrlSpace(0, "import".Length, parseInfo, "import", ExpressionContext.Importable);
 		}
@@ -83,21 +78,7 @@ namespace PythonBinding.Tests.Resolver
 			ArrayList results = resolver.CtrlSpace(0, 0, null, "abc", ExpressionContext.Importable);			
 			Assert.AreEqual(0, results.Count);
 		}
-		
-		/// <summary>
-		/// Tests that the resolver handles the compilation units
-		/// being null.
-		/// </summary>
-		[Test]
-		public void NullCompilationUnit()
-		{
-			PythonResolver resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
-			MockProjectContent mockProjectContent = new MockProjectContent();
-			ArrayList results = resolver.CtrlSpace(0, 0, parseInfo, String.Empty, ExpressionContext.Importable);			
-			Assert.AreEqual(0, results.Count);
-		}
-		
+				
 		[Test]
 		public void ContainsSysModule()
 		{

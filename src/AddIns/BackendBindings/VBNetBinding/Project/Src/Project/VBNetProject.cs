@@ -73,7 +73,7 @@ namespace VBNetBinding
 			ParseProjectContent pc = base.CreateProjectContent();
 			ReferenceProjectItem vbRef = new ReferenceProjectItem(this, "Microsoft.VisualBasic");
 			if (vbRef != null) {
-				pc.AddReferencedContent(ParserService.GetProjectContentForReference(vbRef));
+				pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(vbRef));
 			}
 			MyNamespaceBuilder.BuildNamespace(this, pc);
 			return pc;

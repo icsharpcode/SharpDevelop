@@ -14,12 +14,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		/// <summary>
 		/// Creates a snapshot of the editor content.
-		/// This method is thread-safe.
 		/// </summary>
 		ITextBuffer CreateSnapshot();
 		
 		/// <summary>
-		/// Thread-safe access to the text in the view content.
+		/// Gets the text in the view content.
 		/// </summary>
 		string Text {
 			get;

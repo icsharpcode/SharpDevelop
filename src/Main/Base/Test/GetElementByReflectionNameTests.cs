@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	[TestFixture]
 	public class GetElementByReflectionNameTests
 	{
-		IProjectContent mscorlib = ParserService.DefaultProjectContentRegistry.Mscorlib;
+		IProjectContent mscorlib = AssemblyParserService.DefaultProjectContentRegistry.Mscorlib;
 		
 		void TestClass(Type type)
 		{

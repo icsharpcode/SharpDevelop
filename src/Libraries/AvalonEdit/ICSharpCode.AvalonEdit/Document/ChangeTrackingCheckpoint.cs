@@ -20,20 +20,25 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// </summary>
 	public sealed class ChangeTrackingCheckpoint
 	{
-		readonly TextDocument document;
+		// Object that is unique per document.
+		// Used to determine if two checkpoints belong to the same document.
+		// We don't use a reference to the document itself to allow the GC to reclaim the document memory
+		// even if there are still references to checkpoints.
+		readonly object documentIdentifier;
+		
 		// 'value' is the change from the previous checkpoint to this checkpoint
 		readonly DocumentChangeEventArgs value;
 		readonly int id;
 		ChangeTrackingCheckpoint next;
 		
-		internal ChangeTrackingCheckpoint(TextDocument document)
+		internal ChangeTrackingCheckpoint(object documentIdentifier)
 		{
-			this.document = document;
+			this.documentIdentifier = documentIdentifier;
 		}
 		
-		internal ChangeTrackingCheckpoint(TextDocument document, DocumentChangeEventArgs value, int id)
+		internal ChangeTrackingCheckpoint(object documentIdentifier, DocumentChangeEventArgs value, int id)
 		{
-			this.document = document;
+			this.documentIdentifier = documentIdentifier;
 			this.value = value;
 			this.id = id;
 		}
@@ -41,10 +46,33 @@ namespace ICSharpCode.AvalonEdit.Document
 		internal ChangeTrackingCheckpoint Append(DocumentChangeEventArgs change)
 		{
 			Debug.Assert(this.next == null);
-			this.next = new ChangeTrackingCheckpoint(this.document, change, unchecked( this.id + 1 ));
+			this.next = new ChangeTrackingCheckpoint(this.documentIdentifier, change, unchecked( this.id + 1 ));
 			return this.next;
 		}
 		
+		/// <summary>
+		/// Creates a change tracking checkpoint for the specified document.
+		/// This method is thread-safe.
+		/// If you need a ChangeTrackingCheckpoint that's consistent with a snapshot of the document,
+		/// use <see cref="TextDocument.CreateSnapshot(out ChangeTrackingCheckpoint)"/>.
+		/// </summary>
+		public static ChangeTrackingCheckpoint Create(TextDocument document)
+		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			return document.CreateChangeTrackingCheckpoint();
+		}
+		
+		/// <summary>
+		/// Gets whether this checkpoint belongs to the same document as the other checkpoint.
+		/// </summary>
+		public bool BelongsToSameDocumentAs(ChangeTrackingCheckpoint other)
+		{
+			if (other == null)
+				throw new ArgumentNullException("other");
+			return documentIdentifier == other.documentIdentifier;
+		}
+			
 		/// <summary>
 		/// Compares the age of this checkpoint to the other checkpoint.
 		/// </summary>
@@ -57,7 +85,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			if (other == null)
 				throw new ArgumentNullException("other");
-			if (other.document != this.document)
+			if (other.documentIdentifier != this.documentIdentifier)
 				throw new ArgumentException("Checkpoints do not belong to the same document.");
 			// We will allow overflows, but assume that the maximum distance between checkpoints is 2^31-1.
 			// This is guaranteed on x86 because so many checkpoints don't fit into memory.

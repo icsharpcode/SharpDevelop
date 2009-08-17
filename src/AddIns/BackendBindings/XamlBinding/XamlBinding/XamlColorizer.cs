@@ -173,7 +173,7 @@ namespace ICSharpCode.XamlBinding
 			this.Editor = editor;
 			this.TextView = textView;
 			
-			WeakLineTracker.Register(this.Editor.Document.GetService(typeof(TextDocument)) as TextDocument, this);
+			this.weakLineTracker = WeakLineTracker.Register(this.Editor.Document.GetService(typeof(TextDocument)) as TextDocument, this);
 			
 			ParserService.LoadSolutionProjectsThreadEnded += ParserServiceLoadSolutionProjectsThreadEnded;
 			
@@ -200,12 +200,14 @@ namespace ICSharpCode.XamlBinding
 			);
 		}
 		
+		WeakLineTracker weakLineTracker;
 		bool disposed;
 		
 		public void Dispose()
 		{
 			if (!disposed) {
 				ParserService.LoadSolutionProjectsThreadEnded -= ParserServiceLoadSolutionProjectsThreadEnded;
+				weakLineTracker.Deregister();
 				colorizers.Remove(this);
 			}
 			disposed = true;

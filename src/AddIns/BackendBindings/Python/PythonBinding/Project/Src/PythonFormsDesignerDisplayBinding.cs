@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.IO;
-
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -37,10 +37,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public bool CanAttachTo(IViewContent content)
 		{
-			ITextEditorControlProvider textEditorControlProvider = content as ITextEditorControlProvider;
-			if (textEditorControlProvider != null) {
+			ITextEditorProvider textEditorProvider = content as ITextEditorProvider;
+			if (textEditorProvider != null) {
 				if (IsPythonFile(content.PrimaryFileName)) {
-					ParseInformation parseInfo = GetParseInfo(content.PrimaryFileName, textEditorControlProvider.TextEditorControl.Text, false);
+					ParseInformation parseInfo = GetParseInfo(content.PrimaryFileName, textEditorProvider.TextEditor.Document);
 					return IsDesignable(parseInfo);
 				}
 			}
@@ -69,9 +69,9 @@ namespace ICSharpCode.PythonBinding
 		/// Gets the parse information from the parser service
 		/// for the specified file.
 		/// </summary>
-		protected virtual ParseInformation GetParseInfo(string fileName, string textContent, bool updateCommentTags)
+		protected virtual ParseInformation GetParseInfo(string fileName, ITextBuffer textContent)
 		{
-			return ParserService.ParseFile(fileName, new StringTextBuffer(textContent), updateCommentTags);
+			return ParserService.ParseFile(fileName, textContent);
 		}
 		
 		/// <summary>

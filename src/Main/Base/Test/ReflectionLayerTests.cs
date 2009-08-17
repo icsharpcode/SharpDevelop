@@ -31,12 +31,12 @@ namespace ICSharpCode.SharpDevelop.Tests
 	{
 		public ReflectionLayerTests()
 		{
-			mscorlib = ParserService.DefaultProjectContentRegistry.Mscorlib;
+			mscorlib = AssemblyParserService.DefaultProjectContentRegistry.Mscorlib;
 		}
 		
 		protected override IClass GetClass(Type type)
 		{
-			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
+			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], AssemblyParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
 			IClass c = new ReflectionClass(cu, type, type.FullName, null);
 			cu.ProjectContent.AddClassToNamespaceList(c);
 			return c;
@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		protected override IEnumerable<IAttribute> GetAssemblyAttributes(Assembly assembly)
 		{
-			var pc = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry);
+			var pc = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], AssemblyParserService.DefaultProjectContentRegistry);
 			pc.AddAssemblyAttributes(assembly);
 			return pc.GetAssemblyAttributes();
 		}
@@ -55,17 +55,17 @@ namespace ICSharpCode.SharpDevelop.Tests
 	{
 		public ReflectionWithRoundTripLayerTests()
 		{
-			mscorlib = ParserService.DefaultProjectContentRegistry.Mscorlib;
+			mscorlib = AssemblyParserService.DefaultProjectContentRegistry.Mscorlib;
 			
 			MemoryStream memory = new MemoryStream();
 			DomPersistence.WriteProjectContent((ReflectionProjectContent)mscorlib, memory);
 			memory.Position = 0;
-			mscorlib = DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry);
+			mscorlib = DomPersistence.LoadProjectContent(memory, AssemblyParserService.DefaultProjectContentRegistry);
 		}
 		
 		protected override IClass GetClass(Type type)
 		{
-			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
+			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], AssemblyParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
 			IClass c = new ReflectionClass(cu, type, type.FullName, null);
 			cu.ProjectContent.AddClassToNamespaceList(c);
 			
@@ -73,19 +73,19 @@ namespace ICSharpCode.SharpDevelop.Tests
 			DomPersistence.WriteProjectContent((ReflectionProjectContent)c.ProjectContent, memory);
 			
 			memory.Position = 0;
-			return DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry).Classes.Single();
+			return DomPersistence.LoadProjectContent(memory, AssemblyParserService.DefaultProjectContentRegistry).Classes.Single();
 		}
 		
 		protected override IEnumerable<IAttribute> GetAssemblyAttributes(Assembly assembly)
 		{
-			var pc = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], ParserService.DefaultProjectContentRegistry);
+			var pc = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], AssemblyParserService.DefaultProjectContentRegistry);
 			pc.AddAssemblyAttributes(assembly);
 			
 			MemoryStream memory = new MemoryStream();
 			DomPersistence.WriteProjectContent(pc, memory);
 			
 			memory.Position = 0;
-			return DomPersistence.LoadProjectContent(memory, ParserService.DefaultProjectContentRegistry).GetAssemblyAttributes();
+			return DomPersistence.LoadProjectContent(memory, AssemblyParserService.DefaultProjectContentRegistry).GetAssemblyAttributes();
 		}
 	}
 	
@@ -94,12 +94,12 @@ namespace ICSharpCode.SharpDevelop.Tests
 	{
 		public CecilLayerTests()
 		{
-			mscorlib = CecilReader.LoadAssembly(typeof(object).Assembly.Location, ParserService.DefaultProjectContentRegistry);
+			mscorlib = CecilReader.LoadAssembly(typeof(object).Assembly.Location, AssemblyParserService.DefaultProjectContentRegistry);
 		}
 		
 		IProjectContent LoadAssembly(Assembly assembly)
 		{
-			IProjectContent pc = CecilReader.LoadAssembly(assembly.Location, ParserService.DefaultProjectContentRegistry);
+			IProjectContent pc = CecilReader.LoadAssembly(assembly.Location, AssemblyParserService.DefaultProjectContentRegistry);
 			Assert.IsNotNull(pc);
 			return pc;
 		}

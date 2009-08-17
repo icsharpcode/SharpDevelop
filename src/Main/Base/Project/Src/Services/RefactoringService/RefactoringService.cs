@@ -309,7 +309,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (ProjectService.OpenSolution == null) {
 				foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
 					string name = vc.PrimaryFileName;
-					if (!string.IsNullOrEmpty(name) && ParserService.GetParser(name) != null) {
+					if (!string.IsNullOrEmpty(name) && ParserService.CreateParser(name) != null) {
 						FileProjectItem tempItem = new FileProjectItem(null, ItemType.Compile);
 						tempItem.Include = name;
 						resultList.Add(tempItem);

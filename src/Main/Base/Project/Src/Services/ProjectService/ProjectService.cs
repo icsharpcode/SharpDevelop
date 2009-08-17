@@ -495,6 +495,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				openSolution.Dispose();
 				openSolution = null;
+				ParserService.OnSolutionClosed();
 				
 				OnSolutionClosed(EventArgs.Empty);
 				CommandManager.InvalidateRequerySuggested();

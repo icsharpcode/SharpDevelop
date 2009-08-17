@@ -129,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			nextItem = (++index < projectItems.Count) ? projectItems[index] : null;
 			if (item == null) return false;
 			
-			if (ParserService.GetParser(item.FileName) == null)
+			if (ParserService.CreateParser(item.FileName) == null)
 				return MoveNext();
 			
 			string fileContent;

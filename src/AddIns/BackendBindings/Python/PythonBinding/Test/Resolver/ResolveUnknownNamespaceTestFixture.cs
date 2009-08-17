@@ -30,14 +30,13 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.NamespacesToAdd.Add("Test");
 
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
 			cu.ErrorsDuringCompile = true;
 			cu.FileName = @"C:\Projects\Test\test.py";
-			parseInfo.SetCompilationUnit(cu);
+			ParseInformation parseInfo = new ParseInformation(cu);
 			
 			string python = "import System\r\n" +
 							"class Test:\r\n" +

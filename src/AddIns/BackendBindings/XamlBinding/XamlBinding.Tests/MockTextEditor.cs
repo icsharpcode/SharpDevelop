@@ -34,7 +34,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		{
 			PropertyService.InitializeServiceForUnitTests();
 			pc = new DefaultProjectContent();
-			pc.ReferencedContents.Add(ParserService.DefaultProjectContentRegistry.Mscorlib);
+			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
 			
 			Dictionary<string, string> referencedAssemblies = new Dictionary<string, string>() {
 				{ "System", null },
@@ -45,7 +45,7 @@ namespace ICSharpCode.XamlBinding.Tests
 				{ "PresentationFramework", typeof(System.Windows.EventSetter).Assembly.Location }
 			};
 			foreach (var assembly in referencedAssemblies) {
-				IProjectContent referenceProjectContent = ParserService.DefaultProjectContentRegistry.GetProjectContentForReference(assembly.Key, assembly.Value ?? assembly.Key);
+				IProjectContent referenceProjectContent = AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference(assembly.Key, assembly.Value ?? assembly.Key);
 				pc.ReferencedContents.Add(referenceProjectContent);
 				if (referenceProjectContent is ReflectionProjectContent) {
 					(referenceProjectContent as ReflectionProjectContent).InitializeReferences();

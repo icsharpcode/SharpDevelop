@@ -404,7 +404,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
 				if (parseInfo == null) {
 					parseInfo = ParserService.ParseFile(fileName,
-					                                    new StringTextBuffer(textEditorControl.Document.TextContent), false);
+					                                    new StringTextBuffer(textEditorControl.Document.TextContent));
 				}
 				textEditorControl.Document.FoldingManager.UpdateFoldings(fileName, parseInfo);
 				//UpdateClassMemberBookmarks(parseInfo);

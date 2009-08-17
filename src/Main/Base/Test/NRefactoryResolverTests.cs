@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	[TestFixture]
 	public class NRefactoryResolverTests
 	{
-		ProjectContentRegistry projectContentRegistry = ParserService.DefaultProjectContentRegistry;
+		ProjectContentRegistry projectContentRegistry = AssemblyParserService.DefaultProjectContentRegistry;
 		
 		#region Test helper methods
 		public ICompilationUnit Parse(string fileName, string fileContent)

@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.TaskListOptions.xfrm"));
 			
-			string[] tokens = PropertyService.Get("SharpDevelop.TaskListTokens", ParserService.DefaultTaskListTokens);
+			string[] tokens = ParserService.TaskListTokens;
 			taskList = (ListView)ControlDictionary[taskListView];
 			taskList.BeginUpdate();
 			foreach (string token in tokens) {
@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			}
 			
-			PropertyService.Set("SharpDevelop.TaskListTokens", tokens.ToArray());
+			ParserService.TaskListTokens = tokens.ToArray();
 			
 			return true;
 		}

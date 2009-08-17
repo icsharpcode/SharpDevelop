@@ -45,10 +45,9 @@ namespace PythonBinding.Tests.Designer
 			generator.Attach(viewContent);
 			viewContentAttached = generator.GetViewContent();
 
-			ParseInformation parseInfo = new ParseInformation();
 			PythonParser parser = new PythonParser();
 			ICompilationUnit parserCompilationUnit = parser.Parse(new DefaultProjectContent(), "Test.py", GetTextEditorCode());
-			parseInfo.SetCompilationUnit(parserCompilationUnit);
+			ParseInformation parseInfo = new ParseInformation(parserCompilationUnit);
 			generator.ParseInfoToReturnFromParseFileMethod = parseInfo;
 			
 			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {

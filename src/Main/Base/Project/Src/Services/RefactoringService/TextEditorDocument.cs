@@ -183,17 +183,23 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public System.IO.TextReader CreateReader()
 		{
-			throw new NotImplementedException();
+			return CreateSnapshot().CreateReader();
 		}
 		
 		public ITextBuffer CreateSnapshot()
 		{
-			throw new NotImplementedException();
+			return new StringTextBuffer(Gui.WorkbenchSingleton.SafeThreadFunction<string>(() => this.Text));
 		}
 		
 		public ITextBuffer CreateSnapshot(int offset, int length)
 		{
-			throw new NotImplementedException();
+			return CreateSnapshot().CreateSnapshot(offset, length);
+		}
+		
+		public ITextBufferVersion Version {
+			get {
+				return null;
+			}
 		}
 		
 		sealed class AnchorAdapter : ITextAnchor

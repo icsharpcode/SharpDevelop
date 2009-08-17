@@ -10,8 +10,6 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop
 {
-	public delegate void ParseInformationEventHandler(object sender, ParseInformationEventArgs e);
-	
 	public class ParseInformationEventArgs : EventArgs
 	{
 		string fileName;
@@ -50,20 +48,16 @@ namespace ICSharpCode.SharpDevelop
 		}
 	}
 	
-	public delegate void ParserUpdateStepEventHandler(object sender, ParserUpdateStepEventArgs e);
-	
 	public class ParserUpdateStepEventArgs : EventArgs
 	{
 		string fileName;
 		ITextBuffer content;
-		bool updated;
 		ParseInformation parseInformation;
 		
-		public ParserUpdateStepEventArgs(string fileName, ITextBuffer content, bool updated, ParseInformation parseInformation)
+		public ParserUpdateStepEventArgs(string fileName, ITextBuffer content, ParseInformation parseInformation)
 		{
 			this.fileName = fileName;
 			this.content = content;
-			this.updated = updated;
 			this.parseInformation = parseInformation;
 		}
 		
@@ -72,14 +66,10 @@ namespace ICSharpCode.SharpDevelop
 				return fileName;
 			}
 		}
+		
 		public ITextBuffer Content {
 			get {
 				return content;
-			}
-		}
-		public bool Updated {
-			get {
-				return updated;
 			}
 		}
 		

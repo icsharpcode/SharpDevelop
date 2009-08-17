@@ -196,12 +196,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void ParserServiceLoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
-						DisplayBindingService.AttachSubWindows(content, true);
-					}
-				});
+			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
+				DisplayBindingService.AttachSubWindows(content, true);
+			}
 		}
 		
 		public static bool IsOpen(string fileName)
@@ -479,7 +476,7 @@ namespace ICSharpCode.SharpDevelop
 			bool loggingResumed = false;
 			
 			try {
-			
+				
 				IViewContent content = OpenFile(fileName);
 				if (content is IPositionable) {
 					// TODO: enable jumping to a particular view

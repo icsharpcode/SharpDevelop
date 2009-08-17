@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			clickedCommand.Execute();
 		}
 		
-		public IEnumerable<IVisualizerCommand> ItemsSource
+		public new IEnumerable<IVisualizerCommand> ItemsSource
 		{
 			get { return (IEnumerable<IVisualizerCommand>)base.ItemsSource; }
 			set { base.ItemsSource = value; }

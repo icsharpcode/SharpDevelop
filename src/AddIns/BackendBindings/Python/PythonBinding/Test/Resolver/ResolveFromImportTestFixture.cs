@@ -30,14 +30,13 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
 
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.SetNamespaceExistsReturnValue(true);
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
 			cu.ErrorsDuringCompile = true;
 			cu.FileName = @"C:\Projects\Test\test.py";
-			parseInfo.SetCompilationUnit(cu);
+			ParseInformation parseInfo = new ParseInformation(cu);
 					
 			string python = "from System.";
 			ExpressionResult expressionResult = new ExpressionResult("from System", new DomRegion(1, 14), null, null);

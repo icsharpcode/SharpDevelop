@@ -43,8 +43,7 @@ namespace PythonBinding.Tests.Parsing
 				
 				// Get folds.
 				ParserFoldingStrategy foldingStrategy = new ParserFoldingStrategy();
-				ParseInformation parseInfo = new ParseInformation();
-				parseInfo.SetCompilationUnit(compilationUnit);
+				ParseInformation parseInfo = new ParseInformation(compilationUnit);
 			
 				DocumentFactory docFactory = new DocumentFactory();
 				IDocument doc = docFactory.CreateDocument();

@@ -90,8 +90,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			foreach (IClass c in visitor.Cu.Classes) {
 				project.AddClassToNamespaceList(c);
 			}
-			parseInfo = new ParseInformation();
-			parseInfo.SetCompilationUnit(visitor.Cu);
+			parseInfo = new ParseInformation(visitor.Cu);
 			
 			return result;
 		}

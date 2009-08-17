@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	public class CodeConverterTests
 	{
 		#region TestProgram (converting code)
-		ProjectContentRegistry projectContentRegistry = ParserService.DefaultProjectContentRegistry;
+		ProjectContentRegistry projectContentRegistry = AssemblyParserService.DefaultProjectContentRegistry;
 		
 		void TestProgramCS2VB(string sourceCode, string expectedOutput)
 		{
@@ -64,8 +64,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 				pc.AddClassToNamespaceList(c);
 			}
 			
-			ParseInformation parseInfo = new ParseInformation();
-			parseInfo.SetCompilationUnit(visitor.Cu);
+			ParseInformation parseInfo = new ParseInformation(visitor.Cu);
 			
 			if (sourceLanguage == SupportedLanguage.CSharp) {
 				CSharpToVBNetConvertVisitor convertVisitor = new CSharpToVBNetConvertVisitor(pc, parseInfo);

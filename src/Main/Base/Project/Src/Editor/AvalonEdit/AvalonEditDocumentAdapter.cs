@@ -6,7 +6,10 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
 
@@ -165,12 +168,74 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		
 		public ITextBuffer CreateSnapshot()
 		{
-			return new AvalonEditTextSourceAdapter(document.CreateSnapshot());
+			ChangeTrackingCheckpoint checkpoint;
+			ITextSource textSource = document.CreateSnapshot(out checkpoint);
+			return new Snapshot(textSource, checkpoint);
 		}
 		
 		public ITextBuffer CreateSnapshot(int offset, int length)
 		{
 			return new AvalonEditTextSourceAdapter(document.CreateSnapshot(offset, length));
+		}
+		
+		public ITextBufferVersion Version {
+			get {
+				return new SnapshotVersion(ChangeTrackingCheckpoint.Create(document));
+			}
+		}
+		
+		sealed class Snapshot : AvalonEditTextSourceAdapter
+		{
+			readonly ITextBufferVersion version;
+			
+			public Snapshot(ITextSource textSource, ChangeTrackingCheckpoint checkpoint)
+				: base(textSource)
+			{
+				this.version = new SnapshotVersion(checkpoint);
+			}
+			
+			public override ITextBuffer CreateSnapshot()
+			{
+				// Snapshot is immutable
+				return this;
+			}
+			
+			public override ITextBufferVersion Version {
+				get { return version; }
+			}
+		}
+		
+		sealed class SnapshotVersion : ITextBufferVersion
+		{
+			readonly ChangeTrackingCheckpoint checkpoint;
+			
+			public SnapshotVersion(ChangeTrackingCheckpoint checkpoint)
+			{
+				Debug.Assert(checkpoint != null);
+				this.checkpoint = checkpoint;
+			}
+			
+			public bool BelongsToSameDocumentAs(ITextBufferVersion other)
+			{
+				SnapshotVersion otherVersion = other as SnapshotVersion;
+				return otherVersion != null && checkpoint.BelongsToSameDocumentAs(otherVersion.checkpoint);
+			}
+			
+			public int CompareAge(ITextBufferVersion other)
+			{
+				SnapshotVersion otherVersion = other as SnapshotVersion;
+				if (otherVersion == null)
+					throw new ArgumentException("Does not belong to same document");
+				return checkpoint.CompareAge(otherVersion.checkpoint);
+			}
+			
+			public IEnumerable<TextChangeEventArgs> GetChangesTo(ITextBufferVersion other)
+			{
+				SnapshotVersion otherVersion = other as SnapshotVersion;
+				if (otherVersion == null)
+					throw new ArgumentException("Does not belong to same document");
+				return checkpoint.GetChangesTo(otherVersion.checkpoint).Select(c => new TextChangeEventArgs(c.Offset, c.RemovedText, c.InsertedText));
+			}
 		}
 		
 		public void StartUndoableAction()

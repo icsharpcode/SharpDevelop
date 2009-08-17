@@ -41,10 +41,9 @@ namespace PythonBinding.Tests.Designer
 
 				document = viewContent.DesignerCodeFileDocument;
 
-				ParseInformation parseInfo = new ParseInformation();
 				PythonParser parser = new PythonParser();
 				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.Text);
-				parseInfo.SetCompilationUnit(compilationUnit);
+				ParseInformation parseInfo = new ParseInformation(compilationUnit);
 
 				using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
 					IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));

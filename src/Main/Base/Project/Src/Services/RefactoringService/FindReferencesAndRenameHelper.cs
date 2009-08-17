@@ -415,7 +415,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (entry.Value.ViewContent is IEditable) {
 					ParserService.ParseViewContent(entry.Value.ViewContent);
 				} else {
-					ParserService.ParseFile(entry.Value.OpenedFile.FileName, entry.Key.CreateSnapshot(), !entry.Value.OpenedFile.IsUntitled);
+					ParserService.ParseFile(entry.Value.OpenedFile.FileName, entry.Key.CreateSnapshot());
 				}
 			}
 		}

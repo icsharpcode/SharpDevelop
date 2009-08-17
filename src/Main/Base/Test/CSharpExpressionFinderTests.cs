@@ -171,8 +171,8 @@ class Main {
 		[Test]
 		public void NewException()
 		{
-			FindExpr(program2, "oundException", "NotF", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.SystemTypes.Exception, true));
-			FindFull(program2, "oundException", "new NotFoundException()", ExpressionContext.TypeDerivingFrom(ParserService.DefaultProjectContentRegistry.Mscorlib.SystemTypes.Exception, true));
+			FindExpr(program2, "oundException", "NotF", ExpressionContext.TypeDerivingFrom(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib.SystemTypes.Exception, true));
+			FindFull(program2, "oundException", "new NotFoundException()", ExpressionContext.TypeDerivingFrom(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib.SystemTypes.Exception, true));
 		}
 		
 		[Test]

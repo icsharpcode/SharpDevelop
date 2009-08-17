@@ -68,8 +68,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		/// </summary>
 		static IEnumerable<IProjectContent> AllProjectContentsWithReferences {
 			get {
-				return Enumerable.Concat(ParserService.AllProjectContents, ParserService.DefaultProjectContentRegistry.GetLoadedProjectContents())
-					.Distinct();
+				return Enumerable.Union(ParserService.AllProjectContents, AssemblyParserService.DefaultProjectContentRegistry.GetLoadedProjectContents());
 			}
 		}
 		

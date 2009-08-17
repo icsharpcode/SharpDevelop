@@ -80,7 +80,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			base.OnFileNameChanged(file);
 			if (file == PrimaryFile) {
+				if (!string.IsNullOrEmpty(codeEditor.FileName))
+					ParserService.ClearParseInformation(codeEditor.FileName);
+				
 				codeEditor.FileName = file.FileName;
+				
+				ParserService.BeginParse(file.FileName, codeEditor.DocumentAdapter);
+				
 				BookmarksNotifyNameChange(file.FileName);
 			}
 		}
@@ -159,20 +165,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		#region IEditable
-		/// <summary>
-		/// Thread-safe snapshot creation.
-		/// </summary>
 		public ITextBuffer CreateSnapshot()
 		{
 			return new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditTextSourceAdapter(codeEditor.Document.CreateSnapshot());
 		}
 		
 		/// <summary>
-		/// Thread-safe text getter.
+		/// Gets the document text.
 		/// </summary>
 		public string Text {
 			get {
-				return WorkbenchSingleton.SafeThreadFunction(() => codeEditor.Document.Text);
+				return codeEditor.Document.Text;
 			}
 		}
 		#endregion

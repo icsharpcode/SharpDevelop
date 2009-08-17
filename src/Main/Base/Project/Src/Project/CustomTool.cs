@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			                         },
 			                         outputFileName, FileErrorPolicy.Inform);
 			EnsureOutputFileIsInProject(baseItem, outputFileName);
-			ParserService.EnqueueForParsing(outputFileName, new StringTextBuffer(codeOutput));
+			ParserService.BeginParse(outputFileName, new StringTextBuffer(codeOutput));
 		}
 		
 		public void GenerateCodeDomAsync(FileProjectItem baseItem, string outputFileName, Func<CodeCompileUnit> func)

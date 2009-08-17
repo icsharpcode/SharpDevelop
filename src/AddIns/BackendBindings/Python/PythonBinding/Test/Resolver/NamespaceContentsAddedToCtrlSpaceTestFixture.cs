@@ -32,19 +32,19 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.NamespacesToAdd.Add("Test");
 			myTestClass = new MockClass(mockProjectContent, "MyTestClass");
 			mockProjectContent.NamespaceContentsToReturn.Add(myTestClass);
 
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };
-			parseInfo.SetCompilationUnit(cu);
 			
 			// Add usings.
 			DefaultUsing newUsing = new DefaultUsing(cu.ProjectContent);
 			newUsing.Usings.Add("MyNamespace");
 			cu.UsingScope.Usings.Add(newUsing);
+			
+			ParseInformation parseInfo = new ParseInformation(cu);
 
 			results = resolver.CtrlSpace(0, "".Length, parseInfo, "", ExpressionContext.Default);
 		}

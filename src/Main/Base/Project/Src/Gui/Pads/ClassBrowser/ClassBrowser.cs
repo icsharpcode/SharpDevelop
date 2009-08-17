@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionChanged; // rebuild view when project is removed from solution
 			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			
-			ParserService.ParseInformationUpdated += new ParseInformationEventHandler(ParserServiceParseInformationUpdated);
+			ParserService.ParseInformationUpdated += ParserServiceParseInformationUpdated;
 			
 			AmbienceService.AmbienceChanged += new EventHandler(AmbienceServiceAmbienceChanged);
 			if (ProjectService.OpenSolution != null) {
@@ -112,31 +112,16 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			}
 			UpdateToolbars();
 		}
-
-		List<ParseInformationEventArgs> pending = new List<ParseInformationEventArgs>();
 		
-		// running on main thread, invoked by the parser thread when a compilation unit changed
-		void UpdateThread()
+		void ParserServiceParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			lock (pending) {
-				foreach (ParseInformationEventArgs e in pending) {
-					foreach (TreeNode node in classBrowserTreeView.Nodes) {
-						AbstractProjectNode prjNode = node as AbstractProjectNode;
-						if (prjNode != null && e.ProjectContent.Project == prjNode.Project) {
-							prjNode.UpdateParseInformation(e.OldCompilationUnit, e.NewCompilationUnit);
-						}
-					}
+			WorkbenchSingleton.DebugAssertMainThread();
+			foreach (TreeNode node in classBrowserTreeView.Nodes) {
+				AbstractProjectNode prjNode = node as AbstractProjectNode;
+				if (prjNode != null && e.ProjectContent.Project == prjNode.Project) {
+					prjNode.UpdateParseInformation(e.OldCompilationUnit, e.NewCompilationUnit);
 				}
-				pending.Clear();
 			}
-		}
-		
-		public void ParserServiceParseInformationUpdated(object sender, ParseInformationEventArgs e)
-		{
-			lock (pending) {
-				pending.Add(e);
-			}
-			WorkbenchSingleton.SafeThreadAsyncCall(UpdateThread);
 		}
 		
 		#region Navigation

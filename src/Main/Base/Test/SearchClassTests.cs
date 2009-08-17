@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	[TestFixture]
 	public class SearchClassTests
 	{
-		ProjectContentRegistry projectContentRegistry = ParserService.DefaultProjectContentRegistry;
+		ProjectContentRegistry projectContentRegistry = AssemblyParserService.DefaultProjectContentRegistry;
 		
 		#region Helper methods
 		ICompilationUnit Prepare(LanguageProperties language)

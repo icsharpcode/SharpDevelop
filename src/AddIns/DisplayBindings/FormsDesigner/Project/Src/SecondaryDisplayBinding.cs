@@ -97,7 +97,7 @@ namespace ICSharpCode.FormsDesigner
 				switch (fileExtension) {
 					case ".cs":
 					case ".vb":
-						ParseInformation info = ParserService.ParseFile(fileName, textEditorProvider.TextEditor.Document, false);
+						ParseInformation info = ParserService.ParseFile(fileName, textEditorProvider.TextEditor.Document);
 						
 						if (IsDesignable(info))
 							return true;

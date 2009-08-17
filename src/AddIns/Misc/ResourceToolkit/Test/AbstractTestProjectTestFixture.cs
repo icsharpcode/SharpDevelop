@@ -95,8 +95,8 @@ namespace ResourceToolkit.Tests
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
 			
-			pc.ReferencedContents.Add(ParserService.DefaultProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(ParserService.DefaultProjectContentRegistry.GetProjectContentForReference("System", "System"));
+			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
+			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference("System", "System"));
 			
 			if (project != null) {
 				if (project.LanguageProperties != null) {

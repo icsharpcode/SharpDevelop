@@ -73,7 +73,7 @@ namespace ICSharpCode.FormsDesigner
 		public IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
 		{
 			// get new initialize components
-			ParseInformation info = ParserService.ParseFile(this.viewContent.PrimaryFileName, this.viewContent.PrimaryFileContent, false);
+			ParseInformation info = ParserService.ParseFile(this.viewContent.PrimaryFileName, this.viewContent.PrimaryFileContent);
 			ICompilationUnit cu = info.BestCompilationUnit;
 			foreach (IClass c in cu.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
@@ -293,7 +293,7 @@ namespace ICSharpCode.FormsDesigner
 			// we must not modify the c.Fields collection while it is enumerated
 			removedFields.ForEach(RemoveField);
 			
-			ParserService.EnqueueForParsing(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument);
+			ParserService.BeginParse(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument);
 		}
 		
 		/// <summary>
@@ -382,7 +382,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			// Reparse all source files for the designed form
 			foreach (KeyValuePair<OpenedFile, IDocument> entry in this.ViewContent.SourceFiles) {
-				parsings.Add(entry.Key, ParserService.ParseFile(entry.Key.FileName, entry.Value, false));
+				parsings.Add(entry.Key, ParserService.ParseFile(entry.Key.FileName, entry.Value));
 			}
 			
 			// Update currentClassPart from PrimaryFile

@@ -42,8 +42,8 @@ namespace Grunwald.BooBinding.Tests
 		IProjectContent booLangPC;
 		
 		public ResolverTests() {
-			booLangPC = new ReflectionProjectContent(Assembly.Load("Boo.Lang"), "Boo.Lang.dll", ParserService.DefaultProjectContentRegistry);
-			booLangPC.ReferencedContents.Add(ParserService.DefaultProjectContentRegistry.Mscorlib);
+			booLangPC = new ReflectionProjectContent(Assembly.Load("Boo.Lang"), "Boo.Lang.dll", AssemblyParserService.DefaultProjectContentRegistry);
+			booLangPC.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
 		}
 		
 		const string fileName = "tempFile.boo";
@@ -54,8 +54,8 @@ namespace Grunwald.BooBinding.Tests
 			DefaultProjectContent pc = new DefaultProjectContent();
 			lastPC = pc;
 			HostCallback.GetCurrentProjectContent = delegate { return pc; };
-			pc.ReferencedContents.Add(ParserService.DefaultProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(ParserService.DefaultProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
+			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
+			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
 			pc.ReferencedContents.Add(booLangPC);
 			ICompilationUnit cu = new BooParser().Parse(pc, fileName, new StringTextBuffer(prog));
 			ParserService.RegisterParseInformation(fileName, cu);

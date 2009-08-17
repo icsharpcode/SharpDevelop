@@ -22,10 +22,14 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			this.textSource = textSource;
 		}
 		
+		public virtual ITextBufferVersion Version {
+			get { return null; }
+		}
+		
 		/// <summary>
 		/// Creates an immutable snapshot of this text buffer.
 		/// </summary>
-		public ITextBuffer CreateSnapshot()
+		public virtual ITextBuffer CreateSnapshot()
 		{
 			return new AvalonEditTextSourceAdapter(textSource.CreateSnapshot());
 		}

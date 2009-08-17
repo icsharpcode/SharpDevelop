@@ -200,7 +200,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </remarks>
 		public ITextSource CreateSnapshot()
 		{
-			lock (rope) {
+			lock (lockObject) {
 				return new RopeTextSource(rope.Clone());
 			}
 		}
@@ -218,11 +218,20 @@ namespace ICSharpCode.AvalonEdit.Document
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "Need to return snapshot and checkpoint together to ensure thread-safety")]
 		public ITextSource CreateSnapshot(out ChangeTrackingCheckpoint checkpoint)
 		{
-			lock (rope) {
+			lock (lockObject) {
 				if (currentCheckpoint == null)
-					currentCheckpoint = new ChangeTrackingCheckpoint(this);
+					currentCheckpoint = new ChangeTrackingCheckpoint(lockObject);
 				checkpoint = currentCheckpoint;
 				return new RopeTextSource(rope.Clone());
+			}
+		}
+		
+		internal ChangeTrackingCheckpoint CreateChangeTrackingCheckpoint()
+		{
+			lock (lockObject) {
+				if (currentCheckpoint == null)
+					currentCheckpoint = new ChangeTrackingCheckpoint(lockObject);
+				return currentCheckpoint;
 			}
 		}
 		
@@ -237,7 +246,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </remarks>
 		public ITextSource CreateSnapshot(int offset, int length)
 		{
-			lock (rope) {
+			lock (lockObject) {
 				return new RopeTextSource(rope.GetRange(offset, length));
 			}
 		}
@@ -245,7 +254,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <inheritdoc/>
 		public System.IO.TextReader CreateReader()
 		{
-			lock (rope) {
+			lock (lockObject) {
 				return new RopeTextReader(rope);
 			}
 		}
@@ -518,7 +527,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			fireTextChanged = true;
 			DelayedEvents delayedEvents = new DelayedEvents();
 			
-			lock (rope) {
+			lock (lockObject) {
 				// create linked list of checkpoints, if required
 				if (currentCheckpoint != null) {
 					currentCheckpoint = currentCheckpoint.Append(args);

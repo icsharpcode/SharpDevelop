@@ -37,7 +37,6 @@ namespace PythonBinding.Tests.Resolver
 		{
 			resolver = new PythonResolver();
 			
-			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			testClass = new MockClass(mockProjectContent, "Test.Test1");
 			mockProjectContent.ClassesInProjectContent.Add(testClass);			
@@ -46,7 +45,7 @@ namespace PythonBinding.Tests.Resolver
 
 			compilationUnit = new DefaultCompilationUnit(mockProjectContent);
 			compilationUnit.FileName = @"C:\Projects\Test\test.py";
-			parseInfo.SetCompilationUnit(compilationUnit);
+			ParseInformation parseInfo = new ParseInformation(compilationUnit);
 
 			string python = "a = Test1()\r\n" +
 							"a";

@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	[TestFixture]
 	public class SearchGenericClassTests
 	{
-		ProjectContentRegistry projectContentRegistry = ParserService.DefaultProjectContentRegistry;
+		ProjectContentRegistry projectContentRegistry = AssemblyParserService.DefaultProjectContentRegistry;
 		
 		#region Helper methods
 		// usingMode: 0 = one using-statement for each namespace (correctly cased)
