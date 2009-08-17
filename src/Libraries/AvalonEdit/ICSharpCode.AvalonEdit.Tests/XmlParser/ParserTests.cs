@@ -18,43 +18,61 @@ using NUnit.Framework;
 
 namespace ICSharpCode.AvalonEdit.Xml.Tests
 {
+	class TestFile 
+	{
+		public string Name { get; set; }
+		public string Content { get; set; }
+		public string Canonical { get; set; }
+		public string Description { get; set; }
+	}
+	
 	[TestFixture]
-	public class W3C
+	public class ParserTests
 	{
 		readonly string zipFileName = @"XmlParser\W3C.zip";
 		
-		ZipFile zipFile;
-		List<ZipEntry> files = new List<ZipEntry>();
-		Dictionary<string, string> descriptions = new Dictionary<string, string>();
+		List<TestFile> xmlFiles = new List<TestFile>();
 		
 		[TestFixtureSetUp]
 		public void OpenZipFile()
 		{
-			zipFile = new ZipFile(zipFileName);
-			files.AddRange(zipFile.Cast<ZipEntry>().Where(zip => zip.IsFile));
-			foreach(ZipEntry metaData in GetXmlFilesStartingWith("ibm/ibm_oasis")) {
-				string conent = Decompress(metaData);
-				var doc = System.Xml.Linq.XDocument.Parse(conent);
+			ZipFile zipFile = new ZipFile(zipFileName);
+			
+			Dictionary<string, TestFile> xmlFiles = new Dictionary<string, TestFile>();
+			
+			// Decompress XML files
+			foreach(ZipEntry zipEntry in zipFile.Cast<ZipEntry>().Where(zip => zip.IsFile && zip.Name.EndsWith(".xml"))) {
+				Stream stream = zipFile.GetInputStream(zipEntry);
+				string content = new StreamReader(stream).ReadToEnd();
+				xmlFiles.Add(zipEntry.Name, new TestFile { Name = zipEntry.Name, Content = content });
+			}
+			// Add descriptions
+			foreach(TestFile metaData in xmlFiles.Values.Where(f => f.Name.StartsWith("ibm/ibm_oasis"))) {
+				var doc = System.Xml.Linq.XDocument.Parse(metaData.Content);
 				foreach(var testElem in doc.Descendants("TEST")) {
-					descriptions.Add("ibm/" + testElem.Attribute("URI").Value, testElem.Value.Replace("\n    ", "\n").TrimStart('\n'));
+					string uri = "ibm/" + testElem.Attribute("URI").Value;
+					string description = testElem.Value.Replace("\n    ", "\n").TrimStart('\n');
+					if (xmlFiles.ContainsKey(uri))
+						xmlFiles[uri].Description = description;
 				}
 			}
+			// Copy canonical forms
+			foreach(TestFile canonical in xmlFiles.Values.Where(f => f.Name.Contains("/out/"))) {
+				string uri = canonical.Name.Replace("/out/", "/");
+				if (xmlFiles.ContainsKey(uri))
+					xmlFiles[uri].Canonical = canonical.Content;
+			}
+			// Copy resuts to field
+			this.xmlFiles.AddRange(xmlFiles.Values.Where(f => !f.Name.Contains("/out/")));
 		}
 		
-		string Decompress(ZipEntry zipEntry)
+		IEnumerable<TestFile> GetXmlFilesStartingWith(string directory)
 		{
-			Stream stream = zipFile.GetInputStream(zipEntry);
-			return new StreamReader(stream).ReadToEnd();
-		}
-		
-		/// <remarks> Also excludes "/out/" files </remarks>
-		IEnumerable<ZipEntry> GetXmlFilesStartingWith(string directory)
-		{
-			return files.Where(f => f.Name.StartsWith(directory) && f.Name.EndsWith(".xml") && !f.Name.Contains("/out/"));
+			return xmlFiles.Where(f => f.Name.StartsWith(directory));
 		}
 		
 		[Test]
-		public void Valid()
+		public void W3C_Valid()
 		{
 			string[] exclude = {
 				// NAME in DTD infoset
@@ -64,7 +82,7 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 		}
 		
 		[Test]
-		public void Invalid()
+		public void W3C_Invalid()
 		{
 			string[] exclude = {
 				// Default attribute value
@@ -74,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 		}
 		
 		[Test]
-		public void NotWellformed()
+		public void W3C_NotWellformed()
 		{
 			string[] exclude = {
 				// XML declaration well formed
@@ -104,12 +122,12 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 		
 		StringBuilder errorOutput;
 		
-		void TestFiles(IEnumerable<ZipEntry> files, bool areWellFormed, string[] exclude)
+		void TestFiles(IEnumerable<TestFile> files, bool areWellFormed, string[] exclude)
 		{
 			errorOutput = new StringBuilder();
 			int testsRun = 0;
 			int ignored = 0;
-			foreach (ZipEntry file in files) {
+			foreach (TestFile file in files) {
 				if (exclude.Any(exc => file.Name.Contains(exc))) {
 					ignored++;
 				} else {
@@ -121,6 +139,7 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 				Assert.Fail("Test files not found");
 			}
 			if (errorOutput.Length > 0) {
+				// Can not output ]]> otherwise nuint will crash
 				Assert.Fail(errorOutput.Replace("]]>", "]]~NUNIT~>").ToString());
 			}
 		}
@@ -129,15 +148,12 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 		/// If using DTD, canonical representation is not checked
 		/// If using DTD, uknown entiry references are not error
 		/// </remarks>
-		bool TestFile(ZipEntry zipEntry, bool isWellFormed)
+		bool TestFile(TestFile testFile, bool isWellFormed)
 		{
 			bool passed = true;
 			
-			string fileName = zipEntry.Name;
-			Debug.WriteLine("Testing " + fileName + "...");
-			string content = Decompress(zipEntry);
-			string description = null;
-			descriptions.TryGetValue(fileName, out description);
+			string content = testFile.Content;
+			Debug.WriteLine("Testing " + testFile.Name + "...");
 			AXmlParser parser = new AXmlParser(content);
 			
 			bool usingDTD = content.Contains("<!DOCTYPE") && (content.Contains("<!ENTITY") || content.Contains(" SYSTEM "));
@@ -148,57 +164,49 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 			
 			string printed = PrettyPrintAXmlVisitor.PrettyPrint(document);
 			if (content != printed) {
-				errorOutput.AppendFormat("Output of pretty printed XML for \"{0}\" does not match the original.\n", fileName);
-				errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
+				errorOutput.AppendFormat("Output of pretty printed XML for \"{0}\" does not match the original.\n", testFile.Name);
 				errorOutput.AppendFormat("Pretty printed:\n{0}\n", Indent(printed));
-				errorOutput.AppendLine();
 				passed = false;
 			}
 			
 			if (isWellFormed && !usingDTD) {
-				string canonicalFilename = fileName.Replace("/ibm", "/out/ibm");
-				ZipEntry canonicalFile = files.FirstOrDefault(f => f.Name == canonicalFilename);
-				if (canonicalFile != null) {
-					string canonicalContent = Decompress(canonicalFile);
-					string canonicalPrint = CanonicalPrintAXmlVisitor.Print(document);
-					if (canonicalContent != canonicalPrint) {
-						errorOutput.AppendFormat("Canonical XML for \"{0}\" does not match the excpected.\n", fileName);
-						errorOutput.AppendFormat("Expected:\n{0}\n", Indent(canonicalContent));
+				string canonicalPrint = CanonicalPrintAXmlVisitor.Print(document);
+				if (testFile.Canonical != null) {
+					if (testFile.Canonical != canonicalPrint) {
+						errorOutput.AppendFormat("Canonical XML for \"{0}\" does not match the excpected.\n", testFile.Name);
+						errorOutput.AppendFormat("Expected:\n{0}\n", Indent(testFile.Canonical));
 						errorOutput.AppendFormat("Seen:\n{0}\n", Indent(canonicalPrint));
-						errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
-						errorOutput.AppendLine();
 						passed = false;
 					}
 				} else {
-					errorOutput.AppendFormat("Can not find canonical file for \"{0}\"", fileName);
-					errorOutput.AppendLine();
+					errorOutput.AppendFormat("Can not find canonical output for \"{0}\"", testFile.Name);
+					errorOutput.AppendFormat("Suggested canonical output:\n{0}\n", Indent(canonicalPrint));
 					passed = false;
 				}
 			}
 			
 			bool hasErrors = document.SyntaxErrors.FirstOrDefault() != null;
 			if (isWellFormed && hasErrors) {
-				errorOutput.AppendFormat("Syntax error(s) in well formed file \"{0}\":\n", fileName);
+				errorOutput.AppendFormat("Syntax error(s) in well formed file \"{0}\":\n", testFile.Name);
 				foreach (var error in document.SyntaxErrors) {
 					string followingText = content.Substring(error.StartOffset, Math.Min(10, content.Length - error.StartOffset));
 					errorOutput.AppendFormat("Error ({0}-{1}): {2} (followed by \"{3}\")\n", error.StartOffset, error.EndOffset, error.Message, followingText);
 				}
-				if (description != null) {
-					errorOutput.AppendFormat("Test description:\n{0}\n", Indent(description));
-				}
-				errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
-				errorOutput.AppendLine();
 				passed = false;
 			}
 			
 			if (!isWellFormed && !hasErrors) {
-				errorOutput.AppendFormat("No syntax errors reported for mallformed file \"{0}\"\n", fileName);
-				if (description != null) {
-					errorOutput.AppendFormat("Test description:\n{0}\n", Indent(description));
+				errorOutput.AppendFormat("No syntax errors reported for mallformed file \"{0}\"\n", testFile.Name);
+				passed = false;
+			}
+			
+			// Epilog
+			if (!passed) {
+				if (testFile.Description != null) {
+					errorOutput.AppendFormat("Test description:\n{0}\n", Indent(testFile.Description));
 				}
 				errorOutput.AppendFormat("File content:\n{0}\n", Indent(content));
 				errorOutput.AppendLine();
-				passed = false;
 			}
 			
 			return passed;

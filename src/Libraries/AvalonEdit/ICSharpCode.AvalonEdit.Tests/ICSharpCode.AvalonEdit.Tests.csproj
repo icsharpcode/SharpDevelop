@@ -82,7 +82,7 @@
     <Compile Include="Utils\IndentationStringTests.cs" />
     <Compile Include="Utils\RopeTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
-    <Compile Include="XmlParser\W3C.cs" />
+    <Compile Include="XmlParser\ParserTests.cs" />
     <None Include="app.config" />
     <None Include="XmlParser\W3C.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
