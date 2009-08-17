@@ -11,5 +11,6 @@ namespace ICSharpCode.Data.Core.Interfaces
 {
     public interface IView : ITable
     {
+        string DefiningQuery { get; set; }
     }
 }

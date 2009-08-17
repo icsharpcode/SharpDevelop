@@ -27,18 +27,11 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.Common
 
         public BusinessType BusinessInstance { get; private set; }
 
-        public virtual string Name
+        public override string Name
         {
             get { return BusinessInstance.Name; }
             set { BusinessInstance.Name = value; }
         }
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public override string ToString()
         {

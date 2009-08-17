@@ -60,9 +60,17 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             foreach (Association association in ssdlContainer.AssociationSets)
             {
                 XElement associationSet = new XElement(ssdlNamespace + "AssociationSet", 
-                    new XAttribute("Name", association.AssociationSetName), new XAttribute("Association", string.Concat(entityContainerNamespace, association.Name)),
+                    new XAttribute("Name", association.AssociationSetName), new XAttribute("Association", string.Concat(entityContainerNamespace, association.Name)));
+
+                string role2Name = association.Role2.Name;
+
+                // If the assocation end properties are the same properties
+                if (association.Role1.Name == association.Role2.Name && association.Role1.Type.Name == association.Role2.Type.Name)
+                    role2Name += "1";
+
+                associationSet.Add(
                         new XElement(ssdlNamespace + "End", new XAttribute("Role", association.Role1.Name), new XAttribute("EntitySet", association.Role1.Type.Name)),
-                        new XElement(ssdlNamespace + "End", new XAttribute("Role", association.Role2.Name), new XAttribute("EntitySet", association.Role2.Type.Name)));
+                        new XElement(ssdlNamespace + "End", new XAttribute("Role", role2Name), new XAttribute("EntitySet", association.Role2.Type.Name)));
             
                 entityContainer.Add(associationSet);
             }
@@ -105,14 +113,26 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
             foreach (Association association in ssdlContainer.AssociationSets)
             {
+                string role2Name = association.Role2.Name;
+
+                // If the assocation end properties are the same properties
+                if (association.Role1.Name == association.Role2.Name && association.Role1.Type.Name == association.Role2.Type.Name)
+                    role2Name += "1";
+                
                 XElement associationElement = new XElement(ssdlNamespace + "Association", new XAttribute("Name", association.Name),
                         new XElement(ssdlNamespace + "End", new XAttribute("Role", association.Role1.Name), new XAttribute("Type", string.Concat(entityContainerNamespace, association.Role1.Type.Name)), new XAttribute("Multiplicity", CardinalityStringConverter.CardinalityToSTring(association.Role1.Cardinality))),
-                        new XElement(ssdlNamespace + "End", new XAttribute("Role", association.Role2.Name), new XAttribute("Type", string.Concat(entityContainerNamespace, association.Role2.Type.Name)), new XAttribute("Multiplicity", CardinalityStringConverter.CardinalityToSTring(association.Role2.Cardinality))));
+                        new XElement(ssdlNamespace + "End", new XAttribute("Role", role2Name), new XAttribute("Type", string.Concat(entityContainerNamespace, association.Role2.Type.Name)), new XAttribute("Multiplicity", CardinalityStringConverter.CardinalityToSTring(association.Role2.Cardinality))));
+
+                string dependantRoleName = association.DependantRole.Name;
+
+                // If the assocation end properties are the same properties
+                if (association.PrincipalRole.Name == association.DependantRole.Name && association.PrincipalRole.Type.Name == association.DependantRole.Type.Name)
+                    dependantRoleName += "1";
 
                 associationElement.Add(new XElement(ssdlNamespace + "ReferentialConstraint",
                     new XElement(ssdlNamespace + "Principal", new XAttribute("Role", association.PrincipalRole.Name),
                         new XElement(ssdlNamespace + "PropertyRef", new XAttribute("Name", association.PrincipalRole.Property.Name))),
-                    new XElement(ssdlNamespace + "Dependent", new XAttribute("Role", association.DependantRole.Name),
+                    new XElement(ssdlNamespace + "Dependent", new XAttribute("Role", dependantRoleName),
                         new XElement(ssdlNamespace + "PropertyRef", new XAttribute("Name", association.DependantRole.Property.Name)))));
 
                 schema.Add(associationElement);

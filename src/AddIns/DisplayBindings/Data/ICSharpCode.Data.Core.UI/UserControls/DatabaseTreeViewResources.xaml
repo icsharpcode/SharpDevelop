@@ -59,6 +59,9 @@
             <DataTrigger Binding="{Binding ShowCheckBoxes, RelativeSource={RelativeSource AncestorType=TreeView}}" Value="True">
                 <Setter Property="Visibility" TargetName="chkIsSelected" Value="Visible" />
             </DataTrigger>
+            <DataTrigger Binding="{Binding HasKeyDefined}" Value="False">
+                <Setter Property="IsEnabled" TargetName="chkIsSelected" Value="False" />
+            </DataTrigger>
         </HierarchicalDataTemplate.Triggers>
     </HierarchicalDataTemplate>
     <DataTemplate x:Key="ColumnDataTemplate">

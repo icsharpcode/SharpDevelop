@@ -16,6 +16,7 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Property;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Type;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Common;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Relations;
+using ICSharpCode.Data.Core.UI;
 
 #endregion
 
@@ -197,6 +198,11 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType
 
         internal ListViewItem GetListViewItem(NavigationProperty navigationProperty, out int index)
         {
+            foreach (ListViewItem lvia in VisualTreeHelperUtil.GetControlsDecendant<ListViewItem>(propertiesListView))
+            {
+                lvia.ToString();
+            }
+            
             var value = (from lvi in VisualTreeHelperUtil.GetControlsDecendant<ListViewItem>(propertiesListView)
                          let uiRelatedProperty = lvi.Content as UIRelatedProperty
                          where uiRelatedProperty != null

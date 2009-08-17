@@ -36,7 +36,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             {
                 if (!table.IsSelected)
                     continue;
-                
+
                 EntityType entityType = CreateSSDLEntityType(table);
                 ssdlContainer.EntityTypes.Add(entityType);
 
@@ -79,7 +79,10 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             };
 
             if (table is IView)
+            {
                 entityType.StoreType = StoreType.Views;
+                entityType.DefiningQuery = (table as IView).DefiningQuery;
+            }
             else
                 entityType.StoreType = StoreType.Tables;
 
@@ -175,7 +178,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             {
                 Name = constraint.FKTableName,
                 Cardinality = (Cardinality)constraint.FKCardinality
-            };
+            }; 
 
             Property role2Property = CreateSSDLProperty(constraint.FKColumn, CreateSSDLEntityType(constraint.FKTable));
             role2.Property = role2Property;

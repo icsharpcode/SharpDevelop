@@ -94,34 +94,40 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 		{
 			Debug.Assert(file == this.PrimaryFile);
 
+            // Load EDMX from stream
             XElement edmxElement = null;
             Action<XElement> readMoreAction = edmxElt => edmxElement = edmxElt;            
             _edmView = new EDMView(stream, readMoreAction);
             
+            // If EDMX is empty run EDM Wizard
             if (_edmView.EDM.IsEmpty)
             {
-            	 edmxElement = null;
-            	 EDMWizardWindow wizard = RunWizard(file);
+                edmxElement = null;
+                EDMWizardWindow wizard = RunWizard(file);
 
-                 if (wizard.DialogResult == true)
-                 {
-                     _edmView = new EDMView(wizard.EDMXDocument, readMoreAction);
-                     //wizard.EDMXDocument.Save("C:\\temp\\test.edmx");
-                 }
+                if (wizard.DialogResult == true)
+                    _edmView = new EDMView(wizard.EDMXDocument, readMoreAction);
             }
 
+            // Load or generate DesignerView and EntityTypeDesigners
             EntityTypeDesigner.Init = true;
 
+            if (edmxElement.Element("DesignerViews") == null)
+                edmxElement = new XElement("Designer", DesignerIO.GenerateNewDesignerViewsFromCSDLView(_edmView.CSDL));
+ 
             if (edmxElement != null && edmxElement.Element("DesignerViews") != null)
-            	DesignerIO.Read(_edmView, edmxElement.Element("DesignerViews"), entityType => new EntityTypeDesigner(entityType), complexType => new ComplexTypeDesigner(complexType));
+                DesignerIO.Read(_edmView, edmxElement.Element("DesignerViews"), entityType => new EntityTypeDesigner(entityType), complexType => new ComplexTypeDesigner(complexType));
 
             EntityTypeDesigner.Init = false;
 
-            //VisualHelper.DoEvents();
+            // Call DoEvents, otherwise drawing associations can fail
+            VisualHelper.DoEvents();
 
+            // Gets the designer canvas
             _designerCanvas = DesignerCanvas.GetDesignerCanvas(this, _edmView, _edmView.DesignerViews.FirstOrDefault());
-			 _scrollViewer.Content = _designerCanvas;
+			_scrollViewer.Content = _designerCanvas;
             
+            // Register CSDL of EDMX in CSDL DatabaseTreeView
             CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Add(_edmView.CSDL);
 		}
 		

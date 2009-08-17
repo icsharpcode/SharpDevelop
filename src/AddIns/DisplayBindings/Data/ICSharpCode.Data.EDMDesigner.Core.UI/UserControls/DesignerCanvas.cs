@@ -71,15 +71,15 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
                 var designerView = (DesignerView)e.NewValue;
                 foreach (TypeBaseDesigner typeBaseDesigner in designerView)
                     designerCanvas.Children.Add(typeBaseDesigner);
-                designerCanvas.Loaded +=
-                    delegate
-                    {
-                        VisualHelper.DoEvents();
+                //designerCanvas.Loaded +=
+                //    delegate
+                //    {
+                //        VisualHelper.DoEvents();
 
-                        foreach (TypeBaseDesigner typeBaseDesigner in designerView)
-                            typeBaseDesigner.DrawRelations();
-                        designerCanvas.Zoom = designerView.Zoom;
-                    };
+                //        foreach (TypeBaseDesigner typeBaseDesigner in designerView)
+                //            typeBaseDesigner.DrawRelations();
+                //        designerCanvas.Zoom = designerView.Zoom;
+                //    };
             }));
 
         private static Dictionary<DesignerView, DesignerCanvas> _designerCanvas = new Dictionary<DesignerView, DesignerCanvas>();
@@ -88,18 +88,25 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
         {
             DesignerCanvas designerCanvas = null;
                 
-            if (designerView == null)
-            {
-                designerView = new DesignerView();
-                designerView.ArrangeTypeDesigners = true;
-                designerView.Name = edmView.Name;
-                designerView.Zoom = 100;
+            //if (designerView == null)
+            //{
+            //    EntityTypeDesigner.Init = true;
                 
-                foreach(UIEntityType entityType in edmView.CSDL.EntityTypes)
-                {
-                    designerView.AddTypeDesigner(new EntityTypeDesigner(entityType) { IsExpanded = true });
-                }
-            }
+            //    designerView = new DesignerView();
+            //    designerView.ArrangeTypeDesigners = true;
+            //    designerView.Name = edmView.Name;
+            //    designerView.Zoom = 100;
+
+            //    if (edmView.CSDL.CSDL != null)
+            //    {
+            //        foreach (UIEntityType entityType in edmView.CSDL.EntityTypes)
+            //        {
+            //            designerView.AddTypeDesigner(new EntityTypeDesigner(entityType) { IsExpanded = true });
+            //        }
+            //    }
+
+            //    EntityTypeDesigner.Init = false;
+            //}
             
             if (designerView != null && _designerCanvas.ContainsKey(designerView))
             {
@@ -314,29 +321,38 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
         }
 
 		private void DesignerCanvas_Loaded(object sender, RoutedEventArgs e)
-		{
+		{            
             if (DesignerView.ArrangeTypeDesigners)
             {
                 double left = 20, top = 20;
                 double currentRowsMaxHeight = 0;
-                
+
+                EntityTypeDesigner.Init = true;
+
                 foreach(EntityTypeDesigner entityTypeDesigner in DesignerView.TypeDesignersLocations)
                 {
-                     entityTypeDesigner.Left = left;
-                     entityTypeDesigner.Top = top;
+                    entityTypeDesigner.Left = left;
+                    entityTypeDesigner.Top = top;
                      
-                     if (entityTypeDesigner.ActualHeight > currentRowsMaxHeight)
-                     		currentRowsMaxHeight = entityTypeDesigner.ActualHeight;
+                    if (entityTypeDesigner.ActualHeight > currentRowsMaxHeight)
+                        currentRowsMaxHeight = entityTypeDesigner.ActualHeight;
                      
-                     left += entityTypeDesigner.ActualWidth + 20;
+                    left += entityTypeDesigner.ActualWidth + 20;
                      
-                     if (left > ActualWidth)
-                     {
-                          top += currentRowsMaxHeight + 20;
-                          left = 20;		
-                     }
+                    if (left > ActualWidth)
+                    {
+                        top += currentRowsMaxHeight + 20;
+                        left = 20;		 
+                    }
                 }
+
+                EntityTypeDesigner.Init = false;
             }
+
+            foreach (TypeBaseDesigner typeBaseDesigner in DesignerView)
+                typeBaseDesigner.DrawRelations();
+
+            (sender as DesignerCanvas).Zoom = DesignerView.Zoom;
 		}
         
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e)

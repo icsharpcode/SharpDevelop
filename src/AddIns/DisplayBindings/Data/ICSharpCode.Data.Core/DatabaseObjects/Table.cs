@@ -61,6 +61,29 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             get { return string.Format("[{0}].[{1}]", _schemaName, _tableName); }
         }
 
+        public bool HasKeyDefined
+        {
+            get 
+            {
+                if (Items.FirstOrDefault(column => column.IsPrimaryKey) != null)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        public override bool IsSelected
+        {
+            get
+            {
+                if (HasKeyDefined || GetType().GetInterface("IView") != null)
+                    return base.IsSelected;
+                else
+                    return false;
+            }
+            set { base.IsSelected = value; }
+        }
+
         #endregion
 
         #region IDatabaseObjectBase Members

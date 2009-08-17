@@ -20,7 +20,9 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+		<!--<File name="${FileNameWithoutExtension}.Designer.cs" language="C#" DependentUpon="${FileName}" SubType="Code"><![CDATA[${StandardHeader.C#}]]></File>-->
+    <File name="${FullName}" language="XML" buildAction="Page">
+      <![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
@@ -32,8 +34,8 @@
     <edmx:Mappings />
   </edmx:Runtime>
   <DesignerViews />
-</edmx:Edmx>]]></File>
-		<File name="${FileNameWithoutExtension}.Designer.cs" language="C#" DependentUpon="${FileName}" SubType="Code"><![CDATA[${StandardHeader.C#}]]></File>
+</edmx:Edmx>]]>
+    </File>
 	</Files>
 	
 	<AdditionalOptions/>

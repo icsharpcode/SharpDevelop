@@ -7,6 +7,7 @@ using System.Windows;
 using System.Xml.Linq;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Type;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL;
 
 #endregion
 
@@ -26,12 +27,25 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
         public static DesignerView Read(EDMView edmView, Func<UIEntityType, ITypeDesigner> createEntityDesignerFromUIType, Func<UIComplexType, ITypeDesigner> createComplexDesignerFromUIType, XElement designerViewXElement)
         {
-            var designerView = new DesignerView { Name = designerViewXElement.Attribute("Name").Value, Zoom = int.Parse(designerViewXElement.Attribute("Zoom").Value) };
+            var designerView = new DesignerView()
+                { 
+                    Name = designerViewXElement.Attribute("Name").Value, 
+                    Zoom = int.Parse(designerViewXElement.Attribute("Zoom").Value)
+                };
+
+            var arrange = designerViewXElement.Attribute("Arrange");
+
+            if (arrange != null)
+                designerView.ArrangeTypeDesigners =  bool.Parse(arrange.Value);
+
             foreach (var designerTypeXElement in designerViewXElement.Elements("DesignerType"))
             {
                 var name = designerTypeXElement.Attribute("Name").Value;
+                
                 ITypeDesigner typeDesigner;
+                
                 var entityType = edmView.CSDL.EntityTypes.FirstOrDefault(et => et.Name == name);
+                
                 if (entityType != null)
                     typeDesigner = createEntityDesignerFromUIType(entityType);
                 else
@@ -41,13 +55,19 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                         continue;
                     typeDesigner = createComplexDesignerFromUIType(complexType);
                 }
+
                 var leftAttribute = designerTypeXElement.Attribute("Left").Value;
+
                 if (leftAttribute != null)
                     typeDesigner.Left = double.Parse(leftAttribute, CultureInfo.InvariantCulture);
+
                 var topAttribute = designerTypeXElement.Attribute("Top").Value;
+
                 if (topAttribute != null)
                     typeDesigner.Top = double.Parse(topAttribute, CultureInfo.InvariantCulture);
+
                 var isExpandedAttribute = designerTypeXElement.Attribute("IsExpanded");
+
                 if (isExpandedAttribute != null)
                 {
                     RoutedEventHandler loaded = null;
@@ -58,9 +78,22 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                     };
                     typeDesigner.Loaded += loaded;
                 }
+
                 designerView.TypeDesignersLocations.Add(typeDesigner);
             }
             return designerView;
+        }
+
+        public static XElement GenerateNewDesignerViewsFromCSDLView(CSDLView csdl)
+        {
+            XElement designerView = new XElement("DesignerView", new XAttribute("Name", "View"), new XAttribute("Zoom", 100), new XAttribute("Arrange", true));
+
+            foreach (UIEntityType entityType in csdl.EntityTypes)
+            {
+                designerView.Add(new XElement("DesignerType", new XAttribute("Name", entityType.Name), new XAttribute("Top", 0), new XAttribute("Left", 0), new XAttribute("IsExpanded", true)));
+            }
+
+            return new XElement("DesignerViews", designerView);
         }
     }
 }

@@ -48,8 +48,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             string edmGenPath = RuntimeEnvironment.GetRuntimeDirectory() + "\\EdmGen.exe";
             edmGenPath = @"C:\Windows\Microsoft.NET\Framework\v3.5\EdmGen.exe";
 
-            StreamReader streamReader = null;
-            
             Process process = new Process();
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.WorkingDirectory = Path.GetTempPath();
