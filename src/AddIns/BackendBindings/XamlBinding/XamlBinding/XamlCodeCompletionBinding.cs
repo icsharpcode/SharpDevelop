@@ -225,7 +225,7 @@ namespace ICSharpCode.XamlBinding
 											start = "";
 										completionList.PreselectionLength = start.Length;
 									} else if (mrr.ResolvedType.FullyQualifiedName == "System.Windows.Media.FontFamily") {
-										string text = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1) : "";
+										string text = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, Math.Min(context.ValueStartOffset + 1, context.RawAttributeValue.Length)) : "";
 										int lastComma = text.LastIndexOf(',');
 										completionList.PreselectionLength = lastComma == -1 ? context.ValueStartOffset + 1 : context.ValueStartOffset - lastComma;
 									}

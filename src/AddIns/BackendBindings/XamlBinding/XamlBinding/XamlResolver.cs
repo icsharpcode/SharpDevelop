@@ -31,7 +31,7 @@ namespace ICSharpCode.XamlBinding
 
 		public ResolveResult Resolve(ExpressionResult expressionResult, ParseInformation parseInfo, string fileContent)
 		{
-			if (parseInfo == null || string.IsNullOrEmpty(fileContent))
+			if (parseInfo == null || (string.IsNullOrEmpty(fileContent) && !(expressionResult.Context is XamlContext)))
 				return null;
 			
 			this.resolveExpression = expressionResult.Expression;
@@ -251,12 +251,12 @@ namespace ICSharpCode.XamlBinding
 		
 		public static ResolveResult Resolve(string expression, XamlCompletionContext context)
 		{
-			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, context.Editor.Document.Text);
+			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, null);
 		}
 		
-		public static ResolveResult Resolve(string expression, string fileContent, XamlContext context)
+		public static ResolveResult Resolve(string expression, XamlContext context)
 		{
-			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, fileContent);
+			return new XamlResolver().Resolve(new ExpressionResult(expression, context), context.ParseInformation, null);
 		}
 		
 		public static MemberResolveResult ResolveMember(string expression, XamlCompletionContext context)

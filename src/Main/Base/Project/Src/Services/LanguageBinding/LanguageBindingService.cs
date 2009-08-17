@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop
 	public static class LanguageBindingService
 	{
 		const string languageBindingPath = "/SharpDevelop/Workbench/LanguageBindings";
-		static List<LanguageBindingDescriptor> bindings;
+		static readonly List<LanguageBindingDescriptor> bindings;
 		
 		static LanguageBindingService()
 		{

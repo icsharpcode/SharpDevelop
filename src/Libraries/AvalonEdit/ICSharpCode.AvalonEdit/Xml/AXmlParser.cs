@@ -6,10 +6,12 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 using ICSharpCode.AvalonEdit.Document;
+using System.Threading;
 
 namespace ICSharpCode.AvalonEdit.Xml
 {
@@ -90,9 +92,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 		AXmlDocument userDocument;
 		TextDocument textDocument;
 		
-		List<DocumentChangeEventArgs> changesSinceLastParse = new List<DocumentChangeEventArgs>();
-		
 		internal TrackedSegmentCollection TrackedSegments { get; private set; }
+		ChangeTrackingCheckpoint lastCheckpoint;
+		ReaderWriterLockSlim lockObject;
 		
 		/// <summary>
 		/// Generate syntax error when seeing enity reference other then the build-in ones
@@ -107,17 +109,16 @@ namespace ICSharpCode.AvalonEdit.Xml
 			this.userDocument.Document = this.userDocument;
 			this.UknonwEntityReferenceIsError = true;
 			this.TrackedSegments = new TrackedSegmentCollection();
+			this.lockObject = new ReaderWriterLockSlim();
 		}
 		
 		/// <summary>
 		/// Create new parser, but do not parse the text yet.
 		/// </summary>
-		public AXmlParser(TextDocument textDocument): this(textDocument.Text)
+		public AXmlParser(TextDocument textDocument)
+			: this(textDocument.Text)
 		{
 			this.textDocument = textDocument;
-			this.textDocument.Changed += delegate(object sender, DocumentChangeEventArgs e) {
-				changesSinceLastParse.Add(e);
-			};
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
@@ -127,7 +128,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				throw new Exception("Assertion failed: " + message);
 			}
 		}
-		
+
 		/// <summary> Throws exception if condition is false </summary>
 		[Conditional("DEBUG")]
 		internal static void DebugAssert(bool condition, string message)
@@ -142,19 +143,24 @@ namespace ICSharpCode.AvalonEdit.Xml
 			System.Diagnostics.Debug.WriteLine(string.Format("XML: " + text, pars));
 		}
 		
-		/// <summary>
-		/// Incrementaly parse the document
-		/// </summary>
 		public AXmlDocument Parse()
 		{
-			// Update source text
-			if (textDocument != null) {
-				input = textDocument.Text;
-			}
+			if (!Lock.IsWriteLockHeld)
+				throw new InvalidOperationException("Lock needed!");
 			
-			// Use chages to invalidate cache
-			this.TrackedSegments.UpdateOffsetsAndInvalidate(changesSinceLastParse);
-			changesSinceLastParse.Clear();
+			if (textDocument != null) { // incremental parse
+				ChangeTrackingCheckpoint checkpoint;
+				input = textDocument.CreateSnapshot(out checkpoint).Text;
+				
+				// Use changes to invalidate cache
+				if (lastCheckpoint != null) {
+					var changes = lastCheckpoint.GetChangesTo(checkpoint);
+					if (!changes.Any())
+						return userDocument;
+					this.TrackedSegments.UpdateOffsetsAndInvalidate(changes);
+				}
+				lastCheckpoint = checkpoint;
+			}
 			
 			TagReader tagReader = new TagReader(this, input);
 			List<AXmlObject> tags = tagReader.ReadAllTags();
@@ -165,6 +171,13 @@ namespace ICSharpCode.AvalonEdit.Xml
 			userDocument.UpdateTreeFrom(parsedDocument);
 			userDocument.DebugCheckConsistency(true);
 			return userDocument;
+		}
+		
+		/// <summary>
+		/// Makes calls to Parse() thread-safe. Use Lock everywhere Parse() is called.
+		/// </summary>
+		public ReaderWriterLockSlim Lock {
+			get { return this.lockObject; }
 		}
 	}
 }

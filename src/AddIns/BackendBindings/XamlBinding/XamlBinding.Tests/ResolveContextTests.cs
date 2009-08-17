@@ -124,6 +124,35 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
+		public void ContextAtTagDescriptionTest5()
+		{
+			string xaml = @"<Window x:Class='Vokabeltrainer.Window1'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+	Title=''>
+	<Grid>
+		<StackPanel>
+			<RadioButton
+		</StackPanel>
+	</Grid>
+</Window>";
+			
+			int offset = @"<Window x:Class='Vokabeltrainer.Window1'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+	Title=''>
+	<Grid>
+		<StackPanel>
+			<RadioButton
+		</Stack".Length;
+			
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			
+			Assert.AreEqual(XamlContextDescription.AtTag, context.Description);
+		}
+
+		
+		[Test]
 		public void ElementNameWithDotTest1()
 		{
 			string xaml = "<Grid>\n\t<Grid.ColumnDefinitions />\n</Grid>";

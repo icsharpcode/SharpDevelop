@@ -36,6 +36,16 @@ namespace ICSharpCode.XamlBinding
 		
 		public XamlContext() {}
 		
+		public bool InAttributeValueOrMarkupExtension {
+			get { return Description == XamlContextDescription.InMarkupExtension ||
+					Description == XamlContextDescription.InAttributeValue; }
+		}
+		
+		public bool InCommentOrCData {
+			get { return Description == XamlContextDescription.InComment ||
+					Description == XamlContextDescription.InCData; }
+		}
+		
 		public override bool ShowEntry(object o)
 		{
 			return true;

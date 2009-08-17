@@ -19,15 +19,27 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
-	public class LookupInfo {
-		public LookupInfo() { }
+	class DebugTimerObject : IDisposable
+	{
+		Stopwatch watch;
+		string text;
 		
-		public Dictionary<string, string> XmlnsDefinitions { get; set; }
-		public List<string> IgnoredXmlns { get; set; }
-		public QualifiedNameWithLocation Active { get; set; }
-		public Stack<QualifiedNameWithLocation> Ancestors { get; set; }
-		public QualifiedNameWithLocation Parent { get; set; }
-		public int ActiveElementStartIndex { get; set; }
-		public bool IsRoot { get; set; }
+		public DebugTimerObject(string text)
+		{
+			#if DEBUG
+			this.watch = new Stopwatch();
+			this.text = text;
+			this.watch.Start();
+			#endif
+		}
+		
+		public void Dispose()
+		{
+			#if DEBUG
+			this.watch.Stop();
+			
+			Core.LoggingService.Info(text + " took " + watch.ElapsedMilliseconds + "ms");
+			#endif
+		}
 	}
 }

@@ -22,10 +22,11 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>False</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -67,7 +68,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Comparers.cs" />
-    <Compile Include="LookupInfo.cs" />
+    <Compile Include="DebugTimerObject.cs" />
     <Compile Include="MarkupExtensionInfo.cs" />
     <Compile Include="MarkupExtensionParser.cs" />
     <Compile Include="CompletionDataHelper.cs" />

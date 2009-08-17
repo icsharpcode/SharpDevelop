@@ -6,14 +6,9 @@
 // </file>
 
 using System;
-using System.Linq;
-using System.Windows.Controls;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Xml;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -43,9 +38,10 @@ namespace ICSharpCode.XamlBinding
 			if (textView != null) {
 				colorizer = new XamlColorizer(editor, textView);
 				// attach the colorizer
-				//textView.LineTransformers.Add(colorizer);
+				textView.LineTransformers.Add(colorizer);
 				// add the XamlOutlineContentHost, which manages the tree view
-				textView.Services.AddService(typeof(IOutlineContentHost), new XamlOutlineContentHost(editor));
+				if (WorkbenchSingleton.Workbench != null)
+					textView.Services.AddService(typeof(IOutlineContentHost), new XamlOutlineContentHost(editor));
 				// add ILanguageBinding
 				textView.Services.AddService(typeof(XamlLanguageBinding), this);
 			}

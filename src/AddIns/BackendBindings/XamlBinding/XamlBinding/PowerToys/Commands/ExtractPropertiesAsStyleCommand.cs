@@ -72,12 +72,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		
 		static IMember Resolve(XAttribute attribute, ITextEditor editor)
 		{
-			XamlContext context = CompletionDataHelper.ResolveContext(editor.Document.Text, editor.FileName,
-			                                                          Utils.GetOffsetFromFilePos(editor.Document.Text, attribute.GetLineNumber(), attribute.GetLinePosition()));
+			XamlContext context = CompletionDataHelper.ResolveCompletionContext(editor, default(char), editor.Document.PositionToOffset(attribute.GetLineNumber(), attribute.GetLinePosition()));
 			string prefix = context.XmlnsDefinitions.GetKeyByValue(attribute.Name.NamespaceName);
 			if (!string.IsNullOrEmpty(prefix))
 				prefix += ":";
-			var mrr = XamlResolver.Resolve(prefix + attribute.Name.LocalName, editor.Document.Text, context) as MemberResolveResult;
+			var mrr = XamlResolver.Resolve(prefix + attribute.Name.LocalName, context) as MemberResolveResult;
 			if (mrr != null)
 				return mrr.ResolvedMember;
 			
@@ -86,12 +85,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		
 		static IMember Resolve(XElement element, ITextEditor editor)
 		{
-			XamlContext context = CompletionDataHelper.ResolveContext(editor.Document.Text, editor.FileName,
-			                                                          Utils.GetOffsetFromFilePos(editor.Document.Text, element.GetLineNumber(), element.GetLinePosition()));
+			XamlContext context = CompletionDataHelper.ResolveCompletionContext(editor, default(char), editor.Document.PositionToOffset(element.GetLineNumber(), element.GetLinePosition()));
 			string prefix = context.XmlnsDefinitions.GetKeyByValue(element.Name.NamespaceName);
 			if (!string.IsNullOrEmpty(prefix))
 				prefix += ":";
-			var mrr = XamlResolver.Resolve(prefix + element.Name.LocalName, editor.Document.Text, context) as MemberResolveResult;
+			var mrr = XamlResolver.Resolve(prefix + element.Name.LocalName, context) as MemberResolveResult;
 			if (mrr != null)
 				return mrr.ResolvedMember;
 			

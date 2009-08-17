@@ -160,7 +160,14 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 			if (usingDTD)
 				parser.UknonwEntityReferenceIsError = false;
 			
-			var document = parser.Parse();
+			AXmlDocument document;
+			
+			parser.Lock.EnterWriteLock();
+			try {
+				document = parser.Parse();
+			} finally {
+				parser.Lock.ExitWriteLock();
+			}
 			
 			string printed = PrettyPrintAXmlVisitor.PrettyPrint(document);
 			if (content != printed) {
