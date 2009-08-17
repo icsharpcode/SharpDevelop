@@ -105,11 +105,15 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public AXmlParser(string input)
 		{
 			this.input = input;
-			this.userDocument = new AXmlDocument() { Parser = this };
-			this.userDocument.Document = this.userDocument;
 			this.UknonwEntityReferenceIsError = true;
 			this.TrackedSegments = new TrackedSegmentCollection();
 			this.lockObject = new ReaderWriterLockSlim();
+			
+			this.userDocument = new AXmlDocument() { Parser = this };
+			this.userDocument.Document = this.userDocument;
+			// Track the document
+			this.TrackedSegments.AddParsedObject(this.userDocument, null);
+			this.userDocument.IsCached = false;
 		}
 		
 		/// <summary>
@@ -165,11 +169,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 			TagReader tagReader = new TagReader(this, input);
 			List<AXmlObject> tags = tagReader.ReadAllTags();
 			AXmlDocument parsedDocument = new TagMatchingHeuristics(this, input, tags).ReadDocument();
-			// parsedDocument.DebugCheckConsistency(false);
 			tagReader.PrintStringCacheStats();
 			AXmlParser.Log("Updating main DOM tree...");
 			userDocument.UpdateTreeFrom(parsedDocument);
 			userDocument.DebugCheckConsistency(true);
+			Assert(userDocument.GetSelfAndAllChildren().Count() == parsedDocument.GetSelfAndAllChildren().Count(), "Parsed document and updated document have different number of children");
 			return userDocument;
 		}
 		

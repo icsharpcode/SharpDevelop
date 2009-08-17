@@ -72,7 +72,13 @@ namespace XmlDOM
 		void Button_Click(object sender, RoutedEventArgs e)
 		{
 			if (!textDirty) return;
-			AXmlDocument doc = parser.Parse();
+			AXmlDocument doc;
+			parser.Lock.EnterWriteLock();
+			try {
+				doc = parser.Parse();
+			} finally {
+				parser.Lock.ExitWriteLock();
+			}
 			if (treeView.Items.Count == 0) {
 				treeView.Items.Add(doc);
 			}

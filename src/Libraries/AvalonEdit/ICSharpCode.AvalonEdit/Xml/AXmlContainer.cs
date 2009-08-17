@@ -155,7 +155,6 @@ namespace ICSharpCode.AvalonEdit.Xml
 				// item.DebugCheckConsistency(false);
 				// The parent (or any futher parents) can not be part of parsed document
 				//   becuase otherwise this item would be included twice => safe to change parents
-				DebugAssert(item.Parent.Document == null, "Old parent is part of document as well");
 				// Maintain cache constraint by setting parents to null
 				foreach(AXmlObject ancest in item.GetAncestors().ToList()) {
 					ancest.Parent = null; 
@@ -205,9 +204,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 					Assert(child.Document != null, "Child has null document");
 					Assert(child.Document == this.Document, "Child is in different document");
 				}
-				Assert(myStartOffset <= child.StartOffset && child.EndOffset <= myEndOffset, "Child not within parent text range");
 				if (this.IsCached)
 					Assert(child.IsCached, "Child not in cache");
+				Assert(myStartOffset <= child.StartOffset && child.EndOffset <= myEndOffset, "Child not within parent text range");
 				if (prevChild != null)
 					Assert(prevChild.EndOffset <= child.StartOffset, "Overlaping childs");
 				child.DebugCheckConsistency(checkParentPointers);
@@ -221,6 +220,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// </remarks>
 		internal void UpdateTreeFrom(AXmlContainer srcContainer)
 		{
+			this.StartOffset = srcContainer.StartOffset; // Force the update
 			this.UpdateDataFrom(srcContainer);
 			RemoveChildrenNotIn(srcContainer.Children);
 			InsertAndUpdateChildrenFrom(srcContainer.Children);
@@ -236,7 +236,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 				if (srcChildren.TryGetValue(child.StartOffset, out srcChild) && child.CanUpdateDataFrom(srcChild)) {
 					// Keep only one item with given offset (we might have several due to deletion)
 					srcChildren.Remove(child.StartOffset);
-					if (child is AXmlContainer)
+					// If contaner that needs updating
+					if (child is AXmlContainer && child.LastUpdatedFrom != srcChild)
 						((AXmlContainer)child).RemoveChildrenNotIn(((AXmlContainer)srcChild).Children);
 					i++;
 				} else {
@@ -256,10 +257,13 @@ namespace ICSharpCode.AvalonEdit.Xml
 				AXmlObject child = this.Children[i];
 				AXmlObject srcChild = srcList[i];
 				
-				if (child.CanUpdateDataFrom(srcChild) /* includes offset test */) {
-					child.UpdateDataFrom(srcChild);
-					if (child is AXmlContainer)
-						((AXmlContainer)child).InsertAndUpdateChildrenFrom(((AXmlContainer)srcChild).Children);
+				if (child.CanUpdateDataFrom(srcChild)) { // includes offset test
+					// Does it need updating?
+					if (child.LastUpdatedFrom != srcChild) {
+						child.UpdateDataFrom(srcChild);
+						if (child is AXmlContainer)
+							((AXmlContainer)child).InsertAndUpdateChildrenFrom(((AXmlContainer)srcChild).Children);
+					}
 				} else {
 					InsertChild(i, srcChild);
 				}

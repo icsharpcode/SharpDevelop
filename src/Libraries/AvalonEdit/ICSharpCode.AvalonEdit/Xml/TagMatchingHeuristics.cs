@@ -35,9 +35,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 		{
 			AXmlDocument doc = new AXmlDocument() { Parser = parser };
 			
-			AXmlParser.Log("Flat stream: {0}", PrintObjects(tags));
+			// AXmlParser.Log("Flat stream: {0}", PrintObjects(tags));
 			List<AXmlObject> valid = MatchTags(tags);
-			AXmlParser.Log("Fixed stream: {0}", PrintObjects(valid));
+			// AXmlParser.Log("Fixed stream: {0}", PrintObjects(valid));
 			IEnumerator<AXmlObject> validStream = valid.GetEnumerator();
 			validStream.MoveNext(); // Move to first
 			while(true) {

@@ -58,7 +58,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public void AddParsedObject(AXmlObject obj, int? maxTouchedLocation)
 		{
 			AXmlParser.Assert(obj.Length > 0 || obj is AXmlDocument, string.Format("Invalid object {0}.  It has zero length.", obj));
-			// Expensive check
+//			// Expensive check
 //			if (obj is AXmlContainer) {
 //				int objStartOffset = obj.StartOffset;
 //				int objEndOffset = obj.EndOffset;
@@ -82,13 +82,19 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 		}
 		
-		/// <summary> Removes object with all of its children </summary>
+		/// <summary> Removes object with all of its non-cached children </summary>
 		public void RemoveParsedObject(AXmlObject obj)
 		{
-			foreach(AXmlObject child in obj.GetSelfAndAllChildren()) {
-				bool found = segments.Remove(child);
-				AXmlParser.DebugAssert(found, string.Format("{0} not found", child));
-				RemoveSyntaxErrorsOf(child);
+			// Cached objects may be used in the future - do not remove them
+			if (obj.IsCached) return;
+			segments.Remove(obj);
+			RemoveSyntaxErrorsOf(obj);
+			AXmlParser.Log("Stopped tracking {0}", obj);
+			
+			if (obj is AXmlContainer) {
+				foreach(AXmlObject child in ((AXmlContainer)obj).Children) {
+					RemoveParsedObject(child);
+				}
 			}
 		}
 		
@@ -102,8 +108,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public void RemoveSyntaxErrorsOf(AXmlObject obj)
 		{
 			foreach(SyntaxError syntaxError in obj.MySyntaxErrors) {
-				bool found = segments.Remove(syntaxError);
-				AXmlParser.DebugAssert(found, string.Format("{0} not found", syntaxError));
+				segments.Remove(syntaxError);
 			}
 		}
 		
