@@ -39,16 +39,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-/*		public override bool ReceiveDialogMessage(DialogMessage message)
+		public override bool StorePanelContents()
 		{
-			if (message == DialogMessage.OK) {
-				if (SelectedCulture != null) {
-					PropertyService.Set(uiLanguageProperty, SelectedCulture);
-				}
+			if (SelectedCulture != null) {
+				PropertyService.Set(uiLanguageProperty, SelectedCulture);
 			}
 			return true;
 		}
-		*/
 		
 		void ChangeCulture(object sender, EventArgs e)
 		{
@@ -73,22 +70,22 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			listView.ItemActivate += new EventHandler(ChangeCulture);
 			listView.Sorting = SortOrder.Ascending;
 			listView.Activation = ItemActivation.OneClick;
-			listView.Anchor = (System.Windows.Forms.AnchorStyles.Top | 
-			                  (System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
+			listView.Anchor = (System.Windows.Forms.AnchorStyles.Top |
+			                   (System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
 			listView.MultiSelect = false;
 			
 			foreach (Language language in LanguageService.Languages) {
 				listView.Items.Add(new ListViewItem(new string[] {language.Name, language.Code}, language.ImageIndex));
-			}			
+			}
 			
 			this.Controls.Add(listView);
 			
 			Label culture = new Label();
 			culture.Location  = new Point(8, 220);
 			culture.Size      = new Size(350, 16);
-			culture.Anchor = (System.Windows.Forms.AnchorStyles.Top | 
+			culture.Anchor = (System.Windows.Forms.AnchorStyles.Top |
 			                  (System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
-						
+			
 			Dock = DockStyle.Fill;
 			
 			culture.Text = ResourceService.GetString("Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel") + " " + GetCulture(PropertyService.Get(uiLanguageProperty, "en"));
@@ -98,15 +95,15 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			descr.Location  = new Point(8, 280);
 			descr.Size      = new Size(390, 50);
 			descr.Text      = ResourceService.GetString("Dialog.Options.IDEOptions.SelectCulture.DescriptionText");
-			descr.Anchor = (System.Windows.Forms.AnchorStyles.Top | 
-			                  (System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
+			descr.Anchor = (System.Windows.Forms.AnchorStyles.Top |
+			                (System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
 			
 			this.Controls.Add(descr);
 			
 			newCulture.Location  = new Point(8, 240);
 			newCulture.Size      = new Size(360, 50);
-			newCulture.Anchor = (System.Windows.Forms.AnchorStyles.Top | 
-			                  (System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
+			newCulture.Anchor = (System.Windows.Forms.AnchorStyles.Top |
+			                     (System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
 			this.Controls.Add(newCulture);
 		}
 	}

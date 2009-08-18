@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			WorkbenchSingleton.DebugAssertMainThread();
 			timer = new DispatcherTimer(DispatcherPriority.Background);
-			timer.Interval = TimeSpan.FromSeconds(2);
+			timer.Interval = TimeSpan.FromSeconds(1.5);
 			timer.Tick += new EventHandler(timer_Tick);
 			timer.Start();
 		}
@@ -733,6 +733,12 @@ namespace ICSharpCode.SharpDevelop
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					ParseInformationUpdated(null, e);
+					
+					IViewContent currentView = WorkbenchSingleton.Workbench.ActiveViewContent;
+					IParseInformationListener listener = currentView as IParseInformationListener;
+					if (listener != null && FileUtility.IsEqualFileName(e.FileName, currentView.PrimaryFileName)) {
+						listener.ParseInformationUpdated(new ParseInformation(e.NewCompilationUnit));
+					}
 				});
 		}
 		
@@ -747,12 +753,6 @@ namespace ICSharpCode.SharpDevelop
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					ParserUpdateStepFinished(null, e);
-					
-					IViewContent currentView = WorkbenchSingleton.Workbench.ActiveViewContent;
-					IParseInformationListener listener = currentView as IParseInformationListener;
-					if (listener != null && FileUtility.IsEqualFileName(e.FileName, currentView.PrimaryFileName)) {
-						listener.ParseInformationUpdated(e.ParseInformation);
-					}
 				});
 		}
 		

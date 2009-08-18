@@ -497,6 +497,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (c == '\r')
 						c = '\n';
 					languageBinding.FormattingStrategy.FormatLine(GetAdapterFromSender(sender), c);
+					
+					if (c == '\n') {
+						// Immediately parse on enter.
+						// This ensures we have up-to-date CC info about the method boundary when a user
+						// types near the end of a method.
+						ParserService.BeginParse(this.FileName, this.DocumentAdapter.CreateSnapshot());
+					}
 				}
 			}
 		}
@@ -606,14 +613,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
 			if (parseInfo != null) {
-				if (quickClassBrowser == null) {
-					quickClassBrowser = new QuickClassBrowser();
-					quickClassBrowser.JumpAction = JumpTo;
-					SetRow(quickClassBrowser, 0);
-					this.Children.Add(quickClassBrowser);
+				// don't create quickClassBrowser for files that don't have any classes
+				// (but do keep the quickClassBrowser when the last class is removed from a file)
+				if (quickClassBrowser != null || parseInfo.CompilationUnit.Classes.Count > 0) {
+					if (quickClassBrowser == null) {
+						quickClassBrowser = new QuickClassBrowser();
+						quickClassBrowser.JumpAction = JumpTo;
+						SetRow(quickClassBrowser, 0);
+						this.Children.Add(quickClassBrowser);
+					}
+					quickClassBrowser.Update(parseInfo.CompilationUnit);
+					quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
 				}
-				quickClassBrowser.Update(parseInfo.MostRecentCompilationUnit);
-				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
 			} else {
 				if (quickClassBrowser != null) {
 					this.Children.Remove(quickClassBrowser);

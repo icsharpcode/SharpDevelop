@@ -17,6 +17,7 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -230,9 +231,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#endregion
 		
 		#region IParseInformationListener
+		ParseInformation updateParseInfoTo;
+		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(codeEditor.ParseInformationUpdated, parseInfo);
+			// When parse information is updated quickly in succession, only do a single update
+			// to the latest version.
+			updateParseInfoTo = parseInfo;
+			codeEditor.Dispatcher.BeginInvoke(
+				DispatcherPriority.Background,
+				new Action(
+					delegate {
+						if (updateParseInfoTo != null) {
+							codeEditor.ParseInformationUpdated(updateParseInfoTo);
+							updateParseInfoTo = null;
+						}
+					}));
 		}
 		#endregion
 	}

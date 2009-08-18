@@ -1,6 +1,8 @@
 <UserControl x:Class="ICSharpCode.AvalonEdit.AddIn.QuickClassBrowser"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FocusManager.IsFocusScope="True">
+	<!-- This is a focus scope to ensure commands always target the code editor and not the quick class browser -->
 	<UserControl.Resources>
 		<DataTemplate x:Key="comboBoxItemTemplate">
 			<StackPanel Orientation="Horizontal">
@@ -25,11 +27,13 @@
 		          Grid.Column="0"
 		          Margin="0,0,4,1"
 		          ItemTemplate="{StaticResource comboBoxItemTemplate}"
-		          SelectionChanged="classComboBoxSelectionChanged"/>
+		          SelectionChanged="classComboBoxSelectionChanged"
+		          DropDownClosed="ComboBox_DropDownClosed"/>
 		<ComboBox Name="membersComboBox"
 		          Grid.Column="1"
 		          Margin="0,0,4,1"
 		          ItemTemplate="{StaticResource comboBoxItemTemplate}"
-		          SelectionChanged="membersComboBoxSelectionChanged"/>
+		          SelectionChanged="membersComboBoxSelectionChanged"
+		          DropDownClosed="ComboBox_DropDownClosed"/>
 	</Grid>
 </UserControl>

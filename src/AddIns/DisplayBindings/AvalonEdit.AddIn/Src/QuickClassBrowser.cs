@@ -99,17 +99,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			InitializeComponent();
 		}
 		
+		/// <summary>
+		/// Updates the list of available classes.
+		/// This causes the classes combo box to lose its current selection,
+		/// so the members combo box will be cleared.
+		/// </summary>
+		public void Update(ICompilationUnit compilationUnit)
+		{
+			runUpdateWhenDropDownClosed = true;
+			runUpdateWhenDropDownClosedCU = compilationUnit;
+			if (!IsDropDownOpen)
+				ComboBox_DropDownClosed(null, null);
+		}
+		
 		// The lists of items currently visible in the combo boxes.
 		// These should never be null.
 		List<EntityItem> classItems = new List<EntityItem>();
 		List<EntityItem> memberItems = new List<EntityItem>();
 		
-		/// <summary>
-		/// Updates the list of available classes.
-		/// This causes the classes combo box to loose its current selected,
-		/// so the members combo box will be cleared.
-		/// </summary>
-		public void Update(ICompilationUnit compilationUnit)
+		void DoUpdate(ICompilationUnit compilationUnit)
 		{
 			classItems = new List<EntityItem>();
 			if (compilationUnit != null) {
@@ -117,6 +125,29 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			classItems.Sort();
 			classComboBox.ItemsSource = classItems;
+		}
+		
+		bool IsDropDownOpen {
+			get { return classComboBox.IsDropDownOpen || membersComboBox.IsDropDownOpen; }
+		}
+		
+		// Delayed execution - avoid changing combo boxes while the user is browsing the dropdown list.
+		bool runUpdateWhenDropDownClosed;
+		ICompilationUnit runUpdateWhenDropDownClosedCU;
+		bool runSelectItemWhenDropDownClosed;
+		Location runSelectItemWhenDropDownClosedLocation;
+		
+		void ComboBox_DropDownClosed(object sender, EventArgs e)
+		{
+			if (runUpdateWhenDropDownClosed) {
+				runUpdateWhenDropDownClosed = false;
+				DoUpdate(runUpdateWhenDropDownClosedCU);
+				runUpdateWhenDropDownClosedCU = null;
+			}
+			if (runSelectItemWhenDropDownClosed) {
+				runSelectItemWhenDropDownClosed = false;
+				DoSelectItem(runSelectItemWhenDropDownClosedLocation);
+			}
 		}
 		
 		void AddClasses(IEnumerable<IClass> classes)
@@ -131,6 +162,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// Selects the class and member closest to the specified location.
 		/// </summary>
 		public void SelectItemAtCaretPosition(Location location)
+		{
+			runSelectItemWhenDropDownClosed = true;
+			runSelectItemWhenDropDownClosedLocation = location;
+			if (!IsDropDownOpen)
+				ComboBox_DropDownClosed(null, null);
+		}
+		
+		void DoSelectItem(Location location)
 		{
 			EntityItem matchInside = null;
 			EntityItem nearestMatch = null;
