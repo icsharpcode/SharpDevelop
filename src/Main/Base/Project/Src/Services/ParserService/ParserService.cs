@@ -424,12 +424,15 @@ namespace ICSharpCode.SharpDevelop
 						// update the compilation unit
 						ICompilationUnit oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
 						pc.UpdateCompilationUnit(oldUnit, newUnits[i], fileName);
+						RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, pc, oldUnit, newUnits[i]));
 					}
 					
 					// remove all old units that don't exist anymore
 					foreach (ICompilationUnit oldUnit in oldUnits) {
-						if (!newUnits.Any(n => n.ProjectContent == oldUnit.ProjectContent))
+						if (!newUnits.Any(n => n.ProjectContent == oldUnit.ProjectContent)) {
 							oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
+							RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit.ProjectContent, oldUnit, null));
+						}
 					}
 					
 					this.bufferVersion = fileContentVersion;
@@ -451,8 +454,10 @@ namespace ICSharpCode.SharpDevelop
 					this.oldUnits = null;
 					this.bufferVersion = null;
 				}
-				foreach (ICompilationUnit oldUnit in oldUnits)
+				foreach (ICompilationUnit oldUnit in oldUnits) {
 					oldUnit.ProjectContent.RemoveCompilationUnit(oldUnit);
+					RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, oldUnit.ProjectContent, oldUnit, null));
+				}
 			}
 			
 			public Task<ParseInformation> BeginParse(ITextBuffer fileContent)
