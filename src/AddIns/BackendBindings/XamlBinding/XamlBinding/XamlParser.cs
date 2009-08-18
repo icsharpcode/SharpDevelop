@@ -1,19 +1,21 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision: 2568 $</version>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
+//     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.XamlBinding
@@ -24,7 +26,7 @@ namespace ICSharpCode.XamlBinding
 	public class XamlParser : IParser
 	{
 		string[] lexerTags;
-
+		
 		public string[] LexerTags
 		{
 			get { return lexerTags; }
@@ -50,127 +52,68 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		AXmlParser axmlParser = new AXmlParser();
-		volatile ICSharpCode.SharpDevelop.ITextBufferVersion lastParsedVersion;
+		AXmlParser parser = new AXmlParser();
+		volatile ITextBufferVersion lastParsedVersion;
 		
 		/// <summary>
 		/// Parse the given text and enter read lock.
 		/// No parsing is done if the text is older than seen before.
 		/// </summary>
-		public IDisposable ParseAndLock(ICSharpCode.SharpDevelop.ITextBuffer fileContent)
+		public IDisposable ParseAndLock(ITextBuffer fileContent)
 		{
 			// Copy to ensure thread-safety
 			var lastVer = lastParsedVersion;
-			if (lastVer == null ||                              // First parse
-			    fileContent.Version == null ||                  // Versioning not supported
-			    fileContent.Version.CompareAge(lastVer) > 0)    // Is fileContent newer?
+			if (lastVer == null ||                                       // First parse
+			    fileContent.Version == null ||                           // Versioning not supported
+			    !fileContent.Version.BelongsToSameDocumentAs(lastVer) || // Different document instance? Can happen after closing and reopening of file.
+			    fileContent.Version.CompareAge(lastVer) > 0)             // Is fileContent newer?
 			{
-				axmlParser.Lock.EnterWriteLock();
-				// Dobuble check, now that we are thread-safe
-				if (lastParsedVersion == null || fileContent.Version == null) {
-					// First parse or verisoning not supported
-					axmlParser.Parse(fileContent.Text, null);
+				parser.Lock.EnterWriteLock();
+				// Double check, now that we are thread-safe
+				if (lastParsedVersion == null || fileContent.Version == null || !fileContent.Version.BelongsToSameDocumentAs(lastVer)) {
+					// First parse or versioning not supported
+					parser.Parse(fileContent.Text, null);
 					lastParsedVersion = fileContent.Version;
 				} else if (fileContent.Version.CompareAge(lastParsedVersion) > 0) {
 					// Incremental parse
 					var changes = lastParsedVersion.GetChangesTo(fileContent.Version).
 						Select(c => new DocumentChangeEventArgs(c.Offset, c.RemovedText, c.InsertedText));
-					axmlParser.Parse(fileContent.Text, changes);
+					parser.Parse(fileContent.Text, changes);
 					lastParsedVersion = fileContent.Version;
 				} else {
 					// fileContent is older - no need to parse
 				}
-				axmlParser.Lock.EnterReadLock();
-				axmlParser.Lock.ExitWriteLock();
+				parser.Lock.EnterReadLock();
+				parser.Lock.ExitWriteLock();
 			} else {
 				// fileContent is older - no need to parse
-				axmlParser.Lock.EnterReadLock();
+				parser.Lock.EnterReadLock();
 			}
-			return new CallbackOnDispose(() => axmlParser.Lock.ExitReadLock());
+			return new CallbackOnDispose(() => parser.Lock.ExitReadLock());
 		}
 
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ICSharpCode.SharpDevelop.ITextBuffer fileContent)
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
-			XamlCompilationUnit cu = new XamlCompilationUnit(projectContent);
-			cu.FileName = fileName;
-			try {
-				using (XmlTextReader r = new XmlTextReader(fileContent.CreateReader())) {
-					r.WhitespaceHandling = WhitespaceHandling.Significant;
-					r.Read();
-					r.MoveToContent();
-					DomRegion classStart = new DomRegion(r.LineNumber, r.LinePosition - 1);
-					string className = r.GetAttribute("Class", CompletionDataHelper.XamlNamespace);
-					if (string.IsNullOrEmpty(className)) {
-						LoggingService.Debug("XamlParser: returning empty cu because root element has no Class attribute");
-					}
-					else {
-						DefaultClass c = new DefaultClass(cu, className);
-						c.Modifiers = ModifierEnum.Partial;
-						c.Region = classStart;
-						c.BaseTypes.Add(TypeFromXmlNode(cu, r));
-						cu.Classes.Add(c);
-
-						DefaultMethod initializeComponent = new DefaultMethod(
-							"InitializeComponent",
-							projectContent.SystemTypes.Void,
-							ModifierEnum.Public | ModifierEnum.Synthetic,
-							classStart, DomRegion.Empty,
-							c);
-						c.Methods.Add(initializeComponent);
-
-						ParseXamlElement(cu, c, r);
-						if (r.NodeType == XmlNodeType.EndElement) {
-							c.Region = new DomRegion(classStart.BeginLine, classStart.BeginColumn, r.LineNumber, r.LinePosition + r.Name.Length);
-						}
-					}
+			using (new DebugTimerObject("background parser")) {
+				using (ParseAndLock(fileContent)) {
+					var document = parser.LastDocument;
+					
+					CompilationUnitCreatorVisitor visitor =
+						new CompilationUnitCreatorVisitor(projectContent, fileContent.Text, fileName, lexerTags);
+					
+					document.AcceptVisitor(visitor);
+					
+					return visitor.CompilationUnit;
 				}
 			}
-			catch (XmlException ex) {
-				cu.ErrorsDuringCompile = true;
-			}
-			return cu;
 		}
-
-		static IReturnType TypeFromXmlNode(XamlCompilationUnit cu, XmlReader r)
-		{
-			return cu.CreateType(r.NamespaceURI, r.LocalName);
-		}
-
-		void ParseXamlElement(XamlCompilationUnit cu, DefaultClass c, XmlTextReader r)
-		{
-			Debug.Assert(r.NodeType == XmlNodeType.Element);
-			string name = r.GetAttribute("Name", CompletionDataHelper.XamlNamespace) ?? r.GetAttribute("Name");
-			bool isEmptyElement = r.IsEmptyElement;
-
-			if (!string.IsNullOrEmpty(name)) {
-				IReturnType type = TypeFromXmlNode(cu, r);
-
-				// Use position of Name attribute for field region
-				//if (!r.MoveToAttribute("Name", XamlNamespace)) {
-				//	r.MoveToAttribute("Name");
-				//}
-				DomRegion position = new DomRegion(r.LineNumber, r.LinePosition, r.LineNumber, r.LinePosition + name.Length);
-				c.Fields.Add(new DefaultField(type, name, ModifierEnum.Internal, position, c));
-			}
-
-			if (isEmptyElement)
-				return;
-			while (r.Read()) {
-				if (r.NodeType == XmlNodeType.Element) {
-					ParseXamlElement(cu, c, r);
-				} 
-				else if (r.NodeType == XmlNodeType.Comment) {
-					foreach (string tag in lexerTags) {
-						if (r.Value.Contains(tag)) {
-							cu.TagComments.Add(new TagComment(r.Value, new DomRegion(r.LineNumber, r.LinePosition, r.LineNumber, r.LinePosition + r.Value.Length)));
-							break;
-						}
-					}
-				}
-				else if (r.NodeType == XmlNodeType.EndElement) {
-					break;
-				}
-			}
+		
+		/// <summary>
+		/// Wraps AXmlParser.LastDocument. Returns the last cached version of the document.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">No read lock is held by the current thread.</exception>
+		public AXmlDocument LastDocument {
+			get { return parser.LastDocument; }
 		}
 
 		public IExpressionFinder CreateExpressionFinder(string fileName)

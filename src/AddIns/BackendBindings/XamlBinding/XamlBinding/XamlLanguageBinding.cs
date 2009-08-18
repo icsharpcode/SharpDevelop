@@ -21,7 +21,6 @@ namespace ICSharpCode.XamlBinding
 	{
 		XamlColorizer colorizer;
 		TextView textView;
-		AXmlParser parser;
 
 		public override void Attach(ITextEditor editor)
 		{
@@ -30,9 +29,7 @@ namespace ICSharpCode.XamlBinding
 			// try to access the ICSharpCode.AvalonEdit.Rendering.TextView
 			// of this ITextEditor
 			this.textView = editor.GetService(typeof(TextView)) as TextView;
-			
-			this.parser = new AXmlParser(editor.Document.GetService(typeof(TextDocument)) as TextDocument);
-			
+						
 			// if editor is not an AvalonEdit.TextEditor
 			// GetService returns null
 			if (textView != null) {
@@ -60,10 +57,6 @@ namespace ICSharpCode.XamlBinding
 				textView.Services.RemoveService(typeof(XamlLanguageBinding));
 				colorizer.Dispose();
 			}
-		}
-		
-		public AXmlParser Parser {
-			get { return parser; }
 		}
 	}
 }

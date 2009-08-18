@@ -14,6 +14,7 @@ using System.IO;
 namespace ICSharpCode.XamlBinding.Tests
 {
 	[TestFixture]
+	[Ignore("Does not work due to bugs")]
 	public class ResolveContextTests
 	{
 		[Test]

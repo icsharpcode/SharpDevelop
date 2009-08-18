@@ -67,6 +67,7 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CompilationUnitCreatorVisitor.cs" />
     <Compile Include="Comparers.cs" />
     <Compile Include="DebugTimerObject.cs" />
     <Compile Include="MarkupExtensionInfo.cs" />

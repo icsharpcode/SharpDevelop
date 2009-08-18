@@ -349,9 +349,7 @@ namespace ICSharpCode.XamlBinding
 						break;
 					case "Handler":
 						var loc3 = context.Editor.Document.OffsetToPosition(XmlParser.GetActiveElementStartIndex(context.Editor.Document.Text, context.Editor.Caret.Offset));
-						AttributeValue evtType = MarkupExtensionParser.ParseValue(
-							Utils.GetAttributeValue(context.Editor.Document.Text, loc3.Line,
-							                        loc3.Column, "Event"));
+						AttributeValue evtType = MarkupExtensionParser.ParseValue(context.ActiveElement.GetAttributeValue("Event") ?? "");
 						if (!evtType.IsString)
 							break;
 						

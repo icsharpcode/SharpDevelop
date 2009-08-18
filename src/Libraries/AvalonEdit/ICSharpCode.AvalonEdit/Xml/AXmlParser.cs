@@ -95,14 +95,14 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary>
 		/// Generate syntax error when seeing enity reference other then the build-in ones
 		/// </summary>
-		public bool UknonwEntityReferenceIsError { get; set; }
+		public bool UnknownEntityReferenceIsError { get; set; }
 		
 		/// <summary> Create new parser </summary>
 		public AXmlParser()
 		{
-			this.UknonwEntityReferenceIsError = true;
+			this.UnknownEntityReferenceIsError = true;
 			this.TrackedSegments = new TrackedSegmentCollection();
-			this.Lock = new ReaderWriterLockSlim();
+			this.Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 			
 			this.userDocument = new AXmlDocument() { Parser = this };
 			this.userDocument.Document = this.userDocument;
@@ -167,5 +167,18 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// Makes calls to Parse() thread-safe. Use Lock everywhere Parse() is called.
 		/// </summary>
 		public ReaderWriterLockSlim Lock { get; private set; }
+		
+		/// <summary>
+		/// Returns the last cached version of the document.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">No read lock is held by the current thread.</exception>
+		public AXmlDocument LastDocument {
+			get {
+				if (!Lock.IsReadLockHeld)
+					throw new InvalidOperationException("Read lock needed!");
+				
+				return userDocument;
+			}
+		}
 	}
 }

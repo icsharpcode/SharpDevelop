@@ -20,11 +20,88 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
+	public class ElementWrapper {
+		public ElementWrapper(AXmlElement element)
+		{
+			this.LocalName  = element.LocalName;
+			this.Prefix     = element.Prefix;
+			this.Namespace  = element.Namespace;
+			this.Offset     = element.StartOffset;
+			this.Attributes = element.Attributes.Select(attr => new AttributeWrapper(attr)).ToList();
+		}
+		
+		public string LocalName { get; private set; }
+		public string Namespace { get; private set; }
+		public string Prefix { get; private set; }
+		public List<AttributeWrapper> Attributes { get; private set; }
+		public int Offset { get; set; }
+		
+		public string Name {
+			get {
+				if (string.IsNullOrEmpty(Prefix))
+					return LocalName;
+				
+				return Prefix + ":" + LocalName;
+			}
+		}
+		
+		public QualifiedNameWithLocation ToQualifiedName()
+		{
+			return new QualifiedNameWithLocation(LocalName, Namespace, Prefix, Offset);
+		}
+		
+		public string GetAttributeValue(string localName)
+		{
+			return GetAttributeValue("", localName);
+		}
+		
+		public string GetAttributeValue(string xmlns, string localName)
+		{
+			foreach (var attribute in Attributes) {
+				if (xmlns == attribute.Namespace && attribute.LocalName == localName)
+					return attribute.Value;
+			}
+			
+			return null;
+		}
+	}
+	
+	public class AttributeWrapper {
+		public string LocalName { get; set; }
+		public string Namespace { get; set; }
+		public string Prefix { get; set; }
+		public string Value { get; set; }
+		public int Offset { get; set; }
+		
+		public AttributeWrapper(AXmlAttribute attribute)
+		{
+			this.LocalName = attribute.LocalName;
+			this.Namespace = attribute.Namespace;
+			this.Prefix    = attribute.Prefix;
+			this.Value     = attribute.Value;
+			this.Offset    = attribute.StartOffset;
+		}
+		
+		public string Name {
+			get {
+				if (string.IsNullOrEmpty(Prefix))
+					return LocalName;
+				
+				return Prefix + ":" + LocalName;
+			}
+		}
+		
+		public QualifiedNameWithLocation ToQualifiedName()
+		{
+			return new QualifiedNameWithLocation(LocalName, Namespace, Prefix, Offset);
+		}
+	}
+	
 	public class XamlContext : ExpressionContext {
-		public AXmlElement ActiveElement { get; set; }
-		public AXmlElement ParentElement { get; set; }
-		public List<AXmlElement> Ancestors { get; set; }
-		new public AXmlAttribute Attribute { get; set; }
+		public ElementWrapper ActiveElement { get; set; }
+		public ElementWrapper ParentElement { get; set; }
+		public List<ElementWrapper> Ancestors { get; set; }
+		new public AttributeWrapper Attribute { get; set; }
 		public AttributeValue AttributeValue { get; set; }
 		public string RawAttributeValue { get; set; }
 		public int ValueStartOffset { get; set; }
@@ -71,8 +148,8 @@ namespace ICSharpCode.XamlBinding
 			this.IgnoredXmlns = context.IgnoredXmlns;
 		}
 		
-		public char PressedKey { get; set; }	
-		public bool Forced { get; set; }	
+		public char PressedKey { get; set; }
+		public bool Forced { get; set; }
 		public ITextEditor Editor { get; set; }
 	}
 	

@@ -158,7 +158,7 @@ namespace ICSharpCode.AvalonEdit.Xml.Tests
 			
 			bool usingDTD = content.Contains("<!DOCTYPE") && (content.Contains("<!ENTITY") || content.Contains(" SYSTEM "));
 			if (usingDTD)
-				parser.UknonwEntityReferenceIsError = false;
+				parser.UnknownEntityReferenceIsError = false;
 			
 			AXmlDocument document;
 			

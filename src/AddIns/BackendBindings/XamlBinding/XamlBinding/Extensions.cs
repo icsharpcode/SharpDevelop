@@ -72,6 +72,16 @@ namespace ICSharpCode.XamlBinding
 				collection.Add(item);
 		}
 		
+		public static ElementWrapper ToWrapper(this AXmlElement element)
+		{
+			return new ElementWrapper(element);
+		}
+		
+		public static AttributeWrapper ToWrapper(this AXmlAttribute attribute)
+		{
+			return new AttributeWrapper(attribute);
+		}
+		
 		public static string[] Split(this string thisValue, StringSplitOptions options, params char[] delimiters)
 		{
 			if (thisValue == null)

@@ -58,12 +58,15 @@ namespace ICSharpCode.XamlBinding.Tests
 			new XamlLanguageBinding().Attach(this);
 		}
 		
+		static int fileNo;
+		
 		public override string FileName {
-			get { return "mockFileName.xaml"; }
+			get { return "mockFileName" + (fileNo++) + ".xaml"; }
 		}
 		
 		public void CreateParseInformation()
 		{
+			ParserService.RegisterAvailableParsers(new ParserDescriptor(typeof(XamlParser), "XAML", new string[] { ".xaml" }));
 			var parser = new XamlBinding.XamlParser();
 			parser.LexerTags = new string[0];
 			var cu = parser.Parse(pc, this.FileName, this.Document);

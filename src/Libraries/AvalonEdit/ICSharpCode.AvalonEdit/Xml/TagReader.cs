@@ -719,7 +719,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 					OnSyntaxError(owner, errorLoc + 1, errorLoc + 1, "Invalid entity name");
 				} else {
 					replacement = null;
-					if (parser.UknonwEntityReferenceIsError) {
+					if (parser.UnknownEntityReferenceIsError) {
 						OnSyntaxError(owner, errorLoc, errorLoc + 1 + name.Length + 1, "Unknown entity reference '{0}'", name);
 					}
 				}

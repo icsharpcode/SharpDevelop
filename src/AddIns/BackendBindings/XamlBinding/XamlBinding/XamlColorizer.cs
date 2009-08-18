@@ -41,14 +41,13 @@ namespace ICSharpCode.XamlBinding
 			public int Offset { get; private set; }
 			
 			TextView textView;
-			AXmlParser parser;
+			ITextBuffer snapshot;
 			
-			public HighlightTask(string fileName, DocumentLine currentLine, TextView textView)
+			public HighlightTask(ITextEditor editor, DocumentLine currentLine, TextView textView)
 			{
-				this.FileName = fileName;
+				this.FileName = editor.FileName;
 				this.textView = textView;
-				this.parser = (textView.Services.GetService(typeof(XamlLanguageBinding))
-				               as XamlLanguageBinding).Parser;
+				this.snapshot = editor.Document.CreateSnapshot();
 				this.LineNumber = currentLine.LineNumber;
 				this.LineText = currentLine.Text;
 				this.Offset = currentLine.Offset;
@@ -124,7 +123,7 @@ namespace ICSharpCode.XamlBinding
 
 					index = LineText.IndexOfAny(index + 1, '=', '.');
 					if (index > -1) {
-						context = CompletionDataHelper.ResolveContext(parser, FileName, Offset + index);
+						context = CompletionDataHelper.ResolveContext(snapshot, FileName, Offset + index);
 						
 						if (context.ActiveElement == null || context.InAttributeValueOrMarkupExtension || context.InCommentOrCData)
 							continue;
@@ -216,7 +215,7 @@ namespace ICSharpCode.XamlBinding
 		protected override void ColorizeLine(DocumentLine line)
 		{
 			if (!highlightCache.ContainsKey(line)) {
-				HighlightTask task = new HighlightTask(this.Editor.FileName, line, this.TextView);
+				HighlightTask task = new HighlightTask(this.Editor, line, this.TextView);
 				task.Start();
 				highlightCache.Add(line, task);
 			} else {
@@ -255,7 +254,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			foreach (var item in highlightCache.ToArray()) {
 				if (item.Value.Invalid) {
-					var newTask = new HighlightTask(this.Editor.FileName, item.Key, this.TextView);
+					var newTask = new HighlightTask(this.Editor, item.Key, this.TextView);
 					newTask.Start();
 					highlightCache[item.Key] = newTask;
 				}

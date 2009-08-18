@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Project;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -49,138 +49,145 @@ namespace ICSharpCode.XamlBinding
 		
 		static readonly List<ICompletionItem> emptyList = new List<ICompletionItem>();
 		
+		/// <summary>
+		/// value: http://schemas.microsoft.com/winfx/2006/xaml
+		/// </summary>
 		public const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
+		
+		/// <summary>
+		/// value: http://schemas.microsoft.com/winfx/2006/xaml/presentation
+		/// </summary>
 		public const string WpfXamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+		
+		/// <summary>
+		/// value: http://schemas.openxmlformats.org/markup-compatibility/2006
+		/// </summary>
 		public const string MarkupCompatibilityNamespace = "http://schemas.openxmlformats.org/markup-compatibility/2006";
 		
 		public const bool EnableXaml2009 = true;
 		
 		public static XamlContext ResolveContext(string text, string fileName, int offset)
 		{
-			return ResolveContext(new AXmlParser(text), fileName, offset);
+			return ResolveContext(new StringTextBuffer(text), fileName, offset);
 		}
 		
-		public static XamlContext ResolveContext(AXmlParser parser, string fileName, int offset)
+		public static XamlContext ResolveContext(ITextBuffer fileContent, string fileName, int offset)
 		{
 			using (new DebugTimerObject("ResolveContext")) {
-				ParseInformation info = string.IsNullOrEmpty(fileName) ? null : ParserService.GetParseInformation(fileName);
+				XamlParser parser = ParserService.GetParser(fileName) as XamlParser;
 				
-				parser.Lock.EnterWriteLock();
-				DebugTimer.Start();
-				AXmlDocument document = null;
-				
-				try {
-					document = parser.Parse();
-				} finally {
-					DebugTimer.Stop("Parse & GetChildAtOffset");
-					parser.Lock.ExitWriteLock();
-				}
-				
-				AXmlObject currentData = document.GetChildAtOffset(offset);
-				
-				string attribute = string.Empty, attributeValue = string.Empty;
-				bool inAttributeValue = false;
-				AttributeValue value = null;
-				bool isRoot = false;
-				int offsetFromValueStart = -1;
-				
-				List<AXmlElement> ancestors = new List<AXmlElement>();
-				Dictionary<string, string> xmlns = new Dictionary<string, string>();
-				List<string> ignored = new List<string>();
-				
-				var item = currentData;
-				
-				while (item != document) {
-					if (item is AXmlElement) {
-						AXmlElement element = item as AXmlElement;
-						ancestors.Add(element);
-						foreach (var attr in element.Attributes) {
-							if (attr.IsNamespaceDeclaration) {
-								string prefix = (attr.Name == "xmlns") ? "" : attr.LocalName;
-								if (!xmlns.ContainsKey(prefix))
-									xmlns.Add(prefix, 	attr.Value);
+				using (parser.ParseAndLock(fileContent)) {
+					ParseInformation info = string.IsNullOrEmpty(fileName) ? null : ParserService.GetParseInformation(fileName);
+					
+					AXmlDocument document = parser.LastDocument;
+					AXmlObject currentData = document.GetChildAtOffset(offset);
+					
+					string attribute = string.Empty, attributeValue = string.Empty;
+					bool inAttributeValue = false;
+					AttributeValue value = null;
+					bool isRoot = false;
+					int offsetFromValueStart = -1;
+					
+					List<AXmlElement> ancestors = new List<AXmlElement>();
+					Dictionary<string, string> xmlns = new Dictionary<string, string>();
+					List<string> ignored = new List<string>();
+					
+					var item = currentData;
+					
+					while (item != document) {
+						if (item is AXmlElement) {
+							AXmlElement element = item as AXmlElement;
+							ancestors.Add(element);
+							foreach (var attr in element.Attributes) {
+								if (attr.IsNamespaceDeclaration) {
+									string prefix = (attr.Name == "xmlns") ? "" : attr.LocalName;
+									if (!xmlns.ContainsKey(prefix))
+										xmlns.Add(prefix, 	attr.Value);
+								}
+								
+								if (attr.LocalName == "Ignorable" && attr.Namespace == MarkupCompatibilityNamespace)
+									ignored.Add(attr.Value);
 							}
-							
-							if (attr.LocalName == "Ignorable" && attr.Namespace == MarkupCompatibilityNamespace)
-								ignored.Add(attr.Value);
 						}
+						
+						item = item.Parent;
 					}
 					
-					item = item.Parent;
-				}
-				
-				XamlContextDescription description = XamlContextDescription.None;
-				
-				AXmlElement active = null;
-				AXmlElement parent = null;
-				
-				if (currentData.Parent is AXmlTag) {
-					AXmlTag tag = currentData.Parent as AXmlTag;
-					if (tag.IsStartOrEmptyTag)
-						description = XamlContextDescription.InTag;
-					else if (tag.IsComment)
-						description = XamlContextDescription.InComment;
-					else if (tag.IsCData)
-						description = XamlContextDescription.InCData;
-					active = tag.Parent as AXmlElement;
-				}
-				
-				if (currentData is AXmlAttribute) {
-					AXmlAttribute a = currentData as AXmlAttribute;
-					int valueStartOffset = a.StartOffset + (a.Name ?? "").Length + (a.EqualsSign ?? "").Length + 1;
-					attribute = a.Name;
-					attributeValue = a.Value;
-					value = MarkupExtensionParser.ParseValue(attributeValue);
+					XamlContextDescription description = XamlContextDescription.None;
 					
-					inAttributeValue = offset >= valueStartOffset && offset < a.EndOffset;
-					if (inAttributeValue) {
-						offsetFromValueStart = offset - valueStartOffset;
+					AXmlElement active = null;
+					AXmlElement parent = null;
+					
+					if (currentData.Parent is AXmlTag) {
+						AXmlTag tag = currentData.Parent as AXmlTag;
+						if (tag.IsStartOrEmptyTag)
+							description = XamlContextDescription.InTag;
+						else if (tag.IsComment)
+							description = XamlContextDescription.InComment;
+						else if (tag.IsCData)
+							description = XamlContextDescription.InCData;
+						active = tag.Parent as AXmlElement;
+					}
+					
+					if (currentData is AXmlAttribute) {
+						AXmlAttribute a = currentData as AXmlAttribute;
+						int valueStartOffset = a.StartOffset + (a.Name ?? "").Length + (a.EqualsSign ?? "").Length + 1;
+						attribute = a.Name;
+						attributeValue = a.Value;
+						value = MarkupExtensionParser.ParseValue(attributeValue);
 						
-						description = XamlContextDescription.InAttributeValue;
-						
-						if (value != null && !value.IsString)
-							description = XamlContextDescription.InMarkupExtension;
-						if (attributeValue.StartsWith("{}", StringComparison.Ordinal) && attributeValue.Length > 2)
+						inAttributeValue = offset >= valueStartOffset && offset < a.EndOffset;
+						if (inAttributeValue) {
+							offsetFromValueStart = offset - valueStartOffset;
+							
 							description = XamlContextDescription.InAttributeValue;
-					} else
-						description = XamlContextDescription.InTag;
+							
+							if (value != null && !value.IsString)
+								description = XamlContextDescription.InMarkupExtension;
+							if (attributeValue.StartsWith("{}", StringComparison.Ordinal) && attributeValue.Length > 2)
+								description = XamlContextDescription.InAttributeValue;
+						} else
+							description = XamlContextDescription.InTag;
+					}
+					
+					if (currentData is AXmlTag) {
+						AXmlTag tag = currentData as AXmlTag;
+						if (tag.IsStartOrEmptyTag || tag.IsEndTag)
+							description = XamlContextDescription.AtTag;
+						else if (tag.IsComment)
+							description = XamlContextDescription.InComment;
+						else if (tag.IsCData)
+							description = XamlContextDescription.InCData;
+						active = tag.Parent as AXmlElement;
+					}
+					
+					if (active != ancestors.FirstOrDefault())
+						parent = ancestors.FirstOrDefault();
+					else
+						parent = ancestors.Skip(1).FirstOrDefault();
+					
+					if (active == null)
+						active = parent;
+					
+					var xAttribute = currentData as AXmlAttribute;
+					
+					var context = new XamlContext() {
+						Description       = description,
+						ActiveElement     = (active == null) ? null : active.ToWrapper(),
+						ParentElement     = (parent == null) ? null : parent.ToWrapper(),
+						Ancestors         = ancestors.Select(ancestor => ancestor.ToWrapper()).ToList(),
+						Attribute         = (xAttribute != null) ? xAttribute.ToWrapper() : null,
+						InRoot            = isRoot,
+						AttributeValue    = value,
+						RawAttributeValue = attributeValue,
+						ValueStartOffset  = offsetFromValueStart,
+						XmlnsDefinitions  = xmlns,
+						ParseInformation  = info,
+						IgnoredXmlns      = ignored.AsReadOnly()
+					};
+					
+					return context;
 				}
-				
-				if (currentData is AXmlTag) {
-					AXmlTag tag = currentData as AXmlTag;
-					if (tag.IsStartOrEmptyTag || tag.IsEndTag)
-						description = XamlContextDescription.AtTag;
-					else if (tag.IsComment)
-						description = XamlContextDescription.InComment;
-					else if (tag.IsCData)
-						description = XamlContextDescription.InCData;
-					active = tag.Parent as AXmlElement;
-				}
-				
-				if (active != ancestors.FirstOrDefault())
-					parent = ancestors.FirstOrDefault();
-				else
-					parent = ancestors.Skip(1).FirstOrDefault();
-				
-				if (active == null)
-					active = parent;
-				
-				var context = new XamlContext() {
-					Description       = description,
-					ActiveElement     = active,
-					ParentElement     = parent,
-					Ancestors         = ancestors,
-					Attribute         = currentData as AXmlAttribute,
-					InRoot            = isRoot,
-					AttributeValue    = value,
-					RawAttributeValue = attributeValue,
-					ValueStartOffset  = offsetFromValueStart,
-					XmlnsDefinitions  = xmlns,
-					ParseInformation  = info,
-					IgnoredXmlns      = ignored.AsReadOnly()
-				};
-				
-				return context;
 			}
 		}
 		
@@ -191,7 +198,7 @@ namespace ICSharpCode.XamlBinding
 			if (binding == null)
 				throw new InvalidOperationException("Can only use ResolveCompletionContext with a XamlLanguageBinding.");
 			
-			var context = new XamlCompletionContext(ResolveContext(binding.Parser, editor.FileName, editor.Caret.Offset)) {
+			var context = new XamlCompletionContext(ResolveContext(editor.Document.CreateSnapshot(), editor.FileName, editor.Caret.Offset)) {
 				PressedKey = typedValue,
 				Editor = editor
 			};
@@ -206,7 +213,7 @@ namespace ICSharpCode.XamlBinding
 			if (binding == null)
 				throw new InvalidOperationException("Can only use ResolveCompletionContext with a XamlLanguageBinding.");
 			
-			var context = new XamlCompletionContext(ResolveContext(binding.Parser, editor.FileName, offset)) {
+			var context = new XamlCompletionContext(ResolveContext(editor.Document.CreateSnapshot(), editor.FileName, offset)) {
 				PressedKey = typedValue,
 				Editor = editor
 			};
@@ -216,7 +223,7 @@ namespace ICSharpCode.XamlBinding
 		
 		static List<ICompletionItem> CreateAttributeList(XamlCompletionContext context, bool includeEvents)
 		{
-			AXmlElement lastElement = context.ActiveElement;
+			ElementWrapper lastElement = context.ActiveElement;
 			if (context.ParseInformation == null)
 				return emptyList;
 			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
