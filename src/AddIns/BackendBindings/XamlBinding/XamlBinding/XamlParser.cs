@@ -50,8 +50,8 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		AXmlParser axmlParser;
-		ICSharpCode.SharpDevelop.ITextBuffer lastParsedContent;
+		AXmlParser axmlParser = new AXmlParser();
+		volatile ICSharpCode.SharpDevelop.ITextBufferVersion lastParsedVersion;
 		
 		/// <summary>
 		/// Parse the given text and enter read lock.
@@ -59,21 +59,24 @@ namespace ICSharpCode.XamlBinding
 		/// </summary>
 		public IDisposable ParseAndLock(ICSharpCode.SharpDevelop.ITextBuffer fileContent)
 		{
-			// Is fileContent newer?
-			if (lastParsedContent == null || fileContent.Version.CompareAge(lastParsedContent.Version) > 0) {
+			// Copy to ensure thread-safety
+			var lastVer = lastParsedVersion;
+			if (lastVer == null ||                              // First parse
+			    fileContent.Version == null ||                  // Versioning not supported
+			    fileContent.Version.CompareAge(lastVer) > 0)    // Is fileContent newer?
+			{
 				axmlParser.Lock.EnterWriteLock();
 				// Dobuble check, now that we are thread-safe
-				if (lastParsedContent == null) {
-					// First parse
-					axmlParser = new AXmlParser();
+				if (lastParsedVersion == null || fileContent.Version == null) {
+					// First parse or verisoning not supported
 					axmlParser.Parse(fileContent.Text, null);
-					lastParsedContent = fileContent;
-				} else if (fileContent.Version.CompareAge(lastParsedContent.Version) > 0) {
+					lastParsedVersion = fileContent.Version;
+				} else if (fileContent.Version.CompareAge(lastParsedVersion) > 0) {
 					// Incremental parse
-					var changes = lastParsedContent.Version.GetChangesTo(fileContent.Version).
+					var changes = lastParsedVersion.GetChangesTo(fileContent.Version).
 						Select(c => new DocumentChangeEventArgs(c.Offset, c.RemovedText, c.InsertedText));
 					axmlParser.Parse(fileContent.Text, changes);
-					lastParsedContent = fileContent;
+					lastParsedVersion = fileContent.Version;
 				} else {
 					// fileContent is older - no need to parse
 				}

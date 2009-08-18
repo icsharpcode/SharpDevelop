@@ -54,6 +54,18 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 		}
 		
+		/// <summary>
+		/// Invlidates all objects.  That is, the whole document has changed.
+		/// </summary>
+		/// <remarks> We still have to keep the items becuase they might be in the document </remarks>
+		public void InvalidateAll()
+		{
+			AXmlParser.Log("Invalidating all objects");
+			foreach(AXmlObject obj in segments.OfType<AXmlObject>()) {
+				obj.IsCached = false;
+			}
+		}
+		
 		/// <summary> Add object to cache, optionally adding extra memory tracking </summary>
 		public void AddParsedObject(AXmlObject obj, int? maxTouchedLocation)
 		{

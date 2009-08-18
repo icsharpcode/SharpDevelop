@@ -136,8 +136,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary>
 		/// Incrementaly parse the given text.
 		/// You have to hold the write lock.
-		/// 'changesSinceLastParse' can be null on the first call.
 		/// </summary>
+		/// <param name="changesSinceLastParse">
+		/// Changes since last parse.  Null will cause full reparse.
+		/// </param>
 		public AXmlDocument Parse(string input, IEnumerable<DocumentChangeEventArgs> changesSinceLastParse)
 		{
 			if (!Lock.IsWriteLockHeld)
@@ -146,6 +148,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 			// Use changes to invalidate cache
 			if (changesSinceLastParse != null) {
 				this.TrackedSegments.UpdateOffsetsAndInvalidate(changesSinceLastParse);
+			} else {
+				this.TrackedSegments.InvalidateAll();
 			}
 			
 			TagReader tagReader = new TagReader(this, input);
