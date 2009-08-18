@@ -32,11 +32,11 @@ namespace Debugger
 			if (Paused != null) {
 				foreach(Delegate d in Paused.GetInvocationList()) {
 					if (IsRunning) {
-						TraceMessage ("Skipping OnPaused delegate becuase process has resumed");
+						TraceMessage ("Skipping OnPaused delegate because process has resumed");
 						break;
 					}
 					if (this.TerminateCommandIssued || this.HasExited) {
-						TraceMessage ("Skipping OnPaused delegate becuase process has exited");
+						TraceMessage ("Skipping OnPaused delegate because process has exited");
 						break;
 					}
 					d.DynamicInvoke(this, new ProcessEventArgs(this));

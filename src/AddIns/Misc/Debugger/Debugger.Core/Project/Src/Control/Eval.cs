@@ -282,7 +282,7 @@ namespace Debugger
 	    		// TODO: Check if it is primitive type
 				Value val = Eval.NewObjectNoConstructor(DebugType.CreateFromType(appDomain, value.GetType()));
 				val.PrimitiveValue = value;
-				val.ExpressionTree = new PrimitiveExpression(val);
+				val.ExpressionTree = new PrimitiveExpression(value);
 				return val;
 			}
 	    }

@@ -117,7 +117,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			catch(Debugger.GetValueException ex)
 			{
 				graphBuiltOk = false;
-				showErrorMessage("Cannot evaluate: " + ex.Message);
+				showErrorMessage("Expression cannot be evaluated - " + ex.Message);
 			}
 			if (graphBuiltOk)
 			{

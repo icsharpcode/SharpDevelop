@@ -35,6 +35,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 			
 			clickedCommand.Execute();
+			// make no item selected, so that multiple selections of the same item always execute the command
+			// this triggers VisualizerPicker_SelectionChanged again, which returns immediately
+			this.SelectedIndex = -1;
 		}
 		
 		public new IEnumerable<IVisualizerCommand> ItemsSource

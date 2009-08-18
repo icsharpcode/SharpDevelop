@@ -180,8 +180,8 @@ namespace ICSharpCode.SharpDevelop.Services
 					DebugStarting(this, EventArgs.Empty);
 				
 				Process process = debugger.Start(processStartInfo.FileName,
-				                                          processStartInfo.WorkingDirectory,
-				                                          processStartInfo.Arguments);
+				                                 processStartInfo.WorkingDirectory,
+				                                 processStartInfo.Arguments);
 				SelectProcess(process);
 			}
 		}
@@ -384,8 +384,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			try {
 				Value val = GetValueFromName(variableName);
 				if (val == null) return null;
-				//expressionNode = new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), variableName, val.ExpressionTree);
-				expressionNode = new ExpressionNode(null, variableName, val.ExpressionTree);
+				expressionNode = new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), variableName, val.ExpressionTree);
 			} catch (GetValueException) {
 				return null;
 			}
