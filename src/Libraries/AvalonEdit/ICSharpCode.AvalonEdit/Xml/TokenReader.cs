@@ -149,7 +149,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			if (currentLocation == inputLength) return false;
 			
 			char c = input[currentLocation];
-			return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+			return ((int)c <= 0x20) && (c == ' ' || c == '\t' || c == '\n' || c == '\r');
 		}
 		
 		// The move functions do not have to move if already at target
@@ -217,8 +217,16 @@ namespace ICSharpCode.AvalonEdit.Xml
 		
 		protected bool TryMoveToNonWhiteSpace(int inputLength)
 		{
-			while(TryPeekWhiteSpace()) currentLocation++;
-			return HasMoreData();
+			while(true) {
+				if (currentLocation == inputLength) return false; // Reject end of file
+				char c = input[currentLocation];
+				if (((int)c <= 0x20) && (c == ' ' || c == '\t' || c == '\n' || c == '\r')) {
+					currentLocation++;                            // Accept white-space
+					continue;
+				} else {
+					return true;  // Found non-white-space
+				}
+			}
 		}
 		
 		/// <summary>
@@ -237,7 +245,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			while(true) {
 				if (currentLocation == inputLength) break;              // Reject end of file
 				char c = input[currentLocation];
-				if (0x41 <= (int)c && (int)c <= 0x7A) {                 // Accpet 0x41-0x7A (A-Z[\]^_`a-z)
+				if (0x41 <= (int)c) {                                   // Accpet from 'A' onwards
 					currentLocation++;
 					continue;
 				}
