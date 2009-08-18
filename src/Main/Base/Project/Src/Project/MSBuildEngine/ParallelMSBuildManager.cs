@@ -94,8 +94,6 @@ namespace ICSharpCode.SharpDevelop.Project
 					#endif
 				};
 				parameters.EnableNodeReuse = false;
-				// parallel build seems to break in-memory modifications of the project (additionalTargetFiles+_ComputeNonExistentFileProperty),
-				// so we keep it disabled for the moment.
 				parameters.MaxNodeCount = BuildOptions.DefaultParallelProjectCount;
 				BuildManager.DefaultBuildManager.BeginBuild(parameters);
 			}

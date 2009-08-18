@@ -205,37 +205,35 @@ namespace ICSharpCode.SharpDevelop
 			
 			void RunThread()
 			{
-				try {
-					while (true) {
-						CancellationToken token;
-						JobTask task;
-						int totalWork, workDone;
-						lock (lockObj) {
-							if (actions.Count == 0) {
-								this.threadIsRunning = false;
-								progressMonitor.Done();
-								return;
-							}
-							task = this.actions.Dequeue();
-							token = this.cancellationSource.Token;
-							totalWork = this.totalWork;
-							workDone = this.workDone;
+				while (true) {
+					CancellationToken token;
+					JobTask task;
+					int totalWork, workDone;
+					lock (lockObj) {
+						if (actions.Count == 0) {
+							this.threadIsRunning = false;
+							progressMonitor.Done();
+							return;
 						}
-						if (task.cost > 0) {
-							progressMonitor.BeginTask(task.name, totalWork, false);
-							progressMonitor.WorkDone = workDone;
-						}
-						try {
-							task.Run(token);
-							lock (lockObj) {
-								this.workDone += task.cost;
-							}
-						} catch (OperationCanceledException) {
-							// ignore cancellation
-						}
+						task = this.actions.Dequeue();
+						token = this.cancellationSource.Token;
+						totalWork = this.totalWork;
+						workDone = this.workDone;
 					}
-				} catch (Exception ex) {
-					MessageService.ShowError(ex, "Error on LoadSolutionProjects thread");
+					if (task.cost > 0) {
+						progressMonitor.BeginTask(task.name, totalWork, false);
+						progressMonitor.WorkDone = workDone;
+					}
+					try {
+						task.Run(token);
+						lock (lockObj) {
+							this.workDone += task.cost;
+						}
+					} catch (OperationCanceledException) {
+						// ignore cancellation
+					} catch (Exception ex) {
+						MessageService.ShowError(ex, "Error on LoadSolutionProjects thread");
+					}
 				}
 			}
 			

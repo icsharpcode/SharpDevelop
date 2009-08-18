@@ -404,7 +404,11 @@ namespace ICSharpCode.SharpDevelop
 				ICompilationUnit resultUnit = null;
 				for (int i = 0; i < newUnits.Length; i++) {
 					IProjectContent pc = projectContents[i];
-					newUnits[i] = parser.Parse(pc, fileName, fileContent);
+					try {
+						newUnits[i] = parser.Parse(pc, fileName, fileContent);
+					} catch (Exception ex) {
+						throw new ApplicationException("Error parsing " + fileName, ex);
+					}
 					if (i == 0 || pc == parentProjectContent)
 						resultUnit = newUnits[i];
 				}
