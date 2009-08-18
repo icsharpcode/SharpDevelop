@@ -16,35 +16,19 @@ namespace ICSharpCode.SharpDevelop
 	public sealed class ParserDescriptor
 	{
 		Codon codon;
+		Type parserType;
 		
 		public IParser CreateParser()
 		{
-			return (IParser)codon.AddIn.CreateObject(codon.Properties["class"]);
+			if (codon != null)
+				return (IParser)codon.AddIn.CreateObject(codon.Properties["class"]);
+			else
+				return (IParser)Activator.CreateInstance(parserType);
 		}
 
-		public Codon Codon {
-			get {
-				return codon;
-			}
-		}
+		public string Language { get; private set; }
 
-		public string Language {
-			get {
-				return codon.Id;
-			}
-		}
-
-		public string ProjectFileExtension {
-			get {
-				return codon.Properties["projectfileextension"];
-			}
-		}
-
-		public string[] Supportedextensions {
-			get {
-				return codon.Properties["supportedextensions"].Split(';');
-			}
-		}
+		public string[] Supportedextensions { get; private set; }
 
 		public bool CanParse(string fileName)
 		{
@@ -57,9 +41,26 @@ namespace ICSharpCode.SharpDevelop
 			return false;
 		}
 
-		public ParserDescriptor (Codon codon)
+		public ParserDescriptor(Codon codon)
 		{
+			if (codon == null)
+				throw new ArgumentNullException("codon");
 			this.codon = codon;
+			this.Language = codon.Id;
+			this.Supportedextensions = codon.Properties["supportedextensions"].Split(';');
+		}
+		
+		public ParserDescriptor(Type parserType, string language, string[] supportedExtensions)
+		{
+			if (parserType == null)
+				throw new ArgumentNullException("parserType");
+			if (language == null)
+				throw new ArgumentNullException("language");
+			if (supportedExtensions == null)
+				throw new ArgumentNullException("supportedExtensions");
+			this.parserType = parserType;
+			this.Language = language;
+			this.Supportedextensions = supportedExtensions;
 		}
 	}
 }

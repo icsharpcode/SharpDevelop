@@ -17,9 +17,6 @@ namespace ICSharpCode.SharpDevelop
 	/// <attribute name="supportedextensions">
 	/// Semicolon-separated list of file extensions for which the parser is used. (e.g. ".boo")
 	/// </attribute>
-	/// <attribute name="projectfileextension">
-	/// File extension of project files. (e.g. ".booproj")
-	/// </attribute>
 	/// <attribute name="class">
 	/// Name of the IParser class.
 	/// </attribute>

@@ -63,7 +63,7 @@ namespace ICSharpCode.XmlEditor
 		public static string[] GetXmlFileExtensions()
 		{			
 			foreach (ParserDescriptor parser in AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false)) {
-				if (parser.Codon.Id == "XmlFoldingParser") {
+				if (parser.Language == "XmlFoldingParser") {
 					return parser.Supportedextensions;
 				}
 			}

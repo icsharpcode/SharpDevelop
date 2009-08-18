@@ -701,6 +701,21 @@ namespace ICSharpCode.SharpDevelop
 			FileEntry entry = GetFileEntry(fileName, true);
 			return entry.RegisterParseInformation(cu);
 		}
+		
+		/// <summary>
+		/// Replaces the list of available parsers.
+		/// Causes all stored parse information to be deleted.
+		/// Please use this for unit tests only!
+		/// </summary>
+		public static void RegisterAvailableParsers(params ParserDescriptor[] descriptors)
+		{
+			lock (syncLock) {
+				parserDescriptors = new List<ParserDescriptor>();
+				parserDescriptors.AddRange(descriptors);
+				ClearAllFileEntries();
+			}
+		}
+		
 		#endregion
 		
 		#region ParseInformationUpdated / ParserUpdateStepFinished events
@@ -790,6 +805,11 @@ namespace ICSharpCode.SharpDevelop
 				}
 				projectContents.Clear();
 			}
+			ClearAllFileEntries();
+		}
+		
+		static void ClearAllFileEntries()
+		{
 			FileEntry[] entries;
 			lock (fileEntryDict) {
 				entries = fileEntryDict.Values.ToArray();
