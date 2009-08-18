@@ -704,7 +704,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		/// <summary>
 		/// Replaces the list of available parsers.
-		/// Causes all stored parse information to be deleted.
 		/// Please use this for unit tests only!
 		/// </summary>
 		public static void RegisterAvailableParsers(params ParserDescriptor[] descriptors)
@@ -712,7 +711,6 @@ namespace ICSharpCode.SharpDevelop
 			lock (syncLock) {
 				parserDescriptors = new List<ParserDescriptor>();
 				parserDescriptors.AddRange(descriptors);
-				ClearAllFileEntries();
 			}
 		}
 		

@@ -74,10 +74,10 @@ namespace ICSharpCode.XamlBinding
 		public static XamlContext ResolveContext(ITextBuffer fileContent, string fileName, int offset)
 		{
 			using (new DebugTimerObject("ResolveContext")) {
-				XamlParser parser = ParserService.GetParser(fileName) as XamlParser;
-				
+				XamlParser parser = string.IsNullOrEmpty(fileName) ? new XamlParser() : ParserService.GetParser(fileName) as XamlParser;
+				ParseInformation info = string.IsNullOrEmpty(fileName) ? null : ParserService.GetParseInformation(fileName);
+
 				using (parser.ParseAndLock(fileContent)) {
-					ParseInformation info = string.IsNullOrEmpty(fileName) ? null : ParserService.GetParseInformation(fileName);
 					
 					AXmlDocument document = parser.LastDocument;
 					AXmlObject currentData = document.GetChildAtOffset(offset);

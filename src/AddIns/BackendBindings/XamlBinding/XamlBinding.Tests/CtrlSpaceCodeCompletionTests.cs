@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace ICSharpCode.XamlBinding.Tests
 {
 	[TestFixture]
-	[Ignore("Does not work due to bugs")]
 	[RequiresSTA]
 	public class CodeCompletionTests : TextEditorBasedTests
 	{
@@ -263,7 +262,6 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		[Ignore("Fails currently because the XamlParser fails due to the invalid syntax on the root element.")]
 		public void CtrlSpaceTest11()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
