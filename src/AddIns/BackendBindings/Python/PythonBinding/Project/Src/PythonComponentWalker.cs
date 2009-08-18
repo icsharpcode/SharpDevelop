@@ -292,11 +292,6 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void WalkMethodCall(CallExpression node)
 		{
-			if (node.Args.Length == 0) {
-				// Ignore method calls with no parameters.
-				return;
-			}
-			
 			// Try to get the object being called. Try the form first then
 			// look for other controls.
 			object member = PythonControlFieldExpression.GetMember(component, node);
@@ -308,8 +303,38 @@ namespace ICSharpCode.PythonBinding
 			// Execute the method on the object.
 			if (member != null) {
 				object[] args = deserializer.GetArguments(node).ToArray();
-				member.GetType().InvokeMember(field.MethodName, BindingFlags.InvokeMethod, Type.DefaultBinder, member, args);	
+				InvokeMethod(member, field.MethodName, args);
 			}
+		}
+		
+		void InvokeMethod(object obj, string name, object[] args)
+		{
+			Type type = obj.GetType();
+			try {
+				type.InvokeMember(name, BindingFlags.InvokeMethod, Type.DefaultBinder, obj, args);
+			} catch (MissingMethodException ex) {
+				// Look for an explicitly implemented interface.
+				MethodInfo method = FindInterfaceMethod(type, name);
+				if (method != null) {
+					method.Invoke(obj, args);
+				} else {
+					throw ex;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Looks for an explicitly implemented interface.
+		/// </summary>
+		MethodInfo FindInterfaceMethod(Type type, string name)
+		{
+			string nameMatch = "." + name;
+			foreach (MethodInfo method in type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)) {
+				if (method.Name.EndsWith(nameMatch)) {
+					return method;
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>

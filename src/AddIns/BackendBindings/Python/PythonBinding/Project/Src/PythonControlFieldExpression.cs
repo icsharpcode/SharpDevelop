@@ -329,6 +329,9 @@ namespace ICSharpCode.PythonBinding
 				obj = componentCreator.GetInstance(variableName);
 				if (obj == null) {
 					obj = GetInheritedObject(memberName, componentCreator.RootComponent);
+					if ((obj == null) && !IsSelfReference) {
+						obj = componentCreator.GetInstance(fullMemberName);
+					}
 				}
 			}
 			
@@ -352,7 +355,10 @@ namespace ICSharpCode.PythonBinding
 		public static object GetMember(object obj, CallExpression expression)
 		{
 			string[] memberNames = GetMemberNames(expression.Target as MemberExpression);
-			return GetMember(obj, memberNames, 1, memberNames.Length - 2);
+			if (ContainsSelfReference(memberNames)) {
+				return GetMember(obj, memberNames, 1, memberNames.Length - 2);
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -361,7 +367,7 @@ namespace ICSharpCode.PythonBinding
 		/// <param name="startIndex">The point at which to start looking in the memberNames.</param>
 		/// <param name="endIndex">The last memberNames item to look at.</param>
 		static object GetMember(object obj, string[] memberNames, int startIndex, int endIndex)
-		{
+		{			
 			for (int i = startIndex; i <= endIndex; ++i) {
 				Type type = obj.GetType();
 				string name = memberNames[i];
