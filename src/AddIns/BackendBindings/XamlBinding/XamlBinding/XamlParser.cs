@@ -95,6 +95,7 @@ namespace ICSharpCode.XamlBinding
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
 			using (new DebugTimerObject("background parser")) {
+				Core.LoggingService.Info("file: " + fileName);
 				using (ParseAndLock(fileContent)) {
 					var document = parser.LastDocument;
 					

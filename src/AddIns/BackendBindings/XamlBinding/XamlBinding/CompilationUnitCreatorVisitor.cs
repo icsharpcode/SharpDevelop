@@ -12,6 +12,7 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.SharpDevelop.Dom;
+using System.Text;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -51,17 +52,19 @@ namespace ICSharpCode.XamlBinding
 		{
 			Debug.Assert(document != null);
 			
-			if (attribute.ParentElement.Parent == document && attribute.LocalName == "Class" &&
-			    attribute.Namespace == CompletionDataHelper.XamlNamespace) {
-				this.generatedClass = AddClass(attribute.Value, attribute.ParentElement);
-			} else if (generatedClass != null && attribute.LocalName == "Name") {
-				string name = attribute.Value;
+			if (attribute.ParentElement != null) {
+				if (attribute.ParentElement.Parent == document && attribute.LocalName == "Class" &&
+				    attribute.Namespace == CompletionDataHelper.XamlNamespace) {
+					this.generatedClass = AddClass(attribute.Value, attribute.ParentElement);
+				} else if (generatedClass != null && attribute.LocalName == "Name") {
+					string name = attribute.Value;
 
-				if (!string.IsNullOrEmpty(name)) {
-					IReturnType type = TypeFromXmlNode(CompilationUnit, attribute.ParentElement);
-					DomRegion position = CreateRegion(attribute.ParentElement.StartOffset, attribute.ParentElement.StartOffset + attribute.ParentElement.Name.Length);
-					
-					generatedClass.Fields.Add(new DefaultField(type, name, ModifierEnum.Internal, position, generatedClass));
+					if (!string.IsNullOrEmpty(name)) {
+						IReturnType type = TypeFromXmlNode(CompilationUnit, attribute.ParentElement);
+						DomRegion position = CreateRegion(attribute.ParentElement.StartOffset, attribute.ParentElement.StartOffset + attribute.ParentElement.Name.Length);
+						
+						generatedClass.Fields.Add(new DefaultField(type, name, ModifierEnum.Internal, position, generatedClass));
+					}
 				}
 			}
 			
@@ -71,10 +74,13 @@ namespace ICSharpCode.XamlBinding
 		public override void VisitTag(AXmlTag tag)
 		{
 			if (tag.IsComment) {
-				string value = tag.Children
-					.OfType<AXmlText>()
-					.Select(xmlText => xmlText.Value)
-					.Aggregate((allText, text) => allText += text);
+				StringBuilder sb = new StringBuilder();
+				
+				foreach(AXmlText text in tag.Children.OfType<AXmlText>()) {
+					sb.Append(text.Value);
+				}
+				
+				string value = sb.ToString();
 				
 				foreach (string commentTag in lexerTags) {
 					if (value.Contains(commentTag)) {
