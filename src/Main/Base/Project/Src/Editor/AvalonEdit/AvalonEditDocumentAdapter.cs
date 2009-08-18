@@ -163,9 +163,10 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		
 		public System.IO.TextReader CreateReader()
 		{
-			return CreateSnapshot().CreateReader();
+			return document.CreateSnapshot().CreateReader();
 		}
 		
+		#region Snapshots and ITextBufferVersion
 		public ITextBuffer CreateSnapshot()
 		{
 			ChangeTrackingCheckpoint checkpoint;
@@ -237,6 +238,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 				return checkpoint.GetChangesTo(otherVersion.checkpoint).Select(c => new TextChangeEventArgs(c.Offset, c.RemovedText, c.InsertedText));
 			}
 		}
+		#endregion
 		
 		public void StartUndoableAction()
 		{

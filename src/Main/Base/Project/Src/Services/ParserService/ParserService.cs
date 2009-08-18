@@ -730,7 +730,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			// RaiseParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
 			// To ensure events are raised in the same order, we always invoke on the main thread.
-			Gui.WorkbenchSingleton.SafeThreadAsyncCall(
+			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					ParseInformationUpdated(null, e);
 				});
@@ -744,9 +744,15 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void RaiseParserUpdateStepFinished(ParserUpdateStepEventArgs e)
 		{
-			Gui.WorkbenchSingleton.SafeThreadAsyncCall(
+			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					ParserUpdateStepFinished(null, e);
+					
+					IViewContent currentView = WorkbenchSingleton.Workbench.ActiveViewContent;
+					IParseInformationListener listener = currentView as IParseInformationListener;
+					if (listener != null && FileUtility.IsEqualFileName(e.FileName, currentView.PrimaryFileName)) {
+						listener.ParseInformationUpdated(e.ParseInformation);
+					}
 				});
 		}
 		

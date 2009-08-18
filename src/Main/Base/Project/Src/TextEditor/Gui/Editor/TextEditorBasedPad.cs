@@ -63,8 +63,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public ITextBuffer CreateSnapshot()
 		{
 			string content = WorkbenchSingleton.SafeThreadFunction<string>(GetText);
-			return new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditTextSourceAdapter(
-				new ICSharpCode.AvalonEdit.Document.StringTextSource(content));
+			return new StringTextBuffer(content);
 		}
 		
 		string IEditable.Text {

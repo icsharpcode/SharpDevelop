@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void ManageUsings(Gui.IProgressMonitor progressMonitor, string fileName, IDocument document, bool sort, bool removedUnused)
 		{
-			ParseInformation info = ParserService.ParseFile(fileName, document.CreateSnapshot());
+			ParseInformation info = ParserService.ParseFile(fileName, document);
 			if (info == null) return;
 			ICompilationUnit cu = info.MostRecentCompilationUnit;
 			

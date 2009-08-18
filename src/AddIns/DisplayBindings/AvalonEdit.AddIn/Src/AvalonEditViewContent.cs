@@ -167,7 +167,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#region IEditable
 		public ITextBuffer CreateSnapshot()
 		{
-			return new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditTextSourceAdapter(codeEditor.Document.CreateSnapshot());
+			return codeEditor.DocumentAdapter.CreateSnapshot();
 		}
 		
 		/// <summary>
