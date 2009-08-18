@@ -156,6 +156,18 @@ namespace ICSharpCode.AvalonEdit.Utils
 			Matrix matrix = PresentationSource.FromVisual(visual).CompositionTarget.TransformFromDevice;
 			return new Size(size.Width * matrix.M11, size.Height * matrix.M22);
 		}
+		
+		public static Point TransformToDevice(this Point point, Visual visual)
+		{
+			Matrix matrix = PresentationSource.FromVisual(visual).CompositionTarget.TransformToDevice;
+			return new Point(point.X * matrix.M11, point.Y * matrix.M22);
+		}
+		
+		public static Point TransformFromDevice(this Point point, Visual visual)
+		{
+			Matrix matrix = PresentationSource.FromVisual(visual).CompositionTarget.TransformFromDevice;
+			return new Point(point.X * matrix.M11, point.Y * matrix.M22);
+		}
 		#endregion
 		
 		#region System.Drawing <-> WPF conversions

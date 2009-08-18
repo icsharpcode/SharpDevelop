@@ -165,7 +165,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			var clickedButton = (ToggleButton)e.OriginalSource;
 			var clickedNode = (ITreeNode)clickedButton.DataContext;
-			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0));
+			// use device independent units, because child popup Left/Top are in independent units 
+			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0)).TransformFromDevice(clickedButton);
 
 			if (clickedButton.IsChecked.GetValueOrDefault(false))
 			{

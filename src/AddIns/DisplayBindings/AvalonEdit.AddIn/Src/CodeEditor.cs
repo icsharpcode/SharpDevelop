@@ -375,18 +375,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			popup.VerticalOffset = popupPosition.Y;
 		}
 		
+		/// <summary> Returns Popup position based on mouse position, in device independent units </summary>
 		Point getPopupPosition(TextEditor textEditor, MouseEventArgs mouseArgs)
 		{
 			Point mousePos = mouseArgs.GetPosition(textEditor);
-			return textEditor.PointToScreen(mousePos + new Vector(-4, 6));
-			// attempt to align Popup with line bottom
-			/*TextViewPosition? logicalPos = textEditor.GetPositionFromPoint(mousePos);
+			Point positionInPixels;
+			// align Popup with line bottom
+			TextViewPosition? logicalPos = textEditor.GetPositionFromPoint(mousePos);
 			if (logicalPos.HasValue) {
-				return textEditor.TextArea.TextView.GetVisualPosition(logicalPos.Value, VisualYPosition.LineBottom);
+				var textView = textEditor.TextArea.TextView;
+				positionInPixels = 
+					textView.PointToScreen(
+						textView.GetVisualPosition(logicalPos.Value, VisualYPosition.LineBottom) - textView.ScrollOffset);
+				positionInPixels.X -= 4;
 			}
 			else {
-				return popupPos;
-			}*/
+				positionInPixels = textEditor.PointToScreen(mousePos + new Vector(-4, 6));
+			}
+			/ use device independent units, because Popup Left/Top are in independent units
+			return positionInPixels.TransformFromDevice(textEditor);
 		}
 		
 		Popup createPopup()
