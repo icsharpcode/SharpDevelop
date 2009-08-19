@@ -1071,8 +1071,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			switch(operatorDeclaration.OverloadableOperator)
 			{
 				case OverloadableOperatorType.Add:
+				case OverloadableOperatorType.UnaryPlus:
 					op = Tokens.Plus;
 					break;
+				case OverloadableOperatorType.UnaryMinus:
 				case OverloadableOperatorType.Subtract:
 					op = Tokens.Minus;
 					break;
