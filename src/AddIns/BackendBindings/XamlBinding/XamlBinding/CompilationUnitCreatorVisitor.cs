@@ -22,6 +22,7 @@ namespace ICSharpCode.XamlBinding
 		AXmlDocument document;
 		IClass generatedClass;
 		IProjectContent projectContent;
+		Stack<NodeWrapper> nodeStack;
 		
 		/// <summary>
 		/// string representation of the document, used to create DOM regions.
@@ -38,6 +39,8 @@ namespace ICSharpCode.XamlBinding
 			this.fileContent = fileContent;
 			this.lexerTags = lexerTags;
 			this.projectContent = projectContent;
+			
+			this.nodeStack = new Stack<NodeWrapper>();
 		}
 		
 		public override void VisitDocument(AXmlDocument document)
@@ -91,6 +94,36 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			base.VisitTag(tag);
+		}
+		
+		public override void VisitElement(AXmlElement element)
+		{
+			AXmlTag tag = element.Children.FirstOrDefault() as AXmlTag;
+			
+			if (tag != null && tag.IsStartOrEmptyTag) {				
+				NodeWrapper node = new NodeWrapper() {
+					ElementName = element.LocalName,
+					StartOffset = element.StartOffset,
+					EndOffset = element.EndOffset,
+					Name = element.GetAttributeValue("Name") ?? element.GetAttributeValue(CompletionDataHelper.XamlNamespace, "Name"),
+					Children = new List<NodeWrapper>()
+				};
+				
+				if (CompilationUnit.TreeRootNode == null) {
+					CompilationUnit.TreeRootNode = node;
+					nodeStack.Push(CompilationUnit.TreeRootNode);
+				} else {
+					if (nodeStack.Count > 0)
+						nodeStack.Peek().Children.Add(node);
+					if (!tag.IsEmptyTag)
+						nodeStack.Push(node);
+				}
+			}
+			
+			base.VisitElement(element);
+			
+			if (tag != null && tag.IsStartTag)
+				nodeStack.PopOrDefault();
 		}
 		
 		IClass AddClass(string className, AXmlElement element) {

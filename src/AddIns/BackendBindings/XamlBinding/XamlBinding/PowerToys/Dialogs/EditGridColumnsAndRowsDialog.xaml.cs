@@ -99,11 +99,11 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			XAttribute b = element.Attribute(gridRowName);
 			int value;
 			if (a != null && int.TryParse(a.Value, out value))
-				element.SetAttributeValue(gridColName, Math.Min(Math.Max(0, value), maxCols - 1));
+				element.SetAttributeValue(gridColName, Utils.MinMax(value, 0, maxCols - 1));
 			else
 				element.SetAttributeValue(gridColName, 0);
 			if (b != null && int.TryParse(b.Value, out value))
-				element.SetAttributeValue(gridRowName, Math.Min(Math.Max(0, value), maxRows - 1));
+				element.SetAttributeValue(gridRowName, Utils.MinMax(value, 0, maxRows - 1));
 			else
 				element.SetAttributeValue(gridRowName, 0);
 		}

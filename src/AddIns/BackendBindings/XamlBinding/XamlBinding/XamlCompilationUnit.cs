@@ -22,6 +22,8 @@ namespace ICSharpCode.XamlBinding
 			: base(projectContent)
 		{
 		}
+		
+		public NodeWrapper TreeRootNode { get; set; }
 
 		/// <summary>
 		/// Creates a IReturnType looking for a class referenced in XAML.

@@ -73,7 +73,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public static XamlContext ResolveContext(ITextBuffer fileContent, string fileName, int offset)
 		{
-			using (new DebugTimerObject("ResolveContext")) {
+			//using (new DebugTimerObject("ResolveContext")) {
 				XamlParser parser = string.IsNullOrEmpty(fileName) ? new XamlParser() : ParserService.GetParser(fileName) as XamlParser;
 				ParseInformation info = string.IsNullOrEmpty(fileName) ? null : ParserService.GetParseInformation(fileName);
 
@@ -188,7 +188,7 @@ namespace ICSharpCode.XamlBinding
 					
 					return context;
 				}
-			}
+			//}
 		}
 		
 		public static XamlCompletionContext ResolveCompletionContext(ITextEditor editor, char typedValue)

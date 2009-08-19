@@ -72,13 +72,15 @@ namespace ICSharpCode.XamlBinding
 				// Double check, now that we are thread-safe
 				if (lastParsedVersion == null || fileContent.Version == null || !fileContent.Version.BelongsToSameDocumentAs(lastVer)) {
 					// First parse or versioning not supported
-					parser.Parse(fileContent.Text, null);
+					using (new DebugTimerObject("normal parse"))
+						parser.Parse(fileContent.Text, null);
 					lastParsedVersion = fileContent.Version;
 				} else if (fileContent.Version.CompareAge(lastParsedVersion) > 0) {
 					// Incremental parse
 					var changes = lastParsedVersion.GetChangesTo(fileContent.Version).
 						Select(c => new DocumentChangeEventArgs(c.Offset, c.RemovedText, c.InsertedText));
-					parser.Parse(fileContent.Text, changes);
+					using (new DebugTimerObject("incremental parse"))
+						parser.Parse(fileContent.Text, changes);
 					lastParsedVersion = fileContent.Version;
 				} else {
 					// fileContent is older - no need to parse
@@ -94,19 +96,19 @@ namespace ICSharpCode.XamlBinding
 
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
-			using (new DebugTimerObject("background parser")) {
-				Core.LoggingService.Info("file: " + fileName);
-				using (ParseAndLock(fileContent)) {
-					var document = parser.LastDocument;
-					
-					CompilationUnitCreatorVisitor visitor =
-						new CompilationUnitCreatorVisitor(projectContent, fileContent.Text, fileName, lexerTags);
-					
-					document.AcceptVisitor(visitor);
-					
-					return visitor.CompilationUnit;
-				}
+			//using (new DebugTimerObject("background parser")) {
+			//	Core.LoggingService.Info("file: " + fileName);
+			using (ParseAndLock(fileContent)) {
+				var document = parser.LastDocument;
+				
+				CompilationUnitCreatorVisitor visitor =
+					new CompilationUnitCreatorVisitor(projectContent, fileContent.Text, fileName, lexerTags);
+				
+				document.AcceptVisitor(visitor);
+				
+				return visitor.CompilationUnit;
 			}
+			//}
 		}
 		
 		/// <summary>

@@ -23,7 +23,7 @@ namespace ICSharpCode.XamlBinding
 	/// Description of Utils.
 	/// </summary>
 	public static class Utils
-	{	
+	{
 		public static MarkupExtensionInfo GetInnermostMarkupExtensionInfo(MarkupExtensionInfo info)
 		{
 			var lastNamed = info.NamedArguments.LastOrDefault();
@@ -44,6 +44,11 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return info;
+		}
+		
+		public static int MinMax(int value, int lower, int upper)
+		{
+			return Math.Min(Math.Max(value, lower), upper);
 		}
 		
 		static char[] whitespace = new char[] {' ', '\t', '\n', '\r'};
@@ -86,7 +91,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public static Location GetLocationInfoFromOffset(string text, int offset)
 		{
-			string[] lines = text.Substring(0, offset).Split('\n');
+			string[] lines = text.Substring(0, MinMax(offset, 0, text.Length)).Split('\n');
 			string line = lines.LastOrDefault() ?? string.Empty;
 			
 			return new Location(line.Length + 1, lines.Length);
@@ -100,7 +105,7 @@ namespace ICSharpCode.XamlBinding
 		/// <returns>
 		/// A string, if the at offset is the extension type. <br />
 		/// An AttributeValue, if at the offset is a positional argument. <br />
-		/// A KeyValuePair&lt;string, AttributeValue&gt;, if at the offset is a named argument.
+		/// A KeyValuePair&lt;string, AttributeValue>, if at the offset is a named argument.
 		/// </returns>
 		public static object GetMarkupDataAtPosition(MarkupExtensionInfo info, int offset)
 		{

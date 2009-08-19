@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="MarkupExtensionTokenKind.cs">
     </Compile>
+    <Compile Include="NodeWrapper.cs" />
     <Compile Include="Options\CodeCompletion.xaml.cs">
       <DependentUpon>CodeCompletion.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -145,6 +146,7 @@
       <DependentUpon>XamlOutlineContentHost.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="XamlOutlineNode.cs" />
     <Compile Include="XamlParser.cs" />
     <Compile Include="XamlResolver.cs" />
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

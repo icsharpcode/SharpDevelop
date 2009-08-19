@@ -17,6 +17,8 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.XmlEditor;
 
+#pragma warning disable 169
+
 namespace ICSharpCode.XamlBinding
 {
 	class DebugTimerObject : IDisposable
@@ -43,3 +45,5 @@ namespace ICSharpCode.XamlBinding
 		}
 	}
 }
+
+#pragma warning restore 169
