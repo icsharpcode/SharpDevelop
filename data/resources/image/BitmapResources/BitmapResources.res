@@ -267,6 +267,7 @@ Icons.16x16.SharpQuery.Remove                   = SharpQueryIcons\Icons.16x16.Sh
 Icons.16x16.NameSpace                             = ClassBrowserIcons\Icons.16x16.NameSpace.png
 Icons.16x16.Literal                               = ClassBrowserIcons\Icons.16x16.Literal.png
 Icons.16x16.Reference                             = ClassBrowserIcons\Icons.16x16.Reference.png
+Icons.16x16.Keyword                               = ClassBrowserIcons\Icons.16x16.Keyword.png
 
 
 Icons.16x16.Class                                 = ClassBrowserIcons\Icons.16x16.Class.png
@@ -275,6 +276,7 @@ Icons.16x16.Enum                                  = ClassBrowserIcons\Icons.16x1
 Icons.16x16.Interface                             = ClassBrowserIcons\Icons.16x16.Interface.png
 Icons.16x16.Delegate                              = ClassBrowserIcons\Icons.16x16.Delegate.png
 Icons.16x16.Method                                = ClassBrowserIcons\Icons.16x16.Method.png
+Icons.16x16.Operator                              = ClassBrowserIcons\Icons.16x16.Operator.png
 Icons.16x16.Property                              = ClassBrowserIcons\Icons.16x16.Property.png
 Icons.16x16.Indexer                               = ClassBrowserIcons\Icons.16x16.Indexer.png
 Icons.16x16.Field                                 = ClassBrowserIcons\Icons.16x16.Field.png

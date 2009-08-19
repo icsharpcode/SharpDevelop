@@ -23,10 +23,11 @@ namespace ICSharpCode.SharpDevelop
 		
 		public const int LocalVariableIndex = 16;
 		public const int ParameterIndex = 17;
-		public const int KeywordIndex = NamespaceIndex; // TODO: give keywords their own icon
-		public const int CodeTemplateIndex = 18;
+		public const int OperatorIndex = 18;
+		public const int KeywordIndex = NamespaceIndex; //19;
+		public const int CodeTemplateIndex = 20;
 		
-		public const int ClassIndex     = 19;
+		public const int ClassIndex     = 21;
 		public const int StructIndex    = ClassIndex + 1 * 4;
 		public const int InterfaceIndex = ClassIndex + 2 * 4;
 		public const int EnumIndex      = ClassIndex + 3 * 4;
@@ -79,7 +80,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static int GetIcon(IMethod method)
 		{
-			return MethodIndex + GetModifierOffset(method.Modifiers);
+			if (method.GetIsOperator())
+				return OperatorIndex;
+			else
+				return MethodIndex + GetModifierOffset(method.Modifiers);
 		}
 		
 		public static int GetIcon(IProperty property)
@@ -242,9 +246,11 @@ namespace ICSharpCode.SharpDevelop
 			
 			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Local"));
 			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Parameter"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Operator"));
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Keyword"));
 			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.TextFileIcon"));
 			
-			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Class")); //19
+			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.Class")); //21
 			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.InternalClass"));
 			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.ProtectedClass"));
 			imglist.Images.Add(WinFormsResourceService.GetBitmap("Icons.16x16.PrivateClass"));

@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	}
 	
 	[Serializable]
-	public class DefaultMethod : AbstractMember, IMethod
+	public class DefaultMethod : AbstractMember, IMethod, IMethod2
 	{
 		IList<IParameter> parameters;
 		IList<ITypeParameter> typeParameters;
@@ -163,6 +163,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public virtual bool IsConstructor {
 			get {
 				return Name == "#ctor" || Name == "#cctor";
+			}
+		}
+		
+		public virtual bool IsOperator {
+			get {
+				return Name.StartsWith("op_", StringComparison.Ordinal);
 			}
 		}
 		

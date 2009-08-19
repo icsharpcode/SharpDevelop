@@ -310,6 +310,9 @@ namespace ICSharpCode.NRefactory.Ast
 		Modulus,
 		Concat,
 		
+		UnaryPlus,
+		UnaryMinus,
+		
 		Not,
 		BitNot,
 		
