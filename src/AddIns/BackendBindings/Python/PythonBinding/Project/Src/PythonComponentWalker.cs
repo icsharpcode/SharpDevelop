@@ -16,6 +16,7 @@ using System.Resources;
 using System.Text;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
 using IronPython.Compiler.Ast;
 
 namespace ICSharpCode.PythonBinding
@@ -111,7 +112,10 @@ namespace ICSharpCode.PythonBinding
 				} else if (lhsNameExpression != null) {
 					CallExpression callExpression = node.Right as CallExpression;
 					if (callExpression != null) {
-						CreateInstance(lhsNameExpression.Name.ToString(), callExpression);
+						object instance = CreateInstance(lhsNameExpression.Name.ToString(), callExpression);
+						if (instance == null) {
+							ThrowCouldNotFindTypeException(callExpression.Target as MemberExpression);
+						}
 					}
 				}
 			}
@@ -275,7 +279,7 @@ namespace ICSharpCode.PythonBinding
 					} else if (IsResource(memberExpression)) {
 						fieldExpression.SetPropertyValue(componentCreator, GetResource(node));
 					} else {
-						throw new PythonComponentWalkerException(String.Format("Could not find type '{0}'.", PythonControlFieldExpression.GetMemberName(memberExpression)));
+						ThrowCouldNotFindTypeException(memberExpression);
 					}
 				}
 			} else if (node.Target is IndexExpression) {
@@ -392,6 +396,12 @@ namespace ICSharpCode.PythonBinding
 		{
 			object array = deserializer.Deserialize(callExpression);
 			fieldExpression.SetPropertyValue(componentCreator, array);	
+		}
+		
+		void ThrowCouldNotFindTypeException(MemberExpression memberExpression)
+		{
+			string typeName = PythonControlFieldExpression.GetMemberName(memberExpression);
+			throw new PythonComponentWalkerException(String.Format(StringParser.Parse("${res:ICSharpCode.PythonBinding.UnknownTypeName}"), typeName));
 		}
 	}
 }

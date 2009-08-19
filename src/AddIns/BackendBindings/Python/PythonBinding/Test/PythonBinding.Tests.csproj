@@ -377,6 +377,7 @@
     <Compile Include="Utils\PythonParserHelper.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
     <EmbeddedResource Include="Designer\App.ico" />
+    <EmbeddedResource Include="Strings.resx" />
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
