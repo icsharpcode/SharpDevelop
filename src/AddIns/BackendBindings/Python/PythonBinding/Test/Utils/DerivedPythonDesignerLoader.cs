@@ -28,9 +28,9 @@ namespace PythonBinding.Tests.Utils
 		{
 		}
 
-		public void CallPerformFlush()
+		public void CallPerformFlush(IDesignerSerializationManager serializationManager)
 		{
-			base.PerformFlush(null);
+			base.PerformFlush(serializationManager);
 		}
 
 		protected override void OnEndLoad(bool successful, ICollection errors)

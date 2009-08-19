@@ -22,6 +22,7 @@ namespace PythonBinding.Tests.Parsing
 	/// was folded. This test fixture tests for that bug.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Ignored because test depends on folding - reactivate when folding is reimplemented")]
 	public class ParseClassWithCtorTestFixture
 	{
 		ICompilationUnit compilationUnit;

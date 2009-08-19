@@ -542,6 +542,15 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void OverloadedUnaryOperators()
+		{
+			TestTypeMember("public static TheBug operator +(TheBug bugNode)\n{\n}");
+			TestTypeMember("public static TheBug operator -(TheBug bugNode)\n{\n}");
+			TestTypeMember("public static TheBug operator ~(TheBug bugNode)\n{\n}");
+			TestTypeMember("public static TheBug operator !(TheBug bugNode)\n{\n}");
+		}
+		
+		[Test]
 		public void PropertyWithAccessorAccessModifiers()
 		{
 			TestTypeMember("public bool ExpectsValue {\n" +

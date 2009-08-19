@@ -228,7 +228,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static ClassBrowserImage GetIcon(IMethod method)
 		{
-			return entityImages[MethodIndex + GetModifierOffset(method.Modifiers)];
+			if (method.IsOperator)
+				return Operator;
+			else
+				return entityImages[MethodIndex + GetModifierOffset(method.Modifiers)];
 		}
 		
 		public static ClassBrowserImage GetIcon(IProperty property)
@@ -375,7 +378,8 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static readonly ClassBrowserImage LocalVariable = AddImage("Icons.16x16.Local");
 		public static readonly ClassBrowserImage Parameter = AddImage("Icons.16x16.Parameter");
-		public static readonly ClassBrowserImage Keyword = Namespace; // TODO: give keywords their own icon
+		public static readonly ClassBrowserImage Keyword = AddImage("Icons.16x16.Keyword");
+		public static readonly ClassBrowserImage Operator = AddImage("Icons.16x16.Operator");
 		public static readonly ClassBrowserImage CodeTemplate = AddImage("Icons.16x16.TextFileIcon");
 	}
 }

@@ -592,6 +592,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			AttributedNode node = ConvertMember(baseMember, targetContext);
 			node.Modifier &= ~(Modifiers.Virtual | Modifiers.Abstract);
 			node.Modifier |= Modifiers.Override;
+			node.Attributes.Clear(); // don't copy over attributes
 			
 			if (!baseMember.IsAbstract) {
 				// replace the method/property body with a call to the base method/property

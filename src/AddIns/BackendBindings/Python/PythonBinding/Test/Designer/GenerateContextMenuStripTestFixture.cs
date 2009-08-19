@@ -22,9 +22,7 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateContextMenuStripTestFixture
 	{
 		string generatedPythonCode;
-		string createContextMenuStripCode;
 		Size menuStripSize;
-		PythonDesignerComponent contextMenuDesignerComponent;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -53,22 +51,18 @@ namespace PythonBinding.Tests.Designer
 				menuStrip.RightToLeft = RightToLeft.No;
 				menuStripSize = menuStrip.Size;
 				
-				PythonControl pythonForm = new PythonControl("    ");
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
-				
-				PythonCodeBuilder codeBuilder = new PythonCodeBuilder();
-				contextMenuDesignerComponent = PythonDesignerComponentFactory.CreateDesignerComponent(menuStrip);
-				contextMenuDesignerComponent.AppendCreateInstance(codeBuilder);
-
-				createContextMenuStripCode = codeBuilder.ToString();
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}	
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._components = System.ComponentModel.Container()\r\n" +
+			string expectedCode = "    self._components = System.ComponentModel.Container()\r\n" +
 								"    self._timer1 = System.Windows.Forms.Timer(self._components)\r\n" +
 								"    self._contextMenuStrip1 = System.Windows.Forms.ContextMenuStrip(self._components)\r\n" +
 								"    self.SuspendLayout()\r\n" +
@@ -82,24 +76,9 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
-		}
-		
-		[Test]
-		public void CreateContextMenuStripCodeUsesIContainerConstructor()
-		{
-			string expectedCode = "self._components = System.ComponentModel.Container()\r\n" +
-				"self._contextMenuStrip1 = System.Windows.Forms.ContextMenuStrip(self._components)\r\n";
-			Assert.AreEqual(expectedCode, createContextMenuStripCode);
-		}
-		
-		[Test]
-		public void ContextMenuDesignerComponentCreatedFromFactory()
-		{
-			Assert.IsInstanceOf(typeof(PythonContextMenuComponent), contextMenuDesignerComponent);
 		}
 	}
 }

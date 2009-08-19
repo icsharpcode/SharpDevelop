@@ -16,6 +16,7 @@ using System.Reflection;
 using System.Resources;
 using System.Text;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 using IronPython.Compiler.Ast;
 
 namespace ICSharpCode.PythonBinding
@@ -111,7 +112,10 @@ namespace ICSharpCode.PythonBinding
 				} else if (lhsNameExpression != null) {
 					CallExpression callExpression = node.Right as CallExpression;
 					if (callExpression != null) {
-						CreateInstance(lhsNameExpression.Name.ToString(), callExpression);
+						object instance = CreateInstance(lhsNameExpression.Name.ToString(), callExpression);
+						if (instance == null) {
+							ThrowCouldNotFindTypeException(callExpression.Target as MemberExpression);
+						}
 					}
 				}
 			}
@@ -148,7 +152,7 @@ namespace ICSharpCode.PythonBinding
 				return false;
 			}
 			
-			fieldExpression.SetPropertyValue(componentCreator, node.Name.ToString());
+			fieldExpression.SetPropertyValue(componentCreator, node);
 			return false;
 		}
 		
@@ -275,7 +279,7 @@ namespace ICSharpCode.PythonBinding
 					} else if (IsResource(memberExpression)) {
 						fieldExpression.SetPropertyValue(componentCreator, GetResource(node));
 					} else {
-						throw new PythonComponentWalkerException(String.Format("Could not find type '{0}'.", PythonControlFieldExpression.GetMemberName(memberExpression)));
+						ThrowCouldNotFindTypeException(memberExpression);
 					}
 				}
 			} else if (node.Target is IndexExpression) {
@@ -292,11 +296,6 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void WalkMethodCall(CallExpression node)
 		{
-			if (node.Args.Length == 0) {
-				// Ignore method calls with no parameters.
-				return;
-			}
-			
 			// Try to get the object being called. Try the form first then
 			// look for other controls.
 			object member = PythonControlFieldExpression.GetMember(component, node);
@@ -308,8 +307,38 @@ namespace ICSharpCode.PythonBinding
 			// Execute the method on the object.
 			if (member != null) {
 				object[] args = deserializer.GetArguments(node).ToArray();
-				member.GetType().InvokeMember(field.MethodName, BindingFlags.InvokeMethod, Type.DefaultBinder, member, args);	
+				InvokeMethod(member, field.MethodName, args);
 			}
+		}
+		
+		void InvokeMethod(object obj, string name, object[] args)
+		{
+			Type type = obj.GetType();
+			try {
+				type.InvokeMember(name, BindingFlags.InvokeMethod, Type.DefaultBinder, obj, args);
+			} catch (MissingMethodException ex) {
+				// Look for an explicitly implemented interface.
+				MethodInfo method = FindInterfaceMethod(type, name);
+				if (method != null) {
+					method.Invoke(obj, args);
+				} else {
+					throw ex;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Looks for an explicitly implemented interface.
+		/// </summary>
+		MethodInfo FindInterfaceMethod(Type type, string name)
+		{
+			string nameMatch = "." + name;
+			foreach (MethodInfo method in type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)) {
+				if (method.Name.EndsWith(nameMatch)) {
+					return method;
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -367,6 +396,12 @@ namespace ICSharpCode.PythonBinding
 		{
 			object array = deserializer.Deserialize(callExpression);
 			fieldExpression.SetPropertyValue(componentCreator, array);	
+		}
+		
+		void ThrowCouldNotFindTypeException(MemberExpression memberExpression)
+		{
+			string typeName = PythonControlFieldExpression.GetMemberName(memberExpression);
+			throw new PythonComponentWalkerException(String.Format(StringParser.Parse("${res:ICSharpCode.PythonBinding.UnknownTypeName}"), typeName));
 		}
 	}
 }

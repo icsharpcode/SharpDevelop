@@ -34,5 +34,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<string> HandlesClauses {
 			get;
 		}
+		
+		bool IsOperator {
+			get;
+		}
 	}
 }

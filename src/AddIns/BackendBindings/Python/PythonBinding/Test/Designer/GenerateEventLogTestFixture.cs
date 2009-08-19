@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -36,9 +37,11 @@ namespace PythonBinding.Tests.Designer
 				
 				EventLog eventLog = (EventLog)host.CreateComponent(typeof(EventLog), "eventLog1");
 				
-				string indentString = "    ";
-				PythonControl pythonControl = new PythonControl(indentString);
-				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form);
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
@@ -47,9 +50,7 @@ namespace PythonBinding.Tests.Designer
 		[IgnoreAttribute("Ignore test to fix the build - this test breaks for some reason on .NET 4.0")]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._eventLog1 = System.Diagnostics.EventLog()\r\n" +
-								"    self._eventLog1.BeginInit()\r\n" +
+			string expectedCode = "    self._eventLog1 = System.Diagnostics.EventLog()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # eventLog1\r\n" +
@@ -60,9 +61,7 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self._eventLog1.EndInit()\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}		

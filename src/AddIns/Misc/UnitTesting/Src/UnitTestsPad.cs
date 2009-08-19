@@ -116,10 +116,14 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		protected void SolutionLoaded(Solution solution)
 		{
-			if (solution != null) {
-				treeView.AddSolution(solution);
-			} else {
-				treeView.Clear();
+			// SolutionLoaded will be invoked from another thread.
+			// The UnitTestsPad might be disposed by the time the event is processed by the main thread.
+			if (treeView != null) {
+				if (solution != null) {
+					treeView.AddSolution(solution);
+				} else {
+					treeView.Clear();
+				}
 			}
 		}
 		
@@ -233,7 +237,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Indicates that an event handler for the ParserService's 
+		/// Indicates that an event handler for the ParserService's
 		/// LoadSolutionProjectsThreadEnded event has been added
 		/// </summary>
 		protected virtual void OnAddedLoadSolutionProjectsThreadEndedHandler()

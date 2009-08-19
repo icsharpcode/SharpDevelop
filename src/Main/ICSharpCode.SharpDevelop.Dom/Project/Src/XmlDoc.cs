@@ -254,7 +254,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		static XmlDoc Load(string fileName, string cachePath, bool allowRedirect)
 		{
-			//LoggingService.Debug("Loading XmlDoc for " + fileName);
+			LoggingService.Debug("Loading XmlDoc for " + fileName);
 			XmlDoc doc;
 			string cacheName = null;
 			if (cachePath != null) {

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Reflection;
+using IronPython.Compiler;
 using IronPython.Compiler.Ast;
 
 namespace ICSharpCode.PythonBinding
@@ -33,19 +34,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			List<object> args = new List<object>();
 			foreach (Arg a in expression.Args) {
-				ConstantExpression constantExpression = a.Expression as ConstantExpression;
-				MemberExpression memberExpression = a.Expression as MemberExpression;
-				CallExpression callExpression = a.Expression as CallExpression;
-				NameExpression nameExpression = a.Expression as NameExpression;
-				if (constantExpression != null) {
-					args.Add(constantExpression.Value);
-				} else if (memberExpression != null) {
-					args.Add(Deserialize(memberExpression));
-				} else if (callExpression != null) {
-					args.Add(Deserialize(callExpression));
-				} else if (nameExpression != null) {
-					args.Add(Deserialize(nameExpression));
-				}
+				args.Add(Deserialize(a.Expression));
 			}
 			return args;
 		}		
@@ -62,15 +51,18 @@ namespace ICSharpCode.PythonBinding
 				throw new ArgumentNullException("node");
 			}
 	
-			MemberExpression memberExpression = node as MemberExpression;
-			CallExpression callExpression = node as CallExpression;
-			BinaryExpression binaryExpression = node as BinaryExpression;
-			if (callExpression != null) {
-				return Deserialize(callExpression);
-			} else if (binaryExpression != null) {
-				return Deserialize(binaryExpression);
-			} else if (memberExpression != null) {
-				return Deserialize(memberExpression);
+			if (node is CallExpression) {
+				return Deserialize((CallExpression)node);
+			} else if (node is BinaryExpression) {
+				return Deserialize((BinaryExpression)node);
+			} else if (node is MemberExpression) {
+				return Deserialize((MemberExpression)node);
+			} else if (node is UnaryExpression) {
+				return Deserialize((UnaryExpression)node);
+			} else if (node is ConstantExpression) {
+				return Deserialize((ConstantExpression)node);
+			} else if (node is NameExpression) {
+				return Deserialize((NameExpression)node);
 			}
 			return null;
 		}
@@ -137,10 +129,16 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		object Deserialize(NameExpression nameExpression)
 		{
-			if ("self" == nameExpression.Name.ToString().ToLowerInvariant()) {
+			string name = nameExpression.Name.ToString();
+			if ("self" == name.ToLowerInvariant()) {
 				return componentCreator.RootComponent;
+			} else {
+				bool result;
+				if (Boolean.TryParse(name, out result)) {
+					return result;
+				}
 			}
-			return null;
+			return componentCreator.GetInstance(name);
 		}
 		
 		Type GetType(PythonControlFieldExpression field)
@@ -206,6 +204,29 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return null;
+		}
+		
+		object Deserialize(UnaryExpression expression)
+		{
+			object rhs = Deserialize(expression.Expression);
+			switch (expression.Op) {
+				case PythonOperator.Negate:
+					return Negate(rhs);
+			}
+			return rhs;
+		}
+		
+		object Negate(object value)
+		{
+			if (value is int) {
+				return -1 * (int)value;
+			}
+			return value;
+		}
+		
+		object Deserialize(ConstantExpression expression)
+		{
+			return expression.Value;
 		}
 	}
 }

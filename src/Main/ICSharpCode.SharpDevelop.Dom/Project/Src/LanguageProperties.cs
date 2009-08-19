@@ -222,10 +222,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual bool ShowMember(IMember member, bool showStatic)
 		{
-			if (member is IProperty && ((IProperty)member).IsIndexer) {
+			IProperty property = member as IProperty;
+			if (property != null && property.IsIndexer) {
 				return false;
 			}
-			if (member is IMethod && ((IMethod)member).IsConstructor) {
+			IMethod method = member as IMethod;
+			if (method != null && (method.IsConstructor || method.IsOperator)) {
 				return false;
 			}
 			return member.IsStatic == showStatic;
@@ -335,7 +337,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (member is ArrayReturnType.ArrayIndexer) {
 					return false;
 				}
-				if (member is IMethod && ((IMethod)member).IsConstructor) {
+				IMethod method = member as IMethod;
+				if (method != null && (method.IsConstructor || method.IsOperator)) {
 					return false;
 				}
 				return member.IsStatic || !showStatic;

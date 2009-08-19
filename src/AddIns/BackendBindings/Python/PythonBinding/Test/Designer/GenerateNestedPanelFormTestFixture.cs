@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -55,17 +56,18 @@ namespace PythonBinding.Tests.Designer
 				panel1.Controls.Add(panel2);
 				form.Controls.Add(panel1);
 				
-				string indentString = "    ";
-				PythonControl pythonForm = new PythonControl(indentString);
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._panel1 = System.Windows.Forms.Panel()\r\n" +
+			string expectedCode = "    self._panel1 = System.Windows.Forms.Panel()\r\n" +
 								"    self._panel2 = System.Windows.Forms.Panel()\r\n" +
 								"    self._textBox1 = System.Windows.Forms.TextBox()\r\n" +
 								"    self._panel1.SuspendLayout()\r\n" +
@@ -101,11 +103,9 @@ namespace PythonBinding.Tests.Designer
 								"    self.Controls.Add(self._panel1)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
 								"    self._panel1.ResumeLayout(False)\r\n" +
-								"    self._panel1.PerformLayout()\r\n" +
 								"    self._panel2.ResumeLayout(False)\r\n" +
 								"    self._panel2.PerformLayout()\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}

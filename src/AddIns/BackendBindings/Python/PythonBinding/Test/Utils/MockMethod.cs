@@ -34,6 +34,12 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
+		public bool IsOperator {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public IList<string> HandlesClauses {
 			get {
 				throw new NotImplementedException();

@@ -17,6 +17,7 @@ using PythonBinding.Tests;
 namespace PythonBinding.Tests.Parsing
 {
 	[TestFixture]
+	[Ignore("Ignored because test depends on folding - reactivate when folding is reimplemented")]
 	public class ParseClassWithMethodTestFixture
 	{
 		ICompilationUnit compilationUnit;

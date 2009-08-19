@@ -166,6 +166,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public virtual bool IsOperator {
+			get {
+				return Name.StartsWith("op_", StringComparison.Ordinal);
+			}
+		}
+		
 		public DefaultMethod(IClass declaringType, string name) : base(declaringType, name)
 		{
 		}

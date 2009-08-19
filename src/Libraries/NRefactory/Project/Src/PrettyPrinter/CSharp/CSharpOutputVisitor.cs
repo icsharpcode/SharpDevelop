@@ -820,6 +820,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			} else {
 				switch (operatorDeclaration.OverloadableOperator) {
 					case OverloadableOperatorType.Add:
+					case OverloadableOperatorType.UnaryPlus:
 						outputFormatter.PrintToken(Tokens.Plus);
 						break;
 					case OverloadableOperatorType.BitNot:
@@ -893,6 +894,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.GreaterThan);
 						outputFormatter.PrintToken(Tokens.GreaterThan);
 						break;
+					case OverloadableOperatorType.UnaryMinus:
 					case OverloadableOperatorType.Subtract:
 						outputFormatter.PrintToken(Tokens.Minus);
 						break;

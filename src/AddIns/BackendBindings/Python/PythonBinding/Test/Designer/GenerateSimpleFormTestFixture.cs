@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -20,8 +21,6 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateSimpleFormTestFixture
 	{
 		string generatedPythonCode;
-		string formPropertiesCode;
-		string propertyOwnerName;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -35,48 +34,26 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 				namePropertyDescriptor.SetValue(form, "MainForm");
 				
-				string indentString = "    ";
-				PythonControl pythonForm = new PythonControl(indentString);
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
-				
-				PythonCodeBuilder codeBuilder = new PythonCodeBuilder();
-				codeBuilder.IndentString = indentString;
-				codeBuilder.IncreaseIndent();
-				PythonDesignerRootComponent designerRootComponent = new PythonDesignerRootComponent(form);
-				propertyOwnerName = designerRootComponent.GetPropertyOwnerName();
-				designerRootComponent.AppendComponentProperties(codeBuilder, true, false);
-				formPropertiesCode = codeBuilder.ToString();
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self.SuspendLayout()\r\n" +
+			string expectedCode = "    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # MainForm\r\n" +
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.ResumeLayout(False)\r\n";
 			
-			Assert.AreEqual(expectedCode, generatedPythonCode);
-		}
-		
-		[Test]
-		public void FormPropertiesCode()
-		{
-			string expectedCode = "    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
-								"    self.Name = \"MainForm\"\r\n";
-			Assert.AreEqual(expectedCode, formPropertiesCode);
-		}
-		
-		[Test]
-		public void PropertyOwnerName()
-		{
-			Assert.AreEqual("self", propertyOwnerName);
+			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}		
 	}
 }

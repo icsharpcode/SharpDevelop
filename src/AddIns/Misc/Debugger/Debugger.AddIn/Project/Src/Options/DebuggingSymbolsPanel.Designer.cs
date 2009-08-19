@@ -49,18 +49,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			this.pathList.ListCaption = "${res:Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption}";
 			this.pathList.Location = new System.Drawing.Point(0, 0);
 			this.pathList.ManualOrder = true;
+			this.pathList.Margin = new System.Windows.Forms.Padding(2);
 			this.pathList.Name = "pathList";
-			this.pathList.Size = new System.Drawing.Size(349, 295);
+			this.pathList.Size = new System.Drawing.Size(233, 192);
 			this.pathList.TabIndex = 4;
 			this.pathList.TitleText = "${res:Global.Folder}:";
 			// 
 			// DebuggingSymbolsPanel
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.pathList);
+			this.Margin = new System.Windows.Forms.Padding(2);
 			this.Name = "DebuggingSymbolsPanel";
-			this.Size = new System.Drawing.Size(352, 298);
+			this.Size = new System.Drawing.Size(235, 194);
 			this.ResumeLayout(false);
 		}
 		private ICSharpCode.SharpDevelop.Gui.StringListEditor pathList;

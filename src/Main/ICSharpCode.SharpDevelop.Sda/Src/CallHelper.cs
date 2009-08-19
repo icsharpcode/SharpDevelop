@@ -37,6 +37,9 @@ namespace ICSharpCode.SharpDevelop.Sda
 		#region Initialize Core
 		public void InitSharpDevelopCore(SharpDevelopHost.CallbackHelper callback, StartupSettings properties)
 		{
+			// creating the service manager initializes the logging service etc.
+			ICSharpCode.Core.Services.ServiceManager.Instance = new SDServiceManager();
+			
 			LoggingService.Info("InitSharpDevelop...");
 			this.callback = callback;
 			CoreStartup startup = new CoreStartup(properties.ApplicationName);

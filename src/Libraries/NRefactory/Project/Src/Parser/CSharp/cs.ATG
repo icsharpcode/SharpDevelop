@@ -880,6 +880,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 		parameters.Add(new ParameterDeclarationExpression(type, varName));
 		OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
+			Name = (isImplicit ? "op_Implicit" : "op_Explicit"),
 			Modifier = m.Modifier,
 			Attributes = attributes, 
 			Parameters = parameters, 
@@ -915,11 +916,16 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		(. Location endPos = t.Location; .)
 		")" ( Block<out stmt> | ";" )
 		(.
+			if (op == OverloadableOperatorType.Add && secondType == null)
+				op = OverloadableOperatorType.UnaryPlus;
+			if (op == OverloadableOperatorType.Subtract && secondType == null)
+				op = OverloadableOperatorType.UnaryMinus;
 			OperatorDeclaration operatorDeclaration = new OperatorDeclaration {
 				Modifier = m.Modifier,
 				Attributes = attributes,
 				TypeReference = type,
 				OverloadableOperator = op,
+				Name = GetReflectionNameForOperator(op),
 				Body = (BlockStatement)stmt,
 				StartLocation = m.GetDeclarationLocation(startPos),
 				EndLocation = endPos

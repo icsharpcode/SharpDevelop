@@ -172,26 +172,25 @@
     <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
     <Compile Include="DebugPythonCommandTestFixture.cs" />
     <Compile Include="Designer\AppendNullPropertyValueTestFixture.cs" />
+    <Compile Include="Designer\CallBeginInitOnLoadTestFixture.cs" />
     <Compile Include="Designer\ConvertCustomClassUsingTypeConverterTestFixture.cs" />
-    <Compile Include="Designer\CreateDesignerComponentTests.cs" />
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
     <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
     <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\DeserializeComponentAssignmentTestFixture.cs" />
     <Compile Include="Designer\DeserializeDateTimeArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeLocalVariableTestFixture.cs" />
+    <Compile Include="Designer\DeserializeMethodParametersTestFixture.cs" />
     <Compile Include="Designer\DeserializerConstructorStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeToolStripItemArrayTestFixture.cs" />
     <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
     <Compile Include="Designer\EventHandlerAlreadyExistsTestFixture.cs" />
     <Compile Include="Designer\EventHandlerExistsWithIncorrectParameterCountTestFixture.cs" />
-    <Compile Include="Designer\FindAddRangeMethodTests.cs" />
     <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\FormBaseClassCreatedOnLoadTestFixture.cs" />
     <Compile Include="Designer\GenerateAcceptButtonFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAccessibleRoleFormTestFixture.cs" />
-    <Compile Include="Designer\GenerateAddRangeForNonComponentTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScaleModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
     <Compile Include="Designer\GenerateBackgroundWorkerTestFixture.cs" />
@@ -237,13 +236,11 @@
     <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\GetResourcesFromDesignerLoaderTestFixture.cs" />
-    <Compile Include="Designer\GetSerializableContentPropertiesTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
     <Compile Include="Designer\InsertNewEventHandlerTestFixture.cs" />
     <Compile Include="Designer\InsertSecondEventHandlerTestFixture.cs" />
     <Compile Include="Designer\IsFullyQualifiedBaseClassFormDesignableTestFixture.cs" />
-    <Compile Include="Designer\IsSitedComponentTests.cs" />
     <Compile Include="Designer\LoadAcceptButtonFormTestFixture.cs" />
     <Compile Include="Designer\LoadAccessibleRoleTestFixture.cs" />
     <Compile Include="Designer\LoadAnchorStylesFormTestFixture.cs" />
@@ -261,6 +258,7 @@
     <Compile Include="Designer\LoadInheritedToolTipTestFixture.cs" />
     <Compile Include="Designer\LoadListViewFormTestFixture.cs" />
     <Compile Include="Designer\LoadLocalImageResourceTestFixture.cs" />
+    <Compile Include="Designer\LoadLocalVariablePropertyAssignmentTestFixture.cs" />
     <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
     <Compile Include="Designer\LoadMonthCalendarTestFixture.cs" />
     <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
@@ -385,8 +383,11 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <Compile Include="Parsing\AddInvalidSourceSpanToErrorSinkTestFixture.cs" />
+    <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
+    <Compile Include="Utils\SupportInitCustomControl.cs" />
     <EmbeddedResource Include="Designer\App.ico" />
+    <EmbeddedResource Include="Strings.resx" />
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -47,32 +47,36 @@ namespace PythonBinding.Tests.Designer
 				descriptor = descriptors.Find("View", false);
 				descriptor.SetValue(listView, View.Details);
 				form.Controls.Add(listView);
+
+				DesignerSerializationManager designerSerializationManager = new DesignerSerializationManager(host);
+				IDesignerSerializationManager serializationManager = (IDesignerSerializationManager)designerSerializationManager;
+				using (designerSerializationManager.CreateSession()) {					
 				
-				// Add groups.
-				ListViewGroup group1 = new ListViewGroup();
-				group1.Header = "ListViewGroup";
-				group1.HeaderAlignment = HorizontalAlignment.Right;
-				group1.Name = "defaultGroup";
-				group1.Tag = "tag1";		
-				listView.Groups.Add(group1);
+					// Add groups.
+					ListViewGroup group1 = (ListViewGroup)serializationManager.CreateInstance(typeof(ListViewGroup), new object[0], "listViewGroup1", false);
+					group1.Header = "ListViewGroup";
+					group1.HeaderAlignment = HorizontalAlignment.Right;
+					group1.Name = "defaultGroup";
+					group1.Tag = "tag1";		
+					listView.Groups.Add(group1);
+					
+					ListViewGroup group2 = (ListViewGroup)serializationManager.CreateInstance(typeof(ListViewGroup), new object[0], "listViewGroup2", false);
+					group2.Header = "ListViewGroup";
+					group2.HeaderAlignment = HorizontalAlignment.Center;
+					group2.Name = "listViewGroup2";
+					listView.Groups.Add(group2);
 				
-				ListViewGroup group2 = new ListViewGroup();
-				group2.Header = "ListViewGroup";
-				group2.HeaderAlignment = HorizontalAlignment.Center;
-				group2.Name = "listViewGroup2";
-				listView.Groups.Add(group2);
-				
-				PythonControl pythonForm = new PythonControl("    ");
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);				
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, designerSerializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    listViewGroup1 = System.Windows.Forms.ListViewGroup()\r\n" +
-								"    listViewGroup2 = System.Windows.Forms.ListViewGroup()\r\n" +
+			string expectedCode = "    listViewGroup1 = System.Windows.Forms.ListViewGroup(\"ListViewGroup\", System.Windows.Forms.HorizontalAlignment.Right)\r\n" +
+								"    listViewGroup2 = System.Windows.Forms.ListViewGroup(\"ListViewGroup\", System.Windows.Forms.HorizontalAlignment.Center)\r\n" +
 								"    self._listView1 = System.Windows.Forms.ListView()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
@@ -99,8 +103,7 @@ namespace PythonBinding.Tests.Designer
 								"    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
 								"    self.Controls.Add(self._listView1)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}		

@@ -10,6 +10,7 @@ using System;
 using System.CodeDom;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -49,7 +50,10 @@ namespace PythonBinding.Tests.Designer
 					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 					namePropertyDescriptor.SetValue(userControl, "userControl1");
 					
-					PythonDesignerGenerator.Merge(userControl, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties(), null);
+					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+					using (serializationManager.CreateSession()) {
+						PythonDesignerGenerator.Merge(host, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties(), serializationManager);
+					}
 				}
 			}
 		}
@@ -70,8 +74,7 @@ namespace PythonBinding.Tests.Designer
 									"\t\t# \r\n" + 
 									"\t\tself.Name = \"userControl1\"\r\n" +
 									"\t\tself.Size = System.Drawing.Size(489, 389)\r\n" +
-									"\t\tself.ResumeLayout(False)\r\n" +
-									"\t\tself.PerformLayout()\r\n";
+									"\t\tself.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, document.TextContent);
 		}

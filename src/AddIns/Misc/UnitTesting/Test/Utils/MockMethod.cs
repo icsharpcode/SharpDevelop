@@ -109,6 +109,12 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
+		public bool IsOperator {
+			get {
+				return false;
+			}
+		}
+		
 		public IList<string> HandlesClauses {
 			get {
 				throw new NotImplementedException();

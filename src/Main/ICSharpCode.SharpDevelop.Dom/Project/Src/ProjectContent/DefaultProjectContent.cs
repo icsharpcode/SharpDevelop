@@ -28,6 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		XmlDoc xmlDoc = new XmlDoc();
 		IUsing defaultImports;
+		bool isDisposed;
 		
 		public IUsing DefaultImports {
 			get {
@@ -223,6 +224,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string GetXmlDocumentation(string memberTag)
 		{
+			CheckNotDisposed();
 			string desc = xmlDoc.GetDocumentation(memberTag);
 			if (desc != null) {
 				return desc;
@@ -241,6 +243,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public virtual void Dispose()
 		{
 			xmlDoc.Dispose();
+			isDisposed = true;
+		}
+		
+		[Conditional("DEBUG")]
+		void CheckNotDisposed()
+		{
+			Debug.Assert(!isDisposed);
 		}
 		
 		public void AddClassToNamespaceList(IClass addClass)
@@ -588,6 +597,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		protected IClass GetClassInternal(string typeName, int typeParameterCount, LanguageProperties language)
 		{
+			CheckNotDisposed();
 			#if DEBUG
 			if (System.Text.RegularExpressions.Regex.IsMatch (typeName, "`[0-9]+$"))
 				Debug.Assert(false, "how did a Reflection type name get here?");

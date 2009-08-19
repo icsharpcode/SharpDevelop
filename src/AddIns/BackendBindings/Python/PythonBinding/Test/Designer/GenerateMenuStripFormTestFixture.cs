@@ -48,16 +48,18 @@ namespace PythonBinding.Tests.Designer
 				menuStrip.Location = new Point(0, 0);
 				form.Controls.Add(menuStrip);
 				
-				PythonControl pythonForm = new PythonControl("    ");
-				generatedPythonCode = pythonForm.GenerateInitializeComponentMethod(form);
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._menuStrip1 = System.Windows.Forms.MenuStrip()\r\n" +
+			string expectedCode = "    self._menuStrip1 = System.Windows.Forms.MenuStrip()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # menuStrip1\r\n" +

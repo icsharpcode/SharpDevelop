@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.PythonBinding;
@@ -20,7 +21,6 @@ namespace PythonBinding.Tests.Designer
 	public class GenerateTimerTestFixture
 	{
 		string generatedPythonCode;
-		bool hasIContainerConstructor;		
 
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -39,20 +39,18 @@ namespace PythonBinding.Tests.Designer
 				namePropertyDescriptor = descriptors.Find("Interval", false);
 				namePropertyDescriptor.SetValue(timer, 1000);
 								
-				PythonDesignerComponent component = new PythonDesignerComponent(timer);
-				hasIContainerConstructor = component.HasIContainerConstructor();
-			
-				string indentString = "    ";
-				PythonControl pythonControl = new PythonControl(indentString);
-				generatedPythonCode = pythonControl.GenerateInitializeComponentMethod(form);
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 						
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "def InitializeComponent(self):\r\n" +
-								"    self._components = System.ComponentModel.Container()\r\n" +
+			string expectedCode = "    self._components = System.ComponentModel.Container()\r\n" +
 								"    self._timer1 = System.Windows.Forms.Timer(self._components)\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
@@ -64,16 +62,9 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
 								"    self.Name = \"MainForm\"\r\n" +
-								"    self.ResumeLayout(False)\r\n" +
-								"    self.PerformLayout()\r\n";
+								"    self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, generatedPythonCode, generatedPythonCode);
 		}
-		
-		[Test]
-		public void HasIContainerConstructor()
-		{
-			Assert.IsTrue(hasIContainerConstructor);
-		}		
 	}
 }

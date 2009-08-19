@@ -24,18 +24,15 @@ namespace PythonBinding.Tests.Designer
 	[TestFixture]
 	public class IgnoreDesignTimePropertiesTestFixture
 	{
-		string expectedCode = "def InitializeComponent(self):\r\n" +
-							  "    self.SuspendLayout()\r\n" +
+		string expectedCode = "    self.SuspendLayout()\r\n" +
 							  "    # \r\n" +
 							  "    # MainForm\r\n" +
 							  "    # \r\n" +
 							  "    self.ClientSize = System.Drawing.Size(200, 300)\r\n" +
 							  "    self.Name = \"MainForm\"\r\n" +
-							  "    self.ResumeLayout(False)\r\n" +
-							  "    self.PerformLayout()\r\n";
+							  "    self.ResumeLayout(False)\r\n";
 
-		string generatedCode;
-		PropertyDescriptorCollection propertyDescriptors;
+		string generatedPythonCode;
 		
 		/// <summary>
 		/// After a form is loaded onto a DesignSurface this checks that the PythonForm does not try to 
@@ -53,84 +50,18 @@ namespace PythonBinding.Tests.Designer
 				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 				namePropertyDescriptor.SetValue(form, "MainForm");
 				
-				PythonControl pythonForm = new PythonControl("    ");
-				generatedCode = pythonForm.GenerateInitializeComponentMethod(form);
-				
-				propertyDescriptors = PythonDesignerComponent.GetSerializableProperties(form);
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {					
+					PythonCodeDomSerializer serializer = new PythonCodeDomSerializer("    ");
+					generatedPythonCode = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 1);
+				}
 			}
 		}
 		
 		[Test]
 		public void DesignTimePropertyIsIgnoredInGeneratedCode()
 		{						
-			Assert.AreEqual(expectedCode, generatedCode);
-		}
-		
-		[Test]
-		public void AtLeastOneSerializableProperty()
-		{
-			Assert.IsTrue(propertyDescriptors.Count > 0);
-		}
-		
-		[Test]
-		public void NoLockedProperty()
-		{
-			Assert.IsFalse(ContainsProperty(propertyDescriptors, "Locked"), "Locked property is not expected.");
-		}
-		
-		[Test]
-		public void NoTopLevelPropertyWhichHasDesignTimeVisibilityHidden()
-		{
-			Assert.IsFalse(ContainsProperty(propertyDescriptors, "TopLevel"), "TopLevel property is not expected.");
-		}
-
-		[Test]
-		public void NoTagPropertyWhichHasDefaultValue()
-		{
-			Assert.IsFalse(ContainsProperty(propertyDescriptors, "Tag"), "Tag property is not expected.");
-		}
-		
-		[Test]
-		public void PropertiesAreSorted()
-		{	
-			List<string> strings = new List<string>();
-			List<string> unsortedStrings = new List<string>();
-			foreach (PropertyDescriptor p in propertyDescriptors) {
-				strings.Add(p.Name);
-				unsortedStrings.Add(p.Name);
-			}
-			strings.Sort();
-			
-			Assert.AreEqual(strings, unsortedStrings);
-		}
-		
-		/// <summary>
-		/// Tests that the Controls property is returned in the GetSerializableProperties method.
-		/// </summary>
-		[Test]
-		public void ContainsDesignerSerializationContentProperties()
-		{
-			Assert.IsTrue(ContainsProperty(propertyDescriptors, "Controls"), "Controls property should be returned.");
-		}
-		
-		static bool ContainsProperty(PropertyDescriptorCollection propertyDescriptors, string name)
-		{
-			foreach (PropertyDescriptor property in propertyDescriptors) {
-				if (property.Name == name) {
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		bool HasDesignOnlyAttribute(AttributeCollection attributes)
-		{
-			foreach (Attribute a in attributes) {
-				if (a is DesignOnlyAttribute) {
-					return true;
-				}
-			}
-			return false;
+			Assert.AreEqual(expectedCode, generatedPythonCode);
 		}
 	}
 }

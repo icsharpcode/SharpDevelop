@@ -21,6 +21,7 @@ namespace PythonBinding.Tests.Parsing
 	/// Support folding when no classes are defined.
 	/// </summary>
 	[TestFixture]
+	[Ignore("Ignored because test depends on folding - reactivate when folding is reimplemented")]
 	public class ParseMethodsWithNoClassTestFixture
 	{
 		ICompilationUnit compilationUnit;
