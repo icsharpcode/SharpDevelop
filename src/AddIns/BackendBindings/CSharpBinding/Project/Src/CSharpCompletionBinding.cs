@@ -112,7 +112,7 @@ namespace CSharpBinding
 					ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
 					LoggingService.Debug("CC: Beginning to type a word, result=" + result);
 					if (result.Context != ExpressionContext.IdentifierExpected) {
-						var ctrlSpaceProvider = new CtrlSpaceCompletionItemProvider(result.Context);
+						var ctrlSpaceProvider = new NRefactoryCtrlSpaceCompletionItemProvider(LanguageProperties.CSharp, result.Context);
 						ctrlSpaceProvider.ShowTemplates = true;
 						ctrlSpaceProvider.AllowCompleteExistingExpression = afterUnderscore;
 						ctrlSpaceProvider.ShowCompletion(editor);
@@ -173,7 +173,7 @@ namespace CSharpBinding
 					if (parseInfo != null) {
 						IClass innerMostClass = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 						if (innerMostClass == null) {
-							new CtrlSpaceCompletionItemProvider(ExpressionContext.Namespace).ShowCompletion(editor);
+							new NRefactoryCtrlSpaceCompletionItemProvider(LanguageProperties.CSharp, ExpressionContext.Namespace).ShowCompletion(editor);
 							return true;
 						}
 					}
@@ -181,7 +181,7 @@ namespace CSharpBinding
 				case "as":
 				case "is":
 					if (IsInComment(editor)) return false;
-					new CtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
+					new NRefactoryCtrlSpaceCompletionItemProvider(LanguageProperties.CSharp, ExpressionContext.Type).ShowCompletion(editor);
 					return true;
 				case "override":
 					if (IsInComment(editor)) return false;
@@ -223,7 +223,7 @@ namespace CSharpBinding
 					if (context != null)
 						expressionResult.Context = context;
 				}
-				new CtrlSpaceCompletionItemProvider(expressionResult.Context).ShowCompletion(editor);
+				new NRefactoryCtrlSpaceCompletionItemProvider(LanguageProperties.CSharp, expressionResult.Context).ShowCompletion(editor);
 				return true;
 			}
 			return false;

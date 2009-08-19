@@ -62,19 +62,19 @@ namespace VBNetBinding
 					return true;
 				case "as":
 					if (IsInComment(editor)) return false;
-					new CtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
+					CtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
 					return true;
 				case "new":
 					if (IsInComment(editor)) return false;
-					new CtrlSpaceCompletionItemProvider(ExpressionContext.ObjectCreation).ShowCompletion(editor);
+					CtrlSpaceCompletionItemProvider(ExpressionContext.ObjectCreation).ShowCompletion(editor);
 					return true;
 				case "inherits":
 					if (IsInComment(editor)) return false;
-					new CtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
+					CtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
 					return true;
 				case "implements":
 					if (IsInComment(editor)) return false;
-					new CtrlSpaceCompletionItemProvider(ExpressionContext.Interface).ShowCompletion(editor);
+					CtrlSpaceCompletionItemProvider(ExpressionContext.Interface).ShowCompletion(editor);
 					return true;
 				case "overrides":
 					if (IsInComment(editor)) return false;
@@ -104,6 +104,11 @@ namespace VBNetBinding
 				default:
 					return base.HandleKeyword(editor, word);
 			}
+		}
+		
+		CtrlSpaceCompletionItemProvider CtrlSpaceCompletionItemProvider(ExpressionContext context)
+		{
+			return new NRefactoryCtrlSpaceCompletionItemProvider(LanguageProperties.VBNet, context);
 		}
 		
 		bool TryDeclarationTypeInference(ITextEditor editor, IDocumentLine curLine)

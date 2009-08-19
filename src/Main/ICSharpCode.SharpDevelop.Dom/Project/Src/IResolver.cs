@@ -22,7 +22,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		ResolveResult Resolve(ExpressionResult expressionResult,
 		                      ParseInformation parseInfo,
 		                      string fileContent);
-		
-		ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context);
 	}
 }

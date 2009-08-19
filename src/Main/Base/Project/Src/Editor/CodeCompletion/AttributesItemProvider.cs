@@ -14,15 +14,15 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	/// <summary>
 	/// Provides code completion for attribute names.
 	/// </summary>
-	public class AttributesItemProvider : CtrlSpaceCompletionItemProvider
+	public class AttributesItemProvider : AbstractCompletionItemProvider
 	{
-		public AttributesItemProvider(IProjectContent pc)
-			: this(ExpressionContext.Attribute)
-		{
-		}
+		AbstractCompletionItemProvider baseProvider;
 		
-		public AttributesItemProvider(ExpressionContext context) : base(context)
+		public AttributesItemProvider(AbstractCompletionItemProvider baseProvider)
 		{
+			if (baseProvider == null)
+				throw new ArgumentNullException("baseProvider");
+			this.baseProvider = baseProvider;
 			this.RemoveAttributeSuffix = true;
 		}
 		
@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
-			ICompletionItemList list = base.GenerateCompletionList(editor);
+			ICompletionItemList list = baseProvider.GenerateCompletionList(editor);
 			if (this.RemoveAttributeSuffix && list != null) {
 				foreach (CodeCompletionItem d in list.Items.OfType<CodeCompletionItem>()) {
 					if (d.Text.EndsWith("Attribute")) {

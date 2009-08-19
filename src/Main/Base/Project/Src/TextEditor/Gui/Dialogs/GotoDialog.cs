@@ -106,23 +106,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listBox.ScrollIntoView(listBox.Items[index]);
 		}
 		
-		IList<ICompletionItem> ctrlSpaceCompletionData;
-		
-		IList<ICompletionItem> GetCompletionData()
-		{
-			if (ctrlSpaceCompletionData != null)
-				return ctrlSpaceCompletionData;
-			ITextEditor editor = GetEditor();
-			if (editor != null) {
-				CtrlSpaceCompletionItemProvider cdp = new CtrlSpaceCompletionItemProvider(ExpressionContext.Default);
-				var completionList = cdp.GenerateCompletionList(editor);
-				ctrlSpaceCompletionData = completionList != null ? completionList.Items.ToList() : null;
-			}
-			if (ctrlSpaceCompletionData == null)
-				ctrlSpaceCompletionData = emptyList;
-			return ctrlSpaceCompletionData;
-		}
-		
 		static readonly IList<ICompletionItem> emptyList = new ICompletionItem[0];
 		
 		IList<ICompletionItem> Resolve(string expression)
@@ -205,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} else {
 				AddSourceFiles(text, 0);
-				ShowCtrlSpaceCompletion(text);
+				//ShowCtrlSpaceCompletion(text);
 			}
 			newItems.Sort();
 			foreach (MyListBoxItem item in newItems)
@@ -268,14 +251,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (matchType >= 0) {
 					AddItem(data.Entity, data.Image, data.Priority, matchType);
 				}
-			}
-		}
-		
-		void ShowCtrlSpaceCompletion(string text)
-		{
-			ShowCompletionData(GetCompletionData(), text);
-			foreach (IClass c in SearchClasses(text)) {
-				AddItem(c, GetMatchType(text, c.Name));
 			}
 		}
 		

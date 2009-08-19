@@ -226,16 +226,6 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
-		public static ArrayList CtrlSpace(int caretLine, int caretColumn,
-		                                  string fileName, string fileContent, ExpressionContext context)
-		{
-			IResolver resolver = CreateResolver(fileName);
-			if (resolver != null) {
-				return resolver.CtrlSpace(caretLine, caretColumn, GetParseInformation(fileName), fileContent, context);
-			}
-			return null;
-		}
-		
 		public static IResolver CreateResolver(string fileName)
 		{
 			IParser parser = CreateParser(fileName);

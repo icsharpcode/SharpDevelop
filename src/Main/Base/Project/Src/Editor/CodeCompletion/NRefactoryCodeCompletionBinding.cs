@@ -58,6 +58,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 		}
 		
+		public override bool CtrlSpace(ITextEditor editor)
+		{
+			NRefactoryCtrlSpaceCompletionItemProvider provider = new NRefactoryCtrlSpaceCompletionItemProvider(languageProperties);
+			provider.AllowCompleteExistingExpression = true;
+			provider.ShowCompletion(editor);
+			return true;
+		}
+		
 		#region Comma Insight refresh
 		protected class InspectedCall
 		{
@@ -156,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			IClass c = expected.GetUnderlyingClass();
 			if (c == null) return false;
 			if (c.ClassType == ClassType.Enum) {
-				CtrlSpaceCompletionItemProvider cdp = new CtrlSpaceCompletionItemProvider();
+				CtrlSpaceCompletionItemProvider cdp = new NRefactoryCtrlSpaceCompletionItemProvider(languageProperties);
 				var ctrlSpaceList = cdp.GenerateCompletionList(editor);
 				if (ctrlSpaceList == null) return false;
 				ContextCompletionItemList contextList = new ContextCompletionItemList();

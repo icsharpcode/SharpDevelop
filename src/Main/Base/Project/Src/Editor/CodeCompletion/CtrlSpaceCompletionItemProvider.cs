@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
-	public class CtrlSpaceCompletionItemProvider : CodeCompletionItemProvider
+	public abstract class CtrlSpaceCompletionItemProvider : CodeCompletionItemProvider
 	{
 		public CtrlSpaceCompletionItemProvider()
 		{
@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			preselectionLength = 0;
 			if (!allowCompleteExistingExpression) {
 				ExpressionContext context = overrideContext ?? ExpressionContext.Default;
-				var ctrlSpace = ParserService.CtrlSpace(editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text, context);
+				var ctrlSpace = CtrlSpace(editor, context);
 				return GenerateCompletionListForCompletionData(ctrlSpace, context);
 			}
 			
@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			LoggingService.Debug("Ctrl-Space got expression " + expressionResult.ToString());
 			string expression = expressionResult.Expression;
 			if (expression == null || expression.Length == 0) {
-				var ctrlSpace = ParserService.CtrlSpace(editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text, expressionResult.Context);
+				var ctrlSpace = CtrlSpace(editor, expressionResult.Context);
 				return GenerateCompletionListForCompletionData(ctrlSpace, expressionResult.Context);
 			}
 			
@@ -102,15 +102,47 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				return GenerateCompletionListForExpression(editor, expressionResult);
 			} else {
 				preselectionLength = expression.Length;
-				ArrayList results = ParserService.CtrlSpace(editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text, expressionResult.Context);
+				ArrayList results = CtrlSpace(editor, expressionResult.Context);
 				return GenerateCompletionListForCompletionData(results, expressionResult.Context);
 			}
 		}
+		
+		protected abstract ArrayList CtrlSpace(ITextEditor editor, ExpressionContext context);
 		
 		protected override void InitializeCompletionItemList(DefaultCompletionItemList list)
 		{
 			base.InitializeCompletionItemList(list);
 			list.PreselectionLength = preselectionLength;
+		}
+	}
+	
+	public class NRefactoryCtrlSpaceCompletionItemProvider : CtrlSpaceCompletionItemProvider
+	{
+		LanguageProperties language;
+		
+		public NRefactoryCtrlSpaceCompletionItemProvider(LanguageProperties language)
+		{
+			if (language == null)
+				throw new ArgumentNullException("language");
+			this.language = language;
+		}
+		
+		public NRefactoryCtrlSpaceCompletionItemProvider(LanguageProperties language, ExpressionContext overrideContext)
+			: base(overrideContext)
+		{
+			if (language == null)
+				throw new ArgumentNullException("language");
+			this.language = language;
+		}
+		
+		protected override ArrayList CtrlSpace(ITextEditor editor, ExpressionContext context)
+		{
+			var resolver = new Dom.NRefactoryResolver.NRefactoryResolver(language);
+			return resolver.CtrlSpace(
+				editor.Caret.Line, editor.Caret.Column,
+				ParserService.GetParseInformation(editor.FileName),
+				editor.Document.Text,
+				context);
 		}
 	}
 }

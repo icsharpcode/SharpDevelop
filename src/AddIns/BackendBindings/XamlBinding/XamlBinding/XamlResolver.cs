@@ -275,10 +275,5 @@ namespace ICSharpCode.XamlBinding
 			
 			return resolver.ResolveNamedAttribute(expression);
 		}
-		
-		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
-		{
-			return new ArrayList();
-		}
 	}
 }

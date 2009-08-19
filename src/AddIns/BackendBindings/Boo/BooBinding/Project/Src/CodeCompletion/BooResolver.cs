@@ -5,13 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using AST = Boo.Lang.Compiler.Ast;
 
 namespace Grunwald.BooBinding.CodeCompletion
@@ -399,5 +400,21 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 		}
 		#endregion
+	}
+	
+	sealed class BooCtrlSpaceCompletionItemProvider : CtrlSpaceCompletionItemProvider
+	{
+		public BooCtrlSpaceCompletionItemProvider() {}
+		public BooCtrlSpaceCompletionItemProvider(ExpressionContext overrideContext) : base(overrideContext) {}
+		
+		protected override ArrayList CtrlSpace(ITextEditor editor, ExpressionContext context)
+		{
+			return new BooResolver().CtrlSpace(
+				editor.Caret.Line,
+				editor.Caret.Column,
+				ParserService.GetParseInformation(editor.FileName),
+				editor.Document.Text,
+				context);
+		}
 	}
 }

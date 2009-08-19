@@ -217,10 +217,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public virtual bool CtrlSpace(ITextEditor editor)
 		{
-			CtrlSpaceCompletionItemProvider provider = new CtrlSpaceCompletionItemProvider();
-			provider.AllowCompleteExistingExpression = true;
-			provider.ShowCompletion(editor);
-			return true;
+			return false;
 		}
 	}
 }

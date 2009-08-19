@@ -27,7 +27,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 					char c = editor.Document.GetCharAt(i);
 					if (c == '\n' || c == '(' || c == ',') {
 						// -> Attribute completion
-						new AttributesItemProvider(ExpressionFinder.BooAttributeContext.Instance).ShowCompletion(editor);
+						new AttributesItemProvider(
+							new BooCtrlSpaceCompletionItemProvider(ExpressionFinder.BooAttributeContext.Instance)
+						).ShowCompletion(editor);
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					if (!char.IsWhiteSpace(c))
@@ -35,6 +37,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 			}
 			return base.HandleKeyPress(editor, ch);
+		}
+		
+		public override bool CtrlSpace(ITextEditor editor)
+		{
+			BooCtrlSpaceCompletionItemProvider provider = new BooCtrlSpaceCompletionItemProvider();
+			provider.AllowCompleteExistingExpression = true;
+			provider.ShowCompletion(editor);
+			return true;
 		}
 		
 		bool IsInComment(ITextEditor editor)
@@ -48,12 +58,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			switch (word.ToLowerInvariant()) {
 				case "import":
-					new CtrlSpaceCompletionItemProvider(ExpressionContext.Importable).ShowCompletion(editor);
+					new BooCtrlSpaceCompletionItemProvider(ExpressionContext.Importable).ShowCompletion(editor);
 					return true;
 				case "as":
 				case "isa":
 					if (!IsInComment(editor)) {
-						new CtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
+						new BooCtrlSpaceCompletionItemProvider(ExpressionContext.Type).ShowCompletion(editor);
 						return true;
 					}
 					break;
