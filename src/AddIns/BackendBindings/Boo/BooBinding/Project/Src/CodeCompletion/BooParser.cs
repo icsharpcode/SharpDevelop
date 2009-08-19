@@ -195,7 +195,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				compiler.Run();
 				visitor.Cu.ErrorsDuringCompile = errorCount > 0;
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 			return visitor.Cu;
 		}

@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						ParserService.ParseFile(webReference.WebProxyFileName);
 					}
 				} catch (WebException ex) {
-					MessageService.ShowError(ex, String.Format(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.RefreshWebReference.ReadServiceDescriptionError}"), url.UpdateFromURL));
+					MessageService.ShowException(ex, String.Format(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.RefreshWebReference.ReadServiceDescriptionError}"), url.UpdateFromURL));
 				}
 			}
 		}

@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					op.SaveOptions();
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex, "Error saving project options panel");
+				MessageService.ShowException(ex, "Error saving project options panel");
 				return;
 			}
 			project.Save();

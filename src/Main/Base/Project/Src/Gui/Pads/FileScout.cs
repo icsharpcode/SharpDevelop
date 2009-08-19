@@ -239,7 +239,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					try {
 						File.Delete(fileItem.FullName);
 					} catch(Exception ex) {
-						MessageService.ShowError(ex, "Couldn't delete file '" + Path.GetFileName(fileItem.FullName) + "'");
+						MessageService.ShowException(ex, "Couldn't delete file '" + Path.GetFileName(fileItem.FullName) + "'");
 						break;
 					}
 				}
@@ -593,7 +593,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} catch (Exception excpt) {
 				
-				MessageService.ShowError(excpt, "Device error");
+				MessageService.ShowException(excpt, "Device error");
 				e.Cancel = true;
 			}
 			

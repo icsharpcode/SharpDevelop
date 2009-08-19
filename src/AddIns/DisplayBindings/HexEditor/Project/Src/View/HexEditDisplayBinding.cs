@@ -58,7 +58,7 @@ namespace HexEditor.View
 					}
 				}
 			} catch (IOException ex) {
-				MessageService.ShowError(ex, ex.Message);
+				MessageService.ShowException(ex, ex.Message);
 			} catch (Exception ex) {
 				System.Diagnostics.Debug.Print(ex.ToString());
 			}

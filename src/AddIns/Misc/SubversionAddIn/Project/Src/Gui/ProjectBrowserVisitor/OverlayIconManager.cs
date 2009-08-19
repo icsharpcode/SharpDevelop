@@ -161,7 +161,7 @@ namespace ICSharpCode.Svn
 				try {
 					RunStep(node);
 				} catch (Exception ex) {
-					MessageService.ShowError(ex);
+					MessageService.ShowException(ex);
 				}
 			}
 		}

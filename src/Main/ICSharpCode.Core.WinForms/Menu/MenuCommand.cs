@@ -66,7 +66,7 @@ namespace ICSharpCode.Core.WinForms
 					menuCommand.Owner = caller;
 				}
 			} catch (Exception e) {
-				MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
+				MessageService.ShowException(e, "Can't create menu command : " + codon.Id);
 			}
 		}
 		
@@ -84,7 +84,7 @@ namespace ICSharpCode.Core.WinForms
 						shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), key);
 					}
 				} catch (Exception ex) {
-					MessageService.ShowError(ex);
+					MessageService.ShowException(ex);
 					return System.Windows.Forms.Keys.None;
 				}
 			}

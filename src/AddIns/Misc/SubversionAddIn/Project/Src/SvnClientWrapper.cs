@@ -418,7 +418,7 @@ namespace ICSharpCode.Svn
 							}
 							logMessageReceiver(msg);
 						} catch (Exception ex) {
-							MessageService.ShowError(ex);
+							MessageService.ShowException(ex);
 						}
 					}
 				);

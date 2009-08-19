@@ -201,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					UpdateMembersComboBox();
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

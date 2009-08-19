@@ -56,7 +56,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		protected override void OnError(Node node, Exception error)
 		{
-			MessageService.ShowError(error, "VariableLookupVisitor: error processing " + node);
+			MessageService.ShowException(error, "VariableLookupVisitor: error processing " + node);
 		}
 		
 		public override void OnBinaryExpression(BinaryExpression node)

@@ -105,7 +105,7 @@ namespace ICSharpCode.Svn
 					LoggingService.Warn(ex);
 					WorkbenchSingleton.SafeThreadAsyncCall(infoPanel.ShowError, ex);
 				} else {
-					MessageService.ShowError(ex);
+					MessageService.ShowException(ex);
 				}
 			}
 		}

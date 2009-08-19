@@ -848,7 +848,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				ProjectService.SaveSolution();
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 			}
 		}
 		

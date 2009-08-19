@@ -151,7 +151,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static IEnumerable<string> FindAdditionalFiles(string fileName)
 		{
 			List<string> list = new List<string>();
-			StringParser.Properties["Extension"] = Path.GetExtension(fileName);
+			// HACK: find a different way to support .Designer.XYZ
+			StringParserPropertyContainer.FileCreation["Extension"] = Path.GetExtension(fileName);
 			string prefix = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName));
 			foreach (string ext in AddInTree.BuildItems<string>("/SharpDevelop/Workbench/DependentFileExtensions", null, false)) {
 				if (File.Exists(prefix + ext))

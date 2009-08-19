@@ -32,12 +32,13 @@ namespace ICSharpCode.Core.WinForms
 			this.InitializeComponent2();
 			RightToLeftConverter.ConvertRecursive(this);
 			
-			displayMessage = StringParser.Parse(message, new string[,] {
-				{"FileName", fileName},
-				{"Path",     Path.GetDirectoryName(fileName)},
-				{"FileNameWithoutPath", Path.GetFileName(fileName)},
-				{"Exception", exceptionGot.GetType().FullName},
-			});
+			displayMessage = StringParser.Parse(
+				message,
+				new StringTagPair("FileName", fileName),
+				new StringTagPair("Path",     Path.GetDirectoryName(fileName)),
+				new StringTagPair("FileNameWithoutPath", Path.GetFileName(fileName)),
+				new StringTagPair("Exception", exceptionGot.GetType().FullName)
+			);
 			descriptionTextBox.Lines = this.displayMessage.Split('\n');
 			
 			this.exceptionGot = exceptionGot;

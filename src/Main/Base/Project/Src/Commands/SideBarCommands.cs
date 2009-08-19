@@ -31,13 +31,18 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			SideTabItem item = sideBar.ActiveTab.ChoosedItem;
-			if (item != null && MessageBox.Show(StringParser.Parse(ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabItemQuestion"), new string[,] { {"TabItem", item.Name}}),
-			                    ResourceService.GetString("Global.QuestionText"), 
-			                    MessageBoxButtons.YesNo, 
-			                    MessageBoxIcon.Question,
-			                    MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
-				sideBar.ActiveTab.Items.Remove(item);
-				sideBar.Refresh();
+			if (item != null) {
+				if (MessageBox.Show(StringParser.Parse(
+					"${res:SideBarComponent.ContextMenu.DeleteTabItemQuestion}", new StringTagPair("TabItem", item.Name)),
+				                    ResourceService.GetString("Global.QuestionText"),
+				                    MessageBoxButtons.YesNo,
+				                    MessageBoxIcon.Question,
+				                    MessageBoxDefaultButton.Button2)
+				    == DialogResult.Yes)
+				{
+					sideBar.ActiveTab.Items.Remove(item);
+					sideBar.Refresh();
+				}
 			}
 		}
 	}
@@ -52,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			sideBar.StartRenamingOf(tab);
 			sideBar.DoAddTab = true;
 			sideBar.Refresh();
-		} 
+		}
 	}
 	
 	public class SideBarMoveTabUp : AbstractMenuCommand
@@ -67,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				sideBar.Tabs[index - 1] = tab;
 				sideBar.Refresh();
 			}
-		} 
+		}
 	}
 	public class SideBarMoveTabDown : AbstractMenuCommand
 	{
@@ -82,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				sideBar.Refresh();
 			}
 			
-		} 
+		}
 	}
 
 	public class SideBarMoveActiveTabUp : AbstractMenuCommand
@@ -97,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				sideBar.Tabs[index - 1] = tab;
 				sideBar.Refresh();
 			}
-		} 
+		}
 	}
 
 	public class SideBarMoveActiveMoveTabDown : AbstractMenuCommand
@@ -112,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				sideBar.Tabs[index + 1] = tab;
 				sideBar.Refresh();
 			}
-		} 
+		}
 	}
 	
 	public class SideBarDeleteTabHeader : AbstractMenuCommand
@@ -121,15 +126,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			SideTab selectedSideTab = sideBar.GetTabAt(sideBar.SideBarMousePosition.X, sideBar.SideBarMousePosition.Y);
-			if (MessageBox.Show(StringParser.Parse(ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabHeaderQuestion"), new string[,] { {"TabHeader", selectedSideTab.DisplayName}}),
-			                    ResourceService.GetString("Global.QuestionText"), 
-			                    MessageBoxButtons.YesNo, 
+			if (MessageBox.Show(StringParser.Parse(ResourceService.GetString("SideBarComponent.ContextMenu.DeleteTabHeaderQuestion"), new StringTagPair("TabHeader", selectedSideTab.DisplayName)),
+			                    ResourceService.GetString("Global.QuestionText"),
+			                    MessageBoxButtons.YesNo,
 			                    MessageBoxIcon.Question,
 			                    MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
 				sideBar.DeleteSideTab(selectedSideTab);
 				sideBar.Refresh();
 			}
-		} 
+		}
 	}
 	
 	public class SideBarRenameTabHeader : AbstractMenuCommand
@@ -138,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			SharpDevelopSideBar sideBar = (SharpDevelopSideBar)Owner;
 			sideBar.StartRenamingOf(sideBar.GetTabAt(sideBar.SideBarMousePosition.X, sideBar.SideBarMousePosition.Y));
-		} 
+		}
 	}
 	
 	public class SideBarMoveActiveItemUp : AbstractMenuCommand
@@ -164,6 +169,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 				sideBar.ActiveTab.Exchange(index, index + 1);
 				sideBar.Refresh();
 			}
-		} 
+		}
 	}
 }

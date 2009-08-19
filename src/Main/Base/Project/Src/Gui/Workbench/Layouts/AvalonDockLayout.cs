@@ -211,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					LoadLayout(LayoutConfiguration.CurrentLayoutTemplateFileName, isPlainLayout);
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 				// ignore errors loading configuration
 			} finally {
 				Busy = false;
@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					dockingManager.SaveLayout(fileName);
 				}
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 			}
 		}
 	}

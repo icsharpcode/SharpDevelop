@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} catch (Exception ex) {
 				disableDefinitionView = true;
 				ctl.Visible = false;
-				MessageService.ShowError(ex, "Error resolving at " + caret.Line + "/" + caret.Column
+				MessageService.ShowException(ex, "Error resolving at " + caret.Line + "/" + caret.Column
 				                         + ". DefinitionViewPad is disabled until you restart SharpDevelop.");
 				return null;
 			}

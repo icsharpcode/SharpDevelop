@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -103,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public override object GetValue(object component)
 		{
-			string propertyValue = StringParser.Properties["Properties." + Name];
+			string propertyValue = StringParserPropertyContainer.LocalizedProperty["Properties." + Name];
 			
 			if (typeConverterObject is BooleanTypeConverter) {
 				return Boolean.Parse(propertyValue); 
@@ -114,9 +116,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public override void SetValue(object component, object val)
 		{
 			if (typeConverterObject != null) {
-				StringParser.Properties["Properties." + Name] = typeConverterObject.ConvertFrom(val).ToString();
+				StringParserPropertyContainer.LocalizedProperty["Properties." + Name] = typeConverterObject.ConvertFrom(val).ToString();
 			} else {
-				StringParser.Properties["Properties." + Name] = val.ToString();
+				StringParserPropertyContainer.LocalizedProperty["Properties." + Name] = val.ToString();
 			}
 		}
 		

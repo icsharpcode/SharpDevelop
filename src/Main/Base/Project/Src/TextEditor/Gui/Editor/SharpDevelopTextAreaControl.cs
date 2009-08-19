@@ -403,7 +403,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		private void LogException(Exception ex)
 		{
-			ICSharpCode.Core.MessageService.ShowError(ex);
+			ICSharpCode.Core.MessageService.ShowException(ex);
 		}
 		
 		public string GetWordBeforeCaret()
@@ -512,10 +512,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public override string GetRangeDescription(int selectedItem, int itemCount)
 		{
-			
-			StringParser.Properties["CurrentMethodNumber"]  = selectedItem.ToString("##");
-			StringParser.Properties["NumberOfTotalMethods"] = itemCount.ToString("##");
-			return StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.InsightWindow.NumberOfText}");
+			return StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.InsightWindow.NumberOfText}",
+			                          new StringTagPair("CurrentMethodNumber", selectedItem.ToString("##")),
+			                          new StringTagPair("NumberOfTotalMethods", itemCount.ToString("##")));
 		}
 		
 //		public override IDeclarationViewWindow CreateDeclarationViewWindow()

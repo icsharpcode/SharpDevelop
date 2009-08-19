@@ -50,7 +50,7 @@ namespace ICSharpCode.XmlEditor
 				try {
 					return SaveSchemaChanges();
 				} catch (Exception ex) {
-					MessageService.ShowError(ex, "${res:ICSharpCode.XmlEditor.XmlSchemasPanel.UnableToSaveChanges}");
+					MessageService.ShowException(ex, "${res:ICSharpCode.XmlEditor.XmlSchemasPanel.UnableToSaveChanges}");
 					return false;
 				}
 			}

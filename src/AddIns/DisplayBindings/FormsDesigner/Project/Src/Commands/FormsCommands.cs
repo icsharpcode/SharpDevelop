@@ -51,7 +51,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 					menuCommandService.GlobalInvoke(CommandID);
 				}
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace ICSharpCode.FormsDesigner.Commands
 				try {
 					verb.Invoke();
 				} catch (Exception ex) {
-					MessageService.ShowError(ex);
+					MessageService.ShowException(ex);
 				}
 			}
 		}

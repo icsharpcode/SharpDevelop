@@ -10,18 +10,19 @@ using System;
 namespace ICSharpCode.Core.Services
 {
 	/// <summary>
-	/// Description of IMessageService.
+	/// Interface for the MessageService.
 	/// </summary>
 	public interface IMessageService
 	{
 		/// <summary>
 		/// Shows an error.
-		/// If <paramref name="ex"/> is null, the message is shown inside
-		/// a message box.
-		/// Otherwise, the custom error reporter is used to display
-		/// the exception error.
 		/// </summary>
-		void ShowError(Exception ex, string message);
+		void ShowError(string message);
+		
+		/// <summary>
+		/// Shows an exception.
+		/// </summary>
+		void ShowException(Exception ex, string message);
 		
 		/// <summary>
 		/// Shows a warning message.
@@ -74,10 +75,15 @@ namespace ICSharpCode.Core.Services
 		
 		private ChooseSaveErrorResult() {}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification="ChooseSaveErrorResult is immutable")]
 		public readonly static ChooseSaveErrorResult Retry = new ChooseSaveErrorResult { IsRetry = true };
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification="ChooseSaveErrorResult is immutable")]
 		public readonly static ChooseSaveErrorResult Ignore = new ChooseSaveErrorResult { IsIgnore = true };
+		
 		public static ChooseSaveErrorResult SaveAlternative(string alternativeFileName)
 		{
+			if (alternativeFileName == null)
+				throw new ArgumentNullException("alternativeFileName");
 			return new ChooseSaveErrorResult { AlternativeFileName = alternativeFileName };
 		}
 	}

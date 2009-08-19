@@ -171,7 +171,7 @@ namespace ICSharpCode.SharpDevelop
 						padContent = (IPadContent)Activator.CreateInstance(padType);
 					}
 				} catch (Exception ex) {
-					MessageService.ShowError(ex, "Error creating pad instance");
+					MessageService.ShowException(ex, "Error creating pad instance");
 				}
 			}
 		}

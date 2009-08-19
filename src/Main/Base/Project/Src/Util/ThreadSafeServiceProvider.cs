@@ -36,6 +36,14 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public void TryAddService(Type type, object instance)
+		{
+			lock (services) {
+				if (!services.ContainsKey(type))
+					services.Add(type, instance);
+			}
+		}
+		
 		public object GetService(Type type)
 		{
 			lock (services) {

@@ -98,8 +98,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			projectCreateInformation.Solution = newSolution;
 			
 			string newSolutionName = StringParser.Parse(name, new string[,] {
-			                                           	{"ProjectName", projectCreateInformation.SolutionName}
-			                                           });
+			                                            	{"ProjectName", projectCreateInformation.SolutionName}
+			                                            });
 			
 			newSolution.Name = newSolutionName;
 			
@@ -128,8 +128,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			// Save solution
 			if (File.Exists(solutionLocation)) {
 				
-				StringParser.Properties["combineLocation"] = solutionLocation;
-				if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.Internal.Templates.CombineDescriptor.OverwriteProjectQuestion}")) {
+				string question = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.CombineDescriptor.OverwriteProjectQuestion}",
+				                                     new StringTagPair("combineLocation", solutionLocation));
+				if (MessageService.AskQuestion(question)) {
 					newSolution.Save(solutionLocation);
 				}
 			} else {

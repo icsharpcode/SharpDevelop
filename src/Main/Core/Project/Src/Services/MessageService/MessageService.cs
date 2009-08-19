@@ -19,22 +19,11 @@ namespace ICSharpCode.Core
 	public static class MessageService
 	{
 		/// <summary>
-		/// Delegate used for custom error callbacks.
+		/// Shows an exception error.
 		/// </summary>
-		public delegate void ShowErrorDelegate(Exception ex, string message);
-		
-		/// <summary>
-		/// Gets/Sets the custom error reporter callback delegate.
-		/// If this property is null, the default messagebox is used.
-		/// </summary>
-		public static ShowErrorDelegate CustomErrorReporter { get; set; }
-		
-		/// <summary>
-		/// Shows an exception error using the <see cref="CustomErrorReporter"/>.
-		/// </summary>
-		public static void ShowError(Exception ex)
+		public static void ShowException(Exception ex)
 		{
-			ShowError(ex, null);
+			ShowException(ex, null);
 		}
 		
 		/// <summary>
@@ -42,7 +31,8 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static void ShowError(string message)
 		{
-			ShowError(null, message);
+			LoggingService.Error(message);
+			ServiceManager.Instance.MessageService.ShowError(message);
 		}
 		
 		/// <summary>
@@ -53,31 +43,17 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static void ShowErrorFormatted(string formatstring, params string[] formatitems)
 		{
-			ShowError(null, Format(formatstring, formatitems));
+			ShowError(Format(formatstring, formatitems));
 		}
 		
 		/// <summary>
-		/// Shows an error.
-		/// If <paramref name="ex"/> is null, the message is shown inside
-		/// a message box.
-		/// Otherwise, the custom error reporter is used to display
-		/// the exception error.
+		/// Shows an exception.
 		/// </summary>
-		public static void ShowError(Exception ex, string message)
+		public static void ShowException(Exception ex, string message)
 		{
-			if (message == null) message = string.Empty;
-			
-			if (ex != null) {
-				LoggingService.Error(message, ex);
-				LoggingService.Warn("Stack trace of last error log:\n" + Environment.StackTrace);
-				if (CustomErrorReporter != null) {
-					CustomErrorReporter(ex, message);
-					return;
-				}
-			} else {
-				LoggingService.Error(message);
-			}
-			ServiceManager.MessageService.ShowError(ex, message);
+			LoggingService.Error(message, ex);
+			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
+			ServiceManager.Instance.MessageService.ShowException(ex, message);
 		}
 		
 		/// <summary>
@@ -86,7 +62,7 @@ namespace ICSharpCode.Core
 		public static void ShowWarning(string message)
 		{
 			LoggingService.Warn(message);
-			ServiceManager.MessageService.ShowWarning(message);
+			ServiceManager.Instance.MessageService.ShowWarning(message);
 		}
 		
 		/// <summary>
@@ -106,7 +82,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static bool AskQuestion(string question, string caption)
 		{
-			return ServiceManager.MessageService.AskQuestion(question, caption);
+			return ServiceManager.Instance.MessageService.AskQuestion(question, caption);
 		}
 		
 		public static bool AskQuestionFormatted(string caption, string formatstring, params string[] formatitems)
@@ -145,7 +121,7 @@ namespace ICSharpCode.Core
 		/// <returns>The number of the button that was clicked, or -1 if the dialog was closed  without clicking a button.</returns>
 		public static int ShowCustomDialog(string caption, string dialogText, int acceptButtonIndex, int cancelButtonIndex, params string[] buttontexts)
 		{
-			return ServiceManager.MessageService.ShowCustomDialog(caption, dialogText, acceptButtonIndex, cancelButtonIndex, buttontexts);
+			return ServiceManager.Instance.MessageService.ShowCustomDialog(caption, dialogText, acceptButtonIndex, cancelButtonIndex, buttontexts);
 		}
 		
 		/// <summary>
@@ -162,7 +138,7 @@ namespace ICSharpCode.Core
 		
 		public static string ShowInputBox(string caption, string dialogText, string defaultValue)
 		{
-			return ServiceManager.MessageService.ShowInputBox(caption, dialogText, defaultValue);
+			return ServiceManager.Instance.MessageService.ShowInputBox(caption, dialogText, defaultValue);
 		}
 		
 		static string defaultMessageBoxTitle = "MessageBox";
@@ -204,7 +180,7 @@ namespace ICSharpCode.Core
 		public static void ShowMessage(string message, string caption)
 		{
 			LoggingService.Info(message);
-			ServiceManager.MessageService.ShowMessage(message, caption);
+			ServiceManager.Instance.MessageService.ShowMessage(message, caption);
 		}
 		
 		static string Format(string formatstring, string[] formatitems)

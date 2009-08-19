@@ -30,43 +30,43 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 		[Test]
 		public void ConvertCurrentProjectName()
 		{
-			Assert.AreEqual("<no current project>", tagProvider.Convert("CurrentProjectName"));
+			Assert.AreEqual("<no current project>", tagProvider.ProvideString("CurrentProjectName"));
 		}
 		
 		[Test]
 		public void ConvertTargetPath()
 		{
-			Assert.AreEqual(String.Empty, tagProvider.Convert("TargetPath"));
+			Assert.AreEqual(String.Empty, tagProvider.ProvideString("TargetPath"));
 		}		
 
 		[Test]
 		public void ConvertTargetDir()
 		{
-			Assert.AreEqual(String.Empty, tagProvider.Convert("TargetDir"));
+			Assert.AreEqual(String.Empty, tagProvider.ProvideString("TargetDir"));
 		}		
 
 		[Test]
 		public void ConvertTargetName()
 		{
-			Assert.AreEqual(String.Empty, tagProvider.Convert("TargetName"));
+			Assert.AreEqual(String.Empty, tagProvider.ProvideString("TargetName"));
 		}		
 		
 		[Test]
 		public void ConvertTargetExt()
 		{
-			Assert.AreEqual(String.Empty, tagProvider.Convert("TargetExt"));
+			Assert.AreEqual(String.Empty, tagProvider.ProvideString("TargetExt"));
 		}		
 
 		[Test]
 		public void ConvertProjectDir()
 		{
-			Assert.AreEqual(String.Empty, tagProvider.Convert("ProjectDir"));
+			Assert.AreEqual(String.Empty, tagProvider.ProvideString("ProjectDir"));
 		}		
 		
 		[Test]
 		public void ConvertProjectFileName()
 		{
-			Assert.AreEqual(String.Empty, tagProvider.Convert("ProjectFileName"));
+			Assert.AreEqual(String.Empty, tagProvider.ProvideString("ProjectFileName"));
 		}		
 	}
 }

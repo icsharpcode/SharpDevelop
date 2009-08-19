@@ -634,7 +634,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				DialogResult = DialogResult.OK;
 				Close();
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

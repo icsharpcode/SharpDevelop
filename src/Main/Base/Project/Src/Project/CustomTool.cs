@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					try {
 						action();
 					} catch (Exception ex) {
-						MessageService.ShowError(ex);
+						MessageService.ShowException(ex);
 					} finally {
 						CustomToolsService.NotifyAsyncFinish(this);
 					}

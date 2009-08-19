@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						FileService.OpenFile(fullFileName);
 					}
 				} catch (Exception e) {
-					MessageService.ShowError(e, "unable to open file " + file);
+					MessageService.ShowException(e, "unable to open file " + file);
 				}
 			}
 			
@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					try {
 						command.Run();
 					} catch (Exception ex) {
-						MessageService.ShowError(ex);
+						MessageService.ShowException(ex);
 					}
 				}
 			}
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			try {
 				PropertyService.Set(workbenchMemento, WorkbenchSingleton.Workbench.CreateMemento());
 			} catch (Exception e) {
-				MessageService.ShowError(e, "Exception while saving workbench state.");
+				MessageService.ShowException(e, "Exception while saving workbench state.");
 			}
 		}
 	}

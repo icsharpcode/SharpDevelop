@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,8 +13,9 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Project;
-using Import = System.Collections.Generic.KeyValuePair<System.String, System.String>;
+using Import = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
@@ -260,14 +261,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				IProjectBinding languageinfo = (descriptor != null) ? descriptor.Binding : null;
 				
 				if (languageinfo == null) {
-					StringParser.Properties["type"] = language;
-					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.CantCreateProjectWithTypeError}");
+					MessageService.ShowError(
+						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.CantCreateProjectWithTypeError}",
+						                   new StringTagPair("type", language)));
 					return null;
 				}
 				
-				string newProjectName = StringParser.Parse(name, new string[,] {
-				                                           	{"ProjectName", projectCreateInformation.ProjectName}
-				                                           });
+				string newProjectName = StringParser.Parse(name, new StringTagPair("ProjectName", projectCreateInformation.ProjectName));
 				string projectLocation = Path.GetFullPath(Path.Combine(projectCreateInformation.ProjectBasePath,
 				                                                       newProjectName + ProjectBindingService.GetProjectFileExtension(language)));
 				
@@ -301,7 +301,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				projectCreateInformation.RootNamespace = standardNamespace.ToString();
 				projectCreateInformation.ProjectName = newProjectName;
 				
-				StringParser.Properties["StandardNamespace"] = projectCreateInformation.RootNamespace;
+				StringParserPropertyContainer.FileCreation["StandardNamespace"] = projectCreateInformation.RootNamespace;
 				
 				IProject project;
 				try {
@@ -379,8 +379,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					((IProjectItemListProvider)project).AddProjectItem(projectFile);
 					
 					if (File.Exists(fileName)) {
-						StringParser.Properties["fileName"] = fileName;
-						if (!MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}", "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) {
+						if (!MessageService.AskQuestion(
+							StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}",
+							                   new StringTagPair("fileName", fileName)),
+							"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) {
 							continue;
 						}
 					}
@@ -404,8 +406,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							sr.Close();
 						}
 					} catch (Exception ex) {
-						StringParser.Properties["fileName"] = fileName;
-						MessageService.ShowError(ex, "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.FileCouldntBeWrittenError}");
+						MessageService.ShowException(ex, "Exception writing " + fileName);
 					}
 				}
 				
@@ -413,8 +414,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				// Save project
 				if (File.Exists(projectLocation)) {
-					StringParser.Properties["projectLocation"] = projectLocation;
-					if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion}", "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) {
+					if (MessageService.AskQuestion(
+						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion}",
+						                   new StringTagPair("projectLocation", projectLocation)),
+						"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) 
+					{
 						project.Save();
 					}
 				} else {

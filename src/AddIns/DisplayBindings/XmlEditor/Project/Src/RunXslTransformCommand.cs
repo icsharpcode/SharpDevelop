@@ -49,7 +49,7 @@ namespace ICSharpCode.XmlEditor
 					try {
 						xmlView.RunXslTransform(GetStylesheetContent(xmlView.StylesheetFileName));
 					} catch (Exception ex) {
-						MessageService.ShowError(ex);
+						MessageService.ShowException(ex);
 					}
 				}
 			}

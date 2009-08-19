@@ -306,7 +306,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				} catch (TemplateLoadException ex) {
 					MessageService.ShowError("Error loading template file " + file + ":\n" + ex.ToString());
 				} catch(Exception e) {
-					MessageService.ShowError(e, "Error loading template file " + file + ".");
+					MessageService.ShowException(e, "Error loading template file " + file + ".");
 				}
 			}
 			FileTemplates.Sort();

@@ -666,7 +666,7 @@ namespace ICSharpCode.XmlEditor
 				
 				ShowErrorList();
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

@@ -358,7 +358,7 @@ namespace ICSharpCode.SharpDevelop
 								Directory.Delete(fileName, true);
 						}
 					} catch (Exception e) {
-						MessageService.ShowError(e, "Can't remove directory " + fileName);
+						MessageService.ShowException(e, "Can't remove directory " + fileName);
 //					return;
 					}
 				} else {
@@ -370,7 +370,7 @@ namespace ICSharpCode.SharpDevelop
 								File.Delete(fileName);
 						}
 					} catch (Exception e) {
-						MessageService.ShowError(e, "Can't remove file " + fileName);
+						MessageService.ShowException(e, "Can't remove file " + fileName);
 //					return;
 					}
 				}
@@ -408,9 +408,9 @@ namespace ICSharpCode.SharpDevelop
 					}
 				} catch (Exception e) {
 					if (isDirectory) {
-						MessageService.ShowError(e, "Can't rename directory " + oldName);
+						MessageService.ShowException(e, "Can't rename directory " + oldName);
 					} else {
-						MessageService.ShowError(e, "Can't rename file " + oldName);
+						MessageService.ShowException(e, "Can't rename file " + oldName);
 					}
 					return false;
 				}
@@ -449,9 +449,9 @@ namespace ICSharpCode.SharpDevelop
 					}
 				} catch (Exception e) {
 					if (isDirectory) {
-						MessageService.ShowError(e, "Can't copy directory " + oldName);
+						MessageService.ShowException(e, "Can't copy directory " + oldName);
 					} else {
-						MessageService.ShowError(e, "Can't copy file " + oldName);
+						MessageService.ShowException(e, "Can't copy file " + oldName);
 					}
 					return false;
 				}

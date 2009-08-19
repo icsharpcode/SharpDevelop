@@ -279,7 +279,7 @@ namespace ICSharpCode.FormsDesigner
 			try {
 				this.Generator.MergeFormChanges(unit);
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

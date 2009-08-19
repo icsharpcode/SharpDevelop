@@ -471,7 +471,7 @@ namespace ICSharpCode.SharpDevelop
 						try {
 							return ParseFile(null, fileContent);
 						} catch (Exception ex) {
-							MessageService.ShowError(ex, "Error during async parse");
+							MessageService.ShowException(ex, "Error during async parse");
 							return null;
 						}
 					}
@@ -737,7 +737,10 @@ namespace ICSharpCode.SharpDevelop
 					IViewContent currentView = WorkbenchSingleton.Workbench.ActiveViewContent;
 					IParseInformationListener listener = currentView as IParseInformationListener;
 					if (listener != null && FileUtility.IsEqualFileName(e.FileName, currentView.PrimaryFileName)) {
-						listener.ParseInformationUpdated(new ParseInformation(e.NewCompilationUnit));
+						if (e.NewCompilationUnit != null)
+							listener.ParseInformationUpdated(new ParseInformation(e.NewCompilationUnit));
+						else
+							listener.ParseInformationUpdated(null);
 					}
 				});
 		}
@@ -798,7 +801,7 @@ namespace ICSharpCode.SharpDevelop
 						createdContents.Add(newContent);
 					}
 				} catch (Exception e) {
-					MessageService.ShowError(e, "Error while retrieving project contents from " + project);
+					MessageService.ShowException(e, "Error while retrieving project contents from " + project);
 				}
 			}
 			LoadSolutionProjects.OnSolutionLoaded(createdContents);

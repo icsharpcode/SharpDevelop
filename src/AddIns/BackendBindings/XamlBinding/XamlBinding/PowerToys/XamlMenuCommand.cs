@@ -45,7 +45,7 @@ namespace ICSharpCode.XamlBinding.PowerToys
 					}
 				}
 			} catch (XmlException e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 			}
 		}
 		

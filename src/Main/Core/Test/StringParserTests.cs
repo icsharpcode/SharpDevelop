@@ -17,8 +17,19 @@ namespace ICSharpCode.Core.Tests
 	{
 		public StringParserTest()
 		{
-			StringParser.Properties["test"] = "Value";
-			StringParser.PropertyObjects["obj"] = this;
+			StringParser.RegisterStringTagProvider("obj", new PropertyObjectTagProvider(this));
+			StringParser.RegisterStringTagProvider(new CustomTagProvider());
+		}
+		
+		sealed class CustomTagProvider : IStringTagProvider
+		{
+			public string ProvideString(string tag, StringTagPair[] customTags)
+			{
+				if (string.Equals(tag, "test", StringComparison.OrdinalIgnoreCase))
+					return "Value";
+				else
+					return null;
+			}
 		}
 		
 		public string TestProperty {

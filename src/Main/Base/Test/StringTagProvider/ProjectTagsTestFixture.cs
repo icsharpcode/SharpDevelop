@@ -74,43 +74,43 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 		[Test]
 		public void ConvertCurrentProjectName()
 		{
-			Assert.AreEqual(project.Name, tagProvider.Convert("CurrentProjectName"));
+			Assert.AreEqual(project.Name, tagProvider.ProvideString("CurrentProjectName"));
 		}
 		
 		[Test]
 		public void ConvertTargetPath()
 		{
-			Assert.AreEqual(project.OutputAssemblyFullPath, tagProvider.Convert("TargetPath"));
+			Assert.AreEqual(project.OutputAssemblyFullPath, tagProvider.ProvideString("TargetPath"));
 		}		
 
 		[Test]
 		public void ConvertTargetDir()
 		{
-			Assert.AreEqual(Path.GetDirectoryName(project.OutputAssemblyFullPath), tagProvider.Convert("TargetDir"));
+			Assert.AreEqual(Path.GetDirectoryName(project.OutputAssemblyFullPath), tagProvider.ProvideString("TargetDir"));
 		}		
 
 		[Test]
 		public void ConvertTargetName()
 		{
-			Assert.AreEqual("MyProject.exe", tagProvider.Convert("TargetName"));
+			Assert.AreEqual("MyProject.exe", tagProvider.ProvideString("TargetName"));
 		}		
 		
 		[Test]
 		public void ConvertTargetExt()
 		{
-			Assert.AreEqual(".exe", tagProvider.Convert("TargetExt"));
+			Assert.AreEqual(".exe", tagProvider.ProvideString("TargetExt"));
 		}		
 
 		[Test]
 		public void ConvertProjectDir()
 		{
-			Assert.AreEqual(project.Directory, tagProvider.Convert("ProjectDir"));
+			Assert.AreEqual(project.Directory, tagProvider.ProvideString("ProjectDir"));
 		}		
 		
 		[Test]
 		public void ConvertProjectFileName()
 		{
-			Assert.AreEqual(Path.GetFileName(project.FileName), tagProvider.Convert("ProjectFileName"));
+			Assert.AreEqual(Path.GetFileName(project.FileName), tagProvider.ProvideString("ProjectFileName"));
 		}		
 	}
 }

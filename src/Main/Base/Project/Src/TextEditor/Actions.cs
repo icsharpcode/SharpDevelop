@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 						else
 							FileService.JumpToFilePosition(pos.FileName, pos.Line, pos.Column);
 					} catch (Exception ex) {
-						MessageService.ShowError(ex, "Error jumping to '" + pos.FileName + "'.");
+						MessageService.ShowException(ex, "Error jumping to '" + pos.FileName + "'.");
 					}
 				}
 			}

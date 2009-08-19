@@ -89,7 +89,6 @@
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.Minimal.cs" />
-    <Compile Include="Src\Services\IService.cs" />
     <Compile Include="Src\Services\LoggingService\TextWriterLoggingService.cs" />
     <Compile Include="Src\Services\LoggingService\ILoggingService.cs" />
     <Compile Include="Src\Services\MessageService\TextWriterMessageService.cs" />
@@ -101,7 +100,9 @@
     <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceService.cs" />
     <Compile Include="Src\Services\ServiceManager.cs" />
+    <Compile Include="Src\Services\ServiceNotFoundException.cs" />
     <Compile Include="Src\Services\StringParser\IStringTagProvider.cs" />
+    <Compile Include="Src\Services\StringParser\PropertyObjectTagProvider.cs" />
     <Compile Include="Src\Services\StringParser\StringParser.cs" />
     <Compile Include="Src\Util\AbstractCommand.cs" />
     <Compile Include="Src\Util\CallbackOnDispose.cs" />

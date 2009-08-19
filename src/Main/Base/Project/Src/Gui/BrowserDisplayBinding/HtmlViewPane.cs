@@ -185,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 					}
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		
@@ -200,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 					extension.DocumentCompleted(this, e);
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

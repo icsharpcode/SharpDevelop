@@ -162,7 +162,7 @@ namespace Grunwald.BooBinding.Designer
 			try {
 				this.Generator.MergeFormChanges(unit);
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

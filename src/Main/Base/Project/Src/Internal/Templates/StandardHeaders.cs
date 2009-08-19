@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Collections;
 using System.IO;
 using System.Xml;
-
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
@@ -67,9 +67,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public static void SetHeaders()
 		{
-			
 			foreach (StandardHeader standardHeader in standardHeaders) {
-				StringParser.Properties[standardHeader.Name] = standardHeader.Header;
+				StringParserPropertyContainer.FileCreation[standardHeader.Name] = standardHeader.Header;
 			}
 		}
 		

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			foreach (TemplateProperty property in item.Properties) {
 				FieldInfo fieldInfo = templateInstance.GetType().GetField(property.Name);
-				fieldInfo.SetValue(templateInstance, Convert.ChangeType(StringParser.Properties["Properties." + property.Name], property.Type.StartsWith("Types:") ? typeof(string): Type.GetType(property.Type)));
+				fieldInfo.SetValue(templateInstance, Convert.ChangeType(StringParserPropertyContainer.LocalizedProperty["Properties." + property.Name], property.Type.StartsWith("Types:") ? typeof(string): Type.GetType(property.Type)));
 			}
 			MethodInfo methodInfo = templateInstance.GetType().GetMethod("GenerateOutput");
 			string ret = methodInfo.Invoke(templateInstance, null).ToString();

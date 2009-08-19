@@ -6,8 +6,9 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 
@@ -21,45 +22,24 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class StringParser
 	{
-		readonly static Dictionary<string, string>             properties;
-		readonly static Dictionary<string, IStringTagProvider> stringTagProviders;
-		readonly static Dictionary<string, object>             propertyObjects;
+		readonly static ConcurrentDictionary<string, IStringTagProvider> prefixedStringTagProviders
+			= InitializePrefixedStringTagProviders();
 		
-		public static Dictionary<string, string> Properties {
-			get {
-				return properties;
-			}
-		}
+		// not really a stack - we only use Add and GetEnumerator
+		readonly static ConcurrentStack<IStringTagProvider> stringTagProviders = new ConcurrentStack<IStringTagProvider>();
 		
-		public static Dictionary<string, object> PropertyObjects {
-			get {
-				return propertyObjects;
-			}
-		}
-		
-		static StringParser()
+		static ConcurrentDictionary<string, IStringTagProvider> InitializePrefixedStringTagProviders()
 		{
-			properties         = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			stringTagProviders = new Dictionary<string, IStringTagProvider>(StringComparer.OrdinalIgnoreCase);
-			propertyObjects    = new Dictionary<string, object>();
+			var dict = new ConcurrentDictionary<string, IStringTagProvider>(StringComparer.OrdinalIgnoreCase);
 			
 			// entryAssembly == null might happen in unit test mode
 			Assembly entryAssembly = Assembly.GetEntryAssembly();
 			if (entryAssembly != null) {
 				string exeName = entryAssembly.Location;
-				propertyObjects["exe"] = FileVersionInfo.GetVersionInfo(exeName);
+				dict["exe"] = new PropertyObjectTagProvider(FileVersionInfo.GetVersionInfo(exeName));
 			}
-			properties["USER"] = Environment.UserName;
-			properties["Version"] = RevisionClass.FullVersion;
 			
-			// Maybe test for Mono?
-			if (IntPtr.Size == 4) {
-				properties["Platform"] = "Win32";
-			} else if (IntPtr.Size == 8) {
-				properties["Platform"] = "Win64";
-			} else {
-				properties["Platform"] = "unknown";
-			}
+			return dict;
 		}
 		
 		/// <summary>
@@ -67,24 +47,34 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string Parse(string input)
 		{
-			return Parse(input, null);
+			return Parse(input, (StringTagPair[])null);
 		}
 		
 		/// <summary>
 		/// Parses an array and replaces the elements in the existing array.
 		/// </summary>
+		[Obsolete("Call Parse(string) in a loop / consider suing LINQ Select instead")]
 		public static void Parse(string[] inputs)
 		{
 			for (int i = 0; i < inputs.Length; ++i) {
-				inputs[i] = Parse(inputs[i], null);
+				inputs[i] = Parse(inputs[i]);
 			}
 		}
 		
 		public static void RegisterStringTagProvider(IStringTagProvider tagProvider)
 		{
-			foreach (string str in tagProvider.Tags) {
-				stringTagProviders[str] = tagProvider;
-			}
+			if (tagProvider == null)
+				throw new ArgumentNullException("tagProvider");
+			stringTagProviders.Push(tagProvider);
+		}
+		
+		public static void RegisterStringTagProvider(string prefix, IStringTagProvider tagProvider)
+		{
+			if (prefix == null)
+				throw new ArgumentNullException("prefix");
+			if (tagProvider == null)
+				throw new ArgumentNullException("tagProvider");
+			prefixedStringTagProviders[prefix] = tagProvider;
 		}
 		
 		//readonly static Regex pattern = new Regex(@"\$\{([^\}]*)\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
@@ -92,7 +82,7 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Expands ${xyz} style property values.
 		/// </summary>
-		public static string Parse(string input, string[,] customTags)
+		public static string Parse(string input, params StringTagPair[] customTags)
 		{
 			if (input == null)
 				return null;
@@ -143,83 +133,102 @@ namespace ICSharpCode.Core
 			return output.ToString();
 		}
 		
-		static string GetValue(string propertyName, string[,] customTags)
+		/// <summary>
+		/// For new code, please use the overload taking StringTagPair[]!
+		/// </summary>
+		public static string Parse(string input, string[,] customTags)
 		{
-			
-			// most properties start with res: in lowercase,
-			// so we can save 2 string allocations here, in addition to all the jumps
-			// All other prefixed properties {prefix:Key} shoulg get handled in the switch below.
-			if (propertyName.StartsWith("res:", StringComparison.OrdinalIgnoreCase)) {
-				try {
-					return Parse(ResourceService.GetString(propertyName.Substring(4)), customTags);
-				} catch (ResourceNotFoundException) {
-					return null;
-				}
+			if (customTags == null)
+				return Parse(input);
+			if (customTags.GetLength(1) != 2)
+				throw new ArgumentException("incorrect dimension");
+			StringTagPair[] pairs = new StringTagPair[customTags.GetLength(0)];
+			for (int i = 0; i < pairs.Length; i++) {
+				pairs[i] = new StringTagPair(customTags[i, 0], customTags[i, 1]);
 			}
-			if (propertyName.StartsWith("DATE:", StringComparison.OrdinalIgnoreCase))
-			{
-				try {
-					return DateTime.Now.ToString(propertyName.Split(':')[1]);
-				} catch (Exception ex) {
-					return ex.Message;
-				}
-			}
-			if (propertyName.Equals("DATE", StringComparison.OrdinalIgnoreCase))
-				return DateTime.Today.ToShortDateString();
-			if (propertyName.Equals("TIME", StringComparison.OrdinalIgnoreCase))
-				return DateTime.Now.ToShortTimeString();
-			if (propertyName.Equals("ProductName", StringComparison.OrdinalIgnoreCase))
-				return MessageService.ProductName;
-			if (propertyName.Equals("GUID", StringComparison.OrdinalIgnoreCase))
-				return Guid.NewGuid().ToString().ToUpperInvariant();
-			
+			return Parse(input, pairs);
+		}
+		
+		static string GetValue(string propertyName, StringTagPair[] customTags)
+		{
 			if (customTags != null) {
-				for (int j = 0; j < customTags.GetLength(0); ++j) {
-					if (propertyName.Equals(customTags[j, 0], StringComparison.OrdinalIgnoreCase)) {
-						return customTags[j, 1];
+				foreach (StringTagPair pair in customTags) {
+					if (propertyName.Equals(pair.Tag, StringComparison.OrdinalIgnoreCase)) {
+						return pair.Value;
 					}
 				}
-			}
-			
-			if (properties.ContainsKey(propertyName)) {
-				return properties[propertyName];
-			}
-			
-			if (stringTagProviders.ContainsKey(propertyName)) {
-				return stringTagProviders[propertyName].Convert(propertyName);
 			}
 			
 			int k = propertyName.IndexOf(':');
-			if (k <= 0)
+			if (k <= 0) {
+				// it's property without prefix
+				
+				if (propertyName.Equals("DATE", StringComparison.OrdinalIgnoreCase))
+					return DateTime.Today.ToShortDateString();
+				if (propertyName.Equals("TIME", StringComparison.OrdinalIgnoreCase))
+					return DateTime.Now.ToShortTimeString();
+				if (propertyName.Equals("ProductName", StringComparison.OrdinalIgnoreCase))
+					return MessageService.ProductName;
+				if (propertyName.Equals("GUID", StringComparison.OrdinalIgnoreCase))
+					return Guid.NewGuid().ToString().ToUpperInvariant();
+				if (propertyName.Equals("USER", StringComparison.OrdinalIgnoreCase))
+					return Environment.UserName;
+				if (propertyName.Equals("Version", StringComparison.OrdinalIgnoreCase))
+					return RevisionClass.FullVersion;
+				if (propertyName.Equals("CONFIGDIRECTORY", StringComparison.OrdinalIgnoreCase))
+					return PropertyService.ConfigDirectory;
+				
+				foreach (IStringTagProvider provider in stringTagProviders) {
+					string result = provider.ProvideString(propertyName, customTags);
+					if (result != null)
+						return result;
+				}
+				
 				return null;
-			string prefix = propertyName.Substring(0, k);
-			propertyName = propertyName.Substring(k + 1);
-			switch (prefix.ToUpperInvariant()) {
-				case "SDKTOOLPATH":
-					return FileUtility.GetSdkPath(propertyName);
-				case "ADDINPATH":
-					foreach (AddIn addIn in AddInTree.AddIns) {
-						if (addIn.Manifest.Identities.ContainsKey(propertyName)) {
-							return System.IO.Path.GetDirectoryName(addIn.FileName);
-						}
-					}
-					return null;
-				case "ENV":
-					return Environment.GetEnvironmentVariable(propertyName);
-				case "RES":
+			} else {
+				// it's a prefixed property
+				
+				
+				// res: properties are quite common, so optimize by testing for them first
+				// before allocaing the prefix/propertyName strings
+				// All other prefixed properties {prefix:Key} shoulg get handled in the switch below.
+				if (propertyName.StartsWith("res:", StringComparison.OrdinalIgnoreCase)) {
 					try {
-						return Parse(ResourceService.GetString(propertyName), customTags);
+						return Parse(ResourceService.GetString(propertyName.Substring(4)), customTags);
 					} catch (ResourceNotFoundException) {
 						return null;
 					}
-				case "PROPERTY":
-					return GetProperty(propertyName);
-				default:
-					if (propertyObjects.ContainsKey(prefix)) {
-						return Get(propertyObjects[prefix], propertyName);
-					} else {
+				}
+				
+				string prefix = propertyName.Substring(0, k);
+				propertyName = propertyName.Substring(k + 1);
+				switch (prefix.ToUpperInvariant()) {
+					case "SDKTOOLPATH":
+						return FileUtility.GetSdkPath(propertyName);
+					case "ADDINPATH":
+						foreach (AddIn addIn in AddInTree.AddIns) {
+							if (addIn.Manifest.Identities.ContainsKey(propertyName)) {
+								return System.IO.Path.GetDirectoryName(addIn.FileName);
+							}
+						}
 						return null;
-					}
+					case "DATE":
+						try {
+							return DateTime.Now.ToString(propertyName, CultureInfo.CurrentCulture);
+						} catch (Exception ex) {
+							return ex.Message;
+						}
+					case "ENV":
+						return Environment.GetEnvironmentVariable(propertyName);
+					case "PROPERTY":
+						return GetProperty(propertyName);
+					default:
+						IStringTagProvider provider;
+						if (prefixedStringTagProviders.TryGetValue(prefix, out provider))
+							return provider.ProvideString(propertyName, customTags);
+						else
+							return null;
+				}
 			}
 		}
 		
@@ -254,19 +263,29 @@ namespace ICSharpCode.Core
 				return PropertyService.Get(propertyName, defaultValue);
 			}
 		}
+	}
+	
+	public struct StringTagPair
+	{
+		readonly string tag;
+		readonly string value;
 		
-		static string Get(object obj, string name)
+		public string Tag {
+			get { return tag; }
+		}
+		
+		public string Value {
+			get { return value; }
+		}
+		
+		public StringTagPair(string tag, string value)
 		{
-			Type type = obj.GetType();
-			PropertyInfo prop = type.GetProperty(name);
-			if (prop != null) {
-				return prop.GetValue(obj, null).ToString();
-			}
-			FieldInfo field = type.GetField(name);
-			if (field != null) {
-				return field.GetValue(obj).ToString();
-			}
-			return null;
+			if (tag == null)
+				throw new ArgumentNullException("tag");
+			if (value == null)
+				throw new ArgumentNullException("value");
+			this.tag = tag;
+			this.value = value;
 		}
 	}
 }

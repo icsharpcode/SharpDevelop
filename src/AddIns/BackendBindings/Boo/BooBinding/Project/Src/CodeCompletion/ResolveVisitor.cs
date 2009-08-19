@@ -608,7 +608,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		protected override void OnError(Node node, Exception error)
 		{
-			MessageService.ShowError(error, "ResolveVisitor: error processing " + node);
+			MessageService.ShowException(error, "ResolveVisitor: error processing " + node);
 		}
 		
 		public override void OnBlockExpression(BlockExpression node)

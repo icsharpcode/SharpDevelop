@@ -196,7 +196,7 @@ namespace ICSharpCode.FormsDesigner
 				
 				return el;
 			} catch (Exception e) {
-				ICSharpCode.Core.MessageService.ShowError(e);
+				ICSharpCode.Core.MessageService.ShowException(e);
 			}
 			return null;
 		}

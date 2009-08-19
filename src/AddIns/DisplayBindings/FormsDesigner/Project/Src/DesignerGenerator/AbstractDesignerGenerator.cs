@@ -126,7 +126,7 @@ namespace ICSharpCode.FormsDesigner
 					LoggingService.Warn("-> Field '" + fieldName + "' not found in class");
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		
@@ -168,7 +168,7 @@ namespace ICSharpCode.FormsDesigner
 					this.ViewContent.DesignerCodeFileDocument.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

@@ -20,26 +20,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 	/// Provides tag to string mapping for SharpDevelop. Tags are mapped to strings by several methods
 	/// such as registry and resource files.
 	/// </summary>
-	public class SharpDevelopStringTagProvider :  IStringTagProvider
+	public class SharpDevelopStringTagProvider : IStringTagProvider
 	{
-		readonly static string[] tags = new string[] {
-			"ItemPath", "ItemDir", "ItemFilename", "ItemExt",
-			"CurLine", "CurCol", "CurText",
-			"TargetPath", "TargetDir", "TargetName", "TargetExt",
-			"CurrentProjectName",
-			"ProjectDir", "ProjectFilename",
-			"CombineDir", "CombineFilename",
-			"SolutionDir", "SolutionFilename",
-			"Startuppath", "ConfigDirectory",
-			"TaskService.Warnings", "TaskService.Errors", "TaskService.Messages"
-		};
-		
-		public string[] Tags {
-			get {
-				return tags;
-			}
-		}
-		
 		string GetCurrentItemPath()
 		{
 			return WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName;
@@ -57,7 +39,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 			return String.Empty;
 		}
 		
-		public string Convert(string tag)
+		public string ProvideString(string tag, StringTagPair[] customTags)
+		{
+			return ProvideString(tag);
+		}
+		
+		public string ProvideString(string tag)
 		{
 			switch (tag) {
 				case "TaskService.Warnings":
@@ -162,8 +149,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 					break;
 				case "STARTUPPATH":
 					return Application.StartupPath;
-				case "CONFIGDIRECTORY":
-					return PropertyService.ConfigDirectory;
 			}
 			return String.Empty;
 		}

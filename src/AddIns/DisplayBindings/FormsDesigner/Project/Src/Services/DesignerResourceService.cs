@@ -29,7 +29,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				LoggingService.Debug("ResourceWriter requested for culture: " + info.ToString());
 				return this.store.GetWriter(info);
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 				return null;
 			}
 		}
@@ -40,7 +40,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				LoggingService.Debug("ResourceReader requested for culture: "+info.ToString());
 				return this.store.GetReader(info);
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 				return null;
 			}
 		}

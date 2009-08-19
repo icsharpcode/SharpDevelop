@@ -417,7 +417,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				} catch (TemplateLoadException e) {
 					MessageService.ShowError(ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n" + e.ToString());
 				} catch (Exception e) {
-					MessageService.ShowError(e, ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n");
+					MessageService.ShowException(e, ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n");
 				}
 			}
 			projectTemplates.Sort();

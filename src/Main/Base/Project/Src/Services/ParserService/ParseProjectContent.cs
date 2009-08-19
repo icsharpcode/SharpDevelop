@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop
 				// in the project depending on it, so we do the refresh after the old reference was added.
 				AssemblyParserService.RefreshProjectContentForReference(reference);
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 			}
 		}
 		
@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop
 						OnReferencedContentsChanged(EventArgs.Empty);
 					}
 				} catch (Exception ex) {
-					MessageService.ShowError(ex);
+					MessageService.ShowException(ex);
 				}
 			}
 			

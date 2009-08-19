@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Project
 								FileService.OpenFile(file);
 							}
 						} catch (Exception ex) {
-							MessageService.ShowError(ex, "unable to open file " + file);
+							MessageService.ShowException(ex, "unable to open file " + file);
 						}
 					}
 				}

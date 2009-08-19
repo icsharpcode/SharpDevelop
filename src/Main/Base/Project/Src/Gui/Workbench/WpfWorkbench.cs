@@ -472,7 +472,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						mementoCapable.SetMemento(memento);
 					}
 				} catch (Exception e) {
-					MessageService.ShowError(e, "Can't get/set memento");
+					MessageService.ShowException(e, "Can't get/set memento");
 				}
 			}
 		}
@@ -540,7 +540,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					e.Handled = true;
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		
@@ -553,7 +553,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					e.Handled = true;
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		
@@ -590,7 +590,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

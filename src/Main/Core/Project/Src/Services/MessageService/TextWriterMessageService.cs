@@ -25,7 +25,12 @@ namespace ICSharpCode.Core.Services
 			this.writer = writer;
 		}
 		
-		public void ShowError(Exception ex, string message)
+		public void ShowError(string message)
+		{
+			writer.WriteLine(message);
+		}
+		
+		public void ShowException(Exception ex, string message)
 		{
 			if (message != null) {
 				writer.WriteLine(message);

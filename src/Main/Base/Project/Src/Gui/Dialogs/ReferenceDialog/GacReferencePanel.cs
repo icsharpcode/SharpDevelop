@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ResolveVersionsWorker();
 				//CreateReferenceToFrameworkTable();
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

@@ -72,6 +72,7 @@
     <Compile Include="Src\CallHelper.cs" />
     <Compile Include="Src\log4netLoggingService.cs" />
     <Compile Include="Src\LogMessageRecorder.cs" />
+    <Compile Include="Src\SDMessageService.cs" />
     <Compile Include="Src\SharpDevelopHost.cs" />
     <Compile Include="Src\ExceptionBox.cs">
       <SubType>Form</SubType>

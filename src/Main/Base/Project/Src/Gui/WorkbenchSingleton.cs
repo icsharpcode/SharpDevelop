@@ -84,8 +84,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Project.CustomToolsService.Initialize();
 			Project.BuildModifiedProjectsOnlyService.Initialize();
 			
-			WinFormsMessageService.DialogOwner = workbench.MainWin32Window;
-			WinFormsMessageService.DialogSynchronizeInvoke = workbench.SynchronizingObject;
+			var messageService = (WinFormsMessageService)Core.Services.ServiceManager.Instance.MessageService;
+			messageService.DialogOwner = workbench.MainWin32Window;
+			messageService.DialogSynchronizeInvoke = workbench.SynchronizingObject;
 			
 			workbench.Initialize();
 			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));

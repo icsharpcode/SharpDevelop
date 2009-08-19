@@ -163,7 +163,7 @@ namespace ICSharpCode.Svn
 				isLoadingChangedPaths = false;
 				WorkbenchSingleton.SafeThreadAsyncCall<object, EventArgs>(this.RevisionListViewSelectionChanged, null, EventArgs.Empty);
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

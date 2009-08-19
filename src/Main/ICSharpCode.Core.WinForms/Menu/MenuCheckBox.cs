@@ -23,7 +23,7 @@ namespace ICSharpCode.Core.WinForms
 				try {
 					menuCommand = (ICheckableMenuCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 				} catch (Exception e) {
-					MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
+					MessageService.ShowException(e, "Can't create menu command : " + codon.Id);
 				}
 			}
 		}

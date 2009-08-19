@@ -298,7 +298,7 @@ namespace Debugger.AddIn.TreeModel
 			showError.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.ShowFullError}");
 			showError.Checked = false;
 			showError.Click += delegate {
-				MessageService.ShowError(error, null);
+				MessageService.ShowException(error, null);
 			};
 			
 			menu.Items.AddRange(new ToolStripItem[] {

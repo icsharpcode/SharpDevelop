@@ -559,7 +559,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				else
 					return false;
 			} catch (GetValueException e) {
-				WorkbenchSingleton.SafeThreadAsyncCall(MessageService.ShowError, e);
+				WorkbenchSingleton.SafeThreadAsyncCall(MessageService.ShowException, e);
 				return true;
 			}
 		}

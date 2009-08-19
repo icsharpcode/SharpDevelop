@@ -233,7 +233,7 @@ namespace SharpRefactoring
 				parser.Parse();
 				
 				if (parser.Errors.Count > 0) {
-					MessageService.ShowError(null, parser.Errors.ErrorOutput);
+					MessageService.ShowException(null, parser.Errors.ErrorOutput);
 					return null;
 				}
 				

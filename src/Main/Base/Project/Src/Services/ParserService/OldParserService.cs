@@ -168,7 +168,7 @@ namespace ICSharpCode.SharpDevelop
 						createdContents.Add(newContent);
 					}
 				} catch (Exception e) {
-					MessageService.ShowError(e, "Error while retrieving project contents from " + project);
+					MessageService.ShowException(e, "Error while retrieving project contents from " + project);
 				}
 			}
 			WorkbenchSingleton.SafeThreadAsyncCall(ProjectService.ParserServiceCreatedProjectContents);
@@ -185,7 +185,7 @@ namespace ICSharpCode.SharpDevelop
 						newContent.Initialize1(progressMonitor);
 						workAmount += newContent.GetInitializationWorkAmount();
 					} catch (Exception e) {
-						MessageService.ShowError(e, "Error while initializing project references:" + newContent);
+						MessageService.ShowException(e, "Error while initializing project references:" + newContent);
 					}
 				}
 				
@@ -198,7 +198,7 @@ namespace ICSharpCode.SharpDevelop
 					try {
 						newContent.Initialize2(progressMonitor);
 					} catch (Exception e) {
-						MessageService.ShowError(e, "Error while initializing project contents:" + newContent);
+						MessageService.ShowException(e, "Error while initializing project contents:" + newContent);
 					}
 				}
 			} finally {
@@ -231,7 +231,7 @@ namespace ICSharpCode.SharpDevelop
 			try {
 				ReparseProjectsInternal();
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		
@@ -398,7 +398,7 @@ namespace ICSharpCode.SharpDevelop
 					ParseQueue();
 					ParserUpdateStep();
 				} catch (Exception e) {
-					ICSharpCode.Core.MessageService.ShowError(e);
+					ICSharpCode.Core.MessageService.ShowException(e);
 					
 					// don't fire an exception every 2 seconds at the user, give him at least
 					// time to read the first :-)
@@ -606,11 +606,11 @@ namespace ICSharpCode.SharpDevelop
 				try {
 					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, fileProjectContent, oldUnit, parserOutput));
 				} catch (Exception e) {
-					MessageService.ShowError(e);
+					MessageService.ShowException(e);
 				}
 				return parseInformation;
 			} catch (Exception e) {
-				MessageService.ShowError(e, "Error parsing " + fileName);
+				MessageService.ShowException(e, "Error parsing " + fileName);
 			}
 			return null;
 		}
@@ -706,7 +706,7 @@ namespace ICSharpCode.SharpDevelop
 				try {
 					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, pc, oldUnit, null));
 				} catch (Exception e) {
-					MessageService.ShowError(e);
+					MessageService.ShowException(e);
 				}
 			}
 		}

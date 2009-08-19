@@ -40,7 +40,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 		{
 			Application.ThreadException += ShowErrorBox;
 			AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
-			MessageService.CustomErrorReporter = ShowErrorBox;
 			System.Windows.Threading.Dispatcher.CurrentDispatcher.UnhandledException += Dispatcher_UnhandledException;
 		}
 		
@@ -66,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			ShowErrorBox(ex, "Unhandled exception", e.IsTerminating);
 		}
 		
-		static void ShowErrorBox(Exception exception, string message)
+		public static void ShowErrorBox(Exception exception, string message)
 		{
 			ShowErrorBox(exception, message, false);
 		}

@@ -76,7 +76,7 @@ namespace ICSharpCode.Core.Presentation
 				}
 				addInCommand = menuCommand;
 			} catch (Exception e) {
-				MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
+				MessageService.ShowException(e, "Can't create menu command : " + codon.Id);
 			}
 		}
 		

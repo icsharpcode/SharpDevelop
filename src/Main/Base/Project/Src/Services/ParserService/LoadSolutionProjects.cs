@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop
 					} catch (OperationCanceledException) {
 						// ignore cancellation
 					} catch (Exception ex) {
-						MessageService.ShowError(ex, "Error on LoadSolutionProjects thread");
+						MessageService.ShowException(ex, "Error on LoadSolutionProjects thread");
 					}
 				}
 			}

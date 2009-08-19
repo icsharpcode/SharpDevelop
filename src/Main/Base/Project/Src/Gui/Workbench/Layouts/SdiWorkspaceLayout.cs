@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					LoadDefaultLayoutConfiguration();
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 				// ignore errors loading configuration
 			}
 		}
@@ -268,7 +268,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 			}
 		}
 		
@@ -285,7 +285,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						padContentWrapper.DetachContent();
 						padContentWrapper.Dispose();
 					}
-				} catch (Exception e) { MessageService.ShowError(e); }
+				} catch (Exception e) { MessageService.ShowException(e); }
 			}
 			if (dispose) {
 				contentHash.Clear();
@@ -301,7 +301,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						f.CloseEvent -= CloseWindowEvent;
 						f.Dispose();
 					}
-				} catch (Exception e) { MessageService.ShowError(e); }
+				} catch (Exception e) { MessageService.ShowException(e); }
 			}
 		}
 		public void Detach()
@@ -319,7 +319,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					dockPanel = null;
 				}
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 			}
 			if (contentHash != null) {
 				contentHash.Clear();
@@ -394,7 +394,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						control.Dock = DockStyle.Fill;
 						Controls.Add(control);
 					} catch (Exception ex) {
-						MessageService.ShowError(ex, "Error in IPadContent.Control");
+						MessageService.ShowException(ex, "Error in IPadContent.Control");
 					}
 				}
 			}

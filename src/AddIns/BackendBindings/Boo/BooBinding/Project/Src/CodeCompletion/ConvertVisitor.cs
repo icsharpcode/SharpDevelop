@@ -41,13 +41,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 				_cu.Tag = CompileUnit;
 				Visit(CompileUnit);
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		
 		protected override void OnError(AST.Node node, Exception error)
 		{
-			MessageService.ShowError(error, "error processing " + node.ToCodeString());
+			MessageService.ShowException(error, "error processing " + node.ToCodeString());
 		}
 		
 		private ModifierEnum GetModifier(AST.TypeMember m)

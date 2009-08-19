@@ -122,7 +122,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				taskView.ClearTasks();
 				UpdateToolstripStatus();
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

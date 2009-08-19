@@ -187,7 +187,7 @@ namespace ICSharpCode.Core
 					command.Run();
 				} catch (Exception ex) {
 					// allow startup to continue if some commands fail
-					MessageService.ShowError(ex);
+					MessageService.ShowException(ex);
 				}
 			}
 		}
@@ -206,7 +206,20 @@ namespace ICSharpCode.Core
 			                                  propertiesName);
 			PropertyService.Load();
 			ResourceService.InitializeService(FileUtility.Combine(PropertyService.DataDirectory, "resources"));
-			StringParser.Properties["AppName"] = applicationName;
+			StringParser.RegisterStringTagProvider(new AppNameProvider { appName = applicationName });
+		}
+		
+		sealed class AppNameProvider : IStringTagProvider
+		{
+			internal string appName;
+			
+			public string ProvideString(string tag, StringTagPair[] customTags)
+			{
+				if (string.Equals(tag, "AppName", StringComparison.OrdinalIgnoreCase))
+					return appName;
+				else
+					return null;
+			}
 		}
 	}
 }

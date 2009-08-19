@@ -24,7 +24,7 @@ namespace ICSharpCode.XmlEditor
 				try {
 					FileService.OpenFile(xmlView.StylesheetFileName);
 				} catch (Exception ex) {
-					MessageService.ShowError(ex);
+					MessageService.ShowException(ex);
 				}
 			}
 		}

@@ -228,7 +228,7 @@ namespace ICSharpCode.FormsDesigner.Services
 								asm.LoadModule(Path.GetFileName(fileName), File.ReadAllBytes(fileName));
 							}
 						} catch (Exception ex) {
-							MessageService.ShowError(ex, "Error calling linker for netmodule");
+							MessageService.ShowException(ex, "Error calling linker for netmodule");
 						}
 						try {
 							File.Delete(tempPath);

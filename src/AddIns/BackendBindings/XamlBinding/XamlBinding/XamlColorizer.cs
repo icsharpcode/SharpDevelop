@@ -102,7 +102,7 @@ namespace ICSharpCode.XamlBinding
 					
 					WorkbenchSingleton.SafeThreadAsyncCall(InvokeRedraw);
 				} catch (Exception e) {
-					WorkbenchSingleton.SafeThreadAsyncCall(() => MessageService.ShowError(e));
+					WorkbenchSingleton.SafeThreadAsyncCall(() => MessageService.ShowException(e));
 				}
 			}
 			

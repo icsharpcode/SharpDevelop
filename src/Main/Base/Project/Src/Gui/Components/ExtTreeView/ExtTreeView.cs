@@ -212,7 +212,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} catch (Exception ex) {
 				// catch error to prevent corrupting the TreeView component
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 			if (e.Node.Nodes.Count == 0) {
 				// when the node's subnodes have been removed by Expanding, AfterExpand is not called

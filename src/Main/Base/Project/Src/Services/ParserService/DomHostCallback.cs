@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop
 			};
 			
 			HostCallback.ShowError = delegate(string message, Exception ex) {
-				MessageService.ShowError(ex, message);
+				MessageService.ShowException(ex, message);
 			};
 			
 			HostCallback.ShowAssemblyLoadError = delegate(string fileName, string include, string message) {

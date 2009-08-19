@@ -309,7 +309,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					if (debuggedProcess == null || debuggedProcess.HasExited) {
 						// Process unexpectedly exited
 					} else {
-						MessageService.ShowError(ex);
+						MessageService.ShowException(ex);
 					}
 				}
 			}

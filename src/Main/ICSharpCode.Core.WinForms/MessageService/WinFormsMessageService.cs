@@ -18,26 +18,19 @@ namespace ICSharpCode.Core.WinForms
 	/// All text displayed using the MessageService is passed to the
 	/// <see cref="StringParser"/> to replace ${res} markers.
 	/// </summary>
-	public sealed class WinFormsMessageService : IMessageService
+	public class WinFormsMessageService : IMessageService
 	{
 		/// <summary>
 		/// Gets/Sets the form used as owner for shown message boxes.
 		/// </summary>
-		public static IWin32Window DialogOwner { get; set; }
+		public IWin32Window DialogOwner { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the object used to synchronize message boxes shown on other threads.
 		/// </summary>
-		public static ISynchronizeInvoke DialogSynchronizeInvoke { get; set; }
+		public ISynchronizeInvoke DialogSynchronizeInvoke { get; set; }
 		
-		/// <summary>
-		/// Gets the message service instance.
-		/// </summary>
-		public static readonly WinFormsMessageService Instance = new WinFormsMessageService();
-		
-		private WinFormsMessageService() {}
-		
-		static void BeginInvoke(MethodInvoker method)
+		void BeginInvoke(MethodInvoker method)
 		{
 			ISynchronizeInvoke si = DialogSynchronizeInvoke;
 			if (si == null || !si.InvokeRequired)
@@ -46,7 +39,7 @@ namespace ICSharpCode.Core.WinForms
 				si.BeginInvoke(method, null);
 		}
 		
-		static void Invoke(MethodInvoker method)
+		void Invoke(MethodInvoker method)
 		{
 			ISynchronizeInvoke si = DialogSynchronizeInvoke;
 			if (si == null || !si.InvokeRequired)
@@ -55,17 +48,25 @@ namespace ICSharpCode.Core.WinForms
 				si.Invoke(method, null);
 		}
 		
-		public void ShowError(Exception ex, string message)
+		public virtual void ShowException(Exception ex, string message)
 		{
-			string msg = message + "\n\n";
-			
 			if (ex != null) {
-				msg += "Exception occurred: " + ex.ToString();
+				message += "\n\nException occurred: " + ex.ToString();
 			}
+			ShowError(message);
+		}
+		
+		public void ShowError(string message)
+		{
+			message = StringParser.Parse(message);
 			
+			string caption = StringParser.Parse("${res:Global.ErrorText}");
 			BeginInvoke(
 				delegate {
-					MessageBox.Show(DialogOwner, StringParser.Parse(msg), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(DialogOwner,
+					                message, caption,
+					                MessageBoxButtons.OK, MessageBoxIcon.Warning,
+					                MessageBoxDefaultButton.Button1, GetOptions(message, caption));
 				});
 		}
 		

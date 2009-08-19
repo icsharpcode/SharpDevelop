@@ -88,7 +88,7 @@ namespace ICSharpCode.Svn.Commands
 			} catch (SvnClientException ex) {
 				MessageService.ShowError(ex.Message);
 			} catch (Exception ex) {
-				MessageService.ShowError(ex, "Solution add exception");
+				MessageService.ShowException(ex, "Solution add exception");
 			}
 		}
 		
@@ -129,7 +129,7 @@ namespace ICSharpCode.Svn.Commands
 			} catch (SvnClientException ex) {
 				MessageService.ShowError(ex.Message);
 			} catch (Exception ex) {
-				MessageService.ShowError(ex, "Project add exception");
+				MessageService.ShowException(ex, "Project add exception");
 			}
 		}
 		

@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				else
 					ControlDictionary["fileNameTextBox"].Select();
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				MessageService.ShowException(e);
 			}
 		}
 		
@@ -213,7 +213,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		bool AllPropertiesHaveAValue {
 			get {
 				foreach (TemplateProperty property in SelectedTemplate.Properties) {
-					string val = StringParser.Properties["Properties." + property.Name];
+					string val = StringParserPropertyContainer.LocalizedProperty["Properties." + property.Name];
 					if (val == null || val.Length == 0) {
 						return false;
 					}
@@ -248,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 							throw new Exception("type : " + property.Type + " not found.");
 						}
 						localizedProperty.TypeConverterObject = new CustomTypeConverter(type);
-						StringParser.Properties["Properties." + localizedProperty.Name] = property.DefaultValue;
+						StringParserPropertyContainer.LocalizedProperty["Properties." + localizedProperty.Name] = property.DefaultValue;
 						localizedProperty.DefaultValue = property.DefaultValue; // localizedProperty.TypeConverterObject.ConvertFrom();
 					} else {
 						localizedProperty = new LocalizedProperty(property.Name, property.Type, property.Category, property.Description);
@@ -258,11 +258,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 							if (defVal == null || defVal.Length == 0) {
 								defVal = "True";
 							}
-							StringParser.Properties["Properties." + localizedProperty.Name] = defVal;
+							StringParserPropertyContainer.LocalizedProperty["Properties." + localizedProperty.Name] = defVal;
 							localizedProperty.DefaultValue = Boolean.Parse(defVal);
 						} else {
 							string defVal = property.DefaultValue == null ? String.Empty : property.DefaultValue.ToString();
-							StringParser.Properties["Properties." + localizedProperty.Name] = defVal;
+							StringParserPropertyContainer.LocalizedProperty["Properties." + localizedProperty.Name] = defVal;
 							localizedProperty.DefaultValue = defVal;
 						}
 					}
@@ -304,8 +304,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					int curNumber = 1;
 					
 					while (true) {
-						StringParser.Properties["Number"] = curNumber.ToString();
-						string fileName = StringParser.Parse(SelectedTemplate.DefaultName);
+						string fileName = StringParser.Parse(SelectedTemplate.DefaultName, new StringTagPair("Number", curNumber.ToString()));
 						if (allowUntitledFiles) {
 							bool found = false;
 							foreach (string openFile in FileService.GetOpenFiles()) {
@@ -322,7 +321,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						++curNumber;
 					}
 				} catch (Exception e) {
-					MessageService.ShowError(e);
+					MessageService.ShowException(e);
 				}
 			}
 			return StringParser.Parse(SelectedTemplate.DefaultName);
@@ -456,7 +455,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				PropertyService.Set("Dialogs.NewFileDialog.LastSelectedTemplate", item.Template.Name);
 				
 				string fileName;
-				StringParser.Properties["StandardNamespace"] = "DefaultNamespace";
+				StringParserPropertyContainer.FileCreation["StandardNamespace"] = "DefaultNamespace";
 				if (allowUntitledFiles) {
 					fileName = GenerateCurrentFileName();
 				} else {
@@ -475,16 +474,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 					fileName = FileUtility.NormalizePath(fileName);
 					IProject project = ProjectService.CurrentProject;
 					if (project != null) {
-						StringParser.Properties["StandardNamespace"] = CustomToolsService.GetDefaultNamespace(project, fileName);
+						StringParserPropertyContainer.FileCreation["StandardNamespace"] = CustomToolsService.GetDefaultNamespace(project, fileName);
 					}
 				}
-				StringParser.Properties["FullName"]                 = fileName;
-				StringParser.Properties["FileName"]                 = Path.GetFileName(fileName);
-				StringParser.Properties["FileNameWithoutExtension"] = Path.GetFileNameWithoutExtension(fileName);
-				StringParser.Properties["Extension"]                = Path.GetExtension(fileName);
-				StringParser.Properties["Path"]                     = Path.GetDirectoryName(fileName);
+				StringParserPropertyContainer.FileCreation["FullName"]                 = fileName;
+				StringParserPropertyContainer.FileCreation["FileName"]                 = Path.GetFileName(fileName);
+				StringParserPropertyContainer.FileCreation["FileNameWithoutExtension"] = Path.GetFileNameWithoutExtension(fileName);
+				StringParserPropertyContainer.FileCreation["Extension"]                = Path.GetExtension(fileName);
+				StringParserPropertyContainer.FileCreation["Path"]                     = Path.GetDirectoryName(fileName);
 				
-				StringParser.Properties["ClassName"] = GenerateValidClassOrNamespaceName(Path.GetFileNameWithoutExtension(fileName), false);
+				StringParserPropertyContainer.FileCreation["ClassName"] = GenerateValidClassOrNamespaceName(Path.GetFileNameWithoutExtension(fileName), false);
 				
 				// when adding a file to a project (but not when creating a standalone file while a project is open):
 				if (ProjectService.CurrentProject != null && !this.allowUntitledFiles) {

@@ -37,9 +37,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 		#region Initialize Core
 		public void InitSharpDevelopCore(SharpDevelopHost.CallbackHelper callback, StartupSettings properties)
 		{
-			ICSharpCode.Core.Services.ServiceManager.LoggingService = new log4netLoggingService();
-			ICSharpCode.Core.Services.ServiceManager.MessageService = WinFormsMessageService.Instance;
-			
 			LoggingService.Info("InitSharpDevelop...");
 			this.callback = callback;
 			CoreStartup startup = new CoreStartup(properties.ApplicationName);

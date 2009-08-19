@@ -279,12 +279,12 @@ namespace ICSharpCode.SharpDevelop.Project
 					(openSolution.Preferences as IMementoCapable).SetMemento(new Properties());
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 			try {
 				ApplyConfigurationAndReadPreferences();
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 			// Create project contents for solution
 			ParserService.OnSolutionLoaded();

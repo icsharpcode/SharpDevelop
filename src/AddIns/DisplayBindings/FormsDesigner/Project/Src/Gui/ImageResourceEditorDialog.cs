@@ -417,7 +417,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 			
 			if (e.Error != null) {
-				MessageService.ShowError(e.Error, "Error in project tree scanning thread");
+				MessageService.ShowException(e.Error, "Error in project tree scanning thread");
 			}
 			
 			TreeScanResult result = e.Result as TreeScanResult;

@@ -62,7 +62,7 @@ namespace ICSharpCode.XamlBinding
 		public IDisposable ParseAndLock(ITextBuffer fileContent)
 		{
 			// Copy to ensure thread-safety
-			var lastVer = lastParsedVersion;
+			var lastVer = this.lastParsedVersion;
 			if (lastVer == null ||                                       // First parse
 			    fileContent.Version == null ||                           // Versioning not supported
 			    !fileContent.Version.BelongsToSameDocumentAs(lastVer) || // Different document instance? Can happen after closing and reopening of file.
@@ -70,18 +70,19 @@ namespace ICSharpCode.XamlBinding
 			{
 				parser.Lock.EnterWriteLock();
 				// Double check, now that we are thread-safe
-				if (lastParsedVersion == null || fileContent.Version == null || !fileContent.Version.BelongsToSameDocumentAs(lastVer)) {
+				lastVer = this.lastParsedVersion;
+				if (lastVer == null || fileContent.Version == null || !fileContent.Version.BelongsToSameDocumentAs(lastVer)) {
 					// First parse or versioning not supported
-					using (new DebugTimerObject("normal parse"))
+					using (DebugTimer.Time("normal parse"))
 						parser.Parse(fileContent.Text, null);
-					lastParsedVersion = fileContent.Version;
+					this.lastParsedVersion = fileContent.Version;
 				} else if (fileContent.Version.CompareAge(lastParsedVersion) > 0) {
 					// Incremental parse
 					var changes = lastParsedVersion.GetChangesTo(fileContent.Version).
 						Select(c => new DocumentChangeEventArgs(c.Offset, c.RemovedText, c.InsertedText));
-					using (new DebugTimerObject("incremental parse"))
+					using (DebugTimer.Time("incremental parse"))
 						parser.Parse(fileContent.Text, changes);
-					lastParsedVersion = fileContent.Version;
+					this.lastParsedVersion = fileContent.Version;
 				} else {
 					// fileContent is older - no need to parse
 				}

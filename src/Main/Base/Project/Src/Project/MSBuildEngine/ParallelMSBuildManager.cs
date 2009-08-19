@@ -237,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (redirector != null)
 						redirector.ForwardEvent(e);
 				} catch (Exception ex) {
-					MessageService.ShowError(ex, "Error in build logger");
+					MessageService.ShowException(ex, "Error in build logger");
 				}
 			}
 		}

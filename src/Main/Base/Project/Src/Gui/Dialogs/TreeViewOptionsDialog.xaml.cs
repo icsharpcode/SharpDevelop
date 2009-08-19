@@ -198,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						if (isSelected)
 							dialog.SelectNode(this);
 					} catch (Exception ex) {
-						MessageService.ShowError(ex);
+						MessageService.ShowException(ex);
 					}
 				}
 			}
