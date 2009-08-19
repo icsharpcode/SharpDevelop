@@ -259,27 +259,34 @@ namespace ICSharpCode.SharpDevelop.Tests
 			public void TestMethod<K, V>(string param) where V: K where K: IComparable {}
 			
 			public void GetIndex<T>(T element) where T: IEquatable<T> {}
+			
+			public int Property { get; protected set; }
+			public int ReadOnlyPropertyWithPrivateSetter { get; private set; }
 		}
 		
 		protected abstract IClass GetClass(Type type);
 		protected abstract IEnumerable<IAttribute> GetAssemblyAttributes(Assembly assembly);
 		
-		[Test]
-		public void ReflectionParserTest()
+		IClass testClass;
+		
+		[TestFixtureSetUp]
+		public void FixtureSetUp()
 		{
-			IClass c = GetClass(typeof(TestClass<,>));
-			
-			CheckClass(c);
+			testClass = GetClass(typeof(TestClass<,>));
 		}
 		
-		void CheckClass(IClass c)
+		[Test]
+		public void TestClassTypeParameters()
 		{
-			Assert.AreSame(c, c.TypeParameters[0].Class);
-			Assert.AreSame(c, c.TypeParameters[1].Class);
-			Assert.AreSame(c.TypeParameters[1], ((GenericReturnType)c.TypeParameters[0].Constraints[0]).TypeParameter);
-			
-			IMethod m = c.Methods.First(delegate(IMethod me) { return me.Name == "TestMethod"; });
-			Assert.IsNotNull(m);
+			Assert.AreSame(testClass, testClass.TypeParameters[0].Class);
+			Assert.AreSame(testClass, testClass.TypeParameters[1].Class);
+			Assert.AreSame(testClass.TypeParameters[1], ((GenericReturnType)testClass.TypeParameters[0].Constraints[0]).TypeParameter);
+		}
+		
+		[Test]
+		public void TestMethod()
+		{
+			IMethod m = testClass.Methods.Single(me => me.Name == "TestMethod");
 			Assert.AreEqual("K", m.TypeParameters[0].Name);
 			Assert.AreEqual("V", m.TypeParameters[1].Name);
 			Assert.AreSame(m, m.TypeParameters[0].Method);
@@ -288,9 +295,12 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual("IComparable", m.TypeParameters[0].Constraints[0].Name);
 			GenericReturnType kConst = (GenericReturnType)m.TypeParameters[1].Constraints[0];
 			Assert.AreSame(m.TypeParameters[0], kConst.TypeParameter);
-			
-			m = c.Methods.First(delegate(IMethod me) { return me.Name == "GetIndex"; });
-			Assert.IsNotNull(m);
+		}
+		
+		[Test]
+		public void GetIndex()
+		{
+			IMethod m = testClass.Methods.Single(me => me.Name == "GetIndex");
 			Assert.AreEqual("T", m.TypeParameters[0].Name);
 			Assert.AreSame(m, m.TypeParameters[0].Method);
 			
@@ -299,6 +309,24 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual(1, m.TypeParameters[0].Constraints[0].CastToConstructedReturnType().TypeArguments.Count);
 			GenericReturnType grt = (GenericReturnType)m.TypeParameters[0].Constraints[0].CastToConstructedReturnType().TypeArguments[0];
 			Assert.AreSame(m.TypeParameters[0], grt.TypeParameter);
+		}
+		
+		[Test]
+		public void Property()
+		{
+			IProperty p = testClass.Properties.Single(pr => pr.Name == "Property");
+			Assert.AreEqual(ModifierEnum.Public, p.Modifiers);
+			Assert.AreEqual(ModifierEnum.None, p.GetterModifiers);
+			Assert.AreEqual(ModifierEnum.Protected, p.SetterModifiers);
+		}
+		
+		[Test]
+		public void CannotSetReadOnlyProperty()
+		{
+			IProperty p = testClass.Properties.Single(pr => pr.Name == "ReadOnlyPropertyWithPrivateSetter");
+			Assert.AreEqual(ModifierEnum.Public, p.Modifiers);
+			Assert.AreEqual(ModifierEnum.None, p.GetterModifiers);
+			Assert.IsFalse(p.CanSet);
 		}
 		
 		[Test]

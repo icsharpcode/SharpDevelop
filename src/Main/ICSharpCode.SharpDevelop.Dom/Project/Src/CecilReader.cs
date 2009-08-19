@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						try {
 							a.PositionalArguments.Add(ReflectionReturnType.Parse(pc, (string)o));
 						} catch (ReflectionTypeNameSyntaxError ex) {
-							LoggingService.Warn(ex);
+							LoggingService.Warn("parsing '" + o + "'", ex);
 							a.PositionalArguments.Add(o);
 						}
 					} else {
@@ -304,25 +304,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				
 				foreach (PropertyDefinition property in type.Properties) {
-					if ((property.GetMethod != null && IsVisible(property.GetMethod.Attributes))
-					    || (property.SetMethod != null && IsVisible(property.SetMethod.Attributes)))
-					{
-						DefaultProperty p = new DefaultProperty(this, property.Name);
-						if (this.ClassType == ClassType.Interface) {
-							p.Modifiers = ModifierEnum.Public | ModifierEnum.Abstract;
-						} else {
-							p.Modifiers = TranslateModifiers(property);
-						}
-						p.ReturnType = CreateType(this.ProjectContent, this, property.PropertyType);
-						p.CanGet = property.GetMethod != null;
-						p.CanSet = property.SetMethod != null;
-						if (p.Name == defaultMemberName) {
-							p.IsIndexer = true;
-						}
-						AddParameters(p, property.Parameters);
-						AddAttributes(CompilationUnit.ProjectContent, p.Attributes, property.CustomAttributes);
-						Properties.Add(p);
-					}
+					AddProperty(defaultMemberName, property);
 				}
 				
 				foreach (EventDefinition eventDef in type.Events) {
@@ -347,6 +329,42 @@ namespace ICSharpCode.SharpDevelop.Dom
 						AddMethod(method);
 					}
 				}
+			}
+			
+			void AddProperty(string defaultMemberName, PropertyDefinition property)
+			{
+				if ((property.GetMethod != null && IsVisible(property.GetMethod.Attributes))
+				    || (property.SetMethod != null && IsVisible(property.SetMethod.Attributes)))
+				{
+					DefaultProperty p = new DefaultProperty(this, property.Name);
+					if (this.ClassType == ClassType.Interface) {
+						p.Modifiers = ModifierEnum.Public | ModifierEnum.Abstract;
+					} else {
+						p.Modifiers = TranslateModifiers(property);
+					}
+					p.ReturnType = CreateType(this.ProjectContent, this, property.PropertyType);
+					p.CanGet = property.GetMethod != null && IsVisible(property.GetMethod.Attributes);
+					p.CanSet = property.SetMethod != null && IsVisible(property.SetMethod.Attributes);
+					if (p.CanGet)
+						p.GetterModifiers = GetAccessorVisibility(p, property.GetMethod);
+					if (p.CanSet)
+						p.SetterModifiers = GetAccessorVisibility(p, property.SetMethod);
+					if (p.Name == defaultMemberName) {
+						p.IsIndexer = true;
+					}
+					AddParameters(p, property.Parameters);
+					AddAttributes(CompilationUnit.ProjectContent, p.Attributes, property.CustomAttributes);
+					Properties.Add(p);
+				}
+			}
+			
+			static ModifierEnum GetAccessorVisibility(IProperty p, MethodDefinition accessor)
+			{
+				ModifierEnum visibility = ModifierEnum.VisibilityMask & TranslateModifiers(accessor);
+				if (visibility == (p.Modifiers & ModifierEnum.VisibilityMask))
+					return ModifierEnum.None;
+				else
+					return visibility;
 			}
 			
 			void AddMethod(MethodDefinition method)

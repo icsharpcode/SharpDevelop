@@ -11,8 +11,10 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IProjectContent : IDisposable
+	public interface IProjectContent 
 	{
+		void Dispose();
+		
 		XmlDoc XmlDoc {
 			get;
 		}
