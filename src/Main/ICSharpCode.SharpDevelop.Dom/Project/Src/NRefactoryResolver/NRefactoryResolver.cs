@@ -178,7 +178,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return false;
 			}
 			
-			cu = parseInfo.MostRecentCompilationUnit;
+			cu = parseInfo.CompilationUnit;
 			if (cu == null || cu.ProjectContent == null) {
 				return false;
 			}

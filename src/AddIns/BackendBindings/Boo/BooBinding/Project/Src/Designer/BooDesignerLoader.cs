@@ -60,7 +60,7 @@ namespace Grunwald.BooBinding.Designer
 			Console.WriteLine(module.ToCodeString());
 			#endif
 			
-			CodeDomVisitor visitor = new CodeDomVisitor(parseInfo.MostRecentCompilationUnit.ProjectContent);
+			CodeDomVisitor visitor = new CodeDomVisitor(parseInfo.CompilationUnit.ProjectContent);
 			module.Accept(visitor);
 			
 			#if DEBUG

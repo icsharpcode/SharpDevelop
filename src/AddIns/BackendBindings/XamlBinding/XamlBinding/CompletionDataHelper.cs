@@ -226,7 +226,7 @@ namespace ICSharpCode.XamlBinding
 			ElementWrapper lastElement = context.ActiveElement;
 			if (context.ParseInformation == null)
 				return emptyList;
-			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
+			XamlCompilationUnit cu = context.ParseInformation.CompilationUnit as XamlCompilationUnit;
 			if (cu == null)
 				return emptyList;
 			IReturnType rt = cu.CreateType(lastElement.Namespace, lastElement.LocalName.Trim('.'));
@@ -346,7 +346,7 @@ namespace ICSharpCode.XamlBinding
 			if (context.ParseInformation == null)
 				return emptyList;
 
-			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
+			XamlCompilationUnit cu = context.ParseInformation.CompilationUnit as XamlCompilationUnit;
 			
 			IReturnType rt = null;
 
@@ -1086,7 +1086,7 @@ namespace ICSharpCode.XamlBinding
 			if (context.ParseInformation == null)
 				return null;
 			
-			XamlCompilationUnit cu = context.ParseInformation.BestCompilationUnit as XamlCompilationUnit;
+			XamlCompilationUnit cu = context.ParseInformation.CompilationUnit as XamlCompilationUnit;
 			if (cu == null)
 				return null;
 			string prefix = "";
@@ -1110,7 +1110,7 @@ namespace ICSharpCode.XamlBinding
 			if (context.ParseInformation == null)
 				yield break;
 			
-			var unit = context.ParseInformation.MostRecentCompilationUnit;
+			var unit = context.ParseInformation.CompilationUnit;
 			var loc = context.Editor.Caret.Position;
 			IClass c = unit.GetInnermostClass(loc.Line, loc.Column);
 			if (c == null)
@@ -1147,7 +1147,7 @@ namespace ICSharpCode.XamlBinding
 			if (context.ParseInformation == null)
 				return result;
 			
-			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
+			IProjectContent pc = context.ProjectContent;
 			
 			foreach (var ns in context.XmlnsDefinitions) {
 				result.Add(ns.Key, XamlCompilationUnit.GetNamespaceMembers(pc, ns.Value));
@@ -1221,7 +1221,7 @@ namespace ICSharpCode.XamlBinding
 			if (context.ParseInformation == null)
 				return result;
 			
-			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
+			IProjectContent pc = context.ProjectContent;
 			
 			if (!string.IsNullOrEmpty(prefixClassName)) {
 				var ns = context.XmlnsDefinitions[prefixNamespace];

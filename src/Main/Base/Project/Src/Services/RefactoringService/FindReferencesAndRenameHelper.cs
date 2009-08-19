@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
-			ICompilationUnit newCompilationUnit = ParserService.ParseFile(newInterfaceFileName).MostRecentCompilationUnit;
+			ICompilationUnit newCompilationUnit = ParserService.ParseFile(newInterfaceFileName).CompilationUnit;
 			IClass newInterfaceDef = newCompilationUnit.Classes[0];
 			
 			// finally, add the interface to the base types of the class that we're extracting from

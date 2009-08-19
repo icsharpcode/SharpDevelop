@@ -142,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			} else {
 				ParseInformation parseInfo = ParserService.GetParseInformation(textEditor.FileName);
 				if (parseInfo != null) {
-					cu = parseInfo.MostRecentCompilationUnit;
+					cu = parseInfo.CompilationUnit;
 					if (cu != null) {
 						IClass callingClass = cu.GetInnermostClass(caretLine, textEditor.Caret.Column);
 						callingMember = GetCallingMember(callingClass, caretLine, textEditor.Caret.Column);

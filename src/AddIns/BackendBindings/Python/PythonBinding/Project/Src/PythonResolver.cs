@@ -53,7 +53,7 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			// Search for a local variable.
-			LocalResolveResult localResolveResult = GetLocalVariable(expressionResult.Expression, parseInfo.BestCompilationUnit.FileName, fileContent);
+			LocalResolveResult localResolveResult = GetLocalVariable(expressionResult.Expression, parseInfo.CompilationUnit.FileName, fileContent);
 			if (localResolveResult != null) {
 				return localResolveResult;
 			}
@@ -94,10 +94,7 @@ namespace ICSharpCode.PythonBinding
 		ICompilationUnit GetCompilationUnit(ParseInformation parseInfo, bool mostRecent)
 		{
 			if (parseInfo != null) {
-				if (mostRecent) {
-					return parseInfo.MostRecentCompilationUnit;
-				}
-				return parseInfo.BestCompilationUnit;
+				return parseInfo.CompilationUnit;
 			}
 			return null;
 		}		

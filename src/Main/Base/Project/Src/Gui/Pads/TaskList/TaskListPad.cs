@@ -221,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (parseInfo != null) {
 				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
 				if (positionable != null) {
-					IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(positionable.Line, positionable.Column);
+					IClass c = parseInfo.CompilationUnit.GetInnermostClass(positionable.Line, positionable.Column);
 					if (c != null) return c;
 				}
 			}
@@ -233,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(item.FileName);
 			if (parseInfo != null) {
-				IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(item.Line, item.Column);
+				IClass c = parseInfo.CompilationUnit.GetInnermostClass(item.Line, item.Column);
 				if (c != null) return c;
 			}
 			

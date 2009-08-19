@@ -236,7 +236,7 @@ namespace ICSharpCode.XamlBinding
 							
 							if (context.Attribute.Prefix.Equals("xmlns", StringComparison.OrdinalIgnoreCase) ||
 							    context.Attribute.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase))
-								completionList.Items.AddRange(CompletionDataHelper.CreateListForXmlnsCompletion(context.ParseInformation.BestCompilationUnit.ProjectContent));
+								completionList.Items.AddRange(CompletionDataHelper.CreateListForXmlnsCompletion(context.ProjectContent));
 							
 							ICompletionListWindow window = editor.ShowCompletionWindow(completionList);
 							

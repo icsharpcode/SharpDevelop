@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 				foreach (ProjectItem item in Project.GetItemsOfType(ItemType.Compile)) {
 					ParseInformation parseInformation = ParserService.GetParseInformation(item.FileName);
 					if (parseInformation != null) {
-						InsertParseInformation(parseInformation.BestCompilationUnit);
+						InsertParseInformation(parseInformation.CompilationUnit);
 					}
 				}
 			}

@@ -74,7 +74,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			// get new initialize components
 			ParseInformation info = ParserService.ParseFile(this.viewContent.PrimaryFileName, this.viewContent.PrimaryFileContent);
-			ICompilationUnit cu = info.BestCompilationUnit;
+			ICompilationUnit cu = info.CompilationUnit;
 			foreach (IClass c in cu.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					this.currentClassPart = c;
@@ -388,7 +388,7 @@ namespace ICSharpCode.FormsDesigner
 			// Update currentClassPart from PrimaryFile
 			this.currentClassPart = null;
 			if (this.ViewContent.PrimaryFile != null && parsings.TryGetValue(this.ViewContent.PrimaryFile, out info)) {
-				cu = info.BestCompilationUnit;
+				cu = info.CompilationUnit;
 				foreach (IClass c in cu.Classes) {
 					if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 						if (FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c) != null) {
@@ -418,7 +418,7 @@ namespace ICSharpCode.FormsDesigner
 				return;
 			}
 			
-			cu = info.BestCompilationUnit;
+			cu = info.CompilationUnit;
 			foreach (IClass c in cu.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					this.initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);

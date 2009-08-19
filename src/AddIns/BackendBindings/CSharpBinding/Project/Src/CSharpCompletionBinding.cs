@@ -171,7 +171,7 @@ namespace CSharpBinding
 					
 					ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
 					if (parseInfo != null) {
-						IClass innerMostClass = parseInfo.MostRecentCompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
+						IClass innerMostClass = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 						if (innerMostClass == null) {
 							new CtrlSpaceCompletionItemProvider(ExpressionContext.Namespace).ShowCompletion(editor);
 							return true;

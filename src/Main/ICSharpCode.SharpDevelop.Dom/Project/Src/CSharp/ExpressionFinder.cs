@@ -26,8 +26,8 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		public CSharpExpressionFinder(ParseInformation parseInformation)
 		{
 			this.parseInformation = parseInformation;
-			if (parseInformation != null && parseInformation.MostRecentCompilationUnit != null) {
-				projectContent = parseInformation.MostRecentCompilationUnit.ProjectContent;
+			if (parseInformation != null && parseInformation.CompilationUnit != null) {
+				projectContent = parseInformation.CompilationUnit.ProjectContent;
 			} else {
 				projectContent = DefaultProjectContent.DummyProjectContent;
 			}

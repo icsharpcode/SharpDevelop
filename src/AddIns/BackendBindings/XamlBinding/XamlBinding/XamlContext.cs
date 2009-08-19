@@ -20,6 +20,8 @@ using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
+	// Fetch a copy of all relevant values of the AXmlDocument so that XamlContext can be used
+	// without having to acquire the reader lock.
 	public class ElementWrapper {
 		public ElementWrapper(AXmlElement element)
 		{
@@ -110,6 +112,15 @@ namespace ICSharpCode.XamlBinding
 		public ParseInformation ParseInformation { get; set; }
 		public bool InRoot { get; set; }
 		public ReadOnlyCollection<string> IgnoredXmlns { get; set; }
+		
+		public IProjectContent ProjectContent {
+			get { 
+				if (ParseInformation != null)
+					return ParseInformation.CompilationUnit.ProjectContent;
+				else
+					return null;
+			}
+		}
 		
 		public XamlContext() {}
 		

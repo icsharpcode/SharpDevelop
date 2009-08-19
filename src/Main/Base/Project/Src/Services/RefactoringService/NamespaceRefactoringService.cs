@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			ParseInformation info = ParserService.ParseFile(fileName, document);
 			if (info == null) return;
-			ICompilationUnit cu = info.MostRecentCompilationUnit;
+			ICompilationUnit cu = info.CompilationUnit;
 			
 			List<IUsing> newUsings = new List<IUsing>(cu.UsingScope.Usings);
 			if (sort) {

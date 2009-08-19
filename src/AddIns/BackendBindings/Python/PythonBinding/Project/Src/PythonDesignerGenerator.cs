@@ -78,7 +78,7 @@ namespace ICSharpCode.PythonBinding
 		public void MergeRootComponentChanges(IComponent component, IResourceService resourceService)
 		{
 			ParseInformation parseInfo = ParseFile();
-			Merge(component, ViewContent.DesignerCodeFileDocument, parseInfo.BestCompilationUnit, textEditorProperties, resourceService);
+			Merge(component, ViewContent.DesignerCodeFileDocument, parseInfo.CompilationUnit, textEditorProperties, resourceService);
 		}
 		
 		/// <summary>
@@ -160,7 +160,7 @@ namespace ICSharpCode.PythonBinding
 			
 			// Look at the form's methods and see which are compatible.
 			ArrayList methods = new ArrayList();
-			IClass c = GetClass(parseInfo.BestCompilationUnit);
+			IClass c = GetClass(parseInfo.CompilationUnit);
 			foreach (IMethod method in c.Methods) {
 				if (method.Parameters.Count == 2) {
 					methods.Add(method.Name);
@@ -175,7 +175,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static IMethod GetInitializeComponents(ParseInformation parseInfo)
 		{
-			return GetInitializeComponents(parseInfo.BestCompilationUnit);
+			return GetInitializeComponents(parseInfo.CompilationUnit);
 		}
 		
 		/// <summary>
@@ -278,7 +278,7 @@ namespace ICSharpCode.PythonBinding
 		int GetExistingEventHandler(string methodName)
 		{
 			ParseInformation parseInfo = ParseFile();
-			IClass c = GetClass(parseInfo.BestCompilationUnit);
+			IClass c = GetClass(parseInfo.CompilationUnit);
 			foreach (IMethod method in c.Methods) {
 				if ((method.Name == methodName) && (method.Parameters.Count == 2)) {
 					return method.Region.BeginLine;

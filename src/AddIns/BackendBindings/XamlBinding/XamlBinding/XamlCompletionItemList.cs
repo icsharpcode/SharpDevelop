@@ -135,7 +135,7 @@ namespace ICSharpCode.XamlBinding
 		static bool CreateEventHandlerCode(CompletionContext context, NewEventCompletionItem completionItem, out int discriminator)
 		{
 			ParseInformation p = ParserService.GetParseInformation(context.Editor.FileName);
-			var unit = p.MostRecentCompilationUnit;
+			var unit = p.CompilationUnit;
 			var loc = context.Editor.Document.OffsetToPosition(context.StartOffset);
 			IClass c = unit.GetInnermostClass(loc.Line, loc.Column);
 			

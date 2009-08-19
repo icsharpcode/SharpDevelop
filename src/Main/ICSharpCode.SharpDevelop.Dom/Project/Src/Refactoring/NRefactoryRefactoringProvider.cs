@@ -263,7 +263,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			{
 				if (parseInformation != null) {
 					this.parseInformation = parseInformation;
-					resolver = new NRefactoryResolver.NRefactoryResolver(parseInformation.MostRecentCompilationUnit.ProjectContent.Language);
+					resolver = new NRefactoryResolver.NRefactoryResolver(parseInformation.CompilationUnit.ProjectContent.Language);
 				}
 			}
 			

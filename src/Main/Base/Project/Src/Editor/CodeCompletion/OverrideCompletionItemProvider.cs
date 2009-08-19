@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
 			if (parseInfo == null) return null;
-			IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
+			IClass c = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 			if (c == null) return null;
 			LanguageProperties language = c.ProjectContent.Language;
 			OverrideCompletionItemList result = new OverrideCompletionItemList();

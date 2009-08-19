@@ -72,7 +72,7 @@ namespace ICSharpCode.FormsDesigner
 		public static bool IsDesignable(ParseInformation info)
 		{
 			if (info != null) {
-				ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
+				ICompilationUnit cu = (ICompilationUnit)info.CompilationUnit;
 				foreach (IClass c in cu.Classes) {
 					IMethod method = GetInitializeComponents(c);
 					if (method != null) {

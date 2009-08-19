@@ -52,7 +52,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			if (parseInfo == null)
 				return;
-			foreach (IClass c in parseInfo.MostRecentCompilationUnit.Classes) {
+			foreach (IClass c in parseInfo.CompilationUnit.Classes) {
 				AddClassMemberBookmarks(c);
 			}
 		}

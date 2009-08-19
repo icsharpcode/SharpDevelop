@@ -209,7 +209,7 @@ namespace SharpRefactoring
 		{
 			Dom.ParseInformation parseInfo = ParserService.GetParseInformation(textEditor.FileName);
 			if (parseInfo != null) {
-				Dom.IClass c = parseInfo.MostRecentCompilationUnit.GetInnermostClass(line, column);
+				Dom.IClass c = parseInfo.CompilationUnit.GetInnermostClass(line, column);
 				if (c != null) {
 					foreach (Dom.IMember member in c.Properties) {
 						if (member.BodyRegion.IsInside(line, column)) {

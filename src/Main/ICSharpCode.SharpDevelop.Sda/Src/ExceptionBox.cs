@@ -65,6 +65,9 @@ namespace ICSharpCode.SharpDevelop.Sda
 			ShowErrorBox(ex, "Unhandled exception", e.IsTerminating);
 		}
 		
+		/// <summary>
+		/// Displays the exception box.
+		/// </summary>
 		public static void ShowErrorBox(Exception exception, string message)
 		{
 			ShowErrorBox(exception, message, false);
@@ -76,6 +79,9 @@ namespace ICSharpCode.SharpDevelop.Sda
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		static void ShowErrorBox(Exception exception, string message, bool mustTerminate)
 		{
+			if (exception == null)
+				throw new ArgumentNullException("exception");
+			
 			// ignore reentrant calls (e.g. when there's an exception in OnRender)
 			if (showingBox)
 				return;

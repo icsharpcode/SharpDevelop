@@ -137,6 +137,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// Incrementaly parse the given text.
 		/// You have to hold the write lock.
 		/// </summary>
+		/// <param name="input">
+		/// The full XML text of the new document.
+		/// </param>
 		/// <param name="changesSinceLastParse">
 		/// Changes since last parse.  Null will cause full reparse.
 		/// </param>

@@ -193,7 +193,7 @@ namespace CSharpBinding.FormattingStrategy
 			if (fileName != null && fileName.Length > 0 ) {
 				ParseInformation parseInfo = ParserService.ParseFile(fileName, editor.Document.CreateSnapshot());
 				if (parseInfo != null) {
-					ICompilationUnit currentCompilationUnit = parseInfo.BestCompilationUnit;
+					ICompilationUnit currentCompilationUnit = parseInfo.CompilationUnit;
 					if (currentCompilationUnit != null) {
 						IClass currentClass = currentCompilationUnit.GetInnermostClass(caretLine, 0);
 						int nextElementLine = int.MaxValue;

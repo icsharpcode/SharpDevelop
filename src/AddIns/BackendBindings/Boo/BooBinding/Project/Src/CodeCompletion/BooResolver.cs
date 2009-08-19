@@ -82,7 +82,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (parseInfo == null) {
 				return false;
 			}
-			this.cu = parseInfo.MostRecentCompilationUnit;
+			this.cu = parseInfo.CompilationUnit;
 			if (cu == null) {
 				return false;
 			}
@@ -92,8 +92,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 			this.callingClass = GetCallingClass(pc);
 			callingMember = ResolveCurrentMember(callingClass);
 			if (callingMember == null) {
-				if (cu != parseInfo.BestCompilationUnit) {
-					IClass olderClass = GetCallingClass(parseInfo.BestCompilationUnit.ProjectContent);
+				if (cu != parseInfo.CompilationUnit) {
+					IClass olderClass = GetCallingClass(parseInfo.CompilationUnit.ProjectContent);
 					if (olderClass != null && callingClass == null) {
 						this.callingClass = olderClass;
 					}

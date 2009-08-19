@@ -101,7 +101,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			string resourceCodeFile = items.Single().FileName;
 			
 			// We expect a single class to be in this file.
-			IClass resourceClass = ParserService.GetParseInformation(resourceCodeFile).MostRecentCompilationUnit.Classes.Single();
+			IClass resourceClass = ParserService.GetParseInformation(resourceCodeFile).CompilationUnit.Classes.Single();
 			// Here we assume that VerifyResourceName is the same name transform that
 			// was used when generating the resource code file.
 			// This should be true as long as the code is generated using the

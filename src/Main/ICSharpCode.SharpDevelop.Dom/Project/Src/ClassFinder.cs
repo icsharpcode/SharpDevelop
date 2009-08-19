@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		void Init(ParseInformation parseInfo)
 		{
 			if (parseInfo != null) {
-				cu = parseInfo.MostRecentCompilationUnit;
+				cu = parseInfo.CompilationUnit;
 			}
 			
 			if (cu != null) {

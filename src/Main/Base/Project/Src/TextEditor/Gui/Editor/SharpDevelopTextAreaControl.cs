@@ -36,29 +36,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			get { return adapter; }
 		}
 		
-		QuickClassBrowserPanel quickClassBrowserPanel = null;
-		Control customQuickClassBrowserPanel = null;
 		ErrorDrawer errorDrawer;
 		IAdvancedHighlighter advancedHighlighter;
-		
-		public QuickClassBrowserPanel QuickClassBrowserPanel {
-			get {
-				return quickClassBrowserPanel;
-			}
-		}
-		public Control CustomQuickClassBrowserPanel {
-			get	{
-				return customQuickClassBrowserPanel;
-			}
-			set	{
-				if (customQuickClassBrowserPanel != null) {
-					RemoveQuickClassBrowserPanel();
-					customQuickClassBrowserPanel.Dispose();
-				}
-				customQuickClassBrowserPanel = value;
-				ActivateQuickClassBrowserOnDemand();
-			}
-		}
 		
 		public SharpDevelopTextAreaControl()
 			: this(true, true)
@@ -135,14 +114,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					errorDrawer.Dispose();
 					errorDrawer = null;
 				}
-				if (quickClassBrowserPanel != null) {
-					quickClassBrowserPanel.Dispose();
-					quickClassBrowserPanel = null;
-				}
-				if (customQuickClassBrowserPanel != null) {
-					customQuickClassBrowserPanel.Dispose();
-					customQuickClassBrowserPanel = null;
-				}
 				if (advancedHighlighter != null) {
 					advancedHighlighter.Dispose();
 					advancedHighlighter = null;
@@ -193,11 +164,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			SharpDevelopTextEditorProperties sdtep = base.TextEditorProperties as SharpDevelopTextEditorProperties;
 			
 			if (sdtep != null) {
-				if (!sdtep.ShowQuickClassBrowserPanel) {
-					RemoveQuickClassBrowserPanel();
-				} else {
-					ActivateQuickClassBrowserOnDemand();
-				}
 				if (sdtep.UnderlineErrors) {
 					if (errorDrawer == null) {
 						errorDrawer = new ErrorDrawer(this);
@@ -237,52 +203,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		void RemoveQuickClassBrowserPanel()
-		{
-			if (quickClassBrowserPanel != null) {
-				Controls.Remove(quickClassBrowserPanel);
-				quickClassBrowserPanel.Dispose();
-				quickClassBrowserPanel = null;
-				textAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			}
-			if (customQuickClassBrowserPanel != null) {
-				if (Controls.Contains(customQuickClassBrowserPanel)) {
-					Controls.Remove(customQuickClassBrowserPanel);
-					customQuickClassBrowserPanel.Enabled = false;
-					textAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-				}
-			}
-		}
-		void ShowQuickClassBrowserPanel()
-		{
-			if (quickClassBrowserPanel == null) {
-				quickClassBrowserPanel = new QuickClassBrowserPanel(this);
-				Controls.Add(quickClassBrowserPanel);
-				textAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			}
-			if (customQuickClassBrowserPanel != null) {
-				if (quickClassBrowserPanel != null)
-					RemoveQuickClassBrowserPanel();
-				if (!Controls.Contains(customQuickClassBrowserPanel)) {
-					Controls.Add(customQuickClassBrowserPanel);
-					customQuickClassBrowserPanel.Enabled = true;
-					textAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-				}
-				return;
-			}
-		}
 		public void ActivateQuickClassBrowserOnDemand()
 		{
-			SharpDevelopTextEditorProperties sdtep = base.TextEditorProperties as SharpDevelopTextEditorProperties;
-			if (sdtep != null && sdtep.ShowQuickClassBrowserPanel && FileName != null) {
-				
-				bool quickClassPanelActive = ParserService.CreateParser(FileName) != null;
-				if (quickClassPanelActive) {
-					ShowQuickClassBrowserPanel();
-				} else {
-					RemoveQuickClassBrowserPanel();
-				}
-			}
+			
 		}
 		
 		protected override void OnFileNameChanged(EventArgs e)

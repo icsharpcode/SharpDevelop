@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				return;
 			}
 			
-			ICompilationUnit cu = parseInformation.MostRecentCompilationUnit as ICompilationUnit;
+			ICompilationUnit cu = parseInformation.CompilationUnit as ICompilationUnit;
 			if (cu == null) {
 				return;
 			}

@@ -77,7 +77,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (parseInfo == null && this.declarations == null)
 					parseInfo = ParserService.GetParseInformation(this.TextEditor.FileName);
 				if (parseInfo != null) {
-					ICompilationUnit cu = parseInfo.MostRecentCompilationUnit;
+					ICompilationUnit cu = parseInfo.CompilationUnit;
 					CompileUnit booCu = cu.Tag as CompileUnit;
 					if (booCu != null) {
 						FindAssignmentsVisitor visitor = new FindAssignmentsVisitor();

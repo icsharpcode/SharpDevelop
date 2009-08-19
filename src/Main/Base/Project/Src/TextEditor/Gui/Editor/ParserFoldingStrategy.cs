@@ -14,6 +14,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class ParserFoldingStrategy : IFoldingStrategy
 	{
+		/*
 		void AddClassMembers(IClass c, List<FoldMarker> foldMarkers, IDocument document)
 		{
 			if (c.ClassType == ClassType.Delegate) {
@@ -99,6 +100,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			return foldMarkers;
+		}
+		*/
+		
+		/// <remarks>
+		/// Calculates the fold level of a specific line.
+		/// </remarks>
+		public List<FoldMarker> GenerateFoldMarkers(IDocument document, string fileName, object parseInfo)
+		{
+			return null;
 		}
 	}
 }

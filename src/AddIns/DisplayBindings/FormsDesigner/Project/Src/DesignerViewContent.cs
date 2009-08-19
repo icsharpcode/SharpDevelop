@@ -284,7 +284,7 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
-			serviceContainer.AddService(typeof(ProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).MostRecentCompilationUnit.ProjectContent));
+			serviceContainer.AddService(typeof(ProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
 			
 			// Provide the ImageResourceEditor for all Image and Icon properties
 			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));

@@ -606,9 +606,6 @@
     <Compile Include="Src\TextEditor\Gui\Editor\ErrorDrawer.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaControlProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ParserFoldingStrategy.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\QuickClassBrowserPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextAreaControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

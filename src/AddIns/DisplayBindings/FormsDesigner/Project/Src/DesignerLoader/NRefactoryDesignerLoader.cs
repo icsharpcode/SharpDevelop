@@ -49,7 +49,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			formClass = null;
 			isFirstClassInFile = true;
-			foreach (IClass c in parseInfo.BestCompilationUnit.Classes) {
+			foreach (IClass c in parseInfo.CompilationUnit.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					formClass = c;
 					break;

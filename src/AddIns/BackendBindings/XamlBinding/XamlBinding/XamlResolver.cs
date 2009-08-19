@@ -37,8 +37,8 @@ namespace ICSharpCode.XamlBinding
 			this.resolveExpression = expressionResult.Expression;
 			this.caretLine = expressionResult.Region.BeginLine;
 			this.caretColumn = expressionResult.Region.BeginColumn;
-			this.callingClass = parseInfo.BestCompilationUnit.GetInnermostClass(caretLine, caretColumn);
-			this.context = expressionResult.Context as XamlContext ?? CompletionDataHelper.ResolveContext(fileContent, parseInfo.MostRecentCompilationUnit.FileName, Utils.GetOffsetFromFilePos(fileContent, caretLine, caretColumn));
+			this.callingClass = parseInfo.CompilationUnit.GetInnermostClass(caretLine, caretColumn);
+			this.context = expressionResult.Context as XamlContext ?? CompletionDataHelper.ResolveContext(fileContent, parseInfo.CompilationUnit.FileName, Utils.GetOffsetFromFilePos(fileContent, caretLine, caretColumn));
 			
 			switch (this.context.Description) {
 				case XamlContextDescription.AtTag:
@@ -137,7 +137,7 @@ namespace ICSharpCode.XamlBinding
 				return ResolveProperty(xmlNamespace, name, propertyName, true);
 			}
 			else {
-				IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
+				IProjectContent pc = context.ProjectContent;
 				IReturnType resolvedType = XamlCompilationUnit.FindType(pc, xmlNamespace, name);
 				IClass resolvedClass = resolvedType != null ? resolvedType.GetUnderlyingClass() : null;
 				if (resolvedClass != null) {
@@ -151,7 +151,7 @@ namespace ICSharpCode.XamlBinding
 
 		MemberResolveResult ResolveProperty(string xmlNamespace, string className, string propertyName, bool allowAttached)
 		{
-			IProjectContent pc = context.ParseInformation.BestCompilationUnit.ProjectContent;
+			IProjectContent pc = context.ProjectContent;
 			IReturnType resolvedType = XamlCompilationUnit.FindType(pc, xmlNamespace, className);
 			if (resolvedType != null && resolvedType.GetUnderlyingClass() != null) {
 				var result = ResolvePropertyName(resolvedType, propertyName, allowAttached);
@@ -270,7 +270,7 @@ namespace ICSharpCode.XamlBinding
 			resolver.resolveExpression = expression;
 			resolver.caretLine = expressionResult.Region.BeginLine;
 			resolver.caretColumn = expressionResult.Region.BeginColumn;
-			resolver.callingClass = context.ParseInformation.BestCompilationUnit.GetInnermostClass(resolver.caretLine, resolver.caretColumn);
+			resolver.callingClass = context.ParseInformation.CompilationUnit.GetInnermostClass(resolver.caretLine, resolver.caretColumn);
 			resolver.context = context;
 			
 			return resolver.ResolveNamedAttribute(expression);
