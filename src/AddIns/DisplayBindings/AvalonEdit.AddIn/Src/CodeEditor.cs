@@ -392,7 +392,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			else {
 				positionInPixels = textEditor.PointToScreen(mousePos + new Vector(-4, 6));
 			}
-			/ use device independent units, because Popup Left/Top are in independent units
+			// use device independent units, because Popup Left/Top are in independent units
 			return positionInPixels.TransformFromDevice(textEditor);
 		}
 		
