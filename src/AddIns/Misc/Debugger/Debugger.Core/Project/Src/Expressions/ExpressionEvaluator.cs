@@ -8,6 +8,7 @@ using ICSharpCode.NRefactory.PrettyPrinter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory;
@@ -18,7 +19,7 @@ namespace Debugger
 {
 	public class ExpressionEvaluator: NotImplementedAstVisitor
 	{
-		/// <summary> Evaluate given expression.  If you expression tree already, use overloads of this method.</summary>
+		/// <summary> Evaluate given expression.  If you have expression tree already, use overloads of this method.</summary>
 		/// <returns> Returned value or null for statements </returns>
 		public static Value Evaluate(string code, SupportedLanguage language, StackFrame context)
 		{
@@ -45,47 +46,18 @@ namespace Debugger
 			}
 		}
 		
-		static Dictionary<AppDomain, Dictionary<string, Value>> expressionCache = new Dictionary<AppDomain, Dictionary<string, Value>>();
-		
 		public static Value Evaluate(INode code, StackFrame context)
 		{
 			if (context == null) throw new ArgumentNullException("context");
 			if (context.IsInvalid) throw new DebuggerException("The context is no longer valid");
 			
-			string codeAsText = code.PrettyPrint();
-			
-			// Get value from cache if possible
-			if (expressionCache.ContainsKey(context.AppDomain) &&
-			    expressionCache[context.AppDomain].ContainsKey(codeAsText)) {
-				Value cached = expressionCache[context.AppDomain][codeAsText];
-				if (!cached.IsInvalid) {
-					if (context.Process.Options.Verbose) {
-						context.Process.TraceMessage(string.Format("Cached: {0}", codeAsText));
-					}
-					return cached;
-				}
-			}
-			
 			Value result;
-			DateTime start = Debugger.Util.HighPrecisionTimer.Now;
 			try {
 				result = (Value)code.AcceptVisitor(new ExpressionEvaluator(context), null);
 			} catch (GetValueException) {
 				throw;
 			} catch (NotImplementedException e) {
 				throw new GetValueException(code, "Language feature not implemented: " + e.Message);
-			}
-			DateTime end = Debugger.Util.HighPrecisionTimer.Now;
-			
-			// Store value in cache
-			if (!expressionCache.ContainsKey(context.AppDomain)) {
-				expressionCache[context.AppDomain] = new Dictionary<string, Value>();
-				// TODO
-			}
-			// expressionCache[context.AppDomain][codeAsText] = result;
-			
-			if (context.Process.Options.Verbose) {
-				context.Process.TraceMessage(string.Format("Evaluated: {0} ({1} ms)", code, (end - start).TotalMilliseconds));
 			}
 			return result;
 		}
@@ -129,6 +101,34 @@ namespace Debugger
 			}
 		}
 		
+		void AddToCache(INode expression, Value value)
+		{
+			// Expressions are cleared then the process is resumed
+			context.Process.CachedExpressions[expression] = value;
+		}
+		
+		bool TryGetCached(INode expression, out Value cached)
+		{
+			Value val;
+			if (context.Process.CachedExpressions.TryGetValue(expression, out val)) {
+				if (val == null || !val.IsInvalid) {
+					// context.Process.TraceMessage("Is cached: {0}", expression.PrettyPrint());
+					cached = val;
+					return true;
+				}
+			}
+			cached = null;
+			return false;
+		}
+		
+		Value EvalAndPermRef(INode expression)
+		{
+			Value val = (Value)expression.AcceptVisitor(this, null);
+			if (val != null)
+				val = val.GetPermanentReference();
+			AddToCache(expression, val);
+			return val;
+		}
 		
 		StackFrame context;
 		
@@ -141,256 +141,344 @@ namespace Debugger
 			this.context = context;
 		}
 		
-		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
+		IDisposable LogEval(INode expression)
 		{
-			BinaryOperatorType op;
-			switch (assignmentExpression.Op) {
-				case AssignmentOperatorType.Assign:        op = BinaryOperatorType.None; break;
-				case AssignmentOperatorType.Add:           op = BinaryOperatorType.Add; break;
-				case AssignmentOperatorType.ConcatString:  op = BinaryOperatorType.Concat; break;
-				case AssignmentOperatorType.Subtract:      op = BinaryOperatorType.Subtract; break;
-				case AssignmentOperatorType.Multiply:      op = BinaryOperatorType.Multiply; break;
-				case AssignmentOperatorType.Divide:        op = BinaryOperatorType.Divide; break;
-				case AssignmentOperatorType.DivideInteger: op = BinaryOperatorType.DivideInteger; break;
-				case AssignmentOperatorType.ShiftLeft:     op = BinaryOperatorType.ShiftLeft; break;
-				case AssignmentOperatorType.ShiftRight:    op = BinaryOperatorType.ShiftRight; break;
-				case AssignmentOperatorType.ExclusiveOr:   op = BinaryOperatorType.ExclusiveOr; break;
-				case AssignmentOperatorType.Modulus:       op = BinaryOperatorType.Modulus; break;
-				case AssignmentOperatorType.BitwiseAnd:    op = BinaryOperatorType.BitwiseAnd; break;
-				case AssignmentOperatorType.BitwiseOr:     op = BinaryOperatorType.BitwiseOr; break;
-				case AssignmentOperatorType.Power:         op = BinaryOperatorType.Power; break;
-				default: throw new GetValueException("Unknown operator " + assignmentExpression.Op);
-			}
-			
-			Value right;
-			if (op == BinaryOperatorType.None) {
-				right = (Value)assignmentExpression.Right.AcceptVisitor(this, null);
-			} else {
-				BinaryOperatorExpression binOpExpr = new BinaryOperatorExpression();
-				binOpExpr.Left  = assignmentExpression.Left;
-				binOpExpr.Op    = op;
-				binOpExpr.Right = assignmentExpression.Right;
-				right = (Value)VisitBinaryOperatorExpression(binOpExpr, null);
-			}
-			right = right.GetPermanentReference();
-			
-			Value left = ((Value)assignmentExpression.Left.AcceptVisitor(this, null));
-			
-			if (!left.IsReference && left.Type.FullName != right.Type.FullName) {
-				throw new GetValueException(string.Format("Type {0} expected, {1} seen", left.Type.FullName, right.Type.FullName));
-			}
-			left.SetValue(right);
-			return right;
-		}
-		
-		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
-		{
-			foreach(INode statement in blockStatement.Children) {
-				statement.AcceptVisitor(this, null);
-			}
-			return null;
+			Stopwatch watch = new Stopwatch();
+			watch.Start();
+			return new CallbackOnDispose(delegate {
+				if (!context.Process.CachedExpressions.ContainsKey(expression))
+					throw new DebuggerException("Result not added to cache");
+				watch.Stop();
+				context.Process.TraceMessage("Evaluated: {0} in {1} ms total", expression.PrettyPrint(), watch.ElapsedMilliseconds);
+			});
 		}
 		
 		public override object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
 		{
-			return null;
+			using(LogEval(emptyStatement)) {
+				return null;
+			}
 		}
 		
 		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
-			expressionStatement.Expression.AcceptVisitor(this, null);
-			return null;
-		}
-		
-		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
-		{
-			string identifier = identifierExpression.Identifier;
-			
-			if (identifier == "__exception") {
-				if (context.Thread.CurrentException != null) {
-					return context.Thread.CurrentException.Value;
-				} else {
-					throw new GetValueException("No current exception");
-				}
-			}
-			
-			Value arg = context.GetArgumentValue(identifier);
-			if (arg != null) return arg;
-			
-			Value local = context.GetLocalVariableValue(identifier);
-			if (local != null) return local;
-			
-			if (!context.MethodInfo.IsStatic) {
-				Value member = context.GetThisValue().GetMemberValue(identifier);
-				if (member != null) return member;
-			} else {
-				MemberInfo memberInfo = context.MethodInfo.DeclaringType.GetMember(identifier);
-				if (memberInfo != null && memberInfo.IsStatic) {
-					return Value.GetMemberValue(null, memberInfo, null);
-				}
-			}
-			
-			throw new GetValueException("Identifier \"" + identifier + "\" not found in this context");
-		}
-		
-		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
-		{
-			List<Value> indexes = new List<Value>();
-			foreach(Expression indexExpr in indexerExpression.Indexes) {
-				Value indexValue = ((Value)indexExpr.AcceptVisitor(this, null)).GetPermanentReference();
-				indexes.Add(indexValue);
-			}
-			
-			Value target = (Value)indexerExpression.TargetObject.AcceptVisitor(this, null);
-			
-			if (target.Type.IsArray) {
-				List<int> intIndexes = new List<int>();
-				foreach(Value index in indexes) {
-					if (!index.Type.IsInteger) throw new GetValueException("Integer expected for indexer");
-					intIndexes.Add((int)index.PrimitiveValue);
-				}
-				return target.GetArrayElement(intIndexes.ToArray());
-			}
-			
-			if (target.Type.IsPrimitive && target.PrimitiveValue is string) {
-				if (indexes.Count == 1 && indexes[0].Type.IsInteger) {
-					int index = (int)indexes[0].PrimitiveValue;
-					return Eval.CreateValue(context.AppDomain, ((string)target.PrimitiveValue)[index]);
-				} else {
-					throw new GetValueException("Expected single integer index");
-				}
-			}
-			
-			PropertyInfo pi = target.Type.GetProperty("Item");
-			if (pi == null) throw new GetValueException("The object does not have an indexer property");
-			return target.GetPropertyValue(pi, indexes.ToArray());
-		}
-		
-		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
-		{
-			Value target;
-			string methodName;
-			MemberReferenceExpression memberRef = invocationExpression.TargetObject as MemberReferenceExpression;
-			if (memberRef != null) {
-				target = ((Value)memberRef.TargetObject.AcceptVisitor(this, null)).GetPermanentReference();
-				methodName = memberRef.MemberName;
-			} else {
-				IdentifierExpression ident = invocationExpression.TargetObject as IdentifierExpression;
-				if (ident != null) {
-					target = context.GetThisValue();
-					methodName = ident.Identifier;
-				} else {
-					throw new GetValueException("Member reference expected for method invocation");
-				}
-			}
-			List<Value> args = new List<Value>();
-			foreach(Expression expr in invocationExpression.Arguments) {
-				args.Add(((Value)expr.AcceptVisitor(this, null)).GetPermanentReference());
-			}
-			MethodInfo method = target.Type.GetMember(methodName, BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
-			if (method == null) {
-				throw new GetValueException("Method " + methodName + " not found");
-			}
-			return target.InvokeMethod(method, args.ToArray());
-		}
-		
-		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
-		{
-			Value target = (Value)memberReferenceExpression.TargetObject.AcceptVisitor(this, null);
-			Value member = target.GetMemberValue(memberReferenceExpression.MemberName);
-			if (member != null) {
-				return member;
-			} else {
-				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
+			using(LogEval(expressionStatement)) {
+				EvalAndPermRef(expressionStatement.Expression);
+				return null;
 			}
 		}
 		
 		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
-			return parenthesizedExpression.Expression.AcceptVisitor(this, null);
+			Value cached;
+			if (TryGetCached(parenthesizedExpression, out cached)) return cached;
+			using(LogEval(parenthesizedExpression)) {
+				Value res = EvalAndPermRef(parenthesizedExpression.Expression);
+				
+				AddToCache(parenthesizedExpression, res);
+				return res;
+			}
+		}
+		
+		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
+		{
+			using(LogEval(blockStatement)) {
+				foreach(INode statement in blockStatement.Children) {
+					EvalAndPermRef(statement);
+				}
+				return null;
+			}
+		}
+		
+		/// <remarks> We have to put that in cache as well otherwise expaning (a = b).Prop will reevalute </remarks>
+		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
+		{
+			Value cached;
+			if (TryGetCached(assignmentExpression, out cached)) return cached;
+			using(LogEval(assignmentExpression)) {
+				BinaryOperatorType op;
+				switch (assignmentExpression.Op) {
+					case AssignmentOperatorType.Assign:        op = BinaryOperatorType.None; break;
+					case AssignmentOperatorType.Add:           op = BinaryOperatorType.Add; break;
+					case AssignmentOperatorType.ConcatString:  op = BinaryOperatorType.Concat; break;
+					case AssignmentOperatorType.Subtract:      op = BinaryOperatorType.Subtract; break;
+					case AssignmentOperatorType.Multiply:      op = BinaryOperatorType.Multiply; break;
+					case AssignmentOperatorType.Divide:        op = BinaryOperatorType.Divide; break;
+					case AssignmentOperatorType.DivideInteger: op = BinaryOperatorType.DivideInteger; break;
+					case AssignmentOperatorType.ShiftLeft:     op = BinaryOperatorType.ShiftLeft; break;
+					case AssignmentOperatorType.ShiftRight:    op = BinaryOperatorType.ShiftRight; break;
+					case AssignmentOperatorType.ExclusiveOr:   op = BinaryOperatorType.ExclusiveOr; break;
+					case AssignmentOperatorType.Modulus:       op = BinaryOperatorType.Modulus; break;
+					case AssignmentOperatorType.BitwiseAnd:    op = BinaryOperatorType.BitwiseAnd; break;
+					case AssignmentOperatorType.BitwiseOr:     op = BinaryOperatorType.BitwiseOr; break;
+					case AssignmentOperatorType.Power:         op = BinaryOperatorType.Power; break;
+					default: throw new GetValueException("Unknown operator " + assignmentExpression.Op);
+				}
+				
+				Value right;
+				if (op == BinaryOperatorType.None) {
+					right = EvalAndPermRef(assignmentExpression.Right);
+				} else {
+					BinaryOperatorExpression binOpExpr = new BinaryOperatorExpression();
+					binOpExpr.Left  = assignmentExpression.Left;
+					binOpExpr.Op    = op;
+					binOpExpr.Right = assignmentExpression.Right;
+					right = (Value)VisitBinaryOperatorExpression(binOpExpr, null);
+				}
+				right = right.GetPermanentReference();
+				
+				Value left = EvalAndPermRef(assignmentExpression.Left);
+				
+				if (!left.IsReference && left.Type.FullName != right.Type.FullName) {
+					throw new GetValueException(string.Format("Type {0} expected, {1} seen", left.Type.FullName, right.Type.FullName));
+				}
+				left.SetValue(right);
+				
+				AddToCache(assignmentExpression, right);
+				return right;
+			}
+		}
+		
+		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+		{
+			Value cached;
+			if (TryGetCached(identifierExpression, out cached)) return cached;
+			using(LogEval(identifierExpression)) {
+				string identifier = identifierExpression.Identifier;
+				
+				Value result = null;
+				
+				if (identifier == "__exception") {
+					if (context.Thread.CurrentException != null) {
+						result = context.Thread.CurrentException.Value;
+					} else {
+						throw new GetValueException("No current exception");
+					}
+				}
+				
+				result = result ?? context.GetArgumentValue(identifier);
+				
+				result = result ?? context.GetLocalVariableValue(identifier);
+				
+				if (result == null) {
+					if (!context.MethodInfo.IsStatic) {
+						// Can be null
+						result = context.GetThisValue().GetMemberValue(identifier);
+					} else {
+						MemberInfo memberInfo = context.MethodInfo.DeclaringType.GetMember(identifier);
+						if (memberInfo != null && memberInfo.IsStatic) {
+							result = Value.GetMemberValue(null, memberInfo, null);
+						}
+					}
+				}
+				
+				if (result == null)
+					throw new GetValueException("Identifier \"" + identifier + "\" not found in this context");
+				
+				AddToCache(identifierExpression, result);
+				return result;
+			}
+		}
+		
+		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
+		{
+			Value cached;
+			if (TryGetCached(indexerExpression, out cached)) return cached;
+			using(LogEval(indexerExpression)) {
+				List<Value> indexes = new List<Value>();
+				foreach(Expression indexExpr in indexerExpression.Indexes) {
+					Value indexValue = EvalAndPermRef(indexExpr);
+					indexes.Add(indexValue);
+				}
+				
+				Value target = EvalAndPermRef(indexerExpression.TargetObject);
+				
+				if (target.Type.IsArray) {
+					List<int> intIndexes = new List<int>();
+					foreach(Value index in indexes) {
+						if (!index.Type.IsInteger) throw new GetValueException("Integer expected for indexer");
+						intIndexes.Add((int)index.PrimitiveValue);
+					}
+					return target.GetArrayElement(intIndexes.ToArray());
+				}
+				
+				if (target.Type.IsPrimitive && target.PrimitiveValue is string) {
+					if (indexes.Count == 1 && indexes[0].Type.IsInteger) {
+						int index = (int)indexes[0].PrimitiveValue;
+						return Eval.CreateValue(context.AppDomain, ((string)target.PrimitiveValue)[index]);
+					} else {
+						throw new GetValueException("Expected single integer index");
+					}
+				}
+				
+				PropertyInfo pi = target.Type.GetProperty("Item");
+				if (pi == null) throw new GetValueException("The object does not have an indexer property");
+				Value result = target.GetPropertyValue(pi, indexes.ToArray());
+				
+				AddToCache(indexerExpression, result);
+				return result;
+			}
+		}
+		
+		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
+		{
+			Value cached;
+			if (TryGetCached(invocationExpression, out cached)) return cached;
+			using(LogEval(invocationExpression)) {
+				Value target;
+				string methodName;
+				MemberReferenceExpression memberRef = invocationExpression.TargetObject as MemberReferenceExpression;
+				if (memberRef != null) {
+					target = EvalAndPermRef(memberRef.TargetObject);
+					methodName = memberRef.MemberName;
+				} else {
+					IdentifierExpression ident = invocationExpression.TargetObject as IdentifierExpression;
+					if (ident != null) {
+						target = context.GetThisValue();
+						methodName = ident.Identifier;
+					} else {
+						throw new GetValueException("Member reference expected for method invocation");
+					}
+				}
+				List<Value> args = new List<Value>();
+				foreach(Expression expr in invocationExpression.Arguments) {
+					args.Add(EvalAndPermRef(expr));
+				}
+				MethodInfo method = target.Type.GetMember(methodName, BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
+				if (method == null) {
+					throw new GetValueException("Method " + methodName + " not found");
+				}
+				Value result = target.InvokeMethod(method, args.ToArray());
+				
+				AddToCache(invocationExpression, result);
+				return result;
+			}
+		}
+		
+		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+		{
+			Value cached;
+			if (TryGetCached(memberReferenceExpression, out cached)) return cached;
+			using(LogEval(memberReferenceExpression)) {
+				Value target = EvalAndPermRef(memberReferenceExpression.TargetObject);
+				Value member = target.GetMemberValue(memberReferenceExpression.MemberName);
+				if (member == null)
+					throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
+				
+				AddToCache(memberReferenceExpression, member);
+				return member;
+			}
 		}
 		
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			return Eval.CreateValue(context.AppDomain, primitiveExpression.Value);
+			Value cached;
+			if (TryGetCached(primitiveExpression, out cached)) return cached;
+			using(LogEval(primitiveExpression)){
+				Value result = Eval.CreateValue(context.AppDomain, primitiveExpression.Value);
+				
+				AddToCache(primitiveExpression, result);
+				return result;
+			}
 		}
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
-			return context.GetThisValue();
+			Value cached;
+			if (TryGetCached(thisReferenceExpression, out cached)) return cached;
+			using(LogEval(thisReferenceExpression)) {
+				Value result = context.GetThisValue();
+				
+				AddToCache(thisReferenceExpression, result);
+				return result;
+			}
 		}
 		
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
-			Value value = ((Value)unaryOperatorExpression.Expression.AcceptVisitor(this, null));
-			UnaryOperatorType op = unaryOperatorExpression.Op;
-			
-			if (op == UnaryOperatorType.Dereference) {
-				if (!value.Type.IsPointer) throw new GetValueException("Target object is not a pointer");
-				return value.Dereference();
-			}
-			
-			if (!value.Type.IsPrimitive) throw new GetValueException("Primitive value expected");
-			
-			object val = value.PrimitiveValue;
-			
-			object result = null;
-			
-			// Bool operation
-			if (val is bool) {
-				bool a = Convert.ToBoolean(val);
-				switch (op) {
-					case UnaryOperatorType.Not: result = !a; break;
+			Value cached;
+			if (TryGetCached(unaryOperatorExpression, out cached)) return cached;
+			using(LogEval(unaryOperatorExpression)) {
+				Value value = EvalAndPermRef(unaryOperatorExpression.Expression);
+				UnaryOperatorType op = unaryOperatorExpression.Op;
+				
+				if (op == UnaryOperatorType.Dereference) {
+					if (!value.Type.IsPointer) throw new GetValueException("Target object is not a pointer");
+					return value.Dereference();
 				}
-			}
-			
-			// Float operation
-			if (val is double || val is float) {
-				double a = Convert.ToDouble(val);
-				switch (op) {
-					case UnaryOperatorType.Minus: result = -a; break;
-					case UnaryOperatorType.Plus:  result = +a; break;
+				
+				if (!value.Type.IsPrimitive) throw new GetValueException("Primitive value expected");
+				
+				object val = value.PrimitiveValue;
+				
+				object result = null;
+				
+				// Bool operation
+				if (val is bool) {
+					bool a = Convert.ToBoolean(val);
+					switch (op) {
+						case UnaryOperatorType.Not: result = !a; break;
+					}
 				}
-			}
-		
-			// Integer operation
-			if (val is byte || val is sbyte || val is int || val is uint || val is long || val is ulong) {
-				long a = Convert.ToInt64(val);
-				switch (op) {
-					case UnaryOperatorType.Decrement:     result = a - 1; break;
-					case UnaryOperatorType.Increment:     result = a + 1; break;
-					case UnaryOperatorType.PostDecrement: result = a; break;
-					case UnaryOperatorType.PostIncrement: result = a; break;
-					case UnaryOperatorType.Minus:         result = -a; break;
-					case UnaryOperatorType.Plus:          result = a; break;
-					case UnaryOperatorType.BitNot:        result = ~a; break;
+				
+				// Float operation
+				if (val is double || val is float) {
+					double a = Convert.ToDouble(val);
+					switch (op) {
+						case UnaryOperatorType.Minus: result = -a; break;
+						case UnaryOperatorType.Plus:  result = +a; break;
+					}
 				}
-				switch (op) {
-					case UnaryOperatorType.Decrement:
-					case UnaryOperatorType.PostDecrement:
-						VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Subtract, new PrimitiveExpression(1)), null);
-						break;
-					case UnaryOperatorType.Increment:
-					case UnaryOperatorType.PostIncrement:
-						VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Add, new PrimitiveExpression(1)), null);
-						break;
+			
+				// Integer operation
+				if (val is byte || val is sbyte || val is int || val is uint || val is long || val is ulong) {
+					long a = Convert.ToInt64(val);
+					switch (op) {
+						case UnaryOperatorType.Decrement:     result = a - 1; break;
+						case UnaryOperatorType.Increment:     result = a + 1; break;
+						case UnaryOperatorType.PostDecrement: result = a; break;
+						case UnaryOperatorType.PostIncrement: result = a; break;
+						case UnaryOperatorType.Minus:         result = -a; break;
+						case UnaryOperatorType.Plus:          result = a; break;
+						case UnaryOperatorType.BitNot:        result = ~a; break;
+					}
+					switch (op) {
+						case UnaryOperatorType.Decrement:
+						case UnaryOperatorType.PostDecrement:
+							VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Subtract, new PrimitiveExpression(1)), null);
+							break;
+						case UnaryOperatorType.Increment:
+						case UnaryOperatorType.PostIncrement:
+							VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Add, new PrimitiveExpression(1)), null);
+							break;
+					}
 				}
+				
+				if (result == null) throw new GetValueException("Unsuppored unary expression " + op);
+				
+				Value res = Eval.CreateValue(context.AppDomain, result);
+				
+				AddToCache(unaryOperatorExpression, res);
+				return res;
 			}
-			
-			if (result == null) throw new GetValueException("Unsuppored unary expression " + op);
-			
-			return Eval.CreateValue(context.AppDomain, result);
 		}
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
-			Value left = ((Value)binaryOperatorExpression.Left.AcceptVisitor(this, null)).GetPermanentReference();
-			Value right = ((Value)binaryOperatorExpression.Right.AcceptVisitor(this, null)).GetPermanentReference();
-			
-			object result = VisitBinaryOperatorExpressionInternal(left, right, binaryOperatorExpression.Op);
-			// Conver long to int if possible
-			if (result is long && int.MinValue <= (long)result && (long)result <= int.MaxValue) result = (int)(long)result;
-			return Eval.CreateValue(context.AppDomain, result);
+			Value cached;
+			if (TryGetCached(binaryOperatorExpression, out cached)) return cached;
+			using(LogEval(binaryOperatorExpression)) {
+				Value left = EvalAndPermRef(binaryOperatorExpression.Left);
+				Value right = EvalAndPermRef(binaryOperatorExpression.Right);
+				
+				object result = VisitBinaryOperatorExpressionInternal(left, right, binaryOperatorExpression.Op);
+				// Conver long to int if possible
+				if (result is long && int.MinValue <= (long)result && (long)result <= int.MaxValue) result = (int)(long)result;
+				Value res = Eval.CreateValue(context.AppDomain, result);
+				
+				AddToCache(binaryOperatorExpression, res);
+				return res;
+			}
 		}
 		
 		public object VisitBinaryOperatorExpressionInternal(Value leftValue, Value rightValue, BinaryOperatorType op)

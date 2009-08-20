@@ -185,13 +185,16 @@ namespace Debugger
 			}
 		}
 		
-		public void TraceMessage(string message, params object[] args)
+		public void TraceVerboseMessage(string message, params object[] args)
 		{
-			TraceMessage(string.Format(message, args));
+			if (this.Options.Verbose)
+				TraceMessage(message, args);
 		}
 		
-		public void TraceMessage(string message)
+		public void TraceMessage(string message, params object[] args)
 		{
+			if (args.Length > 0)
+				message = string.Format(message, args);
 			System.Diagnostics.Debug.WriteLine("Debugger:" + message);
 			debugger.OnDebuggerTraceMessage(new MessageEventArgs(this, message));
 		}

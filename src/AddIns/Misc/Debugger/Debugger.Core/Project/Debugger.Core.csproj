@@ -266,6 +266,7 @@
     <Compile Include="Src\Mono.Cecil\Mono.Cecil.Signatures\Var.cs" />
     <Compile Include="Src\Mono.Cecil\Mono.Cecil\MethodCallingConvention.cs" />
     <Compile Include="Src\Mono.Cecil\Mono.Cecil\ReflectionException.cs" />
+    <Compile Include="Src\Util\CallbackOnDispose.cs" />
     <Compile Include="Src\Util\HighPrecisionTimer.cs" />
     <Compile Include="Src\Values\ArrayDimension.cs" />
     <Compile Include="Src\Values\ArrayDimensions.cs" />
