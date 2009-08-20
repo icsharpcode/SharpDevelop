@@ -488,7 +488,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				}
 			}
 			
-			public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+			void HandleTypeDeclaration(AttributedNode typeDeclaration)
 			{
 				if (typeDeclaration.EndLocation.Y > includeCommentsAfterLine)
 					includeCommentsAfterLine = typeDeclaration.EndLocation.Y;
@@ -498,6 +498,17 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				} else {
 					RemoveCurrentNode();
 				}
+			}
+			
+			public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+			{
+				HandleTypeDeclaration(typeDeclaration);
+				return null;
+			}
+			
+			public override object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
+			{
+				HandleTypeDeclaration(delegateDeclaration);
 				return null;
 			}
 		}
@@ -608,13 +619,13 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		
 		static bool IsEndDirective(string trimLine)
 		{
-			return trimLine.StartsWith("#endregion", StringComparison.Ordinal) 
+			return trimLine.StartsWith("#endregion", StringComparison.Ordinal)
 				|| trimLine.StartsWith("#endif", StringComparison.Ordinal);
 		}
 		
 		static bool IsStartDirective(string trimLine)
 		{
-			return trimLine.StartsWith("#region", StringComparison.Ordinal) 
+			return trimLine.StartsWith("#region", StringComparison.Ordinal)
 				|| trimLine.StartsWith("#if", StringComparison.Ordinal);
 		}
 		#endregion
