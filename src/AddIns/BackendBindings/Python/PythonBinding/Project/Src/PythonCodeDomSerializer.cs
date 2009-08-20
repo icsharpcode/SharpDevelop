@@ -155,6 +155,8 @@ namespace ICSharpCode.PythonBinding
 				AppendDelegateCreateExpression((CodeDelegateCreateExpression)expression);
 			} else if (expression is CodeCastExpression) {
 				AppendCastExpression((CodeCastExpression)expression);
+			} else if (expression is CodeBinaryOperatorExpression) {
+				AppendBinaryOperatorExpression((CodeBinaryOperatorExpression)expression);
 			} else {
 				Console.WriteLine("AppendExpression: " + expression.GetType().Name);
 			}
@@ -371,6 +373,27 @@ namespace ICSharpCode.PythonBinding
 				return attributes[typeof(InheritanceAttribute)] as InheritanceAttribute;
 			}
 			return null;	
-		}		
+		}
+		
+		/// <summary>
+		/// Appends expressions like "AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top"
+		/// </summary>
+		void AppendBinaryOperatorExpression(CodeBinaryOperatorExpression expression)
+		{
+			AppendExpression(expression.Left);
+			AppendBinaryOperator(expression.Operator);
+			AppendExpression(expression.Right);
+		}
+		
+		void AppendBinaryOperator(CodeBinaryOperatorType operatorType)
+		{
+			codeBuilder.Append(" ");
+			switch (operatorType) {
+				case CodeBinaryOperatorType.BitwiseOr:
+					codeBuilder.Append("|");
+					break;
+			}
+			codeBuilder.Append(" ");
+		}
 	}
 }

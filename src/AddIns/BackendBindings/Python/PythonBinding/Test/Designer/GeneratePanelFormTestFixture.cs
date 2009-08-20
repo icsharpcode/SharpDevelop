@@ -39,6 +39,7 @@ namespace PythonBinding.Tests.Designer
 				
 				Panel panel = (Panel)host.CreateComponent(typeof(Panel), "panel1");
 				panel.Location = new Point(10, 15);
+				panel.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 				panel.TabIndex = 0;
 				panel.Size = new Size(100, 120);
 				TextBox textBox = (TextBox)host.CreateComponent(typeof(TextBox), "textBox1");
@@ -74,6 +75,7 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    # panel1\r\n" +
 								"    # \r\n" +
+								"    self._panel1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right\r\n" +
 								"    self._panel1.Controls.Add(self._textBox1)\r\n" +
 								"    self._panel1.Location = System.Drawing.Point(10, 15)\r\n" +
 								"    self._panel1.Name = \"panel1\"\r\n" +
