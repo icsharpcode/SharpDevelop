@@ -32,27 +32,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			this.indentString = indentString;
 		}
-		
-//		public string GenerateInitializeComponentMethod(IDesignerHost host, IDesignerSerializationManager serializationManager)
-//		{
-//			return GenerateInitializeComponentMethod(host, serializationManager, String.Empty);
-//		}
-//		
-//		public string GenerateInitializeComponentMethod(IDesignerHost host, IDesignerSerializationManager serializationManager, string rootNamespace)
-//		{
-//			CodeMemberMethod method = FindInitializeComponentMethod(host, serializationManager);
-//			
-//			codeBuilder = new PythonCodeBuilder();
-//			codeBuilder.IndentString = indentString;
-//			codeBuilder.AppendIndentedLine("def " + method.Name + "(self):");
-//			codeBuilder.IncreaseIndent();
-//
-//			GetResourceRootName(rootNamespace, host.RootComponent);
-//			AppendStatements(method.Statements);
-//			
-//			return codeBuilder.ToString();
-//		}
-		
+				
 		public string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager)
 		{
 			return GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty);
