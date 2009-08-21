@@ -500,6 +500,46 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
+		public void CtrlSpaceTest21()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='test ";
+		string fileFooter = @"' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, false,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(!list.Items.Any());
+			              });
+		}
+		
+		[Test]
+		public void TypeAtValueEndingInSpace()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='test ";
+		string fileFooter = @"' />
+	</Grid>
+</Window>";
+			
+			TestKeyPress(fileHeader, fileFooter, 'a', CodeCompletionKeyPressResult.None,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(!list.Items.Any());
+			              });
+		}
+		
+		[Test]
 		public void ElementAttributeDotPressTest01()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
@@ -677,5 +717,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			TestKeyPress(fileHeader, fileFooter, 'a', CodeCompletionKeyPressResult.None, list => {});
 			TestKeyPress(fileHeader, fileFooter, '<', CodeCompletionKeyPressResult.Completed, list => {});
 		}
+		
+		
 	}
 }

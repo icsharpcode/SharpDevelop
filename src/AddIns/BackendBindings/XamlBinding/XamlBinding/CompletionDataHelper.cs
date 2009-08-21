@@ -759,7 +759,7 @@ namespace ICSharpCode.XamlBinding
 			IReturnType typeName;
 			
 			string valueBeforeCaret = (context.ValueStartOffset > 0) ?
-				context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1) : "";
+				context.RawAttributeValue.Substring(0, context.ValueStartOffset) : "";
 			
 			switch (c.ClassType) {
 				case ClassType.Class:

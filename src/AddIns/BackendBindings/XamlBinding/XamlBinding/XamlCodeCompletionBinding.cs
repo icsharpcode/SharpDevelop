@@ -169,10 +169,13 @@ namespace ICSharpCode.XamlBinding
 						
 						string attributeName = (context.Attribute != null) ? context.Attribute.Name : string.Empty;
 						
-						if (!attributeName.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase))
-							this.CtrlSpace(editor);
+						if (!attributeName.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase)) {
+							return this.CtrlSpace(editor)
+								? CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion
+								: CodeCompletionKeyPressResult.None;
+						}
 						trackForced = true;
-						return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
+						return CodeCompletionKeyPressResult.None;
 					}
 					break;
 			}
@@ -243,6 +246,8 @@ namespace ICSharpCode.XamlBinding
 							if ((context.Attribute.Prefix.Equals("xmlns", StringComparison.OrdinalIgnoreCase) ||
 							     context.Attribute.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase)) && window != null)
 								window.Width = 400;
+							
+							return completionList.Items.Any();
 						}
 						return true;
 					}
@@ -393,7 +398,7 @@ namespace ICSharpCode.XamlBinding
 				context.Editor.ShowCompletionWindow(completionList);
 				var insightList = CompletionDataHelper.CreateMarkupExtensionInsight(context);
 				context.Editor.ShowInsightWindow(insightList);
-				return true;
+				return completionList.Items.Any() || insightList.Any();
 			}
 			
 			return false;

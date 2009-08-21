@@ -65,7 +65,7 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CtrlSpaceCodeCompletionTests.cs" />
+    <Compile Include="CodeCompletionTests.cs" />
     <Compile Include="CompletionTestsBase.xaml.cs">
       <DependentUpon>CompletionTestsBase.xaml</DependentUpon>
       <SubType>Code</SubType>
