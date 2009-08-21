@@ -26,6 +26,7 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
+		[NUnit.Framework.Ignore]
 		public void MemoryReadWrite()
 		{
 			StartTest("MemoryReadWrite.cs");

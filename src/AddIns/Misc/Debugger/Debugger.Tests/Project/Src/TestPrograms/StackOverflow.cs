@@ -29,6 +29,7 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
+		[NUnit.Framework.Ignore]
 		public void StackOverflow()
 		{
 			StartTest("StackOverflow.cs");

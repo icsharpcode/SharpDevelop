@@ -30,6 +30,7 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
+		[NUnit.Framework.Ignore]
 		public void Breakpoint()
 		{
 			Breakpoint breakpoint1 = debugger.Breakpoints.Add(@"Breakpoint.cs", 18);
