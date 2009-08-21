@@ -31,15 +31,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (clickedCommand == null) {
 				throw new InvalidOperationException(
 					string.Format("{0} clicked, only instances of {1} must be present in {2}.",
-					              this.SelectedItem.GetType().ToString(), typeof(IVisualizerCommand).Name, typeof(VisualizerPicker).Name));
-				}
-			
+								  this.SelectedItem.GetType().ToString(), typeof(IVisualizerCommand).Name, typeof(VisualizerPicker).Name));
+			}
+
 			clickedCommand.Execute();
-			// make no item selected, so that multiple selections of the same item always execute the command
-			// this triggers VisualizerPicker_SelectionChanged again, which returns immediately
+			// Make no item selected, so that multiple selections of the same item always execute the command.
+			// This triggers VisualizerPicker_SelectionChanged again, which returns immediately.
 			this.SelectedIndex = -1;
 		}
-		
+
 		public new IEnumerable<IVisualizerCommand> ItemsSource
 		{
 			get { return (IEnumerable<IVisualizerCommand>)base.ItemsSource; }

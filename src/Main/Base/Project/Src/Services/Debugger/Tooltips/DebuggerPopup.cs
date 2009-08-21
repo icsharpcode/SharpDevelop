@@ -19,26 +19,26 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	public class DebuggerPopup : Popup
 	{
 		private DebuggerTooltipControl contentControl;
-		
+
 		public DebuggerPopup(DebuggerTooltipControl parentControl)
 		{
 			this.contentControl = new DebuggerTooltipControl(parentControl);
 			this.contentControl.containingPopup = this;
 			this.Child = this.contentControl;
 			this.IsLeaf = false;
-			
+
 			//this.contentControl.Focusable = true;
 			//Keyboard.Focus(this.contentControl);
 			//this.AllowsTransparency = true;
 			//this.PopupAnimation = PopupAnimation.Slide;
 		}
-		
+
 		public IEnumerable<ITreeNode> ItemsSource
 		{
 			get { return this.contentControl.ItemsSource; }
-			set { this.contentControl.ItemsSource = value;  }
+			set { this.contentControl.ItemsSource = value; }
 		}
-		
+
 		private bool isLeaf;
 		public bool IsLeaf
 		{
@@ -50,21 +50,20 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				this.StaysOpen = !isLeaf;
 			}
 		}
-		
+
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			if (isLeaf)
-			{
+			if (isLeaf) {
 				this.contentControl.CloseOnLostFocus();
 			}
 		}
-		
+
 		public void Open()
 		{
 			this.IsOpen = true;
 		}
-		
+
 		public void CloseSelfAndChildren()
 		{
 			this.contentControl.CloseChildPopups();

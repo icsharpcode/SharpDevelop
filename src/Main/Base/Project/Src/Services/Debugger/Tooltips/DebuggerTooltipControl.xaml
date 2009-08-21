@@ -4,11 +4,7 @@
     xmlns:debugging="clr-namespace:ICSharpCode.SharpDevelop.Debugging">
 <UserControl.Resources>
 	
-	  <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="VisualizerPicker.xaml" />
-        </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
+      <ResourceDictionary Source="VisualizerPicker.xaml" />
 	
 	  <!-- TODO move styles to ResourceDictionary -->
       <Style x:Key="ExpandCollapseToggleStyle"

@@ -18,36 +18,34 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	public class VirtualizingIEnumerable<T> : ObservableCollection<T>
 	{
 		private IEnumerator<T> originalSourceEnumerator;
-		
+
 		public VirtualizingIEnumerable(IEnumerable<T> originalSource)
 		{
 			if (originalSource == null)
 				throw new ArgumentNullException("originalSource");
-			
+
 			this.originalSourceEnumerator = originalSource.GetEnumerator();
 		}
-		
+
 		private bool hasNext = true;
 		/// <summary>
 		/// False if all items from underlying IEnumerable have already been added.
 		/// </summary>
 		public bool HasNext
 		{
-			get 
+			get
 			{
 				return this.hasNext;
 			}
 		}
-		
+
 		/// <summary>
 		/// Requests next <paramref name="count"/> items from underlying IEnumerable source and adds them to the collection.
 		/// </summary>
 		public void AddNextItems(int count)
 		{
-			for (int i = 0; i < count; i++)
-			{
-				if (!originalSourceEnumerator.MoveNext()) 
-				{
+			for (int i = 0; i < count; i++) {
+				if (!originalSourceEnumerator.MoveNext()) {
 					this.hasNext = false;
 					break;
 				}

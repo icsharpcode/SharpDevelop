@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	{
 		private ItemsControl itemsControl;
 		private int initialItemsCount;
-		
+
 		/// <summary>
 		/// Creates new instance of LazyItemsControl.
 		/// </summary>
@@ -28,12 +28,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			if (wrappedItemsControl == null)
 				throw new ArgumentNullException("wrappedItemsControl");
-			
+
 			this.initialItemsCount = initialItemsCount;
 			this.itemsControl = wrappedItemsControl;
 			this.itemsControl.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleScroll));
 		}
-		
+
 		private ScrollViewer scrollViewerCached;
 		public ScrollViewer ScrollViewer
 		{
@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return this.scrollViewerCached;
 			}
 		}
-		
+
 		public bool IsScrolledToStart
 		{
 			get
@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return ScrollViewer.VerticalOffset == 0;
 			}
 		}
-		
+
 		public bool IsScrolledToEnd
 		{
 			get
@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return (ScrollViewer.VerticalOffset >= totalItems - ScrollViewer.ViewportHeight);
 			}
 		}
-		
+
 		private int? itemsSourceTotalCount = null;
 		/// <summary> Items count of underlying IEnumerable. Null until scrolled to the end of IEnumerable. </summary>
 		public int? ItemsSourceTotalCount
@@ -78,15 +78,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return this.itemsSourceTotalCount;
 			}
 		}
-		
+
 		private VirtualizingIEnumerable<T> itemsSource;
 		/// <summary> The collection that underlying ItemsControl sees. </summary>
 		public VirtualizingIEnumerable<T> ItemsSource
 		{
-			get
-			{
-				return itemsSource;
-			}
+			get { return itemsSource; }
 			set
 			{
 				this.itemsSource = value;
@@ -94,24 +91,21 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				this.itemsControl.ItemsSource = value;
 			}
 		}
-		
+
 		private void addNextItems(VirtualizingIEnumerable<T> sourceToAdd, int nItems)
 		{
 			sourceToAdd.AddNextItems(nItems);
-			if (!sourceToAdd.HasNext)
-			{
+			if (!sourceToAdd.HasNext) {
 				// all items from IEnumerable have been added
 				this.itemsSourceTotalCount = sourceToAdd.Count;
 			}
 		}
-		
+
 		private void handleScroll(object sender, ScrollChangedEventArgs e)
 		{
-			if (e.VerticalChange > 0)
-			{
+			if (e.VerticalChange > 0) {
 				// scrolled to bottom
-				if (e.VerticalOffset >= this.itemsSource.Count - e.ViewportHeight)
-				{
+				if (e.VerticalOffset >= this.itemsSource.Count - e.ViewportHeight) {
 					addNextItems(this.itemsSource, (int)e.VerticalChange);
 				}
 			}

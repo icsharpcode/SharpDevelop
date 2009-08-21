@@ -2,6 +2,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
     xmlns:debugging="clr-namespace:ICSharpCode.SharpDevelop.Debugging">
+	
+	<!--  
+	<BitmapImage x:Key="MagnifierImage" UriSource="magnifier.png" /> -->
+	
         <Style x:Key="ComboBoxFocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -20,66 +24,72 @@
         <SolidColorBrush x:Key="ButtonNormalBorder" Color="#FF707070"/>
         <Geometry x:Key="DownArrowGeometry">M 0 0 L 2 3 L 4 0 Z</Geometry>
         <Style x:Key="ComboBoxReadonlyToggleButton" TargetType="{x:Type ToggleButton}">
-            <Setter Property="OverridesDefaultStyle" Value="true"/>
-            <Setter Property="IsTabStop" Value="false"/>
-            <Setter Property="Focusable" Value="false"/>
-            <Setter Property="ClickMode" Value="Press"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    	
-                    	<!-- Button face - changed from original ButtonChrome to Border -->
-                        <Border Name="FaceBorder" Background="White" CornerRadius="2" BorderBrush="Gray" BorderThickness="1" Padding="1" >
-                            <Grid HorizontalAlignment="Right" Width="5">
-                                <Path x:Name="Arrow" Fill="Black" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Data="{StaticResource DownArrowGeometry}"/>
-                            </Grid>
-                        </Border>
-                	      <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="true">
-                                <Setter TargetName="FaceBorder" Property="Background" Value="#FFE0EDFF"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <LinearGradientBrush x:Key="TextBoxBorder" EndPoint="0,20" StartPoint="0,0" MappingMode="Absolute">
-            <GradientStop Color="#ABADB3" Offset="0.05"/>
-            <GradientStop Color="#E2E3EA" Offset="0.07"/>
-            <GradientStop Color="#E3E9EF" Offset="1"/>
-        </LinearGradientBrush>
-        <Style TargetType="{x:Type debugging:VisualizerPicker}">
-            <Setter Property="FocusVisualStyle" Value="{StaticResource ComboBoxFocusVisual}"/>
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
-            <Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ButtonNormalBorder}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-            <Setter Property="Padding" Value="4,3"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type debugging:VisualizerPicker}">
-                    	
-                    	 <!--  ComboBox face -->
-                        <Grid x:Name="MainGrid" SnapsToDevicePixels="true" Width="18" Height="16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition  Width="5"/>
-                            </Grid.ColumnDefinitions>
-                            <Popup x:Name="PART_Popup" Margin="1" AllowsTransparency="true" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Grid.ColumnSpan="2">
-                                <Microsoft_Windows_Themes:SystemDropShadowChrome x:Name="Shdw" MaxHeight="{TemplateBinding MaxDropDownHeight}" MinWidth="{Binding ActualWidth, ElementName=MainGrid}" Color="Transparent">
-                                    <Border x:Name="DropDownBorder" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1">
-                                        <ScrollViewer CanContentScroll="true">
-                                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.DirectionalNavigation="Contained"/>
-                                        </ScrollViewer>
-                                    </Border>
-                                </Microsoft_Windows_Themes:SystemDropShadowChrome>
-                            </Popup>
-                            <ToggleButton Style="{StaticResource ComboBoxReadonlyToggleButton}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" Grid.ColumnSpan="2" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+		<Setter Property="OverridesDefaultStyle" Value="true"/>
+		<Setter Property="IsTabStop" Value="false"/>
+		<Setter Property="Focusable" Value="false"/>
+		<Setter Property="ClickMode" Value="Press"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ToggleButton}">
 
-                        	<!-- Content of ComboBox face -->
-                            <ContentPresenter 
+					<!-- Button face - changed from original ButtonChrome to Border -->
+					<Border Name="FaceBorder" Background="White" CornerRadius="2" BorderBrush="#FFD9D9E9" BorderThickness="1" Padding="1" >
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition  Width="5"/>
+							</Grid.ColumnDefinitions>
+							<!--  
+							<Image Grid.Column="0" Width="10" Height="10" Stretch="Fill" Source="{StaticResource MagnifierImage}" />  -->
+							<Path Grid.Column="1" x:Name="Arrow" Fill="Black" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Data="{StaticResource DownArrowGeometry}"/>
+						</Grid>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsChecked" Value="true">
+							<Setter TargetName="FaceBorder" Property="Background" Value="#FFE0EDFF"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<LinearGradientBrush x:Key="TextBoxBorder" EndPoint="0,20" StartPoint="0,0" MappingMode="Absolute">
+		<GradientStop Color="#ABADB3" Offset="0.05"/>
+		<GradientStop Color="#E2E3EA" Offset="0.07"/>
+		<GradientStop Color="#E3E9EF" Offset="1"/>
+	</LinearGradientBrush>
+	<Style TargetType="{x:Type debugging:VisualizerPicker}">
+		<Setter Property="FocusVisualStyle" Value="{StaticResource ComboBoxFocusVisual}"/>
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+		<Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
+		<Setter Property="BorderBrush" Value="{StaticResource ButtonNormalBorder}"/>
+		<Setter Property="BorderThickness" Value="1"/>
+		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+		<Setter Property="Padding" Value="4,3"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type debugging:VisualizerPicker}">
+
+					<!--  ComboBox face -->
+					<Grid x:Name="MainGrid" SnapsToDevicePixels="true" Width="18" Height="16">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition  Width="5"/>
+						</Grid.ColumnDefinitions>
+						<Popup x:Name="PART_Popup" Margin="1" AllowsTransparency="true" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Grid.ColumnSpan="2">
+							<Microsoft_Windows_Themes:SystemDropShadowChrome x:Name="Shdw" MaxHeight="{TemplateBinding MaxDropDownHeight}" MinWidth="{Binding ActualWidth, ElementName=MainGrid}" Color="Transparent">
+								<Border x:Name="DropDownBorder" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1">
+									<ScrollViewer CanContentScroll="true">
+										<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.DirectionalNavigation="Contained"/>
+									</ScrollViewer>
+								</Border>
+							</Microsoft_Windows_Themes:SystemDropShadowChrome>
+						</Popup>
+						<ToggleButton Style="{StaticResource ComboBoxReadonlyToggleButton}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" Grid.ColumnSpan="2" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+
+						<!-- Content of ComboBox face -->
+						<ContentPresenter 
                                 HorizontalAlignment="Left" 
                                 Margin="0" 
                                 VerticalAlignment="Center" 
@@ -90,29 +100,29 @@
                                 
                                 ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
                                 ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="true">
-                                <Setter Property="Margin" TargetName="Shdw" Value="0,0,5,5"/>
-                                <Setter Property="Color" TargetName="Shdw" Value="#71000000"/>
-                            </Trigger>
-                            <Trigger Property="HasItems" Value="false">
-                                <Setter Property="Height" TargetName="DropDownBorder" Value="95"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                                <Setter Property="Background" Value="#FFF4F4F4"/>
-                            </Trigger>
-                            <Trigger Property="IsGrouping" Value="true">
-                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsEditable" Value="true">
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="true">
+							<Setter Property="Margin" TargetName="Shdw" Value="0,0,5,5"/>
+							<Setter Property="Color" TargetName="Shdw" Value="#71000000"/>
+						</Trigger>
+						<Trigger Property="HasItems" Value="false">
+							<Setter Property="Height" TargetName="DropDownBorder" Value="95"/>
+						</Trigger>
+						<Trigger Property="IsEnabled" Value="false">
+							<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+							<Setter Property="Background" Value="#FFF4F4F4"/>
+						</Trigger>
+						<Trigger Property="IsGrouping" Value="true">
+							<Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+		<Style.Triggers>
+			<Trigger Property="IsEditable" Value="true">
+			</Trigger>
+		</Style.Triggers>
+	</Style>
 </ResourceDictionary>

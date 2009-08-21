@@ -265,6 +265,7 @@
     <Compile Include="Src\Services\ProjectBinding\IProjectBinding.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectCreateInformation.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
+    <None Include="Src\Services\Debugger\Tooltips\magnifier.png" />
     <None Include="Src\Services\ParserService\OldParserService.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
@@ -883,6 +884,7 @@
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
     <Page Include="Src\Services\Debugger\Tooltips\DebuggerTooltipControl.xaml" />
+    <Page Include="Src\Services\Debugger\Tooltips\Images.xaml" />
     <Page Include="Src\Services\Debugger\Tooltips\VisualizerPicker.xaml" />
     <Page Include="Src\TextEditor\Gui\Dialogs\GotoDialog.xaml" />
   </ItemGroup>
