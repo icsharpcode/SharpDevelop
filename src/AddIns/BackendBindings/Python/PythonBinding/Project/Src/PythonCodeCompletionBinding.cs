@@ -5,11 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using System.Collections.Generic;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -70,7 +71,7 @@ namespace ICSharpCode.PythonBinding
 			{
 			}
 			
-			protected override System.Collections.ArrayList CtrlSpace(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, ExpressionContext context)
+			protected override List<ICompletionEntry> CtrlSpace(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, ExpressionContext context)
 			{
 				return new PythonResolver().CtrlSpace(
 					editor.Caret.Line,

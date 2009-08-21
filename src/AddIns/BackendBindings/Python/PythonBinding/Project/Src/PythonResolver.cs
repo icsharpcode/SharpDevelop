@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -69,9 +70,9 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Called when Ctrl+Space is entered by the user.
 		/// </summary>
-		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
+		public List<ICompletionEntry> CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
-			ArrayList results = new ArrayList();
+			List<ICompletionEntry> results = new List<ICompletionEntry>();
 			ICompilationUnit compilationUnit = GetCompilationUnit(parseInfo, true);
 			if (compilationUnit != null && compilationUnit.ProjectContent != null) {
 				if (context == ExpressionContext.Importable) {
@@ -79,7 +80,7 @@ namespace ICSharpCode.PythonBinding
 					compilationUnit.ProjectContent.AddNamespaceContents(results, String.Empty, compilationUnit.ProjectContent.Language, true);
 					
 					// Add built-in module names.
-					results.AddRange(GetStandardPythonModuleNames());
+					results.AddRange(GetStandardPythonModuleNames().Select(name => new NamespaceEntry(name)));
 				} else {
 					// Add namespace contents.
 					CtrlSpaceResolveHelper.AddImportedNamespaceContents(results, compilationUnit, null);
@@ -226,9 +227,9 @@ namespace ICSharpCode.PythonBinding
 		/// Returns an array of the types that are imported by the
 		/// current compilation unit.
 		/// </summary>
-		ArrayList GetImportedTypes()
+		List<ICompletionEntry> GetImportedTypes()
 		{
-			ArrayList types = new ArrayList();
+			List<ICompletionEntry> types = new List<ICompletionEntry>();
 			CtrlSpaceResolveHelper.AddImportedNamespaceContents(types, this.compilationUnit, this.callingClass);
 			return types;
 		}

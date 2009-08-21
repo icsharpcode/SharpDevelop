@@ -76,15 +76,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return this.Clone();
 		}
 		
-		public virtual ArrayList GetCompletionData(IProjectContent projectContent)
+		public virtual List<ICompletionEntry> GetCompletionData(IProjectContent projectContent)
 		{
 			return GetCompletionData(projectContent.Language, false);
 		}
 		
-		protected ArrayList GetCompletionData(LanguageProperties language, bool showStatic)
+		protected List<ICompletionEntry> GetCompletionData(LanguageProperties language, bool showStatic)
 		{
 			if (resolvedType == null) return null;
-			ArrayList res = new ArrayList();
+			List<ICompletionEntry> res = new List<ICompletionEntry>();
 			
 			foreach (IMember m in MemberLookupHelper.GetAccessibleMembers(resolvedType, callingClass, language)) {
 				if (language.ShowMember(m, showStatic))
@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			if (!showStatic && callingClass != null) {
-				AddExtensions(language, res, callingClass, resolvedType);
+				AddExtensions(language, res.Add, callingClass, resolvedType);
 			}
 			
 			return res;
@@ -101,12 +101,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Adds extension methods to <paramref name="res"/>.
 		/// </summary>
-		public static void AddExtensions(LanguageProperties language, ArrayList res, IClass callingClass, IReturnType resolvedType)
+		public static void AddExtensions(LanguageProperties language, Action<IMethodOrProperty> methodFound, IClass callingClass, IReturnType resolvedType)
 		{
 			if (language == null)
 				throw new ArgumentNullException("language");
-			if (res == null)
-				throw new ArgumentNullException("res");
+			if (methodFound == null)
+				throw new ArgumentNullException("methodFound");
 			if (resolvedType == null)
 				throw new ArgumentNullException("resolvedType");
 			if (callingClass == null)
@@ -116,11 +116,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			resolvedType = resolvedType.GetDirectReturnType();
 			
 			foreach (IMethodOrProperty mp in CtrlSpaceResolveHelper.FindAllExtensions(language, callingClass)) {
-				TryAddExtension(language, res, mp, resolvedType);
+				TryAddExtension(language, methodFound, mp, resolvedType);
 			}
 		}
 		
-		static void TryAddExtension(LanguageProperties language, ArrayList res, IMethodOrProperty ext, IReturnType resolvedType)
+		static void TryAddExtension(LanguageProperties language, Action<IMethodOrProperty> methodFound, IMethodOrProperty ext, IReturnType resolvedType)
 		{
 			// now add the extension method if it fits the type
 			if (MemberLookupHelper.IsApplicable(resolvedType, ext.Parameters[0].ReturnType, ext as IMethod)) {
@@ -139,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 				}
-				res.Add(ext);
+				methodFound(ext);
 			}
 		}
 		
@@ -214,13 +214,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return primaryResult.GetDefinitionPosition();
 		}
 		
-		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		public override List<ICompletionEntry> GetCompletionData(IProjectContent projectContent)
 		{
-			ArrayList result = primaryResult.GetCompletionData(projectContent);
-			ArrayList result2 = secondaryResult.GetCompletionData(projectContent);
+			List<ICompletionEntry> result = primaryResult.GetCompletionData(projectContent);
+			List<ICompletionEntry> result2 = secondaryResult.GetCompletionData(projectContent);
 			if (result == null)  return result2;
 			if (result2 == null) return result;
-			foreach (object o in result2) {
+			foreach (ICompletionEntry o in result2) {
 				if (!result.Contains(o))
 					result.Add(o);
 			}
@@ -365,7 +365,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		public override List<ICompletionEntry> GetCompletionData(IProjectContent projectContent)
 		{
 			return projectContent.GetNamespaceContents(name);
 		}
@@ -390,7 +390,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
-		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		public override List<ICompletionEntry> GetCompletionData(IProjectContent projectContent)
 		{
 			return null;
 		}
@@ -450,9 +450,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		public override List<ICompletionEntry> GetCompletionData(IProjectContent projectContent)
 		{
-			ArrayList ar = GetCompletionData(projectContent.Language, true);
+			List<ICompletionEntry> ar = GetCompletionData(projectContent.Language, true);
 			if (resolvedClass != null) {
 				ar.AddRange(resolvedClass.GetCompoundClass().GetAccessibleTypes(CallingClass));
 			}
@@ -798,9 +798,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
-		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		public override List<ICompletionEntry> GetCompletionData(IProjectContent projectContent)
 		{
-			ArrayList res = base.GetCompletionData(projectContent);
+			List<ICompletionEntry> res = base.GetCompletionData(projectContent);
 			foreach (IMethod m in this.ResolvedType.GetMethods()) {
 				if (m.IsConstructor && !m.IsStatic && m.IsAccessible(this.CallingClass, true))
 					res.Add(m);
@@ -827,10 +827,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
-		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		public override List<ICompletionEntry> GetCompletionData(IProjectContent projectContent)
 		{
 			if (this.ResolvedType == null) return null;
-			ArrayList res = new ArrayList();
+			List<ICompletionEntry> res = new List<ICompletionEntry>();
 			
 			foreach (IMember m in MemberLookupHelper.GetAccessibleMembers(this.ResolvedType, this.CallingClass, projectContent.Language, true)) {
 				if (projectContent.Language.ShowMember(m, false))
@@ -838,7 +838,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			if (this.CallingClass != null) {
-				AddExtensions(projectContent.Language, res, this.CallingClass, this.ResolvedType);
+				AddExtensions(projectContent.Language, res.Add, this.CallingClass, this.ResolvedType);
 			}
 			
 			return res;

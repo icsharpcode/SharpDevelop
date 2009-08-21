@@ -687,9 +687,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ArrayList GetNamespaceContents(string nameSpace)
+		public List<ICompletionEntry> GetNamespaceContents(string nameSpace)
 		{
-			ArrayList namespaceList = new ArrayList();
+			List<ICompletionEntry> namespaceList = new List<ICompletionEntry>();
 			AddNamespaceContents(namespaceList, nameSpace, language, true);
 			return namespaceList;
 		}
@@ -697,7 +697,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Adds the contents of the specified <paramref name="nameSpace"/> to the <paramref name="list"/>.
 		/// </summary>
-		public void AddNamespaceContents(ArrayList list, string nameSpace, LanguageProperties language, bool lookInReferences)
+		public void AddNamespaceContents(List<ICompletionEntry> list, string nameSpace, LanguageProperties language, bool lookInReferences)
 		{
 			if (nameSpace == null) {
 				return;
@@ -727,13 +727,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 				foreach (string subns in ns.SubNamespaces) {
-					if (!list.Contains(subns))
-						list.Add(subns);
+					NamespaceEntry subnsEntry = new NamespaceEntry(subns);
+					if (!list.Contains(subnsEntry))
+						list.Add(subnsEntry);
 				}
 			}
 		}
 		
-		void AddNamespaceContentsClass(ArrayList list, IClass c, LanguageProperties language, bool lookInReferences)
+		void AddNamespaceContentsClass(List<ICompletionEntry> list, IClass c, LanguageProperties language, bool lookInReferences)
 		{
 			if (c.IsInternal && !lookInReferences) {
 				// internal class and we are looking at it from another project content

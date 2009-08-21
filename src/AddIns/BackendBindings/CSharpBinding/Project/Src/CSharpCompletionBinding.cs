@@ -288,7 +288,7 @@ namespace CSharpBinding
 				this.FullyQualifiedName = c.FullyQualifiedName;
 			}
 			
-			string IEntity.Name {
+			string ICompletionEntry.Name {
 				get { return newName; }
 			}
 		}

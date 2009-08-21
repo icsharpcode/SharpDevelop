@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 
@@ -33,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return nrrt.ResolveVB<T>(program, expression, line);
 		}
 		
-		ArrayList CtrlSpace(string program, int line)
+		List<ICompletionEntry> CtrlSpace(string program, int line)
 		{
 			return nrrt.CtrlSpaceResolveCSharp(program, line, ExpressionContext.Default);
 		}
@@ -199,7 +200,7 @@ class A {
 			ResolveResult result = Resolve(program, "a", 8);
 			Assert.IsNotNull(result, "result");
 			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
-			ArrayList arr = result.GetCompletionData(nrrt.lastPC);
+			var arr = result.GetCompletionData(nrrt.lastPC);
 			Assert.IsNotNull(arr, "arr");
 			foreach (object o in arr) {
 				if (o is IField) {
@@ -341,7 +342,7 @@ class C {
 class Outer { private class Inner { } }
 ";
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Outer", 3);
-			ArrayList l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
+			var l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
 			Assert.IsFalse(IsInnerClassVisible(l));
 		}
 		
@@ -355,7 +356,7 @@ class Derived : Outer {
 class Outer { protected class Inner {} }
 ";
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Outer", 3);
-			ArrayList l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
+			var l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
 			Assert.IsTrue(IsInnerClassVisible(l));
 		}
 		
@@ -370,7 +371,7 @@ class Derived2 : Outer { }
 class Outer { protected class Inner {} }
 ";
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Derived2", 3);
-			ArrayList l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
+			var l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
 			Assert.IsTrue(IsInnerClassVisible(l));
 		}
 		
@@ -385,11 +386,11 @@ class Derived : Outer { }
 class Outer { protected class Inner {} }
 ";
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program, "Derived", 3);
-			ArrayList l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
+			var l = trr.GetCompletionData(trr.ResolvedClass.ProjectContent);
 			Assert.IsFalse(IsInnerClassVisible(l));
 		}
 		
-		bool IsInnerClassVisible(ArrayList l)
+		bool IsInnerClassVisible(IEnumerable l)
 		{
 			foreach (object o in l) {
 				IClass c = o as IClass;

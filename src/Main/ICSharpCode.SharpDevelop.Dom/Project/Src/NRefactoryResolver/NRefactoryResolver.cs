@@ -611,10 +611,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			if (languageProperties.ImportModules) {
-				ArrayList list = new ArrayList();
+				List<ICompletionEntry> list = new List<ICompletionEntry>();
 				CtrlSpaceResolveHelper.AddImportedNamespaceContents(list, cu, callingClass);
 				List<IMember> resultMembers = new List<IMember>();
-				foreach (object o in list) {
+				foreach (ICompletionEntry o in list) {
 					IClass c = o as IClass;
 					if (c != null && IsSameName(identifier, c.Name)) {
 						return new TypeResolveResult(callingClass, callingMember, c);
@@ -1065,21 +1065,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return c2;
 		}
 		
-		static void AddCSharpKeywords(ArrayList ar, BitArray keywords)
+		static void AddCSharpKeywords(List<ICompletionEntry> ar, BitArray keywords)
 		{
 			for (int i = 0; i < keywords.Length; i++) {
 				if (keywords[i]) {
-					ar.Add(NR.Parser.CSharp.Tokens.GetTokenString(i));
+					ar.Add(new KeywordEntry(NR.Parser.CSharp.Tokens.GetTokenString(i)));
 				}
 			}
 		}
 		
-		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
+		public List<ICompletionEntry> CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
 			if (!Initialize(parseInfo, caretLine, caretColumn))
 				return null;
 			
-			ArrayList result = new ArrayList();
+			List<ICompletionEntry> result = new List<ICompletionEntry>();
 			if (language == NR.SupportedLanguage.VBNet) {
 				foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesVB) {
 					if ("System." + pair.Key != pair.Value) {
@@ -1087,8 +1087,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						if (c != null) result.Add(c);
 					}
 				}
-				result.Add("Global");
-				result.Add("New");
+				result.Add(new KeywordEntry("Global"));
+				result.Add(new KeywordEntry("New"));
 				CtrlSpaceInternal(result, fileContent);
 			} else {
 				if (context == ExpressionContext.TypeDeclaration) {
@@ -1100,29 +1100,29 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent);
 				} else if (context == ExpressionContext.MethodBody) {
-					result.Add("var");
+					result.Add(new KeywordEntry("var"));
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.StatementStart);
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent);
 				} else if (context == ExpressionContext.Global) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.GlobalLevel);
 				} else if (context == ExpressionContext.InterfacePropertyDeclaration) {
-					result.Add("get");
-					result.Add("set");
+					result.Add(new KeywordEntry("get"));
+					result.Add(new KeywordEntry("set"));
 				} else if (context == ExpressionContext.BaseConstructorCall) {
-					result.Add("this");
-					result.Add("base");
+					result.Add(new KeywordEntry("this"));
+					result.Add(new KeywordEntry("base"));
 				} else if (context == ExpressionContext.ConstraintsStart) {
-					result.Add("where");
+					result.Add(new KeywordEntry("where"));
 				} else if (context == ExpressionContext.Constraints) {
-					result.Add("where");
-					result.Add("new");
-					result.Add("struct");
-					result.Add("class");
+					result.Add(new KeywordEntry("where"));
+					result.Add(new KeywordEntry("new"));
+					result.Add(new KeywordEntry("struct"));
+					result.Add(new KeywordEntry("class"));
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent);
 				} else if (context == ExpressionContext.InheritableType) {
-					result.Add("where"); // the inheritance list can be followed by constraints
+					result.Add(new KeywordEntry("where")); // the inheritance list can be followed by constraints
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent);
 				} else if (context == ExpressionContext.PropertyDeclaration) {
@@ -1132,12 +1132,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else if (context == ExpressionContext.FullyQualifiedType) {
 					cu.ProjectContent.AddNamespaceContents(result, "", languageProperties, true);
 				} else if (context == ExpressionContext.ParameterType || context == ExpressionContext.FirstParameterType) {
-					result.Add("ref");
-					result.Add("out");
-					result.Add("params");
+					result.Add(new KeywordEntry("ref"));
+					result.Add(new KeywordEntry("out"));
+					result.Add(new KeywordEntry("params"));
 					if (context == ExpressionContext.FirstParameterType && languageProperties.SupportsExtensionMethods) {
 						if (callingMember != null && callingMember.IsStatic) {
-							result.Add("this");
+							result.Add(new KeywordEntry("this"));
 						}
 					}
 					AddCSharpPrimitiveTypes(result);
@@ -1152,15 +1152,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				} else if (context == ExpressionContext.Attribute) {
 					CtrlSpaceInternal(result, fileContent);
-					result.Add("assembly");
-					result.Add("module");
-					result.Add("field");
-					result.Add("event");
-					result.Add("method");
-					result.Add("param");
-					result.Add("property");
-					result.Add("return");
-					result.Add("type");
+					result.Add(new KeywordEntry("assembly"));
+					result.Add(new KeywordEntry("module"));
+					result.Add(new KeywordEntry("field"));
+					result.Add(new KeywordEntry("event"));
+					result.Add(new KeywordEntry("method"));
+					result.Add(new KeywordEntry("param"));
+					result.Add(new KeywordEntry("property"));
+					result.Add(new KeywordEntry("return"));
+					result.Add(new KeywordEntry("type"));
 				} else if (context == ExpressionContext.Default) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionContent);
@@ -1175,7 +1175,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return result;
 		}
 		
-		void AddCSharpPrimitiveTypes(ArrayList result)
+		void AddCSharpPrimitiveTypes(List<ICompletionEntry> result)
 		{
 			foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesCSharp) {
 				IClass c = GetPrimitiveClass(pair.Value, pair.Key);
@@ -1183,7 +1183,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		void CtrlSpaceInternal(ArrayList result, string fileContent)
+		void CtrlSpaceInternal(List<ICompletionEntry> result, string fileContent)
 		{
 			lookupTableVisitor = new LookupTableVisitor(language);
 			
@@ -1371,6 +1371,37 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (fd != null) typeRef = fd.TypeReference;
 			}
 			return TypeVisitor.CreateReturnType(typeRef, this);
+		}
+	}
+	
+	/// <summary>
+	/// Used in CtrlSpace-results to represent a keyword.
+	/// </summary>
+	public class KeywordEntry : ICompletionEntry
+	{
+		public string Name { get; private set; }
+		
+		public KeywordEntry(string name)
+		{
+			if (name == null)
+				throw new ArgumentNullException("name");
+			this.Name = name;
+		}
+		
+		public override int GetHashCode()
+		{
+			return Name.GetHashCode();
+		}
+		
+		public override bool Equals(object obj)
+		{
+			KeywordEntry e = obj as KeywordEntry;
+			return e != null && e.Name == this.Name;
+		}
+		
+		public override string ToString()
+		{
+			return Name;
 		}
 	}
 }

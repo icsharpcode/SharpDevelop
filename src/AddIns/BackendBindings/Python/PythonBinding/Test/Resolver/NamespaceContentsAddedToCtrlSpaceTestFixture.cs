@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -23,7 +23,7 @@ namespace PythonBinding.Tests.Resolver
 	[TestFixture]
 	public class NamespaceContentsAddedToCtrlSpaceTestFixture
 	{
-		ArrayList results;
+		List<ICompletionEntry> results;
 		PythonResolver resolver;
 		MockProjectContent mockProjectContent;
 		MockClass myTestClass;
@@ -70,7 +70,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void TestNamespaceReturnedInResults()
 		{
-			Assert.Contains("Test", results);
+			Assert.Contains(new NamespaceEntry("Test"), results);
 		}
 	}
 }

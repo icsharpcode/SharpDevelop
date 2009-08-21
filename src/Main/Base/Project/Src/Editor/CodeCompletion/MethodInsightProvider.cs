@@ -114,8 +114,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					}
 				}
 				if (methods.Count == 0 && result.CallingClass != null && language.SupportsExtensionMethods) {
-					ArrayList list = new ArrayList();
-					ResolveResult.AddExtensions(language, list, result.CallingClass, mgrr.ContainingType);
+					List<IMethodOrProperty> list = new List<IMethodOrProperty>();
+					ResolveResult.AddExtensions(language, list.Add, result.CallingClass, mgrr.ContainingType);
 					foreach (IMethodOrProperty mp in list) {
 						if (language.NameComparer.Equals(mp.Name, mgrr.Name) && mp is IMethod) {
 							DefaultMethod m = (DefaultMethod)mp.CreateSpecializedMember();

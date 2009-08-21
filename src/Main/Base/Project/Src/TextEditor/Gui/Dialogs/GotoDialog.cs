@@ -188,7 +188,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} else {
 				AddSourceFiles(text, 0);
-				//ShowCtrlSpaceCompletion(text);
+				foreach (IClass c in SearchClasses(text)) {
+					AddItem(c, GetMatchType(text, c.Name));
+				}
 			}
 			newItems.Sort();
 			foreach (MyListBoxItem item in newItems)

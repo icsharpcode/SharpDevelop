@@ -167,8 +167,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				}
 				if (methods.Count == 0 && result.CallingClass != null && language.SupportsExtensionMethods) {
-					ArrayList list = new ArrayList();
-					ResolveResult.AddExtensions(language, list, result.CallingClass, result.ContainingType);
+					List<IMethodOrProperty> list = new List<IMethodOrProperty>();
+					ResolveResult.AddExtensions(language, list.Add, result.CallingClass, result.ContainingType);
 					foreach (IMethodOrProperty mp in list) {
 						if (language.NameComparer.Equals(mp.Name, result.Name) && mp is IMethod) {
 							DefaultMethod m = (DefaultMethod)mp.CreateSpecializedMember();

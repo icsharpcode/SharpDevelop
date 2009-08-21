@@ -10,13 +10,9 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IEntity : IFreezable, IComparable
+	public interface IEntity : ICompletionEntry, IFreezable, IComparable
 	{
 		string FullyQualifiedName {
-			get;
-		}
-		
-		string Name {
 			get;
 		}
 		

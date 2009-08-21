@@ -103,6 +103,7 @@
     <Compile Include="Src\Implementations\SystemTypes.cs" />
     <Compile Include="Src\Implementations\UnknownReturnType.cs" />
     <Compile Include="Src\Interfaces\ExplicitInterfaceImplementation.cs" />
+    <Compile Include="Src\Interfaces\ICompletionEntry.cs" />
     <Compile Include="Src\Interfaces\IDomProgressMonitor.cs" />
     <Compile Include="Src\Interfaces\IFreezable.cs" />
     <Compile Include="Src\Interfaces\IUsingScope.cs" />

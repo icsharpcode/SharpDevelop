@@ -293,9 +293,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return c2;
 		}
 		
-		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
+		public List<ICompletionEntry> CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
-			ArrayList result = new ArrayList();
+			List<ICompletionEntry> result = new List<ICompletionEntry>();
 			
 			if (!Initialize(parseInfo, caretLine, caretColumn))
 				return null;
@@ -343,14 +343,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 		}
 		
 		// used by ctrl+space and resolve visitor (resolve identifier)
-		public ArrayList GetImportedNamespaceContents()
+		public List<ICompletionEntry> GetImportedNamespaceContents()
 		{
-			ArrayList result = new ArrayList();
+			List<ICompletionEntry> result = new List<ICompletionEntry>();
 			AddImportedNamespaceContents(result);
 			return result;
 		}
 		
-		void AddImportedNamespaceContents(ArrayList list)
+		void AddImportedNamespaceContents(List<ICompletionEntry> list)
 		{
 			IClass c;
 			foreach (KeyValuePair<string, string> pair in BooAmbience.ReverseTypeConversionTable) {
@@ -407,7 +407,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public BooCtrlSpaceCompletionItemProvider() {}
 		public BooCtrlSpaceCompletionItemProvider(ExpressionContext overrideContext) : base(overrideContext) {}
 		
-		protected override ArrayList CtrlSpace(ITextEditor editor, ExpressionContext context)
+		protected override List<ICompletionEntry> CtrlSpace(ITextEditor editor, ExpressionContext context)
 		{
 			return new BooResolver().CtrlSpace(
 				editor.Caret.Line,

@@ -213,7 +213,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			public static BooAttributeContext Instance = new BooAttributeContext();
 			
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
 				IClass c = o as IClass;
 				if (c != null && c.IsAbstract)

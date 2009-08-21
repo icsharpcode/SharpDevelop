@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -187,7 +188,7 @@ End Class
 ";
 			LocalResolveResult result = ResolveVB<LocalResolveResult>(program, "a", 4);
 			Assert.IsNotNull(result, "result");
-			ArrayList arr = result.GetCompletionData(lastPC);
+			var arr = result.GetCompletionData(lastPC);
 			Assert.IsNotNull(arr, "arr");
 			foreach (object o in arr) {
 				if (o is IMember) {
@@ -211,7 +212,7 @@ End Module
 ";
 			ResolveResult result = ResolveVB<LocalResolveResult>(program, "t", 4);
 			
-			ArrayList arr = result.GetCompletionData(lastPC);
+			var arr = result.GetCompletionData(lastPC);
 			Assert.IsNotNull(arr, "arr");
 			foreach (object o in arr) {
 				if (o is IMember) {
@@ -241,7 +242,7 @@ interface IInterface2 {
 }
 ";
 			ResolveResult result = Resolve<LocalResolveResult>(program, "a", 4);
-			ArrayList arr = result.GetCompletionData(lastPC);
+			var arr = result.GetCompletionData(lastPC);
 			Assert.IsNotNull(arr, "arr");
 			bool m1 = false;
 			bool m2 = false;
@@ -579,7 +580,7 @@ class A {
 			Assert.IsNotNull(m);
 			Assert.AreEqual("A", result.ResolvedType.FullyQualifiedName);
 			
-			ArrayList ar = result.GetCompletionData(result.CallingClass.ProjectContent);
+			var ar = result.GetCompletionData(result.CallingClass.ProjectContent);
 			Assert.IsTrue(ContainsMember(ar, "A.Method"));
 		}
 		
@@ -952,7 +953,7 @@ namespace Root.Child {
 			Assert.AreEqual("Root.Alpha", result.ResolvedType.FullyQualifiedName);
 		}
 		
-		public ArrayList CtrlSpaceResolveCSharp(string program, int line, ExpressionContext context)
+		public List<ICompletionEntry> CtrlSpaceResolveCSharp(string program, int line, ExpressionContext context)
 		{
 			ParseInformation parseInfo = AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
@@ -973,12 +974,12 @@ namespace Root.Child {
   }
 }
 ";
-			ArrayList m = CtrlSpaceResolveCSharp(program, 7, ExpressionContext.Default);
+			var m = CtrlSpaceResolveCSharp(program, 7, ExpressionContext.Default);
 			Assert.IsTrue(TypeExists(m, "Beta"), "Beta must exist");
 			Assert.IsTrue(TypeExists(m, "Alpha"), "Alpha must exist");
 		}
 		
-		bool TypeExists(ArrayList m, string name)
+		bool TypeExists(IEnumerable m, string name)
 		{
 			foreach (object o in m) {
 				IClass c = o as IClass;
@@ -1203,7 +1204,7 @@ class B {
 ";
 			ResolveResult result = Resolve(program, "b", 4);
 			Assert.IsNotNull(result);
-			ArrayList cd = result.GetCompletionData(lastPC);
+			var cd = result.GetCompletionData(lastPC);
 			Assert.IsFalse(MemberExists(cd, "member"), "member should not be in completion lookup");
 			result = Resolve(program, "b.member", 4);
 			Assert.IsTrue(result != null && result.IsValid, "member should be found even though it is not visible!");
@@ -1224,7 +1225,7 @@ class B {
 ";
 			ResolveResult result = Resolve(program, "a", 4);
 			Assert.IsNotNull(result);
-			ArrayList cd = result.GetCompletionData(lastPC);
+			var cd = result.GetCompletionData(lastPC);
 			Assert.IsTrue(MemberExists(cd, "member"), "member should be in completion lookup");
 			result = Resolve(program, "a.member", 4);
 			Assert.IsTrue(result != null && result.IsValid, "member should be found!");
@@ -1243,7 +1244,7 @@ class B {
 	protected int member;
 }
 ";
-			ArrayList results = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
+			var results = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
 			Assert.IsTrue(MemberExists(results, "member"), "member should be in completion lookup");
 			ResolveResult result = Resolve(program, "member", 4);
 			Assert.IsTrue(result != null && result.IsValid, "member should be found!");
@@ -1264,7 +1265,7 @@ class B {
 ";
 			ResolveResult result = Resolve(program, "b", 4);
 			Assert.IsNotNull(result);
-			ArrayList cd = result.GetCompletionData(lastPC);
+			var cd = result.GetCompletionData(lastPC);
 			Assert.IsFalse(MemberExists(cd, "member"), "member should not be in completion lookup");
 			result = Resolve(program, "b.member", 4);
 			Assert.IsTrue(result != null && result.IsValid, "member should be found even though it is not visible!");
@@ -1285,7 +1286,7 @@ class B {
 ";
 			ResolveResult result = Resolve(program, "b", 4);
 			Assert.IsNotNull(result);
-			ArrayList cd = result.GetCompletionData(lastPC);
+			var cd = result.GetCompletionData(lastPC);
 			Assert.IsFalse(MemberExists(cd, "member"), "member should not be in completion lookup");
 			result = Resolve(program, "b.member", 4);
 			Assert.IsTrue(result != null && result.IsValid, "member should be found even though it is not visible!");
@@ -1306,7 +1307,7 @@ class B {
 ";
 			ResolveResult result = Resolve(program, "base", 4);
 			Assert.IsNotNull(result);
-			ArrayList cd = result.GetCompletionData(lastPC);
+			var cd = result.GetCompletionData(lastPC);
 			Assert.IsTrue(MemberExists(cd, "member"), "member should be in completion lookup");
 			result = Resolve(program, "base.member", 4);
 			Assert.IsTrue(result != null && result.IsValid, "member should be found!");
@@ -1327,7 +1328,7 @@ class B {
 ";
 			ResolveResult result = Resolve(program, "b", 4);
 			Assert.IsNotNull(result);
-			ArrayList cd = result.GetCompletionData(lastPC);
+			var cd = result.GetCompletionData(lastPC);
 			Assert.IsFalse(MemberExists(cd, "Method"), "member should not be in completion lookup");
 			result = Resolve(program, "b.Method()", 4);
 			Assert.IsTrue(result != null && result.IsValid, "method should be found even though it is invisible!");
@@ -1348,7 +1349,7 @@ class B {
 ";
 			ResolveResult result = Resolve(program, "base", 4);
 			Assert.IsNotNull(result);
-			ArrayList cd = result.GetCompletionData(lastPC);
+			var cd = result.GetCompletionData(lastPC);
 			Assert.IsTrue(MemberExists(cd, "Method"), "member should be in completion lookup");
 			result = Resolve(program, "base.Method()", 4);
 			Assert.IsTrue(result != null && result.IsValid, "method should be found!");
@@ -1367,7 +1368,7 @@ class B {
 	protected int Method();
 }
 ";
-			ArrayList results = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
+			var results = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
 			Assert.IsTrue(MemberExists(results, "Method"), "method should be in completion lookup");
 			ResolveResult result = Resolve(program, "Method()", 4);
 			Assert.IsTrue(result != null && result.IsValid, "method should be found!");
@@ -1387,17 +1388,16 @@ class B {
 }
 class Method { }
 ";
-			ArrayList results = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
+			var results = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
 			Assert.IsTrue(MemberExists(results, "Method"), "method should be in completion lookup");
 			ResolveResult result = Resolve(program, "Method()", 4);
 			Assert.IsTrue(result != null && result.IsValid, "method should be found!");
 		}
 		
-		bool MemberExists(ArrayList members, string name)
+		bool MemberExists(IEnumerable members, string name)
 		{
 			Assert.IsNotNull(members);
-			foreach (object o in members) {
-				IMember m = o as IMember;
+			foreach (IMember m in members.OfType<IMember>()) {
 				if (m != null && m.Name == name) return true;
 			}
 			return false;
@@ -1512,7 +1512,7 @@ class A {
 			ResolveResult result = Resolve(arrayListMixedTypeProgram, "ArrayList", 4);
 			Assert.IsTrue(result is MixedResolveResult);
 			// CC should offer both static and non-static results
-			ArrayList list = result.GetCompletionData(lastPC);
+			var list = result.GetCompletionData(lastPC);
 			bool ok = false;
 			foreach (object o in list) {
 				IMethod method = o as IMethod;
@@ -1912,7 +1912,7 @@ public class MyCollectionType : System.Collections.IEnumerable
 		[Test]
 		public void ObjectInitializerCtrlSpaceCompletion()
 		{
-			ArrayList results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 5, ExpressionContext.ObjectInitializer);
+			var results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 5, ExpressionContext.ObjectInitializer);
 			Assert.AreEqual(new[] { "P1", "P2" }, (from IMember p in results orderby p.Name select p.Name).ToArray() );
 			
 			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 9, ExpressionContext.ObjectInitializer);
@@ -2708,7 +2708,7 @@ class C2 : C1 {
 class C1 {
 	protected static int Field;
 }";
-			ArrayList arr = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
+			var arr = CtrlSpaceResolveCSharp(program, 4, ExpressionContext.Default);
 			Assert.IsTrue(MemberExists(arr, "Field"));
 			
 			ResolveResult rr = Resolve(program, "C1", 4);
@@ -2740,7 +2740,7 @@ class C : B {
 	protected int Z;
 }";
 			LocalResolveResult rr = Resolve<LocalResolveResult>(program, "c", 4);
-			ArrayList arr = rr.GetCompletionData(lastPC);
+			var arr = rr.GetCompletionData(lastPC);
 			Assert.IsFalse(MemberExists(arr, "P1"));
 			Assert.IsTrue(MemberExists(arr, "P2"));
 			Assert.IsFalse(MemberExists(arr, "P3"));

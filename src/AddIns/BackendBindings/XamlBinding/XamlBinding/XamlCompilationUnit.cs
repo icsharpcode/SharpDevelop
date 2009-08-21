@@ -119,7 +119,7 @@ namespace ICSharpCode.XamlBinding
 				if (xmlNamespace.StartsWith("clr-namespace:", StringComparison.OrdinalIgnoreCase))
 					return pc.GetNamespaceContents(GetNamespaceNameFromClrNamespace(xmlNamespace)).OfType<IClass>();
 				else {
-					var list = new ArrayList();
+					var list = new List<ICompletionEntry>();
 					AddNamespaceMembersInAssembly(pc, xmlNamespace, list);
 					foreach (IProjectContent p in pc.ReferencedContents) {
 						AddNamespaceMembersInAssembly(p, xmlNamespace, list);
@@ -131,7 +131,7 @@ namespace ICSharpCode.XamlBinding
 			return Enumerable.Empty<IClass>();
 		}
 
-		static void AddNamespaceMembersInAssembly(IProjectContent projectContent, string xmlNamespace, ArrayList list)
+		static void AddNamespaceMembersInAssembly(IProjectContent projectContent, string xmlNamespace, List<ICompletionEntry> list)
 		{
 			foreach (IAttribute att in projectContent.GetAssemblyAttributes()) {
 				if (att.PositionalArguments.Count == 2

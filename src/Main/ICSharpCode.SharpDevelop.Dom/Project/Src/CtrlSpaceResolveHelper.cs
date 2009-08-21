@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public class CtrlSpaceResolveHelper
 	{
-		static void AddTypeParametersForCtrlSpace(ArrayList result, IEnumerable<ITypeParameter> typeParameters)
+		static void AddTypeParametersForCtrlSpace(List<ICompletionEntry> result, IEnumerable<ITypeParameter> typeParameters)
 		{
 			foreach (ITypeParameter p in typeParameters) {
 				DefaultClass c = DefaultTypeParameter.GetDummyClassForTypeParameter(p);
@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public static void AddContentsFromCalling(ArrayList result, IClass callingClass, IMember callingMember)
+		public static void AddContentsFromCalling(List<ICompletionEntry> result, IClass callingClass, IMember callingMember)
 		{
 			IMethodOrProperty methodOrProperty = callingMember as IMethodOrProperty;
 			if (methodOrProperty != null) {
@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (callingClass != null) {
 				AddTypeParametersForCtrlSpace(result, callingClass.TypeParameters);
 				
-				ArrayList members = new ArrayList();
+				List<ICompletionEntry> members = new List<ICompletionEntry>();
 				IReturnType t = callingClass.DefaultReturnType;
 				members.AddRange(t.GetMethods());
 				members.AddRange(t.GetFields());
@@ -80,19 +80,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public static void AddImportedNamespaceContents(ArrayList result, ICompilationUnit cu, IClass callingClass)
+		public static void AddImportedNamespaceContents(List<ICompletionEntry> result, ICompilationUnit cu, IClass callingClass)
 		{
 			IProjectContent projectContent = cu.ProjectContent;
 			projectContent.AddNamespaceContents(result, "", projectContent.Language, true);
-			foreach (IUsing u in cu.GetAllUsings()) {
-				AddUsing(result, u, projectContent);
+			IUsingScope scope = (callingClass != null) ? callingClass.UsingScope : cu.UsingScope;
+			while (scope != null) {
+				foreach (IUsing u in scope.Usings)
+					AddUsing(result, u, projectContent);
+				scope = scope.Parent;
 			}
 			AddUsing(result, projectContent.DefaultImports, projectContent);
 			
 			if (callingClass != null) {
 				string[] namespaceParts = callingClass.Namespace.Split('.');
 				for (int i = 1; i <= namespaceParts.Length; i++) {
-					foreach (object member in projectContent.GetNamespaceContents(string.Join(".", namespaceParts, 0, i))) {
+					foreach (ICompletionEntry member in projectContent.GetNamespaceContents(string.Join(".", namespaceParts, 0, i))) {
 						if (!result.Contains(member))
 							result.Add(member);
 					}
@@ -108,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public static void AddUsing(ArrayList result, IUsing u, IProjectContent projectContent)
+		public static void AddUsing(List<ICompletionEntry> result, IUsing u, IProjectContent projectContent)
 		{
 			if (u == null) {
 				return;
@@ -140,16 +143,44 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 					projectContent.AddNamespaceContents(result, newName ?? name, projectContent.Language, true);
 				} else {
-					foreach (object o in projectContent.GetNamespaceContents(name)) {
-						if (!(o is string))
+					foreach (ICompletionEntry o in projectContent.GetNamespaceContents(name)) {
+						if (!(o is NamespaceEntry))
 							result.Add(o);
 					}
 				}
 			}
 			if (u.HasAliases) {
 				foreach (string alias in u.Aliases.Keys) {
-					result.Add(alias);
+					result.Add(new AliasEntry(alias));
 				}
+			}
+		}
+		
+		public class AliasEntry : ICompletionEntry
+		{
+			public string Name { get; private set; }
+			
+			public AliasEntry(string name)
+			{
+				if (name == null)
+					throw new ArgumentNullException("name");
+				this.Name = name;
+			}
+			
+			public override int GetHashCode()
+			{
+				return Name.GetHashCode();
+			}
+			
+			public override bool Equals(object obj)
+			{
+				AliasEntry e = obj as AliasEntry;
+				return e != null && e.Name == this.Name;
+			}
+			
+			public override string ToString()
+			{
+				return Name;
 			}
 		}
 		
@@ -190,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			bool supportsExtensionMethods = language.SupportsExtensionMethods;
 			bool supportsExtensionProperties = language.SupportsExtensionProperties;
 			if (supportsExtensionMethods || supportsExtensionProperties) {
-				ArrayList list = new ArrayList();
+				List<ICompletionEntry> list = new List<ICompletionEntry>();
 				IMethod dummyMethod = new DefaultMethod("dummy", callingClass.ProjectContent.SystemTypes.Void,
 				                                        ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
 				CtrlSpaceResolveHelper.AddContentsFromCalling(list, callingClass, dummyMethod);

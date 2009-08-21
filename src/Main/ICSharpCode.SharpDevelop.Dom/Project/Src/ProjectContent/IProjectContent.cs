@@ -89,14 +89,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		IClass GetClass(string typeName, int typeParameterCount);
 		bool NamespaceExists(string name);
-		ArrayList GetNamespaceContents(string nameSpace);
+		List<ICompletionEntry> GetNamespaceContents(string nameSpace);
 		
 		IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, GetClassOptions options);
 		bool NamespaceExists(string name, LanguageProperties language, bool lookInReferences);
 		/// <summary>
 		/// Adds the contents of the specified <paramref name="subNameSpace"/> to the <paramref name="list"/>.
 		/// </summary>
-		void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences);
+		void AddNamespaceContents(List<ICompletionEntry> list, string subNameSpace, LanguageProperties language, bool lookInReferences);
 		
 		SearchTypeResult SearchType(SearchTypeRequest request);
 		
@@ -248,6 +248,37 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string NamespaceResult {
 			get { return namespaceResult; }
+		}
+	}
+	
+	/// <summary>
+	/// Used in 'GetNamespaceContents' result to represent a namespace.
+	/// </summary>
+	public class NamespaceEntry : ICompletionEntry
+	{
+		public string Name { get; private set; }
+		
+		public NamespaceEntry(string name)
+		{
+			if (name == null)
+				throw new ArgumentNullException("name");
+			this.Name = name;
+		}
+		
+		public override int GetHashCode()
+		{
+			return Name.GetHashCode();
+		}
+		
+		public override bool Equals(object obj)
+		{
+			NamespaceEntry e = obj as NamespaceEntry;
+			return e != null && e.Name == this.Name;
+		}
+		
+		public override string ToString()
+		{
+			return Name;
 		}
 	}
 }

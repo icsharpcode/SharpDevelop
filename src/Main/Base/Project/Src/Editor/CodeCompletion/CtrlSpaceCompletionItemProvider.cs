@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
@@ -102,12 +103,12 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				return GenerateCompletionListForExpression(editor, expressionResult);
 			} else {
 				preselectionLength = expression.Length;
-				ArrayList results = CtrlSpace(editor, expressionResult.Context);
+				List<ICompletionEntry> results = CtrlSpace(editor, expressionResult.Context);
 				return GenerateCompletionListForCompletionData(results, expressionResult.Context);
 			}
 		}
 		
-		protected abstract ArrayList CtrlSpace(ITextEditor editor, ExpressionContext context);
+		protected abstract List<ICompletionEntry> CtrlSpace(ITextEditor editor, ExpressionContext context);
 		
 		protected override void InitializeCompletionItemList(DefaultCompletionItemList list)
 		{
@@ -135,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			this.language = language;
 		}
 		
-		protected override ArrayList CtrlSpace(ITextEditor editor, ExpressionContext context)
+		protected override List<ICompletionEntry> CtrlSpace(ITextEditor editor, ExpressionContext context)
 		{
 			var resolver = new Dom.NRefactoryResolver.NRefactoryResolver(language);
 			return resolver.CtrlSpace(

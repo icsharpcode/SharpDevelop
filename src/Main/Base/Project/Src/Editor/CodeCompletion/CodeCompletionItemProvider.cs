@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			if (rr == null)
 				return null;
 			IProjectContent callingContent = rr.CallingClass != null ? rr.CallingClass.ProjectContent : null;
-			ArrayList arr = rr.GetCompletionData(callingContent ?? ParserService.CurrentProjectContent);
+			List<ICompletionEntry> arr = rr.GetCompletionData(callingContent ?? ParserService.CurrentProjectContent);
 			return GenerateCompletionListForCompletionData(arr, context);
 		}
 		
@@ -112,14 +112,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			list.SortItems();
 		}
 		
-		public virtual ICompletionItemList GenerateCompletionListForCompletionData(ArrayList arr, ExpressionContext context)
+		public virtual ICompletionItemList GenerateCompletionListForCompletionData(List<ICompletionEntry> arr, ExpressionContext context)
 		{
 			if (arr == null)
 				return null;
 			
 			DefaultCompletionItemList result = CreateCompletionItemList();
 			Dictionary<string, CodeCompletionItem> methodItems = new Dictionary<string, CodeCompletionItem>();
-			foreach (object o in arr) {
+			foreach (ICompletionEntry o in arr) {
 				if (context != null && !context.ShowEntry(o))
 					continue;
 				
@@ -159,10 +159,16 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		public virtual ICompletionItem CreateCompletionItem(object o, ExpressionContext context)
 		{
 			IEntity entity = o as IEntity;
-			if (entity != null)
+			if (entity != null) {
 				return new CodeCompletionItem(entity);
-			else
-				return new DefaultCompletionItem(o.ToString());
+			} else {
+				DefaultCompletionItem item = new DefaultCompletionItem(o.ToString());
+				if (o is NamespaceEntry)
+					item.Image = ClassBrowserIconService.Namespace;
+				else if (o is Dom.NRefactoryResolver.KeywordEntry)
+					item.Image = ClassBrowserIconService.Keyword;
+				return item;
+			}
 		}
 	}
 	

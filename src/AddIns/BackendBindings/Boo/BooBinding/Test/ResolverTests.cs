@@ -227,7 +227,7 @@ namespace Grunwald.BooBinding.Tests
 		public void MyMethodCompletion()
 		{
 			MethodGroupResolveResult rr = Resolve<MethodGroupResolveResult>(regressionProg, "MyMethod", "/*1*/");
-			ArrayList arr = rr.GetCompletionData(lastPC);
+			var arr = rr.GetCompletionData(lastPC);
 			Assert.IsNotNull(arr);
 			bool beginInvoke = false;
 			bool invoke = false;
@@ -379,8 +379,7 @@ namespace Grunwald.BooBinding.Tests
 			int line, column;
 			GetPos(prog, "/*mark*/", out line, out column);
 			BooResolver r = new BooResolver();
-			System.Collections.ArrayList ar;
-			ar = r.CtrlSpace(line, column, ParserService.GetParseInformation(fileName), prog, ExpressionContext.Default);
+			var ar = r.CtrlSpace(line, column, ParserService.GetParseInformation(fileName), prog, ExpressionContext.Default);
 			foreach (string e in unExpected) {
 				foreach (object o in ar) {
 					if (e.Equals(o))

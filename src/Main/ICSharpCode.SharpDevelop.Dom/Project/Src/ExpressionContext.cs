@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public abstract class ExpressionContext
 	{
 		#region Instance members
-		public abstract bool ShowEntry(object o);
+		public abstract bool ShowEntry(ICompletionEntry o);
 		
 		protected bool readOnly = true;
 		object suggestedItem;
@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.name = name;
 			}
 			
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
 				return true;
 			}
@@ -213,9 +213,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.allowImportClasses = allowImportClasses;
 			}
 			
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
-				if (o is string)
+				if (!(o is IEntity))
 					return true;
 				IClass c = o as IClass;
 				if (allowImportClasses && c != null) {
@@ -245,9 +245,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.readOnly = readOnly;
 			}
 			
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
-				if (o is string)
+				if (!(o is IEntity))
 					return true;
 				IClass c = o as IClass;
 				if (c == null)
@@ -333,7 +333,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.b = b;
 			}
 			
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
 				if (opType == 0)
 					return a.ShowEntry(o) || b.ShowEntry(o);
@@ -377,7 +377,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region EnumBaseTypeExpressionContext
 		sealed class EnumBaseTypeExpressionContext : ExpressionContext
 		{
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
 				IClass c = o as IClass;
 				if (c != null) {
@@ -414,9 +414,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region AttributeExpressionContext
 		sealed class AttributeExpressionContext : ExpressionContext
 		{
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
-				if (o is string)
+				if (!(o is IEntity))
 					return true;
 				IClass c = o as IClass;
 				if (c != null && !c.IsAbstract) {
@@ -440,9 +440,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region InheritableTypeExpressionContext
 		sealed class InheritableTypeExpressionContext : ExpressionContext
 		{
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
-				if (o is string) return true;
+				if (!(o is IEntity)) return true;
 				IClass c = o as IClass;
 				if (c != null) {
 					foreach (IClass innerClass in c.InnerClasses) {
@@ -473,9 +473,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.expectedType = expectedType;
 			}
 			
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
-				if (o is string) return true;
+				if (!(o is IEntity)) return true;
 				IClass c = o as IClass;
 				if (c != null) {
 					foreach (IClass innerClass in c.InnerClasses) {
@@ -505,9 +505,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.allowVoid = allowVoid;
 			}
 			
-			public override bool ShowEntry(object o)
+			public override bool ShowEntry(ICompletionEntry o)
 			{
-				if (o is string) return true;
+				if (!(o is IEntity)) return true;
 				IClass c = o as IClass;
 				if (c != null) {
 					if (!allowVoid) {

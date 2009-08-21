@@ -32,7 +32,7 @@ namespace ICSharpCode.XamlBinding
 			this.InAttributeValue = inAttributeValue;
 		}
 
-		public override bool ShowEntry(object o)
+		public override bool ShowEntry(ICompletionEntry o)
 		{
 			return true;
 		}

@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -22,7 +22,7 @@ namespace PythonBinding.Tests.Resolver
 	[TestFixture]
 	public class ResolveImportsTestFixture
 	{
-		ArrayList results;
+		List<ICompletionEntry> results;
 		PythonResolver resolver;
 		MockProjectContent mockProjectContent;		
 		
@@ -65,7 +65,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void TestNamespaceAdded()
 		{
-			Assert.Contains("Test", results);
+			Assert.Contains(new NamespaceEntry("Test"), results);
 		}
 				
 		/// <summary>
@@ -75,14 +75,14 @@ namespace PythonBinding.Tests.Resolver
 		public void NullParseInfo()
 		{
 			PythonResolver resolver = new PythonResolver();
-			ArrayList results = resolver.CtrlSpace(0, 0, null, "abc", ExpressionContext.Importable);			
+			List<ICompletionEntry> results = resolver.CtrlSpace(0, 0, null, "abc", ExpressionContext.Importable);			
 			Assert.AreEqual(0, results.Count);
 		}
-				
+		
 		[Test]
 		public void ContainsSysModule()
 		{
-			Assert.Contains("sys", results);
+			Assert.Contains(new NamespaceEntry("sys"), results);
 		}
 	}
 }

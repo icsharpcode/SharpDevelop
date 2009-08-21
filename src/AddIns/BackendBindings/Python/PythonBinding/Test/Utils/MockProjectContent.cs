@@ -31,7 +31,7 @@ namespace PythonBinding.Tests.Utils
 		bool getClassCalled;
 		string getClassName;
 		List<IClass> classesInProjectContent = new List<IClass>();
-		ArrayList namespaceContents = new ArrayList();
+		List<ICompletionEntry> namespaceContents = new List<ICompletionEntry>();
 		string namespaceContentsSearched = String.Empty;
 		string classNameForGetClass;
 		bool namespaceExistsReturnValue;
@@ -152,7 +152,7 @@ namespace PythonBinding.Tests.Utils
 		/// Gets the namespace contents to return from the
 		/// GetNamespaceContents method.
 		/// </summary>
-		public ArrayList NamespaceContentsToReturn {
+		public List<ICompletionEntry> NamespaceContentsToReturn {
 			get { return namespaceContents; }
 		}
 		
@@ -265,7 +265,7 @@ namespace PythonBinding.Tests.Utils
 			return namespaceExistsReturnValue;
 		}
 		
-		public ArrayList GetNamespaceContents(string nameSpace)
+		public List<ICompletionEntry> GetNamespaceContents(string nameSpace)
 		{
 			namespaceContentsSearched = nameSpace;
 			return namespaceContents;
@@ -281,7 +281,7 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences)
+		public void AddNamespaceContents(List<ICompletionEntry> list, string subNameSpace, LanguageProperties language, bool lookInReferences)
 		{
 			addNamespaceContentsCalled = true;
 			namespaceAddedName = subNameSpace;
@@ -290,7 +290,7 @@ namespace PythonBinding.Tests.Utils
 			
 			// Add the namespaces to the list.
 			foreach (string ns in namespacesToAdd) {
-				list.Add(ns);
+				list.Add(new NamespaceEntry(ns));
 			}
 			
 			// Add the classes in this project content.

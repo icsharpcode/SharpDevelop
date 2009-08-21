@@ -113,7 +113,7 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public ArrayList GetNamespaceContents(string nameSpace)
+		public List<ICompletionEntry> GetNamespaceContents(string nameSpace)
 		{
 			throw new NotImplementedException();
 		}
@@ -128,7 +128,7 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public void AddNamespaceContents(System.Collections.ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences)
+		public void AddNamespaceContents(List<ICompletionEntry> list, string subNameSpace, LanguageProperties language, bool lookInReferences)
 		{
 			throw new NotImplementedException();
 		}

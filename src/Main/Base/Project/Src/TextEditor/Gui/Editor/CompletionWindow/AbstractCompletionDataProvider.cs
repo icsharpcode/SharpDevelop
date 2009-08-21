@@ -144,14 +144,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		protected abstract void GenerateCompletionData(TextArea textArea, char charTyped);
 		
-		protected void AddResolveResults(ICollection list, ExpressionContext context)
+		protected void AddResolveResults(ICollection<ICompletionEntry> list, ExpressionContext context)
 		{
 			if (list == null) {
 				return;
 			}
 			completionData.Capacity += list.Count;
 			CodeCompletionData suggestedData = null;
-			foreach (object o in list) {
+			foreach (ICompletionEntry o in list) {
 				if (context != null && !context.ShowEntry(o))
 					continue;
 				CodeCompletionData ccd = CreateItem(o, context);

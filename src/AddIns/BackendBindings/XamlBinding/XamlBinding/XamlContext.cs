@@ -134,7 +134,7 @@ namespace ICSharpCode.XamlBinding
 					Description == XamlContextDescription.InCData; }
 		}
 		
-		public override bool ShowEntry(object o)
+		public override bool ShowEntry(ICompletionEntry o)
 		{
 			return true;
 		}

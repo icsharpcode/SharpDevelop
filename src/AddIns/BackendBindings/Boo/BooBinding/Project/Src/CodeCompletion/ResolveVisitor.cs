@@ -365,8 +365,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 			}
 			if (callingClass != null) {
-				ArrayList list = new ArrayList();
-				ResolveResult.AddExtensions(callingClass.ProjectContent.Language, list, callingClass, type);
+				List<IMethodOrProperty> list = new List<IMethodOrProperty>();
+				ResolveResult.AddExtensions(callingClass.ProjectContent.Language, list.Add, callingClass, type);
 				foreach (IMethodOrProperty mp in list) {
 					if (IsSameName(mp.Name, memberName)) {
 						if (mp is IMethod)
@@ -487,8 +487,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 			}
 			if (methods.Count == 0) {
-				ArrayList list = new ArrayList();
-				ResolveResult.AddExtensions(callingClass.ProjectContent.Language, list, callingClass, containingType);
+				List<IMethodOrProperty> list = new List<IMethodOrProperty>();
+				ResolveResult.AddExtensions(callingClass.ProjectContent.Language, list.Add, callingClass, containingType);
 				foreach (IMethodOrProperty mp in list) {
 					if (IsSameName(mp.Name, methodName) && mp is IMethod) {
 						IMethod m = (IMethod)mp.CreateSpecializedMember();
