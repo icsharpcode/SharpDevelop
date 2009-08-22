@@ -16,56 +16,15 @@ using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class ConsolePad : TextEditorBasedPad
+	public class ConsolePad : AbstractConsolePad
 	{
-		ConsoleControl editor = new ConsoleControl();
-		
-		public override TextEditorControl TextEditorControl {
-			get {
-				return editor;
-			}
-		}
-		
-		public ConsolePad()
-		{
-			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			
-			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
-				editor.Process = e.Process;
-			};
-			editor.Process = debugger.DebuggedProcess;
-		}
-	}
-	
-	class ConsoleControl : CommandPromptControl
-	{
-		Process process;
-		
-		public Process Process {
-			get { return process; }
-			set { process = value; }
-		}
-		
-		public ConsoleControl()
-		{
-			SetHighlighting("C#");
-			PrintPrompt();
-		}
-		
-		protected override void PrintPromptInternal()
-		{
-			Append("> ");
-		}
-		
 		protected override void AcceptCommand(string command)
 		{
 			if (!string.IsNullOrEmpty(command)) {
 				string result = Evaluate(command);
-				Append(Environment.NewLine);
 				if (!string.IsNullOrEmpty(result)) {
 					Append(result + Environment.NewLine);
 				}
-				PrintPrompt();
 			}
 		}
 		
@@ -83,6 +42,36 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			} catch (GetValueException e) {
 				return e.Message;
 			}
+		}
+		
+		Process process;
+		
+		public Process Process {
+			get { return process; }
+			set { process = value; }
+		}
+		
+		protected override string Prompt {
+			get {
+				return "> ";
+			}
+		}
+		
+		protected override void InitializeConsole()
+		{
+			base.InitializeConsole();
+			
+			SetHighlighting("C#");
+		}
+		
+		public ConsolePad()
+		{
+			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			
+			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
+				this.Process = e.Process;
+			};
+			this.Process = debugger.DebuggedProcess;
 		}
 	}
 }

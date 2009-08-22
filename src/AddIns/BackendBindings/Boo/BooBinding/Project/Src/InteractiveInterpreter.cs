@@ -19,44 +19,21 @@ namespace Grunwald.BooBinding
 	/// <summary>
 	/// Interactive Boo interpreter.
 	/// </summary>
-	public class InteractiveInterpreterPad : TextEditorBasedPad
-	{
-		InteractiveInterpreterControl ctl = new InteractiveInterpreterControl();
-		
-		public override ICSharpCode.TextEditor.TextEditorControl TextEditorControl {
-			get {
-				return ctl;
-			}
-		}
-	}
-	
-	sealed class InteractiveInterpreterControl : CommandPromptControl
+	public class InteractiveInterpreterPad : AbstractConsolePad
 	{
 		InteractiveInterpreter interpreter;
 		
-		public InteractiveInterpreterControl()
-		{
-			SetHighlighting("Boo");
-			PrintPrompt();
-		}
-		
-		void PrintLine(object text)
-		{
-			if (text == null)
-				return;
-			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadAsyncCall(PrintLine, text);
-			} else {
-				if (processing)
-					Append(Environment.NewLine + text.ToString());
-				else
-					InsertLineBeforePrompt(text.ToString());
+		protected override string Prompt {
+			get {
+				return ">>> ";
 			}
 		}
 		
-		protected override void PrintPromptInternal()
+		protected override void InitializeConsole()
 		{
-			Append(">>> ");
+			base.InitializeConsole();
+			
+			SetHighlighting("Boo");
 		}
 		
 		protected override void AcceptCommand(string command)
@@ -66,8 +43,7 @@ namespace Grunwald.BooBinding
 			} else if (!command.Contains("\n") && !command.EndsWith(":")) {
 				ProcessCommand(command);
 			} else {
-				Append(Environment.NewLine);
-				ActiveTextAreaControl.Caret.Position = this.Document.OffsetToPosition(this.Document.TextLength);
+				TextEditor.Caret.Position = TextEditor.Document.OffsetToPosition(TextEditor.Document.TextLength);
 			}
 		}
 		
@@ -105,10 +81,22 @@ namespace Grunwald.BooBinding
 				PrintLine(ex.InnerException);
 			}
 			processing = false;
-			if (this.Document.TextLength != 0) {
-				Append(Environment.NewLine);
+			
+			Append(Environment.NewLine);
+		}
+		
+		void PrintLine(object text)
+		{
+			if (text == null)
+				return;
+			if (WorkbenchSingleton.InvokeRequired) {
+				WorkbenchSingleton.SafeThreadAsyncCall(PrintLine, text);
+			} else {
+				if (processing)
+					Append(text.ToString());
+				else
+					InsertLineBeforePrompt(text.ToString());
 			}
-			PrintPrompt();
 		}
 		
 		protected override void Clear()

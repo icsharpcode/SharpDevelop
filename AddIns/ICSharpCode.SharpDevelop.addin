@@ -2160,6 +2160,23 @@
 		             class = "ICSharpCode.SharpDevelop.Gui.SelectScopeCommand"
 		             type = "ComboBox"/>
 	</Path>
+
+	<Path name="/SharpDevelop/Pads/CommonConsole/ToolBar">
+		<ToolbarItem id = "ClearConsole"
+		             tooltip = "Clear console"
+		             class = "ICSharpCode.SharpDevelop.Gui.ClearConsoleCommand"
+		             icon = "OutputPad.Toolbar.ClearOutputWindow" />
+		<ToolbarItem id = "DeleteHistory"
+		             tooltip = "Delete history"
+		             class = "ICSharpCode.SharpDevelop.Gui.DeleteHistoryCommand"
+		             icon = "Icons.16x16.DeleteHistory" />
+		<ToolbarItem type="Separator" />
+		<ToolbarItem id      = "ToggleWordWrap"
+		             type    = "CheckBox"
+		             icon    = "OutputPad.Toolbar.ToggleWordWrap"
+		             tooltip = "${res:MainWindow.Windows.CompilerMessageView.ToggleWordWrapButton.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ToggleConsoleWordWrapComman"/>
+	</Path>
 	
 	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">
 		<String id = "System" text = "System"/>
