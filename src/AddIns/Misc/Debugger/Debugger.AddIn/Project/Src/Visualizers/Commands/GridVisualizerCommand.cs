@@ -4,10 +4,11 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.AddIn.TreeModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Debugger.AddIn.TreeModel;
+using Debugger.AddIn.Visualizers.GridVisualizer;
 
 namespace Debugger.AddIn.Visualizers
 {
@@ -32,7 +33,11 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			
+			if (this.Node != null && this.Node.Expression != null)
+			{
+				var gridVisualizerWindow = GridVisualizerWindow.EnsureShown();
+				gridVisualizerWindow.ShownExpression = this.Node.Expression;
+			}
 		}
 	}
 }

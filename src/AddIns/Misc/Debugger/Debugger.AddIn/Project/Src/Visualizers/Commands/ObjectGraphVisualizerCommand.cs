@@ -35,10 +35,8 @@ namespace Debugger.AddIn.Visualizers
 		{
 			if (this.Node != null && this.Node.Expression != null)
 			{
-				var objectGraphWindow = VisualizerWPFWindow.EnsureShown();
-				// is this ok with different languages than C#? 
-				//  - Prettyprint an expression and then call WindowsDebugger.GetValueFromName, which is C# only
-				objectGraphWindow.ShownExpression = this.Node.Expression.PrettyPrint();
+				var objectGraphWindow = ObjectGraphWindow.EnsureShown();
+				objectGraphWindow.ShownExpression = this.Node.Expression;
 			}
 		}
 	}

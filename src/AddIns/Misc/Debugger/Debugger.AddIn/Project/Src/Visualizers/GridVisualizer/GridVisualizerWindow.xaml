@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dv="clr-namespace:Debugger.AddIn.Visualizers.Graph"
         xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
-        Title="Grid visualizer" Height="350" Width="600">
+        Title="Collection visualizer" Height="350" Width="600">
 <Window.Resources>
 		<Style x:Key="ComboBoxFocusVisual">
             <Setter Property="Control.Template">

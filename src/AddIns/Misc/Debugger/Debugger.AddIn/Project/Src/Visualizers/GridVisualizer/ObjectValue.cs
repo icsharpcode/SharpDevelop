@@ -14,44 +14,44 @@ using ICSharpCode.NRefactory.Ast;
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
 	/// <summary>
-	/// Object in the debugee, with its properties loaded.
+	/// Object in the debugee, with lazy evaluated properties.
 	/// </summary>
 	public class ObjectValue
 	{
 		// Used to be able to expand items of IEnumerable
-		// Now we rely on PermanentReference to be able to get member values on demand. With IList, PermanentReference can be replaced by Expression
+		// Now we rely on PermanentReference to be able to get member values on demand. With IList, PermanentReference could be replaced by Expression
 		public Value PermanentReference { get; private set; }
 		
 		private Dictionary<string, ObjectProperty> properties = new Dictionary<string, ObjectProperty>();
 		
 		/// <summary> Used to quickly find MemberInfo by member name - DebugType.GetMember(name) uses a loop to search members </summary>
-		private Dictionary<string, MemberInfo> memberFromNameMap;
+		private Dictionary<string, MemberInfo> memberForNameMap;
 		
 		internal ObjectValue(Dictionary<string, MemberInfo> memberFromNameMap)
 		{
-			this.memberFromNameMap = memberFromNameMap;
+			this.memberForNameMap = memberFromNameMap;
 		}
 
 		/// <summary>
 		/// Returns property with given name.
 		/// </summary>
-		public ObjectProperty this[string key]
+		public ObjectProperty this[string propertyName]
 		{
 			get
 			{
 				ObjectProperty property;
 				// has property with name 'propertyName' already been evaluated?
-				if(!this.properties.TryGetValue(key, out property)) 
+				if(!this.properties.TryGetValue(propertyName, out property)) 
 				{
 					if (this.PermanentReference == null) {
 						throw new DebuggerVisualizerException("Cannot get member of this ObjectValue - ObjectValue.PermanentReference is null");
 					}
-					MemberInfo memberInfo = this.memberFromNameMap.GetValue(key);
+					MemberInfo memberInfo = this.memberForNameMap.GetValue(propertyName);
 					if (memberInfo == null) {
-						throw new DebuggerVisualizerException("Cannot get member value - no member found with name " + key);
+						throw new DebuggerVisualizerException("Cannot get member value - no member found with name " + propertyName);
 					}
-					property = createPropertyFromValue(key, this.PermanentReference.GetMemberValue(memberInfo));
-					this.properties.Add(key, property);
+					property = createPropertyFromValue(propertyName, this.PermanentReference.GetMemberValue(memberInfo));
+					this.properties.Add(propertyName, property);
 				}
 				return property;
 			}
@@ -66,12 +66,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			Value permanentReference = value.GetPermanentReference();
 			result.PermanentReference = permanentReference;
 			
-			// cannot use GetMemberValues because memberValue does not have CodeTail anymore - but we need the name of the member
-			/*foreach(MemberInfo memberInfo in permanentReference.Type.GetMembers(bindingFlags))
-			{
-				Value memberValue = permanentReference.GetMemberValue(memberInfo);
-				result.properties.Add(createPropertyFromValue(memberInfo.Name, memberValue));
-			}*/
 			return result;
 		}
 		

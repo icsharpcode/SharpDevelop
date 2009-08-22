@@ -253,8 +253,8 @@
     <Compile Include="Src\Visualizers\Utils\DictionaryExtensions.cs" />
     <Compile Include="Src\Visualizers\Utils\Lookup.cs" />
     <Compile Include="Src\Visualizers\Utils\LookupValueCollection.cs" />
-    <Compile Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml.cs">
-      <DependentUpon>VisualizerWPFWindow.xaml</DependentUpon>
+    <Compile Include="Src\Visualizers\Graph\ObjectGraphWindow.xaml.cs">
+      <DependentUpon>ObjectGraphWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Visualizers\ICorDebug.cs" />
     <Compile Include="Src\Visualizers\IList.cs" />
@@ -381,7 +381,7 @@
     <Folder Include="Src\Visualizers\Utils" />
     <Folder Include="Src\Visualizers\GridVisualizer" />
     <Folder Include="Src\Visualizers\PresentationBindings" />
-    <Page Include="Src\Visualizers\Graph\VisualizerWPFWindow.xaml" />
+    <Page Include="Src\Visualizers\Graph\ObjectGraphWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

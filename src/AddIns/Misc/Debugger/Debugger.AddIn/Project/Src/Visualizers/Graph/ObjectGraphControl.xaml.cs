@@ -66,14 +66,22 @@ namespace Debugger.AddIn.Visualizers.Graph
 			refreshGraph();
 		}
 		
-		public string ShownExpression
+		private ICSharpCode.NRefactory.Ast.Expression shownExpression;
+		public ICSharpCode.NRefactory.Ast.Expression ShownExpression
 		{
 			get {
-				return this.txtExpression.Text;
+				return shownExpression;
 			}
 			set {
-				if (value != this.txtExpression.Text) {
-					this.txtExpression.Text = value;
+				if (value == null) {
+					shownExpression = null;
+					txtExpression.Text = null;
+					Refresh();
+					return;
+				}
+				if (shownExpression == null || value.PrettyPrint() != shownExpression.PrettyPrint()) {
+					txtExpression.Text = value.PrettyPrint();
+					Refresh();
 				}
 			}
 		}

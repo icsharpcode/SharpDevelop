@@ -20,7 +20,7 @@ namespace Debugger.AddIn.Visualizers
 	{
 		public override void Run()
 		{
-			VisualizerWPFWindow.EnsureShown();
+			ObjectGraphWindow.EnsureShown();
 		}
 	}
 }
