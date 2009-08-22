@@ -41,12 +41,12 @@ namespace ICSharpCode.XamlBinding
 		
 		public override bool CanDrag(SharpTreeNode[] nodes)
 		{
-			return nodes.All(node => node.Parent != null);
+			return false; //nodes.All(node => node.Parent != null);
 		}
 		
 		public override DropEffect CanDrop(IDataObject data, DropEffect requestedEffect)
 		{
-			return DropEffect.Move;
+			return  DropEffect.None; //DropEffect.Move;
 		}
 		
 		public override bool CanCopy(SharpTreeNode[] nodes)
