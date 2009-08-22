@@ -220,6 +220,8 @@ namespace ICSharpCode.PythonBinding
 		{
 			if (value is int) {
 				return -1 * (int)value;
+			} else if (value is double) {
+				return -1 * (double)value;
 			}
 			return value;
 		}
