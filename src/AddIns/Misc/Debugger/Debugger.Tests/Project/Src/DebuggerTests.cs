@@ -22,7 +22,6 @@ using NIgnore = NUnit.Framework.IgnoreAttribute;
 namespace Debugger.Tests
 {
 	[TestFixture]
-	[NIgnore]
 	public partial class DebuggerTests: DebuggerTestsBase
 	{
 		

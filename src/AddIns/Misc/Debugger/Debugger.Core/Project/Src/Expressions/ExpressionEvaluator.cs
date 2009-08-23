@@ -51,15 +51,7 @@ namespace Debugger
 			if (context == null) throw new ArgumentNullException("context");
 			if (context.IsInvalid) throw new DebuggerException("The context is no longer valid");
 			
-			Value result;
-			try {
-				result = (Value)code.AcceptVisitor(new ExpressionEvaluator(context), null);
-			} catch (GetValueException) {
-				throw;
-			} catch (NotImplementedException e) {
-				throw new GetValueException(code, "Language feature not implemented: " + e.Message);
-			}
-			return result;
+			return new ExpressionEvaluator(context).Evaluate(code, false);
 		}
 		
 		public static string FormatValue(Value val)
@@ -101,36 +93,40 @@ namespace Debugger
 			}
 		}
 		
-		void AddToCache(INode expression, Value value)
+		public Value Evaluate(INode expression)
 		{
-			// Expressions are cleared then the process is resumed
-			context.Process.CachedExpressions[expression] = value;
+			return Evaluate(expression, true);
 		}
 		
-		bool TryGetCached(INode expression, out Value cached)
+		public Value Evaluate(INode expression, bool permRef)
 		{
+			// Try to get the value from cache
+			// (the cache is cleared when the process is resumed)
 			Value val;
 			if (context.Process.CachedExpressions.TryGetValue(expression, out val)) {
 				if (val == null || !val.IsInvalid) {
-					// context.Process.TraceMessage("Is cached: {0}", expression.PrettyPrint());
-					cached = val;
-					return true;
+					return val;
 				}
 			}
-			cached = null;
-			return false;
-		}
-		
-		Value EvalAndCache(INode expression, bool permRef)
-		{
+			
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
-			Value val = (Value)expression.AcceptVisitor(this, null);
-			if (val != null && permRef)
-				val = val.GetPermanentReference();
-			AddToCache(expression, val);
-			watch.Stop();
-			context.Process.TraceMessage("Evaluated: {0} in {1} ms total", expression.PrettyPrint(), watch.ElapsedMilliseconds);
+			try {
+				val = (Value)expression.AcceptVisitor(this, null);
+				if (val != null && permRef)
+					val = val.GetPermanentReference();
+			} catch (GetValueException) {
+				throw;
+			} catch (NotImplementedException e) {
+				throw new GetValueException(expression, "Language feature not implemented: " + e.Message);
+			} finally {
+				watch.Stop();
+				context.Process.TraceMessage("Evaluated: {0} in {1} ms total", expression.PrettyPrint(), watch.ElapsedMilliseconds);
+			}
+			
+			// Add the result to cache
+			context.Process.CachedExpressions[expression] = val;
+			
 			return val;
 		}
 		
@@ -140,7 +136,7 @@ namespace Debugger
 			get { return context; }
 		}
 		
-		public ExpressionEvaluator(StackFrame context)
+		ExpressionEvaluator(StackFrame context)
 		{
 			this.context = context;
 		}
@@ -168,18 +164,22 @@ namespace Debugger
 			
 			Value right;
 			if (op == BinaryOperatorType.None) {
-				right = (Value)assignmentExpression.Right.AcceptVisitor(this, null);
+				right = Evaluate(assignmentExpression.Right);
 			} else {
 				BinaryOperatorExpression binOpExpr = new BinaryOperatorExpression();
 				binOpExpr.Left  = assignmentExpression.Left;
 				binOpExpr.Op    = op;
 				binOpExpr.Right = assignmentExpression.Right;
-				right = (Value)VisitBinaryOperatorExpression(binOpExpr, null);
+				right = Evaluate(binOpExpr);
 			}
-			right = right.GetPermanentReference();
 			
-			Value left = ((Value)assignmentExpression.Left.AcceptVisitor(this, null));
+			// We can not have perfRef because we need to be able to set the value
+			Value left = (Value)assignmentExpression.Left.AcceptVisitor(this, null);
 			
+			if (left == null) {
+				// Can this happen?
+				throw new GetValueException(string.Format("\"{0}\" can not be set", assignmentExpression.Left.PrettyPrint()));
+			}
 			if (!left.IsReference && left.Type.FullName != right.Type.FullName) {
 				throw new GetValueException(string.Format("Type {0} expected, {1} seen", left.Type.FullName, right.Type.FullName));
 			}
@@ -190,7 +190,7 @@ namespace Debugger
 		public override object VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			foreach(INode statement in blockStatement.Children) {
-				statement.AcceptVisitor(this, null);
+				Evaluate(statement);
 			}
 			return null;
 		}
@@ -202,7 +202,7 @@ namespace Debugger
 		
 		public override object VisitExpressionStatement(ExpressionStatement expressionStatement, object data)
 		{
-			expressionStatement.Expression.AcceptVisitor(this, null);
+			Evaluate(expressionStatement.Expression);
 			return null;
 		}
 		
@@ -241,11 +241,11 @@ namespace Debugger
 		{
 			List<Value> indexes = new List<Value>();
 			foreach(Expression indexExpr in indexerExpression.Indexes) {
-				Value indexValue = ((Value)indexExpr.AcceptVisitor(this, null)).GetPermanentReference();
+				Value indexValue = Evaluate(indexExpr);
 				indexes.Add(indexValue);
 			}
 			
-			Value target = (Value)indexerExpression.TargetObject.AcceptVisitor(this, null);
+			Value target = Evaluate(indexerExpression.TargetObject);
 			
 			if (target.Type.IsArray) {
 				List<int> intIndexes = new List<int>();
@@ -276,31 +276,31 @@ namespace Debugger
 			string methodName;
 			MemberReferenceExpression memberRef = invocationExpression.TargetObject as MemberReferenceExpression;
 			if (memberRef != null) {
-				target = ((Value)memberRef.TargetObject.AcceptVisitor(this, null)).GetPermanentReference();
+				target = Evaluate(memberRef.TargetObject);
 				methodName = memberRef.MemberName;
 			} else {
 				IdentifierExpression ident = invocationExpression.TargetObject as IdentifierExpression;
 				if (ident != null) {
-					target = context.GetThisValue();
+					target = Evaluate(new ThisReferenceExpression());
 					methodName = ident.Identifier;
 				} else {
 					throw new GetValueException("Member reference expected for method invocation");
 				}
 			}
-			List<Value> args = new List<Value>();
-			foreach(Expression expr in invocationExpression.Arguments) {
-				args.Add(((Value)expr.AcceptVisitor(this, null)).GetPermanentReference());
-			}
 			MethodInfo method = target.Type.GetMember(methodName, BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 			if (method == null) {
 				throw new GetValueException("Method " + methodName + " not found");
+			}
+			List<Value> args = new List<Value>();
+			foreach(Expression expr in invocationExpression.Arguments) {
+				args.Add(Evaluate(expr));
 			}
 			return target.InvokeMethod(method, args.ToArray());
 		}
 		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			Value target = (Value)memberReferenceExpression.TargetObject.AcceptVisitor(this, null);
+			Value target = Evaluate(memberReferenceExpression.TargetObject);
 			Value member = target.GetMemberValue(memberReferenceExpression.MemberName);
 			if (member != null) {
 				return member;
@@ -311,7 +311,7 @@ namespace Debugger
 		
 		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
-			return parenthesizedExpression.Expression.AcceptVisitor(this, null);
+			return Evaluate(parenthesizedExpression.Expression);
 		}
 		
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
@@ -326,12 +326,12 @@ namespace Debugger
 		
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
-			Value value = ((Value)unaryOperatorExpression.Expression.AcceptVisitor(this, null));
+			Value value = Evaluate(unaryOperatorExpression.Expression);
 			UnaryOperatorType op = unaryOperatorExpression.Op;
 			
 			if (op == UnaryOperatorType.Dereference) {
 				if (!value.Type.IsPointer) throw new GetValueException("Target object is not a pointer");
-				return value.Dereference();
+				return value.Dereference(); // TODO: Test
 			}
 			
 			if (!value.Type.IsPrimitive) throw new GetValueException("Primitive value expected");
@@ -388,8 +388,8 @@ namespace Debugger
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
-			Value left = ((Value)binaryOperatorExpression.Left.AcceptVisitor(this, null)).GetPermanentReference();
-			Value right = ((Value)binaryOperatorExpression.Right.AcceptVisitor(this, null)).GetPermanentReference();
+			Value left = Evaluate(binaryOperatorExpression.Left);
+			Value right = Evaluate(binaryOperatorExpression.Right);
 			
 			object result = VisitBinaryOperatorExpressionInternal(left, right, binaryOperatorExpression.Op);
 			// Conver long to int if possible
