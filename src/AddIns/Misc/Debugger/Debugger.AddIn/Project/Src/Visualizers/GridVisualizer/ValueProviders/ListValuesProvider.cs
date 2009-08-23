@@ -41,6 +41,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			return ObjectValue.Create(
 				targetObject.AppendIndexer(index).Evaluate(WindowsDebugger.CurrentProcess),
 				//targetObject.AppendIndexer(index), // use Expression instead of value - possible only for IList though
+				index,
 				this.memberFromNameMap);
 		}
 		

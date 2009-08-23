@@ -219,7 +219,7 @@
 					<ComboBox Name="cmbColumns" Style="{StaticResource styleColumnsComboBox}" Width="74" Height="20" HorizontalAlignment="Right">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
-                                        <CheckBox IsChecked="{Binding Path=IsSelected}" Content="{Binding Path=Name}"></CheckBox>
+                                        <CheckBox IsChecked="{Binding Path=IsVisible}" Content="{Binding Path=Header}"></CheckBox>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                             <ComboBox.ToolTip>

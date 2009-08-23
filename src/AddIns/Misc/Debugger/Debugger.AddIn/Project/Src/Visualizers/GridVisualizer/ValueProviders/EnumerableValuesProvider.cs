@@ -39,10 +39,11 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			MethodInfo moveNextMethod = enumerator.Type.GetMethod("MoveNext");
 			PropertyInfo currentproperty = enumerator.Type.GetInterface(typeof(IEnumerator).FullName).GetProperty("Current");
 
+			int index = 0;
 			while ((bool)enumerator.InvokeMethod(moveNextMethod, null).PrimitiveValue)
 			{
 				Value currentValue = enumerator.GetPropertyValue(currentproperty);
-				yield return ObjectValue.Create(currentValue, this.memberFromNameMap);
+				yield return ObjectValue.Create(currentValue, index++, this.memberFromNameMap);
 			}
 		}
 	}

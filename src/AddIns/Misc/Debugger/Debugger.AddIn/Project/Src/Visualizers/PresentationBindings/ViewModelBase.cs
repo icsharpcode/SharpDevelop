@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using ICSharpCode.SharpDevelop;
 
 namespace Debugger.AddIn.Visualizers
 {
     public class ViewModelBase : INotifyPropertyChanged
     {
-        protected void onPropertyChanged(string propertyName)
+        protected void OnPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        	var handler = PropertyChanged;
+           if (handler != null)
+                handler(this, new PropertyChangedEventArgs(propertyName));
         }
         public event PropertyChangedEventHandler PropertyChanged;
     }

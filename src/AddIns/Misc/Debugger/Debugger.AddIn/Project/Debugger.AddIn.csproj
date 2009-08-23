@@ -156,9 +156,9 @@
     <Compile Include="Src\Visualizers\Graph\TreeModel\NestedNodeType.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\NonPublicMembersNode.cs" />
     <Compile Include="Src\Visualizers\Graph\TreeModel\PropertyNode.cs" />
-    <Compile Include="Src\Visualizers\GridVisualizer\SelectedProperties.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\GridValuesProvider.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\GridViewColumnHider.cs" />
+    <Compile Include="Src\Visualizers\PresentationBindings\GridViewHideableColumn.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\ScrollUtils.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
     <Compile Include="Src\Visualizers\Utils\AtomicType.cs" />
@@ -247,7 +247,6 @@
     <Compile Include="Src\Visualizers\GridVisualizer\ObjectValue.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
     <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
-    <Compile Include="Src\Visualizers\GridVisualizer\ValueProviders\VirtualizingIEnumerable.cs" />
     <Compile Include="Src\Visualizers\ObjectProperty.cs" />
     <Compile Include="Src\Visualizers\Utils\DebuggerHelpers.cs" />
     <Compile Include="Src\Visualizers\Utils\DictionaryExtensions.cs" />

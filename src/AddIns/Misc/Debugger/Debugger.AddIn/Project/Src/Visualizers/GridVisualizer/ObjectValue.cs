@@ -14,10 +14,16 @@ using ICSharpCode.NRefactory.Ast;
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
 	/// <summary>
-	/// Object in the debugee, with lazy evaluated properties.
+	/// Item of a collection in the debugee, with lazy evaluated properties.
 	/// </summary>
 	public class ObjectValue
 	{
+		private int index;
+		/// <summary> Index of this item in the collection. </summary>
+		public int Index {
+			get { return index; }
+		}
+		
 		// Used to be able to expand items of IEnumerable
 		// Now we rely on PermanentReference to be able to get member values on demand. With IList, PermanentReference could be replaced by Expression
 		public Value PermanentReference { get; private set; }
@@ -27,8 +33,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		/// <summary> Used to quickly find MemberInfo by member name - DebugType.GetMember(name) uses a loop to search members </summary>
 		private Dictionary<string, MemberInfo> memberForNameMap;
 		
-		internal ObjectValue(Dictionary<string, MemberInfo> memberFromNameMap)
+		internal ObjectValue(int index, Dictionary<string, MemberInfo> memberFromNameMap)
 		{
+			this.index = index;
 			this.memberForNameMap = memberFromNameMap;
 		}
 
@@ -58,9 +65,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			//set	{ properties[key] = value; }
 		}
 		
-		public static ObjectValue Create(Debugger.Value value, Dictionary<string, MemberInfo> memberFromName)
+		public static ObjectValue Create(Debugger.Value value, int index, Dictionary<string, MemberInfo> memberFromName)
 		{
-			ObjectValue result = new ObjectValue(memberFromName);
+			ObjectValue result = new ObjectValue(index, memberFromName);
 			
 			// remember PermanentReference for expanding IEnumerable
 			Value permanentReference = value.GetPermanentReference();

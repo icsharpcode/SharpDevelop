@@ -1,9 +1,0 @@
-<Window x:Class="Debugger.AddIn.Visualizers.Graph.VisualizerWPFWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:dv="clr-namespace:Debugger.AddIn.Visualizers.Graph"
-    xmlns:controls="clr-namespace:Debugger.AddIn.Visualizers.Controls"
-    Title="Object graph visualizer" Height="400" Width="600">
-    
-    <dv:ObjectGraphControl x:Name="objectGraphControl"></dv:ObjectGraphControl>
-</Window>

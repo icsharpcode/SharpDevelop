@@ -4,10 +4,11 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.MetaData;
+using Debugger.AddIn.Visualizers.PresentationBindings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,12 +16,12 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Linq;
+using Debugger.AddIn.Visualizers.Common;
+using Debugger.AddIn.Visualizers.Utils;
+using Debugger.MetaData;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
-using Debugger.AddIn.Visualizers.Utils;
-using Debugger.AddIn.Visualizers.Common;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -29,9 +30,12 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// </summary>
 	public partial class GridVisualizerWindow : Window
 	{
-		private WindowsDebugger debuggerService;
-		private GridViewColumnHider columnHider;
-		private SelectedProperties selectedProperties;
+		WindowsDebugger debuggerService;
+		GridViewColumnHider columnHider;
+		//SelectedProperties selectedProperties;
+		
+		/// <summary> Number of items shown initially when visualizing IEnumerable. </summary>
+		static readonly int initialIEnumerableItemsCount = 24;
 		
 		public GridVisualizerWindow()
 		{
@@ -119,7 +123,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			}
 			if (val != null && !val.IsNull) {
 				GridValuesProvider gridValuesProvider;
-				
 				// Value is IList?
 				DebugType iListType, listItemType;
 				if (val.Type.ResolveIListImplementation(out iListType, out listItemType)) {
@@ -131,7 +134,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					// Value is IEnumerable?
 					DebugType iEnumerableType, itemType;
 					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-						var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, 24);
+						var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
 						var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
 						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
 						gridValuesProvider = enumerableValuesProvider;
@@ -142,43 +145,38 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				}
 				
 				IList<MemberInfo> itemTypeMembers = gridValuesProvider.GetItemTypeMembers();
-				createGridViewColumns((GridView)this.listView.View, itemTypeMembers);
+				InitializeColumns((GridView)this.listView.View, itemTypeMembers);
 				this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
-				// fill column-choosing ComboBox
-				this.selectedProperties = initializeSelectedPropertiesWithEvents(itemTypeMembers);
-				cmbColumns.ItemsSource = this.selectedProperties;
+				cmbColumns.ItemsSource = this.columnHider.HideableColumns;
 			}
 		}
 		
-		private void createGridViewColumns(GridView gridView, IList<MemberInfo> itemTypeMembers)
+		void InitializeColumns(GridView gridView, IList<MemberInfo> itemTypeMembers)
 		{
 			gridView.Columns.Clear();
+			AddIndexColumn(gridView);
+			AddMembersColumns(gridView, itemTypeMembers);
+		}
+		
+		void AddIndexColumn(GridView gridView)
+		{
+			var indexColumn = new GridViewHideableColumn();
+			indexColumn.CanBeHidden = false;
+			indexColumn.Width = 36;
+			indexColumn.Header = string.Empty;
+			indexColumn.DisplayMemberBinding = new Binding("Index");
+			gridView.Columns.Add(indexColumn);
+		}
+		
+		void AddMembersColumns(GridView gridView, IList<MemberInfo> itemTypeMembers)
+		{
 			foreach (var member in itemTypeMembers)	{
-				GridViewColumn column = new GridViewColumn();
-				column.Header = member.Name;
+				var memberColumn = new GridViewHideableColumn();
+				memberColumn.CanBeHidden = true;
+				memberColumn.Header = member.Name;
 				// "{Binding Path=[Name].Value}"
-				column.DisplayMemberBinding = new Binding("[" + member.Name + "].Value");
-				gridView.Columns.Add(column);
-			}
-		}
-		
-		private SelectedProperties initializeSelectedPropertiesWithEvents(IList<MemberInfo> itemTypeMembers)
-		{
-			var selectedProperties = new SelectedProperties(itemTypeMembers.Select(member => member.Name));
-			foreach (var selectedProperty in selectedProperties) {
-				selectedProperty.SelectedChanged += new EventHandler(selectedProperty_SelectedChanged);
-			}
-			return selectedProperties;
-		}
-		
-		void selectedProperty_SelectedChanged(object sender, EventArgs e)
-		{
-			var propertySeleted = ((SelectedProperty)sender);
-			var columnName = propertySeleted.Name;
-			if (propertySeleted.IsSelected) {
-				this.columnHider.ShowColumn(columnName);
-			} else	{
-				this.columnHider.HideColumn(columnName);
+				memberColumn.DisplayMemberBinding = new Binding("[" + member.Name + "].Value");
+				gridView.Columns.Add(memberColumn);
 			}
 		}
 	}

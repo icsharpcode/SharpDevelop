@@ -62,7 +62,7 @@ namespace Debugger.AddIn.Visualizers
             {
                 if (_enumValue.Equals(value)) return;
                 _enumValue = value;
-                onPropertyChanged("SelectedEnumValue");
+                OnPropertyChanged("SelectedEnumValue");
             }
         }
     }
