@@ -1170,7 +1170,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public override object TrackedVisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			Console.WriteLine("VisitTypeReferenceExpression");
+			Append(GetTypeName(typeReferenceExpression.TypeReference));
 			return null;
 		}
 		
