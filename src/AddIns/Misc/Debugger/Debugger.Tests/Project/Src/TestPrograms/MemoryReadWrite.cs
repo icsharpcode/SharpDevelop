@@ -26,7 +26,7 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		[NUnit.Framework.Ignore]
+		[NUnit.Framework.Ignore("Different tokens in .NET 4")]
 		public void MemoryReadWrite()
 		{
 			StartTest("MemoryReadWrite.cs");

@@ -29,7 +29,7 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		[NUnit.Framework.Ignore]
+		[NUnit.Framework.Ignore("Different behaviour in .NET 4")]
 		public void StackOverflow()
 		{
 			StartTest("StackOverflow.cs");
