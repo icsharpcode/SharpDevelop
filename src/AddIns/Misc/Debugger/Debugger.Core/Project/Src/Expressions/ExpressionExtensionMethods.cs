@@ -58,6 +58,7 @@ namespace Debugger
 		
 		public static string PrettyPrint(this INode code)
 		{
+			if (code == null) return string.Empty;
 			CSharpOutputVisitor csOutVisitor = new CSharpOutputVisitor();
 			code.AcceptVisitor(csOutVisitor, null);
 			return csOutVisitor.Text;

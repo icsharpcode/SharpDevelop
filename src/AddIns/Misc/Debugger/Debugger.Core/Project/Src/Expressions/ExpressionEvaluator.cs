@@ -100,10 +100,17 @@ namespace Debugger
 		
 		public Value Evaluate(INode expression, bool permRef)
 		{
+			// Try to get the value from cache
+			// (the cache is cleared when the process is resumed)
+			Value val;
+			if (context.Process.CachedExpressions.TryGetValue(expression, out val)) {
+				if (val == null || !val.IsInvalid) {
+					return val;
+				}
+			}
+			
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
-			
-			Value val;
 			try {
 				val = (Value)expression.AcceptVisitor(this, null);
 				if (val != null && permRef)
@@ -116,6 +123,9 @@ namespace Debugger
 				watch.Stop();
 				context.Process.TraceMessage("Evaluated: {0} in {1} ms total", expression.PrettyPrint(), watch.ElapsedMilliseconds);
 			}
+			
+			// Add the result to cache
+			context.Process.CachedExpressions[expression] = val;
 			
 			return val;
 		}
