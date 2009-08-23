@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
 
@@ -17,7 +16,6 @@ namespace Debugger
 	{
 		internal bool TerminateCommandIssued = false;
 		internal Queue<Breakpoint> BreakpointHitEventQueue = new Queue<Breakpoint>();
-		internal Dictionary<INode, Value> CachedExpressions = new Dictionary<INode, Value>();
 		
 		#region Events
 		
@@ -101,7 +99,6 @@ namespace Debugger
 			if (action == DebuggeeStateAction.Clear) {
 				if (debuggeeState == null) throw new DebuggerException("Debugee state already cleared");
 				debuggeeState = null;
-				this.CachedExpressions.Clear();
 			}
 		}
 		
