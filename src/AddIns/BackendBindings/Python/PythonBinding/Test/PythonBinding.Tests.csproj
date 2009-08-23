@@ -141,6 +141,8 @@
     <Compile Include="Converter\ProjectHasStartupObjectTestFixture.cs" />
     <Compile Include="Converter\PropertyConversionTestFixture.cs" />
     <Compile Include="Converter\PropertyWithGetSetStatementsTestfixture.cs" />
+    <Compile Include="Converter\PropertyWithGetterTestFixture.cs" />
+    <Compile Include="Converter\PropertyWithSetterTestFixture.cs" />
     <Compile Include="Converter\RemoveHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\SingleClassMethodConversionTestFixture.cs" />
     <Compile Include="Converter\ConvertCSharpToPythonMenuCommandTestFixture.cs" />

@@ -951,21 +951,24 @@ namespace ICSharpCode.PythonBinding
 			string propertyName = propertyDeclaration.Name;
 
 			// Add get statements.
-			AppendIndentedLine("def get_" + propertyName + "(self):");
-			IncreaseIndent();
-			propertyDeclaration.GetRegion.Block.AcceptVisitor(this, data);
-			DecreaseIndent();
-			AppendLine();
+			if (propertyDeclaration.HasGetRegion) {
+				AppendIndentedLine("def get_" + propertyName + "(self):");
+				IncreaseIndent();
+				propertyDeclaration.GetRegion.Block.AcceptVisitor(this, data);
+				DecreaseIndent();
+				AppendLine();
+			}
 			
 			// Add set statements.
-			AppendIndentedLine("def set_" + propertyName + "(self, value):");
-			IncreaseIndent();
-			propertyDeclaration.SetRegion.Block.AcceptVisitor(this, data);
-			DecreaseIndent();
-			AppendLine();
+			if (propertyDeclaration.HasSetRegion) {
+				AppendIndentedLine("def set_" + propertyName + "(self, value):");
+				IncreaseIndent();
+				propertyDeclaration.SetRegion.Block.AcceptVisitor(this, data);
+				DecreaseIndent();
+				AppendLine();
+			}
 			
-			// Add property definition.
-			AppendIndentedLine(String.Concat(propertyName, " = property(fget=get_", propertyName, ", fset=set_", propertyName, ")"));
+			AppendPropertyDecorator(propertyDeclaration);
 			AppendLine();
 			
 			return null;
@@ -1939,6 +1942,28 @@ namespace ICSharpCode.PythonBinding
 		bool SupportsDocstring(INode node)
 		{
 			return (node is TypeDeclaration) || (node is MethodDeclaration) || (node is ConstructorDeclaration);
+		}
+		
+		void AppendPropertyDecorator(PropertyDeclaration propertyDeclaration)
+		{
+			string propertyName = propertyDeclaration.Name;
+			AppendIndented(propertyName);
+			Append(" = property(");
+		
+			bool addedParameter = false;
+			if (propertyDeclaration.HasGetRegion) {
+				Append("fget=get_" + propertyName);
+				addedParameter = true;
+			}
+			
+			if (propertyDeclaration.HasSetRegion) {
+				if (addedParameter) {
+					Append(", ");
+				}
+				Append("fset=set_" + propertyName);
+			}
+			Append(")");
+			AppendLine();
 		}
 	}
 }
