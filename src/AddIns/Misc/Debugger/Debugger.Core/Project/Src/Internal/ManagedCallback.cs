@@ -240,18 +240,14 @@ namespace Debugger
 		
 		public void EvalException(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
 		{
-			Eval eval = process.ActiveEvals[corEval];
-			
-			EnterCallback(PausedReason.EvalComplete, "EvalException: " + eval.Description, pThread);
+			EnterCallback(PausedReason.EvalComplete, "EvalException", pThread);
 			
 			HandleEvalComplete(pAppDomain, pThread, corEval, true);
 		}
 		
 		public void EvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
 		{
-			Eval eval = process.ActiveEvals[corEval];
-			
-			EnterCallback(PausedReason.EvalComplete, "EvalComplete: " + eval.Description, pThread);
+			EnterCallback(PausedReason.EvalComplete, "EvalComplete", pThread);
 			
 			HandleEvalComplete(pAppDomain, pThread, corEval, false);
 		}
