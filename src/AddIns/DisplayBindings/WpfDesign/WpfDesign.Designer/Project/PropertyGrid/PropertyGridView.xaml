@@ -209,7 +209,7 @@
                         </DockPanel>
                         <Border BorderThickness="1 0 0 0"
                                 BorderBrush="{x:Static SystemColors.ControlBrush}">
-                            <ContentPresenter x:Name="editorConatiner"
+                            <ContentPresenter x:Name="editorContainer"
                                               Content="{Binding Editor}"
                                               VerticalAlignment="Center"
                                               Margin="3 0" />
@@ -229,10 +229,10 @@
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding IsEnabled}"
                              Value="False">
-                    <Setter TargetName="editorConatiner"
+                    <Setter TargetName="editorContainer"
                             Property="Opacity"
                             Value="0.5" />
-                    <Setter TargetName="editorConatiner"
+                    <Setter TargetName="editorContainer"
                             Property="IsHitTestVisible"
                             Value="False" />
                 </DataTrigger>

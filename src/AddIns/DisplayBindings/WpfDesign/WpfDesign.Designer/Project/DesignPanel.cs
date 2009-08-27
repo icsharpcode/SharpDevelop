@@ -141,8 +141,6 @@ namespace ICSharpCode.WpfDesign.Designer
 		public DesignPanel()
 		{
 			this.Focusable = true;
-			this.VerticalAlignment = VerticalAlignment.Top;
-			this.HorizontalAlignment = HorizontalAlignment.Left;
 			this.AllowDrop = true;
 			DesignerProperties.SetIsInDesignMode(this, true);
 			
