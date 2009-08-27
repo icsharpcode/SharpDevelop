@@ -24,8 +24,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		List<Snapline> verticalMap;
 		double? baseline;
 
-		public static double Accuracy = 5;
-		public static double Margin = 8;
+		public const double Accuracy = 5;
+		public const double Margin = 8;
 
 		public override void BeginPlacement(PlacementOperation operation)
 		{

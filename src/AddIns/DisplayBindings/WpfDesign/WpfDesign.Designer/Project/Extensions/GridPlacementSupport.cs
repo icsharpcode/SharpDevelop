@@ -227,10 +227,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					new Point(GetColumnOffset(leftColumnIndex), GetRowOffset(topRowIndex)),
 					new Point(GetColumnOffset(rightColumnIndex + 1), GetRowOffset(bottomRowIndex + 1))
 				);
-				if (grayOut != null) {
-					grayOut.AnimateActiveAreaRectTo(availableSpaceRect);
-				} else {
-					GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View, availableSpaceRect);
+				if (info.Item == Services.Selection.PrimarySelection) {
+					// only for primary selection:
+					if (grayOut != null) {
+						grayOut.AnimateActiveAreaRectTo(availableSpaceRect);
+					} else {
+						GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View, availableSpaceRect);
+					}
 				}
 				
 				HorizontalAlignment ha = (HorizontalAlignment)info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
