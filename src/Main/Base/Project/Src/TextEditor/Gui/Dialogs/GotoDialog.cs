@@ -46,6 +46,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			textBox.Focus();
 		}
 		
+		protected override void OnClosed(EventArgs e)
+		{
+			Instance = null;
+			ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
+			base.OnClosed(e);
+		}
+		
 		void ParserService_LoadSolutionProjectsThreadEnded(object sender, EventArgs e)
 		{
 			// refresh the list box contents when parsing has completed
@@ -117,12 +124,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return list != null ? list.Items.ToList() : emptyList;
 			}
 			return emptyList;
-		}
-		
-		protected override void OnClosed(EventArgs e)
-		{
-			Instance = null;
-			base.OnClosed(e);
 		}
 		
 		Dictionary<string, object> visibleEntries = new Dictionary<string, object>();
