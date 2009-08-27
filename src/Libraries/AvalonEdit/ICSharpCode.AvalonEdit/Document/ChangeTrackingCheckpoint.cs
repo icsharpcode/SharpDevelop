@@ -72,7 +72,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				throw new ArgumentNullException("other");
 			return documentIdentifier == other.documentIdentifier;
 		}
-			
+		
 		/// <summary>
 		/// Compares the age of this checkpoint to the other checkpoint.
 		/// </summary>
@@ -117,6 +117,20 @@ namespace ICSharpCode.AvalonEdit.Document
 				node = node.next;
 				yield return node.value;
 			} while (node != other);
+		}
+		
+		/// <summary>
+		/// Calculates where the offset has moved in the other buffer version.
+		/// </summary>
+		/// <remarks>This method is thread-safe.</remarks>
+		/// <exception cref="ArgumentException">Raised if 'other' belongs to a different document than this checkpoint.</exception>
+		public int MoveOffsetTo(ChangeTrackingCheckpoint other, int oldOffset, AnchorMovementType movement)
+		{
+			int offset = oldOffset;
+			foreach (DocumentChangeEventArgs e in GetChangesTo(other)) {
+				offset = e.GetNewOffset(offset, movement);
+			}
+			return offset;
 		}
 	}
 }

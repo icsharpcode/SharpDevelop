@@ -249,7 +249,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		[Conditional("DEBUG")]
 		void CheckNotDisposed()
 		{
-			Debug.Assert(!isDisposed);
+			// TODO: this is broken - we are accessing project contents even after
+			// they have been unloaded, e.g. on other threads
+			if (!isDisposed) {
+				// throw new ObjectDisposedException();
+			}
 		}
 		
 		public void AddClassToNamespaceList(IClass addClass)

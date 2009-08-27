@@ -237,6 +237,21 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 					throw new ArgumentException("Does not belong to same document");
 				return checkpoint.GetChangesTo(otherVersion.checkpoint).Select(c => new TextChangeEventArgs(c.Offset, c.RemovedText, c.InsertedText));
 			}
+			
+			public int MoveOffsetTo(ITextBufferVersion other, int oldOffset, AnchorMovementType movement)
+			{
+				SnapshotVersion otherVersion = other as SnapshotVersion;
+				if (otherVersion == null)
+					throw new ArgumentException("Does not belong to same document");
+				switch (movement) {
+					case AnchorMovementType.AfterInsertion:
+						return checkpoint.MoveOffsetTo(otherVersion.checkpoint, oldOffset, ICSharpCode.AvalonEdit.Document.AnchorMovementType.AfterInsertion);
+					case AnchorMovementType.BeforeInsertion:
+						return checkpoint.MoveOffsetTo(otherVersion.checkpoint, oldOffset, ICSharpCode.AvalonEdit.Document.AnchorMovementType.BeforeInsertion);
+					default:
+						throw new NotSupportedException();
+				}
+			}
 		}
 		#endregion
 		

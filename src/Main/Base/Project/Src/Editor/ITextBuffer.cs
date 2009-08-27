@@ -113,6 +113,12 @@ namespace ICSharpCode.SharpDevelop
 		/// <remarks>This method is thread-safe.</remarks>
 		/// <exception cref="ArgumentException">Raised if 'other' belongs to a different document than this checkpoint.</exception>
 		IEnumerable<TextChangeEventArgs> GetChangesTo(ITextBufferVersion other);
+		
+		/// <summary>
+		/// Calculates where the offset has moved in the other buffer version.
+		/// </summary>
+		/// <exception cref="ArgumentException">Raised if 'other' belongs to a different document than this checkpoint.</exception>
+		int MoveOffsetTo(ITextBufferVersion other, int oldOffset, AnchorMovementType movement);
 	}
 	
 	public sealed class StringTextBuffer : Editor.AvalonEdit.AvalonEditTextSourceAdapter
