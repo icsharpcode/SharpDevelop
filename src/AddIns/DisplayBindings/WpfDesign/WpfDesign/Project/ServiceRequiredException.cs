@@ -7,6 +7,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace ICSharpCode.WpfDesign
 {
@@ -25,7 +26,7 @@ namespace ICSharpCode.WpfDesign
 		/// Create a new ServiceRequiredException instance.
 		/// </summary>
 		public ServiceRequiredException(Type serviceType)
-			: this("Service " + serviceType.FullName + " is required.")
+			: base("Service " + serviceType.FullName + " is required.")
 		{
 			this.ServiceType = serviceType;
 		}
@@ -57,6 +58,19 @@ namespace ICSharpCode.WpfDesign
 		protected ServiceRequiredException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
+			if (info == null)
+				throw new ArgumentNullException("info");
+			this.ServiceType = (Type)info.GetValue("ServiceType", typeof(Type));
+		}
+		
+		/// <inheritdoc/>
+		[SecurityPermission(SecurityAction.Demand, SerializationFormatter=true)]
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			if (info == null)
+				throw new ArgumentNullException("info");
+			base.GetObjectData(info, context);
+			info.AddValue("ServiceType", this.ServiceType);
 		}
 	}
 }

@@ -158,6 +158,9 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			}
 		}
 
+		/// <summary>
+		/// Gets whether the property node is enabled for editing.
+		/// </summary>
 		public bool IsEnabled {
 			get {
 				return ValueItem == null && hasStringConverter;
@@ -175,20 +178,18 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 				return false;
 			}
 		}
-
-		public FontWeight FontWeight {
-			get {
-				return IsSet ? FontWeights.Bold : FontWeights.Normal;
-			}
-		}
-
+		
+		/// <summary>
+		/// Gets the color of the name.
+		/// Depends on the type of the value (binding/resource/etc.)
+		/// </summary>
 		public Brush NameForeground {
 			get {
 				if (ValueItem != null) {
-					if (ValueItem.Component is BindingBase)
+					object component = ValueItem.Component;
+					if (component is BindingBase)
 						return Brushes.DarkGoldenrod;
-					if (ValueItem.Component is StaticResourceExtension ||
-					    ValueItem.Component is DynamicResourceExtension)
+					if (component is StaticResourceExtension || component is DynamicResourceExtension)
 						return Brushes.DarkGreen;
 				}
 				return SystemColors.WindowTextBrush;
@@ -252,6 +253,9 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			SetValueCore(Unset);
 		}
 
+		/// <summary>
+		/// Replaces the value of this node with a new binding.
+		/// </summary>
 		public void CreateBinding()
 		{
 			Value = new Binding();
@@ -308,7 +312,10 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			this.Level = parent == null ? 0 : parent.Level + 1;
 			Load(properties);
 		}
-
+		
+		/// <summary>
+		/// Initializes this property node with the specified properties.
+		/// </summary>
 		public void Load(DesignItemProperty[] properties)
 		{
 			if (this.Properties != null) {
@@ -375,6 +382,9 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 
 		#region INotifyPropertyChanged Members
 
+		/// <summary>
+		/// Occurs when a property has changed. Used to support WPF data binding.
+		/// </summary>
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		void RaisePropertyChanged(string name)

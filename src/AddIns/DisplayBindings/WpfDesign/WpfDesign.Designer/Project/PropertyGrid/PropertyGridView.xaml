@@ -204,7 +204,7 @@
 							           VerticalAlignment="Center"
 							           Margin="7 0 0 0"
 							           ToolTip="{Binding Description}"
-							           FontWeight="{Binding FontWeight}"
+							           FontWeight="{Binding IsSet, Converter={x:Static Converters:BoldWhenTrue.Instance}}"
 							           Foreground="{Binding NameForeground}" />
 						</DockPanel>
 						<Border BorderThickness="1 0 0 0"

@@ -55,6 +55,9 @@ namespace ICSharpCode.WpfDesign
 			set { bounds = value; }
 		}
 
+		/// <summary>
+		/// Gets/sets the alignment of the resize thumb used to start the operation.
+		/// </summary>
 		public PlacementAlignment ResizeThumbAlignment { get; set; }
 		
 		/// <inheritdoc/>

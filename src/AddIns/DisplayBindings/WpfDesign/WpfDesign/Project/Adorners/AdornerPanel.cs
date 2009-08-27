@@ -104,7 +104,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 		protected override Size MeasureOverride(Size availableSize)
 		{
 			if (this.AdornedElement != null) {
-				foreach (DependencyObject v in this.VisualChildren) {
+				foreach (DependencyObject v in base.InternalChildren) {
 					UIElement e = v as UIElement;
 					if (e != null) {
 						e.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -123,17 +123,6 @@ namespace ICSharpCode.WpfDesign.Adorners
 				GetPlacement(element).Arrange(this, element, finalSize);
 			}
 			return finalSize;
-		}
-		
-		private DependencyObject[] VisualChildren {
-			get {
-				int count = VisualTreeHelper.GetChildrenCount(this);
-				DependencyObject[] children = new DependencyObject[count];
-				for (int i = 0; i < children.Length; i++) {
-					children[i] = VisualTreeHelper.GetChild(this, i);
-				}
-				return children;
-			}
 		}
 	}
 	

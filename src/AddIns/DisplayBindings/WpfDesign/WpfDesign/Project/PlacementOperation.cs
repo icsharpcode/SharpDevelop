@@ -114,7 +114,7 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 		
-		Rect TransformRectByMiddlePoint(GeneralTransform transform, Rect r)
+		static Rect TransformRectByMiddlePoint(GeneralTransform transform, Rect r)
 		{
 			// we don't want to adjust the size of the control when moving it out of a scaled
 			// container, we just want to move it correcly

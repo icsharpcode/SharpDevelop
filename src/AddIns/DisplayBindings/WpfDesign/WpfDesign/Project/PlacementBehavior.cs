@@ -73,6 +73,8 @@ namespace ICSharpCode.WpfDesign
 	/// Behavior interface for root elements (elements where item.Parent is null).
 	/// Is used instead of <see cref="IPlacementBehavior"/> to support resizing the root element.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1040:AvoidEmptyInterfaces",
+	                                                 Justification = "The root component might have both a PlacementBehavior and a RootPlacementBehavior, which must be distinguished by DesignItem.GetBehavior")]
 	public interface IRootPlacementBehavior : IPlacementBehavior
 	{
 	}
