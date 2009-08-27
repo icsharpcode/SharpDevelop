@@ -173,7 +173,13 @@ namespace Debugger.AddIn.TreeModel
 			
 			// Do last since it may expire the object
 			if ((val.Type.IsClass || val.Type.IsValueType) && !val.IsNull) {
-				fullText = val.InvokeToString();
+				try {
+					fullText = val.InvokeToString();
+				} catch (GetValueException e) {
+					error = e;
+					this.Text = e.Message;
+					return;
+				}
 			}
 			
 			this.Text = (fullText.Length > 256) ? fullText.Substring(0, 256) + "..." : fullText;

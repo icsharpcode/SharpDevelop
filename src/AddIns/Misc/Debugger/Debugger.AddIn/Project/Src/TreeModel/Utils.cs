@@ -8,6 +8,7 @@ using System;
 using System.Windows.Forms;
 using Debugger.Util;
 using ICSharpCode.Core;
+using System.Windows.Threading;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -18,18 +19,19 @@ namespace Debugger.AddIn.TreeModel
 		{
 			if (process == null) return;
 			DebuggeeState oldState = process.DebuggeeState;
-			//using(new PrintTimes("Application.DoEvents()"))
-			{
-				Application.DoEvents();
-			}
-			{
-			
-			}
+			WpfDoEvents();
 			DebuggeeState newState = process.DebuggeeState;
 			if (oldState != newState) {
 				LoggingService.Info("Aborted because debuggee resumed");
 				throw new AbortedBecauseDebuggeeResumedException();
 			}
+		}
+		
+		public static void WpfDoEvents()
+		{
+			DispatcherFrame frame = new DispatcherFrame();
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => frame.Continue = false));
+			Dispatcher.PushFrame(frame);
 		}
 	}
 	
