@@ -1,0 +1,11 @@
+﻿<Popup x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor.BrushEditorPopup"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:BrushEditor="clr-namespace:ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor"
+       Placement="Bottom"
+       AllowsTransparency="True"
+       SnapsToDevicePixels="True"
+       StaysOpen="False">
+    <BrushEditor:BrushEditorView x:Name="BrushEditorView"
+                                 x:FieldModifier="public" />
+</Popup>

@@ -1,0 +1,7 @@
+﻿<CheckBox 
+    x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BoolEditor"
+    xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    IsChecked="{Binding Value}"
+    >	
+</CheckBox>

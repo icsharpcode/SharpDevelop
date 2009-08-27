@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor.GradientBrushEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:BrushEditor="clr-namespace:ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor"
+             >
+	<DockPanel>
+		<BrushEditor:GradientSlider x:Name="slider"
+			DockPanel.Dock="Top"
+			Brush="{Binding Brush}" />
+		<BrushEditor:SolidBrushEditor Color="{Binding SelectedStop.Color, ElementName=slider}" />
+	</DockPanel>
+</UserControl>

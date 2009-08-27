@@ -1,0 +1,7 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/Controls/ControlStyles.xaml" />
+		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/OutlineView/OutlineView.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>
