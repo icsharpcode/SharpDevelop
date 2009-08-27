@@ -265,6 +265,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		public override void LeaveContainer(PlacementOperation operation)
 		{
+			GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
 			base.LeaveContainer(operation);
 			foreach (PlacementInformation info in operation.PlacedItems) {
 				if (info.Item.ComponentType == typeof(ColumnDefinition)) {

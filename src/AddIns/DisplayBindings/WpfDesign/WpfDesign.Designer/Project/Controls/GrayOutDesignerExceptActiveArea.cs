@@ -89,22 +89,23 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				grayOut.adornerPanel.SetAdornedElement(designPanel.Context.RootItem.View, null);
 				grayOut.adornerPanel.Children.Add(grayOut);
 				grayOut.ActiveAreaGeometry = new RectangleGeometry(activeRectInActiveContainer, 0, 0, (Transform)activeContainer.TransformToVisual(grayOut.adornerPanel.AdornedElement));
-				Animate(grayOut.GrayOutBrush, Brush.OpacityProperty, 0, MaxOpacity);
+				Animate(grayOut.GrayOutBrush, Brush.OpacityProperty, MaxOpacity);
 				designPanel.Adorners.Add(grayOut.adornerPanel);
 			}
 		}
 		
 		static readonly TimeSpan animationTime = new TimeSpan(2000000);
 		
-		static void Animate(Animatable element, DependencyProperty property, double from, double to)
+		static void Animate(Animatable element, DependencyProperty property, double to)
 		{
-			element.BeginAnimation(property, new DoubleAnimation(from, to, new Duration(animationTime), FillBehavior.Stop));
+			element.BeginAnimation(property, new DoubleAnimation(to, new Duration(animationTime), FillBehavior.HoldEnd),
+			                       HandoffBehavior.SnapshotAndReplace);
 		}
 		
 		internal static void Stop(ref GrayOutDesignerExceptActiveArea grayOut)
 		{
 			if (grayOut != null) {
-				Animate(grayOut.GrayOutBrush, Brush.OpacityProperty, MaxOpacity, 0);
+				Animate(grayOut.GrayOutBrush, Brush.OpacityProperty, 0);
 				IDesignPanel designPanel = grayOut.designPanel;
 				AdornerPanel adornerPanelToRemove = grayOut.adornerPanel;
 				DispatcherTimer timer = new DispatcherTimer();
