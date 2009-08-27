@@ -59,7 +59,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <returns>Hash code of the object in the debugee.</returns>
 		public static int InvokeDefaultGetHashCode(this Value value)
 		{
-			if (DebuggerHelpers.hashCodeMethod == null)
+			if (DebuggerHelpers.hashCodeMethod == null || DebuggerHelpers.hashCodeMethod.Process.HasExited)
 			{
 				DebugType typeRuntimeHelpers = DebugType.CreateFromType(value.AppDomain, typeof(System.Runtime.CompilerServices.RuntimeHelpers));
 				DebuggerHelpers.hashCodeMethod = typeRuntimeHelpers.GetMember("GetHashCode", BindingFlags.Public | BindingFlags.Static | BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
@@ -68,7 +68,6 @@ namespace Debugger.AddIn.Visualizers.Utils
 					throw new DebuggerException("Cannot obtain method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode");
 				}
 			}
-			
 			// David: I had hard time finding out how to invoke static method.
 			// value.InvokeMethod is nice for instance methods.
 			// what about MethodInfo.Invoke() ?

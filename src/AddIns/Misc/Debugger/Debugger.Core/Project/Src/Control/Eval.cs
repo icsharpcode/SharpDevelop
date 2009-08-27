@@ -336,12 +336,34 @@ namespace Debugger
 		
 		#region Convenience methods
 		
+		public static Value NewObject(DebugType debugType, List<Value> constructorArguments)
+		{
+			return AsyncNewObject(debugType, constructorArguments).WaitForResult();
+		}
+		
 		public static Value NewObjectNoConstructor(DebugType debugType)
 		{
 			return AsyncNewObjectNoConstructor(debugType).WaitForResult();
 		}
 		
 		#endregion
+		
+		public static Eval AsyncNewObject(DebugType debugType, List<Value> constructorArguments)
+		{
+			List<Expression> constructorArgumentsExpressions = SelectExpressions(constructorArguments);
+			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
+			MethodInfo constructor = debugType.GetMethod(".ctor");
+			return new Eval(
+				debugType.AppDomain,
+				"New object: " + debugType.FullName,
+				new ObjectCreateExpression(new TypeReference(debugType.FullName), constructorArgumentsExpressions),
+				delegate(Eval eval) {
+					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObject(
+						constructor.CorFunction, (uint)debugType.GenericArguments.Count, debugType.GenericArgumentsAsCorDebugType,
+						(uint)constructorArgsCorDebug.Length, constructorArgsCorDebug);
+				}
+			);
+		}
 		
 		public static Eval AsyncNewObjectNoConstructor(DebugType debugType)
 		{
@@ -353,6 +375,25 @@ namespace Debugger
 					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GenericArguments.Count, debugType.GenericArgumentsAsCorDebugType);
 				}
 			);
+		}
+		
+		static ICorDebugValue[] ValuesAsCorDebug(List<Value> values)
+		{
+			ICorDebugValue[] valuesAsCorDebug = new ICorDebugValue[values.Count];
+			for(int i = 0; i < values.Count; i++)
+			{
+				valuesAsCorDebug[i] = values[i].CorValue;
+			}
+			return valuesAsCorDebug;
+		}
+		
+		static List<Expression> SelectExpressions(List<Value> values)
+		{
+			List<Expression> expressions = new List<Expression>(values.Count);
+			foreach (Value value in values) {
+				expressions.Add(value.ExpressionTree);
+			}
+			return expressions;
 		}
 	}
 }

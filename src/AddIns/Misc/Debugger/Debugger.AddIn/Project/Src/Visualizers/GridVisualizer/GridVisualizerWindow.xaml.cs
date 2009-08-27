@@ -32,7 +32,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	{
 		WindowsDebugger debuggerService;
 		GridViewColumnHider columnHider;
-		//SelectedProperties selectedProperties;
 		
 		/// <summary> Number of items shown initially when visualizing IEnumerable. </summary>
 		static readonly int initialIEnumerableItemsCount = 24;
