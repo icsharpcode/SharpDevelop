@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <ApplicationManifest>Configuration\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,46 +79,59 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <ProjectReference Include="..\..\src\AddIns\DisplayBindings\WpfDesign\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">
+      <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
+      <Name>WpfDesign.Designer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\AddIns\DisplayBindings\WpfDesign\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
+      <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
+      <Name>WpfDesign.XamlDom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\AddIns\DisplayBindings\WpfDesign\WpfDesign\Project\WpfDesign.csproj">
+      <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
+      <Name>WpfDesign</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\src\Main\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BitmapButton.xaml.cs">
       <DependentUpon>BitmapButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Configuration\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Converters.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="DocumentView.xaml.cs">
       <DependentUpon>DocumentView.xaml</DependentUpon>
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ErrorListView.xaml.cs">
       <DependentUpon>ErrorListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MainWindow_Commands.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="Shell.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="SimpleCommand.cs" />
+    <Compile Include="Toolbox.cs" />
+    <Compile Include="ToolboxView.xaml.cs">
+      <DependentUpon>ToolboxView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="XamlFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NewFileTemplate.xaml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\data\options\WpfToolbox.xaml">
-      <Link>WpfToolbox.xaml</Link>
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Page Include="BitmapButton.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -152,11 +165,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ToolboxView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Properties\app.manifest" />
-    <None Include="Properties\Settings.settings">
+    <None Include="Configuration\app.config" />
+    <None Include="Configuration\app.manifest" />
+    <None Include="Configuration\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
@@ -167,20 +184,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Error.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\AddIns\BackendBindings\Xaml\Xaml\Xaml.csproj">
-      <Project>{B4E5C965-7BB9-4AE9-85FB-C47480B879AD}</Project>
-      <Name>Xaml</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\AddIns\DisplayBindings\WpfDesign\WpfDesign.Designer\WpfDesign.Designer.csproj">
-      <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
-      <Name>WpfDesign.Designer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\AddIns\DisplayBindings\WpfDesign\WpfDesign\WpfDesign.csproj">
-      <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
-      <Name>WpfDesign</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

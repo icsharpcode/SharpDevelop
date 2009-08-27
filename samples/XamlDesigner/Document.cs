@@ -5,7 +5,7 @@ using System.Text;
 using System.ComponentModel;
 using System.IO;
 using ICSharpCode.WpfDesign.Designer;
-using ICSharpCode.WpfDesign.Designer.XamlBackend;
+using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.Designer.OutlineView;
 using System.Xml;
 using ICSharpCode.WpfDesign;
@@ -17,41 +17,28 @@ namespace ICSharpCode.XamlDesigner
 	public class Document : INotifyPropertyChanged
 	{
 		public Document(string tempName, string text)
-			: this()
 		{
 			this.tempName = tempName;
 			Text = text;
-			Context.Parse(Text);
 			IsDirty = false;
 		}
 
 		public Document(string filePath)
-			: this()
 		{
 			this.filePath = filePath;
 			ReloadFile();
 		}
-
-		Document()
-		{
-			var doc = Shell.Instance.Project.CreateDocument();
-			context = new XamlDesignContext(doc);
-			context.UndoService.UndoStackChanged += new EventHandler(UndoService_UndoStackChanged);
-		}
-
+				
 		string tempName;
-		XamlDesignContext context;
+		DesignSurface designSurface = new DesignSurface();
 
 		string text;
 
-		public string Text
-		{
-			get
-			{
+		public string Text {
+			get {
 				return text;
 			}
-			set
-			{
+			set {
 				if (text != value) {
 					text = value;
 					IsDirty = true;
@@ -62,47 +49,39 @@ namespace ICSharpCode.XamlDesigner
 
 		DocumentMode mode;
 
-		public DocumentMode Mode
-		{
-			get
-			{
+		public DocumentMode Mode {
+			get {
 				return mode;
 			}
-			set
-			{
+			set {
 				mode = value;
-				//if (InDesignMode) {
-				//    UpdateDesign();
-				//}
-				//else {
-				//    UpdateXaml();
-				//}
+				if (InDesignMode) {
+					UpdateDesign();
+				}
+				else {
+					UpdateXaml();
+				}
 				RaisePropertyChanged("Mode");
 				RaisePropertyChanged("InXamlMode");
 				RaisePropertyChanged("InDesignMode");
 			}
 		}
 
-		public bool InXamlMode
-		{
+		public bool InXamlMode {
 			get { return Mode == DocumentMode.Xaml; }
 		}
 
-		public bool InDesignMode
-		{
+		public bool InDesignMode {
 			get { return Mode == DocumentMode.Design; }
 		}
 
 		string filePath;
 
-		public string FilePath
-		{
-			get
-			{
+		public string FilePath {
+			get {
 				return filePath;
 			}
-			private set
-			{
+			private set {
 				filePath = value;
 				RaisePropertyChanged("FilePath");
 				RaisePropertyChanged("FileName");
@@ -113,14 +92,11 @@ namespace ICSharpCode.XamlDesigner
 
 		bool isDirty;
 
-		public bool IsDirty
-		{
-			get
-			{
+		public bool IsDirty {
+			get {
 				return isDirty;
 			}
-			private set
-			{
+			private set {
 				isDirty = value;
 				RaisePropertyChanged("IsDirty");
 				RaisePropertyChanged("Name");
@@ -128,59 +104,79 @@ namespace ICSharpCode.XamlDesigner
 			}
 		}
 
-		public string FileName
-		{
-			get
-			{
+		public string FileName {
+			get {
 				if (FilePath == null) return null;
 				return Path.GetFileName(FilePath);
 			}
 		}
 
-		public string Name
-		{
-			get
-			{
+		public string Name {
+			get {
 				return FileName ?? tempName;
 			}
 		}
 
-		public string Title
-		{
-			get
-			{
+		public string Title {
+			get {
 				return IsDirty ? Name + "*" : Name;
 			}
 		}
 
-		public DesignContext Context
-		{
-			get { return context; }
+		public DesignSurface DesignSurface {
+			get { return designSurface; }
 		}
 
-		//TODO
-		//public XamlErrorService XamlErrorService {
-		//    get { 
-		//        if (DesignContext != null) {
-		//            return DesignContext.GetService<XamlErrorService>();
-		//        }
-		//        return null;
-		//    }
-		//}
+		public DesignContext DesignContext {
+			get { return designSurface.DesignContext; }
+		}
+
+		public UndoService UndoService {
+			get { return DesignContext.Services.GetService<UndoService>(); }
+		}
+
+		public ISelectionService SelectionService {
+			get {
+				if (InDesignMode) {
+					return DesignContext.Services.Selection;
+				}
+				return null;
+			}
+		}
+
+		public XamlErrorService XamlErrorService {
+			get { 
+                if (DesignContext != null) {
+				    return DesignContext.Services.GetService<XamlErrorService>();
+                }
+                return null;
+			}
+		}
+
+		OutlineNode outlineRoot;
+
+		public OutlineNode OutlineRoot {
+			get {
+				return outlineRoot;
+			}
+			private set {
+				outlineRoot = value;
+				RaisePropertyChanged("OutlineRoot");
+			}
+		}
 
 		void ReloadFile()
 		{
 			Text = File.ReadAllText(FilePath);
-			//UpdateDesign();
-			Context.Parse(Text);
+			UpdateDesign();
 			IsDirty = false;
 		}
 
 		public void Save()
 		{
-			//if (InDesignMode) {
-			//    UpdateXaml();
-			//}
+			if (InDesignMode) {
+				UpdateXaml();
+			}
 			File.WriteAllText(FilePath, Text);
 			IsDirty = false;
 		}
@@ -193,33 +189,41 @@ namespace ICSharpCode.XamlDesigner
 
 		public void Refresh()
 		{
-			//UpdateXaml();
-			//UpdateDesign();
+			UpdateXaml();
+			UpdateDesign();
 		}
 
-		//void UpdateXaml()
-		//{
-		//    if (Context.CanSave) {
-		//        Text = Context.Save();
-		//    }
-		//}
+		void UpdateXaml()
+		{
+			if (DesignContext.CanSave && UndoService.CanUndo) {
+				var sb = new StringBuilder();
+				using (var xmlWriter = XmlWriter.Create(sb)) {
+					DesignSurface.SaveDesigner(xmlWriter);					
+					Text = XamlFormatter.Format(sb.ToString());
+				}
+			}
+		}
 
-		//void UpdateDesign()
-		//{
-		//    Context.Parse(Text);
-		//}
+		void UpdateDesign()
+		{
+			OutlineRoot = null;
+			using (var xmlReader = XmlReader.Create(new StringReader(Text))) {
+				DesignSurface.LoadDesigner(xmlReader, null);
+			}
+			if (DesignContext.RootItem != null) {
+				OutlineRoot = OutlineNode.Create(DesignContext.RootItem);
+				UndoService.UndoStackChanged += new EventHandler(UndoService_UndoStackChanged);
+			}
+			RaisePropertyChanged("SelectionService");
+			RaisePropertyChanged("XamlErrorService");
+		}
 
 		void UndoService_UndoStackChanged(object sender, EventArgs e)
 		{
-			IsDirty = Context.UndoService.CanUndo;
-			if (Context.ParseSuggested) {
-				Context.Parse(Text);
+			IsDirty = true;
+			if (InXamlMode) {
+				UpdateXaml();
 			}
-			//if (Context.Is
-			//IsDirty = true;
-			//if (InXamlMode) {
-			//    UpdateXaml();
-			//}
 		}
 
 		#region INotifyPropertyChanged Members

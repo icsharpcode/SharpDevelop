@@ -5,9 +5,9 @@
              StartupUri="MainWindow.xaml"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
-
+        
         <Converters:CollapsedWhenFalse x:Key="CollapsedWhenFalse" />
         <Converters:FalseWhenZero x:Key="FalseWhenZero" />
-
+        
     </Application.Resources>
 </Application>

@@ -12,7 +12,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ICSharpCode.WpfDesign.Designer.Services;
-using ICSharpCode.Xaml;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -25,7 +24,7 @@ namespace ICSharpCode.XamlDesigner
 
 		protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
 		{
-			var error = e.GetDataContext() as XamlDocumentError;
+			var error = e.GetDataContext() as XamlError;
 			if (error != null) {
 				Shell.Instance.JumpToError(error);
 			}
