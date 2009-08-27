@@ -46,7 +46,7 @@ namespace ICSharpCode.WpfDesign
 		}
 		
 		#region Equals and GetHashCode implementation
-		/// <summary>Compares this to <paramref name="other"/>.</summary>
+		/// <summary>Compares this to <paramref name="obj"/>.</summary>
 		public override bool Equals(object obj)
 		{
 			if (obj is PlacementAlignment)

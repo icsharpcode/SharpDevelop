@@ -142,7 +142,7 @@ namespace ICSharpCode.WpfDesign
 		
 		#region Start
 		/// <summary>
-		/// Starts a new placement operation that changes the placement of <paramref name="placedItem"/>.
+		/// Starts a new placement operation that changes the placement of <paramref name="placedItems"/>.
 		/// </summary>
 		/// <param name="placedItems">The items to be placed.</param>
 		/// <param name="type">The type of the placement.</param>
