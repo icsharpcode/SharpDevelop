@@ -15,7 +15,7 @@
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <RunCodeAnalysis>False</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Performance#CA1800</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Globalization#CA1303;-Microsoft.Performance#CA1800</CodeAnalysisRules>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
     <DocumentationFile>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.xml</DocumentationFile>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>

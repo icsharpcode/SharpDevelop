@@ -75,7 +75,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (reader == null)
 				throw new ArgumentNullException("reader");
-
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+			
 			XmlDocument doc = new PositionXmlDocument();
 			var errorSink = (IXamlErrorSink)settings.ServiceProvider.GetService(typeof(IXamlErrorSink));
 
@@ -100,10 +102,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		                                                 Justification="We need to continue parsing, and the error is reported to the user.")]
 		internal static XamlDocument Parse(XmlDocument document, XamlParserSettings settings)
 		{
-			if (settings == null)
-				throw new ArgumentNullException("settings");
 			if (document == null)
 				throw new ArgumentNullException("document");
+			if (settings == null)
+				throw new ArgumentNullException("settings");
 			XamlParser p = new XamlParser();
 			p.settings = settings;
 			p.errorSink = (IXamlErrorSink)settings.ServiceProvider.GetService(typeof(IXamlErrorSink));

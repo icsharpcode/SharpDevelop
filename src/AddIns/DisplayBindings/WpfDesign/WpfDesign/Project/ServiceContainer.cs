@@ -100,6 +100,7 @@ namespace ICSharpCode.WpfDesign
 		/// Gets a required service.
 		/// Never returns null; instead a ServiceRequiredException is thrown when the service cannot be found.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		public T GetRequiredService<T>() where T : class
 		{
 			T service = (T)GetService(typeof(T));
