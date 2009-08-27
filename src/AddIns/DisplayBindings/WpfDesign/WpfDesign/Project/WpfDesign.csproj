@@ -90,7 +90,6 @@
     <Compile Include="Extensions\ExtensionServerAttribute.cs" />
     <Compile Include="Extensions\LogicalExtensionServers.cs" />
     <Compile Include="Extensions\SelectionExtensionServer.cs" />
-    <Compile Include="HashSet.cs" />
     <Compile Include="PlacementOperation.cs" />
     <Compile Include="PlacementType.cs" />
     <Compile Include="PlacementAlignment.cs" />

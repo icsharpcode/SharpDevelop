@@ -28,7 +28,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		}
 		
 		public ICollection<DesignItem> SelectedItems {
-			get { return _selectedComponents.Clone(); }
+			get { return _selectedComponents.ToArray(); }
 		}
 		
 		public DesignItem PrimarySelection {
@@ -159,7 +159,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				}
 			}
 
-			if (!SelectedItems.SequenceEqual(prevSelectedItems)) {
+			if (!_selectedComponents.SequenceEqual(prevSelectedItems)) {
 				if (SelectionChanged != null) {
 					SelectionChanged(this, new DesignItemCollectionEventArgs(componentsToNotifyOfSelectionChange));
 				}
