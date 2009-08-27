@@ -205,10 +205,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void AddAllMembersMatchingText(string text)
 		{
 			ITextEditor editor = GetEditor();
-			ParseInformation parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
-			if (parseInfo != null) {
-				foreach (IClass c in parseInfo.CompilationUnit.Classes) {
-					AddAllMembersMatchingText(c, text);
+			if (editor != null) {
+				ParseInformation parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
+				if (parseInfo != null) {
+					foreach (IClass c in parseInfo.CompilationUnit.Classes) {
+						AddAllMembersMatchingText(c, text);
+					}
 				}
 			}
 		}
