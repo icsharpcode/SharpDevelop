@@ -6,49 +6,49 @@ using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer.Services
 {
-    class MoveLogic
-    {
-        public MoveLogic(DesignItem clickedOn)
-        {
-            this.clickedOn = clickedOn;
+	class MoveLogic
+	{
+		public MoveLogic(DesignItem clickedOn)
+		{
+			this.clickedOn = clickedOn;
 			
 			selectedItems = clickedOn.Services.Selection.SelectedItems;
 			if (!selectedItems.Contains(clickedOn))
 				selectedItems = SharedInstances.EmptyDesignItemArray;
-        }
+		}
 
-        DesignItem clickedOn;
-        PlacementOperation operation;
-        ICollection<DesignItem> selectedItems;
-        Point startPoint;
+		DesignItem clickedOn;
+		PlacementOperation operation;
+		ICollection<DesignItem> selectedItems;
+		Point startPoint;
 
-        public DesignItem ClickedOn {
-            get { return clickedOn;  }
-        }
+		public DesignItem ClickedOn {
+			get { return clickedOn;  }
+		}
 
-        public PlacementOperation Operation {
-            get { return operation;  }
-        }
+		public PlacementOperation Operation {
+			get { return operation;  }
+		}
 
-        public IDesignPanel DesignPanel {
-            get { return clickedOn.Services.DesignPanel;  }
-        }
+		public IDesignPanel DesignPanel {
+			get { return clickedOn.Services.DesignPanel;  }
+		}
 
-        public void Start(Point p)
-        {
-            startPoint = p;
-            IPlacementBehavior b = PlacementOperation.GetPlacementBehavior(selectedItems);
+		public void Start(Point p)
+		{
+			startPoint = p;
+			IPlacementBehavior b = PlacementOperation.GetPlacementBehavior(selectedItems);
 			if (b != null && b.CanPlace(selectedItems, PlacementType.Move, PlacementAlignment.TopLeft)) {
 				List<DesignItem> sortedSelectedItems = new List<DesignItem>(selectedItems);
 				sortedSelectedItems.Sort(ModelTools.ComparePositionInModelFile);
 				selectedItems = sortedSelectedItems;
 				operation = PlacementOperation.Start(selectedItems, PlacementType.Move);
 			}
-        }
+		}
 
-        public void Move(Point p)
-        {
-            if (operation != null) {
+		public void Move(Point p)
+		{
+			if (operation != null) {
 
 				// try to switch the container
 				if (operation.CurrentContainerBehavior.CanLeaveContainer(operation)) {
@@ -60,45 +60,45 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					info.Bounds = new Rect(info.OriginalBounds.Left + v.X,
 					                       info.OriginalBounds.Top + v.Y,
 					                       info.OriginalBounds.Width,
-					                       info.OriginalBounds.Height);					
+					                       info.OriginalBounds.Height);
 				}
 				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
 				foreach (PlacementInformation info in operation.PlacedItems) {
 					operation.CurrentContainerBehavior.SetPosition(info);
 				}
 			}
-        }
+		}
 
-        public void Stop()
-        {
-            if (operation != null) {
+		public void Stop()
+		{
+			if (operation != null) {
 				operation.Commit();
 				operation = null;
 			}
-        }
+		}
 
-        public void Cancel()
-        {
-            if (operation != null) {
+		public void Cancel()
+		{
+			if (operation != null) {
 				operation.Abort();
 				operation = null;
 			}
-        }
+		}
 
-        // Perform hit testing on the design panel and return the first model that is not selected
+		// Perform hit testing on the design panel and return the first model that is not selected
 		DesignPanelHitTestResult HitTestUnselectedModel(Point p)
 		{
 			DesignPanelHitTestResult result = DesignPanelHitTestResult.NoHit;
 			ISelectionService selection = clickedOn.Services.Selection;
 
 			DesignPanel.HitTest(p, false, true,	delegate(DesignPanelHitTestResult r) {
-				if (r.ModelHit == null)
-					return true; // continue hit testing
-				if (selection.IsComponentSelected(r.ModelHit))
-					return true; // continue hit testing
-				result = r;
-				return false; // finish hit testing
-			});
+			                    	if (r.ModelHit == null)
+			                    		return true; // continue hit testing
+			                    	if (selection.IsComponentSelected(r.ModelHit))
+			                    		return true; // continue hit testing
+			                    	result = r;
+			                    	return false; // finish hit testing
+			                    });
 
 			return result;
 		}
@@ -136,5 +136,5 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				}
 			}
 		}
-    }
+	}
 }

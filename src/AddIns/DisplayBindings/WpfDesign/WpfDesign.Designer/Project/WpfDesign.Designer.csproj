@@ -169,7 +169,6 @@
     <Compile Include="PropertyGrid\PropertyGridView.xaml.cs">
       <DependentUpon>PropertyGridView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services\ChooseClass.cs" />
     <Compile Include="Services\ChooseClassDialog.xaml.cs">
       <DependentUpon>ChooseClassDialog.xaml</DependentUpon>

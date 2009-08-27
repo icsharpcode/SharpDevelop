@@ -109,6 +109,7 @@
     <Compile Include="PropertyGrid\TypeHelper.cs" />
     <Compile Include="ServiceContainer.cs" />
     <Compile Include="DesignItem.cs" />
+    <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>

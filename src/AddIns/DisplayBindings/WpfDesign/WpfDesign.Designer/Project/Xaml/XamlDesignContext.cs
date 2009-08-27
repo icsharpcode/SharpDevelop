@@ -116,9 +116,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			if (affectedItems == null)
 				throw new ArgumentNullException("affectedItems");
 			
-			UndoService undoService = this.Services.GetService<UndoService>();
-			if (undoService == null)
-				throw new ServiceRequiredException(typeof(UndoService));
+			UndoService undoService = this.Services.GetRequiredService<UndoService>();
 			UndoTransaction g = undoService.StartTransaction(affectedItems);
 			g.Title = changeGroupTitle;
 			return g;

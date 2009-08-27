@@ -164,49 +164,45 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			set { SetValue(Window.WindowStyleProperty, value); }
 		}
 		
-		#pragma warning disable 0067
-		// disable "event is never used" warning
+		/// <summary>
+		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public event EventHandler Activated { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
-		public event EventHandler Activated;
+		public event EventHandler Closed { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
-		public event EventHandler Closed;
+		public event EventHandler Closing { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
-		public event EventHandler Closing;
+		public event EventHandler ContentRendered { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
-		public event EventHandler ContentRendered;
+		public event EventHandler Deactivated { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
-		public event EventHandler Deactivated;
+		public event EventHandler LocationChanged { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
-		public event EventHandler LocationChanged;
+		public event EventHandler SourceInitialized { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
-		public event EventHandler SourceInitialized;
-		
-		/// <summary>
-		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
-		/// </summary>
-		public event EventHandler StateChanged;
-		#pragma warning restore
+		public event EventHandler StateChanged { add {} remove {} }
 	}
 	
 	/// <summary>

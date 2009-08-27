@@ -96,11 +96,15 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 		
-		T GetServiceOrThrowException<T>() where T : class
+		/// <summary>
+		/// Gets a required service.
+		/// Never returns null; instead a ServiceRequiredException is thrown when the service cannot be found.
+		/// </summary>
+		public T GetRequiredService<T>() where T : class
 		{
 			T service = (T)GetService(typeof(T));
 			if (service == null) {
-				throw new DesignerException("Could not find guaranteed service " + typeof(T).FullName);
+				throw new ServiceRequiredException(typeof(T));
 			}
 			return service;
 		}
@@ -111,7 +115,7 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public ISelectionService Selection {
 			get {
-				return GetServiceOrThrowException<ISelectionService>();
+				return GetRequiredService<ISelectionService>();
 			}
 		}
 		
@@ -121,7 +125,7 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public IToolService Tool {
 			get {
-				return GetServiceOrThrowException<IToolService>();
+				return GetRequiredService<IToolService>();
 			}
 		}
 		
@@ -131,7 +135,7 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public IComponentService Component {
 			get {
-				return GetServiceOrThrowException<IComponentService>();
+				return GetRequiredService<IComponentService>();
 			}
 		}
 		
@@ -141,7 +145,7 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public ViewService View {
 			get {
-				return GetServiceOrThrowException<ViewService>();
+				return GetRequiredService<ViewService>();
 			}
 		}
 		
@@ -151,7 +155,7 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public Extensions.ExtensionManager ExtensionManager {
 			get {
-				return GetServiceOrThrowException<Extensions.ExtensionManager>();
+				return GetRequiredService<Extensions.ExtensionManager>();
 			}
 		}
 		
@@ -161,7 +165,7 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public IDesignPanel DesignPanel {
 			get {
-				return GetServiceOrThrowException<IDesignPanel>();
+				return GetRequiredService<IDesignPanel>();
 			}
 		}
 	}

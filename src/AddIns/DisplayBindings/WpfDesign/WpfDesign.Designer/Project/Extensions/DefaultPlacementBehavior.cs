@@ -39,6 +39,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual Rect GetPosition(PlacementOperation operation, DesignItem item)
 		{
+			if (item.View == null)
+				return Rect.Empty;
 			var p = item.View.TranslatePoint(new Point(), operation.CurrentContainer.View);
 			return new Rect(p, item.View.RenderSize);
 		}

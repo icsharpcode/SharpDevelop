@@ -20,31 +20,27 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	sealed class DragMoveMouseGesture : ClickOrDragMouseGesture
 	{
 		bool isDoubleClick;
-        MoveLogic moveLogic;
+		MoveLogic moveLogic;
 		
 		internal DragMoveMouseGesture(DesignItem clickedOn, bool isDoubleClick)
 		{
 			Debug.Assert(clickedOn != null);
 			
 			this.isDoubleClick = isDoubleClick;
-			
-			if (clickedOn.Parent != null)
-				this.positionRelativeTo = clickedOn.Parent.View;
-			else
-				this.positionRelativeTo = clickedOn.View;
+			this.positionRelativeTo = clickedOn.Services.DesignPanel;
 
-            moveLogic = new MoveLogic(clickedOn);
+			moveLogic = new MoveLogic(clickedOn);
 		}
 		
 		protected override void OnDragStarted(MouseEventArgs e)
 		{
-            moveLogic.Start(startPoint);
+			moveLogic.Start(startPoint);
 		}
 		
 		protected override void OnMouseMove(object sender, MouseEventArgs e)
 		{
 			base.OnMouseMove(sender, e); // call OnDragStarted if min. drag distace is reached
-            moveLogic.Move(e.GetPosition(positionRelativeTo));
+			moveLogic.Move(e.GetPosition(positionRelativeTo));
 		}
 		
 		protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
