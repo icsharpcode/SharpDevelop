@@ -124,5 +124,15 @@ namespace ICSharpCode.WpfDesign.Extensions
 				return true;
 			}
 		}
+		
+		// special extension server like 'permanent' - skips applying extensions if there
+		// is no design panel (e.g. in designer unit tests).
+		internal sealed class PermanentWithDesignPanel : DefaultExtensionServer
+		{
+			public override bool ShouldApplyExtensions(DesignItem extendedItem)
+			{
+				return Services.GetService(typeof(IDesignPanel)) != null;
+			}
+		}
 	}
 }

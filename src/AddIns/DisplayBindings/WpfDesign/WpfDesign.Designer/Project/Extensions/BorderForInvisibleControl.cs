@@ -18,14 +18,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			base.OnInitialized();
 
-	        var adornerPanel = new AdornerPanel();
-	        var border = new Border();
-            border.BorderThickness = new Thickness(1);
-            border.BorderBrush = Brushes.WhiteSmoke;
-            border.IsHitTestVisible = false;
-	        AdornerPanel.SetPlacement(border, AdornerPlacement.FillContent);
-	        adornerPanel.Children.Add(border);
-	        Adorners.Add(adornerPanel);
+			var adornerPanel = new AdornerPanel();
+			var border = new Border();
+			border.BorderThickness = new Thickness(1);
+			border.BorderBrush = Brushes.WhiteSmoke;
+			border.IsHitTestVisible = false;
+			AdornerPanel.SetPlacement(border, AdornerPlacement.FillContent);
+			adornerPanel.Children.Add(border);
+			Adorners.Add(adornerPanel);
 		}
 	}
 }
