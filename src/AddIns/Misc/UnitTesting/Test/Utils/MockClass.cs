@@ -382,5 +382,11 @@ namespace UnitTesting.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public IEnumerable<IMember> AllMembers {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

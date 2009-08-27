@@ -115,6 +115,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual bool HandleInput(Key key) {
 			switch (key) {
+				case Key.Back:
+				case Key.Delete:
+					if (console.editor.SelectionStart == 0 && 
+					    console.editor.SelectionLength == console.editor.Document.TextLength) {
+						cleared = true;
+						ClearConsole();
+						return true;
+					}
+					return false;
 				case Key.Down:
 					this.historyPointer = Math.Min(this.historyPointer + 1, this.history.Count);
 					if (this.historyPointer == this.history.Count)

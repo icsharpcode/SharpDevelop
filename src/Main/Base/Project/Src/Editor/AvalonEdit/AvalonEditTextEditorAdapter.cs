@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 				}
 			}
 			
-			public int IndendationSize {
+			public int IndentationSize {
 				get {
 					return avalonEditOptions.IndentationSize;
 				}

@@ -633,5 +633,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} while (currentClass != null);
 			return types;
 		}
+		
+		public IEnumerable<IMember> AllMembers {
+			get {
+				IEnumerable<IMember> p = properties;
+				return p.Concat(methods)
+					.Concat(fields)
+					.Concat(events);
+			}
+		}
 	}
 }

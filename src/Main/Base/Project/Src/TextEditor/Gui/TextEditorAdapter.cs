@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			
-			public int IndendationSize {
+			public int IndentationSize {
 				get {
 					return properties.IndentationSize;
 				}

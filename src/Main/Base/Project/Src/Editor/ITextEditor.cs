@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// Gets the size of an indentation level.
 		/// </summary>
-		int IndendationSize { get; }
+		int IndentationSize { get; }
 	}
 	
 	public interface ITextEditorCaret

@@ -68,7 +68,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 			} catch (UnauthorizedAccessException ex4) {
 				MessageService.ShowError(ex4.Message);
 			} catch (Exception ex3) {
-				MessageService.ShowError(ex3);
+				MessageService.ShowException(ex3);
 			}
 		}
 		

@@ -66,6 +66,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		IEnumerable<IMember> AllMembers {
+			get;
+		}
+		
 		IList<ITypeParameter> TypeParameters {
 			get;
 		}
