@@ -191,6 +191,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				foreach (IClass c in SearchClasses(text)) {
 					AddItem(c, GetMatchType(text, c.Name));
 				}
+				AddAllMembersMatchingText(text);
 			}
 			newItems.Sort();
 			foreach (MyListBoxItem item in newItems)
@@ -198,6 +199,38 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (bestItem != null) {
 				bestItem.IsSelected = true;
 				listBox.ScrollIntoView(bestItem);
+			}
+		}
+		
+		void AddAllMembersMatchingText(string text)
+		{
+			ITextEditor editor = GetEditor();
+			ParseInformation parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
+			if (parseInfo != null) {
+				foreach (IClass c in parseInfo.CompilationUnit.Classes) {
+					AddAllMembersMatchingText(c, text);
+				}
+			}
+		}
+
+		void AddAllMembersMatchingText(IClass c, string text)
+		{
+			foreach (IClass innerClass in c.InnerClasses) {
+				AddAllMembersMatchingText(innerClass, text);
+			}
+			foreach (IMethod m in c.Methods) {
+				if (!m.IsConstructor) {
+					AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m));
+				}
+			}
+			foreach (IField f in c.Fields) {
+				AddItemIfMatchText(text, f, ClassBrowserIconService.GetIcon(f));
+			}
+			foreach (IProperty p in c.Properties) {
+				AddItemIfMatchText(text, p, ClassBrowserIconService.GetIcon(p));
+			}
+			foreach (IEvent evt in c.Events) {
+				AddItemIfMatchText(text, evt, ClassBrowserIconService.GetIcon(evt));
 			}
 		}
 		
