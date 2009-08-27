@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using System.Windows.Forms.Integration;
 using System.Windows.Markup;
 using System.Xml;
 using ICSharpCode.SharpDevelop;
@@ -38,15 +37,10 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
-			this.editor = file.RegisteredViewContents[0] as TextEditorDisplayBindingWrapper;
 		}
 		
-		ElementHost wpfHost;
 		DesignSurface designer;
 		List<Task> tasks = new List<Task>();
-		
-		// save text from editor when designer cannot be saved (e.g. invalid xml)
-		TextEditorDisplayBindingWrapper editor;
 		
 		public DesignSurface DesignSurface {
 			get { return designer; }
@@ -62,10 +56,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			if (designer == null) {
 				// initialize designer on first load
-				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowError;
+				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowException;
 				designer = new DesignSurface();
-				wpfHost = new SharpDevelopElementHost() { ViewContent = this, Child = designer };
-				this.UserControl = wpfHost;
+				this.UserContent = designer;
 				InitPropertyEditor();
 			}
 			if (outline != null) {
@@ -100,23 +93,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
-			if (designer.DesignContext.CanSave) {
-				XmlWriterSettings settings = new XmlWriterSettings();
-				settings.Encoding = Encoding.UTF8;
-				settings.Indent = true;
-				settings.IndentChars = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.IndentationString;
-				settings.NewLineOnAttributes = true;
-				using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
-					designer.SaveDesigner(xmlWriter);
-				}
-			} else {
-				editor.Save(file, stream);
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.Indent = true;
+			settings.NewLineOnAttributes = true;
+			using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
+				designer.SaveDesigner(xmlWriter);
 			}
-		}
-		
-		public override bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
-		{
-			return newView == editor && !designer.DesignContext.CanSave;
 		}
 		
 		void UpdateTasks()
@@ -142,14 +124,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		#region Property editor / SelectionChanged
 		
-		ElementHost propertyEditorHost;
 		PropertyGridView propertyGridView;
 		
 		void InitPropertyEditor()
 		{
 			propertyGridView = new PropertyGridView();
-			propertyEditorHost = new SharpDevelopElementHost() { ViewContent = this, Child = propertyGridView};
-			propertyContainer.PropertyGridReplacementControl = propertyEditorHost;
+			propertyContainer.PropertyGridReplacementContent = propertyGridView;
 		}
 		
 		void OnSelectionChanged(object sender, DesignItemCollectionEventArgs e)
@@ -178,7 +158,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		}
 		#endregion
 		
-		public Control ToolsControl {
+		public object ToolsContent {
 			get { return WpfToolbox.Instance.ToolboxControl; }
 		}
 		
@@ -206,9 +186,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 					if (DesignSurface != null && DesignSurface.DesignContext != null && DesignSurface.DesignContext.RootItem != null) {
 						outline.Root = OutlineNode.Create(DesignSurface.DesignContext.RootItem);
 					}
-                    // see 3522
-                    outline.AddCommandHandler(ApplicationCommands.Delete, 
-                        () => ApplicationCommands.Delete.Execute(null, designer));
+					// see 3522
+					outline.AddCommandHandler(ApplicationCommands.Delete,
+					                          () => ApplicationCommands.Delete.Execute(null, designer));
 				}
 				return outline;
 			}

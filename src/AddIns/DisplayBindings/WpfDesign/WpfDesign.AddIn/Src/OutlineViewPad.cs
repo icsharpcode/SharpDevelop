@@ -14,9 +14,9 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
+	/*
 	public class OutlineViewPad : AbstractPadContent
 	{
-		SharpDevelopElementHost host = new SharpDevelopElementHost();
 		TextBlock notAvailableTextBlock = new TextBlock {
 			Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.OutlinePad.NotAvailable}"),
 			TextWrapping = TextWrapping.Wrap
@@ -57,4 +57,5 @@ namespace ICSharpCode.WpfDesign.AddIn
 			base.Dispose();
 		}
 	}
+	*/
 }

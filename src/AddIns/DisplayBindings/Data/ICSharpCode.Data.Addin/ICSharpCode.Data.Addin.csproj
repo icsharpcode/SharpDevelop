@@ -33,9 +33,9 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\Data\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\Data\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
@@ -45,7 +45,6 @@
     <StartProgram>..\..\..\..\Program Files %28x86%29\SharpDevelop\3.0\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
@@ -145,10 +144,6 @@
     <ProjectReference Include="..\ICSharpCode.Data.Core\ICSharpCode.Data.Core.csproj">
       <Project>{B7823AE9-4B43-4859-8796-2EBDC116FBB8}</Project>
       <Name>ICSharpCode.Data.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ICSharpCode.Data.DemoApp\ICSharpCode.Data.DemoApp.csproj">
-      <Project>{1EB79CD3-ECF1-420E-8A44-FA1EDD15390F}</Project>
-      <Name>ICSharpCode.Data.DemoApp</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.Data.EDMDesigner.Core.UI\ICSharpCode.Data.EDMDesigner.Core.UI.csproj">
       <Project>{EEF5E054-4192-4A57-8FBF-E860D808A51D}</Project>

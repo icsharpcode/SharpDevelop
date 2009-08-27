@@ -24,6 +24,7 @@
 		                fileNamePattern = "\.xaml$"/>
 	</Path>
 	
+	<!--
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id    = "OutlineViewPad"
 		     category = "Tools"
@@ -32,4 +33,5 @@
 		     shortcut = "Control|Alt|I"
 		     class = "ICSharpCode.WpfDesign.AddIn.OutlineViewPad"/>
 	</Path>
+	-->
 </AddIn>

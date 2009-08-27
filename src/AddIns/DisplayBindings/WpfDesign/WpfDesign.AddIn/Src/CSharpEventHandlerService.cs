@@ -5,11 +5,12 @@
 //     <version>$Revision: 2667$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor;
 using System;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -26,20 +27,20 @@ namespace ICSharpCode.WpfDesign.AddIn
 				foreach (IMethod m in c.Methods) {
 					if (m.Name == handlerName) {
 						FileService.JumpToFilePosition(m.DeclaringType.CompilationUnit.FileName,
-						                               m.Region.BeginLine - 1, m.Region.BeginColumn - 1);
+						                               m.Region.BeginLine, m.Region.BeginColumn);
 						return;
 					}
 				}
 			}
 			c = GetDesignedClassCodeBehindPart(c);
 			if (c != null) {
-				ITextEditorControlProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorControlProvider;
+				ITextEditorProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorProvider;
 				if (tecp != null) {
 					int lineNumber;
 					FormsDesigner.CSharpDesignerGenerator.CreateComponentEvent(
-						c, tecp.TextEditorControl.Document, eventHandlerType, handlerName, null,
+						c, tecp.TextEditor, eventHandlerType, handlerName, null,
 						out lineNumber);
-					tecp.TextEditorControl.ActiveTextAreaControl.JumpTo(lineNumber - 1);
+					tecp.TextEditor.JumpTo(lineNumber, 0);
 				}
 			}
 		}

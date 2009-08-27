@@ -32,7 +32,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				if (c != null) {
 					IMember m = DefaultProjectContent.GetMemberByReflectionName(c, property.Name);
 					if (m != null)
-						return CodeCompletionData.GetDocumentation(m.Documentation);
+						return CodeCompletionData.ConvertDocumentation(m.Documentation);
 				}
 			}
 			return null;
