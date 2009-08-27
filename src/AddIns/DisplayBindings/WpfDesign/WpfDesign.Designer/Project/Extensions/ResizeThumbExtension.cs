@@ -22,7 +22,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// The resize thumb around a component.
 	/// </summary>
 	[ExtensionFor(typeof(FrameworkElement))]
-	public sealed class ResizeThumbExtension : PrimarySelectionAdornerProvider
+	public sealed class ResizeThumbExtension : SelectionAdornerProvider
 	{
 		readonly AdornerPanel adornerPanel;
 		readonly ResizeThumb[] resizeThumbs;
@@ -65,14 +65,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			return resizeThumb;
 		}
 
-		Size oldSize;		
+		Size oldSize;
 
 		void drag_Started(DragListener drag)
 		{
 			oldSize = new Size(ModelTools.GetWidth(ExtendedItem.View), ModelTools.GetHeight(ExtendedItem.View));
-			if (resizeBehavior != null) 
+			if (resizeBehavior != null)
 				operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
-			else {				
+			else {
 				changeGroup = this.ExtendedItem.Context.OpenGroup("Resize", extendedItemArray);
 			}
 		}
@@ -95,7 +95,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			if (operation != null) {
 				var info = operation.PlacedItems[0];
-				var result = info.OriginalBounds;				
+				var result = info.OriginalBounds;
 				
 				if (alignment.Horizontal == HorizontalAlignment.Left)
 					result.X = Math.Min(result.Right, result.X - dx);
@@ -108,7 +108,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				info.ResizeThumbAlignment = alignment;
 				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
 				operation.CurrentContainerBehavior.SetPosition(info);
-	        }
+			}
 		}
 
 		void drag_Completed(DragListener drag)
@@ -128,13 +128,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			base.OnInitialized();
 			extendedItemArray[0] = this.ExtendedItem;
-			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;			
-			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);			
+			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
+			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
+			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
+			UpdateAdornerVisibility();
 			OnPrimarySelectionChanged(null, null);
+		}
+		
+		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			UpdateAdornerVisibility();
 		}
 		
 		protected override void OnRemove()
 		{
+			this.ExtendedItem.PropertyChanged -= OnPropertyChanged;
 			this.Services.Selection.PrimarySelectionChanged -= OnPrimarySelectionChanged;
 			base.OnRemove();
 		}
@@ -144,6 +152,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			bool isPrimarySelection = this.Services.Selection.PrimarySelection == this.ExtendedItem;
 			foreach (ResizeThumb g in adornerPanel.Children) {
 				g.IsPrimarySelection = isPrimarySelection;
+			}
+		}
+		
+		void UpdateAdornerVisibility()
+		{
+			FrameworkElement fe = this.ExtendedItem.View as FrameworkElement;
+			foreach (ResizeThumb r in resizeThumbs) {
+				bool isVisible = resizeBehavior != null && resizeBehavior.CanPlace(extendedItemArray, PlacementType.Resize, r.Alignment);
+				r.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
 			}
 		}
 	}

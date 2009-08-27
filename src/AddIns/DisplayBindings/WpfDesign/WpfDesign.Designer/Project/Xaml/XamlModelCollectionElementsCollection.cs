@@ -198,6 +198,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				collection.RemoveInternal(index, item);
 				collection.modelProperty.XamlDesignItem.NotifyPropertyChanged(collection.modelProperty);
 			}
+			
+			public bool MergeWith(ITransactionItem other)
+			{
+				return false;
+			}
 		}
 		
 		sealed class RemoveAtAction : ITransactionItem
@@ -235,6 +240,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			{
 				collection.InsertInternal(index, item);
 				collection.modelProperty.XamlDesignItem.NotifyPropertyChanged(collection.modelProperty);
+			}
+			
+			public bool MergeWith(ITransactionItem other)
+			{
+				return false;
 			}
 		}
 	}

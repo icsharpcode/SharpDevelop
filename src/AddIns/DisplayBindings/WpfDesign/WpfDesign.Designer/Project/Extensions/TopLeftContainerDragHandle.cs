@@ -21,7 +21,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// The drag handle displayed for panels.
 	/// </summary>
 	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
-	[ExtensionFor(typeof(Panel), OverrideExtension = typeof(TopLeftResizeThumb))]
+	[ExtensionFor(typeof(Panel))]
 	public class TopLeftContainerDragHandle : AdornerProvider
 	{
 		/// <summary/>

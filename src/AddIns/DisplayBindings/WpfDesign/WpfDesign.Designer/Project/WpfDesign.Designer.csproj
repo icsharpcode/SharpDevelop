@@ -78,7 +78,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\GridAdorner.cs" />
-    <Compile Include="Controls\NumericUpDown.cs" />
+    <Compile Include="Controls\NumericUpDown.cs">
+      <DependentUpon>NumericUpDown.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />

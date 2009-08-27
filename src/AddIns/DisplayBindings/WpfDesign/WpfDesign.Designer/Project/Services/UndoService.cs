@@ -18,6 +18,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	{
 		void Do();
 		void Undo();
+		bool MergeWith(ITransactionItem other);
 	}
 	#endregion
 	
@@ -76,14 +77,12 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			AssertState(TransactionState.Open);
 			item.Do();
-
-			var a = item as XamlModelProperty.PropertyChangeAction;
-			if (a != null) {
-				foreach (var b in items.OfType<XamlModelProperty.PropertyChangeAction>()) {
-					if (b.MergeWith(a)) return;
-				}
+			
+			foreach (var existingItem in items) {
+				if (existingItem.MergeWith(item))
+					return;
 			}
-
+			
 			items.Add(item);
 		}
 		
@@ -167,6 +166,11 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					Debug.WriteLine("Exception rolling back after failure:\n" + ex.ToString());
 				}
 			}
+		}
+		
+		bool ITransactionItem.MergeWith(ITransactionItem other)
+		{
+			return false;
 		}
 	}
 	#endregion

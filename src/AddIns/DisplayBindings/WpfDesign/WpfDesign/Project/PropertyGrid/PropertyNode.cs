@@ -39,10 +39,18 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		public bool IsEvent { get { return FirstProperty.IsEvent; } }
 		
 		/// <summary>
+		/// Gets the design context associated with this set of properties.
+		/// </summary>
+		public DesignContext Context { get { return FirstProperty.DesignItem.Context; } }
+		
+		/// <summary>
 		/// Gets the service container associated with this set of properties.
 		/// </summary>
 		public ServiceContainer Services { get { return FirstProperty.DesignItem.Services; } }
 		
+		/// <summary>
+		/// Gets the editor control that edits this property.
+		/// </summary>
 		public FrameworkElement Editor { get; private set; }
 		
 		/// <summary>

@@ -8,12 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
 using ICSharpCode.WpfDesign.Adorners;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign
 {
@@ -94,10 +95,11 @@ namespace ICSharpCode.WpfDesign
 			try {
 				currentContainerBehavior.LeaveContainer(this);
 				
-				System.Windows.Media.GeneralTransform transform = currentContainer.View.TransformToVisual(newContainer.View);
+				GeneralTransform transform = currentContainer.View.TransformToVisual(newContainer.View);
+				
 				foreach (PlacementInformation info in placedItems) {
-					info.OriginalBounds = transform.TransformBounds(info.OriginalBounds);
-					info.Bounds = transform.TransformBounds(info.Bounds);
+					info.OriginalBounds = TransformRectByMiddlePoint(transform, info.OriginalBounds);
+					info.Bounds = TransformRectByMiddlePoint(transform, info.Bounds);
 				}
 				
 				currentContainer = newContainer;
@@ -110,6 +112,15 @@ namespace ICSharpCode.WpfDesign
 				Abort();
 				throw;
 			}
+		}
+		
+		Rect TransformRectByMiddlePoint(GeneralTransform transform, Rect r)
+		{
+			// we don't want to adjust the size of the control when moving it out of a scaled
+			// container, we just want to move it correcly
+			Point p = new Point(r.Left + r.Width / 2, r.Top + r.Height / 2);
+			Vector movement = transform.Transform(p) - p;
+			return new Rect(r.TopLeft + movement, r.Size);
 		}
 		#endregion
 		

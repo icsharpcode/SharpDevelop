@@ -37,14 +37,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				return 0;
 			else
 				return v;
-		}	
-	
-		//TODO: Is default way ok?
-		//public override Rect GetPosition(PlacementOperation operation, DesignItem childItem)
-		//{
-		//    UIElement child = childItem.View;
-		//    return new Rect(GetLeft(child), GetTop(child), ModelTools.GetWidth(child), ModelTools.GetHeight(child));
-		//}
+		}
 		
 		public override void SetPosition(PlacementInformation info)
 		{

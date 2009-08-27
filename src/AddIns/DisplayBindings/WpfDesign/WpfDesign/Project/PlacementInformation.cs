@@ -56,5 +56,11 @@ namespace ICSharpCode.WpfDesign
 		}
 
 		public PlacementAlignment ResizeThumbAlignment { get; set; }
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return "[PlacementInformation OriginalBounds=" + originalBounds + " Bounds=" + bounds + " Item=" + item + "]";
+		}
 	}
 }

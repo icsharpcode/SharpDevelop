@@ -16,7 +16,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (!selectedItems.Contains(clickedOn))
 				selectedItems = SharedInstances.EmptyDesignItemArray;
 		}
-
+		
 		DesignItem clickedOn;
 		PlacementOperation operation;
 		ICollection<DesignItem> selectedItems;
@@ -55,7 +55,15 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					ChangeContainerIfPossible(p);
 				}
 				
-				Vector v = p - startPoint;
+				Vector v;
+				UIElement designPanel = this.DesignPanel as UIElement;
+				if (operation.CurrentContainer.View != null && designPanel != null) {
+					v = designPanel.TranslatePoint(p, operation.CurrentContainer.View)
+						- designPanel.TranslatePoint(startPoint, operation.CurrentContainer.View);
+				} else {
+					v = p - startPoint;
+				}
+				
 				foreach (PlacementInformation info in operation.PlacedItems) {
 					info.Bounds = new Rect(info.OriginalBounds.Left + v.X,
 					                       info.OriginalBounds.Top + v.Y,

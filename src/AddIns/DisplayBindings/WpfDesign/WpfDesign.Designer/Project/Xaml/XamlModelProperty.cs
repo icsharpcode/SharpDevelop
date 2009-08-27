@@ -273,11 +273,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				}
 			}
 
-			public bool MergeWith(PropertyChangeAction other)
+			public bool MergeWith(ITransactionItem other)
 			{
-				if (property._property == other.property._property) {
-					newIsSet = other.newIsSet;
-					newValue = other.newValue;
+				PropertyChangeAction o = other as PropertyChangeAction;
+				if (o != null && property._property == o.property._property) {
+					newIsSet = o.newIsSet;
+					newValue = o.newValue;
 					return true;
 				}
 				return false;

@@ -32,62 +32,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			grid = (Grid)this.ExtendedItem.Component;
 		}
 		
-		//TODO: Is default way ok?
-		//public override Rect GetPosition(PlacementOperation operation, DesignItem child)
-		//{
-		//    FrameworkElement obj = child.Component as FrameworkElement;
-		//    if (obj == null) return new Rect();
-		
-		//    Thickness margin = obj.Margin;
-		
-		//    double left, width, right;
-		//    switch (obj.HorizontalAlignment) {
-		//        case HorizontalAlignment.Stretch:
-		//            left = GetColumnOffset(Grid.GetColumn(obj)) + margin.Left;
-		//            right = GetColumnOffset(Grid.GetColumn(obj) + Grid.GetColumnSpan(obj)) - margin.Right;
-		//            width = right - left;
-		//            break;
-		//        case HorizontalAlignment.Left:
-		//            left = GetColumnOffset(Grid.GetColumn(obj)) + margin.Left;
-		//            width = ModelTools.GetWidth(obj);
-		//            right = left + width;
-		//            break;
-		//        case HorizontalAlignment.Right:
-		//            right = GetColumnOffset(Grid.GetColumn(obj) + Grid.GetColumnSpan(obj)) - margin.Right;
-		//            width = ModelTools.GetWidth(obj);
-		//            left = right - width;
-		//            break;
-		//        case HorizontalAlignment.Center:
-		//            throw new NotImplementedException();
-		//        default:
-		//            throw new NotSupportedException();
-		//    }
-		
-		//    double top, height, bottom;
-		//    switch (obj.VerticalAlignment) {
-		//        case VerticalAlignment.Stretch:
-		//            top = GetRowOffset(Grid.GetRow(obj)) + margin.Top;
-		//            bottom = GetRowOffset(Grid.GetRow(obj) + Grid.GetRowSpan(obj)) - margin.Bottom;
-		//            height = bottom - top;
-		//            break;
-		//        case VerticalAlignment.Top:
-		//            top = GetRowOffset(Grid.GetRow(obj)) + margin.Top;
-		//            height = ModelTools.GetHeight(obj);
-		//            bottom = top + height;
-		//            break;
-		//        case VerticalAlignment.Bottom:
-		//            bottom = GetRowOffset(Grid.GetRow(obj) + Grid.GetRowSpan(obj)) - margin.Bottom;
-		//            height = ModelTools.GetHeight(obj);
-		//            top = bottom - height;
-		//            break;
-		//        case VerticalAlignment.Center:
-		//            throw new NotImplementedException();
-		//        default:
-		//            throw new NotSupportedException();
-		//    }
-		//    return new Rect(left, top, Math.Max(0, width), Math.Max(0, height));
-		//}
-		
 		double GetColumnOffset(int index)
 		{
 			// when the grid has no columns, we still need to return 0 for index=0 and grid.Width for index=1
@@ -179,24 +123,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		static HorizontalAlignment SuggestHorizontalAlignment(Rect itemBounds, Rect availableSpaceRect)
 		{
-			if (itemBounds.Right < (availableSpaceRect.Left + availableSpaceRect.Right) / 2) {
-				return HorizontalAlignment.Left;
-			} else if (itemBounds.Left > (availableSpaceRect.Left + availableSpaceRect.Right) / 2) {
-				return HorizontalAlignment.Right;
-			} else {
+			bool isLeft = itemBounds.Left < availableSpaceRect.Left + availableSpaceRect.Width / 4;
+			bool isRight = itemBounds.Right > availableSpaceRect.Right - availableSpaceRect.Width / 4;
+			if (isLeft && isRight)
 				return HorizontalAlignment.Stretch;
-			}
+			else if (isRight)
+				return HorizontalAlignment.Right;
+			else
+				return HorizontalAlignment.Left;
 		}
 		
 		static VerticalAlignment SuggestVerticalAlignment(Rect itemBounds, Rect availableSpaceRect)
 		{
-			if (itemBounds.Bottom < (availableSpaceRect.Top + availableSpaceRect.Bottom) / 2) {
-				return VerticalAlignment.Top;
-			} else if (itemBounds.Top > (availableSpaceRect.Top + availableSpaceRect.Bottom) / 2) {
-				return VerticalAlignment.Bottom;
-			} else {
+			bool isTop = itemBounds.Top < availableSpaceRect.Top + availableSpaceRect.Height / 4;
+			bool isBottom = itemBounds.Bottom > availableSpaceRect.Bottom - availableSpaceRect.Height / 4;
+			if (isTop && isBottom)
 				return VerticalAlignment.Stretch;
-			}
+			else if (isBottom)
+				return VerticalAlignment.Bottom;
+			else
+				return VerticalAlignment.Top;
 		}
 		
 		GrayOutDesignerExceptActiveArea grayOut;
