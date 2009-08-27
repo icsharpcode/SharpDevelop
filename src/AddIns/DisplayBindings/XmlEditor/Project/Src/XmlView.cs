@@ -394,7 +394,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlTextWriter writer = new XmlTextWriter(textWriter);
 			if (editor.Options.ConvertTabsToSpaces) {
-				writer.Indentation = editor.Options.IndendationSize;
+				writer.Indentation = editor.Options.IndentationSize;
 				writer.IndentChar = ' ';
 			} else {
 				writer.Indentation = 1;

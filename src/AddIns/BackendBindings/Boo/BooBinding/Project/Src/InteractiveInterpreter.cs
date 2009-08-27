@@ -36,14 +36,16 @@ namespace Grunwald.BooBinding
 			SetHighlighting("Boo");
 		}
 		
-		protected override void AcceptCommand(string command)
+		protected override bool AcceptCommand(string command)
 		{
 			if (command.EndsWith("\n")) {
 				ProcessCommand(command);
+				return true;
 			} else if (!command.Contains("\n") && !command.EndsWith(":")) {
 				ProcessCommand(command);
+				return true;
 			} else {
-				TextEditor.Caret.Position = TextEditor.Document.OffsetToPosition(TextEditor.Document.TextLength);
+				return false;
 			}
 		}
 		
@@ -81,8 +83,6 @@ namespace Grunwald.BooBinding
 				PrintLine(ex.InnerException);
 			}
 			processing = false;
-			
-			Append(Environment.NewLine);
 		}
 		
 		void PrintLine(object text)
@@ -93,7 +93,7 @@ namespace Grunwald.BooBinding
 				WorkbenchSingleton.SafeThreadAsyncCall(PrintLine, text);
 			} else {
 				if (processing)
-					Append(text.ToString());
+					AppendLine(text.ToString());
 				else
 					InsertLineBeforePrompt(text.ToString());
 			}

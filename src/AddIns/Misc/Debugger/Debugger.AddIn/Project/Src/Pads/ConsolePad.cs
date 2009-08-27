@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class ConsolePad : AbstractConsolePad
 	{
-		protected override void AcceptCommand(string command)
+		protected override bool AcceptCommand(string command)
 		{
 			if (!string.IsNullOrEmpty(command)) {
 				string result = Evaluate(command);
@@ -26,6 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					Append(result + Environment.NewLine);
 				}
 			}
+			return true;
 		}
 		
 		string Evaluate(string code)

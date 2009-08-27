@@ -2926,10 +2926,7 @@ namespace AvalonDock
             DockableContent[] actualContents = DockableContents;
             
             //show all hidden contents
-            // I don't think we need this in SharpDevelop.
-            // It causes a problem that hidden pads lose their stored size information
-            // due to the show/hide happening inside RestoreLayout.
-            //ShowAllHiddenContents();
+            ShowAllHiddenContents();
 
             //restore main panel
             XmlElement rootElement = doc.DocumentElement.ChildNodes[0] as XmlElement;

@@ -117,9 +117,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			switch (key) {
 				case Key.Back:
 				case Key.Delete:
-					if (console.editor.SelectionStart == 0 && 
+					if (console.editor.SelectionStart == 0 &&
 					    console.editor.SelectionLength == console.editor.Document.TextLength) {
-						cleared = true;
 						ClearConsole();
 						return true;
 					}
@@ -145,20 +144,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 						return false;
 					string commandText = console.CommandText;
 					this.console.TextEditor.Document.Insert(this.console.TextEditor.Document.TextLength, "\n");
-					if (!string.IsNullOrEmpty(commandText))
-						AcceptCommand(commandText);
-					if (!cleared)
-						AppendPrompt();
-					else
-						console.CommandText = "";
-					cleared = false;
-					this.history.Add(commandText);
-					this.historyPointer = this.history.Count;
+					if (AcceptCommand(commandText)) {
+						if (!cleared)
+							AppendPrompt();
+						else
+							console.CommandText = "";
+						cleared = false;
+						this.history.Add(commandText);
+						this.historyPointer = this.history.Count;
+					}
 					console.editor.ScrollToEnd();
 					return true;
+				default:
+					return false;
 			}
-			
-			return false;
 		}
 		
 		/// <summary>
@@ -194,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get;
 		}
 		
-		protected abstract void AcceptCommand(string command);
+		protected abstract bool AcceptCommand(string command);
 		
 		protected virtual void InitializeConsole()
 		{
@@ -206,6 +205,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			console.Append(Prompt);
 			console.SetReadonly();
 			console.editor.Document.UndoStack.ClearAll();
+		}
+		
+		protected void AppendLine(string text)
+		{
+			console.Append(text + Environment.NewLine);
 		}
 		
 		protected void Append(string text)
