@@ -59,13 +59,14 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 
 		protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
 		{
-			var row = (e.OriginalSource as DependencyObject).FindAncestor<Border>("uxPropertyNodeRow");
+			var ancestors = (e.OriginalSource as DependencyObject).GetVisualAncestors();
+			Border row = ancestors.OfType<Border>().Where(b => b.Name == "uxPropertyNodeRow").FirstOrDefault();
 			if (row == null) return;
 
-			var node = row.DataContext as PropertyNode;
+			PropertyNode node = row.DataContext as PropertyNode;
 			if (node.IsEvent) return;
 
-			var contextMenu = new PropertyContextMenu();
+			PropertyContextMenu contextMenu = new PropertyContextMenu();
 			contextMenu.DataContext = node;
 			contextMenu.Placement = PlacementMode.Bottom;
 			contextMenu.HorizontalOffset = -30;

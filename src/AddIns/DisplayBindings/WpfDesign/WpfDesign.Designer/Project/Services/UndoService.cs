@@ -158,7 +158,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			}
 		}
 		
-		protected override void Disposed()
+		protected override void Dispose()
 		{
 			if (_state == TransactionState.Open) {
 				try {

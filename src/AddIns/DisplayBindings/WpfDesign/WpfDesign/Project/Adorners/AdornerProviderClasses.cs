@@ -15,7 +15,7 @@ namespace ICSharpCode.WpfDesign.Adorners
 	/// <summary>
 	/// An adorner extension that is attached permanently.
 	/// </summary>
-	[ExtensionServer(typeof(DefaultExtensionServer.PermanentWithDesignPanel))]
+	[ExtensionServer(typeof(DefaultExtensionServer.Permanent))]
 	public abstract class PermanentAdornerProvider : AdornerProvider
 	{
 		

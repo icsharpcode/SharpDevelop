@@ -27,31 +27,31 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public static double Accuracy = 5;
 		public static double Margin = 8;
 
-		public override void BeginPlacement(PlacementOperation operation) 
+		public override void BeginPlacement(PlacementOperation operation)
 		{
 			base.BeginPlacement(operation);
 			CreateSurface(operation);
 		}
 
-		public override void EndPlacement(PlacementOperation operation) 
+		public override void EndPlacement(PlacementOperation operation)
 		{
 			base.EndPlacement(operation);
 			DeleteSurface();
 		}
 
-		public override void EnterContainer(PlacementOperation operation) 
+		public override void EnterContainer(PlacementOperation operation)
 		{
 			base.EnterContainer(operation);
-			CreateSurface(operation);			
+			CreateSurface(operation);
 		}
 
-		public override void LeaveContainer(PlacementOperation operation) 
+		public override void LeaveContainer(PlacementOperation operation)
 		{
 			base.LeaveContainer(operation);
 			DeleteSurface();
 		}
 
-		public override void BeforeSetPosition(PlacementOperation operation) 
+		public override void BeforeSetPosition(PlacementOperation operation)
 		{
 			base.BeforeSetPosition(operation);
 			if (surface == null) return;
@@ -69,14 +69,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var info = operation.PlacedItems[0];
 			
 			if (operation.Type == PlacementType.Resize) {
-				AddLines(bounds, 0, false, horizontalInput, verticalInput, info.ResizeThumbAlignment);					
+				AddLines(bounds, 0, false, horizontalInput, verticalInput, info.ResizeThumbAlignment);
 			} else {
 				AddLines(bounds, 0, false, horizontalInput, verticalInput, null);
 				if (baseline.HasValue) {
 					var textOffset = bounds.Top + baseline.Value;
 					horizontalInput.Add(new Snapline() { Group = 1, Offset = textOffset, Start = bounds.Left, End = bounds.Right });
 				}
-			}			
+			}
 
 			// debug
 			//foreach (var t in horizontalMap.Concat(horizontalInput)) {
@@ -104,8 +104,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					foreach (var item in operation.PlacedItems) {
 						var r = item.Bounds;
 						r.Y += delta;
-						item.Bounds = r;					
-					}					
+						item.Bounds = r;
+					}
 				}
 
 				foreach (var d in drawLines) {
@@ -121,20 +121,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 						bounds.Width = Math.Max(0, bounds.Width - delta);
 					} else {
 						bounds.Width = Math.Max(0, bounds.Width + delta);
-					}					
+					}
 					info.Bounds = bounds;
 				} else {
 					foreach (var item in operation.PlacedItems) {
 						var r = item.Bounds;
 						r.X += delta;
 						item.Bounds = r;
-					}	
-				}			
+					}
+				}
 				
 				foreach (var d in drawLines) {
 					DrawLine(d.Offset, d.Start, d.Offset, d.End);
 				}
-			}			
+			}
 		}
 
 		void CreateSurface(PlacementOperation operation)
@@ -165,7 +165,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			AddLines(containerRect, -Margin, false);
 
 			foreach (var item in ExtendedItem.ContentProperty.CollectionElements
-				.Except(operation.PlacedItems.Select(f => f.Item))) 
+			         .Except(operation.PlacedItems.Select(f => f.Item)))
 			{
 				var bounds = GetPosition(operation, item);
 
@@ -175,12 +175,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 
-		void AddLines(Rect r, double inflate, bool requireOverlap) 
+		void AddLines(Rect r, double inflate, bool requireOverlap)
 		{
 			AddLines(r, inflate, requireOverlap, horizontalMap, verticalMap, null);
 		}
 
-		void AddLines(Rect r, double inflate, bool requireOverlap, List<Snapline> h, List<Snapline> v, PlacementAlignment? filter) 
+		void AddLines(Rect r, double inflate, bool requireOverlap, List<Snapline> h, List<Snapline> v, PlacementAlignment? filter)
 		{
 			Rect r2 = r;
 			r2.Inflate(inflate, inflate);
@@ -189,22 +189,22 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top - 1, Start = r.Left, End = r.Right });
 			if (filter == null || filter.Value.Vertical == VerticalAlignment.Bottom)
 				h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Bottom, Start = r.Left, End = r.Right });
-			if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Left)	
+			if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Left)
 				v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left - 1, Start = r.Top, End = r.Bottom });
-			if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Right)	
+			if (filter == null || filter.Value.Horizontal == HorizontalAlignment.Right)
 				v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Right, Start = r.Top, End = r.Bottom });
 		}
 
 		void AddBaseline(DesignItem item, Rect bounds, List<Snapline> list)
-		{	
+		{
 			var baseline = GetBaseline(item.View);
 			if (baseline.HasValue) {
-			    var textOffset = item.View.TranslatePoint(new Point(0, baseline.Value), ExtendedItem.View).Y;
-			    list.Add(new Snapline() { Group = 1, Offset = textOffset, Start = bounds.Left, End = bounds.Right });
+				var textOffset = item.View.TranslatePoint(new Point(0, baseline.Value), ExtendedItem.View).Y;
+				list.Add(new Snapline() { Group = 1, Offset = textOffset, Start = bounds.Left, End = bounds.Right });
 			}
 		}
 
-		void DeleteSurface() 
+		void DeleteSurface()
 		{
 			if (surface != null) {
 				ExtendedItem.Services.DesignPanel.Adorners.Remove(adornerPanel);
@@ -236,26 +236,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				Stroke = Brushes.Orange,
 				StrokeDashArray = new DoubleCollection(new double[] { 5, 2 }),
 				StrokeDashOffset = x1 + y1  // fix dashes
-			};			
+			};
 			surface.Children.Add(line2);
 		}
 
 		//TODO: GlyphRun must be used
 		static double? GetBaseline(UIElement element) {
-		    var textBox = element.FindChild<TextBox>();
-		    if (textBox != null) {
-		        var r = textBox.GetRectFromCharacterIndex(0).Bottom;
-		        return textBox.TranslatePoint(new Point(0, r), element).Y;
-		    }
-		    var textBlock = element.FindChild<TextBlock>();
-		    if (textBlock != null)
-		        return textBlock.TranslatePoint(new Point(0, textBlock.ActualHeight), element).Y;
+			var textBox = element as TextBox;
+			if (textBox != null) {
+				var r = textBox.GetRectFromCharacterIndex(0).Bottom;
+				return textBox.TranslatePoint(new Point(0, r), element).Y;
+			}
+			var textBlock = element as TextBlock;
+			if (textBlock != null)
+				return textBlock.TranslatePoint(new Point(0, textBlock.ActualHeight), element).Y;
 
-		    return null;
+			return null;
 		}
 
-		static bool Snap(List<Snapline> input, List<Snapline> map, double accuracy, 
-			out List<Snapline> drawLines, out double delta) 
+		static bool Snap(List<Snapline> input, List<Snapline> map, double accuracy,
+		                 out List<Snapline> drawLines, out double delta)
 		{
 			delta = double.MaxValue;
 			drawLines = null;
@@ -264,7 +264,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				foreach (var mapLine in map) {
 					if (Math.Abs(mapLine.Offset - inputLine.Offset) <= accuracy) {
 						if (!inputLine.RequireOverlap && !mapLine.RequireOverlap ||
-							Math.Max(inputLine.Start, mapLine.Start) < Math.Min(inputLine.End, mapLine.End))
+						    Math.Max(inputLine.Start, mapLine.Start) < Math.Min(inputLine.End, mapLine.End))
 						{
 							if (mapLine.Group == inputLine.Group)
 								delta = mapLine.Offset - inputLine.Offset;

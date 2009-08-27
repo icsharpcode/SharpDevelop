@@ -37,11 +37,12 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Is called when the change group is disposed. Should Abort the change group if it is not already committed.
 		/// </summary>
-		protected abstract void Disposed();
+		protected abstract void Dispose();
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
 		void IDisposable.Dispose()
 		{
-			Disposed();
+			Dispose();
 		}
 	}
 }

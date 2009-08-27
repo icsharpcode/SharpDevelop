@@ -109,7 +109,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		{
 			dropTarget = null;
 			dropAfter = null;
-			treeItem = (e.OriginalSource as DependencyObject).FindAncestor<DragTreeViewItem>();
+			treeItem = (e.OriginalSource as DependencyObject).GetVisualAncestors().OfType<DragTreeViewItem>().FirstOrDefault();
 
 			if (treeItem != null) {
 				var parent = ItemsControl.ItemsControlFromItemContainer(treeItem) as DragTreeViewItem;

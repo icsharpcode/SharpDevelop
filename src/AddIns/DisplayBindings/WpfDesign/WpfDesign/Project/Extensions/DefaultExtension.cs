@@ -124,13 +124,5 @@ namespace ICSharpCode.WpfDesign.Extensions
 				return true;
 			}
 		}
-
-        internal sealed class PermanentWithDesignPanel : DefaultExtensionServer
-		{
-			public override bool ShouldApplyExtensions(DesignItem extendedItem)
-			{
-				return Services.GetService<IDesignPanel>() != null;
-			}
-		}
 	}
 }

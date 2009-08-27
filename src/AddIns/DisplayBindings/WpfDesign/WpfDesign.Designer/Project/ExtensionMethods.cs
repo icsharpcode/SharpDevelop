@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
-using System.Collections;
+using System.Text;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -32,35 +33,24 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 			return null;
 		}
-
-		public static T FindAncestor<T>(this DependencyObject d, string name) where T : class
+		
+		static bool IsVisual(DependencyObject d)
 		{
-			while (true) {
-				if (d == null) return null;
-				if (d is T && d is FrameworkElement && (d as FrameworkElement).Name == name) return d as T;
-				d = VisualTreeHelper.GetParent(d);
-			}
+			return d is Visual || d is Visual3D;
 		}
 		
-		public static T FindAncestor<T>(this DependencyObject d) where T : class
+		/// <summary>
+		/// Gets all ancestors in the visual tree (including d itself).
+		/// Returns an empty list if d is null or not a visual.
+		/// </summary>
+		public static IEnumerable<DependencyObject> GetVisualAncestors(this DependencyObject d)
 		{
-			while (true) {
-				if (d == null) return null;
-				if (d is T) return d as T;
-				d = VisualTreeHelper.GetParent(d);
+			if (IsVisual(d)) {
+				while (d != null) {
+					yield return d;
+					d = VisualTreeHelper.GetParent(d);
+				}
 			}
-		}
-
-		public static T FindChild<T>(this DependencyObject d) where T : class
-		{
-			if (d is T) return d as T;
-			int n = VisualTreeHelper.GetChildrenCount(d);
-			for (int i = 0; i < n; i++) {
-				var child = VisualTreeHelper.GetChild(d, i);
-				var result = FindChild<T>(child);
-				if (result != null) return result;
-			}
-			return null;
 		}
 		
 		public static void AddCommandHandler(this UIElement element, ICommand command, Action execute)
@@ -79,6 +69,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 			cb.Executed += delegate(object sender, ExecutedRoutedEventArgs e) {
 				execute();
+				e.Handled = true;
 			};
 			element.CommandBindings.Add(cb);
 		}

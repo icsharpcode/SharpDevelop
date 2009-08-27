@@ -31,7 +31,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 
 		void DragTreeViewItem_Loaded(object sender, RoutedEventArgs e)
 		{
-			ParentTree = this.FindAncestor<DragTreeView>();
+			ParentTree = this.GetVisualAncestors().OfType<DragTreeView>().FirstOrDefault();
 			if (ParentTree != null) {
 				ParentTree.ItemAttached(this);
 			}

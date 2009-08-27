@@ -162,9 +162,9 @@ namespace ICSharpCode.WpfDesign
 		/// Gets the design item property representing the specified dependency property.
 		/// The property must not be an attached property.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043")]
 		public DesignItemProperty this[DependencyProperty dependencyProperty] {
 			get {
-				Debug.Assert(DependencyPropertyDescriptor.FromProperty(dependencyProperty, dependencyProperty.OwnerType).IsAttached == false);
 				return GetProperty(dependencyProperty);
 			}
 		}

@@ -39,6 +39,7 @@ namespace ICSharpCode.WpfDesign
 
 		/// <summary>
 		/// Is called before SetPosition is called for the placed items.
+		/// This may update the bounds on the placement operation (e.g. when snaplines are enabled).
 		/// </summary>
 		void BeforeSetPosition(PlacementOperation operation);
 		
