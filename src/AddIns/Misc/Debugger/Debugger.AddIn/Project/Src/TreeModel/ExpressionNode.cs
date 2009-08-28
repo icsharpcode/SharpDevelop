@@ -110,15 +110,18 @@ namespace Debugger.AddIn.TreeModel
 				// no visualizers if evaluated value is null
 				yield break;
 			}
-			if (this.expressionType.IsPrimitive || this.expressionType.IsSystemDotObject() || this.expressionType.IsEnum()) {
+			/*if (this.expressionType.IsPrimitive || this.expressionType.IsSystemDotObject() || this.expressionType.IsEnum()) {
 				// no visualizers for primitive types
 				yield break;
+			}*/
+			
+			foreach (var descriptor in VisualizerDescriptors.GetAllDescriptors()) {
+				if (descriptor.IsVisualizerAvailable(this.expressionType)) {
+					yield return descriptor.CreateVisualizerCommand(this.Expression);
+				}
 			}
-			// these should be obtained from AddIn tree so that it is possible to write add-in for Debugger.AddIn with new visualizers
-			yield return new GridVisualizerCommand(this);
-			yield return new ObjectGraphVisualizerCommand(this);
 		}
-		
+
 		public ExpressionNode(IImage image, string name, Expression expression)
 		{
 			this.IconImage = image;

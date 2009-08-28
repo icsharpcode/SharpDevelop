@@ -4,21 +4,40 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using ICSharpCode.SharpDevelop.Debugging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.GridVisualizer;
+using Debugger.MetaData;
+using ICSharpCode.NRefactory.Ast;
+using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers
 {
+	public class GridVisualizerDescriptor : IVisualizerDescriptor
+	{
+		public bool IsVisualizerAvailable(DebugType type)
+		{
+			DebugType collectionType, itemType;
+			// Visualizer available for IEnumerable<T>
+			return type.ResolveIEnumerableImplementation(out collectionType, out itemType);
+		}
+		
+		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
+		{
+			return new GridVisualizerCommand(expression);
+		}
+	}
+	
 	/// <summary>
 	/// Shows grid visualizer for a node.
 	/// </summary>
 	public class GridVisualizerCommand : ExpressionNodeVisualizerCommand
 	{
-		public GridVisualizerCommand(ExpressionNode expressionNode)
-			:base(expressionNode)
+		public GridVisualizerCommand(Expression expression)
+			:base(expression)
 		{
 		}
 		
@@ -33,10 +52,10 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Node != null && this.Node.Expression != null)
+			if (this.Expression != null)
 			{
 				var gridVisualizerWindow = GridVisualizerWindow.EnsureShown();
-				gridVisualizerWindow.ShownExpression = this.Node.Expression;
+				gridVisualizerWindow.ShownExpression = this.Expression;
 			}
 		}
 	}

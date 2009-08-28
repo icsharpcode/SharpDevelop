@@ -117,9 +117,9 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			Value val = null;
 			try	{
 				val = debuggerService.GetValueFromName(txtExpression.Text);
-				var systemObjectType = DebugType.CreateFromType(val.AppDomain, typeof(System.Object));
+				/*var systemObjectType = DebugType.CreateFromType(val.AppDomain, typeof(System.Object));
 				var listType = DebugType.CreateFromType(val.AppDomain, typeof(System.Collections.Generic.List<>), systemObjectType);
-				Value list = Eval.NewObject(listType	, val);
+				Value list = Eval.NewObject(listType	, val);*/
 			} catch(GetValueException) {
 				// display ex.Message
 			}

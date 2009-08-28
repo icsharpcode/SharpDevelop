@@ -4,38 +4,37 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.NRefactory.Ast;
+using Debugger.MetaData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Debugger.AddIn.TreeModel;
-using Debugger.AddIn.Visualizers.Graph;
-using Debugger.MetaData;
+using Debugger.AddIn.Visualizers.TextVisualizer;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Debugging;
-using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers
 {
-	public class ObjectGraphVisualizerDescriptor : IVisualizerDescriptor
+	public class TextVisualizerDescriptor : IVisualizerDescriptor
 	{
 		public bool IsVisualizerAvailable(DebugType type)
 		{
-			bool typeIsAtomic = type.IsPrimitive || type.IsSystemDotObject() || type.IsEnum();
-			return !typeIsAtomic;
+			return type.IsString;
 		}
 		
 		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
 		{
-			return new ObjectGraphVisualizerCommand(expression);
+			return new TextVisualizerCommand(expression);
 		}
 	}
 	
 	/// <summary>
-	/// Shows object graph visualizer for a node.
+	/// Description of TextVisualizerCommand.
 	/// </summary>
-	public class ObjectGraphVisualizerCommand : ExpressionNodeVisualizerCommand
+	public class TextVisualizerCommand : ExpressionNodeVisualizerCommand
 	{
-		public ObjectGraphVisualizerCommand(Expression expression)
+		public TextVisualizerCommand(Expression expression)
 			:base(expression)
 		{
 		}
@@ -46,15 +45,16 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override string ToString()
 		{
-			return "Object graph visualizer";
+			return "Text visualizer";
 		}
 		
 		public override void Execute()
 		{
 			if (this.Expression != null)
 			{
-				var objectGraphWindow = ObjectGraphWindow.EnsureShown();
-				objectGraphWindow.ShownExpression = this.Expression;
+				var textVisualizerWindow = new TextVisualizerWindow(
+					this.Expression.PrettyPrint(), this.Expression.Evaluate(WindowsDebugger.CurrentProcess).InvokeToString());
+				textVisualizerWindow.ShowDialog();
 			}
 		}
 	}

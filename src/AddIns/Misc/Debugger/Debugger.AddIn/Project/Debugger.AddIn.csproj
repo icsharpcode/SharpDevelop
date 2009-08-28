@@ -124,9 +124,12 @@
     <Compile Include="Src\TreeModel\DebuggerResourceService.cs" />
     <Compile Include="Src\Visualizers\Commands\ExpressionNodeVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\GridVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\IVisualizerCommandDescriptor.cs" />
     <Compile Include="Src\Visualizers\Commands\ObjectGraphVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\GridVisualizerMenuCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\ObjectGraphVisualizerMenuCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\TextVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\VisualizerDescriptors.cs" />
     <Compile Include="Src\Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Common\IEvaluate.cs" />
     <Compile Include="Src\Visualizers\Common\IListValuesProvider.cs" />
@@ -161,6 +164,10 @@
     <Compile Include="Src\Visualizers\PresentationBindings\GridViewHideableColumn.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\ScrollUtils.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
+    <Compile Include="Src\Visualizers\TextVisualizer\TextVisualizerWindow.xaml.cs">
+      <DependentUpon>TextVisualizerWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Visualizers\Utils\AtomicType.cs" />
     <Compile Include="Src\Visualizers\Utils\IEnumerableExtensions.cs" />
     <Compile Include="Src\Visualizers\Utils\ITreeNode.cs" />
@@ -351,6 +358,7 @@
     <Page Include="Src\Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
     <Page Include="Src\Visualizers\Graph\ObjectGraphControl.xaml" />
     <Page Include="Src\Visualizers\GridVisualizer\GridVisualizerWindow.xaml" />
+    <Page Include="Src\Visualizers\TextVisualizer\TextVisualizerWindow.xaml" />
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
@@ -377,6 +385,7 @@
     <Folder Include="Src\Visualizers\Controls" />
     <Folder Include="Src\Visualizers\Common" />
     <Folder Include="Src\Visualizers\Commands" />
+    <Folder Include="Src\Visualizers\TextVisualizer" />
     <Folder Include="Src\Visualizers\Utils" />
     <Folder Include="Src\Visualizers\GridVisualizer" />
     <Folder Include="Src\Visualizers\PresentationBindings" />

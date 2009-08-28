@@ -4,10 +4,11 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.AddIn.TreeModel;
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Debugger.AddIn.TreeModel;
 using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.Visualizers
@@ -15,16 +16,14 @@ namespace Debugger.AddIn.Visualizers
 	/// <summary>
 	/// Visualizer command for <see cref="ExpressionNode"/>
 	/// </summary>
-	// probably we should not make visualizers available only to ExpressionNodes and descendants,
-	// the visualizer command should be available for any TreeNode
-	// and the VisualizerCommand itself should decide what to do with passed instance
+	// should we make visualizer command available for Expression, or any TreeNode?
 	public abstract class ExpressionNodeVisualizerCommand : IVisualizerCommand
 	{
-		public ExpressionNode Node { get; private set; }
+		public Expression Expression { get; private set; }
 		
-		public ExpressionNodeVisualizerCommand(ExpressionNode expressionNode)
+		public ExpressionNodeVisualizerCommand(Expression expression)
 		{
-			this.Node = expressionNode;
+			this.Expression = expression;
 		}
 		
 		public abstract bool CanExecute { get; }
