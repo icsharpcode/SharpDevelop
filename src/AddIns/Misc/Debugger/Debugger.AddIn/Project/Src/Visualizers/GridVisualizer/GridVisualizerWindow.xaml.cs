@@ -117,12 +117,15 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			Value val = null;
 			try	{
 				val = debuggerService.GetValueFromName(txtExpression.Text);
+				var systemObjectType = DebugType.CreateFromType(val.AppDomain, typeof(System.Object));
+				var listType = DebugType.CreateFromType(val.AppDomain, typeof(System.Collections.Generic.List<>), systemObjectType);
+				Value list = Eval.NewObject(listType	, val);
 			} catch(GetValueException) {
 				// display ex.Message
 			}
 			if (val != null && !val.IsNull) {
 				GridValuesProvider gridValuesProvider;
-				// Value is IList?
+				// Value is IList
 				DebugType iListType, listItemType;
 				if (val.Type.ResolveIListImplementation(out iListType, out listItemType)) {
 					var listValuesProvider = new ListValuesProvider(val.ExpressionTree, iListType, listItemType);
@@ -130,7 +133,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 					this.listView.ItemsSource = virtCollection;
 					gridValuesProvider = listValuesProvider;
 				} else	{
-					// Value is IEnumerable?
+					// Value is IEnumerable
 					DebugType iEnumerableType, itemType;
 					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
 						var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);

@@ -224,8 +224,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
 			
-			foreach (PropertyInfo memberProp in shownType.GetProperties(flags))
+			foreach (MemberInfo memberProp in shownType.GetFieldsAndProperties(flags))
 			{
+				// skip backing fields
 				if (memberProp.Name.Contains("<"))
 					continue;
 

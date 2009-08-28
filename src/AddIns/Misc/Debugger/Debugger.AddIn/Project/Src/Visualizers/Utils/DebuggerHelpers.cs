@@ -8,6 +8,7 @@ using System;
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 using ICSharpCode.SharpDevelop.Services;
+using System.Collections.Generic;
 using Expression = ICSharpCode.NRefactory.Ast.Expression;
 
 namespace Debugger.AddIn.Visualizers.Utils
@@ -45,6 +46,16 @@ namespace Debugger.AddIn.Visualizers.Utils
 		public static ulong GetObjectAddress(this Expression expr)
 		{
 			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetObjectAddress();
+		}
+		
+		public static IEnumerable<MemberInfo> GetFieldsAndProperties(this DebugType type, BindingFlags bindingFlags)
+		{
+			foreach(FieldInfo field in type.GetFields(bindingFlags)) {
+				yield return field;
+			}
+			foreach(PropertyInfo property in type.GetProperties(bindingFlags)) {
+				yield return property;
+			}
 		}
 		
 		/// <summary>

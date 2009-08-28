@@ -336,6 +336,11 @@ namespace Debugger
 		
 		#region Convenience methods
 		
+		public static Value NewObject(DebugType debugType, params Value[] constructorArguments)
+		{
+			return NewObject(debugType, new List<Value>(constructorArguments));
+		}
+		
 		public static Value NewObject(DebugType debugType, List<Value> constructorArguments)
 		{
 			return AsyncNewObject(debugType, constructorArguments).WaitForResult();
