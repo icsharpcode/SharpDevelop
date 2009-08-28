@@ -41,15 +41,19 @@ namespace Debugger.AddIn.Visualizers.TextVisualizer
 			set { this.txtText.Text = value; }
 		}
 		
-		void BtnCopy_Click(object sender, RoutedEventArgs e)
-		{
-			Clipboard.SetText(txtText.Text);
-			Close();
-		}
-		
 		void CheckBox_CheckedChanged(object sender, RoutedEventArgs e)
 		{
 			txtText.TextWrapping = chbWrap.IsChecked.GetValueOrDefault(false) ? TextWrapping.Wrap : TextWrapping.NoWrap;
+		}
+		
+		void BtnCopy_Click(object sender, RoutedEventArgs e)
+		{
+			Clipboard.SetText(txtText.Text);
+		}
+		
+		void BtnClose_Click(object sender, RoutedEventArgs e)
+		{
+			Close();
 		}
 	}
 }
