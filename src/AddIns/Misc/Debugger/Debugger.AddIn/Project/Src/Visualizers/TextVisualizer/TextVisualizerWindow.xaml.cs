@@ -40,5 +40,16 @@ namespace Debugger.AddIn.Visualizers.TextVisualizer
 			get { return this.txtText.Text; }
 			set { this.txtText.Text = value; }
 		}
+		
+		void BtnCopy_Click(object sender, RoutedEventArgs e)
+		{
+			Clipboard.SetText(txtText.Text);
+			Close();
+		}
+		
+		void CheckBox_CheckedChanged(object sender, RoutedEventArgs e)
+		{
+			txtText.TextWrapping = chbWrap.IsChecked.GetValueOrDefault(false) ? TextWrapping.Wrap : TextWrapping.NoWrap;
+		}
 	}
 }

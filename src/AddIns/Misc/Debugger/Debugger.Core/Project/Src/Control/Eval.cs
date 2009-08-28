@@ -356,8 +356,9 @@ namespace Debugger
 		public static Eval AsyncNewObject(DebugType debugType, List<Value> constructorArguments)
 		{
 			List<Expression> constructorArgumentsExpressions = SelectExpressions(constructorArguments);
+			// constructorArgumentsTypes = SelectTypes(constructorArguments);
 			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
-			MethodInfo constructor = debugType.GetMethod(".ctor");
+			MethodInfo constructor = debugType.GetMethod(".ctor");	// TODO
 			return new Eval(
 				debugType.AppDomain,
 				"New object: " + debugType.FullName,
