@@ -260,13 +260,31 @@ namespace Debugger.MetaData
 		
 		/// <summary> Return method overload with given type parameters </summary>
 		/// <returns> Null if not found </returns>
-		public MethodInfo GetMethod(string name, DebugType[] paramTypes)
+		public MethodInfo GetMethod(string name, params DebugType[] paramTypes)
 		{
 			foreach(MethodInfo candidate in GetMethods(name)) {
 				if (candidate.ParameterCount == paramTypes.Length) {
 					bool match = true;
 					for(int i = 0; i < paramTypes.Length; i++) {
 						if (paramTypes[i] != candidate.ParameterTypes[i])
+							match = false;
+					}
+					if (match)
+						return candidate;
+				}
+			}
+			return null;
+		}
+		
+		/// <summary> Return method overload with given parameter names </summary>
+		/// <returns> Null if not found </returns>
+		public MethodInfo GetMethod(string name, params string[] paramNames)
+		{
+			foreach(MethodInfo candidate in GetMethods(name)) {
+				if (candidate.ParameterCount == paramNames.Length) {
+					bool match = true;
+					for(int i = 0; i < paramNames.Length; i++) {
+						if (paramNames[i] != candidate.ParameterNames[i])
 							match = false;
 					}
 					if (match)

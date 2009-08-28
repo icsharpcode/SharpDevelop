@@ -18,6 +18,11 @@ namespace Debugger.Tests.TestPrograms
 		}
 		
 		public string Value = "base value";
+		
+		public string Foo(int i)
+		{
+			return "base-int";
+		}
 	}
 	
 	public class TestClass: BaseClass
@@ -57,6 +62,16 @@ namespace Debugger.Tests.TestPrograms
 		{
 			
 		}
+		
+		public new string Foo(int i)
+		{
+			return "deriv-int";
+		}
+		
+		public string Foo(string s)
+		{
+			return "deriv-string";
+		}
 	}
 }
 
@@ -73,6 +88,18 @@ namespace Debugger.Tests {
 			ObjectDump("LocalVariables", process.SelectedStackFrame.GetLocalVariableValues());
 			ObjectDump("this", process.SelectedStackFrame.GetThisValue().GetMemberValues());
 			ObjectDump("methods", process.SelectedStackFrame.MethodInfo.DeclaringType.GetMethods());
+			Value thisVal = process.SelectedStackFrame.GetThisValue().GetPermanentReference();
+			
+			Value baseMethodVal = thisVal.GetMemberValue(thisVal.Type.BaseType.GetMethod("Foo", "i"), Debugger.Eval.CreateValue(process.SelectedStackFrame.AppDomain, 1));
+			ObjectDump("BaseMethod", baseMethodVal);
+			Value derivedMethodVal = thisVal.GetMemberValue(thisVal.Type.GetMethod("Foo", "i"), Debugger.Eval.CreateValue(process.SelectedStackFrame.AppDomain, 1));
+			ObjectDump("HiddenMethod", derivedMethodVal);
+			Value overloadMethodVal = thisVal.GetMemberValue(thisVal.Type.GetMethod("Foo", "s"), Debugger.Eval.CreateValue(process.SelectedStackFrame.AppDomain, "a"));
+			ObjectDump("HiddenMethod", overloadMethodVal);
+			
+			ObjectDump("BaseMethod_reeval", baseMethodVal.ExpressionTree.Evaluate(process));
+			ObjectDump("HiddenMethod_reeval", derivedMethodVal.ExpressionTree.Evaluate(process));
+			ObjectDump("HiddenMethod_reeval", overloadMethodVal.ExpressionTree.Evaluate(process));
 			
 			EndTest();
 		}
@@ -88,7 +115,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Expressions.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Expressions.cs:48,4-48,40</DebuggingPaused>
+    <DebuggingPaused>Break Expressions.cs:53,4-53,40</DebuggingPaused>
     <Arguments
       Capacity="4"
       Count="1">
@@ -213,7 +240,7 @@ namespace Debugger.Tests {
     </this>
     <methods
       Capacity="8"
-      Count="6">
+      Count="8">
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.TestClass"
@@ -268,6 +295,28 @@ namespace Debugger.Tests {
       <Item>
         <MethodInfo
           DeclaringType="Debugger.Tests.TestPrograms.TestClass"
+          FullName="Debugger.Tests.TestPrograms.TestClass.Foo"
+          IsPublic="True"
+          Module="Expressions.exe"
+          Name="Foo"
+          ParameterCount="1"
+          ParameterTypes="{System.Int32}"
+          ReturnType="System.String" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="Debugger.Tests.TestPrograms.TestClass"
+          FullName="Debugger.Tests.TestPrograms.TestClass.Foo"
+          IsPublic="True"
+          Module="Expressions.exe"
+          Name="Foo"
+          ParameterCount="1"
+          ParameterTypes="{System.String}"
+          ReturnType="System.String" />
+      </Item>
+      <Item>
+        <MethodInfo
+          DeclaringType="Debugger.Tests.TestPrograms.TestClass"
           FullName="Debugger.Tests.TestPrograms.TestClass..ctor"
           IsPublic="True"
           IsSpecialName="True"
@@ -275,6 +324,54 @@ namespace Debugger.Tests {
           Name=".ctor" />
       </Item>
     </methods>
+    <BaseMethod>
+      <Value
+        AsString="base-int"
+        Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).Foo((System.Int32)(1))"
+        IsReference="True"
+        PrimitiveValue="base-int"
+        Type="System.String" />
+    </BaseMethod>
+    <HiddenMethod>
+      <Value
+        AsString="deriv-int"
+        Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.Int32)(1))"
+        IsReference="True"
+        PrimitiveValue="deriv-int"
+        Type="System.String" />
+    </HiddenMethod>
+    <HiddenMethod>
+      <Value
+        AsString="deriv-string"
+        Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.String)(&quot;a&quot;))"
+        IsReference="True"
+        PrimitiveValue="deriv-string"
+        Type="System.String" />
+    </HiddenMethod>
+    <BaseMethod_reeval>
+      <Value
+        AsString="base-int"
+        Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).Foo((System.Int32)(1))"
+        IsReference="True"
+        PrimitiveValue="base-int"
+        Type="System.String" />
+    </BaseMethod_reeval>
+    <HiddenMethod_reeval>
+      <Value
+        AsString="deriv-int"
+        Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.Int32)(1))"
+        IsReference="True"
+        PrimitiveValue="deriv-int"
+        Type="System.String" />
+    </HiddenMethod_reeval>
+    <HiddenMethod_reeval>
+      <Value
+        AsString="deriv-string"
+        Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.String)(&quot;a&quot;))"
+        IsReference="True"
+        PrimitiveValue="deriv-string"
+        Type="System.String" />
+    </HiddenMethod_reeval>
     <ProcessExited />
   </Test>
 </DebuggerTests>

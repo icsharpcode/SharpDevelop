@@ -297,7 +297,7 @@ namespace Debugger
 			MemberReferenceExpression memberRef = invocationExpression.TargetObject as MemberReferenceExpression;
 			if (memberRef != null) {
 				target = Evaluate(memberRef.TargetObject);
-				targetType = GetDebugType(memberRef.TargetObject);
+				targetType = GetDebugType(memberRef.TargetObject) ?? target.Type;
 				methodName = memberRef.MemberName;
 			} else {
 				IdentifierExpression ident = invocationExpression.TargetObject as IdentifierExpression;
