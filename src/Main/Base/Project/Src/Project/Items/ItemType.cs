@@ -56,6 +56,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static readonly ItemType Folder = new ItemType("Folder");
 		public static readonly ItemType WebReferences = new ItemType("WebReferences");
 		
+		/// <summary>
+		/// Gets a collection of item types that are known not to be used for files.
+		/// </summary>
+		public static readonly ReadOnlyCollectionWrapper<ItemType> NonFileItemTypes
+			= new ReadOnlyCollectionWrapper<ItemType>(new List<ItemType>(ReferenceItemTypes) { Folder, WebReferences, Import });
 		
 		readonly string itemName;
 		

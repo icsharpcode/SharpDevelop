@@ -275,11 +275,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		static ITextBuffer GetParseableFileContentInternal(string fileName)
 		{
-			IViewContent viewContent = FileService.GetOpenFile(fileName);
-			IEditable editable = viewContent as IEditable;
-			if (editable != null) {
-				return editable.CreateSnapshot();
-			}
 			//ITextBuffer res = project.GetParseableFileContent(fileName);
 			//if (res != null)
 			//	return res;

@@ -113,19 +113,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listBox.ScrollIntoView(listBox.Items[index]);
 		}
 		
-		static readonly IList<ICompletionItem> emptyList = new ICompletionItem[0];
-		
-		IList<ICompletionItem> Resolve(string expression)
-		{
-			ITextEditor editor = GetEditor();
-			if (editor != null) {
-				CodeCompletionItemProvider cdp = new DotCodeCompletionItemProvider();
-				var list = cdp.GenerateCompletionListForExpression(editor, new ExpressionResult(expression));
-				return list != null ? list.Items.ToList() : emptyList;
-			}
-			return emptyList;
-		}
-		
 		Dictionary<string, object> visibleEntries = new Dictionary<string, object>();
 		int bestMatchType;
 		double bestPriority;
@@ -164,29 +151,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (!int.TryParse(line, out lineNr))
 					lineNr = 0;
 				AddSourceFiles(file, lineNr);
-			} else if (dotPos > 0) {
-				AddSourceFiles(text, 0);
-				string expression = text.Substring(0, dotPos).Trim();
-				text = text.Substring(dotPos + 1).Trim();
-				ShowCompletionData(Resolve(expression), text);
-				foreach (IClass c in SearchClasses(expression)) {
-					if (c.Name.Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
-						foreach (IMethod m in c.DefaultReturnType.GetMethods()) {
-							if (!m.IsConstructor) {
-								AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m));
-							}
-						}
-						foreach (IField f in c.DefaultReturnType.GetFields()) {
-							AddItemIfMatchText(text, f, ClassBrowserIconService.GetIcon(f));
-						}
-						foreach (IProperty p in c.DefaultReturnType.GetProperties()) {
-							AddItemIfMatchText(text, p, ClassBrowserIconService.GetIcon(p));
-						}
-						foreach (IEvent evt in c.DefaultReturnType.GetEvents()) {
-							AddItemIfMatchText(text, evt, ClassBrowserIconService.GetIcon(evt));
-						}
-					}
-				}
 			} else {
 				AddSourceFiles(text, 0);
 				foreach (IClass c in SearchClasses(text)) {

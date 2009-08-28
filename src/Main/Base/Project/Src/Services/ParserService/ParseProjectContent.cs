@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -246,7 +247,6 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (!initializing) return;
 			//int progressStart = progressMonitor.WorkDone;
-			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(project);
 			try {
 				IProjectContent[] referencedContents;
 				lock (this.ReferencedContents) {
@@ -260,21 +260,21 @@ namespace ICSharpCode.SharpDevelop
 					}
 				}
 				
-				while (enumerator.MoveNext()) {
-					int i = enumerator.Index;
-					if ((i % 4) == 2) {
-						//progressMonitor.WorkDone = progressStart + i;
-						token.ThrowIfCancellationRequested();
+				ParseableFileContentFinder finder = new ParseableFileContentFinder();
+				var fileContents =
+					from p in project.Items.AsParallel().WithCancellation(token)
+					where !ItemType.NonFileItemTypes.Contains(p.ItemType)
+					select finder.Create(p);
+				fileContents.ForAll(
+					entry => {
+						ITextBuffer content = entry.GetContent();
+						if (content != null)
+							ParserService.ParseFile(this, entry.FileName, content);
 					}
-					
-					ParserService.ParseFile(this, enumerator.CurrentFileName, new StringTextBuffer(enumerator.CurrentFileContent));
-					
-					if (!initializing) return;
-				}
+				);
 			} finally {
 				initializing = false;
 				//progressMonitor.WorkDone = progressStart + enumerator.ItemCount;
-				enumerator.Dispose();
 			}
 		}
 		

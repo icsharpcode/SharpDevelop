@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				ownerClass = ownerClass.GetCompoundClass();
 				files = GetPossibleFiles(ownerClass, member);
 			}
-			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(files.ToArray());
+			ParseableFileContentFinder finder = new ParseableFileContentFinder();
 			List<Reference> references = new List<Reference>();
 			try {
 				if (progressMonitor != null) {
@@ -163,21 +163,27 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					System.Diagnostics.Debugger.Break();
 				}
 				#endif
-				while (enumerator.MoveNext()) {
+				int index = 0;
+				foreach (ProjectItem item in files) {
+					var entry = finder.Create(item);
+					
 					if (progressMonitor != null) {
-						progressMonitor.WorkDone = enumerator.Index;
+						progressMonitor.WorkDone = index;
 						if (progressMonitor.IsCancelled) {
 							return null;
 						}
 					}
 					
-					AddReferences(references, ownerClass, member, isLocal, enumerator.CurrentFileName, enumerator.CurrentFileContent);
+					ITextBuffer content = entry.GetContent();
+					if (content != null) {
+						AddReferences(references, ownerClass, member, isLocal, entry.FileName, content.Text);
+					}
+					index++;
 				}
 			} finally {
 				if (progressMonitor != null) {
 					progressMonitor.Done();
 				}
-				enumerator.Dispose();
 			}
 			return references;
 		}

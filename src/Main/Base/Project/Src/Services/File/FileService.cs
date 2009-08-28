@@ -81,6 +81,8 @@ namespace ICSharpCode.SharpDevelop
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			
+			WorkbenchSingleton.AssertMainThread();
+			
 			fileName = FileUtility.NormalizePath(fileName);
 			OpenedFile file;
 			openedFileDict.TryGetValue(fileName, out file);
