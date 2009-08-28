@@ -181,7 +181,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SetHighlighting(string language)
 		{
-			this.console.SetHighlighting(language);
+			if (this.console != null)
+				this.console.SetHighlighting(language);
 		}
 		
 		public bool WordWrap {

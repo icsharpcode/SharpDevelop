@@ -1,0 +1,101 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
+//     <version>$Revision$</version>
+// </file>
+using ICSharpCode.SharpDevelop.Project;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Debugging;
+
+namespace Debugger.AddIn.Service
+{
+	/// <summary>
+	/// Interaction logic for EditBreakpointScriptWindow.xaml
+	/// </summary>
+	public partial class EditBreakpointScriptWindow : Window
+	{
+		BreakpointBookmark data;
+		
+		public BreakpointBookmark Data {
+			get { return data; }
+		}
+		
+		public EditBreakpointScriptWindow(BreakpointBookmark data)
+		{
+			InitializeComponent();
+			
+			this.data = data;
+			this.data.Action = BreakpointAction.Condition;
+			
+			foreach (var name in Enum.GetNames(typeof(SupportedLanguage)))
+				cmbLanguage.Items.Add(name);
+			
+			LoggingService.Debug(ProjectService.CurrentProject.Language);
+			
+			this.cmbLanguage.SelectedIndex = 
+				(!string.IsNullOrEmpty(data.ScriptLanguage)) ? 
+				this.cmbLanguage.Items.IndexOf(data.ScriptLanguage) :
+				this.cmbLanguage.Items.IndexOf(ProjectService.CurrentProject.Language.Replace("#", "Sharp"));
+			
+			this.codeEditor.Document.Text = data.Condition;
+			
+			UpdateHighlighting();
+		}
+		
+		void UpdateHighlighting()
+		{
+			codeEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension("." + cmbLanguage.SelectedValue.ToString().Substring(0, 2));
+		}
+		
+		bool CheckSyntax()
+		{
+			SupportedLanguage language = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), this.cmbLanguage.SelectedItem.ToString(), true);
+			using (var parser = ParserFactory.CreateParser(language, new StringReader(this.codeEditor.Document.Text))) {
+				parser.ParseExpression();
+				if (parser.Errors.Count > 0) {
+					MessageService.ShowError(parser.Errors.ErrorOutput);
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		void BtnOKClick(object sender, RoutedEventArgs e)
+		{
+			if (!this.CheckSyntax())
+				return;
+			this.data.Condition = this.codeEditor.Document.Text;
+			DialogResult = true;
+		}
+		
+		void BtnCancelClick(object sender, RoutedEventArgs e)
+		{
+			DialogResult = false;
+		}
+		
+		void CmbLanguageSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			this.data.ScriptLanguage = this.cmbLanguage.SelectedValue.ToString();
+			UpdateHighlighting();
+		}
+		
+		void BtnCheckSyntaxClick(object sender, RoutedEventArgs e)
+		{
+			CheckSyntax();
+		}
+	}
+}

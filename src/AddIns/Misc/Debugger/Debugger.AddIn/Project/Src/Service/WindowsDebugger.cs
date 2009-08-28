@@ -551,7 +551,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool Evaluate(string code, string language)
 		{
 			try {
-				SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language.Replace("#", "Sharp"), true);
+				SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language, true);
 				Value val = ExpressionEvaluator.Evaluate(code, supportedLanguage, debuggedProcess.SelectedStackFrame);
 				
 				if (val.PrimitiveValue is bool)

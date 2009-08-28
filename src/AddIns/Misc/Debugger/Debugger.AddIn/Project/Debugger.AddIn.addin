@@ -138,6 +138,9 @@
 		<MenuItem id="AddWatch" label="${res:MainWindow.Windows.Debug.Watch.AddWatch}" class="Debugger.AddIn.AddWatchCommand" />
 		<MenuItem id="RemoveWatch" label="${res:MainWindow.Windows.Debug.Watch.RemoveWatch}" class="Debugger.AddIn.RemoveWatchCommand" />
 		<MenuItem id="ClearWatches" label="${res:MainWindow.Windows.Debug.Watch.RemoveAll}" class="Debugger.AddIn.ClearWatchesCommand" />
+		<MenuItem id="SelectLanguage" label="Select language" type="Menu">
+			<MenuItem id="Builder" class="Debugger.AddIn.WatchScriptingLanguageMenuBuilder" type="Builder" />
+		</MenuItem>
 		<Condition name = "IsProcessRunning" isdebugging="True">
 			<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
 				<MenuItem id="Separator1" type="Separator" />
@@ -165,14 +168,17 @@
 			          label = "Object graph visualizer"
 			          class = "Debugger.AddIn.Visualizers.ObjectGraphVisualizerMenuCommand"/>
 		</Condition>
-	</Path>
-
-    <Path name = "/Workspace/Tools">
 		<Condition name="SolutionOpen" action="disable">
 			<MenuItem id = "DebuggerGridVisualizerShowCommand"
 			          label = "Grid visualizer"
 			          class = "Debugger.AddIn.Visualizers.GridVisualizerMenuCommand"/>
 		</Condition>
 	</Path>
+
+	<Path name="/SharpDevelop/Pads/CommonConsole/ToolBar">
+		<ToolbarItem class="ICSharpCode.SharpDevelop.Gui.Pads.SelectLanguageCommand"
+			type="ComboBox" id="SelectLanguageCommand" />
+	</Path>
+
 
 </AddIn>

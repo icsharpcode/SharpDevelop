@@ -7,111 +7,18 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 using Debugger;
-using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
-using Exception=System.Exception;
-using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
+using Exception = System.Exception;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class TextNode : Debugger.AddIn.TreeModel.TreeNode, ISetText
-	{
-		public TextNode(string text)
-		{
-			this.Name = text;
-		}
-		
-		public bool CanSetText {
-			get {
-				return true;
-			}
-		}
-		
-		public bool SetText(string text)
-		{
-			this.Text = text;
-			return true;
-		}
-		
-		public bool SetName(string name)
-		{
-			this.Name = name;
-			return true;
-		}
-	}
-	
-	public class ErrorInfoNode : ICorDebug.InfoNode
-	{
-		public ErrorInfoNode(string name, string text) : base(name, text)
-		{
-			IconImage = DebuggerResourceService.GetImage("Icons.16x16.Error");
-		}
-	}
-	
-	public sealed class WatchItemName: NodeTextBox {
-		public WatchItemName()
-		{
-			this.EditEnabled = true;
-			this.EditOnClick = true;
-		}
-		protected override bool CanEdit(TreeNodeAdv node)
-		{
-			TreeNode content = ((TreeViewVarNode)node).Content;
-			return (content is ISetText) && ((ISetText)content).CanSetText;
-		}
-		public override object GetValue(TreeNodeAdv node)
-		{
-			if (node is TreeViewVarNode) {
-				return ((TreeViewVarNode)node).Content.Name;
-			} else {
-				// Happens during incremental search
-				return base.GetValue(node);
-			}
-		}
-		public override void SetValue(TreeNodeAdv node, object value)
-		{
-			if (string.IsNullOrEmpty(value as string))
-				MessageBox.Show("You can not set name to an empty string!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			else
-			{
-				if (((TreeViewVarNode)node).Content is ExpressionNode) {
-					WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((ExpressionNode)((TreeViewVarNode)node).Content).Name);
-					((ExpressionNode)((TreeViewVarNode)node).Content).Name = value.ToString();
-				} else {
-					if (((TreeViewVarNode)node).Content is TextNode) {
-						WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((TextNode)((TreeViewVarNode)node).Content).Name);
-						((TextNode)((TreeViewVarNode)node).Content).Name = value.ToString();
-					}
-				}
-				
-				WatchPad.Instance.Watches.Add(new TextNode(value as string));
-			}
-		}
-		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
-		{
-			if (args.Node == null) {
-				base.MouseDown(args);
-				return;
-			}
-			TreeNode content = ((TreeViewVarNode)args.Node).Content;
-			if (content is IContextMenu && args.Button == MouseButtons.Right) {
-				ContextMenuStrip menu = ((IContextMenu)content).GetContextMenu();
-				if (menu != null) {
-					menu.Show(args.Node.Tree, args.Location);
-					args.Handled = true;
-				}
-			} else {
-				base.MouseDown(args);
-			}
-		}
-	}
-	
 	public class WatchPad : DebuggerPad
 	{
 		TreeViewAdv watchList;
@@ -193,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void watchList_DragDrop(object sender, DragEventArgs e)
 		{
 			watchList.BeginUpdate();
-			TextNode text = new TextNode(e.Data.GetData(DataFormats.StringFormat).ToString());
+			TextNode text = new TextNode(e.Data.GetData(DataFormats.StringFormat).ToString(), SupportedLanguage.CSharp);
 			TreeViewVarNode node = new TreeViewVarNode(this.debuggedProcess, this.watchList, text);
 			watches.Add(text);
 			watchList.Root.Children.Add(node);
@@ -219,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (watchList.SelectedNode == null)
 			{
 				watchList.BeginUpdate();
-				TextNode text = new TextNode("");
+				TextNode text = new TextNode("", SupportedLanguage.CSharp);
 				TreeViewVarNode node = new TreeViewVarNode(this.debuggedProcess, this.watchList, text);
 				watches.Add(text);
 				watchList.Root.Children.Add(node);
@@ -290,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					foreach (var nod in watches) {
 						try {
 							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(nod.Name) ? "is null or empty!" : nod.Name));
-							Value val = ExpressionEvaluator.Evaluate(nod.Name, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
+							Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
 							ExpressionNode valNode = new ExpressionNode(null, nod.Name, val.ExpressionTree);
 							nodes.Add(new TreeViewVarNode(debuggedProcess, watchList, valNode));
 						} catch (GetValueException) {

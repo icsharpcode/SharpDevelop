@@ -79,6 +79,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\BreakpointChangeMenuBuilder.cs" />
+    <Compile Include="Src\DisableBreakpointMenuCommand.cs" />
+    <Compile Include="Src\EnableBreakpointMenuCommand.cs" />
+    <Compile Include="Src\IsActiveBreakpointCondition.cs" />
     <Compile Include="Src\IsBreakpointCondition.cs" />
     <Compile Include="Src\Options\DebuggingOptions.cs" />
     <Compile Include="Src\Options\DebuggingOptionsPanel.cs">
@@ -94,6 +98,7 @@
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Pads\ObjectGraphPad.cs" />
+    <Compile Include="Src\Pads\SelectLanguageCommand.cs" />
     <Compile Include="Src\Pads\WatchPadCommands.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
@@ -106,6 +111,7 @@
     <Compile Include="Src\Pads\WatchPad.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Src\Pads\WatchPadModel.cs" />
     <Compile Include="Src\Service\AttachToProcessForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -120,6 +126,10 @@
     </Compile>
     <Compile Include="Src\Service\DebuggerEventForm.Designer.cs">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Service\EditBreakpointScriptWindow.xaml.cs">
+      <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\TreeModel\DebuggerResourceService.cs" />
     <Compile Include="Src\Visualizers\Commands\ExpressionNodeVisualizerCommand.cs" />
@@ -179,12 +189,6 @@
     <EmbeddedResource Include="Src\Service\DebuggeeExceptionForm.resx">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Src\Service\EditBreakpointScriptForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Service\EditBreakpointScriptForm.Designer.cs">
-      <DependentUpon>EditBreakpointScriptForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Src\Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Src\Service\RunToCursorCommand.cs" />
     <Compile Include="Src\Service\WindowsDebugger.cs" />
@@ -196,9 +200,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Src\Service\DebuggerEventForm.resx">
       <DependentUpon>DebuggerEventForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Src\Service\EditBreakpointScriptForm.resx">
-      <DependentUpon>EditBreakpointScriptForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
@@ -316,6 +317,10 @@
     <Content Include="Server.config">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <ProjectReference Include="..\..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>
@@ -354,6 +359,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Service\EditBreakpointScriptWindow.xaml" />
     <Page Include="Src\Visualizers\Graph\Drawing\PlusToggleButton.xaml" />
     <Page Include="Src\Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
     <Page Include="Src\Visualizers\Graph\ObjectGraphControl.xaml" />

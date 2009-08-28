@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="Debugger.AddIn.Service.EditBreakpointScriptWindow" xmlns:sd="http://icsharpcode.net/sharpdevelop/core" xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="{sd:Localize MainWindow.Windows.Debug.Conditional.Breakpoints.ScriptingWindow.Title}" Width="500" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" Height="400">
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+			<Label Margin="3" Content="{sd:Localize MainWindow.Windows.Debug.Conditional.Breakpoints.ScriptingWindow.ScriptingLanguage}" />
+			<ComboBox Margin="3" Name="cmbLanguage" SelectionChanged="CmbLanguageSelectionChanged" />
+			<Button Margin="3" Name="btnCheckSyntax" Click="BtnCheckSyntaxClick" Content="{sd:Localize MainWindow.Windows.Debug.Conditional.Breakpoints.ScriptingWindow.CheckSyntax}" />
+		</StackPanel>
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+			<Button Name="btnOK" Margin="3" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" />
+			<Button Name="btnCancel" Margin="3" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" />
+		</StackPanel>
+		<avalonedit:TextEditor Name="codeEditor" />
+	</DockPanel>
+</Window>

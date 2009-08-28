@@ -8,16 +8,28 @@
 using System;
 using Debugger;
 using Debugger.AddIn;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.TextEditor;
+using System.Windows.Controls;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class ConsolePad : AbstractConsolePad
 	{
+		SupportedLanguage language;
+		
+		public SupportedLanguage SelectedLanguage {
+			get { return language; }
+			set {
+				this.language = value;
+				OnLanguageChanged();
+			}
+		}
+		
 		protected override bool AcceptCommand(string command)
 		{
 			if (!string.IsNullOrEmpty(command)) {
@@ -38,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return "The process is running";
 			}
 			try {
-				Value val = ExpressionEvaluator.Evaluate(code, SupportedLanguage.CSharp, process.SelectedStackFrame);
+				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, process.SelectedStackFrame);
 				return ExpressionEvaluator.FormatValue(val);
 			} catch (GetValueException e) {
 				return e.Message;
@@ -61,8 +73,26 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void InitializeConsole()
 		{
 			base.InitializeConsole();
-			
-			SetHighlighting("C#");
+			switch (SelectedLanguage) {
+				case SupportedLanguage.CSharp:
+					SetHighlighting("C#");
+					break;
+				case SupportedLanguage.VBNet:
+					SetHighlighting("VBNET");
+					break;
+			}
+		}
+		
+		void OnLanguageChanged()
+		{
+			switch (SelectedLanguage) {
+				case SupportedLanguage.CSharp:
+					SetHighlighting("C#");
+					break;
+				case SupportedLanguage.VBNet:
+					SetHighlighting("VBNET");
+					break;
+			}
 		}
 		
 		public ConsolePad()

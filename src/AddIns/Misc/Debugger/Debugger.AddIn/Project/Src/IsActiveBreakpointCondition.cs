@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
@@ -20,9 +20,9 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace Debugger.AddIn
 {
-	public class IsBreakpointCondition : IConditionEvaluator
+	public class IsActiveBreakpointCondition : IConditionEvaluator
 	{
-		public IsBreakpointCondition()
+		public IsActiveBreakpointCondition()
 		{
 		}
 		
@@ -36,10 +36,18 @@ namespace Debugger.AddIn
 			if (string.IsNullOrEmpty(provider.TextEditor.FileName))
 				return false;
 			
-			foreach (BreakpointBookmark mark in DebuggerService.Breakpoints) {
-				if ((mark.FileName == provider.TextEditor.FileName) &&
-				    (mark.LineNumber == provider.TextEditor.Caret.Line))
-					return true;
+			BreakpointBookmark point = null;
+			
+			foreach (BreakpointBookmark breakpoint in DebuggerService.Breakpoints) {
+				if ((breakpoint.FileName == provider.TextEditor.FileName) &&
+				    (breakpoint.LineNumber == provider.TextEditor.Caret.Line)) {
+					point = breakpoint;
+					break;
+				}
+			}
+			
+			if (point != null) {
+				return point.IsEnabled;
 			}
 			
 			return false;
