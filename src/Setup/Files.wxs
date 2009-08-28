@@ -439,9 +439,6 @@
 									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">
 										<File Source="..\..\bin\Tools\PartCover\Interop.PartCover.dll" Id="Interop.PartCover.dll" Name="Interop.PartCover.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.PartCover.dll" AssemblyManifest="Interop.PartCover.dll" />
 									</Component>
-									<Component Guid="DA202409-86C7-4E13-9D12-26926A6F770B" Id="PartCoverBrowserManualRtf" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover Browser Manual.rtf" Id="PartCover_Browser_Manual.rtf" Name="PartCover Browser Manual.rtf" KeyPath="yes" />
-									</Component>
 									<Component Guid="2748871F-77C1-4107-A004-869CF09CCFE2" Id="PartCoverConsoleManualRtf" DiskId="1">
 										<File Source="..\..\bin\Tools\PartCover\PartCover Console Manual.rtf" Id="PartCover_Console_Manual.rtf" Name="PartCover Console Manual.rtf" KeyPath="yes" />
 									</Component>
@@ -480,12 +477,6 @@
 										<RegistryValue Id="PartCoverTypeLibRegistryGuidFlags" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0\FLAGS" Value="0" />
 										<RegistryValue Id="PartCoverTypeLibRegistryGuidHelp" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0\HELPDIR" Value=" " />
 									</Component>
-									<Component Guid="BEF3D893-B7BA-4487-BDF4-5E8E31AF4C6B" Id="PartCoverCoverageBrowserExe" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.Coverage.Browser.exe" Id="PartCover.Coverage.Browser.exe" Name="PartCover.Coverage.Browser.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="PartCover.Coverage.Browser.exe" AssemblyManifest="PartCover.Coverage.Browser.exe" />
-									</Component>
-									<Component Guid="BE28BCAE-B6D2-430E-8591-95C095BDACD7" Id="PartCoverCoverageBrowserExeConfig" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.Coverage.Browser.exe.config" Id="PartCover.Coverage.Browser.exe.config" Name="PartCover.Coverage.Browser.exe.config" KeyPath="yes" />
-									</Component>
 									<Component Guid="429867BD-2DC0-4934-BED7-70A17978A57C" Id="PartCoverExe" DiskId="1">
 										<File Source="..\..\bin\Tools\PartCover\PartCover.exe" Id="PartCover.exe" Name="PartCover.exe" Assembly=".net" KeyPath="yes" AssemblyApplication="PartCover.exe" AssemblyManifest="PartCover.exe" />
 									</Component>
@@ -496,12 +487,6 @@
 										<File Source="..\..\bin\Tools\PartCover\PartCover.Framework.dll" Id="PartCover.Framework.dll" Name="PartCover.Framework.dll" KeyPath="yes" />
 									</Component>
 									<Directory Id="Xslt" Name="Xslt">
-										<Component Guid="00708219-F106-4A0E-8CDA-E41DE2C0D611" Id="AssemblyReportXslt" DiskId="1">
-											<File Source="..\..\bin\Tools\PartCover\Xslt\assembly.report.xslt" Id="assembly.report.xslt" Name="assembly.report.xslt" KeyPath="yes" />
-										</Component>
-										<Component Guid="55D89B3C-F9F7-48CD-983A-27EBB09AEF72" Id="ClassReportXslt" DiskId="1">
-											<File Source="..\..\bin\Tools\PartCover\Xslt\class.report.xslt" Id="class.report.xslt" Name="class.report.xslt" KeyPath="yes" />
-										</Component>
 										<Component Guid="A2973C0C-487A-4D0E-AA42-B9D48DCDE060" Id="PartCoverToNCoverXslt" DiskId="1">
 											<File Source="..\..\bin\Tools\PartCover\Xslt\PartCoverToNCover.xsl" Name="PartCoverToNCover.xsl" Id="PartCoverToNCover.xsl" KeyPath="yes" />
 										</Component>

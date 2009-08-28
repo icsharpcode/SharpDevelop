@@ -399,16 +399,11 @@
 				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				<ComponentRef Id="InteropPartCoverDll"/>
-				<ComponentRef Id="PartCoverBrowserManualRtf"/>
 				<ComponentRef Id="PartCoverConsoleManualRtf"/>
 				<ComponentRef Id="PartCoverCorDriverDll"/>
-				<ComponentRef Id="PartCoverCoverageBrowserExe"/>
-				<ComponentRef Id="PartCoverCoverageBrowserExeConfig"/>
 				<ComponentRef Id="PartCoverExe"/>
 				<ComponentRef Id="PartCoverExeConfig"/>
 				<ComponentRef Id="PartCoverFrameworkDll"/>
-				<ComponentRef Id="AssemblyReportXslt"/>
-				<ComponentRef Id="ClassReportXslt"/>		
 				<ComponentRef Id="PartCoverToNCoverXslt"/>		
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>	
 				<ComponentRef Id="PythonEmptyClassTemplate"/>	
