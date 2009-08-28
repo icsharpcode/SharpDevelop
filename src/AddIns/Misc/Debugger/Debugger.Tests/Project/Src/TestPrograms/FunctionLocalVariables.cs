@@ -54,9 +54,6 @@ namespace Debugger.Tests {
       Count="5">
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="0"
           Expression="i"
           PrimitiveValue="0"
@@ -64,9 +61,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="S"
           Expression="s"
           IsReference="True"
@@ -86,9 +80,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is null}"
-          ArrayLength="{Exception: Value is null}"
-          ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="n"
           IsNull="True"
@@ -98,9 +89,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="o"
           IsReference="True"

@@ -75,9 +75,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break ObjectValue.cs:32,4-32,40</DebuggingPaused>
     <val>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="{Debugger.Tests.TestPrograms.ObjectValue}"
         Expression="val"
         IsReference="True"
@@ -87,9 +84,6 @@ namespace Debugger.Tests {
     <val_members>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="c"
           Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).privateField"
           IsReference="True"
@@ -98,9 +92,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="d"
           Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).publicFiled"
           IsReference="True"
@@ -109,9 +100,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="a"
           Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePublic"
           IsReference="True"
@@ -120,9 +108,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="b"
           Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePrivate"
           IsReference="True"
@@ -131,9 +116,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="c"
           Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).PublicProperty"
           IsReference="True"
@@ -144,9 +126,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break ObjectValue.cs:34,4-34,40</DebuggingPaused>
     <val>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="{Debugger.Tests.TestPrograms.ObjectValue}"
         Expression="val"
         IsReference="True"
@@ -156,9 +135,6 @@ namespace Debugger.Tests {
     <val_members>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="new private"
           Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).privateField"
           IsReference="True"
@@ -167,9 +143,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="d"
           Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).publicFiled"
           IsReference="True"
@@ -178,9 +151,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="a"
           Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePublic"
           IsReference="True"
@@ -189,9 +159,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="b"
           Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePrivate"
           IsReference="True"
@@ -200,9 +167,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="new private"
           Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).PublicProperty"
           IsReference="True"

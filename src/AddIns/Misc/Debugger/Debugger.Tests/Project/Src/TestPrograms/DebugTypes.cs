@@ -273,9 +273,6 @@ namespace Debugger.Tests {
       Count="20">
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is null}"
-          ArrayLength="{Exception: Value is null}"
-          ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="nullMyClass"
           IsNull="True"
@@ -296,9 +293,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is null}"
-          ArrayLength="{Exception: Value is null}"
-          ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="nullObject"
           IsNull="True"
@@ -318,9 +312,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is null}"
-          ArrayLength="{Exception: Value is null}"
-          ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="nullString"
           IsNull="True"
@@ -340,9 +331,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="obj"
           IsReference="True"
@@ -361,9 +349,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{MyClass}"
           Expression="myClass"
           IsReference="True"
@@ -383,9 +368,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="42"
           Expression="loc"
           PrimitiveValue="42"
@@ -404,9 +386,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="43"
           Expression="locByRef"
           PrimitiveValue="43"
@@ -425,9 +404,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32*}"
           Expression="locPtr"
           IsReference="True"
@@ -456,9 +432,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32*}"
           Expression="locPtrByRef"
           IsReference="True"
@@ -487,9 +460,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32**}"
           Expression="locPtrPtr"
           IsReference="True"
@@ -527,9 +497,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Void*}"
           Expression="locVoidPtr"
           IsReference="True"
@@ -557,9 +524,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="locObj"
           IsReference="True"
@@ -578,9 +542,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="locObjByRef"
           IsReference="True"
@@ -663,9 +624,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{Point}"
           Expression="locStruct"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -684,9 +642,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{Point*}"
           Expression="locStructPtr"
           IsReference="True"
@@ -715,9 +670,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32}"
           Expression="box"
           IsReference="True"
@@ -738,9 +690,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{MyInterfaceImpl&lt;System.Int32&gt;}"
           Expression="myInterfaceImpl"
           IsReference="True"
@@ -762,9 +711,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{MyInterfaceImpl&lt;System.Int32&gt;}"
           Expression="myInterface"
           IsReference="True"
@@ -791,9 +737,6 @@ namespace Debugger.Tests {
       Count="15">
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="42"
           Expression="arg"
           PrimitiveValue="42"
@@ -812,9 +755,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="43"
           Expression="argByRef"
           PrimitiveValue="43"
@@ -833,9 +773,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32*}"
           Expression="argPtr"
           IsReference="True"
@@ -864,9 +801,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32*}"
           Expression="argPtrByRef"
           IsReference="True"
@@ -895,9 +829,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32**}"
           Expression="argPtrPtr"
           IsReference="True"
@@ -935,9 +866,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Void*}"
           Expression="argVoidPtr"
           IsReference="True"
@@ -965,9 +893,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="argObj"
           IsReference="True"
@@ -986,9 +911,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Object}"
           Expression="argObjByRef"
           IsReference="True"
@@ -1071,9 +993,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{Point}"
           Expression="argStruct"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -1092,9 +1011,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{Point}"
           Expression="argStructByRef"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -1113,9 +1029,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{Point*}"
           Expression="argStructPtr"
           IsReference="True"
@@ -1144,9 +1057,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32}"
           Expression="argBox"
           IsReference="True"
@@ -1167,9 +1077,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Int32}"
           Expression="argBoxByRef"
           IsReference="True"

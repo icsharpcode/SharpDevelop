@@ -54,9 +54,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break GenericDictionary.cs:21,4-21,40</DebuggingPaused>
     <dict>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="{System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;}"
         Expression="dict"
         IsReference="True"
@@ -88,9 +85,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="3"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).count"
           PrimitiveValue="3"
@@ -98,9 +92,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="3"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).version"
           PrimitiveValue="3"
@@ -108,9 +99,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="-1"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).freeList"
           PrimitiveValue="-1"
@@ -118,9 +106,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="0"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).freeCount"
           PrimitiveValue="0"
@@ -128,9 +113,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;}"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).comparer"
           IsReference="True"
@@ -139,9 +121,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is null}"
-          ArrayLength="{Exception: Value is null}"
-          ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).keys"
           IsNull="True"
@@ -151,9 +130,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is null}"
-          ArrayLength="{Exception: Value is null}"
-          ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).values"
           IsNull="True"
@@ -163,9 +139,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is null}"
-          ArrayLength="{Exception: Value is null}"
-          ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict))._syncRoot"
           IsNull="True"
@@ -175,9 +148,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is null}"
-          ArrayLength="{Exception: Value is null}"
-          ArrayRank="{Exception: Value is null}"
           AsString="null"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).m_siInfo"
           IsNull="True"
@@ -187,9 +157,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;}"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Comparer"
           IsReference="True"
@@ -198,9 +165,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="3"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Count"
           PrimitiveValue="3"
@@ -208,9 +172,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{KeyCollection&lt;System.String,System.Int32&gt;}"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Keys"
           IsReference="True"
@@ -219,9 +180,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="{ValueCollection&lt;System.String,System.Int32&gt;}"
           Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Values"
           IsReference="True"

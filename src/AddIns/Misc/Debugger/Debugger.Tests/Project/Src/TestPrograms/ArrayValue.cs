@@ -69,9 +69,6 @@ namespace Debugger.Tests {
     <array_elements>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="0"
           Expression="(array)[(System.Int32)0]"
           PrimitiveValue="0"
@@ -79,9 +76,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="1"
           Expression="(array)[(System.Int32)1]"
           PrimitiveValue="1"
@@ -89,9 +83,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="2"
           Expression="(array)[(System.Int32)2]"
           PrimitiveValue="2"
@@ -99,9 +90,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="3"
           Expression="(array)[(System.Int32)3]"
           PrimitiveValue="3"
@@ -109,9 +97,6 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <Value
-          ArrayDimensions="{Exception: Value is not an array}"
-          ArrayLength="{Exception: Value is not an array}"
-          ArrayRank="{Exception: Value is not an array}"
           AsString="4"
           Expression="(array)[(System.Int32)4]"
           PrimitiveValue="4"
@@ -149,9 +134,6 @@ namespace Debugger.Tests {
     </type>
     <array.Length>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="5"
         Expression="((System.Array)(array)).Length"
         PrimitiveValue="5"

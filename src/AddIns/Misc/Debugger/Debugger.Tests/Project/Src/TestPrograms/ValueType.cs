@@ -55,9 +55,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break ValueType.cs:21,4-21,40</DebuggingPaused>
     <this>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="{Debugger.Tests.ValueType}"
         Expression="this"
         PrimitiveValue="{Exception: Value is not a primitive type}"

@@ -101,9 +101,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break FunctionVariablesLifetime.cs:25,4-25,40</DebuggingPaused>
     <argument>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="1"
         Expression="argument"
         PrimitiveValue="1"
@@ -111,9 +108,6 @@ namespace Debugger.Tests {
     </argument>
     <local>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="2"
         Expression="local"
         PrimitiveValue="2"
@@ -121,9 +115,6 @@ namespace Debugger.Tests {
     </local>
     <_x0040_class>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="3"
         Expression="((Debugger.Tests.TestPrograms.FunctionVariablesLifetime)(this)).@class"
         PrimitiveValue="3"
@@ -132,9 +123,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break FunctionVariablesLifetime.cs:34,4-34,40</DebuggingPaused>
     <argument>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="argument"
         IsInvalid="True"
@@ -145,9 +133,6 @@ namespace Debugger.Tests {
     </argument>
     <local>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="local"
         IsInvalid="True"
@@ -158,9 +143,6 @@ namespace Debugger.Tests {
     </local>
     <_x0040_class>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="((Debugger.Tests.TestPrograms.FunctionVariablesLifetime)(this)).@class"
         IsInvalid="True"
@@ -171,9 +153,6 @@ namespace Debugger.Tests {
     </_x0040_class>
     <localInSubFunction>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="4"
         Expression="localInSubFunction"
         PrimitiveValue="4"
@@ -182,9 +161,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break FunctionVariablesLifetime.cs:27,4-27,40</DebuggingPaused>
     <argument>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="argument"
         IsInvalid="True"
@@ -195,9 +171,6 @@ namespace Debugger.Tests {
     </argument>
     <local>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="local"
         IsInvalid="True"
@@ -208,9 +181,6 @@ namespace Debugger.Tests {
     </local>
     <_x0040_class>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="((Debugger.Tests.TestPrograms.FunctionVariablesLifetime)(this)).@class"
         IsInvalid="True"
@@ -221,9 +191,6 @@ namespace Debugger.Tests {
     </_x0040_class>
     <localInSubFunction>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="localInSubFunction"
         IsInvalid="True"
@@ -235,9 +202,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break FunctionVariablesLifetime.cs:34,4-34,40</DebuggingPaused>
     <argument>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="argument"
         IsInvalid="True"
@@ -248,9 +212,6 @@ namespace Debugger.Tests {
     </argument>
     <local>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="local"
         IsInvalid="True"
@@ -261,9 +222,6 @@ namespace Debugger.Tests {
     </local>
     <_x0040_class>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="((Debugger.Tests.TestPrograms.FunctionVariablesLifetime)(this)).@class"
         IsInvalid="True"
@@ -274,9 +232,6 @@ namespace Debugger.Tests {
     </_x0040_class>
     <localInSubFunction>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="localInSubFunction"
         IsInvalid="True"
@@ -287,9 +242,6 @@ namespace Debugger.Tests {
     </localInSubFunction>
     <localInSubFunction_x0028_new_x0029_>
       <Value
-        ArrayDimensions="{Exception: Value is not an array}"
-        ArrayLength="{Exception: Value is not an array}"
-        ArrayRank="{Exception: Value is not an array}"
         AsString="4"
         Expression="localInSubFunction"
         PrimitiveValue="4"
@@ -298,9 +250,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break FunctionVariablesLifetime.cs:19,4-19,40</DebuggingPaused>
     <argument>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="argument"
         IsInvalid="True"
@@ -311,9 +260,6 @@ namespace Debugger.Tests {
     </argument>
     <local>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="local"
         IsInvalid="True"
@@ -324,9 +270,6 @@ namespace Debugger.Tests {
     </local>
     <_x0040_class>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="((Debugger.Tests.TestPrograms.FunctionVariablesLifetime)(this)).@class"
         IsInvalid="True"
@@ -337,9 +280,6 @@ namespace Debugger.Tests {
     </_x0040_class>
     <localInSubFunction>
       <Value
-        ArrayDimensions="{Exception: Value is no longer valid}"
-        ArrayLength="{Exception: Value is no longer valid}"
-        ArrayRank="{Exception: Value is no longer valid}"
         AsString="{Exception: Value is no longer valid}"
         Expression="localInSubFunction"
         IsInvalid="True"

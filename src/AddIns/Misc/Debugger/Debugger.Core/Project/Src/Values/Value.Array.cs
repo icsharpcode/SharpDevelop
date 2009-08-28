@@ -31,8 +31,10 @@ namespace Debugger
 		/// Gets the number of elements in the array.
 		/// eg new object[4,5] returns 20
 		/// </summary>
+		/// <returns> 0 for non-arrays </returns>
 		public int ArrayLength {
 			get {
+				if (!this.Type.IsArray) return 0;
 				return (int)CorArrayValue.Count;
 			}
 		}
@@ -41,15 +43,19 @@ namespace Debugger
 		/// Gets the number of dimensions of the array.
 		/// eg new object[4,5] returns 2
 		/// </summary>
+		/// <returns> 0 for non-arrays </returns>
 		public int ArrayRank { 
 			get {
+				if (!this.Type.IsArray) return 0;
 				return (int)CorArrayValue.Rank;
 			}
 		}
 		
 		/// <summary> Gets the dimensions of the array  </summary>
+		/// <returns> null for non-arrays </returns>
 		public ArrayDimensions ArrayDimensions {
 			get {
+				if (!this.Type.IsArray) return null;
 				int rank = this.ArrayRank;
 				uint[] baseIndicies;
 				if (CorArrayValue.HasBaseIndicies() == 1) {
