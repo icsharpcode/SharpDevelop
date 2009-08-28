@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Profiling
 		}
 		
 		public static string GetSessionFileName(IProject project)
-		{			
+		{
 			string filename = @"ProfilingSessions\Session" +
 				DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) +
 				".sdps";
@@ -68,8 +68,10 @@ namespace ICSharpCode.SharpDevelop.Profiling
 		}
 		
 		public static void AddSessionToProject(IProject project, string path)
-		{		
+		{
 			Action updater = () => {
+				if (!File.Exists(path))
+					return;
 				FileService.OpenFile(path);
 				if (!project.ReadOnly) {
 					FileProjectItem file = new FileProjectItem(project, ItemType.Content, "ProfilingSessions\\" + Path.GetFileName(path));

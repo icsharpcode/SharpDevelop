@@ -5,7 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
+using System.Diagnostics;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Profiling
 {
@@ -13,16 +16,19 @@ namespace ICSharpCode.SharpDevelop.Profiling
 	{
 		public bool CanProfile(ICSharpCode.SharpDevelop.Project.IProject project)
 		{
-			return false;
+			return true;
 		}
 		
-		public void Start(System.Diagnostics.ProcessStartInfo info, string outputPath, Action afterFinishedAction)
+		public void Start(ProcessStartInfo info, string outputPath, Action afterFinishedAction)
 		{
-			throw new NotSupportedException();
+			MessageService.ShowError("Profiling not supported! " +
+			                         "No appropriate Profiler AddIn was found.");
+			afterFinishedAction();
 		}
 		
 		public void Dispose()
 		{
+			Stop();
 		}
 		
 		public bool IsRunning {
@@ -33,7 +39,6 @@ namespace ICSharpCode.SharpDevelop.Profiling
 		
 		public void Stop()
 		{
-			throw new NotSupportedException();
 		}
 	}
 }

@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				OnDebugStarted(EventArgs.Empty);
 			} catch (Exception) {
 				OnDebugStopped(EventArgs.Empty);
-				throw new ApplicationException("Can't execute " + "\"" + processStartInfo.FileName + "\"\n");
+				throw new ApplicationException("Can't execute \"" + processStartInfo.FileName + "\"\n");
 			}
 		}
 		
