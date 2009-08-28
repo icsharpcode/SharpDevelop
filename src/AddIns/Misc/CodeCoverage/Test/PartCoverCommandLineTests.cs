@@ -57,7 +57,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.PartCoverFileName = partCoverFileName;
 			runner.Target = targetFileName;
-			string expectedCommandLine = partCoverFileName + " --target=\"" + targetFileName + "\"";
+			string expectedCommandLine = partCoverFileName + " --target \"" + targetFileName + "\"";
 			
 			Assert.AreEqual(expectedCommandLine, runner.CommandLine);
 		}		
@@ -68,7 +68,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			string targetWorkingDirectory = @"C:\Program Files\SharpDevelop\bin\Tools";
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.TargetWorkingDirectory = targetWorkingDirectory;
-			string expectedArgs = "--target-work-dir=\"" + targetWorkingDirectory + "\"";
+			string expectedArgs = "--target-work-dir \"" + targetWorkingDirectory + "\"";
 			
 			Assert.AreEqual(expectedArgs, runner.GetArguments());
 		}
@@ -80,7 +80,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.TargetWorkingDirectory = null;
 			runner.TargetArguments = targetArgs;
-			string expectedArgs = "--target-args=\"" + targetArgs + "\"";
+			string expectedArgs = "--target-args \"" + targetArgs + "\"";
 			
 			Assert.AreEqual(expectedArgs, runner.GetArguments());
 		}		
@@ -96,7 +96,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.TargetWorkingDirectory = null;
 			runner.TargetArguments = targetArgs;
-			string expectedArgs = "--target-args=\"" + targetArgs.Replace("\"", "\\\"") + "\"";
+			string expectedArgs = "--target-args \"" + targetArgs.Replace("\"", "\\\"") + "\"";
 			
 			Assert.AreEqual(expectedArgs, runner.GetArguments());
 		}		
@@ -107,7 +107,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			string include = @"[RootNamespace.MyTests]*";
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.Include.Add(include);
-			string expectedArgs = "--include=" + include;
+			string expectedArgs = "--include " + include;
 			
 			Assert.AreEqual(expectedArgs, runner.GetArguments());
 		}		
@@ -120,7 +120,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.Include.Add(include1);
 			runner.Include.Add(include2);
-			string expectedArgs = "--include=" + include1 + " --include=" + include2;
+			string expectedArgs = "--include " + include1 + " --include " + include2;
 			
 			Assert.AreEqual(expectedArgs, runner.GetArguments());
 		}		
@@ -131,7 +131,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			string exclude = @"[RootNamespace.MyTests]*";
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.Exclude.Add(exclude);
-			string expectedArgs = "--exclude=" + exclude;
+			string expectedArgs = "--exclude " + exclude;
 			
 			Assert.AreEqual(expectedArgs, runner.GetArguments());
 		}		
@@ -144,7 +144,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.Exclude.Add(exclude1);
 			runner.Exclude.Add(exclude2);
-			string expectedArgs = "--exclude=" + exclude1 + " --exclude=" + exclude2;
+			string expectedArgs = "--exclude " + exclude1 + " --exclude " + exclude2;
 			
 			Assert.AreEqual(expectedArgs, runner.GetArguments());
 		}		
@@ -157,7 +157,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.Exclude.Add(exclude);
 			runner.Include.Add(include);
-			string expectedArgs = "--include=" + include + " --exclude=" + exclude;
+			string expectedArgs = "--include " + include + " --exclude " + exclude;
 			
 			Assert.AreEqual(expectedArgs, runner.GetArguments());
 		}		
@@ -168,7 +168,7 @@ namespace ICSharpCode.CodeCoverage.Tests
 			string output = @"C:\Projects\MyTests\CodeCoverage.xml";
 			PartCoverRunner runner = new PartCoverRunner();
 			runner.Output = output;
-			string expectedArgs = "--output=\"" + output + "\"";
+			string expectedArgs = "--output \"" + output + "\"";
 			
 			Assert.AreEqual(expectedArgs, runner.GetArguments());
 		}		
