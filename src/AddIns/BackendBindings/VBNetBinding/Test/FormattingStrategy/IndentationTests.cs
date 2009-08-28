@@ -5,15 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using System;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core;
 using NUnit.Framework;
-using VBNetBinding.FormattingStrategy;
 
-namespace VBNetBinding.Tests.FormattingStrategy
+namespace VBNetBinding.Tests
 {
-	/*
 	[TestFixture]
 	public class IndentationTests
 	{
@@ -28,6 +27,24 @@ End Interface";
 			string expectedCode = @"Interface t
 	Sub Test()
 	Sub Test2()
+End Interface";
+			
+			RunFormatTest(code, expectedCode);
+		}
+		
+		[Test]
+		public void InterfaceWithNewLineAtEndTest()
+		{
+			string code = @"Interface t
+Sub Test()
+Sub Test2()
+
+End Interface";
+			
+			string expectedCode = @"Interface t
+	Sub Test()
+	Sub Test2()
+	
 End Interface";
 			
 			RunFormatTest(code, expectedCode);
@@ -119,13 +136,12 @@ End Class";
 		
 		void RunFormatTest(string code, string expectedCode)
 		{
-			using (TextEditorControl editor = new TextEditorControl()) {
-				editor.Document.TextContent = code;
-				VBFormattingStrategy formattingStrategy = new VBFormattingStrategy();
-				formattingStrategy.IndentLines(editor.ActiveTextAreaControl.TextArea, 0, editor.Document.TotalNumberOfLines);
-				
-				Assert.AreEqual(expectedCode, editor.Document.TextContent);
-			}
+			AvalonEditTextEditorAdapter editor = new AvalonEditTextEditorAdapter(new TextEditor());
+			editor.Document.Text = code;
+			VBNetFormattingStrategy formattingStrategy = new VBNetFormattingStrategy();
+			formattingStrategy.IndentLines(editor, 0, editor.Document.TotalNumberOfLines);
+			
+			Assert.AreEqual(expectedCode, editor.Document.Text);
 		}
 		
 		[TestFixtureSetUp]
@@ -135,5 +151,5 @@ End Class";
 				PropertyService.InitializeService(String.Empty, String.Empty, "VBNetBindingTests");
 			}
 		}
-	}*/
+	}
 }

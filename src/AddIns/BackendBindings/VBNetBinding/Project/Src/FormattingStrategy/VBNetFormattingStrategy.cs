@@ -1,15 +1,13 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Markus Palme" email="MarkusPalme@gmx.de"/>
+//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -19,15 +17,15 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 
-namespace VBNetBinding.FormattingStrategy
+namespace VBNetBinding
 {
-	/*
 	/// <summary>
 	/// This class handles the auto and smart indenting in the textbuffer while
 	/// you type.
 	/// </summary>
-	public class VBFormattingStrategy : DefaultFormattingStrategy
+	public class VBNetFormattingStrategy : DefaultFormattingStrategy
 	{
 		List<VBStatement> statements;
 		IList<string> keywords;
@@ -44,7 +42,7 @@ namespace VBNetBinding.FormattingStrategy
 		bool doCasing;
 		bool doInsertion;
 		
-		public VBFormattingStrategy()
+		public VBNetFormattingStrategy()
 		{
 			statements = new List<VBStatement>();
 			statements.Add(new VBStatement(@"^if.*?(then|\s+_)$", "^end ?if$", "End If", 1));
@@ -116,219 +114,220 @@ namespace VBNetBinding.FormattingStrategy
 			};
 		}
 		
-		public override void FormatLine(TextArea textArea, int lineNr, int cursorOffset, char ch) // used for comment tag formater/inserter
+		public override void FormatLine(ITextEditor editor, char charTyped)
 		{
-			textArea.Document.UndoStack.StartUndoGroup();
-			FormatLineInternal(textArea, lineNr, cursorOffset, ch);
-			textArea.Document.UndoStack.EndUndoGroup();
+			using (editor.Document.OpenUndoGroup()) {
+				FormatLineInternal(editor, editor.Caret.Line, editor.Caret.Offset, charTyped);
+			}
 		}
 		
-		void FormatLineInternal(TextArea textArea, int lineNr, int cursorOffset, char ch)
+		void FormatLineInternal(ITextEditor editor, int lineNr, int cursorOffset, char ch)
 		{
-			string terminator = textArea.TextEditorProperties.LineTerminator;
+			string terminator = DocumentUtilitites.GetLineTerminator(editor.Document, lineNr);
 			doCasing = PropertyService.Get("VBBinding.TextEditor.EnableCasing", true);
 			doInsertion = PropertyService.Get("VBBinding.TextEditor.EnableEndConstructs", true);
 			
-			if (lineNr > 0)
+			IDocumentLine currentLine = editor.Document.GetLine(lineNr);
+			IDocumentLine lineAbove = lineNr > 1 ? editor.Document.GetLine(lineNr - 1) : null;
+			
+			string curLineText = editor.Document.Text;
+			string lineAboveText = lineAbove == null ? "" : lineAbove.Text;
+			
+			if (ch == '\'') {
+				InsertDocumentationComments(editor, lineNr, cursorOffset, ch);
+			}
+			
+			if (ch == '\n' && lineAboveText != null)
 			{
-				LineSegment curLine = textArea.Document.GetLineSegment(lineNr);
-				LineSegment lineAbove = lineNr > 0 ? textArea.Document.GetLineSegment(lineNr - 1) : null;
+				string textToReplace = lineAboveText;
+				// remove string content
+				MatchCollection strmatches = Regex.Matches(textToReplace, "\"[^\"]*?\"", RegexOptions.Singleline);
+				foreach (Match match in strmatches)
+				{
+					textToReplace = textToReplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
+				}
+				// remove comments
+				textToReplace = Regex.Replace(textToReplace, "'.*$", "", RegexOptions.Singleline);
 				
-				string curLineText = textArea.Document.GetText(curLine.Offset, curLine.Length);
-				string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
+				if (doCasing)
+					DoCasingOnLine(lineAbove, textToReplace, editor);
 				
-				if (ch == '\'') {
-					curLineText   = textArea.Document.GetText(curLine);
-					
-					if (curLineText != null && curLineText.EndsWith("'''") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("'''"))) {
-						string indentation = base.GetIndentation(textArea, lineNr);
-						object member = GetMemberAfter(textArea, lineNr);
-						if (member != null) {
-							StringBuilder sb = new StringBuilder();
-							sb.Append(" <summary>");
-							sb.Append(terminator);
-							sb.Append(indentation);
-							sb.Append("''' ");
-							sb.Append(terminator);
-							sb.Append(indentation);
-							sb.Append("''' </summary>");
-							
-							if (member is IMethod) {
-								IMethod method = (IMethod)member;
-								if (method.Parameters != null && method.Parameters.Count > 0) {
-									for (int i = 0; i < method.Parameters.Count; ++i) {
-										sb.Append(terminator);
-										sb.Append(indentation);
-										sb.Append("''' <param name=\"");
-										sb.Append(method.Parameters[i].Name);
-										sb.Append("\"></param>");
-									}
-								}
-								if (method.ReturnType != null && !method.IsConstructor && method.ReturnType.FullyQualifiedName != "System.Void") {
-									sb.Append(terminator);
-									sb.Append(indentation);
-									sb.Append("''' <returns></returns>");
-								}
-							}
-							textArea.Document.Insert(cursorOffset, sb.ToString());
-							
-							textArea.Refresh();
-							textArea.Caret.Position = textArea.Document.OffsetToPosition(cursorOffset + indentation.Length + "/// ".Length + " <summary>".Length + terminator.Length);
-						}
+				if (doInsertion)
+					DoInsertionOnLine(terminator, currentLine, lineAbove, textToReplace, editor, lineNr);
+				
+				if (IsInString(lineAboveText)) {
+					if (IsFinishedString(curLineText)) {
+						editor.Document.Insert(lineAbove.Offset + lineAbove.Length,
+						                         "\" & _");
+						editor.Document.Insert(currentLine.Offset, "\"");
+					} else {
+						editor.Document.Insert(lineAbove.Offset + lineAbove.Length,
+						                         "\"");
 					}
-					return;
+				} else {
+					string indent = DocumentUtilitites.GetIndentation(editor.Document, lineAbove.Offset);
+					if (indent.Length > 0) {
+						string newLineText = indent + currentLine.Text.Trim();
+						editor.Document.Replace(currentLine.Offset, currentLine.Length, newLineText);
+					}
+					editor.Caret.Column = indent.Length + 1;
 				}
 				
-				if (ch == '\n' && lineAboveText != null)
+				IndentLines(editor, lineNr - 1, lineNr);
+			}
+			else if(ch == '>')
+			{
+				if (IsInsideDocumentationComment(editor, currentLine, cursorOffset))
 				{
-					string texttoreplace = lineAboveText;
-					// remove string content
-					MatchCollection strmatches = Regex.Matches(texttoreplace, "\"[^\"]*?\"", RegexOptions.Singleline);
-					foreach (Match match in strmatches)
-					{
-						texttoreplace = texttoreplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
-					}
-					// remove comments
-					texttoreplace = Regex.Replace(texttoreplace, "'.*$", "", RegexOptions.Singleline);
+					int column = editor.Caret.Offset - currentLine.Offset;
+					int index = Math.Min(column - 1, curLineText.Length - 1);
 					
-					if (doCasing)
-					{
-						foreach (string keyword in keywords) {
-							string regex = "\\b" + keyword + "\\b"; // \b = word border
-							MatchCollection matches = Regex.Matches(texttoreplace, regex, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-							foreach (Match match in matches) {
-								if (keyword == "EndIf") // special case
-									textArea.Document.Replace(lineAbove.Offset + match.Index, match.Length, "End If");
-								else
-									textArea.Document.Replace(lineAbove.Offset + match.Index, match.Length, keyword);
-							}
-						}
+					while (index > 0 && curLineText[index] != '<') {
+						--index;
+						if(curLineText[index] == '/')
+							return; // the tag was an end tag or already
 					}
 					
-					if (doInsertion)
-					{
-						if (Regex.IsMatch(texttoreplace.Trim(), @"^If .*[^_]$", RegexOptions.IgnoreCase)) {
-							if (!Regex.IsMatch(texttoreplace, @"\bthen\b", RegexOptions.IgnoreCase)) {
-								string specialThen = "Then"; // do special check in cases like If t = True' comment
-								if (textArea.Document.GetCharAt(lineAbove.Offset + texttoreplace.Length) == '\'')
-									specialThen += " ";
-								if (textArea.Document.GetCharAt(lineAbove.Offset + texttoreplace.Length - 1) != ' ')
-									specialThen = " " + specialThen;
-								
-								textArea.Document.Insert(lineAbove.Offset + texttoreplace.Length, specialThen);
-								texttoreplace += specialThen;
-							}
+					if (index > 0) {
+						StringBuilder commentBuilder = new StringBuilder("");
+						for (int i = index; i < curLineText.Length && i < column && !Char.IsWhiteSpace(curLineText[i]); ++i) {
+							commentBuilder.Append(curLineText[ i]);
 						}
-						// check #Region statements
-						if (Regex.IsMatch(texttoreplace.Trim(), @"^#Region", RegexOptions.IgnoreCase) && LookForEndRegion(textArea)) {
-							string indentation = GetIndentation(textArea, lineNr - 1);
-							texttoreplace += indentation + "\r\n" + indentation + "#End Region";
-							textArea.Document.Replace(curLine.Offset, curLine.Length, texttoreplace);
+						string tag = commentBuilder.ToString().Trim();
+						if (!tag.EndsWith(">")) {
+							tag += ">";
 						}
-						foreach (VBStatement statement_ in statements) {
-							VBStatement statement = statement_; // allow passing statement byref
-							if (Regex.IsMatch(texttoreplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
-								string indentation = GetIndentation(textArea, lineNr - 1);
-								if (IsEndStatementNeeded(textArea, ref statement, lineNr))
-									textArea.Document.Replace(curLine.Offset, curLine.Length, terminator + indentation + statement.EndStatement);
-								if (!IsInsideInterface(textArea, lineNr) || statement == interfaceStatement) {
-									for (int i = 0; i < statement.IndentPlus; i++) {
-										indentation += Tab.GetIndentationString(textArea.Document);
-									}
-								}
-
-								textArea.Document.Replace(curLine.Offset, curLine.Length, indentation + curLineText.Trim());
-								textArea.Caret.Column = indentation.Length;
-								return;
-							}
-						}
-					}
-					
-					if (IsInString(lineAboveText))
-					{
-						if (IsFinishedString(curLineText)) {
-							textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
-							                         "\" & _");
-							curLine = textArea.Document.GetLineSegment(lineNr);
-							textArea.Document.Insert(curLine.Offset, "\"");
-							
-							if (IsElseConstruct(lineAboveText))
-								SmartIndentLine(textArea, lineNr - 1);
-							textArea.Caret.Column = SmartIndentLine(textArea, lineNr) + 1;
-						} else {
-							textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
-							                         "\"");
-							if (IsElseConstruct(lineAboveText))
-								SmartIndentLine(textArea, lineNr - 1);
-							textArea.Caret.Column = SmartIndentLine(textArea, lineNr);
-						}
-					}
-					else
-					{
-						string indent = GetIndentation(textArea, lineNr - 1);
-						if (indent.Length > 0) {
-							string newLineText = indent + TextUtilities.GetLineAsString(textArea.Document, lineNr).Trim();
-							curLine = textArea.Document.GetLineSegment(lineNr);
-							textArea.Document.Replace(curLine.Offset, curLine.Length, newLineText);
-						}
-						if (IsElseConstruct(lineAboveText))
-							SmartIndentInternal(textArea, lineNr - 1, lineNr);
-						textArea.Caret.Column = GetIndentation(textArea, lineNr).Length;
-					}
-				}
-				else if(ch == '>')
-				{
-					if (IsInsideDocumentationComment(textArea, curLine, cursorOffset))
-					{
-						curLineText  = textArea.Document.GetText(curLine);
-						int column = textArea.Caret.Offset - curLine.Offset;
-						int index = Math.Min(column - 1, curLineText.Length - 1);
-						
-						while (index > 0 && curLineText[index] != '<') {
-							--index;
-							if(curLineText[index] == '/')
-								return; // the tag was an end tag or already
-						}
-						
-						if (index > 0) {
-							StringBuilder commentBuilder = new StringBuilder("");
-							for (int i = index; i < curLineText.Length && i < column && !Char.IsWhiteSpace(curLineText[i]); ++i) {
-								commentBuilder.Append(curLineText[ i]);
-							}
-							string tag = commentBuilder.ToString().Trim();
-							if (!tag.EndsWith(">")) {
-								tag += ">";
-							}
-							if (!tag.StartsWith("/")) {
-								textArea.Document.Insert(textArea.Caret.Offset, "</" + tag.Substring(1));
-							}
+						if (!tag.StartsWith("/")) {
+							editor.Document.Insert(editor.Caret.Offset, "</" + tag.Substring(1));
 						}
 					}
 				}
 			}
 		}
-		
-		bool LookForEndRegion(TextArea area)
+
+		void DoInsertionOnLine(string terminator, IDocumentLine currentLine, IDocumentLine lineAbove, string textToReplace, ITextEditor editor, int lineNr)
 		{
-			string lineText = area.Document.GetText(area.Document.GetLineSegment(0));
+			string curLineText = currentLine.Text;
+			
+			if (Regex.IsMatch(textToReplace.Trim(), "^If .*[^_]$", RegexOptions.IgnoreCase)) {
+				if (!Regex.IsMatch(textToReplace, "\\bthen\\b", RegexOptions.IgnoreCase)) {
+					string specialThen = "Then"; // do special check in cases like If t = True' comment
+					if (editor.Document.GetCharAt(lineAbove.Offset + textToReplace.Length) == '\'')
+						specialThen += " ";
+					if (editor.Document.GetCharAt(lineAbove.Offset + textToReplace.Length - 1) != ' ')
+						specialThen = " " + specialThen;
+					editor.Document.Insert(lineAbove.Offset + textToReplace.Length, specialThen);
+					textToReplace += specialThen;
+				}
+			}
+			
+			// check #Region statements
+			if (Regex.IsMatch(textToReplace.Trim(), "^#Region", RegexOptions.IgnoreCase) && LookForEndRegion(editor)) {
+				string indentation = DocumentUtilitites.GetIndentation(editor.Document, lineAbove.Offset);
+				textToReplace += indentation + "\r\n" + indentation + "#End Region";
+				editor.Document.Replace(currentLine.Offset, currentLine.Length, textToReplace);
+			}
+			
+			foreach (VBStatement statement_ in statements) {
+				VBStatement statement = statement_;	// allow passing statement byref
+				if (Regex.IsMatch(textToReplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
+					string indentation = DocumentUtilitites.GetIndentation(editor.Document, lineAbove.Offset);
+					if (IsEndStatementNeeded(editor, ref statement, lineNr)) {
+						editor.Document.Replace(currentLine.Offset, currentLine.Length, terminator + indentation + statement.EndStatement);
+					}
+					if (!IsInsideInterface(editor, lineNr) || statement == interfaceStatement) {
+						for (int i = 0; i < statement.IndentPlus; i++) {
+							indentation += editor.Options.IndentationString;
+						}
+					}
+					editor.Document.Replace(currentLine.Offset, currentLine.Length, indentation + curLineText.Trim());
+					editor.Caret.Line = currentLine.LineNumber;
+					editor.Caret.Column = indentation.Length;
+					return;
+				}
+			}
+		}
+		
+		void DoCasingOnLine(IDocumentLine lineAbove, string textToReplace, ITextEditor editor)
+		{
+			foreach (string keyword in keywords) {
+				string regex = "\\b" + keyword + "\\b"; // \b = word border
+				MatchCollection matches = Regex.Matches(textToReplace, regex, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+				foreach (Match match in matches) {
+					if (keyword == "EndIf") // special case
+						editor.Document.Replace(lineAbove.Offset + match.Index, match.Length, "End If");
+					else
+						editor.Document.Replace(lineAbove.Offset + match.Index, match.Length, keyword);
+				}
+			}
+		}
+
+		void InsertDocumentationComments(ITextEditor editor, int lineNr, int cursorOffset, char ch)
+		{
+			string terminator = DocumentUtilitites.GetLineTerminator(editor.Document, lineNr);
+			
+			IDocumentLine currentLine = editor.Document.GetLine(lineNr);
+			IDocumentLine previousLine = (lineNr > 1) ? editor.Document.GetLine(lineNr - 1) : null;
+			
+			string curLineText = currentLine.Text;
+			string lineAboveText = previousLine == null ? null : previousLine.Text;
+			
+			if (curLineText != null && curLineText.EndsWith("'''") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("'''"))) {
+				string indentation = DocumentUtilitites.GetIndentation(editor.Document, currentLine.Offset);
+				object member = GetMemberAfter(editor, lineNr);
+				if (member != null) {
+					StringBuilder sb = new StringBuilder();
+					sb.Append(" <summary>");
+					sb.Append(terminator);
+					sb.Append(indentation);
+					sb.Append("''' ");
+					sb.Append(terminator);
+					sb.Append(indentation);
+					sb.Append("''' </summary>");
+					if (member is IMethod) {
+						IMethod method = (IMethod)member;
+						if (method.Parameters != null && method.Parameters.Count > 0) {
+							for (int i = 0; i < method.Parameters.Count; ++i) {
+								sb.Append(terminator);
+								sb.Append(indentation);
+								sb.Append("''' <param name=\"");
+								sb.Append(method.Parameters[i].Name);
+								sb.Append("\"></param>");
+							}
+						}
+						if (method.ReturnType != null && !method.IsConstructor && method.ReturnType.FullyQualifiedName != "System.Void") {
+							sb.Append(terminator);
+							sb.Append(indentation);
+							sb.Append("''' <returns></returns>");
+						}
+					}
+					editor.Document.Insert(cursorOffset, sb.ToString());
+					editor.Caret.Position = editor.Document.OffsetToPosition(cursorOffset + indentation.Length + "/// ".Length + " <summary>".Length + terminator.Length);
+				}
+			}
+		}
+		
+		bool LookForEndRegion(ITextEditor editor)
+		{
+			string lineText = editor.Document.GetLine(1).Text;
 			int count = 0;
 			int lineNr = 0;
-			while ((!Regex.IsMatch(lineText, @"^\s*#End\s+Region", RegexOptions.IgnoreCase) || count >= 0) && (lineNr < area.Document.TotalNumberOfLines)) {
+			while ((!Regex.IsMatch(lineText, @"^\s*#End\s+Region", RegexOptions.IgnoreCase) || count >= 0) && (lineNr < editor.Document.TotalNumberOfLines)) {
 				if (Regex.IsMatch(lineText, @"^\s*#Region", RegexOptions.IgnoreCase))
 					count++;
 				if (Regex.IsMatch(lineText, @"^\s*#End\s+Region", RegexOptions.IgnoreCase))
 					count--;
 				lineNr++;
-				if (lineNr < area.Document.TotalNumberOfLines)
-					lineText = area.Document.GetText(area.Document.GetLineSegment(lineNr));
+				if (lineNr < editor.Document.TotalNumberOfLines)
+					lineText = editor.Document.GetLine(1).Text;
 			}
 			
 			return (count > 0);
 		}
 		
-		bool IsInsideInterface(TextArea area, int lineNr)
+		bool IsInsideInterface(ITextEditor editor, int lineNr)
 		{
-			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(area.Document.TextContent));
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(editor.Document.Text));
 			
 			Stack<Token> tokens = new Stack<Token>();
 			
@@ -409,12 +408,12 @@ namespace VBNetBinding.FormattingStrategy
 				(type == Tokens.Interface);
 		}
 		
-		bool IsEndStatementNeeded(TextArea textArea, ref VBStatement statement, int lineNr)
+		bool IsEndStatementNeeded(ITextEditor editor, ref VBStatement statement, int lineNr)
 		{
 			Stack<Token> tokens = new Stack<Token>();
 			List<Token> missingEnds = new List<Token>();
 			
-			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(textArea.Document.TextContent));
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(editor.Document.Text));
 			
 			Token currentToken = null;
 			Token prevToken = null;
@@ -446,23 +445,23 @@ namespace VBNetBinding.FormattingStrategy
 				missingEnds.Add(tokens.Pop());
 			
 			if (missingEnds.Count > 0)
-				return GetClosestMissing(missingEnds, statement, textArea, lineNr) != null;
+				return GetClosestMissing(missingEnds, statement, editor, lineNr) != null;
 			else
 				return false;
 		}
 		
-		Token GetClosestMissing(List<Token> missingEnds, VBStatement statement, TextArea textArea, int lineNr)
+		Token GetClosestMissing(List<Token> missingEnds, VBStatement statement, ITextEditor editor, int lineNr)
 		{
 			Token closest = null;
 			int diff = 0;
 			
 			foreach (Token t in missingEnds) {
-				if (!IsSingleLine(t.Location.Line, textArea)) {
-					if (IsMatchingStatement(t, statement) && ((diff = lineNr - t.Location.Line + 1) > -1)) {
+				if (!IsSingleLine(t.Location.Line, editor)) {
+					if (IsMatchingStatement(t, statement) && ((diff = lineNr - t.Location.Line) > 0)) {
 						if (closest == null) {
 							closest = t;
 						} else {
-							if (diff < lineNr - closest.Location.Line + 1)
+							if (diff < lineNr - closest.Location.Line)
 								closest = t;
 						}
 					}
@@ -472,17 +471,17 @@ namespace VBNetBinding.FormattingStrategy
 			return closest;
 		}
 		
-		bool IsSingleLine(int line, TextArea textArea)
+		bool IsSingleLine(int line, ITextEditor editor)
 		{
 			if (line < 1)
 				return false;
 			
-			LineSegment lineSeg = textArea.Document.GetLineSegment(line - 1);
+			IDocumentLine lineSeg = editor.Document.GetLine(line);
 			
 			if (lineSeg == null)
 				return false;
 			
-			string text = textArea.Document.GetText(lineSeg);
+			string text = lineSeg.Text;
 			
 			if (StripComment(text).Trim(' ', '\t', '\r', '\n').EndsWith("_"))
 				return true;
@@ -523,14 +522,14 @@ namespace VBNetBinding.FormattingStrategy
 			return Regex.Replace(text, "'.*$", "", RegexOptions.Singleline).Trim();
 		}
 		
-		bool IsInsideDocumentationComment(TextArea textArea, LineSegment curLine, int cursorOffset)
+		bool IsInsideDocumentationComment(ITextEditor editor, IDocumentLine curLine, int cursorOffset)
 		{
 			for (int i = curLine.Offset; i < cursorOffset; ++i) {
-				char ch = textArea.Document.GetCharAt(i);
+				char ch = editor.Document.GetCharAt(i);
 				if (ch == '"') {
 					return false;
 				}
-				if (ch == '\'' && i + 2 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '\'' && textArea.Document.GetCharAt(i + 2) == '\'')
+				if (ch == '\'' && i + 2 < cursorOffset && editor.Document.GetCharAt(i + 1) == '\'' && editor.Document.GetCharAt(i + 2) == '\'')
 				{
 					return true;
 				}
@@ -538,25 +537,20 @@ namespace VBNetBinding.FormattingStrategy
 			return false;
 		}
 		
-		public override void IndentLines(TextArea textArea, int begin, int end)
+		public override void IndentLines(ITextEditor editor, int begin, int end)
 		{
-			if (textArea.Document.TextEditorProperties.IndentStyle != IndentStyle.Smart) {
-				base.IndentLines(textArea, begin, end);
-				return;
-			}
-			
-			SmartIndentInternal(textArea, begin, end);
+			SmartIndentInternal(editor, begin, end);
 		}
 		
-		int SmartIndentInternal(TextArea textArea, int begin, int end)
+		int SmartIndentInternal(ITextEditor editor, int begin, int end)
 		{
-			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(textArea.Document.TextContent));
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(editor.Document.Text));
 			
 			Stack<string> indentation = new Stack<string>();
 			
 			indentation.Push(string.Empty);
 			
-			int oldLine = 0;
+			int oldLine = 1;
 			
 			bool inInterface = false;
 			bool isMustOverride = false;
@@ -583,16 +577,16 @@ namespace VBNetBinding.FormattingStrategy
 					isDelegate = isDeclare = isMustOverride = false;
 				
 				if (IsSpecialCase(currentToken, prevToken)) {
-					ApplyToRange(textArea, indentation, oldLine, currentToken.Location.Line, begin, end);
+					ApplyToRange(editor, indentation, oldLine, currentToken.Location.Line, begin, end);
 					Unindent(indentation);
-					ApplyToRange(textArea, indentation, currentToken.Location.Line - 1, currentToken.Location.Line, begin, end);
-					Indent(textArea, indentation);
+					ApplyToRange(editor, indentation, currentToken.Location.Line, currentToken.Location.Line, begin, end);
+					Indent(editor, indentation);
 					
-					oldLine = currentToken.Location.Line;
+					oldLine = currentToken.Location.Line + 1;
 				}
 				
 				if (IsBlockEnd(currentToken, prevToken)) {
-					ApplyToRange(textArea, indentation, oldLine, currentToken.Location.Line - 1, begin, end);
+					ApplyToRange(editor, indentation, oldLine, currentToken.Location.Line, begin, end);
 					
 					if (currentToken.Kind == Tokens.Interface)
 						inInterface = false;
@@ -604,24 +598,24 @@ namespace VBNetBinding.FormattingStrategy
 							Unindent(indentation);
 					}
 					
-					oldLine = currentToken.Location.Line - 1;
+					oldLine = currentToken.Location.Line;
 				}
 				
 				if (IsBlockStart(lexer, currentToken, prevToken)) {
-					int line = GetLastVisualLine(currentToken.Location.Line, textArea);
-					ApplyToRange(textArea, indentation, oldLine, line, begin, end);
+					int line = GetLastVisualLine(currentToken.Location.Line, editor);
+					ApplyToRange(editor, indentation, oldLine, line, begin, end);
 					
 					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
-						Indent(textArea, indentation);
+						Indent(editor, indentation);
 						
 						if (currentToken.Kind == Tokens.Select)
-							Indent(textArea, indentation);
+							Indent(editor, indentation);
 					}
 					
 					if (currentToken.Kind == Tokens.Interface)
 						inInterface = true;
 					
-					oldLine = line;
+					oldLine = line + 1;
 				}
 				
 				prevToken = currentToken;
@@ -631,19 +625,19 @@ namespace VBNetBinding.FormattingStrategy
 			int newLine = prevToken.Location.Line;
 			
 			if (oldLine > newLine)
-				newLine = oldLine + 1;
+				newLine = oldLine;
 			
-			ApplyToRange(textArea, indentation, oldLine, newLine, begin, end);
+			ApplyToRange(editor, indentation, oldLine, newLine, begin, end);
 			
 			return (indentation.PeekOrDefault() ?? string.Empty).Length;
 		}
 		
-		int GetLastVisualLine(int line, TextArea area)
+		int GetLastVisualLine(int line, ITextEditor area)
 		{
-			string text = StripComment(area.Document.GetText(area.Document.GetLineSegment(line - 1)));
+			string text = StripComment(area.Document.GetLine(line).Text);
 			while (text.EndsWith("_", StringComparison.Ordinal)) {
 				line++;
-				text = StripComment(area.Document.GetText(area.Document.GetLineSegment(line - 1)));
+				text = StripComment(area.Document.GetLine(line).Text);
 			}
 			return line;
 		}
@@ -653,10 +647,10 @@ namespace VBNetBinding.FormattingStrategy
 			indentation.PopOrDefault();
 		}
 
-		void Indent(TextArea textArea, Stack<string> indentation)
+		void Indent(ITextEditor editor, Stack<string> indentation)
 		{
-			bool useSpaces = textArea.TextEditorProperties.ConvertTabsToSpaces;
-			int indentationSize = textArea.TextEditorProperties.IndentationSize;
+			bool useSpaces = editor.Options.ConvertTabsToSpaces;
+			int indentationSize = editor.Options.IndentationSize;
 			
 			string addIndent = (useSpaces) ? new string(' ', indentationSize) : "\t";
 			
@@ -769,18 +763,18 @@ namespace VBNetBinding.FormattingStrategy
 			return false;
 		}
 		
-		void ApplyToRange(TextArea textArea, Stack<string> indentation, int begin, int end, int selBegin, int selEnd)
+		void ApplyToRange(ITextEditor editor, Stack<string> indentation, int begin, int end, int selBegin, int selEnd)
 		{
 			bool multiLine = false;
 			
-			for (int i = begin; i < end; i++) {
-				LineSegment curLine = textArea.Document.GetLineSegment(i);
-				string lineText = textArea.Document.GetText(curLine).Trim(' ', '\t', '\r', '\n');
+			for (int i = begin; i <= end; i++) {
+				IDocumentLine curLine = editor.Document.GetLine(i);
+				string lineText = curLine.Text.Trim(' ', '\t', '\r', '\n');
 				string noComments = StripComment(lineText).TrimEnd(' ', '\t', '\r', '\n');
 				
 				if (i < selBegin || i > selEnd) {
 					indentation.PopOrDefault();
-					indentation.Push(GetIndentation(textArea, i));
+					indentation.Push(DocumentUtilitites.GetIndentation(editor.Document, curLine.Offset));
 				}
 				
 				// change indentation before (indent this line)
@@ -789,11 +783,11 @@ namespace VBNetBinding.FormattingStrategy
 					multiLine = false;
 				}
 				
-				SmartReplaceLine(textArea.Document, curLine, (indentation.PeekOrDefault() ?? string.Empty) + lineText);
+				editor.Document.SmartReplaceLine(curLine, (indentation.PeekOrDefault() ?? string.Empty) + lineText);
 				
 				// change indentation afterwards (indent next line)
 				if (!multiLine && noComments.EndsWith("_")) {
-					Indent(textArea, indentation);
+					Indent(editor, indentation);
 					multiLine = true;
 				}
 
@@ -813,25 +807,18 @@ namespace VBNetBinding.FormattingStrategy
 			
 			return false;
 		}
-
-		protected override int SmartIndentLine(TextArea textArea, int line)
-		{
-			if (line <= 0)
-				return AutoIndentLine(textArea, line);
-			return SmartIndentInternal(textArea, line, line);
-		}
 		
 		/// <summary>
 		/// Gets the next member after the specified caret position.
 		/// </summary>
-		object GetMemberAfter(TextArea textArea, int caretLine)
+		object GetMemberAfter(ITextEditor editor, int caretLine)
 		{
-			string fileName = textArea.MotherTextEditorControl.FileName;
+			string fileName = editor.FileName;
 			object nextElement = null;
 			if (fileName != null && fileName.Length > 0 ) {
-				ParseInformation parseInfo = ParserService.ParseFile(fileName, textArea.Document.TextContent);
+				ParseInformation parseInfo = ParserService.ParseFile(fileName, editor.Document);
 				if (parseInfo != null) {
-					ICompilationUnit currentCompilationUnit = parseInfo.BestCompilationUnit;
+					ICompilationUnit currentCompilationUnit = parseInfo.CompilationUnit;
 					if (currentCompilationUnit != null) {
 						IClass currentClass = currentCompilationUnit.GetInnermostClass(caretLine, 0);
 						int nextElementLine = int.MaxValue;
@@ -849,25 +836,7 @@ namespace VBNetBinding.FormattingStrategy
 									nextElement = c;
 								}
 							}
-							foreach (IMember m in currentClass.Methods) {
-								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
-									nextElementLine = m.Region.BeginLine;
-									nextElement = m;
-								}
-							}
-							foreach (IMember m in currentClass.Properties) {
-								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
-									nextElementLine = m.Region.BeginLine;
-									nextElement = m;
-								}
-							}
-							foreach (IMember m in currentClass.Fields) {
-								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
-									nextElementLine = m.Region.BeginLine;
-									nextElement = m;
-								}
-							}
-							foreach (IMember m in currentClass.Events) {
+							foreach (IMember m in currentClass.AllMembers) {
 								if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
 									nextElementLine = m.Region.BeginLine;
 									nextElement = m;
@@ -880,7 +849,13 @@ namespace VBNetBinding.FormattingStrategy
 			return nextElement;
 		}
 		
+		public override void IndentLine(ITextEditor editor, IDocumentLine line)
+		{
+			base.IndentLine(editor, line);
+		}
+		
 		#region SearchBracket
+		/*
 		public override int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool inString  = false;
@@ -955,8 +930,7 @@ namespace VBNetBinding.FormattingStrategy
 				}
 			}
 			return -1;
-		}
+		}*/
 		#endregion
 	}
-	*/
 }

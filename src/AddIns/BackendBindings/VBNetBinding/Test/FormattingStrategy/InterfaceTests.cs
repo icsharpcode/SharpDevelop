@@ -4,17 +4,14 @@
 //     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
 //     <version>$Revision: 3548 $</version>
 // </file>
+using ICSharpCode.AvalonEdit;
 using System;
-using NUnit.Framework;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.TextEditor;
-using VBNetBinding;
-using VBNetBinding.FormattingStrategy;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using NUnit.Framework;
 
 namespace VBNetBinding.Tests
 {
-	/*
 	/// <summary>
 	/// Tests the special case of an interface. for ex. no insertion of End-Tags etc.
 	/// </summary>
@@ -37,23 +34,26 @@ namespace VBNetBinding.Tests
 				"\r\n" + // This extra new line is required. This is the new line just entered by the user.
 				"End Interface";
 			
-			string bar = "Sub Bar";
+			string bar = "Sub Bar\r\n";
 			int cursorOffset = code.IndexOf(bar) + bar.Length;
-			int line = 2;
 			
 			string expectedCode = "Public Interface Foo\r\n" +
 				"\tPublic Sub Bar\r\n" +
 				"\t\r\n" +
 				"End Interface";
 			
-			using (TextEditorControl editor = new TextEditorControl()) {
-				editor.Document.TextContent = code;
-				editor.ActiveTextAreaControl.Caret.Position = editor.Document.OffsetToPosition(cursorOffset);
-				VBFormattingStrategy formattingStrategy = new VBFormattingStrategy();
-				formattingStrategy.FormatLine(editor.ActiveTextAreaControl.TextArea, line, cursorOffset, '\n');
-				
-				Assert.AreEqual(expectedCode, editor.Document.TextContent);
-			}
+			int expectedOffset = ("Public Interface Foo\r\n" +
+				"\tPublic Sub Bar\r\n" +
+				"\t").Length;
+			
+			AvalonEditTextEditorAdapter editor = new AvalonEditTextEditorAdapter(new TextEditor());
+			editor.Document.Text = code;
+			editor.Caret.Offset = cursorOffset;
+			VBNetFormattingStrategy formattingStrategy = new VBNetFormattingStrategy();
+			formattingStrategy.FormatLine(editor, '\n');
+			
+			Assert.AreEqual(expectedCode, editor.Document.Text);
+			Assert.AreEqual(expectedOffset, editor.Caret.Offset);
 		}
-	}*/
+	}
 }

@@ -98,9 +98,9 @@
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
 		<CodeCompletionBinding id = "VBNet" extensions = ".vb" class = "VBNetBinding.VBNetCompletionBinding"/>
 	</Path>
-
-	<Path name = "/AddIns/DefaultTextEditor/Formatter/VBNET">
-		<Class id ="VBNetFormatter" class = "VBNetBinding.FormattingStrategy.VBFormattingStrategy"/>
+	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id="VBNet" class="VBNetBinding.VBNetLanguageBinding" extensions=".vb" />
 	</Path>
 	
 	<Path name = "/Workspace/Icons">

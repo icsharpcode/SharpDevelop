@@ -51,6 +51,7 @@
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
+    <Compile Include="Src\VBNetLanguageBinding.cs" />
     <Compile Include="Src\VBNetProjectBinding.cs" />
     <Compile Include="Src\FormattingStrategy\VBNetFormattingStrategy.cs" />
     <Compile Include="Src\OptionPanels\BuildOptions.cs">

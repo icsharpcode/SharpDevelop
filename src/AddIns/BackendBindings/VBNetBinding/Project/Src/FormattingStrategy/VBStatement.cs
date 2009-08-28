@@ -6,7 +6,7 @@
 // </file>
 using System;
 
-namespace VBNetBinding.FormattingStrategy
+namespace VBNetBinding
 {
 	public class VBStatement
 	{
