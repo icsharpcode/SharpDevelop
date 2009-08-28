@@ -141,25 +141,25 @@ namespace ICSharpCode.CodeCoverage
 		/// so in order for this to be passed to PartCover as a single argument
 		/// we need to prefix each double quote by a backslash. For example:
 		/// 
-		/// Target args: "C:\Projects\My Tests\Test.dll" /output="C:\Projects\My Tests\Output.xml" 
+		/// Target args: "C:\Projects\My Tests\Test.dll" /output "C:\Projects\My Tests\Output.xml" 
 		/// 
-		/// PartCover: --target-args="\"C:\Projects\My Tests\Test.dll\" /output=\"C:\Projects\My Tests\Output.xml\"" 
+		/// PartCover: --target-args "\"C:\Projects\My Tests\Test.dll\" /output \"C:\Projects\My Tests\Output.xml\"" 
 		/// </remarks>
 		public string GetArguments()
 		{
 			StringBuilder arguments = new StringBuilder();
 			
 			if (!String.IsNullOrEmpty(target)) {
-				arguments.AppendFormat("--target=\"{0}\" ", target);
+				arguments.AppendFormat("--target \"{0}\" ", target);
 			}
 			if (!String.IsNullOrEmpty(targetWorkingDirectory)) {
-				arguments.AppendFormat("--target-work-dir=\"{0}\" ", targetWorkingDirectory);
+				arguments.AppendFormat("--target-work-dir \"{0}\" ", targetWorkingDirectory);
 			}
 			if (!String.IsNullOrEmpty(targetArguments)) {
-				arguments.AppendFormat("--target-args=\"{0}\" ", targetArguments.Replace("\"", "\\\""));
+				arguments.AppendFormat("--target-args \"{0}\" ", targetArguments.Replace("\"", "\\\""));
 			}
 			if (!String.IsNullOrEmpty(output)) {
-				arguments.AppendFormat("--output=\"{0}\" ", output);
+				arguments.AppendFormat("--output \"{0}\" ", output);
 			}
 			
 			arguments.Append(GetArguments("--include", include));
@@ -255,7 +255,7 @@ namespace ICSharpCode.CodeCoverage
 			StringBuilder arguments = new StringBuilder();
 			foreach (string item in items) {
 				arguments.Append(argumentName);
-				arguments.Append("=");
+				arguments.Append(" ");
 				arguments.Append(item);
 				arguments.Append(" ");
 			}
