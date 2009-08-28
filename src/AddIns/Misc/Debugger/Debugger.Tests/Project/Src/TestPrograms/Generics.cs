@@ -598,7 +598,7 @@ namespace Debugger.Tests {
         ArrayLength="{Exception: Value is not an array}"
         ArrayRank="{Exception: Value is not an array}"
         AsString="0"
-        Expression="gClass.Prop"
+        Expression="((Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32, System.String&gt;)(gClass)).Prop"
         PrimitiveValue="0"
         Type="System.Int32" />
     </Prop>
@@ -608,7 +608,7 @@ namespace Debugger.Tests {
         ArrayLength="{Exception: Value is not an array}"
         ArrayRank="{Exception: Value is not an array}"
         AsString="0"
-        Expression="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32,System.String&gt;.StaticProp"
+        Expression="Debugger.Tests.TestPrograms.GenericClass&lt;System.Int32, System.String&gt;.StaticProp"
         PrimitiveValue="0"
         Type="System.Int32" />
     </StaticProp>

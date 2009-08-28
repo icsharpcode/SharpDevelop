@@ -158,7 +158,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="derived name"
-          Expression="this.name"
+          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).name"
           IsReference="True"
           PrimitiveValue="derived name"
           Type="System.String" />
@@ -169,7 +169,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="derived value"
-          Expression="this.Value"
+          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Value"
           IsReference="True"
           PrimitiveValue="derived value"
           Type="System.String" />
@@ -180,7 +180,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="field value"
-          Expression="this.field"
+          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).field"
           IsReference="True"
           PrimitiveValue="field value"
           Type="System.String" />
@@ -191,7 +191,7 @@ namespace Debugger.Tests {
           ArrayLength="3"
           ArrayRank="1"
           AsString="{System.String[]}"
-          Expression="this.array"
+          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).array"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
@@ -202,7 +202,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="base name"
-          Expression="this.name"
+          Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).name"
           IsReference="True"
           PrimitiveValue="base name"
           Type="System.String" />
@@ -213,7 +213,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="base value"
-          Expression="this.Value"
+          Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).Value"
           IsReference="True"
           PrimitiveValue="base value"
           Type="System.String" />
@@ -224,7 +224,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="derived name"
-          Expression="this.Name"
+          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Name"
           IsReference="True"
           PrimitiveValue="derived name"
           Type="System.String" />
@@ -235,7 +235,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="base name"
-          Expression="this.Name"
+          Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).Name"
           IsReference="True"
           PrimitiveValue="base name"
           Type="System.String" />

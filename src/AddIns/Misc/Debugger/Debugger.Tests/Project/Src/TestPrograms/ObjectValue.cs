@@ -91,7 +91,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="c"
-          Expression="val.privateField"
+          Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).privateField"
           IsReference="True"
           PrimitiveValue="c"
           Type="System.String" />
@@ -102,7 +102,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="d"
-          Expression="val.publicFiled"
+          Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).publicFiled"
           IsReference="True"
           PrimitiveValue="d"
           Type="System.String" />
@@ -113,7 +113,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="a"
-          Expression="val.basePublic"
+          Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePublic"
           IsReference="True"
           PrimitiveValue="a"
           Type="System.String" />
@@ -124,7 +124,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="b"
-          Expression="val.basePrivate"
+          Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePrivate"
           IsReference="True"
           PrimitiveValue="b"
           Type="System.String" />
@@ -135,7 +135,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="c"
-          Expression="val.PublicProperty"
+          Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).PublicProperty"
           IsReference="True"
           PrimitiveValue="c"
           Type="System.String" />
@@ -160,7 +160,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="new private"
-          Expression="val.privateField"
+          Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).privateField"
           IsReference="True"
           PrimitiveValue="new private"
           Type="System.String" />
@@ -171,7 +171,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="d"
-          Expression="val.publicFiled"
+          Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).publicFiled"
           IsReference="True"
           PrimitiveValue="d"
           Type="System.String" />
@@ -182,7 +182,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="a"
-          Expression="val.basePublic"
+          Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePublic"
           IsReference="True"
           PrimitiveValue="a"
           Type="System.String" />
@@ -193,7 +193,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="b"
-          Expression="val.basePrivate"
+          Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePrivate"
           IsReference="True"
           PrimitiveValue="b"
           Type="System.String" />
@@ -204,7 +204,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="new private"
-          Expression="val.PublicProperty"
+          Expression="((Debugger.Tests.TestPrograms.ObjectValue)(val)).PublicProperty"
           IsReference="True"
           PrimitiveValue="new private"
           Type="System.String" />

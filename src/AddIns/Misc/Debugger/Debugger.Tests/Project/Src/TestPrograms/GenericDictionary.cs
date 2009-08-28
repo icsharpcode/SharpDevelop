@@ -70,7 +70,7 @@ namespace Debugger.Tests {
           ArrayLength="3"
           ArrayRank="1"
           AsString="{System.Int32[]}"
-          Expression="dict.buckets"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).buckets"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32[]" />
@@ -81,7 +81,7 @@ namespace Debugger.Tests {
           ArrayLength="3"
           ArrayRank="1"
           AsString="{Entry&lt;System.String,System.Int32&gt;[]}"
-          Expression="dict.entries"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).entries"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Entry&lt;System.String,System.Int32&gt;[]" />
@@ -92,7 +92,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="3"
-          Expression="dict.count"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).count"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
@@ -102,7 +102,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="3"
-          Expression="dict.version"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).version"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
@@ -112,7 +112,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="-1"
-          Expression="dict.freeList"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).freeList"
           PrimitiveValue="-1"
           Type="System.Int32" />
       </Item>
@@ -122,7 +122,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="0"
-          Expression="dict.freeCount"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).freeCount"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
@@ -132,7 +132,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;}"
-          Expression="dict.comparer"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).comparer"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;" />
@@ -143,7 +143,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is null}"
           ArrayRank="{Exception: Value is null}"
           AsString="null"
-          Expression="dict.keys"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).keys"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -155,7 +155,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is null}"
           ArrayRank="{Exception: Value is null}"
           AsString="null"
-          Expression="dict.values"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).values"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -167,7 +167,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is null}"
           ArrayRank="{Exception: Value is null}"
           AsString="null"
-          Expression="dict._syncRoot"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict))._syncRoot"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -179,7 +179,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is null}"
           ArrayRank="{Exception: Value is null}"
           AsString="null"
-          Expression="dict.m_siInfo"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).m_siInfo"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -191,7 +191,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="{System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;}"
-          Expression="dict.Comparer"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Comparer"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;" />
@@ -202,7 +202,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="3"
-          Expression="dict.Count"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Count"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
@@ -212,7 +212,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="{KeyCollection&lt;System.String,System.Int32&gt;}"
-          Expression="dict.Keys"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Keys"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="KeyCollection&lt;System.String,System.Int32&gt;" />
@@ -223,7 +223,7 @@ namespace Debugger.Tests {
           ArrayLength="{Exception: Value is not an array}"
           ArrayRank="{Exception: Value is not an array}"
           AsString="{ValueCollection&lt;System.String,System.Int32&gt;}"
-          Expression="dict.Values"
+          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Values"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="ValueCollection&lt;System.String,System.Int32&gt;" />
