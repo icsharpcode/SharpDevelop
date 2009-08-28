@@ -10,6 +10,6 @@
 			<Button Name="btnOK" Margin="3" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" />
 			<Button Name="btnCancel" Margin="3" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" />
 		</StackPanel>
-		<avalonedit:TextEditor Name="codeEditor" />
+		<avalonedit:TextEditor x:Name="codeEditor" />
 	</DockPanel>
 </Window>
