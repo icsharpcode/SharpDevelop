@@ -167,10 +167,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuild.BuildPropertyGroup group = project.AddNewPropertyGroup(false);
 			group.AddNewProperty(ProjectGuidPropertyName, IdGuid, true);
 			group.AddNewProperty("Configuration", "Debug", true).Condition = " '$(Configuration)' == '' ";
-			group.AddNewProperty("Platform", "AnyCPU", true).Condition = " '$(Platform)' == '' ";
+			group.AddNewProperty("Platform", "x86", true).Condition = " '$(Platform)' == '' ";
 			
 			this.ActiveConfiguration = "Debug";
-			this.ActivePlatform = "AnyCPU";
+			this.ActivePlatform = "x86";
+			SetProperty(null, "x86", "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, false);
 		}
 		
 		/// <summary>
@@ -1132,6 +1133,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					return platformNames;
 				}
+			}
+		}
+		
+		protected void InvalidateConfigurationPlatformNames()
+		{
+			lock (SyncRoot) {
+				configurationNames = null;
+				platformNames = null;
 			}
 		}
 		
