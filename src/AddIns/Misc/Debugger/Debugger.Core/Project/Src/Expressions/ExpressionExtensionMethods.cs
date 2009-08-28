@@ -110,7 +110,7 @@ namespace Debugger
 				// TODO: Combined arrays and pointers?
 				// TODO: Check
 				if (type.IsArray) {
-					arrayRanks.Add(type.GetArrayRank() - 1);
+					arrayRanks.Insert(0, type.GetArrayRank() - 1);
 					type = type.ElementType;
 				} else if (type.IsPointer) {
 					pointerNest++;

@@ -258,6 +258,24 @@ namespace Debugger.MetaData
 			return QueryMembers<MethodInfo>(name);
 		}
 		
+		/// <summary> Return method overload with given type parameters </summary>
+		/// <returns> Null if not found </returns>
+		public MethodInfo GetMethod(string name, DebugType[] paramTypes)
+		{
+			foreach(MethodInfo candidate in GetMethods(name)) {
+				if (candidate.ParameterCount == paramTypes.Length) {
+					bool match = true;
+					for(int i = 0; i < paramTypes.Length; i++) {
+						if (paramTypes[i] != candidate.ParameterTypes[i])
+							match = false;
+					}
+					if (match)
+						return candidate;
+				}
+			}
+			return null;
+		}
+		
 		/// <summary> Return first method with the given token</summary>
 		public MethodInfo GetMethod(uint token)
 		{

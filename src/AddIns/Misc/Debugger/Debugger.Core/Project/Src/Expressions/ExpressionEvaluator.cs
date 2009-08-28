@@ -124,6 +124,9 @@ namespace Debugger
 				context.Process.TraceMessage("Evaluated: {0} in {1} ms total", expression.PrettyPrint(), watch.ElapsedMilliseconds);
 			}
 			
+			if (val != null && val.IsInvalid)
+				throw new DebuggerException("Expression is invalid right after evaluation");
+			
 			// Add the result to cache
 			context.Process.CachedExpressions[expression] = val;
 			
@@ -206,6 +209,22 @@ namespace Debugger
 			return null;
 		}
 		
+		public override object VisitCastExpression(CastExpression castExpression, object data)
+		{
+			return Evaluate(castExpression.Expression);
+		}
+		
+		public DebugType GetDebugType(INode expr)
+		{
+			if (expr is ParenthesizedExpression) {
+				return GetDebugType(((ParenthesizedExpression)expr).Expression);
+			} else if (expr is CastExpression) {
+				return DebugType.CreateFromTypeReference(context.AppDomain, ((CastExpression)expr).CastTo);
+			} else {
+				return null;
+			}
+		}
+		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			string identifier = identifierExpression.Identifier;
@@ -273,23 +292,42 @@ namespace Debugger
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			Value target;
+			DebugType targetType;
 			string methodName;
 			MemberReferenceExpression memberRef = invocationExpression.TargetObject as MemberReferenceExpression;
 			if (memberRef != null) {
 				target = Evaluate(memberRef.TargetObject);
+				targetType = GetDebugType(memberRef.TargetObject);
 				methodName = memberRef.MemberName;
 			} else {
 				IdentifierExpression ident = invocationExpression.TargetObject as IdentifierExpression;
 				if (ident != null) {
 					target = Evaluate(new ThisReferenceExpression());
+					targetType = target.Type;
 					methodName = ident.Identifier;
 				} else {
 					throw new GetValueException("Member reference expected for method invocation");
 				}
 			}
-			MethodInfo method = target.Type.GetMember(methodName, BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
-			if (method == null) {
+			MethodInfo method;
+			IList<MemberInfo> methods = targetType.GetMembers(methodName, BindingFlags.Method);
+			if (methods.Count == 0)
+				methods = targetType.GetMembers(methodName, BindingFlags.Method | BindingFlags.IncludeSuperType);
+			if (methods.Count == 0) {
 				throw new GetValueException("Method " + methodName + " not found");
+			} else if (methods.Count == 1) {
+				method = (MethodInfo)methods[0];
+			} else {
+				List<DebugType> argTypes = new List<DebugType>();
+				foreach(Expression expr in invocationExpression.Arguments) {
+					DebugType argType = GetDebugType(expr);
+					if (argType == null)
+						throw new GetValueException("Multiple methods with name " + methodName + " found.  Use explicit casts for arguments to select method overload.");
+					argTypes.Add(argType);
+				}
+				method = target.Type.GetMethod(methodName, argTypes.ToArray());
+				if (method == null)
+					throw new GetValueException("Can not find overload with given types");
 			}
 			List<Value> args = new List<Value>();
 			foreach(Expression expr in invocationExpression.Arguments) {
@@ -301,12 +339,14 @@ namespace Debugger
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			Value target = Evaluate(memberReferenceExpression.TargetObject);
-			Value member = target.GetMemberValue(memberReferenceExpression.MemberName);
-			if (member != null) {
-				return member;
-			} else {
+			DebugType targetType = GetDebugType(memberReferenceExpression.TargetObject) ?? target.Type;
+			MemberInfo memberInfo = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlags.AllInThisType);
+			if (memberInfo == null)
+				memberInfo = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlags.All);
+			if (memberInfo == null)
 				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
-			}
+			Value member = target.GetMemberValue(memberInfo);
+			return member;
 		}
 		
 		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)

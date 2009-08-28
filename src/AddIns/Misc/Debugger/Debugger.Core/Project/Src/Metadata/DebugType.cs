@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
-
 using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
@@ -374,6 +374,22 @@ namespace Debugger.MetaData
 			return CreateFromSignature(module, typeSpecBlob, declaringType);
 		}
 		
+		public static DebugType CreateFromTypeReference(AppDomain appDomain, TypeReference typeRef)
+		{
+			List<DebugType> genArgs = new List<DebugType>();
+			foreach(TypeReference argRef in typeRef.GenericTypes) {
+				genArgs.Add(CreateFromTypeReference(appDomain, argRef));
+			}
+			DebugType type = CreateFromName(appDomain, typeRef.Type, genArgs.ToArray());
+			for(int i = 0; i < typeRef.PointerNestingLevel; i++) {
+				type = CreatePointer(type);
+			}
+			for(int i = typeRef.RankSpecifier.Length - 1; i >= 0; i--) {
+				type = CreateArray(type, typeRef.RankSpecifier[i] + 1);
+			}
+			return type;
+		}
+		
 		public static DebugType CreateFromSignature(Module module, byte[] signature, DebugType declaringType)
 		{
 			SignatureReader sigReader = new SignatureReader(signature);
@@ -426,15 +442,13 @@ namespace Debugger.MetaData
 			if (sigType is ARRAY) {
 				ARRAY arraySig = (ARRAY)sigType;
 				DebugType elementType = CreateFromSignature(module, arraySig.Type, declaringType);
-				ICorDebugType res = module.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)sigType.ElementType, (uint)arraySig.Shape.Rank, elementType.CorType);
-				return CreateFromCorType(module.AppDomain, res);
+				return CreateArray(elementType, arraySig.Shape.Rank);
 			}
 			
 			if (sigType is SZARRAY) {
 				SZARRAY arraySig = (SZARRAY)sigType;
 				DebugType elementType = CreateFromSignature(module, arraySig.Type, declaringType);
-				ICorDebugType res = module.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)sigType.ElementType, 1, elementType.CorType);
-				return CreateFromCorType(module.AppDomain, res);
+				return CreateSzArray(elementType);
 			}
 			
 			if (sigType is PTR) {
@@ -445,8 +459,7 @@ namespace Debugger.MetaData
 				} else {
 					elementType = CreateFromSignature(module, ptrSig.PtrType, declaringType);
 				}
-				ICorDebugType res = module.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)sigType.ElementType, 0, elementType.CorType);
-				return CreateFromCorType(module.AppDomain, res);
+				return CreatePointer(elementType);
 			}
 			
 			if (sigType is FNPTR) {
@@ -454,6 +467,30 @@ namespace Debugger.MetaData
 			}
 			
 			throw new NotImplementedException(sigType.ElementType.ToString());
+		}
+		
+		public static DebugType CreateArray(DebugType elementType, int rank)
+		{
+			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.ARRAY, (uint)rank, elementType.CorType);
+			return CreateFromCorType(elementType.AppDomain, res);
+		}
+		
+		public static DebugType CreateSzArray(DebugType elementType)
+		{
+			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.SZARRAY, 1, elementType.CorType);
+			return CreateFromCorType(elementType.AppDomain, res);
+		}
+		
+		public static DebugType CreatePointer(DebugType elementType)
+		{
+			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.PTR, 0, elementType.CorType);
+			return CreateFromCorType(elementType.AppDomain, res);
+		}
+		
+		public static DebugType CreateReference(DebugType elementType)
+		{
+			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.BYREF, 0, elementType.CorType);
+			return CreateFromCorType(elementType.AppDomain, res);
 		}
 		
 		public static DebugType CreateFromCorClass(AppDomain appDomain, bool? valueType, ICorDebugClass corClass, DebugType[] genericArguments)
