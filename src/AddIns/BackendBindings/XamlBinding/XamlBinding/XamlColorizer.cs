@@ -130,6 +130,7 @@ namespace ICSharpCode.XamlBinding
 						
 						string propertyName;
 						string token;
+						int startIndex;
 						
 						switch (context.Description) {
 							case XamlContextDescription.AtTag:
@@ -140,18 +141,18 @@ namespace ICSharpCode.XamlBinding
 									continue;
 								
 								propertyName = token.Substring(propertyNameIndex + 1);
+								startIndex = LineText.IndexOf(propertyName, index, StringComparison.Ordinal);
 								break;
 							case XamlContextDescription.InTag:
 								if (LineText[index] == '.' || context.Attribute == null)
 									continue;
 								
 								token = propertyName = context.Attribute.Name;
+								startIndex = LineText.LastIndexOf(propertyName, index, StringComparison.Ordinal);
 								break;
 							default:
 								continue;
 						}
-						
-						int startIndex = LineText.LastIndexOf(propertyName, index, StringComparison.Ordinal);
 						
 						if (startIndex > -1) {
 							yield return new HighlightingInfo(token, startIndex, startIndex + propertyName.Length, Offset, context);
