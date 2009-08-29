@@ -44,12 +44,10 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\ComponentInspectorApplication.cs" />
-    <EmbeddedResource Include="..\..\..\..\Main\StartUp\Project\Resources\StringResources.resources">
-      <Link>Resources\StringResources.resources</Link>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.config" />
+    <Folder Include="Resources" />
     <ProjectReference Include="..\ComponentInspector.Core\ComponentInspector.Core.csproj">
       <Project>{E6F4983F-DE41-4AEC-88E7-1FA9AFB4E6FF}</Project>
       <Name>ComponentInspector.Core</Name>
@@ -60,6 +58,11 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\..\..\data\resources\StringResources.resx">
+      <Link>Resources\StringResources.resx</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />
