@@ -71,7 +71,7 @@ namespace StringResourceToolAddIn
 			try {
 				Process.Start(info);
 			} catch (Exception ex) {
-				MessageService.ShowError(ex, "Error starting " + info.FileName);
+				MessageService.ShowException(ex, "Error starting " + info.FileName);
 			}
 		}
 		

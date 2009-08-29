@@ -99,7 +99,7 @@ namespace StringResourceTool
 			button4.Size = new System.Drawing.Size(113, 23);
 			button4.TabIndex = 6;
 			button4.Text = "Download database";
-			button4.Click += new System.EventHandler(this.Button4Click);
+			button4.Click += new System.EventHandler(this.DownloadButtonClick);
 			savePasswordCheckBox = new System.Windows.Forms.CheckBox();
 			// 
 			// savePasswordCheckBox
@@ -328,7 +328,6 @@ namespace StringResourceTool
 			}
 		}
 		const string srcDir = @"..\..\..\..\";
-		const string dataBaseDir = srcDir + @"..\..\SharpDevelopResources\LanguageResources\";
 		Hashtable FindResourceStrings()
 		{
 			ResourceSet rs = new ResourceSet(srcDir + @"Main\StartUp\Project\Resources\StringResources.resources");
@@ -358,18 +357,23 @@ namespace StringResourceTool
 			}
 		}
 		
-		void Button4Click(object sender, EventArgs e)
+		void DownloadButtonClick(object sender, EventArgs e)
 		{
 			EventHandler onDownloadFinished = delegate {
-				outputTextBox.Text += "\nBuilding resource files...";
-				RunBatch(dataBaseDir, "build.bat", delegate {
-				         	BeginInvoke(new MethodInvoker(delegate {
-				         	                              	outputTextBox.Text += "\r\nBuilding SharpDevelop...";
-				         	                              }));
-				         	RunBatch(srcDir, "debugbuild.bat", null);
-				         });
+				outputTextBox.Text += "\r\nLoading database...";
+				Application.DoEvents();
+				
+				ResourceDatabase db = ResourceDatabase.Load("LocalizeDb_DL_Corsavy.mdb");
+				outputTextBox.Text += "\r\nCreating resource files...";
+				Application.DoEvents();
+				BuildResourceFiles.Build(db, Path.Combine(srcDir, "../data/resources"),
+				                         text => { outputTextBox.Text += "\r\n" + text; Application.DoEvents();});
+				
+				outputTextBox.Text += "\r\nBuilding SharpDevelop...";
+				RunBatch(srcDir, "debugbuild.bat", null);
 			};
-			server.DownloadDatabase(dataBaseDir + "LocalizeDb.mdb", onDownloadFinished);
+			server.DownloadDatabase("LocalizeDb_DL_Corsavy.mdb", onDownloadFinished);
+			//onDownloadFinished(null, null);
 		}
 		
 		void RunBatch(string dir, string batchFile, MethodInvoker exitCallback)

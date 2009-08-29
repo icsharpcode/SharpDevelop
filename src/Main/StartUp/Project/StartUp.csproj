@@ -53,6 +53,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SharpDevelopMain.cs" />
+    <EmbeddedResource Include="..\..\..\..\data\resources\StringResources.resx">
+      <Link>Resources\StringResources.resx</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\BitmapResources.resources">
       <LogicalName>Resources.BitmapResources.resources</LogicalName>
     </EmbeddedResource>
@@ -61,9 +64,6 @@
     </None>
     <EmbeddedResource Include="Resources\SplashScreen.jpg">
       <LogicalName>Resources.SplashScreen.jpg</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\StringResources.resources">
-      <LogicalName>Resources.StringResources.resources</LogicalName>
     </EmbeddedResource>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <None Include="SharpDevelop.exe.config">

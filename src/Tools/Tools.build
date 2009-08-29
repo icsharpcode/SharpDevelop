@@ -1,4 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<PropertyGroup>
+		<LanguageResourcePath>..\..\data\resources\</LanguageResourcePath>
+	</PropertyGroup>
+	
 	<ItemGroup>
 		<SHFBFiles Include="SHFB\*"/>
 		<SHFBBuildComponents Include="SHFB\BuildComponents\*"/>
@@ -18,9 +22,21 @@
 		<HelpToolFiles Include="Help\*"/>
 		<PartCoverFiles Include="PartCover\*"/>
 		<PartCoverXsltFiles Include="PartCover\xslt\*"/>
+	
+		<LanguageResource Include="$(LanguageResourcePath)StringResources.*.resx"/>
 	</ItemGroup>
 	
-	<Target Name="Build">
+	<Target Name="CompileResources" Inputs="@(LanguageResource)" Outputs="@(LanguageResource->'$(LanguageResourcePath)%(Filename).resources')">
+		<GenerateResource
+		    Sources="@(LanguageResource)"
+		    OutputResources="@(LanguageResource->'$(LanguageResourcePath)%(Filename).resources')">
+		    <Output
+		        TaskParameter="OutputResources"
+		        ItemName="Resources"/>
+		</GenerateResource>
+	</Target>
+	
+	<Target Name="Build" DependsOnTargets="CompileResources">
 		<Copy SourceFiles="@(SHFBFiles)" DestinationFolder="..\..\bin\Tools\SHFB" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(SHFBBuildComponents)" DestinationFolder="..\..\bin\Tools\SHFB\BuildComponents" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(SHFBColorizerFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Colorizer" SkipUnchangedFiles="true"/>
@@ -66,6 +82,7 @@
 	<ItemGroup>
 		<CleanupFiles Include="..\..\bin\*"/>
 		<CleanupFiles Include="..\Main\GlobalAssemblyInfo.cs"/>
+		<CleanupFiles Include="$(LanguageResourcePath)StringResources.*.resources"/>
 		<CleanupDirectories Include="..\..\bin\UnitTests"/>
 		<CleanupDirectories Include="..\..\bin\Tools"/>
 		<CleanupDirectories Include="..\..\bin\setup\help"/>
