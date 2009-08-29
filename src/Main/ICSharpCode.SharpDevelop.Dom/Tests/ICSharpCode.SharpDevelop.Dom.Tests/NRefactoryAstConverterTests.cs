@@ -16,9 +16,15 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 	[TestFixture]
 	public class NRefactoryAstConverterTests
 	{
-		ICompilationUnit Parse(string code, SupportedLanguage language)
+		readonly ProjectContentRegistry projectContentRegistry = new ProjectContentRegistry();
+		
+		ICompilationUnit Parse(string code, SupportedLanguage language, bool referenceMscorlib)
 		{
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(new DefaultProjectContent());
+			DefaultProjectContent pc = new DefaultProjectContent();
+			if (referenceMscorlib) {
+				pc.AddReferencedContent(projectContentRegistry.Mscorlib);
+			}
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			using (IParser p = ParserFactory.CreateParser(language, new StringReader(code))) {
 				p.ParseMethodBodies = false;
 				p.Parse();
@@ -27,6 +33,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 				visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			}
 			return visitor.Cu;
+		}
+		
+		ICompilationUnit Parse(string code, SupportedLanguage language)
+		{
+			return Parse(code, language, false);
 		}
 		
 		ICompilationUnit Parse(string code)
@@ -164,6 +175,41 @@ static class X {}
 			Assert.IsTrue(c.IsAbstract, "class should be abstract");
 			Assert.IsTrue(c.IsSealed, "class should be sealed");
 			Assert.IsTrue(c.IsStatic, "class should be static");
+		}
+		
+		[Test]
+		public void IndexerDefaultNameTest()
+		{
+			ICompilationUnit cu = Parse(@"
+class X {
+	public int this[int index] {
+		get { return 0; }
+	}
+}
+");
+			IProperty p = cu.Classes[0].Properties[0];
+			Assert.IsTrue(p.IsIndexer, "IsIndexer must be true");
+			Assert.AreEqual("Item", p.Name);
+			Assert.AreEqual(1, p.Parameters.Count);
+		}
+		
+		[Test]
+		public void IndexerNonDefaultNameTest()
+		{
+			ICompilationUnit cu = Parse(@"
+using System.Runtime.CompilerServices;
+class X {
+	[IndexerName(""Foo"")]
+	public int this[int index] {
+		get { return 0; }
+	}
+}
+", SupportedLanguage.CSharp, true);
+			
+			IProperty p = cu.Classes[0].Properties[0];
+			Assert.IsTrue(p.IsIndexer, "IsIndexer must be true");
+			Assert.AreEqual("Foo", p.Name);
+			Assert.AreEqual(1, p.Parameters.Count);
 		}
 	}
 }

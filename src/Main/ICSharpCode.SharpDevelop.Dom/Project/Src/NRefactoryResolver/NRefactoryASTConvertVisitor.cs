@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Linq;
 
 using ICSharpCode.NRefactory.Visitors;
 using AST = ICSharpCode.NRefactory.Ast;
@@ -719,9 +720,30 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					i.Parameters.Add(CreateParameter(par));
 				}
 			}
+			// If an IndexerNameAttribute is specified, use the specified name
+			// for the indexer instead of the default name.
+			IAttribute indexerNameAttribute = i.Attributes.LastOrDefault(this.IsIndexerNameAttribute);
+			if (indexerNameAttribute != null && indexerNameAttribute.PositionalArguments.Count > 0) {
+				string name = indexerNameAttribute.PositionalArguments[0] as string;
+				if (!String.IsNullOrEmpty(name)) {
+					i.FullyQualifiedName = String.Concat(i.DeclaringType.FullyQualifiedName, ".", name);
+				}
+			}
 			DefaultClass c = GetCurrentClass();
 			c.Properties.Add(i);
 			return null;
+		}
+		
+		bool IsIndexerNameAttribute(IAttribute att)
+		{
+			if (att == null || att.AttributeType == null)
+				return false;
+			string indexerNameAttributeFullName = typeof(System.Runtime.CompilerServices.IndexerNameAttribute).FullName;
+			IClass indexerNameAttributeClass = this.Cu.ProjectContent.GetClass(indexerNameAttributeFullName, 0, LanguageProperties.CSharp, GetClassOptions.Default | GetClassOptions.ExactMatch);
+			if (indexerNameAttributeClass == null) {
+				return String.Equals(att.AttributeType.FullyQualifiedName, indexerNameAttributeFullName, StringComparison.Ordinal);
+			}
+			return att.AttributeType.Equals(indexerNameAttributeClass.DefaultReturnType);
 		}
 		
 		public override object VisitEventDeclaration(AST.EventDeclaration eventDeclaration, object data)
