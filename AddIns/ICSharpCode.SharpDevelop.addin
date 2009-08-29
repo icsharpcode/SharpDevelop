@@ -1580,7 +1580,11 @@
 			          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"
 			          shortcut = "Control|G"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
-			<MenuItem id = "Separator3" type = "Separator" />
+			<MenuItem id = "GotoDefinition"
+			          label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
+			          shortcut = "Control|Return"
+			          icon="Icons.16x16.SelectionArrow"
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.GoToDefinition"/>
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
 			          shortcut = "Control|B"

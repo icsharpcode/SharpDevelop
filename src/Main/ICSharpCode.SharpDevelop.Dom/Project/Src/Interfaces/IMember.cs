@@ -21,7 +21,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>
 		/// Gets/Sets the declaring type reference (declaring type incl. type arguments).
-		/// Never returns null, if the property is set to null (e.g. when this is not a specialized member),
+		/// Never returns null.
+		/// If the property is set to null (e.g. when this is not a specialized member),
 		/// it should return the default type reference to the <see cref="DeclaringType"/>.
 		/// </summary>
 		IReturnType DeclaringTypeReference {

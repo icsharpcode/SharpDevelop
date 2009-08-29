@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Editor.Commands;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -17,7 +18,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -384,7 +384,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			TextViewPosition? logicalPos = textEditor.GetPositionFromPoint(mousePos);
 			if (logicalPos.HasValue) {
 				var textView = textEditor.TextArea.TextView;
-				positionInPixels = 
+				positionInPixels =
 					textView.PointToScreen(
 						textView.GetVisualPosition(logicalPos.Value, VisualYPosition.LineBottom) - textView.ScrollOffset);
 				positionInPixels.X -= 4;
@@ -425,6 +425,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			// close existing popup immediately on text editor mouse down
 			tryCloseExistingPopup(false);
+			if (e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
+				TextEditor editor = GetTextEditorFromSender(sender);
+				var position = editor.GetPositionFromPoint(e.GetPosition(editor));
+				if (position != null) {
+					GoToDefinition.Run(GetAdapterFromSender(sender), document.GetOffset(position.Value));
+					e.Handled = true;
+				}
+			}
 		}
 		
 		/*void textArea_GotFocus(object sender, RoutedEventArgs e)

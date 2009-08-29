@@ -71,6 +71,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public AbstractMember(IClass declaringType, string name) : base(declaringType, name)
 		{
+			// members must have a parent class
+			if (declaringType == null)
+				throw new ArgumentNullException("declaringType");
 		}
 		
 		public abstract IMember Clone();
