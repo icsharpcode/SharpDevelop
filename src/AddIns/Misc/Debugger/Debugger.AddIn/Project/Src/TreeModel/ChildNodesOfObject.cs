@@ -4,12 +4,14 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.SharpDevelop.Services;
 using System.Collections;
 using System.Collections.Generic;
 using Debugger.MetaData;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop;
+using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -67,13 +69,14 @@ namespace Debugger.AddIn.TreeModel
 			
 			DebugType iListType = shownType.GetInterface(typeof(IList).FullName);
 			if (iListType != null) {
-				yield return new IListNode(targetObject, iListType);
-			} /*else {
-				DebugType iEnumerableType = shownType.GetInterface(typeof(IEnumerable).FullName);
-				if (iEnumerableType != null) {
-					yield return new IEnumerableNode(targetObject, iEnumerableType);
+				yield return new IListNode(targetObject);
+			} else {
+				DebugType iEnumerableType, itemType;
+				if (shownType.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
+				{
+					yield return new IEnumerableNode(targetObject, itemType);
 				}
-			}*/
+			}
 			
 			foreach(TreeNode node in LazyGetMembersOfObject(targetObject, shownType, publicInstanceFlags)) {
 				yield return node;
@@ -93,6 +96,37 @@ namespace Debugger.AddIn.TreeModel
 			
 			members.Sort();
 			return members;
+		}
+
+		
+		public static IEnumerable<TreeNode> LazyGetItemsOfIList(Expression targetObject)
+		{
+			int count = 0;
+			try {
+				count = GetIListCount(targetObject);
+			} catch (GetValueException) {
+				yield break;
+			}
+			
+			for(int i = 0; i < count; i++) {
+				yield return new ExpressionNode(ExpressionNode.GetImageForArrayIndexer(), "[" + i + "]", targetObject.AppendIndexer(i));
+			}
+		}
+		
+		/// <summary>
+		/// Evaluates System.Collections.ICollection.Count property on given object.
+		/// </summary>
+		/// <exception cref="GetValueException">Evaluating System.Collections.ICollection.Count on targetObject failed.</exception>
+		public static int GetIListCount(Expression targetObject)
+		{
+			Value list = targetObject.Evaluate(WindowsDebugger.CurrentProcess);
+			var iCollectionInterface = list.Type.GetInterface(typeof(ICollection).FullName);
+			if (iCollectionInterface == null) {
+				throw new GetValueException(targetObject, targetObject.PrettyPrint() + " does not implement System.Collections.ICollection");
+			}
+			PropertyInfo countProperty = iCollectionInterface.GetProperty("Count");
+			// Do not get string representation since it can be printed in hex
+			return (int)list.GetPropertyValue(countProperty).PrimitiveValue;
 		}
 		
 		public static IEnumerable<TreeNode> PrependNode(TreeNode node, IEnumerable<TreeNode> rest)

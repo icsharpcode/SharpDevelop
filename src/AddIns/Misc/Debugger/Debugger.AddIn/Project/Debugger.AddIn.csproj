@@ -132,6 +132,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\TreeModel\DebuggerResourceService.cs" />
+    <Compile Include="Src\TreeModel\IEnumerableNode.cs" />
     <Compile Include="Src\Visualizers\Commands\ExpressionNodeVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\GridVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\IVisualizerCommandDescriptor.cs" />
