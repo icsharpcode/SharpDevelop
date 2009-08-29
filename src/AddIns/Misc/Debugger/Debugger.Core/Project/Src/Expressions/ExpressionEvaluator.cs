@@ -336,6 +336,21 @@ namespace Debugger
 			return target.InvokeMethod(method, args.ToArray());
 		}
 		
+		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
+		{
+			List<Expression> constructorParameters = objectCreateExpression.Parameters;
+			DebugType[] constructorParameterTypes = new DebugType[constructorParameters.Count];
+			for (int i = 0; i < constructorParameters.Count; i++) {
+				constructorParameterTypes[i] = GetDebugType(constructorParameters[i]);
+			}
+			Value[] constructorParameterValues = new Value[constructorParameters.Count];
+			for (int i = 0; i < constructorParameters.Count; i++) {
+				constructorParameterValues[i] = Evaluate(constructorParameters[i]);
+			}
+			return Eval.NewObject(DebugType.CreateFromTypeReference(context.AppDomain, objectCreateExpression.CreateType), 
+			                      constructorParameterValues, constructorParameterTypes);
+		}
+		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			Value target = Evaluate(memberReferenceExpression.TargetObject);

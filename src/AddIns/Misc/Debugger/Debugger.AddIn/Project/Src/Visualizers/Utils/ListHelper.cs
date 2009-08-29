@@ -27,5 +27,12 @@ namespace Debugger.AddIn.Visualizers.Utils
 			list.Sort();
 			return list;
 		}
+		
+		public static List<T> ToList<T>(this T singleItem)
+		{
+			var newList = new List<T>();
+			newList.Add(singleItem);
+			return newList;
+		}
 	}
 }

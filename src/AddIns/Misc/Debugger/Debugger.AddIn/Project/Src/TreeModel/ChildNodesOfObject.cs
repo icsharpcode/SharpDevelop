@@ -68,7 +68,12 @@ namespace Debugger.AddIn.TreeModel
 			DebugType iListType = shownType.GetInterface(typeof(IList).FullName);
 			if (iListType != null) {
 				yield return new IListNode(targetObject, iListType);
-			}
+			} /*else {
+				DebugType iEnumerableType = shownType.GetInterface(typeof(IEnumerable).FullName);
+				if (iEnumerableType != null) {
+					yield return new IEnumerableNode(targetObject, iEnumerableType);
+				}
+			}*/
 			
 			foreach(TreeNode node in LazyGetMembersOfObject(targetObject, shownType, publicInstanceFlags)) {
 				yield return node;

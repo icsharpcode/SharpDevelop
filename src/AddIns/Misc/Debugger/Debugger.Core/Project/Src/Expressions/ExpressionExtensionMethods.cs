@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision: 4767 $</version>
+//     <version>$Revision$</version>
 // </file>
 using ICSharpCode.NRefactory.PrettyPrinter;
 using System;
@@ -102,7 +102,7 @@ namespace Debugger
 			return typedArgs;
 		}
 		
-		static TypeReference ToTypeReference(this DebugType type)
+		public static TypeReference ToTypeReference(this DebugType type)
 		{
 			List<int> arrayRanks = new List<int>();
 			int pointerNest = 0;

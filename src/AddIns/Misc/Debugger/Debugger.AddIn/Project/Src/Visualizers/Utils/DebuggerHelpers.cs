@@ -5,16 +5,34 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using Debugger;
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 using ICSharpCode.SharpDevelop.Services;
 using System.Collections.Generic;
-using Expression = ICSharpCode.NRefactory.Ast.Expression;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.Utils
 {
 	public static class DebuggerHelpers
 	{
+		/// <summary>
+		/// Creates an expression which, when evaluated, creates a List&lt;T&gt; in the debugee
+		/// filled with contents of IEnumerable&lt;T&gt; from the debugee.
+		/// </summary>
+		/// <param name="iEnumerableVariable">Expression for IEnumerable variable in the debugee.</param>
+		/// <param name="itemType">
+		/// The generic argument of IEnumerable&lt;T&gt; that <paramref name="iEnumerableVariable"/> implements.</param>
+		public static Expression CreateDebugListExpression(Expression iEnumerableVariable, DebugType itemType, out DebugType listType)
+		{
+			// is using itemType.AppDomain ok?
+			listType = DebugType.CreateFromType(itemType.AppDomain, typeof(System.Collections.Generic.List<>), itemType);
+			var iEnumerableType = DebugType.CreateFromType(itemType.AppDomain, typeof(IEnumerable<>), itemType);
+			// explicitely cast the variable to IEnumerable<T>, where T is itemType
+			Expression iEnumerableVariableExplicitCast = new CastExpression(iEnumerableType.ToTypeReference() , iEnumerableVariable, CastType.Cast);
+			return new ObjectCreateExpression(listType.ToTypeReference(), iEnumerableVariableExplicitCast.ToList());
+		}
+		
 		/// <summary>
 		/// Gets underlying address of object in the debuggee.
 		/// </summary>

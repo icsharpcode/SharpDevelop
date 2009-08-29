@@ -33,9 +33,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		WindowsDebugger debuggerService;
 		GridViewColumnHider columnHider;
 		
-		/// <summary> Number of items shown initially when visualizing IEnumerable. </summary>
-		static readonly int initialIEnumerableItemsCount = 24;
-		
 		public GridVisualizerWindow()
 		{
 			InitializeComponent();
@@ -125,23 +122,19 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				// Value is IList
 				DebugType iListType, listItemType;
 				if (val.Type.ResolveIListImplementation(out iListType, out listItemType)) {
-					var listValuesProvider = new ListValuesProvider(val.ExpressionTree, iListType, listItemType);
-					var virtCollection = new VirtualizingCollection<ObjectValue>(listValuesProvider);
-					this.listView.ItemsSource = virtCollection;
-					gridValuesProvider = listValuesProvider;
+					gridValuesProvider = CreateListValuesProvider(val.ExpressionTree, iListType, listItemType);
 				} else	{
 					// Value is IEnumerable
 					DebugType iEnumerableType, itemType;
 					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-						var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
+						// original
+						/*var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
 						var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
 						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
-						gridValuesProvider = enumerableValuesProvider;
-						
-						/*var systemObjectType = DebugType.CreateFromType(val.AppDomain, typeof(System.Object));
-						var listType = DebugType.CreateFromType(val.AppDomain, typeof(System.Collections.Generic.List<>), systemObjectType);
-						Value list = Eval.NewObject(listType	, val);*/
-						
+						gridValuesProvider = enumerableValuesProvider;*/
+						DebugType debugListType;
+						var debugListExpression = DebuggerHelpers.CreateDebugListExpression(val.ExpressionTree, itemType, out debugListType);
+						gridValuesProvider = CreateListValuesProvider(debugListExpression, debugListType, itemType);
 					} else	{
 						// Value cannot be displayed in GridVisualizer
 						return;
@@ -153,6 +146,14 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
 				cmbColumns.ItemsSource = this.columnHider.HideableColumns;
 			}
+		}
+		
+		ListValuesProvider CreateListValuesProvider(ICSharpCode.NRefactory.Ast.Expression targetObject, DebugType iListType, DebugType listItemType)
+		{
+			var listValuesProvider = new ListValuesProvider(targetObject, iListType, listItemType);
+			var virtCollection = new VirtualizingCollection<ObjectValue>(listValuesProvider);
+			this.listView.ItemsSource = virtCollection;
+			return listValuesProvider;
 		}
 		
 		void InitializeColumns(GridView gridView, IList<MemberInfo> itemTypeMembers)

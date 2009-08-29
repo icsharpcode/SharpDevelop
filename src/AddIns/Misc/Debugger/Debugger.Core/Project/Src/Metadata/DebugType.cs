@@ -353,7 +353,7 @@ namespace Debugger.MetaData
 				if (module.AppDomain == appDomain) {
 					uint token;
 					try {
-						token = module.MetaData.FindTypeDefPropsByName(typeName, enclosingType == null ? 0 : enclosingType.Token).Token;
+						token = module.MetaData.FindTypeDefPropsByName(GetQualifiedName(typeName, genericArguments), enclosingType == null ? 0 : enclosingType.Token).Token;
 					} catch {
 						continue;
 					}
@@ -361,6 +361,16 @@ namespace Debugger.MetaData
 				}
 			}
 			throw new DebuggerException("Can not find type " + typeName);
+		}
+		
+		/// <summary> Converts type name to the form suitable for COM API. </summary>
+		static string GetQualifiedName(string typeName, params DebugType[] genericArguments)
+		{
+			if (genericArguments != null && genericArguments.Length > 0 && !typeName.Contains("`")) {
+				return typeName + "`" + genericArguments.Length;
+			} else 	{
+				return typeName;
+			}
 		}
 		
 		public static DebugType CreateFromTypeSpec(Module module, uint token, DebugType declaringType)

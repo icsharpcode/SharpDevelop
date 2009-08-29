@@ -336,14 +336,9 @@ namespace Debugger
 		
 		#region Convenience methods
 		
-		public static Value NewObject(DebugType debugType, params Value[] constructorArguments)
+		public static Value NewObject(DebugType debugType, Value[] constructorArguments, DebugType[] constructorArgumentsTypes)
 		{
-			return NewObject(debugType, new List<Value>(constructorArguments));
-		}
-		
-		public static Value NewObject(DebugType debugType, List<Value> constructorArguments)
-		{
-			return AsyncNewObject(debugType, constructorArguments).WaitForResult();
+			return AsyncNewObject(debugType, constructorArguments, constructorArgumentsTypes).WaitForResult();
 		}
 		
 		public static Value NewObjectNoConstructor(DebugType debugType)
@@ -353,12 +348,14 @@ namespace Debugger
 		
 		#endregion
 		
-		public static Eval AsyncNewObject(DebugType debugType, List<Value> constructorArguments)
+		public static Eval AsyncNewObject(DebugType debugType, Value[] constructorArguments, DebugType[] constructorArgumentsTypes)
 		{
 			List<Expression> constructorArgumentsExpressions = SelectExpressions(constructorArguments);
-			// constructorArgumentsTypes = SelectTypes(constructorArguments);
 			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
-			MethodInfo constructor = debugType.GetMethod(".ctor");	// TODO
+			MethodInfo constructor = debugType.GetMethod(".ctor", constructorArgumentsTypes);
+			if (constructor == null) {
+				throw new DebuggerException(string.Format("Type {0} has no constructor overload with given argument types.", debugType.FullName));
+			}
 			return new Eval(
 				debugType.AppDomain,
 				"New object: " + debugType.FullName,
@@ -383,19 +380,19 @@ namespace Debugger
 			);
 		}
 		
-		static ICorDebugValue[] ValuesAsCorDebug(List<Value> values)
+		static ICorDebugValue[] ValuesAsCorDebug(Value[] values)
 		{
-			ICorDebugValue[] valuesAsCorDebug = new ICorDebugValue[values.Count];
-			for(int i = 0; i < values.Count; i++)
+			ICorDebugValue[] valuesAsCorDebug = new ICorDebugValue[values.Length];
+			for(int i = 0; i < values.Length; i++)
 			{
 				valuesAsCorDebug[i] = values[i].CorValue;
 			}
 			return valuesAsCorDebug;
 		}
 		
-		static List<Expression> SelectExpressions(List<Value> values)
+		static List<Expression> SelectExpressions(Value[] values)
 		{
-			List<Expression> expressions = new List<Expression>(values.Count);
+			List<Expression> expressions = new List<Expression>(values.Length);
 			foreach (Value value in values) {
 				expressions.Add(value.ExpressionTree);
 			}

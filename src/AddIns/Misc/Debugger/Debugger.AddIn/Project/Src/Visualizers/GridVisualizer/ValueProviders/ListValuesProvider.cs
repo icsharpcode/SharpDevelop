@@ -48,16 +48,13 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		// TODO move to Utils iListType.EvaluateCount(Expression targetObject)
 		// or targetObject.EvaluateCount(iListType)
 		// or targetObject.EvaluateIListCount()	<- calls ResolveIListImplementation
-		private int evaluateCount()
+		int evaluateCount()
 		{
 			PropertyInfo countProperty = this.collectionType.GetGenericInterface("System.Collections.Generic.ICollection").GetProperty("Count");
-			try {
-				// Do not get string representation since it can be printed in hex later
-				Value countValue = targetObject.Evaluate(WindowsDebugger.CurrentProcess).GetPropertyValue(countProperty);
-				return (int)countValue.PrimitiveValue;
-			} catch (GetValueException) {
-				return -1;
-			}
+			// Do not get string representation since it can be printed in hex later
+			Value countValue = targetObject.Evaluate(WindowsDebugger.CurrentProcess).GetPropertyValue(countProperty);
+			//Value countValue = targetObject.AppendMemberReference(countProperty).Evaluate(WindowsDebugger.CurrentProcess);
+			return (int)countValue.PrimitiveValue;
 		}
 	}
 }

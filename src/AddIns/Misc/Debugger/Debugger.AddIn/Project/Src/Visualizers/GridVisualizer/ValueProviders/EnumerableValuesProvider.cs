@@ -4,13 +4,14 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger.MetaData;
-using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Services;
+using Debugger.AddIn.Visualizers.Utils;
+using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
