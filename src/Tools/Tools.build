@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
 	<PropertyGroup>
 		<LanguageResourcePath>..\..\data\resources\</LanguageResourcePath>
 	</PropertyGroup>
@@ -26,17 +26,13 @@
 		<LanguageResource Include="$(LanguageResourcePath)StringResources.*.resx"/>
 	</ItemGroup>
 	
-	<Target Name="CompileResources" Inputs="@(LanguageResource)" Outputs="@(LanguageResource->'$(LanguageResourcePath)%(Filename).resources')">
+	<Target Name="CompileLanguageResources" Inputs="@(LanguageResource)" Outputs="@(LanguageResource->'$(LanguageResourcePath)%(Filename).resources')">
 		<GenerateResource
 		    Sources="@(LanguageResource)"
-		    OutputResources="@(LanguageResource->'$(LanguageResourcePath)%(Filename).resources')">
-		    <Output
-		        TaskParameter="OutputResources"
-		        ItemName="Resources"/>
-		</GenerateResource>
+		    OutputResources="@(LanguageResource->'$(LanguageResourcePath)%(Filename).resources')"/>
 	</Target>
 	
-	<Target Name="Build" DependsOnTargets="CompileResources">
+	<Target Name="Build" DependsOnTargets="CompileLanguageResources">
 		<Copy SourceFiles="@(SHFBFiles)" DestinationFolder="..\..\bin\Tools\SHFB" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(SHFBBuildComponents)" DestinationFolder="..\..\bin\Tools\SHFB\BuildComponents" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(SHFBColorizerFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Colorizer" SkipUnchangedFiles="true"/>
