@@ -82,7 +82,7 @@ namespace ReflectorAddIn
 		
 		public static void TryGoTo(string assemblyName, AbstractEntity entity)
 		{
-			string dotnetName = entity.DocumentationTag;
+			string dotnetName = entity.DocumentationTag.Replace('+', '.');
 			string selectCommand;
 			if (entity is IClass) {
 				selectCommand = "SelectTypeDeclaration";
