@@ -156,60 +156,55 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public override void SetPosition(PlacementInformation info)
 		{
 			base.SetPosition(info);
-			if (info.Operation.Type == PlacementType.AddItem) {
-				SetColumn(info.Item, GetColumnIndex(info.Bounds.Left), 1);
-				SetRow(info.Item, GetRowIndex(info.Bounds.Top), 1);
-			} else {
-				int leftColumnIndex = GetColumnIndex(info.Bounds.Left);
-				int rightColumnIndex = GetEndColumnIndex(info.Bounds.Right);
-				if (rightColumnIndex < leftColumnIndex) rightColumnIndex = leftColumnIndex;
-				SetColumn(info.Item, leftColumnIndex, rightColumnIndex - leftColumnIndex + 1);
-				int topRowIndex = GetRowIndex(info.Bounds.Top);
-				int bottomRowIndex = GetEndRowIndex(info.Bounds.Bottom);
-				if (bottomRowIndex < topRowIndex) bottomRowIndex = topRowIndex;
-				SetRow(info.Item, topRowIndex, bottomRowIndex - topRowIndex + 1);
-				
-				Rect availableSpaceRect = new Rect(
-					new Point(GetColumnOffset(leftColumnIndex), GetRowOffset(topRowIndex)),
-					new Point(GetColumnOffset(rightColumnIndex + 1), GetRowOffset(bottomRowIndex + 1))
-				);
-				if (info.Item == Services.Selection.PrimarySelection) {
-					// only for primary selection:
-					if (grayOut != null) {
-						grayOut.AnimateActiveAreaRectTo(availableSpaceRect);
-					} else {
-						GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View, availableSpaceRect);
-					}
+			int leftColumnIndex = GetColumnIndex(info.Bounds.Left);
+			int rightColumnIndex = GetEndColumnIndex(info.Bounds.Right);
+			if (rightColumnIndex < leftColumnIndex) rightColumnIndex = leftColumnIndex;
+			SetColumn(info.Item, leftColumnIndex, rightColumnIndex - leftColumnIndex + 1);
+			int topRowIndex = GetRowIndex(info.Bounds.Top);
+			int bottomRowIndex = GetEndRowIndex(info.Bounds.Bottom);
+			if (bottomRowIndex < topRowIndex) bottomRowIndex = topRowIndex;
+			SetRow(info.Item, topRowIndex, bottomRowIndex - topRowIndex + 1);
+			
+			Rect availableSpaceRect = new Rect(
+				new Point(GetColumnOffset(leftColumnIndex), GetRowOffset(topRowIndex)),
+				new Point(GetColumnOffset(rightColumnIndex + 1), GetRowOffset(bottomRowIndex + 1))
+			);
+			if (info.Item == Services.Selection.PrimarySelection) {
+				// only for primary selection:
+				if (grayOut != null) {
+					grayOut.AnimateActiveAreaRectTo(availableSpaceRect);
+				} else {
+					GrayOutDesignerExceptActiveArea.Start(ref grayOut, this.Services, this.ExtendedItem.View, availableSpaceRect);
 				}
-				
-				HorizontalAlignment ha = (HorizontalAlignment)info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
-				VerticalAlignment va = (VerticalAlignment)info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;
-				ha = SuggestHorizontalAlignment(info.Bounds, availableSpaceRect);
-				va = SuggestVerticalAlignment(info.Bounds, availableSpaceRect);
-				
-				info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].SetValue(ha);
-				info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].SetValue(va);
-				
-				Thickness margin = new Thickness(0, 0, 0, 0);
-				if (ha == HorizontalAlignment.Left || ha == HorizontalAlignment.Stretch)
-					margin.Left = info.Bounds.Left - GetColumnOffset(leftColumnIndex);
-				if (va == VerticalAlignment.Top || va == VerticalAlignment.Stretch)
-					margin.Top = info.Bounds.Top - GetRowOffset(topRowIndex);
-				if (ha == HorizontalAlignment.Right || ha == HorizontalAlignment.Stretch)
-					margin.Right = GetColumnOffset(rightColumnIndex + 1) - info.Bounds.Right;
-				if (va == VerticalAlignment.Bottom || va == VerticalAlignment.Stretch)
-					margin.Bottom = GetRowOffset(bottomRowIndex + 1) - info.Bounds.Bottom;
-				info.Item.Properties[FrameworkElement.MarginProperty].SetValue(margin);
-				
-				if (ha == HorizontalAlignment.Stretch)
-					info.Item.Properties[FrameworkElement.WidthProperty].Reset();
-				else
-					info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
-				if (va == VerticalAlignment.Stretch)
-					info.Item.Properties[FrameworkElement.HeightProperty].Reset();
-				else
-					info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
 			}
+			
+			HorizontalAlignment ha = (HorizontalAlignment)info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
+			VerticalAlignment va = (VerticalAlignment)info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;
+			ha = SuggestHorizontalAlignment(info.Bounds, availableSpaceRect);
+			va = SuggestVerticalAlignment(info.Bounds, availableSpaceRect);
+			
+			info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].SetValue(ha);
+			info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].SetValue(va);
+			
+			Thickness margin = new Thickness(0, 0, 0, 0);
+			if (ha == HorizontalAlignment.Left || ha == HorizontalAlignment.Stretch)
+				margin.Left = info.Bounds.Left - GetColumnOffset(leftColumnIndex);
+			if (va == VerticalAlignment.Top || va == VerticalAlignment.Stretch)
+				margin.Top = info.Bounds.Top - GetRowOffset(topRowIndex);
+			if (ha == HorizontalAlignment.Right || ha == HorizontalAlignment.Stretch)
+				margin.Right = GetColumnOffset(rightColumnIndex + 1) - info.Bounds.Right;
+			if (va == VerticalAlignment.Bottom || va == VerticalAlignment.Stretch)
+				margin.Bottom = GetRowOffset(bottomRowIndex + 1) - info.Bounds.Bottom;
+			info.Item.Properties[FrameworkElement.MarginProperty].SetValue(margin);
+			
+			if (ha == HorizontalAlignment.Stretch)
+				info.Item.Properties[FrameworkElement.WidthProperty].Reset();
+			else
+				info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
+			if (va == VerticalAlignment.Stretch)
+				info.Item.Properties[FrameworkElement.HeightProperty].Reset();
+			else
+				info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
 		}
 		
 		public override void LeaveContainer(PlacementOperation operation)

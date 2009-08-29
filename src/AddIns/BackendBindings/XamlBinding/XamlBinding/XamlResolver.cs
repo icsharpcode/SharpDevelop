@@ -154,10 +154,7 @@ namespace ICSharpCode.XamlBinding
 			IProjectContent pc = context.ProjectContent;
 			IReturnType resolvedType = XamlCompilationUnit.FindType(pc, xmlNamespace, className);
 			if (resolvedType != null && resolvedType.GetUnderlyingClass() != null) {
-				var result = ResolvePropertyName(resolvedType, propertyName, allowAttached);
-				if (result == null && CompletionDataHelper.XamlNamespaceAttributes.Contains(propertyName))
-					return new MemberResolveResult(null, null, new DefaultProperty(null, propertyName));
-				return result;
+				return ResolvePropertyName(resolvedType, propertyName, allowAttached);
 			}
 			return null;
 		}

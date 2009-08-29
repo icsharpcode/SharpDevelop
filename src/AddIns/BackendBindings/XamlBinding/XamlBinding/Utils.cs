@@ -53,11 +53,6 @@ namespace ICSharpCode.XamlBinding
 		
 		static char[] whitespace = new char[] {' ', '\t', '\n', '\r'};
 		
-		public static string GetXamlNamespacePrefix(XamlContext context)
-		{
-			return GetNamespacePrefix(CompletionDataHelper.XamlNamespace, context);
-		}
-		
 		public static string GetNamespacePrefix(string namespaceUri, XamlContext context)
 		{
 			var item = context.XmlnsDefinitions.FirstOrDefault(i => i.Value == namespaceUri);

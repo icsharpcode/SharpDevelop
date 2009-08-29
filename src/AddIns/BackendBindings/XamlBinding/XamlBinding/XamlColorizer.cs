@@ -233,19 +233,23 @@ namespace ICSharpCode.XamlBinding
 		void ColorizeMember(HighlightingInfo info, DocumentLine line, IMember member)
 		{
 			try {
-				if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":", StringComparison.OrdinalIgnoreCase))) {
-					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightIgnored);
+				if (info.Token.StartsWith(info.Context.XamlNamespacePrefix + ":", StringComparison.Ordinal)) {
+					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
 				} else {
-					if (member != null) {
-						if (member is IEvent)
-							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
-						else
-							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
+					if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":", StringComparison.Ordinal))) {
+						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightIgnored);
 					} else {
-						if (info.Token.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase) || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":", StringComparison.OrdinalIgnoreCase))
-							ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
-						else
-							Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
+						if (member != null) {
+							if (member is IEvent)
+								ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
+							else
+								ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
+						} else {
+							if (info.Token.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase) || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":", StringComparison.OrdinalIgnoreCase))
+								ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
+							else
+								Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
+						}
 					}
 				}
 			} catch (ArgumentOutOfRangeException) {}

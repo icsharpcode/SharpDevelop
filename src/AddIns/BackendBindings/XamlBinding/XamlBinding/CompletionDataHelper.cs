@@ -91,6 +91,7 @@ namespace ICSharpCode.XamlBinding
 					List<AXmlElement> ancestors = new List<AXmlElement>();
 					Dictionary<string, string> xmlns = new Dictionary<string, string>();
 					List<string> ignored = new List<string>();
+					string xamlNamespacePrefix = string.Empty;
 					
 					var item = currentData;
 					
@@ -106,7 +107,10 @@ namespace ICSharpCode.XamlBinding
 								}
 								
 								if (attr.LocalName == "Ignorable" && attr.Namespace == MarkupCompatibilityNamespace)
-									ignored.Add(attr.Value);
+									ignored.AddRange(attr.Value.Split(' ', '\t'));
+								
+								if (string.IsNullOrEmpty(xamlNamespacePrefix) && attr.Value == XamlNamespace)
+									xamlNamespacePrefix = attr.LocalName;
 							}
 						}
 						
@@ -172,18 +176,19 @@ namespace ICSharpCode.XamlBinding
 					var xAttribute = currentData as AXmlAttribute;
 					
 					var context = new XamlContext() {
-						Description       = description,
-						ActiveElement     = (active == null) ? null : active.ToWrapper(),
-						ParentElement     = (parent == null) ? null : parent.ToWrapper(),
-						Ancestors         = ancestors.Select(ancestor => ancestor.ToWrapper()).ToList(),
-						Attribute         = (xAttribute != null) ? xAttribute.ToWrapper() : null,
-						InRoot            = isRoot,
-						AttributeValue    = value,
-						RawAttributeValue = attributeValue,
-						ValueStartOffset  = offsetFromValueStart,
-						XmlnsDefinitions  = xmlns,
-						ParseInformation  = info,
-						IgnoredXmlns      = ignored.AsReadOnly()
+						Description         = description,
+						ActiveElement       = (active == null) ? null : active.ToWrapper(),
+						ParentElement       = (parent == null) ? null : parent.ToWrapper(),
+						Ancestors           = ancestors.Select(ancestor => ancestor.ToWrapper()).ToList(),
+						Attribute           = (xAttribute != null) ? xAttribute.ToWrapper() : null,
+						InRoot              = isRoot,
+						AttributeValue      = value,
+						RawAttributeValue   = attributeValue,
+						ValueStartOffset    = offsetFromValueStart,
+						XmlnsDefinitions    = xmlns,
+						ParseInformation    = info,
+						IgnoredXmlns        = ignored.AsReadOnly(),
+						XamlNamespacePrefix = xamlNamespacePrefix
 					};
 					
 					return context;
@@ -233,7 +238,7 @@ namespace ICSharpCode.XamlBinding
 			
 			var list = new List<ICompletionItem>();
 			
-			string xamlPrefix = Utils.GetXamlNamespacePrefix(context);
+			string xamlPrefix = context.XamlNamespacePrefix;
 			string xKey = string.IsNullOrEmpty(xamlPrefix) ? "" : xamlPrefix + ":";
 			
 			if (xamlBuiltInTypes.Concat(XamlNamespaceAttributes).Select(s => xKey + s).Contains(lastElement.Name))
@@ -413,16 +418,14 @@ namespace ICSharpCode.XamlBinding
 				if (itemClass != null)
 					result.Add(new XamlCodeCompletionItem(itemClass, last.Prefix));
 			}
-			
-			string xamlPrefix = Utils.GetXamlNamespacePrefix(context);
-			
+						
 			var xamlItems = XamlNamespaceAttributes.AsEnumerable();
 			
 			if (EnableXaml2009)
 				xamlItems = xamlBuiltInTypes.Concat(XamlNamespaceAttributes);
 			
 			foreach (string item in xamlItems)
-				result.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, item));
+				result.Add(new XamlCompletionItem(context.XamlNamespacePrefix, XamlNamespace, item));
 			
 			return result;
 		}
@@ -452,7 +455,7 @@ namespace ICSharpCode.XamlBinding
 				it.Text = text;
 			}
 			
-			return neededItems.Cast<ICompletionItem>().Add(new XamlCompletionItem(Utils.GetXamlNamespacePrefix(context), XamlNamespace, "Reference"));
+			return neededItems.Cast<ICompletionItem>().Add(new XamlCompletionItem(context.XamlNamespacePrefix, XamlNamespace, "Reference"));
 		}
 
 		public static XamlCompletionItemList CreateListForContext(XamlCompletionContext context)
@@ -495,14 +498,14 @@ namespace ICSharpCode.XamlBinding
 						int propertyStart = element.IndexOf('.');
 						if (propertyStart != -1)
 							className = element.Substring(0, propertyStart).TrimEnd('.');
-						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(className, context), info, editor.Document.Text) as TypeResolveResult;
+						TypeResolveResult trr = XamlResolver.Resolve(className, context) as TypeResolveResult;
 						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
 						
 						if (typeClass != null && typeClass.HasAttached(true, true))
 							list.Items.AddRange(GetListOfAttached(context, className, ns, true, true));
 					} else {
 						QualifiedNameWithLocation last = context.ActiveElement.ToQualifiedName();
-						TypeResolveResult trr = new XamlResolver().Resolve(new ExpressionResult(last.Name, context), info, editor.Document.Text) as TypeResolveResult;
+						TypeResolveResult trr = XamlResolver.Resolve(last.Name, context) as TypeResolveResult;
 						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
 						list.Items.AddRange(CreateAttributeList(context, true));
 						list.Items.AddRange(standardAttributes);
@@ -746,9 +749,8 @@ namespace ICSharpCode.XamlBinding
 			if (type is ConstructedReturnType &&  type.TypeArgumentCount > 0 && c.FullyQualifiedName == "System.Nullable") {
 				ConstructedReturnType rt = type as ConstructedReturnType;
 				string nullExtensionName = "Null";
-				string prefix = Utils.GetXamlNamespacePrefix(context);
-				if (!string.IsNullOrEmpty(prefix))
-					nullExtensionName = prefix + ":" + nullExtensionName;
+				if (!string.IsNullOrEmpty(context.XamlNamespacePrefix))
+					nullExtensionName = context.XamlNamespacePrefix + ":" + nullExtensionName;
 				yield return new SpecialCompletionItem("{" + nullExtensionName + "}");
 				c = rt.TypeArguments.First().GetUnderlyingClass();
 				if (c == null)

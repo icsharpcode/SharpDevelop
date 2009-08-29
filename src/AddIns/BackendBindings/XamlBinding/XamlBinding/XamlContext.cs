@@ -112,6 +112,7 @@ namespace ICSharpCode.XamlBinding
 		public ParseInformation ParseInformation { get; set; }
 		public bool InRoot { get; set; }
 		public ReadOnlyCollection<string> IgnoredXmlns { get; set; }
+		public string XamlNamespacePrefix { get; set; }
 		
 		public IProjectContent ProjectContent {
 			get { 
@@ -157,6 +158,7 @@ namespace ICSharpCode.XamlBinding
 			this.XmlnsDefinitions = context.XmlnsDefinitions;
 			this.InRoot = context.InRoot;
 			this.IgnoredXmlns = context.IgnoredXmlns;
+			this.XamlNamespacePrefix = context.XamlNamespacePrefix;
 		}
 		
 		public char PressedKey { get; set; }
