@@ -218,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			if (MessageBox.Show(StringParser.Parse("${res:ICSharpCode.SharpDevelop.ExceptionBox.QuitWarning}"), MessageService.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
 			    == DialogResult.Yes)
 			{
-				Application.Exit();
+				Process.GetCurrentProcess().Kill();
 			}
 		}
 		

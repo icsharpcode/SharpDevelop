@@ -326,6 +326,34 @@ namespace ICSharpCode.AvalonEdit
 		}
 		#endregion
 		
+		#region IsReadOnly
+		/// <summary>
+		/// IsReadOnly dependency property.
+		/// </summary>
+		public static readonly DependencyProperty IsReadOnlyProperty =
+			DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(TextEditor),
+			                            new FrameworkPropertyMetadata(Boxes.False, OnIsReadOnlyChanged));
+		
+		/// <summary>
+		/// Specifies whether the user can change the text editor content.
+		/// Setting this property will replace the
+		/// <see cref="Editing.TextArea.ReadOnlySectionProvider">TextArea.ReadOnlySectionProvider</see>.
+		/// </summary>
+		public bool IsReadOnly {
+			get { return (bool)GetValue(IsReadOnlyProperty); }
+			set { SetValue(IsReadOnlyProperty, Boxes.Box(value)); }
+		}
+		
+		static void OnIsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			TextEditor editor = (TextEditor)d;
+			if ((bool)e.NewValue)
+				editor.TextArea.ReadOnlySectionProvider = NoReadOnlySections.Instance;
+			else
+				editor.TextArea.ReadOnlySectionProvider = NoReadOnlySections.Instance;
+		}
+		#endregion
+		
 		#region TextBoxBase-like methods
 		/// <summary>
 		/// Appends text to the end of the document.

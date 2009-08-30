@@ -46,6 +46,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (visible) {
 				Show();
 			}
+			// required because the visual columns might have changed if the
+			// element generators did something differently than on the last run
+			// (e.g. a FoldingSection was collapsed)
+			InvalidateVisualColumn();
 		}
 		
 		void TextView_ScrollOffsetChanged(object sender, EventArgs e)

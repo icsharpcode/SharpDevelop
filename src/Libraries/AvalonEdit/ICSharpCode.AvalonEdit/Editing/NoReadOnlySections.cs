@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
@@ -30,6 +31,24 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new ArgumentNullException("segment");
 			// the segment is always deletable
 			return ExtensionMethods.Sequence(segment);
+		}
+	}
+	
+	/// <summary>
+	/// <see cref="IReadOnlySectionProvider"/> that completely disables editing.
+	/// </summary>
+	sealed class ReadOnlyDocument : IReadOnlySectionProvider
+	{
+		public static readonly ReadOnlyDocument Instance = new ReadOnlyDocument();
+		
+		public bool CanInsert(int offset)
+		{
+			return false;
+		}
+		
+		public IEnumerable<ISegment> GetDeletableSegments(ISegment segment)
+		{
+			return Enumerable.Empty<ISegment>();
 		}
 	}
 }
