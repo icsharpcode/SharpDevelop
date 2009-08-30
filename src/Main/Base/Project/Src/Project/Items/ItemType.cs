@@ -60,7 +60,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets a collection of item types that are known not to be used for files.
 		/// </summary>
 		public static readonly ReadOnlyCollectionWrapper<ItemType> NonFileItemTypes
-			= new ReadOnlyCollectionWrapper<ItemType>(new List<ItemType>(ReferenceItemTypes) { Folder, WebReferences, Import });
+			= new ReadOnlyCollectionWrapper<ItemType>(
+				new List<ItemType>(ReferenceItemTypes) {
+					Folder, WebReferences, Import 
+				});
 		
 		readonly string itemName;
 		

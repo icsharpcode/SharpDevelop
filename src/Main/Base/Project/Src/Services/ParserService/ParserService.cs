@@ -329,18 +329,32 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			
-			public ParseInformation GetParseInformation()
+			public ParseInformation GetParseInformation(IProjectContent content)
 			{
-				ParseInformation p = this.parseInfo; // read volatile
+				ParseInformation p = GetExistingParseInformation(content);
 				if (p != null)
 					return p;
 				else
-					return ParseFile(null, null);
+					return ParseFile(content, null);
 			}
 			
-			public ParseInformation GetExistingParseInformation()
+			public ParseInformation GetExistingParseInformation(IProjectContent content)
 			{
-				return this.parseInfo; // read volatile
+				if (content == null) {
+					return this.parseInfo; // read volatile
+				} else {
+					ParseInformation p = this.parseInfo; // read volatile
+					if (p != null && p.CompilationUnit.ProjectContent == content)
+						return p;
+					lock (this) {
+						if (this.oldUnits != null) {
+							ICompilationUnit cu = this.oldUnits.FirstOrDefault(c => c.ProjectContent == content);
+							return cu != null ? new ParseInformation(cu) : null;
+						} else {
+							return null;
+						}
+					}
+				}
 			}
 			
 			public ParseInformation ParseFile(IProjectContent parentProjectContent, ITextBuffer fileContent)
@@ -513,7 +527,7 @@ namespace ICSharpCode.SharpDevelop
 		/// The returned ParseInformation might be stale (re-parse is not forced).</returns>
 		public static ParseInformation GetParseInformation(string fileName)
 		{
-			return GetFileEntry(fileName, true).GetParseInformation();
+			return GetFileEntry(fileName, true).GetParseInformation(null);
 		}
 		
 		/// <summary>
@@ -525,7 +539,22 @@ namespace ICSharpCode.SharpDevelop
 		{
 			FileEntry entry = GetFileEntry(fileName, false);
 			if (entry != null)
-				return entry.GetExistingParseInformation();
+				return entry.GetExistingParseInformation(null);
+			else
+				return null;
+		}
+		
+		/// <summary>
+		/// Gets parse information for the specified file in the context of the
+		/// specified project content.
+		/// This method is thread-safe.
+		/// </summary>
+		/// <returns>Returns the ParseInformation for the specified file, or null if the file has not been parsed for that project content.</returns>
+		public static ParseInformation GetExistingParseInformation(IProjectContent content, string fileName)
+		{
+			FileEntry entry = GetFileEntry(fileName, false);
+			if (entry != null)
+				return entry.GetExistingParseInformation(content);
 			else
 				return null;
 		}

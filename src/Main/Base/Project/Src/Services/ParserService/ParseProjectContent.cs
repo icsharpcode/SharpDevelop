@@ -263,7 +263,7 @@ namespace ICSharpCode.SharpDevelop
 				ParseableFileContentFinder finder = new ParseableFileContentFinder();
 				var fileContents =
 					from p in project.Items.AsParallel().WithCancellation(token)
-					where !ItemType.NonFileItemTypes.Contains(p.ItemType)
+					where !ItemType.NonFileItemTypes.Contains(p.ItemType) && !String.IsNullOrEmpty(p.FileName)
 					select finder.Create(p);
 				fileContents.ForAll(
 					entry => {
