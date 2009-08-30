@@ -806,7 +806,6 @@
 									<Component Guid="52CFA578-E494-48D1-9928-38C3F867C47D" Id="LanguageBitmapFiles" DiskId="1">
 										<File Source="..\..\data\resources\languages\usa.png" Name="usa.png" Id="usa.png" />
 										<File Source="..\..\data\resources\languages\Arabic.png" Name="Arabic.png" Id="Arabic.png" />
-										<File Source="..\..\data\resources\languages\badgoisern.png" Id="badgoisern.png" Name="badgoisern.png" />
 										<File Source="..\..\data\resources\languages\brazil.png" Name="brazil.png" Id="brazil.png" />
 										<File Source="..\..\data\resources\languages\bulgaria.png" Name="bulgaria.png" Id="bulgaria.png" />
 										<File Source="..\..\data\resources\languages\catalonia.png" Id="catalonia.png" Name="catalonia.png" />
