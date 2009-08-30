@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -57,6 +58,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			markers.Add(m);
 			// no need to mark segment for redraw: the text marker is invisible until a property is set
 			return m;
+		}
+		
+		public IEnumerable<ITextMarker> GetMarkersAtOffset(int offset)
+		{
+			return markers.FindSegmentsContaining(offset);
 		}
 		
 		public IEnumerable<ITextMarker> TextMarkers {
@@ -152,7 +158,40 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						drawingContext.DrawGeometry(brush, null, geometry);
 					}
 				}
+				if (marker.MarkerType != TextMarkerType.None) {
+					foreach (Rect r in BackgroundGeometryBuilder.GetRectsForSegment(textView, marker)) {
+						Point startPoint = r.BottomLeft;
+						Point endPoint = r.BottomRight;
+						
+						Pen usedPen = new Pen(new SolidColorBrush(marker.MarkerColor), 1);
+						usedPen.Freeze();
+						switch (marker.MarkerType) {
+							case TextMarkerType.SquigglyUnderline:
+								double offset = 2.5;
+								
+								int count = (int)((endPoint.X - startPoint.X) / offset) + 1;
+								
+								StreamGeometry geometry = new StreamGeometry();
+								
+								using (StreamGeometryContext ctx = geometry.Open()) {
+									ctx.BeginFigure(startPoint, false, false);
+									ctx.PolyLineTo(CreatePoints(startPoint, endPoint, offset, count).ToArray(), true, false);
+								}
+								
+								geometry.Freeze();
+								
+								drawingContext.DrawGeometry(Brushes.Transparent, usedPen, geometry);
+								break;
+						}
+					}
+				}
 			}
+		}
+		
+		IEnumerable<Point> CreatePoints(Point start, Point end, double offset, int count)
+		{
+			for (int i = 0; i < count; i++)
+				yield return new Point(start.X + i * offset, start.Y - ((i + 1) % 2 == 0 ? offset : 0));
 		}
 		#endregion
 	}
@@ -168,6 +207,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.service = service;
 			this.StartOffset = startOffset;
 			this.Length = length;
+			this.markerType = TextMarkerType.None;
 		}
 		
 		public event EventHandler Deleted;
@@ -217,5 +257,31 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public object Tag { get; set; }
+		
+		TextMarkerType markerType;
+		
+		public TextMarkerType MarkerType {
+			get { return markerType; }
+			set {
+				if (markerType != value) {
+					markerType = value;
+					Redraw();
+				}
+			}
+		}
+		
+		Color markerColor;
+		
+		public Color MarkerColor {
+			get { return markerColor; }
+			set {
+				if (markerColor != value) {
+					markerColor = value;
+					Redraw();
+				}
+			}
+		}
+		
+		public object ToolTip { get; set; }
 	}
 }

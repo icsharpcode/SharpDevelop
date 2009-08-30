@@ -155,9 +155,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			base.Dispose();
 			BookmarksDetach();
-			codeEditor.DisposeLanguageBinding();
-			// Unload document on dispose.
-			codeEditor.Document = null;
+			codeEditor.Dispose();
 		}
 		
 		public override string ToString()

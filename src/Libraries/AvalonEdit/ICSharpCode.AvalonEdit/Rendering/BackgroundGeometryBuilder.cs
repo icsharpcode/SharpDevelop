@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -42,6 +43,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// Adds the specified segment to the geometry.
 		/// </summary>
 		public void AddSegment(TextView textView, ISegment segment)
+		{
+			foreach (Rect r in GetRectsForSegment(textView, segment))
+				AddRectangle(r.Left, r.Top, r.Right, r.Bottom);
+		}
+		
+		public static IEnumerable<Rect> GetRectsForSegment(TextView textView, ISegment segment)
 		{
 			if (textView == null)
 				throw new ArgumentNullException("textView");
@@ -89,7 +96,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					y -= scrollOffset.Y;
 					left -= scrollOffset.X;
 					right -= scrollOffset.X;
-					AddRectangle(left, y, right, y + line.Height);
+					yield return new Rect(left, y, right - left, line.Height);
 				}
 			}
 		}

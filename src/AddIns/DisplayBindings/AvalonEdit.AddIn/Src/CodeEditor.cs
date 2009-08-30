@@ -38,7 +38,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// Integrates AvalonEdit with SharpDevelop.
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
-	public class CodeEditor : Grid
+	public class CodeEditor : Grid, IDisposable
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
@@ -49,6 +49,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		CodeEditorAdapter secondaryTextEditorAdapter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
+		readonly ErrorDrawer errorDrawer;
 		
 		public TextEditor PrimaryTextEditor {
 			get { return primaryTextEditor; }
@@ -64,7 +65,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get {
 				return document;
 			}
-			set {
+			private set {
 				if (document != value) {
 					if (document != null)
 						document.UpdateFinished -= DocumentUpdateFinished;
@@ -124,13 +125,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		internal void DisposeLanguageBinding()
-		{
-			primaryTextEditorAdapter.Language.Detach();
-			if (secondaryTextEditorAdapter != null)
-				secondaryTextEditorAdapter.Language.Detach();
-		}
-		
 		public void Redraw(ISegment segment, DispatcherPriority priority)
 		{
 			primaryTextEditor.TextArea.TextView.Redraw(segment, priority);
@@ -149,6 +143,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor = CreateTextEditor();
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
+			
+			this.errorDrawer = new ErrorDrawer(primaryTextEditorAdapter);
 			
 			this.Document = primaryTextEditor.Document;
 			primaryTextEditor.SetBinding(TextEditor.DocumentProperty, new Binding("Document") { Source = this });
@@ -310,6 +306,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
 				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
+			}
+			
+			var markersAtOffset = textMarkerService.GetMarkersAtOffset(args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column));
+			
+			ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
+			
+			if (markerWithToolTip != null) {
+				if (toolTip == null) {
+					toolTip = new ToolTip();
+					toolTip.Closed += toolTip_Closed;
+				}
+				toolTip.Content = markerWithToolTip.ToolTip;
+				toolTip.IsOpen = true;
+				e.Handled = true;
 			}
 			
 			ToolTipRequestService.RequestToolTip(args);
@@ -647,6 +657,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
+		}
+		
+		public void Dispose()
+		{
+			primaryTextEditorAdapter.Language.Detach();
+			if (secondaryTextEditorAdapter != null)
+				secondaryTextEditorAdapter.Language.Detach();
+			
+			errorDrawer.Dispose();
+			this.Document = null;
 		}
 	}
 }
