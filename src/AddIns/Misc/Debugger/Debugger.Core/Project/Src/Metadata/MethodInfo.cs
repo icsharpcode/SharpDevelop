@@ -455,7 +455,8 @@ namespace Debugger.MetaData
 				LocalVarSig.LocalVariable locVarSig = sigReader.ReadLocalVariable(sigReader.Blob, 0, out start);
 				DebugType type = DebugType.CreateFromSignature(this.Module, locVarSig.Type, this.DeclaringType);
 				// Compiler generated?
-				if ((symVar.Attributes & 1) == 1) {
+				// NB: Display class does not have the compiler-generated flag
+				if ((symVar.Attributes & 1) == 1 || symVar.Name.StartsWith("CS$")) {
 					if (type.IsDisplayClass) {
 						
 					}

@@ -254,7 +254,10 @@ namespace Debugger.Tests
 			Type type = obj.GetType();
 			
 			if (!(obj is IEnumerable)) {
-				XmlElement newContainer = doc.CreateElement(XmlConvert.EncodeName(type.Name));
+				string name = XmlConvert.EncodeName(type.Name);
+				if (name.Contains("__AnonymousType"))
+					name = "AnonymousType";
+				XmlElement newContainer = doc.CreateElement(name);
 				container.AppendChild(newContainer);
 				container = newContainer;
 			}

@@ -31,6 +31,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="nunit.framework">
@@ -48,6 +51,7 @@
     <Compile Include="Src\TestPrograms\Break.cs" />
     <Compile Include="Src\TestPrograms\Breakpoint.cs" />
     <Compile Include="Src\TestPrograms\Callstack.cs" />
+    <Compile Include="Src\TestPrograms\CompilerGeneratedClasses.cs" />
     <Compile Include="Src\TestPrograms\DebuggeeKilled.cs" />
     <Compile Include="Src\TestPrograms\DebugTypes.cs" />
     <Compile Include="Src\TestPrograms\DefinedTypes.cs" />
