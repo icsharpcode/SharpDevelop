@@ -115,7 +115,8 @@ namespace Debugger
 				val = (Value)expression.AcceptVisitor(this, null);
 				if (val != null && permRef)
 					val = val.GetPermanentReference();
-			} catch (GetValueException) {
+			} catch (GetValueException e) {
+				e.Expression = expression;
 				throw;
 			} catch (NotImplementedException e) {
 				throw new GetValueException(expression, "Language feature not implemented: " + e.Message);
@@ -125,7 +126,7 @@ namespace Debugger
 			}
 			
 			if (val != null && val.IsInvalid)
-				throw new DebuggerException("Expression is invalid right after evaluation");
+				throw new DebuggerException("Expression \"" + expression.PrettyPrint() + "\" is invalid right after evaluation");
 			
 			// Add the result to cache
 			context.Process.CachedExpressions[expression] = val;

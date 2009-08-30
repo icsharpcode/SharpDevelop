@@ -18,6 +18,22 @@ namespace Debugger.Wrappers.CorSym
 				return Util.GetString(GetName);
 			}
 		}
+		
+		const int defaultSigSize = 8;
+		
+		public unsafe byte[] Signature {
+			get {
+				byte[] sig = new byte[defaultSigSize];
+				uint acualSize;
+				fixed(byte* pSig = sig)
+					this.GetSignature((uint)sig.Length, out acualSize, new IntPtr(pSig));
+				Array.Resize(ref sig, (int)acualSize);
+				if (acualSize > defaultSigSize)
+					fixed(byte* pSig = sig)
+						this.GetSignature((uint)sig.Length, out acualSize, new IntPtr(pSig));
+				return sig;
+			}
+		}
 	}
 }
 

@@ -5,13 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
+using ICSharpCode.NRefactory.Ast;
 using Mono.Cecil.Signatures;
+using System.Runtime.InteropServices;
 
 namespace Debugger.MetaData
 {
@@ -311,32 +312,42 @@ namespace Debugger.MetaData
 			get {
 				if (hasDebuggerAttributeCache.HasValue) return hasDebuggerAttributeCache.Value;
 				
-				MetaDataImport metaData = this.Module.MetaData;
-				hasDebuggerAttributeCache = false;
-				// Look on the method
-				foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(methodProps.Token, 0)) {
-					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
-					TypeRefProps attributeType = metaData.GetTypeRefProps(constructorMethod.DeclaringType);
-					if (attributeType.Name == "System.Diagnostics.DebuggerStepThroughAttribute" ||
-					    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute" ||
-					    attributeType.Name == "System.Diagnostics.DebuggerHiddenAttribute")
-					{
-						hasDebuggerAttributeCache = true;
-					}
-				}
-				// Look on the type
-				foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(this.DeclaringType.Token, 0)) {
-					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
-					TypeRefProps attributeType = metaData.GetTypeRefProps(constructorMethod.DeclaringType);
-					if (attributeType.Name == "System.Diagnostics.DebuggerStepThroughAttribute" ||
-					    attributeType.Name == "System.Diagnostics.DebuggerNonUserCodeAttribute" ||
-					    attributeType.Name == "System.Diagnostics.DebuggerHiddenAttribute")
-					{
-						hasDebuggerAttributeCache = true;
-					}
-				}
+				hasDebuggerAttributeCache =
+					// Look on the method
+					HasAnyAttribute(this.Module.MetaData, methodProps.Token,
+					                typeof(System.Diagnostics.DebuggerStepThroughAttribute),
+					                typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
+					                typeof(System.Diagnostics.DebuggerHiddenAttribute))
+					||
+					// Look on the type
+					HasAnyAttribute(this.Module.MetaData, this.DeclaringType.Token,
+					                typeof(System.Diagnostics.DebuggerStepThroughAttribute),
+					                typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
+					                typeof(System.Diagnostics.DebuggerHiddenAttribute));
 				return hasDebuggerAttributeCache.Value;
 			}
+		}
+		
+		internal static bool HasAnyAttribute(MetaDataImport metaData, uint token, params Type[] wantedAttrTypes)
+		{
+			foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(token, 0)) {
+				CorTokenType tkType = (CorTokenType)(ca.Type & 0xFF000000);
+				string attributeName;
+				if (tkType == CorTokenType.MemberRef) {
+					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
+					attributeName = metaData.GetTypeRefProps(constructorMethod.DeclaringType).Name;
+				} else if (tkType == CorTokenType.MethodDef) {
+					MethodProps constructorMethod = metaData.GetMethodProps(ca.Type);
+					attributeName = metaData.GetTypeDefProps(constructorMethod.ClassToken).Name;
+				} else {
+					throw new DebuggerException("Not expected: " + tkType);
+				}
+				foreach(Type wantedAttrType in wantedAttrTypes) {
+					if (attributeName == wantedAttrType.FullName)
+						return true;
+				}
+			}
+			return false;
 		}
 		
 		internal void MarkAsNonUserCode()
@@ -413,19 +424,19 @@ namespace Debugger.MetaData
 		}
 		
 		[Debugger.Tests.Ignore]
-		public List<ISymUnmanagedVariable> LocalVariables {
+		public List<LocalVariableInfo> LocalVariables {
 			get {
 				if (this.SymMethod != null) { // TODO: Is this needed?
 					return GetLocalVariablesInScope(this.SymMethod.RootScope);
 				} else {
-					return new List<ISymUnmanagedVariable>();
+					return new List<LocalVariableInfo>();
 				}
 			}
 		}
 		
 		public string[] LocalVariableNames {
 			get {
-				List<ISymUnmanagedVariable> vars = LocalVariables;
+				List<LocalVariableInfo> vars = this.LocalVariables;
 				List<string> names = new List<string>();
 				for(int i = 0; i < vars.Count; i++) {
 					names.Add(vars[i].Name);
@@ -435,18 +446,81 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		List<ISymUnmanagedVariable> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
+		List<LocalVariableInfo> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
 		{
-			List<ISymUnmanagedVariable> vars = new List<ISymUnmanagedVariable>();
+			List<LocalVariableInfo> vars = new List<LocalVariableInfo>();
 			foreach (ISymUnmanagedVariable symVar in symScope.Locals) {
-				if (!symVar.Name.StartsWith("CS$")) { // TODO: Generalize
-					vars.Add(symVar);
+				int start;
+				SignatureReader sigReader = new SignatureReader(symVar.Signature);
+				LocalVarSig.LocalVariable locVarSig = sigReader.ReadLocalVariable(sigReader.Blob, 0, out start);
+				DebugType type = DebugType.CreateFromSignature(this.Module, locVarSig.Type, this.DeclaringType);
+				// Compiler generated?
+				if ((symVar.Attributes & 1) == 1) {
+					if (type.IsDisplayClass) {
+						
+					}
+				} else {
+					ISymUnmanagedVariable symVarCopy = symVar;
+					LocalVariableInfo locVar = new LocalVariableInfo(
+						symVar.Name,
+						type,
+						delegate(StackFrame context) {
+							return GetLocalVariableValue(context, symVarCopy);
+						}
+					);
+					vars.Add(locVar);
 				}
 			}
 			foreach(ISymUnmanagedScope childScope in symScope.Children) {
 				vars.AddRange(GetLocalVariablesInScope(childScope));
 			}
 			return vars;
+		}
+		
+		static Value GetLocalVariableValue(StackFrame context, ISymUnmanagedVariable symVar)
+		{
+			ICorDebugValue corVal;
+			try {
+				corVal = context.CorILFrame.GetLocalVariable((uint)symVar.AddressField1);
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
+				throw;
+			}
+			return new Value(context.AppDomain, new IdentifierExpression(symVar.Name), corVal);
+		}
+	}
+	
+	public class LocalVariableInfo
+	{
+		public delegate Value LocalVariableValueGetter(StackFrame context);
+		
+		string name;
+		DebugType type;
+		LocalVariableValueGetter getter;
+		
+		public string Name {
+			get { return name; }
+		}
+		
+		public DebugType Type {
+			get { return type; }
+		}
+		
+		public LocalVariableInfo(string name, DebugType type, LocalVariableValueGetter getter)
+		{
+			this.name = name;
+			this.type = type;
+			this.getter = getter;
+		}
+		
+		public Value GetValue(StackFrame context)
+		{
+			return getter(context);
+		}
+		
+		public override string ToString()
+		{
+			return this.Type.ToString() + " " + this.Name;
 		}
 	}
 }

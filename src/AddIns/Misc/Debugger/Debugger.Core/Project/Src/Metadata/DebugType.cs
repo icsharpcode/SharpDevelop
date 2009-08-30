@@ -721,6 +721,22 @@ namespace Debugger.MetaData
 			return (GetMembers(bindingFlags).Count > 0);
 		}
 		
+		public bool IsCompilerGenerated {
+			get {
+				if (this.IsClass || this.IsValueType) {
+					return MethodInfo.HasAnyAttribute(this.Module.MetaData, this.Token, typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute));
+				} else {
+					return false;
+				}
+			}
+		}
+		
+		public bool IsDisplayClass {
+			get {
+				return this.IsCompilerGenerated && this.Name.Contains("DisplayClass");
+			}
+		}
+		
 		public override string ToString()
 		{
 			return string.Format("{0}", this.FullName);

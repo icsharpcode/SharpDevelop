@@ -16,6 +16,7 @@ namespace Debugger.Wrappers.CorDebug
 	{
 		public unsafe Byte[] RawValue {
 			get {
+				// TODO: Unset fixing insead
 				Byte[] retValue = new Byte[(int)Size];
 				IntPtr pValue = Marshal.AllocHGlobal(retValue.Length);
 				GetValue(pValue);

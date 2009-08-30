@@ -41,6 +41,12 @@ namespace Mono.Cecil.Signatures {
 		byte [] m_blobData;
 		IDictionary m_signatures;
 		
+		public byte[] Blob {
+			get {
+				return m_blobData;
+			}
+		}
+		
 		public SignatureReader (byte [] blobData)
 		{
 			m_blobData = blobData;
@@ -325,7 +331,7 @@ namespace Mono.Cecil.Signatures {
 			return types;
 		}
 
-		LocalVarSig.LocalVariable ReadLocalVariable (byte [] data, int pos, out int start)
+		public LocalVarSig.LocalVariable ReadLocalVariable (byte [] data, int pos, out int start)
 		{
 			start = pos;
 			LocalVarSig.LocalVariable lv = new LocalVarSig.LocalVariable ();

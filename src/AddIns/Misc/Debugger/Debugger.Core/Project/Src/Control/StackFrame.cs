@@ -376,31 +376,15 @@ namespace Debugger
 		
 		#endregion
 		
-		/// <summary> Returns value of give local variable </summary>
-		public Value GetLocalVariableValue(ISymUnmanagedVariable symVar)
-		{
-			return new Value(this.AppDomain, new IdentifierExpression(symVar.Name), GetLocalVariableCorValue(symVar));
-		}
-		
-		ICorDebugValue GetLocalVariableCorValue(ISymUnmanagedVariable symVar)
-		{
-			try {
-				return CorILFrame.GetLocalVariable((uint)symVar.AddressField1);
-			} catch (COMException e) {
-				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
-				throw;
-			}
-		}
-		
 		#region Convenience methods
 		
 		/// <summary> Get local variable with given name </summary>
 		/// <returns> Null if not found </returns>
 		public Value GetLocalVariableValue(string name)
 		{
-			foreach(ISymUnmanagedVariable symVar in this.MethodInfo.LocalVariables) {
-				if (symVar.Name == name) {
-					return GetLocalVariableValue(symVar);
+			foreach(LocalVariableInfo locVar in this.MethodInfo.LocalVariables) {
+				if (locVar.Name == name) {
+					return locVar.GetValue(this);
 				}
 			}
 			return null;
@@ -410,8 +394,8 @@ namespace Debugger
 		public List<Value> GetLocalVariableValues()
 		{
 			List<Value> values = new List<Value>();
-			foreach(ISymUnmanagedVariable symVar in this.MethodInfo.LocalVariables) {
-				values.Add(GetLocalVariableValue(symVar));
+			foreach(LocalVariableInfo locVar in this.MethodInfo.LocalVariables) {
+				values.Add(locVar.GetValue(this));
 			}
 			return values;
 		}

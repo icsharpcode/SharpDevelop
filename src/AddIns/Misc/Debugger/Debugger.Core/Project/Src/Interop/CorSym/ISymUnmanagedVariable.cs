@@ -17,11 +17,11 @@ namespace Debugger.Interop.CorSym
     public interface ISymUnmanagedVariable
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
+        void GetName([In] uint cchName, out uint pcchName, [In] IntPtr szName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         uint GetAttributes();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSignature([In] uint cSig, out uint pcSig, [Out] IntPtr sig);
+        void GetSignature([In] uint cSig, out uint pcSig, [In] IntPtr sig);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         uint GetAddressKind();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
