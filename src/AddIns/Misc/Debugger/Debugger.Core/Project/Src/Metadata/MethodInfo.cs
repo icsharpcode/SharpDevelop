@@ -427,7 +427,7 @@ namespace Debugger.MetaData
 		public List<LocalVariableInfo> LocalVariables {
 			get {
 				if (this.SymMethod != null) { // TODO: Is this needed?
-					return GetLocalVariablesInScope(this.SymMethod.RootScope);
+					return GetLocalVariables();
 				} else {
 					return new List<LocalVariableInfo>();
 				}
@@ -446,25 +446,84 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		List<LocalVariableInfo> localVariables; // Cache
+		
+		List<LocalVariableInfo> GetLocalVariables()
+		{
+			if (localVariables != null) return localVariables;
+			
+			localVariables = GetLocalVariablesInScope(this.SymMethod.RootScope);
+			if (!this.IsStatic && this.DeclaringType.IsDisplayClass) {
+				// Get display class from self
+				localVariables.AddRange(GetLocalVariablesFromDisplayClass(
+					delegate(StackFrame context) {
+						return context.GetThisValue();
+					},
+					this.DeclaringType
+				));
+				// Get dispaly classes from fields
+				foreach(FieldInfo fieldInfo in this.DeclaringType.GetFields()) {
+					FieldInfo fieldInfoCopy = fieldInfo;
+					if (fieldInfo.Name.StartsWith("CS$")) {
+						localVariables.AddRange(GetLocalVariablesFromDisplayClass(
+							delegate(StackFrame context) {
+								return context.GetThisValue().GetFieldValue(fieldInfoCopy);
+							},
+							fieldInfo.Type
+						));
+					}
+				}
+			}
+			return localVariables;
+		}
+		
+		List<LocalVariableInfo> GetLocalVariablesFromDisplayClass(ValueGetter getDisplayClass, DebugType displayClassType)
+		{
+			List<LocalVariableInfo> vars = new List<LocalVariableInfo>();
+			if (displayClassType.IsDisplayClass) {
+				foreach(FieldInfo fieldInfo in displayClassType.GetFields()) {
+					FieldInfo fieldInfoCopy = fieldInfo;
+					if (!fieldInfo.Name.StartsWith("CS$")) {
+						vars.Add(
+							new LocalVariableInfo(
+								fieldInfo.Name,
+								fieldInfo.Type,
+								delegate(StackFrame context) {
+									return getDisplayClass(context).GetFieldValue(fieldInfoCopy);
+								}
+							)
+						);
+					}
+				}
+			}
+			return vars;
+		}
+		
 		List<LocalVariableInfo> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
 		{
 			List<LocalVariableInfo> vars = new List<LocalVariableInfo>();
 			foreach (ISymUnmanagedVariable symVar in symScope.Locals) {
+				ISymUnmanagedVariable symVarCopy = symVar;
 				int start;
 				SignatureReader sigReader = new SignatureReader(symVar.Signature);
 				LocalVarSig.LocalVariable locVarSig = sigReader.ReadLocalVariable(sigReader.Blob, 0, out start);
-				DebugType type = DebugType.CreateFromSignature(this.Module, locVarSig.Type, this.DeclaringType);
+				DebugType locVarType = DebugType.CreateFromSignature(this.Module, locVarSig.Type, this.DeclaringType);
 				// Compiler generated?
 				// NB: Display class does not have the compiler-generated flag
 				if ((symVar.Attributes & 1) == 1 || symVar.Name.StartsWith("CS$")) {
-					if (type.IsDisplayClass) {
-						
+					// Get display class from local variable
+					if (locVarType.IsDisplayClass) {
+						vars.AddRange(GetLocalVariablesFromDisplayClass(
+							delegate(StackFrame context) {
+								return GetLocalVariableValue(context, symVarCopy);
+							},
+							locVarType
+						));
 					}
 				} else {
-					ISymUnmanagedVariable symVarCopy = symVar;
 					LocalVariableInfo locVar = new LocalVariableInfo(
 						symVar.Name,
-						type,
+						locVarType,
 						delegate(StackFrame context) {
 							return GetLocalVariableValue(context, symVarCopy);
 						}
@@ -491,13 +550,13 @@ namespace Debugger.MetaData
 		}
 	}
 	
+	public delegate Value ValueGetter(StackFrame context);
+	
 	public class LocalVariableInfo
 	{
-		public delegate Value LocalVariableValueGetter(StackFrame context);
-		
 		string name;
 		DebugType type;
-		LocalVariableValueGetter getter;
+		ValueGetter getter;
 		
 		public string Name {
 			get { return name; }
@@ -507,7 +566,7 @@ namespace Debugger.MetaData
 			get { return type; }
 		}
 		
-		public LocalVariableInfo(string name, DebugType type, LocalVariableValueGetter getter)
+		public LocalVariableInfo(string name, DebugType type, ValueGetter getter)
 		{
 			this.name = name;
 			this.type = type;

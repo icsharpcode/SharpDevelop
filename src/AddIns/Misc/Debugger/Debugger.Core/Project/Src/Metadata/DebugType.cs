@@ -733,7 +733,7 @@ namespace Debugger.MetaData
 		
 		public bool IsDisplayClass {
 			get {
-				return this.IsCompilerGenerated && this.Name.Contains("DisplayClass");
+				return this.Name.StartsWith("<>") && this.Name.Contains("__DisplayClass");
 			}
 		}
 		
