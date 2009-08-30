@@ -32,5 +32,11 @@ namespace ICSharpCode.SharpDevelop
 		public virtual void Detach()
 		{
 		}
+		
+		public virtual IBracketSearcher BracketSearcher {
+			get {
+				return null;
+			}
+		}
 	}
 }

@@ -31,6 +31,13 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Provides access to the bracket search logic for this language.
+		/// </summary>
+		IBracketSearcher BracketSearcher {
+			get;
+		}
+		
+		/// <summary>
 		/// Callback function for backend bindings to add services to ITextEditor.
 		/// This is called when the file name of an ITextEditor changes.
 		/// </summary>

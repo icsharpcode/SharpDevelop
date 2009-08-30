@@ -51,7 +51,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		CodeEditorAdapter secondaryTextEditorAdapter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
-		readonly ErrorDrawer errorDrawer;
+		readonly ErrorPainter errorPainter;
+		
+		BracketHighlightRenderer primaryBracketRenderer;
+		BracketHighlightRenderer secondaryBracketRenderer;
 		
 		public TextEditor PrimaryTextEditor {
 			get { return primaryTextEditor; }
@@ -146,7 +149,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
 			
-			this.errorDrawer = new ErrorDrawer(primaryTextEditorAdapter);
+			this.errorPainter = new ErrorPainter(primaryTextEditorAdapter);
+			
+			this.primaryBracketRenderer = new BracketHighlightRenderer(primaryTextEditor.TextArea.TextView);
 			
 			this.Document = primaryTextEditor.Document;
 			primaryTextEditor.SetBinding(TextEditor.DocumentProperty, new Binding("Document") { Source = this });
@@ -169,13 +174,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.Background = Brushes.White;
 			textEditor.FontFamily = new FontFamily("Consolas");
 			textEditor.FontSize = 13;
-			textEditor.TextArea.TextEntering += TextArea_TextEntering;
-			textEditor.TextArea.TextEntered += TextArea_TextEntered;
-			textEditor.MouseHover += textEditor_MouseHover;
-			textEditor.MouseHoverStopped += textEditor_MouseHoverStopped;
-			textEditor.MouseLeave += textEditor_MouseLeave;
-			textView.MouseDown += textView_MouseDown;
-			textEditor.TextArea.Caret.PositionChanged += caret_PositionChanged;
+			textEditor.TextArea.TextEntering += TextAreaTextEntering;
+			textEditor.TextArea.TextEntered += TextAreaTextEntered;
+			textEditor.MouseHover += TextEditorMouseHover;
+			textEditor.MouseHoverStopped += TextEditorMouseHoverStopped;
+			textEditor.MouseLeave += TextEditorMouseLeave;
+			textView.MouseDown += TextViewMouseDown;
+			textEditor.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
 			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
 			
@@ -191,8 +196,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
-			textEditor.TextArea.TextView.MouseRightButtonDown += textEditor_TextArea_TextView_MouseRightButtonDown;
-			textEditor.TextArea.TextView.ContextMenuOpening += textEditor_TextArea_TextView_ContextMenuOpening;
+			textEditor.TextArea.TextView.MouseRightButtonDown += TextViewMouseRightButtonDown;
+			textEditor.TextArea.TextView.ContextMenuOpening += TextViewContextMenuOpening;
 			
 			return textEditor;
 		}
@@ -203,13 +208,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.LeftMargins.OfType<IconBarMargin>().Single().TextView = null;
 		}
 		
-		void textEditor_TextArea_TextView_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+		void TextViewContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
 			ITextEditor adapter = GetAdapterFromSender(sender);
 			MenuService.CreateContextMenu(adapter, contextMenuPath).IsOpen = true;
 		}
 		
-		void textEditor_TextArea_TextView_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		void TextViewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			TextEditor textEditor = GetTextEditorFromSender(sender);
 			var position = textEditor.GetPositionFromPoint(e.GetPosition(textEditor));
@@ -246,6 +251,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				SetRow(secondaryTextEditor, 2);
 				this.Children.Add(secondaryTextEditor);
 				
+				this.secondaryBracketRenderer = new BracketHighlightRenderer(secondaryTextEditor.TextArea.TextView);
+				
 				secondaryTextEditorAdapter.FileNameChanged();
 			} else {
 				// remove secondary editor
@@ -254,6 +261,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				secondaryTextEditor = null;
 				secondaryTextEditorAdapter.Language.Detach();
 				secondaryTextEditorAdapter = null;
+				this.secondaryBracketRenderer = null;
 				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
 			}
 		}
@@ -261,7 +269,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public event EventHandler CaretPositionChanged;
 		bool caretPositionWasChanged;
 		
-		void caret_PositionChanged(object sender, EventArgs e)
+		void TextAreaCaretPositionChanged(object sender, EventArgs e)
 		{
 			Debug.Assert(sender is Caret);
 			if (sender == this.ActiveTextEditor.TextArea.Caret) {
@@ -286,13 +294,24 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
 			}
 			var caret = this.ActiveTextEditor.TextArea.Caret;
+			
+			var activeAdapter = this.ActiveTextEditorAdapter;
+			
+			if (activeAdapter.Language != null) {
+				var bracketSearchResult = activeAdapter.Language.BracketSearcher.SearchBracket(activeAdapter.Document, activeAdapter.Caret.Offset);
+//				if (activeAdapter == primaryTextEditorAdapter)
+//					this.primaryBracketRenderer.SetHighlight(bracketSearchResult);
+//				else
+//					this.secondaryBracketRenderer.SetHighlight(bracketSearchResult);
+			}
+			
 			StatusBarService.SetCaretPosition(caret.Column, caret.Line, caret.Column);
 			CaretPositionChanged.RaiseEvent(this, EventArgs.Empty);
 		}
 		
 		public void JumpTo(int line, int column)
 		{
-			tryCloseExistingPopup(true);
+			TryCloseExistingPopup(true);
 			
 			// the adapter sets the caret position and takes care of scrolling
 			this.ActiveTextEditorAdapter.JumpTo(line, column);
@@ -302,7 +321,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		ToolTip toolTip;
 		Popup popup;
 
-		void textEditor_MouseHover(object sender, MouseEventArgs e)
+		void TextEditorMouseHover(object sender, MouseEventArgs e)
 		{
 			TextEditor textEditor = (TextEditor)sender;
 			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(GetAdapter(textEditor));
@@ -312,18 +331,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
 			}
 			
-			var markersAtOffset = textMarkerService.GetMarkersAtOffset(args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column));
-			
-			ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
-			
-			if (markerWithToolTip != null) {
-				if (toolTip == null) {
-					toolTip = new ToolTip();
-					toolTip.Closed += toolTip_Closed;
+			if (args.InDocument) {
+				var markersAtOffset = textMarkerService.GetMarkersAtOffset(args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column));
+				
+				ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
+				
+				if (markerWithToolTip != null) {
+					if (toolTip == null) {
+						toolTip = new ToolTip();
+						toolTip.Closed += ToolTipClosed;
+					}
+					toolTip.Content = markerWithToolTip.ToolTip;
+					toolTip.IsOpen = true;
+					e.Handled = true;
+					return;
 				}
-				toolTip.Content = markerWithToolTip.ToolTip;
-				toolTip.IsOpen = true;
-				e.Handled = true;
 			}
 			
 			ToolTipRequestService.RequestToolTip(args);
@@ -336,14 +358,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						throw new NotSupportedException("Content to show in Popup must be UIElement: " + args.ContentToShow);
 					}
 					if (popup == null) {
-						popup = createPopup();
+						popup = CreatePopup();
 					}
-					if (tryCloseExistingPopup(false)) {
+					if (TryCloseExistingPopup(false)) {
 						// when popup content decides to close, close the popup
 						contentToShowITooltip.Closed += (closedSender, closedArgs) => { popup.IsOpen = false; };
 						popup.Child = (UIElement)args.ContentToShow;
 						//ICSharpCode.SharpDevelop.Debugging.DebuggerService.CurrentDebugger.IsProcessRunningChanged
-						setPopupPosition(popup, textEditor, e);
+						SetPopupPosition(popup, textEditor, e);
 						popup.IsOpen = true;
 					}
 					e.Handled = true;
@@ -351,7 +373,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				else {
 					if (toolTip == null) {
 						toolTip = new ToolTip();
-						toolTip.Closed += toolTip_Closed;
+						toolTip.Closed += ToolTipClosed;
 					}
 					toolTip.Content = args.ContentToShow;
 					toolTip.IsOpen = true;
@@ -363,11 +385,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (popup != null) {
 					e.Handled = true;
 				}
-				tryCloseExistingPopup(false);
+				TryCloseExistingPopup(false);
 			}
 		}
 		
-		bool tryCloseExistingPopup(bool mouseClick)
+		bool TryCloseExistingPopup(bool mouseClick)
 		{
 			bool canClose = true;
 			if (popup != null) {
@@ -382,15 +404,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return canClose;
 		}
 		
-		void setPopupPosition(Popup popup, TextEditor textEditor, MouseEventArgs mouseArgs)
+		void SetPopupPosition(Popup popup, TextEditor textEditor, MouseEventArgs mouseArgs)
 		{
-			var popupPosition = getPopupPosition(textEditor, mouseArgs);
+			var popupPosition = GetPopupPosition(textEditor, mouseArgs);
 			popup.HorizontalOffset = popupPosition.X;
 			popup.VerticalOffset = popupPosition.Y;
 		}
 		
 		/// <summary> Returns Popup position based on mouse position, in device independent units </summary>
-		Point getPopupPosition(TextEditor textEditor, MouseEventArgs mouseArgs)
+		Point GetPopupPosition(TextEditor textEditor, MouseEventArgs mouseArgs)
 		{
 			Point mousePos = mouseArgs.GetPosition(textEditor);
 			Point positionInPixels;
@@ -410,16 +432,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return positionInPixels.TransformFromDevice(textEditor);
 		}
 		
-		Popup createPopup()
+		Popup CreatePopup()
 		{
 			popup = new Popup();
-			popup.Closed += popup_Closed;
+			popup.Closed += PopupClosed;
 			popup.Placement = PlacementMode.Absolute;
 			popup.StaysOpen = true;
 			return popup;
 		}
 		
-		void textEditor_MouseHoverStopped(object sender, MouseEventArgs e)
+		void TextEditorMouseHoverStopped(object sender, MouseEventArgs e)
 		{
 			if (toolTip != null) {
 				toolTip.IsOpen = false;
@@ -427,18 +449,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void textEditor_MouseLeave(object sender, MouseEventArgs e)
+		void TextEditorMouseLeave(object sender, MouseEventArgs e)
 		{
 			if (popup != null && !popup.IsMouseOver) {
 				// do not close popup if mouse moved from editor to popup
-				tryCloseExistingPopup(false);
+				TryCloseExistingPopup(false);
 			}
 		}
 		
-		void textView_MouseDown(object sender, MouseButtonEventArgs e)
+		void TextViewMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			// close existing popup immediately on text editor mouse down
-			tryCloseExistingPopup(false);
+			TryCloseExistingPopup(false);
 			if (e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
 				TextEditor editor = GetTextEditorFromSender(sender);
 				var position = editor.GetPositionFromPoint(e.GetPosition(editor));
@@ -448,18 +470,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
-		
-		/*void textArea_GotFocus(object sender, RoutedEventArgs e)
-		{
-			// close popup whenever TextEditor.TextArea gets focus - eg. on debugger step (CodeEditor.JumpTo calls focus)
-		}*/
 
-		void toolTip_Closed(object sender, RoutedEventArgs e)
+		void ToolTipClosed(object sender, RoutedEventArgs e)
 		{
 			toolTip = null;
 		}
 		
-		void popup_Closed(object sender, EventArgs e)
+		void PopupClosed(object sender, EventArgs e)
 		{
 			popup = null;
 		}
@@ -475,7 +492,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+		void TextAreaTextEntering(object sender, TextCompositionEventArgs e)
 		{
 			// don't start new code completion if there is still a completion window open
 			if (completionWindow != null)
@@ -514,7 +531,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+		void TextAreaTextEntered(object sender, TextCompositionEventArgs e)
 		{
 			if (e.Text.Length > 0 && !e.Handled) {
 				ILanguageBinding languageBinding = GetAdapterFromSender(sender).Language;
@@ -693,7 +710,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (secondaryTextEditorAdapter != null)
 				secondaryTextEditorAdapter.Language.Detach();
 			
-			errorDrawer.Dispose();
+			errorPainter.Dispose();
 			this.Document = null;
 		}
 	}

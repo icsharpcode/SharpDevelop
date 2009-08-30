@@ -541,7 +541,6 @@ namespace CSharpBinding.FormattingStrategy
 		{
 			SurroundSelectionWithSingleLineComment(editor, "//");
 		}
-		
 		/*
 		#region SearchBracketBackward
 		public override int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)

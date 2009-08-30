@@ -25,5 +25,9 @@ namespace CSharpBinding
 		public override LanguageProperties Properties {
 			get { return LanguageProperties.CSharp; }
 		}
+		
+		public override IBracketSearcher BracketSearcher {
+			get { return new CSharpBracketSearcher(); }
+		}
 	}
 }

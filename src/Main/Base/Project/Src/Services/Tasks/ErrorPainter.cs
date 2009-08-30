@@ -15,12 +15,12 @@ namespace ICSharpCode.SharpDevelop
 	/// <summary>
 	/// Synchronizes the ITextEditors with the TaskService. It adds and removes error markers.
 	/// </summary>
-	public class ErrorDrawer : IDisposable
+	public class ErrorPainter : IDisposable
 	{
 		ITextEditor textEditor;
 		ITextMarkerService markerService;
 		
-		public ErrorDrawer(ITextEditor textEditor)
+		public ErrorPainter(ITextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 			this.markerService = this.textEditor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop
 						markerColor = Colors.Blue;
 						break;
 					case TaskType.Warning:
-						markerColor = Colors.Yellow;
+						markerColor = Colors.Orange;
 						break;
 				}
 				

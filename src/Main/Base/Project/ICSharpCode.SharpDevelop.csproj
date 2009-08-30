@@ -98,6 +98,7 @@
     <Compile Include="Src\Editor\Commands\GoToDefinition.cs" />
     <Compile Include="Src\Editor\Commands\IndentSelection.cs" />
     <Compile Include="Src\Editor\DocumentUtilitites.cs" />
+    <Compile Include="Src\Editor\IBracketSearcher.cs" />
     <Compile Include="Src\Editor\IDocument.cs" />
     <Compile Include="Src\Editor\IDocumentLine.cs" />
     <Compile Include="Src\Editor\IFileDocumentProvider.cs" />
@@ -259,7 +260,7 @@
     <Compile Include="Src\Services\Profiler\ProfilerService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
-    <Compile Include="Src\Services\Tasks\ErrorDrawer.cs" />
+    <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
     <Compile Include="Src\Services\Tasks\TaskService.cs" />
     <Compile Include="Src\Services\DisplayBinding\IDisplayBinding.cs" />

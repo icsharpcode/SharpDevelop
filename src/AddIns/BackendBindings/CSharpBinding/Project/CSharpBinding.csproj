@@ -55,6 +55,7 @@
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
     <Compile Include="Src\CSharpAdvancedHighlighter.cs" />
+    <Compile Include="Src\CSharpBracketSearcher.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\CSharpProjectBinding.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />

@@ -58,5 +58,16 @@ namespace ICSharpCode.SharpDevelop
 			foreach (ILanguageBinding binding in allBindings)
 				binding.Detach();
 		}
+		
+		public IBracketSearcher BracketSearcher {
+			get {
+				foreach (ILanguageBinding binding in allBindings) {
+					if (binding.BracketSearcher != null)
+						return binding.BracketSearcher;
+				}
+				
+				return DefaultBracketSearcher.DefaultInstance;
+			}
+		}
 	}
 }
