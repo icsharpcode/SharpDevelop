@@ -18,12 +18,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		BracketSearchResult result;
 		Pen borderPen;
+		Brush backgroundBrush;
 		TextView textView;
 		
 		public void SetHighlight(BracketSearchResult result)
 		{
-			this.result = result;
-			textView.InvalidateLayer(this.Layer);
+			if (this.result != result) {
+				this.result = result;
+				textView.InvalidateLayer(this.Layer);
+			}
 		}
 		
 		public BracketHighlightRenderer(TextView textView)
@@ -33,6 +36,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			this.borderPen = new Pen(Brushes.Blue, 1);
 			this.borderPen.Freeze();
+			
+			this.backgroundBrush = new SolidColorBrush(Color.FromArgb(50, 0, 0, 255));
+			this.backgroundBrush.Freeze();
+			
 			this.textView = textView;
 			
 			this.textView.BackgroundRenderers.Add(this);
@@ -60,7 +67,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			if (geometry != null) {
 				geometry.Freeze();
-				drawingContext.DrawGeometry(Brushes.LightBlue, borderPen, geometry);
+				drawingContext.DrawGeometry(backgroundBrush, borderPen, geometry);
 			}
 		}
 	}
