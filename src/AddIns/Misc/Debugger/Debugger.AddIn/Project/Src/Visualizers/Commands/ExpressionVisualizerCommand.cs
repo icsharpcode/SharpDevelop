@@ -17,11 +17,11 @@ namespace Debugger.AddIn.Visualizers
 	/// Visualizer command for <see cref="ExpressionNode"/>
 	/// </summary>
 	// should we make visualizer command available for Expression, or any TreeNode?
-	public abstract class ExpressionNodeVisualizerCommand : IVisualizerCommand
+	public abstract class ExpressionVisualizerCommand : IVisualizerCommand
 	{
 		public Expression Expression { get; private set; }
 		
-		public ExpressionNodeVisualizerCommand(Expression expression)
+		public ExpressionVisualizerCommand(Expression expression)
 		{
 			this.Expression = expression;
 		}

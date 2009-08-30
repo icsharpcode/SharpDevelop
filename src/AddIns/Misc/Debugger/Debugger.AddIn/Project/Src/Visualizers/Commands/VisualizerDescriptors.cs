@@ -18,10 +18,11 @@ namespace Debugger.AddIn.Visualizers
 	{
 		static ReadOnlyCollection<IVisualizerDescriptor> allDescriptors;
 			
-		static IEnumerable<IVisualizerDescriptor> createAllDescriptors()
+		static IEnumerable<IVisualizerDescriptor> CreateAllDescriptors()
 		{
 			// these should be obtained from AddIn tree so that it is possible to write add-in for Debugger.AddIn with new visualizers
 			yield return new TextVisualizerDescriptor();
+			yield return new XmlVisualizerDescriptor();
 			yield return new ObjectGraphVisualizerDescriptor();
 			yield return new GridVisualizerDescriptor();
 		}
@@ -29,7 +30,7 @@ namespace Debugger.AddIn.Visualizers
 		public static ReadOnlyCollection<IVisualizerDescriptor> GetAllDescriptors()
 		{
 			if (allDescriptors == null) {
-				allDescriptors = new List<IVisualizerDescriptor>(createAllDescriptors()).AsReadOnly();
+				allDescriptors = new List<IVisualizerDescriptor>(CreateAllDescriptors()).AsReadOnly();
 			}
 			return allDescriptors;
 		}

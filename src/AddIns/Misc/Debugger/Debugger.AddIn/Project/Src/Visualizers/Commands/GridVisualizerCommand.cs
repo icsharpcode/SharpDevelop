@@ -21,7 +21,7 @@ namespace Debugger.AddIn.Visualizers
 		public bool IsVisualizerAvailable(DebugType type)
 		{
 			DebugType collectionType, itemType;
-			// Visualizer available for IEnumerable<T>
+			// Visualizer available for IEnumerable<T> (that means also IList<T>)
 			return type.ResolveIEnumerableImplementation(out collectionType, out itemType);
 		}
 		
@@ -34,7 +34,7 @@ namespace Debugger.AddIn.Visualizers
 	/// <summary>
 	/// Shows grid visualizer for a node.
 	/// </summary>
-	public class GridVisualizerCommand : ExpressionNodeVisualizerCommand
+	public class GridVisualizerCommand : ExpressionVisualizerCommand
 	{
 		public GridVisualizerCommand(Expression expression)
 			:base(expression)

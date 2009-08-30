@@ -133,7 +133,7 @@
     </Compile>
     <Compile Include="Src\TreeModel\DebuggerResourceService.cs" />
     <Compile Include="Src\TreeModel\IEnumerableNode.cs" />
-    <Compile Include="Src\Visualizers\Commands\ExpressionNodeVisualizerCommand.cs" />
+    <Compile Include="Src\Visualizers\Commands\ExpressionVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\GridVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\IVisualizerCommandDescriptor.cs" />
     <Compile Include="Src\Visualizers\Commands\ObjectGraphVisualizerCommand.cs" />
@@ -141,6 +141,7 @@
     <Compile Include="Src\Visualizers\Commands\ObjectGraphVisualizerMenuCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\TextVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Commands\VisualizerDescriptors.cs" />
+    <Compile Include="Src\Visualizers\Commands\XmlVisualizerCommand.cs" />
     <Compile Include="Src\Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Src\Visualizers\Common\IEvaluate.cs" />
     <Compile Include="Src\Visualizers\Common\IListValuesProvider.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="Src\Visualizers\PresentationBindings\GridViewHideableColumn.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\ScrollUtils.cs" />
     <Compile Include="Src\Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
+    <Compile Include="Src\Visualizers\TextVisualizer\TextVisualizerMode.cs" />
     <Compile Include="Src\Visualizers\TextVisualizer\TextVisualizerWindow.xaml.cs">
       <DependentUpon>TextVisualizerWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

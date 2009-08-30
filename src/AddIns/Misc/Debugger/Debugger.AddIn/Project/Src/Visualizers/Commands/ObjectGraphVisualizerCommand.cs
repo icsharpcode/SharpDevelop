@@ -33,7 +33,7 @@ namespace Debugger.AddIn.Visualizers
 	/// <summary>
 	/// Shows object graph visualizer for a node.
 	/// </summary>
-	public class ObjectGraphVisualizerCommand : ExpressionNodeVisualizerCommand
+	public class ObjectGraphVisualizerCommand : ExpressionVisualizerCommand
 	{
 		public ObjectGraphVisualizerCommand(Expression expression)
 			:base(expression)

@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers
 {
-	public class TextVisualizerDescriptor : IVisualizerDescriptor
+	public class XmlVisualizerDescriptor : IVisualizerDescriptor
 	{
 		public bool IsVisualizerAvailable(DebugType type)
 		{
@@ -25,16 +25,16 @@ namespace Debugger.AddIn.Visualizers
 		
 		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
 		{
-			return new TextVisualizerCommand(expression);
+			return new XmlVisualizerCommand(expression);
 		}
 	}
 	
 	/// <summary>
 	/// Description of TextVisualizerCommand.
 	/// </summary>
-	public class TextVisualizerCommand : ExpressionVisualizerCommand
+	public class XmlVisualizerCommand : ExpressionVisualizerCommand
 	{
-		public TextVisualizerCommand(Expression expression)
+		public XmlVisualizerCommand(Expression expression)
 			:base(expression)
 		{
 		}
@@ -45,7 +45,7 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override string ToString()
 		{
-			return "Text visualizer";
+			return "Xml visualizer";
 		}
 		
 		public override void Execute()
@@ -54,7 +54,7 @@ namespace Debugger.AddIn.Visualizers
 			{
 				var textVisualizerWindow = new TextVisualizerWindow(
 					this.Expression.PrettyPrint(), this.Expression.Evaluate(WindowsDebugger.CurrentProcess).InvokeToString());
-				textVisualizerWindow.Mode = TextVisualizerMode.PlainText;
+				textVisualizerWindow.Mode = TextVisualizerMode.Xml;
 				textVisualizerWindow.ShowDialog();
 			}
 		}

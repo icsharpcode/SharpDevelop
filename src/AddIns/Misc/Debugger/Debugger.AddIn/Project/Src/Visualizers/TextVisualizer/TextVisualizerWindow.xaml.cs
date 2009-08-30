@@ -4,9 +4,10 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using System.Linq;
+using ICSharpCode.AvalonEdit.Highlighting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +26,8 @@ namespace Debugger.AddIn.Visualizers.TextVisualizer
 		public TextVisualizerWindow()
 		{
 			InitializeComponent();
+			Mode = TextVisualizerMode.PlainText;
+			textEditor.IsReadOnly = true;
 		}
 		
 		public TextVisualizerWindow(string title, string text)
@@ -37,18 +40,35 @@ namespace Debugger.AddIn.Visualizers.TextVisualizer
 		
 		public string Text
 		{
-			get { return this.txtText.Text; }
-			set { this.txtText.Text = value; }
+			get { return this.textEditor.Text; }
+			set { this.textEditor.Text = value; }
+		}
+		
+		private TextVisualizerMode mode;
+		public TextVisualizerMode Mode
+		{
+			get { return mode; }
+			set { 
+				mode = value;
+				switch (mode) {
+					case TextVisualizerMode.PlainText:
+						textEditor.SyntaxHighlighting = null;
+						break;
+					case TextVisualizerMode.Xml:
+						textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(".xml");
+						break;
+				}
+			}
 		}
 		
 		void CheckBox_CheckedChanged(object sender, RoutedEventArgs e)
 		{
-			txtText.TextWrapping = chbWrap.IsChecked.GetValueOrDefault(false) ? TextWrapping.Wrap : TextWrapping.NoWrap;
+			textEditor.WordWrap = chbWrap.IsChecked.GetValueOrDefault(false);
 		}
 		
 		void BtnCopy_Click(object sender, RoutedEventArgs e)
 		{
-			Clipboard.SetText(txtText.Text);
+			Clipboard.SetText(textEditor.Text);
 		}
 		
 		void BtnClose_Click(object sender, RoutedEventArgs e)
