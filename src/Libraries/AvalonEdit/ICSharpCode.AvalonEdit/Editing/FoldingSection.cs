@@ -20,6 +20,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		FoldingManager manager;
 		bool isFolded;
 		CollapsedLineSection collapsedSection;
+		string title;
 		
 		/// <summary>
 		/// Gets/sets if the section is folded.
@@ -45,6 +46,22 @@ namespace ICSharpCode.AvalonEdit.Editing
 						}
 					}
 					if (manager != null)
+						manager.textView.Redraw(this, DispatcherPriority.Normal);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the text used to display the collapsed version of the folding section.
+		/// </summary>
+		public string Title {
+			get {
+				return title;
+			}
+			set {
+				if (title != value) {
+					title = value;
+					if (this.IsFolded && manager != null)
 						manager.textView.Redraw(this, DispatcherPriority.Normal);
 				}
 			}

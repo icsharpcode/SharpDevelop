@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.Commands;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -18,6 +18,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -31,6 +32,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Editor.Commands;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -666,13 +668,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void UpdateFolding(ITextEditor editor, ParseInformation parseInfo)
 		{
 			if (editor != null) {
-				ParserFoldingStrategy folding = editor.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
+				IServiceContainer container = editor.GetService(typeof(IServiceContainer)) as IServiceContainer;
+				ParserFoldingStrategy folding = container.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
 				if (folding != null) {
-					if (parseInfo != null)
-						folding.Attach();
-					else
-						folding.Detach();
-					folding.UpdateFoldings(parseInfo);
+					if (parseInfo == null) {
+						folding.Dispose();
+						container.RemoveService(typeof(ParserFoldingStrategy));
+					} else {
+						folding.UpdateFoldings(parseInfo);
+					}
+				} else {
+					TextArea textArea = editor.GetService(typeof(TextArea)) as TextArea;
+					if (parseInfo != null) {
+						folding = new ParserFoldingStrategy(textArea);
+						container.AddService(typeof(ParserFoldingStrategy), folding);
+					}
 				}
 			}
 		}

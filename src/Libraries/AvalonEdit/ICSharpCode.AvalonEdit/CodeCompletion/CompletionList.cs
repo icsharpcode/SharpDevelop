@@ -136,6 +136,16 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			}
 		}
 		
+		/// <inheritdoc/>
+		protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
+		{
+			base.OnMouseDoubleClick(e);
+			if (e.ChangedButton == MouseButton.Left) {
+				e.Handled = true;
+				RequestInsertion(e);
+			}
+		}
+		
 		/// <summary>
 		/// Gets/Sets the selected item.
 		/// </summary>

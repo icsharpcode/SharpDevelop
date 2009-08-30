@@ -51,15 +51,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (FoldingManager == null)
 				return null;
 			int foldedUntil = -1;
+			string title = null;
 			foreach (FoldingSection fs in FoldingManager.GetFoldingsAt(offset)) {
 				if (fs.IsFolded) {
-					if (fs.EndOffset > foldedUntil)
+					if (fs.EndOffset > foldedUntil) {
 						foldedUntil = fs.EndOffset;
+						title = fs.Title;
+					}
 				}
 			}
 			if (foldedUntil > offset) {
+				if (string.IsNullOrEmpty(title))
+					title = "...";
 				FormattedText text = new FormattedText(
-					"...",
+					title,
 					CurrentContext.GlobalTextRunProperties.CultureInfo,
 					FlowDirection.LeftToRight,
 					CurrentContext.GlobalTextRunProperties.Typeface,
@@ -86,7 +91,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		sealed class FoldingLineTextRun : FormattedTextRun
 		{
-			public FoldingLineTextRun(FormattedTextElement element, TextRunProperties properties) 
+			public FoldingLineTextRun(FormattedTextElement element, TextRunProperties properties)
 				: base(element, properties)
 			{
 			}

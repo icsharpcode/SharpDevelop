@@ -19,12 +19,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Uses SharpDevelop.Dom to create parsing information.
 	/// </summary>
-	public class ParserFoldingStrategy
+	public class ParserFoldingStrategy : IDisposable
 	{
 		readonly FoldingManager foldingManager;
 		TextArea textArea;
 		FoldingMargin margin;
 		FoldingElementGenerator generator;
+		bool isFirstUpdate = true;
 		
 		public ParserFoldingStrategy(TextArea textArea)
 		{
@@ -32,24 +33,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			foldingManager = new FoldingManager(textArea.TextView, textArea.Document);
 			margin = new FoldingMargin() { FoldingManager = foldingManager, TextView = textArea.TextView };
 			generator = new FoldingElementGenerator() { FoldingManager = foldingManager };
+			textArea.LeftMargins.Add(margin);
+			textArea.TextView.ElementGenerators.Add(generator);
 		}
 		
-		public bool IsAttached {
-			get { return textArea.TextView.ElementGenerators.Contains(generator); }
-		}
-		
-		public void Attach()
+		public void Dispose()
 		{
-			if (!IsAttached) {
-				textArea.LeftMargins.Add(margin);
-				textArea.TextView.ElementGenerators.Add(generator);
+			if (textArea != null) {
+				textArea.LeftMargins.Remove(margin);
+				textArea.TextView.ElementGenerators.Remove(generator);
+				foldingManager.Clear();
+				textArea = null;
 			}
-		}
-		
-		public void Detach()
-		{
-			textArea.LeftMargins.Remove(margin);
-			textArea.TextView.ElementGenerators.Remove(generator);
 		}
 		
 		public void UpdateFoldings(ParseInformation parseInfo)
@@ -72,12 +67,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				} else {
 					// no matching current folding; create a new one:
 					section = foldingManager.CreateFolding(newFolding.StartOffset, newFolding.EndOffset);
+					// auto-close #regions only when opening the document
+					section.IsFolded = isFirstUpdate && newFolding.DefaultClosed;
 				}
+				section.Title = newFolding.Name;
 			}
 			// remove all outstanding old foldings:
 			while (oldFoldingIndex < oldFoldings.Length) {
 				foldingManager.RemoveFolding(oldFoldings[oldFoldingIndex++]);
 			}
+			
+			isFirstUpdate = false;
 		}
 		
 		IEnumerable<NewFolding> GetNewFoldings(ParseInformation parseInfo)
@@ -88,8 +88,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					AddClassMembers(c, newFoldMarkers);
 				}
 				foreach (FoldingRegion foldingRegion in parseInfo.CompilationUnit.FoldingRegions) {
-					newFoldMarkers.Add(new NewFolding(textArea.Document.GetOffset(foldingRegion.Region.BeginLine, foldingRegion.Region.BeginColumn),
-					                                  textArea.Document.GetOffset(foldingRegion.Region.EndLine, foldingRegion.Region.EndColumn)));
+					NewFolding f = new NewFolding(textArea.Document.GetOffset(foldingRegion.Region.BeginLine, foldingRegion.Region.BeginColumn),
+					                              textArea.Document.GetOffset(foldingRegion.Region.EndLine, foldingRegion.Region.EndColumn));
+					f.DefaultClosed = true;
+					f.Name = foldingRegion.Name;
+					newFoldMarkers.Add(f);
 				}
 			}
 			return newFoldMarkers.Where(f => f.EndOffset > f.StartOffset).OrderBy(f=>f.StartOffset);
@@ -122,12 +125,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		struct NewFolding
 		{
 			public readonly int StartOffset, EndOffset;
+			public string Name;
+			public bool DefaultClosed;
 			
 			public NewFolding(int start, int end)
 			{
 				Debug.Assert(start < end);
 				this.StartOffset = start;
 				this.EndOffset = end;
+				this.Name = null;
+				this.DefaultClosed = false;
 			}
 		}
 	}

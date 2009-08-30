@@ -48,6 +48,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				AddRectangle(r.Left, r.Top, r.Right, r.Bottom);
 		}
 		
+		/// <summary>
+		/// Calculates the list of rectangle where the segment in shown.
+		/// This returns one rectangle for each line inside the segment.
+		/// </summary>
 		public static IEnumerable<Rect> GetRectsForSegment(TextView textView, ISegment segment)
 		{
 			if (textView == null)
