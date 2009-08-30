@@ -108,7 +108,7 @@ namespace Debugger.Tests {
 					Value result = ExpressionEvaluator.Evaluate(expr, SupportedLanguage.CSharp, process.SelectedStackFrame);
 					restultFmted = ExpressionEvaluator.FormatValue(result);
 				} catch (GetValueException e) {
-					restultFmted = "Error: " + e.Message;
+					restultFmted = e.Message;
 				}
 			}
 			if (restultFmted != null) {
@@ -145,7 +145,7 @@ namespace Debugger.Tests {
     <Eval> </Eval>
     <Eval> (5 + 6) % (1 + 2) = 2 </Eval>
     <Eval> 15 &amp; 255 = 15 </Eval>
-    <Eval> 15 &amp;&amp; 255 = Error: Unsupported operator for integers: LogicalAnd </Eval>
+    <Eval> 15 &amp;&amp; 255 = Error evaluating "15 &amp;&amp; 255": Unsupported operator for integers: LogicalAnd </Eval>
     <Eval> b + 3 == i = True </Eval>
     <Eval> b + 4 == i = False </Eval>
     <Eval> true == true = True </Eval>

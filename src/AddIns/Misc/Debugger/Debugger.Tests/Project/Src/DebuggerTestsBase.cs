@@ -26,6 +26,8 @@ namespace Debugger.Tests
 {
 	public class DebuggerTestsBase
 	{
+		string expetedOutputEnvVar = "SD_TESTS_DEBUGGER_XML_OUT";
+		
 		protected NDebugger   debugger;
 		protected Process     process;
 		protected string      log;
@@ -105,7 +107,7 @@ namespace Debugger.Tests
 			
 			if (actualXml != expectedXml) {
 				// Update the source code file with the new output
-				string path = Environment.GetEnvironmentVariable("SD_TESTS_DEBUGGER_XML_OUT");
+				string path = Environment.GetEnvironmentVariable(expetedOutputEnvVar);
 				if (path != null) {
 					string filename = Path.Combine(path, testName);
 					string newSourceCode = File.ReadAllText(filename, Encoding.UTF8);

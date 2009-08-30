@@ -26,7 +26,6 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		[NUnit.Framework.Ignore("Different tokens in .NET 4")]
 		public void MemoryReadWrite()
 		{
 			StartTest("MemoryReadWrite.cs");
@@ -37,8 +36,8 @@ namespace Debugger.Tests {
 			addrHello = DeRef(process.ReadMemory(addrHello, 4));
 			addrWorld = DeRef(process.ReadMemory(addrWorld, 4));
 			
-			byte[] hello = process.ReadMemory(addrHello, 18);
-			byte[] world = process.ReadMemory(addrWorld, 20);
+			byte[] hello = process.ReadMemory(addrHello + 4, 14);
+			byte[] world = process.ReadMemory(addrWorld + 4, 16);
 			
 			ObjectDump("hello", ToHex(hello));
 			ObjectDump("world", ToHex(world));
@@ -75,8 +74,8 @@ namespace Debugger.Tests {
     <ModuleLoaded>MemoryReadWrite.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <DebuggingPaused>Break MemoryReadWrite.cs:18,4-18,40</DebuggingPaused>
-    <hello>54 B7 A1 79 5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
-    <world>54 B7 A1 79 6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
+    <hello>5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
+    <world>6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>

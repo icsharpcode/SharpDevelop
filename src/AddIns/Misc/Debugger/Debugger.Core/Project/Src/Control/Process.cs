@@ -114,14 +114,7 @@ namespace Debugger
 			}
 		}
 		
-		static public Process CreateProcess(NDebugger debugger, string filename, string workingDirectory, string arguments)
-		{
-			return debugger.MTA2STA.Call<Process>(delegate{
-			                                      	return StartInternal(debugger, filename, workingDirectory, arguments);
-			                                      });
-		}
-		
-		static unsafe Process StartInternal(NDebugger debugger, string filename, string workingDirectory, string arguments)
+		static unsafe public Process CreateProcess(NDebugger debugger, string filename, string workingDirectory, string arguments)
 		{
 			debugger.TraceMessage("Executing " + filename);
 			

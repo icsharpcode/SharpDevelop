@@ -5,24 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Debugger;
-using Debugger.Interop;
-using Microsoft.CSharp;
-using NUnit.Framework;
 using System;
-using System.CodeDom.Compiler;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Resources;
-using System.Threading;
+using NUnit.Framework;
 using NIgnore = NUnit.Framework.IgnoreAttribute;
 
 namespace Debugger.Tests
 {
 	[TestFixture]
-	[NIgnore]
+	//[NIgnore]
 	public partial class DebuggerTests: DebuggerTestsBase
 	{
 		
