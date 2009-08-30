@@ -3,8 +3,7 @@
     xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
     xmlns:debugging="clr-namespace:ICSharpCode.SharpDevelop.Debugging">
 	
-	<!--  
-	<BitmapImage x:Key="MagnifierImage" UriSource="magnifier.png" /> -->
+	<BitmapImage x:Key="MagnifierImage" UriSource="magnifier.png" />
 	
         <Style x:Key="ComboBoxFocusVisual">
             <Setter Property="Control.Template">
@@ -33,20 +32,28 @@
 				<ControlTemplate TargetType="{x:Type ToggleButton}">
 
 					<!-- Button face - changed from original ButtonChrome to Border -->
-					<Border Name="FaceBorder" Background="White" CornerRadius="2" BorderBrush="#FFD9D9E9" BorderThickness="1" Padding="1" >
+					<Border Name="FaceBorder" Background="Transparent" CornerRadius="2" BorderBrush="Transparent" BorderThickness="1" Padding="1" >
 						<Grid>
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="*"/>
 								<ColumnDefinition  Width="5"/>
 							</Grid.ColumnDefinitions>
 							<!--  
-							<Image Grid.Column="0" Width="10" Height="10" Stretch="Fill" Source="{StaticResource MagnifierImage}" />  -->
+							<Rectangle Width="10" Height="10" Grid.Column="0" Fill="Black"></Rectangle> -->
+							<Image Grid.Column="0" Width="10" Height="10" Stretch="Fill" Source="{StaticResource MagnifierImage}" />
 							<Path Grid.Column="1" x:Name="Arrow" Fill="Black" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Data="{StaticResource DownArrowGeometry}"/>
 						</Grid>
 					</Border>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsChecked" Value="true">
-							<Setter TargetName="FaceBorder" Property="Background" Value="#FFE0EDFF"/>
+							<Setter TargetName="FaceBorder" Property="Background" Value="White"/>
+							<Setter TargetName="FaceBorder" Property="BorderBrush" Value="#FFE0EDFF"/>
+						</Trigger>
+						<Trigger Property="IsMouseOver" Value="true">
+							<Setter TargetName="FaceBorder" Property="Background" Value="White"/>
+							<Setter TargetName="FaceBorder" Property="BorderBrush" Value="#FFE0EDFF"/>
+					    <!-- #FFE0EDFF border -->
+						<!--   #FFD9D9E9 fill  -->
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>

@@ -1,7 +1,9 @@
 <UserControl x:Class="ICSharpCode.SharpDevelop.Debugging.DebuggerTooltipControl"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:debugging="clr-namespace:ICSharpCode.SharpDevelop.Debugging">
+    xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+    xmlns:debugging="clr-namespace:ICSharpCode.SharpDevelop.Debugging"
+>
 <UserControl.Resources>
 	
       <ResourceDictionary Source="VisualizerPicker.xaml" />
@@ -94,7 +96,7 @@
 
     </UserControl.Resources>
         <StackPanel Orientation="Vertical">
-        	 <RepeatButton Name="btnUp" Style="{StaticResource upButtonStyle}" Content="^" Click="BtnUp_Click"></RepeatButton>
+        	 <RepeatButton Name="btnUp" Focusable="False" Style="{StaticResource upButtonStyle}" Content="^" Click="BtnUp_Click"></RepeatButton>
             <DataGrid VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" 
                               GridLinesVisibility="None" 
                               RowHeight="18" MaxHeight="202" 
@@ -196,6 +198,6 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-        	 <RepeatButton Name="btnDown" Style="{StaticResource downButtonStyle}" Content="v" Click="BtnDown_Click"></RepeatButton>
+        	 <RepeatButton Name="btnDown" Focusable="False" Style="{StaticResource downButtonStyle}" Content="v" Click="BtnDown_Click"></RepeatButton>
         </StackPanel>
 </UserControl>

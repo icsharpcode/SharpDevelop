@@ -24,8 +24,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			get { return index; }
 		}
 		
-		// Used to be able to expand items of IEnumerable
-		// Now we rely on PermanentReference to be able to get member values on demand. With IList, PermanentReference could be replaced by Expression
+		// PermanentReference to one row. Even if we used expressions, they are cached using PermanentReferences, so
+		// one PermanentReference for a row would be created anyway
 		public Value PermanentReference { get; private set; }
 		
 		private Dictionary<string, ObjectProperty> properties = new Dictionary<string, ObjectProperty>();
