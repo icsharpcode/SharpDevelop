@@ -4,9 +4,11 @@
 //     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.AvalonEdit.Document;
 using System;
+using System.Diagnostics;
 using System.Windows.Media;
+
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -21,9 +23,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void SetHighlight(BracketSearchResult result)
 		{
 			this.result = result;
-			var layer = textView.GetKnownLayer(Layer);
-			if (layer != null)
-				layer.InvalidateVisual();
+			textView.InvalidateLayer(this.Layer);
 		}
 		
 		public BracketHighlightRenderer(TextView textView)
@@ -35,7 +35,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.borderPen.Freeze();
 			this.textView = textView;
 			
-			//this.textView.BackgroundRenderers.Add(this);
+			this.textView.BackgroundRenderers.Add(this);
 		}
 		
 		public KnownLayer Layer {

@@ -299,10 +299,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			if (activeAdapter.Language != null) {
 				var bracketSearchResult = activeAdapter.Language.BracketSearcher.SearchBracket(activeAdapter.Document, activeAdapter.Caret.Offset);
-//				if (activeAdapter == primaryTextEditorAdapter)
-//					this.primaryBracketRenderer.SetHighlight(bracketSearchResult);
-//				else
-//					this.secondaryBracketRenderer.SetHighlight(bracketSearchResult);
+				if (activeAdapter == primaryTextEditorAdapter)
+					this.primaryBracketRenderer.SetHighlight(bracketSearchResult);
+				else
+					this.secondaryBracketRenderer.SetHighlight(bracketSearchResult);
 			}
 			
 			StatusBarService.SetCaretPosition(caret.Column, caret.Line, caret.Column);

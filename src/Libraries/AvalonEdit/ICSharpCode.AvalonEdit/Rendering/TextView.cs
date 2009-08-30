@@ -248,19 +248,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		/// <summary>
-		/// Retrieves a known layer from the Layers collection.
-		/// </summary>
-		public UIElement GetKnownLayer(KnownLayer knownLayer)
-		{
-			foreach (UIElement layer in layers) {
-				LayerPosition p = LayerPosition.GetLayerPosition(layer);
-				if (p != null && p.KnownLayer == knownLayer)
-					return layer;
-			}
-			return null;
-		}
-		
-		/// <summary>
 		/// Inserts a new layer at a position specified relative to an existing layer.
 		/// </summary>
 		/// <param name="layer">The new layer to insert.</param>
@@ -377,6 +364,16 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				visibleVisualLines = null;
 				InvalidateMeasure(redrawPriority);
 			}
+		}
+		
+		/// <summary>
+		/// Causes a known layer to redraw.
+		/// This method does not invalidate visual lines;
+		/// use the <see cref="Redraw()"/> method to do that.
+		/// </summary>
+		public void InvalidateLayer(KnownLayer knownLayer)
+		{
+			InvalidateMeasure(DispatcherPriority.Normal);
 		}
 		
 		/// <summary>
