@@ -10,10 +10,13 @@ using System.Windows;
 namespace ICSharpCode.WpfDesign
 {
 	/// <summary>
-	/// Description of ExtensionMethods.
+	/// Extension methods used in the WPF designer.
 	/// </summary>
 	public static class ExtensionMethods
 	{
+		/// <summary>
+		/// Rounds position and size of a Rect to PlacementInformation.BoundsPrecision digits. 
+		/// </summary>
 		public static Rect Round(this Rect rect)
 		{
 			return new Rect(

@@ -165,9 +165,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
 			canvas.Properties["Children"].CollectionElements.Add(textBox);
 			AssertCanvasDesignerOutput("<Canvas>\n" +
-			                           "  <Panel.Children>\n" +
-			                           "    <TextBox />\n" +
-			                           "  </Panel.Children>\n" +
+			                           "  <TextBox />\n" +
 			                           "</Canvas>", canvas.Context);
 			AssertLog("");
 		}
@@ -179,9 +177,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
 			canvas.Properties["Children"].CollectionElements.Add(textBox);
 			AssertCanvasDesignerOutput("<Canvas>\n" +
-			                           "  <Panel.Children>\n" +
-			                           "    <TextBox />\n" +
-			                           "  </Panel.Children>\n" +
+			                           "  <TextBox />\n" +
 			                           "</Canvas>", canvas.Context);
 			AssertLog("");
 		}

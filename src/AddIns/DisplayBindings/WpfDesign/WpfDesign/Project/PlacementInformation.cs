@@ -15,6 +15,10 @@ namespace ICSharpCode.WpfDesign
 	/// </summary>
 	public sealed class PlacementInformation
 	{
+		/// <summary>
+		/// The designer rounds bounds to this number of digits to avoid floating point errors.
+		/// Value: 8
+		/// </summary>
 		public const int BoundsPrecision = 8;
 		
 		Rect originalBounds, bounds;
