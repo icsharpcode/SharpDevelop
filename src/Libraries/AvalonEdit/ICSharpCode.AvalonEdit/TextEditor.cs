@@ -348,7 +348,7 @@ namespace ICSharpCode.AvalonEdit
 		{
 			TextEditor editor = (TextEditor)d;
 			if ((bool)e.NewValue)
-				editor.TextArea.ReadOnlySectionProvider = NoReadOnlySections.Instance;
+				editor.TextArea.ReadOnlySectionProvider = ReadOnlyDocument.Instance;
 			else
 				editor.TextArea.ReadOnlySectionProvider = NoReadOnlySections.Instance;
 		}
