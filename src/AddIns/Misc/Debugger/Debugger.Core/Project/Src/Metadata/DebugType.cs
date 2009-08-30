@@ -737,6 +737,18 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		public bool IsYieldEnumerator {
+			get {
+				if (this.IsCompilerGenerated) {
+					foreach(DebugType intf in this.Interfaces) {
+						if (intf.FullName == typeof(System.Collections.IEnumerator).FullName)
+							return true;
+					}
+				}
+				return false;
+			}
+		}
+		
 		public override string ToString()
 		{
 			return string.Format("{0}", this.FullName);

@@ -165,7 +165,7 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <AnonymousType
-          Name="&lt;&gt;4__this"
+          Name="this"
           Value="(()((()(this)).CS$&lt;&gt;8__locals3)).&lt;&gt;4__this = {Debugger.Tests.TestPrograms.CompilerGeneratedClasses}" />
       </Item>
     </OutterDelegateLocalVariables>
@@ -208,7 +208,7 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <AnonymousType
-          Name="&lt;&gt;4__this"
+          Name="this"
           Value="(()((()(this)).CS$&lt;&gt;8__locals3)).&lt;&gt;4__this = {Debugger.Tests.TestPrograms.CompilerGeneratedClasses}" />
       </Item>
     </InnterDelegateLocalVariables>

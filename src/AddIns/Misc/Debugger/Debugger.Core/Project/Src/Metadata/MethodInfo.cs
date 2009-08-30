@@ -474,6 +474,9 @@ namespace Debugger.MetaData
 					}
 				}
 			}
+			if (this.DeclaringType.IsYieldEnumerator) {
+				
+			}
 			return localVariables;
 		}
 		
@@ -484,15 +487,19 @@ namespace Debugger.MetaData
 				foreach(FieldInfo fieldInfo in displayClassType.GetFields()) {
 					FieldInfo fieldInfoCopy = fieldInfo;
 					if (!fieldInfo.Name.StartsWith("CS$")) {
-						vars.Add(
-							new LocalVariableInfo(
-								fieldInfo.Name,
-								fieldInfo.Type,
-								delegate(StackFrame context) {
-									return getDisplayClass(context).GetFieldValue(fieldInfoCopy);
-								}
-							)
+						LocalVariableInfo locVar = new LocalVariableInfo(
+							fieldInfo.Name,
+							fieldInfo.Type,
+							delegate(StackFrame context) {
+								return getDisplayClass(context).GetFieldValue(fieldInfoCopy);
+							}
 						);
+						locVar.IsCapturedByDelegate = true;
+						if (fieldInfo.Name.StartsWith("<>") && fieldInfo.Name.EndsWith("__this")) {
+							locVar.Name = "this";
+							locVar.IsThis = true;
+						}
+						vars.Add(locVar);
 					}
 				}
 			}
@@ -554,22 +561,17 @@ namespace Debugger.MetaData
 	
 	public class LocalVariableInfo
 	{
-		string name;
-		DebugType type;
 		ValueGetter getter;
 		
-		public string Name {
-			get { return name; }
-		}
-		
-		public DebugType Type {
-			get { return type; }
-		}
+		public string Name { get; internal set; }
+		public DebugType Type { get; private set; }
+		public bool IsThis { get; internal set; }
+		public bool IsCapturedByDelegate { get; internal set; }
 		
 		public LocalVariableInfo(string name, DebugType type, ValueGetter getter)
 		{
-			this.name = name;
-			this.type = type;
+			this.Name = name;
+			this.Type = type;
 			this.getter = getter;
 		}
 		
