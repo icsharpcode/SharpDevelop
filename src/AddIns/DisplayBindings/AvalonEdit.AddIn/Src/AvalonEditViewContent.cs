@@ -66,11 +66,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			isLoading = true;
 			try {
 				BookmarksDetach();
-				codeEditor.FileName = file.FileName;
 				codeEditor.PrimaryTextEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				
 				codeEditor.Load(stream);
+				// we set the file name after loading because this will place the fold markers etc.
+				codeEditor.FileName = file.FileName;
 				BookmarksAttach();
 			} finally {
 				isLoading = false;

@@ -70,6 +70,7 @@
     <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />
+    <Compile Include="Src\ParserFoldingStrategy.cs" />
     <Compile Include="Src\QuickClassBrowser.cs">
       <SubType>Code</SubType>
     </Compile>

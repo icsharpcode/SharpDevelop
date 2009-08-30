@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -51,11 +52,38 @@ namespace ICSharpCode.AvalonEdit.Editing
 			return fs;
 		}
 		
-		internal void RemoveFolding(FoldingSection fs)
+		/// <summary>
+		/// Removes a folding section from this manager.
+		/// </summary>
+		public void RemoveFolding(FoldingSection fs)
+		{
+			if (fs == null)
+				throw new ArgumentNullException("fs");
+			document.VerifyAccess();
+			fs.IsFolded = false;
+			foldings.Remove(fs);
+			textView.Redraw(fs, DispatcherPriority.Normal);
+		}
+		
+		/// <summary>
+		/// Removes all folding sections.
+		/// </summary>
+		public void Clear()
 		{
 			document.VerifyAccess();
-			foldings.Remove(fs);
+			foreach (FoldingSection s in foldings)
+				s.IsFolded = false;
+			foldings.Clear();
 			textView.Redraw();
+		}
+		
+		/// <summary>
+		/// Gets all foldings in this manager.
+		/// The foldings are returned sorted by start offset;
+		/// for multiple foldings at the same offset the order is undefined.
+		/// </summary>
+		public IEnumerable<FoldingSection> AllFoldings {
+			get { return foldings; }
 		}
 		
 		/// <summary>

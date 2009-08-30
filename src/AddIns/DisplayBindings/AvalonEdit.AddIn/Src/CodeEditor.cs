@@ -185,6 +185,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var iconBarMargin = new IconBarMargin(iconBarManager) { TextView = textView };
 			textEditor.TextArea.LeftMargins.Insert(0, iconBarMargin);
 			
+			textView.Services.AddService(typeof(ParserFoldingStrategy), new ParserFoldingStrategy(textEditor.TextArea));
+			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
 			textEditor.TextArea.TextView.MouseRightButtonDown += textEditor_TextArea_TextView_MouseRightButtonDown;
@@ -657,6 +659,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
+			UpdateFolding(primaryTextEditorAdapter, parseInfo);
+			UpdateFolding(secondaryTextEditorAdapter, parseInfo);
+		}
+		
+		void UpdateFolding(ITextEditor editor, ParseInformation parseInfo)
+		{
+			if (editor != null) {
+				ParserFoldingStrategy folding = editor.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
+				if (folding != null) {
+					if (parseInfo != null)
+						folding.Attach();
+					else
+						folding.Detach();
+					folding.UpdateFoldings(parseInfo);
+				}
+			}
 		}
 		
 		public void Dispose()

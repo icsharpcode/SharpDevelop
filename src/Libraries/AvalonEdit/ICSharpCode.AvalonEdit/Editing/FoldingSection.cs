@@ -30,11 +30,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (isFolded != value) {
 					isFolded = value;
 					if (value) {
-						DocumentLine startLine = manager.document.GetLineByOffset(StartOffset);
-						DocumentLine endLine = manager.document.GetLineByOffset(EndOffset);
-						if (startLine != endLine) {
-							DocumentLine startLinePlusOne = startLine.NextLine;
-							collapsedSection = manager.textView.CollapseLines(startLinePlusOne, endLine);
+						if (manager != null) {
+							DocumentLine startLine = manager.document.GetLineByOffset(StartOffset);
+							DocumentLine endLine = manager.document.GetLineByOffset(EndOffset);
+							if (startLine != endLine) {
+								DocumentLine startLinePlusOne = startLine.NextLine;
+								collapsedSection = manager.textView.CollapseLines(startLinePlusOne, endLine);
+							}
 						}
 					} else {
 						if (collapsedSection != null) {
@@ -42,7 +44,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 							collapsedSection = null;
 						}
 					}
-					manager.textView.Redraw(this, DispatcherPriority.Normal);
+					if (manager != null)
+						manager.textView.Redraw(this, DispatcherPriority.Normal);
 				}
 			}
 		}
@@ -54,12 +57,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.Length = endOffset - startOffset;
 		}
 		
-		/// <summary>
-		/// Deletes the folding section.
-		/// </summary>
-		public void Remove()
+		internal void Removed()
 		{
-			manager.RemoveFolding(this);
+			if (collapsedSection != null) {
+				collapsedSection.Uncollapse();
+				collapsedSection = null;
+			}
+			manager = null;
 		}
 	}
 }
