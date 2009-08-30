@@ -44,6 +44,30 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 	}
 	
+	[ExtensionFor(typeof(HeaderedContentControl))]
+	public sealed class HeaderedContentControlInstanceFactory : CustomInstanceFactory
+	{
+		Brush _transparentBrush = new SolidColorBrush(Colors.Transparent);
+		
+		/// <summary>
+		/// Creates an instance of the specified type, passing the specified arguments to its constructor.
+		/// </summary>
+		public override object CreateInstance(Type type, params object[] arguments)
+		{
+			object instance = base.CreateInstance(type, arguments);
+			Control control = instance as Control;
+			if (control != null) {
+				if (control.Background == null) {
+					control.Background = _transparentBrush;
+				}
+				TypeDescriptionProvider provider = new DummyValueInsteadOfNullTypeDescriptionProvider(
+					TypeDescriptor.GetProvider(control), "Background", _transparentBrush);
+				TypeDescriptor.AddProvider(provider, control);
+			}
+			return instance;
+		}
+	}
+	
 	sealed class DummyValueInsteadOfNullTypeDescriptionProvider : TypeDescriptionProvider
 	{
 		// By using a TypeDescriptionProvider, we can intercept all access to the property that is

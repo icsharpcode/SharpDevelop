@@ -150,7 +150,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			PlacementOperation operation = PlacementOperation.TryStartInsertNewComponents(
 				container,
 				new DesignItem[] { createdItem },
-				new Rect[] { new Rect(position, size) },
+				new Rect[] { new Rect(position, size).Round() },
 				PlacementType.AddItem
 			);
 			if (operation != null) {
@@ -212,7 +212,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			operation = PlacementOperation.TryStartInsertNewComponents(container,
 				new DesignItem[] { createdItem },
-				new Rect[] { GetStartToEndRect(e) },
+				new Rect[] { GetStartToEndRect(e).Round() },
 				PlacementType.Resize);
 			if (operation != null) {
 				services.Selection.SetSelectedComponents(new DesignItem[] { createdItem });
@@ -224,7 +224,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			base.OnMouseMove(sender, e);
 			if (operation != null) {
 				foreach (PlacementInformation info in operation.PlacedItems) {
-					info.Bounds = GetStartToEndRect(e);
+					info.Bounds = GetStartToEndRect(e).Round();
 					operation.CurrentContainerBehavior.SetPosition(info);
 				}
 			}

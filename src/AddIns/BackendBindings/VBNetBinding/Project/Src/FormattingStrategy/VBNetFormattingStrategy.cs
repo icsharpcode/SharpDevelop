@@ -851,7 +851,12 @@ namespace VBNetBinding
 		
 		public override void IndentLine(ITextEditor editor, IDocumentLine line)
 		{
-			base.IndentLine(editor, line);
+			IndentLines(editor, line.LineNumber, line.LineNumber);
+		}
+		
+		public override void SurroundSelectionWithComment(ITextEditor editor)
+		{
+			SurroundSelectionWithSingleLineComment(editor, "'");
 		}
 		
 		#region SearchBracket

@@ -12,14 +12,15 @@ using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	[ExtensionFor(typeof(UIElement))]
+	[ExtensionFor(typeof(Panel))]
+	[ExtensionFor(typeof(ContentControl))]
 	public class DefaultPlacementBehavior : BehaviorExtension, IPlacementBehavior
 	{
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 			if (ExtendedItem.ContentProperty == null ||
-				Metadata.IsPlacementDisabled(ExtendedItem.ComponentType)) 
+			    Metadata.IsPlacementDisabled(ExtendedItem.ComponentType))
 				return;
 			ExtendedItem.AddBehavior(typeof(IPlacementBehavior), this);
 		}
@@ -45,7 +46,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			return new Rect(p, item.View.RenderSize);
 		}
 
-		public virtual void BeforeSetPosition(PlacementOperation operation) 
+		public virtual void BeforeSetPosition(PlacementOperation operation)
 		{
 		}
 
@@ -67,16 +68,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 			} else {
 				ExtendedItem.ContentProperty.Reset();
-			}			
+			}
 		}
 
 		public virtual bool CanEnterContainer(PlacementOperation operation)
 		{
-			if (ExtendedItem.ContentProperty.IsCollection && 
-				CollectionSupport.CanCollectionAdd(ExtendedItem.ContentProperty.ReturnType, 
-				operation.PlacedItems.Select(p => p.Item.Component))) 
+			if (ExtendedItem.ContentProperty.IsCollection)
+				return CollectionSupport.CanCollectionAdd(ExtendedItem.ContentProperty.ReturnType,
+				                                          operation.PlacedItems.Select(p => p.Item.Component));
+			if (!ExtendedItem.ContentProperty.IsSet)
 				return true;
-			return !ExtendedItem.ContentProperty.IsSet;
+			
+			object value = ExtendedItem.ContentProperty.ValueOnInstance;
+			// don't overwrite non-primitive values like bindings
+			return ExtendedItem.ContentProperty.Value == null && (value is string && string.IsNullOrEmpty(value as string));
 		}
 
 		public virtual void EnterContainer(PlacementOperation operation)

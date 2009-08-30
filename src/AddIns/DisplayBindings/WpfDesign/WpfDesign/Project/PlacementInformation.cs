@@ -15,6 +15,8 @@ namespace ICSharpCode.WpfDesign
 	/// </summary>
 	public sealed class PlacementInformation
 	{
+		public const int BoundsPrecision = 8;
+		
 		Rect originalBounds, bounds;
 		readonly DesignItem item;
 		readonly PlacementOperation operation;

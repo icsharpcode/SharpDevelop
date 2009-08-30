@@ -27,6 +27,7 @@ namespace ICSharpCode.XamlDesigner
 
 			uxTextEditor.SetHighlighting("XML");
 			uxTextEditor.DataBindings.Add("Text", doc, "Text", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged);
+			Document.Mode = DocumentMode.Design;
 		}
 
 		public Document Document { get; private set; }

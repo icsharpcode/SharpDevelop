@@ -28,8 +28,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		/// <summary>
 		/// The namespace used for the WPF schema.
-		/// Value: "http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+		/// Value: "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		/// </summary>
-		public const string PresentationNamespace = "http://schemas.microsoft.com/netfx/2007/xaml/presentation";
+		public const string PresentationNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
 	}
 }

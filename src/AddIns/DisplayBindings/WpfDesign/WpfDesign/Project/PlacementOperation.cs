@@ -99,7 +99,7 @@ namespace ICSharpCode.WpfDesign
 				
 				foreach (PlacementInformation info in placedItems) {
 					info.OriginalBounds = TransformRectByMiddlePoint(transform, info.OriginalBounds);
-					info.Bounds = TransformRectByMiddlePoint(transform, info.Bounds);
+					info.Bounds = TransformRectByMiddlePoint(transform, info.Bounds).Round();
 				}
 				
 				currentContainer = newContainer;

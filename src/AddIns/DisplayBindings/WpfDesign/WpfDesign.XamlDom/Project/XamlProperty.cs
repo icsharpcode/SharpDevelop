@@ -267,6 +267,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return;
 			}
 			if (_propertyElement == null) {
+				if (PropertyName == parentObject.ContentPropertyName) {
+					parentObject.XmlElement.InsertBefore(newChildNode, parentObject.XmlElement.FirstChild);
+					return;
+				}
 				_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
 					this.PropertyTargetType.Name + "." + this.PropertyName,
 					parentObject.OwnerDocument.GetNamespaceFor(this.PropertyTargetType)
@@ -281,7 +285,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			Debug.Assert(index >= 0 && index <= collectionElements.Count);
 			XmlElement collection = _propertyElement;
 			if (collection == null) {
-				if (collectionElements.Count == 0) {
+				if (collectionElements.Count == 0 && this.PropertyName != this.ParentObject.ContentPropertyName) {
 					// we have to create the collection element
 					_propertyElement = parentObject.OwnerDocument.XmlDocument.CreateElement(
 						this.PropertyTargetType.Name + "." + this.PropertyName,

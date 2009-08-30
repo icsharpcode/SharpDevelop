@@ -39,6 +39,8 @@ namespace ICSharpCode.XamlDesigner
 
 			LoadSettings();
 			ProcessPaths(App.Args);
+			
+			ApplicationCommands.New.Execute(null, this);
 		}
 
 		public static MainWindow Instance;

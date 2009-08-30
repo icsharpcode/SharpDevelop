@@ -28,7 +28,7 @@ namespace ICSharpCode.XamlDesigner
 			this.filePath = filePath;
 			ReloadFile();
 		}
-				
+		
 		string tempName;
 		DesignSurface designSurface = new DesignSurface();
 
@@ -145,11 +145,11 @@ namespace ICSharpCode.XamlDesigner
 		}
 
 		public XamlErrorService XamlErrorService {
-			get { 
-                if (DesignContext != null) {
-				    return DesignContext.Services.GetService<XamlErrorService>();
-                }
-                return null;
+			get {
+				if (DesignContext != null) {
+					return DesignContext.Services.GetService<XamlErrorService>();
+				}
+				return null;
 			}
 		}
 
@@ -195,12 +195,10 @@ namespace ICSharpCode.XamlDesigner
 
 		void UpdateXaml()
 		{
-			if (DesignContext.CanSave && UndoService.CanUndo) {
-				var sb = new StringBuilder();
-				using (var xmlWriter = XmlWriter.Create(sb)) {
-					DesignSurface.SaveDesigner(xmlWriter);					
-					Text = XamlFormatter.Format(sb.ToString());
-				}
+			var sb = new StringBuilder();
+			using (var xmlWriter = XmlWriter.Create(sb)) {
+				DesignSurface.SaveDesigner(xmlWriter);
+				Text = XamlFormatter.Format(sb.ToString());
 			}
 		}
 

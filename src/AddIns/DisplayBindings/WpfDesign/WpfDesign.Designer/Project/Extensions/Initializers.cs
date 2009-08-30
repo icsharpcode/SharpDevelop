@@ -26,7 +26,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions.Initializers
 		}
 	}
 
-    [ExtensionFor(typeof(HeaderedContentControl))]
+	[ExtensionFor(typeof(HeaderedContentControl), OverrideExtension = typeof(ContentControlInitializer))]
 	public class HeaderedContentControlInitializer : DefaultInitializer
 	{
 		public override void InitializeDefaults(DesignItem item)
@@ -34,6 +34,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions.Initializers
 			DesignItemProperty headerProperty = item.Properties["Header"];
 			if (headerProperty.ValueOnInstance == null) {
 				headerProperty.SetValue(item.ComponentType.Name);
+			}
+			
+			DesignItemProperty contentProperty = item.Properties["Content"];
+			if (contentProperty.ValueOnInstance == null) {
+				contentProperty.SetValue(new PanelInstanceFactory().CreateInstance(typeof(Canvas)));
 			}
 		}
 	}

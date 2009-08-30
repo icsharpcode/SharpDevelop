@@ -141,8 +141,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		public DesignPanel()
 		{
 			this.Focusable = true;
-			this.AllowDrop = false;
-			this.ClipToBounds = true;
+			this.Margin = new Thickness(16);
 			DesignerProperties.SetIsInDesignMode(this, true);
 			
 			_eatAllHitTestRequests = new EatAllHitTestRequests();

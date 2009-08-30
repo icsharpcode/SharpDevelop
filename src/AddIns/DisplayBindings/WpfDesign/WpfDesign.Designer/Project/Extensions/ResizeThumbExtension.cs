@@ -104,7 +104,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				result.Width = newWidth;
 				result.Height = newHeight;
 				
-				info.Bounds = result;
+				info.Bounds = result.Round();
 				info.ResizeThumbAlignment = alignment;
 				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
 				operation.CurrentContainerBehavior.SetPosition(info);

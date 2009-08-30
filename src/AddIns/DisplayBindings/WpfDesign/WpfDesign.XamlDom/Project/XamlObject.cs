@@ -261,6 +261,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (propertyName == null)
 				throw new ArgumentNullException("propertyName");
 			
+//			if (propertyName == ContentPropertyName)
+//				return 
+			
 			foreach (XamlProperty p in properties) {
 				if (!p.IsAttached && p.PropertyName == propertyName)
 					return p;
