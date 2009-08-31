@@ -72,6 +72,7 @@
     <Compile Include="GetBitmapExtension.cs" />
     <Compile Include="IOptionBindingContainer.cs" />
     <Compile Include="IStatusUpdate.cs" />
+    <Compile Include="LanguageChangeWeakEventManager.cs" />
     <Compile Include="LocalizeExtension.cs" />
     <Compile Include="Menu\IMenuItemBuilder.cs" />
     <Compile Include="Menu\MenuCommand.cs" />

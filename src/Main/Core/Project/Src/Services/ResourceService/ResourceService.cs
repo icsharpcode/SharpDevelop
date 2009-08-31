@@ -168,8 +168,9 @@ namespace ICSharpCode.Core
 		{
 			if (e.Key == uiLanguageProperty && e.NewValue != e.OldValue) {
 				LoadLanguageResources((string)e.NewValue);
-				if (LanguageChanged != null)
-					LanguageChanged(null, e);
+				EventHandler handler = LanguageChanged;
+				if (handler != null)
+					handler(null, e);
 			}
 		}
 		
@@ -206,8 +207,9 @@ namespace ICSharpCode.Core
 					ra.Load();
 				}
 			}
-			if (ClearCaches != null)
-				ClearCaches(null, EventArgs.Empty);
+			EventHandler handler = ClearCaches;
+			if (handler != null)
+				handler(null, EventArgs.Empty);
 		}
 		
 		static Hashtable Load(string fileName)
