@@ -68,6 +68,7 @@
     <Compile Include="Src\BracketHighlightRenderer.cs" />
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
+    <Compile Include="Src\CodeEditorView.cs" />
     <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />

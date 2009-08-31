@@ -45,9 +45,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
 		QuickClassBrowser quickClassBrowser;
-		readonly TextEditor primaryTextEditor;
+		readonly CodeEditorView primaryTextEditor;
 		readonly CodeEditorAdapter primaryTextEditorAdapter;
-		TextEditor secondaryTextEditor;
+		CodeEditorView secondaryTextEditor;
 		CodeEditorAdapter secondaryTextEditorAdapter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
@@ -56,11 +56,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		BracketHighlightRenderer primaryBracketRenderer;
 		BracketHighlightRenderer secondaryBracketRenderer;
 		
-		public TextEditor PrimaryTextEditor {
+		public CodeEditorView PrimaryTextEditor {
 			get { return primaryTextEditor; }
 		}
 		
-		public TextEditor ActiveTextEditor {
+		public CodeEditorView ActiveTextEditor {
 			get { return primaryTextEditor; }
 		}
 		
@@ -98,15 +98,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public ITextEditor ActiveTextEditorAdapter {
-			get { return GetAdapter(this.ActiveTextEditor); }
-		}
-		
-		CodeEditorAdapter GetAdapter(TextEditor editor)
-		{
-			if (editor == secondaryTextEditor)
-				return secondaryTextEditorAdapter;
-			else
-				return primaryTextEditorAdapter;
+			get { return this.ActiveTextEditor.Adapter; }
 		}
 		
 		public IconBarManager IconBarManager {
@@ -163,10 +155,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Children.Add(primaryTextEditor);
 		}
 		
-		protected virtual TextEditor CreateTextEditor()
+		protected virtual CodeEditorView CreateTextEditor()
 		{
-			TextEditor textEditor = new TextEditor();
+			CodeEditorView textEditor = new CodeEditorView();
 			CodeEditorAdapter adapter = new CodeEditorAdapter(this, textEditor);
+			textEditor.Adapter = adapter;
 			TextView textView = textEditor.TextArea.TextView;
 			textView.Services.AddService(typeof(ITextEditor), adapter);
 			textView.Services.AddService(typeof(CodeEditor), this);
@@ -176,10 +169,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.FontSize = 13;
 			textEditor.TextArea.TextEntering += TextAreaTextEntering;
 			textEditor.TextArea.TextEntered += TextAreaTextEntered;
-			textEditor.MouseHover += TextEditorMouseHover;
-			textEditor.MouseHoverStopped += TextEditorMouseHoverStopped;
-			textEditor.MouseLeave += TextEditorMouseLeave;
-			textView.MouseDown += TextViewMouseDown;
 			textEditor.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
 			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
@@ -309,178 +298,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			CaretPositionChanged.RaiseEvent(this, EventArgs.Empty);
 		}
 		
-		public void JumpTo(int line, int column)
-		{
-			TryCloseExistingPopup(true);
-			
-			// the adapter sets the caret position and takes care of scrolling
-			this.ActiveTextEditorAdapter.JumpTo(line, column);
-			this.ActiveTextEditor.Focus();
-		}
-		
-		ToolTip toolTip;
-		Popup popup;
-
-		void TextEditorMouseHover(object sender, MouseEventArgs e)
-		{
-			TextEditor textEditor = (TextEditor)sender;
-			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(GetAdapter(textEditor));
-			var pos = textEditor.GetPositionFromPoint(e.GetPosition(textEditor));
-			args.InDocument = pos.HasValue;
-			if (pos.HasValue) {
-				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
-			}
-			
-			if (args.InDocument) {
-				var markersAtOffset = textMarkerService.GetMarkersAtOffset(args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column));
-				
-				ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
-				
-				if (markerWithToolTip != null) {
-					if (toolTip == null) {
-						toolTip = new ToolTip();
-						toolTip.Closed += ToolTipClosed;
-					}
-					toolTip.Content = markerWithToolTip.ToolTip;
-					toolTip.IsOpen = true;
-					e.Handled = true;
-					return;
-				}
-			}
-			
-			ToolTipRequestService.RequestToolTip(args);
-			
-			if (args.ContentToShow != null) {
-				var contentToShowITooltip = args.ContentToShow as ITooltip;
-				
-				if (contentToShowITooltip != null && contentToShowITooltip.ShowAsPopup) {
-					if (!(args.ContentToShow is UIElement)) {
-						throw new NotSupportedException("Content to show in Popup must be UIElement: " + args.ContentToShow);
-					}
-					if (popup == null) {
-						popup = CreatePopup();
-					}
-					if (TryCloseExistingPopup(false)) {
-						// when popup content decides to close, close the popup
-						contentToShowITooltip.Closed += (closedSender, closedArgs) => { popup.IsOpen = false; };
-						popup.Child = (UIElement)args.ContentToShow;
-						//ICSharpCode.SharpDevelop.Debugging.DebuggerService.CurrentDebugger.IsProcessRunningChanged
-						SetPopupPosition(popup, textEditor, e);
-						popup.IsOpen = true;
-					}
-					e.Handled = true;
-				}
-				else {
-					if (toolTip == null) {
-						toolTip = new ToolTip();
-						toolTip.Closed += ToolTipClosed;
-					}
-					toolTip.Content = args.ContentToShow;
-					toolTip.IsOpen = true;
-					e.Handled = true;
-				}
-			}
-			else {
-				// close popup if mouse hovered over empty area
-				if (popup != null) {
-					e.Handled = true;
-				}
-				TryCloseExistingPopup(false);
-			}
-		}
-		
-		bool TryCloseExistingPopup(bool mouseClick)
-		{
-			bool canClose = true;
-			if (popup != null) {
-				var popupContentITooltip = popup.Child as ITooltip;
-				if (popupContentITooltip != null) {
-					canClose = popupContentITooltip.Close(mouseClick);
-				}
-				if (canClose) {
-					popup.IsOpen = false;
-				}
-			}
-			return canClose;
-		}
-		
-		void SetPopupPosition(Popup popup, TextEditor textEditor, MouseEventArgs mouseArgs)
-		{
-			var popupPosition = GetPopupPosition(textEditor, mouseArgs);
-			popup.HorizontalOffset = popupPosition.X;
-			popup.VerticalOffset = popupPosition.Y;
-		}
-		
-		/// <summary> Returns Popup position based on mouse position, in device independent units </summary>
-		Point GetPopupPosition(TextEditor textEditor, MouseEventArgs mouseArgs)
-		{
-			Point mousePos = mouseArgs.GetPosition(textEditor);
-			Point positionInPixels;
-			// align Popup with line bottom
-			TextViewPosition? logicalPos = textEditor.GetPositionFromPoint(mousePos);
-			if (logicalPos.HasValue) {
-				var textView = textEditor.TextArea.TextView;
-				positionInPixels =
-					textView.PointToScreen(
-						textView.GetVisualPosition(logicalPos.Value, VisualYPosition.LineBottom) - textView.ScrollOffset);
-				positionInPixels.X -= 4;
-			}
-			else {
-				positionInPixels = textEditor.PointToScreen(mousePos + new Vector(-4, 6));
-			}
-			// use device independent units, because Popup Left/Top are in independent units
-			return positionInPixels.TransformFromDevice(textEditor);
-		}
-		
-		Popup CreatePopup()
-		{
-			popup = new Popup();
-			popup.Closed += PopupClosed;
-			popup.Placement = PlacementMode.Absolute;
-			popup.StaysOpen = true;
-			return popup;
-		}
-		
-		void TextEditorMouseHoverStopped(object sender, MouseEventArgs e)
-		{
-			if (toolTip != null) {
-				toolTip.IsOpen = false;
-				e.Handled = true;
-			}
-		}
-		
-		void TextEditorMouseLeave(object sender, MouseEventArgs e)
-		{
-			if (popup != null && !popup.IsMouseOver) {
-				// do not close popup if mouse moved from editor to popup
-				TryCloseExistingPopup(false);
-			}
-		}
-		
-		void TextViewMouseDown(object sender, MouseButtonEventArgs e)
-		{
-			// close existing popup immediately on text editor mouse down
-			TryCloseExistingPopup(false);
-			if (e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
-				TextEditor editor = GetTextEditorFromSender(sender);
-				var position = editor.GetPositionFromPoint(e.GetPosition(editor));
-				if (position != null) {
-					GoToDefinition.Run(GetAdapterFromSender(sender), document.GetOffset(position.Value));
-					e.Handled = true;
-				}
-			}
-		}
-
-		void ToolTipClosed(object sender, RoutedEventArgs e)
-		{
-			toolTip = null;
-		}
-		
-		void PopupClosed(object sender, EventArgs e)
-		{
-			popup = null;
-		}
-		
 		volatile static ReadOnlyCollection<ICodeCompletionBinding> codeCompletionBindings;
 		
 		public static ReadOnlyCollection<ICodeCompletionBinding> CodeCompletionBindings {
@@ -563,10 +380,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return textEditor;
 		}
 		
-		TextEditor GetTextEditorFromSender(object sender)
+		CodeEditorView GetTextEditorFromSender(object sender)
 		{
 			ITextEditorComponent textArea = (ITextEditorComponent)sender;
-			TextEditor textEditor = (TextEditor)textArea.GetService(typeof(TextEditor));
+			CodeEditorView textEditor = (CodeEditorView)textArea.GetService(typeof(TextEditor));
 			if (textEditor == null)
 				throw new InvalidOperationException("could not find TextEditor service");
 			return textEditor;
@@ -575,9 +392,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void OnCodeCompletion(object sender, ExecutedRoutedEventArgs e)
 		{
 			CloseExistingCompletionWindow();
-			TextEditor textEditor = GetTextEditorFromSender(sender);
+			CodeEditorView textEditor = GetTextEditorFromSender(sender);
 			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
-				if (cc.CtrlSpace(GetAdapter(textEditor))) {
+				if (cc.CtrlSpace(textEditor.Adapter)) {
 					e.Handled = true;
 					break;
 				}
@@ -664,7 +481,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (quickClassBrowser != null || parseInfo.CompilationUnit.Classes.Count > 0) {
 					if (quickClassBrowser == null) {
 						quickClassBrowser = new QuickClassBrowser();
-						quickClassBrowser.JumpAction = JumpTo;
+						quickClassBrowser.JumpAction = (line, col) => ActiveTextEditor.JumpTo(line, col);
 						SetRow(quickClassBrowser, 0);
 						this.Children.Add(quickClassBrowser);
 					}

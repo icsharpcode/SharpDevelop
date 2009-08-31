@@ -225,7 +225,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void JumpTo(int line, int column)
 		{
-			codeEditor.JumpTo(line, column);
+			codeEditor.ActiveTextEditor.JumpTo(line, column);
 		}
 		#endregion
 		

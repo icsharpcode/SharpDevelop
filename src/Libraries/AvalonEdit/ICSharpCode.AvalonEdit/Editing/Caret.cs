@@ -216,6 +216,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		/// <summary>
 		/// Event raised when the caret position has changed.
+		/// This event might be raised multiple times during a big update operation.
+		/// You might want to check TextDocument.IsInUpdate and delay time-consuming
+		/// actions until the update operation ends.
 		/// </summary>
 		public event EventHandler PositionChanged;
 		
