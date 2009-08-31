@@ -13,6 +13,7 @@ using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using System.Windows.Threading;
 
 namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {
@@ -194,7 +195,15 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		{
 			textEditor.TextArea.Selection = Selection.Empty;
 			textEditor.TextArea.Caret.Position = new TextViewPosition(line, column);
-			textEditor.TextArea.Caret.BringCaretToView();
+			if (textEditor.ActualHeight > 0) {
+				textEditor.ScrollTo(line, column);
+			} else {
+				// we have to delay the scrolling if the text editor is not yet loaded
+				textEditor.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(
+					delegate {
+						textEditor.ScrollTo(line, column);
+					}));
+			}
 		}
 		
 		public virtual IInsightWindow ActiveInsightWindow {

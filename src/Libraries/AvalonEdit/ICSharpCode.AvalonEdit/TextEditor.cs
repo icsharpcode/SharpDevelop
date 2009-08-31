@@ -20,6 +20,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
+using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit
 {
@@ -879,6 +880,31 @@ namespace ICSharpCode.AvalonEdit
 		object IServiceProvider.GetService(Type serviceType)
 		{
 			return textArea.GetService(serviceType);
+		}
+		
+		/// <summary>
+		/// Scrolls to the specified line/column.
+		/// This method requires that the TextEditor was already assigned a size (WPF layout must have run prior).
+		/// </summary>
+		public void ScrollTo(int line, int column)
+		{
+			const double MinimumScrollPercentage = 0.3;
+			
+			if (scrollViewer != null) {
+				Point p = textArea.TextView.GetVisualPosition(new TextViewPosition(line, column), VisualYPosition.LineMiddle);
+				double verticalPos = p.Y - scrollViewer.ViewportHeight / 2;
+				if (Math.Abs(verticalPos - scrollViewer.VerticalOffset) > MinimumScrollPercentage * scrollViewer.ViewportHeight) {
+					scrollViewer.ScrollToVerticalOffset(Math.Max(0, verticalPos));
+				}
+				if (p.X > scrollViewer.ViewportWidth - Caret.MinimumDistanceToViewBorder * 2) {
+					double horizontalPos = Math.Max(0, p.X - scrollViewer.ViewportWidth / 2);
+					if (Math.Abs(horizontalPos - scrollViewer.HorizontalOffset) > MinimumScrollPercentage * scrollViewer.ViewportWidth) {
+						scrollViewer.ScrollToHorizontalOffset(horizontalPos);
+					}
+				} else {
+					scrollViewer.ScrollToHorizontalOffset(0);
+				}
+			}
 		}
 	}
 }

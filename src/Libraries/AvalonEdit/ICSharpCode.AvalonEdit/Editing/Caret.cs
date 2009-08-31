@@ -299,6 +299,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		/// <summary>
+		/// Minimum distance of the caret to the view border.
+		/// </summary>
+		internal const double MinimumDistanceToViewBorder = 30;
+		
+		/// <summary>
 		/// Scrolls the text view so that the caret is visible.
 		/// </summary>
 		public void BringCaretToView()
@@ -306,7 +311,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (textView != null) {
 				VisualLine visualLine = textView.GetOrConstructVisualLine(textView.Document.GetLineByNumber(position.Line));
 				Rect caretRectangle = CalcCaretRectangle(visualLine);
-				caretRectangle.Inflate(30, 30); // leave at least 30 pixels distance to the view border
+				caretRectangle.Inflate(MinimumDistanceToViewBorder, MinimumDistanceToViewBorder);
 				textView.MakeVisible(caretRectangle);
 			}
 		}
