@@ -54,12 +54,22 @@ namespace ICSharpCode.XamlBinding
 				this.task = new Task(Process);
 			}
 			
+			public HighlightTask(ITextEditor editor, DocumentLine currentLine, TextView textView, IList<Highlight> oldHighlightData)
+				: this(editor, currentLine, textView)
+			{
+				this.results = oldHighlightData;
+			}
+			
 			IList<Highlight> results;
 			
 			// output
-			public IList<Highlight> GetResults()
+			public Highlight[] GetResults()
 			{
-				return results;
+				lock (this) {
+					if (results == null)
+						return null;
+					return results.ToArray();
+				}
 			}
 			
 			readonly Task task;
@@ -98,7 +108,8 @@ namespace ICSharpCode.XamlBinding
 						results.Add(new Highlight() { Member = member, Info = info });
 					}
 					
-					this.results = results;
+					lock (this)
+						this.results = results;
 					
 					WorkbenchSingleton.SafeThreadAsyncCall(InvokeRedraw);
 				} catch (Exception e) {
@@ -221,8 +232,9 @@ namespace ICSharpCode.XamlBinding
 				highlightCache.Add(line, task);
 			} else {
 				HighlightTask task = highlightCache[line];
-				if (task.CompletedSuccessfully) {
-					foreach (var result in task.GetResults()) {
+				var results = task.GetResults();
+				if (results != null) {
+					foreach (var result in results) {
 						ColorizeMember(result.Info, line, result.Member);
 					}
 				}
@@ -259,7 +271,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			foreach (var item in highlightCache.ToArray()) {
 				if (item.Value.Invalid) {
-					var newTask = new HighlightTask(this.Editor, item.Key, this.TextView);
+					var newTask = new HighlightTask(this.Editor, item.Key, this.TextView, item.Value.GetResults());
 					newTask.Start();
 					highlightCache[item.Key] = newTask;
 				}
@@ -276,8 +288,10 @@ namespace ICSharpCode.XamlBinding
 
 				current = current.NextLine;
 			}
+			Core.LoggingService.Debug("invalidated lines");
 		}
 		
+		#region highlight helpers
 		void HighlightProperty(VisualLineElement element)
 		{
 			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.PropertyForegroundBrush);
@@ -301,21 +315,21 @@ namespace ICSharpCode.XamlBinding
 			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.IgnoredForegroundBrush);
 			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.IgnoredBackgroundBrush);
 		}
+		#endregion
 		
 		public void BeforeRemoveLine(DocumentLine line)
 		{
-			highlightCache.Remove(line);
 			InvalidateLines(line.NextLine);
 		}
 		
 		public void SetLineLength(DocumentLine line, int newTotalLength)
 		{
-			highlightCache.Remove(line);
-			InvalidateLines(line.NextLine);
+			InvalidateLines(line);
 		}
 		
 		public void LineInserted(DocumentLine insertionPos, DocumentLine newLine)
 		{
+			InvalidateLines(newLine);
 		}
 		
 		public void RebuildDocument()
