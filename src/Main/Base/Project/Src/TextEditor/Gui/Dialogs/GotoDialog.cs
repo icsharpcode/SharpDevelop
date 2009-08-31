@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,11 +14,14 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Project;
+using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -61,26 +63,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 				new Action(delegate { textBoxTextChanged(null, null); }));
 		}
 		
-		class MyListBoxItem : ListBoxItem, IComparable<MyListBoxItem>
+		class GotoEntry : IComparable<GotoEntry>
 		{
-			public readonly string Text;
+			public object Tag;
+			public string Text { get; private set; }
+			IImage image;
 			
-			public MyListBoxItem(string text, IImage image)
-			{
-				this.Text = text;
-				this.Content = new StackPanel {
-					Orientation = Orientation.Horizontal,
-					Children = {
-						image.CreatePixelSnappedImage(),
-						new TextBlock {
-							Text = text,
-							Margin = new Thickness(4, 0, 0, 0)
-						}
-					}
-				};
+			public ImageSource ImageSource {
+				get { return image.ImageSource; }
 			}
 			
-			public int CompareTo(MyListBoxItem other)
+			public GotoEntry(string text, IImage image)
+			{
+				this.Text = text;
+				this.image = image;
+			}
+			
+			public int CompareTo(GotoEntry other)
 			{
 				return Text.CompareTo(other.Text);
 			}
@@ -98,10 +97,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ChangeIndex(+1);
 			} else if (e.Key == Key.PageUp) {
 				e.Handled = true;
-				ChangeIndex((int)Math.Round(-listBox.ActualHeight / ((ListBoxItem)listBox.SelectedItem).ActualHeight));
+				ChangeIndex((int)Math.Round(-listBox.ActualHeight / 20));
 			} else if (e.Key == Key.PageDown) {
 				e.Handled = true;
-				ChangeIndex((int)Math.Round(+listBox.ActualHeight / ((ListBoxItem)listBox.SelectedItem).ActualHeight));
+				ChangeIndex((int)Math.Round(+listBox.ActualHeight / 20));
 			}
 		}
 		
@@ -109,20 +108,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			int index = listBox.SelectedIndex;
 			index = Math.Max(0, Math.Min(listBox.Items.Count - 1, index + increment));
-			((ListBoxItem)listBox.Items[index]).IsSelected = true;
+			listBox.SelectedIndex = index;
 			listBox.ScrollIntoView(listBox.Items[index]);
 		}
 		
 		Dictionary<string, object> visibleEntries = new Dictionary<string, object>();
 		int bestMatchType;
 		double bestPriority;
-		List<MyListBoxItem> newItems = new List<MyListBoxItem>();
-		ListBoxItem bestItem;
+		List<GotoEntry> newItems = new List<GotoEntry>();
+		GotoEntry bestItem;
 		
 		void textBoxTextChanged(object sender, TextChangedEventArgs e)
 		{
 			string text = textBox.Text.Trim();
-			listBox.Items.Clear();
+			listBox.ItemsSource = null;
 			newItems.Clear();
 			visibleEntries.Clear();
 			bestItem = null;
@@ -159,10 +158,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AddAllMembersMatchingText(text);
 			}
 			newItems.Sort();
-			foreach (MyListBoxItem item in newItems)
-				listBox.Items.Add(item);
+			listBox.ItemsSource = newItems;
 			if (bestItem != null) {
-				bestItem.IsSelected = true;
+				listBox.SelectedItem = bestItem;
 				listBox.ScrollIntoView(bestItem);
 			}
 		}
@@ -258,29 +256,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		ArrayList SearchClasses(string text)
 		{
-			string lowerText = text.ToLowerInvariant();
 			ArrayList list = new ArrayList();
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
 					IProjectContent projectContent = ParserService.GetProjectContent(project);
 					if (projectContent != null) {
-						AddClasses(lowerText, list, projectContent.Classes);
+						AddClasses(text, list, projectContent.Classes);
 					}
 				}
 			}
 			return list;
 		}
 		
-		void AddClasses(string lowerText, ArrayList list, IEnumerable<IClass> classes)
+		void AddClasses(string text, ArrayList list, IEnumerable<IClass> classes)
 		{
 			foreach (IClass c in classes) {
 				string className = c.Name;
-				if (className.Length >= lowerText.Length) {
-					if (className.ToLowerInvariant().IndexOf(lowerText) >= 0) {
+				if (className.Length >= text.Length) {
+					if (className.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) {
 						list.Add(c);
 					}
 				}
-				AddClasses(lowerText, list, c.InnerClasses);
+				AddClasses(text, list, c.InnerClasses);
 			}
 		}
 		
@@ -296,11 +293,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (itemText.Length < searchText.Length)
 				return MatchType_NoMatch;
-			int indexInsensitive = itemText.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase);
+			int indexInsensitive = itemText.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
 			if (indexInsensitive < 0)
 				return MatchType_NoMatch;
 			// This is a case insensitive match
-			int indexSensitive = itemText.IndexOf(searchText, StringComparison.InvariantCulture);
+			int indexSensitive = itemText.IndexOf(searchText, StringComparison.Ordinal);
 			if (itemText.Length == searchText.Length) {
 				// this is a full match
 				if (indexSensitive == 0)
@@ -326,8 +323,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (visibleEntries.ContainsKey(text))
 				return;
 			visibleEntries.Add(text, null);
-			MyListBoxItem item = new MyListBoxItem(text, image);
-			item.MouseDoubleClick += okButtonClick;
+			GotoEntry item = new GotoEntry(text, image);
 			item.Tag = tag;
 			if (bestItem == null
 			    || (tag is IMember && bestItem.Tag is IClass)
@@ -386,7 +382,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				if (listBox.SelectedItem == null)
 					return;
-				object tag = ((ListBoxItem)listBox.SelectedItem).Tag;
+				object tag = ((GotoEntry)listBox.SelectedItem).Tag;
 				if (tag is int) {
 					ITextEditor editor = GetEditor();
 					if (editor != null) {

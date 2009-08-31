@@ -30,7 +30,17 @@
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			Margin="8,4,8,4"
-			Name="listBox" />
+			Name="listBox"
+			MouseDoubleClick="okButtonClick">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="{Binding ImageSource}"/>
+						<TextBlock Text="{Binding Text}" Margin="4,0,0,0"/>
+					</StackPanel>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
 		<Button
 			Content="{core:Localize Global.OKButtonText}"
 			Grid.Column="0"
