@@ -308,10 +308,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public void BringCaretToView()
 		{
+			BringCaretToView(MinimumDistanceToViewBorder);
+		}
+		
+		internal void BringCaretToView(double border)
+		{
 			if (textView != null) {
 				VisualLine visualLine = textView.GetOrConstructVisualLine(textView.Document.GetLineByNumber(position.Line));
 				Rect caretRectangle = CalcCaretRectangle(visualLine);
-				caretRectangle.Inflate(MinimumDistanceToViewBorder, MinimumDistanceToViewBorder);
+				caretRectangle.Inflate(border, border);
 				textView.MakeVisible(caretRectangle);
 			}
 		}

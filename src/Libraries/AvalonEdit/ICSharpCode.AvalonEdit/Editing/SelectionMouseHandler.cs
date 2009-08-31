@@ -530,6 +530,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 					SetCaretOffsetToMousePosition(e, textArea.Selection.SurroundingSegment);
 				}
 			}
+			textArea.Caret.BringCaretToView(5.0);
 		}
 		#endregion
 		

@@ -314,9 +314,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 								}
 							}
 							if (found == false)
-								break;
+								return fileName;
 						} else if (!File.Exists(Path.Combine(basePath, fileName))) {
-							break;
+							return fileName;
 						}
 						++curNumber;
 					}
