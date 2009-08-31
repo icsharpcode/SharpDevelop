@@ -14,12 +14,12 @@ using ICSharpCode.SharpDevelop.Editor;
 namespace CSharpBinding
 {
 	/// <summary>
-	/// Description of CSharpBracketSearcher.
+	/// Searches matching brackets for C#.
 	/// </summary>
 	public class CSharpBracketSearcher : IBracketSearcher
 	{
-		string openingBrackets = "([{<";
-		string closingBrackets = ")]}>";
+		string openingBrackets = "([{";
+		string closingBrackets = ")]}";
 		
 		public BracketSearchResult SearchBracket(IDocument document, int offset)
 		{

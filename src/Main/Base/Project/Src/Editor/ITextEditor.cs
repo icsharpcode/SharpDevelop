@@ -29,6 +29,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// Gets the primary view if split-view is active.
 		/// If split-view is disabled, the current ITextEditor instance is returned.
+		/// This property never returns null.
 		/// </summary>
 		/// <example>bool isSecondaryView = (editor != editor.PrimaryView);</example>
 		ITextEditor PrimaryView { get; }
@@ -40,14 +41,20 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		/// <summary>
 		/// Gets an object that represents the caret inside this text editor.
+		/// This property never returns null.
 		/// </summary>
 		ITextEditorCaret Caret { get; }
 		
 		/// <summary>
 		/// Gets the set of options used in the text editor.
+		/// This property never returns null.
 		/// </summary>
 		ITextEditorOptions Options { get; }
 		
+		/// <summary>
+		/// Gets the language binding attached to this text editor.
+		/// This property never returns null.
+		/// </summary>
 		ILanguageBinding Language { get; }
 		
 		/// <summary>

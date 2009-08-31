@@ -96,6 +96,7 @@
     <Compile Include="Src\Editor\CodeCompletion\TextCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\Commands\CommentRegion.cs" />
     <Compile Include="Src\Editor\Commands\GoToDefinition.cs" />
+    <Compile Include="Src\Editor\Commands\GoToMatchingBrace.cs" />
     <Compile Include="Src\Editor\Commands\IndentSelection.cs" />
     <Compile Include="Src\Editor\DocumentUtilitites.cs" />
     <Compile Include="Src\Editor\IBracketSearcher.cs" />

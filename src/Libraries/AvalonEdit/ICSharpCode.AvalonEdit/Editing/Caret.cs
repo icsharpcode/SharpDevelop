@@ -163,6 +163,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		/// <summary>
 		/// Gets/Sets the caret offset.
+		/// Setting the caret offset has the side effect of setting the <see cref="DesiredXPos"/> to NaN.
 		/// </summary>
 		public int Offset {
 			get {
@@ -184,6 +185,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		/// <summary>
 		/// Gets/Sets the desired x-position of the caret, in device-independent pixels.
+		/// This property is NaN if the caret has no desired position.
 		/// </summary>
 		public double DesiredXPos {
 			get { return desiredXPos; }
