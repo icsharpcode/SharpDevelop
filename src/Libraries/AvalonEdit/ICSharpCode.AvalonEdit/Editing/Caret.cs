@@ -221,6 +221,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// This event might be raised multiple times during a big update operation.
 		/// You might want to check TextDocument.IsInUpdate and delay time-consuming
 		/// actions until the update operation ends.
+		/// TODO: only raise this event outside of document updates
 		/// </summary>
 		public event EventHandler PositionChanged;
 		

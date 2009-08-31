@@ -8,10 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
-using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -37,6 +38,45 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.textView = textView;
 			this.document = document;
 			this.foldings = new TextSegmentCollection<FoldingSection>(document);
+		}
+		
+		// keep a reference to the helper as long as the folding manager exists
+		ExpandFoldingsWhenCaretIsMovedIntoThemHelper helper;
+		
+		/// <summary>
+		/// Will listen to Caret.PositionChanged events and automatically expand folding sections
+		/// when the caret is moved into them.
+		/// </summary>
+		public void ExpandFoldingsWhenCaretIsMovedIntoThem(Caret caret)
+		{
+			if (helper == null)
+				helper = new ExpandFoldingsWhenCaretIsMovedIntoThemHelper(this);
+			CaretWeakEventManager.PositionChanged.AddListener(caret, helper);
+		}
+		
+		sealed class ExpandFoldingsWhenCaretIsMovedIntoThemHelper : IWeakEventListener
+		{
+			FoldingManager manager;
+			
+			public ExpandFoldingsWhenCaretIsMovedIntoThemHelper(FoldingManager manager)
+			{
+				this.manager = manager;
+			}
+			
+			bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+			{
+				if (managerType == typeof(CaretWeakEventManager.PositionChanged)) {
+					Caret caret = (Caret)sender;
+					int caretOffset = caret.Offset;
+					foreach (FoldingSection s in manager.GetFoldingsContaining(caretOffset)) {
+						if (s.IsFolded && s.StartOffset < caretOffset && caretOffset < s.EndOffset) {
+							s.IsFolded = false;
+						}
+					}
+					return true;
+				}
+				return false;
+			}
 		}
 		
 		/// <summary>

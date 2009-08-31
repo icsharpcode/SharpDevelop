@@ -131,6 +131,7 @@
     </Compile>
     <Compile Include="Editing\CaretNavigationCommandHandler.cs">
     </Compile>
+    <Compile Include="Editing\CaretWeakEventHandler.cs" />
     <Compile Include="Editing\DragDropException.cs" />
     <Compile Include="Editing\EditingCommandHandler.cs" />
     <Compile Include="Editing\FoldingElementGenerator.cs">

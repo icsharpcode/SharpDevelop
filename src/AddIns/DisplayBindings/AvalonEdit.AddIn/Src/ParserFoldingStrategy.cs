@@ -31,6 +31,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			this.textArea = textArea;
 			foldingManager = new FoldingManager(textArea.TextView, textArea.Document);
+			foldingManager.ExpandFoldingsWhenCaretIsMovedIntoThem(textArea.Caret);
 			margin = new FoldingMargin() { FoldingManager = foldingManager, TextView = textArea.TextView };
 			generator = new FoldingElementGenerator() { FoldingManager = foldingManager };
 			textArea.LeftMargins.Add(margin);
