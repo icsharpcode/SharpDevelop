@@ -25,24 +25,19 @@ namespace ICSharpCode.CodeCoverage.Tests
 		public void SetUpFixture()
 		{
 			string xml = "<PartCoverReport>\r\n" +
-				"\t<file id=\"1\" url=\"c:\\Projects\\Foo\\SimpleTestFixture.cs\"/>\r\n" +
-				"\t<type name=\"Foo.Tests.FooTestFixture\" asm=\"Foo.Tests\">\r\n" +
-				"\t\t<method name=\"InvalidVisitCount\">\r\n" +
-				"\t\t\t<code>\r\n" +
+				"\t<File id=\"1\" url=\"c:\\Projects\\Foo\\SimpleTestFixture.cs\"/>\r\n" +
+				"\t<Assembly id=\"1\" name=\"Foo.Tests\" module=\"C:\\Projects\\Test\\bin\\Foo.Tests.DLL\" domain=\"test-domain-Foo.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"\t<Type name=\"Foo.Tests.FooTestFixture\" asmref=\"1\">\r\n" +
+				"\t\t<Method name=\"InvalidVisitCount\">\r\n" +
 				"\t\t\t<pt visit=\"a\" fid=\"1\" sl=\"10\" sc=\"3\" el=\"20\" ec=\"4\"/>\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t\t<method name=\"InvalidLine\">\r\n" +
-				"\t\t\t<code>\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t\t<Method name=\"InvalidLine\">\r\n" +
 				"\t\t\t<pt visit=\"2\" fid=\"1\" sl=\"b\" sc=\"3\" el=\"20\" ec=\"4\"/>\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t\t<method name=\"InvalidColumn\">\r\n" +
-				"\t\t\t<code>\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t\t<Method name=\"InvalidColumn\">\r\n" +
 				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"20\" sc=\"c\" el=\"d\" ec=\"e\"/>\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +
 				"</PartCoverReport>";
 			
 			results = new CodeCoverageResults(new StringReader(xml));

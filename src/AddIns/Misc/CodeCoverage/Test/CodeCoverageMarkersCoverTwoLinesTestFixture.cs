@@ -41,15 +41,14 @@ namespace ICSharpCode.CodeCoverage.Tests
 
 			string xml = "<PartCoverReport>\r\n" +
 				"\t<file id=\"1\" url=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\" />\r\n" +
-				"\t<type asm=\"XmlEditor.Tests\" name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\">\r\n" +
-				"\t\t<method name=\"NoteElementHasNoChildElements\">\r\n" +
-				"\t\t\t<code>\r\n" +
-				"\t\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"3\" el=\"1\" ec=\"4\" />\r\n" +
-				"\t\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"2\" sc=\"4\" el=\"3\" ec=\"57\" />\r\n" +
-				"\t\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"4\" sc=\"3\" el=\"4\" ec=\"4\" />\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
+				"\t<Assembly id=\"1\" name=\"XmlEditor.Tests\" module=\"C:\\Projects\\Test\\XmlEditor.Tests\\bin\\XmlEditor.Tests.DLL\" domain=\"test-domain-XmlEditor.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"\t<Type asmref=\"1\" name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\">\r\n" +
+				"\t\t<Method name=\"NoteElementHasNoChildElements\">\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"3\" el=\"1\" ec=\"4\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"2\" sc=\"4\" el=\"3\" ec=\"57\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"4\" sc=\"3\" el=\"4\" ec=\"4\" />\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +
 				"</PartCoverReport>";
 			
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));

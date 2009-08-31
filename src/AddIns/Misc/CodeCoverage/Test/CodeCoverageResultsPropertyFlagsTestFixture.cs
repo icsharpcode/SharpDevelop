@@ -29,43 +29,34 @@ namespace ICSharpCode.CodeCoverage.Tests
 		public void SetUpFixture()
 		{
 			string xml = "<PartCoverReport ver=\"1.0.2796.35184\">\r\n" +
-						"  <file id=\"1\" url=\"d:\\Projects\\test\\TestFixture1.cs\" />\r\n" +
-						"  <type asm=\"MyTests\" name=\"MyTests.Class1\" flags=\"2606412\">\r\n" +
-						"    <method name=\"set_Count\" sig=\"void  (int)\" flags=\"2182\" iflags=\"0\">\r\n" +
-						"      <code>\r\n" +
-						"        <pt visit=\"0\" pos=\"9\" len=\"1\" fid=\"1\" sl=\"34\" sc=\"4\" el=\"34\" ec=\"5\" />\r\n" +
-						"        <pt visit=\"0\" pos=\"1\" len=\"8\" fid=\"1\" sl=\"33\" sc=\"5\" el=\"33\" ec=\"12\" />\r\n" +
-						"        <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"32\" sc=\"8\" el=\"32\" ec=\"9\" />\r\n" +
-						"      </code>\r\n" +
-						"    </method>\r\n" +
-						"    <method name=\"get_Count\" sig=\"int  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
-						"      <code>\r\n" +
-						"        <pt visit=\"0\" pos=\"6\" len=\"2\" fid=\"1\" sl=\"31\" sc=\"4\" el=\"31\" ec=\"5\" />\r\n" +
-						"        <pt visit=\"0\" pos=\"1\" len=\"5\" fid=\"1\" sl=\"30\" sc=\"5\" el=\"30\" ec=\"15\" />\r\n" +
-						"        <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"29\" sc=\"8\" el=\"29\" ec=\"9\" />\r\n" +
-						"      </code>\r\n" +
-						"    </method>\r\n" +
-						"    <method name=\"get_NotAProperty\" sig=\"void  ()\" flags=\"134\" iflags=\"0\">\r\n" +
-						"      <code>\r\n" +
-						"        <pt visit=\"0\" pos=\"1\" len=\"1\" fid=\"1\" sl=\"26\" sc=\"3\" el=\"26\" ec=\"4\" />\r\n" +
-						"        <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"25\" sc=\"3\" el=\"25\" ec=\"4\" />\r\n" +
-						"      </code>\r\n" +
-						"    </method>\r\n" +
-						"    <method name=\"PropertyFlagsButJustAMethod\" sig=\"void  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
-						"      <code>\r\n" +
-						"        <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
-						"        <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
-						"        <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
-						"      </code>\r\n" +
-						"    </method>\r\n" +
-						"    <method name=\"InvalidFlags\" sig=\"void  ()\" flags=\"\" iflags=\"0\">\r\n" +
-						"      <code>\r\n" +
-						"        <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
-						"        <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
-						"        <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
-						"      </code>\r\n" +
-						"    </method>\r\n" +
-						"  </type>\r\n" +
+						"  <File id=\"1\" url=\"d:\\Projects\\test\\TestFixture1.cs\" />\r\n" +
+						"  <Assembly id=\"1\" name=\"MyTests\" module=\"C:\\Projects\\Test\\MyTests\\bin\\MyTests.DLL\" domain=\"test-domain-MyTests.dll\" domainIdx=\"1\" />\r\n" +
+						"  <Type asmref=\"1\" name=\"MyTests.Class1\" flags=\"2606412\">\r\n" +
+						"    <Method name=\"set_Count\" sig=\"void  (int)\" flags=\"2182\" iflags=\"0\">\r\n" +
+						"      <pt visit=\"0\" pos=\"9\" len=\"1\" fid=\"1\" sl=\"34\" sc=\"4\" el=\"34\" ec=\"5\" />\r\n" +
+						"      <pt visit=\"0\" pos=\"1\" len=\"8\" fid=\"1\" sl=\"33\" sc=\"5\" el=\"33\" ec=\"12\" />\r\n" +
+						"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"32\" sc=\"8\" el=\"32\" ec=\"9\" />\r\n" +
+						"    </Method>\r\n" +
+						"    <Method name=\"get_Count\" sig=\"int  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
+						"      <pt visit=\"0\" pos=\"6\" len=\"2\" fid=\"1\" sl=\"31\" sc=\"4\" el=\"31\" ec=\"5\" />\r\n" +
+						"      <pt visit=\"0\" pos=\"1\" len=\"5\" fid=\"1\" sl=\"30\" sc=\"5\" el=\"30\" ec=\"15\" />\r\n" +
+						"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"29\" sc=\"8\" el=\"29\" ec=\"9\" />\r\n" +
+						"    </Method>\r\n" +
+						"    <Method name=\"get_NotAProperty\" sig=\"void  ()\" flags=\"134\" iflags=\"0\">\r\n" +
+						"      <pt visit=\"0\" pos=\"1\" len=\"1\" fid=\"1\" sl=\"26\" sc=\"3\" el=\"26\" ec=\"4\" />\r\n" +
+						"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"25\" sc=\"3\" el=\"25\" ec=\"4\" />\r\n" +
+						"    </Method>\r\n" +
+						"    <Method name=\"PropertyFlagsButJustAMethod\" sig=\"void  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
+						"      <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
+						"      <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+						"      <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
+						"    </Method>\r\n" +
+						"    <Method name=\"InvalidFlags\" sig=\"void  ()\" flags=\"\" iflags=\"0\">\r\n" +
+						"      <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
+						"      <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+						"      <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
+						"    </Method>\r\n" +
+						"  </Type>\r\n" +
 						"</PartCoverReport>";
 
 			results = new CodeCoverageResults(new StringReader(xml));

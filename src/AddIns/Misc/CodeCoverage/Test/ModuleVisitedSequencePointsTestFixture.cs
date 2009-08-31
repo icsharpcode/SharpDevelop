@@ -23,36 +23,32 @@ namespace ICSharpCode.CodeCoverage.Tests
 		public void SetUpFixture()
 		{
 			string xml = "<PartCoverReport>\r\n" +
-				"\t<file id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\"/>\r\n" +
-				"\t<file id=\"2\" url=\"c:\\Projects\\Foo\\FooTestFixture2.cs\"/>\r\n" +
-				"\t<file id=\"3\" url=\"c:\\Projects\\Foo\\BarTestFixture.cs\"/>\r\n" +
-				"\t<type name=\"Foo.Tests.FooTestFixture1\" asm=\"Foo.Tests\">\r\n" +
-				"\t\t<method name=\"SimpleTest1\">\r\n" +
-				"\t\t\t<code>\r\n" +
+				"\t<File id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\"/>\r\n" +
+				"\t<File id=\"2\" url=\"c:\\Projects\\Foo\\FooTestFixture2.cs\"/>\r\n" +
+				"\t<File id=\"3\" url=\"c:\\Projects\\Foo\\BarTestFixture.cs\"/>\r\n" +
+				"\t<Assembly id=\"1\" name=\"Foo.Tests\" module=\"C:\\Projects\\Test\\bin\\Foo.Tests.DLL\" domain=\"test-domain-Foo.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"\t<Assembly id=\"2\" name=\"Bar.Tests\" module=\"C:\\Projects\\Test\\bin\\Bar.Tests.DLL\" domain=\"test-domain-Bar.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"\t<Type name=\"Foo.Tests.FooTestFixture1\" asmref=\"1\">\r\n" +
+				"\t\t<Method name=\"SimpleTest1\">\r\n" +
 				"\t\t\t<pt visit=\"12\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" fid=\"1\" />\r\n" +
 				"\t\t\t<pt visit=\"4\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" fid=\"1\" />\r\n" +
 				"\t\t\t<pt visit=\"0\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" fid=\"1\"/>\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
-				"\t<type name=\"Foo.Tests.FooTestFixture2\" asm=\"Foo.Tests\">\r\n" +
-				"\t\t<method name=\"SimpleTest2\">\r\n" +
-				"\t\t\t<code>\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +
+				"\t<Type name=\"Foo.Tests.FooTestFixture2\" asmref=\"1\">\r\n" +
+				"\t\t<Method name=\"SimpleTest2\">\r\n" +
 				"\t\t\t<pt visit=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" fid=\"2\" />\r\n" +
 				"\t\t\t<pt visit=\"10\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" fid=\"2\"/>\r\n" +
 				"\t\t\t<pt visit=\"0\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" fid=\"2\" />\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
-				"\t<type name=\"Bar.Tests.FooTestFixture3\" asm=\"Bar.Tests\">\r\n" +
-				"\t\t<method name=\"SimpleTest3\">\r\n" +
-				"\t\t\t<code>\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +
+				"\t<Type name=\"Bar.Tests.FooTestFixture3\" asmref=\"2\">\r\n" +
+				"\t\t<Method name=\"SimpleTest3\">\r\n" +
 				"\t\t\t<pt visit=\"5\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" fid=\"3\" />\r\n" +
 				"\t\t\t<pt visit=\"1\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" fid=\"3\" />\r\n" +
 				"\t\t\t<pt visit=\"0\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" fid=\"3\" />\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +				
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +				
 				"</PartCoverReport>";
 			results = new CodeCoverageResults(new StringReader(xml));
 			fooModule = results.Modules[0];
