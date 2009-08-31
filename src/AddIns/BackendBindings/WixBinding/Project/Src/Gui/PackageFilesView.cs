@@ -41,7 +41,7 @@ namespace ICSharpCode.WixBinding
 		{
 			packageFilesControl = new WixPackageFilesControl();
 			packageFilesControl.DirtyChanged += delegate { base.RaiseIsDirtyChanged(); };
-			TitleName = StringParser.Parse("${res:ICSharpCode.WixBinding.PackageFilesView.Title}");
+			SetLocalizedTitle("${res:ICSharpCode.WixBinding.PackageFilesView.Title}");
 			this.project = project;
 			
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;

@@ -18,19 +18,19 @@ namespace ICSharpCode.Core.Presentation
 	/// Custom binding to allow direct bindings of option properties to WPF controls.
 	/// </summary>
 	/// <remarks>
-	/// Properties accessed by this binding have to be managed by a custom<br />
+	/// Properties accessed by this binding have to be managed by a custom
 	/// settings class, which contains all settings as static properties or fields.<br />
 	/// Do not use PropertyService directly!<br />
 	/// This markup extension can only be used in OptionPanels or other <br />classes implementing IOptionBindingContainer!
-	/// <br />
-	/// Example:
+	/// </remarks>
+	/// <example>
 	/// <code>
 	/// {sd:OptionBinding addin:XmlEditorAddInOptions.ShowAttributesWhenFolded}
 	/// </code>
 	/// <br />
 	/// Whereas 'sd' is the xml namespace of ICSharpCode.Core.Presentation.OptionBinding and 'addin'<br />
 	/// is the xml namespace, in which your settings class is defined.
-	/// </remarks>
+	/// </example>
 	public class OptionBinding : MarkupExtension
 	{
 		public string PropertyName { get; set; }

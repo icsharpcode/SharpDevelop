@@ -23,7 +23,7 @@ namespace ICSharpCode.StartPage
 		
 		public StartPageViewContent()
 		{
-			this.TitleName = StringParser.Parse("${res:StartPage.StartPageContentName}");
+			SetLocalizedTitle("${res:StartPage.StartPageContentName}");
 		}
 	}
 }

@@ -37,6 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.dockLayout = dockLayout;
 			viewContents = new ViewContentCollection(this);
 			
+			ResourceService.LanguageChanged += OnTabPageTextChanged;
 			OnTitleNameChanged(this, EventArgs.Empty);
 		}
 		
@@ -231,6 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void Dispose()
 		{
+			ResourceService.LanguageChanged -= OnTabPageTextChanged;
 			// DetachContent must be called before the controls are disposed
 			List<IViewContent> viewContents = this.ViewContents.ToList();
 			this.ViewContents.Clear();
@@ -386,11 +388,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.OnClosed();
 			Dispose();
 			CommandManager.InvalidateRequerySuggested();
-		}
-		
-		public void RedrawContent()
-		{
-			RefreshTabPageTexts();
 		}
 		
 		void RefreshTabPageTexts()

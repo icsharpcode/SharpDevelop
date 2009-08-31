@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -73,6 +74,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public event EventHandler TabPageTextChanged;
 		
+		/// <summary>
+		/// Gets/Sets the title of the current tab page.
+		/// This value will be passed through the string parser before being displayed.
+		/// </summary>
 		public string TabPageText {
 			get { return tabPageText; }
 			set {
@@ -336,6 +341,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		string titleName;
+		LanguageDependendExtension titleNameLocalizeExtension;
 		
 		string IViewContent.TitleName {
 			get {
@@ -351,10 +357,34 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public string TitleName {
 			get { return titleName; }
 			protected set {
+				if (titleNameLocalizeExtension != null) {
+					titleNameLocalizeExtension.PropertyChanged -= OnTitleNameLocalizationChanged;
+					titleNameLocalizeExtension = null;
+				}
 				if (titleName != value) {
 					titleName = value;
 					OnTitleNameChanged(EventArgs.Empty);
 				}
+			}
+		}
+		
+		/// <summary>
+		/// Sets a localized title that will update automatically when the language changes.
+		/// </summary>
+		/// <param name="text">The input to the string parser which will localize title.</param>
+		protected void SetLocalizedTitle(string text)
+		{
+			titleNameLocalizeExtension = new StringParseExtension(text) { UsesAccessors = false };
+			titleNameLocalizeExtension.PropertyChanged += OnTitleNameLocalizationChanged;
+			OnTitleNameLocalizationChanged(null, null);
+		}
+		
+		void OnTitleNameLocalizationChanged(object sender, EventArgs e)
+		{
+			string value = titleNameLocalizeExtension.Value;
+			if (titleName != value) {
+				titleName = value;
+				OnTitleNameChanged(EventArgs.Empty);
 			}
 		}
 		#endregion

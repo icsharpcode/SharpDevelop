@@ -76,8 +76,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void SelectWindow();
 		
-		void RedrawContent();
-		
 		/// <summary>
 		/// Is called when the title of this window has changed.
 		/// </summary>

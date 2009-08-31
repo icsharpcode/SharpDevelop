@@ -39,15 +39,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		const string DefaultLayoutName = "Default";
 		
-		public static string[] DefaultLayouts = new string[] {
-			"Default",
-			"Debug",
-			"Plain"
-		};
-		
 		string name;
 		string fileName;
-		string displayName = null;
+		string displayName;
 		
 		bool   readOnly;
 		bool   custom;
@@ -81,10 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public string DisplayName {
 			get {
-				return displayName == null ? Name : displayName;
-			}
-			set {
-				displayName = value;
+				return displayName == null ? Name : StringParser.Parse(displayName);
 			}
 		}
 		
@@ -106,6 +97,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			name       = el.GetAttribute("name");
 			fileName   = el.GetAttribute("file");
 			readOnly   = Boolean.Parse(el.GetAttribute("readonly"));
+			if (el.HasAttribute("displayName"))
+				displayName = el.GetAttribute("displayName");
 			this.custom = custom;
 		}
 		
@@ -226,6 +219,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 						w.WriteAttributeString("name", lc.name);
 						w.WriteAttributeString("file", lc.fileName);
 						w.WriteAttributeString("readonly", lc.readOnly.ToString());
+						if (lc.displayName != null)
+							w.WriteAttributeString("displayName", lc.displayName);
 						w.WriteEndElement();
 					}
 				}

@@ -60,7 +60,7 @@ namespace Hornung.ResourceToolkit.Gui
 		{
 			LoggingService.Debug("ResourceToolkit: Creating new UnusedResourceKeysViewContent");
 			
-			this.TitleName = StringParser.Parse("${res:Hornung.ResourceToolkit.UnusedResourceKeys.Title}");
+			SetLocalizedTitle("${res:Hornung.ResourceToolkit.UnusedResourceKeys.Title}");
 			
 			if (unusedKeys == null) {
 				throw new ArgumentNullException("unusedKeys");

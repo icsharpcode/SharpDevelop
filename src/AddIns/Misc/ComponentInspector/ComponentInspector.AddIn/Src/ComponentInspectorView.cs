@@ -25,7 +25,7 @@ namespace ICSharpCode.ComponentInspector.AddIn
 		{
 			instance = this;
 	
-			this.TitleName = StringParser.Parse("${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}");
+			SetLocalizedTitle("${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}");
 			
 			// HACK: Due to various static members in the ComponentInspector
 			// the ObjectBrowser does not like being re-used after being disposed. 

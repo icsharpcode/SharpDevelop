@@ -17,7 +17,7 @@ namespace ICSharpCode.Core.Presentation
 	/// Markup extension that retrieves localized resource strings.
 	/// </summary>
 	[MarkupExtensionReturnType(typeof(string))]
-	public sealed class LocalizeExtension : MarkupExtension, INotifyPropertyChanged, IWeakEventListener
+	public sealed class LocalizeExtension : LanguageDependendExtension
 	{
 		public LocalizeExtension(string key)
 		{
@@ -34,6 +34,29 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		public bool UsesAccessors { get; set; }
 		
+		public override string Value {
+			get {
+				try {
+					string result = ResourceService.GetString(key);
+					if (UsesAccessors)
+						result = MenuService.ConvertLabel(result);
+					return result;
+				} catch (ResourceNotFoundException) {
+					return "{Localize:" + key + "}";
+				}
+			}
+		}
+	}
+	
+	public abstract class LanguageDependendExtension : MarkupExtension, INotifyPropertyChanged, IWeakEventListener
+	{
+		protected LanguageDependendExtension()
+		{
+			this.UpdateOnLanguageChange = true;
+		}
+		
+		public abstract string Value { get; }
+		
 		/// <summary>
 		/// Set whether the LocalizeExtension should use a binding to automatically
 		/// change the text on language changes.
@@ -46,40 +69,41 @@ namespace ICSharpCode.Core.Presentation
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (UpdateOnLanguageChange) {
-				if (!isRegisteredForLanguageChange) {
-					isRegisteredForLanguageChange = true;
-					LanguageChangeWeakEventManager.AddListener(this);
-				}
-				return (new Binding("Value") { Source = this }).ProvideValue(serviceProvider);
+				return CreateBinding().ProvideValue(serviceProvider);
 			} else {
 				return this.Value;
 			}
 		}
 		
-		public string Value {
-			get {
-				try {
-					string result = ResourceService.GetString(key);
-					if (UsesAccessors)
-						result = MenuService.ConvertLabel(result);
-					return result;
-				} catch (ResourceNotFoundException) {
-					return "{Localize:" + key + "}";
-				}
-			}
+		public Binding CreateBinding()
+		{
+			return new Binding("Value") { Source = this, Mode = BindingMode.OneWay };
 		}
 		
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		
+		event System.ComponentModel.PropertyChangedEventHandler ChangedEvent;
+		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged {
+			add {
+				if (!isRegisteredForLanguageChange) {
+					isRegisteredForLanguageChange = true;
+					LanguageChangeWeakEventManager.AddListener(this);
+				}
+				ChangedEvent += value;
+			}
+			remove { ChangedEvent -= value; }
+		}
 		
 		static readonly System.ComponentModel.PropertyChangedEventArgs
 			valueChangedEventArgs = new System.ComponentModel.PropertyChangedEventArgs("Value");
 		
 		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
-			var handler = PropertyChanged;
+			var handler = ChangedEvent;
 			if (handler != null)
 				handler(this, valueChangedEventArgs);
 			return true;
 		}
 	}
+
 }

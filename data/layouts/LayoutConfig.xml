@@ -1,14 +1,17 @@
 <LayoutConfig>
 	
 	<Layout name     = "Default"
+		displayName = "${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.DefaultItem}"
 		file     = "Default.xml"
 		readonly = "False"/>
 	
 	<Layout name     = "Debug"
+		displayName = "${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.DebugItem}"
 		file     = "Debug.xml"
 		readonly = "False"/>
 	
 	<Layout name     = "Plain"
+		displayName = "${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.PlainItem}"
 		file     = "Plain.xml"
 		readonly = "True"/>
 		

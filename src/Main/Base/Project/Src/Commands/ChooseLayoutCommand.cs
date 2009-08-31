@@ -27,10 +27,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public ChooseLayoutCommand()
 		{
 			LayoutConfiguration.LayoutChanged += new EventHandler(LayoutChanged);
-			
-			foreach (string layout in LayoutConfiguration.DefaultLayouts) {
-				LayoutConfiguration.GetLayout(layout).DisplayName   = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand." + layout + "Item}");
-			}
+			ResourceService.LanguageChanged += new EventHandler(ResourceService_LanguageChanged);
+		}
+
+		void ResourceService_LanguageChanged(object sender, EventArgs e)
+		{
+			OnOwnerChanged(e);
 		}
 		
 		int oldItem = 0;
