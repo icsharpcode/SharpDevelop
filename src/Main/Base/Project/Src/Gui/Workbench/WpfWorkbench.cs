@@ -107,6 +107,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
 			CommandManager.RequerySuggested += requerySuggestedEventHandler;
+			ResourceService.LanguageChanged += OnLanguageChanged;
 			
 			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
 		}
@@ -184,6 +185,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (ToolBar tb in toolBars) {
 				ToolBarService.UpdateStatus(tb.ItemsSource);
 			}
+		}
+		
+		void OnLanguageChanged(object sender, EventArgs e)
+		{
+			MenuService.UpdateText(mainMenu.ItemsSource);
 		}
 		
 		public ICollection<IViewContent> ViewContentCollection {

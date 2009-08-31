@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ICSharpCode.Core.Presentation
@@ -84,12 +85,28 @@ namespace ICSharpCode.Core.Presentation
 		
 		static ToolBar CreateToolBar(object owner, AddInTreeNode treeNode)
 		{
-			ToolBar tb = new ToolBar();
+			ToolBar tb = new CoreToolBar();
 			ToolBarTray.SetIsLocked(tb, true);
 			tb.ItemsSource = CreateToolBarItems(treeNode.BuildChildItems<ToolbarItemDescriptor>(owner));
 			UpdateStatus(tb.ItemsSource); // setting Visible is only possible after the items have been added
-			//new LanguageChangeWatcher(toolStrip);
 			return tb;
+		}
+		
+		sealed class CoreToolBar : ToolBar, IWeakEventListener
+		{
+			public CoreToolBar()
+			{
+				LanguageChangeWeakEventManager.AddListener(this);
+			}
+			
+			bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+			{
+				if (managerType == typeof(LanguageChangeWeakEventManager)) {
+					MenuService.UpdateText(this.ItemsSource);
+					return true;
+				}
+				return false;
+			}
 		}
 		
 		public static ToolBar CreateToolBar(object owner, string addInTreePath)

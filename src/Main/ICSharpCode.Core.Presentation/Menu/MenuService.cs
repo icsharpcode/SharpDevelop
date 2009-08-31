@@ -92,6 +92,17 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
+		public static void UpdateText(IEnumerable menuItems)
+		{
+			if (menuItems == null)
+				return;
+			foreach (object o in menuItems) {
+				IStatusUpdate cmi = o as IStatusUpdate;
+				if (cmi != null)
+					cmi.UpdateText();
+			}
+		}
+		
 		public static ContextMenu CreateContextMenu(object owner, string addInTreePath)
 		{
 			ContextMenu menu = new ContextMenu();
