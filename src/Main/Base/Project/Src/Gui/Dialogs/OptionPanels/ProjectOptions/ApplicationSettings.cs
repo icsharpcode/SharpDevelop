@@ -63,8 +63,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			b.CreateLocationButton("win32ResourceFileTextBox");
 			
 			applicationManifestComboBox = Get<ComboBox>("applicationManifest");
-			applicationManifestComboBox.Items.Add("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault}");
-			applicationManifestComboBox.Items.Add("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest}");
+			applicationManifestComboBox.Items.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault}"));
+			applicationManifestComboBox.Items.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest}"));
 			foreach (string fileName in Directory.GetFiles(project.Directory, "*.manifest")) {
 				applicationManifestComboBox.Items.Add(Path.GetFileName(fileName));
 			}
