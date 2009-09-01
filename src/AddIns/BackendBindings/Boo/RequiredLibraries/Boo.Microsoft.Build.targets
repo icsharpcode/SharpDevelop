@@ -218,6 +218,7 @@
 	>
 		
 		<Booc
+			AllowUnsafeBlocks="$(AllowUnsafeBlocks)"
 			CheckForOverflowUnderflow="$(CheckForOverflowUnderflow)"
 			Culture="$(AssemblyCulture)"
 			DefineSymbols="$(DefineConstants)"
@@ -230,8 +231,10 @@
 			KeyFile="$(AssemblyOriginatorKeyFile)"
 			NoConfig="$(NoConfig)"
 			NoStandardLib="$(NoStdLib)"
+			OptionalWarnings="$(OptionalWarnings)"
 			OutputAssembly="@(IntermediateAssembly)"
 			Pipeline="$(Pipeline)"
+			Platform="$(PlatformTarget)"
 			References="@(ReferencePath)"
 			Resources="@(ManifestResourceWithNoCulture);
 			           @(ManifestNonResxWithNoCultureOnDisk);
@@ -250,13 +253,13 @@
 		/>
 		
 		<Copy
-			Condition=" '$(BoocToolPath)' == '' "
+			Condition=" ('$(BoocToolPath)' == '') and ('$(CopyBooLangToOutput)' != 'false') "
 			SkipUnchangedFiles="true"
 			SourceFiles="$(BooBinPath)\Boo.Lang.dll"
 			DestinationFolder="$(OutputPath)"/>
 		
 		<Copy
-			Condition=" '$(BoocToolPath)' != '' "
+			Condition=" ('$(BoocToolPath)' != '') and ('$(CopyBooLangToOutput)' != 'false') "
 			SkipUnchangedFiles="true"
 			SourceFiles="$(BoocToolPath)\Boo.Lang.dll"
 			DestinationFolder="$(OutputPath)"/>
