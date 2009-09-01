@@ -1,12 +1,12 @@
 ﻿<Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="booBuildOptionsPanel" />
-    <ClientSize value="{Width=510, Height=607}" />
+    <ClientSize value="{Width=510, Height=639}" />
     <AutoScroll value="True" />
     <Controls>
       <System.Windows.Forms.GroupBox>
         <Name value="warningsGroupBox" />
-        <Location value="3, 438" />
+        <Location value="3, 468" />
         <UseCompatibleTextRendering value="True" />
         <Text value="${res:Dialog.ProjectOptions.Build.ErrorsAndWarnings}" />
         <Size value="504, 66" />
@@ -50,7 +50,7 @@
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.GroupBox>
         <Name value="treatWarningsAsErrorsGroupBox" />
-        <Location value="3, 508" />
+        <Location value="3, 538" />
         <UseCompatibleTextRendering value="True" />
         <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors}" />
         <Size value="504, 92" />
@@ -99,8 +99,16 @@
         <TabIndex value="0" />
         <Controls>
           <System.Windows.Forms.CheckBox>
+            <Name value="allowUnsafeCodeCheckBox" />
+            <Location value="5, 98" />
+            <Text value="${res:Dialog.ProjectOptions.BuildOptions.AllowUnsafeCode}" />
+            <TabIndex value="11" />
+            <Size value="487, 21" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
             <Name value="useStrictMode" />
-            <Location value="5, 116" />
+            <Location value="5, 134" />
             <Text value="Strict Mode" />
             <TabIndex value="10" />
             <Size value="487, 21" />
@@ -117,7 +125,7 @@
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="duckyCheckBox" />
-            <Location value="5, 98" />
+            <Location value="5, 116" />
             <Text value="Use duck typing by default" />
             <TabIndex value="8" />
             <Size value="487, 21" />
@@ -126,13 +134,13 @@
           <System.Windows.Forms.TextBox>
             <Name value="pipelineTextBox" />
             <TabIndex value="7" />
-            <Location value="111, 149" />
+            <Location value="112, 158" />
             <Anchor value="Top, Left, Right" />
             <Size value="386, 20" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="pipelineLabel" />
-            <Location value="5, 149" />
+            <Location value="6, 158" />
             <Text value="Pipeline:" />
             <Size value="100, 23" />
             <TextAlign value="MiddleRight" />
@@ -168,7 +176,7 @@
         <Name value="outputGroupBox" />
         <Location value="3, 193" />
         <Text value="${res:Dialog.ProjectOptions.Build.Output}" />
-        <Size value="504, 239" />
+        <Size value="504, 269" />
         <Anchor value="Top, Left, Right" />
         <TabIndex value="1" />
         <Controls>
@@ -254,15 +262,32 @@
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.GroupBox>
             <Name value="advancedOutputGroupBox" />
-            <Location value="6, 128" />
+            <Location value="6, 123" />
             <Text value="${res:Dialog.ProjectOptions.Build.Advanced}" />
-            <Size value="492, 105" />
+            <Size value="492, 140" />
             <Anchor value="Top, Left, Right" />
             <TabIndex value="9" />
             <Controls>
+              <System.Windows.Forms.ComboBox>
+                <Name value="targetCpuComboBox" />
+                <TabIndex value="6" />
+                <Location value="192, 21" />
+                <Size value="180, 21" />
+                <FormattingEnabled value="True" />
+                <DropDownStyle value="DropDownList" />
+              </System.Windows.Forms.ComboBox>
+              <System.Windows.Forms.Label>
+                <Name value="targetCpuLabel" />
+                <Location value="6, 22" />
+                <UseCompatibleTextRendering value="True" />
+                <Text value="${res:Dialog.ProjectOptions.Build.TargetCPU}" />
+                <Size value="180, 16" />
+                <TextAlign value="MiddleRight" />
+                <TabIndex value="5" />
+              </System.Windows.Forms.Label>
               <System.Windows.Forms.Label>
                 <Name value="baseIntermediateOutputPathLabel" />
-                <Location value="6, 17" />
+                <Location value="6, 51" />
                 <Text value="${res:Dialog.ProjectOptions.Build.BaseIntermediateOutputPath}" />
                 <Size value="480, 16" />
                 <TextAlign value="BottomLeft" />
@@ -272,13 +297,13 @@
               <System.Windows.Forms.TextBox>
                 <Name value="baseIntermediateOutputPathTextBox" />
                 <TabIndex value="1" />
-                <Location value="6, 36" />
+                <Location value="6, 70" />
                 <Anchor value="Top, Left, Right" />
                 <Size value="429, 20" />
               </System.Windows.Forms.TextBox>
               <System.Windows.Forms.Button>
                 <Name value="baseIntermediateOutputPathBrowseButton" />
-                <Location value="446, 36" />
+                <Location value="446, 70" />
                 <Text value="..." />
                 <Size value="40, 21" />
                 <Anchor value="Top, Right" />
@@ -286,7 +311,7 @@
               </System.Windows.Forms.Button>
               <System.Windows.Forms.Label>
                 <Name value="intermediateOutputPathLabel" />
-                <Location value="6, 60" />
+                <Location value="6, 94" />
                 <Text value="${res:Dialog.ProjectOptions.Build.IntermediateOutputPath}" />
                 <Size value="480, 16" />
                 <TextAlign value="BottomLeft" />
@@ -296,13 +321,13 @@
               <System.Windows.Forms.TextBox>
                 <Name value="intermediateOutputPathTextBox" />
                 <TabIndex value="1" />
-                <Location value="6, 76" />
+                <Location value="6, 110" />
                 <Anchor value="Top, Left, Right" />
                 <Size value="429, 20" />
               </System.Windows.Forms.TextBox>
               <System.Windows.Forms.Button>
                 <Name value="intermediateOutputPathBrowseButton" />
-                <Location value="446, 75" />
+                <Location value="446, 109" />
                 <Text value="..." />
                 <Size value="40, 21" />
                 <Anchor value="Top, Right" />
