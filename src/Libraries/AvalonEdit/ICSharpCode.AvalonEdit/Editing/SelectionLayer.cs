@@ -45,7 +45,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			foreach (var segment in textArea.Selection.Segments) {
 				geoBuilder.AddSegment(textView, segment);
 			}
-			PathGeometry geometry = geoBuilder.CreateGeometry();
+			Geometry geometry = geoBuilder.CreateGeometry();
 			if (geometry != null) {
 				SolidColorBrush lightHighlightBrush = new SolidColorBrush(SystemColors.HighlightColor);
 				lightHighlightBrush.Opacity = 0.7;

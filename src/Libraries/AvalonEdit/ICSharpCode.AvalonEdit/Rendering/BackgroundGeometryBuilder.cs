@@ -173,7 +173,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return ls;
 		}
 		
-		void CloseFigure()
+		/// <summary>
+		/// Closes the current figure.
+		/// </summary>
+		public void CloseFigure()
 		{
 			if (figure != null) {
 				figure.Segments.Insert(insertionIndex, MakeLineSegment(lastLeft, lastTop + cornerRadius));
@@ -193,7 +196,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// Creates the geometry.
 		/// Returns null when the geometry is empty!
 		/// </summary>
-		public PathGeometry CreateGeometry()
+		public Geometry CreateGeometry()
 		{
 			CloseFigure();
 			if (figures.Count != 0) {

@@ -150,7 +150,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (marker.BackgroundColor != null) {
 					BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder();
 					geoBuilder.AddSegment(textView, marker);
-					PathGeometry geometry = geoBuilder.CreateGeometry();
+					Geometry geometry = geoBuilder.CreateGeometry();
 					if (geometry != null) {
 						Color color = marker.BackgroundColor.Value;
 						SolidColorBrush brush = new SolidColorBrush(color);

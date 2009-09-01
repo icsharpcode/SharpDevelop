@@ -61,12 +61,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			builder.CornerRadius = 1;
 			
 			builder.AddSegment(textView, new TextSegment() { StartOffset = result.OpeningBracketOffset, Length = result.OpeningBracketLength });
+			builder.CloseFigure(); // prevent connecting the two segments
 			builder.AddSegment(textView, new TextSegment() { StartOffset = result.ClosingBracketOffset, Length = result.ClosingBracketLength });
 			
-			PathGeometry geometry = builder.CreateGeometry();
-			
+			Geometry geometry = builder.CreateGeometry();
 			if (geometry != null) {
-				geometry.Freeze();
 				drawingContext.DrawGeometry(backgroundBrush, borderPen, geometry);
 			}
 		}

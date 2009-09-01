@@ -47,7 +47,7 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
-		    if (e.OriginalSource == uxZoom.ScrollViewer) {
+			if (e.OriginalSource == uxZoom.ScrollViewer) {
 				UnselectAll();
 			}
 		}
@@ -67,9 +67,9 @@ namespace ICSharpCode.WpfDesign.Designer
 		public void LoadDesigner(XmlReader xamlReader, XamlLoadSettings loadSettings)
 		{
 			UnloadDesigner();
-            loadSettings = loadSettings ?? new XamlLoadSettings();
-            loadSettings.CustomServiceRegisterFunctions.Add(
-                context => context.Services.AddService(typeof(IDesignPanel), _designPanel));
+			loadSettings = loadSettings ?? new XamlLoadSettings();
+			loadSettings.CustomServiceRegisterFunctions.Add(
+				context => context.Services.AddService(typeof(IDesignPanel), _designPanel));
 			InitializeDesigner(new XamlDesignContext(xamlReader, loadSettings));
 		}
 		
@@ -209,7 +209,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			yield return item;
 			foreach (var child in Descendants(item)) {
 				yield return child;
-			}			
+			}
 		}
 
 		public static IEnumerable<DesignItem> Descendants(DesignItem item)
