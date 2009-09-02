@@ -28,16 +28,18 @@ namespace Debugger.Tests.TestPrograms
 namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test]
-		public void Exception_StackOverflow()
-		{
-			StartTest("Exception_StackOverflow.cs");
-			
-			process.Continue();
-			//ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);
-			
-			EndTest();
-		}
+//		The location where the process will break is non-deterministic
+//
+//		[NUnit.Framework.Test]
+//		public void Exception_StackOverflow()
+//		{
+//			StartTest("Exception_StackOverflow.cs");
+//			
+//			process.Continue();
+//			//ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);
+//			
+//			EndTest();
+//		}
 	}
 }
 #endif

@@ -59,6 +59,9 @@ namespace Debugger.Tests {
 		{
 			StartTest("DebugType_Access.cs");
 			
+			process.Options.StepOverSingleLineProperties = false;
+			process.Options.StepOverFieldAccessProperties = true;
+			
 			ObjectDump("Members", process.SelectedStackFrame.MethodInfo.DeclaringType.GetMembers(BindingFlags.All));
 			ObjectDump("Types", process.SelectedStackFrame.MethodInfo.Module.GetNamesOfDefinedTypes());
 			
