@@ -33,6 +33,8 @@ namespace ICSharpCode.SharpDevelop
 			TaskService.Cleared += new EventHandler(OnCleared);
 			DebuggerService.DebugStarted += OnDebugStarted;
 			DebuggerService.DebugStopped += OnDebugStopped;
+			
+			UpdateErrors();
 		}
 		
 		bool isDisposed;

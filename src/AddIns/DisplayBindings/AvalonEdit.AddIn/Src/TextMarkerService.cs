@@ -169,7 +169,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 							case TextMarkerType.SquigglyUnderline:
 								double offset = 2.5;
 								
-								int count = (int)((endPoint.X - startPoint.X) / offset) + 1;
+								int count = Math.Max((int)((endPoint.X - startPoint.X) / offset) + 1, 4);
 								
 								StreamGeometry geometry = new StreamGeometry();
 								

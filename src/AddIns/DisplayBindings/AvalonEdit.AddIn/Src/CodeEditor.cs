@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		CodeEditorAdapter secondaryTextEditorAdapter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
-		readonly ErrorPainter errorPainter;
+		ErrorPainter errorPainter;
 		
 		BracketHighlightRenderer primaryBracketRenderer;
 		BracketHighlightRenderer secondaryBracketRenderer;
@@ -117,6 +117,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (secondaryTextEditorAdapter != null)
 						secondaryTextEditorAdapter.FileNameChanged();
 					
+					if (this.errorPainter != null)
+						this.errorPainter.Dispose();
+					
+					this.errorPainter = new ErrorPainter(primaryTextEditorAdapter);
+					
 					FetchParseInformation();
 				}
 			}
@@ -140,8 +145,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor = CreateTextEditor();
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
-			
-			this.errorPainter = new ErrorPainter(primaryTextEditorAdapter);
 			
 			this.primaryBracketRenderer = new BracketHighlightRenderer(primaryTextEditor.TextArea.TextView);
 			
@@ -527,7 +530,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (secondaryTextEditorAdapter != null)
 				secondaryTextEditorAdapter.Language.Detach();
 			
-			errorPainter.Dispose();
+			if (errorPainter != null)
+				errorPainter.Dispose();
 			this.Document = null;
 		}
 	}

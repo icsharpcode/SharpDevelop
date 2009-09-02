@@ -128,6 +128,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 		}
 		
+		[Conditional("DEBUG")]
 		internal static void Log(string text, params object[] pars)
 		{
 			System.Diagnostics.Debug.WriteLine(string.Format("XML: " + text, pars));

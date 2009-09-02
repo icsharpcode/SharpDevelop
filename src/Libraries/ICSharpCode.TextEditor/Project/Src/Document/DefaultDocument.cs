@@ -40,7 +40,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		/// <summary>
 		/// The indentation from the line above will be
-		/// taken to indent the curent line
+		/// taken to indent the current line
 		/// </summary>
 		Auto,
 		

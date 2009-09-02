@@ -69,7 +69,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> Add object to cache, optionally adding extra memory tracking </summary>
 		public void AddParsedObject(AXmlObject obj, int? maxTouchedLocation)
 		{
-			AXmlParser.Assert(obj.Length > 0 || obj is AXmlDocument, string.Format("Invalid object {0}.  It has zero length.", obj));
+			if (!(obj.Length > 0 || obj is AXmlDocument))
+				AXmlParser.Assert(false, string.Format("Invalid object {0}.  It has zero length.", obj));
 //			// Expensive check
 //			if (obj is AXmlContainer) {
 //				int objStartOffset = obj.StartOffset;
