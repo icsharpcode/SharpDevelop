@@ -80,7 +80,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				IProjectContent content = ParserService.GetProjectContent(project);
 				if (content != null) {
-					IClass c = content.GetClassByReflectionName(name, false);
+					IClass c = content.GetClassByReflectionName(name, true);
 					if (c != null)
 						return c;
 				}
