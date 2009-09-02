@@ -349,11 +349,13 @@ namespace Debugger.MetaData
 		
 		public static DebugType CreateFromName(AppDomain appDomain, string typeName, DebugType enclosingType, params DebugType[] genericArguments)
 		{
+			if (enclosingType != null && genericArguments != null)
+				typeName = GetQualifiedName(typeName, genericArguments.Length - enclosingType.GenericArguments.Count);
 			foreach(Module module in appDomain.Process.Modules) {
 				if (module.AppDomain == appDomain) {
 					uint token;
 					try {
-						token = module.MetaData.FindTypeDefPropsByName(GetQualifiedName(typeName, genericArguments), enclosingType == null ? 0 : enclosingType.Token).Token;
+						token = module.MetaData.FindTypeDefPropsByName(typeName, enclosingType == null ? 0 : enclosingType.Token).Token;
 					} catch {
 						continue;
 					}
@@ -364,10 +366,10 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Converts type name to the form suitable for COM API. </summary>
-		static string GetQualifiedName(string typeName, params DebugType[] genericArguments)
+		static string GetQualifiedName(string typeName, int genericArgumentsCount)
 		{
-			if (genericArguments != null && genericArguments.Length > 0 && !typeName.Contains("`")) {
-				return typeName + "`" + genericArguments.Length;
+			if (genericArgumentsCount > 0 && !typeName.Contains("`")) {
+				return typeName + "`" + genericArgumentsCount;
 			} else 	{
 				return typeName;
 			}

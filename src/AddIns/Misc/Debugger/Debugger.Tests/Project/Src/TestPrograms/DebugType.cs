@@ -27,6 +27,9 @@ namespace Debugger.Tests.TestPrograms
 		
 		public class MyGenClass<T>
 		{
+			public class MyNestedClass
+			{
+			}
 			public class MyGenNestedClass<U>
 			{
 			}
@@ -101,6 +104,7 @@ namespace Debugger.Tests.TestPrograms
 			MyGenClass<int> myGenClass_int = new MyGenClass<int>();
 			MyGenClass<int>[] array_MyGenClass_int = new MyGenClass<int>[] {};
 			MyGenClass<MyGenStruct<int>> myGenClass_MyGenStruct_int = new MyGenClass<MyGenStruct<int>>();
+			MyGenClass<int>.MyNestedClass myNestedClass = new MyGenClass<int>.MyNestedClass();
 			MyGenClass<int>.MyGenNestedClass<char> myGenNestedClass = new MyGenClass<int>.MyGenNestedClass<char>();
 			
 			// Generic struct
@@ -115,7 +119,7 @@ namespace Debugger.Tests.TestPrograms
 			
 			// TypeRef generics
 			List<int> list = new List<int>();
-			// TODO List<int>.Enumerator listEnum = list.GetEnumerator();
+			List<int>.Enumerator listEnum = list.GetEnumerator();
 			
 			// Other
 			AddDelegate fnPtr = Add;
@@ -205,14 +209,15 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType.cs:125,4-125,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType.cs:129,4-129,40</DebuggingPaused>
     <DefinedTypes
       Capacity="16"
-      Count="11">
+      Count="12">
       <Item>Debugger.Tests.TestPrograms.DebugType</Item>
       <Item>AddDelegate</Item>
       <Item>MyClass</Item>
       <Item>MyGenClass`1</Item>
+      <Item>MyNestedClass</Item>
       <Item>MyGenNestedClass`1</Item>
       <Item>MyStruct</Item>
       <Item>MyGenStruct`1</Item>
@@ -355,7 +360,7 @@ namespace Debugger.Tests {
           Module="DebugType.exe"
           Name="Fun2"
           ParameterCount="3"
-          ParameterTypes="{Exception: Can not find type Enumerator}"
+          ParameterTypes="{System.Int32**, System.Object[,], Enumerator&lt;System.Object&gt;}"
           ReturnType="System.Object[]" />
       </Item>
       <Item>
@@ -869,6 +874,24 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <LocalVariable
+          Name="myNestedClass"
+          Type="MyNestedClass&lt;System.Int32&gt;"
+          Value="myNestedClass = {MyNestedClass&lt;System.Int32&gt;}">
+          <Type>
+            <DebugType
+              BaseType="System.Object"
+              FullName="MyNestedClass&lt;System.Int32&gt;"
+              GenericArguments="{System.Int32}"
+              Kind="Class"
+              Module="DebugType.exe"
+              Name="MyNestedClass&lt;Int32&gt;">
+              <ElementType>null</ElementType>
+            </DebugType>
+          </Type>
+        </LocalVariable>
+      </Item>
+      <Item>
+        <LocalVariable
           Name="myGenNestedClass"
           Type="MyGenNestedClass&lt;System.Int32,System.Char&gt;"
           Value="myGenNestedClass = {MyGenNestedClass&lt;System.Int32,System.Char&gt;}">
@@ -1017,6 +1040,25 @@ namespace Debugger.Tests {
               Kind="Class"
               Module="mscorlib.dll"
               Name="List&lt;Int32&gt;">
+              <ElementType>null</ElementType>
+            </DebugType>
+          </Type>
+        </LocalVariable>
+      </Item>
+      <Item>
+        <LocalVariable
+          Name="listEnum"
+          Type="Enumerator&lt;System.Int32&gt;"
+          Value="listEnum = {Enumerator&lt;System.Int32&gt;}">
+          <Type>
+            <DebugType
+              BaseType="System.ValueType"
+              FullName="Enumerator&lt;System.Int32&gt;"
+              GenericArguments="{System.Int32}"
+              Interfaces="{System.Collections.Generic.IEnumerator&lt;System.Int32&gt;, System.IDisposable, System.Collections.IEnumerator}"
+              Kind="ValueType"
+              Module="mscorlib.dll"
+              Name="Enumerator&lt;Int32&gt;">
               <ElementType>null</ElementType>
             </DebugType>
           </Type>
