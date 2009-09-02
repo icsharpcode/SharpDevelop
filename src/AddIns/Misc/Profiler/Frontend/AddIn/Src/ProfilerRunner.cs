@@ -11,7 +11,8 @@ using ICSharpCode.Core;
 using ICSharpCode.Profiler.AddIn.OptionsPanels;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Profiling;
+using ICSharpCode.SharpDevelop.Project;
+using System.IO;
 
 namespace ICSharpCode.Profiler.AddIn
 {
@@ -76,8 +77,9 @@ namespace ICSharpCode.Profiler.AddIn
 		}
 		
 		void FinishSession()
-		{		
+		{
 			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog("Preparing for analysis", true)) {
+				profiler.Dispose();
 				if (database != null) {
 					database.WriteTo(writer, progress => !dlg.IsCancelled);
 					writer.Close();
@@ -100,6 +102,33 @@ namespace ICSharpCode.Profiler.AddIn
 		public void Stop()
 		{
 			profiler.Stop();
+		}
+		
+		public static ProfilerRunner CreateRunner(IProfilingDataWriter writer)
+		{
+			AbstractProject currentProj = ProjectService.CurrentProject as AbstractProject;
+			
+			if (currentProj == null)
+				return null;
+			
+			if (!currentProj.IsStartable) {
+				if (MessageService.AskQuestion("This project cannot be started. Do you want to profile the solution's StartUp project instead?")) {
+					currentProj = ProjectService.OpenSolution.StartupProject as AbstractProject;
+					if (currentProj == null) {
+						MessageService.ShowError("No startable project was found. Aborting ...");
+						return null;
+					}
+				} else
+					return null;
+			}
+			if (!File.Exists(currentProj.OutputAssemblyFullPath)) {
+				MessageService.ShowError("This project cannot be started because the executable file was not found, " +
+				                         "please ensure that the project and all its depencies are built correctly!");
+				return null;
+			}
+			
+			ProfilerRunner runner = new ProfilerRunner(currentProj.CreateStartInfo(), true, writer);
+			return runner;
 		}
 		
 		#region MessageView Management

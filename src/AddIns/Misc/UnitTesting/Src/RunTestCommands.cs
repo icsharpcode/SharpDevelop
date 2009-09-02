@@ -16,7 +16,6 @@ using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Profiling;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.SharpDevelop.Util;
@@ -520,48 +519,7 @@ namespace ICSharpCode.UnitTesting
 			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
 		}
 	}
-	
-	public class RunTestWithProfilerCommand : AbstractRunTestCommand
-	{
-		protected override void RunTests(UnitTestApplicationStartHelper helper)
-		{
-			TestRunnerCategory.AppendLine(helper.GetCommandLine());
-			ProcessStartInfo startInfo = new ProcessStartInfo(helper.UnitTestApplication);
-			
-			string path = ProfilerService.GetSessionFileName(helper.Project);
-			
-			startInfo.Arguments = helper.GetArguments();
-			startInfo.WorkingDirectory = UnitTestApplicationStartHelper.UnitTestApplicationDirectory;
-			LoggingService.Info("starting profiler...");
-			ProfilerService.CurrentProfiler.Start(startInfo, path, delegate { AfterFinish(helper, path); });
-		}
 		
-		void AfterFinish(UnitTestApplicationStartHelper helper, string path)
-		{
-			ProfilerService.AddSessionToProject(helper.Project, path);
-			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
-			LoggingService.Info("shutting profiler down...");
-		}
-		
-		public override void Run()
-		{
-			if (ProfilerService.IsProfilerLoaded && ProfilerService.CurrentProfiler.IsRunning) {
-				MessageService.ShowError("Currently there is a profiling session in progress. " +
-				                         "Please finish the current session before starting a new one.");
-			} else {
-				base.Run();
-			}
-		}
-		
-		protected override void OnStop()
-		{
-			if (ProfilerService.CurrentProfiler.IsRunning) {
-				LoggingService.Info("stopping profiler...");
-				ProfilerService.CurrentProfiler.Stop();
-			}
-		}
-	}
-	
 	public class RunAllTestsInPadCommand : RunTestInPadCommand
 	{
 		public override void Run()

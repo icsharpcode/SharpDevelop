@@ -85,9 +85,6 @@
 			          label = "${res:ICSharpCode.UnitTesting.RunWithDebugger}"
 			          icon  = "Icons.16x16.RunProgramIcon"
 			          class = "ICSharpCode.UnitTesting.RunTestWithDebuggerCommand"/>
-			<MenuItem id    = "RunWithProfiler"
-			          label = "Run with profiler"
-			          class = "ICSharpCode.UnitTesting.RunTestWithProfilerCommand"/>
 		</ComplexCondition>
 	</Path>
 	

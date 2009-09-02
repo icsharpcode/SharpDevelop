@@ -77,12 +77,12 @@
     </Compile>
     <Compile Include="Data\SQLiteCallTreeNode.cs" />
     <Compile Include="Data\TempFileDatabase.cs" />
+    <Compile Include="Data\UnitTestRootCallTreeNode.cs" />
     <Compile Include="Data\UnmanagedCallTreeNode.cs" />
     <Compile Include="Data\UnmanagedCallTreeNode64.cs">
       <DependentUpon>UnmanagedCallTreeNode.cs</DependentUpon>
     </Compile>
     <Compile Include="Data\UnmanagedProfilingDataSet.cs">
-      <DependentUpon>ProfilingDataSQLiteWriter.cs</DependentUpon>
     </Compile>
     <Compile Include="ExtendedRegistry.cs" />
     <Compile Include="ExtensionMethods.cs" />

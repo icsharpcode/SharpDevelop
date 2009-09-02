@@ -78,6 +78,9 @@
     <Reference Include="UIAutomationProvider">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UnitTesting">
+      <HintPath>..\..\..\..\..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -95,11 +98,13 @@
     <Compile Include="Src\Commands\ProfileExecutable.cs" />
     <Compile Include="Src\Commands\ProfileProject.cs" />
     <Compile Include="Src\Commands\ProfilerMenuCommand.cs" />
+    <Compile Include="Src\Commands\RunTestWithProfilerCommand.cs" />
     <Compile Include="Src\Commands\SetAsRoot.cs" />
     <Compile Include="Src\Commands\ShowFunctions.cs" />
     <Compile Include="Src\Dialogs\ProfileExecutableForm.xaml.cs">
       <DependentUpon>ProfileExecutableForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\OptionsPanels\General.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -115,7 +120,6 @@
     </Compile>
     <Compile Include="Src\Views\SharpDevelopElementHost.cs" />
     <Compile Include="Src\Views\WpfViewer.cs" />
-    <Compile Include="Src\WindowsProfiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Dialogs\ProfileExecutableForm.xaml">

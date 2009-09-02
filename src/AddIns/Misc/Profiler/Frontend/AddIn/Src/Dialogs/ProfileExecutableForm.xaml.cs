@@ -45,7 +45,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 				try {
 					Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 					
-					var runner = CreateRunner(txtExePath.Text, txtWorkingDir.Text, txtArgs.Text, new ProfilingDataSQLiteWriter(outputPath));
+					var runner = CreateRunner(txtExePath.Text, txtWorkingDir.Text, txtArgs.Text, new ProfilingDataSQLiteWriter(outputPath, false, null));
 
 					if (runner != null) {
 						runner.RunFinished += delegate {

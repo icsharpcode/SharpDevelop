@@ -8,6 +8,11 @@
 		<Import assembly="ICSharpCode.Profiler.AddIn.dll" />
 	</Runtime>
 	
+	<Manifest>
+		<Identity name="Profiler.AddIn" />
+		<Dependency addin="ICSharpCode.UnitTesting" requirePreload="true" />
+	</Manifest>
+	
 	<Path name="/SharpDevelop/Workbench/MainMenu/Analysis">
 		<MenuItem id="Profiler" label="Profiler" type="Menu" insertbefore="Separator1">
 			<ComplexCondition action="Disable">
@@ -81,7 +86,17 @@
 		</DialogPanel>
 	</Path>
 
-	<Path name="/SharpDevelop/Services/ProfilerService/Profiler">
-		<Class id = "WindowsProfiler" class="ICSharpCode.Profiler.AddIn.WindowsProfiler" />
+	<Path name = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
+			<MenuItem id    = "RunWithProfiler"
+			          label = "Run with profiler"
+			          class = "ICSharpCode.Profiler.AddIn.Commands.RunTestWithProfilerCommand"/>
+		</ComplexCondition>
 	</Path>
 </AddIn>

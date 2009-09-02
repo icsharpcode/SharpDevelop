@@ -30,11 +30,13 @@ namespace ICSharpCode.Profiler.Controller.Data
 		int functionInfoCount;
 		bool isDisposed;
 		int processorFrequency;
+		bool profileUnitTests;
+		string[] unitTestNames;
 		
 		/// <summary>
 		/// Creates a new SQLite profiling data provider and opens or creates a new database stored in a file.
 		/// </summary>
-		public ProfilingDataSQLiteWriter(string fileName)
+		public ProfilingDataSQLiteWriter(string fileName, bool profileUnitTests, string[] unitTestNames)
 		{
 			if (File.Exists(fileName))
 				throw new IOException("File already exists!");
@@ -54,6 +56,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 			InitializeTables();
 			
 			File.SetAttributes(fileName, FileAttributes.Compressed);
+			
+			this.profileUnitTests = profileUnitTests;
+			this.unitTestNames = unitTestNames;
+			
+			if (profileUnitTests && unitTestNames == null)
+				throw new InvalidOperationException("Please add unit tests to filter!");
 		}
 		
 		/// <summary>
@@ -103,8 +111,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 				cmd.CommandText = "INSERT INTO DataSets(id, cpuusage, rootid)" +
 					"VALUES(?,?,?);";
 				
-				cmd.ExecuteNonQuery();
-				
 				using (SQLiteCommand loopCommand = this.connection.CreateCommand()) {
 					CallTreeNode node = dataSet.RootNode;
 					
@@ -121,11 +127,51 @@ namespace ICSharpCode.Profiler.Controller.Data
 					loopCommand.Parameters.Add(dataParams.isActiveAtStart = new SQLiteParameter());
 					loopCommand.Parameters.Add(dataParams.callCount = new SQLiteParameter());
 					
-					InsertTree(loopCommand, node, -1, dataSet, dataParams);
-					dataSetCount++;
+					bool addedData = true;
+					
+					if (profileUnitTests)
+						addedData = FindUnitTestsAndInsert(loopCommand, node, dataSet, dataParams);
+					else
+						InsertTree(loopCommand, node, -1, dataSet, dataParams);
+					
+					if (addedData) {
+						cmd.ExecuteNonQuery();
+						dataSetCount++;
+					}
 				}
 				
 				transaction.Commit();
+			}
+		}
+		
+		bool IsUnitTest(NameMapping name)
+		{
+			return unitTestNames.Contains(name.Name);
+		}
+		
+		bool FindUnitTestsAndInsert(SQLiteCommand cmd, CallTreeNode node, IProfilingDataSet dataSet, FunctionDataParams dataParams)
+		{
+			List<CallTreeNode> list = new List<CallTreeNode>();
+
+			FindUnitTests(node, list);
+			
+			if (list.Count > 0) {
+				InsertTree(cmd, new UnitTestRootCallTreeNode(list), -1, dataSet, dataParams);
+				return true;
+			}
+			
+			return false;
+		}
+		
+		void FindUnitTests(CallTreeNode parentNode, IList<CallTreeNode> list)
+		{
+			if (IsUnitTest(parentNode.NameMapping)) {
+				list.Add(parentNode);
+				return;
+			}
+			
+			foreach (var node in parentNode.Children) {
+				FindUnitTests(node, list);
 			}
 		}
 		
@@ -194,9 +240,10 @@ namespace ICSharpCode.Profiler.Controller.Data
 			parentId, nameId, cpuCyclesSpent, isActiveAtStart, callCount, endId;
 		}
 		
-		unsafe void InsertTree(SQLiteCommand cmd, CallTreeNode node, int parentId, IProfilingDataSet dataSet, FunctionDataParams dataParams)
+		void InsertTree(SQLiteCommand cmd, CallTreeNode node, int parentId, IProfilingDataSet dataSet, FunctionDataParams dataParams)
 		{
 			int thisID = functionInfoCount++;
+			
 			foreach (CallTreeNode child in node.Children) {
 				InsertTree(cmd, child, thisID, dataSet, dataParams);
 			}
