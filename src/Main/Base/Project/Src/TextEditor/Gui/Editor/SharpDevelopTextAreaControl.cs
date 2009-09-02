@@ -327,6 +327,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						if (ccBinding.HandleKeyPress(this, ch))
 							return false;
 					}
+					if (ch == '\n')
+						StartDelayedReparse();
 				}
 			} catch (Exception ex) {
 				LogException(ex);
@@ -334,6 +336,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				inHandleKeyPress = false;
 			}
 			return false;
+		}
+		
+		bool startedDelayedReparse;
+		
+		void StartDelayedReparse()
+		{
+			if (startedDelayedReparse)
+				return;
+			startedDelayedReparse = true;
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					startedDelayedReparse = false;
+					if (!this.IsDisposed) {
+						ParserService.StartAsyncParse(this.FileName, this.Document.TextContent);
+					}
+				});
 		}
 		
 		public void StartCtrlSpaceCompletion()

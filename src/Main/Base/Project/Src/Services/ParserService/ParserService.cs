@@ -366,6 +366,14 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
+		public static void StartAsyncParse(string fileName, string fileContent)
+		{
+			ThreadPool.QueueUserWorkItem(
+				delegate {
+					ParseFile(fileName, fileContent);
+				});
+		}
+		
 		public static void StartParserThread()
 		{
 			abortParserUpdateThread = false;
