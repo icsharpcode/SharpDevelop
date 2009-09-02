@@ -51,6 +51,10 @@ namespace Debugger.Tests.TestPrograms
 		
 		public static unsafe void Main()
 		{
+			// TODO
+			// int? iNull = 5;
+			// int? iNull_null = null;
+			
 			// The nulls should be first to test for "Value does not fall within the expected range." exception of .BaseType
 			MyClass nullMyClass = null;
 			object nullObject = null;
@@ -125,7 +129,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType.cs:76,4-76,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType.cs:80,4-80,40</DebuggingPaused>
     <MyClassMemberts
       Capacity="16"
       Count="15">
@@ -731,7 +735,7 @@ namespace Debugger.Tests {
         </Value>
       </Item>
     </LocalVariables>
-    <DebuggingPaused>Break DebugType.cs:93,4-93,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType.cs:97,4-97,40</DebuggingPaused>
     <Arguments
       Capacity="16"
       Count="15">

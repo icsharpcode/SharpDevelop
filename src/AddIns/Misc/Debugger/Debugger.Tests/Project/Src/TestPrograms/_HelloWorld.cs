@@ -14,6 +14,8 @@ namespace Debugger.Tests.TestPrograms
 		public static void Main()
 		{
 			System.Diagnostics.Debug.WriteLine("Hello world!");
+			
+			System.Diagnostics.Debugger.Break();
 		}
 	}
 }
@@ -25,9 +27,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void _HelloWorld()
 		{
-			StartTest("_HelloWorld.cs", false);
-			
-			process.WaitForExit();
+			StartTest("_HelloWorld.cs");
 			
 			EndTest();
 		}
@@ -47,6 +47,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
+    <DebuggingPaused>Break _HelloWorld.cs:18,4-18,40</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

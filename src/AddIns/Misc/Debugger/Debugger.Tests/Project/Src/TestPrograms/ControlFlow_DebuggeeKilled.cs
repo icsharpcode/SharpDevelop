@@ -1,7 +1,7 @@
-// <file>
+ï»¿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
+//     <owner name="David Srbeckï¿½" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -13,8 +13,6 @@ namespace Debugger.Tests.TestPrograms
 	{
 		public static void Main()
 		{
-			int id = System.Diagnostics.Process.GetCurrentProcess().Id;
-			System.Diagnostics.Debug.WriteLine(id.ToString());
 			System.Diagnostics.Debugger.Break();
 		}
 	}
@@ -22,21 +20,37 @@ namespace Debugger.Tests.TestPrograms
 
 #if TEST_CODE
 namespace Debugger.Tests {
+	using NUnit.Framework;
+
 	public partial class DebuggerTests
 	{
-//		[NUnit.Framework.Test]
-//		public void ControlFlow_DebuggeeKilled()
-//		{
-//			StartTest("ControlFlow_DebuggeeKilled.cs");
-//			WaitForPause();
-//			Assert.AreNotEqual(null, lastLogMessage);
-//			System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(int.Parse(lastLogMessage));
-//			p.Kill();
-//			process.WaitForExit();
-//		}
+		[NUnit.Framework.Test]
+		public void ControlFlow_DebuggeeKilled()
+		{
+			StartTest("ControlFlow_DebuggeeKilled.cs");
+			
+			foreach(System.Diagnostics.Process p in System.Diagnostics.Process.GetProcesses()) {
+				if (p.ProcessName.StartsWith("ControlFlow_DebuggeeKilled"))
+					p.Kill();
+			}
+			process.WaitForExit();
+			
+			EndTest();
+		}
 	}
 }
 #endif
 
 #if EXPECTED_OUTPUT
+<?xml version="1.0" encoding="utf-8"?>
+<DebuggerTests>
+  <Test
+    name="ControlFlow_DebuggeeKilled.cs">
+    <ProcessStarted />
+    <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>ControlFlow_DebuggeeKilled.exe (Has symbols)</ModuleLoaded>
+    <DebuggingPaused>Break ControlFlow_DebuggeeKilled.cs:16,4-16,40</DebuggingPaused>
+    <ProcessExited />
+  </Test>
+</DebuggerTests>
 #endif // EXPECTED_OUTPUT

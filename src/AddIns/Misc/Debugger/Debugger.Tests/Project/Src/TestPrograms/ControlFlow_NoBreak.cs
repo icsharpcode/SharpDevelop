@@ -9,38 +9,26 @@ using System;
 
 namespace Debugger.Tests.TestPrograms
 {
-	public class Exception
+	public class ControlFlow_NoBreak
 	{
 		public static void Main()
 		{
-			System.Diagnostics.Debugger.Break();
 			
-			throw new System.Exception("test");
 		}
 	}
 }
 
 #if TEST_CODE
 namespace Debugger.Tests {
-	using NUnit.Framework;
-	
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		public void Exception()
+		public void ControlFlow_NoBreak()
 		{
-			StartTest("Exception.cs");
+			StartTest("ControlFlow_NoBreak.cs", false);
 			
-			process.ExceptionThrown += delegate {
-				process.Terminate();
-			};
-			process.Paused += delegate {
-				// Should not be raised for dead process
-				Assert.Fail();
-			};
-			
-			process.AsyncContinue();
 			process.WaitForExit();
+			
 			EndTest();
 		}
 	}
@@ -51,12 +39,10 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="Exception.cs">
+    name="_SimpleProgram.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>Exception.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Exception.cs:16,4-16,40</DebuggingPaused>
-    <ExceptionThrown>System.Exception: test</ExceptionThrown>
+    <ModuleLoaded>_SimpleProgram.exe (Has symbols)</ModuleLoaded>
     <ProcessExited />
   </Test>
 </DebuggerTests>

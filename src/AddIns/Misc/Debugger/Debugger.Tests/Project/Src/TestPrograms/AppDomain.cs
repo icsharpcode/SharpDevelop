@@ -9,7 +9,7 @@ using System;
 
 namespace Debugger.Tests.TestPrograms
 {
-	public class AppDomains
+	public class AppDomain
 	{
 		public static void Main()
 		{
@@ -39,9 +39,9 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		public void AppDomains()
+		public void AppDomain()
 		{
-			StartTest("AppDomains.cs");
+			StartTest("AppDomain.cs");
 			
 			DebugType type1 = process.SelectedStackFrame.GetLocalVariableValue("one").Type;
 			DebugType type1b = process.SelectedStackFrame.GetLocalVariableValue("one").Type;
@@ -63,15 +63,15 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="AppDomains.cs">
+    name="AppDomain.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>AppDomains.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AppDomains.cs:17,4-17,40</DebuggingPaused>
+    <ModuleLoaded>AppDomain.exe (Has symbols)</ModuleLoaded>
+    <DebuggingPaused>Break AppDomain.cs:17,4-17,40</DebuggingPaused>
     <SameDomainEqual>True</SameDomainEqual>
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>AppDomains.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AppDomains.cs:30,4-30,40</DebuggingPaused>
+    <ModuleLoaded>AppDomain.exe (Has symbols)</ModuleLoaded>
+    <DebuggingPaused>Break AppDomain.cs:30,4-30,40</DebuggingPaused>
     <AppDomainName>myDomain Id=2</AppDomainName>
     <OtherDomainEqual>False</OtherDomainEqual>
     <AppDomainsEqual>False</AppDomainsEqual>

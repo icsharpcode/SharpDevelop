@@ -28,17 +28,16 @@ namespace Debugger.Tests.TestPrograms
 namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
-//		[NUnit.Framework.Test]
-//		[NUnit.Framework.Ignore("Different behaviour in .NET 4")]
-//		public void Exception_StackOverflow()
-//		{
-//			StartTest("Exception_StackOverflow.cs");
-//			
-//			process.Continue();
-//			//ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);
-//			
-//			EndTest();
-//		}
+		[NUnit.Framework.Test]
+		public void Exception_StackOverflow()
+		{
+			StartTest("Exception_StackOverflow.cs");
+			
+			process.Continue();
+			//ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);
+			
+			EndTest();
+		}
 	}
 }
 #endif
@@ -47,13 +46,13 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="StackOverflow.cs">
+    name="Exception_StackOverflow.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>StackOverflow.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break StackOverflow.cs:16,4-16,40</DebuggingPaused>
+    <ModuleLoaded>Exception_StackOverflow.exe (Has symbols)</ModuleLoaded>
+    <DebuggingPaused>Break Exception_StackOverflow.cs:16,4-16,40</DebuggingPaused>
     <ExceptionThrown>Could not intercept: System.StackOverflowException</ExceptionThrown>
-    <DebuggingPaused>Exception StackOverflow.cs:22,4-22,22</DebuggingPaused>
+    <DebuggingPaused>Exception Exception_StackOverflow.cs:21,3-21,4</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>
