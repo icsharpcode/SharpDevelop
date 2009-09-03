@@ -86,8 +86,6 @@ namespace ICSharpCode.Profiler.Controls
 				ad.Child = bar;
 				layer.Add(ad);
 				
-				CallTreeNode resultRoot;
-				
 				searchTask.Execute(
 					() => DoSearchInBackground(list.Roots.Select(i => i.Node).ToList(), start, end, text, true),
 					result => SearchCompleted(result, layer, ad),
@@ -160,9 +158,12 @@ namespace ICSharpCode.Profiler.Controls
 			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
 				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 &&
 				    (nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) > 0) {
-					if ((nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) >=
-					    (e.NewSize.Width - this.callCountColumn.Width - this.percentColumn.Width - this.timeSpentColumn.Width))
-						this.nameColumn.Width = e.NewSize.Width - this.callCountColumn.Width - this.percentColumn.Width - this.timeSpentColumn.Width - 25;
+					double newValue = e.NewSize.Width - this.callCountColumn.Width
+						- this.percentColumn.Width - this.timeSpentColumn.Width
+						- this.timeSpentSelfColumn.Width - this.timeSpentPerCallColumn.Width
+						- this.timeSpentSelfPerCallColumn.Width;
+					if ((nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) >= newValue)
+						this.nameColumn.Width = newValue - 25;
 					else
 						nameColumn.Width += (e.NewSize.Width - e.PreviousSize.Width);
 				}

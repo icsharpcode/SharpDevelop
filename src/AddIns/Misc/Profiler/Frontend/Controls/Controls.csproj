@@ -93,6 +93,8 @@
     <Page Include="ExtendedTimeLineControl.xaml" />
     <Page Include="QueryView.xaml" />
     <Page Include="Themes\Generic.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Controller\Controller.csproj">
       <Project>{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F}</Project>
       <Name>Controller</Name>

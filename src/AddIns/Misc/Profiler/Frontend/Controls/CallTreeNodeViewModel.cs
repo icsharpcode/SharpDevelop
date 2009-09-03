@@ -46,7 +46,7 @@ namespace ICSharpCode.Profiler.Controls
 		public event EventHandler<NodeEventArgs<CallTreeNodeViewModel>> RequestBringIntoView;
 		
 		protected virtual void OnRequestBringIntoView(NodeEventArgs<CallTreeNodeViewModel> e)
-		{			
+		{
 			if (RequestBringIntoView != null) {
 				RequestBringIntoView(this, e);
 			}
@@ -98,6 +98,15 @@ namespace ICSharpCode.Profiler.Controls
 					return 1;
 				else
 					return (double)this.node.CpuCyclesSpent / (double)GetNodeFromLevel(1).node.CpuCyclesSpent;
+			}
+		}
+		
+		public Visibility HotPathIndicatorVisibility {
+			get {
+				if (TimePercentageOfParent >= 0.2)
+					return Visibility.Visible;
+				
+				return Visibility.Collapsed;
 			}
 		}
 		
@@ -258,7 +267,7 @@ namespace ICSharpCode.Profiler.Controls
 					OnPropertyChanged("IsExpanded");
 					this.IsExpandedChanged(new NodeEventArgs<CallTreeNodeViewModel>(this));
 					
-					if (!isExpanded) {
+					if (isExpanded) {
 						DeselectChildren(children);
 					}
 				}
@@ -323,6 +332,35 @@ namespace ICSharpCode.Profiler.Controls
 			get {
 				if (!node.IsThread)
 					return node.TimeSpent.ToString("f6") + "ms";
+				else
+					return null;
+			}
+		}
+		
+		public string TimeSpentSelf {
+			get {
+				if (!node.IsThread) {
+					double value = node.TimeSpent - node.Children.Aggregate(0.0, (sum, item) => sum + item.TimeSpent);
+					return value.ToString("f6") + "ms";
+				} else
+					return null;
+			}
+		}
+		
+		public string TimeSpentSelfPerCall {
+			get {
+				if (!node.IsThread) {
+					double value = node.TimeSpent - node.Children.Aggregate(0.0, (sum, item) => sum + item.TimeSpent);
+					return (value / node.CallCount).ToString("f6") + "ms";
+				} else
+					return null;
+			}
+		}
+		
+		public string TimeSpentPerCall {
+			get {
+				if (!node.IsThread)
+					return (node.TimeSpent / node.CallCount).ToString("f6") + "ms";
 				else
 					return null;
 			}

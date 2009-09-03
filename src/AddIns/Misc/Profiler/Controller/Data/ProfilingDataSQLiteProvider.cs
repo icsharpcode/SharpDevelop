@@ -350,7 +350,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override IQueryable<CallTreeNode> GetFunctions(int startIndex, int endIndex)
 		{
-			if (startIndex < 0 || startIndex > endIndex)
+			if (startIndex < 0 || startIndex >= this.dataSets.Count)
 				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + endIndex);
 			if (endIndex < startIndex || endIndex >= this.DataSets.Count)
 				throw new ArgumentOutOfRangeException("endIndex", endIndex, "Value must be between " + startIndex + " and " + (this.DataSets.Count - 1));

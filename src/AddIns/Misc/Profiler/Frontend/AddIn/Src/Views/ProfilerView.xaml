@@ -40,7 +40,7 @@
 				<y:QueryView x:Name="treeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="from t in Threads select t" IsQueryModifiable="False" />
 			</TabItem>
 			<TabItem Header="Top 20">
-				<y:QueryView x:Name="top20View" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="(from f in Functions where f.CallCount > 0 orderby f.CpuCyclesSpent descending select f).Take(20)" IsQueryModifiable="False" />
+				<y:QueryView x:Name="top20View" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="(from f in Functions where f.CallCount > 0 orderby f.CpuCyclesSpentSelf descending select f).Take(20)" IsQueryModifiable="False" />
 			</TabItem>
 			<TabItem Name="dummyTab" Header="">
 			</TabItem>
