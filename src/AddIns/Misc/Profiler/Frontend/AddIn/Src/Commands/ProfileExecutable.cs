@@ -6,17 +6,8 @@
 // </file>
 
 using System;
-using System.IO;
-using System.Windows.Forms;
-
-using ICSharpCode.Core;
-using ICSharpCode.Profiler.AddIn.Views;
-using ICSharpCode.Profiler.Controller.Data;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Build.BuildEngine;
 using System.Windows.Interop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {

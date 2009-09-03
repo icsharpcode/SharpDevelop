@@ -24,7 +24,11 @@ namespace ICSharpCode.Core.Presentation
 		
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
-			return ResourceService.GetString(key);
+			try {
+				return ResourceService.GetString(key);
+			} catch (ResourceNotFoundException) {
+				return "{Localize:" + key + "}";
+			}
 		}
 	}
 }

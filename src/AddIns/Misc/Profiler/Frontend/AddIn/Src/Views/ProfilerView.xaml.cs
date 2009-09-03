@@ -29,7 +29,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			
 			this.timeLine.IsEnabled = true;
 			this.timeLine.ValuesList.Clear();
-			this.timeLine.ValuesList.AddRange(this.provider.DataSets.Select(i => i.CpuUsage / 100));
+			this.timeLine.ValuesList.AddRange(this.provider.DataSets.Select(i => new TimeLineInfo() { value = i.CpuUsage / 100, displayMarker = i.IsFirst }));
 			this.timeLine.SelectedStartIndex = 0;
 			this.timeLine.SelectedEndIndex = this.timeLine.ValuesList.Count;
 			
@@ -98,11 +98,14 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		void UpdateErrorList(IEnumerable<CompilerError> errors)
 		{
 			Dispatcher.Invoke(
-				() => {
-					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-					TaskService.ClearExceptCommentTasks();
-					TaskService.AddRange(errors.Select(error => new Task("", error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)));
-				});
+				(Action)(
+					() => {
+						WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+						TaskService.ClearExceptCommentTasks();
+						TaskService.AddRange(errors.Select(error => new Task("", error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)));
+					}
+				)
+			);
 		}
 		
 		void tabView_SelectionChanged(object sender, SelectionChangedEventArgs e)

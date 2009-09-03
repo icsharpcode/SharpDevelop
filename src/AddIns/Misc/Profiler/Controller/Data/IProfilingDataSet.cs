@@ -28,6 +28,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 		double CpuUsage { get; }
 		
 		/// <summary>
+		/// Gets whether this dataset is the first dataset of a profiling run.
+		/// </summary>
+		bool IsFirst { get; }
+		
+		/// <summary>
 		/// Gets the root node of the dataset.
 		/// </summary>
 		CallTreeNode RootNode { get; }

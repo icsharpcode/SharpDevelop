@@ -135,7 +135,7 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			if (level == 0)
 				return null; // no tooltip for root
-			if (level == 1)
+			if (node.IsThread)
 				return Name;
 
 			TextBlock text = new TextBlock {

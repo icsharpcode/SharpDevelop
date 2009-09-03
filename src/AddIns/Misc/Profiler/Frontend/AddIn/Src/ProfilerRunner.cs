@@ -7,12 +7,17 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+
 using ICSharpCode.Core;
+using ICSharpCode.Profiler.AddIn.Dialogs;
 using ICSharpCode.Profiler.AddIn.OptionsPanels;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using System.IO;
 
 namespace ICSharpCode.Profiler.AddIn
 {
@@ -22,6 +27,7 @@ namespace ICSharpCode.Profiler.AddIn
 	public class ProfilerRunner
 	{
 		public event EventHandler RunFinished;
+		ProfilerControlWindow controlWindow;
 		
 		protected virtual void OnRunFinished(EventArgs e)
 		{
@@ -80,6 +86,8 @@ namespace ICSharpCode.Profiler.AddIn
 		{
 			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog("Preparing for analysis", true)) {
 				profiler.Dispose();
+
+				WorkbenchSingleton.SafeThreadAsyncCall(() => { controlWindow.AllowClose = true; this.controlWindow.Close(); });
 				if (database != null) {
 					database.WriteTo(writer, progress => !dlg.IsCancelled);
 					writer.Close();
@@ -96,7 +104,9 @@ namespace ICSharpCode.Profiler.AddIn
 		public void Run()
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+			this.controlWindow = new ProfilerControlWindow(this);
 			profiler.Start();
+			this.controlWindow.Show();
 		}
 		
 		public void Stop()

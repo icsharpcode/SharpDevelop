@@ -69,6 +69,8 @@ namespace ICSharpCode.Profiler.Controls
 			set { SetValue(ShowQueryItemsProperty, value); }
 			get { return (bool)GetValue(ShowQueryItemsProperty); }
 		}
+		
+		public ControlsTranslation Translation { get; set; }
 		#endregion
 
 		void txtSearchKeyDown(object sender, KeyEventArgs e)
@@ -82,7 +84,7 @@ namespace ICSharpCode.Profiler.Controls
 				
 				AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
 				OverlayAdorner ad = new OverlayAdorner(this);
-				WaitBar bar = new WaitBar("Refreshing view, please wait ...");
+				WaitBar bar = new WaitBar();
 				ad.Child = bar;
 				layer.Add(ad);
 				
@@ -154,6 +156,8 @@ namespace ICSharpCode.Profiler.Controls
 			this.DataContext = this;
 			this.task = new SingleTask(this.Dispatcher);
 			this.searchTask = new SingleTask(this.Dispatcher);
+			
+			this.Translation = new ControlsTranslation();
 			
 			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
 				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 &&

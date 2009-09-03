@@ -173,14 +173,26 @@ namespace ICSharpCode.Profiler.Controller.Data
 					SQLiteCommand cmd;
 					
 					using (LockAndCreateCommand(out cmd)) {
-						cmd.CommandText = @"SELECT id, cpuusage
+						SQLiteDataReader reader;
+						bool isFirstAllowed = true;
+						try {
+							cmd.CommandText = @"SELECT id, cpuusage, isfirst
 											FROM DataSets
 											ORDER BY id;";
-						
-						SQLiteDataReader reader = cmd.ExecuteReader();
+							
+							reader = cmd.ExecuteReader();
+						} catch (SQLiteException) {
+							cmd.CommandText = @"SELECT id, cpuusage
+											FROM DataSets
+											ORDER BY id;";
+							
+							reader = cmd.ExecuteReader();
+							
+							isFirstAllowed = false;
+						}
 						
 						while (reader.Read()) {
-							list.Add(new SQLiteDataSet(this, reader.GetInt32(0), reader.GetDouble(1)));
+							list.Add(new SQLiteDataSet(this, reader.GetInt32(0), reader.GetDouble(1), isFirstAllowed ? reader.GetBoolean(2) : false));
 						}
 					}
 					
@@ -212,12 +224,14 @@ namespace ICSharpCode.Profiler.Controller.Data
 			ProfilingDataSQLiteProvider provider;
 			int index;
 			double cpuUsage;
+			bool isFirst;
 			
-			public SQLiteDataSet(ProfilingDataSQLiteProvider provider, int index, double cpuUsage)
+			public SQLiteDataSet(ProfilingDataSQLiteProvider provider, int index, double cpuUsage, bool isFirst)
 			{
 				this.provider = provider;
 				this.index = index;
 				this.cpuUsage = cpuUsage;
+				this.isFirst = isFirst;
 			}
 			
 			public double CpuUsage {
@@ -229,6 +243,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 			public CallTreeNode RootNode {
 				get {
 					return this.provider.GetRoot(index, index);
+				}
+			}
+			
+			public bool IsFirst {
+				get {
+					return isFirst;
 				}
 			}
 		}

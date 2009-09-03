@@ -106,10 +106,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 				
 				cmd.Parameters.Add(new SQLiteParameter("id", dataSetCount));
 				cmd.Parameters.Add(new SQLiteParameter("cpuuage", dataSet.CpuUsage.ToString(CultureInfo.InvariantCulture)));
+				cmd.Parameters.Add(new SQLiteParameter("isfirst", dataSet.IsFirst));
 				cmd.Parameters.Add(new SQLiteParameter("rootid", functionInfoCount));
 				
-				cmd.CommandText = "INSERT INTO DataSets(id, cpuusage, rootid)" +
-					"VALUES(?,?,?);";
+				cmd.CommandText = "INSERT INTO DataSets(id, cpuusage, isfirst, rootid)" +
+					"VALUES(?,?,?,?);";
 				
 				using (SQLiteCommand loopCommand = this.connection.CreateCommand()) {
 					CallTreeNode node = dataSet.RootNode;
@@ -208,6 +209,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				CREATE TABLE DataSets(
 					id INTEGER NOT NULL PRIMARY KEY,
 					cpuusage REAL NOT NULL,
+					isfirst INTEGER NOT NULL,
 					rootid INTEGER NOT NULL
 				);
 				

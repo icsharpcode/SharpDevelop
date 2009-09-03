@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallTreeNodeViewModel.cs" />
+    <Compile Include="ControlsTranslation.cs" />
     <Compile Include="EventLine.cs" />
     <Compile Include="ExtendedTimeLineControl.xaml.cs">
       <DependentUpon>ExtendedTimeLineControl.xaml</DependentUpon>
@@ -98,6 +99,7 @@
     <ProjectReference Include="..\..\Controller\Controller.csproj">
       <Project>{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F}</Project>
       <Name>Controller</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>
