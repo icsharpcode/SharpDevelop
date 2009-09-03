@@ -17,12 +17,12 @@
       HorizontalAlignment="Left"
       VerticalAlignment="Stretch">
       <ToggleButton
-        Content="CollectData"
+        Content="{sd:Localize AddIns.Profiler.ProfilerControlWindow.CollectData}"
         x:Name="collectData"
         Checked="CollectDataChecked"
         Unchecked="CollectDataUnchecked" />
       <Button
-        Content="Shutdown"
+        Content="{sd:Localize AddIns.Profiler.ProfilerControlWindow.Shutdown}"
         x:Name="shutdown"
         Click="ShutdownClick" />
     </ToolBar>

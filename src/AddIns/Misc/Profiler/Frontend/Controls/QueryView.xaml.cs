@@ -84,7 +84,7 @@ namespace ICSharpCode.Profiler.Controls
 				
 				AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
 				OverlayAdorner ad = new OverlayAdorner(this);
-				WaitBar bar = new WaitBar();
+				WaitBar bar = new WaitBar(Translation.WaitBarText);
 				ad.Child = bar;
 				layer.Add(ad);
 				
@@ -220,7 +220,7 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
 			OverlayAdorner ad = new OverlayAdorner(this);
-			WaitBar bar = new WaitBar("Refreshing view, please wait ...");
+			WaitBar bar = new WaitBar(Translation.WaitBarText);
 			ad.Child = bar;
 			layer.Add(ad);
 			int rangeStart = RangeStart;
