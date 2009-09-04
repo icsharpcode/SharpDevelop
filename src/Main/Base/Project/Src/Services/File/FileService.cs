@@ -388,38 +388,43 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (FileUtility.IsEqualFileName(oldName, newName))
 				return false;
-			FileRenamingEventArgs eargs = new FileRenamingEventArgs(oldName, newName, isDirectory);
-			OnFileRenaming(eargs);
-			if (eargs.Cancel)
-				return false;
-			if (!eargs.OperationAlreadyDone) {
-				try {
-					if (isDirectory && Directory.Exists(oldName)) {
-						
-						if (Directory.Exists(newName)) {
-							MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
-							return false;
-						}
-						Directory.Move(oldName, newName);
-						
-					} else if (File.Exists(oldName)) {
-						if (File.Exists(newName)) {
-							MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
-							return false;
-						}
-						File.Move(oldName, newName);
-					}
-				} catch (Exception e) {
-					if (isDirectory) {
-						MessageService.ShowError(e, "Can't rename directory " + oldName);
-					} else {
-						MessageService.ShowError(e, "Can't rename file " + oldName);
-					}
+			FileChangeWatcher.DisableAllChangeWatchers();
+			try {
+				FileRenamingEventArgs eargs = new FileRenamingEventArgs(oldName, newName, isDirectory);
+				OnFileRenaming(eargs);
+				if (eargs.Cancel)
 					return false;
+				if (!eargs.OperationAlreadyDone) {
+					try {
+						if (isDirectory && Directory.Exists(oldName)) {
+							
+							if (Directory.Exists(newName)) {
+								MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+								return false;
+							}
+							Directory.Move(oldName, newName);
+							
+						} else if (File.Exists(oldName)) {
+							if (File.Exists(newName)) {
+								MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
+								return false;
+							}
+							File.Move(oldName, newName);
+						}
+					} catch (Exception e) {
+						if (isDirectory) {
+							MessageService.ShowError(e, "Can't rename directory " + oldName);
+						} else {
+							MessageService.ShowError(e, "Can't rename file " + oldName);
+						}
+						return false;
+					}
 				}
+				OnFileRenamed(new FileRenameEventArgs(oldName, newName, isDirectory));
+				return true;
+			} finally {
+				FileChangeWatcher.EnableAllChangeWatchers();
 			}
-			OnFileRenamed(new FileRenameEventArgs(oldName, newName, isDirectory));
-			return true;
 		}
 		
 		/// <summary>
@@ -479,7 +484,7 @@ namespace ICSharpCode.SharpDevelop
 			bool loggingResumed = false;
 			
 			try {
-			
+				
 				IViewContent content = OpenFile(fileName);
 				if (content is IPositionable) {
 					// TODO: enable jumping to a particular view
