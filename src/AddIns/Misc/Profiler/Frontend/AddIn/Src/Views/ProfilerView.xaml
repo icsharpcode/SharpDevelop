@@ -25,7 +25,7 @@
 	<Grid>
 		<GridSplitter Width="0" Margin="0,202.5,0,204.5" />
 		<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,30,0,0" Height="90.5" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-			<y:TimeLineControl Name="timeLine" RangeChanged="timeLine_RangeChanged" />
+			<y:TimeLineControl Name="timeLine" RangeChanged="TimeLineRangeChanged" />
 		</ScrollViewer>
 		<ToolBar Height="27" Name="toolBar1" VerticalAlignment="Top">
 			<Menu>
@@ -40,7 +40,7 @@
 				<y:QueryView x:Name="treeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="from t in Threads select t" IsQueryModifiable="False" />
 			</TabItem>
 			<TabItem Header="Top 20">
-				<y:QueryView x:Name="top20View" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="(from f in Functions where f.CallCount > 0 orderby f.CpuCyclesSpentSelf descending select f).Take(20)" IsQueryModifiable="False" />
+				<y:QueryView x:Name="top20View" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="(from f in Functions where f.CallCount > 0 &amp;&amp; f.IsUserCode orderby f.CpuCyclesSpentSelf descending select f).Take(20)" IsQueryModifiable="False" />
 			</TabItem>
 			<TabItem Name="dummyTab" Header="">
 			</TabItem>

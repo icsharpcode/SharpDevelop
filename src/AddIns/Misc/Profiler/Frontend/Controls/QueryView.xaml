@@ -119,7 +119,7 @@
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="%" Width="80" x:Name="percentColumn">
+					<GridViewColumn Header="% of parent" Width="80" x:Name="percentColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<DockPanel LastChildFill="false">
@@ -142,6 +142,7 @@
 			<Label>Search:</Label>
 			<TextBox Name="txtSearch" Width="150" KeyDown="txtSearchKeyDown"></TextBox>
 			<CheckBox Content="Show Query Bar" IsChecked="{Binding ShowQueryItems}" />
+			<Button Content="Expand hot path in selected subtree" Name="btnExpandHotPathSubtree" Click="BtnExpandHotPathSubtreeClick" />
 		</ToolBar>
 		<DockPanel Name="queryPanel" Visibility="{Binding ShowQueryItems, Converter={StaticResource VisibilityConverter}}" Grid.Row="1" Grid.ColumnSpan="2">
 			<Button Name="btnExecuteQuery" DockPanel.Dock="Right" Click="btnExecuteQueryClick">Execute Query</Button>

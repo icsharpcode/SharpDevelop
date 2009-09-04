@@ -54,7 +54,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			InitializeOldTabs();
 		}
 
-		void timeLine_RangeChanged(object sender, RangeEventArgs e)
+		void TimeLineRangeChanged(object sender, RangeEventArgs e)
 		{
 			foreach (TabItem item in this.tabView.Items) {
 				if (item != null && item.Content != null)

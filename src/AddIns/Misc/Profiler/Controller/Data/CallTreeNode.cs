@@ -61,6 +61,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		/// <summary>
+		/// Gets whether this call is user code.
+		/// </summary>
+		public virtual bool IsUserCode {
+			get {
+				return this.NameMapping.Id > 0;
+			}
+		}
+		
+		/// <summary>
 		/// Gets whether the function call started in a previous data set that's not selected.
 		/// </summary>
 		public abstract bool IsActiveAtStart { get; }

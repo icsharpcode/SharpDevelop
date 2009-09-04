@@ -97,7 +97,7 @@ namespace ICSharpCode.Profiler.Controls
 				if (this.parent == null)
 					return 1;
 				else
-					return (double)this.node.CpuCyclesSpent / (double)GetNodeFromLevel(1).node.CpuCyclesSpent;
+					return (double)this.node.CpuCyclesSpent / (double)this.parent.node.CpuCyclesSpent;
 			}
 		}
 		
@@ -108,15 +108,6 @@ namespace ICSharpCode.Profiler.Controls
 				
 				return Visibility.Collapsed;
 			}
-		}
-		
-		CallTreeNodeViewModel GetNodeFromLevel(int level)
-		{
-			if (this.level > level) {
-				return this.parent.GetNodeFromLevel(level);
-			}
-			
-			return this;
 		}
 		
 		public virtual string TimePercentageOfParentAsText

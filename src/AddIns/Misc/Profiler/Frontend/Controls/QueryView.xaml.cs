@@ -294,6 +294,23 @@ namespace ICSharpCode.Profiler.Controls
 			this.Invalidate();
 		}
 		
+		void BtnExpandHotPathSubtreeClick(object sender, RoutedEventArgs e)
+		{
+			foreach (CallTreeNodeViewModel node in this.SelectedItems.ToArray()) {
+				ExpandHotPathItems(node);
+			}
+		}
+		
+		void ExpandHotPathItems(CallTreeNodeViewModel parent)
+		{
+			if (parent.HotPathIndicatorVisibility == Visibility.Visible) {
+				parent.IsExpanded = true;
+				
+				foreach (CallTreeNodeViewModel node in parent.Children)
+					ExpandHotPathItems(node);
+			}
+		}
+		
 		public ContextMenu TreeViewContextMenu {
 			get { return this.treeView.ContextMenu; }
 			set { this.treeView.ContextMenu = this.ringDiagram.ContextMenu = value; }
