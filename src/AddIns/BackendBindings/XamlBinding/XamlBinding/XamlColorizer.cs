@@ -270,6 +270,10 @@ namespace ICSharpCode.XamlBinding
 		void ColorizeInvalidated()
 		{
 			foreach (var item in highlightCache.ToArray()) {
+				if (item.Key.IsDeleted) {
+					highlightCache.Remove(item.Key);
+					continue;
+				}
 				if (item.Value.Invalid) {
 					var newTask = new HighlightTask(this.Editor, item.Key, this.TextView, item.Value.GetResults());
 					newTask.Start();
@@ -288,7 +292,6 @@ namespace ICSharpCode.XamlBinding
 
 				current = current.NextLine;
 			}
-			Core.LoggingService.Debug("invalidated lines");
 		}
 		
 		#region highlight helpers
@@ -317,6 +320,7 @@ namespace ICSharpCode.XamlBinding
 		}
 		#endregion
 		
+		#region ILineTracker implementation
 		public void BeforeRemoveLine(DocumentLine line)
 		{
 			InvalidateLines(line.NextLine);
@@ -336,6 +340,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			highlightCache.Clear();
 		}
+		#endregion
 		
 		public struct HighlightingInfo
 		{
