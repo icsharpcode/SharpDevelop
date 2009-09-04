@@ -70,7 +70,13 @@ namespace ICSharpCode.Profiler.Controls
 			get { return (bool)GetValue(ShowQueryItemsProperty); }
 		}
 		
-		public ControlsTranslation Translation { get; set; }
+		public static readonly DependencyProperty TranslationProperty = DependencyProperty.Register(
+			"Translation", typeof(ControlsTranslation), typeof(QueryView));
+		
+		public ControlsTranslation Translation {
+			set { SetValue(TranslationProperty, value); }
+			get { return (ControlsTranslation)GetValue(TranslationProperty); }
+		}
 		#endregion
 
 		void txtSearchKeyDown(object sender, KeyEventArgs e)

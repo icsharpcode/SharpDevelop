@@ -20,6 +20,8 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 {
 	public class RunTestWithProfilerCommand : AbstractRunTestCommand
 	{
+		ProfilerRunner runner;
+		
 		protected override void RunTests(UnitTestApplicationStartHelper helper)
 		{
 			TestRunnerCategory.AppendLine(helper.GetCommandLine());
@@ -32,7 +34,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			startInfo.WorkingDirectory = UnitTestApplicationStartHelper.UnitTestApplicationDirectory;
 			LoggingService.Info("starting profiler...");
 			
-			ProfilerRunner runner = new ProfilerRunner(startInfo, true, new ProfilingDataSQLiteWriter(path, true, GetUnitTestNames(helper).ToArray()));
+			runner = new ProfilerRunner(startInfo, true, new ProfilingDataSQLiteWriter(path, true, GetUnitTestNames(helper).ToArray()));
 			
 			runner.RunFinished += delegate {
 				WorkbenchSingleton.SafeThreadCall(() => FileService.OpenFile(path));
@@ -72,22 +74,12 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			LoggingService.Info("shutting profiler down...");
 		}
 		
-		public override void Run()
-		{
-//			if (ProfilerService.IsProfilerLoaded && ProfilerService.CurrentProfiler.IsRunning) {
-//				MessageService.ShowError("Currently there is a profiling session in progress. " +
-//				                         "Please finish the current session before starting a new one.");
-//			} else {
-			base.Run();
-//			}
-		}
-		
 		protected override void OnStop()
 		{
-//			if (ProfilerService.CurrentProfiler.IsRunning) {
-//				LoggingService.Info("stopping profiler...");
-//				ProfilerService.CurrentProfiler.Stop();
-//			}
+			if (this.runner != null && this.runner.Profiler.IsRunning) {
+				LoggingService.Info("stopping profiler...");
+				runner.Stop();
+			}
 		}
 	}
 }

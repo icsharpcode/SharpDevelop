@@ -44,9 +44,9 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 						parts.Add("GetNodeByPath(" + string.Join(",", path.Select(i => i.ToString()).ToArray()) + ")");
 				}
 				
-				string header = "Merged Nodes: " + items.First().Name;
+				string header = string.Format(StringParser.Parse("${res:AddIns.Profiler.Commands.SetAsRoot.TabTitle}:"), items.First().Name);
 				if (nameId == null)
-					header = "Merged Nodes";
+					header = StringParser.Parse("${res:AddIns.Profiler.Commands.SetAsRoot.TabTitle}:");
 				
 				Parent.CreateTab(header, "Merge(" + string.Join(",", parts.ToArray()) + ")");
 			}	

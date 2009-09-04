@@ -140,7 +140,7 @@ namespace ICSharpCode.Profiler.Controls
 			return text;
 		}
 
-		public object CreateToolTip()
+		public object CreateToolTip(ControlsTranslation translation)
 		{
 			if (node.IsThread)
 				return Name; // only name for threads
@@ -151,11 +151,11 @@ namespace ICSharpCode.Profiler.Controls
 					((!string.IsNullOrEmpty(node.ReturnType)) ? node.ReturnType + " " : ""),
 					new Bold { Inlines = { node.Name } },
 					"(" + ((node.Parameters.Count > 0) ? string.Join(", ", node.Parameters.ToArray()) : "") + ")\n",
-					new Bold { Inlines = { "CPU Cycles:" } },
+					new Bold { Inlines = { translation.CpuCyclesText } },
 					" " + node.CpuCyclesSpent + "\n",
-					new Bold { Inlines = { "Time:" } },
+					new Bold { Inlines = { translation.TimeText } },
 					" " + node.TimeSpent.ToString("f6") + "ms\n",
-					new Bold { Inlines = { "Calls:" } },
+					new Bold { Inlines = { translation.CallsText } },
 					" " + node.CallCount.ToString()
 				}
 			};
@@ -382,7 +382,6 @@ namespace ICSharpCode.Profiler.Controls
 		}
 
 		#region IViewModel<CallTreeNodeViewModel> Member
-
 		int visibleElementCount = 1;
 
 		public virtual int VisibleElementCount
@@ -397,7 +396,6 @@ namespace ICSharpCode.Profiler.Controls
 				return new Thickness((level - 1) * 12, 0, 2, 0);
 			}
 		}
-
 		#endregion
 	}
 }

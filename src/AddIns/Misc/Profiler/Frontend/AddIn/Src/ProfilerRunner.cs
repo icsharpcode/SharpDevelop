@@ -65,9 +65,8 @@ namespace ICSharpCode.Profiler.AddIn
 			}
 			
 			PrintProfilerOptions();
-			
-			this.profiler.RegisterFailed += delegate { MessageService.ShowError("Could not register the profiler into COM Registry. Cannot start profiling!"); };
-			this.profiler.DeregisterFailed += delegate { MessageService.ShowError("Could not unregister the profiler from COM Registry!"); };
+			this.profiler.RegisterFailed += delegate { MessageService.ShowError("${res:AddIns.Profiler.Messages.RegisterFailed}"); };
+			this.profiler.DeregisterFailed += delegate { MessageService.ShowError("${res:AddIns.Profiler.Messages.UnregisterFailed}"); };
 			this.profiler.OutputUpdated += delegate { SetOutputText(profiler.ProfilerOutput); };
 			this.profiler.SessionEnded += delegate { FinishSession(); };
 		}
@@ -84,7 +83,7 @@ namespace ICSharpCode.Profiler.AddIn
 		
 		void FinishSession()
 		{
-			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog("Preparing for analysis", true)) {
+			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog(StringParser.Parse("${res:AddIns.Profiler.Messages.PreparingForAnalysis}"), true)) {
 				profiler.Dispose();
 
 				WorkbenchSingleton.SafeThreadAsyncCall(() => { controlWindow.AllowClose = true; this.controlWindow.Close(); });
@@ -122,18 +121,17 @@ namespace ICSharpCode.Profiler.AddIn
 				return null;
 			
 			if (!currentProj.IsStartable) {
-				if (MessageService.AskQuestion("This project cannot be started. Do you want to profile the solution's StartUp project instead?")) {
+				if (MessageService.AskQuestion("${res:AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject}")) {
 					currentProj = ProjectService.OpenSolution.StartupProject as AbstractProject;
 					if (currentProj == null) {
-						MessageService.ShowError("No startable project was found. Aborting ...");
+						MessageService.ShowError("${res:AddIns.Profiler.Messages.NoStartableProjectFound}");
 						return null;
 					}
 				} else
 					return null;
 			}
 			if (!File.Exists(currentProj.OutputAssemblyFullPath)) {
-				MessageService.ShowError("This project cannot be started because the executable file was not found, " +
-				                         "please ensure that the project and all its depencies are built correctly!");
+				MessageService.ShowError("${res:AddIns.Profiler.Messages.FileNotFound}");
 				return null;
 			}
 			
@@ -147,26 +145,26 @@ namespace ICSharpCode.Profiler.AddIn
 		static void EnsureProfileCategory()
 		{
 			if (profileCategory == null) {
-				MessageViewCategory.Create(ref profileCategory, "Profile", "Profile");
+				MessageViewCategory.Create(ref profileCategory, "Profile", StringParser.Parse("${res:AddIns.Profiler.MessageViewCategory}"));
 			}
 		}
 		
 		public static void SetOutputText(string text)
 		{
 			EnsureProfileCategory();
-			profileCategory.SetText(text);
+			profileCategory.SetText(StringParser.Parse(text));
 		}
 		
 		public static void AppendOutputText(string text)
 		{
 			EnsureProfileCategory();
-			profileCategory.AppendText(text);
+			profileCategory.AppendText(StringParser.Parse(text));
 		}
 		
 		public static void AppendOutputLine(string text)
 		{
 			EnsureProfileCategory();
-			profileCategory.AppendLine(text);
+			profileCategory.AppendLine(StringParser.Parse(text));
 		}
 		#endregion
 	}

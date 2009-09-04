@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="ICSharpCode.Profiler.AddIn.Views.ProfilerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
              xmlns:y="clr-namespace:ICSharpCode.Profiler.Controls;assembly=ICSharpCode.Profiler.Controls"
              xmlns:local="clr-namespace:ICSharpCode.Profiler.AddIn.Views">
 	<UserControl.Resources>
@@ -29,21 +30,20 @@
 		</ScrollViewer>
 		<ToolBar Height="27" Name="toolBar1" VerticalAlignment="Top">
 			<Menu>
-				<MenuItem Name="mnuQueryHistory" Header="Query History">
-					<MenuItem Name="mnuClearQueryHistory" Header="Clear History" Click="mnuClearQueryHistoryClick" />
+				<MenuItem Name="mnuQueryHistory" Header="{sd:Localize AddIns.Profiler.ProfilingView.QueryHistoryText}">
+					<MenuItem Name="mnuClearQueryHistory" Header="{sd:Localize AddIns.Profiler.ProfilingView.ClearQueryHistoryText}" Click="ClearQueryHistoryClick" />
 					<Separator />
 				</MenuItem>
 			</Menu>
 		</ToolBar>
-		<TabControl Name="tabView" HorizontalAlignment="Stretch" Margin="0,120,0,0" SelectionChanged="tabView_SelectionChanged">
-			<TabItem Header="Overview">
+		<TabControl Name="tabView" HorizontalAlignment="Stretch" Margin="0,120,0,0" SelectionChanged="TabViewSelectionChanged">
+			<TabItem Header="{sd:Localize AddIns.Profiler.ProfilingView.OverviewTabText}">
 				<y:QueryView x:Name="treeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="from t in Threads select t" IsQueryModifiable="False" />
 			</TabItem>
-			<TabItem Header="Top 20">
+			<TabItem Header="{sd:Localize AddIns.Profiler.ProfilingView.Top20TabText}">
 				<y:QueryView x:Name="top20View" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowQueryItems="False" CurrentQuery="(from f in Functions where f.CallCount > 0 &amp;&amp; f.IsUserCode orderby f.CpuCyclesSpentSelf descending select f).Take(20)" IsQueryModifiable="False" />
 			</TabItem>
-			<TabItem Name="dummyTab" Header="">
-			</TabItem>
+			<TabItem Name="dummyTab" />
 		</TabControl>
 	</Grid>
 </UserControl>

@@ -71,6 +71,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\ProfilerRunner.cs" />
+    <Compile Include="Src\SharpDevelopTranslation.cs" />
     <Compile Include="Src\Views\ProfilerView.xaml.cs">
       <DependentUpon>ProfilerView.xaml</DependentUpon>
     </Compile>

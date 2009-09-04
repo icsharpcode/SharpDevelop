@@ -33,11 +33,14 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			this.timeLine.SelectedStartIndex = 0;
 			this.timeLine.SelectedEndIndex = this.timeLine.ValuesList.Count;
 			
+			var translation = new SharpDevelopTranslation();
+			
 			foreach (TabItem item in this.tabView.Items) {
 				if (item.Content != null) {
 					QueryView view = item.Content as QueryView;
 					view.Reporter = new ErrorReporter(UpdateErrorList);
 					view.Provider = provider;
+					view.Translation = translation;
 					view.SetRange(this.timeLine.SelectedStartIndex, this.timeLine.SelectedEndIndex);
 					view.ContextMenuOpening += delegate(object sender, ContextMenuEventArgs e) {
 						object source = (e.OriginalSource is Shape) ? e.OriginalSource : view;
@@ -87,7 +90,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			e.CanExecute = this.timeLine.IsEnabled && this.timeLine.ValuesList.Count > 0;
 		}
 
-		void closeButton_Click(object sender, RoutedEventArgs e)
+		void CloseButtonClick(object sender, RoutedEventArgs e)
 		{
 			int index = tabView.Items.IndexOf(((Button)sender).Tag);
 			if (index == tabView.SelectedIndex)
@@ -108,7 +111,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			);
 		}
 		
-		void tabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		void TabViewSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (dummyTab.IsSelected)
 				Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() => CreateTab("New Tab", string.Empty)));
@@ -168,7 +171,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 			newTab.Header = new StackPanel { Orientation = Orientation.Horizontal, Children = { header, closeButton } };
 
-			closeButton.Click += new RoutedEventHandler(closeButton_Click);
+			closeButton.Click += new RoutedEventHandler(CloseButtonClick);
 			closeButton.Tag = newTab;
 
 			QueryView view;
@@ -225,7 +228,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			return index;
 		}
 		
-		void mnuClearQueryHistoryClick(object sender, RoutedEventArgs e)
+		void ClearQueryHistoryClick(object sender, RoutedEventArgs e)
 		{
 			while (mnuQueryHistory.Items.Count > 2)
 				mnuQueryHistory.Items.RemoveAt(2);

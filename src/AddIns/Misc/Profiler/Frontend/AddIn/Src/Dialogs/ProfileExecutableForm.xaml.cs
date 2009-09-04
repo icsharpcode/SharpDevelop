@@ -60,7 +60,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 					MessageService.ShowError(ex.Message);
 				}
 			} catch (ArgumentNullException) {
-				MessageService.ShowError("Invalid data, please try again!");
+				MessageService.ShowError(StringParser.Parse("${res:AddIns.Profiler.ProfileExecutable.ErrorMessage}"));
 			} catch (FileNotFoundException ex) {
 				MessageService.ShowError(ex.Message);
 			} catch (DirectoryNotFoundException ex2) {
