@@ -85,13 +85,13 @@ namespace ICSharpCode.FormsDesigner.Services
 			IProject project = prs.ProjectContent.Project as IProject;
 			ImageResourceEditorDialog dialog;
 			
-			if (projectResource != null && Object.ReferenceEquals(projectResource.OriginalValue, value)) {
+			if (projectResource != null && Object.ReferenceEquals(projectResource.OriginalValue, value) && prs.DesignerSupportsProjectResources) {
 				dialog = new ImageResourceEditorDialog(project, context.PropertyDescriptor.PropertyType, projectResource);
 			} else {
 				if (context.PropertyDescriptor.PropertyType == typeof(Image)) {
-					dialog = new ImageResourceEditorDialog(project, value as Image);
+					dialog = new ImageResourceEditorDialog(project, value as Image, prs.DesignerSupportsProjectResources);
 				} else if (context.PropertyDescriptor.PropertyType == typeof(Icon)) {
-					dialog = new ImageResourceEditorDialog(project, value as Icon);
+					dialog = new ImageResourceEditorDialog(project, value as Icon, prs.DesignerSupportsProjectResources);
 				} else {
 					throw new InvalidOperationException("ImageResourceEditor called on unsupported property type: " + context.PropertyDescriptor.PropertyType.ToString());
 				}

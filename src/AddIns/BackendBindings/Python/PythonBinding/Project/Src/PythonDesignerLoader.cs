@@ -47,6 +47,11 @@ namespace ICSharpCode.PythonBinding
 			host.AddService(typeof(ComponentSerializationService), new CodeDomComponentSerializationService((IServiceProvider)host));
 			host.AddService(typeof(INameCreationService), new XmlDesignerLoader.NameCreationService(host));
 			host.AddService(typeof(IDesignerSerializationService), new DesignerSerializationService(host));
+			
+			ProjectResourceService projectResourceService = host.GetService(typeof(ProjectResourceService)) as ProjectResourceService;
+			if (projectResourceService != null) {
+				projectResourceService.DesignerSupportsProjectResources = false;
+			}
 
 			base.BeginLoad(host);
 		}

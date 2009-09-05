@@ -27,6 +27,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		IProjectContent projectContent;
 		string stringLiteralDelimiter;
+		bool designerSupportsProjectResources = true;
 		
 		public ProjectResourceService(IProjectContent projectContent)
 		{
@@ -45,6 +46,11 @@ namespace ICSharpCode.FormsDesigner.Services
 					this.stringLiteralDelimiter = null;
 				}
 			}
+		}
+		
+		public bool DesignerSupportsProjectResources { 
+			get { return designerSupportsProjectResources; }
+			set { designerSupportsProjectResources = value; }
 		}
 		
 		/// <summary>

@@ -305,7 +305,7 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Loading += this.DesignerLoading;
 			designSurface.Loaded += this.DesignerLoaded;
 			designSurface.Flushed += this.DesignerFlushed;
-			designSurface.Unloading += this.DesingerUnloading;
+			designSurface.Unloading += this.DesignerUnloading;
 			
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(this.Control, designSurface));
 			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(this, designSurface);
@@ -404,7 +404,7 @@ namespace ICSharpCode.FormsDesigner
 				designSurface.Loading -= this.DesignerLoading;
 				designSurface.Loaded -= this.DesignerLoaded;
 				designSurface.Flushed -= this.DesignerFlushed;
-				designSurface.Unloading -= this.DesingerUnloading;
+				designSurface.Unloading -= this.DesignerUnloading;
 				
 				IComponentChangeService componentChangeService = designSurface.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
 				if (componentChangeService != null) {
@@ -492,7 +492,7 @@ namespace ICSharpCode.FormsDesigner
 			Application.DoEvents();
 		}
 		
-		void DesingerUnloading(object sender, EventArgs e)
+		void DesignerUnloading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader unloading...");
 			this.unloading = true;
