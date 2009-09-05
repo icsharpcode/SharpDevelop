@@ -83,11 +83,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				folder.IdGuid = Guid.NewGuid().ToString().ToUpperInvariant();
 			}
 			
+			bool isNew = false;
 			if (folder.Parent != null) {
 				folder.Parent.RemoveFolder(folder);
+			} else {
+				// this is a new project/solution folder
+				isNew = true;
+			}
+			if (isNew) {
+				this.ParentSolution.BeforeAddFolderToSolution(folder);
 			}
 			folder.Parent = this;
 			Folders.Add(folder);
+			if (isNew) {
+				this.ParentSolution.AfterAddFolderToSolution(folder);
+			}
 		}
 		
 		public virtual void RemoveFolder(ISolutionFolder folder)

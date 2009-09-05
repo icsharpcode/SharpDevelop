@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>contains &lt;GUID, (IProject/ISolutionFolder)&gt; pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		
+		bool isLoading;
 		string fileName = String.Empty;
 		
 		MSBuild.Engine buildEngine = MSBuildInternals.CreateEngine();
@@ -250,10 +251,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override void AddFolder(ISolutionFolder folder)
+		internal void BeforeAddFolderToSolution(ISolutionFolder folder)
 		{
 			IProject project = folder as IProject;
-			if (project != null) {
+			if (project != null && !isLoading) {
+				// HACK: don't deal with configurations during loading
 				if (this.GetConfigurationNames().Count == 0) {
 					foreach (string config in project.ConfigurationNames) {
 						foreach (string platform in project.PlatformNames)
@@ -261,9 +263,18 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
+		}
+		
+		public override void AddFolder(ISolutionFolder folder)
+		{
 			base.AddFolder(folder);
 			guidDictionary[folder.IdGuid] = folder;
-			if (project != null) {
+		}
+		
+		internal void AfterAddFolderToSolution(ISolutionFolder folder)
+		{
+			IProject project = folder as IProject;
+			if (project != null && !isLoading) {
 				var projectConfigurations = project.ConfigurationNames;
 				var solutionConfigurations = this.GetConfigurationNames();
 				var projectPlatforms = project.PlatformNames;
@@ -1189,8 +1200,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			} else {
 				newSolution.fileName = fileName;
-				if (!SetupSolution(newSolution)) {
-					return null;
+				newSolution.isLoading = true;
+				try {
+					if (!SetupSolution(newSolution)) {
+						return null;
+					}
+				} finally {
+					newSolution.isLoading = false;
 				}
 			}
 			
