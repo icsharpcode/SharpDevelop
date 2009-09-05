@@ -1854,18 +1854,17 @@ out implementsClause);
 		}
 		case 2: case 45: case 49: case 51: case 52: case 53: case 54: case 57: case 74: case 91: case 94: case 103: case 108: case 113: case 120: case 126: case 130: case 133: case 156: case 162: case 169: case 188: case 197: case 198: case 208: case 209: case 215: {
 
-#line  1026 "VBNET.ATG" 
-			Location startPos = t.Location; 
-
-#line  1028 "VBNET.ATG" 
+#line  1027 "VBNET.ATG" 
 			m.Check(Modifiers.Fields);
 			FieldDeclaration fd = new FieldDeclaration(attributes, null, m.Modifier);
-			fd.StartLocation = m.GetDeclarationLocation(startPos); 
 			
 			IdentifierForFieldDeclaration();
 
-#line  1032 "VBNET.ATG" 
+#line  1030 "VBNET.ATG" 
 			string name = t.val; 
+
+#line  1031 "VBNET.ATG" 
+			fd.StartLocation = m.GetDeclarationLocation(t.Location); 
 			VariableDeclaratorPartAfterIdentifier(
 #line  1033 "VBNET.ATG" 
 variableDeclarators, name);

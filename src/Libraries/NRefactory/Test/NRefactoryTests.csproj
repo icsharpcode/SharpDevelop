@@ -80,6 +80,7 @@
     <Compile Include="Parser\Expressions\StackAllocExpressionTests.cs" />
     <Compile Include="Parser\GlobalScope\UsingDeclarationTests.cs" />
     <Compile Include="Parser\GlobalScope\TypeDeclarationTests.cs" />
+    <Compile Include="Parser\SnippetParserTests.cs" />
     <Compile Include="Parser\TypeLevel\ConstructorDeclarationTests.cs" />
     <Compile Include="Parser\TypeLevel\EventDeclarationTests.cs" />
     <Compile Include="Parser\TypeLevel\FieldDeclarationTests.cs" />
