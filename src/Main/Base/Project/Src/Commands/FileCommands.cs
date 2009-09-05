@@ -6,10 +6,11 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -141,25 +142,23 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		internal static void Save(IWorkbenchWindow window)
 		{
-			window.ViewContents.ForEach(Save);
-		}
-		
-		internal static void Save(IViewContent content)
-		{
-			if (content != null) {
-				if (content is ICustomizedCommands) {
-					if (((ICustomizedCommands)content).SaveAsCommand()) {
-						return;
-					}
-				}
-				if (content.IsViewOnly) {
-					return;
-				}
-				// save the primary file only
-				if (content.PrimaryFile != null) {
-					Save(content.PrimaryFile);
-				}
+			List<IViewContent> remainingViewContents = new List<IViewContent>();
+			
+			foreach (IViewContent content in window.ViewContents) {
+				// try to run customized Save As Command, exclude ViewContent if successful
+				if (content is ICustomizedCommands && (content as ICustomizedCommands).SaveAsCommand())
+					continue;
+				// exclude view only ViewContents
+				if (content.IsViewOnly)
+					continue;
+				
+				remainingViewContents.Add(content);
 			}
+			
+			// save remaining files once (display Save As dialog)
+			var files = remainingViewContents.SelectMany(content => content.Files).Distinct();
+			
+			files.ForEach(Save);
 		}
 		
 		internal static void Save(OpenedFile file)
