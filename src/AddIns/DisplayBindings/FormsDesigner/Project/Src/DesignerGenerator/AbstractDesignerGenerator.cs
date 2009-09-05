@@ -25,7 +25,7 @@ using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public abstract class AbstractDesignerGenerator : IDesignerGenerator
+	public abstract class AbstractDesignerGenerator : IDesignerGenerator2
 	{
 		/// <summary>The currently open part of the class being designed.</summary>
 		IClass currentClassPart;
@@ -211,6 +211,18 @@ namespace ICSharpCode.FormsDesigner
 		{
 		}
 		
+		public virtual void NotifyFormRenamed(string newName)
+		{
+			Reparse();
+			LoggingService.Info("Renaming form to " + newName);
+			if (this.formClass == null) {
+				LoggingService.Warn("Cannot rename, formClass not found");
+			} else {
+				ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, newName);
+				Reparse();
+			}
+		}
+		
 		public virtual void MergeFormChanges(CodeCompileUnit unit)
 		{
 			Reparse();
@@ -236,14 +248,6 @@ namespace ICSharpCode.FormsDesigner
 			if (this.formClass == null) {
 				MessageService.ShowMessage("Cannot save form: InitializeComponent method does not exist anymore. You should not modify the Designer.cs file while editing a form.");
 				return;
-			}
-			
-			if (formClass.Name != this.formClass.Name) {
-				LoggingService.Info("Renaming form to " + formClass.Name);
-				ICSharpCode.SharpDevelop.Refactoring.FindReferencesAndRenameHelper.RenameClass(this.formClass, formClass.Name);
-				this.ViewContent.DesignerCodeFile.MakeDirty();
-				this.ViewContent.PrimaryFile.MakeDirty();
-				Reparse();
 			}
 			
 			FixGeneratedCode(this.formClass, initializeComponent);

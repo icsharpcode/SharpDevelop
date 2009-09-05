@@ -369,7 +369,20 @@ namespace ICSharpCode.FormsDesigner
 			bool loading = this.loader != null && this.loader.Loading;
 			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
 			if (!loading && !unloading) {
-				this.MakeDirty();
+				try {
+					this.MakeDirty();
+					if (e.Component != null && e.Component == Host.RootComponent
+					    && e.Member != null && e.Member.Name == "Name" && e.NewValue is string
+					    && !object.Equals(e.OldValue, e.NewValue))
+					{
+						// changing the name of the form
+						IDesignerGenerator2 gen2 = generator as IDesignerGenerator2;
+						if (gen2 != null)
+							gen2.NotifyFormRenamed((string)e.NewValue);
+					}
+				} catch (Exception ex) {
+					MessageService.ShowError(ex);
+				}
 			}
 		}
 		
