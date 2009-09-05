@@ -217,7 +217,24 @@ namespace ICSharpCode.FormsDesigner.Services
 				this.WriteResourcesToBuffer();
 				if (buffer == null || buffer.Length == 0) return;
 				stream.Write(buffer, 0, buffer.Length);
-				if (IsNewFile) {
+				// SD2-1588:
+				// The possible call to AddFileToProject below
+				// can cause a Subversion add command for the file to be issued.
+				// For this command to succeed,
+				// Subversion seems to require delete access to the file.
+				// Since the OpenedFile implementation does not grant
+				// delete access (what is very reasonable imho),
+				// close the stream here to "unlock" it.
+				// Of course this only works as long as the OpenedFile
+				// implementation does not require the stream to be left open
+				// after the save operation.
+				stream.Close();
+				
+				// Check for file existance before adding it to the project
+				// because this may as well be a save operation to a
+				// MemoryStream before the file has been written to disk
+				// for the first time.
+				if (IsNewFile && File.Exists(this.OpenedFile.FileName)) {
 					resourceStore.AddFileToProject(this);
 					IsNewFile = false;
 				}
