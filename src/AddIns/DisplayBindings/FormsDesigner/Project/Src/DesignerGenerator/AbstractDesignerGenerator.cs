@@ -502,6 +502,11 @@ namespace ICSharpCode.FormsDesigner
 			int line = GetEventHandlerInsertionLine(currentClassPart);
 			LoggingService.Debug("-> Inserting new event handler at line " + line.ToString(System.Globalization.CultureInfo.InvariantCulture));
 			
+			if (line - 1 == this.viewContent.PrimaryFileDocument.TotalNumberOfLines) {
+				// insert a newline at the end of file if necessary (can happen in Boo if there is no newline at the end of the document)
+				this.viewContent.PrimaryFileDocument.Insert(this.viewContent.PrimaryFileDocument.TextLength, Environment.NewLine);
+			}
+			
 			int offset = this.viewContent.PrimaryFileDocument.GetLineSegment(line - 1).Offset;
 			
 			this.viewContent.PrimaryFileDocument.Insert(offset, CreateEventHandler(edesc.EventType, eventMethodName, body, tabs));
