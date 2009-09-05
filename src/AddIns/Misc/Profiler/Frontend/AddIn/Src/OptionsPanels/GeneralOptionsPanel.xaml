@@ -21,7 +21,7 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{sd:Localize AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription}" />
-          <Slider Margin="3" Width="150"
+          <Slider Margin="3" Width="100"
             Name="slSharedMemorySize"
             IsDirectionReversed="False"
             TickPlacement="Both"

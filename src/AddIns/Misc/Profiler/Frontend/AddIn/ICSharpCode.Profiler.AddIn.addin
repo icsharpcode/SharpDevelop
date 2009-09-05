@@ -44,46 +44,46 @@
 	<Path name="/AddIns/Profiler/QueryView/ContextMenu">
 		<MenuItem
 			id="GoToDefinition"
-			label="{res:AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition}"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition}"
 			class="ICSharpCode.Profiler.AddIn.Commands.GoToDefinition" />
 		<MenuItem
 			id="FindReferences"
-			label="{res:SharpDevelop.Refactoring.FindReferences}"
+			label="${res:SharpDevelop.Refactoring.FindReferences}"
 			class="ICSharpCode.Profiler.AddIn.Commands.FindReferences" />
 		<MenuItem type="Separator" id="Separator2" />
 		<MenuItem
 			id="SetAsRoot"
-			label="{res:AddIns.Profiler.ProfilingView.ContextMenu.SetAsRoot}"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.SetAsRoot}"
 			class="ICSharpCode.Profiler.AddIn.Commands.SetAsRoot" />
 		<MenuItem
 			id="FindCallsOfSelected"
-			label="{res:AddIns.Profiler.ProfilingView.ContextMenu.FindCallsOfSelected}"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.FindCallsOfSelected}"
 			class="ICSharpCode.Profiler.AddIn.Commands.FindCallsOfSelected" />
 		<MenuItem
 			id="ShowFunctions"
-			label="{res:AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions}"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions}"
 			class="ICSharpCode.Profiler.AddIn.Commands.ShowFunctions" />
 		<MenuItem type="Separator" id="Separator1" />
 		<MenuItem
 			id="CopyStacktrace"
-			label="{res:AddIns.Profiler.ProfilingView.ContextMenu.CopyStacktrace}"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.CopyStacktrace}"
 			class="ICSharpCode.Profiler.AddIn.Commands.CopyStacktrace" />
 		<MenuItem
 			id="CopySelectedData"
-			label="{res:AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData}"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData}"
 			class="ICSharpCode.Profiler.AddIn.Commands.CopySelectedData" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/FileFilter">
-		<FileFilter id = "SharpDevelopProfingSession"
+		<FileFilter id = "SharpDevelopProfilingSession"
 		            insertbefore="AllFiles"
-		            name = "{res:AddIns.Profiler.FileExtensionDescription}"
+		            name = "${res:AddIns.Profiler.FileExtensionDescription}"
 		            extensions = "*.sdps"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog">
 		<DialogPanel id    = "Profiling"
-		             label = "{res:AddIns.Profiler.Options.Title}"
+		             label = "${res:AddIns.Profiler.Options.Title}"
 		             class = "ICSharpCode.Profiler.AddIn.OptionsPanels.General"
 		             insertbefore = "TextEditorOptions" />
 	</Path>
@@ -97,7 +97,7 @@
 				</Not>
 			</And>
 			<MenuItem id    = "RunWithProfiler"
-			          label = "{res:AddIns.Profiler.UnitTests.RunWithProfiler}"
+			          label = "${res:AddIns.Profiler.UnitTests.RunWithProfiler}"
 			          class = "ICSharpCode.Profiler.AddIn.Commands.RunTestWithProfilerCommand"/>
 		</ComplexCondition>
 	</Path>

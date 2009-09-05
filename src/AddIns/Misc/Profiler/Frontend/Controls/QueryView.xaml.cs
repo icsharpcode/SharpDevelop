@@ -212,8 +212,13 @@ namespace ICSharpCode.Profiler.Controls
 			if ((RangeEnd < 0 && RangeEnd >= Provider.DataSets.Count) &&
 			    (RangeStart < 0 && RangeStart >= Provider.DataSets.Count))
 				return;
-
-			Debug.Assert(RangeStart <= RangeEnd);
+			
+			if (Provider.DataSets.Count == 0)
+				return;
+			
+			RangeEnd = Math.Min(RangeEnd, Provider.DataSets.Count - 1);
+			RangeStart = Math.Max(RangeStart, 0);
+			
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
 			LoadData();
@@ -250,7 +255,7 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			try {
 				if (compiler.Compile()) {
-					var data = compiler.ExecuteQuery(provider, rangeStart, rangeEnd - 1);
+					var data = compiler.ExecuteQuery(provider, rangeStart, rangeEnd);
 					var nodes = data.Select(i => new CallTreeNodeViewModel(i, null)).ToList();
 					return new HierarchyList<CallTreeNodeViewModel>(nodes);
 				}
