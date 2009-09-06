@@ -184,7 +184,7 @@ namespace UnitTesting.Tests
 			
 			FileUtility.ApplicationRootPath = @"C:\SharpDevelop";
 			
-			string expectedFullCommandLine = "\"C:\\SharpDevelop\\bin\\Tools\\NUnit\\nunit-console.exe\" \"C:\\Projects\\MyTests\\MyTests.dll\" /nologo";
+			string expectedFullCommandLine = "\"C:\\SharpDevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" \"C:\\Projects\\MyTests\\MyTests.dll\" /nologo";
 			Assert.AreEqual(expectedFullCommandLine, helper.GetCommandLine());
 		}
 		

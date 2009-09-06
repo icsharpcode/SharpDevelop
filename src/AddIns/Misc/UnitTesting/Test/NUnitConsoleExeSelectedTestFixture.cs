@@ -42,9 +42,23 @@ namespace UnitTesting.Tests
 			MockCSharpProject project = new MockCSharpProject();
 			UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
 			helper.Initialize(project, null);
-			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-dotnet2.exe", helper.UnitTestApplication);
+			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe", helper.UnitTestApplication);
 		}
 		
+		
+		[Test]
+		public void TargetCpuAnyCPUDotnet2()
+		{
+			MockCSharpProject project = new MockCSharpProject();
+			project.ActiveConfiguration = "Debug";
+			project.ActivePlatform = "AnyCPU";
+			project.SetProperty("PlatformTarget", "AnyCPU");
+			project.SetProperty("TargetFrameworkVersion", "v3.5");
+			
+			UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
+			helper.Initialize(project, null);
+			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console-dotnet2.exe", helper.UnitTestApplication);
+		}
 		
 		[Test]
 		public void NUnitConsole32BitUsedWhenTargetCpuIs32BitDotnet2()
