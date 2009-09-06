@@ -81,7 +81,7 @@
 		            extensions = "*.sdps"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Dialogs/OptionsDialog">
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id    = "Profiling"
 		             label = "${res:AddIns.Profiler.Options.Title}"
 		             class = "ICSharpCode.Profiler.AddIn.OptionsPanels.General"

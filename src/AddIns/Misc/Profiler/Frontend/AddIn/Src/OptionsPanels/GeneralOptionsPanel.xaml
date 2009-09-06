@@ -9,18 +9,20 @@
         Orientation="Vertical">
         <CheckBox Margin="3"
           Name="chkEnableDC"
-          VerticalAlignment="Top"
-          Content="{sd:Localize AddIns.Profiler.Options.General.DataCollection.EnableDC}" />
+          VerticalAlignment="Top">
+	      	<TextBlock TextWrapping="Wrap" Text="{sd:Localize AddIns.Profiler.Options.General.DataCollection.EnableDC}" />
+      	</CheckBox>
         <CheckBox Margin="3"
           Name="chkEnableDCAtStartup"
+          VerticalAlignment="Top">
+	      	<TextBlock TextWrapping="Wrap" Text="{sd:Localize AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup}" />
+        </CheckBox>
+        <Label Margin="3"
+          HorizontalAlignment="Left"
           VerticalAlignment="Top"
-          Content="{sd:Localize AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup}" />
+          Content="{sd:Localize AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription}" />
         <StackPanel Margin="3"
           Orientation="Horizontal">
-      	   <Label Margin="3"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="{sd:Localize AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription}" />
           <Slider Margin="3" Width="100"
             Name="slSharedMemorySize"
             IsDirectionReversed="False"
@@ -33,9 +35,9 @@
             IsSnapToTickEnabled="True"
             VerticalAlignment="Top" />
           <TextBlock Margin="3"
-            HorizontalAlignment="Right"
+            HorizontalAlignment="Left"
             Text="{Binding Value, ElementName=slSharedMemorySize, StringFormat=\{0\} MB}"
-            VerticalAlignment="Top" />
+            VerticalAlignment="Center" />
         </StackPanel>
         <CheckBox Margin="3"
           Name="chkDoNotProfileNetInternals"
