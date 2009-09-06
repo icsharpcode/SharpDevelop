@@ -60,8 +60,7 @@ namespace ICSharpCode.Core.Presentation
 				case "Separator":
 					return new ConditionalSeparator(codon, caller, true);
 				case "CheckBox":
-					return "CheckBox";
-					//return new ToolBarCheckBox(codon, caller);
+					return new ToolBarCheckBox(codon, caller);
 				case "Item":
 					return new ToolBarButton(codon, caller, createCommand);
 				case "ComboBox":

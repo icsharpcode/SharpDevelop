@@ -86,6 +86,7 @@
     <Compile Include="SplitButton.cs" />
     <Compile Include="StringParseExtension.cs" />
     <Compile Include="ToolBar\ToolBarButton.cs" />
+    <Compile Include="ToolBar\ToolBarCheckBox.cs" />
     <Compile Include="ToolBar\ToolBarComboBox.cs" />
     <Compile Include="ToolBar\ToolBarDropDownButton.cs" />
     <Compile Include="ToolBar\ToolBarService.cs" />

@@ -57,6 +57,14 @@ namespace ICSharpCode.Core.Presentation
 			commandCreated = true;
 		}
 		
+		public ICommand GetAddInCommand()
+		{
+			if (!commandCreated) {
+				CreateCommand();
+			}
+			return addInCommand;
+		}
+		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification="We're displaying the message to the user.")]
 		void CreateCommand()
 		{

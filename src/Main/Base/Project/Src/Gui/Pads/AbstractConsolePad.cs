@@ -38,10 +38,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			this.panel = new DockPanel();
 			
+			this.console = new ConsoleControl();
+			
+			// creating the toolbar accesses the WordWrap property, so we must do this after creating the console
 			this.toolbar = ToolBarService.CreateToolBar(this, toolBarTreePath);
 			this.toolbar.SetValue(DockPanel.DockProperty, Dock.Top);
-			
-			this.console = new ConsoleControl();
 			
 			this.panel.Children.Add(toolbar);
 			this.panel.Children.Add(console);

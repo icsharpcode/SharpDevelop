@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <author name="Daniel Grunwald"/>
@@ -8,25 +8,31 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace ICSharpCode.Core.Presentation
 {
-	/// <summary>
-	/// A tool bar button based on the AddIn-tree.
-	/// </summary>
-	sealed class ToolBarButton : Button, IStatusUpdate
+	sealed class ToolBarCheckBox : CheckBox, IStatusUpdate
 	{
 		readonly Codon codon;
 		readonly object caller;
+		BindingExpressionBase isCheckedBinding;
 		
-		public ToolBarButton(Codon codon, object caller, bool createCommand)
+		public ToolBarCheckBox(Codon codon, object caller)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
 			this.codon = codon;
 			this.caller = caller;
-			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
+			this.Command = CommandWrapper.GetCommand(codon, caller, true);
+			CommandWrapper wrapper = this.Command as CommandWrapper;
+			if (wrapper != null) {
+				ICheckableMenuCommand cmd = wrapper.GetAddInCommand() as ICheckableMenuCommand;
+				if (cmd != null) {
+					isCheckedBinding = SetBinding(IsCheckedProperty, new Binding("IsChecked") { Source = cmd, Mode = BindingMode.OneWay });
+				}
+			}
 			
 			if (codon.Properties.Contains("icon")) {
 				var image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
@@ -38,7 +44,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 			UpdateText();
 			
-			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.ButtonStyleKey);
+			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.CheckBoxStyleKey);
 		}
 		
 		public void UpdateText()
@@ -54,6 +60,12 @@ namespace ICSharpCode.Core.Presentation
 				this.Visibility = Visibility.Collapsed;
 			else
 				this.Visibility = Visibility.Visible;
+		}
+		
+		protected override void OnClick()
+		{
+			base.OnClick();
+			isCheckedBinding.UpdateTarget();
 		}
 	}
 }

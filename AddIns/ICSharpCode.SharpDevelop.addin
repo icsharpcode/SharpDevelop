@@ -2179,7 +2179,7 @@
 		             type    = "CheckBox"
 		             icon    = "OutputPad.Toolbar.ToggleWordWrap"
 		             tooltip = "${res:MainWindow.Windows.CompilerMessageView.ToggleWordWrapButton.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Gui.ToggleConsoleWordWrapComman"/>
+		             class   = "ICSharpCode.SharpDevelop.Gui.ToggleConsoleWordWrapCommand"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">

@@ -219,7 +219,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		/// <summary>
-		/// Converts from the Windows-Forms style label format (accessor key marked with '&')
+		/// Converts from the Windows-Forms style label format (accessor key marked with '&amp;')
 		/// to a WPF label format (accessor key marked with '_').
 		/// </summary>
 		public static string ConvertLabel(string label)

@@ -5,15 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using System.Windows.Threading;
 
 namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {
@@ -195,13 +195,15 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		{
 			textEditor.TextArea.Selection = Selection.Empty;
 			textEditor.TextArea.Caret.Position = new TextViewPosition(line, column);
+			// might have jumped to a different location if column was outside the valid range
+			TextLocation actualLocation = textEditor.TextArea.Caret.Location;
 			if (textEditor.ActualHeight > 0) {
-				textEditor.ScrollTo(line, column);
+				textEditor.ScrollTo(actualLocation.Line, actualLocation.Column);
 			} else {
 				// we have to delay the scrolling if the text editor is not yet loaded
 				textEditor.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(
 					delegate {
-						textEditor.ScrollTo(line, column);
+						textEditor.ScrollTo(actualLocation.Line, actualLocation.Column);
 					}));
 			}
 		}
