@@ -109,8 +109,11 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
-		/// Gets the end offset of the segment.
+		/// Gets/Sets the end offset of the segment.
 		/// </summary>
+		/// <remarks>
+		/// Setting the end offset will change the length, the start offset will stay constant.
+		/// </remarks>
 		public int EndOffset {
 			get {
 				return StartOffset + Length;
@@ -126,6 +129,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets/Sets the length of the segment.
 		/// </summary>
+		/// <remarks>
+		/// Setting the length will change the end offset, the start offset will stay constant.
+		/// </remarks>
 		public int Length {
 			get {
 				return segmentLength;

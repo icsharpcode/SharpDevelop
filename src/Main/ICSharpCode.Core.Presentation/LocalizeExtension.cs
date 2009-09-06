@@ -17,7 +17,7 @@ namespace ICSharpCode.Core.Presentation
 	/// Markup extension that retrieves localized resource strings.
 	/// </summary>
 	[MarkupExtensionReturnType(typeof(string))]
-	public sealed class LocalizeExtension : LanguageDependendExtension
+	public sealed class LocalizeExtension : LanguageDependentExtension
 	{
 		public LocalizeExtension(string key)
 		{
@@ -48,9 +48,9 @@ namespace ICSharpCode.Core.Presentation
 		}
 	}
 	
-	public abstract class LanguageDependendExtension : MarkupExtension, INotifyPropertyChanged, IWeakEventListener
+	public abstract class LanguageDependentExtension : MarkupExtension, INotifyPropertyChanged, IWeakEventListener
 	{
-		protected LanguageDependendExtension()
+		protected LanguageDependentExtension()
 		{
 			this.UpdateOnLanguageChange = true;
 		}

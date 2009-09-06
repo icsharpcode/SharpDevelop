@@ -700,7 +700,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			#if DEBUG
 			if (!selection.IsEmpty) {
 				foreach (ISegment s in selection.Segments) {
-					Debug.Assert(ReadOnlySectionProvider.GetDeletableSegments(s).Count() == 0);
+					Debug.Assert(this.ReadOnlySectionProvider.GetDeletableSegments(s).Count() == 0);
 				}
 			}
 			#endif
@@ -713,6 +713,23 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (this.Document == null)
 				throw ThrowUtil.NoDocumentAssigned();
 			selection.ReplaceSelectionWithText(this, newText);
+		}
+		
+		internal ISegment[] GetDeletableSegments(ISegment segment)
+		{
+			var deletableSegments = this.ReadOnlySectionProvider.GetDeletableSegments(segment);
+			if (deletableSegments == null)
+				throw new InvalidOperationException("ReadOnlySectionProvider.GetDeletableSegments returned null");
+			var array = deletableSegments.ToArray();
+			int lastIndex = segment.Offset;
+			for (int i = 0; i < array.Length; i++) {
+				if (array[i].Offset < lastIndex)
+					throw new InvalidOperationException("ReadOnlySectionProvider returned incorrect segments (outside of input segment / wrong order)");
+				lastIndex = array[i].EndOffset;
+			}
+			if (lastIndex > segment.EndOffset)
+				throw new InvalidOperationException("ReadOnlySectionProvider returned incorrect segments (outside of input segment / wrong order)");
+			return array;
 		}
 		#endregion
 		

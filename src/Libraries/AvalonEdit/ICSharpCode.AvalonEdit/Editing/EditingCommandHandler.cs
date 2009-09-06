@@ -151,7 +151,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 					}
 					if (segments != null) {
 						foreach (ISegment segment in segments.Reverse()) {
-							foreach (ISegment writableSegment in textArea.ReadOnlySectionProvider.GetDeletableSegments(segment).Reverse()) {
+							foreach (ISegment writableSegment in textArea.GetDeletableSegments(segment).Reverse()) {
 								transformSegment(textArea, writableSegment);
 							}
 						}
@@ -208,7 +208,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 					int offset = line.Offset;
 					ISegment s = TextUtilities.GetSingleIndentationSegment(line.Document, offset, textArea.Options.IndentationSize);
 					if (s.Length > 0) {
-						s = textArea.ReadOnlySectionProvider.GetDeletableSegments(s).FirstOrDefault();
+						s = textArea.GetDeletableSegments(s).FirstOrDefault();
 						if (s != null && s.Length > 0) {
 							textArea.Document.Remove(s.Offset, s.Length);
 						}

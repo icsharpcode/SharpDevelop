@@ -77,9 +77,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 						}
 					}
 				} else {
-					var segmentsToDelete = textArea.ReadOnlySectionProvider.GetDeletableSegments(this).ToList();
-					for (int i = segmentsToDelete.Count - 1; i >= 0; i--) {
-						if (i == segmentsToDelete.Count - 1) {
+					ISegment[] segmentsToDelete = textArea.GetDeletableSegments(this);
+					for (int i = segmentsToDelete.Length - 1; i >= 0; i--) {
+						if (i == segmentsToDelete.Length - 1) {
 							textArea.Caret.Offset = segmentsToDelete[i].EndOffset;
 							textArea.Document.Replace(segmentsToDelete[i], newText);
 						} else {

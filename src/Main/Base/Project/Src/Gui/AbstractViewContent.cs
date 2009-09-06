@@ -341,7 +341,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		string titleName;
-		LanguageDependendExtension titleNameLocalizeExtension;
+		LanguageDependentExtension titleNameLocalizeExtension;
 		
 		string IViewContent.TitleName {
 			get {

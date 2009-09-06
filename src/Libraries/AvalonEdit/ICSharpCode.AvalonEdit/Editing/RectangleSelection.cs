@@ -215,9 +215,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 					textArea.Document.Insert(lineSegment.Offset, newText);
 				}
 			} else {
-				var segmentsToDelete = textArea.ReadOnlySectionProvider.GetDeletableSegments(lineSegment).ToList();
-				for (int i = segmentsToDelete.Count - 1; i >= 0; i--) {
-					if (i == segmentsToDelete.Count - 1) {
+				ISegment[] segmentsToDelete = textArea.GetDeletableSegments(lineSegment);
+				for (int i = segmentsToDelete.Length - 1; i >= 0; i--) {
+					if (i == segmentsToDelete.Length - 1) {
 						textArea.Document.Replace(segmentsToDelete[i], newText);
 					} else {
 						textArea.Document.Remove(segmentsToDelete[i]);

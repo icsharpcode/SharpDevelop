@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Diagnostics;
 
@@ -130,44 +131,74 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <summary>
 	/// A segment using text anchors as start and end positions.
 	/// </summary>
-	sealed class AnchorSegment : ISegment
+	/// <remarks>
+	/// For the constructors creating new anchors, the start position will be AfterInsertion and the end position will be BeforeInsertion.
+	/// Should the end position move before the start position, the segment will have length 0.
+	/// </remarks>
+	public sealed class AnchorSegment : ISegment
 	{
 		readonly TextAnchor start, end;
 		
+		/// <inheritdoc/>
 		public int Offset {
 			get { return start.Offset; }
 		}
 		
+		/// <inheritdoc/>
 		public int Length {
-			get { return end.Offset - start.Offset; }
+			get {
+				// Math.Max takes care of the fact that end.Offset might move before start.Offset.
+				return Math.Max(0, end.Offset - start.Offset);
+			}
 		}
 		
+		/// <inheritdoc/>
 		public int EndOffset {
-			get { return end.Offset; }
+			get {
+				// Math.Max takes care of the fact that end.Offset might move before start.Offset.
+				return Math.Max(start.Offset, end.Offset);
+			}
 		}
 		
+		/// <summary>
+		/// Creates a new AnchorSegment using the specified anchors.
+		/// The anchors must have <see cref="TextAnchor.SurviveDeletion"/> set to true.
+		/// </summary>
 		public AnchorSegment(TextAnchor start, TextAnchor end)
 		{
-			Debug.Assert(start != null);
-			Debug.Assert(end != null);
-			Debug.Assert(start.SurviveDeletion);
-			Debug.Assert(end.SurviveDeletion);
+			if (start == null)
+				throw new ArgumentNullException("start");
+			if (end == null)
+				throw new ArgumentNullException("end");
+			if (!start.SurviveDeletion)
+				throw new ArgumentException("Anchors for AnchorSegment must use SurviveDeletion", "start");
+			if (!end.SurviveDeletion)
+				throw new ArgumentException("Anchors for AnchorSegment must use SurviveDeletion", "end");
 			this.start = start;
 			this.end = end;
 		}
 		
+		/// <summary>
+		/// Creates a new AnchorSegment that creates new anchors.
+		/// </summary>
 		public AnchorSegment(TextDocument document, ISegment segment)
-			: this(document, segment.Offset, segment.Length)
+			: this(document, ThrowUtil.CheckNotNull(segment, "segment").Offset, segment.Length)
 		{
 		}
 		
+		/// <summary>
+		/// Creates a new AnchorSegment that creates new anchors.
+		/// </summary>
 		public AnchorSegment(TextDocument document, int offset, int length)
 		{
-			Debug.Assert(document != null);
+			if (document == null)
+				throw new ArgumentNullException("document");
 			this.start = document.CreateAnchor(offset);
 			this.start.SurviveDeletion = true;
+			this.start.MovementType = AnchorMovementType.AfterInsertion;
 			this.end = document.CreateAnchor(offset + length);
 			this.end.SurviveDeletion = true;
+			this.start.MovementType = AnchorMovementType.BeforeInsertion;
 		}
 	}
 }

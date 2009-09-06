@@ -24,6 +24,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <summary>
 		/// Gets the deletable segments inside the given segment.
 		/// </summary>
+		/// <remarks>
+		/// All segments in the result must be within the given segment, and they must be returned in order
+		/// (e.g. if two segments are returned, EndOffset of first segment must be less than StartOffset of second segment).
+		/// </remarks>
 		IEnumerable<ISegment> GetDeletableSegments(ISegment segment);
 	}
 }
