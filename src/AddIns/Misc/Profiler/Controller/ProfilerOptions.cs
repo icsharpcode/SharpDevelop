@@ -17,9 +17,10 @@ namespace ICSharpCode.Profiler.Controller
 		/// <summary>
 		/// Defines the default size of the shared memory.
 		/// </summary>
-		public const int SHARED_MEMORY_SIZE = 64 * 1024 * 1024; // 64 mb
+		public const int DefaultSharedMemorySize = 64 * 1024 * 1024; // 64 mb
 		
 		bool enableDC;
+		bool enableDCAtStart;
 		bool dotNotProfileDotNetInternals;
 		bool combineRecursiveFunction;
 		int sharedMemorySize;
@@ -46,6 +47,13 @@ namespace ICSharpCode.Profiler.Controller
 		}
 		
 		/// <summary>
+		/// Gets whether data collection is enabled at the start of the profiling session.
+		/// </summary>
+		public bool EnableDCAtStart {
+			get { return enableDCAtStart; }
+		}
+		
+		/// <summary>
 		/// Gets the size of the shared memory.
 		/// </summary>
 		public int SharedMemorySize {
@@ -55,19 +63,20 @@ namespace ICSharpCode.Profiler.Controller
 		/// <summary>
 		/// Creates new ProfilerOptions using the selected settings.
 		/// </summary>
-		public ProfilerOptions(bool enableDC, int sharedMemorySize, bool profileDotNetInternals, bool combineRecursiveFunction)
+		public ProfilerOptions(bool enableDC, int sharedMemorySize, bool profileDotNetInternals, bool combineRecursiveFunction, bool enableDCAtStart)
 		{
 			this.enableDC = enableDC;
 			this.sharedMemorySize = sharedMemorySize;
 			this.dotNotProfileDotNetInternals = profileDotNetInternals;
 			this.combineRecursiveFunction = combineRecursiveFunction;
+			this.enableDCAtStart = enableDCAtStart;
 		}
 		
 		/// <summary>
 		/// Creates default ProfilerOptions.
 		/// </summary>
 		public ProfilerOptions()
-			: this(true, SHARED_MEMORY_SIZE, false, false)
+			: this(true, DefaultSharedMemorySize, false, false, true)
 		{
 		}
 	}

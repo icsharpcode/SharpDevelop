@@ -32,6 +32,14 @@ namespace ICSharpCode.Profiler.Controls
 			set { SetValue(SelectedRootProperty, value); }
 		}
 		
+		public static readonly DependencyProperty TranslationProperty = DependencyProperty.Register(
+			"Translation", typeof(ControlsTranslation), typeof(RingDiagramControl));
+		
+		public ControlsTranslation Translation {
+			set { SetValue(TranslationProperty, value); }
+			get { return (ControlsTranslation)GetValue(TranslationProperty); }
+		}
+		
 		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
@@ -43,6 +51,7 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			this.hierarchyStack = new Stack<CallTreeNodeViewModel>();
 			this.task = new SingleTask(this.Dispatcher);
+			this.Translation = new ControlsTranslation();
 		}
 
 		void Update(CallTreeNodeViewModel item)
@@ -73,7 +82,7 @@ namespace ICSharpCode.Profiler.Controls
 			ell.HorizontalAlignment = HorizontalAlignment.Center;
 			ell.Fill = Brushes.Gray;
 			ell.Stroke = Brushes.Black;
-			ell.ToolTip = item.CreateToolTip();
+			ell.ToolTip = item.CreateToolTip(Translation);
 			ell.Tag = item;
 
 			ell.MouseLeftButtonDown += (sender, e) =>
@@ -151,11 +160,10 @@ namespace ICSharpCode.Profiler.Controls
 			p.WedgeAngle = wedgeAngle;
 			p.RotationAngle = rotationAngle;
 			p.Stroke = Brushes.Black;
-			p.ToolTip = node.CreateToolTip();
+			p.ToolTip = node.CreateToolTip(Translation);
 			p.VerticalAlignment = VerticalAlignment.Center;
 			p.HorizontalAlignment = HorizontalAlignment.Center;
 			p.Tag = node;
-			//p.ContextMenu = this.ContextMenu.;
 
 			p.MouseLeftButtonDown += new MouseButtonEventHandler(
 				delegate(object sender, MouseButtonEventArgs e)	{					

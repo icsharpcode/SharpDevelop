@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+  x:Class="ICSharpCode.Profiler.AddIn.Dialogs.ProfilerControlWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+  Title="{sd:Localize AddIns.Profiler.ProfilerControlWindow.Title}"
+  WindowStyle="ToolWindow" Closing="WindowClosing"
+  Topmost="True"
+  Height="60"
+  Width="170">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition
+        Height="*" />
+    </Grid.RowDefinitions>
+    <ToolBar
+      Grid.Column="0"
+      Grid.Row="0"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Stretch">
+      <ToggleButton
+        Content="{sd:Localize AddIns.Profiler.ProfilerControlWindow.CollectData}"
+        x:Name="collectData"
+        Checked="CollectDataChecked"
+        Unchecked="CollectDataUnchecked" />
+      <Button
+        Content="{sd:Localize AddIns.Profiler.ProfilerControlWindow.Shutdown}"
+        x:Name="shutdown"
+        Click="ShutdownClick" />
+    </ToolBar>
+  </Grid>
+</Window>

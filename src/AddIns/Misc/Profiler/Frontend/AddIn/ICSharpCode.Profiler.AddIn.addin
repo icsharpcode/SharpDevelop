@@ -8,6 +8,11 @@
 		<Import assembly="ICSharpCode.Profiler.AddIn.dll" />
 	</Runtime>
 	
+	<Manifest>
+		<Identity name="Profiler.AddIn" />
+		<Dependency addin="ICSharpCode.UnitTesting" requirePreload="true" />
+	</Manifest>
+	
 	<Path name="/SharpDevelop/Workbench/MainMenu/Analysis">
 		<MenuItem id="Profiler" label="Profiler" type="Menu" insertbefore="Separator1">
 			<ComplexCondition action="Disable">
@@ -17,13 +22,13 @@
 				<MenuItem
 					id="ProfileProject"
 					class="ICSharpCode.Profiler.AddIn.Commands.ProfileProject"
-					label="Profile current project"
+					label="${res:AddIns.Profiler.ProfileCurrentProject}"
 				/>
 			</ComplexCondition>
 			<MenuItem
 				id="ProfileExecutable"
 				class="ICSharpCode.Profiler.AddIn.Commands.ProfileExecutable"
-				label="Select executable to profile"
+				label="${res:AddIns.Profiler.ProfileExecutable}"
 			/>
 		</MenuItem>
 	</Path>
@@ -32,56 +37,68 @@
 		<DisplayBinding id = "ProfilerDisplayBinding"
 		                insertbefore="Text"
 		                fileNamePattern=".sdps"
-		                title = "Profiler View"
+		                title = "${res:AddIns.Profiler.ProfilingView.Title}"
 		                class = "ICSharpCode.Profiler.AddIn.Views.ProfilerDisplayBinding"/>
 	</Path>
 	
 	<Path name="/AddIns/Profiler/QueryView/ContextMenu">
 		<MenuItem
 			id="GoToDefinition"
-			label="Go to definition"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition}"
 			class="ICSharpCode.Profiler.AddIn.Commands.GoToDefinition" />
 		<MenuItem
+			id="FindReferences"
+			label="${res:SharpDevelop.Refactoring.FindReferences}"
+			class="ICSharpCode.Profiler.AddIn.Commands.FindReferences" />
+		<MenuItem type="Separator" id="Separator2" />
+		<MenuItem
 			id="SetAsRoot"
-			label="Set as root/Merge"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.SetAsRoot}"
 			class="ICSharpCode.Profiler.AddIn.Commands.SetAsRoot" />
 		<MenuItem
 			id="FindCallsOfSelected"
-			label="Find calls of selected functions"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.FindCallsOfSelected}"
 			class="ICSharpCode.Profiler.AddIn.Commands.FindCallsOfSelected" />
 		<MenuItem
 			id="ShowFunctions"
-			label="Show functions"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions}"
 			class="ICSharpCode.Profiler.AddIn.Commands.ShowFunctions" />
 		<MenuItem type="Separator" id="Separator1" />
 		<MenuItem
-			id="CopyStackTrace"
-			label="Copy stacktrace"
+			id="CopyStacktrace"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.CopyStacktrace}"
 			class="ICSharpCode.Profiler.AddIn.Commands.CopyStacktrace" />
 		<MenuItem
 			id="CopySelectedData"
-			label="Copy selected data"
+			label="${res:AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData}"
 			class="ICSharpCode.Profiler.AddIn.Commands.CopySelectedData" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/FileFilter">
-		<FileFilter id = "SharpDevelopProfingSession"
+		<FileFilter id = "SharpDevelopProfilingSession"
 		            insertbefore="AllFiles"
-		            name = "SharpDevelop Profiling Session"
+		            name = "${res:AddIns.Profiler.FileExtensionDescription}"
 		            extensions = "*.sdps"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Dialogs/OptionsDialog">
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<OptionPanel id    = "Profiling"
-		             label = "Profiling"
-		             insertbefore = "TextEditorOptions">
-			<OptionPanel id    = "General"
-			             label = "General"
-			             class = "ICSharpCode.Profiler.AddIn.OptionsPanels.General"/>
-		</OptionPanel>
+		             label = "${res:AddIns.Profiler.Options.Title}"
+		             class = "ICSharpCode.Profiler.AddIn.OptionsPanels.General"
+		             insertbefore = "TextEditorOptions" />
 	</Path>
 
-	<Path name="/SharpDevelop/Services/ProfilerService/Profiler">
-		<Class id = "WindowsProfiler" class="ICSharpCode.Profiler.AddIn.WindowsProfiler" />
+	<Path name = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="SolutionOpen"/>
+				<Not>
+					<Condition name="RunningTests"/>
+				</Not>
+			</And>
+			<MenuItem id    = "RunWithProfiler"
+			          label = "${res:AddIns.Profiler.UnitTests.RunWithProfiler}"
+			          class = "ICSharpCode.Profiler.AddIn.Commands.RunTestWithProfilerCommand"/>
+		</ComplexCondition>
 	</Path>
 </AddIn>

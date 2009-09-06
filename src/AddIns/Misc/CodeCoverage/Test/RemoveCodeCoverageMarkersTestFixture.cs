@@ -38,16 +38,15 @@ namespace ICSharpCode.CodeCoverage.Tests
 			document.Text = code;
 			
 			string xml = "<PartCoverReport>\r\n" +
-				"\t<file id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\"/>\r\n" +
-				"\t<type name=\"Foo.Tests.FooTestFixture\" asm=\"Foo.Tests\">\r\n" +
-				"\t\t<method name=\"SimpleTest\">\r\n" +
-				"\t\t\t<code>\r\n" +
+				"\t<File id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\"/>\r\n" +
+				"\t<Assembly id=\"1\" name=\"Foo.Tests\" module=\"C:\\Projects\\Test\\bin\\Foo.Tests.DLL\" domain=\"test-domain-Foo.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"\t<Type name=\"Foo.Tests.FooTestFixture\" asmref=\"1\">\r\n" +
+				"\t\t<Method name=\"SimpleTest\">\r\n" +
 				"\t\t\t<pt visit=\"1\" sl=\"1\" sc=\"3\" el=\"1\" ec=\"4\" fid=\"1\" />\r\n" +
 				"\t\t\t<pt visit=\"1\" sl=\"2\" sc=\"4\" el=\"2\" ec=\"18\" fid=\"1\" />\r\n" +
 				"\t\t\t<pt visit=\"0\" sl=\"3\" sc=\"3\" el=\"3\" ec=\"4\" fid=\"1\" />\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +
 				"</PartCoverReport>";
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];

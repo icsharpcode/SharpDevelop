@@ -148,9 +148,13 @@
     <Compile Include="Converter\NullConversionTestFixture.cs" />
     <Compile Include="Converter\ObjectCreationTestFixture.cs" />
     <Compile Include="Converter\ObjectInitializerConversionTestFixture.cs" />
+    <Compile Include="Converter\ObjectReferenceEqualsConversionTestFixture.cs" />
     <Compile Include="Converter\ProjectHasStartupObjectTestFixture.cs" />
     <Compile Include="Converter\PropertyConversionTestFixture.cs" />
+    <Compile Include="Converter\PropertyReferenceConversionTestFixture.cs" />
     <Compile Include="Converter\PropertyWithGetSetStatementsTestfixture.cs" />
+    <Compile Include="Converter\PropertyWithGetterTestFixture.cs" />
+    <Compile Include="Converter\PropertyWithSetterTestFixture.cs" />
     <Compile Include="Converter\RemoveHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\SingleClassMethodConversionTestFixture.cs" />
     <Compile Include="Converter\ConvertCSharpToPythonMenuCommandTestFixture.cs" />
@@ -270,6 +274,7 @@
     <Compile Include="Designer\LoadTimerTestFixture.cs" />
     <Compile Include="Designer\LoadToolTipTestFixture.cs" />
     <Compile Include="Designer\LoadTreeViewTestFixture.cs" />
+    <Compile Include="Designer\LoadUserControlWithDoublePropertyTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
@@ -348,6 +353,7 @@
     <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
+    <Compile Include="Utils\DoublePropertyUserControl.cs" />
     <Compile Include="Utils\FooItemCollection.cs" />
     <Compile Include="Utils\MockClass.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />

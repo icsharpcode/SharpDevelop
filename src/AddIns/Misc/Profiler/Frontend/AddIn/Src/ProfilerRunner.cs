@@ -7,11 +7,17 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+
 using ICSharpCode.Core;
+using ICSharpCode.Profiler.AddIn.Dialogs;
 using ICSharpCode.Profiler.AddIn.OptionsPanels;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Profiling;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Profiler.AddIn
 {
@@ -21,6 +27,7 @@ namespace ICSharpCode.Profiler.AddIn
 	public class ProfilerRunner
 	{
 		public event EventHandler RunFinished;
+		ProfilerControlWindow controlWindow;
 		
 		protected virtual void OnRunFinished(EventArgs e)
 		{
@@ -58,9 +65,8 @@ namespace ICSharpCode.Profiler.AddIn
 			}
 			
 			PrintProfilerOptions();
-			
-			this.profiler.RegisterFailed += delegate { MessageService.ShowError("Could not register the profiler into COM Registry. Cannot start profiling!"); };
-			this.profiler.DeregisterFailed += delegate { MessageService.ShowError("Could not unregister the profiler from COM Registry!"); };
+			this.profiler.RegisterFailed += delegate { MessageService.ShowError("${res:AddIns.Profiler.Messages.RegisterFailed}"); };
+			this.profiler.DeregisterFailed += delegate { MessageService.ShowError("${res:AddIns.Profiler.Messages.UnregisterFailed}"); };
 			this.profiler.OutputUpdated += delegate { SetOutputText(profiler.ProfilerOutput); };
 			this.profiler.SessionEnded += delegate { FinishSession(); };
 		}
@@ -76,8 +82,11 @@ namespace ICSharpCode.Profiler.AddIn
 		}
 		
 		void FinishSession()
-		{		
-			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog("Preparing for analysis", true)) {
+		{
+			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog(StringParser.Parse("${res:AddIns.Profiler.Messages.PreparingForAnalysis}"), true)) {
+				profiler.Dispose();
+
+				WorkbenchSingleton.SafeThreadAsyncCall(() => { controlWindow.AllowClose = true; this.controlWindow.Close(); });
 				if (database != null) {
 					database.WriteTo(writer, progress => !dlg.IsCancelled);
 					writer.Close();
@@ -94,12 +103,40 @@ namespace ICSharpCode.Profiler.AddIn
 		public void Run()
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+			this.controlWindow = new ProfilerControlWindow(this);
 			profiler.Start();
+			this.controlWindow.Show();
 		}
 		
 		public void Stop()
 		{
 			profiler.Stop();
+		}
+		
+		public static ProfilerRunner CreateRunner(IProfilingDataWriter writer)
+		{
+			AbstractProject currentProj = ProjectService.CurrentProject as AbstractProject;
+			
+			if (currentProj == null)
+				return null;
+			
+			if (!currentProj.IsStartable) {
+				if (MessageService.AskQuestion("${res:AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject}")) {
+					currentProj = ProjectService.OpenSolution.StartupProject as AbstractProject;
+					if (currentProj == null) {
+						MessageService.ShowError("${res:AddIns.Profiler.Messages.NoStartableProjectFound}");
+						return null;
+					}
+				} else
+					return null;
+			}
+			if (!File.Exists(currentProj.OutputAssemblyFullPath)) {
+				MessageService.ShowError("${res:AddIns.Profiler.Messages.FileNotFound}");
+				return null;
+			}
+			
+			ProfilerRunner runner = new ProfilerRunner(currentProj.CreateStartInfo(), true, writer);
+			return runner;
 		}
 		
 		#region MessageView Management
@@ -108,26 +145,26 @@ namespace ICSharpCode.Profiler.AddIn
 		static void EnsureProfileCategory()
 		{
 			if (profileCategory == null) {
-				MessageViewCategory.Create(ref profileCategory, "Profile", "Profile");
+				MessageViewCategory.Create(ref profileCategory, "Profile", StringParser.Parse("${res:AddIns.Profiler.MessageViewCategory}"));
 			}
 		}
 		
 		public static void SetOutputText(string text)
 		{
 			EnsureProfileCategory();
-			profileCategory.SetText(text);
+			profileCategory.SetText(StringParser.Parse(text));
 		}
 		
 		public static void AppendOutputText(string text)
 		{
 			EnsureProfileCategory();
-			profileCategory.AppendText(text);
+			profileCategory.AppendText(StringParser.Parse(text));
 		}
 		
 		public static void AppendOutputLine(string text)
 		{
 			EnsureProfileCategory();
-			profileCategory.AppendLine(text);
+			profileCategory.AppendLine(StringParser.Parse(text));
 		}
 		#endregion
 	}

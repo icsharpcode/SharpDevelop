@@ -25,17 +25,16 @@ namespace ICSharpCode.CodeCoverage.Tests
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<PartCoverReport ver=\"1.0.2796.35184\">\r\n" +
-				"\t<file id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"\t<type asm=\"Foo.Tests\" name=\"Foo.Tests.FooTestFixture\" flags=\"1232592\">\r\n" +
-				"\t\t<method name=\"SimpleTest\" sig=\"void  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
-				"\t\t\t<code>\r\n" +
-				"\t\t\t\t<pt visit=\"1\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
-				"\t\t\t\t<pt visit=\"1\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" />\r\n" +
-				"\t\t\t\t<pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" />\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
+			string xml = "<PartCoverReport date=\"2008-07-10T02:59:13.7198656+01:00\">\r\n" +
+				"    <File id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"    <Assembly id=\"1\" name=\"Foo.Tests\" module=\"C:\\Projects\\Test\\Foo.Tests\\bin\\Foo.Tests.DLL\" domain=\"test-domain-Foo.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"    <Type asmref=\"1\" name=\"Foo.Tests.FooTestFixture\" flags=\"1232592\">\r\n" +
+				"        <Method name=\"SimpleTest\" sig=\"void  ()\" bodysize=\"42\" flags=\"2182\" iflags=\"0\">\r\n" +
+				"            <pt visit=\"1\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"            <pt visit=\"1\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" />\r\n" +
+				"            <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" />\r\n" +
+				"        </Method>\r\n" +
+				"    </Type>\r\n" +
 				"</PartCoverReport>";
 			results = new CodeCoverageResults(new StringReader(xml));
 			if (results.Modules.Count > 0) {

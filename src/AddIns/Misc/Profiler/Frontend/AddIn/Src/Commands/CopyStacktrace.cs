@@ -6,16 +6,9 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Windows.Shapes;
-
-using ICSharpCode.Core;
-using ICSharpCode.Profiler.Controller.Queries;
-using ICSharpCode.Profiler.Controls;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
 {

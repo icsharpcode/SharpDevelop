@@ -256,9 +256,6 @@
     <Compile Include="Src\Services\ParserService\AssemblyParserService.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
-    <Compile Include="Src\Services\Profiler\DefaultProfiler.cs" />
-    <Compile Include="Src\Services\Profiler\IProfiler.cs" />
-    <Compile Include="Src\Services\Profiler\ProfilerService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
@@ -856,11 +853,6 @@
     <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
       <Link>ICSharpCode.SharpDevelop.addin</Link>
     </Content>
-    <Folder Include="Src\Editor" />
-    <Folder Include="Src\Project\MSBuildEngine" />
-    <Folder Include="Src\Services\Debugger\Tooltips" />
-    <Folder Include="Src\Services\LanguageBinding" />
-    <Folder Include="Src\Services\Profiler" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
     <Folder Include="Src\Services\NavigationService" />

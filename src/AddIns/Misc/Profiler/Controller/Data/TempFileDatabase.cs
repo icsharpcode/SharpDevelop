@@ -44,6 +44,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			public long StreamStartPosition { get; set; }
 			public long StreamLength { get; set; }
 			public double CpuUsage { get; set; }
+			public bool IsFirst { get; set; }
 		}
 		
 		#region TempFileDatabase DataSet and DataWriter implementation
@@ -54,8 +55,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			public DataSet(TempFileDatabase database, UnmanagedMemory view,
 			               TargetProcessPointer nativeStartPosition, TargetProcessPointer nativeRootFuncInfoStartPosition,
-			               double cpuUsage)
-				: base(nativeStartPosition, nativeRootFuncInfoStartPosition, view.Pointer, view.Length, cpuUsage, database.is64Bit)
+			               double cpuUsage, bool isFirst)
+				: base(nativeStartPosition, nativeRootFuncInfoStartPosition, view.Pointer, view.Length, cpuUsage, isFirst, database.is64Bit)
 			{
 				this.database = database;
 				this.view = view;
@@ -116,7 +117,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				if (dataSet == null)
 					throw new InvalidOperationException("TempFileDatabase cannot write DataSets other than UnmanagedProfilingDataSet!");
 				
-				database.AddDataset((byte *)uDataSet.StartPtr.ToPointer(), uDataSet.Length, uDataSet.NativeStartPosition, uDataSet.NativeRootFuncInfoPosition, uDataSet.CpuUsage);
+				database.AddDataset((byte *)uDataSet.StartPtr.ToPointer(), uDataSet.Length, uDataSet.NativeStartPosition, uDataSet.NativeRootFuncInfoPosition, uDataSet.CpuUsage, uDataSet.IsFirst);
 				this.database.is64Bit = uDataSet.Is64Bit;
 			}
 			
@@ -149,14 +150,14 @@ namespace ICSharpCode.Profiler.Controller.Data
 			this.file = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite, 4096, FileOptions.Asynchronous | FileOptions.DeleteOnClose);
 		}
 		
-		unsafe void AddDataset(byte *ptr, long length, TargetProcessPointer nativeStartPosition, TargetProcessPointer nativeRootFuncInfoStartPosition, double cpuUsage)
+		unsafe void AddDataset(byte *ptr, long length, TargetProcessPointer nativeStartPosition, TargetProcessPointer nativeRootFuncInfoStartPosition, double cpuUsage, bool isFirst)
 		{
 			byte[] data = new byte[length];
 			Marshal.Copy(new IntPtr(ptr), data, 0, (int)length);
 			if (this.currentWrite != null)
 				this.file.EndWrite(this.currentWrite);
 			this.streamInfos.Add(new StreamInfo { NativeStartPosition = nativeStartPosition, NativeRootFuncInfoStartPosition = nativeRootFuncInfoStartPosition,
-			                     	StreamStartPosition = this.file.Length, StreamLength = length, CpuUsage = cpuUsage });
+			                     	StreamStartPosition = this.file.Length, StreamLength = length, CpuUsage = cpuUsage, IsFirst = isFirst });
 			this.currentWrite = this.file.BeginWrite(data, 0, (int)length, null, null);
 		}
 		
@@ -206,7 +207,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			return new DataSet(this, mmf.MapView(streamInfos[index].StreamStartPosition, streamInfos[index].StreamLength), streamInfos[index].NativeStartPosition,
 			                   streamInfos[index].NativeRootFuncInfoStartPosition,
-			                   streamInfos[index].CpuUsage);
+			                   streamInfos[index].CpuUsage, streamInfos[index].IsFirst);
 		}
 		
 		/// <summary>

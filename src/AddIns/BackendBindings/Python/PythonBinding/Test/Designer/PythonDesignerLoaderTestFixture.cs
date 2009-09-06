@@ -61,6 +61,7 @@ namespace PythonBinding.Tests.Designer
 
 			mockExtenderProviderService = new MockExtenderProviderService();
 			mockDesignerLoaderHost.AddService(typeof(IExtenderProviderService), mockExtenderProviderService);
+			mockDesignerLoaderHost.AddService(typeof(ProjectResourceService), new ProjectResourceService(new MockProjectContent()));
 			
 			mockEventBindingService = new MockEventBindingService();
 			mockDesignerLoaderHost.AddService(typeof(IEventBindingService), mockEventBindingService);
@@ -121,7 +122,14 @@ namespace PythonBinding.Tests.Designer
 			DesignerSerializationService service = mockDesignerLoaderHost.GetService(typeof(IDesignerSerializationService)) as DesignerSerializationService;
 			Assert.IsNotNull(service);
 		}
-			
+
+		[Test]
+		public void ProjectResourceServiceDesignerDoesNotSupportProjectResources()
+		{
+			ProjectResourceService service = mockDesignerLoaderHost.GetService(typeof(ProjectResourceService)) as ProjectResourceService;
+			Assert.IsFalse(service.DesignerSupportsProjectResources);
+		}
+		
 		[Test]
 		public void RootDesignerComponentNameIsMainForm()
 		{

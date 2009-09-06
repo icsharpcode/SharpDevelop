@@ -33,16 +33,15 @@ namespace ICSharpCode.CodeCoverage.Tests
 			ITextMarkerService markerStrategy = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			
 			string xml = "<PartCoverReport>\r\n" +
-				"\t<file id=\"1\" url=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\"/>\r\n" +
-				"\t<type name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\" asm=\"XmlEditor.Tests\">\r\n" +
-				"\t\t<method name=\"GetSchema\">\r\n" +
-				"\t\t\t<code>\r\n" +
-				"\t\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"0\" sc=\"3\" el=\"0\" ec=\"4\" />\r\n" +
-				"\t\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"-1\" sc=\"4\" el=\"9\" ec=\"20\" />\r\n" +
-				"\t\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"10\" sc=\"3\" el=\"10\" ec=\"4\" />\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
+				"\t<File id=\"1\" url=\"c:\\Projects\\XmlEditor\\Test\\Schema\\SingleElementSchemaTestFixture.cs\"/>\r\n" +
+				"\t<Assembly id=\"1\" name=\"XmlEditor.Tests\" module=\"C:\\Projects\\Test\\XmlEditor.Tests\\bin\\XmlEditor.Tests.DLL\" domain=\"test-domain-XmlEditor.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"\t<Type name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\" asmref=\"1\">\r\n" +
+				"\t\t<Method name=\"GetSchema\">\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"0\" sc=\"3\" el=\"0\" ec=\"4\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"-1\" sc=\"4\" el=\"9\" ec=\"20\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"10\" sc=\"3\" el=\"10\" ec=\"4\" />\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +
 				"</PartCoverReport>";
 			
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));

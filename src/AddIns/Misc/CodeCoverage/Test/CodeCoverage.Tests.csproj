@@ -61,6 +61,7 @@
     <Compile Include="CodeCoverageResultsMissingFileIdTestFixture.cs" />
     <Compile Include="CodeCoverageResultsPropertyFlagsTestFixture.cs" />
     <Compile Include="CodeCoverageResultsTestFixture.cs" />
+    <Compile Include="CodeCoverageResultsWithEmptyMethodElementTestFixture.cs" />
     <Compile Include="CodeCoverageTreeViewTestFixture.cs" />
     <Compile Include="DerivedCodeCoverageTreeView.cs" />
     <Compile Include="ListViewSortingTestFixture.cs" />

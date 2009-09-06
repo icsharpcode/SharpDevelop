@@ -30,9 +30,9 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		/// </summary>
 		public override void Run()
 		{
-			var list = GetSelectedItems().ToList();
+			var list = GetSelectedItems();
 			
-			if (list.Count > 0) {
+			if (list.Any()) {
 				var items = from item in list select item.Node;	
 				
 				List<string> parts = new List<string>();
@@ -44,7 +44,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 					}
 				}
 				
-				string header = "Results";
+				string header = StringParser.Parse("${res:AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle}");
 				
 				Parent.CreateTab(header, "from c in Calls where " + string.Join(" || ", parts.ToArray()) + " select c");
 			}	

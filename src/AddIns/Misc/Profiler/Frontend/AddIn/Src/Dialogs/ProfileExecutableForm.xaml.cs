@@ -45,7 +45,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 				try {
 					Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 					
-					var runner = CreateRunner(txtExePath.Text, txtWorkingDir.Text, txtArgs.Text, new ProfilingDataSQLiteWriter(outputPath));
+					var runner = CreateRunner(txtExePath.Text, txtWorkingDir.Text, txtArgs.Text, new ProfilingDataSQLiteWriter(outputPath, false, null));
 
 					if (runner != null) {
 						runner.RunFinished += delegate {
@@ -60,7 +60,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 					MessageService.ShowError(ex.Message);
 				}
 			} catch (ArgumentNullException) {
-				MessageService.ShowError("Invalid data, please try again!");
+				MessageService.ShowError(StringParser.Parse("${res:AddIns.Profiler.ProfileExecutable.ErrorMessage}"));
 			} catch (FileNotFoundException ex) {
 				MessageService.ShowError(ex.Message);
 			} catch (DirectoryNotFoundException ex2) {

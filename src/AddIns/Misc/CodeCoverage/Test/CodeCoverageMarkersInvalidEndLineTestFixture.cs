@@ -34,18 +34,17 @@ namespace ICSharpCode.CodeCoverage.Tests
 			// Give doc 3 lines (end line seems to be counted as an extra line).
 			document.Text = "abc\r\ndef";
 			
-			string xml = "<coverage>\r\n" +
-				"\t<type name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\" asm=\"XmlEditor.Tests\">\r\n" +
-				"\t\t<method name=\"GetSchema\">\r\n" +
-				"\t\t\t<code>\r\n" +
+			string xml = "<Coverage>\r\n" +
+				"\t<Assembly id=\"1\" name=\"XmlEditor.Tests\" module=\"C:\\Projects\\Test\\XmlEditor.Tests\\bin\\XmlEditor.Tests.DLL\" domain=\"test-domain-XmlEditor.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"\t<Type name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\" asmref=\"1\">\r\n" +
+				"\t\t<Method name=\"GetSchema\">\r\n" +
 				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"3\" sc=\"3\" el=\"4\" ec=\"4\" />\r\n" +
 				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"4\" el=\"5\" ec=\"20\" />\r\n" +
 				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"4\" el=\"-1\" ec=\"20\" />\r\n" +
 				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"4\" el=\"0\" ec=\"20\" />\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
-				"</coverage>";
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +
+				"</Coverage>";
 			
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];

@@ -46,7 +46,7 @@ namespace ICSharpCode.Profiler.Controls
 		public event EventHandler<NodeEventArgs<CallTreeNodeViewModel>> RequestBringIntoView;
 		
 		protected virtual void OnRequestBringIntoView(NodeEventArgs<CallTreeNodeViewModel> e)
-		{			
+		{
 			if (RequestBringIntoView != null) {
 				RequestBringIntoView(this, e);
 			}
@@ -97,17 +97,17 @@ namespace ICSharpCode.Profiler.Controls
 				if (this.parent == null)
 					return 1;
 				else
-					return (double)this.node.CpuCyclesSpent / (double)GetNodeFromLevel(1).node.CpuCyclesSpent;
+					return (double)this.node.CpuCyclesSpent / (double)this.parent.node.CpuCyclesSpent;
 			}
 		}
 		
-		CallTreeNodeViewModel GetNodeFromLevel(int level)
-		{
-			if (this.level > level) {
-				return this.parent.GetNodeFromLevel(level);
+		public Visibility HotPathIndicatorVisibility {
+			get {
+				if (TimePercentageOfParent >= 0.2)
+					return Visibility.Visible;
+				
+				return Visibility.Collapsed;
 			}
-			
-			return this;
 		}
 		
 		public virtual string TimePercentageOfParentAsText
@@ -126,7 +126,7 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			if (level == 0)
 				return null; // no tooltip for root
-			if (level == 1)
+			if (node.IsThread)
 				return Name;
 
 			TextBlock text = new TextBlock {
@@ -140,7 +140,7 @@ namespace ICSharpCode.Profiler.Controls
 			return text;
 		}
 
-		public object CreateToolTip()
+		public object CreateToolTip(ControlsTranslation translation)
 		{
 			if (node.IsThread)
 				return Name; // only name for threads
@@ -151,11 +151,11 @@ namespace ICSharpCode.Profiler.Controls
 					((!string.IsNullOrEmpty(node.ReturnType)) ? node.ReturnType + " " : ""),
 					new Bold { Inlines = { node.Name } },
 					"(" + ((node.Parameters.Count > 0) ? string.Join(", ", node.Parameters.ToArray()) : "") + ")\n",
-					new Bold { Inlines = { "CPU Cycles:" } },
+					new Bold { Inlines = { translation.CpuCyclesText } },
 					" " + node.CpuCyclesSpent + "\n",
-					new Bold { Inlines = { "Time:" } },
+					new Bold { Inlines = { translation.TimeText } },
 					" " + node.TimeSpent.ToString("f6") + "ms\n",
-					new Bold { Inlines = { "Calls:" } },
+					new Bold { Inlines = { translation.CallsText } },
 					" " + node.CallCount.ToString()
 				}
 			};
@@ -258,7 +258,7 @@ namespace ICSharpCode.Profiler.Controls
 					OnPropertyChanged("IsExpanded");
 					this.IsExpandedChanged(new NodeEventArgs<CallTreeNodeViewModel>(this));
 					
-					if (!isExpanded) {
+					if (isExpanded) {
 						DeselectChildren(children);
 					}
 				}
@@ -328,6 +328,35 @@ namespace ICSharpCode.Profiler.Controls
 			}
 		}
 		
+		public string TimeSpentSelf {
+			get {
+				if (!node.IsThread) {
+					double value = node.TimeSpent - node.Children.Aggregate(0.0, (sum, item) => sum + item.TimeSpent);
+					return value.ToString("f6") + "ms";
+				} else
+					return null;
+			}
+		}
+		
+		public string TimeSpentSelfPerCall {
+			get {
+				if (!node.IsThread) {
+					double value = node.TimeSpent - node.Children.Aggregate(0.0, (sum, item) => sum + item.TimeSpent);
+					return (value / node.CallCount).ToString("f6") + "ms";
+				} else
+					return null;
+			}
+		}
+		
+		public string TimeSpentPerCall {
+			get {
+				if (!node.IsThread)
+					return (node.TimeSpent / node.CallCount).ToString("f6") + "ms";
+				else
+					return null;
+			}
+		}
+		
 		public string CallCount {
 			get {
 				if (!node.IsThread)
@@ -353,7 +382,6 @@ namespace ICSharpCode.Profiler.Controls
 		}
 
 		#region IViewModel<CallTreeNodeViewModel> Member
-
 		int visibleElementCount = 1;
 
 		public virtual int VisibleElementCount
@@ -368,7 +396,6 @@ namespace ICSharpCode.Profiler.Controls
 				return new Thickness((level - 1) * 12, 0, 2, 0);
 			}
 		}
-
 		#endregion
 	}
 }

@@ -61,14 +61,37 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		/// <summary>
+		/// Gets whether this call is user code.
+		/// </summary>
+		public virtual bool IsUserCode {
+			get {
+				return this.NameMapping.Id > 0;
+			}
+		}
+		
+		/// <summary>
 		/// Gets whether the function call started in a previous data set that's not selected.
 		/// </summary>
 		public abstract bool IsActiveAtStart { get; }
 		
 		/// <summary>
-		/// Gets how many CPU cycles where spent inside this method, including sub calls.
+		/// Gets how many CPU cycles were spent inside this method, including sub calls.
 		/// </summary>
 		public abstract long CpuCyclesSpent { get; }
+		
+		/// <summary>
+		/// Gets how many CPU cycles were spent inside this method, excluding sub calls.
+		/// </summary>
+		public virtual long CpuCyclesSpentSelf {
+			get {
+				return GetCpuCyclesSelf();
+			}
+		}
+		
+		long GetCpuCyclesSelf()
+		{
+			return CpuCyclesSpent - Children.Aggregate(0L, (sum, item) => sum + item.CpuCyclesSpent);
+		}
 		
 		/// <summary>
 		/// Gets the name of the method including namespace and class name.

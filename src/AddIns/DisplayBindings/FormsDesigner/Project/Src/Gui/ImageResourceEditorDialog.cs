@@ -38,7 +38,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		#region Constructors
 		
-		ImageResourceEditorDialog(IProject project, Type requiredResourceType)
+		ImageResourceEditorDialog(IProject project, Type requiredResourceType, bool designerSupportsProjectResources)
 			: base()
 		{
 			if (requiredResourceType == null)
@@ -56,10 +56,13 @@ namespace ICSharpCode.FormsDesigner.Gui
 			
 			this.importLocalResourceButton.DataBindings.Add("Enabled", this.localResourceRadioButton, "Checked");
 			this.projectResourcesTreeView.DataBindings.Add("Enabled", this.projectResourceRadioButton, "Checked");
+			
+			this.projectResourceRadioButton.Visible = designerSupportsProjectResources;
+			this.projectResourcesTreeView.Visible = designerSupportsProjectResources;
 		}
 		
 		public ImageResourceEditorDialog(IProject project, Type requiredResourceType, ProjectResourceInfo projectResource)
-			: this(project, requiredResourceType)
+			: this(project, requiredResourceType, true)
 		{
 			if (projectResource == null)
 				throw new ArgumentNullException("projectResource");
@@ -81,8 +84,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.projectTreeScanningBackgroundWorker.RunWorkerAsync(projectResource);
 		}
 		
-		public ImageResourceEditorDialog(IProject project, Image localResource)
-			: this(project, typeof(Image))
+		public ImageResourceEditorDialog(IProject project, Image localResource, bool designerSupportsProjectResources)
+			: this(project, typeof(Image), designerSupportsProjectResources)
 		{
 			if (localResource != null) {
 				this.localResourceRadioButton.Checked = true;
@@ -94,8 +97,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.projectTreeScanningBackgroundWorker.RunWorkerAsync();
 		}
 		
-		public ImageResourceEditorDialog(IProject project, Icon localResource)
-			: this(project, typeof(Icon))
+		public ImageResourceEditorDialog(IProject project, Icon localResource, bool designerSupportsProjectResources)
+			: this(project, typeof(Icon), designerSupportsProjectResources)
 		{
 			if (localResource != null) {
 				this.localResourceRadioButton.Checked = true;

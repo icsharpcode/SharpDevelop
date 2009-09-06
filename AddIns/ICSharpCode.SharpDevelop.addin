@@ -1577,7 +1577,7 @@
 			          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "GotoLineNr"
-			          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"
+			          label = "${res:XML.MainMenu.SearchMenu.Goto}"
 			          shortcut = "Control|G"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
 			<MenuItem id = "GotoDefinition"

@@ -32,8 +32,11 @@ namespace Grunwald.BooBinding
 			helper.BindBoolean("duckyCheckBox", "Ducky", false).CreateLocationButton("duckyCheckBox");
 			helper.BindBoolean("checkForOverflowCheckBox", "CheckForOverflowUnderflow", true).CreateLocationButton("checkForOverflowCheckBox");
 			helper.BindBoolean("useStrictMode", "Strict", false).CreateLocationButton("useStrictMode");
+			helper.BindBoolean("allowUnsafeCodeCheckBox", "AllowUnsafeBlocks", false).CreateLocationButton("allowUnsafeCodeCheckBox");
 			
 			helper.BindString("pipelineTextBox", "Pipeline", TextBoxEditMode.EditEvaluatedProperty).CreateLocationButton("pipelineLabel");
+			
+			CreatePlatformTarget().CreateLocationButton("targetCpuLabel");
 			
 			InitWarnings();
 			

@@ -88,7 +88,7 @@ namespace ICSharpCode.Profiler.Frontend
 		void profiler_SessionEnded(object sender, EventArgs e)
 		{
 			string pathToDb = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(typeof(Profiler.Controller.Profiler).Assembly.Location), "output.sdps");
-			ProfilingDataSQLiteWriter writer = new ProfilingDataSQLiteWriter(pathToDb);
+			ProfilingDataSQLiteWriter writer = new ProfilingDataSQLiteWriter(pathToDb, false, null);
 			this.database.WriteTo(writer, progress => true);
 			writer.Close();
 			this.database.Close();

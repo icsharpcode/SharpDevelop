@@ -130,6 +130,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void RenameClass(IClass c, string newName)
 		{
+			if (c == null)
+				throw new ArgumentNullException("c");
+			if (newName == null)
+				throw new ArgumentNullException("newName");
 			c = c.GetCompoundClass(); // get compound class if class is partial
 			
 			List<Reference> list = RefactoringService.FindReferences(c, null);

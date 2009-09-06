@@ -20,6 +20,7 @@ namespace ICSharpCode.CodeCoverage
 	{
 		List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
 		Dictionary<string, string> fileNames = new Dictionary<string, string>();
+		Dictionary<string, string> assemblies = new Dictionary<string, string>();
 		
 		public CodeCoverageResults(string fileName)
 			: this(new StreamReader(fileName, true))
@@ -50,7 +51,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		void ReadResults(XmlReader reader)
-		{			
+		{
 			CodeCoverageModule currentModule = null;
 			CodeCoverageMethod currentMethod = null;
 			string currentClassName = String.Empty;
@@ -58,19 +59,21 @@ namespace ICSharpCode.CodeCoverage
 			while (reader.Read()) {
 				switch (reader.NodeType) {
 					case XmlNodeType.Element:
-						if (reader.Name == "type") {
+						if (reader.Name == "Type") {
 							currentModule = AddModule(reader);
 							currentClassName = reader.GetAttribute("name");
-						} else if (reader.Name == "method" && currentModule != null) {
+						} else if ((reader.Name == "Method") && (currentModule != null) && (!reader.IsEmptyElement)) {
 							currentMethod = AddMethod(currentModule, currentClassName, reader);
-						} else if (reader.Name == "pt" && currentMethod != null) {
+						} else if ((reader.Name == "pt") && (currentMethod != null)) {
 							AddSequencePoint(currentMethod, reader);
-						} else if (reader.Name == "file") {
+						} else if (reader.Name == "File") {
 							AddFileName(reader);
+						} else if (reader.Name == "Assembly") {
+							AddAssembly(reader);
 						}
 						break;
 					case XmlNodeType.EndElement:
-						if (currentMethod != null && reader.Name == "method" && currentMethod.SequencePoints.Count == 0) {
+						if (currentMethod != null && reader.Name == "Method" && currentMethod.SequencePoints.Count == 0) {
 							// Remove method that has no sequence points.
 							currentModule.Methods.Remove(currentMethod);
 						}
@@ -80,9 +83,6 @@ namespace ICSharpCode.CodeCoverage
 			reader.Close();
 			
 			RemoveModulesWithNoMethods();
-			
-//			RemoveExcludedModules();
-//			RemoveExcludedMethods();
 		}
 		
 		/// <summary>
@@ -90,14 +90,15 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		CodeCoverageModule AddModule(XmlReader reader)
 		{
-			string assembly = reader.GetAttribute("asm");
+			string id = reader.GetAttribute("asmref");
+			string assemblyName = GetAssembly(id);
 			foreach (CodeCoverageModule existingModule in modules) {
-				if (existingModule.Name == assembly) {
+				if (existingModule.Name == assemblyName) {
 					return existingModule;
 				}
 			}
 			
-			CodeCoverageModule module = new CodeCoverageModule(assembly);
+			CodeCoverageModule module = new CodeCoverageModule(assemblyName);
 			modules.Add(module);
 			return module;
 		}
@@ -151,49 +152,6 @@ namespace ICSharpCode.CodeCoverage
 			return 0;
 		}
 		
-//		void RemoveExcludedModules()
-//		{
-//			List<CodeCoverageModule> excludedModules = new List<CodeCoverageModule>();
-//			
-//			foreach (CodeCoverageModule module in modules) {
-//				if (module.IsExcluded) {
-//					excludedModules.Add(module);
-//				}
-//			}
-//			
-//			foreach (CodeCoverageModule excludedModule in excludedModules) {
-//				modules.Remove(excludedModule);
-//			}
-//		}
-//		
-//		void RemoveExcludedMethods()
-//		{
-//			List<CodeCoverageMethod> excludedMethods = new List<CodeCoverageMethod>();
-//			
-//			foreach (CodeCoverageModule module in modules) {
-//				foreach (CodeCoverageMethod method in module.Methods) {
-//					if (method.IsExcluded) {
-//						excludedMethods.Add(method);
-//					}
-//				}
-//				foreach (CodeCoverageMethod excludedMethod in excludedMethods) {
-//					module.Methods.Remove(excludedMethod);
-//				}
-//			}
-//		}
-//		
-//		bool IsExcluded(XmlReader reader)
-//		{
-//			string excludedValue = reader.GetAttribute("excluded");
-//			if (excludedValue != null) {
-//				bool excluded;
-//				if (Boolean.TryParse(excludedValue, out excluded)) {
-//					return excluded;
-//				}
-//			}
-//			return false;
-//		}
-		
 		/// <summary>
 		/// Returns a filename based on the file id. The filenames are stored in the
 		/// PartCover results xml at the start of the file each with its own
@@ -201,8 +159,23 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		string GetFileName(string id)
 		{
-			if (fileNames.ContainsKey(id)) {
-				return fileNames[id];
+			return GetDictionaryValue(fileNames, id);
+		}
+		
+		/// <summary>
+		/// Returns an assembly based on the id. The assemblies are stored in the
+		/// PartCover results xml at the start of the file each with its own
+		/// id.
+		/// </summary>
+		string GetAssembly(string id)
+		{
+			return GetDictionaryValue(assemblies, id);
+		}
+		
+		string GetDictionaryValue(Dictionary<string, string> dictionary, string key)
+		{
+			if (dictionary.ContainsKey(key)) {
+				return dictionary[key];
 			}
 			return String.Empty;
 		}
@@ -215,6 +188,16 @@ namespace ICSharpCode.CodeCoverage
 			string id = reader.GetAttribute("id");
 			string fileName = reader.GetAttribute("url");
 			fileNames.Add(id, fileName);
+		}
+
+		/// <summary>
+		/// Saves the assembly and its associated id for reference.
+		/// </summary>
+		void AddAssembly(XmlReader reader)
+		{
+			string id = reader.GetAttribute("id");
+			string name = reader.GetAttribute("name");
+			assemblies.Add(id, name);
 		}
 		
 		/// <summary>

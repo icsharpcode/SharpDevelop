@@ -298,7 +298,7 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Loading += this.DesignerLoading;
 			designSurface.Loaded += this.DesignerLoaded;
 			designSurface.Flushed += this.DesignerFlushed;
-			designSurface.Unloading += this.DesingerUnloading;
+			designSurface.Unloading += this.DesignerUnloading;
 			
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(this, designSurface));
 			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(this, designSurface);
@@ -362,7 +362,20 @@ namespace ICSharpCode.FormsDesigner
 			bool loading = this.loader != null && this.loader.Loading;
 			LoggingService.Debug("Forms designer: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
 			if (!loading && !unloading) {
-				this.MakeDirty();
+				try {
+					this.MakeDirty();
+					if (e.Component != null && e.Component == Host.RootComponent
+					    && e.Member != null && e.Member.Name == "Name" && e.NewValue is string
+					    && !object.Equals(e.OldValue, e.NewValue))
+					{
+						// changing the name of the form
+						IDesignerGenerator2 gen2 = generator as IDesignerGenerator2;
+						if (gen2 != null)
+							gen2.NotifyFormRenamed((string)e.NewValue);
+					}
+				} catch (Exception ex) {
+					MessageService.ShowException(ex);
+				}
 			}
 		}
 		
@@ -397,7 +410,7 @@ namespace ICSharpCode.FormsDesigner
 				designSurface.Loading -= this.DesignerLoading;
 				designSurface.Loaded -= this.DesignerLoaded;
 				designSurface.Flushed -= this.DesignerFlushed;
-				designSurface.Unloading -= this.DesingerUnloading;
+				designSurface.Unloading -= this.DesignerUnloading;
 				
 				IComponentChangeService componentChangeService = designSurface.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
 				if (componentChangeService != null) {
@@ -490,7 +503,7 @@ namespace ICSharpCode.FormsDesigner
 			Application.DoEvents();
 		}
 		
-		void DesingerUnloading(object sender, EventArgs e)
+		void DesignerUnloading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader unloading...");
 			this.unloading = true;

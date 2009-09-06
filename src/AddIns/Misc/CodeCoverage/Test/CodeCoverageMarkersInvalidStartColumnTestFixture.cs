@@ -34,16 +34,15 @@ namespace ICSharpCode.CodeCoverage.Tests
 			document.Text = "abcdefg\r\nabcdefg";
 			
 			string xml = "<PartCoverReport>\r\n" +
-				"\t<file id=\"1\" url=\"c:\\Projects\\Test\\Test.cs\" />\r\n" +
-				"\t<type name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\" asm=\"XmlEditor.Tests\">\r\n" +
-				"\t\t<method name=\"GetSchema\">\r\n" +
-				"\t\t\t<code>\r\n" +
-				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"0\" el=\"1\" ec=\"1\" />\r\n" +
-				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"-1\" el=\"1\" ec=\"1\" />\r\n" +
-				"\t\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"8\" el=\"1\" ec=\"20\" />\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
+				"\t<File id=\"1\" url=\"c:\\Projects\\Test\\Test.cs\" />\r\n" +
+				"\t<Assembly id=\"1\" name=\"XmlEditor.Tests\" module=\"C:\\Projects\\Test\\XmlEditor.Tests\\bin\\XmlEditor.Tests.DLL\" domain=\"test-domain-XmlEditor.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"\t<Type name=\"XmlEditor.Tests.Schema.SingleElementSchemaTestFixture\" asmref=\"1\">\r\n" +
+				"\t\t<Method name=\"GetSchema\">\r\n" +
+				"\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"0\" el=\"1\" ec=\"1\" />\r\n" +
+				"\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"-1\" el=\"1\" ec=\"1\" />\r\n" +
+				"\t\t<pt visit=\"1\" fid=\"1\" sl=\"1\" sc=\"8\" el=\"1\" ec=\"20\" />\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +
 				"</PartCoverReport>";
 			
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));

@@ -48,6 +48,8 @@ namespace ICSharpCode.Profiler.Controller
 		bool is64Bit;
 		bool isRunning;
 		volatile bool stopDC;
+		volatile bool enableDC;
+		volatile bool isFirstDC;
 		
 		/// <summary>
 		/// Gets whether the profiler is running inside a 64-bit profilee process or not.
@@ -198,6 +200,17 @@ namespace ICSharpCode.Profiler.Controller
 			get { return profilerOutput.ToString(); }
 		}
 		
+		public void EnableDataCollection()
+		{
+			this.enableDC = true;
+		}
+		
+		public void DisableDataCollection()
+		{
+			this.enableDC = false;
+			this.isFirstDC = true;
+		}
+		
 		/// <summary>
 		/// Creates a new profiler using the path to an executable to profile and a data writer.
 		/// </summary>
@@ -303,8 +316,6 @@ namespace ICSharpCode.Profiler.Controller
 				this.Pause();
 				this.threadListMutex.WaitOne();
 
-				Debug.Print("running DC " + (is64Bit ? "x64" : "x86"));
-
 				if (this.is64Bit)
 					CollectData64();
 				else
@@ -343,13 +354,16 @@ namespace ICSharpCode.Profiler.Controller
 
 				item = (ThreadLocalData32*)TranslatePointer(item->Predecessor);
 			}
-
-			this.AddDataset(fullView.Pointer,
-			                memHeader32->NativeAddress + memHeader32->HeapOffset,
-			                memHeader32->Allocator.startPos - memHeader32->NativeAddress,
-			                memHeader32->Allocator.pos - memHeader32->Allocator.startPos,
-			                (cpuUsageCounter == null) ? 0 : cpuUsageCounter.NextValue(),
-			                memHeader32->RootFuncInfoAddress);
+			if (this.enableDC) {
+				this.AddDataset(fullView.Pointer,
+				                memHeader32->NativeAddress + memHeader32->HeapOffset,
+				                memHeader32->Allocator.startPos - memHeader32->NativeAddress,
+				                memHeader32->Allocator.pos - memHeader32->Allocator.startPos,
+				                (cpuUsageCounter == null) ? 0 : cpuUsageCounter.NextValue(),
+				                isFirstDC,
+				                memHeader32->RootFuncInfoAddress);
+				isFirstDC = false;
+			}
 
 			ZeroMemory(new IntPtr(TranslatePointer(memHeader32->Allocator.startPos)), new IntPtr(memHeader32->Allocator.pos - memHeader32->Allocator.startPos));
 
@@ -389,9 +403,9 @@ namespace ICSharpCode.Profiler.Controller
 			}
 		}
 		
-		unsafe void AddDataset(byte *ptr, TargetProcessPointer nativeStartPosition, long offset, long length, double cpuUsage, TargetProcessPointer nativeRootFuncInfoPosition)
+		unsafe void AddDataset(byte *ptr, TargetProcessPointer nativeStartPosition, long offset, long length, double cpuUsage, bool isFirst, TargetProcessPointer nativeRootFuncInfoPosition)
 		{
-			using (DataSet dataSet = new DataSet(this, ptr + offset, length, nativeStartPosition, nativeRootFuncInfoPosition, cpuUsage, is64Bit)) {
+			using (DataSet dataSet = new DataSet(this, ptr + offset, length, nativeStartPosition, nativeRootFuncInfoPosition, cpuUsage, isFirst, is64Bit)) {
 				lock (this.dataWriter) {
 					this.dataWriter.WriteDataSet(dataSet);
 				}
@@ -493,6 +507,9 @@ namespace ICSharpCode.Profiler.Controller
 			this.profilee.StartInfo = this.psi;
 			this.profilee.Exited += new EventHandler(ProfileeExited);
 			
+			this.enableDC = this.profilerOptions.EnableDCAtStart;
+			this.isFirstDC = true;
+			
 			Debug.WriteLine("Launching profiler for " + this.psi.FileName + "...");
 			this.profilee.Start();
 			
@@ -579,6 +596,7 @@ namespace ICSharpCode.Profiler.Controller
 			// unload all counters to prevent exception during last collection!
 			this.cpuUsageCounter = null;
 			this.performanceCounters = null;
+			
 			// Take last shot
 			if (this.is64Bit)
 				CollectData64();
@@ -797,8 +815,8 @@ namespace ICSharpCode.Profiler.Controller
 			
 			public DataSet(Profiler profiler, byte *startPtr, long length, TargetProcessPointer nativeStartPosition,
 			               TargetProcessPointer nativeRootFuncInfoPosition,
-			               double cpuUsage, bool is64Bit)
-				: base(nativeStartPosition, nativeRootFuncInfoPosition, startPtr, length, cpuUsage, is64Bit)
+			               double cpuUsage, bool isFirst, bool is64Bit)
+				: base(nativeStartPosition, nativeRootFuncInfoPosition, startPtr, length, cpuUsage, isFirst, is64Bit)
 			{
 				this.profiler = profiler;
 			}

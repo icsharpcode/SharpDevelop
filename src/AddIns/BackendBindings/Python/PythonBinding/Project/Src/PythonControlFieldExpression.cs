@@ -304,8 +304,13 @@ namespace ICSharpCode.PythonBinding
 		public static object ConvertPropertyValue(PropertyDescriptor propertyDescriptor, object propertyValue)
 		{
 			if (propertyValue != null) {
-				if (!propertyDescriptor.PropertyType.IsAssignableFrom(propertyValue.GetType())) {
-					return propertyDescriptor.Converter.ConvertFrom(propertyValue);
+				Type propertyValueType = propertyValue.GetType();
+				if (!propertyDescriptor.PropertyType.IsAssignableFrom(propertyValueType)) {
+					if (propertyDescriptor.Converter.CanConvertFrom(propertyValueType)) {
+						return propertyDescriptor.Converter.ConvertFrom(propertyValue);
+					}
+					TypeConverter converter = TypeDescriptor.GetConverter(propertyValue);
+					return converter.ConvertTo(propertyValue, propertyDescriptor.PropertyType);
 				}
 			}
 			return propertyValue;

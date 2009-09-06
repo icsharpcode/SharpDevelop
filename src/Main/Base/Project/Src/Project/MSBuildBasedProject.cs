@@ -195,6 +195,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			this.ActiveConfiguration = "Debug";
 			this.ActivePlatform = information.Platform;
+			SetProperty(null, "x86", "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, false);
 		}
 		
 		/// <summary>
@@ -1238,6 +1239,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					return platformNames;
 				}
+			}
+		}
+		
+		protected void InvalidateConfigurationPlatformNames()
+		{
+			lock (SyncRoot) {
+				configurationNames = null;
+				platformNames = null;
 			}
 		}
 		

@@ -34,6 +34,9 @@ namespace ICSharpCode.PythonBinding
 		// references to fields or parameters.
 		List<ParameterDeclarationExpression> methodParameters = new List<ParameterDeclarationExpression>();
 		MethodDeclaration currentMethod;
+
+		// Holds the names of any parameters defined for this class.
+		List<string> propertyNames = new List<string>();
 		
 		SupportedLanguage language;
 		List<MethodDeclaration> entryPointMethods;
@@ -664,10 +667,13 @@ namespace ICSharpCode.PythonBinding
 		
 		public override object TrackedVisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
-			if (IsField(identifierExpression.Identifier)) {
-				Append("self._" + identifierExpression.Identifier);
+			string name = identifierExpression.Identifier;
+			if (IsField(name)) {
+				Append("self._" + name);
+			} else if (IsProperty(name) && !IsMethodParameter(name)) {
+				Append("self." + name);
 			} else {
-				Append(identifierExpression.Identifier);
+				Append(name);
 			}
 			return null;
 		}
@@ -949,23 +955,27 @@ namespace ICSharpCode.PythonBinding
 		public override object TrackedVisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			string propertyName = propertyDeclaration.Name;
+			propertyNames.Add(propertyName);
 
 			// Add get statements.
-			AppendIndentedLine("def get_" + propertyName + "(self):");
-			IncreaseIndent();
-			propertyDeclaration.GetRegion.Block.AcceptVisitor(this, data);
-			DecreaseIndent();
-			AppendLine();
+			if (propertyDeclaration.HasGetRegion) {
+				AppendIndentedLine("def get_" + propertyName + "(self):");
+				IncreaseIndent();
+				propertyDeclaration.GetRegion.Block.AcceptVisitor(this, data);
+				DecreaseIndent();
+				AppendLine();
+			}
 			
 			// Add set statements.
-			AppendIndentedLine("def set_" + propertyName + "(self, value):");
-			IncreaseIndent();
-			propertyDeclaration.SetRegion.Block.AcceptVisitor(this, data);
-			DecreaseIndent();
-			AppendLine();
+			if (propertyDeclaration.HasSetRegion) {
+				AppendIndentedLine("def set_" + propertyName + "(self, value):");
+				IncreaseIndent();
+				propertyDeclaration.SetRegion.Block.AcceptVisitor(this, data);
+				DecreaseIndent();
+				AppendLine();
+			}
 			
-			// Add property definition.
-			AppendIndentedLine(String.Concat(propertyName, " = property(fget=get_", propertyName, ", fset=set_", propertyName, ")"));
+			AppendPropertyDecorator(propertyDeclaration);
 			AppendLine();
 			
 			return null;
@@ -1167,7 +1177,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public override object TrackedVisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			Console.WriteLine("VisitTypeReferenceExpression");
+			Append(GetTypeName(typeReferenceExpression.TypeReference));
 			return null;
 		}
 		
@@ -1262,7 +1272,7 @@ namespace ICSharpCode.PythonBinding
 		public override object TrackedVisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			memberReferenceExpression.TargetObject.AcceptVisitor(this, data);
-			if (memberReferenceExpression.TargetObject is ThisReferenceExpression) {
+			if ((memberReferenceExpression.TargetObject is ThisReferenceExpression) && !IsProperty(memberReferenceExpression.MemberName)) {
 				Append("._");
 			} else {
 				Append(".");
@@ -1510,10 +1520,8 @@ namespace ICSharpCode.PythonBinding
 		bool IsField(string name)
 		{
 			// Check the current method's parameters.
-			foreach (ParameterDeclarationExpression param in methodParameters) {
-				if (param.ParameterName == name) {
-					return false;
-				}
+			if (IsMethodParameter(name)) {
+				return false;
 			}
 
 			// Check the current class's fields.
@@ -1525,6 +1533,21 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return false;
+		}
+		
+		bool IsMethodParameter(string name)
+		{
+			foreach (ParameterDeclarationExpression param in methodParameters) {
+				if (param.ParameterName == name) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		bool IsProperty(string name)
+		{
+			return propertyNames.Contains(name);
 		}
 		
 		/// <summary>
@@ -1939,6 +1962,28 @@ namespace ICSharpCode.PythonBinding
 		bool SupportsDocstring(INode node)
 		{
 			return (node is TypeDeclaration) || (node is MethodDeclaration) || (node is ConstructorDeclaration);
+		}
+		
+		void AppendPropertyDecorator(PropertyDeclaration propertyDeclaration)
+		{
+			string propertyName = propertyDeclaration.Name;
+			AppendIndented(propertyName);
+			Append(" = property(");
+		
+			bool addedParameter = false;
+			if (propertyDeclaration.HasGetRegion) {
+				Append("fget=get_" + propertyName);
+				addedParameter = true;
+			}
+			
+			if (propertyDeclaration.HasSetRegion) {
+				if (addedParameter) {
+					Append(", ");
+				}
+				Append("fset=set_" + propertyName);
+			}
+			Append(")");
+			AppendLine();
 		}
 	}
 }

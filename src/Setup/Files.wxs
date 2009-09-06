@@ -441,9 +441,6 @@
 									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">
 										<File Source="..\..\bin\Tools\PartCover\Interop.PartCover.dll" Id="Interop.PartCover.dll" Name="Interop.PartCover.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.PartCover.dll" AssemblyManifest="Interop.PartCover.dll" />
 									</Component>
-									<Component Guid="DA202409-86C7-4E13-9D12-26926A6F770B" Id="PartCoverBrowserManualRtf" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover Browser Manual.rtf" Id="PartCover_Browser_Manual.rtf" Name="PartCover Browser Manual.rtf" KeyPath="yes" />
-									</Component>
 									<Component Guid="2748871F-77C1-4107-A004-869CF09CCFE2" Id="PartCoverConsoleManualRtf" DiskId="1">
 										<File Source="..\..\bin\Tools\PartCover\PartCover Console Manual.rtf" Id="PartCover_Console_Manual.rtf" Name="PartCover Console Manual.rtf" KeyPath="yes" />
 									</Component>
@@ -451,42 +448,36 @@
 										<File Source="..\..\bin\Tools\PartCover\PartCover.CorDriver.dll" Id="PartCover.CorDriver.dll" Name="PartCover.CorDriver.dll" KeyPath="yes" />
 										<RegistryValue Id="PartCoverCorDriverRegistryAppIdGuid" Root="HKCR" Type="string" Key="AppId\7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" Value="PartCoverCorDriver" />
 										<RegistryValue Id="PartCoverCorDriverRegistryAppIdDriverDll" Root="HKCR" Type="string" Key="AppId\PartCoverCorDriver.DLL" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}" Value="PartCoverConnector Object" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidInProcServer" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\InProcServer32" Value="[#PartCover.CorDriver.dll]" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidInProcServerThreadingModel" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\InProcServer32" Name="ThreadingModel" Value="both" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidProgID" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\ProgID" Value="PartCover.CorDriver.Connector.2" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\Programmable" Value=" " />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}\VersionIndependentProgID" Value="PartCover.CorDriver.Connector" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" Value="CorProfiler Object" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\InprocServer32" Value="[#PartCover.CorDriver.dll]" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32ThreadingModel" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\InprocServer32" Name="ThreadingModel" Value="both" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidProgId" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\ProgId" Value="PartCover.CorDriver.CorProfiler.2" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\Programmable" Value=" " />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}\VersionIndependentProgID" Value="PartCover.CorDriver.CorProfiler" />
-										<RegistryValue Id="PartCoverCorConnectorRegistry" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector" Value="PartCoverConnector Object" />
-										<RegistryValue Id="PartCoverCorConnectorRegistryClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CLSID" Value="{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}" />
-										<RegistryValue Id="PartCoverCorConnectorRegistryCurVer" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CurVer" Value="PartCover.CorDriver.Connector.2" />
-										<RegistryValue Id="PartCoverCorConnectorRegistry2" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.2" Value="PartCoverConnector Object" />
-										<RegistryValue Id="PartCoverCorConnectorRegistry2ClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.2\CLSID" Value="{6F6225EA-0897-41fa-B1EF-8B4D3E15325E}" />
+										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}" Value="CorProfiler Object" />
+										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
+										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidInProcServer" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\InProcServer32" Value="[#PartCover.CorDriver.dll]" />
+										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidInProcServerThreadingModel" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\InProcServer32" Name="ThreadingModel" Value="both" />
+										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidProgID" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\ProgID" Value="PartCover.CorDriver.CorProfiler.2" />
+										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\Programmable" Value="" />
+										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
+										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\VersionIndependentProgID" Value="PartCover.CorDriver.CorProfiler" />
+										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}" Value="PartCoverConnector2 Object" />
+										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
+										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\InprocServer32" Value="[#PartCover.CorDriver.dll]" />
+										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32ThreadingModel" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\InprocServer32" Name="ThreadingModel" Value="both" />
+										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidProgId" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\ProgId" Value="PartCover.CorDriver.Connector.3" />
+										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\Programmable" Value="" />
+										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
+										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\VersionIndependentProgID" Value="PartCover.CorDriver.Connector" />
+										<RegistryValue Id="PartCoverCorConnectorRegistry" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector" Value="PartCoverConnector2 Object" />
+										<RegistryValue Id="PartCoverCorConnectorRegistryClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CLSID" Value="{FB20430E-CDC9-45D7-8453-272268002E08}" />
+										<RegistryValue Id="PartCoverCorConnectorRegistryCurVer" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CurVer" Value="PartCover.CorDriver.Connector.3" />
+										<RegistryValue Id="PartCoverCorConnectorRegistry3" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.3" Value="PartCoverConnector2 Object" />
+										<RegistryValue Id="PartCoverCorConnectorRegistry3ClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.3\CLSID" Value="{FB20430E-CDC9-45D7-8453-272268002E08}" />
 										<RegistryValue Id="PartCoverCorProfilerRegistryName" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler" Value="CorProfiler Object" />
 										<RegistryValue Id="PartCoverCorProfilerRegistryNameClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler\CLSID" Value="{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" />
 										<RegistryValue Id="PartCoverCorProfilerRegistryNameCurVer" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler\CurVer" Value="PartCover.CorDriver.CorProfiler.2" />
 										<RegistryValue Id="PartCoverCorProfilerRegistry2" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler.2" Value="CorProfiler Object" />
 										<RegistryValue Id="PartCoverCorProfilerRegistry2ClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler.2\CLSID" Value="{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuid" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0" Value="PartCover module" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuidWin32" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0\0\win32" Value="[#PartCover.CorDriver.dll]" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuidFlags" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0\FLAGS" Value="0" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuidHelp" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.0\HELPDIR" Value=" " />
-									</Component>
-									<Component Guid="BEF3D893-B7BA-4487-BDF4-5E8E31AF4C6B" Id="PartCoverCoverageBrowserExe" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.Coverage.Browser.exe" Id="PartCover.Coverage.Browser.exe" Name="PartCover.Coverage.Browser.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="PartCover.Coverage.Browser.exe" AssemblyManifest="PartCover.Coverage.Browser.exe" />
-									</Component>
-									<Component Guid="BE28BCAE-B6D2-430E-8591-95C095BDACD7" Id="PartCoverCoverageBrowserExeConfig" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.Coverage.Browser.exe.config" Id="PartCover.Coverage.Browser.exe.config" Name="PartCover.Coverage.Browser.exe.config" KeyPath="yes" />
+										<RegistryValue Id="PartCoverTypeLibRegistryGuid" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.1" Value="PartCover module" />
+										<RegistryValue Id="PartCoverTypeLibRegistryGuidWin32" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.1\0\win32" Value="[#PartCover.CorDriver.dll]" />
+										<RegistryValue Id="PartCoverTypeLibRegistryGuidFlags" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.1\FLAGS" Value="0" />
+										<RegistryValue Id="PartCoverTypeLibRegistryGuidHelp" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\2.1\HELPDIR" Value="" />
 									</Component>
 									<Component Guid="429867BD-2DC0-4934-BED7-70A17978A57C" Id="PartCoverExe" DiskId="1">
 										<File Source="..\..\bin\Tools\PartCover\PartCover.exe" Id="PartCover.exe" Name="PartCover.exe" Assembly=".net" KeyPath="yes" AssemblyApplication="PartCover.exe" AssemblyManifest="PartCover.exe" />
@@ -498,12 +489,6 @@
 										<File Source="..\..\bin\Tools\PartCover\PartCover.Framework.dll" Id="PartCover.Framework.dll" Name="PartCover.Framework.dll" KeyPath="yes" />
 									</Component>
 									<Directory Id="Xslt" Name="Xslt">
-										<Component Guid="00708219-F106-4A0E-8CDA-E41DE2C0D611" Id="AssemblyReportXslt" DiskId="1">
-											<File Source="..\..\bin\Tools\PartCover\Xslt\assembly.report.xslt" Id="assembly.report.xslt" Name="assembly.report.xslt" KeyPath="yes" />
-										</Component>
-										<Component Guid="55D89B3C-F9F7-48CD-983A-27EBB09AEF72" Id="ClassReportXslt" DiskId="1">
-											<File Source="..\..\bin\Tools\PartCover\Xslt\class.report.xslt" Id="class.report.xslt" Name="class.report.xslt" KeyPath="yes" />
-										</Component>
 										<Component Guid="A2973C0C-487A-4D0E-AA42-B9D48DCDE060" Id="PartCoverToNCoverXslt" DiskId="1">
 											<File Source="..\..\bin\Tools\PartCover\Xslt\PartCoverToNCover.xsl" Name="PartCoverToNCover.xsl" Id="PartCoverToNCover.xsl" KeyPath="yes" />
 										</Component>

@@ -305,7 +305,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (IsPublic) {
 				return true;
 			} else if (IsInternal) {
-				return callingClass != null && this.DeclaringType.ProjectContent.InternalsVisibleTo(callingClass.ProjectContent);
+				// members can be both internal and protected: in that case, we want to return true if it is visible
+				// through any of the modifiers
+				if (callingClass != null && this.DeclaringType.ProjectContent.InternalsVisibleTo(callingClass.ProjectContent))
+					return true;
 			}
 			// protected or private:
 			// search in callingClass and, if callingClass is a nested class, in its outer classes

@@ -40,16 +40,15 @@ namespace ICSharpCode.CodeCoverage.Tests
 			markerStrategy = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			
 			string xml = "<PartCoverReport>\r\n" +
-				"<file id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"\t<type asm=\"Foo.Tests\" name=\"Foo.Tests.FooTestFixture\" flags=\"1232592\">\r\n" +
-				"\t\t<method name=\"SimpleTest\">\r\n" +
-				"\t\t\t<code>\r\n" +
-				"\t\t\t\t<pt visit=\"1\" sl=\"1\" fid=\"1\" sc=\"3\" el=\"1\" ec=\"4\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"\t\t\t\t<pt visit=\"1\" sl=\"2\" fid=\"1\" sc=\"4\" el=\"2\" ec=\"18\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"\t\t\t\t<pt visit=\"0\" sl=\"3\" fid=\"1\" sc=\"3\" el=\"3\" ec=\"4\" document=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
-				"\t\t\t</code>\r\n" +
-				"\t\t</method>\r\n" +
-				"\t</type>\r\n" +
+				"<File id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
+				"<Assembly id=\"1\" name=\"Foo.Tests\" module=\"C:\\Projects\\Test\\Foo.Tests\\bin\\Foo.Tests.DLL\" domain=\"test-domain-Foo.Tests.dll\" domainIdx=\"1\" />\r\n" +
+				"\t<Type asmref=\"1\" name=\"Foo.Tests.FooTestFixture\" flags=\"1232592\">\r\n" +
+				"\t\t<Method name=\"SimpleTest\">\r\n" +
+				"\t\t\t<pt visit=\"1\" sl=\"1\" fid=\"1\" sc=\"3\" el=\"1\" ec=\"4\" document=\"c:\\Projects\\Foo\\Foo1TestFixture.cs\" />\r\n" +
+				"\t\t\t<pt visit=\"1\" sl=\"2\" fid=\"1\" sc=\"4\" el=\"2\" ec=\"18\" document=\"c:\\Projects\\Foo\\Foo1TestFixture.cs\" />\r\n" +
+				"\t\t\t<pt visit=\"0\" sl=\"3\" fid=\"1\" sc=\"3\" el=\"3\" ec=\"4\" document=\"c:\\Projects\\Foo\\Foo1TestFixture.cs\" />\r\n" +
+				"\t\t</Method>\r\n" +
+				"\t</Type>\r\n" +
 				"</PartCoverReport>";
 			CodeCoverageResults results = new CodeCoverageResults(new StringReader(xml));
 			CodeCoverageMethod method = results.Modules[0].Methods[0];

@@ -672,7 +672,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				case OverloadableOperatorType.UnaryPlus:
 					return "op_UnaryPlus";
 				default:
-					throw new NotSupportedException();
+					return "op_unknown";
 			}
 		}
 	}

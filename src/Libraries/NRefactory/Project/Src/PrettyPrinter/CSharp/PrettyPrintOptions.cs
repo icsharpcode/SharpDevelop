@@ -15,6 +15,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		NextLineShifted2
 	}
 	
+	public enum BraceForcement {
+		DoNotChange,
+		RemoveBraces,
+		AddBraces,
+		RemoveBracesForSingleLine
+	}
+	
 	/// <summary>
 	/// Description of PrettyPrintOptions.	
 	/// </summary>
@@ -224,6 +231,68 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		#endregion
 		
+		#region Force Braces
+		BraceForcement ifElseBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement IfElseBraceForcement {
+			get {
+				return ifElseBraceForcement;
+			}
+			set {
+				ifElseBraceForcement = value;
+			}
+		}
+		
+		BraceForcement forBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement ForBraceForcement {
+			get {
+				return forBraceForcement;
+			}
+			set {
+				forBraceForcement = value;
+			}
+		}
+		
+		BraceForcement foreachBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement ForEachBraceForcement {
+			get {
+				return foreachBraceForcement;
+			}
+			set {
+				foreachBraceForcement = value;
+			}
+		}
+		
+		BraceForcement whileBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement WhileBraceForcement {
+			get {
+				return whileBraceForcement;
+			}
+			set {
+				whileBraceForcement = value;
+			}
+		}
+		
+		BraceForcement usingBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement UsingBraceForcement {
+			get {
+				return usingBraceForcement;
+			}
+			set {
+				usingBraceForcement = value;
+			}
+		}
+		
+		BraceForcement fixedBraceForcement = BraceForcement.DoNotChange;
+		public BraceForcement FixedBraceForcement {
+			get {
+				return fixedBraceForcement;
+			}
+			set {
+				fixedBraceForcement = value;
+			}
+		}
+		#endregion
+		
 		#region Indentation
 		bool indentNamespaceBody = true;
 		bool indentClassBody     = true;
@@ -354,6 +423,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public bool PlaceCatchOnNewLine { get; set; }
 		public bool PlaceFinallyOnNewLine { get; set; }
 		public bool PlaceElseOnNewLine { get; set; }
+		public bool PlaceNonBlockElseOnNewLine { get; set; }
 		public bool PlaceWhileOnNewLine { get; set; }
 		#endregion
 		
@@ -856,5 +926,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		#endregion
 		#endregion
+		
+		public PrettyPrintOptions ()
+		{
+			PlaceNonBlockElseOnNewLine = true;
+		}
 	}
 }

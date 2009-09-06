@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ICSharpCode.Profiler.Controls.QueryView"
+﻿<UserControl x:Class="ICSharpCode.Profiler.Controls.QueryView" x:Name="queryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ICSharpCode.Profiler.Controls">
@@ -71,33 +71,55 @@
 		<local:TreeListView x:Name="treeView" Grid.Row="2" SelectionMode="Extended">
 			<ListView.View>
 				<local:CustomGridView>
-					<GridViewColumn Header="Name" Width="240" x:Name="nameColumn">
+					<GridViewColumn Header="{Binding Translation.NameColumnText, ElementName=queryView}" Width="240" x:Name="nameColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<local:CustomGridViewScrollableCell CurrentScrollPosition="{Binding ElementName=treeView, Path=View.CurrentScrollPosition}">
 									<StackPanel Orientation="Horizontal">
 										<ToggleButton Visibility="{Binding CheckBoxVisibility}" IsChecked="{Binding IsExpanded}" Margin="{Binding IndentationMargin}" Style="{StaticResource ExpandCollapseToggleStyle}" />
+										<Ellipse Width="10" Height="10" HorizontalAlignment="Center" Margin="0,0,0,3" Fill="Red" Visibility="{Binding HotPathIndicatorVisibility}" />
 										<TextBlock Text="{Binding Name}" ToolTip="{Binding ToolTip}" />
 									</StackPanel>
 								</local:CustomGridViewScrollableCell>
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="Call count" Width="60" x:Name="callCountColumn">
+					<GridViewColumn Header="{Binding Translation.CallCountColumnText, ElementName=queryView}" Width="60" x:Name="callCountColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding CallCount}" HorizontalAlignment="Right" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="Time spent" Width="110" x:Name="timeSpentColumn">
+					<GridViewColumn Header="{Binding Translation.TimeSpentColumnText, ElementName=queryView}" Width="110" x:Name="timeSpentColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock HorizontalAlignment="Right" Text="{Binding TimeSpent}" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="%" Width="80" x:Name="percentColumn">
+					<GridViewColumn Header="{Binding Translation.TimeSpentSelfColumnText, ElementName=queryView}" Width="110" x:Name="timeSpentSelfColumn">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock HorizontalAlignment="Right" Text="{Binding TimeSpentSelf}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="{Binding Translation.TimeSpentPerCallColumnText, ElementName=queryView}" Width="110" x:Name="timeSpentPerCallColumn">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock HorizontalAlignment="Right" Text="{Binding TimeSpentPerCall}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="{Binding Translation.TimeSpentSelfPerCallColumnText, ElementName=queryView}" Width="110" x:Name="timeSpentSelfPerCallColumn">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock HorizontalAlignment="Right" Text="{Binding TimeSpentSelfPerCall}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn Header="{Binding Translation.TimePercentageOfParentColumnText, ElementName=queryView}" Width="80" x:Name="percentColumn">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<DockPanel LastChildFill="false">
@@ -117,17 +139,18 @@
 			</ListView.ItemContainerStyle>
 		</local:TreeListView>
 		<ToolBar Height="26" Grid.Row="0" Grid.ColumnSpan="2">
-			<Label>Search:</Label>
-			<TextBox Name="txtSearch" Width="150" KeyDown="txtSearchKeyDown"></TextBox>
-			<CheckBox Content="Show Query Bar" IsChecked="{Binding ShowQueryItems}" />
+			<Label Content="{Binding Translation.SearchLabelText, ElementName=queryView}" />
+			<TextBox Name="txtSearch" Width="150" KeyDown="txtSearchKeyDown" />
+			<CheckBox Content="{Binding Translation.ShowQueryBarText, ElementName=queryView}" IsChecked="{Binding ShowQueryItems}" />
+			<Button Content="{Binding Translation.ExpandHotPathSubtreeText, ElementName=queryView}" Name="btnExpandHotPathSubtree" Click="BtnExpandHotPathSubtreeClick" />
 		</ToolBar>
 		<DockPanel Name="queryPanel" Visibility="{Binding ShowQueryItems, Converter={StaticResource VisibilityConverter}}" Grid.Row="1" Grid.ColumnSpan="2">
-			<Button Name="btnExecuteQuery" DockPanel.Dock="Right" Click="btnExecuteQueryClick">Execute Query</Button>
-			<TextBox Name="txtQuery" TextChanged="txtQueryTextChanged" KeyDown="txtQueryKeyDown"></TextBox>
+			<Button Name="btnExecuteQuery" DockPanel.Dock="Right" Click="btnExecuteQueryClick" Content="{Binding Translation.ExecuteQueryText, ElementName=queryView}" />
+			<TextBox Name="txtQuery" TextChanged="txtQueryTextChanged" KeyDown="txtQueryKeyDown" />
 		</DockPanel>
 		<GridSplitter Width="5" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="2" />
 		<Viewbox Name="diagramView" Grid.Column="1" Grid.Row="2" Margin="5,0,0,0">
-			<local:RingDiagramControl x:Name="ringDiagram" SelectedRoot="{Binding SelectedItem, Mode=TwoWay, ElementName=treeView}" />
+			<local:RingDiagramControl x:Name="ringDiagram" Translation="{Binding Translation, ElementName=queryView}" SelectedRoot="{Binding SelectedItem, Mode=TwoWay, ElementName=treeView}" />
 		</Viewbox>
 	</Grid>
 </UserControl>

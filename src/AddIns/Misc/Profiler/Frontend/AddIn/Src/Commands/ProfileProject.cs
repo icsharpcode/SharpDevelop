@@ -8,7 +8,6 @@
 using System;
 using System.IO;
 using ICSharpCode.Profiler.Controller.Data;
-using ICSharpCode.SharpDevelop.Profiling;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
@@ -26,14 +25,14 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		public override void Run()
 		{
 			IProject currentProj = ProjectService.CurrentProject;
-			string path = ProfilerService.GetSessionFileName(currentProj);
+			string path = currentProj.GetSessionFileName();
 			Directory.CreateDirectory(Path.GetDirectoryName(path));
 			
-			IProfilingDataWriter writer = new ProfilingDataSQLiteWriter(path);
-			ProfilerRunner runner = WindowsProfiler.CreateRunner(writer);
+			IProfilingDataWriter writer = new ProfilingDataSQLiteWriter(path, false, null);
+			ProfilerRunner runner = ProfilerRunner.CreateRunner(writer);
 			
 			if (runner != null) {
-				runner.RunFinished += delegate { ProfilerService.AddSessionToProject(currentProj, path); };
+				runner.RunFinished += delegate { currentProj.AddSessionToProject(path); };
 				runner.Run();
 			}
 		}

@@ -41,6 +41,26 @@ namespace ICSharpCode.SharpDevelop
 		
 		static HashSet<FileChangeWatcher> activeWatchers = new HashSet<FileChangeWatcher>();
 		
+		static int globalDisableCount;
+		
+		public static void DisableAllChangeWatchers()
+		{
+			WorkbenchSingleton.AssertMainThread();
+			globalDisableCount++;
+			foreach (FileChangeWatcher w in activeWatchers)
+				w.SetWatcher();
+		}
+		
+		public static void EnableAllChangeWatchers()
+		{
+			WorkbenchSingleton.AssertMainThread();
+			if (globalDisableCount == 0)
+				throw new InvalidOperationException();
+			globalDisableCount--;
+			foreach (FileChangeWatcher w in activeWatchers)
+				w.SetWatcher();
+		}
+		
 		FileSystemWatcher watcher;
 		bool wasChangedExternally = false;
 		OpenedFile file;
@@ -95,6 +115,8 @@ namespace ICSharpCode.SharpDevelop
 			}
 			
 			if (!enabled)
+				return;
+			if (globalDisableCount > 0)
 				return;
 			if (DetectExternalChangesOption == false)
 				return;

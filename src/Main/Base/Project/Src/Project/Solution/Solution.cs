@@ -27,6 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>contains &lt;GUID, (IProject/ISolutionFolder)&gt; pairs.</summary>
 		Dictionary<string, ISolutionFolder> guidDictionary = new Dictionary<string, ISolutionFolder>();
 		
+		bool isLoading;
 		string fileName = String.Empty;
 		
 		public Solution()
@@ -234,10 +235,47 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		internal void BeforeAddFolderToSolution(ISolutionFolder folder)
+		{
+			IProject project = folder as IProject;
+			if (project != null && !isLoading) {
+				// HACK: don't deal with configurations during loading
+				if (this.GetConfigurationNames().Count == 0) {
+					foreach (string config in project.ConfigurationNames) {
+						foreach (string platform in project.PlatformNames)
+							AddSolutionConfigurationPlatform(config, FixPlatformNameForSolution(platform), null, false, false);
+					}
+				}
+			}
+		}
+		
 		public override void AddFolder(ISolutionFolder folder)
 		{
 			base.AddFolder(folder);
 			guidDictionary[folder.IdGuid] = folder;
+		}
+		
+		internal void AfterAddFolderToSolution(ISolutionFolder folder)
+		{
+			IProject project = folder as IProject;
+			if (project != null && !isLoading) {
+				var projectConfigurations = project.ConfigurationNames;
+				var solutionConfigurations = this.GetConfigurationNames();
+				var projectPlatforms = project.PlatformNames;
+				var solutionPlatforms = this.GetPlatformNames();
+				foreach (string config in solutionConfigurations) {
+					string projectConfig = config;
+					if (!projectConfigurations.Contains(projectConfig))
+						projectConfig = projectConfigurations.FirstOrDefault() ?? "Debug";
+					foreach (string platform in solutionPlatforms) {
+						string projectPlatform = FixPlatformNameForProject(platform);
+						if (!projectPlatforms.Contains(projectPlatform))
+							projectPlatform = projectPlatforms.FirstOrDefault() ?? "AnyCPU";
+						
+						CreateMatchingItem(config, platform, project, projectConfig + "|" + FixPlatformNameForSolution(projectPlatform));
+					}
+				}
+			}
 		}
 		
 		#endregion
@@ -591,6 +629,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			ProjectSection newSec = new ProjectSection("SolutionConfigurationPlatforms", "preSolution");
 			this.Sections.Insert(0, newSec);
+			
+			// convert VS 2003 solution to VS 2005 (or later)
 			foreach (ProjectSection sec in this.Sections) {
 				if (sec.Name == "SolutionConfiguration") {
 					this.Sections.Remove(sec);
@@ -598,7 +638,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						// item.Name = item.Location
 						// might be  ConfigName.0 = Debug   (VS.NET)
 						// or        Debug = Debug          (VS.NET 03)
-						newSec.Items.Add(new SolutionItem(item.Location + "|Any CPU", item.Location + "|Any CPU"));
+						newSec.Items.Add(new SolutionItem(item.Location + "|x86", item.Location + "|x86"));
 					}
 					break;
 				}
@@ -1185,8 +1225,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			} else {
 				newSolution.fileName = fileName;
-				if (!SetupSolution(newSolution)) {
-					return null;
+				newSolution.isLoading = true;
+				try {
+					if (!SetupSolution(newSolution)) {
+						return null;
+					}
+				} finally {
+					newSolution.isLoading = false;
 				}
 			}
 			

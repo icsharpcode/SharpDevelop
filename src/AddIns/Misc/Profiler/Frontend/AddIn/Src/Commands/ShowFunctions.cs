@@ -29,9 +29,8 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		public override void Run()
 		{
 			var selectedItem = GetSelectedItems().FirstOrDefault();
-			
 			if (selectedItem != null)
-				Parent.CreateTab("All functions for " + selectedItem.GetSignature(),
+				Parent.CreateTab(string.Format(StringParser.Parse("${res:AddIns.Profiler.Commands.ShowFunctions.TabTitle}"), selectedItem.GetSignature()),
 				                 "from f in Functions where f.Signature == \"" + selectedItem.GetSignature() + "\" select f");
 		}
 	}

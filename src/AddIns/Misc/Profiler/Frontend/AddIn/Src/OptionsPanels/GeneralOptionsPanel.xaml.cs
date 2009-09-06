@@ -28,7 +28,7 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 		
 		public T GetOptionValue<T>(string name)
 		{
-			object o;
+			object o = null;
 			
 			switch (name) {
 				case "SharedMemorySize":
@@ -43,6 +43,9 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 				case "CombineRecursiveFunction":
 					o = this.chkCombineRecursiveCalls.IsChecked;
 					break;
+				case "EnableDCAtStart":
+					o = this.chkEnableDCAtStartup.IsChecked;
+					break;
 				default:
 					throw new NotSupportedException("value '" + name + "' is not supported!");
 			}
@@ -53,10 +56,10 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 		public void SetOptionValue<T>(string name, T value)
 		{
 			object o = value;
-
+			
 			switch (name) {
 				case "SharedMemorySize":
-					this.slSharedMemorySize.Value = (double)o;
+					this.slSharedMemorySize.Value = (int)o;
 					break;
 				case "EnableDC":
 					this.chkEnableDC.IsChecked = (bool)o;
@@ -66,6 +69,9 @@ namespace ICSharpCode.Profiler.AddIn.OptionsPanels
 					break;
 				case "CombineRecursiveFunction":
 					this.chkCombineRecursiveCalls.IsChecked = (bool)o;
+					break;
+				case "EnableDCAtStart":
+					this.chkEnableDCAtStartup.IsChecked = (bool)o;
 					break;
 				default:
 					throw new NotSupportedException("value '" + name + "' is not supported!");

@@ -44,6 +44,19 @@ namespace PythonBinding.Tests.Designer
 
 			Assert.AreEqual(expectedArgs, args);
 		}
+
+		[Test]
+		public void NegativeDoubleParameter()
+		{			
+			List<object> expectedArgs = new List<object>();
+			expectedArgs.Add(-1.0);
+			
+			string code = "TestClass(-1.0)";
+			CallExpression callExpression = PythonParserHelper.GetCallExpression(code);
+			List<object> args = deserializer.GetArguments(callExpression);
+
+			Assert.AreEqual(expectedArgs, args);
+		}	
 		
 		[Test]
 		public void EnumParameter()

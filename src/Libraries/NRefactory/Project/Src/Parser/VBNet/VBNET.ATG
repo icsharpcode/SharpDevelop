@@ -1023,13 +1023,13 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	.)
 	EndOfStmt
 | /* 9.6 */
-	(. Location startPos = t.Location; .)
 	(.
 		m.Check(Modifiers.Fields);
 		FieldDeclaration fd = new FieldDeclaration(attributes, null, m.Modifier);
-		fd.StartLocation = m.GetDeclarationLocation(startPos); 
 	.)
 	IdentifierForFieldDeclaration (. string name = t.val; .)
+	(. fd.StartLocation = m.GetDeclarationLocation(t.Location); .)
+	
 	VariableDeclaratorPartAfterIdentifier<variableDeclarators, name>
 	{ "," VariableDeclarator<variableDeclarators> }
 	EndOfStmt

@@ -69,6 +69,14 @@ namespace ICSharpCode.Profiler.Controls
 			set { SetValue(ShowQueryItemsProperty, value); }
 			get { return (bool)GetValue(ShowQueryItemsProperty); }
 		}
+		
+		public static readonly DependencyProperty TranslationProperty = DependencyProperty.Register(
+			"Translation", typeof(ControlsTranslation), typeof(QueryView));
+		
+		public ControlsTranslation Translation {
+			set { SetValue(TranslationProperty, value); }
+			get { return (ControlsTranslation)GetValue(TranslationProperty); }
+		}
 		#endregion
 
 		void txtSearchKeyDown(object sender, KeyEventArgs e)
@@ -82,11 +90,9 @@ namespace ICSharpCode.Profiler.Controls
 				
 				AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
 				OverlayAdorner ad = new OverlayAdorner(this);
-				WaitBar bar = new WaitBar("Refreshing view, please wait ...");
+				WaitBar bar = new WaitBar(Translation.WaitBarText);
 				ad.Child = bar;
 				layer.Add(ad);
-				
-				CallTreeNode resultRoot;
 				
 				searchTask.Execute(
 					() => DoSearchInBackground(list.Roots.Select(i => i.Node).ToList(), start, end, text, true),
@@ -157,12 +163,17 @@ namespace ICSharpCode.Profiler.Controls
 			this.task = new SingleTask(this.Dispatcher);
 			this.searchTask = new SingleTask(this.Dispatcher);
 			
+			this.Translation = new ControlsTranslation();
+			
 			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
 				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 &&
 				    (nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) > 0) {
-					if ((nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) >=
-					    (e.NewSize.Width - this.callCountColumn.Width - this.percentColumn.Width - this.timeSpentColumn.Width))
-						this.nameColumn.Width = e.NewSize.Width - this.callCountColumn.Width - this.percentColumn.Width - this.timeSpentColumn.Width - 25;
+					double newValue = e.NewSize.Width - this.callCountColumn.Width
+						- this.percentColumn.Width - this.timeSpentColumn.Width
+						- this.timeSpentSelfColumn.Width - this.timeSpentPerCallColumn.Width
+						- this.timeSpentSelfPerCallColumn.Width;
+					if ((nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) >= newValue)
+						this.nameColumn.Width = newValue - 25;
 					else
 						nameColumn.Width += (e.NewSize.Width - e.PreviousSize.Width);
 				}
@@ -201,8 +212,13 @@ namespace ICSharpCode.Profiler.Controls
 			if ((RangeEnd < 0 && RangeEnd >= Provider.DataSets.Count) &&
 			    (RangeStart < 0 && RangeStart >= Provider.DataSets.Count))
 				return;
-
-			Debug.Assert(RangeStart <= RangeEnd);
+			
+			if (Provider.DataSets.Count == 0)
+				return;
+			
+			RangeEnd = Math.Min(RangeEnd, Provider.DataSets.Count - 1);
+			RangeStart = Math.Max(RangeStart, 0);
+			
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
 			LoadData();
@@ -215,7 +231,7 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			AdornerLayer layer = AdornerLayer.GetAdornerLayer(this);
 			OverlayAdorner ad = new OverlayAdorner(this);
-			WaitBar bar = new WaitBar("Refreshing view, please wait ...");
+			WaitBar bar = new WaitBar(Translation.WaitBarText);
 			ad.Child = bar;
 			layer.Add(ad);
 			int rangeStart = RangeStart;
@@ -239,7 +255,7 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			try {
 				if (compiler.Compile()) {
-					var data = compiler.ExecuteQuery(provider, rangeStart, rangeEnd - 1);
+					var data = compiler.ExecuteQuery(provider, rangeStart, rangeEnd);
 					var nodes = data.Select(i => new CallTreeNodeViewModel(i, null)).ToList();
 					return new HierarchyList<CallTreeNodeViewModel>(nodes);
 				}
@@ -287,6 +303,23 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			OnCurrentQueryChanged(EventArgs.Empty);
 			this.Invalidate();
+		}
+		
+		void BtnExpandHotPathSubtreeClick(object sender, RoutedEventArgs e)
+		{
+			foreach (CallTreeNodeViewModel node in this.SelectedItems.ToArray()) {
+				ExpandHotPathItems(node);
+			}
+		}
+		
+		void ExpandHotPathItems(CallTreeNodeViewModel parent)
+		{
+			if (parent.HotPathIndicatorVisibility == Visibility.Visible) {
+				parent.IsExpanded = true;
+				
+				foreach (CallTreeNodeViewModel node in parent.Children)
+					ExpandHotPathItems(node);
+			}
 		}
 		
 		public ContextMenu TreeViewContextMenu {

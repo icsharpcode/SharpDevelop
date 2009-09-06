@@ -16,9 +16,14 @@ using System.Windows.Media;
 
 namespace ICSharpCode.Profiler.Controls
 {
+	public struct TimeLineInfo {
+		public double value;
+		public bool displayMarker;
+	}
+	
 	public class TimeLineControl : FrameworkElement
 	{
-		ObservableCollection<double> valuesList;
+		ObservableCollection<TimeLineInfo> valuesList;
 		int selectedStartIndex, selectedEndIndex;
 		double pieceWidth;
 
@@ -54,14 +59,14 @@ namespace ICSharpCode.Profiler.Controls
 			}
 		}
 
-		public ObservableCollection<double> ValuesList
+		public ObservableCollection<TimeLineInfo> ValuesList
 		{
 			get { return valuesList; }
 		}
 
 		public TimeLineControl()
 		{
-			this.valuesList = new ObservableCollection<double>();
+			this.valuesList = new ObservableCollection<TimeLineInfo>();
 			this.valuesList.CollectionChanged += delegate { this.InvalidateMeasure(); this.InvalidateVisual(); };
 		}
 
@@ -94,7 +99,7 @@ namespace ICSharpCode.Profiler.Controls
 				for (int i = 0; i < this.valuesList.Count; i++)
 				{
 					double x = this.pieceWidth / 2.0 + this.pieceWidth * i + offset;
-					double y = this.RenderSize.Height - this.valuesList[i] * (this.RenderSize.Height - offset) - offset;
+					double y = this.RenderSize.Height - this.valuesList[i].value * (this.RenderSize.Height - offset) - offset;
 
 					points.Add(new Point(x, y));
 
@@ -115,12 +120,28 @@ namespace ICSharpCode.Profiler.Controls
 			drawingContext.DrawLine(new Pen(Brushes.Black, 1), new Point(offset / 2, this.RenderSize.Height - offset / 2), new Point(this.RenderSize.Width - offset, this.RenderSize.Height - offset / 2));
 			drawingContext.DrawLine(new Pen(Brushes.Black, 1), new Point(offset / 2, 0), new Point(offset / 2, this.RenderSize.Height - offset / 2));
 			
-			for (int i = 0; i < this.valuesList.Count; i++)
+			var p = new Pen(Brushes.DarkRed, 2);
+			
+			for (int i = 0; i < this.valuesList.Count; i++) {
 				drawingContext.DrawLine(new Pen(Brushes.Black, 1),
 				                        new Point(offset + pieceWidth / 2 + pieceWidth * i, this.RenderSize.Height - offset / 4),
 				                        new Point(offset + pieceWidth / 2 + pieceWidth * i, this.RenderSize.Height - (offset / 4 * 3 + 3)));
+				
+				if (this.valuesList[i].displayMarker) {
+					drawingContext.DrawLine(p, new Point(offset + pieceWidth * i, 0),
+					                        new Point(offset + pieceWidth * i, this.RenderSize.Height - offset));
+				}
+
+			}
 			
 			drawingContext.DrawGeometry(b, new Pen(b, 3), geometry);
+			
+			for (int i = 0; i < this.valuesList.Count; i++) {
+				if (this.valuesList[i].displayMarker)
+					drawingContext.DrawLine(p, new Point(offset + pieceWidth * i, 0),
+					                        new Point(offset + pieceWidth * i, this.RenderSize.Height - offset));
+			}
+			
 			drawingContext.DrawRectangle(
 				new SolidColorBrush(Color.FromArgb(64, Colors.CornflowerBlue.R,
 				                                   Colors.CornflowerBlue.G, Colors.CornflowerBlue.B)),
