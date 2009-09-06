@@ -73,6 +73,10 @@ namespace ICSharpCode.PythonBinding
 		{
 		}
 		
+		public void NotifyFormRenamed(string newName)
+		{
+		}
+		
 		/// <summary>
 		/// Updates the InitializeComponent method's body with the generated code.
 		/// </summary>

@@ -100,6 +100,10 @@ namespace ICSharpCode.WixBinding
 		{
 		}
 		
+		public void NotifyFormRenamed(string newName)
+		{
+		}
+		
 		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
 		{
 			file = null;

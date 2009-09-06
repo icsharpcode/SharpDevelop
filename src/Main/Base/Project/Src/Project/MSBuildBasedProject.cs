@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			this.ActiveConfiguration = "Debug";
 			this.ActivePlatform = information.Platform;
-			SetProperty(null, "x86", "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, false);
+			SetProperty(null, information.Platform, "PlatformTarget", "x86", PropertyStorageLocations.PlatformSpecific, false);
 		}
 		
 		/// <summary>

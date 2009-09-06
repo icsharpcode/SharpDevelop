@@ -24,7 +24,7 @@ using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public abstract class AbstractDesignerGenerator : IDesignerGenerator2
+	public abstract class AbstractDesignerGenerator : IDesignerGenerator
 	{
 		/// <summary>The currently open part of the class being designed.</summary>
 		IClass currentClassPart;
@@ -471,6 +471,8 @@ namespace ICSharpCode.FormsDesigner
 		/// <returns></returns>
 		public virtual bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
 		{
+			if (edesc == null)
+				throw new ArgumentNullException("edesc");
 			Reparse();
 			
 			LoggingService.Debug("Forms designer: AbstractDesignerGenerator.InsertComponentEvent: eventMethodName=" + eventMethodName);

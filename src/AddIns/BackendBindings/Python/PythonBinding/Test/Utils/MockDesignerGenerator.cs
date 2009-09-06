@@ -63,6 +63,10 @@ namespace PythonBinding.Tests.Utils
 		{
 		}
 		
+		public void NotifyFormRenamed(string newName)
+		{
+		}
+		
 		public void MergeRootComponentChanges(IDesignerHost host, IDesignerSerializationManager serializationManager)
 		{
 			mergeChangesHost = host;

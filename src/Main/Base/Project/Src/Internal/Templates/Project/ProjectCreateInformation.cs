@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		internal List<IProject> createdProjects = new List<IProject>();
 		
 		public ProjectCreateInformation() {
-			Platform = "AnyCPU";
+			Platform = "x86";
 		}
 		
 		public ReadOnlyCollection<IProject> CreatedProjects {

@@ -60,7 +60,6 @@
     <Compile Include="Src\DesignerGenerator\CodeDOMGenerator.cs" />
     <Compile Include="Src\DesignerGenerator\CSharpDesignerGenerator.cs" />
     <Compile Include="Src\DesignerGenerator\IDesignerGenerator.cs" />
-    <Compile Include="Src\DesignerGenerator\XmlDesignerGenerator.cs" />
     <Compile Include="Src\DesignerLoader\AbstractCodeDomDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="Src\DesignerSourceCodeStorage.cs" />

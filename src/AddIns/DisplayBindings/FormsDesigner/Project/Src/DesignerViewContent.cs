@@ -369,9 +369,7 @@ namespace ICSharpCode.FormsDesigner
 					    && !object.Equals(e.OldValue, e.NewValue))
 					{
 						// changing the name of the form
-						IDesignerGenerator2 gen2 = generator as IDesignerGenerator2;
-						if (gen2 != null)
-							gen2.NotifyFormRenamed((string)e.NewValue);
+						generator.NotifyFormRenamed((string)e.NewValue);
 					}
 				} catch (Exception ex) {
 					MessageService.ShowException(ex);
