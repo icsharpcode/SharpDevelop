@@ -175,10 +175,9 @@
 		</Condition>
 	</Path>
 
-	<Path name="/SharpDevelop/Pads/CommonConsole/ToolBar">
+	<Path name="/SharpDevelop/Pads/ConsolePad/ToolBar">
+		<Include id="StandardCommands" path="/SharpDevelop/Pads/CommonConsole/ToolBar" />
 		<ToolbarItem class="ICSharpCode.SharpDevelop.Gui.Pads.SelectLanguageCommand"
 			type="ComboBox" id="SelectLanguageCommand" />
 	</Path>
-
-
 </AddIn>

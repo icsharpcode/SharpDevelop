@@ -6,21 +6,27 @@
 // </file>
 
 using System;
+using System.Collections;
+using System.Windows.Controls;
+
 using Debugger;
 using Debugger.AddIn;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.TextEditor;
-using System.Windows.Controls;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class ConsolePad : AbstractConsolePad
 	{
 		SupportedLanguage language;
+		
+		const string debuggerConsoleToolBarTreePath = "/SharpDevelop/Pads/ConsolePad/ToolBar";
 		
 		public SupportedLanguage SelectedLanguage {
 			get { return language; }
@@ -96,13 +102,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		public ConsolePad()
-		{
+		{			
 			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
 			
 			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
 				this.Process = e.Process;
 			};
 			this.Process = debugger.DebuggedProcess;
+		}
+		
+		protected override ToolBar BuildToolBar()
+		{
+			return ToolBarService.CreateToolBar(this, debuggerConsoleToolBarTreePath);
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.console = new ConsoleControl();
 			
 			// creating the toolbar accesses the WordWrap property, so we must do this after creating the console
-			this.toolbar = ToolBarService.CreateToolBar(this, toolBarTreePath);
+			this.toolbar = BuildToolBar();
 			this.toolbar.SetValue(DockPanel.DockProperty, Dock.Top);
 			
 			this.panel.Children.Add(toolbar);
@@ -54,6 +54,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			};
 			
 			this.InitializeConsole();
+		}
+		
+		protected virtual ToolBar BuildToolBar()
+		{
+			return ToolBarService.CreateToolBar(this, toolBarTreePath);
 		}
 		
 		public virtual ITextEditor TextEditor {
@@ -310,6 +315,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IEnumerable<ISegment> GetDeletableSegments(ISegment segment)
 		{
+			if (segment.EndOffset < this.EndOffset)
+				return Enumerable.Empty<ISegment>();
+			
 			return new[] {
 				new TextSegment() {
 					StartOffset = Math.Max(this.EndOffset, segment.Offset),
