@@ -112,7 +112,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
             // Load or generate DesignerView and EntityTypeDesigners
             EntityTypeDesigner.Init = true;
 
-            if (edmxElement.Element("DesignerViews") == null)
+            if (edmxElement == null || edmxElement.Element("DesignerViews") == null)
                 edmxElement = new XElement("Designer", DesignerIO.GenerateNewDesignerViewsFromCSDLView(_edmView.CSDL));
  
             if (edmxElement != null && edmxElement.Element("DesignerViews") != null)

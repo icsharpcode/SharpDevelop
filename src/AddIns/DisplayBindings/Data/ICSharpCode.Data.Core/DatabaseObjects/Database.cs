@@ -22,6 +22,8 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
         private DatabaseObjectBase<ITable> _tables = null;
         private DatabaseObjectBase<IView> _views = null;
         private DatabaseObjectBase<IProcedure> _procedures = null;
+        private DatabaseObjectBase<IConstraint> _constraints = null;
+        private DatabaseObjectBase<IUserDefinedDataType> _userDefinedDataTypes = null;
 
         #endregion
 
@@ -70,6 +72,28 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             }
         }
 
+        public DatabaseObjectsCollection<IConstraint> Constraints
+        {
+            get
+            {
+                if (_constraints != null)
+                    return _constraints.Items;
+                else
+                    return null;
+            }
+        }
+
+        public DatabaseObjectsCollection<IUserDefinedDataType> UserDefinedDataTypes
+        {
+            get
+            {
+                if (_userDefinedDataTypes != null)
+                    return _userDefinedDataTypes.Items;
+                else
+                    return null;
+            }
+        }
+
         #endregion
 
         #region Constructor
@@ -87,11 +111,19 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
         {
             try
             {
+                _constraints = new DatabaseObjectBase<IConstraint>();
+                _constraints.Name = "Constraints";
+
+                _userDefinedDataTypes = new DatabaseObjectBase<IUserDefinedDataType>();
+                _userDefinedDataTypes.Name = "UserDefinedDataTypes";
+
                 _tables = new DatabaseObjectBase<ITable>();
                 _tables.Name = "Tables";
                 _tables.Items = Datasource.DatabaseDriver.LoadTables(this);
                 Items.Add(_tables);
                 OnPropertyChanged("Tables");
+                OnPropertyChanged("Constraints");
+                OnPropertyChanged("UserDefinedDataTypes");
 
                 _views = new DatabaseObjectBase<IView>();
                 _views.Name = "Views";
