@@ -26,6 +26,7 @@ namespace Debugger.AddIn.TreeModel
 			this.targetObject = targetObject;
 			
 			this.Name = "IEnumerable";
+			this.Text = "Expanding will enumerate the IEnumerable";
 			DebugType debugListType;
 			this.debugListExpression = DebuggerHelpers.CreateDebugListExpression(targetObject, itemType, out debugListType);
 			this.ChildNodes = Utils.LazyGetItemsOfIList(this.debugListExpression);

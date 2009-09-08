@@ -349,8 +349,12 @@ namespace Debugger.MetaData
 		
 		public static DebugType CreateFromName(AppDomain appDomain, string typeName, DebugType enclosingType, params DebugType[] genericArguments)
 		{
-			if (enclosingType != null && genericArguments != null)
-				typeName = GetQualifiedName(typeName, genericArguments.Length - enclosingType.GenericArguments.Count);
+			if (genericArguments != null) {
+				if (enclosingType != null)
+					typeName = GetQualifiedName(typeName, genericArguments.Length - enclosingType.GenericArguments.Count);
+				else
+					typeName = GetQualifiedName(typeName, genericArguments.Length);
+			}
 			foreach(Module module in appDomain.Process.Modules) {
 				if (module.AppDomain == appDomain) {
 					uint token;
