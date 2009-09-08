@@ -39,7 +39,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 			try {
 				this.runner.Profiler.EnableDataCollection();
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		
@@ -48,7 +48,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 			try {
 				this.runner.Profiler.DisableDataCollection();
 			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+				MessageService.ShowException(ex);
 			}
 		}
 		

@@ -6,8 +6,10 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.ComponentModel;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
@@ -35,6 +37,8 @@ namespace ICSharpCode.Core.Presentation
 	{
 		public string PropertyName { get; set; }
 		
+		static readonly Regex regex = new Regex("^.+\\:.+\\..+$", RegexOptions.Compiled);
+		
 		DependencyObject target;
 		DependencyProperty dp;
 		
@@ -42,6 +46,9 @@ namespace ICSharpCode.Core.Presentation
 		
 		public OptionBinding(string propertyName)
 		{
+			if (!regex.IsMatch(propertyName))
+				throw new ArgumentException("parameter must have the following format: namespace:ClassName.FieldOrProperty", "propertyName");
+			
 			this.PropertyName = propertyName;
 		}
 		
@@ -51,7 +58,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			if (service == null)
 				return null;
-	
+			
 			target = service.TargetObject as DependencyObject;
 			dp = service.TargetProperty as DependencyProperty;
 			
@@ -71,15 +78,23 @@ namespace ICSharpCode.Core.Presentation
 			
 			container.AddBinding(this);
 			
+			object result = null;
+			
 			if (this.propertyInfo is PropertyInfo)
-				return (propertyInfo as PropertyInfo).GetValue(null, null);
+				result = (propertyInfo as PropertyInfo).GetValue(null, null);
 			else {
 				this.propertyInfo = t.GetField(name[1]);
 				if (this.propertyInfo is FieldInfo)
-					return (propertyInfo as FieldInfo).GetValue(null);
+					result = (propertyInfo as FieldInfo).GetValue(null);
 			}
 			
-			return null;
+			Type returnType = dp.PropertyType;
+			
+			if (dp.PropertyType.IsGenericType && dp.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+				returnType = dp.PropertyType.GetGenericArguments().First();
+			}
+			
+			return Convert.ChangeType(result, returnType);
 		}
 		
 		IOptionBindingContainer TryFindContainer(FrameworkElement start)
@@ -95,13 +110,23 @@ namespace ICSharpCode.Core.Presentation
 		
 		public bool Save()
 		{
+			object value = target.GetValue(dp);
+			
+			Type returnType = null;
+			if (propertyInfo is PropertyInfo)
+				returnType = (propertyInfo as PropertyInfo).PropertyType;
+			if (propertyInfo is FieldInfo)
+				returnType = (propertyInfo as FieldInfo).FieldType;
+			
+			value = Convert.ChangeType(value, returnType);
+			
 			if (propertyInfo is PropertyInfo) {
-				(propertyInfo as PropertyInfo).SetValue(null, target.GetValue(dp), null);
+				(propertyInfo as PropertyInfo).SetValue(null, value, null);
 				return true;
 			}
 			
 			if (propertyInfo is FieldInfo) {
-				(propertyInfo as FieldInfo).SetValue(null, target.GetValue(dp));
+				(propertyInfo as FieldInfo).SetValue(null, value);
 				return true;
 			}
 			

@@ -84,7 +84,7 @@
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<OptionPanel id    = "Profiling"
 		             label = "${res:AddIns.Profiler.Options.Title}"
-		             class = "ICSharpCode.Profiler.AddIn.OptionsPanels.General"
+		             class = "ICSharpCode.Profiler.AddIn.OptionPanels.General"
 		             insertbefore = "TextEditorOptions" />
 	</Path>
 

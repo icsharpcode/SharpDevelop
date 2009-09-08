@@ -1,14 +1,13 @@
-﻿using ICSharpCode.SharpDevelop;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Windows;
+
 using ICSharpCode.Core;
-using ICSharpCode.Profiler.AddIn.OptionsPanels;
-using ICSharpCode.Profiler.AddIn.Views;
 using ICSharpCode.Profiler.Controller;
 using ICSharpCode.Profiler.Controller.Data;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 

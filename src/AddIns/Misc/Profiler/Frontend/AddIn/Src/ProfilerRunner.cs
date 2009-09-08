@@ -8,13 +8,10 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 
 using ICSharpCode.Core;
 using ICSharpCode.Profiler.AddIn.Dialogs;
-using ICSharpCode.Profiler.AddIn.OptionsPanels;
+using ICSharpCode.Profiler.AddIn.OptionPanels;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -57,11 +54,11 @@ namespace ICSharpCode.Profiler.AddIn
 			if (useTempFileDatabase) {
 				this.database = new TempFileDatabase();
 				this.writer = writer;
-				this.profiler = new Controller.Profiler(startInfo, this.database.GetWriter(), General.CreateProfilerOptions());
+				this.profiler = new Controller.Profiler(startInfo, this.database.GetWriter(), OptionWrapper.CreateProfilerOptions());
 			} else {
 				this.database = null;
 				this.writer = writer;
-				this.profiler = new Controller.Profiler(startInfo, writer, General.CreateProfilerOptions());
+				this.profiler = new Controller.Profiler(startInfo, writer, OptionWrapper.CreateProfilerOptions());
 			}
 			
 			PrintProfilerOptions();
@@ -73,7 +70,7 @@ namespace ICSharpCode.Profiler.AddIn
 		
 		void PrintProfilerOptions()
 		{
-			var options = General.CreateProfilerOptions();
+			var options = OptionWrapper.CreateProfilerOptions();
 			LoggingService.Info("Profiler settings:");
 			LoggingService.Info("Shared memory size: " + options.SharedMemorySize + " (" + (options.SharedMemorySize / 1024 / 1024) + " MB)");
 			LoggingService.Info("Combine recursive calls: " + options.CombineRecursiveFunction);

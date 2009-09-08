@@ -7,7 +7,6 @@
     <RootNamespace>ICSharpCode.Profiler.AddIn</RootNamespace>
     <AssemblyName>ICSharpCode.Profiler.AddIn</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\HP\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -63,12 +62,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Extensions.cs" />
-    <Compile Include="Src\OptionsPanels\General.cs">
+    <Compile Include="Src\OptionPanels\General.cs">
+      <DependentUpon>General.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\OptionsPanels\GeneralOptionsPanel.xaml.cs">
-      <DependentUpon>GeneralOptionsPanel.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Src\OptionPanels\OptionWrapper.cs" />
     <Compile Include="Src\ProfilerRunner.cs" />
     <Compile Include="Src\SharpDevelopTranslation.cs" />
     <Compile Include="Src\Views\ProfilerView.xaml.cs">
@@ -84,7 +81,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Src\Dialogs\ProfilerControlWindow.xaml" />
-    <Page Include="Src\OptionsPanels\GeneralOptionsPanel.xaml" />
+    <Page Include="Src\OptionPanels\General.xaml" />
     <Page Include="Src\Views\ProfilerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
