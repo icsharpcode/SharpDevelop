@@ -27,6 +27,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <remarks>
 		/// All segments in the result must be within the given segment, and they must be returned in order
 		/// (e.g. if two segments are returned, EndOffset of first segment must be less than StartOffset of second segment).
+		/// 
+		/// For replacements, the last segment being returned will be replaced with the new text. If an empty list is returned,
+		/// no replacement will be done.
 		/// </remarks>
 		IEnumerable<ISegment> GetDeletableSegments(ISegment segment);
 	}

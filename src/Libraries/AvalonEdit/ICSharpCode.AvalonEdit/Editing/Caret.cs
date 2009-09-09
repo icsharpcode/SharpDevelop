@@ -338,6 +338,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		bool showScheduled;
+		bool hasWin32Caret;
 		
 		void ShowInternal()
 		{
@@ -350,7 +351,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (caretAdorner != null && textView != null) {
 				VisualLine visualLine = textView.GetVisualLine(position.Line);
 				if (visualLine != null) {
-					caretAdorner.Show(CalcCaretRectangle(visualLine));
+					Rect caretRect = CalcCaretRectangle(visualLine);
+					// Create Win32 caret so that Windows knows where our managed caret is. This is necessary for
+					// features like 'Follow text editing' in the Windows Magnifier.
+					if (!hasWin32Caret) {
+						hasWin32Caret = Win32.CreateCaret(textView, caretRect.Size);
+					}
+					if (hasWin32Caret) {
+						Win32.SetCaretPosition(textView, caretRect.Location - textView.ScrollOffset);
+					}
+					caretAdorner.Show(caretRect);
 				} else {
 					caretAdorner.Hide();
 				}
@@ -364,6 +374,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			Debug.WriteLine("Caret.Hide()");
 			visible = false;
+			if (hasWin32Caret) {
+				Win32.DestroyCaret();
+				hasWin32Caret = false;
+			}
 			if (caretAdorner != null) {
 				caretAdorner.Hide();
 			}
