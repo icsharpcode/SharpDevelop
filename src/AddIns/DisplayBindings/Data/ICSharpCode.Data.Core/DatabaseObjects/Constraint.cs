@@ -123,14 +123,15 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             {
                 IColumn pkColumn = PKColumns.First();
 
-                if (!pkColumn.IsPrimaryKey && !FKColumns.First().IsNullable)
-                    return Cardinality.One;
-                if (pkColumn.IsPrimaryKey && pkColumn.IsForeignKey)
-                    return Cardinality.One; 
+                //if (pkColumn.IsPrimaryKey && pkColumn.IsForeignKey)
+                //    return Cardinality.One;
+                //else 
                 if (pkColumn.IsPrimaryKey)
                     return Cardinality.Many;
-                
-                return Cardinality.ZeroToOne;
+                else if (!pkColumn.IsPrimaryKey && !FKColumns.First().IsNullable)
+                    return Cardinality.One;
+                else
+                    return Cardinality.ZeroToOne;
             }
         }
 
