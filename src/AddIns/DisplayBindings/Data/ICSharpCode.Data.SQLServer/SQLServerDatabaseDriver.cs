@@ -107,7 +107,6 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
             ORDER BY 
                 1,2,3,4";
 
-        private const string _getUserDefinedDataTypes = @"SELECT t1.*, t2.Name AS SystemType FROM sys.Types t1, sys.types t2 WHERE t1.is_user_defined = 1 AND t2.system_type_id = t1.system_type_id AND t2.user_type_id = t1.system_type_id";
         private const string _getViews = @"SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='VIEW' AND TABLE_NAME<>'dtproperties' ORDER BY TABLE_SCHEMA, TABLE_NAME";
         private const string _getProcedures = "SELECT ROUTINE_NAME, ROUTINE_SCHEMA, ROUTINE_BODY, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE'";
         private const string _getProcedureParameters = @"SELECT PARAMETER_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, PARAMETER_MODE, IS_RESULT FROM information_schema.PARAMETERS WHERE SPECIFIC_NAME = '{0}' AND SPECIFIC_SCHEMA = '{1}' AND SPECIFIC_CATALOG = '{2}'";
@@ -228,6 +227,7 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
                     column.ColumnId = (int)dtColumns.Rows[j]["ColumnId"];
                     column.Name = (string)dtColumns.Rows[j]["Name"];
                     column.DataType = (string)dtColumns.Rows[j]["DataType"];
+                    column.SystemType = (string)dtColumns.Rows[j]["SystemType"];
                     column.Length = Convert.ToInt32(dtColumns.Rows[j]["Length"]);
 
                     if (column.Length == -1)
@@ -237,6 +237,16 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
                             case "varchar":
                             case "nvarchar":
                                 column.DataType += "(max)";
+                                break;
+                            default:
+                                break;
+                        }
+
+                        switch (column.SystemType.ToLower())
+                        {
+                            case "varchar":
+                            case "nvarchar":
+                                column.SystemType += "(max)";
                                 break;
                             default:
                                 break;
@@ -267,33 +277,23 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 
                 for (int i = 0; i < dtConstraints.Rows.Count; i++)
                 {
-                    IConstraint constraint = new ICSharpCode.Data.Core.DatabaseObjects.Constraint();
-                    constraint.Name = (string)dtConstraints.Rows[i]["ConstraintName"];
-                    constraint.FKTableName = (string)dtConstraints.Rows[i]["FKTable"];
-                    constraint.FKColumnName = (string)dtConstraints.Rows[i]["FKColumn"];
-                    constraint.PKTableName = (string)dtConstraints.Rows[i]["PKTable"];
-                    constraint.PKColumnName = (string)dtConstraints.Rows[i]["PKColumn"];
+                    string constraintName = (string)dtConstraints.Rows[i]["ConstraintName"];
 
-                    database.Constraints.Add(constraint);
+                    IConstraint constraint = database.Constraints.FirstOrDefault(c => c.Name == constraintName);
+
+                    if (constraint == null)
+                    {
+                        constraint = new ICSharpCode.Data.Core.DatabaseObjects.Constraint();
+                        constraint.Name = constraintName;
+                        constraint.FKTableName = (string)dtConstraints.Rows[i]["FKTable"];
+                        constraint.PKTableName = (string)dtConstraints.Rows[i]["PKTable"];
+
+                        database.Constraints.Add(constraint);
+                    }
+
+                    constraint.FKColumnNames.Add((string)dtConstraints.Rows[i]["FKColumn"]);
+                    constraint.PKColumnNames.Add((string)dtConstraints.Rows[i]["PKColumn"]);                
                 }
-            }
-
-            using (SqlDataAdapter da = new SqlDataAdapter(_getUserDefinedDataTypes, sqlConnection))
-            {
-                DataTable dtUserDefinedDataTypes = new DataTable("UserDefinedDataTypes");
-                da.Fill(dtUserDefinedDataTypes);
-
-                for (int i = 0; i < dtUserDefinedDataTypes.Rows.Count; i++)
-                {
-                    IUserDefinedDataType userDefinedDataType = new UserDefinedDataType();
-                    userDefinedDataType.Name = (string)dtUserDefinedDataTypes.Rows[i]["Name"];
-                    userDefinedDataType.SystemType = (string)dtUserDefinedDataTypes.Rows[i]["SystemType"];
-                    userDefinedDataType.Length = Convert.ToInt32(dtUserDefinedDataTypes.Rows[i]["Max_Length"]);
-                    userDefinedDataType.IsNullable = (bool)dtUserDefinedDataTypes.Rows[i]["Is_Nullable"];
-
-                    database.UserDefinedDataTypes.Add(userDefinedDataType);
-                }
-
             }
 
             using (SqlDataAdapter da = new SqlDataAdapter(_getTables, sqlConnection))

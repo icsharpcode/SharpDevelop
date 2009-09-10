@@ -123,17 +123,22 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                         new XElement(ssdlNamespace + "End", new XAttribute("Role", association.Role1.Name), new XAttribute("Type", string.Concat(entityContainerNamespace, association.Role1.Type.Name)), new XAttribute("Multiplicity", CardinalityStringConverter.CardinalityToSTring(association.Role1.Cardinality))),
                         new XElement(ssdlNamespace + "End", new XAttribute("Role", role2Name), new XAttribute("Type", string.Concat(entityContainerNamespace, association.Role2.Type.Name)), new XAttribute("Multiplicity", CardinalityStringConverter.CardinalityToSTring(association.Role2.Cardinality))));
 
-                string dependantRoleName = association.DependantRole.Name;
+                string dependentRoleName = association.DependantRole.Name;
 
                 // If the assocation end properties are the same properties
                 if (association.PrincipalRole.Name == association.DependantRole.Name && association.PrincipalRole.Type.Name == association.DependantRole.Type.Name)
-                    dependantRoleName += "1";
+                    dependentRoleName += "1";
 
-                associationElement.Add(new XElement(ssdlNamespace + "ReferentialConstraint",
-                    new XElement(ssdlNamespace + "Principal", new XAttribute("Role", association.PrincipalRole.Name),
-                        new XElement(ssdlNamespace + "PropertyRef", new XAttribute("Name", association.PrincipalRole.Property.Name))),
-                    new XElement(ssdlNamespace + "Dependent", new XAttribute("Role", dependantRoleName),
-                        new XElement(ssdlNamespace + "PropertyRef", new XAttribute("Name", association.DependantRole.Property.Name)))));
+                XElement principalRoleElement = new XElement(ssdlNamespace + "Principal", new XAttribute("Role", association.PrincipalRole.Name));
+                foreach (Property property in association.PrincipalRole.Properties)
+                    principalRoleElement.Add(new XElement(ssdlNamespace + "PropertyRef", new XAttribute("Name", property.Name)));
+
+                XElement dependentRoleElement = new XElement(ssdlNamespace + "Dependent", new XAttribute("Role", dependentRoleName));
+                foreach (Property property in association.DependantRole.Properties)
+                    dependentRoleElement.Add(new XElement(ssdlNamespace + "PropertyRef", new XAttribute("Name", property.Name)));
+
+                XElement referentialConstraintElement = new XElement(ssdlNamespace + "ReferentialConstraint", principalRoleElement, dependentRoleElement);
+                associationElement.Add(referentialConstraintElement);
 
                 schema.Add(associationElement);
             }
@@ -250,13 +255,13 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                         {
                             isPrincipal = true;
                             association.PrincipalRole = role;
-                            role.Property = role.Type.Properties.Where(p => p.Name == principalElement.Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).First();
+                            role.Properties = role.Type.Properties.Where(p => p.Name == principalElement.Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).ToEventedObservableCollection();
                         }
                         else
                         {
                             isPrincipal = false;
                             association.DependantRole = role;
-                            role.Property = role.Type.Properties.Where(p => p.Name == referentialConstraintElement.Element(XName.Get("Dependent", ssdlNamespace.NamespaceName)).Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).First();
+                            role.Properties = role.Type.Properties.Where(p => p.Name == referentialConstraintElement.Element(XName.Get("Dependent", ssdlNamespace.NamespaceName)).Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).ToEventedObservableCollection();
                         }
                     }
                     if (isPrincipal)

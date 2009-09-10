@@ -3,6 +3,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 
 #endregion
 
@@ -48,6 +49,23 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common
         {
             if (ItemRemoved != null)
                 ItemRemoved(item);
+        }
+
+        #endregion
+    }
+
+    public static class EventedObservableCollection
+    {
+        #region Extension methods
+
+        public static EventedObservableCollection<T> ToEventedObservableCollection<T>(this IEnumerable<T> source)
+        {
+            EventedObservableCollection<T> dest = new EventedObservableCollection<T>();
+
+            foreach (T item in source)
+                dest.Add(item);
+
+            return dest;
         }
 
         #endregion

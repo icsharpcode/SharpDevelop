@@ -15,22 +15,22 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
     {
         #region Fields
 
-        private string _pkColumnName = string.Empty;
+        private List<string> _pkColumnNames = new List<string>();
         private string _pkTableName = string.Empty;
-        private string _fkColumnName = string.Empty;
+        private List<string> _fkColumnNames = new List<string>();
         private string _fkTableName = string.Empty;
 
         #endregion
 
         #region Properties
 
-        public string PKColumnName 
+        public List<string> PKColumnNames 
         {
-            get { return _pkColumnName; }
+            get { return _pkColumnNames; }
             set
             {
-                _pkColumnName = value;
-                OnPropertyChanged("PKColumnName");
+                _pkColumnNames = value;
+                OnPropertyChanged("PKColumnNames");
             }
         }
 
@@ -44,13 +44,13 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             }
         }
 
-        public string FKColumnName 
+        public List<string> FKColumnNames 
         {
-            get { return _fkColumnName; }
+            get { return _fkColumnNames; }
             set
             {
-                _fkColumnName = value;
-                OnPropertyChanged("FKColumnName");
+                _fkColumnNames = value;
+                OnPropertyChanged("FKColumnNames");
             }
         }
 
@@ -64,14 +64,14 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             }
         }
 
-        public IColumn PKColumn 
+        public DatabaseObjectsCollection<IColumn> PKColumns
         {
             get
             {
                 ITable table = PKTable;
 
                 if (table != null)
-                    return GetColumnFromTableByName(table, PKColumnName);
+                    return GetColumnsFromTableByName(table, PKColumnNames);
                 else
                     return null;
             }
@@ -86,25 +86,27 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
         {
             get
             {
-                if (!FKColumn.IsPrimaryKey && FKColumn.IsNullable)
+                IColumn fkColumn = FKColumns.First();
+
+                if (!fkColumn.IsPrimaryKey && fkColumn.IsNullable)
                     return Cardinality.ZeroToOne;
-                else if (!FKColumn.IsPrimaryKey && !FKColumn.IsNullable)
+                else if (!fkColumn.IsPrimaryKey && !fkColumn.IsNullable)
                     return Cardinality.One;
-                else if (!FKColumn.IsPrimaryKey)
+                else if (!fkColumn.IsPrimaryKey)
                     return Cardinality.Many;
                 else
                     return Cardinality.One;
             }
         }
 
-        public IColumn FKColumn 
+        public DatabaseObjectsCollection<IColumn> FKColumns
         {
             get 
             {
                 ITable table = FKTable;
 
                 if (table != null)
-                    return GetColumnFromTableByName(table, FKColumnName);
+                    return GetColumnsFromTableByName(table, FKColumnNames);
                 else
                     return null;
             }
@@ -119,12 +121,16 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
         {
             get
             {
-                if (PKColumn.IsPrimaryKey)
-                    return Cardinality.Many;
-                else if (!PKColumn.IsPrimaryKey && !FKColumn.IsNullable)
+                IColumn pkColumn = PKColumns.First();
+
+                if (!pkColumn.IsPrimaryKey && !FKColumns.First().IsNullable)
                     return Cardinality.One;
-                else // !PKColumn.IsPrimaryKey && FKColumn.IsNullable
-                    return Cardinality.ZeroToOne;
+                if (pkColumn.IsPrimaryKey && pkColumn.IsForeignKey)
+                    return Cardinality.One; 
+                if (pkColumn.IsPrimaryKey)
+                    return Cardinality.Many;
+                
+                return Cardinality.ZeroToOne;
             }
         }
 
@@ -149,9 +155,9 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             return null;
         }
 
-        private IColumn GetColumnFromTableByName(ITable table, string columnName)
-        {
-            return table.Items.FirstOrDefault(c => c.Name == columnName);
+        private DatabaseObjectsCollection<IColumn> GetColumnsFromTableByName(ITable table, List<string> columnNames)
+        {     
+            return table.Items.Where(c => columnNames.Contains(c.Name)).ToDatabaseObjectsCollection();
         }
 
         #endregion

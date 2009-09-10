@@ -83,7 +83,6 @@
     <Compile Include="Common\Enumerable.cs" />
     <Compile Include="Common\Helper.cs" />
     <Compile Include="DatabaseObjects\TableType.cs" />
-    <Compile Include="DatabaseObjects\UserDefinedDataType.cs" />
     <Compile Include="DatabaseObjects\View.cs" />
     <Compile Include="Enums\Cardinality.cs" />
     <Compile Include="Enums\ParameterMode.cs" />
@@ -98,7 +97,6 @@
     <Compile Include="Interfaces\IProcedure.cs" />
     <Compile Include="Interfaces\IProcedureParameter.cs" />
     <Compile Include="Interfaces\ITable.cs" />
-    <Compile Include="Interfaces\IUserDefinedDataType.cs" />
     <Compile Include="Interfaces\IView.cs" />
     <Compile Include="Common\Objects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

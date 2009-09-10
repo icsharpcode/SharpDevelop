@@ -19,7 +19,6 @@ namespace ICSharpCode.Data.Core.Interfaces
         DatabaseObjectsCollection<IView> Views { get; }
         DatabaseObjectsCollection<IProcedure> Procedures { get; }
         DatabaseObjectsCollection<IConstraint> Constraints { get; }
-        DatabaseObjectsCollection<IUserDefinedDataType> UserDefinedDataTypes { get; }
 
         bool LoadDatabase();
     }

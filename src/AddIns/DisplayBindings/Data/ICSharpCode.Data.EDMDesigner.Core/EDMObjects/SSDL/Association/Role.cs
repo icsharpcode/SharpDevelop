@@ -15,6 +15,11 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects.SSDL.Association
     {
         public EntityType.EntityType Type { get; set; }
         public Cardinality Cardinality { get; set; }
-        public Property.Property Property { get; set; }
+        public EventedObservableCollection<Property.Property> Properties { get; set; }
+
+        public Role()
+        {
+            Properties = new EventedObservableCollection<Property.Property>();
+        }
     }
 }

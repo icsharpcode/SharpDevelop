@@ -64,15 +64,16 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
                 else
                     allowsNull = "not null";
 
-                if (_parentTable != null && _parentTable.Constraints != null)
-                {
-                    IConstraint constraint = _parentTable.Constraints.FirstOrDefault(constr => constr.FKColumnName == Name);
+                bool isForeignKey = IsForeignKey;
 
-                    if (constraint != null)
-                        return string.Format("{0} (FK, {1}, {2})", Name, DataType, allowsNull); 
-                }
-                
-                return string.Format("{0} ({1}, {2})", Name, DataType, allowsNull); 
+                if (IsPrimaryKey && !isForeignKey)
+                    return string.Format("{0} (PK, {1}, {2})", Name, DataType, allowsNull); 
+                else if (!IsPrimaryKey && isForeignKey)
+                    return string.Format("{0} (FK, {1}, {2})", Name, DataType, allowsNull); 
+                else if (IsPrimaryKey && isForeignKey)
+                    return string.Format("{0} (PK, FK, {1}, {2})", Name, DataType, allowsNull); 
+                else
+                    return string.Format("{0} ({1}, {2})", Name, DataType, allowsNull); 
             }
         }
 
@@ -190,7 +191,7 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
         {
             get
             {
-                IConstraint constraint = _parentTable.Constraints.FirstOrDefault(constr => constr.FKColumnName == Name);
+                IConstraint constraint = _parentTable.Constraints.FirstOrDefault(constr => constr.FKColumns.FirstOrDefault(column => column.ColumnId == ColumnId && column.Name == Name) != null);
 
                 if (constraint == null)
                     return false;
@@ -266,6 +267,17 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             {
                 _isSystemVerified = value;
                 OnPropertyChanged("IsSystemVerified");
+            }
+        }
+
+        public bool IsUserDefinedDataType
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_systemType))
+                    return false;
+                else
+                    return true;
             }
         }
 

@@ -127,14 +127,18 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             Property property = new Property(entityType)
             {
                 Name = column.Name,
-                Type = column.DataType,
                 IsKey = column.IsPrimaryKey,
-                Nullable = column.IsNullable,
+                Nullable = column.IsNullable
                 // FixedLength
                 // Collation
                 // DefaultValue
                 // Unicode
             };
+
+            if (!column.IsUserDefinedDataType)
+                property.Type = column.DataType;
+            else
+                property.Type = column.SystemType;
 
             if (column.Length > 0)
                 property.MaxLength = column.Length;
@@ -167,9 +171,12 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
                 Cardinality = (Cardinality)constraint.PKCardinality
             };
 
-            Property role1Property = CreateSSDLProperty(constraint.PKColumn, CreateSSDLEntityType(constraint.PKTable));
-            role1.Property = role1Property;
-            role1.Type = role1Property.EntityType;
+            foreach (IColumn pkColumn in constraint.PKColumns)
+            {
+                Property role1Property = CreateSSDLProperty(pkColumn, CreateSSDLEntityType(constraint.PKTable));
+                role1.Properties.Add(role1Property);
+                role1.Type = role1Property.EntityType;
+            }
 
             association.Role1 = role1;
             association.PrincipalRole = role1;
@@ -178,11 +185,14 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             {
                 Name = constraint.FKTableName,
                 Cardinality = (Cardinality)constraint.FKCardinality
-            }; 
+            };
 
-            Property role2Property = CreateSSDLProperty(constraint.FKColumn, CreateSSDLEntityType(constraint.FKTable));
-            role2.Property = role2Property;
-            role2.Type = role2Property.EntityType;
+            foreach (IColumn fkColumn in constraint.FKColumns)
+            {
+                Property role2Property = CreateSSDLProperty(fkColumn, CreateSSDLEntityType(constraint.FKTable));
+                role2.Properties.Add(role2Property);
+                role2.Type = role2Property.EntityType;
+            }
 
             association.Role2 = role2;
             association.DependantRole = role2;

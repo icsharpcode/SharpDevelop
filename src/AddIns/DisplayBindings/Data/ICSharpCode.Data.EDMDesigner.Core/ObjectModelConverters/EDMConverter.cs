@@ -56,15 +56,16 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
                 filenameRump, objectContextName, objectContextNamespace);
             processStartInfo.UseShellExecute = false;
             processStartInfo.ErrorDialog = false;
+            processStartInfo.RedirectStandardOutput = true;
             processStartInfo.RedirectStandardError = true;
             process.StartInfo = processStartInfo;
             process.Start();
+            string outputMessage = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
             
             if (process.ExitCode != 0)
             {
-            	TextReader textReader = process.StandardError;
-            	throw new Exception("An error occured during generating the EDMX file.", new Exception(textReader.ReadToEnd()));
+            	throw new Exception("An error occured during generating the EDMX file.", new Exception(outputMessage));
             }
 
             XDocument csdlXDocument = XDocument.Load(filenameRump + ".csdl");

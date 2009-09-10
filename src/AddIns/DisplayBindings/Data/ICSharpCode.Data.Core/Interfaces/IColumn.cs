@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+#endregion
 
 namespace ICSharpCode.Data.Core.Interfaces
 {
@@ -16,6 +20,7 @@ namespace ICSharpCode.Data.Core.Interfaces
         bool IsComputed { get; set; }
         bool IsCursorType { get; set; }
         bool IsDeterministic { get; set; }
+        bool IsForeignKey { get; }
         bool IsFulltextIndexed { get; set; }
         bool IsIdentity { get; set; }
         bool IsIdNotForRepl { get; set; }
@@ -25,6 +30,7 @@ namespace ICSharpCode.Data.Core.Interfaces
         bool IsPrecise { get; set; }
         bool IsPrimaryKey { get; set; }
         bool IsRowGuidCol { get; set; }
+        bool IsUserDefinedDataType { get; }
         bool IsSystemVerified { get; set; }
         bool IsXmlIndexable { get; set; }
         int Precision { get; set; }

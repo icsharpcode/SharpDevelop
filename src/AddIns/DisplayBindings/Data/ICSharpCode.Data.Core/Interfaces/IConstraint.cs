@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ICSharpCode.Data.Core.Enums;
+using ICSharpCode.Data.Core.DatabaseObjects;
 
 #endregion
 
@@ -12,13 +13,13 @@ namespace ICSharpCode.Data.Core.Interfaces
 {
     public interface IConstraint : IDatabaseObjectBase
     {
-        string PKColumnName { get; set; }
+        List<string> PKColumnNames { get; set; }
         string PKTableName { get; set; }
-        string FKColumnName { get; set; }
+        List<string> FKColumnNames { get; set; }
         string FKTableName { get; set; }
-        IColumn PKColumn { get; }
+        DatabaseObjectsCollection<IColumn> PKColumns { get; }
         ITable PKTable { get; }
-        IColumn FKColumn { get; }
+        DatabaseObjectsCollection<IColumn> FKColumns { get; }
         ITable FKTable { get; }
         Cardinality PKCardinality { get; }
         Cardinality FKCardinality { get; }

@@ -107,6 +107,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 
                 if (wizard.DialogResult == true)
                     _edmView = new EDMView(wizard.EDMXDocument, readMoreAction);
+                else
+                    return;
             }
 
             // Load or generate DesignerView and EntityTypeDesigners
