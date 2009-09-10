@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -66,7 +67,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("[{0} Chld:{1}]", base.ToString(), this.Children.Count);
+			return string.Format(CultureInfo.InvariantCulture, "[{0} Chld:{1}]", base.ToString(), this.Children.Count);
 		}
 	}
 }

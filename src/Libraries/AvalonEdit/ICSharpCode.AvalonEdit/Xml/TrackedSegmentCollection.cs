@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Xml
@@ -70,7 +72,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public void AddParsedObject(AXmlObject obj, int? maxTouchedLocation)
 		{
 			if (!(obj.Length > 0 || obj is AXmlDocument))
-				AXmlParser.Assert(false, string.Format("Invalid object {0}.  It has zero length.", obj));
+				AXmlParser.Assert(false, string.Format(CultureInfo.InvariantCulture, "Invalid object {0}.  It has zero length.", obj));
 //			// Expensive check
 //			if (obj is AXmlContainer) {
 //				int objStartOffset = obj.StartOffset;

@@ -351,7 +351,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			ensureSelectionValidRequested = false;
 			if (allowCaretOutsideSelection == 0) {
-				if (!selection.Contains(caret.Offset)) {
+				if (!selection.IsEmpty && !selection.Contains(caret.Offset)) {
 					Debug.WriteLine("Resetting selection because caret is outside");
 					this.Selection = Selection.Empty;
 				}

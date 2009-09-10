@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -144,15 +145,15 @@ namespace ICSharpCode.AvalonEdit.Xml
 			get {
 				string prefix = this.Prefix;
 				if (string.IsNullOrEmpty(prefix)) {
-					return FindDefaultNamesapce();
+					return FindDefaultNamespace();
 				} else {
-					return ReslovePrefix(prefix);
+					return ResolvePrefix(prefix);
 				}
 			}
 		}
 		
-		/// <summary> Find the defualt namesapce for this context </summary>
-		public string FindDefaultNamesapce()
+		/// <summary> Find the defualt namespace for this context </summary>
+		public string FindDefaultNamespace()
 		{
 			AXmlElement current = this;
 			while(current != null) {
@@ -167,7 +168,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// Recursively resolve given prefix in this context.  Prefix must have some value.
 		/// </summary>
 		/// <returns> Empty string if prefix is not found </returns>
-		public string ReslovePrefix(string prefix)
+		public string ResolvePrefix(string prefix)
 		{
 			if (string.IsNullOrEmpty(prefix)) throw new ArgumentException("No prefix given", "prefix");
 			
@@ -223,7 +224,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("[{0} '{1}' Attr:{2} Chld:{3} Nest:{4}]", base.ToString(), this.Name, this.HasStartOrEmptyTag ? this.StartTag.Children.Count : 0, this.Children.Count, this.IsProperlyNested ? "Ok" : "Bad");
+			return string.Format(CultureInfo.InvariantCulture, "[{0} '{1}' Attr:{2} Chld:{3} Nest:{4}]", base.ToString(), this.Name, this.HasStartOrEmptyTag ? this.StartTag.Children.Count : 0, this.Children.Count, this.IsProperlyNested ? "Ok" : "Bad");
 		}
 	}
 }

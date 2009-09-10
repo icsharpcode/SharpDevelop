@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -28,6 +29,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> The text with all entity references resloved </summary>
 		public string Value { get; set; }
 		/// <summary> True if the text contains only whitespace characters </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
+		                                                 Justification = "System.Xml also uses 'Whitespace'")]
 		public bool ContainsOnlyWhitespace { get; set; }
 		
 		/// <inheritdoc/>
@@ -57,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("[{0} Text.Length={1}]", base.ToString(), this.EscapedValue.Length);
+			return string.Format(CultureInfo.InvariantCulture, "[{0} Text.Length={1}]", base.ToString(), this.EscapedValue.Length);
 		}
 	}
 }

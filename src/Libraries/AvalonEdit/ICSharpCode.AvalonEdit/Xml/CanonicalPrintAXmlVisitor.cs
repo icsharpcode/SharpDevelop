@@ -104,7 +104,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			sb.Append(Escape(text.Value));
 		}
 		
-		string Escape(string text)
+		static string Escape(string text)
 		{
 			return text
 				.Replace("&", "&amp;")

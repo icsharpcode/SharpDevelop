@@ -71,6 +71,7 @@
     <Compile Include="Document\ChangeTrackingTest.cs" />
     <Compile Include="Document\TextAnchorTest.cs" />
     <Compile Include="Document\TextSegmentTreeTest.cs" />
+    <Compile Include="Editing\TextSegmentReadOnlySectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Document\CollapsingTests.cs" />
     <Compile Include="Document\HeightTests.cs" />
@@ -90,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Document" />
+    <Folder Include="Editing" />
     <Folder Include="Utils" />
     <Folder Include="XmlParser" />
   </ItemGroup>

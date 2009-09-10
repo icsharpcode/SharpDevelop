@@ -321,6 +321,7 @@
     <Compile Include="Xml\AXmlTag.cs" />
     <Compile Include="Xml\AXmlText.cs" />
     <Compile Include="Xml\CanonicalPrintAXmlVisitor.cs" />
+    <Compile Include="Xml\InternalException.cs" />
     <Compile Include="Xml\TrackedSegmentCollection.cs">
       <DependentUpon>AXmlParser.cs</DependentUpon>
     </Compile>

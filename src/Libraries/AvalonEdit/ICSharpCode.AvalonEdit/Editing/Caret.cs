@@ -85,7 +85,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 					if (PositionChanged != null) {
 						PositionChanged(this, EventArgs.Empty);
 					}
-					Debug.WriteLine("Caret position changed to " + value);
+					Log("Caret position changed to " + value);
 					if (visible)
 						Show();
 				}
@@ -232,6 +232,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (!visualColumnValid) {
 				TextDocument document = textArea.Document;
 				if (document != null) {
+					Debug.WriteLine("Explicit validation of caret column");
 					var documentLine = document.GetLineByNumber(position.Line);
 					RevalidateVisualColumn(textView.GetOrConstructVisualLine(documentLine));
 				}
@@ -329,7 +330,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public void Show()
 		{
-			Debug.WriteLine("Caret.Show()");
+			Log("Caret.Show()");
 			visible = true;
 			if (!showScheduled) {
 				showScheduled = true;
@@ -372,7 +373,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public void Hide()
 		{
-			Debug.WriteLine("Caret.Hide()");
+			Log("Caret.Hide()");
 			visible = false;
 			if (hasWin32Caret) {
 				Win32.DestroyCaret();
@@ -381,6 +382,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (caretAdorner != null) {
 				caretAdorner.Hide();
 			}
+		}
+		
+		[Conditional("DEBUG")]
+		static void Log(string text)
+		{
+			// commented out to make debug output less noisy - add back if there are any problems with the caret
+			//Debug.WriteLine(text);
 		}
 		
 		/// <summary>

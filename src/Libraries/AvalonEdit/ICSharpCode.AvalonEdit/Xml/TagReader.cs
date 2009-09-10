@@ -149,7 +149,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				} else if (tag.IsUnknownBang) {
 					text = ReadText(TextType.UnknownBang);
 				} else {
-					throw new Exception(string.Format("Unknown opening bracket '{0}'", tag.OpeningBracket));
+					throw new InternalException(string.Format(CultureInfo.InvariantCulture, "Unknown opening bracket '{0}'", tag.OpeningBracket));
 				}
 				// Enumerate
 				text = text.ToList();
@@ -186,7 +186,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			} else if (tag.IsDocumentType) {
 				if (tag.ClosingBracket != ">") OnSyntaxError(tag, brStart, brEnd, "'>' expected");
 			} else {
-				throw new Exception(string.Format("Unknown opening bracket '{0}'", tag.OpeningBracket));
+				throw new InternalException(string.Format(CultureInfo.InvariantCulture, "Unknown opening bracket '{0}'", tag.OpeningBracket));
 			}
 			
 			// Attribute name may not apper multiple times
@@ -220,7 +220,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 					} else if (TryRead("[CDATA[")) {
 						return "<![CDATA[";
 					} else {
-						foreach(string dtdName in AXmlTag.DTDNames) {
+						foreach(string dtdName in AXmlTag.DtdNames) {
 							// the dtdName includes "<!"
 							if (TryRead(dtdName.Remove(0, 2))) return dtdName;
 						}
@@ -230,7 +230,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 					return "<";
 				}
 			} else {
-				throw new Exception("'<' expected");
+				throw new InternalException("'<' expected");
 			}
 		}
 		
@@ -579,12 +579,13 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public static void OnSyntaxError(AXmlObject obj, int start, int end, string message, params object[] args)
 		{
 			if (end <= start) end = start + 1;
-			AXmlParser.Log("Syntax error ({0}-{1}): {2}", start, end, string.Format(message, args));
+			string formattedMessage = string.Format(CultureInfo.InvariantCulture, message, args);
+			AXmlParser.Log("Syntax error ({0}-{1}): {2}", start, end, formattedMessage);
 			obj.AddSyntaxError(new SyntaxError() {
 			                   	Object = obj,
 			                   	StartOffset = start,
 			                   	EndOffset = end,
-			                   	Message = string.Format(message, args),
+			                   	Message = formattedMessage,
 			                   });
 		}
 		
@@ -624,7 +625,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 		}
 		
-		string NormalizeEndOfLine(string text)
+		static string NormalizeEndOfLine(string text)
 		{
 			return text.Replace("\r\n", "\n").Replace("\r", "\n");
 		}
@@ -678,7 +679,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				
 				// Resolve the name
 				string replacement;
-				if (name == "") {
+				if (name.Length == 0) {
 					replacement = null;
 					OnSyntaxError(owner, errorLoc + 1, errorLoc + 1, "Entity name expected");
 				} else if (name == "amp") {

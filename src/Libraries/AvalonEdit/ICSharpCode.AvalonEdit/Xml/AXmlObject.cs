@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -45,7 +46,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		internal AXmlDocument Document { get; set; }
 		
 		/// <summary> Creates new object </summary>
-		public AXmlObject()
+		protected AXmlObject()
 		{
 			this.LastUpdatedFrom = this;
 		}
@@ -129,7 +130,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		protected static void Assert(bool condition, string message)
 		{
 			if (!condition) {
-				throw new Exception("Assertion failed: " + message);
+				throw new InternalException("Assertion failed: " + message);
 			}
 		}
 		
@@ -138,7 +139,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		protected static void DebugAssert(bool condition, string message)
 		{
 			if (!condition) {
-				throw new Exception("Assertion failed: " + message);
+				throw new InternalException("Assertion failed: " + message);
 			}
 		}
 		
@@ -229,7 +230,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("{0}({1}-{2})", this.GetType().Name.Remove(0, 4), this.StartOffset, this.EndOffset);
+			return string.Format(CultureInfo.InvariantCulture, "{0}({1}-{2})", this.GetType().Name.Remove(0, 4), this.StartOffset, this.EndOffset);
 		}
 		
 		#region Helpper methods

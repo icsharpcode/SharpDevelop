@@ -86,7 +86,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 							textArea.Document.Remove(segmentsToDelete[i]);
 						}
 					}
-					textArea.Selection = Selection.Empty;
+					if (segmentsToDelete.Length != 0) {
+						textArea.Selection = Selection.Empty;
+					}
 				}
 			}
 		}

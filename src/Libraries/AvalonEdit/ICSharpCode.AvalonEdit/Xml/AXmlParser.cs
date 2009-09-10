@@ -6,12 +6,13 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
-using System.Threading;
 
 namespace ICSharpCode.AvalonEdit.Xml
 {
@@ -115,7 +116,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		internal static void Assert(bool condition, string message)
 		{
 			if (!condition) {
-				throw new Exception("Assertion failed: " + message);
+				throw new InternalException("Assertion failed: " + message);
 			}
 		}
 
@@ -124,14 +125,14 @@ namespace ICSharpCode.AvalonEdit.Xml
 		internal static void DebugAssert(bool condition, string message)
 		{
 			if (!condition) {
-				throw new Exception("Assertion failed: " + message);
+				throw new InternalException("Assertion failed: " + message);
 			}
 		}
 		
 		[Conditional("DEBUG")]
 		internal static void Log(string text, params object[] pars)
 		{
-			System.Diagnostics.Debug.WriteLine(string.Format("XML: " + text, pars));
+			System.Diagnostics.Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "XML: " + text, pars));
 		}
 		
 		/// <summary>

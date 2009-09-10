@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -22,7 +23,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 	public class AXmlTag: AXmlContainer
 	{
 		/// <summary> These identify the start of DTD elements </summary>
-		public static readonly string[] DTDNames = new string[] {"<!DOCTYPE", "<!NOTATION", "<!ELEMENT", "<!ATTLIST", "<!ENTITY"};
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification="ReadOnlyCollection is immutable")]
+		public static readonly ReadOnlyCollection<string> DtdNames = new ReadOnlyCollection<string>(
+			new string[] {"<!DOCTYPE", "<!NOTATION", "<!ELEMENT", "<!ATTLIST", "<!ENTITY" } );
 		
 		/// <summary> Opening bracket - usually "&lt;" </summary>
 		public string OpeningBracket { get; internal set; }
@@ -46,7 +49,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> True if tag starts with "&lt;![CDATA[" </summary>
 		public bool IsCData                 { get { return OpeningBracket == "<![CDATA["; } }
 		/// <summary> True if tag starts with one of the DTD starts </summary>
-		public bool IsDocumentType          { get { return DTDNames.Contains(OpeningBracket); } }
+		public bool IsDocumentType          { get { return DtdNames.Contains(OpeningBracket); } }
 		/// <summary> True if tag starts with "&lt;!" </summary>
 		public bool IsUnknownBang           { get { return OpeningBracket == "<!"; } }
 		
@@ -103,7 +106,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("[{0} '{1}{2}{3}' Attr:{4}]", base.ToString(), this.OpeningBracket, this.Name, this.ClosingBracket, this.Children.Count);
+			return string.Format(CultureInfo.InvariantCulture, "[{0} '{1}{2}{3}' Attr:{4}]", base.ToString(), this.OpeningBracket, this.Name, this.ClosingBracket, this.Children.Count);
 		}
 	}
 }

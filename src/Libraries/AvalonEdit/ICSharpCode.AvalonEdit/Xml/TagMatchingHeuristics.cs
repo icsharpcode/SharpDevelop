@@ -56,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 			
 			// Check well formed
-			foreach(AXmlTag xmlDeclaration in doc.Children.OfType<AXmlTag>().Where(t => t.IsProcessingInstruction && t.Name.ToLower() == "xml")) {
+			foreach(AXmlTag xmlDeclaration in doc.Children.OfType<AXmlTag>().Where(t => t.IsProcessingInstruction && string.Equals(t.Name, "xml", StringComparison.OrdinalIgnoreCase))) {
 				if (xmlDeclaration.StartOffset != 0)
 					TagReader.OnSyntaxError(doc, xmlDeclaration.StartOffset, xmlDeclaration.StartOffset + 5,
 					                        "XML declaration must be at the start of document");
@@ -87,7 +87,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			return doc;
 		}
 		
-		AXmlObject ReadSingleObject(IEnumerator<AXmlObject> objStream)
+		static AXmlObject ReadSingleObject(IEnumerator<AXmlObject> objStream)
 		{
 			AXmlObject obj = objStream.Current;
 			objStream.MoveNext();
@@ -407,7 +407,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		}
 		
 		#region Helper methods
-		
+		/*
 		string PrintObjects(IEnumerable<AXmlObject> objs)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -429,12 +429,12 @@ namespace ICSharpCode.AvalonEdit.Xml
 				} else if (obj is AXmlText) {
 					sb.Append('~');
 				} else {
-					throw new Exception("Should not be here: " + obj);
+					throw new InternalException("Should not be here: " + obj);
 				}
 			}
 			return sb.ToString();
 		}
-		
+		*/
 		#endregion
 	}
 }

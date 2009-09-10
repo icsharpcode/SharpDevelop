@@ -66,13 +66,13 @@ namespace ICSharpCode.AvalonEdit.Xml
 		
 		protected void Skip(int count)
 		{
-			if (currentLocation + count > inputLength) throw new Exception("Skipping after the end of file");
+			AXmlParser.Assert(currentLocation + count <= inputLength, "Skipping after the end of file");
 			currentLocation += count;
 		}
 		
 		protected void GoBack(int oldLocation)
 		{
-			if (oldLocation > currentLocation) throw new Exception("Trying to move forward");
+			AXmlParser.Assert(oldLocation <= currentLocation, "Trying to move forward");
 			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation);
 			currentLocation = oldLocation;
 		}
@@ -269,7 +269,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		
 		protected string GetText(int start, int end)
 		{
-			if (end > currentLocation) throw new Exception("Reading ahead of current location");
+			AXmlParser.Assert(end <= currentLocation, "Reading ahead of current location");
 			if (start == inputLength && end == inputLength) {
 				return string.Empty;
 			} else {

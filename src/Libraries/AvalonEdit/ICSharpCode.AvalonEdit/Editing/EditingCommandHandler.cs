@@ -226,8 +226,23 @@ namespace ICSharpCode.AvalonEdit.Editing
 					// call BeginUpdate before running the 'selectingCommand'
 					// so that undoing the delete does not select the deleted character
 					using (textArea.Document.RunUpdate()) {
-						if (textArea.Selection.IsEmpty)
+						if (textArea.Selection.IsEmpty) {
+							TextViewPosition oldCaretPosition = textArea.Caret.Position;
 							selectingCommand.Execute(args.Parameter, textArea);
+							bool hasSomethingDeletable = false;
+							foreach (ISegment s in textArea.Selection.Segments) {
+								if (textArea.GetDeletableSegments(s).Length > 0) {
+									hasSomethingDeletable = true;
+									break;
+								}
+							}
+							if (!hasSomethingDeletable) {
+								// If nothing in the selection is deletable; then reset caret+selection
+								// to the previous value. This prevents the caret from moving through read-only sections.
+								textArea.Caret.Position = oldCaretPosition;
+								textArea.Selection = Selection.Empty;
+							}
+						}
 						textArea.RemoveSelectedText();
 					}
 					textArea.Caret.BringCaretToView();
@@ -362,7 +377,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
 				DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-				textArea.Document.Remove(currentLine.Offset, currentLine.TotalLength);
+				textArea.Selection = new SimpleSelection(currentLine.Offset, currentLine.EndOffset);
+				textArea.RemoveSelectedText();
 				args.Handled = true;
 			}
 		}

@@ -28,7 +28,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public AXmlObjectCollection<AXmlObject> Children { get; private set; }
 		
 		/// <summary> Create new container </summary>
-		public AXmlContainer()
+		protected  AXmlContainer()
 		{
 			this.Children = new AXmlObjectCollection<AXmlObject>();
 		}
