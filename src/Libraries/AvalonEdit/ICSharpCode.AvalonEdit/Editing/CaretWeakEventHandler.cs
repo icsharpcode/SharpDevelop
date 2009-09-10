@@ -19,6 +19,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <summary>
 		/// Handles the Caret.PositionChanged event.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
 		public sealed class PositionChanged : WeakEventManagerBase<PositionChanged, Caret>
 		{
 			/// <inheritdoc/>

@@ -12,7 +12,7 @@ using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Rendering;
 
-namespace ICSharpCode.AvalonEdit.Editing
+namespace ICSharpCode.AvalonEdit.Folding
 {
 	/// <summary>
 	/// A <see cref="VisualLineElementGenerator"/> that produces line elements for folded <see cref="FoldingSection"/>s.

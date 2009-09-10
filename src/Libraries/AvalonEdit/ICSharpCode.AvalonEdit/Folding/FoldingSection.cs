@@ -10,7 +10,7 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 
-namespace ICSharpCode.AvalonEdit.Editing
+namespace ICSharpCode.AvalonEdit.Folding
 {
 	/// <summary>
 	/// A section that can be folded.

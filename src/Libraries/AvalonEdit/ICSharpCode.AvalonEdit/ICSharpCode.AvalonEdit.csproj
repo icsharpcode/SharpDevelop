@@ -132,21 +132,14 @@
     <Compile Include="Editing\CaretNavigationCommandHandler.cs">
     </Compile>
     <Compile Include="Editing\CaretWeakEventHandler.cs" />
+    <Compile Include="Editing\DottedLineMargin.cs" />
     <Compile Include="Editing\DragDropException.cs" />
     <Compile Include="Editing\EditingCommandHandler.cs" />
-    <Compile Include="Editing\FoldingElementGenerator.cs">
-      <DependentUpon>FoldingManager.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Editing\FoldingManager.cs" />
-    <Compile Include="Editing\FoldingMargin.cs">
-      <DependentUpon>FoldingManager.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Editing\FoldingMarginMarker.cs">
-      <DependentUpon>FoldingManager.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Editing\FoldingSection.cs">
-      <DependentUpon>FoldingManager.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Folding\FoldingElementGenerator.cs" />
+    <Compile Include="Folding\FoldingManager.cs" />
+    <Compile Include="Folding\FoldingMargin.cs" />
+    <Compile Include="Folding\FoldingMarginMarker.cs" />
+    <Compile Include="Folding\FoldingSection.cs" />
     <Compile Include="Editing\IReadOnlySectionProvider.cs" />
     <Compile Include="Editing\LineNumberMargin.cs" />
     <Compile Include="Editing\NoReadOnlySections.cs">
@@ -379,6 +372,7 @@
   <ItemGroup>
     <Folder Include="Document" />
     <Folder Include="documentation" />
+    <Folder Include="Folding" />
     <Folder Include="Highlighting" />
     <Folder Include="Highlighting\Xshd" />
     <Folder Include="Highlighting\Resources" />

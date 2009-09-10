@@ -30,19 +30,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			                                         new FrameworkPropertyMetadata(typeof(LineNumberMargin)));
 		}
 		
-		/// <summary>
-		/// TextArea property.
-		/// </summary>
-		public static readonly DependencyProperty TextAreaProperty =
-			DependencyProperty.Register("TextArea", typeof(TextArea), typeof(LineNumberMargin));
-		
-		/// <summary>
-		/// Gets/sets the text area in which text should be selected.
-		/// </summary>
-		public TextArea TextArea {
-			get { return (TextArea)GetValue(TextAreaProperty); }
-			set { SetValue(TextAreaProperty, value); }
-		}
+		TextArea textArea;
 		
 		Typeface typeface;
 		double emSize;
@@ -94,6 +82,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 			base.OnTextViewChanged(oldTextView, newTextView);
 			if (newTextView != null) {
 				newTextView.VisualLinesChanged += TextViewVisualLinesChanged;
+				
+				// find the text area belonging to the new text view
+				textArea = newTextView.Services.GetService(typeof(TextArea)) as TextArea;
+			} else {
+				textArea = null;
 			}
 			InvalidateVisual();
 		}
@@ -156,23 +149,23 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
 			base.OnMouseLeftButtonDown(e);
-			if (!e.Handled && TextView != null && TextArea != null) {
+			if (!e.Handled && TextView != null && textArea != null) {
 				e.Handled = true;
-				TextArea.Focus();
+				textArea.Focus();
 				
 				SimpleSegment currentSeg = GetTextLineSegment(e);
 				if (currentSeg == SimpleSegment.Invalid)
 					return;
-				TextArea.Caret.Offset = currentSeg.Offset + currentSeg.Length;
+				textArea.Caret.Offset = currentSeg.Offset + currentSeg.Length;
 				if (CaptureMouse()) {
 					selecting = true;
 					selectionStart = new AnchorSegment(Document, currentSeg.Offset, currentSeg.Length);
 					if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift) {
-						SimpleSelection simpleSelection = TextArea.Selection as SimpleSelection;
+						SimpleSelection simpleSelection = textArea.Selection as SimpleSelection;
 						if (simpleSelection != null)
 							selectionStart = new AnchorSegment(Document, simpleSelection);
 					}
-					TextArea.Selection = new SimpleSelection(selectionStart);
+					textArea.Selection = new SimpleSelection(selectionStart);
 					if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift) {
 						ExtendSelection(currentSeg);
 					}
@@ -202,18 +195,18 @@ namespace ICSharpCode.AvalonEdit.Editing
 		void ExtendSelection(SimpleSegment currentSeg)
 		{
 			if (currentSeg.Offset < selectionStart.Offset) {
-				TextArea.Caret.Offset = currentSeg.Offset;
-				TextArea.Selection = new SimpleSelection(currentSeg.Offset, selectionStart.Offset + selectionStart.Length);
+				textArea.Caret.Offset = currentSeg.Offset;
+				textArea.Selection = new SimpleSelection(currentSeg.Offset, selectionStart.Offset + selectionStart.Length);
 			} else {
-				TextArea.Caret.Offset = currentSeg.Offset + currentSeg.Length;
-				TextArea.Selection = new SimpleSelection(selectionStart.Offset, currentSeg.Offset + currentSeg.Length);
+				textArea.Caret.Offset = currentSeg.Offset + currentSeg.Length;
+				textArea.Selection = new SimpleSelection(selectionStart.Offset, currentSeg.Offset + currentSeg.Length);
 			}
 		}
 		
 		/// <inheritdoc/>
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			if (selecting && TextArea != null && TextView != null) {
+			if (selecting && textArea != null && TextView != null) {
 				e.Handled = true;
 				SimpleSegment currentSeg = GetTextLineSegment(e);
 				if (currentSeg == SimpleSegment.Invalid)

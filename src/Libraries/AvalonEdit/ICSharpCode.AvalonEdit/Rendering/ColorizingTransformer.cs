@@ -78,13 +78,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			}
 		}
 		
-				/// <summary>
+		/// <summary>
 		/// Called when added to a text view.
 		/// </summary>
 		protected virtual void OnAddToTextView(TextView textView)
 		{
 		}
-				
+		
 		/// <summary>
 		/// Called when removed from a text view.
 		/// </summary>

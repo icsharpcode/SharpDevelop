@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 
@@ -19,7 +21,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// AbstractMargin derives from FrameworkElement, so if you don't want to handle visual children and rendering
 	/// on your own, choose another base class for your margin!
 	/// </summary>
-	public abstract class AbstractMargin : FrameworkElement
+	public abstract class AbstractMargin : FrameworkElement, ITextViewConnect
 	{
 		/// <summary>
 		/// TextView property.
@@ -31,6 +33,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <summary>
 		/// Gets/sets the text view for which line numbers are displayed.
 		/// </summary>
+		/// <remarks>Adding a margin to <see cref="TextArea.LeftMargins"/> will automatically set this property to the text area's TextView.</remarks>
 		public TextView TextView {
 			get { return (TextView)GetValue(TextViewProperty); }
 			set { SetValue(TextViewProperty, value); }
@@ -38,7 +41,30 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		static void OnTextViewChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
 		{
-			((AbstractMargin)dp).OnTextViewChanged((TextView)e.OldValue, (TextView)e.NewValue);
+			AbstractMargin margin = (AbstractMargin)dp;
+			margin.wasAutoAddedToTextView = false;
+			margin.OnTextViewChanged((TextView)e.OldValue, (TextView)e.NewValue);
+		}
+		
+		// automatically set/unset TextView property using ITextViewConnect
+		bool wasAutoAddedToTextView;
+		
+		void ITextViewConnect.AddToTextView(TextView textView)
+		{
+			if (this.TextView == null) {
+				this.TextView = textView;
+				wasAutoAddedToTextView = true;
+			} else if (this.TextView != textView) {
+				throw new InvalidOperationException("This margin belongs to a different TextView.");
+			}
+		}
+		
+		void ITextViewConnect.RemoveFromTextView(TextView textView)
+		{
+			if (wasAutoAddedToTextView && this.TextView == textView) {
+				this.TextView = null;
+				Debug.Assert(!wasAutoAddedToTextView); // setting this.TextView should have unset this flag
+			}
 		}
 		
 		TextDocument document;

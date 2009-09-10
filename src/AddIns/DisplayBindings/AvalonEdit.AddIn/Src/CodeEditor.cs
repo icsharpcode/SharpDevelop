@@ -170,6 +170,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.Background = Brushes.White;
 			textEditor.FontFamily = new FontFamily("Consolas");
 			textEditor.FontSize = 13;
+			textEditor.ShowLineNumbers = true;
 			textEditor.TextArea.TextEntering += TextAreaTextEntering;
 			textEditor.TextArea.TextEntered += TextAreaTextEntered;
 			textEditor.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
@@ -181,8 +182,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
-			var iconBarMargin = new IconBarMargin(iconBarManager) { TextView = textView };
-			textEditor.TextArea.LeftMargins.Insert(0, iconBarMargin);
+			textEditor.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
 			textView.Services.AddService(typeof(ParserFoldingStrategy), new ParserFoldingStrategy(textEditor.TextArea));
 			

@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.textArea = textArea;
 			foldingManager = new FoldingManager(textArea.TextView, textArea.Document);
 			foldingManager.ExpandFoldingsWhenCaretIsMovedIntoThem(textArea.Caret);
-			margin = new FoldingMargin() { FoldingManager = foldingManager, TextView = textArea.TextView };
+			margin = new FoldingMargin() { FoldingManager = foldingManager };
 			generator = new FoldingElementGenerator() { FoldingManager = foldingManager };
 			textArea.LeftMargins.Add(margin);
 			textArea.TextView.ElementGenerators.Add(generator);

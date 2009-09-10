@@ -17,8 +17,12 @@ using ICSharpCode.AvalonEdit.Utils;
 namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
-	/// Element generator that displays · for spaces and » for tabs and a box for control characeters.
+	/// Element generator that displays · for spaces and » for tabs and a box for control characters.
 	/// </summary>
+	/// <remarks>
+	/// This element generator is present in every TextView by default; the enabled features can be configured using the
+	/// <see cref="TextEditorOptions"/>.
+	/// </remarks>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace")]
 	public class SingleCharacterElementGenerator : VisualLineElementGenerator, IWeakEventListener
 	{
@@ -38,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public bool ShowBoxForControlCharacters { get; set; }
 		
 		/// <summary>
-		/// Creates a new WhitespaceElementGenerator instance.
+		/// Creates a new SingleCharacterElementGenerator instance.
 		/// </summary>
 		public SingleCharacterElementGenerator()
 		{

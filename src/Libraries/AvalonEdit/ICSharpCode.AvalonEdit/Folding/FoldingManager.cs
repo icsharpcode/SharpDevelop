@@ -12,9 +12,11 @@ using System.Windows;
 using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Editing
+namespace ICSharpCode.AvalonEdit.Folding
 {
 	/// <summary>
 	/// Stores a list of foldings for a specific TextView and TextDocument.
@@ -25,6 +27,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 		internal readonly TextDocument document;
 		
 		readonly TextSegmentCollection<FoldingSection> foldings;
+		
+		/// <summary>
+		/// Creates a new FoldingManager instance.
+		/// </summary>
+		public FoldingManager(TextView textView)
+			: this(textView, ThrowUtil.CheckNotNull(textView, "textView").Document)
+		{
+		}
 		
 		/// <summary>
 		/// Creates a new FoldingManager instance.
@@ -40,6 +50,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.foldings = new TextSegmentCollection<FoldingSection>(document);
 		}
 		
+		#region ExpandFoldingsWhenCaretIsMovedIntoThem
 		// keep a reference to the helper as long as the folding manager exists
 		ExpandFoldingsWhenCaretIsMovedIntoThemHelper helper;
 		
@@ -78,6 +89,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				return false;
 			}
 		}
+		#endregion
 		
 		/// <summary>
 		/// Creates a folding for the specified text section.

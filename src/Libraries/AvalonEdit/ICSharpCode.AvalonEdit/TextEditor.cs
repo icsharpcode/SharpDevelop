@@ -31,6 +31,7 @@ namespace ICSharpCode.AvalonEdit
 	[Localizability(LocalizationCategory.Text), ContentProperty("Text")]
 	public class TextEditor : Control, ITextEditorComponent, IServiceProvider, IWeakEventListener
 	{
+		#region Constructors
 		static TextEditor()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(TextEditor),
@@ -62,6 +63,7 @@ namespace ICSharpCode.AvalonEdit
 			textArea.SetBinding(TextArea.DocumentProperty, new Binding(DocumentProperty.Name) { Source = this });
 			textArea.SetBinding(TextArea.OptionsProperty, new Binding(OptionsProperty.Name) { Source = this });
 		}
+		#endregion
 		
 		/// <inheritdoc/>
 		protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer()
@@ -69,7 +71,7 @@ namespace ICSharpCode.AvalonEdit
 			return new TextEditorAutomationPeer(this);
 		}
 		
-		// Forward focus to TextArea.
+		/// Forward focus to TextArea.
 		/// <inheritdoc/>
 		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
 		{
@@ -195,6 +197,7 @@ namespace ICSharpCode.AvalonEdit
 		}
 		#endregion
 		
+		#region Text property
 		/// <summary>
 		/// Gets/Sets the text of the current document.
 		/// </summary>
@@ -238,7 +241,9 @@ namespace ICSharpCode.AvalonEdit
 				TextChanged(this, e);
 			}
 		}
+		#endregion
 		
+		#region TextArea / ScrollViewer properties
 		readonly TextArea textArea;
 		ScrollViewer scrollViewer;
 		
@@ -283,6 +288,7 @@ namespace ICSharpCode.AvalonEdit
 			if (textArea != null)
 				command.Execute(null, textArea);
 		}
+		#endregion
 		
 		#region Syntax highlighting
 		IHighlightingDefinition syntaxHighlighting;
@@ -352,6 +358,38 @@ namespace ICSharpCode.AvalonEdit
 				editor.TextArea.ReadOnlySectionProvider = ReadOnlyDocument.Instance;
 			else
 				editor.TextArea.ReadOnlySectionProvider = NoReadOnlySections.Instance;
+		}
+		#endregion
+		
+		#region ShowLineNumbers
+		/// <summary>
+		/// IsReadOnly dependency property.
+		/// </summary>
+		public static readonly DependencyProperty ShowLineNumbersProperty =
+			DependencyProperty.Register("ShowLineNumbers", typeof(bool), typeof(TextEditor),
+			                            new FrameworkPropertyMetadata(Boxes.False, OnShowLineNumbersChanged));
+		
+		/// <summary>
+		/// Specifies whether line numbers are shown on the left to the text view.
+		/// </summary>
+		public bool ShowLineNumbers {
+			get { return (bool)GetValue(ShowLineNumbersProperty); }
+			set { SetValue(ShowLineNumbersProperty, Boxes.Box(value)); }
+		}
+		
+		static void OnShowLineNumbersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			TextEditor editor = (TextEditor)d;
+			var leftMargins = editor.TextArea.LeftMargins;
+			if ((bool)e.NewValue) {
+				leftMargins.Insert(0, new LineNumberMargin());
+				leftMargins.Insert(1, DottedLineMargin.Create());
+			} else {
+				for (int i = 0; i < leftMargins.Count; i++) {
+					if (leftMargins[i] is LineNumberMargin || DottedLineMargin.IsDottedLineMargin(leftMargins[i]))
+						leftMargins.RemoveAt(i--);
+				}
+			}
 		}
 		#endregion
 		
@@ -805,20 +843,7 @@ namespace ICSharpCode.AvalonEdit
 		}
 		#endregion
 		
-		/// <summary>
-		/// Gets the text view position from a point inside the editor.
-		/// </summary>
-		/// <param name="point">The position, relative to top left
-		/// corner of TextEditor control</param>
-		/// <returns>The text view position, or null if the point is outside the document.</returns>
-		public TextViewPosition? GetPositionFromPoint(Point point)
-		{
-			if (this.Document == null)
-				return null;
-			TextView textView = this.TextArea.TextView;
-			return textView.GetPosition(TranslatePoint(point, textView) + textView.ScrollOffset);
-		}
-		
+		#region MouseHover events
 		/// <summary>
 		/// The PreviewMouseHover event.
 		/// </summary>
@@ -876,10 +901,25 @@ namespace ICSharpCode.AvalonEdit
 			add { AddHandler(MouseHoverStoppedEvent, value); }
 			remove { RemoveHandler(MouseHoverStoppedEvent, value); }
 		}
+		#endregion
 		
 		object IServiceProvider.GetService(Type serviceType)
 		{
 			return textArea.GetService(serviceType);
+		}
+		
+		/// <summary>
+		/// Gets the text view position from a point inside the editor.
+		/// </summary>
+		/// <param name="point">The position, relative to top left
+		/// corner of TextEditor control</param>
+		/// <returns>The text view position, or null if the point is outside the document.</returns>
+		public TextViewPosition? GetPositionFromPoint(Point point)
+		{
+			if (this.Document == null)
+				return null;
+			TextView textView = this.TextArea.TextView;
+			return textView.GetPosition(TranslatePoint(point, textView) + textView.ScrollOffset);
 		}
 		
 		/// <summary>

@@ -41,7 +41,7 @@ namespace ICSharpCode.AvalonEdit
 		}
 		#endregion
 		
-		#region ShowSpaces / ShowTabs / ShowBoxForControlCharacters
+		#region ShowSpaces / ShowTabs / ShowEndOfLine / ShowBoxForControlCharacters
 		bool showSpaces;
 		
 		/// <summary>
@@ -72,6 +72,23 @@ namespace ICSharpCode.AvalonEdit
 				if (showTabs != value) {
 					showTabs = value;
 					OnPropertyChanged("ShowTabs");
+				}
+			}
+		}
+		
+		bool showEndOfLine;
+		
+		/// <summary>
+		/// Gets/Sets whether to show ¶ at the end of lines.
+		/// </summary>
+		/// <remarks>The default value is <c>false</c>.</remarks>
+		[DefaultValue(false)]
+		public virtual bool ShowEndOfLine {
+			get { return showEndOfLine; }
+			set {
+				if (showEndOfLine != value) {
+					showEndOfLine = value;
+					OnPropertyChanged("ShowEndOfLine");
 				}
 			}
 		}
@@ -168,8 +185,10 @@ namespace ICSharpCode.AvalonEdit
 		public virtual bool CutCopyWholeLine {
 			get { return cutCopyWholeLine; }
 			set {
-				cutCopyWholeLine = value;
-				OnPropertyChanged("CutCopyWholeLine");
+				if (cutCopyWholeLine != value) {
+					cutCopyWholeLine = value;
+					OnPropertyChanged("CutCopyWholeLine");
+				}
 			}
 		}
 	}

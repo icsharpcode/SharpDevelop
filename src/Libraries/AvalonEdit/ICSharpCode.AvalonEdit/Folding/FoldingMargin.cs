@@ -13,11 +13,11 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
-using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.Editing
+namespace ICSharpCode.AvalonEdit.Folding
 {
 	/// <summary>
 	/// A margin that shows markers for foldings and allows to expand/collapse the foldings.
@@ -124,7 +124,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			if (!TextView.VisualLinesValid)
+			if (TextView == null || !TextView.VisualLinesValid)
 				return;
 			if (TextView.VisualLines.Count == 0 || FoldingManager == null)
 				return;

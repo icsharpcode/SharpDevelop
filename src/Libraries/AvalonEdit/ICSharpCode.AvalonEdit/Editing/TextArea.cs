@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -65,22 +66,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			textView.Services.AddService(typeof(TextArea), this);
 			
-			leftMargins.Add(new LineNumberMargin { TextView = textView, TextArea = this } );
-			leftMargins.Add(new Line {
-			                	X1 = 0, Y1 = 0, X2 = 0, Y2 = 1,
-			                	StrokeDashArray = { 0, 2 },
-			                	Stretch = Stretch.Fill,
-			                	Stroke = Brushes.Gray,
-			                	StrokeThickness = 1,
-			                	StrokeDashCap = PenLineCap.Round,
-			                	Margin = new Thickness(2, 0, 2, 0)
-			                });
-			
 			textView.LineTransformers.Add(new SelectionColorizer(this));
 			textView.InsertLayer(new SelectionLayer(this), KnownLayer.Selection, LayerInsertionPosition.Replace);
 			
 			caret = new Caret(this);
 			caret.PositionChanged += (sender, e) => RequestSelectionValidation();
+			
+			leftMargins.CollectionChanged += leftMargins_CollectionChanged;
 			
 			this.DefaultInputHandler = new TextAreaDefaultInputHandler(this);
 			this.ActiveInputHandler = this.DefaultInputHandler;
@@ -408,6 +400,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public ObservableCollection<UIElement> LeftMargins {
 			get {
 				return leftMargins;
+			}
+		}
+		
+		void leftMargins_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.OldItems != null) {
+				foreach (ITextViewConnect c in e.OldItems.OfType<ITextViewConnect>()) {
+					c.RemoveFromTextView(textView);
+				}
+			}
+			if (e.NewItems != null) {
+				foreach (ITextViewConnect c in e.NewItems.OfType<ITextViewConnect>()) {
+					c.AddToTextView(textView);
+				}
 			}
 		}
 		

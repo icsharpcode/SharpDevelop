@@ -13,7 +13,7 @@ using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Rendering;
 
-namespace ICSharpCode.AvalonEdit.Editing
+namespace ICSharpCode.AvalonEdit.Folding
 {
 	sealed class FoldingMarginMarker : UIElement
 	{

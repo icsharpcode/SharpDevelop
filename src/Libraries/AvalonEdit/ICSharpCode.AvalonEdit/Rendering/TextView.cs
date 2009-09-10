@@ -172,6 +172,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (OptionChanged != null) {
 				OptionChanged(this, e);
 			}
+			UpdateNewlineVisibilityFromOptions();
 			Redraw();
 		}
 		
@@ -233,6 +234,22 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			DisconnectFromTextView(lineTransformer);
 			Redraw();
+		}
+		
+		NewLineElementGenerator newLineElementGenerator;
+		
+		void UpdateNewlineVisibilityFromOptions()
+		{
+			bool hasNewlineGenerator = newLineElementGenerator != null;
+			if (hasNewlineGenerator != Options.ShowEndOfLine) {
+				if (Options.ShowEndOfLine) {
+					newLineElementGenerator = new NewLineElementGenerator();
+					this.ElementGenerators.Add(newLineElementGenerator);
+				} else {
+					this.ElementGenerators.Remove(newLineElementGenerator);
+					newLineElementGenerator = null;
+				}
+			}
 		}
 		#endregion
 		
@@ -371,6 +388,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// This method does not invalidate visual lines;
 		/// use the <see cref="Redraw()"/> method to do that.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "knownLayer",
+		                                                 Justification="This method is meant to invalidate only a specific layer - I just haven't figured out how to do that, yet.")]
 		public void InvalidateLayer(KnownLayer knownLayer)
 		{
 			InvalidateMeasure(DispatcherPriority.Normal);
@@ -1448,7 +1467,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <see cref="VisualLineElementGenerator"/>s that cause <see cref="VisualLine"/>s to span
 		/// multiple <see cref="DocumentLine"/>s. Do not call it without providing a corresponding
 		/// <see cref="VisualLineElementGenerator"/>.
-		/// If you want to create collapsible text sections, see <see cref="Editing.FoldingManager"/>.
+		/// If you want to create collapsible text sections, see <see cref="Folding.FoldingManager"/>.
 		/// </summary>
 		public CollapsedLineSection CollapseLines(DocumentLine start, DocumentLine end)
 		{
