@@ -47,6 +47,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			get;
 			set;
 		}
+		bool LastCharacterIsNewLine {
+			get;
+		}
+		bool LastCharacterIsWhiteSpace {
+			get;
+		}
 		void NewLine();
 		void Indent();
 		void PrintComment(Comment comment, bool forceWriteInPreviousBlock);
