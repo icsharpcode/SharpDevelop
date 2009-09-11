@@ -636,6 +636,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			
 			maxWidth += AdditionalHorizontalScrollAmount;
 			double heightTreeHeight = this.DocumentHeight;
+			TextEditorOptions options = this.Options;
+			if (options.AllowScrollBelowDocument) {
+				heightTreeHeight = Math.Max(heightTreeHeight, Math.Min(heightTreeHeight - 50, scrollOffset.Y) + scrollViewport.Height);
+			}
 			
 			SetScrollData(availableSize,
 			              new Size(maxWidth, heightTreeHeight),

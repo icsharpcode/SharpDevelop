@@ -68,6 +68,9 @@
     <Reference Include="UIAutomationProvider">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAutomationTypes">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -135,6 +138,7 @@
     <Compile Include="Editing\DottedLineMargin.cs" />
     <Compile Include="Editing\DragDropException.cs" />
     <Compile Include="Editing\EditingCommandHandler.cs" />
+    <Compile Include="Folding\BraceFoldingStrategy.cs" />
     <Compile Include="Folding\FoldingElementGenerator.cs" />
     <Compile Include="Folding\FoldingManager.cs" />
     <Compile Include="Folding\FoldingMargin.cs" />
@@ -167,6 +171,7 @@
     <Compile Include="Editing\TextSegmentReadOnlySectionProvider.cs">
       <DependentUpon>IReadOnlySectionProvider.cs</DependentUpon>
     </Compile>
+    <Compile Include="Folding\NewFolding.cs" />
     <Compile Include="Highlighting\DocumentHighlighter.cs" />
     <Compile Include="Highlighting\HighlightedInlineBuilder.cs" />
     <Compile Include="Highlighting\HighlightedLine.cs" />

@@ -14,13 +14,13 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
-using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit
 {
@@ -353,11 +353,18 @@ namespace ICSharpCode.AvalonEdit
 		
 		static void OnIsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			TextEditor editor = (TextEditor)d;
-			if ((bool)e.NewValue)
-				editor.TextArea.ReadOnlySectionProvider = ReadOnlyDocument.Instance;
-			else
-				editor.TextArea.ReadOnlySectionProvider = NoReadOnlySections.Instance;
+			TextEditor editor = d as TextEditor;
+			if (editor != null) {
+				if ((bool)e.NewValue)
+					editor.TextArea.ReadOnlySectionProvider = ReadOnlyDocument.Instance;
+				else
+					editor.TextArea.ReadOnlySectionProvider = NoReadOnlySections.Instance;
+				
+				TextEditorAutomationPeer peer = TextEditorAutomationPeer.FromElement(editor) as TextEditorAutomationPeer;
+				if (peer != null) {
+					peer.RaiseIsReadOnlyChanged((bool)e.OldValue, (bool)e.NewValue);
+				}
+			}
 		}
 		#endregion
 		
@@ -923,6 +930,15 @@ namespace ICSharpCode.AvalonEdit
 		}
 		
 		/// <summary>
+		/// Scrolls to the specified line.
+		/// This method requires that the TextEditor was already assigned a size (WPF layout must have run prior).
+		/// </summary>
+		public void ScrollToLine(int line)
+		{
+			ScrollTo(line, -1);
+		}
+		
+		/// <summary>
 		/// Scrolls to the specified line/column.
 		/// This method requires that the TextEditor was already assigned a size (WPF layout must have run prior).
 		/// </summary>
@@ -930,19 +946,22 @@ namespace ICSharpCode.AvalonEdit
 		{
 			const double MinimumScrollPercentage = 0.3;
 			
+			ScrollToLine(line);
 			if (scrollViewer != null) {
-				Point p = textArea.TextView.GetVisualPosition(new TextViewPosition(line, column), VisualYPosition.LineMiddle);
+				Point p = textArea.TextView.GetVisualPosition(new TextViewPosition(line, Math.Max(1, column)), VisualYPosition.LineMiddle);
 				double verticalPos = p.Y - scrollViewer.ViewportHeight / 2;
 				if (Math.Abs(verticalPos - scrollViewer.VerticalOffset) > MinimumScrollPercentage * scrollViewer.ViewportHeight) {
 					scrollViewer.ScrollToVerticalOffset(Math.Max(0, verticalPos));
 				}
-				if (p.X > scrollViewer.ViewportWidth - Caret.MinimumDistanceToViewBorder * 2) {
-					double horizontalPos = Math.Max(0, p.X - scrollViewer.ViewportWidth / 2);
-					if (Math.Abs(horizontalPos - scrollViewer.HorizontalOffset) > MinimumScrollPercentage * scrollViewer.ViewportWidth) {
-						scrollViewer.ScrollToHorizontalOffset(horizontalPos);
+				if (column > 0) {
+					if (p.X > scrollViewer.ViewportWidth - Caret.MinimumDistanceToViewBorder * 2) {
+						double horizontalPos = Math.Max(0, p.X - scrollViewer.ViewportWidth / 2);
+						if (Math.Abs(horizontalPos - scrollViewer.HorizontalOffset) > MinimumScrollPercentage * scrollViewer.ViewportWidth) {
+							scrollViewer.ScrollToHorizontalOffset(horizontalPos);
+						}
+					} else {
+						scrollViewer.ScrollToHorizontalOffset(0);
 					}
-				} else {
-					scrollViewer.ScrollToHorizontalOffset(0);
 				}
 			}
 		}

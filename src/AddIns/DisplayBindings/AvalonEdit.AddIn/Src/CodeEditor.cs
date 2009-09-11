@@ -146,6 +146,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
 			
+			// always support scrolling below the end of the document - it's better when folding is enabled
+			primaryTextEditor.Options.AllowScrollBelowDocument = true;
+			
 			this.primaryBracketRenderer = new BracketHighlightRenderer(primaryTextEditor.TextArea.TextView);
 			
 			this.Document = primaryTextEditor.Document;
@@ -239,6 +242,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				secondaryTextEditor.SetBinding(TextEditor.DocumentProperty,
 				                               new Binding(TextEditor.DocumentProperty.Name) { Source = primaryTextEditor });
 				secondaryTextEditor.SyntaxHighlighting = primaryTextEditor.SyntaxHighlighting;
+				secondaryTextEditor.Options = primaryTextEditor.Options;
 				
 				SetRow(secondaryTextEditor, 2);
 				this.Children.Add(secondaryTextEditor);

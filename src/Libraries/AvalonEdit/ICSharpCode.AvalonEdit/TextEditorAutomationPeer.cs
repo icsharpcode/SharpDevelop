@@ -1,16 +1,18 @@
-/*
- * Created by SharpDevelop.
- * User: Daniel
- * Date: 04.06.2009
- * Time: 20:46
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Daniel Grunwald"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
+using System.Diagnostics;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit
 {
@@ -24,6 +26,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public TextEditorAutomationPeer(TextEditor owner) : base(owner)
 		{
+			Debug.WriteLine("TextEditorAutomationPeer was created");
 		}
 		
 		private TextEditor TextEditor {
@@ -40,7 +43,7 @@ namespace ICSharpCode.AvalonEdit
 		}
 		
 		bool IValueProvider.IsReadOnly {
-			get { return false; }
+			get { return this.TextEditor.IsReadOnly; }
 		}
 		
 		/// <inheritdoc/>
@@ -56,6 +59,11 @@ namespace ICSharpCode.AvalonEdit
 			}
 			
 			return base.GetPattern(patternInterface);
+		}
+		
+		internal void RaiseIsReadOnlyChanged(bool oldValue, bool newValue)
+		{
+			RaisePropertyChangedEvent(ValuePatternIdentifiers.IsReadOnlyProperty, Boxes.Box(oldValue), Boxes.Box(newValue));
 		}
 	}
 }

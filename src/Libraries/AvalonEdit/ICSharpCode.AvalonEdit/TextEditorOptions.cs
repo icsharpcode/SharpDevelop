@@ -145,7 +145,7 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
-				
+		
 		bool requireControlModifierForHyperlinkClick = true;
 		
 		/// <summary>
@@ -244,6 +244,23 @@ namespace ICSharpCode.AvalonEdit
 				if (cutCopyWholeLine != value) {
 					cutCopyWholeLine = value;
 					OnPropertyChanged("CutCopyWholeLine");
+				}
+			}
+		}
+		
+		bool allowScrollBelowDocument;
+		
+		/// <summary>
+		/// Gets/Sets whether the user can scroll below the bottom of the document.
+		/// The default value is false; but it a good idea to set this property to true when using folding.
+		/// </summary>
+		[DefaultValue(false)]
+		public virtual bool AllowScrollBelowDocument {
+			get { return allowScrollBelowDocument; }
+			set {
+				if (allowScrollBelowDocument != value) {
+					allowScrollBelowDocument = value;
+					OnPropertyChanged("AllowScrollBelowDocument");
 				}
 			}
 		}
