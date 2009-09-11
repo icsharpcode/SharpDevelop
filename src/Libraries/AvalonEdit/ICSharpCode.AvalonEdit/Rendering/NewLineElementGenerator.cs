@@ -14,11 +14,21 @@ using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {
+	// This class is internal because it does not need to be accessed by the user - it can be configured using TextEditorOptions.
+	
 	/// <summary>
 	/// Elements generator that displays "¶" at the end of lines.
 	/// </summary>
-	public class NewLineElementGenerator : VisualLineElementGenerator
+	/// <remarks>
+	/// This element generator can be easily enabled and configured using the
+	/// <see cref="TextEditorOptions"/>.
+	/// </remarks>
+	sealed class NewLineElementGenerator : VisualLineElementGenerator, IBuiltinElementGenerator
 	{
+		void IBuiltinElementGenerator.FetchOptions(TextEditorOptions options)
+		{
+		}
+		
 		/// <inheritdoc/>
 		public override int GetFirstInterestedOffset(int startOffset)
 		{

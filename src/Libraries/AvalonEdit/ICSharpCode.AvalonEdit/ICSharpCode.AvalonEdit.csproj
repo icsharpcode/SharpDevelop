@@ -239,6 +239,7 @@
     <Compile Include="Rendering\LayerPosition.cs">
       <DependentUpon>TextView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\LinkElementGenerator.cs" />
     <Compile Include="Rendering\NewLineElementGenerator.cs" />
     <Compile Include="Rendering\SingleCharacterElementGenerator.cs" />
     <Compile Include="Rendering\TextLayer.cs">
@@ -254,6 +255,7 @@
     <Compile Include="Rendering\VisualLineElementTextRunProperties.cs">
       <DependentUpon>VisualLine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\VisualLineLinkText.cs" />
     <Compile Include="Rendering\VisualLinesInvalidException.cs" />
     <Compile Include="Rendering\VisualLineText.cs" />
     <Compile Include="Rendering\VisualLineTextParagraphProperties.cs">

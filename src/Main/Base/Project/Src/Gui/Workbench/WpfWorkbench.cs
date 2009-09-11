@@ -123,6 +123,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
 		{
+			e.Handled = true;
 			if (e.Uri.Scheme == "mailto") {
 				try {
 					Process.Start(e.Uri.ToString());

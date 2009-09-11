@@ -50,15 +50,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public TextView()
 		{
 			services.AddService(typeof(TextView), this);
-			this.Options = new TextEditorOptions();
 			textLayer = new TextLayer(this);
 			elementGenerators = new ObserveAddRemoveCollection<VisualLineElementGenerator>(ElementGenerator_Added, ElementGenerator_Removed);
 			lineTransformers = new ObserveAddRemoveCollection<IVisualLineTransformer>(LineTransformer_Added, LineTransformer_Removed);
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
-			
-			SingleCharacterElementGenerator sceg = new SingleCharacterElementGenerator();
-			sceg.SynchronizeOptions(this);
-			elementGenerators.Add(sceg);
+			this.Options = new TextEditorOptions();
+			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 			
 			layers = new UIElementCollection(this, this);
 			InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
@@ -172,7 +169,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (OptionChanged != null) {
 				OptionChanged(this, e);
 			}
-			UpdateNewlineVisibilityFromOptions();
+			UpdateBuiltinElementGeneratorsFromOptions();
 			Redraw();
 		}
 		
@@ -235,21 +232,39 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			DisconnectFromTextView(lineTransformer);
 			Redraw();
 		}
+		#endregion
 		
+		#region Builtin ElementGenerators
 		NewLineElementGenerator newLineElementGenerator;
+		SingleCharacterElementGenerator singleCharacterElementGenerator;
+		LinkElementGenerator linkElementGenerator;
+		MailLinkElementGenerator mailLinkElementGenerator;
 		
-		void UpdateNewlineVisibilityFromOptions()
+		void UpdateBuiltinElementGeneratorsFromOptions()
 		{
-			bool hasNewlineGenerator = newLineElementGenerator != null;
-			if (hasNewlineGenerator != Options.ShowEndOfLine) {
-				if (Options.ShowEndOfLine) {
-					newLineElementGenerator = new NewLineElementGenerator();
-					this.ElementGenerators.Add(newLineElementGenerator);
+			TextEditorOptions options = this.Options;
+			
+			AddRemoveDefaultElementGeneratorOnDemand(ref newLineElementGenerator, options.ShowEndOfLine);
+			AddRemoveDefaultElementGeneratorOnDemand(ref singleCharacterElementGenerator, options.ShowBoxForControlCharacters || options.ShowSpaces || options.ShowTabs);
+			AddRemoveDefaultElementGeneratorOnDemand(ref linkElementGenerator, options.EnableHyperlinks);
+			AddRemoveDefaultElementGeneratorOnDemand(ref mailLinkElementGenerator, options.EnableEmailHyperlinks);
+		}
+		
+		void AddRemoveDefaultElementGeneratorOnDemand<T>(ref T generator, bool demand)
+			where T : VisualLineElementGenerator, IBuiltinElementGenerator, new()
+		{
+			bool hasGenerator = generator != null;
+			if (hasGenerator != demand) {
+				if (demand) {
+					generator = new T();
+					this.ElementGenerators.Add(generator);
 				} else {
-					this.ElementGenerators.Remove(newLineElementGenerator);
-					newLineElementGenerator = null;
+					this.ElementGenerators.Remove(generator);
+					generator = null;
 				}
 			}
+			if (generator != null)
+				generator.FetchOptions(this.Options);
 		}
 		#endregion
 		

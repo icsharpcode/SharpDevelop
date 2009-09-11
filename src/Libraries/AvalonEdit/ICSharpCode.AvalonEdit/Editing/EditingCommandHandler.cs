@@ -377,7 +377,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			TextArea textArea = GetTextArea(target);
 			if (textArea != null && textArea.Document != null) {
 				DocumentLine currentLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-				textArea.Selection = new SimpleSelection(currentLine.Offset, currentLine.EndOffset);
+				textArea.Selection = new SimpleSelection(currentLine.Offset, currentLine.Offset + currentLine.TotalLength);
 				textArea.RemoveSelectedText();
 				args.Handled = true;
 			}

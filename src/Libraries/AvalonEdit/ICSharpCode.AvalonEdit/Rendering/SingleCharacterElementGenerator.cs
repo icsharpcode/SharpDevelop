@@ -16,6 +16,8 @@ using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {
+	// This class is internal because it does not need to be accessed by the user - it can be configured using TextEditorOptions.
+	
 	/// <summary>
 	/// Element generator that displays · for spaces and » for tabs and a box for control characters.
 	/// </summary>
@@ -24,7 +26,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// <see cref="TextEditorOptions"/>.
 	/// </remarks>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace")]
-	public class SingleCharacterElementGenerator : VisualLineElementGenerator, IWeakEventListener
+	sealed class SingleCharacterElementGenerator : VisualLineElementGenerator, IBuiltinElementGenerator
 	{
 		/// <summary>
 		/// Gets/Sets whether to show · for spaces.
@@ -51,34 +53,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.ShowBoxForControlCharacters = true;
 		}
 		
-		/// <summary>
-		/// Fetch options from the text editor and synchronize with future option changes.
-		/// </summary>
-		public void SynchronizeOptions(ITextEditorComponent textEditor)
-		{
-			if (textEditor == null)
-				throw new ArgumentNullException("textEditor");
-			FetchOptions(textEditor.Options);
-			TextEditorWeakEventManager.OptionChanged.AddListener(textEditor, this);
-		}
-		
-		/// <inheritdoc/>
-		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-		{
-			if (managerType == typeof(TextEditorWeakEventManager.OptionChanged)) {
-				ITextEditorComponent component = (ITextEditorComponent)sender;
-				FetchOptions(component.Options);
-				return true;
-			}
-			return false;
-		}
-		
-		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-		{
-			return ReceiveWeakEvent(managerType, sender, e);
-		}
-		
-		void FetchOptions(TextEditorOptions options)
+		void IBuiltinElementGenerator.FetchOptions(TextEditorOptions options)
 		{
 			this.ShowSpaces = options.ShowSpaces;
 			this.ShowTabs = options.ShowTabs;

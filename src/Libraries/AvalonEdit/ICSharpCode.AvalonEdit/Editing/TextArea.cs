@@ -756,6 +756,23 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		#endregion
 		
+		#region OnKeyDown/OnKeyUp
+		// Make life easier for text editor extensions that use a different cursor based on the pressed modifier keys.
+		/// <inheritdoc/>
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			TextView.InvalidateCursor();
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnKeyUp(KeyEventArgs e)
+		{
+			base.OnKeyUp(e);
+			TextView.InvalidateCursor();
+		}
+		#endregion
+		
 		/// <summary>
 		/// Gets the requested service.
 		/// </summary>

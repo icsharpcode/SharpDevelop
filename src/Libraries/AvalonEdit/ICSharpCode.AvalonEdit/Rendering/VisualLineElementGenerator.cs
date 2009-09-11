@@ -59,4 +59,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </remarks>
 		public abstract VisualLineElement ConstructElement(int offset);
 	}
+	
+	internal interface IBuiltinElementGenerator
+	{
+		void FetchOptions(TextEditorOptions options);
+	}
 }

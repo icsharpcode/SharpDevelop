@@ -111,6 +111,60 @@ namespace ICSharpCode.AvalonEdit
 		}
 		#endregion
 		
+		#region EnableHyperlinks
+		bool enableHyperlinks = true;
+		
+		/// <summary>
+		/// Gets/Sets whether to enable clickable hyperlinks in the editor.
+		/// </summary>
+		/// <remarks>The default value is <c>true</c>.</remarks>
+		[DefaultValue(true)]
+		public virtual bool EnableHyperlinks {
+			get { return enableHyperlinks; }
+			set {
+				if (enableHyperlinks != value) {
+					enableHyperlinks = value;
+					OnPropertyChanged("EnableHyperlinks");
+				}
+			}
+		}
+		
+		bool enableEmailHyperlinks = true;
+		
+		/// <summary>
+		/// Gets/Sets whether to enable clickable hyperlinks for e-mail addresses in the editor.
+		/// </summary>
+		/// <remarks>The default value is <c>true</c>.</remarks>
+		[DefaultValue(true)]
+		public virtual bool EnableEmailHyperlinks {
+			get { return enableEmailHyperlinks; }
+			set {
+				if (enableEmailHyperlinks != value) {
+					enableEmailHyperlinks = value;
+					OnPropertyChanged("EnableEMailHyperlinks");
+				}
+			}
+		}
+				
+		bool requireControlModifierForHyperlinkClick = true;
+		
+		/// <summary>
+		/// Gets/Sets whether the user needs to press Control to click hyperlinks.
+		/// The default value is true.
+		/// </summary>
+		/// <remarks>The default value is <c>true</c>.</remarks>
+		[DefaultValue(true)]
+		public virtual bool RequireControlModifierForHyperlinkClick {
+			get { return requireControlModifierForHyperlinkClick; }
+			set {
+				if (requireControlModifierForHyperlinkClick != value) {
+					requireControlModifierForHyperlinkClick = value;
+					OnPropertyChanged("RequireControlModifierForHyperlinkClick");
+				}
+			}
+		}
+		#endregion
+		
 		#region TabSize / IndentationSize / ConvertTabsToSpaces / GetIndentationString
 		// I'm using '_' prefixes for the fields here to avoid confusion with the local variables
 		// in the methods below.
@@ -157,6 +211,7 @@ namespace ICSharpCode.AvalonEdit
 		/// Gets the text used for indentation.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
+		[Browsable(false)]
 		public string IndentationString {
 			get { return GetIndentationString(1); }
 		}
@@ -182,6 +237,7 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Gets/Sets whether copying without a selection copies the whole current line.
 		/// </summary>
+		[DefaultValue(true)]
 		public virtual bool CutCopyWholeLine {
 			get { return cutCopyWholeLine; }
 			set {

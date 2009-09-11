@@ -81,9 +81,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				g.FinishGeneration();
 			}
 			
-//			if (FirstDocumentLine.Length != 0)
-//				elements.Add(new VisualLineText(FirstDocumentLine.Text, FirstDocumentLine.Length));
-//			//elements.Add(new VisualNewLine(VisualNewLine.NewLineType.Lf));
 			this.Elements = elements.AsReadOnly();
 			CalculateOffsets(context.GlobalTextRunProperties);
 		}
