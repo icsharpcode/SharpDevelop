@@ -46,6 +46,11 @@
 		       class="ICSharpCode.CppBinding.Project.SpecifyCliRuntimeLibraryCommand"/>
 	</Path>
 
+	<Path name = "/SharpDevelop/Workbench/Ambiences">
+		<Class id    = "C++"
+		       class = "ICSharpCode.CppBinding.CppAmbience"/>
+	</Path>
+
 	<Path name="/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id="C++Project"
 					insertbefore="AllFiles"
@@ -62,19 +67,20 @@
 		            extensions="*.cpp;*.c;*.hpp;*.h"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id="C++"
+	<Path name="/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding id="C++"
 		                 guid="{0E96FCFA-9DAC-4534-AC18-01A90C368873}"
 		                 supportedextensions=".cpp;*.c;*.hpp;*.c"
 		                 projectfileextension=".vcxproj"
 		                 class="ICSharpCode.CppBinding.CppLanguageBinding" />
 	</Path>
 
+	<!--
 	<Path name="/Workspace/Parser">
 		<Parser id="C++"
-				supportedextensions="*.cpp;*.c;*.hpp;*.h"
+				supportedextensions=".cpp;.c;.hpp;.h"
 				projectfileextension="vcxproj"
-				class="ICSharpCode.CppBinding.CppParser" />
+				class="ICSharpCode.CppBinding.Parser.CppParser" />
 	</Path>
-	
+	-->
 </AddIn>

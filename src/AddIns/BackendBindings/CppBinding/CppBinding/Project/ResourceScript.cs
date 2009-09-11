@@ -20,14 +20,14 @@ namespace ICSharpCode.CppBinding.Project
 	/// </summary>
 	public class ResourceScript
 	{
-        /// <summary>
-        /// Creates a new empty resource script.
-        /// </summary>
-        public ResourceScript()
-        {
-        }
+		/// <summary>
+		/// Creates a new empty resource script.
+		/// </summary>
+		public ResourceScript()
+		{
+		}
         
-        /// <summary>
+		/// <summary>
 		/// Creates the object representing a file on disk
 		/// </summary>
 		public ResourceScript(string fileName)
@@ -36,7 +36,7 @@ namespace ICSharpCode.CppBinding.Project
 				Load(inStream);
 			}
 		}
-
+		
 		public ResourceEntry AddIcon(string resourceId, string iconPath) {
 			ResourceIcon iconEntry = new ResourceIcon(resourceId, iconPath, lines.Count);
 			Icons.Add(iconEntry);

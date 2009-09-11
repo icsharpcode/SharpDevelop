@@ -15,7 +15,7 @@ namespace ICSharpCode.CppBinding
 	/// <summary>
 	/// Description of CppLanguageBinding.
 	/// </summary>
-	public class CppLanguageBinding : ILanguageBinding
+	public class CppLanguageBinding : IProjectBinding
 	{
 		public const string LanguageName = "C++";
 		
@@ -24,7 +24,9 @@ namespace ICSharpCode.CppBinding
 				return LanguageName;
 			}
 		}
-		
+
+		public readonly static CppLanguageProperties LanguageProperties = new CppLanguageProperties();
+
 		public IProject LoadProject(ProjectLoadInformation info) {
 			return new CppProject(info);
 		}

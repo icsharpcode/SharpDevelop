@@ -33,7 +33,6 @@
 
 	<Files>
 		<File name="${FullName}.cpp" language="C++"><![CDATA[${StandardHeader.C++.NET}
-#pragma once
 #include "${ClassName}.h"
 using namespace System;
 

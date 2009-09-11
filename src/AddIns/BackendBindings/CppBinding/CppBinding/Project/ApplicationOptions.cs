@@ -126,6 +126,8 @@ namespace ICSharpCode.CppBinding.Project
 			iconResourceScriptPath = null;
 			IEnumerable <ProjectItem> resourceScripts = project.Items.Where(
 						item => item is FileProjectItem && ((FileProjectItem)item).BuildAction == "ResourceCompile");			
+			
+			// search in all resource scripts, but due to limitation in resource compiler, only one of them can contain icons
 			foreach (ProjectItem item in resourceScripts) {
 				ResourceScript rc = new ResourceScript(item.FileName);
 				if (rc.Icons.Count == 0) continue;
