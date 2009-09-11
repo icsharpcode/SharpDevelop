@@ -172,6 +172,7 @@
       <DependentUpon>IReadOnlySectionProvider.cs</DependentUpon>
     </Compile>
     <Compile Include="Folding\NewFolding.cs" />
+    <Compile Include="Folding\XmlFoldingStrategy.cs" />
     <Compile Include="Highlighting\DocumentHighlighter.cs" />
     <Compile Include="Highlighting\HighlightedInlineBuilder.cs" />
     <Compile Include="Highlighting\HighlightedLine.cs" />

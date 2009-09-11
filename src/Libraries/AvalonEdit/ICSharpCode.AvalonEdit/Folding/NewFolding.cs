@@ -21,17 +21,17 @@ namespace ICSharpCode.AvalonEdit.Folding
 	/// <summary>
 	/// Helper class used for <see cref="FoldingManager.UpdateFoldings"/>.
 	/// </summary>
-	public sealed class NewFolding : ISegment
+	public class NewFolding : ISegment
 	{
 		/// <summary>
-		/// Gets the start offset.
+		/// Gets/Sets the start offset.
 		/// </summary>
-		public int StartOffset { get; private set; }
+		public int StartOffset { get; set; }
 		
 		/// <summary>
-		/// Gets the end offset.
+		/// Gets/Sets the end offset.
 		/// </summary>
-		public int EndOffset { get; private set; }
+		public int EndOffset { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the name displayed for the folding.
@@ -42,6 +42,13 @@ namespace ICSharpCode.AvalonEdit.Folding
 		/// Gets/Sets whether the folding is closed by default.
 		/// </summary>
 		public bool DefaultClosed { get; set; }
+		
+		/// <summary>
+		/// Creates a new NewFolding instance.
+		/// </summary>
+		public NewFolding()
+		{
+		}
 		
 		/// <summary>
 		/// Creates a new NewFolding instance.
