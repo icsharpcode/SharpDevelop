@@ -128,14 +128,17 @@
     <ProjectReference Include="..\..\..\..\..\src\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\src\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\src\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.Data.Core.UI\ICSharpCode.Data.Core.UI.csproj">
       <Project>{BAD94D6E-4159-4CB6-B991-486F412D9BB6}</Project>
@@ -144,6 +147,7 @@
     <ProjectReference Include="..\ICSharpCode.Data.Core\ICSharpCode.Data.Core.csproj">
       <Project>{B7823AE9-4B43-4859-8796-2EBDC116FBB8}</Project>
       <Name>ICSharpCode.Data.Core</Name>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.Data.EDMDesigner.Core.UI\ICSharpCode.Data.EDMDesigner.Core.UI.csproj">
       <Project>{EEF5E054-4192-4A57-8FBF-E860D808A51D}</Project>

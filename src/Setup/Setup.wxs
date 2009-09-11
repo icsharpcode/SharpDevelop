@@ -438,6 +438,25 @@
 				<ComponentRef Id="ICSharpCodeProfilerControllerDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControlsDll"/>
 				<ComponentRef Id="SystemDataSQLiteDll"/>-->
+			
+				<ComponentRef Id="CppBindingAddin"/>
+				<ComponentRef Id="CppBindingDll"/>
+				<ComponentRef Id="CppBindingTemplates"/>
+				
+				<ComponentRef Id="ICSharpCodeWpfDesignAddInDll"/>
+				<ComponentRef Id="ICSharpCodeWpfDesignDesignerDll"/>
+				<ComponentRef Id="ICSharpCodeWpfDesignDll"/>
+				<ComponentRef Id="ICSharpCodeWpfDesignXamlDomDll"/>
+				<ComponentRef Id="WpfDesignAddin"/>
+				
+				<ComponentRef Id="ICSharpCodeDataAddin"/>
+				<ComponentRef Id="ICSharpCodeDataAddinDll"/>
+				<ComponentRef Id="ICSharpCodeDataCoreDll"/>
+				<ComponentRef Id="ICSharpCodeDataCoreUIDll"/>
+				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreDll"/>
+				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreUIDll"/>
+				<ComponentRef Id="ICSharpCodeDataSQLServerDll"/>
+				<ComponentRef Id="CSharpEDMXXft"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

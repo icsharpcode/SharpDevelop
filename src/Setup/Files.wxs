@@ -623,7 +623,7 @@
 											<File Source="..\..\bin\Tools\SHFB\SharedContent\VS2005BuilderContent_zh-CN.xml" Name="VS2005BuilderContent_zh-CN.xml" Id="VS2005BuilderContent_zh_CN.xml" />
 										</Component>
 									</Directory>
-									<Directory Id="Templates" Name="Templates">
+									<Directory Id="SHFBTemplates" Name="Templates">
 										<Component Guid="5A21AA47-795A-4A94-AB67-6D36DEA22117" Id="SHFBTemplates" DiskId="1">
 											<File Source="..\..\bin\Tools\SHFB\Templates\Build1xHelpFile.bat" Name="Build1xHelpFile.bat" Id="Build1xHelpFile.bat" />
 											<File Source="..\..\bin\Tools\SHFB\Templates\Build2xHelpFile.bat" Name="Build2xHelpFile.bat" Id="Build2xHelpFile.bat" />
@@ -1286,6 +1286,24 @@
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\XamlBinding.addin" Name="XamlBinding.addin" Id="XamlBinding.addin" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Directory Id="CppBinding" Name="CppBinding">
+										<Component Guid="B7C63B27-82B7-42E8-893F-5034CB153074" Id="CppBindingAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\CppBinding\CppBinding.addin" Name="CppBinding.addin" Id="CppBinding.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="AC3EFDF3-3063-464A-9072-1285BAAD3579" Id="CppBindingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\CppBinding\CppBinding.dll" Name="CppBinding.dll" Id="CppBinding.dll" KeyPath="yes" />
+										</Component>
+										<Directory Id="CppTemplates" Name="Templates">
+											<Component Guid="CD1E49C5-7037-46B0-81CE-41C3E10759E6" Id="CppBindingTemplates" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\CppBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="ConsoleProject.xpt" KeyPath="yes" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\CppBinding\Templates\DefaultAssemblyInfo.cpp" Name="DefaultAssemblyInfo.cpp" Id="DefaultAssemblyInfo.cpp" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\CppBinding\Templates\Empty.xft" Name="Empty.xft" Id="Templates.Empty1.xft" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\CppBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="Templates.EmptyClass1.xft" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\CppBinding\Templates\Library.xpt" Name="Library.xpt" Id="Templates.Library.xpt" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\CppBinding\Templates\UnmanagedConsoleProject.xpt" Name="UnmanagedConsoleProject.xpt" Id="UnmanagedConsoleProject.xpt" />
+											</Component>
+										</Directory>
+									</Directory>
 								</Directory>
 								<Directory Id="DisplayBindingsFolder" Name="DisplayBindings">
 									<Directory Id="FormsDesignerFolder" Name="FormsDesigner">
@@ -1403,6 +1421,53 @@
 										<Component Guid="1606B107-445F-4233-B72A-D4546A8393BC" Id="HexEditorDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\HexEditor\HexEditor.dll" Name="HexEditor.dll" Id="HexEditor.dll" KeyPath="yes" />
 										</Component>
+									</Directory>
+									<Directory Id="WpfDesign" Name="WpfDesign">
+										<Component Guid="E529AC6C-30BE-4406-9F26-B55CAA110D3F" Id="ICSharpCodeWpfDesignAddInDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.AddIn.dll" Name="ICSharpCode.WpfDesign.AddIn.dll" Id="ICSharpCode.WpfDesign.AddIn.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="1147F468-F5DC-49D3-9CFC-EE794FC7BBC5" Id="ICSharpCodeWpfDesignDesignerDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.dll" Name="ICSharpCode.WpfDesign.Designer.dll" Id="ICSharpCode.WpfDesign.Designer.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="C454357F-4ED8-424A-8F6A-0652EC8A0AB8" Id="ICSharpCodeWpfDesignDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.dll" Name="ICSharpCode.WpfDesign.dll" Id="ICSharpCode.WpfDesign.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="DADDFB3A-A7AE-4D28-BFD6-294ECDFD9D3B" Id="ICSharpCodeWpfDesignXamlDomDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.dll" Name="ICSharpCode.WpfDesign.XamlDom.dll" Id="ICSharpCode.WpfDesign.XamlDom.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="E89BBA3D-D267-4E4F-8DA7-E38E864C4317" Id="WpfDesignAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\WpfDesign.addin" Name="WpfDesign.addin" Id="WpfDesign.addin" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="Data" Name="Data">
+										<Component Guid="16E65D48-658D-4C6B-BCCB-9B5450727CFD" Id="ICSharpCodeDataAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\Data\ICSharpCode.Data.addin" Name="ICSharpCode.Data.addin" Id="ICSharpCode.Data.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="03DE504B-1757-49CD-A3FC-BAC7210F3565" Id="ICSharpCodeDataAddinDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\Data\ICSharpCode.Data.Addin.dll" Name="ICSharpCode.Data.Addin.dll" Id="ICSharpCode.Data.Addin.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="48BC48FD-D6C4-471B-A19A-52EC48FDADF3" Id="ICSharpCodeDataCoreDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\Data\ICSharpCode.Data.Core.dll" Name="ICSharpCode.Data.Core.dll" Id="ICSharpCode.Data.Core.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="FAE360BA-DA88-41E8-A5C7-1DA41E98B8F2" Id="ICSharpCodeDataCoreUIDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\Data\ICSharpCode.Data.Core.UI.dll" Name="ICSharpCode.Data.Core.UI.dll" Id="ICSharpCode.Data.Core.UI.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="AC3788E8-6068-46BA-94E0-FE17B9D057A9" Id="ICSharpCodeDataEDMDesignerCoreDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\Data\ICSharpCode.Data.EDMDesigner.Core.dll" Name="ICSharpCode.Data.EDMDesigner.Core.dll" Id="ICSharpCode.Data.EDMDesigner.Core.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="D41C8A90-0CD0-4160-9172-1DBE3B55902D" Id="ICSharpCodeDataEDMDesignerCoreUIDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\Data\ICSharpCode.Data.EDMDesigner.Core.UI.dll" Name="ICSharpCode.Data.EDMDesigner.Core.UI.dll" Id="ICSharpCode.Data.EDMDesigner.Core.UI.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="31400415-BB2A-49C9-90DF-58F7FD0A8154" Id="ICSharpCodeDataSQLServerDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\DisplayBindings\Data\ICSharpCode.Data.SQLServer.dll" Name="ICSharpCode.Data.SQLServer.dll" Id="ICSharpCode.Data.SQLServer.dll" KeyPath="yes" />
+										</Component>
+										<Directory Id="DataTemplates" Name="Templates">
+											<Directory Id="Files" Name="Files">
+												<Component Guid="2791081B-A45D-4729-952C-43C147753653" Id="CSharpEDMXXft" DiskId="1">
+													<File Source="..\..\AddIns\AddIns\DisplayBindings\Data\Templates\Files\CSharp.EDMX.xft" Name="CSharp.EDMX.xft" Id="CSharp.EDMX.xft" KeyPath="yes" />
+												</Component>
+											</Directory>
+										</Directory>
 									</Directory>
 								</Directory>
 								<Directory Id="MiscAddInsFolder" Name="Misc">

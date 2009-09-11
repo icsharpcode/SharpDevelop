@@ -13,7 +13,6 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Services;
-using ICSharpCode.TextEditor;
 using System.Windows.Controls;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads

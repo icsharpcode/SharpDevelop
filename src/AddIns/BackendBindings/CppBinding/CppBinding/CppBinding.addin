@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "Cpp Binding"
        author      = "Tomasz Tretkowski"
        url         = ""
-       description = "Backing binding for C++">
+       description = "Backing binding for C++"
+       addInManagerHidden="preinstalled">
 	
 	<Runtime>
 		<Import assembly =":ICSharpCode.SharpDevelop" />

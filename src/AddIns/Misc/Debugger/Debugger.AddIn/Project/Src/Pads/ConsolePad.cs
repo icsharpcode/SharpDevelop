@@ -18,7 +18,6 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Services;
-using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {

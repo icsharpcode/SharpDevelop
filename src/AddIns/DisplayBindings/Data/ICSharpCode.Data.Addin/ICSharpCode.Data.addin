@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "Data Addin"
        author      = "Philipp Maihart"
        url         = "http://www.pmnet.info"
-       description = "Database Tools Addin for SharpDevelop">
+       description = "Database Tools Addin for SharpDevelop"
+       addInManagerHidden="preinstalled">
     
   <Runtime>
     <Import assembly="ICSharpCode.Data.Addin.dll" />
