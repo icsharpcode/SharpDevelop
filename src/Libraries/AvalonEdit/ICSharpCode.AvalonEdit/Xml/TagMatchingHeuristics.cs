@@ -153,10 +153,12 @@ namespace ICSharpCode.AvalonEdit.Xml
 						break;
 					}
 					AXmlObject nested = ReadTextOrElement(objStream);
-					if (nested is AXmlElement) {
-						if (!((AXmlElement)nested).IsProperlyNested)
+					
+					AXmlElement nestedAsElement = nested as AXmlElement;
+					if (nestedAsElement != null) {
+						if (!nestedAsElement.IsProperlyNested)
 							element.IsProperlyNested = false;
-						element.AddChildren(Split((AXmlElement)nested).ToList());
+						element.AddChildren(Split(nestedAsElement).ToList());
 					} else {
 						element.AddChild(nested);
 					}
@@ -333,15 +335,16 @@ namespace ICSharpCode.AvalonEdit.Xml
 			return bestConfig.Document.Reverse().ToList();
 		}
 		
-		/// <summary> Get posible configurations after considering fiven object </summary>
+		/// <summary> Get posible configurations after considering given object </summary>
 		Configurations ProcessObject(Configurations oldConfigs, AXmlObject obj)
 		{
 			AXmlParser.Log("Processing {0}", obj);
 			
-			AXmlTag tag = obj as AXmlTag;
-			AXmlParser.Assert(obj is AXmlTag || obj is AXmlText || obj is AXmlElement, obj.GetType().Name + " not expected");
-			if (obj is AXmlElement)
-				AXmlParser.Assert(((AXmlElement)obj).IsProperlyNested, "Element not proprly nested");
+			AXmlTag objAsTag = obj as AXmlTag;
+			AXmlElement objAsElement = obj as AXmlElement;
+			AXmlParser.DebugAssert(objAsTag != null || objAsElement != null || obj is AXmlText, obj.GetType().Name + " not expected");
+			if (objAsElement != null)
+				AXmlParser.Assert(objAsElement.IsProperlyNested, "Element not properly nested");
 			
 			Configurations newConfigs = new Configurations();
 			
@@ -351,22 +354,22 @@ namespace ICSharpCode.AvalonEdit.Xml
 				var oldDocument = oldConfig.Document;
 				int oldCost = oldConfig.Cost;
 				
-				if (tag != null && tag.IsStartTag) {
+				if (objAsTag != null && objAsTag.IsStartTag) {
 					newConfigs.Add(new Configuration {                    // Push start-tag (cost 0)
-						StartTags = oldStartTags.Push(tag),
-						Document = oldDocument.Push(tag),
+						StartTags = oldStartTags.Push(objAsTag),
+						Document = oldDocument.Push(objAsTag),
 						Cost = oldCost,
 					});
-				} else if (tag != null && tag.IsEndTag) {
+				} else if (objAsTag != null && objAsTag.IsEndTag) {
 					newConfigs.Add(new Configuration {                    // Ignore (cost 1)
 						StartTags = oldStartTags,
-						Document = oldDocument.Push(StartTagPlaceholder).Push(tag),
+						Document = oldDocument.Push(StartTagPlaceholder).Push(objAsTag),
 						Cost = oldCost + 1,
 	               });
-					if (!oldStartTags.IsEmpty && oldStartTags.Peek().Name != tag.Name) {
+					if (!oldStartTags.IsEmpty && oldStartTags.Peek().Name != objAsTag.Name) {
 						newConfigs.Add(new Configuration {                // Pop 1 item (cost 1) - not mathcing
 							StartTags = oldStartTags.Pop(),
-							Document = oldDocument.Push(tag),
+							Document = oldDocument.Push(objAsTag),
 							Cost = oldCost + 1,
 		               });
 					}
@@ -375,10 +378,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 					var doc = oldDocument;
 					foreach(AXmlTag poped in oldStartTags) {
 						popedCount++;
-						if (poped.Name == tag.Name) {
+						if (poped.Name == objAsTag.Name) {
 							newConfigs.Add(new Configuration {             // Pop 'x' items (cost x-1) - last one is matching
 								StartTags = startTags.Pop(),
-								Document = doc.Push(tag),
+								Document = doc.Push(objAsTag),
 								Cost = oldCost + popedCount - 1,
 							});
 						}

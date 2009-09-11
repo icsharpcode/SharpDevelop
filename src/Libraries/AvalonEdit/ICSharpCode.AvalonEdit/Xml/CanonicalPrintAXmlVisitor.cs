@@ -39,12 +39,15 @@ namespace ICSharpCode.AvalonEdit.Xml
 		public override void VisitDocument(AXmlDocument document)
 		{
 			foreach(AXmlObject child in document.Children) {
-				AXmlTag tag = child as AXmlTag;
+				AXmlTag childAsTag = child as AXmlTag;
 				// Only procssing instructions or elements
-				if (tag != null && tag.IsProcessingInstruction && tag.Name != "xml") {
-					VisitTag(tag);
-				} else if (child is AXmlElement) {
-					VisitElement((AXmlElement)child);
+				if (childAsTag != null && childAsTag.IsProcessingInstruction && childAsTag.Name != "xml") {
+					VisitTag(childAsTag);
+				} else {
+					AXmlElement childAsElement = child as AXmlElement;
+					if (childAsElement != null) {
+						VisitElement(childAsElement);
+					}
 				}
 			}
 		}

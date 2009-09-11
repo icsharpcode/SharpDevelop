@@ -17,9 +17,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 	/// Collection that presents only some items from the wrapped collection.
 	/// It implicitely filters object that are not of type T (or derived).
 	/// </summary>
-	public class FilteredCollection<T, C>: ObservableCollection<T> where C: INotifyCollectionChanged, IList
+	public class FilteredCollection<T, TCollection>: ObservableCollection<T> where TCollection : INotifyCollectionChanged, IList
 	{
-		C source;
+		TCollection source;
 		Predicate<object> condition;
 		List<int> srcPtrs = new List<int>(); // Index to the original collection
 		
@@ -27,10 +27,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 		protected FilteredCollection() {}
 		
 		/// <summary> Wrap the given collection.  Items of type other then T are filtered </summary>
-		public FilteredCollection(C source) : this (source, x => true) { }
+		public FilteredCollection(TCollection source) : this (source, x => true) { }
 		
 		/// <summary> Wrap the given collection.  Items of type other then T are filtered.  Items not matching the condition are filtered. </summary>
-		public FilteredCollection(C source, Predicate<object> condition)
+		public FilteredCollection(TCollection source, Predicate<object> condition)
 		{
 			this.source = source;
 			this.condition = condition;

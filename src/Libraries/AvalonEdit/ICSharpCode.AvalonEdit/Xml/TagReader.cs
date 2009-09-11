@@ -208,7 +208,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		string ReadOpeningBracket()
 		{
 			// We are using a lot of string literals so that the memory instances are shared
-			int start = this.CurrentLocation;
+			//int start = this.CurrentLocation;
 			if (TryRead('<')) {
 				if (TryRead('/')) {
 					return "</";

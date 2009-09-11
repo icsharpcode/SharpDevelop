@@ -144,12 +144,16 @@ namespace ICSharpCode.AvalonEdit.Xml
 		}
 		
 		/// <summary> Recursively gets self and all nested nodes. </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate",
+		                                                 Justification = "Using a method makes the API look more LINQ-like and indicates that the returned collection is computed every time.")]
 		public virtual IEnumerable<AXmlObject> GetSelfAndAllChildren()
 		{
 			return new AXmlObject[] { this };
 		}
 		
 		/// <summary> Get all ancestors of this node </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate",
+		                                                 Justification = "Using a method makes the API look more LINQ-like and indicates that the returned collection is computed every time.")]
 		public IEnumerable<AXmlObject> GetAncestors()
 		{
 			AXmlObject curr = this.Parent;

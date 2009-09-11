@@ -64,7 +64,15 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		public override IEnumerable<AXmlObject> GetSelfAndAllChildren()
 		{
-			return new AXmlObject[] { this }.Flatten(i => i is AXmlContainer ? ((AXmlContainer)i).Children : null);
+			return (new AXmlObject[] { this }).Flatten(
+				delegate(AXmlObject i) {
+					AXmlContainer container = i as AXmlContainer;
+					if (container != null)
+						return container.Children;
+					else
+						return null;
+				}
+			);
 		}
 		
 		/// <summary>
@@ -77,8 +85,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 			foreach(AXmlObject child in this.Children) {
 				if ((child is AXmlAttribute || child is AXmlText) && offset == child.EndOffset) return child;
 				if (child.StartOffset < offset && offset < child.EndOffset) {
-					if (child is AXmlContainer) {
-						return ((AXmlContainer)child).GetChildAtOffset(offset);
+					AXmlContainer container = child as AXmlContainer;
+					if (container != null) {
+						return container.GetChildAtOffset(offset);
 					} else {
 						return child;
 					}
@@ -139,9 +148,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 				// Dangling object - either a new parser object or removed tree (still cached)
 				item.Parent = this;
 				item.Document = this.Document;
-				if (item is AXmlContainer) {
-					foreach(AXmlObject child in ((AXmlContainer)item).Children) {
-						((AXmlContainer)item).SetParentPointersInTree(child);
+				AXmlContainer container = item as AXmlContainer;
+				if (container != null) {
+					foreach(AXmlObject child in container.Children) {
+						container.SetParentPointersInTree(child);
 					}
 				}
 			} else if (item.Parent == this) {
@@ -157,7 +167,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 				//   becuase otherwise this item would be included twice => safe to change parents
 				// Maintain cache constraint by setting parents to null
 				foreach(AXmlObject ancest in item.GetAncestors().ToList()) {
-					ancest.Parent = null; 
+					ancest.Parent = null;
 				}
 				item.Parent = this;
 				// Rest of the tree is consistent - do not recurse
@@ -237,8 +247,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 					// Keep only one item with given offset (we might have several due to deletion)
 					srcChildren.Remove(child.StartOffset);
 					// If contaner that needs updating
-					if (child is AXmlContainer && child.LastUpdatedFrom != srcChild)
-						((AXmlContainer)child).RemoveChildrenNotIn(((AXmlContainer)srcChild).Children);
+					AXmlContainer childAsContainer = child as AXmlContainer;
+					if (childAsContainer != null && child.LastUpdatedFrom != srcChild)
+						childAsContainer.RemoveChildrenNotIn(((AXmlContainer)srcChild).Children);
 					i++;
 				} else {
 					RemoveChild(i);
@@ -261,8 +272,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 					// Does it need updating?
 					if (child.LastUpdatedFrom != srcChild) {
 						child.UpdateDataFrom(srcChild);
-						if (child is AXmlContainer)
-							((AXmlContainer)child).InsertAndUpdateChildrenFrom(((AXmlContainer)srcChild).Children);
+						AXmlContainer childAsContainer = child as AXmlContainer;
+						if (childAsContainer != null)
+							childAsContainer.InsertAndUpdateChildrenFrom(((AXmlContainer)srcChild).Children);
 					}
 				} else {
 					InsertChild(i, srcChild);

@@ -106,8 +106,9 @@ namespace ICSharpCode.AvalonEdit.Xml
 			RemoveSyntaxErrorsOf(obj);
 			AXmlParser.Log("Stopped tracking {0}", obj);
 			
-			if (obj is AXmlContainer) {
-				foreach(AXmlObject child in ((AXmlContainer)obj).Children) {
+			AXmlContainer container = obj as AXmlContainer;
+			if (container != null) {
+				foreach (AXmlObject child in container.Children) {
 					RemoveParsedObject(child);
 				}
 			}

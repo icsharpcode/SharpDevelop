@@ -16,6 +16,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 	public class AXmlAttributeCollection: FilteredCollection<AXmlAttribute, AXmlObjectCollection<AXmlObject>>
 	{
 		/// <summary> Empty unbound collection </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes",
+		                                                 Justification = "InsertItem prevents modifying the Empty collection")]
 		public static readonly AXmlAttributeCollection Empty = new AXmlAttributeCollection();
 		
 		/// <summary> Create unbound collection </summary>
@@ -73,6 +75,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		protected override void InsertItem(int index, AXmlAttribute item)
 		{
+			// prevent insertions into the static 'Empty' instance
+			if (this == Empty)
+				throw new NotSupportedException("Cannot insert into AXmlAttributeCollection.Empty");
+			
 			AddToHashtable(item);
 			item.Changing += item_Changing;
 			item.Changed  += item_Changed;
@@ -91,10 +97,17 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <inheritdoc/>
 		protected override void SetItem(int index, AXmlAttribute item)
 		{
-			throw new NotSupportedException();
+			RemoveFromHashtable(this[index]);
+			this[index].Changing -= item_Changing;
+			this[index].Changed  -= item_Changed;
+			
+			AddToHashtable(item);
+			item.Changing += item_Changing;
+			item.Changed  += item_Changed;
+			base.SetItem(index, item);
 		}
 		
-		// Every item in the collectoin should be registered to these handlers
+		// Every item in the collection should be registered to these handlers
 		// so that we can handle renames
 		
 		void item_Changing(object sender, AXmlObjectEventArgs e)

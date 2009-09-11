@@ -15,13 +15,14 @@ namespace ICSharpCode.AvalonEdit.Xml
 	/// <summary>
 	/// Two collections in sequence
 	/// </summary>
-	public class MergedCollection<T, C>: ObservableCollection<T> where C: INotifyCollectionChanged, IList<T>
+	public class MergedCollection<T, TCollection> : ObservableCollection<T> where TCollection : INotifyCollectionChanged, IList<T>
 	{
-		C a;
-		C b;
+		TCollection a;
+		TCollection b;
 		
 		/// <summary> Create a wrapper containing elements of 'a' and then 'b' </summary>
-		public MergedCollection(C a, C b)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+		public MergedCollection(TCollection a, TCollection b)
 		{
 			this.a = a;
 			this.b = b;
