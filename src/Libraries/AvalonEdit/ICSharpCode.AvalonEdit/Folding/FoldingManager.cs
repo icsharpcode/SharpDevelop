@@ -188,7 +188,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			}
 			// remove all outstanding old foldings:
 			while (oldFoldingIndex < oldFoldings.Length) {
-				FoldingSection oldSection = oldFoldings[oldFoldingIndex];
+				FoldingSection oldSection = oldFoldings[oldFoldingIndex++];
 				if (oldSection.StartOffset >= firstErrorOffset)
 					break;
 				this.RemoveFolding(oldSection);
