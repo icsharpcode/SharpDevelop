@@ -946,7 +946,6 @@ namespace ICSharpCode.AvalonEdit
 		{
 			const double MinimumScrollPercentage = 0.3;
 			
-			ScrollToLine(line);
 			if (scrollViewer != null) {
 				Point p = textArea.TextView.GetVisualPosition(new TextViewPosition(line, Math.Max(1, column)), VisualYPosition.LineMiddle);
 				double verticalPos = p.Y - scrollViewer.ViewportHeight / 2;
