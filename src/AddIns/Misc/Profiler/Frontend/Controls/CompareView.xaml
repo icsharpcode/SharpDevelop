@@ -1,0 +1,18 @@
+﻿<UserControl
+	x:Class="ICSharpCode.Profiler.Controls.CompareView" 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <GridSplitter Grid.Column="1" HorizontalAlignment="Left" Width="5" />
+    <StackPanel Grid.Column="1" Orientation="Vertical">
+      <Button Content="Part2" Margin="3" />
+    </StackPanel>
+    <StackPanel Orientation="Vertical">
+      <Button Content="Part1" Margin="3" />
+    </StackPanel>
+  </Grid>
+</UserControl>

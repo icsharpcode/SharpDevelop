@@ -5,17 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using ICSharpCode.Profiler.Controller;
+
+using ICSharpCode.Profiler.Controller.Data;
 
 namespace ICSharpCode.Profiler.Controls
 {
@@ -188,25 +187,26 @@ namespace ICSharpCode.Profiler.Controls
 
 		public bool IsAncestorOf(CallTreeNodeViewModel descendant)
 		{
-			if (this != descendant)
-			{
+			if (this != descendant) {
 				if (descendant == null)
 					return false;
 
 				return IsAncestorOf(descendant.Parent);
 			}
-			else
-				return true;
+			
+			return true;
 		}
 
 		public virtual ReadOnlyCollection<CallTreeNodeViewModel> Children {
 			get {
 				lock (this) {
-					if (this.children == null)
+					if (this.children == null) {
+						
 						this.children = this.node.Children
 							.Select(c => new CallTreeNodeViewModel(c, this))
 							.ToList()
 							.AsReadOnly();
+					}
 					
 					return this.children;
 				}

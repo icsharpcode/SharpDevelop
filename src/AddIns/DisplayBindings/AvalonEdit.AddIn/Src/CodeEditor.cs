@@ -289,10 +289,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (quickClassBrowser != null) {
 				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
 			}
-			var caret = this.ActiveTextEditor.TextArea.Caret;
 			
+			var caret = this.ActiveTextEditor.TextArea.Caret;
 			var activeAdapter = this.ActiveTextEditorAdapter;
 			
+			/*
+			 * Special case: ITextEditor.Language guarantees that it never returns null.
+			 * In this case however it can be null, since this code is called while the document is loaded.
+			 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
+			 * loading of the document has finished.
+			 * */
 			if (activeAdapter.Language != null) {
 				var bracketSearchResult = activeAdapter.Language.BracketSearcher.SearchBracket(activeAdapter.Document, activeAdapter.Caret.Offset);
 				if (activeAdapter == primaryTextEditorAdapter)

@@ -5,17 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Project;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -384,7 +386,7 @@ namespace ICSharpCode.XamlBinding
 				foreach (var c in ns.Value) {
 					if (includeAbstract) {
 						if (c.ClassType == ClassType.Class) {
-							if (!(!c.IsStatic && !c.DerivesFrom("System.Attribute") && c.Methods.Any(m => m.IsConstructor && m.IsPublic)))
+							if (c.IsStatic || c.DerivesFrom("System.Attribute"))
 								continue;
 						} else if (c.ClassType == ClassType.Interface) {
 						} else {

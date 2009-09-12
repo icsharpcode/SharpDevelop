@@ -154,6 +154,29 @@ namespace ICSharpCode.Profiler.Controls
 			
 			return result;
 		}
+		
+		class GridViewColumnModel
+		{
+			public GridViewColumnModel(GridViewColumn column)
+			{
+				this.Column = column;
+			}
+			
+			public GridViewColumn Column { get; private set; }
+			double width;
+			
+			public bool IsVisible {
+				get { return Column.Width > 0.1; }
+				set {
+					if (value)
+						Column.Width = width;
+					else {
+						width = Column.Width;
+						Column.Width = 0;
+					}
+				}
+			}
+		}
 
 		public QueryView()
 		{
@@ -164,6 +187,7 @@ namespace ICSharpCode.Profiler.Controls
 			this.searchTask = new SingleTask(this.Dispatcher);
 			
 			this.Translation = new ControlsTranslation();
+			this.visibleColumnsSelection.ItemsSource = this.gridView.Columns.Select(col => new GridViewColumnModel(col));
 			
 			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
 				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 &&

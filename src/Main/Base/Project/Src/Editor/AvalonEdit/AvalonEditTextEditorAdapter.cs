@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		public ITextEditorOptions Options { get; private set; }
 		
 		public virtual ILanguageBinding Language {
-			get { return null; }
+			get { throw new NotSupportedException(); }
 		}
 		
 		sealed class CaretAdapter : ITextEditorCaret

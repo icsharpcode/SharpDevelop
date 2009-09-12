@@ -1,4 +1,4 @@
-﻿SYNTAX OF METADATA INFORAMTION
+﻿SYNTAX OF METADATA INFORMATION
 
 Sig ::= MethodDefSig | MethodRefSig | StandAloneMethodSig | FieldSig | PropertySig | LocalVarSig
 MethodDefSig ::= [[HASTHIS] [EXPLICITTHIS]] (DEFAULT|VARARG|GENERIC GenParamCount) ParamCount RetType Param*
