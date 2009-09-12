@@ -85,6 +85,8 @@
     <Compile Include="Src\AddInTree\AddInTreeNode.cs" />
     <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
     <Compile Include="Src\CoreException.cs" />
+    <Compile Include="Src\Services\AnalyticsMonitor\AnalyticsMonitorService.cs" />
+    <Compile Include="Src\Services\AnalyticsMonitor\IAnalyticsMonitor.cs" />
     <Compile Include="Src\Services\ApplicationStateInfoService.cs" />
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
@@ -124,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />
+    <Folder Include="Src\Services\AnalyticsMonitor" />
     <Folder Include="Src\Services\ResourceService" />
     <Content Include="..\..\..\..\data\schemas\AddIn.xsd">
       <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>

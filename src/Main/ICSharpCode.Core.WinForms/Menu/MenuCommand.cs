@@ -127,7 +127,7 @@ namespace ICSharpCode.Core.WinForms
 				if (GetVisible() && Enabled) {
 					ICommand cmd = Command;
 					if (cmd != null) {
-						LoggingService.Info("Run command " + cmd.GetType().FullName);
+						AnalyticsMonitorService.TrackFeature(cmd.GetType().FullName, "Menu");
 						cmd.Run();
 					}
 				}

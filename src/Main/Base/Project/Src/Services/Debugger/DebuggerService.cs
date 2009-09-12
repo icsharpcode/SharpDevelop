@@ -97,11 +97,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public static event EventHandler DebugStarted;
 		public static event EventHandler DebugStopped;
 		
+		static IAnalyticsMonitorTrackedFeature debugFeature;
+		
 		static void OnDebugStarting(object sender, EventArgs e)
 		{
 			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
 			LayoutConfiguration.CurrentLayoutName = "Debug";
-
+			
+			debugFeature = AnalyticsMonitorService.TrackFeature("Debugger");
+			
 			ClearDebugMessages();
 			
 			if (DebugStarting != null)
@@ -116,6 +120,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		static void OnDebugStopped(object sender, EventArgs e)
 		{
+			if (debugFeature != null)
+				debugFeature.EndTracking();
+			
 			RemoveCurrentLineMarker();
 			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
 			LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;

@@ -67,6 +67,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CollapsiblePanel.cs" />
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="DropDownButton.cs" />
     <Compile Include="GetBitmapExtension.cs" />

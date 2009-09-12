@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="ICSharpCode.StartPage.RecentProjectsControl"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<StackPanel Orientation="Vertical">
+		<ListView Name="lastProjectsListView" SelectionMode="Single" MouseDoubleClick="lastProjectsDoubleClick" KeyDown="lastProjectsKeyDown">
+			<ListView.Resources>
+				<DataTemplate x:Key="nameCellTemplate">
+					<TextBlock>
+						<Hyperlink Tag="{Binding}" Click="listViewHyperlinkClick">
+							<TextBlock Text="{Binding Path=Name}" />
+						</Hyperlink>
+					</TextBlock>
+				</DataTemplate>
+			</ListView.Resources>
+			<ListView.View>
+				<GridView>
+					<GridViewColumn CellTemplate="{StaticResource nameCellTemplate}" Header="{core:Localize Global.Name}" />
+					<GridViewColumn DisplayMemberBinding="{Binding Path=LastModification}" Header="{core:Localize StartPage.StartMenu.ModifiedTable}" />
+					<GridViewColumn DisplayMemberBinding="{Binding Path=Path}" Header="{core:Localize StartPage.StartMenu.LocationTable}" />
+				</GridView>
+			</ListView.View>
+		</ListView>
+		<StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+			<Button Content="{core:Localize StartPage.StartMenu.OpenCombineButton}" Click="openSolutionClick" />
+			<Button Content="{core:Localize StartPage.StartMenu.NewCombineButton}" Click="newSolutionClick" Margin="8,0,0,0" />
+		</StackPanel>
+	</StackPanel>
+</UserControl>

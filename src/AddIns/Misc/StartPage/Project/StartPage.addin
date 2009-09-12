@@ -33,4 +33,9 @@
 		<BrowserSchemeExtension id    = "startpage"
 		                        class = "ICSharpCode.StartPage.StartPageScheme"/>
 	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/StartPage/Items">
+		<Class id="RecentProjects"
+               class="ICSharpCode.StartPage.RecentProjectsControl"/>
+	</Path>
 </AddIn>

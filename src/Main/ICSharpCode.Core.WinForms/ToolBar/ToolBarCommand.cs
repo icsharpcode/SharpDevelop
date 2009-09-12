@@ -45,7 +45,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 			if (menuCommand != null) {
 				menuCommand.Owner = caller;
-				LoggingService.Info("Run command " + menuCommand.GetType().FullName);
+				AnalyticsMonitorService.TrackFeature(menuCommand.GetType().FullName, "Toolbar");
 				menuCommand.Run();
 			}
 		}

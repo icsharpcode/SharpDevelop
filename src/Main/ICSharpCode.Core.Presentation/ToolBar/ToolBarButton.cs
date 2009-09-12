@@ -41,6 +41,25 @@ namespace ICSharpCode.Core.Presentation
 			SetResourceReference(FrameworkElement.StyleProperty, ToolBar.ButtonStyleKey);
 		}
 		
+		string GetFeatureName()
+		{
+			string commandName = codon.Properties["command"];
+			if (string.IsNullOrEmpty(commandName)) {
+				return codon.Properties["class"];
+			} else {
+				return commandName;
+			}
+		}
+		
+		protected override void OnClick()
+		{
+			string feature = GetFeatureName();
+			if (!string.IsNullOrEmpty(feature)) {
+				AnalyticsMonitorService.TrackFeature(feature, "Toolbar");
+			}
+			base.OnClick();
+		}
+		
 		public void UpdateText()
 		{
 			if (codon.Properties.Contains("tooltip")) {

@@ -1,0 +1,35 @@
+﻿<AddIn name        = "Usage Data Collector"
+       author      = "Daniel Grunwald"
+       url         = ""
+       description = "Collects usage data and sends it to the SharpDevelop team"
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.UsageDataCollector"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "UsageDataCollector.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/ViewContent/StartPage/Items">
+		<Condition name = "Compare" string = "${property:ICSharpCode.UsageDataCollector.Enabled}" equals = "">
+			<Class id = "UsageDataCollector"
+			       insertbefore = "RecentProjects"
+			       class = "ICSharpCode.UsageDataCollector.StartPageMessage"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/Workspace/Autostart">
+		<Condition name = "Compare" string = "${property:ICSharpCode.UsageDataCollector.Enabled}" equals = "True">
+			<Class id    = "UsageDataCollector"
+			       class = "ICSharpCode.UsageDataCollector.AutoStartCommand"/>
+		</Condition>
+	</Path>
+	
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/UIOptions">
+		<OptionPanel id = "UsageDataCollector"
+		             label = "Usage Data Collector"
+		             class = "ICSharpCode.UsageDataCollector.OptionPage" />
+	</Path>
+</AddIn>

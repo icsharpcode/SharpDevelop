@@ -36,6 +36,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 			T cached = trackedSegments.GetCachedObject<T>(this.CurrentLocation, 0, condition);
 			if (cached != null) {
 				Skip(cached.Length);
+				AXmlParser.Assert(cached.Length > 0, "cached elements must not have zero length");
 				res = cached;
 				return true;
 			} else {

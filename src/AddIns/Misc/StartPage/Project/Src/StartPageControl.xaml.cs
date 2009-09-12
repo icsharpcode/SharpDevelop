@@ -7,14 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Project;
-using System.Windows.Input;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.StartPage
 {
@@ -26,63 +21,15 @@ namespace ICSharpCode.StartPage
 		public StartPageControl()
 		{
 			InitializeComponent();
-			
-			BuildRecentProjectList();
+			List<object> items = AddInTree.BuildItems<object>("/SharpDevelop/ViewContent/StartPage/Items", this, false);
+			// WPF does not use DataTemplates if the item already is a UIElement; so we 'box' it.
+			List<BoxEntry> entries = items.ConvertAll(control => new BoxEntry { Control = control } );
+			startPageItems.ItemsSource = entries;
 		}
 		
-		void BuildRecentProjectList()
+		sealed class BoxEntry
 		{
-			List<RecentOpenItem> items = new List<RecentOpenItem>();
-			foreach (string path in FileService.RecentOpen.RecentProject) {
-				FileInfo file = new FileInfo(path);
-				if (file.Exists) {
-					items.Add(
-						new RecentOpenItem {
-							Name = System.IO.Path.GetFileNameWithoutExtension(path),
-							LastModification = file.LastWriteTime.ToShortDateString(),
-							Path = path
-						});
-				}
-			}
-			lastProjectsListView.ItemsSource = items;
-		}
-		
-		class RecentOpenItem
-		{
-			public string Name { get; set; }
-			public string LastModification { get; set; }
-			public string Path { get; set; }
-		}
-		
-		void lastProjectsDoubleClick(object sender, RoutedEventArgs e)
-		{
-			RecentOpenItem item = (RecentOpenItem)lastProjectsListView.SelectedItem;
-			if (item != null) {
-				ProjectService.LoadSolutionOrProject(item.Path);
-			}
-		}
-		
-		void lastProjectsKeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Key.Return) {
-				lastProjectsDoubleClick(null, null);
-			}
-		}
-		
-		void listViewHyperlinkClick(object sender, RoutedEventArgs e)
-		{
-			RecentOpenItem item = (RecentOpenItem)((Hyperlink)sender).Tag;
-			ProjectService.LoadSolutionOrProject(item.Path);
-		}
-		
-		void openSolutionClick(object sender, RoutedEventArgs e)
-		{
-			new ICSharpCode.SharpDevelop.Project.Commands.LoadSolution().Run();
-		}
-		
-		void newSolutionClick(object sender, RoutedEventArgs e)
-		{
-			new ICSharpCode.SharpDevelop.Project.Commands.CreateNewSolution().Run();
+			public object Control { get; set; }
 		}
 	}
 }

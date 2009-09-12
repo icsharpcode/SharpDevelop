@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using System.Text;
 
@@ -25,6 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		#region Building in the SharpDevelop GUI
 		static CancellableProgressMonitor guiBuildProgressMonitor;
+		static IAnalyticsMonitorTrackedFeature guiBuildTrackedFeature;
 		
 		/// <summary>
 		/// Starts to run a build inside the SharpDevelop GUI.
@@ -48,6 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			} else {
 				guiBuildProgressMonitor = new CancellableProgressMonitor(StatusBarService.CreateProgressMonitor());
+				guiBuildTrackedFeature = AnalyticsMonitorService.TrackFeature("Build");
 				Gui.WorkbenchSingleton.Workbench.GetPad(typeof(Gui.CompilerMessageView)).BringPadToFront();
 				ProjectService.RaiseEventBuildStarted(new BuildEventArgs(project, options));
 				StartBuild(project, options,
@@ -106,6 +109,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				WorkbenchSingleton.SafeThreadAsyncCall(
 					delegate {
 						guiBuildProgressMonitor = null;
+						if (guiBuildTrackedFeature != null) {
+							guiBuildTrackedFeature.EndTracking();
+							guiBuildTrackedFeature = null;
+						}
 						ProjectService.RaiseEventBuildFinished(new BuildEventArgs(buildable, options, results));
 					});
 			}

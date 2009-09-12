@@ -55,6 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\RecentProjectsControl.xaml.cs">
+      <DependentUpon>RecentProjectsControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\ShowStartPageCommand.cs" />
     <Resource Include="Resources\balken_links.gif" />
     <Resource Include="Resources\balken_mitte.gif" />
@@ -88,6 +92,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Resources" />
+    <Page Include="Src\RecentProjectsControl.xaml" />
     <Page Include="Src\StartPageControl.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

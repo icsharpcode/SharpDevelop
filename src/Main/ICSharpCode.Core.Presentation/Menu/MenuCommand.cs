@@ -98,7 +98,6 @@ namespace ICSharpCode.Core.Presentation
 			if (!commandCreated) {
 				CreateCommand();
 			}
-			LoggingService.Debug("Execute " + codon.Id);
 			if (CanExecute(parameter)) {
 				addInCommand.Run();
 			}
@@ -130,9 +129,62 @@ namespace ICSharpCode.Core.Presentation
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
 				if (inputBindingOwner != null) {
-					inputBindingOwner.InputBindings.Add(new InputBinding(this.Command, kg));
+					var shortcutCommand = this.Command;
+					string featureName = GetFeatureName();
+					if (shortcutCommand != null && !string.IsNullOrEmpty(featureName))
+						shortcutCommand = new ShortcutCommandWrapper(shortcutCommand, featureName);
+					inputBindingOwner.InputBindings.Add(new InputBinding(shortcutCommand, kg));
 				}
 				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			}
+		}
+		
+		string GetFeatureName()
+		{
+			string commandName = codon.Properties["command"];
+			if (string.IsNullOrEmpty(commandName)) {
+				return codon.Properties["class"];
+			} else {
+				return commandName;
+			}
+		}
+		
+		protected override void OnClick()
+		{
+			base.OnClick();
+			string feature = GetFeatureName();
+			if (!string.IsNullOrEmpty(feature)) {
+				AnalyticsMonitorService.TrackFeature(feature, "Menu");
+			}
+		}
+		
+		sealed class ShortcutCommandWrapper : System.Windows.Input.ICommand
+		{
+			readonly System.Windows.Input.ICommand baseCommand;
+			readonly string featureName;
+			
+			public ShortcutCommandWrapper(System.Windows.Input.ICommand baseCommand, string featureName)
+			{
+				Debug.Assert(baseCommand != null);
+				Debug.Assert(featureName != null);
+				this.baseCommand = baseCommand;
+				this.featureName = featureName;
+			}
+			
+			public event EventHandler CanExecuteChanged {
+				add { baseCommand.CanExecuteChanged += value; }
+				remove { baseCommand.CanExecuteChanged -= value; }
+			}
+			
+			public void Execute(object parameter)
+			{
+				AnalyticsMonitorService.TrackFeature(featureName, "Shortcut");
+				baseCommand.Execute(parameter);
+			}
+			
+			public bool CanExecute(object parameter)
+			{
+				return baseCommand.CanExecute(parameter);
 			}
 		}
 	}

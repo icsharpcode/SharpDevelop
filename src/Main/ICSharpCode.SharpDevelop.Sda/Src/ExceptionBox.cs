@@ -87,6 +87,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 				return;
 			showingBox = true;
 			try {
+				try {
+					AnalyticsMonitorService.TrackException(exception);
+				} catch (Exception ex) {
+					LoggingService.Warn("Error tracking exception", ex);
+				}
 				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
 					if (ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.InvokeRequired)
 						box.ShowDialog();
