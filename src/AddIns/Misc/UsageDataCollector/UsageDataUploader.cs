@@ -24,6 +24,9 @@ namespace ICSharpCode.UsageDataCollector
 	{
 		string databaseFileName;
 		
+		/// <summary>
+		/// Creates a new UsageDataUploader.
+		/// </summary>
 		public UsageDataUploader(string databaseFileName)
 		{
 			this.databaseFileName = databaseFileName;
@@ -38,6 +41,11 @@ namespace ICSharpCode.UsageDataCollector
 			return connection;
 		}
 		
+		/// <summary>
+		/// Retrieves all stored data as XML text.
+		/// </summary>
+		/// <exception cref="IncompatibleDatabaseException">The database version is not compatible with this
+		/// version of the AnalyticsSessionWriter.</exception>
 		public string GetTextForStoredData()
 		{
 			UsageDataMessage message;
@@ -60,6 +68,8 @@ namespace ICSharpCode.UsageDataCollector
 		/// <summary>
 		/// Starts the upload of the usage data.
 		/// </summary>
+		/// <exception cref="IncompatibleDatabaseException">The database version is not compatible with this
+		/// version of the AnalyticsSessionWriter.</exception>
 		public void StartUpload()
 		{
 			UsageDataMessage message;

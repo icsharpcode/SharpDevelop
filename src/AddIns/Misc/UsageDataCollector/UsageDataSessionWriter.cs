@@ -12,9 +12,13 @@ using System.Runtime.Serialization;
 namespace ICSharpCode.UsageDataCollector
 {
 	/// <summary>
-	/// Creates an analytics session.
+	/// Creates a usage data session.
+	/// 
+	/// Instance methods on this class are not thread-safe. If you are using it in a multi-threaded application,
+	/// you should consider writing your own wrapper class that takes care of the thread-safety.
+	/// In SharpDevelop, this is done by the AnalyticsMonitor class.
 	/// </summary>
-	public class AnalyticsSessionWriter : IDisposable
+	public class UsageDataSessionWriter : IDisposable
 	{
 		SQLiteConnection connection;
 		long sessionID;
@@ -22,8 +26,9 @@ namespace ICSharpCode.UsageDataCollector
 		/// <summary>
 		/// Opens/Creates the database and starts writing a new session to it.
 		/// </summary>
-		/// <exception cref="IncompatibleDatabaseException"></exception>
-		public AnalyticsSessionWriter(string databaseFileName)
+		/// <exception cref="IncompatibleDatabaseException">The database version is not compatible with this
+		/// version of the AnalyticsSessionWriter.</exception>
+		public UsageDataSessionWriter(string databaseFileName)
 		{
 			SQLiteConnectionStringBuilder conn = new SQLiteConnectionStringBuilder();
 			conn.Add("Data Source", databaseFileName);
@@ -129,6 +134,11 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
+		/// <summary>
+		/// Adds environment data to the current session.
+		/// </summary>
+		/// <param name="name">Name of the data entry.</param>
+		/// <param name="value">Value of the data entry.</param>
 		public void AddEnvironmentData(string name, string value)
 		{
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
@@ -141,6 +151,12 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
+		/// <summary>
+		/// Adds a feature use to the session.
+		/// </summary>
+		/// <param name="featureName">Name of the feature.</param>
+		/// <param name="activationMethod">How the feature was activated (Menu, Toolbar, Shortcut, etc.)</param>
+		/// <returns>ID that can be used for <see cref="WriteEndTimeForFeature"/></returns>
 		public long AddFeatureUse(string featureName, string activationMethod)
 		{
 			long featureRowId;
@@ -160,15 +176,24 @@ namespace ICSharpCode.UsageDataCollector
 			return featureRowId;
 		}
 		
-		public void WriteEndTimeForFeature(long featureID)
+		/// <summary>
+		/// Marks the end time for a feature use.
+		/// </summary>
+		/// <param name="featureUseID">A value returned from <see cref="AddFeatureUse"/>.</param>
+		public void WriteEndTimeForFeature(long featureUseID)
 		{
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
 				cmd.CommandText = "UPDATE FeatureUses SET endTime = datetime('now') WHERE id = ?;";
-				cmd.Parameters.Add(new SQLiteParameter { Value = featureID });
+				cmd.Parameters.Add(new SQLiteParameter { Value = featureUseID });
 				cmd.ExecuteNonQuery();
 			}
 		}
 		
+		/// <summary>
+		/// Adds an exception report to the session.
+		/// </summary>
+		/// <param name="exceptionType">Full .NET type name of the exception.</param>
+		/// <param name="stacktrace">Stacktrace</param>
 		public void AddException(string exceptionType, string stacktrace)
 		{
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
@@ -181,10 +206,18 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
+		bool isDisposed;
+		
+		/// <summary>
+		/// Closes the session.
+		/// </summary>
 		public void Dispose()
 		{
-			EndSession();
-			connection.Close();
+			if (!isDisposed) {
+				isDisposed = true;
+				EndSession();
+				connection.Dispose();
+			}
 		}
 	}
 	

@@ -27,6 +27,9 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
+		/// <summary>
+		/// Allows to enable/disable the usage data monitoring.
+		/// </summary>
 		public static bool Enabled {
 			get {
 				return string.Equals(PropertyService.Get("ICSharpCode.UsageDataCollector.Enabled"), bool.TrueString, StringComparison.OrdinalIgnoreCase);
@@ -52,7 +55,7 @@ namespace ICSharpCode.UsageDataCollector
 		
 		readonly object lockObj = new object();
 		string dbFileName;
-		AnalyticsSessionWriter session;
+		UsageDataSessionWriter session;
 		
 		private AnalyticsMonitor()
 		{
@@ -63,13 +66,17 @@ namespace ICSharpCode.UsageDataCollector
 			SharpDevelop.Gui.WorkbenchSingleton.WorkbenchUnloaded += delegate { CloseSession(); };
 		}
 		
+		/// <summary>
+		/// Opens the database connection, updates the database if required.
+		/// Will start an upload to the server, if required.
+		/// </summary>
 		public void OpenSession()
 		{
 			bool sessionOpened = false;
 			lock (lockObj) {
 				if (session == null) {
 					try {
-						session = new AnalyticsSessionWriter(dbFileName);
+						session = new UsageDataSessionWriter(dbFileName);
 						session.AddEnvironmentData("appVersion", RevisionClass.FullVersion);
 						session.AddEnvironmentData("language", ResourceService.Language);
 						sessionOpened = true;
@@ -79,7 +86,7 @@ namespace ICSharpCode.UsageDataCollector
 							// upgrade database by deleting the old one
 							TryDeleteDatabase();
 							try {
-								session = new AnalyticsSessionWriter(dbFileName);
+								session = new UsageDataSessionWriter(dbFileName);
 							} catch (IncompatibleDatabaseException ex2) {
 								LoggingService.Warn("AnalyticsMonitor: Could upgrade database: " + ex2.Message);
 							}
@@ -95,6 +102,11 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
+		/// <summary>
+		/// Retrieves all stored data as XML text.
+		/// </summary>
+		/// <exception cref="IncompatibleDatabaseException">The database version is not compatible with this
+		/// version of the AnalyticsSessionWriter.</exception>
 		public string GetTextForStoredData()
 		{
 			UsageDataUploader uploader = new UsageDataUploader(dbFileName);
