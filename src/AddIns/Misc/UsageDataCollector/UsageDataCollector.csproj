@@ -43,12 +43,18 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
       <HintPath>..\..\..\Libraries\SQLite\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
@@ -65,7 +71,12 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AnalyticsMonitor.cs" />
-    <Compile Include="AnalyticsSessionWriter.cs" />
+    <Compile Include="CollectedDataView.xaml.cs">
+      <DependentUpon>CollectedDataView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UsageDataMessage.cs" />
+    <Compile Include="UsageDataSessionWriter.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="OptionPage.xaml.cs">
       <DependentUpon>OptionPage.xaml</DependentUpon>
@@ -75,12 +86,19 @@
       <DependentUpon>StartPageMessage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UsageDataUploader.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="CollectedDataView.xaml" />
     <Page Include="OptionPage.xaml" />
     <Page Include="StartPageMessage.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>

@@ -6,10 +6,11 @@
 // </file>
 
 using System;
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop;
-using System.IO;
+using System.Threading;
 
 namespace ICSharpCode.UsageDataCollector
 {
@@ -56,15 +57,40 @@ namespace ICSharpCode.UsageDataCollector
 		
 		public void OpenSession()
 		{
+			bool sessionOpened = false;
 			lock (lockObj) {
 				if (session == null) {
 					try {
 						session = new AnalyticsSessionWriter(dbFileName);
-					} catch (DatabaseTooNewException) {
-						LoggingService.Warn("Could not use AnalyticsMonitor: too new version of database");
+						session.AddEnvironmentData("appVersion", RevisionClass.FullVersion);
+						session.AddEnvironmentData("language", ResourceService.Language);
+						sessionOpened = true;
+					} catch (IncompatibleDatabaseException ex) {
+						if (ex.ActualVersion < ex.ExpectedVersion) {
+							LoggingService.Info("AnalyticsMonitor: " + ex.Message + ", removing old database");
+							// upgrade database by deleting the old one
+							TryDeleteDatabase();
+							try {
+								session = new AnalyticsSessionWriter(dbFileName);
+							} catch (IncompatibleDatabaseException ex2) {
+								LoggingService.Warn("AnalyticsMonitor: Could upgrade database: " + ex2.Message);
+							}
+						} else {
+							LoggingService.Warn("AnalyticsMonitor: " + ex.Message);
+						}
 					}
 				}
 			}
+			if (sessionOpened) {
+				UsageDataUploader uploader = new UsageDataUploader(dbFileName);
+				ThreadPool.QueueUserWorkItem(delegate { uploader.StartUpload(); });
+			}
+		}
+		
+		public string GetTextForStoredData()
+		{
+			UsageDataUploader uploader = new UsageDataUploader(dbFileName);
+			return uploader.GetTextForStoredData();
 		}
 		
 		void TryDeleteDatabase()
@@ -73,8 +99,10 @@ namespace ICSharpCode.UsageDataCollector
 				CloseSession();
 				try {
 					File.Delete(dbFileName);
-				} catch (IOException) {
-				} catch (AccessViolationException) {
+				} catch (IOException ex) {
+					LoggingService.Warn("AnalyticsMonitor: Could delete database: " + ex.Message);
+				} catch (AccessViolationException ex) {
+					LoggingService.Warn("AnalyticsMonitor: Could delete database: " + ex.Message);
 				}
 			}
 		}

@@ -6,6 +6,9 @@
 	  	</TextBlock>
 		<RadioButton Name="acceptRadio">I would like to participate - collect and upload usage data</RadioButton>
 		<RadioButton Name="declineRadio">I do not want to participate</RadioButton>
+		<Button Name="showCollectedDataButton" Click="ShowCollectedDataButton_Click" Margin="4" HorizontalAlignment="Left">
+		Show collected data
+		</Button>
 		<TextBlock HorizontalAlignment="Left">
 			<Hyperlink NavigateUri="http://www.example.com/UsageData">Privacy Statement</Hyperlink>
 		</TextBlock>

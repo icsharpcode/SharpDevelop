@@ -6,6 +6,11 @@
 // </file>
 
 using System;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Navigation;
+
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.UsageDataCollector
@@ -18,6 +23,7 @@ namespace ICSharpCode.UsageDataCollector
 		public OptionPage()
 		{
 			InitializeComponent();
+			AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
 		}
 		
 		public override void LoadOptions()
@@ -29,6 +35,7 @@ namespace ICSharpCode.UsageDataCollector
 				else
 					declineRadio.IsChecked = true;
 			}
+			showCollectedDataButton.IsEnabled = acceptRadio.IsChecked ?? false;
 		}
 		
 		public override bool SaveOptions()
@@ -38,6 +45,22 @@ namespace ICSharpCode.UsageDataCollector
 			else if (declineRadio.IsChecked ?? false)
 				AnalyticsMonitor.Enabled = false;
 			return base.SaveOptions();
+		}
+		
+		void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+		{
+			e.Handled = true;
+			try {
+				Process.Start(e.Uri.ToString());
+			} catch {
+				// catch exceptions - e.g. incorrectly installed web browser
+			}
+		}
+		
+		void ShowCollectedDataButton_Click(object sender, RoutedEventArgs e)
+		{
+			string data = AnalyticsMonitor.Instance.GetTextForStoredData();
+			(new CollectedDataView(data) { Owner = Window.GetWindow(this), ShowInTaskbar = false }).ShowDialog();
 		}
 	}
 }
