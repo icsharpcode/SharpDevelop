@@ -38,32 +38,15 @@ namespace ICSharpCode.UsageDataCollector
 			return connection;
 		}
 		
-		/// <summary>
-		/// Starts the upload of the usage data.
-		/// </summary>
-		public void StartUpload()
-		{
-			UsageDataMessage message = GetDataToBeTransmitted(false);
-			DataContractSerializer serializer = new DataContractSerializer(typeof(UsageDataMessage));
-			using (FileStream fs = new FileStream(Path.Combine(Path.GetTempPath(), "SharpDevelopUsageData.xml.gz"), FileMode.Create, FileAccess.Write)) {
-				using (GZipStream zip = new GZipStream(fs, CompressionMode.Compress)) {
-					serializer.WriteObject(zip, message);
-				}
-			}
-		}
-		
-		internal UsageDataMessage GetDataToBeTransmitted(bool fetchIncompleteSessions)
-		{
-			using (SQLiteConnection connection = OpenConnection()) {
-				using (SQLiteTransaction transaction = connection.BeginTransaction()) {
-					return FetchDataForUpload(connection, fetchIncompleteSessions);
-				}
-			}
-		}
-		
 		public string GetTextForStoredData()
 		{
-			UsageDataMessage message = GetDataToBeTransmitted(true);
+			UsageDataMessage message;
+			using (SQLiteConnection connection = OpenConnection()) {
+				using (SQLiteTransaction transaction = connection.BeginTransaction()) {
+					CheckDatabaseVersion(connection);
+					message = FetchDataForUpload(connection, true);
+				}
+			}
 			using (StringWriter w = new StringWriter()) {
 				using (XmlTextWriter xmlWriter = new XmlTextWriter(w)) {
 					xmlWriter.Formatting = Formatting.Indented;
@@ -74,12 +57,37 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
-		#region FetchDataForUpload
+		/// <summary>
+		/// Starts the upload of the usage data.
+		/// </summary>
+		public void StartUpload()
+		{
+			UsageDataMessage message;
+			using (SQLiteConnection connection = OpenConnection()) {
+				using (SQLiteTransaction transaction = connection.BeginTransaction()) {
+					CheckDatabaseVersion(connection);
+					if (HasAlreadyUploadedToday(connection)) {
+						message = null;
+					} else {
+						message = FetchDataForUpload(connection, false);
+					}
+					transaction.Commit();
+				}
+			}
+			if (message != null) {
+				DataContractSerializer serializer = new DataContractSerializer(typeof(UsageDataMessage));
+				using (FileStream fs = new FileStream(Path.Combine(Path.GetTempPath(), "SharpDevelopUsageData.xml.gz"), FileMode.Create, FileAccess.Write)) {
+					using (GZipStream zip = new GZipStream(fs, CompressionMode.Compress)) {
+						serializer.WriteObject(zip, message);
+					}
+				}
+			}
+		}
+		
 		Version expectedDBVersion = new Version(1, 0, 1);
 		
-		UsageDataMessage FetchDataForUpload(SQLiteConnection connection, bool fetchIncompleteSessions)
+		void CheckDatabaseVersion(SQLiteConnection connection)
 		{
-			// Check the database version
 			using (SQLiteCommand cmd = connection.CreateCommand()) {
 				cmd.CommandText = "SELECT value FROM Properties WHERE name = 'dbVersion';";
 				string version = (string)cmd.ExecuteScalar();
@@ -90,7 +98,22 @@ namespace ICSharpCode.UsageDataCollector
 					throw new IncompatibleDatabaseException(expectedDBVersion, actualDBVersion);
 				}
 			}
-			
+		}
+		
+		bool HasAlreadyUploadedToday(SQLiteConnection connection)
+		{
+			using (SQLiteCommand cmd = connection.CreateCommand()) {
+				cmd.CommandText = "SELECT value > datetime('now','-1 day') FROM Properties WHERE name='lastUpload';";
+				object result = cmd.ExecuteScalar();
+				if (result == null)
+					return false; // no lastUpload entry -> DB was never uploaded
+				return (long)result > 0;
+			}
+		}
+		
+		#region FetchDataForUpload
+		UsageDataMessage FetchDataForUpload(SQLiteConnection connection, bool fetchIncompleteSessions)
+		{
 			UsageDataMessage message = new UsageDataMessage();
 			// Retrieve the User ID
 			using (SQLiteCommand cmd = connection.CreateCommand()) {
@@ -184,6 +207,30 @@ namespace ICSharpCode.UsageDataCollector
 				",",
 				sessions.Select(s => s.SessionID.ToString(CultureInfo.InvariantCulture)).ToArray());
 		}
+		
+		#region RemoveUploadedData
+		/// <summary>
+		/// Removes the data that was successfully uploaded and sets the 'lastUpload' property.
+		/// </summary>
+		void RemoveUploadedData(IEnumerable<UsageDataSession> sessions)
+		{
+			string commaSeparatedSessionIDList = GetCommaSeparatedIDList(sessions);
+			using (SQLiteConnection connection = OpenConnection()) {
+				using (SQLiteTransaction transaction = connection.BeginTransaction()) {
+					using (SQLiteCommand cmd = connection.CreateCommand()) {
+						cmd.CommandText = @"DELETE FROM Sessions WHERE id IN (" + commaSeparatedSessionIDList + @");
+							DELETE FROM Environment WHERE session IN (" + commaSeparatedSessionIDList + @");
+							DELETE FROM FeatureUses WHERE session IN (" + commaSeparatedSessionIDList + @");
+							DELETE FROM Exceptions WHERE session IN (" + commaSeparatedSessionIDList + @");
+							INSERT OR REPLACE INTO Properties (name, value) VALUES ('lastUpload', datetime('now'));
+						";
+						cmd.ExecuteNonQuery();
+					}
+					transaction.Commit();
+				}
+			}
+		}
+		#endregion
 		
 		/// <summary>
 		/// Helps keep the memory usage during data preparation down (there are lots of duplicate strings, and we don't

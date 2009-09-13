@@ -108,11 +108,8 @@ namespace ICSharpCode.UsageDataCollector
 		{
 			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
 				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-					cmd.CommandText = "INSERT INTO Sessions (startTime) VALUES (datetime());";
-					cmd.ExecuteNonQuery();
-				}
-				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-					cmd.CommandText = "SELECT last_insert_rowid();";
+					cmd.CommandText = "INSERT INTO Sessions (startTime) VALUES (datetime('now'));" +
+						"SELECT last_insert_rowid();";
 					sessionID = (long)cmd.ExecuteScalar();
 				}
 				AddEnvironmentData("platform", Environment.OSVersion.Platform.ToString());
@@ -126,7 +123,7 @@ namespace ICSharpCode.UsageDataCollector
 		void EndSession()
 		{
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-				cmd.CommandText = "UPDATE Sessions SET endTime = datetime() WHERE id = ?;";
+				cmd.CommandText = "UPDATE Sessions SET endTime = datetime('now') WHERE id = ?;";
 				cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
 				cmd.ExecuteNonQuery();
 			}
@@ -150,14 +147,12 @@ namespace ICSharpCode.UsageDataCollector
 			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
 				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
 					cmd.CommandText = "INSERT INTO FeatureUses (session, time, feature, activationMethod)" +
-						" VALUES (?, datetime(), ?, ?);";
+						"    VALUES (?, datetime('now'), ?, ?);" +
+						"SELECT last_insert_rowid();";
 					cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
 					cmd.Parameters.Add(new SQLiteParameter { Value = featureName });
 					cmd.Parameters.Add(new SQLiteParameter { Value = activationMethod });
-					cmd.ExecuteNonQuery();
-				}
-				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-					cmd.CommandText = "SELECT last_insert_rowid();";
+					
 					featureRowId = (long)cmd.ExecuteScalar();
 				}
 				transaction.Commit();
@@ -168,7 +163,7 @@ namespace ICSharpCode.UsageDataCollector
 		public void WriteEndTimeForFeature(long featureID)
 		{
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-				cmd.CommandText = "UPDATE FeatureUses SET endTime = datetime() WHERE id = ?;";
+				cmd.CommandText = "UPDATE FeatureUses SET endTime = datetime('now') WHERE id = ?;";
 				cmd.Parameters.Add(new SQLiteParameter { Value = featureID });
 				cmd.ExecuteNonQuery();
 			}
@@ -178,7 +173,7 @@ namespace ICSharpCode.UsageDataCollector
 		{
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
 				cmd.CommandText = "INSERT INTO Exceptions (session, time, type, stackTrace)" +
-					" VALUES (?, datetime(), ?, ?);";
+					" VALUES (?, datetime('now'), ?, ?);";
 				cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
 				cmd.Parameters.Add(new SQLiteParameter { Value = exceptionType });
 				cmd.Parameters.Add(new SQLiteParameter { Value = stacktrace });
