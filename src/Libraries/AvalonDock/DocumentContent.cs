@@ -158,6 +158,16 @@ namespace AvalonDock
             base.OnDragMouseLeave(sender, e);
         }
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            if (DragEnabledArea != null)
+            {
+                DragEnabledArea.InputBindings.Add(new InputBinding(ApplicationCommands.Close, new MouseGesture(MouseAction.MiddleClick)));
+            }
+        }
+
         /// <summary>
         /// Event fired when the document is about to be closed
         /// </summary>
@@ -203,6 +213,7 @@ namespace AvalonDock
 
                 parentPane.CheckContentsEmpty();
             }
+
 
 
             if (manager != null)

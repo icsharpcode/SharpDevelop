@@ -264,6 +264,19 @@ namespace AvalonDock
                 }
                 availableSize = newAvailSize;
             }
+            //Thx to TMx
+            else if (availableSize.Height == double.PositiveInfinity &&
+                Orientation == Orientation.Vertical)
+            {
+                Size newAvailSize = new Size();
+                foreach (FrameworkElement child in visibleChildren)
+                {
+                    child.Measure(newAvailSize);
+                    newAvailSize.Width = Math.Max(child.DesiredSize.Width, newAvailSize.Width);
+                    newAvailSize.Height += child.DesiredSize.Height;
+                }
+                availableSize = newAvailSize;
+            }
 
             var splitters = from FrameworkElement child in visibleChildren
                             where child is ResizingPanelSplitter

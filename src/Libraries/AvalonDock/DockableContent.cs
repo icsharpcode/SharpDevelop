@@ -137,7 +137,7 @@ namespace AvalonDock
         /// <summary>
         /// Dockable to a border of a <see cref="DockingManager"/> and into a <see cref="DocumentPane"/>
         /// </summary>
-        Dockable = DockableToBorders | Document,
+        Dockable = DockableToBorders | Document | Floating,
 
         /// <summary>
         /// Dockable to a border of a <see cref="DockingManager"/> and into a <see cref="DocumentPane"/> but not in autohidden mode (WinForms controls)
@@ -159,6 +159,20 @@ namespace AvalonDock
         public readonly AnchorStyle Anchor = AnchorStyle.None;
 
         public DockableContentStateAndPosition(
+           Pane containerPane,
+           int childIndex,
+           double width,
+           double height,
+           AnchorStyle anchor)
+        {
+            ContainerPane = containerPane;
+            ChildIndex = childIndex;
+            Width = width;
+            Height = height;
+            Anchor = anchor;
+        }
+
+       public DockableContentStateAndPosition(
             DockableContent cntToSave)
         {
             ContainerPane = cntToSave.ContainerPane;
@@ -485,6 +499,19 @@ namespace AvalonDock
                 storeWriter.WriteAttributeString(
                     "FloatingWindowSize", new SizeConverter().ConvertToInvariantString(FloatingWindowSize));
             }
+
+            if (SavedStateAndPosition != null)
+            {
+                storeWriter.WriteAttributeString(
+                    "ChildIndex", SavedStateAndPosition.ChildIndex.ToString());
+                storeWriter.WriteAttributeString(
+                    "Width", SavedStateAndPosition.Width.ToString());
+                storeWriter.WriteAttributeString(
+                    "Height", SavedStateAndPosition.Height.ToString());
+                storeWriter.WriteAttributeString(
+                    "Anchor", SavedStateAndPosition.Anchor.ToString());
+            }
+
         }
 
         /// <summary>
@@ -496,6 +523,28 @@ namespace AvalonDock
         {
             if (contentElement.HasAttribute("FloatingWindowSize"))
                 FloatingWindowSize = (Size)(new SizeConverter()).ConvertFromInvariantString(contentElement.GetAttribute("FloatingWindowSize"));
+
+
+            Size effectiveSize = new Size(0d, 0d);
+            if (contentElement.HasAttribute("EffectiveSize"))
+            {
+                // Store
+                effectiveSize = (Size)(new SizeConverter()).ConvertFromInvariantString(contentElement.GetAttribute("EffectiveSize"));
+            }
+
+            ResizingPanel.SetEffectiveSize(this, effectiveSize);
+
+            if (contentElement.HasAttribute("ChildIndex"))
+            {
+                _savedStateAndPosition = new DockableContentStateAndPosition(
+                    ContainerPane,
+                    int.Parse(contentElement.GetAttribute("ChildIndex")),
+                    double.Parse(contentElement.GetAttribute("Width")),
+                    double.Parse(contentElement.GetAttribute("Height")),
+                    (AnchorStyle) Enum.Parse(typeof(AnchorStyle), contentElement.GetAttribute("Anchor"))
+                    );
+
+            }
         } 
         #endregion
     }

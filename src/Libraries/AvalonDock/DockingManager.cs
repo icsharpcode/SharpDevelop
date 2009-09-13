@@ -543,6 +543,11 @@ namespace AvalonDock
                         }
                     }
                 }
+                else
+                {
+                    _mainDocumentPane = value;
+                }
+
             }
         }
 
@@ -1746,7 +1751,11 @@ namespace AvalonDock
                 if (content.ContainerPane.GetManager() == null)
                 {
                     //disconnect the parent pane from previous panel
-                    ((Panel)content.ContainerPane.Parent).Children.Remove(content.ContainerPane);
+                    //((Panel)content.ContainerPane.Parent).Children.Remove(content.ContainerPane);
+                    if (content.ContainerPane.Parent != null)
+                    {
+                        ((Panel)content.ContainerPane.Parent).Children.Remove(content.ContainerPane);
+                    }
                     Anchor(content.ContainerPane, desideredAnchor);
                 }
 
@@ -2482,7 +2491,10 @@ namespace AvalonDock
 
         void SaveLayout(XmlWriter xmlWriter, DockableContent content)
         {
-            Debug.Assert(!string.IsNullOrEmpty(content.Name));
+            Debug.Assert(!string.IsNullOrEmpty(content.Name),
+            "DockableContent must have a Name to save its content.\n" +
+            "Click Ignore to skip this element and continue with save."
+            );
 
             if (!string.IsNullOrEmpty(content.Name))
             {
@@ -2960,6 +2972,7 @@ namespace AvalonDock
                         && hiddenContent.State != DockableContentState.Hidden)
                     {
                         Hide(hiddenContent);
+                        hiddenContent.RestoreLayout(hiddenContentElement);
                     }
                 }
             }

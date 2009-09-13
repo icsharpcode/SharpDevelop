@@ -348,6 +348,8 @@ namespace AvalonDock
                 DocumentContent docContent = this.HostedPane.Items[0] as DocumentContent;
                 if (!docContent.Close())
                     e.Cancel = true;
+                else
+                    this.HostedPane.Items.Remove(docContent);
             }
             
             base.OnClosing(e);

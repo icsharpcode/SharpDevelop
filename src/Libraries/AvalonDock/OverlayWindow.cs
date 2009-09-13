@@ -201,10 +201,12 @@ namespace AvalonDock
             else
                 owdPaneInto.Enabled = !(_manager.DragPaneServices.FloatingWindow is DocumentFloatingWindow);
 
-            owdPaneBottom.Enabled = owdPaneInto.Enabled;
-            owdPaneTop.Enabled = owdPaneInto.Enabled;
-            owdPaneLeft.Enabled = owdPaneInto.Enabled;
-            owdPaneRight.Enabled = owdPaneInto.Enabled;
+            int destPaneChildCount = pane.Items.Count;
+
+            owdPaneBottom.Enabled = owdPaneInto.Enabled && destPaneChildCount > 0;
+            owdPaneTop.Enabled = owdPaneInto.Enabled && destPaneChildCount > 0;
+            owdPaneLeft.Enabled = owdPaneInto.Enabled && destPaneChildCount > 0;
+            owdPaneRight.Enabled = owdPaneInto.Enabled && destPaneChildCount > 0;
 
             CurrentDropPane = pane;
         }

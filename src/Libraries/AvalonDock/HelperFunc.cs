@@ -105,8 +105,25 @@ namespace AvalonDock
 
                 if (child is DependencyObject)
                 {
-
                     T childFound = (child as DependencyObject).GetLogicalChildContained<T>();
+                    if (childFound != null)
+                        return childFound;
+                }
+            }
+
+            return null;
+        }
+
+        public static T FindAnotherLogicalChildContained<T>(this DependencyObject obj, UIElement childToExclude) where T : DependencyObject
+        {
+            foreach (object child in LogicalTreeHelper.GetChildren(obj))
+            {
+                if (child is T && child != childToExclude)
+                    return child as T;
+
+                if (child is DependencyObject)
+                {
+                    T childFound = (child as DependencyObject).FindAnotherLogicalChildContained<T>(childToExclude);
                     if (childFound != null)
                         return childFound;
                 }
