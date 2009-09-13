@@ -33,12 +33,20 @@ namespace ICSharpCode.UsageDataCollector
 			}
 			set {
 				PropertyService.Set("ICSharpCode.UsageDataCollector.Enabled", value.ToString());
-				if (value) {
-					Instance.OpenSession();
-				} else {
-					Instance.CloseSession();
-					Instance.TryDeleteDatabase();
-				}
+				// Initially opening the session takes some time; which is bad for the startpage
+				// because the animation would start with a delay. We solve this by calling Open/CloseSession
+				// on a background thread.
+				ThreadPool.QueueUserWorkItem(delegate { AsyncEnableDisable(); } );
+			}
+		}
+		
+		static void AsyncEnableDisable()
+		{
+			if (Enabled) {
+				Instance.OpenSession();
+			} else {
+				Instance.CloseSession();
+				Instance.TryDeleteDatabase();
 			}
 		}
 		

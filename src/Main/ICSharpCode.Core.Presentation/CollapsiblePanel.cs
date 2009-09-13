@@ -35,7 +35,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static readonly DependencyProperty DurationProperty = DependencyProperty.Register(
 			"Duration", typeof(TimeSpan), typeof(CollapsiblePanel),
-			new UIPropertyMetadata(TimeSpan.FromMilliseconds(500)));
+			new UIPropertyMetadata(TimeSpan.FromMilliseconds(250)));
 		
 		/// <summary>
 		/// The duration in milliseconds of the animation.

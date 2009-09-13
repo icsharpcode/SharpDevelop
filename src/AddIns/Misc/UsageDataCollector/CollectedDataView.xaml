@@ -15,7 +15,7 @@
       Margin="16,8,16,8"
       Click="Button_Click" />
     <avalonEdit:TextEditor
-    	Name="textEditor"
+    	x:Name="textEditor"
        IsReadOnly="True" />
   </DockPanel>
 </Window>
