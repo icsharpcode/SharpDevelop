@@ -159,6 +159,8 @@ namespace ICSharpCode.UsageDataCollector
 		/// <returns>ID that can be used for <see cref="WriteEndTimeForFeature"/></returns>
 		public long AddFeatureUse(string featureName, string activationMethod)
 		{
+			if (featureName == null)
+				throw new ArgumentNullException("featureName");
 			long featureRowId;
 			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
 				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
@@ -196,6 +198,8 @@ namespace ICSharpCode.UsageDataCollector
 		/// <param name="stacktrace">Stacktrace</param>
 		public void AddException(string exceptionType, string stacktrace)
 		{
+			if (exceptionType == null)
+				throw new ArgumentNullException("exceptionType");
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
 				cmd.CommandText = "INSERT INTO Exceptions (session, time, type, stackTrace)" +
 					" VALUES (?, datetime('now'), ?, ?);";

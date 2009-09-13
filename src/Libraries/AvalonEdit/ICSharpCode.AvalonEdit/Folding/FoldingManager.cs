@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 	/// <summary>
 	/// Stores a list of foldings for a specific TextView and TextDocument.
 	/// </summary>
-	public class FoldingManager
+	public class FoldingManager : IWeakEventListener
 	{
 		internal readonly TextView textView;
 		internal readonly TextDocument document;
@@ -41,7 +41,39 @@ namespace ICSharpCode.AvalonEdit.Folding
 				throw new ArgumentNullException("document");
 			this.textView = textView;
 			this.document = document;
-			this.foldings = new TextSegmentCollection<FoldingSection>(document);
+			this.foldings = new TextSegmentCollection<FoldingSection>();
+			document.VerifyAccess();
+			TextDocumentWeakEventManager.Changed.AddListener(document, this);
+		}
+		#endregion
+		
+		#region ReceiveWeakEvent
+		/// <inheritdoc/>
+		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			if (managerType == typeof(TextDocumentWeakEventManager.Changed)) {
+				OnDocumentChanged((DocumentChangeEventArgs)e);
+				return true;
+			}
+			return false;
+		}
+		
+		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			return ReceiveWeakEvent(managerType, sender, e);
+		}
+		
+		void OnDocumentChanged(DocumentChangeEventArgs e)
+		{
+			foldings.UpdateOffsets(e);
+			FoldingSection s = foldings.FindFirstSegmentWithStartAfter(e.Offset);
+			while (s != null && s.StartOffset == e.Offset) {
+				FoldingSection next = foldings.GetNextSegment(s);
+				if (s.Length == 0) {
+					RemoveFolding(s);
+				}
+				s = next;
+			}
 		}
 		#endregion
 		

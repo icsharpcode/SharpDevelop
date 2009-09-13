@@ -185,7 +185,8 @@ namespace ICSharpCode.UsageDataCollector
 						if (!reader.IsDBNull(2))
 							featureUse.EndTime = reader.GetDateTime(2);
 						featureUse.FeatureName = stringInterning.Intern(reader.GetString(3));
-						featureUse.ActivationMethod = stringInterning.Intern(reader.GetString(4));
+						if (!reader.IsDBNull(4))
+							featureUse.ActivationMethod = stringInterning.Intern(reader.GetString(4));
 						session.FeatureUses.Add(featureUse);
 					}
 				}
@@ -201,7 +202,8 @@ namespace ICSharpCode.UsageDataCollector
 						UsageDataException exception = new UsageDataException();
 						exception.Time = reader.GetDateTime(1);
 						exception.ExceptionType = stringInterning.Intern(reader.GetString(2));
-						exception.StackTrace = stringInterning.Intern(reader.GetString(3));
+						if (!reader.IsDBNull(3))
+							exception.StackTrace = stringInterning.Intern(reader.GetString(3));
 						session.Exceptions.Add(exception);
 					}
 				}

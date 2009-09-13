@@ -40,10 +40,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 							}
 						}
 					} else {
-						if (collapsedSection != null) {
-							collapsedSection.Uncollapse();
-							collapsedSection = null;
-						}
+						RemoveCollapsedLineSection();
 					}
 					if (manager != null)
 						manager.textView.Redraw(this, DispatcherPriority.Normal);
@@ -74,12 +71,17 @@ namespace ICSharpCode.AvalonEdit.Folding
 			this.Length = endOffset - startOffset;
 		}
 		
-		internal void Removed()
+		void RemoveCollapsedLineSection()
 		{
 			if (collapsedSection != null) {
-				collapsedSection.Uncollapse();
+				if (collapsedSection.Start != null)
+					collapsedSection.Uncollapse();
 				collapsedSection = null;
 			}
+		}
+		
+		internal void Removed()
+		{
 			manager = null;
 		}
 	}
