@@ -189,8 +189,10 @@ namespace Debugger.AddIn
 					default:
 						throw new NotImplementedException("BinaryOperator: " + binaryOperatorExpression.Op);
 				}
-			} catch (System.Exception e) {
-				throw new GetValueException(e.Message);
+			} catch (NotImplementedException e) {
+				throw e;
+			} catch (System.Exception e2) {
+				throw new GetValueException(e2.Message);
 			}
 			
 			return val;

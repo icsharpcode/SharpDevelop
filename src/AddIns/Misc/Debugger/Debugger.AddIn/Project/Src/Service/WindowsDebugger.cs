@@ -565,7 +565,9 @@ namespace ICSharpCode.SharpDevelop.Services
 				else
 					return false;
 			} catch (GetValueException e) {
-				WorkbenchSingleton.SafeThreadAsyncCall(MessageService.ShowError, e);
+				string errorMessage = "Error while evaluating breakpoint condition " + code + ":\n" + e.Message + "\n";
+				DebuggerService.PrintDebugMessage(errorMessage);
+				WorkbenchSingleton.SafeThreadAsyncCall(MessageService.ShowWarning, errorMessage);
 				return true;
 			}
 		}
