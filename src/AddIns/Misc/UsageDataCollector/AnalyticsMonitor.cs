@@ -109,6 +109,10 @@ namespace ICSharpCode.UsageDataCollector
 		/// version of the AnalyticsSessionWriter.</exception>
 		public string GetTextForStoredData()
 		{
+			lock (lockObj) {
+				if (session != null)
+					session.Flush();
+			}
 			UsageDataUploader uploader = new UsageDataUploader(dbFileName);
 			return uploader.GetTextForStoredData();
 		}
@@ -152,31 +156,20 @@ namespace ICSharpCode.UsageDataCollector
 			TrackedFeature feature = new TrackedFeature();
 			lock (lockObj) {
 				if (session != null) {
-					feature.IsTracked = true;
-					feature.FeatureID = session.AddFeatureUse(featureName, activationMethod);
+					feature.Feature = session.AddFeatureUse(featureName, activationMethod);
 				}
 			}
 			return feature;
 		}
 		
-		void EndTracking(TrackedFeature feature)
-		{
-			lock (lockObj) {
-				if (session != null && feature.IsTracked) {
-					feature.IsTracked = false;
-					session.WriteEndTimeForFeature(feature.FeatureID);
-				}
-			}
-		}
-		
 		sealed class TrackedFeature : IAnalyticsMonitorTrackedFeature
 		{
-			internal bool IsTracked;
-			internal long FeatureID;
+			internal FeatureUse Feature;
 			
 			public void EndTracking()
 			{
-				Instance.EndTracking(this);
+				if (Feature != null)
+					Feature.TrackEndTime();
 			}
 		}
 	}

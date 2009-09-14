@@ -6,22 +6,25 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Globalization;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace ICSharpCode.UsageDataCollector
 {
 	/// <summary>
 	/// Creates a usage data session.
 	/// 
-	/// Instance methods on this class are not thread-safe. If you are using it in a multi-threaded application,
-	/// you should consider writing your own wrapper class that takes care of the thread-safety.
-	/// In SharpDevelop, this is done by the AnalyticsMonitor class.
+	/// This class is thread-safe.
 	/// </summary>
 	public class UsageDataSessionWriter : IDisposable
 	{
+		readonly object lockObj = new object();
 		SQLiteConnection connection;
 		long sessionID;
+		Timer timer;
 		
 		/// <summary>
 		/// Opens/Creates the database and starts writing a new session to it.
@@ -43,8 +46,34 @@ namespace ICSharpCode.UsageDataCollector
 				connection.Close();
 				throw;
 			}
+			
+			timer = new Timer(OnTimer, 0, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(60));
 		}
 		
+		void OnTimer(object state)
+		{
+			lock (lockObj) {
+				if (isDisposed)
+					return;
+				try {
+					FlushOutstandingChanges();
+				} catch (Exception ex) {
+					ICSharpCode.Core.MessageService.ShowException(ex);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Flushes changes that are not written yet.
+		/// </summary>
+		public void Flush()
+		{
+			lock (lockObj) {
+				if (isDisposed)
+					throw new ObjectDisposedException(GetType().Name);
+				FlushOutstandingChanges();
+			}
+		}
 		
 		static readonly Version expectedDBVersion = new Version(1, 0, 1);
 		
@@ -127,10 +156,14 @@ namespace ICSharpCode.UsageDataCollector
 		
 		void EndSession()
 		{
-			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-				cmd.CommandText = "UPDATE Sessions SET endTime = datetime('now') WHERE id = ?;";
-				cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
-				cmd.ExecuteNonQuery();
+			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
+				FlushOutstandingChanges();
+				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+					cmd.CommandText = "UPDATE Sessions SET endTime = datetime('now') WHERE id = ?;";
+					cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
+					cmd.ExecuteNonQuery();
+				}
+				transaction.Commit();
 			}
 		}
 		
@@ -141,53 +174,97 @@ namespace ICSharpCode.UsageDataCollector
 		/// <param name="value">Value of the data entry.</param>
 		public void AddEnvironmentData(string name, string value)
 		{
-			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-				cmd.CommandText = "INSERT INTO Environment (session, name, value)" +
-					" VALUES (?, ?, ?);";
-				cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
-				cmd.Parameters.Add(new SQLiteParameter { Value = name });
-				cmd.Parameters.Add(new SQLiteParameter { Value = value });
-				cmd.ExecuteNonQuery();
+			if (name == null)
+				throw new ArgumentNullException("name");
+			lock (lockObj) {
+				if (isDisposed)
+					throw new ObjectDisposedException(GetType().Name);
+				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+					cmd.CommandText = "INSERT INTO Environment (session, name, value)" +
+						" VALUES (?, ?, ?);";
+					cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
+					cmd.Parameters.Add(new SQLiteParameter { Value = name });
+					cmd.Parameters.Add(new SQLiteParameter { Value = value });
+					cmd.ExecuteNonQuery();
+				}
 			}
 		}
+		
+		Queue<FeatureUse> delayedStart = new Queue<FeatureUse>();
+		Queue<FeatureUse> delayedEnd = new Queue<FeatureUse>();
 		
 		/// <summary>
 		/// Adds a feature use to the session.
 		/// </summary>
 		/// <param name="featureName">Name of the feature.</param>
 		/// <param name="activationMethod">How the feature was activated (Menu, Toolbar, Shortcut, etc.)</param>
-		/// <returns>ID that can be used for <see cref="WriteEndTimeForFeature"/></returns>
-		public long AddFeatureUse(string featureName, string activationMethod)
+		public FeatureUse AddFeatureUse(string featureName, string activationMethod)
 		{
 			if (featureName == null)
 				throw new ArgumentNullException("featureName");
-			long featureRowId;
-			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
-				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-					cmd.CommandText = "INSERT INTO FeatureUses (session, time, feature, activationMethod)" +
-						"    VALUES (?, datetime('now'), ?, ?);" +
-						"SELECT last_insert_rowid();";
-					cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
-					cmd.Parameters.Add(new SQLiteParameter { Value = featureName });
-					cmd.Parameters.Add(new SQLiteParameter { Value = activationMethod });
-					
-					featureRowId = (long)cmd.ExecuteScalar();
-				}
-				transaction.Commit();
+			
+			lock (lockObj) {
+				if (isDisposed)
+					throw new ObjectDisposedException(GetType().Name);
+				FeatureUse featureUse = new FeatureUse(this);
+				featureUse.name = featureName;
+				featureUse.activation = activationMethod;
+				delayedStart.Enqueue(featureUse);
+				return featureUse;
 			}
-			return featureRowId;
 		}
 		
-		/// <summary>
-		/// Marks the end time for a feature use.
-		/// </summary>
-		/// <param name="featureUseID">A value returned from <see cref="AddFeatureUse"/>.</param>
-		public void WriteEndTimeForFeature(long featureUseID)
+		internal void WriteEndTimeForFeature(FeatureUse featureUse)
 		{
-			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-				cmd.CommandText = "UPDATE FeatureUses SET endTime = datetime('now') WHERE id = ?;";
-				cmd.Parameters.Add(new SQLiteParameter { Value = featureUseID });
-				cmd.ExecuteNonQuery();
+			lock (lockObj) {
+				if (isDisposed)
+					return;
+				featureUse.endTime = DateTime.UtcNow;
+				delayedEnd.Enqueue(featureUse);
+			}
+		}
+		
+		void FlushOutstandingChanges()
+		{
+			//Console.WriteLine("Flushing {0} starts and {1} ends", delayedStart.Count, delayedEnd.Count);
+			if (delayedStart.Count == 0 && delayedEnd.Count == 0)
+				return;
+			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
+				if (delayedStart.Count > 0) {
+					using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+						cmd.CommandText = "INSERT INTO FeatureUses (session, time, feature, activationMethod)" +
+							"    VALUES (?, ?, ?, ?);" +
+							"SELECT last_insert_rowid();";
+						SQLiteParameter time, feature, activationMethod;
+						cmd.Parameters.Add(new SQLiteParameter() { Value = sessionID });
+						cmd.Parameters.Add(time = new SQLiteParameter());
+						cmd.Parameters.Add(feature = new SQLiteParameter());
+						cmd.Parameters.Add(activationMethod = new SQLiteParameter());
+						while (delayedStart.Count > 0) {
+							FeatureUse use = delayedStart.Dequeue();
+							time.Value = use.startTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
+							feature.Value = use.name;
+							activationMethod.Value = use.activation;
+							
+							use.rowId = (long)cmd.ExecuteScalar();
+						}
+					}
+				}
+				if (delayedEnd.Count > 0) {
+					using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+						cmd.CommandText = "UPDATE FeatureUses SET endTime = ? WHERE id = ?;";
+						SQLiteParameter endTime, id;
+						cmd.Parameters.Add(endTime = new SQLiteParameter());
+						cmd.Parameters.Add(id = new SQLiteParameter());
+						while (delayedEnd.Count > 0) {
+							FeatureUse use = delayedEnd.Dequeue();
+							endTime.Value = use.endTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
+							id.Value = use.rowId;
+							cmd.ExecuteNonQuery();
+						}
+					}
+				}
+				transaction.Commit();
 			}
 		}
 		
@@ -200,13 +277,20 @@ namespace ICSharpCode.UsageDataCollector
 		{
 			if (exceptionType == null)
 				throw new ArgumentNullException("exceptionType");
-			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-				cmd.CommandText = "INSERT INTO Exceptions (session, time, type, stackTrace)" +
-					" VALUES (?, datetime('now'), ?, ?);";
-				cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
-				cmd.Parameters.Add(new SQLiteParameter { Value = exceptionType });
-				cmd.Parameters.Add(new SQLiteParameter { Value = stacktrace });
-				cmd.ExecuteNonQuery();
+			lock (lockObj) {
+				if (isDisposed)
+					throw new ObjectDisposedException(GetType().Name);
+				// first, insert the exception (it's most important to have)
+				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+					cmd.CommandText = "INSERT INTO Exceptions (session, time, type, stackTrace)" +
+						" VALUES (?, datetime('now'), ?, ?);";
+					cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
+					cmd.Parameters.Add(new SQLiteParameter { Value = exceptionType });
+					cmd.Parameters.Add(new SQLiteParameter { Value = stacktrace });
+					cmd.ExecuteNonQuery();
+				}
+				// then, flush outstanding changes (SharpDevelop will likely exit soon)
+				FlushOutstandingChanges();
 			}
 		}
 		
@@ -217,14 +301,39 @@ namespace ICSharpCode.UsageDataCollector
 		/// </summary>
 		public void Dispose()
 		{
-			if (!isDisposed) {
-				isDisposed = true;
-				EndSession();
-				connection.Dispose();
+			lock (lockObj) {
+				if (!isDisposed) {
+					isDisposed = true;
+					EndSession();
+					timer.Dispose();
+					connection.Dispose();
+				}
 			}
 		}
 	}
-	
+
+	public sealed class FeatureUse
+	{
+		internal readonly DateTime startTime = DateTime.UtcNow;
+		internal DateTime endTime;
+		internal string name, activation;
+		internal long rowId;
+		UsageDataSessionWriter writer;
+		
+		internal FeatureUse(UsageDataSessionWriter writer)
+		{
+			this.writer = writer;
+		}
+		
+		/// <summary>
+		/// Marks the end time for a feature use.
+		/// </summary>
+		public void TrackEndTime()
+		{
+			writer.WriteEndTimeForFeature(this);
+		}
+	}
+
 	[Serializable]
 	public class IncompatibleDatabaseException : Exception
 	{
