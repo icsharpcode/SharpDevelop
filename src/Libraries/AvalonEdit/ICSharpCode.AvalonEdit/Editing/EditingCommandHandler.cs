@@ -307,6 +307,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 		static void CopySelectedText(TextArea textArea)
 		{
 			Clipboard.SetDataObject(textArea.Selection.CreateDataObject(textArea), true);
+			
+			string text = textArea.Selection.GetText(textArea.Document);
+			text = NewLineFinder.NormalizeNewLines(text, Environment.NewLine);
+			textArea.OnTextCopied(new TextEventArgs(text));
 		}
 		
 		const string LineSelectedType = "MSDEVLineSelect";  // This is the type VS 2003 and 2005 use for flagging a whole line copy
@@ -316,7 +320,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			ISegment wholeLine = new SimpleSegment(line.Offset, line.TotalLength);
 			string text = textArea.Document.GetText(wholeLine);
 			// Ensure we use the appropriate newline sequence for the OS
-			DataObject data = new DataObject(NewLineFinder.NormalizeNewLines(text, Environment.NewLine));
+			text = NewLineFinder.NormalizeNewLines(text, Environment.NewLine);
+			DataObject data = new DataObject(text);
 			
 			// Also copy text in HTML format to clipboard - good for pasting text into Word
 			// or to the SharpDevelop forums.
@@ -328,6 +333,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			data.SetData(LineSelectedType, lineSelected, false);
 			
 			Clipboard.SetDataObject(data, true);
+			
+			textArea.OnTextCopied(new TextEventArgs(text));
 		}
 		
 		static void CanPaste(object target, CanExecuteRoutedEventArgs args)

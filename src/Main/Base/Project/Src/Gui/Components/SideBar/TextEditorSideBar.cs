@@ -167,5 +167,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			return el;
 		}
+		
+		protected override object StartItemDrag(SideTabItem draggedItem)
+		{
+			if (this.ActiveTab.ChoosedItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
+				this.ActiveTab.ChoosedItem = draggedItem;
+			}
+			var dataObject = new System.Windows.DataObject();
+			dataObject.SetText(draggedItem.Tag.ToString());
+			return dataObject;
+		}
 	}
 }

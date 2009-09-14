@@ -193,8 +193,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textEditor.TextArea.TextView.MouseRightButtonDown += TextViewMouseRightButtonDown;
 			textEditor.TextArea.TextView.ContextMenuOpening += TextViewContextMenuOpening;
+			textEditor.TextArea.TextCopied += textEditor_TextArea_TextCopied;
 			
 			return textEditor;
+		}
+		
+		public event EventHandler<TextEventArgs> TextCopied;
+
+		void textEditor_TextArea_TextCopied(object sender, TextEventArgs e)
+		{
+			if (TextCopied != null)
+				TextCopied(this, e);
 		}
 
 		protected virtual void DisposeTextEditor(TextEditor textEditor)

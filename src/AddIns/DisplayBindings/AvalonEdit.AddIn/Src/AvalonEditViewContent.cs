@@ -21,7 +21,8 @@ using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	public class AvalonEditViewContent : AbstractViewContent, IEditable, IMementoCapable, ITextEditorProvider, IPositionable, IParseInformationListener
+	public class AvalonEditViewContent
+		: AbstractViewContent, IEditable, IMementoCapable, ITextEditorProvider, IPositionable, IParseInformationListener, IToolsHost
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		
@@ -33,6 +34,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			file.ForceInitializeView(this);
 			codeEditor.Document.Changed += textEditor_Document_Changed;
 			codeEditor.CaretPositionChanged += CaretChanged;
+			codeEditor.TextCopied += codeEditor_TextCopied;
+		}
+		
+		void codeEditor_TextCopied(object sender, ICSharpCode.AvalonEdit.Editing.TextEventArgs e)
+		{
+			TextEditorSideBar.Instance.PutInClipboardRing(e.Text);
 		}
 		
 		void textEditor_Document_Changed(object sender, DocumentChangeEventArgs e)
@@ -248,5 +255,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}));
 		}
 		#endregion
+		
+		object IToolsHost.ToolsContent {
+			get { return TextEditorSideBar.Instance; }
+		}
 	}
 }

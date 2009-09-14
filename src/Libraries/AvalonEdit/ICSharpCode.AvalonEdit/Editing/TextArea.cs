@@ -781,5 +781,44 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			return textView.Services.GetService(serviceType);
 		}
+		
+		/// <summary>
+		/// Occurs when text inside the TextArea was copied.
+		/// </summary>
+		public event EventHandler<TextEventArgs> TextCopied;
+		
+		internal void OnTextCopied(TextEventArgs e)
+		{
+			if (TextCopied != null)
+				TextCopied(this, e);
+		}
+	}
+	
+	/// <summary>
+	/// EventArgs with text.
+	/// </summary>
+	[Serializable]
+	public class TextEventArgs : EventArgs
+	{
+		string text;
+		
+		/// <summary>
+		/// Gets the text.
+		/// </summary>
+		public string Text {
+			get {
+				return text;
+			}
+		}
+		
+		/// <summary>
+		/// Creates a new TextEventArgs instance.
+		/// </summary>
+		public TextEventArgs(string text)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			this.text = text;
+		}
 	}
 }
