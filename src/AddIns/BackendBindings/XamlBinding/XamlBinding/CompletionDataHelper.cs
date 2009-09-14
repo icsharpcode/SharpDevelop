@@ -620,7 +620,7 @@ namespace ICSharpCode.XamlBinding
 					break;
 				case "System.Windows.Markup.TypeExtension":
 					if (context.AttributeValue.ExtensionValue.PositionalArguments.Count <= 1) {
-						list.Items.AddRange(CreateElementList(context, true, true));
+						list.Items.AddRange(GetClassesFromContext(context).FlattenToList());
 						AttributeValue selItem = Utils.GetInnermostMarkupExtensionInfo(context.AttributeValue.ExtensionValue)
 							.PositionalArguments.LastOrDefault();
 						string word = context.Editor.GetWordBeforeCaret().TrimEnd();
@@ -640,6 +640,15 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return true;
+		}
+		
+		static IEnumerable<ICompletionItem> FlattenToList(this IDictionary<string, IEnumerable<IClass>> data)
+		{
+			foreach (var item in data) {
+				foreach (IClass c in item.Value) {
+					yield return new XamlCodeCompletionItem(c, item.Key);
+				}
+			}
 		}
 
 		public static IEnumerable<IInsightItem> MemberInsight(MemberResolveResult result)
