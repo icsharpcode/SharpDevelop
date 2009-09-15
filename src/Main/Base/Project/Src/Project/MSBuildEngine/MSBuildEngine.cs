@@ -222,13 +222,20 @@ namespace ICSharpCode.SharpDevelop.Project
 					w.WriteLine("  <Target Name=\"_ComputeNonExistentFileProperty\" />");
 				}
 				
-				// inject our imports at the end of 'Microsoft.Common.Targets' by replacing the CodeAnalysisTargets.
-				if (globalProperties.ContainsKey("CodeAnalysisTargets")) {
-					w.WriteLine("  <Import Project=\"" + globalProperties["CodeAnalysisTargets"] + "\" />");
+				// 'MsTestToolsTargets' is preferred because it's at the end of the MSBuild 3.5 and 4.0 target file,
+				// but on MSBuild 2.0 we need to fall back to 'CodeAnalysisTargets'.
+				string hijackedProperty = "MsTestToolsTargets";
+				if (project.MinimumSolutionVersion == Solution.SolutionVersionVS2005)
+					hijackedProperty = "CodeAnalysisTargets";
+				
+				// because we'll replace the hijackedProperty, manually write the corresponding include
+				if (globalProperties.ContainsKey(hijackedProperty)) {
+					w.WriteLine("  <Import Project=\"" + globalProperties[hijackedProperty] + "\" />");
 				}
 				w.WriteLine("</Project>");
 				
-				globalProperties["CodeAnalysisTargets"] = temporaryFileName;
+				// inject our imports at the end of 'Microsoft.Common.Targets' by replacing the hijackedProperty.
+				globalProperties[hijackedProperty] = temporaryFileName;
 			}
 			
 			string fileName = project.FileName;
