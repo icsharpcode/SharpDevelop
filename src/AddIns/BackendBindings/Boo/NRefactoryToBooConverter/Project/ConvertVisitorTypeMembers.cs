@@ -154,7 +154,7 @@ namespace NRefactoryToBooConverter
 				if (para != null)
 					output.Add(para);
 			}
-			output.VariableNumber = isParams;
+			output.HasParamArray = isParams;
 		}
 		
 		B.ParameterDeclaration ConvertParameter(ParameterDeclarationExpression pde, out bool isParams)
