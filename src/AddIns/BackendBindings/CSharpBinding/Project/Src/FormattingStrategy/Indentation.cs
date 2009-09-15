@@ -20,14 +20,63 @@ namespace CSharpBinding.FormattingStrategy
 	
 	public sealed class IndentationReformatter
 	{
+		/// <summary>
+		/// An indentation block. Tracks the state of the indentation.
+		/// </summary>
 		public struct Block
 		{
+			/// <summary>
+			/// The indentation outside of the block.
+			/// </summary>
 			public string OuterIndent;
+			
+			/// <summary>
+			/// The indentation inside the block.
+			/// </summary>
 			public string InnerIndent;
+			
+			/// <summary>
+			/// The last word that was seen inside this block.
+			/// Because parenthesis open a sub-block and thus don't change their parent's LastWord,
+			/// this property can be used to identify the type of block statement (if, while, switch)
+			/// at the position of the '{'.
+			/// </summary>
 			public string LastWord;
+			
+			/// <summary>
+			/// The type of bracket that opened this block (, [ or {
+			/// </summary>
 			public char Bracket;
+			
+			/// <summary>
+			/// Gets whether there's currently a line continuation going on inside this block.
+			/// </summary>
 			public bool Continuation;
-			public bool OneLineBlock;
+			
+			/// <summary>
+			/// Gets whether there's currently a 'one-line-block' going on. 'one-line-blocks' occur
+			/// with if statements that don't use '{}'. They are not represented by a Block instance on
+			/// the stack, but are instead handled similar to line continuations.
+			/// This property is an integer because there might be multiple nested one-line-blocks.
+			/// As soon as there is a finished statement, OneLineBlock is reset to 0.
+			/// </summary>
+			public int OneLineBlock;
+			
+			/// <summary>
+			/// The previous value of one-line-block before it was reset.
+			/// Used to restore the indentation of 'else' to the correct level.
+			/// </summary>
+			public int PreviousOneLineBlock;
+			
+			public void ResetOneLineBlock()
+			{
+				PreviousOneLineBlock = OneLineBlock;
+				OneLineBlock = 0;
+			}
+			
+			/// <summary>
+			/// Gets the line number where this block started.
+			/// </summary>
 			public int StartLine;
 			
 			public void Indent(IndentationSettings set)
@@ -40,8 +89,14 @@ namespace CSharpBinding.FormattingStrategy
 				OuterIndent = InnerIndent;
 				InnerIndent += str;
 				Continuation = false;
-				OneLineBlock = false;
+				ResetOneLineBlock();
 				LastWord = "";
+			}
+			
+			public override string ToString()
+			{
+				return string.Format("[Block StartLine={0}, LastWord='{1}', Continuation={2}, OneLineBlock={3}, PreviousOneLineBlock={4}]",
+				                     this.StartLine, this.LastWord, this.Continuation, this.OneLineBlock, this.PreviousOneLineBlock);
 			}
 		}
 		
@@ -78,7 +133,8 @@ namespace CSharpBinding.FormattingStrategy
 			block.Bracket = '{';
 			block.Continuation = false;
 			block.LastWord = "";
-			block.OneLineBlock = false;
+			block.OneLineBlock = 0;
+			block.PreviousOneLineBlock = 0;
 			block.StartLine = 0;
 			
 			inString = false;
@@ -104,8 +160,7 @@ namespace CSharpBinding.FormattingStrategy
 				if (blockComment || (inString && verbatim))
 					return;
 				indent.Append(block.InnerIndent);
-				if (block.OneLineBlock)
-					indent.Append(set.IndentString);
+				indent.Append(Repeat(set.IndentString, block.OneLineBlock));
 				if (block.Continuation)
 					indent.Append(set.IndentString);
 				if (doc.Text != indent.ToString())
@@ -212,7 +267,7 @@ namespace CSharpBinding.FormattingStrategy
 				#region Push/Pop the blocks
 				switch (c) {
 					case '{':
-						block.OneLineBlock = false;
+						block.ResetOneLineBlock();
 						blocks.Push(block);
 						block.StartLine = doc.LineNumber;
 						if (block.LastWord == "switch") {
@@ -242,7 +297,7 @@ namespace CSharpBinding.FormattingStrategy
 						if (blocks.Count == 0) break;
 						block = blocks.Pop();
 						block.Continuation = false;
-						block.OneLineBlock = false;
+						block.ResetOneLineBlock();
 						break;
 					case '(':
 					case '[':
@@ -252,7 +307,7 @@ namespace CSharpBinding.FormattingStrategy
 						else
 							block.StartLine = doc.LineNumber;
 						block.Indent(set,
-						             (oldBlock.OneLineBlock ? set.IndentString : "") +
+						             Repeat(set.IndentString, oldBlock.OneLineBlock) +
 						             (oldBlock.Continuation ? set.IndentString : "") +
 						             (i == line.Length - 1 ? set.IndentString : new String(' ', i + 1)));
 						block.Bracket = c;
@@ -273,12 +328,12 @@ namespace CSharpBinding.FormattingStrategy
 					case ';':
 					case ',':
 						block.Continuation = false;
-						block.OneLineBlock = false;
+						block.ResetOneLineBlock();
 						break;
 					case ':':
 						if (block.LastWord == "case" || line.StartsWith("case ") || line.StartsWith(block.LastWord + ":")) {
 							block.Continuation = false;
-							block.OneLineBlock = false;
+							block.ResetOneLineBlock();
 						}
 						break;
 				}
@@ -302,7 +357,7 @@ namespace CSharpBinding.FormattingStrategy
 			
 			if (line[0] == '}') {
 				indent.Append(oldBlock.OuterIndent);
-				oldBlock.OneLineBlock = false;
+				oldBlock.ResetOneLineBlock();
 				oldBlock.Continuation = false;
 			} else {
 				indent.Append(oldBlock.InnerIndent);
@@ -321,18 +376,19 @@ namespace CSharpBinding.FormattingStrategy
 					indent.Remove(indent.Length - set.IndentString.Length, set.IndentString.Length);
 			} else if (lastRealChar == ')') {
 				if (IsSingleStatementKeyword(block.LastWord)) {
-					block.OneLineBlock = true;
+					block.OneLineBlock++;
 				}
 			} else if (lastRealChar == 'e' && block.LastWord == "else") {
-				block.OneLineBlock = true;
+				block.OneLineBlock = Math.Max(1, block.PreviousOneLineBlock);
 				block.Continuation = false;
+				oldBlock.OneLineBlock = block.OneLineBlock - 1;
 			}
 			
 			if (doc.ReadOnly) {
 				// We can't change the current line, but we should accept the existing
 				// indentation if possible (=if the current statement is not a multiline
 				// statement).
-				if (!oldBlock.Continuation && !oldBlock.OneLineBlock &&
+				if (!oldBlock.Continuation && oldBlock.OneLineBlock == 0 &&
 				    oldBlock.StartLine == block.StartLine &&
 				    block.StartLine < doc.LineNumber && lastRealChar != ':')
 				{
@@ -357,8 +413,7 @@ namespace CSharpBinding.FormattingStrategy
 			if (line[0] != '{') {
 				if (line[0] != ')' && oldBlock.Continuation && oldBlock.Bracket == '{')
 					indent.Append(set.IndentString);
-				if (oldBlock.OneLineBlock)
-					indent.Append(set.IndentString);
+				indent.Append(Repeat(set.IndentString, oldBlock.OneLineBlock));
 			}
 			
 			// this is only for blockcomment lines starting with *,
@@ -374,7 +429,20 @@ namespace CSharpBinding.FormattingStrategy
 			}
 		}
 		
-		bool IsSingleStatementKeyword(string keyword) {
+		static string Repeat(string text, int count)
+		{
+			if (count == 0)
+				return string.Empty;
+			if (count == 1)
+				return text;
+			StringBuilder b = new StringBuilder(text.Length * count);
+			for (int i = 0; i < count; i++)
+				b.Append(text);
+			return b.ToString();
+		}
+		
+		bool IsSingleStatementKeyword(string keyword)
+		{
 			switch (keyword) {
 				case "if":
 				case "for":
