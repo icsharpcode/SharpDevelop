@@ -39,6 +39,20 @@ namespace AvalonDock
     /// </summary>
     public sealed class ColorFactory
     {
+        /// Change the theme to one from AvalonDock.
+        /// </summary>
+        /// <param name="theme">for example: "aero.normalcolor" (default style)</param>
+        public static void ChangeTheme(string theme)
+        {
+            ResourceDictionary rd = new ResourceDictionary();
+            rd.Source = new Uri("/AvalonDock;component/themes/" + theme + ".xaml", UriKind.RelativeOrAbsolute);
+
+            // first search and remove old one
+            ResetColors();
+
+            Application.Current.Resources.MergedDictionaries.Add(rd);
+        }
+
         /// <summary>
         /// Change the colors based on the aero-theme from AvalonDock.
         /// <para>
@@ -72,16 +86,17 @@ namespace AvalonDock
 
             //ResourceDictionary parent = Application.Current.Resources;
             // first search and remove old one
-            foreach (ResourceDictionary res in Application.Current.Resources.MergedDictionaries)
-            {
-                string source = res.Source.ToString();
-                if (source.Contains("/AvalonDock;component/themes/"))
-                {
-                    Application.Current.Resources.MergedDictionaries.Remove(res);
-                    break;
-                }
-            }
-            
+            //foreach (ResourceDictionary res in Application.Current.Resources.MergedDictionaries)
+            //{
+            //    string source = res.Source.ToString();
+            //    if (source.Contains("/AvalonDock;component/themes/"))
+            //    {
+            //        Application.Current.Resources.MergedDictionaries.Remove(res);
+            //        break;
+            //    }
+            //}
+            ResetColors();
+
             Application.Current.Resources.MergedDictionaries.Add(rd);
         }
 
@@ -90,16 +105,81 @@ namespace AvalonDock
         /// </summary>
         public static void ResetColors()
         {
-            foreach (ResourceDictionary res in Application.Current.Resources.MergedDictionaries)
+//-            foreach (ResourceDictionary res in Application.Current.Resources.MergedDictionaries)
+            ResourceDictionary res = GetActualResourceDictionary();
+            if (res != null)
+                Application.Current.Resources.MergedDictionaries.Remove(res);
+        }
+
+        /// <summary>
+        /// Change a specified brush inside the actual theme.
+        /// Look at AvalonDockBrushes.cs for possible values.
+        /// </summary>
+        /// <param name="brushName">an AvalonDockBrushes value</param>
+        /// <param name="brush">The new brush. It can be every brush type that is derived from Brush-class.</param>
+        public static void ChangeBrush(AvalonDockBrushes brushName, Brush brush)
+        {
+            ChangeBrush(brushName.ToString(), brush);
+        }
+
+        /// <summary>
+        /// Change a specified brush inside the actual theme.
+        /// </summary>
+        /// <param name="brushName">a brush name</param>
+        /// <param name="brush">The new brush. It can be every brush type that is derived from Brush-class.</param>
+        public static void ChangeBrush(string brushName, Brush brush)
+        {
+            // get the actual ResourceDictionary
+            ResourceDictionary rd = GetActualResourceDictionary();
+            if (rd == null)
+             {
+//-                string source = res.Source.ToString();
+//-                if (source.Contains("/AvalonDock;component/themes/"))
+                ChangeTheme("aero.normalcolor");
+                rd = GetActualResourceDictionary();
+            }
+
+            if (rd != null)
             {
-                string source = res.Source.ToString();
-                if (source.Contains("/AvalonDock;component/themes/"))
-                {
-                    Application.Current.Resources.MergedDictionaries.Remove(res);
-                    break;
+                foreach (ResourceDictionary rd2 in rd.MergedDictionaries)
+                 {
+//-                    Application.Current.Resources.MergedDictionaries.Remove(res);
+//-                    break;
+                    foreach (object key in rd2.Keys)
+                    {
+                        object item = rd2[key];
+                        string keyTypeName = key.GetType().Name;
+
+                        string str = "";
+                        switch (keyTypeName)
+                        {
+                            case "ComponentResourceKey":
+                                str = ((ComponentResourceKey)key).ResourceId.ToString();
+                                break;
+                            case "String":
+                                str = (string)key;
+                                break;
+                        }
+                        if (str == brushName)
+                        {
+                            rd[key] = brush;
+                            return;
+                        }
+                    }
                 }
             }
         }
+
+
+        //    {
+        //        string source = res.Source.ToString();
+        //        if (source.Contains("/AvalonDock;component/themes/"))
+        //        {
+        //            Application.Current.Resources.MergedDictionaries.Remove(res);
+        //            break;
+        //        }
+        //    }
+        //}
 
 
         /// <summary>
@@ -137,6 +217,22 @@ namespace AvalonDock
             }
         }
         
+        static ResourceDictionary GetActualResourceDictionary()
+        {
+            // get the actual ResourceDictionary
+            foreach (ResourceDictionary res in Application.Current.Resources.MergedDictionaries)
+            {
+                if (res.Source != null)
+                {
+                    string source = res.Source.ToString();
+                    if (source.Contains("/AvalonDock;component/themes/"))
+                    {
+                        return res;
+                    }
+                }
+            }
+            return null;
+        }
 
         static Color GetColor(Color c, Color newCol)
         {

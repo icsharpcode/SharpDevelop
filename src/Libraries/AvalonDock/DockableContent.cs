@@ -167,8 +167,8 @@ namespace AvalonDock
         {
             ContainerPane = containerPane;
             ChildIndex = childIndex;
-            Width = width;
-            Height = height;
+            Width = Math.Max(width, 100.0);
+            Height = Math.Max(height, 100.0);
             Anchor = anchor;
         }
 
@@ -177,8 +177,8 @@ namespace AvalonDock
         {
             ContainerPane = cntToSave.ContainerPane;
             ChildIndex = ContainerPane.Items.IndexOf(cntToSave);
-            Width = ContainerPane.ActualWidth;
-            Height = ContainerPane.ActualHeight;
+            Width = Math.Max(ContainerPane.ActualWidth, 100.0);
+            Height = Math.Max(ContainerPane.ActualHeight, 100.0);
 
             DockablePane dockablePane = ContainerPane as DockablePane;
             if (dockablePane != null)
@@ -222,11 +222,20 @@ namespace AvalonDock
         #endregion
 
         #region State Properties & Events
+
+        public delegate void DockableContentStateHandler(object sender, DockableContentState state);
+        public event DockableContentStateHandler StateChanged;
 		
         public DockableContentState State
         {
             get { return (DockableContentState)GetValue(StatePropertyKey.DependencyProperty); }
-            protected set { SetValue(StatePropertyKey, value); }
+            //protected set { SetValue(StatePropertyKey, value); }
+            protected set
+            {
+                SetValue(StatePropertyKey, value);
+                if (StateChanged != null)
+                    StateChanged(this, value);
+            }
         }
 
         // Using a DependencyProperty as the backing store for State.  This enables animation, styling, binding, etc...
@@ -296,6 +305,16 @@ namespace AvalonDock
             State = DockableContentState.Document;
         }
         #endregion 
+
+        #region HideOnClose
+        public static DependencyProperty HideOnCloseKey = DependencyProperty.Register("HideOnClose", typeof(bool), typeof(DockableContent), new PropertyMetadata(true));
+
+        public bool HideOnClose
+        {
+            get { return (bool)GetValue(HideOnCloseKey); }
+            set { SetValue(HideOnCloseKey, value); }
+        }
+        #endregion
 
 
         protected override void OnInitialized(EventArgs e)
@@ -461,15 +480,15 @@ namespace AvalonDock
 
         internal void SaveCurrentStateAndPosition()
         {
-            if (State == DockableContentState.Docked)
-            {
+            //if (State == DockableContentState.Docked)
+            //{
                 _savedStateAndPosition = new DockableContentStateAndPosition(
                     this);
-            }
-            else
-            {
-                _savedStateAndPosition = null;
-            }
+            //}
+            //else
+            //{
+            //    _savedStateAndPosition = null;
+            //}
         }
 
         /// <summary>

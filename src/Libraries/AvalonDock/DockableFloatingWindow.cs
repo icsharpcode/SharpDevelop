@@ -123,6 +123,7 @@ namespace AvalonDock
             {
                 Width = selectedContent.FloatingWindowSize.Width;
                 Height = selectedContent.FloatingWindowSize.Height;
+                this.ResizeMode = selectedContent.FloatingResizeMode;
             }
             else
             {

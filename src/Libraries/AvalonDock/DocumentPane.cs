@@ -88,6 +88,8 @@ namespace AvalonDock
                 new CommandBinding(ShowDocumentsListMenuCommand, ExecutedShowDocumentsListMenuCommand, CanExecuteShowDocumentsListMenuCommand));
             this.CommandBindings.Add(
                 new CommandBinding(ApplicationCommands.Close, ExecutedCloseCommand, CanExecuteCloseCommand));
+            this.CommandBindings.Add(
+                new CommandBinding(CloseCommand, ExecutedCloseCommand, CanExecuteCloseCommand));
 
             this.CommandBindings.Add(
                 new CommandBinding(CloseAllButThisCommand, this.OnExecuteCommand, this.OnCanExecuteCommand));
@@ -136,7 +138,7 @@ namespace AvalonDock
 
             ManagedContent contentToClose = SelectedItem as ManagedContent;
 
-            if (e.Parameter != null)
+            if (e.Parameter is ManagedContent)
                 contentToClose = e.Parameter as ManagedContent;
 
             DockableContent dockableContent = contentToClose as DockableContent;
@@ -216,6 +218,22 @@ namespace AvalonDock
                     }
                 }
                 return closeAllButThisCommand;
+            }
+        }
+
+        private static RoutedUICommand closeCommand = null;
+        public static RoutedUICommand CloseCommand
+        {
+            get
+            {
+                lock (syncRoot)
+                {
+                    if (null == closeCommand)
+                    {
+                        closeCommand = new RoutedUICommand("C_lose", "Close", typeof(DocumentPane));
+                    }
+                }
+                return closeCommand;
             }
         }
 
@@ -408,6 +426,7 @@ namespace AvalonDock
                             containerPanel.RemoveChild(this);
 
                         manager.MainDocumentPane = candidateNewMainDocPane;
+                        candidateNewMainDocPane.NotifyPropertyChanged("IsMainDocumentPane");
                     }
                 }
                 else

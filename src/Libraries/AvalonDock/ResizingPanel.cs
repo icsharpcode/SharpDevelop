@@ -108,7 +108,9 @@ namespace AvalonDock
 
         static void OnSplitSizeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-
+            ResizingPanel parentPanel = LogicalTreeHelper.GetParent(sender) as ResizingPanel;
+            if (parentPanel != null)
+                parentPanel.InvalidateMeasure();
         }
 
         static object OnCoerceSplitSize(DependencyObject sender, object value)

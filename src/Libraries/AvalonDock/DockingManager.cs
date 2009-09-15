@@ -1669,6 +1669,17 @@ namespace AvalonDock
 
             if (!found && MainDocumentPane != null)
             {
+                if (document.Parent is DocumentPane)
+                {
+                    ((DocumentPane)document.Parent).Items.Clear();
+                }
+                //if (document.Parent != null)
+                //{
+                //    throw new InvalidProgramException(
+                //        string.Format("Disconnnect first the document from its logical parent ({0})",
+                //        document.Parent.GetType()));
+                //}
+
                 MainDocumentPane.Items.Insert(0, document);
             }
 
@@ -1804,6 +1815,23 @@ namespace AvalonDock
                 {
                     content.ContainerPane.SelectedItem = content;
                     content.SetAsActive();
+
+                    DockablePane dockParent = content.ContainerPane as DockablePane;
+                    if (content.ActualWidth == 0.0 && (
+                        dockParent.Anchor == AnchorStyle.Left || dockParent.Anchor == AnchorStyle.Right))
+                    {
+                        ResizingPanel.SetResizeWidth(dockParent, new GridLength(200));
+                        ResizingPanel.SetEffectiveSize(dockParent, new Size(200, 0.0));
+                    }
+                    else if (content.ActualWidth == 0.0 && (
+                        dockParent.Anchor == AnchorStyle.Left || dockParent.Anchor == AnchorStyle.Right))
+                    {
+                        ResizingPanel.SetResizeWidth(dockParent, new GridLength(200));
+                        ResizingPanel.SetEffectiveSize(dockParent, new Size(200, 0.0));
+                    }
+
+
+                    
                     //ActiveContent = content;
                     ////content.FocusContent();
                     //if (content.Content is IInputElement)
@@ -1815,8 +1843,18 @@ namespace AvalonDock
                 content.State == DockableContentState.FloatingWindow)
             {
                 FloatingDockablePane containerPane = content.ContainerPane as FloatingDockablePane;
+
                 if (containerPane != null)
+                {
+                    //check if visible on the primary screen
+                    if (containerPane.FloatingWindow.Left > System.Windows.SystemParameters.PrimaryScreenWidth)
+                        containerPane.FloatingWindow.Left = System.Windows.SystemParameters.PrimaryScreenWidth - containerPane.FloatingWindow.Width;
+                    if (containerPane.FloatingWindow.Top > System.Windows.SystemParameters.PrimaryScreenHeight)
+                        containerPane.FloatingWindow.Top = System.Windows.SystemParameters.PrimaryScreenHeight - containerPane.FloatingWindow.Height;
+
+
                     containerPane.FloatingWindow.Activate();
+                }
 
             }
             else if (content.State == DockableContentState.Document)
@@ -2475,7 +2513,7 @@ namespace AvalonDock
 
         void SaveLayout(XmlWriter xmlWriter, DockableFloatingWindow flWindow)
         {
-            xmlWriter.WriteStartElement("FloatingWinfow");
+            xmlWriter.WriteStartElement("FloatingWindow");
             xmlWriter.WriteAttributeString("IsDockableWindow", XmlConvert.ToString(flWindow.IsDockableWindow));
 
             xmlWriter.WriteAttributeString("Top", XmlConvert.ToString(flWindow.Top));

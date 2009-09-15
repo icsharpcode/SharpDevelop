@@ -499,6 +499,16 @@ namespace AvalonDock
             { _floatingWindowSize = value; }
         }
 
+        
+        ResizeMode _floatingResizeMode = ResizeMode.CanResize;
+        public ResizeMode FloatingResizeMode
+        {
+            get
+            { return _floatingResizeMode; }
+            set
+            { _floatingResizeMode = value; }
+        }
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;

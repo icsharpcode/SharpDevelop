@@ -13,7 +13,7 @@
 		     x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type ad:DockingManager}, ResourceId={x:Static ad:ContextMenuElement.DocumentPane}}"
 		     >
         <MenuItem Header="Close" 
-			Command="ApplicationCommands.Close" CommandParameter="{Binding}" />
+			Command="ApplicationCommands.Close"  />
         <MenuItem Command="ad:DocumentPane.CloseAllButThisCommand" />
         <Separator/>
         <MenuItem Command="ad:DocumentPane.NewHorizontalTabGroupCommand">

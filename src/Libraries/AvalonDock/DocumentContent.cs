@@ -213,6 +213,15 @@ namespace AvalonDock
 
                 parentPane.CheckContentsEmpty();
             }
+            else
+            {
+                FloatingDockablePane floatingParentPane = ContainerPane as FloatingDockablePane;
+                if (floatingParentPane != null)
+                {
+                    floatingParentPane.RemoveContent(0);
+                    floatingParentPane.FloatingWindow.Close();
+                }
+            }
 
 
 
@@ -266,6 +275,10 @@ namespace AvalonDock
 
             if (oldManager != null)
                 oldManager.FireDocumentClosedEvent();
+
+
+            if (Parent != null)
+                throw new InvalidOperationException("Parent MUST bu null after Doc is closed");
 
             return true;
         }
