@@ -183,6 +183,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 					results = new List<IMember>();
 				}
 			}
+			// Sometimes there might be 'override's without corresponding 'virtual's.
+			// Ensure those get found, too.
+			if (nonMethodOverride != null && allResults.Count == 0) {
+				results.Add(nonMethodOverride);
+			}
+			foreach (IMethod method in overrideMethodDict.Values) {
+				if (handledMethods.Add(method)) {
+					results.Add(method);
+				}
+			}
+			if (results.Count > 0) {
+				allResults.Add(results);
+			}
 			return allResults;
 		}
 		
