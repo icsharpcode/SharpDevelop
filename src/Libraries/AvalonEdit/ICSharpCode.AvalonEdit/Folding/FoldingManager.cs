@@ -201,6 +201,9 @@ namespace ICSharpCode.AvalonEdit.Folding
 					throw new ArgumentException("newFoldings must be sorted by start offset");
 				previousStartOffset = newFolding.StartOffset;
 				
+				if (newFolding.StartOffset == newFolding.EndOffset)
+					continue; // ignore zero-length foldings
+				
 				// remove old foldings that were skipped
 				while (oldFoldingIndex < oldFoldings.Length && newFolding.StartOffset > oldFoldings[oldFoldingIndex].StartOffset) {
 					this.RemoveFolding(oldFoldings[oldFoldingIndex++]);

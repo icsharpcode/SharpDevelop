@@ -55,8 +55,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					AddClassMembers(c, newFoldMarkers);
 				}
 				foreach (FoldingRegion foldingRegion in parseInfo.CompilationUnit.FoldingRegions) {
-					NewFolding f = new NewFolding(textArea.Document.GetOffset(foldingRegion.Region.BeginLine, foldingRegion.Region.BeginColumn),
-					                              textArea.Document.GetOffset(foldingRegion.Region.EndLine, foldingRegion.Region.EndColumn));
+					NewFolding f = new NewFolding(GetOffset(foldingRegion.Region.BeginLine, foldingRegion.Region.BeginColumn),
+					                              GetOffset(foldingRegion.Region.EndLine, foldingRegion.Region.EndColumn));
 					f.DefaultClosed = isFirstUpdate;
 					f.Name = foldingRegion.Name;
 					newFoldMarkers.Add(f);
@@ -74,8 +74,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (cRegion.IsEmpty)
 				cRegion = c.Region;
 			if (cRegion.BeginLine < cRegion.EndLine) {
-				newFoldMarkers.Add(new NewFolding(textArea.Document.GetOffset(cRegion.BeginLine, cRegion.BeginColumn),
-				                                  textArea.Document.GetOffset(cRegion.EndLine, cRegion.EndColumn)));
+				newFoldMarkers.Add(new NewFolding(GetOffset(cRegion.BeginLine, cRegion.BeginColumn),
+				                                  GetOffset(cRegion.EndLine, cRegion.EndColumn)));
 			}
 			foreach (IClass innerClass in c.InnerClasses) {
 				AddClassMembers(innerClass, newFoldMarkers);
@@ -83,10 +83,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			foreach (IMember m in c.AllMembers) {
 				if (m.Region.EndLine < m.BodyRegion.EndLine) {
-					newFoldMarkers.Add(new NewFolding(textArea.Document.GetOffset(m.Region.EndLine, m.Region.EndColumn),
-					                                  textArea.Document.GetOffset(m.BodyRegion.EndLine, m.BodyRegion.EndColumn)));
+					newFoldMarkers.Add(new NewFolding(GetOffset(m.Region.EndLine, m.Region.EndColumn),
+					                                  GetOffset(m.BodyRegion.EndLine, m.BodyRegion.EndColumn)));
 				}
 			}
+		}
+		
+		int GetOffset(int line, int column)
+		{
+			if (line < 1)
+				return 0;
+			var document = textArea.Document;
+			if (line > document.LineCount)
+				return document.TextLength;
+			return document.GetOffset(line, column);
 		}
 	}
 }

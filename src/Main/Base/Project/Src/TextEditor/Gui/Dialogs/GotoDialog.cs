@@ -11,9 +11,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -21,7 +23,6 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Project;
-using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -68,19 +69,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public object Tag;
 			public string Text { get; private set; }
 			IImage image;
+			int matchType;
 			
 			public ImageSource ImageSource {
 				get { return image.ImageSource; }
 			}
 			
-			public GotoEntry(string text, IImage image)
+			public GotoEntry(string text, IImage image, int matchType)
 			{
 				this.Text = text;
 				this.image = image;
+				this.matchType = matchType;
 			}
 			
 			public int CompareTo(GotoEntry other)
 			{
+				int r = matchType.CompareTo(other.matchType);
+				if (r != 0)
+					return -r;
 				return Text.CompareTo(other.Text);
 			}
 		}
@@ -112,11 +118,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listBox.ScrollIntoView(listBox.Items[index]);
 		}
 		
-		Dictionary<string, object> visibleEntries = new Dictionary<string, object>();
-		int bestMatchType;
-		double bestPriority;
+		HashSet<string> visibleEntries = new HashSet<string>();
 		List<GotoEntry> newItems = new List<GotoEntry>();
-		GotoEntry bestItem;
 		
 		void textBoxTextChanged(object sender, TextChangedEventArgs e)
 		{
@@ -124,14 +127,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listBox.ItemsSource = null;
 			newItems.Clear();
 			visibleEntries.Clear();
-			bestItem = null;
 			if (text.Length == 0) {
 				return;
 			}
 			if (text.Length == 1 && !char.IsDigit(text, 0)) {
 				return;
 			}
-			int dotPos = text.IndexOf('.');
 			int commaPos = text.IndexOf(',');
 			if (commaPos < 0) {
 				// use "File, ##" or "File: ##" syntax for line numbers
@@ -142,9 +143,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else if (commaPos > 0) {
 				string file = text.Substring(0, commaPos).Trim();
 				string line = text.Substring(commaPos + 1).Trim();
-				if (line.StartsWith("line")) {
-					// remove the word "line"
-					line = line.Substring(4).Trim();
+				Match m = Regex.Match(line, @"^\w+ (\d+)$");
+				if (m.Success) {
+					// remove the word "line" (or some localized version of it)
+					line = m.Groups[1].Value;
 				}
 				int lineNr;
 				if (!int.TryParse(line, out lineNr))
@@ -159,9 +161,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			newItems.Sort();
 			listBox.ItemsSource = newItems;
-			if (bestItem != null) {
-				listBox.SelectedItem = bestItem;
-				listBox.ScrollIntoView(bestItem);
+			if (newItems.Count > 0) {
+				listBox.SelectedItem = newItems[0];
 			}
 		}
 		
@@ -225,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (item.Project != null) {
 						display += StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ") + item.Project.Name;
 					}
-					AddItem(display, ClassBrowserIconService.GotoArrow, new FileLineReference(fileName, lineNumber), 0.5, matchType);
+					AddItem(display, ClassBrowserIconService.GotoArrow, new FileLineReference(fileName, lineNumber), matchType);
 				}
 			}
 		}
@@ -237,19 +238,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ITextEditor editor = GetEditor();
 				if (editor != null) {
 					num = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, num));
-					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrow, num, 0, int.MaxValue);
-				}
-			}
-		}
-		
-		void ShowCompletionData(IList<ICompletionItem> dataList, string text)
-		{
-			string lowerText = text.ToLowerInvariant();
-			foreach (CodeCompletionItem data in dataList.OfType<CodeCompletionItem>()) {
-				string dataText = data.Text;
-				int matchType = GetMatchType(text, dataText);
-				if (matchType >= 0) {
-					AddItem(data.Entity, data.Image, data.Priority, matchType);
+					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrow, num, int.MaxValue);
 				}
 			}
 		}
@@ -318,28 +307,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void AddItem(string text, IImage image, object tag, double priority, int matchType)
+		void AddItem(string text, IImage image, object tag, int matchType)
 		{
-			if (visibleEntries.ContainsKey(text))
+			if (!visibleEntries.Add(text))
 				return;
-			visibleEntries.Add(text, null);
-			GotoEntry item = new GotoEntry(text, image);
+			GotoEntry item = new GotoEntry(text, image, matchType);
 			item.Tag = tag;
-			if (bestItem == null
-			    || (tag is IMember && bestItem.Tag is IClass)
-			    || (!(tag is IClass && bestItem.Tag is IMember)
-			        && (matchType > bestMatchType || matchType == bestMatchType && priority > bestPriority)))
-			{
-				bestItem = item;
-				bestPriority = priority;
-				bestMatchType = matchType;
-			}
 			newItems.Add(item);
 		}
 		
 		void AddItem(IClass c, int matchType)
 		{
-			AddItem(c, ClassBrowserIconService.GetIcon(c), CodeCompletionDataUsageCache.GetPriority(c.DotNetName, true), matchType);
+			AddItem(c, ClassBrowserIconService.GetIcon(c), matchType);
 		}
 		
 		void AddItemIfMatchText(string text, IMember member, IImage image)
@@ -347,13 +326,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string name = member.Name;
 			int matchType = GetMatchType(text, name);
 			if (matchType >= 0) {
-				AddItem(member, image, CodeCompletionDataUsageCache.GetPriority(member.DotNetName, true), matchType);
+				AddItem(member, image, matchType);
 			}
 		}
 		
-		void AddItem(IEntity e, IImage image, double priority, int matchType)
+		void AddItem(IEntity e, IImage image, int matchType)
 		{
-			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", image, e, priority, matchType);
+			AddItem(e.Name + " (" + e.FullyQualifiedName + ")", image, e, matchType);
 		}
 		
 		void cancelButtonClick(object sender, RoutedEventArgs e)

@@ -226,6 +226,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
 				var position = GetPositionFromPoint(e.GetPosition(this));
 				if (position != null) {
+					Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
 					GoToDefinition.Run(this.Adapter, this.Document.GetOffset(position.Value));
 					e.Handled = true;
 				}

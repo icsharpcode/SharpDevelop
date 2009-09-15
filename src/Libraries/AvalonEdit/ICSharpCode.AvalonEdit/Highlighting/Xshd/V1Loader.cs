@@ -283,7 +283,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 						throw new HighlightingDefinitionInvalidException("Unexpected end of @ sequence, use @@ to look for a single @.");
 					switch (expr[i]) {
 						case 'C': // match whitespace or punctuation
-							b.Append(@"^[\w\d_]");
+							b.Append(@"[^\w\d_]");
 							break;
 						case '!': // negative lookahead
 							{
