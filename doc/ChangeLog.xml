@@ -1,719 +1,555 @@
 ﻿<ChangeLog project="SharpDevelop">
-  <Change author="Daniel Grunwald" date="02/07/2008">Fixed forum-7331: Deleting .cs code template group causes code completion to throw NullReferenceException</Change>
-  <Change author="Matt Ward" date="02/06/2008">${ProjectDir} string now returns the active project's directory and not its filename.</Change>
-  <Change author="Matt Ward" date="02/03/2008">Added support for casts and class method calls in the python code converter.</Change>
-  <Change author="Matt Ward" date="02/02/2008">ClassBrowserPad checks that the parent nodes in the tree are AbstractProjectNodes before updating their parse information. This fixes a null reference exception that was being thrown if the class browser was showing classes instead of projects.</Change>
-  <Change author="Daniel Grunwald" date="01/29/2008">Fixed forum-7302: InvalidOperationException for code completion after new keyword.
-DynamicHelpPad: invoke UpdateTick on main thread to avoid race condition.</Change>
-  <Change author="Daniel Grunwald" date="01/28/2008">Fixed build.</Change>
-  <Change author="Daniel Grunwald" date="01/28/2008">Don't reuse IAmbience instances (they are not thread-safe).
-Make NewFileDialog + SelectReferenceDialog resizable.
-ClassBrowser: fixed bug that could cause classes not to be removed from the class browser when the file containing the class definition was removed from the project.
-ClassBrowser: fixed bug with generic and non-generic classes that have the same name.</Change>
-  <Change author="Daniel Grunwald" date="01/28/2008">Forum-6859: Show code templates in code completion.
-Templates are now inserted by pressing Tab (instead of Space).
-However, when "Automatic template insertion" in the text editor options is on (new default: off), templates are also inserted when a template is chosen from the code completion list.</Change>
-  <Change author="Daniel Grunwald" date="01/27/2008">Fixed forum-7200, forum-7286: Exception when trying to remove lines with breakpoints
-Improved default selection in "Go to" dialog.
-SharpDevelop.Dom: Renamed IDecoration-&gt;IEntity, moved common properties in IClass and IMember into IEntity.</Change>
-  <Change author="David Srbecký" date="01/26/2008">Fixed IList for types that do not implement IList, but their superclass does.</Change>
-  <Change author="Daniel Grunwald" date="01/26/2008">Make IClass (+ IMember, IParameter, IAttribute, ICompilationUnit .....) immutable.
-Rewrite partial class support in DefaultProjectContent.</Change>
-  <Change author="David Srbecký" date="01/26/2008">If object supports IList, use it to access the items from local variables pad.</Change>
-  <Change author="David Srbecký" date="01/26/2008">When Terminate is called immediately mark the process as Expired.  
-After that ignore all callbacks except ExitProcess.  
-Remove the process when ExitProcess is received.  
-If it was last process reset debugger.</Change>
-  <Change author="David Srbecký" date="01/26/2008">API support for enumerating implemented interfaces</Change>
-  <Change author="David Srbecký" date="01/26/2008">Removed some code duplication the metadata wrapper.</Change>
-  <Change author="David Srbecký" date="01/26/2008">Bugfix for Termination from the exception dialog.</Change>
-  <Change author="David Srbecký" date="01/26/2008">Fixed NullRerferenceExcpetion in SimpleMemberReference evaluator.  If member not found, throw exception.</Change>
-  <Change author="David Srbecký" date="01/26/2008">Updated string resources</Change>
-  <Change author="David Srbecký" date="01/26/2008">Terminate command does 'Break+Terminate' rather then 'Continue+Break+Terminate'.  I think this was left over from .NET 1.1 hack.  
-Changed the way callbacks are handled - it uses pauseOnNextExit flag now rather then two different exit procedures.  
-Queued callback are drained from the process queue.</Change>
-  <Change author="David Srbecký" date="01/25/2008">Starting support for multiple AppDomains.</Change>
-  <Change author="David Srbecký" date="01/25/2008">Fixed base type for arrays and for primitive values.  Updated tests for it.</Change>
-  <Change author="David Srbecký" date="01/25/2008">Base class tests</Change>
-  <Change author="David Srbecký" date="01/23/2008">Compare object types by module paths rather then modules instances - one module can be loaded multiple times (for appdomains)</Change>
-  <Change author="David Srbecký" date="01/23/2008">Correct order of events when process is killed.  
-Only ValueNode.Create can be used to create node.</Change>
-  <Change author="David Srbecký" date="01/23/2008">Change "Private members" to "Non-Public members"</Change>
-  <Change author="David Srbecký" date="01/23/2008">Do not allow exploring of locals while debuggee is running</Change>
-  <Change author="Christoph Wille" date="01/23/2008">Updated setup for SHFB 1.6.0.4</Change>
-  <Change author="Christoph Wille" date="01/23/2008">Copy new BuildComponents folder for SHFB 1.6.0.4</Change>
-  <Change author="Christoph Wille" date="01/23/2008">SHFB 1.6.0.4</Change>
-  <Change author="Christoph Wille" date="01/23/2008">Remove old version of SHFB</Change>
-  <Change author="David Srbecký" date="01/21/2008">The 'System.Object' type does not have any children - do not show 'plus' for it</Change>
-  <Change author="David Srbecký" date="01/21/2008">Limit repainting of Local Variables Pad to 40 ms.</Change>
-  <Change author="David Srbecký" date="01/21/2008">ThreadsPad refresh does Application.DoEvents() as well.</Change>
-  <Change author="David Srbecký" date="01/21/2008">CallStackPad refresh does Application.DoEvents() as well.  
-DoEvents() called very often.  
-New class for logging time measurements to the console.  
-If one OnPause delegate resumes process, remaining delegates are not called.</Change>
-  <Change author="David Srbecký" date="01/20/2008">Measure performance of CallStackPad refresh</Change>
-  <Change author="David Srbecký" date="01/20/2008">Performance tweak - call Application.DoEvents() before refreshing local variables pad.</Change>
-  <Change author="David Srbecký" date="01/20/2008">Abort Evals that take more the 500 ms</Change>
-  <Change author="David Srbecký" date="01/20/2008">Quick property access support for optimized code.</Change>
-  <Change author="David Srbecký" date="01/20/2008">Call "ToString" on objects</Change>
-  <Change author="David Srbecký" date="01/20/2008">Completely rewritten the sate management for Process.</Change>
-  <Change author="Daniel Grunwald" date="01/20/2008">Make ICSharpCode.SharpDevelop.BuildWorker 32-bit only - if SharpDevelop.exe is 32-bit, BuildWorker must also be 32-bit to avoid using a mixture of 32-bit and 64-bit MSBuild when compiling a solution.</Change>
-  <Change author="David Srbecký" date="01/20/2008">Rewritten Exception class</Change>
-  <Change author="David Srbecký" date="01/20/2008">Show the list of childs being progressively populated, do not wait until they are all loaded.</Change>
-  <Change author="David Srbecký" date="01/20/2008">Rewritten evals.  They are more restricted now: 
-- Eval starts executing as soon as it is created
-- Evals can not be 'scheduled' and executed latter</Change>
-  <Change author="David Srbecký" date="01/19/2008">Optimization - if a property just returns a field value, do not evaluate the property but access the field directly.</Change>
-  <Change author="David Srbecký" date="01/19/2008">Move EventArgs from their own files to the files they relate to</Change>
-  <Change author="David Srbecký" date="01/19/2008">Reorganized file structure
+  <Change author="Daniel Grunwald" date="09/15/2009">Fixed compiler warning in Boo AddIn.</Change>
+  <Change author="Daniel Grunwald" date="09/15/2009">Fixed forum-10068: members from COM Interop assembly not shown in code completion.</Change>
+  <Change author="Daniel Grunwald" date="09/15/2009">Fixed forum-10067: incorrect indentation for nested if-statements without braces.</Change>
+  <Change author="Siegfried Pammer" date="09/14/2009">fixed SD2-1568 - Using unsupported evaluation features in conditional breakpoints causes an exception</Change>
+  <Change author="Siegfried Pammer" date="09/11/2009">added workaround to fix http://community.sharpdevelop.net/forums/p/10063/27905.aspx</Change>
+  <Change author="Daniel Grunwald" date="09/10/2009">Revert r4902.</Change>
+  <Change author="Mike Krüger" date="09/10/2009">* Src/PrettyPrinter/IOutputAstVisitor.cs: Exposed some properties
+  from the abstract output formatter into the interface.</Change>
+  <Change author="Daniel Grunwald" date="09/09/2009">Disable IME when ICSharpCode.TextEditor is used in .NET 4.0.</Change>
+  <Change author="Siegfried Pammer" date="09/06/2009">fixed some localization issues in Profiler options panels</Change>
+  <Change author="Matt Ward" date="09/06/2009">Update string resources.</Change>
+  <Change author="Daniel Grunwald" date="09/05/2009">Fixed ArgumentOutOfRangeException in Boo forms designer and added workaround for another possible ArgumentOutOfRangeException (also when leaving the designer).</Change>
+  <Change author="Daniel Grunwald" date="09/05/2009">Fixed IsAccessible for "protected internal" members. (forum-9974)</Change>
+  <Change author="Siegfried Pammer" date="09/05/2009">- updated English translation
+- updated German translation
+- fixed small bug in QueryView
+- fixed localization issues in GeneralOptionsPanel</Change>
+  <Change author="Daniel Grunwald" date="09/05/2009">Immediately rename form class when a form is renamed in the designer (avoids side-effects in IViewContent.Save).
+This fixes forum-9916 (error closing Sharp Development IDE after renaming a form).</Change>
+  <Change author="Christian Hornung" date="09/05/2009">Fixed SD2-1588 - Automatic SVN add of forms designer .resx file fails.
+The stream which the resource file is saved to is now closed before the SVN add operation to unlock the file.
+Also fixed the .resx file being added to the project prematurely and not being added to SVN when multiple designer views for the same form are opened before the .resx file has been saved to disk for the first time.</Change>
+  <Change author="Daniel Grunwald" date="09/05/2009">Fix SD2-1584 - VB .NET snippet parser crashes on invalid syntax</Change>
+  <Change author="Daniel Grunwald" date="09/05/2009">Fix SD2-1587 - Duplicate sections added to solution file on each save</Change>
+  <Change author="Siegfried Pammer" date="09/05/2009">fixed SD2-1526 - Save As shows a Save As dialog box for each view attached to the file</Change>
+  <Change author="Matt Ward" date="09/05/2009">Disabled project resources in the python form designer.</Change>
+  <Change author="Siegfried Pammer" date="09/04/2009">Added missing resource strings for the profiler</Change>
+  <Change author="Siegfried Pammer" date="09/04/2009">- Top 20 displays user code only
+- Added functionality to expand selected hot paths
+- fixed percentage of parent</Change>
+  <Change author="Daniel Grunwald" date="09/04/2009">Temporarily disable FileChangeWatcher while renaming files. Should fix forum-10029.</Change>
+  <Change author="Siegfried Pammer" date="09/03/2009">missed to commit some changes (never commit around 12 PM!)</Change>
+  <Change author="Siegfried Pammer" date="09/03/2009">Profiler:
+- added translation for the profiler UI
+- added functionality to control data collection (only profile parts)
+- added new columns (Time spent (self); Time spent/call, Time spent (self)/call)
+- added hot path indicators
+- Top 20 tab is now sorted by TimeSpentSelf
+
+* fixed bug in LocalizeExtension</Change>
+  <Change author="Siegfried Pammer" date="09/03/2009">Profiler:
+- added new data columns
+- added hot path indicator if method takes more than 20% time of the parent node</Change>
+  <Change author="Christoph Wille" date="09/02/2009">RC 2 designation of setup</Change>
+  <Change author="Daniel Grunwald" date="09/02/2009">Reparse when return is pressed.</Change>
+  <Change author="Siegfried Pammer" date="09/02/2009">Profiler: fixed "Find references" for methods without source code</Change>
+  <Change author="Siegfried Pammer" date="09/02/2009">implemented Find References for the profiler tree view</Change>
+  <Change author="Siegfried Pammer" date="09/02/2009">Profiler:
+- fixed memory leak
+- removed ICSharpCode.SharpDevelop.Profiling namespace
+- added filter for unit tests when selecting "Run with profiler"</Change>
+  <Change author="Daniel Grunwald" date="09/01/2009">Set /32BIT+ on booc.exe</Change>
+  <Change author="Daniel Grunwald" date="09/01/2009">Missing StringParser.Parse call in ApplicationSettings panel</Change>
+  <Change author="Daniel Grunwald" date="09/01/2009">Put new build options into the UI (BOO-1228)</Change>
+  <Change author="Daniel Grunwald" date="09/01/2009">Update to Boo 0.9.2.3383.</Change>
+  <Change author="Matt Ward" date="08/31/2009">Code coverage results now read from new PartCover 2.3's new results file format.</Change>
+  <Change author="Matt Ward" date="08/30/2009">Update COM Guids written to registry for PartCover 2.3</Change>
+  <Change author="Christian Hornung" date="08/29/2009">Forms designer: Fixed SD2-1531 - CenterHorizontally / CenterVertically: icons are swapped.</Change>
+  <Change author="Christian Hornung" date="08/29/2009">NRefactoryASTConvertVisitor: Apply IndexerNameAttributes to the names of the converted indexers.
+This fixes the ReflectorAddIn being unable to find such indexers in Reflector.</Change>
+  <Change author="Christian Hornung" date="08/29/2009">ReflectorAddIn: Fixed finding nested classes and members thereof.</Change>
+  <Change author="Daniel Grunwald" date="08/28/2009">profiler: modified DefaultProfiler implementation to show error message instead of throwing NotSupportedException in case no profiler was found.</Change>
+  <Change author="Daniel Grunwald" date="08/28/2009">Create new projects as x86 by default - AnyCPU leads to programs running as 64-bit process without ever being tested that way.</Change>
+  <Change author="Daniel Grunwald" date="08/28/2009">Fix unit tests.</Change>
+  <Change author="Daniel Grunwald" date="08/28/2009">Replace equals sign with space to match new PartCover command line syntax.</Change>
+  <Change author="Daniel Grunwald" date="08/28/2009">Upgrade to PartCover 2.3.
+Set /32BIT flag on PartCover.exe</Change>
+  <Change author="Daniel Grunwald" date="08/27/2009">Change label "Goto line number" -&gt; "Go to" to better reflect the features of the new GotoDialog</Change>
+  <Change author="Mike Krüger" date="08/24/2009">* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added brace
+  forcement options - this enables to change bracing for some
+  constructs. </Change>
+  <Change author="Matt Ward" date="08/23/2009">Python code converter now attempts to detect property references and adds a this reference.</Change>
+  <Change author="Matt Ward" date="08/23/2009">Python code converter now converts type reference expressions.</Change>
+  <Change author="Matt Ward" date="08/23/2009">Python code converter now supports read-only and write-only property conversions.</Change>
+  <Change author="Matt Ward" date="08/22/2009">Python forms designer now supports negative doubles as method parameters.</Change>
+  <Change author="Daniel Grunwald" date="08/20/2009">Fixed SD2-1494 - 'Move class to file' duplicates delegate declarations
+Based on patch by Bruno Marques.</Change>
+  <Change author="Matt Ward" date="08/20/2009">Fixed bug in python forms designer failing to convert an integer into a double when loading a form with a property of type double.</Change>
+  <Change author="Matt Ward" date="08/20/2009">Python forms designer now generating AnchorStyles properties.</Change>
+  <Change author="Daniel Grunwald" date="08/19/2009">Fixed output for overloaded unary operators.</Change>
+  <Change author="Daniel Grunwald" date="08/19/2009">Fixed SD2-1572 - operators are shown as nameless methods in code completion</Change>
+  <Change author="Daniel Grunwald" date="08/19/2009">Don't generate code for attributes of base class in override code completion.</Change>
+  <Change author="Matt Ward" date="08/19/2009">Python forms designer shows a more useful error message if it is unable to find a type to create a local variable.</Change>
+  <Change author="Daniel Grunwald" date="08/19/2009">Fixed SD2-1581 - GetterModifiers/SetterModifiers not loaded in ReflectionProperty and CecilReader</Change>
+  <Change author="Matt Ward" date="08/18/2009">Python forms designer now calls all methods and explicit interface methods when loading InitializeComponent method.</Change>
+  <Change author="Matt Ward" date="08/17/2009">Fixed squashed controls on debug symbols options panel.</Change>
+  <Change author="Matt Ward" date="08/16/2009">Python forms designer now converts constructor parameters to the correct objects when loading a form.</Change>
+  <Change author="Matt Ward" date="08/16/2009">Python form designer now supports assigning a local variable to a property on a control.</Change>
+  <Change author="Matt Ward" date="08/16/2009">Fixed null reference exception in form designer's NameCreationService when generating code with the python code dom serializer.</Change>
+  <Change author="Matt Ward" date="08/15/2009">Python forms designer now generates code using a code dom serializer.</Change>
+  <Change author="Daniel Grunwald" date="08/15/2009">Fixed NullReferenceException in unit tests pad when SharpDevelop was closed while the parser thread was still running.</Change>
+  <Change author="Daniel Grunwald" date="08/14/2009">Fixed SD2-1582: Code completion lists multiple entries for partial classes</Change>
+  <Change author="Daniel Grunwald" date="08/11/2009">Rename ProjectTypeGuids.cs to work around bug in Visual Studio. (http://community.sharpdevelop.net/forums/t/9580.aspx)</Change>
+  <Change author="Christian Hornung" date="08/11/2009">TextArea: Always set the owner of the tooltip when shown.
+Fixes SD2-1543 - Text editor tooltips only work in the file opened first when secondary monitor present.
+Also fixes problems with showing tooltips when TextEditors are used on different levels in the form hierarchy within the same application.</Change>
+  <Change author="Matt Ward" date="08/10/2009">Python forms designer now generates code for the content of nested custom collections.</Change>
+  <Change author="Matt Ward" date="08/10/2009">Python forms designer now generates code for the items inside a custom collection on a control.</Change>
+  <Change author="Matt Ward" date="08/09/2009">Added support for TableLayoutPanel RowStyles and ColumnStyles in Python forms designer.</Change>
+  <Change author="Matt Ward" date="08/08/2009">Child controls on a TableLayoutPanel are now supported in the Python forms designer.</Change>
+  <Change author="Matt Ward" date="08/08/2009">Fixed null reference exception in the python forms designer when generating code for properties that have a null property value.</Change>
+  <Change author="Matt Ward" date="08/08/2009">Python forms designer now generates a multline string for the RichTextBox.Text property.</Change>
+  <Change author="Matt Ward" date="08/08/2009">Filename with dot character is now correctly shown in the Errors window when compiling a python file that has syntax errors.</Change>
+  <Change author="Daniel Grunwald" date="08/07/2009">Recompiled SharpSvn using VS2008.</Change>
+  <Change author="Daniel Grunwald" date="08/07/2009">Update to SharpSvn 1.6004.1329. (SVN 1.6.4)</Change>
+  <Change author="Matt Ward" date="08/06/2009">Python forms designer can now load a SplitContainer containing child controls.</Change>
+  <Change author="Matt Ward" date="08/05/2009">MonthCalendar SelectionRange and DateTime[] properties now supported in Python forms designer.</Change>
+  <Change author="Matt Ward" date="08/04/2009">Added support for list view groups in Python forms designer.</Change>
+  <Change author="Matt Ward" date="08/03/2009">Python forms designer now uses InstanceDescriptor to generate code for object creation.</Change>
+  <Change author="Matt Ward" date="08/02/2009">Fixed null reference exception when generating code in the Python forms designer for a non-IComponent object's AddRange method.</Change>
+  <Change author="Matt Ward" date="08/01/2009">Inherited tooltips now supported in the Python forms designer.</Change>
+  <Change author="Matt Ward" date="08/01/2009">Public inherited controls now supported in Python forms designer.</Change>
+  <Change author="Matt Ward" date="08/01/2009">Inherited protected controls are now supported in the Python forms designer.</Change>
+  <Change author="Daniel Grunwald" date="07/31/2009">Fixed SD2-1465 - Convert integer casts correctly between VB and C#</Change>
+  <Change author="Daniel Grunwald" date="07/31/2009">Fixed forum-9858: problem with sizeof operator converting from C# to VB.NET</Change>
+  <Change author="Matt Ward" date="07/29/2009">Fixed null reference exception when loading/generating code in the python forms designer when a control's property was null.</Change>
+  <Change author="Matt Ward" date="07/29/2009">Python forms designer no longer generates code for controls in inherited base class.</Change>
+  <Change author="Matt Ward" date="07/28/2009">Python forms designer now creates an instance of the form's base class instead of just a Form or UserControl when loading a form in the designer.</Change>
+  <Change author="Daniel Grunwald" date="07/28/2009">Fixed forum-9843: missing icon in project browser for .resx files.</Change>
+  <Change author="Matt Ward" date="07/27/2009">Python forms designer can now design forms that do not directly inherit from Form or UserControl.</Change>
+  <Change author="Siegfried Pammer" date="07/27/2009">Profiler: fixed display of meta data tokens VAR and MVAR</Change>
+  <Change author="Matt Ward" date="07/26/2009">Refactored the set property value code out of the PythonComponentWalker class.</Change>
+  <Change author="Matt Ward" date="07/26/2009">Fixed failing unit test in Python addin.</Change>
+  <Change author="Matt Ward" date="07/26/2009">Python forms designer now loading/generating forms with nested properties (e.g. Button.FlatAppearance)</Change>
+  <Change author="Matt Ward" date="07/26/2009">Correct code generated for Default cursor in python forms designer.</Change>
+  <Change author="Daniel Grunwald" date="07/25/2009">Installer now displays SharpDevelop 3.1 RC 1.</Change>
+  <Change author="Daniel Grunwald" date="07/25/2009">Handle SVN errors when creating a new project.</Change>
+  <Change author="Matt Ward" date="07/25/2009">Two tree nodes with their NodeFont property set can now be loaded into the python forms designer.</Change>
+  <Change author="Daniel Grunwald" date="07/25/2009">Fixed build.</Change>
+  <Change author="Daniel Grunwald" date="07/25/2009">Fixed SD2-1406: More Missing String Resources</Change>
+  <Change author="Daniel Grunwald" date="07/25/2009">Fixed SD2-1525: Error creating new files when default encoding was set to Unicode.</Change>
+  <Change author="Daniel Grunwald" date="07/24/2009">Fixed SD2-1550 - Exception creating new F# project when F# compiler is not installed</Change>
+  <Change author="Daniel Grunwald" date="07/24/2009">Fixed InvalidOperationException in ReflectorAddIn when the 'run as administrator' compatibility option is set on Reflector.exe.</Change>
+  <Change author="Daniel Grunwald" date="07/24/2009">Disable upgrades from SharpDevelop 3.0 to 3.1 (the user will be prompted to uninstall 3.0 first). Fixes SD2-1565 - Microsoft.Scripting.dll removed by upgrade 3.0 -&gt; 3.1.
+Upgrading from previous 3.1 beta versions are still possible.</Change>
+  <Change author="Daniel Grunwald" date="07/24/2009">Fixed parsing of try statements with multiple catch clauses (bug introduced in r4526).</Change>
+  <Change author="Mike Krüger" date="07/24/2009">* Src/Visitors/LookupTableVisitor.cs: Lookup table visitors now can
+  be re-used (they reset when they visit a compilation unit).</Change>
+  <Change author="Mike Krüger" date="07/24/2009">* Src/Parser/CSharp/cs.ATG:
+* Src/Parser/CSharp/Parser.cs: Catch clauses have now set their
+  correct positions.</Change>
+  <Change author="Matt Ward" date="07/23/2009">Fixed bug where some TreeNode properties were not set when loading a form into the python forms designer.</Change>
+  <Change author="Mike Krüger" date="07/23/2009">* Src/Visitors/LookupTableVisitor.cs: Catch variable declarations
+  are now valid in the whole catch clause, not only in the statement
+  block. (Required for the lookup inside the variable declaration)</Change>
+  <Change author="Matt Ward" date="07/22/2009">Updated to IronPython 2.0.2</Change>
+  <Change author="Daniel Grunwald" date="07/19/2009">Show version number of installed 3rd party AddIns in exception dialog.</Change>
+  <Change author="Matt Ward" date="07/19/2009">Added support for code folding of global python methods defined outside of a class.</Change>
+  <Change author="Daniel Grunwald" date="07/18/2009">Use svn:eol-style=native for NRefactory.</Change>
+  <Change author="Daniel Grunwald" date="07/18/2009">CSharpOutputTest: don't ignore whitespace.</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Consistently use "http://schemas.microsoft.com/winfx/2006/xaml/presentation" as WPF XML namespace.</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Made text boxes for Postbuild/Prebuild events multi-line (forum-9791).</Change>
+  <Change author="Mike Krüger" date="07/17/2009">* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
+* Src/PrettyPrinter/AbstractOutputFormatter.cs: Comments that start
+  line are no longer indented when outputting them.</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Setup: Fixed issue in .booproj file association.</Change>
+  <Change author="Mike Krüger" date="07/17/2009">* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Corrected else in
+  new line placement.</Change>
+  <Change author="Siegfried Pammer" date="07/17/2009">fixed SD2-1551</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Changed GUID for Microsoft.Scripting.dll</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Fixed forum-9335: checked state in FileTypeRegisterer option panel is incorrect for some entries.</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">TaskView: show paths relative to the solution directory</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Mark SdaUser sample as 32-bit.</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Make "Open in explorer" available for solution items and directories.</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Fixed forum-9732: exception opening F# interactive pad.</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Fixed bug introduced in revision 4452 (IOException on startup).</Change>
+  <Change author="Daniel Grunwald" date="07/17/2009">Fixed SD2-893 - Searching text in a directory with no access permissions throws exception</Change>
+  <Change author="Daniel Grunwald" date="07/16/2009">Fixed potential ArgumentNullException in search (forum-9109, though I couldn't reproduce it).</Change>
+  <Change author="Daniel Grunwald" date="07/16/2009">NRefactory: Fixed incorrect end column in C# type declarations.
+Fixes forum-9578: IndexOutOfRangeException in 'Implement Interface' refactoring.</Change>
+  <Change author="Daniel Grunwald" date="07/16/2009">Fixed copying from ICSharpCode.TextEditor to wordpad (encode of characters that are not in Windows-1252).</Change>
+  <Change author="Daniel Grunwald" date="07/16/2009">Fixed forum-9591: NUnit test results are read with incorrect encoding.</Change>
+  <Change author="Daniel Grunwald" date="07/16/2009">Fixed forum-9717: exception using Project - Add - New Folder when the project browser is not open.</Change>
+  <Change author="Matt Ward" date="07/15/2009">Fixed bug when converting references to 'this' and event handlers to python.</Change>
+  <Change author="Matt Ward" date="07/15/2009">Fixed null reference exception when converting a constructor to python.</Change>
+  <Change author="Mike Krüger" date="07/13/2009">* Src/Visitors/AbstractAstTransformer.cs: Made node stack protected.
+  I had a complicated AST transformation where I needed to add/remove
+  statements this seemed to be the easiest solution for it.</Change>
+  <Change author="Daniel Grunwald" date="07/12/2009">Fixed thread-safety problem in DefaultReturnType.</Change>
+  <Change author="Matt Ward" date="07/09/2009">Updated to NUnit 2.5.1</Change>
+  <Change author="Daniel Grunwald" date="07/09/2009">Fixed build.</Change>
+  <Change author="Daniel Grunwald" date="07/07/2009">Fixed thread-safety problem in SearchClassReturnType.
+Don't set 'Strict' to true when creating new Boo project.</Change>
+  <Change author="Mike Krüger" date="07/07/2009">* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Improved
+  collection initializer output.</Change>
+  <Change author="Matt Ward" date="07/06/2009">ListViewItems with imageIndex or imageKey set are now created correctly in generated python forms designer code.</Change>
+  <Change author="Matt Ward" date="07/05/2009">Updated to the final build of WiX 3.0 (3.0.5419)</Change>
+  <Change author="Matt Ward" date="07/05/2009">Child tree nodes now added on loading a form in the python forms designer.</Change>
+  <Change author="Matt Ward" date="07/04/2009">Code now generated for TreeView TreeNodes in the python forms designer.</Change>
+  <Change author="Matt Ward" date="07/01/2009">Code generation and ImageList resources now supported in python forms designer.</Change>
+  <Change author="Daniel Grunwald" date="06/30/2009">FileUtility.IsValidPath(...) and additional directory tests (patch by Frederick Kautz)</Change>
+  <Change author="Matt Ward" date="06/29/2009">Added support for icon resources in python forms designer.</Change>
+  <Change author="Matt Ward" date="06/29/2009">Added some missing IronPython files.</Change>
+  <Change author="Matt Ward" date="06/29/2009">Bitmap resources on the main form are now supported in the python forms designer.</Change>
+  <Change author="Matt Ward" date="06/27/2009">Python forms designer now generating the correct code when assigning a DataSet to a DataGridView's DataSource.</Change>
+  <Change author="Matt Ward" date="06/27/2009">Python forms designer now supports local bitmap resources.</Change>
+  <Change author="Robert Pickering" date="06/25/2009">Fix breaking changes from may CTP.</Change>
+  <Change author="Mike Krüger" date="06/23/2009">* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added anonymous
+  method brace style.</Change>
+  <Change author="Matt Ward" date="06/22/2009">Fixed NRefactory unit tests.</Change>
+  <Change author="Mike Krüger" date="06/22/2009">* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Removed
+  unneccessary spaces in if section.</Change>
+  <Change author="Matt Ward" date="06/21/2009">Empty form resource file (.resx) now being created and added to project when the python forms designer is used.</Change>
+  <Change author="Matt Ward" date="06/21/2009">Fixed failing unit test.</Change>
+  <Change author="Mike Krüger" date="06/19/2009">* Output/CSharp/VBNetToCSharpConverterTest.cs: Fixed unit test.</Change>
+  <Change author="Mike Krüger" date="06/18/2009">* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
+* Src/PrettyPrinter/AbstractOutputFormatter.cs: Corrected block
+  comment output.</Change>
+  <Change author="Mike Krüger" date="06/18/2009">* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: If statements
+  without block are now correctly indented.</Change>
+  <Change author="Matt Ward" date="06/17/2009">Python code converter now supports xml doc comments for constructors. Xml doc comments that are not before a class, method or constructor declaration are converted to single line python comments.</Change>
+  <Change author="Mike Krüger" date="06/17/2009">* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: removed embedded
+  statement newline. (newline here is incorrect ex. printing "if (a)
+  Foo(); else Bar();" should be possible without forcing newline after
+  Foo).</Change>
+  <Change author="Mike Krüger" date="06/17/2009">* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Correctly indent
+  embedded statements.</Change>
+  <Change author="Matt Ward" date="06/16/2009">Convert class and method xml doc comments to python docstrings.</Change>
+  <Change author="Matt Ward" date="06/14/2009">Added support for multiline comments in the python code converter.</Change>
+  <Change author="Matt Ward" date="06/14/2009">Single line comments now converted from C#, VB.NET to Python.</Change>
+  <Change author="Matt Ward" date="06/09/2009">Python forms designer now ignores any statements before the form's InitializeComponent method is found (e.g. sys.path.append('...').</Change>
+  <Change author="Daniel Grunwald" date="06/08/2009">Avoid NullReferenceException when pasting text.</Change>
+  <Change author="Matt Ward" date="06/07/2009">Add 'import clr' if clr.GetType used in converted python code.</Change>
+  <Change author="Matt Ward" date="06/07/2009">Xor operator now converted to python correctly.</Change>
+  <Change author="Matt Ward" date="06/07/2009">Python converter no longer uses 'self' when calling a method inside a static method.</Change>
+  <Change author="Matt Ward" date="06/07/2009">Python code converter now adds code to call the project's main entry method.</Change>
+  <Change author="Matt Ward" date="06/07/2009">Python code converter now converts 'foreach (string key in dictionary.Keys)' statements correctly.</Change>
+  <Change author="Matt Ward" date="06/07/2009">Now using short type names (e.g. Array instead of System.Array) in generated python code.</Change>
+  <Change author="Matt Ward" date="06/06/2009">Convert System.String and System.Int32 to 'str' and 'int' in python.</Change>
+  <Change author="Matt Ward" date="06/06/2009">New line added between import statements and class definitions when converting code to Python.</Change>
+  <Change author="Daniel Grunwald" date="06/06/2009">Fixed code completion on protected members from a base class when the inheritance was specified in a different part of a partial class.</Change>
+  <Change author="Daniel Grunwald" date="06/06/2009">Fixed ObjectDisposedException if user closes SharpDevelop while LoadSolutionProjects thread is running.</Change>
+  <Change author="Daniel Grunwald" date="06/05/2009">Updated fullAssemblyNameToRequiredFrameworkVersionDictionary.
+Increase timeout on ProcessExitedTestFixture.</Change>
+  <Change author="Siegfried Pammer" date="06/05/2009">- added additional logging to Unit Test profiling
+- fixed bug in Extract Method</Change>
+  <Change author="Siegfried Pammer" date="06/04/2009">Profiler: reimplemented search in QueryView</Change>
+  <Change author="Matt Ward" date="06/04/2009">Double quote characters now escaped when generating string property assignments in the python forms designer.</Change>
+  <Change author="Matt Ward" date="06/04/2009">Backslash characters now escaped when generating string property assignments in the python forms designer.</Change>
+  <Change author="Matt Ward" date="06/04/2009">Correct code generated for nested enum types (e.g. Environment.SpecialFolder) in the python forms designer.</Change>
+  <Change author="Daniel Grunwald" date="06/04/2009">Simplified Reflector AddIn by using Reflector's SendMessage API instead of registering the IPC AddIn.</Change>
+  <Change author="Daniel Grunwald" date="06/04/2009">Fixed another performance issue in the ClassBrowser.</Change>
+  <Change author="Daniel Grunwald" date="06/03/2009">Fixed performance issue in class browser during loading of a solution.</Change>
+  <Change author="Daniel Grunwald" date="06/03/2009">Performance improvements for solution loading:
+- Fixed bug in SVN OverlayIconManager that could cause two worker threads to be started.
+- Fixed performance bug in SvnClientWrapper.SingleStatus.
+- DefaultProjectContent.AddClassToNamespaceListInternal: do not try to update existing class in namespace's classList if we're adding a new class.</Change>
+  <Change author="Daniel Grunwald" date="06/03/2009">Profiler: Fixed CPU usage graph in time line.
+Profiler: Fixed "go to definition" command.</Change>
+  <Change author="Matt Ward" date="06/03/2009">Break statements no longer generated when converting a switch statement to python.</Change>
+  <Change author="Daniel Grunwald" date="06/03/2009">Fixed exception in VB code completion when a C# project contains two namespaces that differ only in case.</Change>
+  <Change author="Daniel Grunwald" date="06/03/2009">Allow setting 'Option Infer' in project options.
+Create new projects with 'Option Infer' set to true.</Change>
+  <Change author="Daniel Grunwald" date="06/02/2009">Allow choosing the target framework when creating VB projects.</Change>
+  <Change author="Daniel Grunwald" date="06/02/2009">Add Project Reference dialog: sort projects alphabetically.</Change>
+  <Change author="Daniel Grunwald" date="06/01/2009">Fixed ArgumentNullException in CompileModifiedProjectsOnly when an IBuildable2 implementation returned null as ProjectBuildOptions.</Change>
+  <Change author="Daniel Grunwald" date="05/31/2009">Do not show 'Finalize' in C# code completion.</Change>
+  <Change author="Daniel Grunwald" date="05/31/2009">Use tabs instead of spaces in WPF file templates.</Change>
+  <Change author="Matt Ward" date="05/31/2009">Python code converter now specifies types when creating an instance of a generic.</Change>
+  <Change author="Matt Ward" date="05/31/2009">Python forms designer no longer generates code for the form's MainMenuStrip property after the menu strip has been removed.</Change>
+  <Change author="Matt Ward" date="05/30/2009">Python menu options now use the debugger when running ipy.exe</Change>
+  <Change author="Matt Ward" date="05/27/2009">Debugger now supports debugging IronPython code.</Change>
+  <Change author="Matt Ward" date="05/27/2009">Namespace imports now import all classes on conversion to IronPython.</Change>
+  <Change author="Matt Ward" date="05/26/2009">MainFile property now set when converting a project to IronPython.</Change>
+  <Change author="Matt Ward" date="05/25/2009">Boolean variables now correctly converted to python.</Change>
+  <Change author="Matt Ward" date="05/25/2009">Added support for ContextMenuStrips in the python forms designer.</Change>
+  <Change author="Matt Ward" date="05/24/2009">Extender provider properties set for other controls now appear in properties window in the python form designer.</Change>
+  <Change author="Daniel Grunwald" date="05/24/2009">Rename "Quality Tools" -&gt; "Analysis".</Change>
+  <Change author="Matt Ward" date="05/23/2009">Added Create XML output file option to the options panel for unit tests.</Change>
+  <Change author="Matt Ward" date="05/23/2009">Added support for extender providers (e.g. ToolTips) in the python forms designer.</Change>
+  <Change author="Daniel Grunwald" date="05/21/2009">Update to Mono.Cecil revision 134535.
+Fixed handling of type attribute arguments when loading with Mono.Cecil.
+Fixed handling of unbound generic types in type attribute arguments when loading with Reflection.</Change>
+  <Change author="Matt Ward" date="05/21/2009">Python forms designer does not generate comments for a control if no property or event handler code was generated for that control.</Change>
+  <Change author="Siegfried Pammer" date="05/20/2009">fixed VB .NET Indentation: multiline statements indented correctly (forums/t/9532)</Change>
+  <Change author="Siegfried Pammer" date="05/19/2009">- fixed bugs with profiling read-only projects and Unit Tests
+- fixed bug in UnitTesting-AddIn, if unit testing was canceled before the execution had started</Change>
+  <Change author="Daniel Grunwald" date="05/18/2009">Disabled failing debugger test.</Change>
+  <Change author="Matt Ward" date="05/18/2009">Added support for ISupportInitialize in the python forms designer.</Change>
+  <Change author="Siegfried Pammer" date="05/18/2009">- added basic support for profiling Unit Tests
+- fixed bug in CopyStacktrace</Change>
+  <Change author="Matt Ward" date="05/17/2009">Python forms designer now checks the non-visual component has a constructor that takes an IContainer before generating code to create the component.</Change>
+  <Change author="Daniel Grunwald" date="05/16/2009">Do not save the highlighter being used if the user didn't change it.
+Fixed SD2-1540: When "build only modified projects" is used, projects are not rebuilt after a "Clean" operation</Change>
+  <Change author="Matt Ward" date="05/14/2009">Updated language resources.</Change>
+  <Change author="Matt Ward" date="05/14/2009">Unit Tests tree now shows tests that fail due to an unhandled exception being thrown.</Change>
+  <Change author="Matt Ward" date="05/14/2009">Installer now displays SharpDevelop 3.1 Beta 1.</Change>
+  <Change author="Siegfried Pammer" date="05/13/2009">removed transparency from DebuggeeExceptionForm, added buttons for Break and Terminate again</Change>
+  <Change author="Matt Ward" date="05/13/2009">Fixed ArgumentException thrown when duplicate binary file ids are in a WiX file and the dialog is opened in the designer.</Change>
+  <Change author="Matt Ward" date="05/12/2009">NUnit-Console no longer creates TestResult.xml if the /xml option is not used.</Change>
+  <Change author="Daniel Grunwald" date="05/12/2009">SvnClientWrapper: Fixed NullReferenceException in discovery of changed paths.</Change>
+  <Change author="Matt Ward" date="05/10/2009">Static class methods now use staticmethod when converted to Python.</Change>
+  <Change author="Matt Ward" date="05/10/2009">Use HintPath for IronPython reference in Python project templates.</Change>
+  <Change author="Matt Ward" date="05/10/2009">Add reference to IronPython when converting projects to Python.</Change>
+  <Change author="Matt Ward" date="05/09/2009">Typeof expressions and for each loops using a method call now converted to Python.</Change>
+  <Change author="Matt Ward" date="05/09/2009">Event handlers with EventHandler object creation now converted to Python.</Change>
+  <Change author="Matt Ward" date="05/09/2009">An error message is now displayed when trying to compile a Python application when no main file is specified.</Change>
+  <Change author="Matt Ward" date="05/09/2009">Can now convert C# and VB.NET projects to Python.</Change>
+  <Change author="Daniel Grunwald" date="05/09/2009">Fixed SD2-1514 - Exception compiling F# project using build worker.
+Custom events are no longer forwarded to the SharpDevelop process.</Change>
+  <Change author="Siegfried Pammer" date="05/08/2009">WatchPad now allows changing nodes while debugging</Change>
+  <Change author="Matt Ward" date="05/08/2009">Updated to WiX 3.0.5301</Change>
+  <Change author="Daniel Grunwald" date="05/08/2009">Added ICSharpCode.Core.Presentation to assembly redirect list.
+DebuggeeExceptionForm: ShowInTaskbar = false</Change>
+  <Change author="Siegfried Pammer" date="05/08/2009">fixed bug in CSharpMethodExtractor</Change>
+  <Change author="Matt Ward" date="05/07/2009">Fixed build - NUnit 2.5 no longer allows hiding the SetUpFixture method in derived classes.</Change>
+  <Change author="Matt Ward" date="05/06/2009">Fixed failing tests due to move to NUnit 2.5</Change>
+  <Change author="Matt Ward" date="05/06/2009">Updated to NUnit 2.5.0.9122</Change>
+  <Change author="Siegfried Pammer" date="05/06/2009">fixed bug when using other file sizes than 64 mb for temporary storage file.</Change>
+  <Change author="Matt Ward" date="05/04/2009">Added basic support for non-visual components in the python forms designer.</Change>
+  <Change author="Matt Ward" date="05/04/2009">Python forms designer now supports loading and generating code for the text in a ListViewSubItem.</Change>
+  <Change author="Matt Ward" date="05/04/2009">Ordering of controls in generated python forms designer code now matches the order of the standard forms designer.</Change>
+  <Change author="Matt Ward" date="05/03/2009">Python forms designer now supports generating code for ListViewItem's text.</Change>
+  <Change author="Siegfried Pammer" date="05/03/2009">Created new ExceptionForm based on suggestions from forums/9446</Change>
+  <Change author="Siegfried Pammer" date="05/02/2009">Extract Method: clean up and bug fixes</Change>
+  <Change author="Siegfried Pammer" date="05/02/2009">Extract Method: Add ref keyword to extracted parameters only if the type is a reference type</Change>
+  <Change author="Siegfried Pammer" date="05/02/2009">- fixed bugs in VB .NET Indentation
+- added Unit Tests</Change>
+  <Change author="Siegfried Pammer" date="05/01/2009">prepared profiler for public testing</Change>
+  <Change author="Daniel Grunwald" date="04/27/2009">Show 'static' class modifier in tool tips.</Change>
+  <Change author="Daniel Grunwald" date="04/27/2009">Use a Mutex when accessing SharpDevelopProperties.xml
+
+Prevents IOException when shutting down multiple SharpDevelop instances at the same time.</Change>
+  <Change author="Daniel Grunwald" date="04/27/2009">Subversion History View: immediately get file name from view content</Change>
+  <Change author="Siegfried Pammer" date="04/26/2009">- declared PrimaryFileName in AbstractViewContent as virtual to make special case in Profiler ViewContent working</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">Fixed forum-9315: view contents with customized save command (e.g. project options) are not saved when closing them and clicking 'Yes' in the 'Do you want to save?' question.</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">Fixed potential NullReferenceException in MemberLookupHelper.IsInvocable. Might have been the cause of forum-9346.</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">Use "build modified projects only" feature when starting unit tests.</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">CopyToClipboard: don't truncate string to 256 characters</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">F# binding: use "--standalone" option only in release builds. This speeds up compiling debug builds of SharpDevelop.</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">Force handle creation of main form in WorkbenchSingleton.InitializeWorkbench.</Change>
+  <Change author="Matt Ward" date="04/25/2009">Python forms designer no longer generates event handlers if they already exist.</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">Fixed namespace handling in Boo ConvertVisitor.</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">Prevent Boo forms designer from changing the type of fields to 'void'</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">Boo Forms Designer: prevent the designer from deleting unrelated fields.</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">Fixed loading of assemblies that contain generic types with more than 10 type parameters.</Change>
+  <Change author="Daniel Grunwald" date="04/25/2009">Adjust ProjectTypeGuids when converting project between C# and VB.</Change>
+  <Change author="Daniel Grunwald" date="04/24/2009">Fixed SD2-1397 - Code completion does not work for nested classes inside generic classes.</Change>
+  <Change author="Daniel Grunwald" date="04/24/2009">Fixed bug in ScriptRunner (for scripts inside file or project templates).</Change>
+  <Change author="Daniel Grunwald" date="04/24/2009">Fixed bug in build engine: the mapping solution configuration-&gt;project configuration was not applied when building only modified projects.</Change>
+  <Change author="Mike Krüger" date="04/24/2009">* Src/Lexer/AbstractLexer.cs: Allow white spaces as symbol
+  separator.</Change>
+  <Change author="Siegfried Pammer" date="04/20/2009">- fixed crash in ExtractedMethod, when extracting code with params parameters
+- always close undo group, even if extraction causes exception</Change>
+  <Change author="Siegfried Pammer" date="04/19/2009">- Bug fixes in Profiler and enhancements in GUI
+- improved TaskListPad</Change>
+  <Change author="Daniel Grunwald" date="04/19/2009">ICSharpCode.SharpDevelop.BuildWorker: Fixed excessive CPU usage during build worker shutdown.</Change>
+  <Change author="Matt Ward" date="04/19/2009">Added limited support for ListView items in the python forms designer. No support for sub items nor the ListViewItem.Text property.</Change>
+  <Change author="Matt Ward" date="04/18/2009">Code coverage results now generated when an exclusion has been added to the project.</Change>
+  <Change author="Daniel Grunwald" date="04/17/2009">Fixed forum-9381: GetClass could return class with incorrect type parameter count.</Change>
+  <Change author="Siegfried Pammer" date="04/15/2009">fixed bugs in ProfileProject and ProfileExecutableForm</Change>
+  <Change author="Matt Ward" date="04/13/2009">Added support for designing user controls in the python forms designer.</Change>
+  <Change author="Matt Ward" date="04/13/2009">Removed all control specific code when determining child components in the python forms designer.</Change>
+  <Change author="Siegfried Pammer" date="04/13/2009">Updated UI
+Added context menu to RingDiagramControl</Change>
+  <Change author="Matt Ward" date="04/13/2009">Removed control specific code from generated code when adding an array of controls to a property in the python forms designer.</Change>
+  <Change author="Matt Ward" date="04/12/2009">Form.Controls, MenuStrip.Items and ToolStripMenuItem.DropDownItems properties are now generated in the correct alphabetical order in the python forms designer.</Change>
+  <Change author="Matt Ward" date="04/12/2009">Controls.Add method is now invoked rather than being hard coded in the python forms designer code.</Change>
+  <Change author="Matt Ward" date="04/12/2009">ComboBox items code now generated in Python forms designer.</Change>
+  <Change author="Siegfried Pammer" date="04/12/2009">fixed display of merged nodes in profiler</Change>
+  <Change author="Matt Ward" date="04/12/2009">Fixed build by using actual ToolStripMenuItem sizes in menustrip test.</Change>
+  <Change author="Matt Ward" date="04/12/2009">Python forms designer now handles loading and generating a form with a MenuStrip and ToolStripItems.</Change>
+  <Change author="Matt Ward" date="04/11/2009">Fixed bug in XmlParser.IsAttributeValueChar not recognising valid characters as being valid for an attribute value.</Change>
+  <Change author="Daniel Grunwald" date="04/11/2009">Allow saving external tool options when tools in the .NET SDK cannot be found.</Change>
+  <Change author="Daniel Grunwald" date="04/10/2009">SubversionAddIn: on 64-bit Windows, look for 64-bit version of TortoiseSVN.</Change>
+  <Change author="Daniel Grunwald" date="04/10/2009">Improved performance of UpdateAssemblyInfo.
+Code-completion debug output: use Debug.WriteLine instead of Console.WriteLine.
+Custom Tool project template: fixed compile error.</Change>
+  <Change author="Siegfried Pammer" date="04/10/2009">- fixed SD2-1523 - Watch pad right click shows two context menus based on patch from http://community.sharpdevelop.net/forums/t/9006.aspx
+- applied patch for drag&amp;drop in Watch pad from http://community.sharpdevelop.net/forums/t/9320.aspx
+- fixed NullReferenceException in ValueNode if either Watch Pad or LocalVarPad are not opened (added comments)
 </Change>
-  <Change author="David Srbecký" date="01/19/2008">Refreshed the documentation file.  (Switched to Sandcastle)</Change>
-  <Change author="David Srbecký" date="01/19/2008">Enter version to AssemblyInfo</Change>
-  <Change author="David Srbecký" date="01/19/2008">Renamed MetaData class to MetaDataImport to avoid name collision with the namespace.  
-Removed Util.Lists.</Change>
-  <Change author="David Srbecký" date="01/19/2008">Moved metadata related classes to Debugger.MetaData namespace</Change>
-  <Change author="David Srbecký" date="01/19/2008">Added synchronous Continue and Step*.  
-Use these to simplify the test code.</Change>
-  <Change author="David Srbecký" date="01/19/2008">Removed TreeListView from the setup</Change>
-  <Change author="David Srbecký" date="01/19/2008">Renamed Continue to AsyncContinue.  
-Renamed Step* to AsyncStep*.</Change>
-  <Change author="David Srbecký" date="01/19/2008">Updated tests</Change>
-  <Change author="David Srbecký" date="01/19/2008">Remove the no longer used TreeListView control</Change>
-  <Change author="David Srbecký" date="01/19/2008">Update callstack by overwriting rather then by clear+fill</Change>
-  <Change author="David Srbecký" date="01/18/2008">Reorganized code in CallstackPad</Change>
-  <Change author="David Srbecký" date="01/18/2008">Renamed LastStackFrame to MostRecentStackFrame</Change>
-  <Change author="David Srbecký" date="01/18/2008">Show changed values in blue</Change>
-  <Change author="David Srbecký" date="01/18/2008">Tests - sort serialized data alphabetically</Change>
-  <Change author="Daniel Grunwald" date="01/18/2008">Fixed forum-7234: resolving of constructor calls</Change>
-  <Change author="David Srbecký" date="01/18/2008">Added StackOverflow test.  
-Updated tests.  
-Fixed null reference in Tread.SelectedStackFrame.</Change>
-  <Change author="David Srbecký" date="01/18/2008">Added an Expression cache</Change>
-  <Change author="David Srbecký" date="01/18/2008">Fixed build</Change>
-  <Change author="Daniel Grunwald" date="01/18/2008">Allow using shortcuts from the main menu when a debugger tool tip has focus.</Change>
-  <Change author="David Srbecký" date="01/18/2008">GetHashCode and Equals for expressions</Change>
-  <Change author="David Srbecký" date="01/18/2008">Update tooltip when debugger is stepped</Change>
-  <Change author="David Srbecký" date="01/18/2008">String setting not supported</Change>
-  <Change author="David Srbecký" date="01/18/2008">Enabled editing in the local variables pad.  
-Fixed incremental search for the local variables pad.</Change>
-  <Change author="David Srbecký" date="01/18/2008">Only the following values can be set: argument, local variable, array element, field value</Change>
-  <Change author="David Srbecký" date="01/18/2008">Getting properties for generic types.  
-Updated generic test.</Change>
-  <Change author="David Srbecký" date="01/18/2008">Fixed access to static fields</Change>
-  <Change author="David Srbecký" date="01/18/2008">Fix: Do not show "Private members" if it is empty. Same for others.  
-Show only get properties - no indexers and setters.</Change>
-  <Change author="David Srbecký" date="01/17/2008">Forgotten to commit file</Change>
-  <Change author="David Srbecký" date="01/17/2008">Moving some directories</Change>
-  <Change author="David Srbecký" date="01/17/2008">Removed Value.Name property.  
-Removed ValueCollection.  
-Removed ExpressionCollection.  
-Reorganized methods in StackFrame, added some convenience methods.</Change>
-  <Change author="Matt Ward" date="01/16/2008">Corrected ClassDiagram's Diagram.dll entry in installer so the Diagram.dll is now installed.</Change>
-  <Change author="Dickon Field" date="01/16/2008">Added a little more code for the db control - working on the db object tree</Change>
-  <Change author="Daniel Grunwald" date="01/16/2008">Fixed forum-7231: InvalidOperationException when subversion overlay icon manager tries to set overlay before project browser tree view is created.
-Add try-catch around Process.Start for starting URLs (on some systems, the browser opens but Process.Start produces an exception, e.g. forum-7017).</Change>
-  <Change author="David Srbecký" date="01/16/2008">Remove IExpirable from Value.  
-Tests: catch ToString exceptions.</Change>
-  <Change author="David Srbecký" date="01/16/2008">Change buttons in exception box to "Break", "Continue" and "Terminate".  "Continue" is enabled only for handled exceptions and "Break" unwinds exceptions by default.  
+  <Change author="Matt Ward" date="04/09/2009">Fixed SD2-1505 - Locals window - show values in hex does not refresh the values on display. Based on fix supplied by Nikhil Sarda.</Change>
+  <Change author="Matt Ward" date="04/08/2009">Added empty string checks to XmlParser.</Change>
+  <Change author="Siegfried Pammer" date="04/07/2009">fixed crash when trying to profile non-.NET executable
+fixed crash when trying to open a session without datasets
+fixed bug in HexEditor</Change>
+  <Change author="Siegfried Pammer" date="04/03/2009">added work-around for Windows Forms bug in ElementHost, because WpfViewer was sometimes not displayed.</Change>
+  <Change author="Daniel Grunwald" date="04/03/2009">Switch from SvnDotNet to SharpSVN. This updates the embedded subversion library from 1.5.0 to 1.6.0.</Change>
+  <Change author="Siegfried Pammer" date="04/03/2009">fixed CallCount when selecting only a small amount of datasets.</Change>
+  <Change author="Matt Ward" date="04/02/2009">Code code now generated for empty menu strip in python forms designer.</Change>
+  <Change author="Matt Ward" date="03/31/2009">Python form designer now supports loading/generating code for a form's AcceptButton and CancelButton properties.</Change>
+  <Change author="Mike Krüger" date="03/31/2009">* Parser/Expressions/LambdaExpressionTests.cs: Added test case for
+  typed ref/out parameter lambda expressions.</Change>
+  <Change author="Mike Krüger" date="03/31/2009">* Src/Parser/gen.sh:
+* Src/Parser/CSharp/cs.ATG:
+* Src/Parser/CSharp/Parser.cs:
+* Src/Parser/CSharp/CSharpParser.cs: Added ref/out parameters for
+  typed lambda expressions.</Change>
+  <Change author="Siegfried Pammer" date="03/30/2009">fixed threading bug in QueryCompiler</Change>
+  <Change author="Matt Ward" date="03/30/2009">Event handlers added for child controls when loading a form into the python forms designer.</Change>
+  <Change author="Matt Ward" date="03/30/2009">XmlParser now returning the correct active element if the element is followed by a tab or new line character.</Change>
+  <Change author="Mike Krüger" date="03/30/2009">* Src/Lexer/CSharp/Lexer.cs:
+* Src/Lexer/AbstractLexer.cs: #if/#elif preprocessor directive now
+  contain the arg as string representation too (arg was null).</Change>
+  <Change author="Matt Ward" date="03/29/2009">Form event handlers now generated and loaded by python form designer.</Change>
+  <Change author="Matt Ward" date="03/28/2009">SuspendLayout, ResumeLayout methods now called for nested controls in python forms designer generated code.</Change>
+  <Change author="Matt Ward" date="03/28/2009">Child controls now added to a panel when form is loaded into the python form designer.</Change>
+  <Change author="Matt Ward" date="03/28/2009">Code is now generated for controls added to a panel in the python forms designer.</Change>
+  <Change author="Mike Krüger" date="03/27/2009">* Src/Visitors/LookupTableVisitor.cs: Added IsQueryContinuation flag
+  to local lookup variables. This helps resolving the type of "from
+  ... where ... into VAR" constructs.</Change>
+  <Change author="Daniel Grunwald" date="03/27/2009">When unpinning a pad, hide it immediately (patch from DockPanelSuite forum).</Change>
+  <Change author="Siegfried Pammer" date="03/26/2009">fixed bugs in UI
+updated TODO.txt</Change>
+  <Change author="Matt Ward" date="03/26/2009">Added support for AnchorStyles in python forms designer.</Change>
+  <Change author="Siegfried Pammer" date="03/25/2009">Improvements and bug fixes in Profiler.AddIn GUI</Change>
+  <Change author="Matt Ward" date="03/25/2009">Python forms designer: Control creation code now generated. Control variable names now prefixed with underscore. Control properties now set correctly on loading the form into the designer.</Change>
+  <Change author="Siegfried Pammer" date="03/24/2009">Moved SharpDevelopElementHost to Profiler.AddIn
+Added new functionality to Profiler
+rearranged ProfileExecutableForm
+fixed bug in TimeLineControl
+smaller bug fixes</Change>
+  <Change author="Daniel Grunwald" date="03/24/2009">ChangeLog: only show changes since revision 3800.</Change>
+  <Change author="Siegfried Pammer" date="03/24/2009">Added SharpDevelopElementHost for hosting WPF controls as ViewContents</Change>
+  <Change author="Matt Ward" date="03/24/2009">Code now generated for controls on a form in the python forms designer.</Change>
+  <Change author="Matt Ward" date="03/22/2009">The state of ShowErrors, ShowWarnings, ShowMessages in the Errors window is now saved on closing SharpDevelop.</Change>
+  <Change author="Matt Ward" date="03/22/2009">Python forms designer now using more PropertyDescriptor information to determine whether a property should be serialized. Form properties now generated in alphabetical order.</Change>
+  <Change author="Matt Ward" date="03/22/2009">Added python class library project template.</Change>
+  <Change author="Siegfried Pammer" date="03/21/2009">new options in profiler</Change>
+  <Change author="Matt Ward" date="03/21/2009">Fixed failing python addin unit tests - font size now converted to string using CultureInfo.InvariantCulture.</Change>
+  <Change author="Matt Ward" date="03/21/2009">Python forms designer now supports fonts.</Change>
+  <Change author="Daniel Grunwald" date="03/20/2009">Prevent potential stack overflow in ElementReturnType.BaseType.</Change>
+  <Change author="Daniel Grunwald" date="03/20/2009">Fixed SD2-1534: Boo forms designer modifies fields in non-designer file</Change>
+  <Change author="Daniel Grunwald" date="03/20/2009">Fixed bug introduced in last commit (fixes unit tests).</Change>
+  <Change author="Daniel Grunwald" date="03/20/2009">Fixed SD2-1530: protected inner classes are not visible</Change>
+  <Change author="Daniel Grunwald" date="03/20/2009">Don't constantly create new threads to poll the clipboard.</Change>
+  <Change author="Daniel Grunwald" date="03/20/2009">Fixed SD2-1533 - Project configurations get confused</Change>
+  <Change author="Daniel Grunwald" date="03/20/2009">Work around for SD2-1485: Build worker occasionally hangs:
+In parallel builds, don't use in-process build.</Change>
+  <Change author="Siegfried Pammer" date="03/19/2009">- bug fixes
+- added "ProfileExecutable" dialog
+- replaced ProfilerService with ProfilerRunner</Change>
+  <Change author="Matt Ward" date="03/19/2009">Fixed unhandled FileNotFoundException in XML tree editor when a file is loaded with a dtd reference that cannot be found.</Change>
+  <Change author="Daniel Grunwald" date="03/19/2009">Fixed bug in 'Find overrides': when overrides were in partial classes, the search result sometimes used the wrong class part.</Change>
+  <Change author="Daniel Grunwald" date="03/19/2009">Fixed exception from forum-9214 (but hung build still not fixed).
+Fixed string resource name in App.Config description.</Change>
+  <Change author="Matt Ward" date="03/18/2009">Can now run all tests with code coverage or run all the tests in the current project.</Change>
+  <Change author="Siegfried Pammer" date="03/18/2009">- finished Options Panels
+- bug fixes</Change>
+  <Change author="Daniel Grunwald" date="03/18/2009">Mark booc.exe as 32-bit (fix build).
+DynamicHelpPad: fixed possible NullReferenceException.</Change>
+  <Change author="Daniel Grunwald" date="03/18/2009">Fixed forum-9168: ArgumentOutOfRangeException in BooFormattingStrategy.SearchBracketForward/GapTextBufferStrategy.GetCharAt.
+Fixed forum-9200: ArgumentException in ShowErrorHelpCommand.Run/IHxTopicList.ItemAt.</Change>
+  <Change author="Daniel Grunwald" date="03/18/2009">Boo: In strict mode, the default visibility is private.</Change>
+  <Change author="Daniel Grunwald" date="03/18/2009">Update to Boo 0.9.1.3287.</Change>
+  <Change author="Daniel Grunwald" date="03/18/2009">SearchAndReplace: don't search in .exe/.dll/.pdb</Change>
+  <Change author="Matt Ward" date="03/17/2009">Python forms designer now supports Form Color properties.</Change>
+  <Change author="Siegfried Pammer" date="03/17/2009">added "QualityTools" menu</Change>
+  <Change author="Siegfried Pammer" date="03/17/2009">fixed profiler start bugs</Change>
+  <Change author="Daniel Grunwald" date="03/17/2009">Revert changes to NRefactory.csproj in revision 3849 - add GlobalAssemblyInfo.cs back so that the assembly is correctly versioned.</Change>
+  <Change author="Mike Krüger" date="03/17/2009">* Src/Lexer/AbstractLexer.cs: Added null check.</Change>
+  <Change author="Mike Krüger" date="03/17/2009">* Src/Lexer/ILexer.cs:
+* Src/Lexer/CSharp/Lexer.cs:
+* Src/Lexer/AbstractLexer.cs: Added SetConditionalCompilationSymbols
+  method.</Change>
+  <Change author="Daniel Grunwald" date="03/16/2009">Added CreateStartInfo method to AbstractProject.</Change>
+  <Change author="Daniel Grunwald" date="03/16/2009">When handling file names, use StringComparison.OrdinalIgnoreCase instead of InvariantCultureIgnoreCase.</Change>
+  <Change author="Daniel Grunwald" date="03/16/2009">ExceptionBox: fixed potential deadlock when exception occurred on non-GUI thread.
+Added menu entries for "Edit &gt; Insert &gt; Paste as comment/string" (r3832)</Change>
+  <Change author="Daniel Grunwald" date="03/16/2009">Fixed cleanup in AutomatedBuild.</Change>
+  <Change author="Daniel Grunwald" date="03/16/2009">Add profiler to setup.</Change>
+  <Change author="Daniel Grunwald" date="03/16/2009">Build profiler when using SharpDevelop .bat files.</Change>
+  <Change author="Siegfried Pammer" date="03/16/2009">removed doc
+fixed references in Profiler.AddIn
+clean up in allocator.cpp</Change>
+  <Change author="Siegfried Pammer" date="03/16/2009">Added Profiler</Change>
+  <Change author="Mike Krüger" date="03/16/2009">* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
+* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added place on new
+  line options.</Change>
+  <Change author="Mike Krüger" date="03/16/2009">* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: fixed bracket
+  space output issues.</Change>
+  <Change author="Mike Krüger" date="03/15/2009">* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
+* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added some
+  formatting options.</Change>
+  <Change author="Matt Ward" date="03/14/2009">Python forms designer now supports Control's Padding property.</Change>
+  <Change author="Matt Ward" date="03/14/2009">Python forms designer now supports the Form's Location property.</Change>
+  <Change author="Matt Ward" date="03/14/2009">Python forms designer now supports AutoScrollMinSize, AutoScrollMargin and MinimumSize properties.</Change>
+  <Change author="Mike Krüger" date="03/13/2009">* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Respected the
+  aroundassignment option in more constructs.</Change>
+  <Change author="Mike Krüger" date="03/13/2009">* NRefactory.csproj: 
 
-"Show full error..." made localizable.</Change>
-  <Change author="David Srbecký" date="01/16/2008">Tests output - use name of dumped object as the XML node name.</Change>
-  <Change author="David Srbecký" date="01/16/2008">Updated Stepping test</Change>
-  <Change author="David Srbecký" date="01/16/2008">Include ToString value in the test output</Change>
-  <Change author="David Srbecký" date="01/16/2008">A set of properties to expand can be specified in debugger tests.  
-Some tests updated.</Change>
-  <Change author="David Srbecký" date="01/16/2008">Debugger tests - do not expand properties by default.</Change>
-  <Change author="David Srbecký" date="01/15/2008">".cs" part of test name</Change>
-  <Change author="David Srbecký" date="01/15/2008">Added the expected output to the tests as well</Change>
-  <Change author="David Srbecký" date="01/15/2008">Move testing code to the tests</Change>
-  <Change author="David Srbecký" date="01/15/2008">Tweak debug test output - specify the object type as attribute rather then container node.</Change>
-  <Change author="David Srbecký" date="01/15/2008">Update debugger tests.  
-Prevent infinite recursion in debugger tests.</Change>
-  <Change author="David Srbecký" date="01/15/2008">Add context menu to the Local Variables Pad.  
-Add context menu to error item which shows the full exception.</Change>
-  <Change author="David Srbecký" date="01/15/2008">Catch evaluation errors are display them as special error node.</Change>
-  <Change author="David Srbecký" date="01/15/2008">Rename ExpressionNode to ValueNode to emphasise that the node is immutable.  The expression is now evaluated before the node's constructor.</Change>
-  <Change author="David Srbecký" date="01/15/2008">Fixed array access.</Change>
-  <Change author="David Srbecký" date="01/15/2008">Values store expression which can be used to re-obtain the value.  
-Values do not sore names; the name is inferred from the expression.</Change>
-  <Change author="David Srbecký" date="01/15/2008">Parser and Expression nodes for very simple expressions (in form "Identifier.Member.Member").  
-Re-enabled debugger tooltips.</Change>
-  <Change author="David Srbecký" date="01/15/2008">Updating DynamicTreeDebuggerRow adapter.  
-Fixed disappearing plus for TreeViewNode.</Change>
-  <Change author="David Srbecký" date="01/14/2008">Bug fix:  Consider that the process may be resumed in the OnDebuggeeStateChanged event</Change>
-  <Change author="David Srbecký" date="01/14/2008">Abort refresh of local variables if debuggee is running</Change>
-  <Change author="David Srbecký" date="01/14/2008">MethodInfo instances are unique.  Added a test for it.</Change>
-  <Change author="David Srbecký" date="01/14/2008">Cache all queries for some set of type members</Change>
-  <Change author="David Srbecký" date="01/14/2008">Removed walk-arounds left over from the last tree control.</Change>
-  <Change author="David Srbecký" date="01/14/2008">Removed ExpressionEvaluateException.  Use GetValueException instead.</Change>
-  <Change author="David Srbecký" date="01/14/2008">Any null value is assumed to be of type System.Object.  
-Fixed getting type of values type (struct)</Change>
-  <Change author="David Srbecký" date="01/14/2008">Added a test for value type (struct)</Change>
-  <Change author="David Srbecký" date="01/14/2008">Extended a test for function arguments.</Change>
-  <Change author="David Srbecký" date="01/14/2008">Tests and tested programs can be defined in the same file.
-Added a template for debugger tests.  
-Convenience environment variable for updating XML output.</Change>
-  <Change author="David Srbecký" date="01/13/2008">Methods for running all debugger tests from one assembly - not used now</Change>
-  <Change author="Daniel Grunwald" date="01/13/2008">Prevent type inference cycles (e.g. "var a = a;") from causing a StackOverflowException.</Change>
-  <Change author="Daniel Grunwald" date="01/13/2008">Fixed resolving when a generic class derived from a non-generic class with the same name.
-Fixed resolving when a class had the same name as its containing namespace.</Change>
-  <Change author="Daniel Grunwald" date="01/13/2008">Fixed code completion after new-expression "new SomeClass().Member".
-Fixed overload resolution to try overloads in base class if no overload in the derived class is applicable.</Change>
-  <Change author="David Srbecký" date="01/13/2008">Added more error checking for objects.  Better support for getting values of static members.</Change>
-  <Change author="David Srbecký" date="01/13/2008">Test fix - exception throwing order changed in last commit</Change>
-  <Change author="David Srbecký" date="01/13/2008">CannotGetValueException renamed to GetValueException</Change>
-  <Change author="David Srbecký" date="01/13/2008">Polishing the expressions</Change>
-  <Change author="Daniel Grunwald" date="01/12/2008">Fixed DefaultProjectContent.GetClass implementation: inner classes nested in other inner classes were not found.
-NRefactoryResolver: Fixed attribute constructor lookup. Resolve attribute arguments in the context of the decorated class.</Change>
-  <Change author="Daniel Grunwald" date="01/12/2008">Fixed code completion in indexer setters and explicit event implementations.
-Make overload resolution aware of "ref" and "out" parameters.</Change>
-  <Change author="Matt Ward" date="01/12/2008">Temporarily disabled SharpServerTools in the installer since its files are missing after a build.</Change>
-  <Change author="Daniel Grunwald" date="01/12/2008">NRefactoryResolver rewrite: remove code duplication between NRefactoryResolver and TypeVisitor. Changed handling of method groups to follow C# specification more closely.
-This fixes several bugs in overload resolution.</Change>
-  <Change author="Dickon Field" date="01/11/2008">resolved runtime issue in ServerTools - now runs, not complete</Change>
-  <Change author="Dickon Field" date="01/11/2008">Fixed the build of this project to copy addin file to output dir correctly - still breaks at runtime though - sorry!</Change>
-  <Change author="Dickon Field" date="01/11/2008">Removed the reference to Todo.cs from proj file</Change>
-  <Change author="David Srbecký" date="01/11/2008">Custom Abstract Syntax Tree for debugger expression independent of NRefactory.</Change>
-  <Change author="Dickon Field" date="01/11/2008">Started new style Server control, incorporating dbtool</Change>
-  <Change author="David Srbecký" date="01/11/2008">Added missing SVN keyword Revision to files</Change>
-  <Change author="Daniel Grunwald" date="01/11/2008">Some minor bug fixes, changed copyright date from 2007 to 2008.</Change>
-  <Change author="David Srbecký" date="01/11/2008">Do not add 'this' variable for static methods</Change>
-  <Change author="David Srbecký" date="01/11/2008">Abort variable refresh if debuggee is stepped</Change>
-  <Change author="Matt Ward" date="01/10/2008">NUnit.Framework.dll and NUnit.Core.dll no longer registered in GAC by the installer. This makes the installer consistent with the latest NUnit installer and fixes the problem where NUnit-Console cannot find log4net when running unit tests.</Change>
-  <Change author="David Srbecký" date="01/10/2008">Forum-20456 (solodev): Only non-expired StackFrame can be selected.</Change>
-  <Change author="David Srbecký" date="01/09/2008">Fixed LocalVariablesPas updating.  
-Less debug output to the console.</Change>
-  <Change author="David Srbecký" date="01/09/2008">If can not get managed version of executable, just use the default.</Change>
-  <Change author="David Srbecký" date="01/09/2008">Removed lifetime tracking of StackFrame.  It was quite expensive and it is not necessary for the expression-based variable model.</Change>
-  <Change author="David Srbecký" date="01/09/2008">Updated ClassEditor to new TreeView</Change>
-  <Change author="David Srbecký" date="01/09/2008">Updating Local Variables Pad to work with the new TreeView</Change>
-  <Change author="David Srbecký" date="01/09/2008">Custom modifications of the TreeView</Change>
-  <Change author="David Srbecký" date="01/09/2008">Updated to TreeViewAdv control 1.6.1.0</Change>
-  <Change author="David Srbecký" date="01/09/2008">Updated test</Change>
-  <Change author="Daniel Grunwald" date="01/09/2008">Fixed forum-7193: CSharpOutputVisitor bugs</Change>
-  <Change author="David Srbecký" date="01/08/2008">Show 'Private members' and similar nodes only if they are not empty.  
-Changed the semantics of BindingFlags - if no demands are specified, it implicitly means 'all' rather then 'none'.</Change>
-  <Change author="David Srbecký" date="01/08/2008">Small bugfix: Update the Local Variables pad when stepping</Change>
-  <Change author="David Srbecký" date="01/08/2008">Removed the caches in StackFrame - Values can not be cached now since they have much shorter lifespan</Change>
-  <Change author="David Srbecký" date="01/08/2008">Updated DynamicTreeDebuggerRow adapter to the new model.</Change>
-  <Change author="Daniel Grunwald" date="01/08/2008">Fixed forum-7172: NullReferenceException in C# parser when "fixed" keyword was used incorrectly.</Change>
-  <Change author="Daniel Grunwald" date="01/08/2008">Fixed forum-7126: Template RunCommand's only work on new solutions
-Forum-7191: When NSvn.Client initialization fails, disable project browser overlays.
-Exception handler in ParserService.ParserFile: show the name of the file that caused the exception.
-AsynchronousAdvancedHighlighter: do not try to highlight deleted lines. This should fix the bug reported in forum-7175.</Change>
-  <Change author="David Srbecký" date="01/08/2008">Updated TreeViewNode adapter to the new model.  
-The pad is progressively updated using the same method as before - Application.DoEvents() is called periodically so that repaint events are invoked.  I still need to put is checks so that press of Stepping command terminates the update. </Change>
-  <Change author="David Srbecký" date="01/05/2008">Completely rewritten the variable model for Local Variables Pad and for the debugger tooltips.  
-Previously the nodes wrapped debugger values - any requests were redirected to the underling value.
-The nodes are now based on Expressions and act as dum data storage.  When node is created the expression is evaluated and the properties (Image, Name, Text, Type) are stored locally in the node.  The node is immutable so its content can not be changed - the GUI need to create a fresh node.  This implies that the expression is evaluated only once - when the node is created.
-A node can have child nodes.  The child nodes are created on-demand using enumerators.  This is desirable since creation of node involves evaluation of expression.  It also prevents infinite recursion.</Change>
-  <Change author="Matt Ward" date="01/05/2008">Updated to NUnit 2.4.6. The Unit Testing addin now uses the nunit-console's new /run command line parameter introduced in NUnit 2.4.6. This can be used to execute a test method, class or namespace.</Change>
-  <Change author="David Srbecký" date="01/04/2008">Initial implementation of expression evaluator</Change>
-  <Change author="David Srbecký" date="01/04/2008">Creation of expression does not evaluate the expression.</Change>
-  <Change author="David Srbecký" date="01/04/2008">Support for array lower bounds</Change>
-  <Change author="David Srbecký" date="01/03/2008">Added code for creating expressions</Change>
-  <Change author="Matt Ward" date="01/02/2008">Updated the WixBinding and SharpDevelop's installer to use WiX 3.0.3621.0</Change>
-  <Change author="David Srbecký" date="01/02/2008">Rename Function to StackFrame</Change>
-  <Change author="David Srbecký" date="01/02/2008">Moved part of code from Function to MethodInfo</Change>
-  <Change author="David Srbecký" date="01/02/2008">Tests for the last revision generic</Change>
-  <Change author="David Srbecký" date="01/02/2008">Create generic ICorDebugType from ICorDebugClass and type arguments.  
-We can not get DebugType for a Function</Change>
-  <Change author="David Srbecký" date="01/02/2008">Updated tests</Change>
-  <Change author="David Srbecký" date="01/02/2008">Skeleton of the Expression classes</Change>
-  <Change author="David Srbecký" date="01/02/2008">Removed the delegate-based persistence framework (will be replaced by expressions)</Change>
-  <Change author="David Srbecký" date="01/02/2008">Bad idea - reverting last two revisions.  At least for the time being.</Change>
-  <Change author="David Srbecký" date="01/01/2008">Preparing to remove ValueCollection</Change>
-  <Change author="David Srbecký" date="01/01/2008">Values have no names.  Names will be part of higher level abstraction.</Change>
-  <Change author="David Srbecký" date="01/01/2008">Removed some unused references.  
-Removed/disabled all Expression code.  It will return as higher level abstraction layer.</Change>
-  <Change author="David Srbecký" date="01/01/2008">Removed expiry propagation for Values. 
-
-It seems there were only two cases:
- - Values expiring when stack frame exits
- - Values expiring immediately when debuggee is resumed
-
-These precisely correspond to these two cases: (respectively)
- - Values that have closed expression
- - Values that do not have closed expression
-
-
-The new behaviour is that every value expires when debuggee is resumed.
-
-Work in progress...</Change>
-  <Change author="David Srbecký" date="01/01/2008">Removed the IMutable interface which propagated notifications about value changes.
-
-It do not provide 100% guarantee of notification.  For example:
- - If the user obtained a reference to same value from two places (eg classA.someInt and classB.someInt where classA == classB) then change in one place did not trigger notification in the other.  
- - Changing of the backing value for a property would not change the property.
-
-Idea for better system (if it is needed in the future):
-Each value refers to some memory range (eg reference it is 4 byte pointer in memory;  string is value on heap).
-Whenever a debugger is resumed all bets are off and anything could have changed.  
-Other then that value changes if and only if its memory range is modified by the user.
-Expression as a whole changes whenever any of the values involved changes;  if method call or property is involved then the whole expression may change when any memory is modified.</Change>
-  <Change author="David Srbecký" date="01/01/2008">Added 'Expressions' test</Change>
-  <Change author="David Srbecký" date="01/01/2008">Build compound expressions (eg "localVar.field[5]")</Change>
-  <Change author="David Srbecký" date="01/01/2008">Moved code to the Value class:
- - Value.GetFieldValue
- - Value.GetPropertyValue
- - Value.SetPropertyValue
- - Value.InvokeMethod
- - Value.AsyncInvokeMethod</Change>
-  <Change author="David Srbecký" date="01/01/2008">Removed file Value.Common.cs</Change>
-  <Change author="David Srbecký" date="01/01/2008">Added specific Ast Expression so that more information can be preserved.  
-Renamed Testing attribute SummaryOnly to ToStringOnly  </Change>
-  <Change author="David Srbecký" date="12/31/2007">Update Debugger.Tests</Change>
-  <Change author="David Srbecký" date="12/31/2007">Removed classes ArrayElement, LocalVariable, MemberValue and MethodArgument.  They added no functionality to the Value class except for specifying how the Value was created. </Change>
-  <Change author="David Srbecký" date="12/31/2007">Rename files (Value-*.cs =&gt; Value.*.cs)</Change>
-  <Change author="David Srbecký" date="12/31/2007">Removed the NamedValue class.  All values now have name.</Change>
-  <Change author="David Srbecký" date="12/31/2007">Added an Expression class which will be used to store AST expression for each value</Change>
-  <Change author="David Srbecký" date="12/31/2007">Re-enabled debugger</Change>
-  <Change author="Matt Ward" date="12/31/2007">XML editor now uses the text editor's CodeCompletionWindow instead of its own custom version.</Change>
-  <Change author="Matt Ward" date="12/26/2007">Added pre-build event to run UpdateAssemblyInfo.exe to Python.Build.Tasks and ClassDiagram projects.</Change>
-  <Change author="Matt Ward" date="12/26/2007">Removed NAnt file template from installer.</Change>
-  <Change author="Matt Ward" date="12/26/2007">Added NAnt addin sample.</Change>
-  <Change author="Matt Ward" date="12/18/2007">The SdiWorkspaceLayout now checks that the DefaultWorkbench ToolBars property is not null before adding controls to the toolbar panel. The ToolBars property is null if nothing is specified in the .addin file under the path /SharpDevelop/Workbench/ToolBar</Change>
-  <Change author="Matt Ward" date="12/18/2007">Updated samples so they work with SharpDevelop 3.0</Change>
-  <Change author="Matt Ward" date="12/16/2007">Moved Mono addin to samples and added support for Mono's new VB.NET compiler Vbnc.</Change>
-  <Change author="Matt Ward" date="12/03/2007">Added IronPython addin with support for IronPython 1.1</Change>
-  <Change author="Matt Ward" date="12/02/2007">Fixed problems with the XML Editor's XmlParser class preventing the XamlExpressionFinder from correctly identifying an attribute or element in a different namespace. The GetActiveElementStartPath, GetParentElementPath and GetQualifiedAttributeName all now correctly determine the namespace of the element or attribute if the xml has mixed namespaces.</Change>
-  <Change author="Daniel Grunwald" date="11/25/2007">Layout configuration: Make "&lt;Reset to defaults&gt;" switch back to the Default layout.
-Do not store active layout, always start with Default. (fixes SD2-1268)
-Switch layout before starting the debugger (removes workaround for SD2-1325)
-Add LINQ support to VBNetOutputVisitor (not tested to generate valid code, but better than "throw new NotImplementedException();")</Change>
-  <Change author="Matt Ward" date="11/25/2007">The CodeCoverageMethod.GetChildNamespaces method now correctly identifies the child namespaces when there are two that start the same and match up to just before the dot character.</Change>
-  <Change author="Matt Ward" date="11/25/2007">Modifed nunit-console: Release version now being built. Changed the default behaviour of nunit-console where if a test fixture is specified on the command line then no other tests in the assembly are loaded. The default behaviour meant that a SetUpFixture class would not be run breaking tests that rely on it.</Change>
-  <Change author="Matt Ward" date="11/25/2007">Removed unused files from setup and code coverage addin.</Change>
-  <Change author="Matt Ward" date="11/25/2007">Updated installer: Removed nunit-console components used to target .NET 1.1. Added log4net component for NUnit 2.4.5.</Change>
-  <Change author="Matt Ward" date="11/25/2007">Updated to NUnit 2.4.5. Removed support for running unit tests against .NET 1.1.</Change>
-  <Change author="Daniel Grunwald" date="11/19/2007">Suppress warning message when SideBarConfig.xml does not exist (on first start after installation).
-Disable Debugger AddIn: it is WAY too unstable to be useful.</Change>
-  <Change author="Matt Ward" date="11/19/2007">Changed CodeCoverage addin to use PartCover 2.2 instead of NCover.</Change>
-  <Change author="Daniel Grunwald" date="11/19/2007">Improved finding xml documentation (now supports redirections). Add support for compiling for Compact Framework 3.5.</Change>
-  <Change author="Matt Ward" date="11/04/2007">XmlView checks that the PrimaryFile is not null before MakeDirty is called in the DocumentChanged event handler. The text editor's filename is set to an empty string instead of null in the XslOutputView so the ParserService does not throw an ArgumentNullException when looking for a parser.</Change>
-  <Change author="Daniel Grunwald" date="11/03/2007">Fixed build.</Change>
-  <Change author="Daniel Grunwald" date="11/03/2007">Fixed forum-6858: Bug in New Project/New File Dialog: LastSelectedCategory is not saved correctly for sub-categories.</Change>
-  <Change author="Daniel Grunwald" date="11/03/2007">Allow choosing the target framework when creating a new project.</Change>
-  <Change author="Daniel Grunwald" date="10/31/2007">Fixed SD2-1379: When opening files, compile errors are not highlighted</Change>
-  <Change author="Daniel Grunwald" date="10/28/2007">Fixed rare deadlock between QuickClassBrowserPanel locking a CompoundClass and then doing SearchType requests on a project content; and the parser thread updating a project content and then locking a compound class.</Change>
-  <Change author="Daniel Grunwald" date="10/28/2007">Fixed tracking of current project: Improved finding of the first visible parent node of a project by not using lazy initialization for solution folder nodes. Do not set ProjectService.CurrentProject in SelectFile requests - when changing the active file, ProjectService.ActiveViewContentChanged already takes care of changing the current project.</Change>
-  <Change author="Daniel Grunwald" date="10/28/2007">Disable code-completion inside string literals.
-Fixed control size in HistoryViewDisplayBinding/InfoPanel.</Change>
-  <Change author="Daniel Grunwald" date="10/27/2007">Improve code completion after the "new" keyword.</Change>
-  <Change author="Daniel Grunwald" date="10/27/2007">Go back to DockingWindow mode. This seems to solve the issue that text editor tooltips were sometimes not visible anymore after a layout change.</Change>
-  <Change author="Daniel Grunwald" date="10/27/2007">Prevent crash in DockPanel.FocusManager.Activate when active pane was removed (e.g. the pad that was active when SharpDevelop was closed does not exist anymore after an AddIn was removed manually or SharpDevelop was updated)</Change>
-  <Change author="Daniel Grunwald" date="10/27/2007">Fixed code completion after string literals ("hello, world".Length), fixed code completion in object initializers that use binary operators in the value (new MyType { P1 = someValue + someOtherValue }).</Change>
-  <Change author="Daniel Grunwald" date="10/26/2007">Fixed build.</Change>
-  <Change author="Daniel Grunwald" date="10/26/2007">FxCop AddIn: allow suppressing assembly-wide messages (e.g. AssembliesShouldHaveValidStrongNames)</Change>
-  <Change author="Daniel Grunwald" date="10/26/2007">Make project conversion from MSBuild 2.0 to 3.5 explicit using a button in the project options.
-Remove .NET 1.x compilation support. Remove .NET CF 1.0 compilation support.
-Newly created projects for start as MSBuild 3.5 projects.</Change>
-  <Change author="Daniel Grunwald" date="10/25/2007">Fixed bug in text editor drag+drop that could cause an undo group to stay open.</Change>
-  <Change author="Daniel Grunwald" date="10/25/2007">Update to Boo 0.8.</Change>
-  <Change author="Christoph Wille" date="10/21/2007">Updated setup for SHFB 1.6</Change>
-  <Change author="Daniel Grunwald" date="10/21/2007">WinFormsUI/License.txt: disable Copy to Output Directory.
-Fixed a bug that could cause a file to be registered multiple times in the project content, showing all class members twice in the "quick class browser".</Change>
-  <Change author="Christoph Wille" date="10/21/2007">Updated tools.build to copy new directories of SHFB 1.6</Change>
-  <Change author="Christoph Wille" date="10/21/2007">SHFB 1.6.0.0
-
-http://www.codeplex.com/SHFB/Release/ProjectReleases.aspx?ReleaseId=5311</Change>
-  <Change author="Christoph Wille" date="10/21/2007">Remove old version of SHFB</Change>
-  <Change author="Daniel Grunwald" date="10/19/2007">Code completion: fixed some context detection bugs.</Change>
-  <Change author="Daniel Grunwald" date="10/19/2007">Disabled COM registration for MyMeta.
-Add logging for text editor's undo stack.
-C# parser: fixed [module: ..] attributes
-C# code completion: suggest "assembly", "module", etc. when typing an attribute.</Change>
-  <Change author="Daniel Grunwald" date="10/16/2007">Fixed two bugs:
- - When there were a generic and a non-generic method with identical parameters (e.g. "object GetSomething()" and "T GetSomething&lt;T&gt;()" ), running find references on one of them returned results for both methods.
- - Code completion was showing incorrect list for array initializers in field declarations ("static int[] field = { &lt;Ctrl+Space&gt; };")
-Improved GetHashCode + Equals code generator.</Change>
-  <Change author="Daniel Grunwald" date="10/14/2007">Fixed attribute completion.</Change>
-  <Change author="Daniel Grunwald" date="10/13/2007">Looks like I only committed the src folder in rev. 2714, here are the missing changes.</Change>
-  <Change author="Daniel Grunwald" date="10/13/2007">Fixed forum-19285: code-completion for nested inner classes</Change>
-  <Change author="Daniel Grunwald" date="10/12/2007">Add "Abort build" and "Set platform" commands to the "Build" menu.</Change>
-  <Change author="Daniel Grunwald" date="10/12/2007">Assign DomRegion to ExpressionResult for describing the exact location where the expression was found.
-NRefactoryResolver now assigns the correct positions to nodes parsed by ParseExpression. This fixes code-completion on parenthesized query expressions.</Change>
-  <Change author="Daniel Grunwald" date="10/12/2007">WorkbenchLayout: make the SharpDevelop main form structured similar to the DockPanelSuite sample application, use DockingMdi mode. This seems to solve some issues with the DockPanelSuite v2.1.</Change>
-  <Change author="Daniel Grunwald" date="10/11/2007">Do not show read-only value-type fields and properties in collection initializer completion.</Change>
-  <Change author="Daniel Grunwald" date="10/11/2007">Add code-completion support for object and collection initializers.</Change>
-  <Change author="Dickon Field" date="10/09/2007">Added MyMeta and ICSharpCode.DataTools libraries which are required by new version of DbTools plugin</Change>
-  <Change author="Daniel Grunwald" date="10/07/2007">Update to Cecil 0.6.
-Fixed some bugs.
-C# parser: include position information for statements/expressions.</Change>
-  <Change author="Daniel Grunwald" date="09/30/2007">Fixed forum-19066: Invalid params for External Tools.
-Changed some instances of "combine" to "solution".</Change>
-  <Change author="Daniel Grunwald" date="09/30/2007">Reapply our patches to the DockPanel Suite.</Change>
-  <Change author="Daniel Grunwald" date="09/30/2007">Update to DockPanel Suite v2.1.</Change>
-  <Change author="Daniel Grunwald" date="09/29/2007">Fixed crash when closing the solution while building.</Change>
-  <Change author="Daniel Grunwald" date="09/29/2007">Show build progress in status bar.</Change>
-  <Change author="Daniel Grunwald" date="09/29/2007">Some fixes suggested by FxCop.
-Fixed using the "Suppress message" command on constructors.</Change>
-  <Change author="Daniel Grunwald" date="09/29/2007">Add a .targets file to the build that gets automatically included when the C# 2.0 or VB 8 compiler is used. This .targets file will display warnings when the project uses MSBuild 3.5 features.
-Fixed Project &gt; Check with FxCop.</Change>
-  <Change author="Daniel Grunwald" date="09/28/2007">Fixed deleting directories when "Use recycle bin" option was activated.</Change>
-  <Change author="Daniel Grunwald" date="09/27/2007">Fixed bug introduced in revision 2688 that could cause non-partial classes to become a CompoundClass with two identical parts when the file is edited.
-This caused symptoms like seeing fields and properties twice in the code completion drop-down, seeing method overloads twice; and indirectly caused several problems with the Rename refactoring.</Change>
-  <Change author="Daniel Grunwald" date="09/27/2007">Fixed build.
-Embedded SharpDevelop.exe.manifest in SharpDevelop.exe.</Change>
-  <Change author="Daniel Grunwald" date="09/27/2007">Support embedding the .manifest in the .exe.</Change>
-  <Change author="Daniel Grunwald" date="09/27/2007">Build engine: reduce the number of events build workers sent to the host process</Change>
-  <Change author="Daniel Grunwald" date="09/26/2007">Add ICSharpCode.SharpDevelop.BuildWorker.exe to setup.</Change>
-  <Change author="Daniel Grunwald" date="09/26/2007">Rewritten build system. Separated solution build logic (BuildEngine) from project build logic (MSBuildEngine).
-New features:
-- Supports non-MSBuild projects.
-- Setting different properties for each project in a solution.
-- Build can run in a worker process 
-- Builds multiple projects in parallel</Change>
-  <Change author="Daniel Grunwald" date="09/24/2007">Fixed exception when deleting a file that had multiple view contents open in the same WorkbenchWindow (e.g. Source view+Designer view, or Source view+Subversion History).</Change>
-  <Change author="Daniel Grunwald" date="09/24/2007">Fixed build again.</Change>
-  <Change author="Daniel Grunwald" date="09/24/2007">Fixed SD2-1378: Bookmarks behave incorrectly when removing text</Change>
-  <Change author="Daniel Grunwald" date="09/24/2007">Implemented SD2-1371: Use recycle bin to delete files.
-Fixed bug introduced in last revision that caused the unit tests to fail.</Change>
-  <Change author="Daniel Grunwald" date="09/24/2007" />
-  <Change author="Daniel Grunwald" date="09/24/2007">When there are duplicate classes, treat both parts as implicitly partial. Fixes SD2-1217: Duplicate class name support in ProjectContent.</Change>
-  <Change author="Daniel Grunwald" date="09/24/2007">SdStatusBar.BeginTask: reset WorkDone to 0.</Change>
-  <Change author="Daniel Grunwald" date="09/24/2007">Applied patch by Ray Gilbert: CodeDomOutputVisitor now supports more language constructs. (see http://www.codeproject.com/csharp/codedom_assistant.asp)</Change>
-  <Change author="Daniel Grunwald" date="09/23/2007">Add sample project for text anchors.</Change>
-  <Change author="Daniel Grunwald" date="09/23/2007">Fixed removing lines in the text editor.</Change>
-  <Change author="Daniel Grunwald" date="09/23/2007">Add TextAnchor to text editor.
-Usage: TextAnchor anchor = document.GetLineSegment(lineNumber).CreateAnchor(columnNumber);
-anchor.LineNumber and anchor.ColumnNumber are updated when text is inserted/removed in the document. anchor.IsDeleted will be true when the text location containing the anchor was removed.
-LineSegment gets an IsDeleted property, so a LineSegment reference can be used as anchor for a line.</Change>
-  <Change author="Daniel Grunwald" date="09/22/2007">Fixed forum-15062: TextEditor changes encoding of UTF-16 files to UTF-8.</Change>
-  <Change author="Daniel Grunwald" date="09/22/2007">TextView.VirtualTop: X was a column number, Y a pixel position. Now both are pixel positions.
-CSharpOutputVisitor: use System.Runtime.InteropServices.DefaultParameterValueAttribute when converting VB optional parameters.</Change>
-  <Change author="Daniel Grunwald" date="09/22/2007">Fixed forum-18069: Text selection lags mouse depending on font
-TextEditor now provides TextChanged event so users do not have to attach to textEditor.Document.DocumentChanged.
-Improved the heuristic that determines which comments belong to a class for the "Move class to file" command.
-Prevent SharpDevelop from crashing if code-completion cache is corrupted.</Change>
-  <Change author="Daniel Grunwald" date="09/17/2007">Merged CSharpCodeCompletion sample enhancements from /branches/2.1 to trunk.
-Fixed forum-18847: selections do not work correctly when selecting from invalid lines to valid lines.
-When code converter crashes, report the file that it was processing during the crash.</Change>
-  <Change author="Daniel Grunwald" date="09/11/2007">Fixed SD2-1377: Exception adding reference to Compact Framework application.
-C# code completion: Members of anonymous types are properties, not fields.</Change>
-  <Change author="Daniel Grunwald" date="09/10/2007">RunProject command: compile project before running it.
-C# syntax highlighting: add contextual keywords introduced in C# 3.0.
-C# parser: support "from T x in e" syntax in query expressions.</Change>
-  <Change author="Daniel Grunwald" date="09/10/2007">NRefactory: Support parsing statements like "SomeDelegate d = GenericMethod&lt;string&gt;;"
-Renamed FieldReferenceExpression to MemberReferenceExpression.</Change>
-  <Change author="Daniel Grunwald" date="08/26/2007">Fixed NullableBoolEditor: the editor must be able to show the difference between the null value and an ambiguous value (multiple selected components with different values).</Change>
-  <Change author="Daniel Grunwald" date="08/26/2007">Add more controls to toolbox, support editing properties of type "Cursor" and "bool?".</Change>
-  <Change author="Daniel Grunwald" date="08/26/2007">Support creating event handlers by double-clicking buttons in the WPF designer.</Change>
-  <Change author="Daniel Grunwald" date="08/25/2007">Worked on event support in WPF designer.
-Fixed C# parser bug regarding expressions like "(T)-val".</Change>
-  <Change author="Russell Wilkins" date="08/25/2007">SideTab updates</Change>
-  <Change author="Daniel Grunwald" date="08/24/2007">Various bug fixes.</Change>
-  <Change author="Daniel Grunwald" date="08/24/2007">Make Properties class thread-safe. (probably fixes forum-18390).</Change>
-  <Change author="Daniel Grunwald" date="08/24/2007">Fixed forum-18448: crash when editing XML file containing a reference to a non-existing DTD.</Change>
-  <Change author="Daniel Grunwald" date="08/24/2007">Improved C# code completion (typing constraints on generic classes).</Change>
-  <Change author="Daniel Grunwald" date="08/23/2007">Fixed build.
-Allow unit testing of view contents by decoupling OpenedFile from FileService and Workbench.</Change>
-  <Change author="Daniel Grunwald" date="08/23/2007">Fixed SD2-953: Code error is thrown runing a WinForm with the form .resx file opened
-The forms designer now uses OpenedFile (SD2-1234) to allow sharing unsaved resource files between resource editor and forms designer.</Change>
-  <Change author="Daniel Grunwald" date="08/23/2007">Fixed forum-18481: Problem with Boo Forms Designer when using TableLayoutPanel</Change>
-  <Change author="Daniel Grunwald" date="08/13/2007">Fixed forum-18391 and forum-18392 (pretty printer bugs).
-VBNetOutputVisitor: Don't output "ByVal" by default.</Change>
-  <Change author="Daniel Grunwald" date="08/13/2007">Worked on VB&lt;-&gt;C# converter.
-Fixed SD2-980: VB 'For Each' statement not converted correcly to C#
-
-Text editor: Use TextLocation struct instead of System.Drawing.Point to represent line/column pairs.</Change>
-  <Change author="Christoph Wille" date="08/13/2007">SHFB (Sandcastle Help File Builder, http://codeplex.com/SHFB) version 1.5.0.1 (for Sandcastle June 2007 CTP) added, NDoc removed</Change>
-  <Change author="Daniel Grunwald" date="08/12/2007">Worked on VB-&gt;C# converter.</Change>
-  <Change author="Daniel Grunwald" date="08/12/2007">More improvements for the C#-&gt;VB converter.</Change>
-  <Change author="Daniel Grunwald" date="08/12/2007">Improved C#-&gt;VB converter.</Change>
-  <Change author="Daniel Grunwald" date="08/11/2007">Worked on C# -&gt; VB converter.
-Fixed SD2-1022: Delegates usage not converted correctly from C# to VB.</Change>
-  <Change author="Daniel Grunwald" date="08/10/2007">Fixed SD2-803: Implicit interface implementations are not converted correctly to VB</Change>
-  <Change author="Daniel Grunwald" date="08/09/2007">Fixed SD2-1028: local variables should be always initialized when converting code from VB to C#.</Change>
-  <Change author="Daniel Grunwald" date="08/09/2007">Fixed SD2-1069: Conversion of VB ReDim statement to C# not implemented.</Change>
-  <Change author="Daniel Grunwald" date="08/09/2007">Move Search&amp;Replace into an AddIn.</Change>
-  <Change author="Daniel Grunwald" date="08/08/2007">Fixed forum-18320: exception when converting VB code using named arguments to Boo.
-Add ShellExecuteDisplayBinding: allows to launch files using the default program associated with them in SharpDevelop's "Open With" menu.</Change>
-  <Change author="Daniel Grunwald" date="08/08/2007">Implemented SD2-1054: Opening a file with different editor</Change>
-  <Change author="Daniel Grunwald" date="08/08/2007">Worked on SD2-1054: Opening a file with different editor
-Still missing: "Set as default"</Change>
-  <Change author="Daniel Grunwald" date="08/08/2007">Property pad now works correctly with the Windows Forms designer.</Change>
-  <Change author="Daniel Grunwald" date="08/08/2007">Merged SD 2.2 revision 2624:2639 to trunk.</Change>
-  <Change author="Daniel Grunwald" date="08/08/2007">Set correct caret column when pressing return.</Change>
-  <Change author="Daniel Grunwald" date="08/08/2007">Fixed SD2-1298: Converting single assignment and comparison statement from C# to VB.NET</Change>
-  <Change author="Daniel Grunwald" date="08/08/2007">Fixed nunit.framework detection (fixes build)</Change>
-  <Change author="Daniel Grunwald" date="08/08/2007">Fixed SD2-1355: FormattingStrategy: meaning of IndentLine, FormatLine return value</Change>
-  <Change author="Daniel Grunwald" date="08/06/2007">Add "RequiredTargetFramework" meta data to references.</Change>
-  <Change author="Daniel Grunwald" date="08/05/2007">Fixed build.</Change>
-  <Change author="Daniel Grunwald" date="08/05/2007">GacReferencePanel: when the GAC contains multiple versions of an assembly, show the version that MSBuild will use.</Change>
-  <Change author="Daniel Grunwald" date="08/05/2007">Use MSBuild's ResolveAssemblyReferences task to make sure we load the correct assembly version for code-completion. E.g. a reference to "System.Net" loads a different assembly depending on the target framework. SharpDevelop now can also find assemblies in custom reference paths, using assembly tables and everything else supported by MSBuild (including custom ResolveAssemblyReferences tasks).
-The property pad uses the information from MSBuild to show the resolved assembly version.</Change>
-  <Change author="Daniel Grunwald" date="08/04/2007">Project options page: allow choosing 3.0 and 3.5 as target framework.</Change>
-  <Change author="Daniel Grunwald" date="08/04/2007">Remove skip-messages for projects not compiled when compiling only a single project using F9.
-Replace ICSharpCode.SharpDevelop.Func&lt;...&gt; with System.Func&lt;...&gt;; use System.Linq.Enumerable instead of the ICSharpCode.SharpDevelop.Linq helper class.</Change>
-  <Change author="Daniel Grunwald" date="08/04/2007">Use MSBuild 3.5.
-SharpDevelop can now compile C# 3.0 projects created with VS2008 Beta 2.</Change>
-  <Change author="Daniel Grunwald" date="08/04/2007">WpfDesigner tests: Change WPF namespace from winfx/2006/xaml/presentation to netfx/2007/xaml/presentation</Change>
-  <Change author="Daniel Grunwald" date="08/04/2007">Merge Merged SD 2.2 revision 2603:2624 to trunk.
-</Change>
-  <Change author="Daniel Grunwald" date="07/19/2007">Fixed method insight for constructors.</Change>
-  <Change author="Daniel Grunwald" date="07/19/2007">CSharpExpressionFinder: better support for field initializers</Change>
-  <Change author="Daniel Grunwald" date="07/19/2007">Fixed two problems in C# expression finder (wrong context detected for property setters and nested types)</Change>
-  <Change author="Daniel Grunwald" date="07/19/2007">Fixed code completion bug: calls from nested classes to static methods in the parent class now are resolved correctly.</Change>
-  <Change author="Daniel Grunwald" date="07/19/2007">More C# code completion fixes.</Change>
-  <Change author="Daniel Grunwald" date="07/19/2007">C# expression finder: Fix "if (a &gt; b) {}".</Change>
-  <Change author="Daniel Grunwald" date="07/19/2007">Fixed C# expression finder bug for statements like "if (a &lt; b) {}"</Change>
-  <Change author="Daniel Grunwald" date="07/18/2007">Fixed forum-17917: Overriding properties that have get/set accessors with different visibility as the property does not insert the visibility modifier in the overriding code.
-Overriding abstract members now inserts "throw new NotImplementedException();" instead of a call to the base method.</Change>
-  <Change author="Daniel Grunwald" date="07/12/2007">Merged SD 2.2 revision 2560:2603 to trunk.</Change>
-  <Change author="Daniel Grunwald" date="07/10/2007">TextEditor: Fixed UpdateToEnd when there are folded regions.</Change>
-  <Change author="Daniel Grunwald" date="07/10/2007">TextAreaMouseHandler: This patch by Troy Simpson fixes an issue with selecting text via double-click, then following-up with a gutter selection.
-GapTextBufferStrategy: rewrote PlaceGap, fixing a performance issue when deleting text in large documents
-DefaultHighlightingStrategy: cache currentLine.Offset because it's not cheap to retrieve (it's an O(lg n) operation)
-DefaultDocument.RequestUpdate: when doing a WholeTextArea update, skip all other updates because they would only duplicate the work done by the WholeTextArea update
-Except for the load time, the performance editing large .txt files is now good; though the text editor takes a huge amount of memory (tested with a 1,000,000 lines file).</Change>
-  <Change author="Daniel Grunwald" date="07/08/2007">Change UpgradeCode - otherwise it is not possible to install SharpDevelop 2.2 when SharpDevelop 3.0 is already installed.</Change>
-  <Change author="Daniel Grunwald" date="07/08/2007">Applied text editor selection patch by Troy Simpson.</Change>
-  <Change author="Daniel Grunwald" date="07/08/2007">Fixed forum-17570: text editor saves an additional empty when saving a file.</Change>
-  <Change author="Daniel Grunwald" date="07/08/2007">Add optional "settingsPath" and "domPersistencePath" settings to SharpDevelop.exe.config. These can be used to redirect the settings/code completion cache to different folders, e.g. for running SharpDevelop from a USB stick.
-Make XML documentation tooltips work even if the code completion cache is disabled.</Change>
-  <Change author="Daniel Grunwald" date="06/27/2007">EventHandlerCompletitionDataProvider: build event name correctly ("button1.Click"=&gt;"button1_Click"), fixed support for generic delegates (EventHandler&lt;T&gt;)</Change>
-  <Change author="David Alpert" date="06/26/2007">c# event completion better handles generic eventhandlers (EventHandler&lt;TEventArgs&gt;) with a workaround to resolve TEventArgs into a more explicit reference (eg. MouseEventArgs)</Change>
-  <Change author="David Alpert" date="06/26/2007">improved C# event handler code completion; delegate completion now suggests a method name and optionally inserts the stub.</Change>
-  <Change author="Daniel Grunwald" date="06/25/2007">Implemented AttributeReturnType, now the unit test AddIn should work again.</Change>
-  <Change author="Daniel Grunwald" date="06/25/2007">Try to work around MSBuild bug that causes the build to fail on the build server.</Change>
-  <Change author="Daniel Grunwald" date="06/25/2007">Fixed build.</Change>
-  <Change author="Daniel Grunwald" date="06/25/2007">Support right-click &gt; add using on type names when the "using" is missing.</Change>
-  <Change author="Daniel Grunwald" date="06/24/2007">Include XamlBinding and WPFDesigner in setup.</Change>
-  <Change author="Daniel Grunwald" date="06/23/2007">Fixed WpfDesign unit tests.</Change>
-  <Change author="Daniel Grunwald" date="06/23/2007">Add image loading and custom control support to WpfDesign.</Change>
-  <Change author="Daniel Grunwald" date="06/23/2007">Add Undo/Redo support to integrated WPF designer.</Change>
-  <Change author="Daniel Grunwald" date="06/23/2007">Support ToolBox and PropertyGrid in WPF designer.</Change>
-  <Change author="Daniel Grunwald" date="06/23/2007">Add WpfDesigner addin.
-Add AbstractViewContentHandlingLoadErrors for easy handling of invalid files.</Change>
-  <Change author="Matt Ward" date="06/23/2007">Added unit tests for XmlParser getting attribute names with prefixes. Added GetQualifiedAttributeName and GetQualifiedAttributeNameAtIndex methods which return a QualifiedName for an attribute that includes its prefix if any.</Change>
-  <Change author="Daniel Grunwald" date="06/23/2007">Revert text editor selection code to that currently used by SD 2.1 - keyboard selection was broken by an old version of Troy Simpson's patch.</Change>
-  <Change author="Daniel Grunwald" date="06/23/2007">XamlBinding.</Change>
-  <Change author="Daniel Grunwald" date="06/23/2007">Support "Find references" and "Rename" in .xaml files.</Change>
-  <Change author="Daniel Grunwald" date="06/23/2007">Worked on Xaml language binding.</Change>
-  <Change author="Daniel Grunwald" date="06/22/2007">Fixed broken build.</Change>
-  <Change author="Daniel Grunwald" date="06/22/2007">Refactored the interface IAttribute to include useful information (type reference to the attribute type + arguments).
-Begin work on a Xaml language binding.</Change>
-  <Change author="Daniel Grunwald" date="06/22/2007">Fixed use of ActiveWorkbenchWindow / ActiveViewContent / ActiveContent.</Change>
-  <Change author="Daniel Grunwald" date="06/22/2007">The tools pad can now host any control as tool box, depending on the current view content. Every view content now has its own SideBar as toolbox, so AddIns don't have to manage merging toolbox sections anymore.</Change>
-  <Change author="Daniel Grunwald" date="06/22/2007">Merged SD 2.1/2.2 revision 2532:2560 to trunk.</Change>
-  <Change author="David Alpert" date="06/15/2007">fixed the unit test that was breaking the build.</Change>
-  <Change author="David Alpert" date="06/15/2007">NavigationService now suspends logging while a solution is being loaded and resumes when ParserService.LoadSolutionProjectsThreadEnded fires.  It also suspends logging while the workbench is starting up.</Change>
-  <Change author="David Alpert" date="06/15/2007">Updated the NavigationService to reflect Daniel's ongoing work on SD-1234 in revisions 2313 and 2365; When jumping to a file position, the transitory (0x0) position is no longer marked;
-Added XML comments to NavigationService.cs; Moved the services initialization code from a static constructor (that FxCop didn't like) to the more consistent InitializeService/Unload interface used elsewhere in SharpDevelop.
-
-
-</Change>
-  <Change author="David Srbecký" date="06/14/2007">Debbugger.AddIn is now available under the BSD license</Change>
-  <Change author="Daniel Grunwald" date="06/04/2007">Implemented forum-16705: MyBase keyword and code completion in constructors</Change>
-  <Change author="Daniel Grunwald" date="06/04/2007">Fixed CSharpExpressionFinder</Change>
-  <Change author="Daniel Grunwald" date="06/04/2007">"Code Completion when a character is typed" can now be turned off in the options.</Change>
-  <Change author="Daniel Grunwald" date="06/04/2007">Merged SD 2.1 revision 2493:2532 to trunk.
-</Change>
-  <Change author="Justin Dearing" date="05/31/2007">Cleaned up the Save function. You are now prompted to remove the readonly attribute from Readonly files.</Change>
-  <Change author="Daniel Grunwald" date="05/25/2007">Revert to old DockPanelSuite: version 2.0 is too unstable.</Change>
-  <Change author="Daniel Grunwald" date="05/05/2007">Begin implementing "aggressive" context-dependent code-completion (Ctrl+Space completion whenever you start to type).</Change>
-  <Change author="Daniel Grunwald" date="05/04/2007">Support "go to definition" and "find references" for C# base constructor calls (": base(...)").</Change>
-  <Change author="Daniel Grunwald" date="05/04/2007">Fixed code-completion bugs.</Change>
-  <Change author="Daniel Grunwald" date="05/03/2007">Improved C# 3.0 code-completion.</Change>
-  <Change author="Daniel Grunwald" date="04/20/2007">Fixed unit tests.</Change>
-  <Change author="Daniel Grunwald" date="04/20/2007">Replace List&lt;LineSegment&gt; with an augmented red-black tree that supports all operations (Insert, Remove, GetSegmentByOffset, GetSegmentByIndex and adjusting the line's offsets after insertions) in O(lg n) time (with n=number of lines in document).</Change>
-  <Change author="Daniel Grunwald" date="04/19/2007">Fixed build.</Change>
-  <Change author="Daniel Grunwald" date="04/19/2007">Merged SD 2.1 revision 2482:2493 to trunk.</Change>
-  <Change author="Daniel Grunwald" date="04/18/2007">SD2-1344: "Anti-alias text" option has no effect when ClearType is turned on</Change>
-  <Change author="Daniel Grunwald" date="04/18/2007">Refactored code accessing text editor options.</Change>
-  <Change author="Markus Palme" date="04/17/2007"> TextEditor selection patch from Troy Simposon</Change>
-  <Change author="Daniel Grunwald" date="04/11/2007">Fixed setup.</Change>
-  <Change author="Daniel Grunwald" date="04/11/2007">Merged SD 2.1 r 2454:2479 to trunk.
-Fixed LocalCopy settings for references to ICSharpCode.Core in AddIns, use GlobalAssemblyInfo.cs for SharpServerTools projects.</Change>
-  <Change author="Daniel Grunwald" date="04/05/2007">Change background color of inactive pads.</Change>
-  <Change author="Daniel Grunwald" date="04/05/2007">Apply our patches to the docking library; remove patches that are not required anymore from patchnotes.txt</Change>
-  <Change author="Daniel Grunwald" date="04/05/2007">Update to DockPanel Suite v2.0.</Change>
-  <Change author="Itai Bar-Haim" date="04/04/2007">A crash fix when double-clicking the empty place where the "Add Member" row should have appeared; A fix so that row is no longer empty.</Change>
-  <Change author="Itai Bar-Haim" date="04/04/2007">Fixed a crash when clicking on a members group list content.</Change>
-  <Change author="Daniel Grunwald" date="04/03/2007">Prevent PropertyContainer from failing when there is no workbench (in unit tests)</Change>
-  <Change author="Daniel Grunwald" date="04/03/2007">Improved SharpDevelop.Dom API.</Change>
-  <Change author="Christoph Wille" date="04/02/2007">Fix output path property for Release builds</Change>
-  <Change author="Christoph Wille" date="04/02/2007">Fix setup for ICSharpCode.DataTools (UI, Model, Addin)</Change>
-  <Change author="Daniel Grunwald" date="04/01/2007">Fixed bug that prevented the PropertyPad from displaying the properties of elements in pads.</Change>
-  <Change author="Dickon Field" date="04/01/2007">Refactored following discussion at #d discussions in Karlsruhe. Model api factored to be independent of #d, DataTools.UI is reusable UI components independent of #d, DataTools.AddIn is the #d plugin. ServerTools plugin remains unchanged.</Change>
-  <Change author="Dickon Field" date="03/31/2007">updated ServerBrowserTool addin file and BitmapResources.resources to include icon for Server Explorer</Change>
-  <Change author="Dickon Field" date="03/31/2007">added DbToolsProvider for SQLite</Change>
-  <Change author="Daniel Grunwald" date="03/25/2007">Merged SD 2.1 r 2432:2454 to trunk.</Change>
-  <Change author="Itai Bar-Haim" date="03/23/2007">Some fixes to the diagram code; Some progress with the class editor (mostly conversion to TreeViewAdv); Some FxCop fixes.</Change>
-  <Change author="Dickon Field" date="03/20/2007">bugfix to DbProvidersService to handle suspected multiple config entries for the same DbProviderFactory</Change>
-  <Change author="Dickon Field" date="03/19/2007">Extracted strings for SharpDbTools into resources</Change>
-  <Change author="Dickon Field" date="03/13/2007">Started to externalise strings to resource files. SharpDbTools default resources are centralised in the SharpDbTools assembly, referenced by plugs-ins etc</Change>
-  <Change author="Daniel Grunwald" date="03/11/2007">Allow editing the "Content" and "Header" properties.</Change>
-  <Change author="Daniel Grunwald" date="03/11/2007">Allow placing elements in a Grid.</Change>
-  <Change author="Daniel Grunwald" date="03/10/2007">allow resizing and deleting Grid rows and columns</Change>
-  <Change author="Daniel Grunwald" date="03/10/2007">Added row/column creation adorner for Grid.</Change>
-  <Change author="Daniel Grunwald" date="03/10/2007">Implemented deleting components from the design surface.</Change>
-  <Change author="Daniel Grunwald" date="03/10/2007">Support drag'n'drop from toolbox to designer surface.</Change>
-  <Change author="Dickon Field" date="03/08/2007">Fixed bug arising from concurrent access to DbModelInfoService</Change>
-  <Change author="Daniel Grunwald" date="03/08/2007">Merged SD 2.1 r 2406:2432 to trunk.</Change>
-  <Change author="Dickon Field" date="03/08/2007">Fixed a bug in OracleFormsArtefactFactory to query metadata for users properly, and added check in DbProvidersService so that it notifies users of DbProviderFactories that are not accessible rather than crashing.</Change>
-  <Change author="Daniel Grunwald" date="03/05/2007">Allow creating new components.</Change>
-  <Change author="Dickon Field" date="03/04/2007">Added drag n drop behaviour to Database Explorer. Selecting a database node and dragging it to a drop target results in the connection string for that database connection being copied to the target.
-Bugs exist, most importantly in some cases a retrieval of database metadata results in a class cast exception. It is however possible to create a logical database connection, create and test its connection string, without retrieving metadata.</Change>
-  <Change author="Daniel Grunwald" date="03/04/2007">Support loading .xaml files that use CDATA-sections.
-Support loading .xaml files that set up event handlers.</Change>
-  <Change author="Daniel Grunwald" date="03/04/2007">Merge unit tests for WpfDesign.Designer and WpfDesign.XamlDom.
-Keep the Z-Order when moving multiple elements between containers.</Change>
-  <Change author="Daniel Grunwald" date="03/04/2007">WpfDesigner: support dragging multiple selected components.</Change>
-  <Change author="Daniel Grunwald" date="03/03/2007">XamlDom: better support for element collections.</Change>
-  <Change author="Daniel Grunwald" date="03/03/2007">Begin work on moving components between containers.</Change>
-  <Change author="Daniel Grunwald" date="03/03/2007">Worked on Move/Resize in the WPF Designer.</Change>
-  <Change author="Daniel Grunwald" date="03/01/2007">Allow selecting multiple child elements inside a Panel by "drawing" a selection rectangle.</Change>
-  <Change author="Daniel Grunwald" date="02/28/2007">Set Canvas.Left+Canvas.Top attached properties when resizing a control inside a Canvas.</Change>
-  <Change author="Daniel Grunwald" date="02/27/2007">Add Undo/Redo support to WpfDesigner.</Change>
-  <Change author="Daniel Grunwald" date="02/27/2007">Merged SD 2.1 r2376:2406 to trunk.</Change>
-  <Change author="Daniel Grunwald" date="02/27/2007">Allow resizing components.</Change>
-  <Change author="Matt Ward" date="02/25/2007">Aga.Controls now builds into the SharpDevelop/bin folder so it can be shared by the Class Diagram and the Debugger addin. Updated the installer to reflect this change.</Change>
-  <Change author="Itai Bar-Haim" date="02/24/2007">Added clearing features for the class canvas and diagram router.</Change>
-  <Change author="Matt Ward" date="02/24/2007">Removed TreeListView.dll and added Aga.Controls.dll to the Class Diagram addin folder in the installer.</Change>
-  <Change author="Itai Bar-Haim" date="02/24/2007">removed unneeded references.</Change>
-  <Change author="Itai Bar-Haim" date="02/24/2007">Fixed naming and brought back items accidentally removed. Fixed parameters icon display.</Change>
-  <Change author="Daniel Grunwald" date="02/24/2007">fixed build</Change>
-  <Change author="Daniel Grunwald" date="02/24/2007">Forum-13925: allow turning off the parameter list in ambience.</Change>
-  <Change author="Itai Bar-Haim" date="02/24/2007">Fixed coloring issue; Fixed parameter documentation display.</Change>
-  <Change author="Matt Ward" date="02/24/2007">Installer now checks that .NET 3.0 is installed. Changed feature title to SharpDevelop 3.0. Changed the default product code and package code guids in the .user file.</Change>
-  <Change author="Itai Bar-Haim" date="02/23/2007">Switching to use TreeViewAdv instead of TreeListView. Work in progress.</Change>
-  <Change author="Russell Wilkins" date="02/20/2007">Loader updates</Change>
-  <Change author="Russell Wilkins" date="02/17/2007">Removed XomlCodeSeparationDesignerLoader and now use XomlDesignerLoader for all xoml loading.
-Some FxCop updates.</Change>
-  <Change author="Itai Bar-Haim" date="02/16/2007">labels alignment.</Change>
-  <Change author="Itai Bar-Haim" date="02/16/2007">minor fix - handle layout change event of nested types.</Change>
-  <Change author="Russell Wilkins" date="02/16/2007">Refactoring the WorkflowDesignerLoaders</Change>
-  <Change author="Russell Wilkins" date="02/15/2007">Various updates around TypeProviderService and TypeResolutionService.</Change>
-  <Change author="Russell Wilkins" date="02/13/2007">Template updates.
-Do not load/lock assemblies in WorkflowSideTabService.</Change>
-  <Change author="Daniel Grunwald" date="02/10/2007">Merged SharpDevelop 2.1 r2356:2376 to trunk.</Change>
-  <Change author="Russell Wilkins" date="02/09/2007">Various fixes to designer services and FxCop Updates</Change>
-  <Change author="Itai Bar-Haim" date="02/08/2007">Better compatibility with VS2005 format. Made the Enum and the Delegate blocks look more like in VS2005. Minor bug fixes.</Change>
-  <Change author="Russell Wilkins" date="02/06/2007">Default designer context menu added.</Change>
-  <Change author="Russell Wilkins" date="02/06/2007">Select related property in propertyPad when error selected from activity context menu.</Change>
-  <Change author="Russell Wilkins" date="02/06/2007">Implmented TypeConverter for EventProperties.</Change>
-  <Change author="Russell Wilkins" date="02/06/2007">Fix loading of ViewContent on project opening.
-</Change>
-  <Change author="Russell Wilkins" date="02/05/2007">FxCop updates</Change>
-  <Change author="Russell Wilkins" date="02/05/2007">Various updates around TypeProviderService and TypeResolutionService.
-Template updates</Change>
-  <Change author="Daniel Grunwald" date="02/05/2007">Fixed build.</Change>
-  <Change author="Daniel Grunwald" date="02/05/2007">Worked on SD2-1234 - added support for view contents that are not editing a file (e.g. project options).</Change>
-  <Change author="Daniel Grunwald" date="02/03/2007">Fixed build.</Change>
-  <Change author="Daniel Grunwald" date="02/03/2007">Merged SD 2.1 r2332:2356 to trunk.</Change>
-  <Change author="Dickon Field" date="02/01/2007">Added a new subclass of TextEditorControl to specialise behaviour for SQL, SQLTextEditorControl, plus some test code to get the CompletionWindow showing and working correctly. Next step to add an ICompletionDataProvider that encapsulates pluggable SQL parsing using parser based on coco/r.</Change>
-  <Change author="Russell Wilkins" date="01/31/2007">TypeProviderService added to maintain common TypeProviders for projects.
-</Change>
-  <Change author="Russell Wilkins" date="01/30/2007">WorkflowSideTabService created to handle toolbox sidetabs for project assembly references. </Change>
-  <Change author="Russell Wilkins" date="01/30/2007">FileRenaming after EventBindingService changes.
-SideBar handling moved to WorkflowToolboxService.</Change>
-  <Change author="Russell Wilkins" date="01/30/2007">Reworking of EventBindingService</Change>
-  <Change author="Itai Bar-Haim" date="01/28/2007">Some refactoring; Initial support for nested types.</Change>
-  <Change author="Daniel Grunwald" date="01/26/2007">Fixed merged unit tests.</Change>
-  <Change author="Daniel Grunwald" date="01/26/2007">Merged SD 2.1 rev. 2226:2312 to trunk:
-- Unit Tests window changes: It now has an All Tests root node when multiple test projects exist in a solution. Added a toolbar button and menu item to run all the tests in the solution independent of the currently selected test. Added a run with code coverage toolbar button.
-- Fixed SD2-1123. Code coverage vist count list view is now sortable by column.
-- Fixed finding generic code-completion members by their Reflection name - fixes problems with Code analysis line numbers not showing for generic classes.
-- Fixed SD2-1275: Searching using an invalid regex shows search in progress dialog
-- The LocalizedStringFile property in a WiX project is no longer escaped when the project is saved after making changes in the Application tab of the project options.
-- Removed Run All Tests context menu item from Unit Tests window. Code coverage window opened after all tests have been run with code coverage and there were no test failures. No longer using a static NCover runner which was raising events in two RunTestWithCodeCoverageCommand instances (toolbar, context menu) and causing one to try to read a test results file which no longer existed.
-- Fixed SD2-1252: Don't steal file associations from Visual Studio
-- Fixed SD2-1286: Nested With statements result in stack overflow
-- Update to NSvn 1.0.0.2727</Change>
-  <Change author="Itai Bar-Haim" date="01/25/2007">Class diagram file format matches the Visual Studio Class Diagram file format better (still not perfect, somewhat buggy).</Change>
-  <Change author="Russell Wilkins" date="01/25/2007">Rules file handling implemented.</Change>
-  <Change author="Christian Hornung" date="01/24/2007">ResourceToolkit:
-Implemented SD2-1237 - Support accessing linked resource files. Resource files that are accessed using a ResourceManager (except the designer generated ones) are now searched in the project instead of directly on disk.</Change>
-  <Change author="Russell Wilkins" date="01/24/2007">Template updates,
-EventBindingService and code generation updates</Change>
-  <Change author="Daniel Grunwald" date="01/23/2007">Some XML documentation for ICSharpCode.Core.</Change>
-  <Change author="Daniel Grunwald" date="01/23/2007">Fixed resource editor.</Change>
-  <Change author="Daniel Grunwald" date="01/23/2007">Add the WorkflowDesigner AddIn written by Russell Wilkins, see http://sdwwf.sf.net/</Change>
-  <Change author="Daniel Grunwald" date="01/23/2007">Fixed unit test and setup.</Change>
-  <Change author="Daniel Grunwald" date="01/23/2007">Merged SD 2.1 rev. 2226:2312 to trunk.</Change>
-  <Change author="Daniel Grunwald" date="01/23/2007">Worked on SD2-1234: Create common way to handle in-memory representations of files that have multiple views.
-Removed SharpQuery.</Change>
-  <Change author="David Srbecký" date="01/21/2007">Using Andrey Gliznetsov's Advanced TreeView for Local Variables Pad</Change>
-  <Change author="Justin Dearing" date="01/20/2007">A pattern for implementing a ConfigurationCollection for storing recently opened files in your application. Its a good starting point.</Change>
-  <Change author="Justin Dearing" date="01/20/2007">Added a "graphical" dialog based on the UserExitDialog.wxs
-Changed the naming for WixDialog.xft</Change>
-  <Change author="Itai Bar-Haim" date="01/19/2007">Made the NoteCanvasItem editable;
-Some refactoring and file movement;
-Added zoom commands (not added to the toolbar yet);
-Added styling for abstract, static, and sealed classes.</Change>
-  <Change author="David Srbecký" date="01/14/2007">Added Andrey Gliznetsov's Advanced TreeView</Change>
-  <Change author="Christian Hornung" date="01/13/2007">Added a ListView sorting framework to the Widgets library and used it to implement SD2-1266 - sortable columns in resource editor.</Change>
-  <Change author="Itai Bar-Haim" date="01/12/2007">Implemented some of the member-adding functionality of the ClassEditor (work in progress).</Change>
-  <Change author="David Srbecký" date="01/12/2007">Fixed last build; 
-Compare test results in test instead of in TearDown</Change>
-  <Change author="David Srbecký" date="01/11/2007">Cache variables for a Function; 
-Some bugfixes</Change>
-  <Change author="David Srbecký" date="01/11/2007">Trim nulls from the end of most strings</Change>
-  <Change author="David Srbecký" date="01/11/2007">Do not assume that strings are null terminated</Change>
-  <Change author="Justin Dearing" date="01/11/2007">Fixed a comment.</Change>
-  <Change author="David Srbecký" date="01/11/2007">Updated string resources</Change>
-  <Change author="David Srbecký" date="01/10/2007">Fixed access to members of base class</Change>
-  <Change author="David Srbecký" date="01/10/2007">Added exception test</Change>
-  <Change author="David Srbecký" date="01/10/2007">Static method do not have 'this'</Change>
-  <Change author="David Srbecký" date="01/10/2007">Fixed types for nested generic classes</Change>
-  <Change author="David Srbecký" date="01/10/2007">Debugger tests: Store various states to XML and compare with previous results</Change>
-  <Change author="David Srbecký" date="01/08/2007">Unified model for both Local Variables Pad and Tooltips</Change>
-  <Change author="Dickon Field" date="01/07/2007">Added progressbar for queries from sqltool, introduced base class derived from TextEditor to host code completion behaviour</Change>
-  <Change author="Itai Bar-Haim" date="01/06/2007">Added initial editing (refactoring) support to the class editor.</Change>
-  <Change author="Itai Bar-Haim" date="01/05/2007">Fixed class wizard so it is now compiled to the correct place and has the correct version.</Change>
-  <Change author="Itai Bar-Haim" date="01/05/2007">Added the class wizard project to the class diagram solution.</Change>
-  <Change author="Christian Hornung" date="01/04/2007">ResourceToolkit:
-Fixed resolving of local resource managers (was broken since r2191 because NRefactoryResolver now requires the location to be set on expressions that are parsed with parser.ParseExpression).</Change>
-  <Change author="Daniel Grunwald" date="01/03/2007">Support editing multiple controls inside the property editor.</Change>
-  <Change author="Daniel Grunwald" date="01/02/2007">Rework hit testing.</Change>
-  <Change author="Daniel Grunwald" date="01/02/2007">Support editing enum property in PropertyEditor.</Change>
-  <Change author="Daniel Grunwald" date="01/02/2007">WPF PropertyEditor</Change>
-  <Change author="Daniel Grunwald" date="01/01/2007">Add "IsSet" button to property grid.</Change>
-  <Change author="Daniel Grunwald" date="01/01/2007">Begin implementing the PropertyEditor.</Change>
-  <Change author="Daniel Grunwald" date="12/31/2006">Add WindowClone.</Change>
-  <Change author="Daniel Grunwald" date="12/31/2006">Fixed CSharpCodeCompletion sample.</Change>
-  <Change author="Daniel Grunwald" date="12/31/2006">Allow setting simple properties via DesignItem.</Change>
-  <Change author="Daniel Grunwald" date="12/30/2006">WPF Designer.</Change>
-  <Change author="Itai Bar-Haim" date="12/30/2006">Match to the newest version. Mainly includes features implementation.</Change>
-  <Change author="Itai Bar-Haim" date="12/30/2006">Initial check-in of the new Class Wizard.</Change>
-  <Change author="Itai Bar-Haim" date="12/30/2006">Match to the newest version. Mainly includes refactoring and bug fixes.</Change>
-  <Change author="Itai Bar-Haim" date="12/30/2006">Match to the newest version. Mainly includes features implementation.</Change>
-  <Change author="Itai Bar-Haim" date="12/30/2006">Match to the newest version. Mainly includes refactoring and bug fixes.</Change>
-  <Change author="Itai Bar-Haim" date="12/30/2006">Match to the newest version. Mainly includes refactoring and bug fixes.</Change>
-  <Change author="Daniel Grunwald" date="12/30/2006">Merged Serralongue 2181:2226 to trunk.</Change>
-  <Change author="Daniel Grunwald" date="12/30/2006">More work on adorners.</Change>
-  <Change author="Daniel Grunwald" date="12/29/2006">Add adorner support.</Change>
-  <Change author="Daniel Grunwald" date="12/29/2006">Support CustomInstanceFactory.</Change>
-  <Change author="Daniel Grunwald" date="12/29/2006">Work on designer extensibility framework.</Change>
-  <Change author="Daniel Grunwald" date="12/29/2006">Worked on designer infrastructure.</Change>
-  <Change author="Daniel Grunwald" date="12/29/2006">Rename DesignSite -&gt; DesignItem.</Change>
-  <Change author="Daniel Grunwald" date="12/28/2006">WpfDesigner</Change>
-  <Change author="Daniel Grunwald" date="12/28/2006">Create WpfDesign project.</Change>
-  <Change author="Daniel Grunwald" date="12/27/2006">Start implementation of our .xaml loader.</Change>
-  <Change author="David Srbecký" date="12/26/2006">Fixed variable grouping in tooltips</Change>
-  <Change author="David Srbecký" date="12/26/2006">Load debuggee metadata only once and cache it</Change>
-  <Change author="David Srbecký" date="12/26/2006">Added generated debugger help file</Change>
-  <Change author="David Srbecký" date="12/26/2006">Fixed build: Moved DebuggerObject to correct namespace</Change>
-  <Change author="David Srbecký" date="12/26/2006">All debugger classes derive from DebuggerObject; 
-Added missing SVN Revision keywords</Change>
-  <Change author="David Srbecký" date="12/26/2006">Improved DebugType.FullName (support arrays and generics)</Change>
-  <Change author="David Srbecký" date="12/26/2006">Eval results are not automatically re-evaluated anymore</Change>
-  <Change author="David Srbecký" date="12/24/2006">Fixed unit test: Eliminated WaitHandles from process</Change>
-  <Change author="David Srbecký" date="12/24/2006">Debugger tests compile (but fail)</Change>
-  <Change author="Daniel Grunwald" date="12/23/2006">Add ClassDiagram AddIn by Itai Bar-Haim.</Change>
-  <Change author="Daniel Grunwald" date="12/23/2006">Make setup install to Program files\SharpDevelop\3.0 instead of 2.1</Change>
-  <Change author="Daniel Grunwald" date="12/23/2006">Improved VB -&gt; C# converter.</Change>
-  <Change author="David Srbecký" date="12/22/2006">Use reflection instead of exceptions to determine type. This minimizes overhead while being debugged.</Change>
-  <Change author="David Srbecký" date="12/22/2006">Added some performance measurements; Improved value cache</Change>
-  <Change author="Daniel Grunwald" date="12/22/2006">Remove GetClass overload that doesn't take a TypeParameterCount</Change>
-  <Change author="Daniel Grunwald" date="12/22/2006">Remove NAntAddIn from setup.</Change>
-  <Change author="Daniel Grunwald" date="12/22/2006">Remove NAntAddIn</Change>
-  <Change author="Daniel Grunwald" date="12/22/2006">Add partial C# 3.0 support.</Change>
-  <Change author="David Srbecký" date="12/22/2006">Moved a few files</Change>
-  <Change author="Christoph Wille" date="12/22/2006">3.0 Alpha designation for setup; note: we do not yet check for .NET FW 3.0 preinstalled which will be mandatory for Montferrer</Change>
-  <Change author="David Srbecký" date="12/22/2006">Complete rewrite of variable subsystem</Change>
-  <Change author="Christoph Wille" date="12/22/2006">Subversion post commit hook code checked in</Change>
-  <Change author="Daniel Grunwald" date="12/22/2006">Mark trunk as SD 3.0</Change>
+* Src/PrettyPrinter/CSharp/OutputFormatter.cs:
+* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added some options.</Change>
+  <Change author="Mike Krüger" date="03/13/2009">* Src/PrettyPrinter/CSharp/PrettyPrintOptions.cs:
+* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added some output
+  options.</Change>
+  <Change author="Matt Ward" date="03/13/2009">Form.Visible property now loaded/generated in python forms designer.</Change>
+  <Change author="Matt Ward" date="03/12/2009">Python forms designer now supports loading and generating code for standard control cursors (e.g. AppStarting, Help and WaitCursor).</Change>
+  <Change author="Mike Krüger" date="03/10/2009">* Src/Parser/IParser.cs:
+* Src/Lexer/VBNet/Lexer.cs:
+* Src/Lexer/CSharp/Lexer.cs:
+* Src/Lexer/AbstractLexer.cs:
+* Src/Parser/AbstractParser.cs:
+* Src/Lexer/Special/Comment.cs:
+* Src/Parser/VBNet/VBNetParser.cs:
+* Src/Lexer/Special/TagComment.cs:
+* Src/Parser/CSharp/CSharpParser.cs:
+* Src/Lexer/Special/SpecialTracker.cs:
+* Src/Lexer/CSharp/ConditionalCompilation.cs:
+* Src/Lexer/Special/PreProcessingDirective.cs:
+* Src/PrettyPrinter/AbstractOutputFormatter.cs:
+* Src/PrettyPrinter/CSharp/CSharpOutputVisitor.cs: Added some
+  nrefactory features for monodevelop.</Change>
+  <Change author="Mike Krüger" date="03/09/2009">* Output/SnippetConversion.cs:
+* Output/VBNet/CSharpToVBNetConverterTest.cs:
+* Output/CSharp/VBNetToCSharpConverterTest.cs: Fixed some unit tests
+  so that they run on non windows platforms.</Change>
+  <Change author="Mike Krüger" date="03/09/2009">* Src/PrettyPrinter/VBNet/VBNetOutputFormatter.cs: Use
+  Environment.Newline instead of hardcoded eol terminator.</Change>
+  <Change author="Matt Ward" date="03/08/2009">String, enum and boolean properties on a form now loading and being generated in the python forms designer.</Change>
+  <Change author="Matt Ward" date="03/08/2009">mscorlib now added as a default reference in Python project templates.</Change>
+  <Change author="Christian Hornung" date="03/07/2009">Fixed SD2-1529 - Forms designer rewrites array field declarations.
+Fixed NRefactory -&gt; CodeDOM output for array types.</Change>
+  <Change author="Daniel Grunwald" date="03/06/2009">New feature: Edit &gt; Insert &gt; Paste as comment/string.</Change>
+  <Change author="Daniel Grunwald" date="03/01/2009">Fixed namespace handling in Boo code completion.</Change>
+  <Change author="Matt Ward" date="03/01/2009">Assembly created when compiling a class library is now copied to the output folder.</Change>
+  <Change author="Daniel Grunwald" date="03/01/2009">When using "Compile modified projects only", require recompilation if the project options were changed.</Change>
+  <Change author="Daniel Grunwald" date="02/28/2009">Handle errors when writing new class diagram (fixes forum-9024: Read only class diagram file causing System.UnauthorizedAccessException)</Change>
+  <Change author="Daniel Grunwald" date="02/28/2009">Fixed exception when an open solution file is deleted.</Change>
+  <Change author="Daniel Grunwald" date="02/28/2009">Fixed SD2-1524: Reference to a method hiding a base class event resolved incorrectly.
+Add Subversion "Get lock..." command.</Change>
+  <Change author="Daniel Grunwald" date="02/28/2009">Fixed SD2-1528: Stack overflow in code completion when using FluentValidation</Change>
+  <Change author="Daniel Grunwald" date="02/27/2009">Add DispatcherErrorHandler allow WPF addins to use SharpDevelop's unhandled exception dialog.
+Fixed expected output in failing NRefactory unit test.</Change>
+  <Change author="Mike Krüger" date="02/27/2009">* cs.ATG:
+* Parser.cs: Fixed unit tests.</Change>
+  <Change author="Mike Krüger" date="02/26/2009">checked in some changes from monodevelop.</Change>
+  <Change author="Daniel Grunwald" date="02/23/2009">Added some strings to the translation database (mostly message box texts in the Subversion AddIn).</Change>
+  <Change author="Daniel Grunwald" date="02/23/2009">Backport ICSharpCode.Core.Presentation to SharpDevelop 3.1 - this makes it easier to write WPF-based AddIns.</Change>
+  <Change author="Matt Ward" date="02/22/2009">Open With dialog is now centered and no longer shown in task bar.</Change>
+  <Change author="Daniel Grunwald" date="02/21/2009">Fixed bug in "Find references": MemberLookupHelper.IsSimilarMember could return true when comparing a field with a local variable.</Change>
+  <Change author="Daniel Grunwald" date="02/21/2009">Fixed subversion state condition for directory/solution nodes.</Change>
+  <Change author="Matt Ward" date="02/18/2009">Pressing the up key in the Python Console no longer closes the completion window if there is command history.</Change>
+  <Change author="Daniel Grunwald" date="02/17/2009">Make DisplayBindingService public.
+Change keyboard shortcut for debug-mode code completion to Ctrl+Space+Alt+Dot (debug builds only).</Change>
+  <Change author="Matt Ward" date="02/16/2009">Updated the installer version number to 3.1</Change>
+  <Change author="Matt Ward" date="02/15/2009">Enabled the python code conversion and forms designer.</Change>
+  <Change author="Matt Ward" date="02/15/2009">Updated to IronPython 2.0.1</Change>
+  <Change author="David Srbecký" date="02/14/2009">Updated test output for ".NET Framework 3.5 SP1 Family Update"</Change>
+  <Change author="Matt Ward" date="02/14/2009">Fixed null reference exception in WriteableProjectEvaluator if a null IProject is returned from the ProjectService.CurrentProject.</Change>
+  <Change author="Matt Ward" date="02/14/2009">Catch InvalidCastException in IronPython parser when parsing invalid code.</Change>
+  <Change author="Daniel Grunwald" date="02/12/2009">SD2-1521: Reconsider what a 'preinstalled addin' is.
+Third-party AddIns installed in SharpDevelop/AddIns are now visible in the AddInManager, only AddIns with 'addInManagerHidden="preinstalled"' stay hidden.</Change>
+  <Change author="Daniel Grunwald" date="02/10/2009">Allow SharpDevelop 3.0 addins to load in SharpDevelop 3.1.
+Continue using 'SharpDevelop3.0' directory for settings in SharpDevelop 3.1.</Change>
+  <Change author="Christoph Wille" date="02/10/2009">Version 3.1 designation</Change>
+  <Change author="Matt Ward" date="02/09/2009">Updated string resources.</Change>
 </ChangeLog>
