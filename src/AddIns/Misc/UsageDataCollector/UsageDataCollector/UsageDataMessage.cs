@@ -9,13 +9,13 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace ICSharpCode.UsageDataCollector
+namespace ICSharpCode.UsageDataCollector.DataContract
 {
 	/// <summary>
 	/// Represents a message used to send data to the server.
 	/// </summary>
 	[DataContract]
-	sealed class UsageDataMessage
+	public sealed class UsageDataMessage
 	{
 		/// <summary>
 		/// Unique identifier per user.
@@ -23,10 +23,17 @@ namespace ICSharpCode.UsageDataCollector
 		/// </summary>
 		[DataMember]
 		public Guid UserID;
-		
+
+		/// <summary>
+		/// Gets the sessions stored in this message.
+		/// </summary>
 		[DataMember]
 		public List<UsageDataSession> Sessions = new List<UsageDataSession>();
 		
+		/// <summary>
+		/// Finds the session with the specified session ID.
+		/// </summary>
+		/// <exception cref="ArgumentException">No session with the specified ID was found.</exception>
 		public UsageDataSession FindSession(long sessionID)
 		{
 			foreach (UsageDataSession s in Sessions) {
@@ -37,8 +44,11 @@ namespace ICSharpCode.UsageDataCollector
 		}
 	}
 	
+	/// <summary>
+	/// A UsageData session.
+	/// </summary>
 	[DataContract]
-	sealed class UsageDataSession
+	public sealed class UsageDataSession
 	{
 		/// <summary>
 		/// ID of the session, usually unique per user (unless the user restores a backup of the database).
@@ -60,12 +70,21 @@ namespace ICSharpCode.UsageDataCollector
 		[DataMember]
 		public DateTime? EndTime;
 		
+		/// <summary>
+		/// List of environment properties associated with the session.
+		/// </summary>
 		[DataMember]
 		public List<UsageDataEnvironmentProperty> EnvironmentProperties = new List<UsageDataEnvironmentProperty>();
 		
+		/// <summary>
+		/// List of feature uses associated with the session.
+		/// </summary>
 		[DataMember]
 		public List<UsageDataFeatureUse> FeatureUses = new List<UsageDataFeatureUse>();
 		
+		/// <summary>
+		/// List of exceptions associated with the session.
+		/// </summary>
 		[DataMember]
 		public List<UsageDataException> Exceptions = new List<UsageDataException>();
 	}
@@ -76,11 +95,17 @@ namespace ICSharpCode.UsageDataCollector
 	/// or have multiple OS installations pointing to the same database (e.g. when SharpDevelop is used on an USB stick).
 	/// </summary>
 	[DataContract]
-	sealed class UsageDataEnvironmentProperty
+	public sealed class UsageDataEnvironmentProperty
 	{
+		/// <summary>
+		/// Name of the property.
+		/// </summary>
 		[DataMember]
 		public string Name;
 		
+		/// <summary>
+		/// Value of the property.
+		/// </summary>
 		[DataMember]
 		public string Value;
 	}
@@ -89,7 +114,7 @@ namespace ICSharpCode.UsageDataCollector
 	/// Represents a feature being used.
 	/// </summary>
 	[DataContract]
-	sealed class UsageDataFeatureUse
+	public sealed class UsageDataFeatureUse
 	{
 		/// <summary>
 		/// The time when the feature was used.
@@ -124,7 +149,7 @@ namespace ICSharpCode.UsageDataCollector
 	/// The exception message might e.g. contain names of the file the user is working on.
 	/// </summary>
 	[DataContract]
-	sealed class UsageDataException
+	public sealed class UsageDataException
 	{
 		/// <summary>
 		/// The time when the exception occurred.

@@ -13,7 +13,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Xml;
+
+using ICSharpCode.UsageDataCollector.DataContract;
+using ICSharpCode.UsageDataCollector.Service;
 
 namespace ICSharpCode.UsageDataCollector
 {
@@ -70,7 +75,20 @@ namespace ICSharpCode.UsageDataCollector
 		/// </summary>
 		/// <exception cref="IncompatibleDatabaseException">The database version is not compatible with this
 		/// version of the AnalyticsSessionWriter.</exception>
-		public void StartUpload()
+		public void StartUpload(string uploadUrl)
+		{
+			EndpointAddress epa = new EndpointAddress(uploadUrl);
+			BasicHttpBinding binding = new BasicHttpBinding();
+			binding.Security.Mode = BasicHttpSecurityMode.None;
+			StartUpload(binding, epa);
+		}
+		
+		/// <summary>
+		/// Starts the upload of the usage data.
+		/// </summary>
+		/// <exception cref="IncompatibleDatabaseException">The database version is not compatible with this
+		/// version of the AnalyticsSessionWriter.</exception>
+		public void StartUpload(Binding binding, EndpointAddress endpoint)
 		{
 			UsageDataMessage message;
 			using (SQLiteConnection connection = OpenConnection()) {
@@ -85,13 +103,30 @@ namespace ICSharpCode.UsageDataCollector
 				}
 			}
 			if (message != null) {
+				string commaSeparatedSessionIDList = GetCommaSeparatedIDList(message.Sessions);
+				
 				DataContractSerializer serializer = new DataContractSerializer(typeof(UsageDataMessage));
-				using (FileStream fs = new FileStream(Path.Combine(Path.GetTempPath(), "SharpDevelopUsageData.xml.gz"), FileMode.Create, FileAccess.Write)) {
-					using (GZipStream zip = new GZipStream(fs, CompressionMode.Compress)) {
+				byte[] data;
+				using (MemoryStream ms = new MemoryStream()) {
+					using (GZipStream zip = new GZipStream(ms, CompressionMode.Compress)) {
 						serializer.WriteObject(zip, message);
 					}
+					data = ms.ToArray();
 				}
+				message = null;
+				File.WriteAllBytes(Path.Combine(Path.GetTempPath(), "SharpDevelopUsageData.xml.gz"), data);
+				
+				UDCUploadServiceClient client = new UDCUploadServiceClient(binding, endpoint);
+				client.BeginUploadUsageData("sharpdevelop", new MemoryStream(data),
+				                            ar => UsageDataUploaded(ar, client, commaSeparatedSessionIDList), null);
 			}
+		}
+		
+		void UsageDataUploaded(IAsyncResult result, UDCUploadServiceClient client, string commaSeparatedSessionIDList)
+		{
+			client.EndUploadUsageData(result);
+			
+			RemoveUploadedData(commaSeparatedSessionIDList);
 		}
 		
 		Version expectedDBVersion = new Version(1, 0, 1);
@@ -224,9 +259,8 @@ namespace ICSharpCode.UsageDataCollector
 		/// <summary>
 		/// Removes the data that was successfully uploaded and sets the 'lastUpload' property.
 		/// </summary>
-		void RemoveUploadedData(IEnumerable<UsageDataSession> sessions)
+		void RemoveUploadedData(string commaSeparatedSessionIDList)
 		{
-			string commaSeparatedSessionIDList = GetCommaSeparatedIDList(sessions);
 			using (SQLiteConnection connection = OpenConnection()) {
 				using (SQLiteTransaction transaction = connection.BeginTransaction()) {
 					using (SQLiteCommand cmd = connection.CreateCommand()) {

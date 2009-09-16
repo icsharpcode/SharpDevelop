@@ -19,6 +19,8 @@ namespace ICSharpCode.UsageDataCollector
 	/// </summary>
 	public sealed class AnalyticsMonitor : IAnalyticsMonitor
 	{
+		const string UploadUrl = "http://build.sharpdevelop.net/udc.upload/uploadusagedata.svc";
+		
 		public static readonly AnalyticsMonitor Instance = new AnalyticsMonitor();
 		
 		public static bool EnabledIsUndecided {
@@ -99,7 +101,7 @@ namespace ICSharpCode.UsageDataCollector
 			}
 			if (sessionOpened) {
 				UsageDataUploader uploader = new UsageDataUploader(dbFileName);
-				ThreadPool.QueueUserWorkItem(delegate { uploader.StartUpload(); });
+				ThreadPool.QueueUserWorkItem(delegate { uploader.StartUpload(UploadUrl); });
 			}
 		}
 		
