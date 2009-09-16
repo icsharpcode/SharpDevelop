@@ -457,6 +457,10 @@
 				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreUIDll"/>
 				<ComponentRef Id="ICSharpCodeDataSQLServerDll"/>
 				<ComponentRef Id="CSharpEDMXXft"/>
+				
+				<ComponentRef Id="UDCSystemDataSQLiteDll"/>
+				<ComponentRef Id="UsageDataCollectorAddin"/>
+				<ComponentRef Id="UsageDataCollectorDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
@@ -477,14 +481,6 @@
 				         Title="Boo Projects (.booproj)"
 				         Description="Associates Boo projects (.booproj) with SharpDevelop">
 					<ComponentRef Id="BooProjectFileAssociation"/>
-				</Feature>
-				<Feature Id="CombineFileAssociation"
-				         Level="2"
-				         AllowAdvertise="no"
-				         InstallDefault="local"
-				         Title="SharpDevelop 1.x Combines (.cmbx)"
-				         Description="Associates SharpDevelop 1.x Combines (.cmbx) with SharpDevelop">
-					<ComponentRef Id="SharpDevelopCombineFileAssociation"/>
 				</Feature>
 				<Feature Id="CSharpFileAssociation"
 				         Level="2"
@@ -509,14 +505,6 @@
 				         Title="Python Project Files (.pyproj)"
 				         Description="Associates Python Projects (.pyproj) with SharpDevelop">
 					<ComponentRef Id="PythonProjectFileAssociation"/>
-				</Feature>
-				<Feature Id="SD11ProjectFileAssociation"
-				         Level="2"
-				         AllowAdvertise="no"
-				         InstallDefault="local"
-				         Title="SharpDevelop 1.x Projects (.prjx)"
-				         Description="Associates SharpDevelop 1.x Projects (.prjx) with SharpDevelop">
-					<ComponentRef Id="SharpDevelop11ProjectFileAssociation"/>
 				</Feature>
 				<Feature Id="ResxFileAssociation"
 				         Level="2"
@@ -573,14 +561,6 @@
 				         Title="SharpDevelop WiX Projects (.wixproj)"
 				         Description="Associates SharpDevelop WiX Projects (.wixproj) with SharpDevelop">
 					<ComponentRef Id="SharpDevelopWixProjectFileAssociation"/>
-				</Feature>
-				<Feature Id="XmlFormFileAssociation"
-				         Level="2"
-				         AllowAdvertise="no"
-				         InstallDefault="local"
-				         Title="SharpDevelop XML Forms (.xfrm)"
-				         Description="Associates SharpDevelop XML Forms (.xfrm) with SharpDevelop">
-					<ComponentRef Id="SharpDevelopXmlFormFileAssociation"/>
 				</Feature>
 				<Feature Id="XmlFileAssociation"
 				         Level="2"

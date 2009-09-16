@@ -80,12 +80,6 @@
 								<RegistryValue Id="SD.booprojfile.icon" Root="HKCR" Type="string" Key="SD.booprojfile\DefaultIcon" Value="&quot;[#prjx.ico]&quot;" />
 								<RegistryValue Id="SD.booprojfile.association" Root="HKCR" Type="string" Key=".booproj" Value="SD.booprojfile" />
 							</Component>
-							<Component Id="SharpDevelopCombineFileAssociation" Guid="9D7E0D45-CD48-4A52-8875-939A78B8F710" DiskId="1">
-								<RegistryValue Id="SD.cmbxfile" Root="HKCR" Type="string" Key="SD.cmbxfile" Value="SharpDevelop 1.x Combine" KeyPath="yes" />
-								<RegistryValue Id="SD.cmbxfile.command" Root="HKCR" Type="string" Key="SD.cmbxfile\shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
-								<RegistryValue Id="SD.cmbxfile.icon" Root="HKCR" Type="string" Key="SD.cmbxfile\DefaultIcon" Value="&quot;[#cmbx.ico]&quot;" />
-								<RegistryValue Id="SD.cmbxfile.association" Root="HKCR" Type="string" Key=".cmbx" Value="SD.cmbxfile" />
-							</Component>
 							<Component Id="CSharpFileAssociation" Guid="C98CAD28-2903-4B3A-8C56-B4A09AEC4509" DiskId="1">
 								<RegistryValue Id="SD.csfile" Root="HKCR" Type="string" Key="SD.csfile" Value="C# File" KeyPath="yes" />
 								<RegistryValue Id="SD.csfile.command" Root="HKCR" Type="string" Key="SD.csfile\shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
@@ -97,12 +91,6 @@
 								<RegistryValue Id="SD.csproj.command" Root="HKCR" Type="string" Key="SD.csprojfile\shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
 								<RegistryValue Id="SD.csproj.icon" Root="HKCR" Type="string" Key="SD.csprojfile\DefaultIcon" Value="&quot;[#prjx.ico]&quot;" />
 								<RegistryValue Id="SD.csproj.association" Root="HKCR" Type="string" Key=".csproj" Value="SD.csprojfile" />
-							</Component>
-							<Component Id="SharpDevelop11ProjectFileAssociation" Guid="DD3AAFF7-A307-4918-A33E-35620A2118F6" DiskId="1">
-								<RegistryValue Id="SD.prjxfile" Root="HKCR" Type="string" Key="SD.prjxfile" Value="SharpDevelop 1.x Project" KeyPath="yes" />
-								<RegistryValue Id="SD.prjxfile.command" Root="HKCR" Type="string" Key="SD.prjxfile\shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
-								<RegistryValue Id="SD.prjxfile.icon" Root="HKCR" Type="string" Key="SD.prjxfile\DefaultIcon" Value="&quot;[#prjx.ico]&quot;" />
-								<RegistryValue Id="SD.prjxfile.association" Root="HKCR" Type="string" Key=".prjx" Value="SD.prjxfile" />
 							</Component>
 							<Component Id="PythonProjectFileAssociation" Guid="6BA02209-9C7A-42A3-85BC-407FA4C0B646" DiskId="1">
 								<RegistryValue Id="SD.pyprojfile" Root="HKCR" Type="string" Key="SD.pyprojfile" Value="Python Project File" KeyPath="yes" />
@@ -145,12 +133,6 @@
 								<RegistryValue Id="SD.wixprojfile.command" Root="HKCR" Type="string" Key="SD.wixprojfile\shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
 								<RegistryValue Id="SD.wixprojfile.icon" Root="HKCR" Type="string" Key="SD.wixprojfile\DefaultIcon" Value="&quot;[#prjx.ico]&quot;" />
 								<RegistryValue Id="SD.wixprojfile.association" Root="HKCR" Type="string" Key=".wixproj" Value="SD.wixprojfile" />
-							</Component>
-							<Component Id="SharpDevelopXmlFormFileAssociation" Guid="621910C8-91FC-4383-85AA-7E9D786DAF84" DiskId="1">
-								<RegistryValue Id="SD.xfrmfile" Root="HKCR" Type="string" Key="SD.xfrmfile" Value="SharpDevelop XML Form" KeyPath="yes" />
-								<RegistryValue Id="SD.xfrmfile.command" Root="HKCR" Type="string" Key="SD.xfrmfile\shell\open\command" Value="&quot;[#SharpDevelop.exe]&quot; &quot;%1&quot;" />
-								<RegistryValue Id="SD.xfrmfile.icon" Root="HKCR" Type="string" Key="SD.xfrmfile\DefaultIcon" Value="&quot;[#xfrm.ico]&quot;" />
-								<RegistryValue Id="SD.xfrmfile.association" Root="HKCR" Type="string" Key=".xfrm" Value="SD.xfrmfile" />
 							</Component>
 							<Component Id="XmlFileAssociation" Guid="EB0CC9A4-2934-465B-831F-0EC4B718A162" DiskId="1">
 								<RegistryValue Id="SD.xmlfile" Root="HKCR" Type="string" Key="SD.xmlfile" Value="XML File" KeyPath="yes" />
@@ -1643,6 +1625,19 @@
 											<File Source="..\..\AddIns\AddIns\Misc\Profiler\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="System.Data.SQLite.dll" KeyPath="yes" />
 										</Component>
 									</Directory>-->
+									<Directory Id="UsageDataCollector" Name="UsageDataCollector">
+										<Component Guid="952BD2C8-F477-4C87-A869-80E4B5E955D6" Id="UDCSystemDataSQLiteDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="System.Data.SQLite.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="F0D830A5-C1AE-43E4-B74C-CF78B7E8A849" Id="UsageDataCollectorAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\UsageDataCollector.addin" Name="UsageDataCollector.addin" Id="UsageDataCollector.addin" />
+											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\UsageDataCollector.AddIn.dll" Name="UsageDataCollector.AddIn.dll" Id="UsageDataCollector.AddIn.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="BDFB1DDB-E4AD-4D20-B7C1-21EDDEF33943" Id="UsageDataCollectorDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\UsageDataCollector.dll" Name="UsageDataCollector.dll" Id="UsageDataCollector.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\UsageDataCollector.xml" Name="UsageDataCollector.xml" Id="UsageDataCollector.xml" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 						</Directory>
