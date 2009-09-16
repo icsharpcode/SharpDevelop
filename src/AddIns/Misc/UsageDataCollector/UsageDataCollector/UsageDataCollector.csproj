@@ -61,8 +61,5 @@
     <Compile Include="UsageDataSessionWriter.cs" />
     <Compile Include="UsageDataUploader.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="app.config" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

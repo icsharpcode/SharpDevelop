@@ -80,6 +80,8 @@ namespace ICSharpCode.UsageDataCollector
 			EndpointAddress epa = new EndpointAddress(uploadUrl);
 			BasicHttpBinding binding = new BasicHttpBinding();
 			binding.Security.Mode = BasicHttpSecurityMode.None;
+			binding.TransferMode = TransferMode.Streamed;
+			binding.MessageEncoding = WSMessageEncoding.Mtom;
 			StartUpload(binding, epa);
 		}
 		
@@ -117,14 +119,24 @@ namespace ICSharpCode.UsageDataCollector
 				File.WriteAllBytes(Path.Combine(Path.GetTempPath(), "SharpDevelopUsageData.xml.gz"), data);
 				
 				UDCUploadServiceClient client = new UDCUploadServiceClient(binding, endpoint);
-				client.BeginUploadUsageData("sharpdevelop", new MemoryStream(data),
-				                            ar => UsageDataUploaded(ar, client, commaSeparatedSessionIDList), null);
+				try {
+					client.BeginUploadUsageData("sharpdevelop", new MemoryStream(data),
+					                            ar => UsageDataUploaded(ar, client, commaSeparatedSessionIDList), null);
+				} catch (EndpointNotFoundException) {
+					// ignore error (maybe currently not connected to network)
+				}
 			}
 		}
 		
 		void UsageDataUploaded(IAsyncResult result, UDCUploadServiceClient client, string commaSeparatedSessionIDList)
 		{
-			client.EndUploadUsageData(result);
+			try {
+				client.EndUploadUsageData(result);
+			} catch (EndpointNotFoundException) {
+				// ignore error (maybe currently not connected to network)
+			}
+			client.Close();
+			
 			
 			RemoveUploadedData(commaSeparatedSessionIDList);
 		}
