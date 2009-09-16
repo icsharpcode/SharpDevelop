@@ -11,7 +11,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Tests
+namespace ICSharpCode.AvalonEdit
 {
 	[TestFixture]
 	public class WeakReferenceTests

@@ -8,7 +8,7 @@
 using System;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Utils.Tests
+namespace ICSharpCode.AvalonEdit.Utils
 {
 	[TestFixture]
 	public class ExtensionMethodsTests

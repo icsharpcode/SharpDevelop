@@ -71,6 +71,7 @@
     <Compile Include="Document\ChangeTrackingTest.cs" />
     <Compile Include="Document\TextAnchorTest.cs" />
     <Compile Include="Document\TextSegmentTreeTest.cs" />
+    <Compile Include="Document\TextUtilitiesTests.cs" />
     <Compile Include="Editing\TextSegmentReadOnlySectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Document\CollapsingTests.cs" />

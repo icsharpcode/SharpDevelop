@@ -10,7 +10,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Editing.Tests
+namespace ICSharpCode.AvalonEdit.Editing
 {
 	[TestFixture]
 	public class TextSegmentReadOnlySectionTests

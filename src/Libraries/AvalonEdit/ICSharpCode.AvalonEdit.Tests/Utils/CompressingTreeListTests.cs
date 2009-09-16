@@ -10,7 +10,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Utils.Tests
+namespace ICSharpCode.AvalonEdit.Utils
 {
 	[TestFixture]
 	public class CompressingTreeListTests

@@ -457,7 +457,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (document.GetCharAt(offset) == ' ') {
 					spacesCount++;
 					if (spacesCount == indentationSize) {
-						document.Replace(offset, indentationSize, "\t", OffsetChangeMappingType.CharacterReplace);
+						document.Replace(offset - (indentationSize - 1), indentationSize, "\t", OffsetChangeMappingType.CharacterReplace);
 						spacesCount = 0;
 						offset -= indentationSize - 1;
 						endOffset -= indentationSize - 1;

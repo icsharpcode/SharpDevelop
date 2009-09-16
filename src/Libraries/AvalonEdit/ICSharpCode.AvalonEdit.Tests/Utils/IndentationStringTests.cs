@@ -8,7 +8,7 @@
 using System;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Tests.Utils
+namespace ICSharpCode.AvalonEdit.Utils
 {
 	[TestFixture]
 	public class IndentationStringTests

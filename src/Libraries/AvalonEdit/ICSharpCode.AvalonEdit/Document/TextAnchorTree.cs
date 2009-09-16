@@ -204,7 +204,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			// go forward through the tree and delete all nodes in the removal segment
 			while (node != null && offset + remainingRemovalLength > node.length) {
 				TextAnchor anchor = (TextAnchor)node.Target;
-				if (anchor != null && anchor.SurviveDeletion) {
+				if (anchor != null && (anchor.SurviveDeletion || entry.RemovalNeverCausesAnchorDeletion)) {
 					if (firstDeletionSurvivor == null)
 						firstDeletionSurvivor = node;
 					// This node should be deleted, but it wants to survive.

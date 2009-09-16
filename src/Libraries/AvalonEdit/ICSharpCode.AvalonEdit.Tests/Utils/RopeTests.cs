@@ -12,7 +12,7 @@ using System.IO;
 using NUnit.Framework;
 using System.Text;
 
-namespace ICSharpCode.AvalonEdit.Utils.Tests
+namespace ICSharpCode.AvalonEdit.Utils
 {
 	[TestFixture]
 	public class RopeTests

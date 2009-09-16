@@ -9,7 +9,7 @@ using System;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace ICSharpCode.AvalonEdit.Document.Tests
+namespace ICSharpCode.AvalonEdit.Document
 {
 	[TestFixture]
 	public class TextAnchorTest
@@ -272,6 +272,46 @@ namespace ICSharpCode.AvalonEdit.Document.Tests
 				if ((i % 5) == 0)
 					GC.Collect();
 			}
+		}
+		
+		[Test]
+		public void ReplaceSpacesWithTab()
+		{
+			document.Text = "a    b";
+			TextAnchor before = document.CreateAnchor(1);
+			before.MovementType = AnchorMovementType.AfterInsertion;
+			TextAnchor after = document.CreateAnchor(5);
+			TextAnchor survivingMiddle = document.CreateAnchor(2);
+			TextAnchor deletedMiddle = document.CreateAnchor(3);
+			
+			document.Replace(1, 4, "\t", OffsetChangeMappingType.CharacterReplace);
+			Assert.AreEqual("a\tb", document.Text);
+			// yes, the movement is a bit strange; but that's how CharacterReplace works when the text gets shorter
+			Assert.AreEqual(1, before.Offset);
+			Assert.AreEqual(2, after.Offset);
+			Assert.AreEqual(2, survivingMiddle.Offset);
+			Assert.AreEqual(2, deletedMiddle.Offset);
+		}
+		
+		[Test]
+		public void ReplaceTwoCharactersWithThree()
+		{
+			document.Text = "a12b";
+			TextAnchor before = document.CreateAnchor(1);
+			before.MovementType = AnchorMovementType.AfterInsertion;
+			TextAnchor after = document.CreateAnchor(3);
+			before.MovementType = AnchorMovementType.BeforeInsertion;
+			TextAnchor middleB = document.CreateAnchor(2);
+			before.MovementType = AnchorMovementType.BeforeInsertion;
+			TextAnchor middleA = document.CreateAnchor(2);
+			before.MovementType = AnchorMovementType.AfterInsertion;
+			
+			document.Replace(1, 2, "123", OffsetChangeMappingType.CharacterReplace);
+			Assert.AreEqual("a123b", document.Text);
+			Assert.AreEqual(1, before.Offset);
+			Assert.AreEqual(4, after.Offset);
+			Assert.AreEqual(2, middleA.Offset);
+			Assert.AreEqual(2, middleB.Offset);
 		}
 	}
 }

@@ -118,6 +118,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				if (c != ' ' && c != '\t')
 					break;
 			}
+			pos++; // go back the one character that isn't whitespace
 			return new SimpleSegment(pos, offset - pos);
 		}
 		

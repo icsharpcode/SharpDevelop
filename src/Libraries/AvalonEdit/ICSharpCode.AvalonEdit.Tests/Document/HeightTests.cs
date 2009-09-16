@@ -10,7 +10,7 @@ using System.Linq;
 using ICSharpCode.AvalonEdit.Rendering;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Document.Tests
+namespace ICSharpCode.AvalonEdit.Document
 {
 	[TestFixture]
 	public class HeightTests

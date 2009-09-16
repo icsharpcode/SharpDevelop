@@ -9,7 +9,7 @@ using System;
 using ICSharpCode.AvalonEdit.Rendering;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Document.Tests
+namespace ICSharpCode.AvalonEdit.Document
 {
 	[TestFixture]
 	public class CollapsingTests

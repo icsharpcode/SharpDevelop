@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Document.Tests
+namespace ICSharpCode.AvalonEdit.Document
 {
 	[TestFixture]
 	public class LineManagerTests

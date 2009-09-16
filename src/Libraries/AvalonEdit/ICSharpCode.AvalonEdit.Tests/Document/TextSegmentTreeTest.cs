@@ -9,7 +9,7 @@ using System;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace ICSharpCode.AvalonEdit.Document.Tests
+namespace ICSharpCode.AvalonEdit.Document
 {
 	[TestFixture]
 	public class TextSegmentTreeTest

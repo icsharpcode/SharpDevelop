@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Rendering;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Document.Tests
+namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
 	/// A randomized test for the line manager.

@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Diagnostics;
+using ICSharpCode.AvalonEdit.Utils;
+using System.Globalization;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -126,6 +127,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			return !left.Equals(right);
 		}
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return "[Offset=" + Offset.ToString(CultureInfo.InvariantCulture) + ", Length=" + Length.ToString(CultureInfo.InvariantCulture) + "]";
+		}
 	}
 	
 	/// <summary>
@@ -199,6 +206,12 @@ namespace ICSharpCode.AvalonEdit.Document
 			this.end = document.CreateAnchor(offset + length);
 			this.end.SurviveDeletion = true;
 			this.start.MovementType = AnchorMovementType.BeforeInsertion;
+		}
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return "[Offset=" + Offset.ToString(CultureInfo.InvariantCulture) + ", EndOffset=" + EndOffset.ToString(CultureInfo.InvariantCulture) + "]";
 		}
 	}
 }

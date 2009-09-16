@@ -447,11 +447,11 @@ namespace ICSharpCode.AvalonEdit.Document
 						Replace(offset, length, text, null);
 					} else if (text.Length > length) {
 						// look at OffsetChangeMappingType.CharacterReplace XML comments on why we need to replace
-						// the last
+						// the last character
 						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + length - 1, 1, 1 + text.Length - length);
 						Replace(offset, length, text, OffsetChangeMap.FromSingleElement(entry));
 					} else if (text.Length < length) {
-						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + length - text.Length, length - text.Length, 0);
+						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + text.Length, length - text.Length, 0, true);
 						Replace(offset, length, text, OffsetChangeMap.FromSingleElement(entry));
 					} else {
 						Replace(offset, length, text, OffsetChangeMap.Empty);

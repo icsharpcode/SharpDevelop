@@ -22,7 +22,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Normal replace.
 		/// Anchors in front of the replaced region will stay in front, anchors after the replaced region will stay after.
-		/// Anchors in the middle of the removed region will move depending on their AnchorMovementType.
+		/// Anchors in the middle of the removed region will be deleted. Ifthey survive deletion,
+		/// they move depending on their AnchorMovementType.
 		/// </summary>
 		/// <remarks>
 		/// This is the default implementation of DocumentChangeEventArgs when OffsetChangeMap is null,
@@ -51,7 +52,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// with itself and the additional text segment. A simple insertion of the additional text would have the undesired
 		/// effect of moving anchors immediately after the replaced text into the replacement text if they used
 		/// AnchorMovementStyle.BeforeInsertion.
-		/// Shrinking text is implemented by removing the text segment that's too long.
+		/// Shrinking text is implemented by removing the text segment that's too long; but in a special mode that
+		/// causes anchors to always survive irrespective of their <see cref="TextAnchor.SurviveDeletion"/> setting.
 		/// If the text keeps its old size, this is implemented as OffsetChangeMap.Empty.
 		/// </remarks>
 		CharacterReplace
@@ -203,22 +205,16 @@ namespace ICSharpCode.AvalonEdit.Document
 	public struct OffsetChangeMapEntry : IEquatable<OffsetChangeMapEntry>
 	{
 		readonly int offset;
-		readonly int removalLength;
 		readonly int insertionLength;
+		
+		// MSB: RemovalNeverCausesAnchorDeletion; other 31 bits: RemovalLength
+		readonly uint removalLengthWithDeletionFlag;
 		
 		/// <summary>
 		/// The offset at which the change occurs.
 		/// </summary>
 		public int Offset {
 			get { return offset; }
-		}
-		
-		/// <summary>
-		/// The number of characters removed.
-		/// Returns 0 if this entry represents an insertion.
-		/// </summary>
-		public int RemovalLength {
-			get { return removalLength; }
 		}
 		
 		/// <summary>
@@ -230,29 +226,45 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
+		/// The number of characters removed.
+		/// Returns 0 if this entry represents an insertion.
+		/// </summary>
+		public int RemovalLength {
+			get { return (int)(removalLengthWithDeletionFlag & 0x7fffffff); }
+		}
+		
+		/// <summary>
+		/// Gets whether the removal should not cause any anchor deletions.
+		/// </summary>
+		public bool RemovalNeverCausesAnchorDeletion {
+			get { return (removalLengthWithDeletionFlag & 0x80000000) != 0; }
+		}
+		
+		/// <summary>
 		/// Gets the new offset where the specified offset moves after this document change.
 		/// </summary>
 		public int GetNewOffset(int oldOffset, AnchorMovementType movementType)
 		{
-			if (!(this.removalLength == 0 && oldOffset == this.offset)) {
+			int removalLength = this.RemovalLength;
+			if (!(removalLength == 0 && oldOffset == offset)) {
 				// we're getting trouble (both if statements in here would apply)
 				// if there's no removal and we insert at the offset
 				// -> we'd need to disambiguate by movementType, which is handled after the if
 				
 				// offset is before start of change: no movement
-				if (oldOffset <= this.offset)
+				if (oldOffset <= offset)
 					return oldOffset;
 				// offset is after end of change: movement by normal delta
-				if (oldOffset >= this.offset + this.removalLength)
-					return oldOffset + this.insertionLength - this.removalLength;
+				if (oldOffset >= offset + removalLength)
+					return oldOffset + insertionLength - removalLength;
 			}
 			// we reach this point if
 			// a) the oldOffset is inside the deleted segment
 			// b) there was no removal and we insert at the caret position
 			if (movementType == AnchorMovementType.AfterInsertion)
-				return this.offset + this.insertionLength;
+				return offset + insertionLength;
 			else
-				return this.offset;
+				return offset;
 		}
 		
 		/// <summary>
@@ -265,15 +277,25 @@ namespace ICSharpCode.AvalonEdit.Document
 			ThrowUtil.CheckNotNegative(insertionLength, "insertionLength");
 			
 			this.offset = offset;
-			this.removalLength = removalLength;
+			this.removalLengthWithDeletionFlag = (uint)removalLength;
 			this.insertionLength = insertionLength;
+		}
+		
+		/// <summary>
+		/// Creates a new OffsetChangeMapEntry instance.
+		/// </summary>
+		public OffsetChangeMapEntry(int offset, int removalLength, int insertionLength, bool removalNeverCausesAnchorDeletion)
+			: this(offset, removalLength, insertionLength)
+		{
+			if (removalNeverCausesAnchorDeletion)
+				this.removalLengthWithDeletionFlag |= 0x80000000;
 		}
 		
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			unchecked {
-				return offset + 3559 * insertionLength + 3571 * removalLength;
+				return offset + 3559 * insertionLength + 3571 * (int)removalLengthWithDeletionFlag;
 			}
 		}
 		
@@ -286,7 +308,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <inheritdoc/>
 		public bool Equals(OffsetChangeMapEntry other)
 		{
-			return offset == other.offset && insertionLength == other.insertionLength && removalLength == other.removalLength;
+			return offset == other.offset && insertionLength == other.insertionLength && removalLengthWithDeletionFlag == other.removalLengthWithDeletionFlag;
 		}
 		
 		/// <summary>

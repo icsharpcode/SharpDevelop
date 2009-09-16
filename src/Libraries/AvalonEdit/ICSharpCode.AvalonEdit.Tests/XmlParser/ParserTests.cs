@@ -16,7 +16,7 @@ using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.SharpZipLib.Zip;
 using NUnit.Framework;
 
-namespace ICSharpCode.AvalonEdit.Xml.Tests
+namespace ICSharpCode.AvalonEdit.Xml
 {
 	class TestFile 
 	{
