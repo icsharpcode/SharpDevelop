@@ -50,6 +50,11 @@ namespace ICSharpCode.UsageDataCollector
 			timer = new Timer(OnTimer, 0, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(60));
 		}
 		
+		/// <summary>
+		/// This delegate is called when an exception occurs on the background timer.
+		/// </summary>
+		public Action<Exception> OnException { get; set; }
+		
 		void OnTimer(object state)
 		{
 			lock (lockObj) {
@@ -58,7 +63,11 @@ namespace ICSharpCode.UsageDataCollector
 				try {
 					FlushOutstandingChanges();
 				} catch (Exception ex) {
-					ICSharpCode.Core.MessageService.ShowException(ex);
+					Action<Exception> onException = this.OnException;
+					if (onException != null)
+						onException(ex);
+					else
+						throw;
 				}
 			}
 		}
@@ -311,7 +320,10 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 	}
-
+	
+	/// <summary>
+	/// Represents a feature use that is currently being written.
+	/// </summary>
 	public sealed class FeatureUse
 	{
 		internal readonly DateTime startTime = DateTime.UtcNow;
@@ -334,14 +346,31 @@ namespace ICSharpCode.UsageDataCollector
 		}
 	}
 
+	/// <summary>
+	/// Thrown when the database used to internally store the usage data is incompatible with the DB version
+	/// expected by the UsageDataCollector library.
+	/// </summary>
 	[Serializable]
 	public class IncompatibleDatabaseException : Exception
 	{
+		/// <summary>
+		/// Expected database version.
+		/// </summary>
 		public Version ExpectedVersion { get; set; }
+		
+		/// <summary>
+		/// Actual database version.
+		/// </summary>
 		public Version ActualVersion { get; set; }
 		
+		/// <summary>
+		/// Creates a new IncompatibleDatabaseException instance.
+		/// </summary>
 		public IncompatibleDatabaseException() {}
 		
+		/// <summary>
+		/// Creates a new IncompatibleDatabaseException instance.
+		/// </summary>
 		public IncompatibleDatabaseException(Version expectedVersion, Version actualVersion)
 			: base("Expected DB version " + expectedVersion + " but found " + actualVersion)
 		{
@@ -349,6 +378,9 @@ namespace ICSharpCode.UsageDataCollector
 			this.ActualVersion = actualVersion;
 		}
 		
+		/// <summary>
+		/// Deserializes an IncompatibleDatabaseException instance.
+		/// </summary>
 		protected IncompatibleDatabaseException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			if (info != null) {
@@ -357,6 +389,7 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);

@@ -77,6 +77,7 @@ namespace ICSharpCode.UsageDataCollector
 				if (session == null) {
 					try {
 						session = new UsageDataSessionWriter(dbFileName);
+						session.OnException = MessageService.ShowException;
 						session.AddEnvironmentData("appVersion", RevisionClass.FullVersion);
 						session.AddEnvironmentData("language", ResourceService.Language);
 						sessionOpened = true;

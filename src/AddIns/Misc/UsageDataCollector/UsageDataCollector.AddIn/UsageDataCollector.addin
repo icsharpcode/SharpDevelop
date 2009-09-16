@@ -9,7 +9,7 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "UsageDataCollector.dll"/>
+		<Import assembly = "UsageDataCollector.AddIn.dll"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/ViewContent/StartPage/Items">
