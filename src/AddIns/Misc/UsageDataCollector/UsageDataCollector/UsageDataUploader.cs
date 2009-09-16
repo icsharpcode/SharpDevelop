@@ -130,15 +130,18 @@ namespace ICSharpCode.UsageDataCollector
 		
 		void UsageDataUploaded(IAsyncResult result, UDCUploadServiceClient client, string commaSeparatedSessionIDList)
 		{
+			bool success = false;
 			try {
 				client.EndUploadUsageData(result);
+				success = true;
 			} catch (EndpointNotFoundException) {
 				// ignore error (maybe currently not connected to network)
 			}
 			client.Close();
 			
-			
-			RemoveUploadedData(commaSeparatedSessionIDList);
+			if (success) {
+				RemoveUploadedData(commaSeparatedSessionIDList);
+			}
 		}
 		
 		Version expectedDBVersion = new Version(1, 0, 1);

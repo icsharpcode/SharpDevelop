@@ -148,8 +148,7 @@ namespace ICSharpCode.UsageDataCollector
 		{
 			lock (lockObj) {
 				if (session != null) {
-					// TODO: recognize inner exceptions
-					session.AddException(exception.GetType().FullName, exception.StackTrace);
+					session.AddException(exception);
 				}
 			}
 		}

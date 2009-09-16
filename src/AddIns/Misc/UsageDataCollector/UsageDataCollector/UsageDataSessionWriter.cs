@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Globalization;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Threading;
 
 namespace ICSharpCode.UsageDataCollector
@@ -275,6 +276,27 @@ namespace ICSharpCode.UsageDataCollector
 				}
 				transaction.Commit();
 			}
+		}
+		
+		/// <summary>
+		/// Adds an exception report to the session.
+		/// </summary>
+		/// <param name="exception">The exception instance.</param>
+		public void AddException(Exception exception)
+		{
+			if (exception == null)
+				throw new ArgumentNullException("exception");
+			string exceptionType = exception.GetType().FullName;
+			string stacktrace = exception.StackTrace;
+			while (exception.InnerException != null) {
+				exception = exception.InnerException;
+				
+				stacktrace = exception.StackTrace + Environment.NewLine
+					+ "-- continuing with outer exception (" + exceptionType + ") --" + Environment.NewLine
+					+ stacktrace;
+				exceptionType = exception.GetType().FullName;
+			}
+			AddException(exceptionType, stacktrace);
 		}
 		
 		/// <summary>
