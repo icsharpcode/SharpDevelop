@@ -204,8 +204,8 @@ namespace ClassDiagram
 //			System.Diagnostics.Debug.WriteLine("ClassCanvas.PictureBox1Paint");
 			Size bbox = GetDiagramPixelSize();
 			
-			pictureBox1.Width = bbox.Width + 100;
-			pictureBox1.Height = bbox.Height + 100;
+			pictureBox1.Width = Math.Min(10000, bbox.Width + 100);
+			pictureBox1.Height = Math.Min(10000, bbox.Height + 100);
 
 			e.Graphics.PageScale = zoom;
 			SetRecommendedGraphicsAttributes(e.Graphics);
