@@ -515,10 +515,11 @@ namespace ICSharpCode.XmlEditor
 		
 		void InitAutoCompleteMode()
 		{
-			try {
+			// Auto-completion disabled due to bug - see SD2-1049 - XPath query combo box is case insensitive
+			/*try {
 				xPathComboBox.AutoCompleteMode = AutoCompleteMode.Suggest;
 				xPathComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
-			} catch (ThreadStateException) { }
+			} catch (ThreadStateException) { }*/
 		}
 		
 		void XPathResultsListViewItemActivate(object sender, EventArgs e)
