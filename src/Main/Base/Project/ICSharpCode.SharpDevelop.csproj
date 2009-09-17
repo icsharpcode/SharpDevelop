@@ -135,6 +135,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
+    <Compile Include="Src\Gui\Components\ColorPicker.xaml.cs">
+      <DependentUpon>ColorPicker.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\StringParserPropertyContainer.cs" />
     <Compile Include="Src\Gui\Components\SideBar\TextEditorSideBar.cs" />
     <Compile Include="Src\Gui\Dialogs\AddOpenWithEntryDialog.cs" />
@@ -878,6 +882,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Page Include="Src\Gui\App.xaml" />
+    <Page Include="Src\Gui\Components\ColorPicker.xaml" />
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />

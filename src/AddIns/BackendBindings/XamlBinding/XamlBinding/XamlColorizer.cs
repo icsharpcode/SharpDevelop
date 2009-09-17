@@ -297,26 +297,26 @@ namespace ICSharpCode.XamlBinding
 		#region highlight helpers
 		void HighlightProperty(VisualLineElement element)
 		{
-			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.PropertyForegroundBrush);
-			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.PropertyBackgroundBrush);
+			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.PropertyForegroundColor.ToBrush());
+			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.PropertyBackgroundColor.ToBrush());
 		}
 		
 		void HighlightEvent(VisualLineElement element)
 		{
-			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.EventForegroundBrush);
-			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.EventBackgroundBrush);
+			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.EventForegroundColor.ToBrush());
+			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.EventBackgroundColor.ToBrush());
 		}
 		
 		void HighlightNamespaceDeclaration(VisualLineElement element)
 		{
-			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.NamespaceDeclarationForegroundBrush);
-			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.NamespaceDeclarationBackgroundBrush);
+			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.NamespaceDeclarationForegroundColor.ToBrush());
+			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.NamespaceDeclarationBackgroundColor.ToBrush());
 		}
 		
 		void HighlightIgnored(VisualLineElement element)
 		{
-			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.IgnoredForegroundBrush);
-			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.IgnoredBackgroundBrush);
+			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.IgnoredForegroundColor.ToBrush());
+			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.IgnoredBackgroundColor.ToBrush());
 		}
 		#endregion
 		

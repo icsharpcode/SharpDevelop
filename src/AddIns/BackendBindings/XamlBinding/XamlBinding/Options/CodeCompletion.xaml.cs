@@ -30,17 +30,6 @@ namespace ICSharpCode.XamlBinding.Options
 			InitializeComponent();
 		}
 		
-		void ButtonClick(object sender, RoutedEventArgs e)
-		{
-			SharpDevelopColorDialog dialog = new SharpDevelopColorDialog();
-			
-			if (dialog.ShowWpfDialog() ?? false) {
-				Button b = sender as Button;
-				b.Background = new SolidColorBrush(dialog.WpfColor);
-				b.Content = (sender as Button).Background;
-			}
-		}
-		
 		public override bool SaveOptions()
 		{
 			if (base.SaveOptions()) {

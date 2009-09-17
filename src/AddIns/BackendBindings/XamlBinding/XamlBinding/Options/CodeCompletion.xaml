@@ -1,4 +1,9 @@
-<gui:OptionPanel x:Class="ICSharpCode.XamlBinding.Options.CodeCompletion" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:addin="clr-namespace:ICSharpCode.XamlBinding" xmlns:sd="http://icsharpcode.net/sharpdevelop/core" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<gui:OptionPanel x:Class="ICSharpCode.XamlBinding.Options.CodeCompletion"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:addin="clr-namespace:ICSharpCode.XamlBinding" 
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <StackPanel>
     <GroupBox Header="{sd:Localize AddIns.XamlBinding.Options.CodeCompletionGroupLabel}">
       <StackPanel>
@@ -23,15 +28,15 @@
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="1" DockPanel.Dock="Left" Content="{sd:Localize AddIns.XamlBinding.Options.PropertyColor}" Grid.Column="0" />
-        <Label Grid.Row="2" DockPanel.Dock="Left" Content="{sd:Localize AddIns.XamlBinding.Options.EventColor}" Grid.Column="0" />
-        <Label Grid.Row="3" DockPanel.Dock="Left" Content="{sd:Localize AddIns.XamlBinding.Options.NamespaceDeclarationColor}" Grid.Column="0" />
-        <Label Grid.Row="4" DockPanel.Dock="Left" Content="{sd:Localize AddIns.XamlBinding.Options.IngoredElementColor}" Grid.Column="0" />
-        <Button Grid.Row="1" Background="{sd:OptionBinding addin:XamlBindingOptions.PropertyForegroundBrush}" Content="{sd:OptionBinding addin:XamlBindingOptions.PropertyForegroundBrush}" Foreground="WhiteSmoke" Click="ButtonClick" Grid.Column="1" />
-        <TextBlock Grid.ColumnSpan="1" Margin="3" Text="{sd:Localize AddIns.XamlBinding.Options.HighlightingDescription}" Grid.Column="0" Grid.Row="0" />
-        <Button Grid.Row="2" Background="{sd:OptionBinding addin:XamlBindingOptions.EventForegroundBrush}" Content="{sd:OptionBinding addin:XamlBindingOptions.EventForegroundBrush}" Foreground="WhiteSmoke" Click="ButtonClick" Grid.Column="1" />
-        <Button Grid.Row="3" Background="{sd:OptionBinding addin:XamlBindingOptions.NamespaceDeclarationForegroundBrush}" Content="{sd:OptionBinding addin:XamlBindingOptions.NamespaceDeclarationForegroundBrush}" Foreground="WhiteSmoke" Click="ButtonClick" Grid.Column="1" />
-        <Button Grid.Row="4" Background="{sd:OptionBinding addin:XamlBindingOptions.IgnoredForegroundBrush}" Content="{sd:OptionBinding addin:XamlBindingOptions.IgnoredForegroundBrush}" Foreground="WhiteSmoke" Click="ButtonClick" Grid.Column="1" />
+        <TextBlock Grid.ColumnSpan="1" Margin="3" Text="{sd:Localize AddIns.XamlBinding.Options.HighlightingDescription}" />
+        <Label Grid.Row="1" Content="{sd:Localize AddIns.XamlBinding.Options.PropertyColor}" />
+        <Label Grid.Row="2" Content="{sd:Localize AddIns.XamlBinding.Options.EventColor}" />
+        <Label Grid.Row="3" Content="{sd:Localize AddIns.XamlBinding.Options.NamespaceDeclarationColor}" />
+        <Label Grid.Row="4" Content="{sd:Localize AddIns.XamlBinding.Options.IngoredElementColor}" />
+        <gui:ColorPicker Grid.Row="1" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.PropertyForegroundColor}" />
+        <gui:ColorPicker Grid.Row="2" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.EventForegroundColor}" />
+        <gui:ColorPicker Grid.Row="3" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.NamespaceDeclarationForegroundColor}" />
+        <gui:ColorPicker Grid.Row="4" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.IgnoredForegroundColor}" />
       </Grid>
     </GroupBox>
   </StackPanel>

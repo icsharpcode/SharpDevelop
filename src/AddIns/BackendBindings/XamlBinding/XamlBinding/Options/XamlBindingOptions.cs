@@ -30,13 +30,6 @@ namespace ICSharpCode.XamlBinding
 			}
 		}
 		
-		public static IEnumerable<Brush> Colors {
-			get {
-				foreach (var item in typeof(Brushes).GetProperties())
-					yield return item.GetValue(null, null) as Brush;
-			}
-		}
-		
 		public static bool UseExtensionCompletion {
 			get { return Properties.Get("UseExtensionCompletion", true); }
 			set { Properties.Set("UseExtensionCompletion", value); }
@@ -52,43 +45,43 @@ namespace ICSharpCode.XamlBinding
 			set { Properties.Set("EventHandlerNamePattern", value); }
 		}
 		
-		public static Brush PropertyForegroundBrush {
-			get { return Properties.Get("PropertyForeground", Brushes.CadetBlue); }
+		public static Color PropertyForegroundColor {
+			get { return Properties.Get("PropertyForeground", Colors.CadetBlue); }
 			set { Properties.Set("PropertyForeground", value); }
 		}
 		
-		public static Brush PropertyBackgroundBrush {
-			get { return Properties.Get("PropertyBackground", Brushes.Transparent); }
+		public static Color PropertyBackgroundColor {
+			get { return Properties.Get("PropertyBackground", Colors.Transparent); }
 			set { Properties.Set("PropertyBackground", value); }
 		}
 		
-		public static Brush EventForegroundBrush {
-			get { return Properties.Get("EventForeground", Brushes.Green); }
+		public static Color EventForegroundColor {
+			get { return Properties.Get("EventForeground", Colors.Green); }
 			set { Properties.Set("EventForeground", value); }
 		}
 
-		public static Brush EventBackgroundBrush {
-			get { return Properties.Get("EventBackground", Brushes.Transparent); }
+		public static Color EventBackgroundColor {
+			get { return Properties.Get("EventBackground", Colors.Transparent); }
 			set { Properties.Set("EventBackground", value); }
 		}
 		
-		public static Brush NamespaceDeclarationForegroundBrush {
-			get { return Properties.Get("NamespaceDeclarationForeground", Brushes.Orange); }
+		public static Color NamespaceDeclarationForegroundColor {
+			get { return Properties.Get("NamespaceDeclarationForeground", Colors.Orange); }
 			set { Properties.Set("NamespaceDeclarationForeground", value); }
 		}
 		
-		public static Brush NamespaceDeclarationBackgroundBrush { 
-			get { return Properties.Get("NamespaceDeclarationBackground", Brushes.Transparent); }
+		public static Color NamespaceDeclarationBackgroundColor { 
+			get { return Properties.Get("NamespaceDeclarationBackground", Colors.Transparent); }
 			set { Properties.Set("NamespaceDeclarationBackground", value); }
 		}
 		
-		public static Brush IgnoredForegroundBrush {
-			get { return Properties.Get("IgnoredForeground", Brushes.LightGray); }
+		public static Color IgnoredForegroundColor {
+			get { return Properties.Get("IgnoredForeground", Colors.LightGray); }
 			set { Properties.Set("IgnoredForeground", value); }
 		}
 		
-		public static Brush IgnoredBackgroundBrush {
-			get { return Properties.Get("IgnoredBackground", Brushes.Transparent); }
+		public static Color IgnoredBackgroundColor {
+			get { return Properties.Get("IgnoredBackground", Colors.Transparent); }
 			set { Properties.Set("IgnoredBackground", value); }
 		}
 	}

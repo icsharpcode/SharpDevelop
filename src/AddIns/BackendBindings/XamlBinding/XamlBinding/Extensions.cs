@@ -5,16 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Xml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
+
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -337,6 +339,11 @@ namespace ICSharpCode.XamlBinding
 				return stack.Pop();
 			
 			return default(T);
+		}
+		
+		public static Brush ToBrush(this Color color)
+		{
+			return new SolidColorBrush(color);
 		}
 	}
 }

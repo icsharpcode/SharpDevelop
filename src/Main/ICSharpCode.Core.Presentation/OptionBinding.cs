@@ -6,12 +6,10 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Markup;
 
 namespace ICSharpCode.Core.Presentation
@@ -23,7 +21,7 @@ namespace ICSharpCode.Core.Presentation
 	/// Properties accessed by this binding have to be managed by a custom
 	/// settings class, which contains all settings as static properties or fields.<br />
 	/// Do not use PropertyService directly!<br />
-	/// This markup extension can only be used in OptionPanels or other <br />classes implementing IOptionBindingContainer!
+	/// This markup extension can only be used in OptionPanels or other <br />containers implementing IOptionBindingContainer!
 	/// </remarks>
 	/// <example>
 	/// <code>
@@ -74,24 +72,40 @@ namespace ICSharpCode.Core.Presentation
 			IOptionBindingContainer container = TryFindContainer(target as FrameworkElement);
 			
 			if (container == null)
-				throw new InvalidOperationException("This extension can only be used in OptionPanels");
+				throw new InvalidOperationException("This extension can be used in OptionPanels only!");
 			
 			container.AddBinding(this);
 			
-			object result = null;
+			try {
+				object result = null;
+				
+				if (this.propertyInfo is PropertyInfo)
+					result = (propertyInfo as PropertyInfo).GetValue(null, null);
+				else {
+					this.propertyInfo = t.GetField(name[1]);
+					if (this.propertyInfo is FieldInfo)
+						result = (propertyInfo as FieldInfo).GetValue(null);
+				}
+
+				return ConvertOnDemand(result, dp.PropertyType);
+			} catch (Exception e) {
+				throw new Exception("Failing to convert " + dp.Name + " " + dp.PropertyType, e);
+			}
+		}
+
+		object ConvertOnDemand(object result, Type returnType)
+		{
+			if (returnType.IsInstanceOfType(result) || returnType == typeof(object))
+				return result;
 			
-			if (this.propertyInfo is PropertyInfo)
-				result = (propertyInfo as PropertyInfo).GetValue(null, null);
-			else {
-				this.propertyInfo = t.GetField(name[1]);
-				if (this.propertyInfo is FieldInfo)
-					result = (propertyInfo as FieldInfo).GetValue(null);
+			if (returnType == typeof(string)) {
+				var converter = TypeDescriptor.GetConverter(result.GetType());
+				return converter.ConvertToString(result);
 			}
 			
-			Type returnType = dp.PropertyType;
-			
-			if (dp.PropertyType.IsGenericType && dp.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
-				returnType = dp.PropertyType.GetGenericArguments().First();
+			if (result is string) {
+				var converter = TypeDescriptor.GetConverter(returnType);
+				return converter.ConvertFromString(result as string);
 			}
 			
 			return Convert.ChangeType(result, returnType);
@@ -113,12 +127,16 @@ namespace ICSharpCode.Core.Presentation
 			object value = target.GetValue(dp);
 			
 			Type returnType = null;
+			
 			if (propertyInfo is PropertyInfo)
 				returnType = (propertyInfo as PropertyInfo).PropertyType;
 			if (propertyInfo is FieldInfo)
 				returnType = (propertyInfo as FieldInfo).FieldType;
 			
-			value = Convert.ChangeType(value, returnType);
+			if (returnType == null)
+				return false;
+			
+			value = ConvertOnDemand(value, returnType);
 			
 			if (propertyInfo is PropertyInfo) {
 				(propertyInfo as PropertyInfo).SetValue(null, value, null);
