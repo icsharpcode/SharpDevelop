@@ -1483,8 +1483,6 @@ LocalVariableDeclarator<out VariableDeclaration var>
 
 Statement
 (.
-	TypeReference type;
-	Expression expr;
 	Statement stmt = null;
 	Location startPos = la.Location;
 .)
@@ -1495,26 +1493,10 @@ Statement
 		IF (IsLabel()) Identifier (. compilationUnit.AddChild(new LabelStatement(t.val)); .)
 		":" Statement
 		/*--- local constant declaration: */
-		| "const" Type<out type> (. LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifiers.Const); string ident = null; var.StartLocation = t.Location; .) 
-		  Identifier (. ident = t.val; Location varStart = t.Location; .)
-		  "=" Expr<out expr> 
-		  (.
-			SafeAdd(var, var.Variables, new VariableDeclaration(ident, expr) {
-				StartLocation = varStart,
-				EndLocation = t.EndLocation,
-				TypeReference = type
-			}); 
-		  .)
-		  { "," Identifier (. ident = t.val; .) "=" Expr<out expr> 
-		  (.
-			SafeAdd(var, var.Variables, new VariableDeclaration(ident, expr) {
-				StartLocation = varStart,
-				EndLocation = t.EndLocation,
-				TypeReference = type
-			});
-		  .) }
-		  ";" (. var.EndLocation = t.EndLocation; compilationUnit.AddChild(var); .)
-
+	|	"const"
+		LocalVariableDecl<out stmt>
+		(. if (stmt != null) { ((LocalVariableDeclaration)stmt).Modifier |= Modifiers.Const; } .)
+		";" (. compilationUnit.AddChild(stmt); .)
 		/*--- local variable declaration: */
 	|	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. compilationUnit.AddChild(stmt); .)
 	
