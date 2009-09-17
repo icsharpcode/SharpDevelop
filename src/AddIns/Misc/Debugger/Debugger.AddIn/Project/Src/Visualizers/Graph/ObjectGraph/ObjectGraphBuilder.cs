@@ -4,14 +4,15 @@
 //     <owner name="Martin Koníèek" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Services;
-using ICSharpCode.NRefactory.Ast;
 using Debugger;
-using Debugger.MetaData;
-using Debugger.AddIn.Visualizers.Utils;
 using Debugger.AddIn.Visualizers.Common;
+using Debugger.AddIn.Visualizers.Utils;
+using Debugger.MetaData;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
@@ -89,19 +90,19 @@ namespace Debugger.AddIn.Visualizers.Graph
 				throw new DebuggerVisualizerException("Please use the visualizer when debugging.");
 			}
 			
-			// TODO GetValueFromName calls evaluator with SupportedLanguage.CSharp, is that ok?
-			Value rootValue = debuggerService.GetValueFromName(expression);
+			var rootExpression = ExpressionEvaluator.ParseExpression(expression, SupportedLanguage.CSharp);
+			Value rootValue = rootExpression.Evaluate(debuggedProcess);
 			if (rootValue.IsNull)	{
 				throw new DebuggerVisualizerException(expression + " is null.");
 			}
-			return buildGraphForValue(rootValue, expandedNodes);
+			return buildGraphForValue(rootValue.GetPermanentReference(), rootExpression, expandedNodes);
 		}
 		
-		private ObjectGraph buildGraphForValue(Value rootValue, ExpandedExpressions expandedNodes)
+		private ObjectGraph buildGraphForValue(Value rootValue, Expression rootExpression, ExpandedExpressions expandedNodes)
 		{
 			resultGraph = new ObjectGraph();
 			//resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference(), expandedNodes);
-			resultGraph.Root = createNewNode(rootValue.GetPermanentReference());
+			resultGraph.Root = createNewNode(rootValue, rootExpression);
 			loadContent(resultGraph.Root);
 			loadNeighborsRecursive(resultGraph.Root, expandedNodes);
 			return resultGraph;
@@ -115,7 +116,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public ObjectGraphNode ObtainNodeForExpression(Expression expr, out bool createdNewNode)
 		{
-			return ObtainNodeForValue(expr.EvalPermanentReference(), out createdNewNode);
+			return ObtainNodeForValue(expr.EvalPermanentReference(), expr, out createdNewNode);
 		}
 		
 		/// <summary>
@@ -123,14 +124,14 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="value">Value for which to obtain the node/</param>
 		/// <param name="createdNew">True if new node was created, false if existing node was returned.</param>
-		public ObjectGraphNode ObtainNodeForValue(Value value, out bool createdNew)
+		public ObjectGraphNode ObtainNodeForValue(Value value, Expression expression, out bool createdNew)
 		{
 			createdNew = false;
 			ObjectGraphNode nodeForValue = getExistingNodeForValue(value);
 			if (nodeForValue == null)
 			{
 				// if no node for memberValue exists, create it
-				nodeForValue = createNewNode(value);
+				nodeForValue = createNewNode(value, expression);
 				loadContent(nodeForValue);
 				createdNew = true;
 			}
@@ -151,7 +152,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			if (thisNode.PermanentReference.Type.ResolveIListImplementation(out iListType, out listItemType))
 			{
 				// it is a collection
-				loadNodeCollectionContent(contentRoot, thisNode.PermanentReference.ExpressionTree, iListType);
+				loadNodeCollectionContent(contentRoot, thisNode.Expression, iListType);
 			}
 			else
 			{
@@ -299,7 +300,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 						
 						bool createdNew;
 						// get existing node (loop) or create new
-						targetNode = ObtainNodeForValue(memberValue, out createdNew);
+						targetNode = ObtainNodeForValue(memberValue, complexProperty.Expression, out createdNew);
 						if (createdNew)
 						{
 							// if member node is new, recursively build its subtree
@@ -321,7 +322,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="permanentReference">Value, has to be valid.</param>
 		/// <returns>New empty object node representing the value.</returns>
-		private ObjectGraphNode createNewNode(Value permanentReference)
+		private ObjectGraphNode createNewNode(Value permanentReference, Expression expression)
 		{
 			ObjectGraphNode newNode = new ObjectGraphNode();
 			newNode.HashCode = permanentReference.InvokeDefaultGetHashCode();
@@ -333,6 +334,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			// permanent reference to the object this node represents is useful for graph building,
 			// and matching nodes in animations
 			newNode.PermanentReference = permanentReference;
+			newNode.Expression = expression;
 			
 			return newNode;
 		}

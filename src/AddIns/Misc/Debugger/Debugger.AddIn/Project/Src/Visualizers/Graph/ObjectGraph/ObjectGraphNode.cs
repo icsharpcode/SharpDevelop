@@ -20,8 +20,9 @@ namespace Debugger.AddIn.Visualizers.Graph
 	{
 		/// <summary>
 		/// Permanent reference to the value in the the debugee this node represents.
+		/// Needed for graph building and matching, since hashCodes are not unique.
 		/// </summary>
-		internal Debugger.Value PermanentReference { get; set; } // needed for graph building and matching, since hashCodes are not unique
+		internal Debugger.Value PermanentReference { get; set; }
 		/// <summary>
 		/// Hash code in the debuggee of the DebuggerValue this node represents.
 		/// </summary>
@@ -29,7 +30,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Expression used to obtain this node.
 		/// </summary>
-		public Expression Expression { get { return this.PermanentReference.ExpressionTree; } }
+		public Expression Expression { get; set; }
 
 		/// <summary>
 		/// Property tree of this node.
@@ -46,17 +47,5 @@ namespace Debugger.AddIn.Visualizers.Graph
 				return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });
 			}
 		}
-		
-		// TODO just for ObjectGraphBuilder, remove
-		/// <summary>
-		/// Only complex properties filtered out of <see cref="Properties"/>
-		/// </summary>
-		/*public IEnumerable<ObjectGraphProperty> ComplexProperties
-		{
-			get
-			{
-				return this.Content.FlattenPropertyNodes().Select(node => {return node.Property; });
-			}
-		}*/
 	}
 }
