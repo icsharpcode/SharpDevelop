@@ -197,8 +197,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					foreach (var nod in watches) {
 						try {
 							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(nod.Name) ? "is null or empty!" : nod.Name));
-							Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-							ExpressionNode valNode = new ExpressionNode(null, nod.Name, val.ExpressionTree);
+							var nodExpression = debugger.GetExpression(nod.Name);
+							//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
+							ExpressionNode valNode = new ExpressionNode(null, nod.Name, nodExpression);
 							nodes.Add(new TreeViewVarNode(debuggedProcess, watchList, valNode));
 						} catch (GetValueException) {
 							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), nod.Name);

@@ -37,6 +37,7 @@
 //
 #endregion
 
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -44,7 +45,6 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
-
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
@@ -341,9 +341,20 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (!CanEvaluate) {
 				return null;
-			} else {
-				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
 			}
+			return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
+		}
+		
+		/// <summary>
+		/// Gets Expression for given variable. Can throw GetValueException.
+		/// <exception cref="GetValueException">Thrown when getting expression fails. Exception message explains reason.</exception>
+		/// </summary>
+		public Expression GetExpression(string variableName)
+		{
+			if (!CanEvaluate) {
+				throw new GetValueException("Cannot evaluate now - debugged process is either null or running or has no selected stack frame");
+			}
+			return ExpressionEvaluator.ParseExpression(variableName, SupportedLanguage.CSharp);
 		}
 		
 		public bool IsManaged(int processId)
@@ -387,11 +398,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public object GetTooltipControl(string variableName)
 		{
-			if (!CanEvaluate) {
-				return null;
-			}
 			try {
-				var tooltipExpression = ExpressionEvaluator.ParseExpression(variableName, SupportedLanguage.CSharp);
+				var tooltipExpression = GetExpression(variableName);
 				ExpressionNode expressionNode = new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), variableName, tooltipExpression);
 				return new DebuggerTooltipControl(expressionNode);
 			} catch (GetValueException) {

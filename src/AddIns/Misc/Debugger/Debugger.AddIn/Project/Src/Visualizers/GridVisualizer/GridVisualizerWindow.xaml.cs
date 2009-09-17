@@ -111,29 +111,31 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 			if (listViewScroller != null) {
 				listViewScroller.ScrollToVerticalOffset(0);
 			}
-			Value val = null;
+			Value shownValue = null;
+			ICSharpCode.NRefactory.Ast.Expression shownExpr = null;
 			try	{
-				val = debuggerService.GetValueFromName(txtExpression.Text);
+				shownExpr = debuggerService.GetExpression(txtExpression.Text);
+				shownValue = shownExpr.Evaluate(debuggerService.DebuggedProcess);
 			} catch(GetValueException) {
 				// display ex.Message
 			}
-			if (val != null && !val.IsNull) {
+			if (shownValue != null && !shownValue.IsNull) {
 				GridValuesProvider gridValuesProvider;
 				// Value is IList
 				DebugType iListType, listItemType;
-				if (val.Type.ResolveIListImplementation(out iListType, out listItemType)) {
-					gridValuesProvider = CreateListValuesProvider(val.ExpressionTree, iListType, listItemType);
+				if (shownValue.Type.ResolveIListImplementation(out iListType, out listItemType)) {
+					gridValuesProvider = CreateListValuesProvider(shownExpr, iListType, listItemType);
 				} else	{
 					// Value is IEnumerable
 					DebugType iEnumerableType, itemType;
-					if (val.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
+					if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
 						// original
 						/*var lazyListViewWrapper = new LazyItemsControl<ObjectValue>(this.listView, initialIEnumerableItemsCount);
 						var enumerableValuesProvider = new EnumerableValuesProvider(val.ExpressionTree, iEnumerableType, itemType);
 						lazyListViewWrapper.ItemsSource = new VirtualizingIEnumerable<ObjectValue>(enumerableValuesProvider.ItemsSource);
 						gridValuesProvider = enumerableValuesProvider;*/
 						DebugType debugListType;
-						var debugListExpression = DebuggerHelpers.CreateDebugListExpression(val.ExpressionTree, itemType, out debugListType);
+						var debugListExpression = DebuggerHelpers.CreateDebugListExpression(shownExpr, itemType, out debugListType);
 						gridValuesProvider = CreateListValuesProvider(debugListExpression, debugListType, itemType);
 					} else	{
 						// Value cannot be displayed in GridVisualizer
