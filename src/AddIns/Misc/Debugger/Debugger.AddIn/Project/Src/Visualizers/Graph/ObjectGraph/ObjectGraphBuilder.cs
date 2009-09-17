@@ -157,7 +157,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			else
 			{
 				// it is an object
-				loadNodeObjectContent(contentRoot, thisNode.PermanentReference, thisNode.PermanentReference.Type);
+				loadNodeObjectContent(contentRoot, thisNode.Expression, thisNode.PermanentReference.Type);
 			}
 		}
 		
@@ -187,18 +187,18 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		private void loadNodeObjectContent(AbstractNode node, Value value, DebugType type)
+		private void loadNodeObjectContent(AbstractNode node, Expression expression, DebugType type)
 		{
 			// base
 			if (type.BaseType != null && type.BaseType.FullName != "System.Object")
 			{
 				var baseClassNode = new BaseClassNode(type.BaseType.FullName, type.BaseType.Name);
 				node.AddChild(baseClassNode);
-				loadNodeObjectContent(baseClassNode, value, type.BaseType);
+				loadNodeObjectContent(baseClassNode, expression, type.BaseType);
 			}
 			
 			// non-public members
-			var nonPublicProperties = getProperties(value, type, this.nonPublicInstanceMemberFlags);
+			var nonPublicProperties = getProperties(expression, type, this.nonPublicInstanceMemberFlags);
 			if (nonPublicProperties.Count > 0)
 			{
 				var nonPublicMembersNode = new NonPublicMembersNode();
@@ -210,18 +210,18 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 			
 			// public members
-			foreach (var property in getPublicProperties(value, type))
+			foreach (var property in getPublicProperties(expression, type))
 			{
 				node.AddChild(new PropertyNode(property));
 			}
 		}
 		
-		private List<ObjectGraphProperty> getPublicProperties(Value value, DebugType shownType)
+		private List<ObjectGraphProperty> getPublicProperties(Expression expression, DebugType shownType)
 		{
-			return getProperties(value, shownType, this.memberBindingFlags);
+			return getProperties(expression, shownType, this.memberBindingFlags);
 		}
 		
-		private List<ObjectGraphProperty> getProperties(Value value, DebugType shownType, BindingFlags flags)
+		private List<ObjectGraphProperty> getProperties(Expression expression, DebugType shownType, BindingFlags flags)
 		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
 			
@@ -233,7 +233,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 
 				// ObjectGraphProperty needs an expression
 				// to use expanded / nonexpanded (and to evaluate?)
-				Expression propExpression = value.ExpressionTree.AppendMemberReference(memberProp);
+				Expression propExpression = expression.AppendMemberReference(memberProp);
 				// Value, IsAtomic are lazy evaluated
 				propertyList.Add(new ObjectGraphProperty
 				                 { Name = memberProp.Name,
@@ -241,33 +241,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				                 	/*PropInfo = memberProp,*/ IsAtomic = true, TargetNode = null });
 				
 			}
-			
 			return propertyList.Sorted(ObjectPropertyComparer.Instance);
-			
-			/*// take all properties for this value (type = value's real type)
-			foreach(Expression memberExpr in value.Expression.AppendObjectMembers(shownType, flags))
-			{
-				// skip private backing fields
-				if (memberExpr.CodeTail.Contains("<"))
-					continue;
-				
-				checkIsOfSupportedType(memberExpr);
-				
-				string memberName = memberExpr.CodeTail;
-				if (memberExpr.IsOfAtomicType())
-				{
-					// properties are now lazy-evaluated
-					//  string memberValueAsString = memberExpr.Evaluate(debuggerService.DebuggedProcess).InvokeToString();
-					propertyList.Add(createAtomicProperty(memberName, memberExpr));
-				}
-				else
-				{
-					bool memberIsNull = memberExpr.IsNull();
-					propertyList.Add(createComplexProperty(memberName, memberExpr, null, memberIsNull));
-				}
-			}
-			
-			return propertyList.Sorted(ObjectPropertyComparer.Instance);*/
 		}
 		
 		/// <summary>
