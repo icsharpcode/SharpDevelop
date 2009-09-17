@@ -63,15 +63,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				modifiers |= ModifierEnum.Internal;
 			}
 			
-			if (methodBase.IsVirtual) {
-				modifiers |= ModifierEnum.Virtual;
-			}
-			if (methodBase.IsAbstract) {
-				modifiers |= ModifierEnum.Abstract;
-			}
 			if (methodBase.IsFinal) {
 				modifiers |= ModifierEnum.Sealed;
+			} else if (methodBase.IsAbstract) {
+				modifiers |= ModifierEnum.Abstract;
+			} else if (methodBase.IsVirtual) {
+				modifiers |= ModifierEnum.Virtual;
 			}
+			
 			this.Modifiers = modifiers;
 			
 			ReflectionClass.AddAttributes(declaringType.ProjectContent, this.Attributes, CustomAttributeData.GetCustomAttributes(methodBase));

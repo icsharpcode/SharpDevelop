@@ -47,6 +47,14 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				} else {
 					modifiers |= ModifierEnum.Internal;
 				}
+				
+				if (methodBase.IsFinal) {
+					modifiers |= ModifierEnum.Sealed;
+				} else if (methodBase.IsAbstract) {
+					modifiers |= ModifierEnum.Abstract;
+				} else if (methodBase.IsVirtual) {
+					modifiers |= ModifierEnum.Virtual;
+				}
 			} else {
 				// assume public property, if no methodBase could be get.
 				modifiers = ModifierEnum.Public;

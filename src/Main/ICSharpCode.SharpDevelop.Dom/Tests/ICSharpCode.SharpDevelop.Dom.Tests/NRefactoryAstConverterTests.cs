@@ -16,13 +16,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 	[TestFixture]
 	public class NRefactoryAstConverterTests
 	{
-		readonly ProjectContentRegistry projectContentRegistry = new ProjectContentRegistry();
-		
 		ICompilationUnit Parse(string code, SupportedLanguage language, bool referenceMscorlib)
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
 			if (referenceMscorlib) {
-				pc.AddReferencedContent(projectContentRegistry.Mscorlib);
+				pc.AddReferencedContent(SharedProjectContentRegistryForTests.Instance.Mscorlib);
 			}
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			using (IParser p = ParserFactory.CreateParser(language, new StringReader(code))) {
