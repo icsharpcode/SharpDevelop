@@ -54,6 +54,23 @@ namespace Debugger
 			return new ExpressionEvaluator(context).Evaluate(code, false);
 		}
 		
+		/// <summary>
+		/// Parses string representation of an expression (eg. "a.b[10] + 2") into NRefactory Expression tree.
+		/// </summary>
+		public static Expression ParseExpression(string code, SupportedLanguage language)
+		{
+			SnippetParser parser = new SnippetParser(language);
+			INode astRoot = parser.Parse(code);
+			if (parser.Errors.Count > 0) {
+				throw new GetValueException(parser.Errors.ErrorOutput);
+			}
+			Expression astExpression = astRoot as Expression;
+			if (astExpression == null) {
+				throw new GetValueException("Code must be expression");
+			}
+			return astExpression;
+		}
+		
 		public static string FormatValue(Value val)
 		{
 			if (val == null) {

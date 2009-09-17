@@ -339,7 +339,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public Value GetValueFromName(string variableName)
 		{
-			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
+			if (!CanEvaluate) {
 				return null;
 			} else {
 				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, debuggedProcess.SelectedStackFrame);
@@ -374,22 +374,29 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		bool CanEvaluate
+		{
+			get { 
+				return debuggedProcess != null && !debuggedProcess.IsRunning && debuggedProcess.SelectedStackFrame != null;
+			}
+		}
+		
 		/// <summary>
 		/// Gets the tooltip control that shows the value of given variable.
 		/// Return null if no tooltip is available.
 		/// </summary>
 		public object GetTooltipControl(string variableName)
 		{
-			ExpressionNode expressionNode;
+			if (!CanEvaluate) {
+				return null;
+			}
 			try {
-				Value val = GetValueFromName(variableName);
-				if (val == null) return null;
-				expressionNode = new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), variableName, val.ExpressionTree);
+				var tooltipExpression = ExpressionEvaluator.ParseExpression(variableName, SupportedLanguage.CSharp);
+				ExpressionNode expressionNode = new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), variableName, tooltipExpression);
+				return new DebuggerTooltipControl(expressionNode);
 			} catch (GetValueException) {
 				return null;
 			}
-			
-			return new DebuggerTooltipControl(expressionNode);
 		}
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)
