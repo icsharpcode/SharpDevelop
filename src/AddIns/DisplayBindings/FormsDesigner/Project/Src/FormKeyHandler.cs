@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Reflection;
@@ -18,12 +19,12 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public class FormKeyHandler : IMessageFilter
+	public sealed class FormKeyHandler : IMessageFilter
 	{
 		const int keyPressedMessage          = 0x100;
 		const int leftMouseButtonDownMessage = 0x0202;
 		
-		Hashtable keyTable = new Hashtable();
+		readonly Dictionary<Keys, CommandWrapper> keyTable = new Dictionary<Keys, CommandWrapper>();
 		public static bool inserted = false;
 		public static void Insert()
 		{
@@ -81,6 +82,13 @@ namespace ICSharpCode.FormsDesigner
 				return false;
 			}
 			
+			Control originControl = Control.FromChildHandle(m.HWnd);
+			if (originControl != null && formDesigner.Control != null && !(formDesigner.Control == originControl || formDesigner.Control.Contains(originControl))) {
+				// Ignore if message origin not in forms designer
+				// (e.g. navigating the main menu)
+				return false;
+			}
+			
 			Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;
 			
 			if (keyPressed == Keys.Escape) {
@@ -90,8 +98,8 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			
-			CommandWrapper commandWrapper = (CommandWrapper)keyTable[keyPressed];
-			if (commandWrapper != null) {
+			CommandWrapper commandWrapper;
+			if (keyTable.TryGetValue(keyPressed, out commandWrapper)) {
 				if (commandWrapper.CommandID == MenuCommands.Delete) {
 					// Check Delete menu is enabled.
 					if (!formDesigner.EnableDelete) {
@@ -99,7 +107,6 @@ namespace ICSharpCode.FormsDesigner
 					}
 				}
 				LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
-				Control ctl = WorkbenchSingleton.ActiveControl;
 				
 				IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.Host.GetService(typeof(IMenuCommandService));
 				ISelectionService   selectionService = (ISelectionService)formDesigner.Host.GetService(typeof(ISelectionService));
@@ -160,7 +167,7 @@ namespace ICSharpCode.FormsDesigner
 			return false; // invoke the CommandID
 		}
 		
-		class CommandWrapper
+		sealed class CommandWrapper
 		{
 			CommandID commandID;
 			bool      restoreSelection;
