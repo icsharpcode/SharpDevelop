@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.IO;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
@@ -208,6 +209,38 @@ class X {
 			Assert.IsTrue(p.IsIndexer, "IsIndexer must be true");
 			Assert.AreEqual("Foo", p.Name);
 			Assert.AreEqual(1, p.Parameters.Count);
+		}
+		
+		[Test]
+		public void GenericInnerClassTest()
+		{
+			ICompilationUnit cu = Parse(@"
+using System;
+
+class Outer<T1> where T1 : IDisposable {
+	class Inner<T2> where T2 : T1 {
+		public static void Method<T3>(T1 p1, T2 p2, T3 p3) where T3 : T2 { }
+	}
+}
+");
+			IClass outer = cu.Classes[0];
+			Assert.AreEqual(1, outer.TypeParameters.Count);
+			
+			IClass inner = outer.InnerClasses[0];
+			Assert.AreEqual(2, inner.TypeParameters.Count);
+			Assert.AreEqual("T1", inner.TypeParameters[0].Name);
+			Assert.AreSame(inner, inner.TypeParameters[0].Class);
+			Assert.AreEqual("T2", inner.TypeParameters[1].Name);
+			Assert.AreSame(inner.TypeParameters[0], inner.TypeParameters[1].Constraints[0].CastToGenericReturnType().TypeParameter);
+			Assert.AreEqual("IDisposable", inner.TypeParameters[0].Constraints[0].Name);
+			
+			IMethod method = inner.Methods.Single(m => m.Name == "Method");
+			Assert.AreEqual(1, method.TypeParameters.Count);
+			Assert.AreSame(inner.TypeParameters[0], method.Parameters[0].ReturnType.CastToGenericReturnType().TypeParameter);
+			Assert.AreSame(inner.TypeParameters[1], method.Parameters[1].ReturnType.CastToGenericReturnType().TypeParameter);
+			Assert.AreSame(method.TypeParameters[0], method.Parameters[2].ReturnType.CastToGenericReturnType().TypeParameter);
+			
+			Assert.AreSame(inner.TypeParameters[1], method.TypeParameters[0].Constraints[0].CastToGenericReturnType().TypeParameter);
 		}
 	}
 }
