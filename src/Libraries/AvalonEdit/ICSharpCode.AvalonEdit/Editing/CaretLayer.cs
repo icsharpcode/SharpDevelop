@@ -75,11 +75,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 				Brush caretBrush = this.CaretBrush;
 				if (caretBrush == null)
 					caretBrush = (Brush)textView.GetValue(TextBlock.ForegroundProperty);
-				drawingContext.DrawRectangle(caretBrush, null,
-				                             new Rect(caretRectangle.X - textView.HorizontalOffset,
-				                                      caretRectangle.Y - textView.VerticalOffset,
-				                                      caretRectangle.Width,
-				                                      caretRectangle.Height));
+				Rect r = new Rect(caretRectangle.X - textView.HorizontalOffset,
+				                  caretRectangle.Y - textView.VerticalOffset,
+				                  caretRectangle.Width,
+				                  caretRectangle.Height);
+				drawingContext.DrawRectangle(caretBrush, null, PixelSnapHelpers.ToPixels(r));
 			}
 		}
 	}

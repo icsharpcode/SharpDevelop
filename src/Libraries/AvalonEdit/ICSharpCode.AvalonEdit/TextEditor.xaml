@@ -34,6 +34,20 @@
 	
 	<Style TargetType="{x:Type editing:TextArea}">
 		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+		<Setter Property="SelectionBrush">
+			<Setter.Value>
+				<SolidColorBrush 
+					Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"
+					Opacity="0.7"/>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="SelectionBorder">
+			<Setter.Value>
+				<Pen Brush="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+				     Thickness="1"/>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="SelectionForeground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type editing:TextArea}">

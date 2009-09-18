@@ -42,18 +42,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 			base.OnRender(drawingContext);
 			
 			BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder();
+			geoBuilder.CornerRadius = textArea.SelectionCornerRadius;
 			foreach (var segment in textArea.Selection.Segments) {
 				geoBuilder.AddSegment(textView, segment);
 			}
 			Geometry geometry = geoBuilder.CreateGeometry();
 			if (geometry != null) {
-				SolidColorBrush lightHighlightBrush = new SolidColorBrush(SystemColors.HighlightColor);
-				lightHighlightBrush.Opacity = 0.7;
-				lightHighlightBrush.Freeze();
-				Pen pen = new Pen(SystemColors.HighlightBrush, 1);
-				//pen.LineJoin = PenLineJoin.Round;
-				pen.Freeze();
-				drawingContext.DrawGeometry(lightHighlightBrush, pen, geometry);
+				drawingContext.DrawGeometry(textArea.SelectionBrush, textArea.SelectionBorder, geometry);
 			}
 		}
 	}

@@ -321,6 +321,63 @@ namespace ICSharpCode.AvalonEdit.Editing
 				}
 			}
 		}
+		
+		/// <summary>
+		/// The <see cref="SelectionBrush"/> property.
+		/// </summary>
+		public static readonly DependencyProperty SelectionBrushProperty =
+			DependencyProperty.Register("SelectionBrush", typeof(Brush), typeof(TextArea));
+		
+		/// <summary>
+		/// Gets/Sets the background brush used for the selection.
+		/// </summary>
+		public Brush SelectionBrush {
+			get { return (Brush)GetValue(SelectionBrushProperty); }
+			set { SetValue(SelectionBrushProperty, value); }
+		}
+		
+		/// <summary>
+		/// The <see cref="SelectionForeground"/> property.
+		/// </summary>
+		public static readonly DependencyProperty SelectionForegroundProperty =
+			DependencyProperty.Register("SelectionForeground", typeof(Brush), typeof(TextArea));
+		
+		/// <summary>
+		/// Gets/Sets the foreground brush used selected text.
+		/// </summary>
+		public Brush SelectionForeground {
+			get { return (Brush)GetValue(SelectionForegroundProperty); }
+			set { SetValue(SelectionForegroundProperty, value); }
+		}
+		
+		/// <summary>
+		/// The <see cref="SelectionBorder"/> property.
+		/// </summary>
+		public static readonly DependencyProperty SelectionBorderProperty =
+			DependencyProperty.Register("SelectionBorder", typeof(Pen), typeof(TextArea));
+		
+		/// <summary>
+		/// Gets/Sets the background brush used for the selection.
+		/// </summary>
+		public Pen SelectionBorder {
+			get { return (Pen)GetValue(SelectionBorderProperty); }
+			set { SetValue(SelectionBorderProperty, value); }
+		}
+		
+		/// <summary>
+		/// The <see cref="SelectionCornerRadius"/> property.
+		/// </summary>
+		public static readonly DependencyProperty SelectionCornerRadiusProperty =
+			DependencyProperty.Register("SelectionCornerRadius", typeof(double), typeof(TextArea),
+			                            new FrameworkPropertyMetadata(3.0));
+		
+		/// <summary>
+		/// Gets/Sets the corner radius of the selection.
+		/// </summary>
+		public double SelectionCornerRadius {
+			get { return (double)GetValue(SelectionCornerRadiusProperty); }
+			set { SetValue(SelectionCornerRadiusProperty, value); }
+		}
 		#endregion
 		
 		#region Force caret to stay inside selection
@@ -772,6 +829,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 			TextView.InvalidateCursor();
 		}
 		#endregion
+		
+		/// <inheritdoc/>
+		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged(e);
+			if (e.Property == SelectionBrushProperty
+			    || e.Property == SelectionBorderProperty
+			    || e.Property == SelectionForegroundProperty
+			    || e.Property == SelectionCornerRadiusProperty)
+			{
+				textView.Redraw();
+			}
+		}
 		
 		/// <summary>
 		/// Gets the requested service.

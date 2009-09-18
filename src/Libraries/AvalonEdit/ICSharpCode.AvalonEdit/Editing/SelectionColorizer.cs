@@ -25,6 +25,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		protected override void Colorize(ITextRunConstructionContext context)
 		{
+			// if SelectionForeground is null, keep the existing foreground color
+			if (textArea.SelectionForeground == null)
+				return;
+			
 			int lineStartOffset = context.VisualLine.FirstDocumentLine.Offset;
 			int lineEndOffset = context.VisualLine.LastDocumentLine.Offset + context.VisualLine.LastDocumentLine.TotalLength;
 			
@@ -40,8 +44,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				ChangeVisualElements(
 					startColumn, endColumn,
 					element => {
-						element.TextRunProperties.SetForegroundBrush(SystemColors.HighlightTextBrush);
-						//element.TextRunProperties.SetBackgroundBrush(SystemColors.HighlightBrush);
+						element.TextRunProperties.SetForegroundBrush(textArea.SelectionForeground);
 					});
 			}
 		}
