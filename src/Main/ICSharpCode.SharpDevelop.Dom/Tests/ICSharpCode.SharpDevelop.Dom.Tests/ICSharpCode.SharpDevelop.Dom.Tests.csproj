@@ -55,6 +55,7 @@
     <Compile Include="NUnitHelpers\SyntaxHelpers.cs" />
     <Compile Include="NUnitHelpers\Constraints.cs" />
     <Compile Include="ProjectContentClassManagementTest.cs" />
+    <Compile Include="VBNetAmbienceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

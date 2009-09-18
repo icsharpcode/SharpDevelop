@@ -108,7 +108,9 @@ namespace NRefactoryDemo
 		{
 			using (IParser parser = ParserFactory.CreateParser(language, new StringReader(text))) {
 				parser.Parse();
+				// this allows retrieving comments, preprocessor directives, etc. (stuff that isn't part of the syntax)
 				SetSpecials(parser.Lexer.SpecialTracker.RetrieveSpecials());
+				// this retrieves the root node of the result AST
 				astView.Unit = parser.CompilationUnit;
 				if (parser.Errors.Count > 0) {
 					MessageBox.Show(parser.Errors.ErrorOutput, "Parse errors");
@@ -128,6 +130,7 @@ namespace NRefactoryDemo
 		
 		void GenerateCode(IOutputAstVisitor outputVisitor)
 		{
+			// re-insert the comments we saved from the parser into the output
 			using (SpecialNodesInserter.Install(savedSpecialsList, outputVisitor)) {
 				astView.Unit.AcceptVisitor(outputVisitor, null);
 			}
