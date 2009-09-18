@@ -52,6 +52,24 @@ namespace ICSharpCode.XamlBinding
 			return element;
 		}
 		
+		public static string[] GetCurrentNamespaces(this XElement element)
+		{
+			Dictionary<XName, string> active = new Dictionary<XName, string>();
+			
+			var current = element;
+			
+			while (current != null) {
+				var newAttributes = current.Attributes()
+					.Where(i => i.IsNamespaceDeclaration && !active.ContainsKey(i.Name))
+					.ToArray();
+				foreach (var item in newAttributes)
+					active.Add(item.Name, item.Value);
+				current = current.Parent;
+			}
+			
+			return active.Select(pair => pair.Value).ToArray();
+		}
+		
 		public static XElement MoveAfter(this XElement element, XNode target)
 		{
 			if (element == null)

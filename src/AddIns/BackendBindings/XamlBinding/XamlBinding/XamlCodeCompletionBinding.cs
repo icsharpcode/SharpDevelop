@@ -210,7 +210,8 @@ namespace ICSharpCode.XamlBinding
 							var completionList = new XamlCompletionItemList();
 							completionList.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
 							
-							if ((context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter") && context.Attribute.Name == "Value")
+							if ((context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter") &&
+							    (context.Attribute.Name == "Property" || context.Attribute.Name == "Value"))
 								DoSetterAndEventSetterCompletion(context, completionList);
 							else if ((context.ActiveElement.Name.EndsWith("Trigger") || context.ActiveElement.Name == "Condition") && context.Attribute.Name == "Value")
 								DoTriggerCompletion(context, completionList);

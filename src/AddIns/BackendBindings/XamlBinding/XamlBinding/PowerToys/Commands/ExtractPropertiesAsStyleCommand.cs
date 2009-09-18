@@ -50,9 +50,12 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 						document.Root.AddFirst(resourcesRoot);
 					}
 					
+					string currentWpfXamlNamespace = resourcesRoot.GetCurrentNamespaces()
+						.First(i => CompletionDataHelper.WpfXamlNamespaces.Contains(i));
+					
 					var selectedAttributes = attributes.Where(item => item.Selected);
 					
-					resourcesRoot.AddFirst(CreateStyle(dialog.StyleName, selectedItem.Name.LocalName, selectedAttributes));
+					resourcesRoot.AddFirst(CreateStyle(dialog.StyleName, selectedItem.Name.LocalName, selectedAttributes, currentWpfXamlNamespace));
 					
 					selectedAttributes.Where(p => p.Attribute != null).Select(prop => prop.Attribute).Remove();
 					selectedAttributes.Where(p => p.Element != null).Select(prop => prop.Element).Remove();
@@ -98,9 +101,9 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		
 		// TODO : make the methods xmlns independent
 		
-		static XElement CreateStyle(string name, string targetType, IEnumerable<PropertyEntry> entries)
+		static XElement CreateStyle(string name, string targetType, IEnumerable<PropertyEntry> entries, string currentWpfXamlNamespace)
 		{
-			XElement style = new XElement(XName.Get("Style", CompletionDataHelper.WpfXamlNamespace));
+			XElement style = new XElement(XName.Get("Style", currentWpfXamlNamespace));
 			if (!string.IsNullOrEmpty(name))
 				style.SetAttributeValue(XName.Get("Key", CompletionDataHelper.XamlNamespace), name);
 			style.SetAttributeValue(XName.Get("TargetType"), targetType);
@@ -108,49 +111,49 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			foreach (var entry in entries) {
 				if (entry.Attribute != null) {
 					if (entry.Member is IEvent)
-						style.Add(CreateEventSetter(entry.PropertyName, entry.PropertyValue));
+						style.Add(CreateEventSetter(entry.PropertyName, entry.PropertyValue, currentWpfXamlNamespace));
 					else
-						style.Add(CreateSetter(entry.PropertyName, entry.PropertyValue));
+						style.Add(CreateSetter(entry.PropertyName, entry.PropertyValue, currentWpfXamlNamespace));
 				} else {
 					if (entry.Member is IEvent)
-						style.Add(CreateExtendedEventSetter(entry.PropertyName, entry.PropertyValue));
+						style.Add(CreateExtendedEventSetter(entry.PropertyName, entry.PropertyValue, currentWpfXamlNamespace));
 					else
-						style.Add(CreateExtendedSetter(entry.PropertyName, entry.PropertyValue));
+						style.Add(CreateExtendedSetter(entry.PropertyName, entry.PropertyValue, currentWpfXamlNamespace));
 				}
 			}
 			
 			return style;
 		}
 		
-		static XElement CreateEventSetter(string eventName, string handler)
+		static XElement CreateEventSetter(string eventName, string handler, string currentWpfXamlNamespace)
 		{
-			XElement eventSetter = new XElement(XName.Get("EventSetter", CompletionDataHelper.WpfXamlNamespace));
+			XElement eventSetter = new XElement(XName.Get("EventSetter", currentWpfXamlNamespace));
 			eventSetter.SetAttributeValue(XName.Get("Event"), eventName);
 			eventSetter.SetAttributeValue(XName.Get("Handler"), handler);
 			return eventSetter;
 		}
 		
-		static XElement CreateSetter(string property, string value)
+		static XElement CreateSetter(string property, string value, string currentWpfXamlNamespace)
 		{
-			XElement setter = new XElement(XName.Get("Setter", CompletionDataHelper.WpfXamlNamespace));
+			XElement setter = new XElement(XName.Get("Setter", currentWpfXamlNamespace));
 			setter.SetAttributeValue(XName.Get("Property"), property);
 			setter.SetAttributeValue(XName.Get("Value"), value);
 			return setter;
 		}
 		
-		static XElement CreateExtendedEventSetter(string eventName, string handler)
+		static XElement CreateExtendedEventSetter(string eventName, string handler, string currentWpfXamlNamespace)
 		{
-			XElement eventSetter = new XElement(XName.Get("EventSetter", CompletionDataHelper.WpfXamlNamespace));
+			XElement eventSetter = new XElement(XName.Get("EventSetter", currentWpfXamlNamespace));
 			eventSetter.SetAttributeValue(XName.Get("Event"), eventName);
-			eventSetter.Add(new XElement(XName.Get("EventSetter.Handler", CompletionDataHelper.WpfXamlNamespace), handler));
+			eventSetter.Add(new XElement(XName.Get("EventSetter.Handler", currentWpfXamlNamespace), handler));
 			return eventSetter;
 		}
 		
-		static XElement CreateExtendedSetter(string property, string value)
+		static XElement CreateExtendedSetter(string property, string value, string currentWpfXamlNamespace)
 		{
-			XElement setter = new XElement(XName.Get("Setter", CompletionDataHelper.WpfXamlNamespace));
+			XElement setter = new XElement(XName.Get("Setter", currentWpfXamlNamespace));
 			setter.SetAttributeValue(XName.Get("Property"), property);
-			setter.Add(new XElement(XName.Get("Setter.Value", CompletionDataHelper.WpfXamlNamespace), value));
+			setter.Add(new XElement(XName.Get("Setter.Value", currentWpfXamlNamespace), value));
 			return setter;
 		}
 	}

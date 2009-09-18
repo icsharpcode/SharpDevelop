@@ -30,9 +30,9 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			XElement selectedItem = (from item in document.Root.Descendants()
 			                         where item.IsInRange(startLoc, endLoc) select item).FirstOrDefault();
 			
-			if (selectedItem == null || selectedItem.Name != XName.Get("Grid", CompletionDataHelper.WpfXamlNamespace)) {
+			if (selectedItem == null || CompletionDataHelper.WpfXamlNamespaces.Select(item => XName.Get("Grid", item)).Any(ns => ns == selectedItem.Name)) {
 				selectedItem = document.Root.Elements().FirstOrDefault();
-				if (selectedItem == null || selectedItem.Name != XName.Get("Grid", CompletionDataHelper.WpfXamlNamespace)) {
+				if (selectedItem == null || CompletionDataHelper.WpfXamlNamespaces.Select(item => XName.Get("Grid", item)).Any(ns => ns == selectedItem.Name)) {
 					MessageService.ShowError("Please select a Grid!");
 					return false;
 				}

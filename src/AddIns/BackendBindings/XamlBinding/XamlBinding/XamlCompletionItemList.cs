@@ -79,7 +79,7 @@ namespace ICSharpCode.XamlBinding
 									int spaces = CountWhiteSpacesAtEnd(context.Editor.GetWordBeforeCaret());
 									int typeNameStart = markup.ExtensionType.IndexOf(':') + 1;
 									
-									if (!word.EndsWith(",", StringComparison.OrdinalIgnoreCase) && markup.ExtensionType.Substring(typeNameStart, markup.ExtensionType.Length - typeNameStart) != word) {
+									if (!(word == "." || word == "," || word == ":") && markup.ExtensionType.Substring(typeNameStart, markup.ExtensionType.Length - typeNameStart) != word) {
 										context.Editor.Document.Replace(context.Editor.Caret.Offset - spaces, spaces, ", ");
 										oldOffset += (2 - spaces);
 									}

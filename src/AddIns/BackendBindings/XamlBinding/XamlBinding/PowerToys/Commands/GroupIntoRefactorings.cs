@@ -39,7 +39,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override XElement CreateParent()
 		{
-			return new XElement(XName.Get("Border", CompletionDataHelper.WpfXamlNamespace));
+			return new XElement(XName.Get("Border", currentWpfNamespace));
 		}
 	}
 	
@@ -47,8 +47,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
-			XElement newParent = new XElement(XName.Get("Grid", CompletionDataHelper.WpfXamlNamespace));
-			XElement newItem = new XElement(XName.Get("Border", CompletionDataHelper.WpfXamlNamespace), newParent);
+			XElement newParent = new XElement(XName.Get("Grid", currentWpfNamespace));
+			XElement newItem = new XElement(XName.Get("Border", currentWpfNamespace), newParent);
 			
 			newParent.Add(children);
 			parent.Add(newItem);
@@ -64,8 +64,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
-			XElement newParent = new XElement(XName.Get("StackPanel", CompletionDataHelper.WpfXamlNamespace));
-			XElement newItem = new XElement(XName.Get("Border", CompletionDataHelper.WpfXamlNamespace), newParent);
+			XElement newParent = new XElement(XName.Get("StackPanel", currentWpfNamespace));
+			XElement newItem = new XElement(XName.Get("Border", currentWpfNamespace), newParent);
 			
 			newParent.SetAttributeValue("Orientation", "Vertical");
 			
@@ -83,8 +83,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
-			XElement newParent = new XElement(XName.Get("StackPanel", CompletionDataHelper.WpfXamlNamespace));
-			XElement newItem = new XElement(XName.Get("Border", CompletionDataHelper.WpfXamlNamespace), newParent);
+			XElement newParent = new XElement(XName.Get("StackPanel", currentWpfNamespace));
+			XElement newItem = new XElement(XName.Get("Border", currentWpfNamespace), newParent);
 			
 			newParent.SetAttributeValue("Orientation", "Horizontal");
 			
@@ -112,6 +112,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 
 	abstract class GroupIntoBase : XamlMenuCommand
 	{
+		protected string currentWpfNamespace;
+		
 		protected override bool Refactor(ITextEditor editor, XDocument document)
 		{
 			if (editor.SelectionLength == 0) {
@@ -127,6 +129,10 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			
 			if (selectedItems.Any()) {
 				var parent = selectedItems.First().Parent;
+				
+				currentWpfNamespace = parent.GetCurrentNamespaces()
+					.First(i => CompletionDataHelper.WpfXamlNamespaces.Contains(i));
+				
 				var items = selectedItems.Where(i => i.Parent == parent);
 				
 				return GroupInto(parent, items);
@@ -181,7 +187,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override XElement CreateParent()
 		{
-			return new XElement(XName.Get("Grid", CompletionDataHelper.WpfXamlNamespace));
+			return new XElement(XName.Get("Grid", currentWpfNamespace));
 		}
 	}
 	
@@ -189,7 +195,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override XElement CreateParent()
 		{
-			return new XElement(XName.Get("Canvas", CompletionDataHelper.WpfXamlNamespace));
+			return new XElement(XName.Get("Canvas", currentWpfNamespace));
 		}
 	}
 	
@@ -197,7 +203,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override XElement CreateParent()
 		{
-			return new XElement(XName.Get("DockPanel", CompletionDataHelper.WpfXamlNamespace));
+			return new XElement(XName.Get("DockPanel", currentWpfNamespace));
 		}
 	}
 	
@@ -205,7 +211,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override XElement CreateParent()
 		{
-			return new XElement(XName.Get("UniformGrid", CompletionDataHelper.WpfXamlNamespace));
+			return new XElement(XName.Get("UniformGrid", currentWpfNamespace));
 		}
 	}
 	
@@ -213,7 +219,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override XElement CreateParent()
 		{
-			return new XElement(XName.Get("Viewbox", CompletionDataHelper.WpfXamlNamespace));
+			return new XElement(XName.Get("Viewbox", currentWpfNamespace));
 		}
 	}
 	
@@ -221,7 +227,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override XElement CreateParent()
 		{
-			return new XElement(XName.Get("WrapPanel", CompletionDataHelper.WpfXamlNamespace));
+			return new XElement(XName.Get("WrapPanel", currentWpfNamespace));
 		}
 	}
 	
@@ -229,7 +235,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override XElement CreateParent()
 		{
-			var element = new XElement(XName.Get("StackPanel", CompletionDataHelper.WpfXamlNamespace));
+			var element = new XElement(XName.Get("StackPanel", currentWpfNamespace));
 			element.SetAttributeValue("Orientation", "Vertical");
 			return element;
 		}
@@ -239,7 +245,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override XElement CreateParent()
 		{
-			var element = new XElement(XName.Get("StackPanel", CompletionDataHelper.WpfXamlNamespace));
+			var element = new XElement(XName.Get("StackPanel", currentWpfNamespace));
 			element.SetAttributeValue("Orientation", "Horizontal");
 			return element;
 		}
@@ -249,8 +255,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
-			XElement newParent = new XElement(XName.Get("Grid", CompletionDataHelper.WpfXamlNamespace));
-			XElement newItem = new XElement(XName.Get("ScrollViewer", CompletionDataHelper.WpfXamlNamespace), newParent);
+			XElement newParent = new XElement(XName.Get("Grid", currentWpfNamespace));
+			XElement newItem = new XElement(XName.Get("ScrollViewer", currentWpfNamespace), newParent);
 			
 			newParent.Add(children);
 			parent.Add(newItem);
@@ -266,8 +272,8 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
-			XElement newParent = new XElement(XName.Get("Grid", CompletionDataHelper.WpfXamlNamespace));
-			XElement newItem = new XElement(XName.Get("GroupBox", CompletionDataHelper.WpfXamlNamespace), newParent);
+			XElement newParent = new XElement(XName.Get("Grid", currentWpfNamespace));
+			XElement newItem = new XElement(XName.Get("GroupBox", currentWpfNamespace), newParent);
 			
 			newParent.Add(children);
 			parent.Add(newItem);

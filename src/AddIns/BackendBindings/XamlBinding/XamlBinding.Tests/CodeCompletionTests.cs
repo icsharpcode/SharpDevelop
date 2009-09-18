@@ -520,6 +520,106 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
+		public void CtrlSpaceTest22()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Window.Resources>
+		<Style TargetType='{x:Type Button}'>
+			<Setter Property='";
+			string fileFooter = @"'
+		</Style>
+	</Window.Resources>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='test ' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              });
+		}
+		
+		[Test]
+		public void CtrlSpaceTest25()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Window.Resources>
+		<Style TargetType='{x:Type Button}'>
+			<Setter Property='AllowDrop' Value'";
+			string fileFooter = @"'
+		</Style>
+	</Window.Resources>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='test ' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              });
+		}
+		
+		[Test]
+		public void CtrlSpaceTest23()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Window.Resources>
+		<Style TargetType='Button'>
+			<Setter Property='";
+			string fileFooter = @"'
+		</Style>
+	</Window.Resources>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='test ' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              });
+		}
+		
+		[Test]
+		public void CtrlSpaceTest24()
+		{
+			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+	<Window.Resources>
+		<Style TargetType='Button'>
+			<Setter Property='AllowDrop' Value='";
+			string fileFooter = @"'
+		</Style>
+	</Window.Resources>
+	<Grid>
+		<Button AllowDrop='True' Grid.Row='0' Content='test ' />
+	</Grid>
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              });
+		}
+		
+		[Test]
 		public void TypeAtValueEndingInSpace()
 		{
 			string fileHeader = @"<Window x:Class='ICSharpCode.XamlBinding.Tests.CompletionTestsBase'

@@ -30,14 +30,13 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 	/// </summary>
 	public partial class EditGridColumnsAndRowsDialog : Window
 	{
-		static readonly XName rowDefsName = XName.Get("Grid.RowDefinitions", CompletionDataHelper.WpfXamlNamespace);
-		static readonly XName colDefsName = XName.Get("Grid.ColumnDefinitions", CompletionDataHelper.WpfXamlNamespace);
+		readonly XName rowDefsName, colDefsName;
+		readonly XName rowDefName, colDefName;
 		
-		static readonly XName rowDefName = XName.Get("RowDefinition", CompletionDataHelper.WpfXamlNamespace);
-		static readonly XName colDefName = XName.Get("ColumnDefinition", CompletionDataHelper.WpfXamlNamespace);
+		readonly XName gridRowName = XName.Get("Grid.Row");
+		readonly XName gridColName = XName.Get("Grid.Column");
 		
-		static readonly XName gridRowName = XName.Get("Grid.Row");
-		static readonly XName gridColName = XName.Get("Grid.Column");
+		readonly string currentWpfNamespace;
 		
 		XElement gridTree;
 		XElement rowDefitions;
@@ -52,6 +51,15 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 		public EditGridColumnsAndRowsDialog(XElement gridTree)
 		{
 			InitializeComponent();
+			
+			currentWpfNamespace = gridTree.GetCurrentNamespaces()
+				.First(i => CompletionDataHelper.WpfXamlNamespaces.Contains(i));
+			
+			rowDefsName = XName.Get("Grid.RowDefinitions", currentWpfNamespace);
+			colDefsName = XName.Get("Grid.ColumnDefinitions", currentWpfNamespace);
+			
+			rowDefName = XName.Get("RowDefinition", currentWpfNamespace);
+			colDefName = XName.Get("ColumnDefinition", currentWpfNamespace);
 			
 			this.gridTree = gridTree;
 			this.rowDefitions = gridTree.Element(rowDefsName) ?? new XElement(rowDefsName);
@@ -93,7 +101,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Dialogs
 			RebuildGrid();
 		}
 		
-		static void NormalizeElementGridIndices(XElement element, int maxCols, int maxRows)
+		void NormalizeElementGridIndices(XElement element, int maxCols, int maxRows)
 		{
 			XAttribute a = element.Attribute(gridColName);
 			XAttribute b = element.Attribute(gridRowName);

@@ -57,9 +57,13 @@ namespace ICSharpCode.XamlBinding
 		public const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
 		
 		/// <summary>
-		/// value: http://schemas.microsoft.com/winfx/2006/xaml/presentation
+		/// values: http://schemas.microsoft.com/winfx/2006/xaml/presentation,
+		/// http://schemas.microsoft.com/netfx/2007/xaml/presentation
 		/// </summary>
-		public const string WpfXamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+		public static readonly string[] WpfXamlNamespaces = new[] {
+			"http://schemas.microsoft.com/winfx/2006/xaml/presentation",
+			"http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+		};
 		
 		/// <summary>
 		/// value: http://schemas.openxmlformats.org/markup-compatibility/2006
@@ -677,9 +681,9 @@ namespace ICSharpCode.XamlBinding
 			isExplicit = false;
 			
 			for (int i = 0; i < ancestors.Count; i++) {
-				if (ancestors[i].LocalName == "Style" && ancestors[i].Namespace == WpfXamlNamespace) {
+				if (ancestors[i].LocalName == "Style" && WpfXamlNamespaces.Contains(ancestors[i].Namespace)) {
 					isExplicit = true;
-					return ancestors[i].GetAttributeValue(WpfXamlNamespace, "TargetType") ?? string.Empty;
+					return ancestors[i].GetAttributeValue("TargetType") ?? string.Empty;
 				}
 				
 				if (ancestors[i].Name.EndsWithAny(elementName.Select(s => "." + s + "s"), StringComparison.Ordinal)
