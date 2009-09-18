@@ -131,6 +131,19 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static string windowsSdk70InstallRoot = null;
+		/// <summary>
+		/// Location of the .NET 3.5 SP1 SDK (Windows SDK 7.0) install root.
+		/// </summary>
+		public static string WindowsSdk70InstallRoot {
+			get {
+				if (windowsSdk70InstallRoot == null) {
+					windowsSdk70InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v7.0", "InstallationFolder") ?? string.Empty;
+				}
+				return windowsSdk70InstallRoot;
+			}
+		}
+		
 		#endregion
 		
 		public static string Combine(params string[] paths)
@@ -185,6 +198,10 @@ namespace ICSharpCode.Core
 		/// <returns>The path of the executable, or null if the exe is not found.</returns>
 		public static string GetSdkPath(string exeName) {
 			string execPath;
+			if (!string.IsNullOrEmpty(WindowsSdk70InstallRoot)) {
+				execPath = Path.Combine(WindowsSdk70InstallRoot, "bin\\" + exeName);
+				if (File.Exists(execPath)) { return execPath; }
+			}
 			if (!string.IsNullOrEmpty(WindowsSdk61InstallRoot)) {
 				execPath = Path.Combine(WindowsSdk61InstallRoot, "bin\\" + exeName);
 				if (File.Exists(execPath)) { return execPath; }
