@@ -2806,5 +2806,45 @@ class B
 			var completionData = rr.GetCompletionData(mrr.ResolvedMember.DeclaringType.ProjectContent);
 			Assert.IsTrue(completionData.OfType<IField>().Any(f => f.FullyQualifiedName == "B.x"));
 		}
+		
+		[Test]
+		public void OverrideOnlyMethod()
+		{
+			// "override"s without corresponding "virtual"s can occur in code generated
+			// by the COM importer
+			string program = @"using System;
+class Test {
+	void Test(A instance) {
+		
+	}
+}
+class A {
+	public override void M1();
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "instance", 4);
+			Assert.AreEqual("instance", lrr.Field.Name);
+			var completionData = lrr.GetCompletionData(lrr.CallingClass.ProjectContent);
+			Assert.IsTrue(completionData.OfType<IMethod>().Any(m => m.FullyQualifiedName == "A.M1"));
+		}
+		
+		[Test]
+		public void OverrideOnlyProperty()
+		{
+			// "override"s without corresponding "virtual"s can occur in code generated
+			// by the COM importer
+			string program = @"using System;
+class Test {
+	void Test(A instance) {
+		
+	}
+}
+class A {
+	public override int P1 { get; set; }
+}";
+			var lrr = Resolve<LocalResolveResult>(program, "instance", 4);
+			Assert.AreEqual("instance", lrr.Field.Name);
+			var completionData = lrr.GetCompletionData(lrr.CallingClass.ProjectContent);
+			Assert.IsTrue(completionData.OfType<IProperty>().Any(m => m.FullyQualifiedName == "A.P1"));
+		}
 	}
 }

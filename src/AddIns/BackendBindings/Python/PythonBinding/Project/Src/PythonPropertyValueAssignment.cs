@@ -32,9 +32,10 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		/// <remarks>
 		/// 1) Strings are returned surrounded by double quotes.
-		/// 2) Objects are returned with their full name (e.g. System.Windows.Forms.Size(100, 200)).
-		/// 3) Enums are returned with their full name (e.g. System.Windows.Forms.AccessibleRole.None).
-		/// 4) By default the ToString method is used on the property value.
+		/// 2) Characters are returned surrounded by double quotes.
+		/// 3) Objects are returned with their full name (e.g. System.Windows.Forms.Size(100, 200)).
+		/// 4) Enums are returned with their full name (e.g. System.Windows.Forms.AccessibleRole.None).
+		/// 5) By default the ToString method is used on the property value.
 		/// </remarks>
 		public static string ToString(object propertyValue)
 		{
@@ -45,6 +46,8 @@ namespace ICSharpCode.PythonBinding
 			Type propertyType = propertyValue.GetType();
 			if (propertyType == typeof(String)) {
 				return GetQuotedString((string)propertyValue);
+			} else if (propertyType == typeof(Char)) {
+				return GetQuotedString(propertyValue.ToString());
 			} else if (propertyType == typeof(AnchorStyles)) {
 				AnchorStyles anchor = (AnchorStyles)propertyValue;
 				return GetAnchorStyleAsString(anchor);

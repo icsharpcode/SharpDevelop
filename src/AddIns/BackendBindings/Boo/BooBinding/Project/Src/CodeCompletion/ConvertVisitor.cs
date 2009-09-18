@@ -223,7 +223,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (par.IsByRef) p.Modifiers |= ParameterModifiers.Ref;
 				output.Add(p);
 			}
-			if (parameters.VariableNumber) {
+			if (parameters.HasParamArray) {
 				p.Modifiers |= ParameterModifiers.Params;
 			}
 		}

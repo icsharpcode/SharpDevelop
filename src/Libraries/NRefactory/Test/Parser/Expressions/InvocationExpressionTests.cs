@@ -103,6 +103,20 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(expr.Arguments[0] is InvocationExpression);
 			CheckSimpleInvoke((InvocationExpression)expr.Arguments[0]);
 		}
+		
+		[Test]
+		public void NestedInvocationPositions()
+		{
+			InvocationExpression expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("a.B().C(args)");
+			Assert.AreEqual(new Location(8, 1), expr.StartLocation);
+			Assert.AreEqual(new Location(14, 1), expr.EndLocation);
+			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
+			Assert.AreEqual(new Location(6, 1), mre.StartLocation);
+			Assert.AreEqual(new Location(8, 1), mre.EndLocation);
+			
+			Assert.AreEqual(new Location(4, 1), mre.TargetObject.StartLocation);
+			Assert.AreEqual(new Location(6, 1), mre.TargetObject.EndLocation);
+		}
 		#endregion
 		
 		#region VB.NET

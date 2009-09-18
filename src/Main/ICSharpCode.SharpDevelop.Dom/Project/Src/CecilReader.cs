@@ -458,19 +458,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				ModifierEnum m = ModifierEnum.None;
 				
-				if (method.IsStatic)
+				if (method.IsStatic) {
 					m |= ModifierEnum.Static;
-				
-				if (method.IsAbstract) {
-					m |= ModifierEnum.Abstract;
-				} else if (method.Overrides.Count > 0) {
-					if (method.IsFinal) {
+				} else {
+					if (method.IsAbstract) {
+						m |= ModifierEnum.Abstract;
+					} else if (method.IsFinal) {
 						m |= ModifierEnum.Sealed;
-					} else {
+					} else if (method.Overrides.Count > 0) {
 						m |= ModifierEnum.Override;
+					} else if (method.IsVirtual) {
+						m |= ModifierEnum.Virtual;
 					}
-				} else if (method.IsVirtual) {
-					m |= ModifierEnum.Virtual;
 				}
 				
 				if ((method.Attributes & MethodAttributes.Public) == MethodAttributes.Public)

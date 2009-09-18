@@ -40,17 +40,22 @@
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ClassInheritanceTreeTests.cs" />
     <Compile Include="CodeSnippetConverterTests.cs" />
+    <Compile Include="CSharpAmbienceTests.cs" />
     <Compile Include="NRefactoryAstConverterTests.cs" />
     <Compile Include="NRefactoryRefactoringProviderTests.cs" />
     <Compile Include="NUnitHelpers\SyntaxHelpers.cs" />
     <Compile Include="NUnitHelpers\Constraints.cs" />
     <Compile Include="ProjectContentClassManagementTest.cs" />
+    <Compile Include="VBNetAmbienceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

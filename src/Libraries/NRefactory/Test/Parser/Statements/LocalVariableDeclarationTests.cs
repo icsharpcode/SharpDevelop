@@ -208,6 +208,28 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("System.Nullable", type.GenericTypes[0].GenericTypes[0].Type);
 			Assert.AreEqual("System.Int32", type.GenericTypes[0].GenericTypes[0].GenericTypes[0].Type);
 		}
+		
+		[Test]
+		public void PositionTestWithoutModifier()
+		{
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("\ndouble w = 7;");
+			Assert.AreEqual(2, lvd.StartLocation.Line);
+			Assert.AreEqual(1, lvd.StartLocation.Column);
+			Assert.AreEqual(2, lvd.EndLocation.Line);
+			Assert.AreEqual(14, lvd.EndLocation.Column);
+		}
+		
+		[Test]
+		public void PositionTestWithModifier()
+		{
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("\nconst double w = 7;");
+			Assert.AreEqual(Modifiers.Const, lvd.Modifier);
+			Assert.AreEqual(2, lvd.StartLocation.Line);
+			Assert.AreEqual(1, lvd.StartLocation.Column);
+			Assert.AreEqual(2, lvd.EndLocation.Line);
+			Assert.AreEqual(20, lvd.EndLocation.Column);
+		}
+
 		#endregion
 		
 		#region VB.NET

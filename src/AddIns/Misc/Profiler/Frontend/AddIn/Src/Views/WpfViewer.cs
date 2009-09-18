@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
 using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
-
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
@@ -50,12 +50,27 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		/// </summary>
 		public WpfViewer(OpenedFile file)
 		{
-			//this.Files.Add(file);
+			// HACK : OpenedFile architecture does not allow to keep files open
+			//        but it is necessary for the ProfilerView to keep the session file open.
+			//        We don't want to load all session data into memory.
+			// this.Files.Add(file);
+			
+			// HACK : The file is not recognised by the FileService for closing if it is deleted while open.
+			//        (reason see above comment)
+			FileService.FileRemoving += FileServiceFileRemoving;
+			
 			this.file = file;
 			this.provider = ProfilingDataSQLiteProvider.FromFile(file.FileName);
 			this.TabPageText = Path.GetFileName(file.FileName);
 			this.TitleName = this.TabPageText;
 			dataView = new ProfilerView(this.provider);
+		}
+
+		void FileServiceFileRemoving(object sender, FileCancelEventArgs e)
+		{
+			if (FileUtility.IsEqualFileName(e.FileName, file.FileName) || 
+			    FileUtility.IsBaseDirectory(e.FileName, file.FileName))
+				this.WorkbenchWindow.CloseWindow(true);
 		}
 
 		/// <summary>
@@ -65,6 +80,8 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		{
 			this.dataView.SaveUserState();
 			this.provider.Close();
+			
+			FileService.FileRemoving -= FileServiceFileRemoving;
 			base.Dispose();
 		}
 	}

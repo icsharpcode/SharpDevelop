@@ -12,6 +12,13 @@ using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Dom.Tests
 {
+	static class SharedProjectContentRegistryForTests
+	{
+		public static readonly ProjectContentRegistry Instance = new ProjectContentRegistry();
+		
+		static SharedProjectContentRegistryForTests() {} // delay-initialize
+	}
+	
 	[TestFixture]
 	public class CodeSnippetConverterTests
 	{
@@ -21,10 +28,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 		
 		public CodeSnippetConverterTests()
 		{
-			ProjectContentRegistry pcr = new ProjectContentRegistry();
 			referencedContents = new List<IProjectContent> {
-				pcr.Mscorlib,
-				pcr.GetProjectContentForReference("System", "System")
+				SharedProjectContentRegistryForTests.Instance.Mscorlib,
+				SharedProjectContentRegistryForTests.Instance.GetProjectContentForReference("System", "System")
 			};
 		}
 		

@@ -19,8 +19,10 @@ namespace ICSharpCode.TextEditor
 	{
 		public Ime(IntPtr hWnd, Font font)
 		{
+			// For unknown reasons, the IME support is causing crashes when used in a WOW64 process
+			// or when used in .NET 4.0. We'll disable IME support in those cases.
 			string PROCESSOR_ARCHITEW6432 = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
-			if (PROCESSOR_ARCHITEW6432 == "IA64" || PROCESSOR_ARCHITEW6432 == "AMD64" || Environment.OSVersion.Platform == PlatformID.Unix) {
+			if (PROCESSOR_ARCHITEW6432 == "IA64" || PROCESSOR_ARCHITEW6432 == "AMD64" || Environment.OSVersion.Platform == PlatformID.Unix || Environment.Version >= new Version(4,0)) {
 				disableIME = true;
 			} else {
 				this.hIMEWnd = ImmGetDefaultIMEWnd(hWnd);

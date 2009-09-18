@@ -377,10 +377,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ConvertAttributes(typeDeclaration, c);
 			c.Documentation = GetDocumentation(region.BeginLine, typeDeclaration.Attributes);
 			
-			if (currentClass.Count > 0) {
-				DefaultClass cur = GetCurrentClass();
-				cur.InnerClasses.Add(c);
-				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + typeDeclaration.Name;
+			DefaultClass outerClass = GetCurrentClass();
+			if (outerClass != null) {
+				outerClass.InnerClasses.Add(c);
+				c.FullyQualifiedName = outerClass.FullyQualifiedName + '.' + typeDeclaration.Name;
 			} else {
 				c.FullyQualifiedName = PrependCurrentNamespace(typeDeclaration.Name);
 				cu.Classes.Add(c);
@@ -388,7 +388,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			c.UsingScope = currentNamespace;
 			currentClass.Push(c);
 			
-			ConvertTemplates(typeDeclaration.Templates, c); // resolve constrains in context of the class
+			ConvertTemplates(outerClass, typeDeclaration.Templates, c); // resolve constrains in context of the class
 			// templates must be converted before base types because base types may refer to generic types
 			
 			if (c.ClassType != ClassType.Enum && typeDeclaration.BaseTypes != null) {
@@ -421,19 +421,33 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return ret;
 		}
 		
-		void ConvertTemplates(IList<AST.TemplateDefinition> templateList, DefaultClass c)
+		void ConvertTemplates(DefaultClass outerClass, IList<AST.TemplateDefinition> templateList, DefaultClass c)
 		{
-			int index = 0;
-			if (templateList.Count == 0) {
+			int outerClassTypeParameterCount = outerClass != null ? outerClass.TypeParameters.Count : 0;
+			if (templateList.Count == 0 && outerClassTypeParameterCount == 0) {
 				c.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
 			} else {
 				Debug.Assert(c.TypeParameters.Count == 0);
+				
+				int index = 0;
+				if (outerClassTypeParameterCount > 0) {
+					foreach (DefaultTypeParameter outerTypeParamter in outerClass.TypeParameters) {
+						DefaultTypeParameter p = new DefaultTypeParameter(c, outerTypeParamter.Name, index++);
+						p.HasConstructableConstraint = outerTypeParamter.HasConstructableConstraint;
+						p.HasReferenceTypeConstraint = outerTypeParamter.HasReferenceTypeConstraint;
+						p.HasValueTypeConstraint = outerTypeParamter.HasValueTypeConstraint;
+						p.Attributes.AddRange(outerTypeParamter.Attributes);
+						p.Constraints.AddRange(outerTypeParamter.Constraints);
+						c.TypeParameters.Add(p);
+					}
+				}
+				
 				foreach (AST.TemplateDefinition template in templateList) {
 					c.TypeParameters.Add(new DefaultTypeParameter(c, template.Name, index++));
 				}
 				// converting the constraints requires that the type parameters are already present
 				for (int i = 0; i < templateList.Count; i++) {
-					ConvertConstraints(templateList[i], (DefaultTypeParameter)c.TypeParameters[i]);
+					ConvertConstraints(templateList[i], (DefaultTypeParameter)c.TypeParameters[i + outerClassTypeParameterCount]);
 				}
 			}
 		}
@@ -487,17 +501,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		void CreateDelegate(DefaultClass c, string name, AST.TypeReference returnType, IList<AST.TemplateDefinition> templates, IList<AST.ParameterDeclarationExpression> parameters)
 		{
 			c.BaseTypes.Add(c.ProjectContent.SystemTypes.MulticastDelegate);
-			if (currentClass.Count > 0) {
-				DefaultClass cur = GetCurrentClass();
-				cur.InnerClasses.Add(c);
-				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + name;
+			DefaultClass outerClass = GetCurrentClass();
+			if (outerClass != null) {
+				outerClass.InnerClasses.Add(c);
+				c.FullyQualifiedName = outerClass.FullyQualifiedName + '.' + name;
 			} else {
 				c.FullyQualifiedName = PrependCurrentNamespace(name);
 				cu.Classes.Add(c);
 			}
 			c.UsingScope = currentNamespace;
 			currentClass.Push(c); // necessary for CreateReturnType
-			ConvertTemplates(templates, c);
+			ConvertTemplates(outerClass, templates, c);
 			
 			List<IParameter> p = new List<IParameter>();
 			if (parameters != null) {
