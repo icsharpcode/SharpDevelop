@@ -70,6 +70,11 @@
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CodeEditorView.cs" />
+    <Compile Include="Src\Commands\SortOptionsDialog.xaml.cs">
+      <DependentUpon>SortOptionsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Commands\SortSelectionCommand.cs" />
     <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />
@@ -84,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />
+    <Folder Include="Src\Commands" />
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
@@ -114,6 +120,7 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Page Include="Src\Commands\SortOptionsDialog.xaml" />
     <Page Include="Src\QuickClassBrowser.xaml">
       <DependentUpon>QuickClassBrowser.cs</DependentUpon>
     </Page>

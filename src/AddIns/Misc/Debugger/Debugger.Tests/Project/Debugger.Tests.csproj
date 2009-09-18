@@ -69,6 +69,7 @@
     <Compile Include="Src\TestPrograms\ControlFlow_Stepping.cs" />
     <Compile Include="Src\TestPrograms\ControlFlow_TerminatePausedProcess.cs" />
     <Compile Include="Src\TestPrograms\ControlFlow_TerminateRunningProcess.cs" />
+    <Compile Include="Src\TestPrograms\ControlFlow_NoBreak.cs" />
     <Compile Include="Src\TestPrograms\Thread_Name.cs" />
     <EmbeddedResource Include="Src\TestPrograms\AppDomain.cs" />
     <EmbeddedResource Include="Src\TestPrograms\Breakpoint.cs" />

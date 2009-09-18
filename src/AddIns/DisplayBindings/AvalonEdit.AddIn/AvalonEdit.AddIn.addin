@@ -55,7 +55,7 @@
 			<MenuItem id = "SortSelection"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
-			          class ="ICSharpCode.SharpDevelop.Editor.Commands.SortSelection"/>
+			          class ="ICSharpCode.AvalonEdit.AddIn.Commands.SortSelectionCommand"/>
 			<MenuItem id = "Separator3" type = "Separator" insertbefore = "Separator4" />
 			<MenuItem id = "Tabs2Spaces"
 			          insertbefore = "Separator4"

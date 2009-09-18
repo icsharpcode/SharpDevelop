@@ -115,7 +115,6 @@ namespace ICSharpCode.UsageDataCollector
 					}
 					data = ms.ToArray();
 				}
-				message = null;
 				File.WriteAllBytes(Path.Combine(Path.GetTempPath(), "SharpDevelopUsageData.xml.gz"), data);
 				
 				UDCUploadServiceClient client = new UDCUploadServiceClient(binding, endpoint);

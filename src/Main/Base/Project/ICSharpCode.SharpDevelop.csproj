@@ -164,6 +164,9 @@
       <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.Designer.cs</Link>
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
     </None>
+    <Compile Include="Src\Gui\Dialogs\GotoDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\NewProjectDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\NewProjectDialog.Designer.cs">
       <DependentUpon>NewProjectDialog.cs</DependentUpon>
@@ -560,7 +563,6 @@
     <EmbeddedResource Include="Resources\GeneralTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\CodeTemplatePanel.xfrm" />
     <EmbeddedResource Include="Resources\MarkersTextEditorPanel.xfrm" />
-    <EmbeddedResource Include="Resources\SortOptionsDialog.xfrm" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\Commands\MenuCommands.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\IBookmarkMargin.cs" />
@@ -601,12 +603,6 @@
     <Compile Include="Src\TextEditor\Commands\TextAreaContextmenuCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
-    <Compile Include="Src\TextEditor\Gui\Dialogs\GotoDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\TextEditor\Gui\Dialogs\SortOptionsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\TextEditor\Gui\Editor\CommandPromptControl.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionData.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataProvider.cs" />
@@ -883,12 +879,14 @@
     </ProjectReference>
     <Page Include="Src\Gui\App.xaml" />
     <Page Include="Src\Gui\Components\ColorPicker.xaml" />
+    <Page Include="Src\Gui\Dialogs\GotoDialog.xaml">
+      <DependentUpon>GotoDialog.cs</DependentUpon>
+    </Page>
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
     <Page Include="Src\Services\Debugger\Tooltips\DebuggerTooltipControl.xaml" />
     <Page Include="Src\Services\Debugger\Tooltips\VisualizerPicker.xaml" />
-    <Page Include="Src\TextEditor\Gui\Dialogs\GotoDialog.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

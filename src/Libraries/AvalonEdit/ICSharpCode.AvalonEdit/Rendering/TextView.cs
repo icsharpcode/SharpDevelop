@@ -284,7 +284,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		/// <param name="layer">The new layer to insert.</param>
 		/// <param name="referencedLayer">The existing layer</param>
-		/// <param name="position">Specifies whether</param>
+		/// <param name="position">Specifies whether the layer is inserted above,below, or replaces the referenced layer</param>
 		public void InsertLayer(UIElement layer, KnownLayer referencedLayer, LayerInsertionPosition position)
 		{
 			if (layer == null)

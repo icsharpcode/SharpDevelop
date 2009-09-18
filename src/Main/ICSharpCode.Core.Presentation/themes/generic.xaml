@@ -176,4 +176,27 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+	
+	<Style TargetType="{x:Type local:RadioButtonGroup}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type local:RadioButtonGroup}">
+					<Border BorderThickness="{TemplateBinding Control.BorderThickness}" 
+					        BorderBrush="{TemplateBinding Control.BorderBrush}" 
+					        Background="{TemplateBinding Control.Background}"
+					        Padding="{TemplateBinding Control.Padding}"
+					        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}">
+						<ItemsPresenter />
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="ItemsPanel">
+			<Setter.Value>
+				<ItemsPanelTemplate>
+					<StackPanel/>
+				</ItemsPanelTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 </ResourceDictionary>
