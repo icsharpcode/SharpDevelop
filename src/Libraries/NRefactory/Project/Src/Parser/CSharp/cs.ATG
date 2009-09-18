@@ -1782,8 +1782,10 @@ Expr<out Expression expr>
 		)
 	)
 	(.	if (expr != null) {
-			expr.StartLocation = startLocation;
-			expr.EndLocation = t.EndLocation;
+			if (expr.StartLocation.IsEmpty)
+				expr.StartLocation = startLocation;
+			if (expr.EndLocation.IsEmpty)
+				expr.EndLocation = t.EndLocation;
 		}
 	.)
 .
@@ -1938,14 +1940,14 @@ PrimaryExpr<out Expression pexpr>
 		(. startLocation = la.Location; .)
 		(
 			"++"   (. pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostIncrement); .)
-			| "--" (. pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostDecrement); .)
-		)
+		|
+			"--" (. pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostDecrement); .)
 		/*--- member access */
-		| PointerMemberAccess<out pexpr, pexpr>
-		| MemberAccess<out pexpr, pexpr>
+		|	PointerMemberAccess<out pexpr, pexpr>
+		|	MemberAccess<out pexpr, pexpr>
 			
 		/*--- invocation expression: */
-		| "("
+		|	"("
 			(. List<Expression> parameters = new List<Expression>(); .)
 			(. pexpr = new InvocationExpression(pexpr, parameters); .)
 			[ Argument<out expr>     (. SafeAdd(pexpr, parameters, expr); .)
@@ -1958,13 +1960,15 @@ PrimaryExpr<out Expression pexpr>
 		      List<Expression> indices = new List<Expression>();
 		      pexpr = new IndexerExpression(pexpr, indices);
 		   .)
-		"[" Expr<out expr> (. SafeAdd(pexpr, indices, expr); .)
-		{ "," Expr<out expr> (. SafeAdd(pexpr, indices, expr); .)
-		} "]"
-		
+			"[" Expr<out expr> (. SafeAdd(pexpr, indices, expr); .)
+			{ "," Expr<out expr> (. SafeAdd(pexpr, indices, expr); .)
+			} "]"
+		)
 		(.	if (pexpr != null) {
-				pexpr.StartLocation = startLocation;
-				pexpr.EndLocation = t.EndLocation;
+				if (pexpr.StartLocation.IsEmpty)
+					pexpr.StartLocation = startLocation;
+				if (pexpr.EndLocation.IsEmpty)
+					pexpr.EndLocation = t.EndLocation;
 			}
 		.)
 	}
@@ -1980,9 +1984,9 @@ MemberAccess<out Expression expr, Expression target>
 			}
 		}
 	.)
-	"."
+	"." (. Location startLocation = t.Location; .)
 	Identifier
-	(. expr = new MemberReferenceExpression(target, t.val); expr.StartLocation = t.Location; expr.EndLocation = t.EndLocation; .)
+	(. expr = new MemberReferenceExpression(target, t.val); expr.StartLocation = startLocation; expr.EndLocation = t.EndLocation; .)
 	[ IF (IsGenericInSimpleNameOrMemberAccess())
 		TypeArgumentList<out typeList, false>
 		(. ((MemberReferenceExpression)expr).TypeArguments = typeList; .)

@@ -73,8 +73,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			// SEMICOLON HACK : without a trailing semicolon, parsing expressions does not work correctly
 			if (la.kind == Tokens.Semicolon) lexer.NextToken();
 			if (expr != null) {
-				expr.StartLocation = startLocation;
-				expr.EndLocation = t.EndLocation;
+				if (expr.StartLocation.IsEmpty)
+					expr.StartLocation = startLocation;
+				if (expr.EndLocation.IsEmpty)
+					expr.EndLocation = t.EndLocation;
 				expr.AcceptVisitor(new SetParentVisitor(), null);
 			}
 			Expect(Tokens.EOF);
