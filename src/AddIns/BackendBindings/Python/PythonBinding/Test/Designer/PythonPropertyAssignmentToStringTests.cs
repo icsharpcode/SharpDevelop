@@ -111,5 +111,11 @@ namespace PythonBinding.Tests.Designer
 		{
 			Assert.AreEqual("None", PythonPropertyValueAssignment.ToString(null));
 		}
+		
+		[Test]
+		public void CharConversion()
+		{
+			Assert.AreEqual("\"*\"", PythonPropertyValueAssignment.ToString('*'));
+		}
 	}
 }
