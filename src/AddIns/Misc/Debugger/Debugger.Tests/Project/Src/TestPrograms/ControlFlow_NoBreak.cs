@@ -39,10 +39,10 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="_SimpleProgram.cs">
+    name="ControlFlow_NoBreak.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>_SimpleProgram.exe (Has symbols)</ModuleLoaded>
+    <ModuleLoaded>ControlFlow_NoBreak.exe (Has symbols)</ModuleLoaded>
     <ProcessExited />
   </Test>
 </DebuggerTests>
