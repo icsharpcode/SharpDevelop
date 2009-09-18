@@ -51,9 +51,9 @@ namespace ICSharpCode.SharpDevelop.Editor
 			int lineNumber = line.LineNumber;
 			if (lineNumber > 1) {
 				IDocumentLine previousLine = document.GetLine(lineNumber - 1);
-				string indentation = DocumentUtilitites.GetIndentation(document, previousLine.Offset);
+				string indentation = DocumentUtilitites.GetWhitespaceAfter(document, previousLine.Offset);
 				// copy indentation to line
-				string newIndentation = DocumentUtilitites.GetIndentation(document, line.Offset);
+				string newIndentation = DocumentUtilitites.GetWhitespaceAfter(document, line.Offset);
 				document.Replace(line.Offset, newIndentation.Length, indentation);
 			}
 		}

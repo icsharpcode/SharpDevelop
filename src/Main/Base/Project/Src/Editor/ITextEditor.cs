@@ -141,6 +141,13 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the size of an indentation level.
 		/// </summary>
 		int IndentationSize { get; }
+		
+		/// <summary>
+		/// Gets the column of the vertical ruler (line that signifies the maximum line length
+		/// defined by the coding style)
+		/// This property returns a valid value even if the vertical ruler is set to be invisible.
+		/// </summary>
+		int VerticalRulerColumn { get; }
 	}
 	
 	public interface ITextEditorCaret

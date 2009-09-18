@@ -163,7 +163,7 @@ namespace ICSharpCode.XmlEditor
 					if (r.NodeType == XmlNodeType.Element) {
 						tagStack.Push(currentIndentation);
 						if (r.LineNumber < begin)
-							currentIndentation = DocumentUtilitites.GetIndentation(editor.Document, editor.Document.PositionToOffset(r.LineNumber, 1));
+							currentIndentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.PositionToOffset(r.LineNumber, 1));
 						if (r.Name.Length < 16)
 							attribIndent = currentIndentation + new string(' ', 2 + r.Name.Length);
 						else

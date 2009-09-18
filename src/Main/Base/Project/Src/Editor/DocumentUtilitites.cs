@@ -129,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <param name="document">The document.</param>
 		/// <param name="offset">The offset where the indentation starts.</param>
 		/// <returns>The indentation text.</returns>
-		public static string GetIndentation(ITextBuffer textBuffer, int offset)
+		public static string GetWhitespaceAfter(ITextBuffer textBuffer, int offset)
 		{
 			ISegment segment = TextUtilities.GetWhitespaceAfter(GetTextSource(textBuffer), offset);
 			return textBuffer.GetText(segment.Offset, segment.Length);

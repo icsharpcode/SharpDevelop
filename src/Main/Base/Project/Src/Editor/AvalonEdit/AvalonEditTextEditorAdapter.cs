@@ -143,6 +143,12 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 					return avalonEditOptions.IndentationSize;
 				}
 			}
+			
+			public int VerticalRulerColumn {
+				get {
+					return 120;
+				}
+			}
 		}
 		
 		public virtual string FileName {

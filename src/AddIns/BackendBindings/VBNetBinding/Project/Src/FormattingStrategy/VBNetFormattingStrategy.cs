@@ -165,7 +165,7 @@ namespace VBNetBinding
 						                         "\"");
 					}
 				} else {
-					string indent = DocumentUtilitites.GetIndentation(editor.Document, lineAbove.Offset);
+					string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineAbove.Offset);
 					if (indent.Length > 0) {
 						string newLineText = indent + currentLine.Text.Trim();
 						editor.Document.Replace(currentLine.Offset, currentLine.Length, newLineText);
@@ -223,7 +223,7 @@ namespace VBNetBinding
 			
 			// check #Region statements
 			if (Regex.IsMatch(textToReplace.Trim(), "^#Region", RegexOptions.IgnoreCase) && LookForEndRegion(editor)) {
-				string indentation = DocumentUtilitites.GetIndentation(editor.Document, lineAbove.Offset);
+				string indentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineAbove.Offset);
 				textToReplace += indentation + "\r\n" + indentation + "#End Region";
 				editor.Document.Replace(currentLine.Offset, currentLine.Length, textToReplace);
 			}
@@ -231,7 +231,7 @@ namespace VBNetBinding
 			foreach (VBStatement statement_ in statements) {
 				VBStatement statement = statement_;	// allow passing statement byref
 				if (Regex.IsMatch(textToReplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
-					string indentation = DocumentUtilitites.GetIndentation(editor.Document, lineAbove.Offset);
+					string indentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineAbove.Offset);
 					if (IsEndStatementNeeded(editor, ref statement, lineNr)) {
 						editor.Document.Replace(currentLine.Offset, currentLine.Length, terminator + indentation + statement.EndStatement);
 					}
@@ -273,7 +273,7 @@ namespace VBNetBinding
 			string lineAboveText = previousLine == null ? null : previousLine.Text;
 			
 			if (curLineText != null && curLineText.EndsWith("'''") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("'''"))) {
-				string indentation = DocumentUtilitites.GetIndentation(editor.Document, currentLine.Offset);
+				string indentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, currentLine.Offset);
 				object member = GetMemberAfter(editor, lineNr);
 				if (member != null) {
 					StringBuilder sb = new StringBuilder();
@@ -774,7 +774,7 @@ namespace VBNetBinding
 				
 				if (i < selBegin || i > selEnd) {
 					indentation.PopOrDefault();
-					indentation.Push(DocumentUtilitites.GetIndentation(editor.Document, curLine.Offset));
+					indentation.Push(DocumentUtilitites.GetWhitespaceAfter(editor.Document, curLine.Offset));
 				}
 				
 				// change indentation before (indent this line)

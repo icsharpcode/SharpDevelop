@@ -21,9 +21,9 @@ namespace Grunwald.BooBinding
 				IDocumentLine previousLine = document.GetLine(line.LineNumber - 1);
 				
 				if (previousLine.Text.EndsWith(":", StringComparison.Ordinal)) {
-					string indentation = DocumentUtilitites.GetIndentation(document, previousLine.Offset);
+					string indentation = DocumentUtilitites.GetWhitespaceAfter(document, previousLine.Offset);
 					indentation += editor.Options.IndentationString;
-					string newIndentation = DocumentUtilitites.GetIndentation(document, line.Offset);
+					string newIndentation = DocumentUtilitites.GetWhitespaceAfter(document, line.Offset);
 					document.Replace(line.Offset, newIndentation.Length, indentation);
 					return;
 				}

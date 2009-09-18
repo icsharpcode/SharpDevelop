@@ -1303,20 +1303,20 @@
 				<MenuItem id = "Insert" label = "${res:XML.MainMenu.EditMenu.Insert}" type="Menu">
 					<MenuItem id = "PasteAsComment"
 					          label = "${res:XML.MainMenu.EditMenu.Paste.AsComment}"
-					          class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.PasteAsCommentCommand"/>
+					          class="ICSharpCode.SharpDevelop.Editor.Commands.PasteAsCommentCommand"/>
 					<MenuItem id = "PasteAsString"
 					          label = "${res:XML.MainMenu.EditMenu.Paste.AsString}"
-					          class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.PasteAsStringCommand"/>
+					          class="ICSharpCode.SharpDevelop.Editor.Commands.PasteAsStringCommand"/>
 					
 					<MenuItem id="Separator1" type="Separator"/>
 					
 					<MenuItem id = "InsertColor"
 					          label = "${res:XML.MainMenu.ToolMenu.InsColor}"
-					          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/>
+					          class = "ICSharpCode.SharpDevelop.Editor.Commands.ShowColorDialog"/>
 					<MenuItem id       = "InsertGuid"
 					          shortcut = "Control|Shift|G"
 					          label    = "${res:XML.MainMenu.ToolMenu.InsGUID}"
-					          class    = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.InsertGuidCommand"/>
+					          class    = "ICSharpCode.SharpDevelop.Editor.Commands.InsertGuidCommand"/>
 				</MenuItem>
 			</Condition>
 			<MenuItem id = "SelectAll"
@@ -1799,6 +1799,7 @@
 		<MenuItem id = "Comment"
 		          icon  = "Icons.16x16.CommentRegion"
 		          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
+		          shortcut="Control|OemQuestion"
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.CommentRegion"/>
 		<MenuItem id = "Indent"
 		          label = "${res:XML.TextAreaContextMenu.Indent}"

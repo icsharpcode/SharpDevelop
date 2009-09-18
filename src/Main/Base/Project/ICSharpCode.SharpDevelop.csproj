@@ -98,6 +98,9 @@
     <Compile Include="Src\Editor\Commands\GoToDefinition.cs" />
     <Compile Include="Src\Editor\Commands\GoToMatchingBrace.cs" />
     <Compile Include="Src\Editor\Commands\IndentSelection.cs" />
+    <Compile Include="Src\Editor\Commands\InsertGuidCommand.cs" />
+    <Compile Include="Src\Editor\Commands\PasteAsCommands.cs" />
+    <Compile Include="Src\Editor\Commands\ShowColorDialog.cs" />
     <Compile Include="Src\Editor\DocumentUtilitites.cs" />
     <Compile Include="Src\Editor\IBracketSearcher.cs" />
     <Compile Include="Src\Editor\IDocument.cs" />
@@ -598,7 +601,6 @@
     <Compile Include="Src\TextEditor\Commands\GenerateCodeCommand.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\TextEditor\Commands\PasteAsCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\SearchCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\TextAreaContextmenuCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />

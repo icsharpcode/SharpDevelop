@@ -254,7 +254,7 @@ namespace CSharpBinding
 						editor.Language.FormattingStrategy.IndentLines(editor, region.EndLine, editor.Caret.Line);
 						
 						IDocumentLine line = editor.Document.GetLine(editor.Caret.Line - 1);
-						int indentationLength = DocumentUtilitites.GetIndentation(editor.Document, line.Offset).Length;
+						int indentationLength = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset).Length;
 						
 						editor.Select(line.Offset + indentationLength, line.Length - indentationLength);
 					}

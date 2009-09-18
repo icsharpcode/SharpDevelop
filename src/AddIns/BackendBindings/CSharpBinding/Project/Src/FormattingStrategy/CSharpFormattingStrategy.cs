@@ -279,7 +279,7 @@ namespace CSharpBinding.FormattingStrategy
 				curLineText = curLine.Text;
 				string lineAboveText = lineAbove == null ? "" : lineAbove.Text;
 				if (curLineText != null && curLineText.EndsWith("///") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("///"))) {
-					string indentation = DocumentUtilitites.GetIndentation(textArea.Document, curLine.Offset);
+					string indentation = DocumentUtilitites.GetWhitespaceAfter(textArea.Document, curLine.Offset);
 					object member = GetMemberAfter(textArea, lineNr);
 					if (member != null) {
 						StringBuilder sb = new StringBuilder();

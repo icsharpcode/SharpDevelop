@@ -113,6 +113,12 @@ namespace ICSharpCode.SharpDevelop
 					return properties.IndentationSize;
 				}
 			}
+			
+			public int VerticalRulerColumn {
+				get {
+					return properties.VerticalRulerRow;
+				}
+			}
 		}
 		
 		static ICSharpCode.NRefactory.Location ToLocation(TextLocation position)

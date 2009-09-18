@@ -21,49 +21,6 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public class ShowColorDialog : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-			
-			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
-				return;
-			}
-			TextEditorControl textarea = ((ITextEditorControlProvider)viewContent).TextEditorControl;
-			
-			using (SharpDevelopColorDialog cd = new SharpDevelopColorDialog()) {
-				if (cd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					string ext = Path.GetExtension(textarea.FileName).ToLowerInvariant();
-					string colorstr;
-					if (ext == ".cs" || ext == ".vb" || ext == ".boo") {
-						if (cd.Color.IsKnownColor) {
-							colorstr = "Color." + cd.Color.ToKnownColor().ToString();
-						} else if (cd.Color.A < 255) {
-							colorstr = "Color.FromArgb(0x" + cd.Color.ToArgb().ToString("x") + ")";
-						} else {
-							colorstr = string.Format("Color.FromArgb({0}, {1}, {2})", cd.Color.R, cd.Color.G, cd.Color.B);
-						}
-					} else {
-						if (cd.Color.IsKnownColor) {
-							colorstr = cd.Color.ToKnownColor().ToString();
-						} else if (cd.Color.A < 255) {
-							colorstr = "#" + cd.Color.ToArgb().ToString("X");
-						} else {
-							colorstr = string.Format("#{0:X2}{1:X2}{2:X2}", cd.Color.R, cd.Color.G, cd.Color.B);
-						}
-					}
-					
-					textarea.Document.Insert(textarea.ActiveTextAreaControl.Caret.Offset, colorstr);
-					int lineNumber = textarea.Document.GetLineNumberForOffset(textarea.ActiveTextAreaControl.Caret.Offset);
-					textarea.ActiveTextAreaControl.Caret.Column += colorstr.Length;
-					textarea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, new TextLocation(0, lineNumber)));
-					textarea.Document.CommitUpdate();
-				}
-			}
-		}
-	}
-	
 	public class QuickDocumentation : AbstractMenuCommand
 	{
 		public override void Run()
@@ -204,26 +161,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (textEditorControl != null) {
 				textEditorControl.Split();
 			}
-		}
-	}
-
-	public class InsertGuidCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
-				return;
-			}
-			
-			TextEditorControl textEditor = ((ITextEditorControlProvider)viewContent).TextEditorControl;
-			if (textEditor == null) {
-				return;
-			}
-			
-			string newGuid = Guid.NewGuid().ToString().ToUpperInvariant();
-			
-			textEditor.ActiveTextAreaControl.TextArea.InsertString(newGuid);
 		}
 	}
 }
