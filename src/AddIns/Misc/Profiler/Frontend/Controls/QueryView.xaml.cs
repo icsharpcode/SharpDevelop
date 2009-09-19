@@ -308,17 +308,17 @@ namespace ICSharpCode.Profiler.Controls
 		void BtnExpandHotPathSubtreeClick(object sender, RoutedEventArgs e)
 		{
 			foreach (CallTreeNodeViewModel node in this.SelectedItems.ToArray()) {
-				ExpandHotPathItems(node);
+				ExpandHotPathItems(node, node);
 			}
 		}
 		
-		void ExpandHotPathItems(CallTreeNodeViewModel parent)
+		void ExpandHotPathItems(CallTreeNodeViewModel parent, CallTreeNodeViewModel selectedRoot)
 		{
-			if (parent.HotPathIndicatorVisibility == Visibility.Visible) {
+			if ((parent.CpuCyclesSpent / (double)selectedRoot.CpuCyclesSpent) >= 0.2) {
 				parent.IsExpanded = true;
 				
 				foreach (CallTreeNodeViewModel node in parent.Children)
-					ExpandHotPathItems(node);
+					ExpandHotPathItems(node, selectedRoot);
 			}
 		}
 		
