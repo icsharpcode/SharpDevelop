@@ -31,7 +31,10 @@
 	<!-- Right click menu -->
 	<Path name = "/AddIns/HexEditor/Editor/ContextMenu">
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
-		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
+		<MenuItem id="Copy" label="Copy" type="Menu">
+			<MenuItem id="CopyAsBinary" label="As binary" class="HexEditor.Commands.CopyAsBinary" />
+			<MenuItem id="CopyAsHexString" label="As hex string" class="HexEditor.Commands.CopyAsHexString" />
+		</MenuItem>
 		<Include id = "Paste" item = "/SharpDevelop/Workbench/MainMenu/Edit/Paste"/>
 		<Include id = "Delete" item = "/SharpDevelop/Workbench/MainMenu/Edit/Delete"/>
 		<MenuItem id = "Separator1" type = "Separator"/>

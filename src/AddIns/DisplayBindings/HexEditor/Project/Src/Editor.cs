@@ -115,6 +115,8 @@ namespace HexEditor
 			
 			HexEditSizeChanged(null, EventArgs.Empty);
 			AdjustScrollBar();
+			
+			this.Invalidate();
 		}
 
 		#region Measure functions
@@ -1000,6 +1002,16 @@ namespace HexEditor
 			return text;
 		}
 		
+		public string CopyAsHexString()
+		{
+			return GetHex(selection.GetSelectionBytes());
+		}
+		
+		public string CopyAsBinary()
+		{
+			return Copy();
+		}
+		
 		public void Paste(string text)
 		{
 			if (caret.Offset > buffer.BufferSize) caret.Offset = buffer.BufferSize;
@@ -1099,14 +1111,8 @@ namespace HexEditor
 		static string GetHex(byte[] bytes)
 		{
 			StringBuilder builder = new StringBuilder();
-			for (int i = 0; i < bytes.Length; i++) {
-				string num = string.Format("{0:X}", bytes[i]);
-				if (num.Length < 2) {
-					builder.Append("0" + num + " ");
-				} else {
-					builder.Append(num + " ");
-				}
-			}
+			for (int i = 0; i < bytes.Length; i++)
+				builder.Append(string.Format("{0:X2} ", bytes[i]));
 			return builder.ToString();
 		}
 		#endregion
@@ -1432,11 +1438,12 @@ namespace HexEditor
 					undoStack.AddRemoveStep(caret.Offset - 1, new byte[] {(byte)e.KeyChar});
 				else
 					undoStack.AddOverwriteStep(caret.Offset - 1, new byte[] {(byte)e.KeyChar}, old);
+				
+				OnDocumentChanged(EventArgs.Empty);
 			}
 			caret.SetToPosition(GetPositionForOffset(caret.Offset, charwidth));
 			
-			EventArgs e2 = new EventArgs();
-			OnDocumentChanged(e2);
+
 			
 			this.Invalidate();
 		}

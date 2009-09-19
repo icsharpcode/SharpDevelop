@@ -49,13 +49,15 @@ namespace HexEditor.View
 			tSTBCharsPerLine.Text = hexEditControl.BytesPerLine.ToString();
 			this.hexEditControl.ContextMenuStrip = MenuService.CreateContextMenu(this.hexEditControl, "/AddIns/HexEditor/Editor/ContextMenu");
 			tCBViewMode.SelectedIndex = 0;
-						
+			
 			tSTBCharsPerLine.Value = Settings.BytesPerLine;
 			tCBViewMode.SelectedItem = Settings.ViewMode.ToString();
 			hexEditControl.ViewMode = Settings.ViewMode;
 			hexEditControl.BytesPerLine = Settings.BytesPerLine;
 			tbSizeToFit.Checked = hexEditControl.FitToWindowWidth = Settings.FitToWidth;
 			tSTBCharsPerLine.Enabled = !Settings.FitToWidth;
+			
+			hexEditControl.Invalidate();
 		}
 
 		void TbSizeToFitClick(object sender, EventArgs e)
@@ -89,11 +91,13 @@ namespace HexEditor.View
 		public void LoadFile(OpenedFile file, Stream stream)
 		{
 			hexEditControl.LoadFile(file, stream);
+			hexEditControl.Invalidate();
 		}
 		
 		public void SaveFile(OpenedFile file, Stream stream)
 		{
 			hexEditControl.SaveFile(file, stream);
+			hexEditControl.Invalidate();
 		}
 		
 		public string Cut()
