@@ -346,5 +346,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			else
 				return null;
 		}
+		
+		public override string ToString()
+		{
+			return this.Name;
+		}
 	}
 }

@@ -291,27 +291,39 @@ namespace ICSharpCode.AvalonEdit
 		#endregion
 		
 		#region Syntax highlighting
-		IHighlightingDefinition syntaxHighlighting;
-		HighlightingColorizer colorizer;
+		/// <summary>
+		/// The <see cref="SyntaxHighlighting"/> property.
+		/// </summary>
+		public static readonly DependencyProperty SyntaxHighlightingProperty =
+			DependencyProperty.Register("SyntaxHighlighting", typeof(IHighlightingDefinition), typeof(TextEditor),
+			                            new FrameworkPropertyMetadata(OnSyntaxHighlightingChanged));
+		
 		
 		/// <summary>
 		/// Gets/sets the syntax highlighting definition used to colorize the text.
 		/// </summary>
 		public IHighlightingDefinition SyntaxHighlighting {
-			get { return syntaxHighlighting; }
-			set {
-				if (syntaxHighlighting != value) {
-					if (colorizer != null) {
-						this.TextArea.TextView.LineTransformers.Remove(colorizer);
-						colorizer = null;
-					}
-					syntaxHighlighting = value;
-					if (value != null) {
-						TextView textView = this.TextArea.TextView;
-						colorizer = new HighlightingColorizer(textView, value.MainRuleSet);
-						textView.LineTransformers.Insert(0, colorizer);
-					}
-				}
+			get { return (IHighlightingDefinition)GetValue(SyntaxHighlightingProperty); }
+			set { SetValue(SyntaxHighlightingProperty, value); }
+		}
+		
+		HighlightingColorizer colorizer;
+		
+		static void OnSyntaxHighlightingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			((TextEditor)d).OnSyntaxHighlightingChanged(e.NewValue as IHighlightingDefinition);
+		}
+		
+		void OnSyntaxHighlightingChanged(IHighlightingDefinition newValue)
+		{
+			if (colorizer != null) {
+				this.TextArea.TextView.LineTransformers.Remove(colorizer);
+				colorizer = null;
+			}
+			if (newValue != null) {
+				TextView textView = this.TextArea.TextView;
+				colorizer = new HighlightingColorizer(textView, newValue.MainRuleSet);
+				textView.LineTransformers.Insert(0, colorizer);
 			}
 		}
 		#endregion

@@ -7,25 +7,105 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
+
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
 	/// <summary>
 	/// Manages a list of syntax highlighting definitions.
 	/// </summary>
+	/// <remarks>
+	/// All memers on this class (including instance members) are thread-safe.
+	/// </remarks>
 	public class HighlightingManager : IHighlightingDefinitionReferenceResolver
 	{
-		sealed class RegisteredHighlighting
+		sealed class DelayLoadedHighlightingDefinition : IHighlightingDefinition
 		{
-			public IHighlightingDefinition Definition;
-			public Func<IHighlightingDefinition> LazyLoadingFunction;
+			readonly object lockObj = new object();
+			readonly string name;
+			Func<IHighlightingDefinition> lazyLoadingFunction;
+			IHighlightingDefinition definition;
+			Exception storedException;
+			
+			public DelayLoadedHighlightingDefinition(string name, Func<IHighlightingDefinition> lazyLoadingFunction)
+			{
+				this.name = name;
+				this.lazyLoadingFunction = lazyLoadingFunction;
+			}
+			
+			public string Name {
+				get {
+					if (name != null)
+						return name;
+					else
+						return GetDefinition().Name;
+				}
+			}
+			
+			IHighlightingDefinition GetDefinition()
+			{
+				Func<IHighlightingDefinition> func;
+				lock (lockObj) {
+					if (this.definition != null)
+						return this.definition;
+					func = this.lazyLoadingFunction;
+				}
+				Exception exception = null;
+				IHighlightingDefinition def = null;
+				try {
+					using (var busyLock = BusyManager.Enter(this)) {
+						if (!busyLock.Success)
+							throw new InvalidOperationException("Tried to create delay-loaded highlighting definition recursively. Make sure the are no cyclic references between the highlighting definitions.");
+						def = func();
+					}
+					if (def == null)
+						throw new InvalidOperationException("Function for delay-loading highlighting definition returned null");
+				} catch (Exception ex) {
+					exception = ex;
+				}
+				lock (lockObj) {
+					this.lazyLoadingFunction = null;
+					if (this.definition == null && this.storedException == null) {
+						this.definition = def;
+						this.storedException = exception;
+					}
+					if (this.storedException != null)
+						throw new HighlightingDefinitionInvalidException("Error delay-loading highlighting definition", this.storedException);
+					return this.definition;
+				}
+			}
+			
+			public HighlightingRuleSet MainRuleSet {
+				get {
+					return GetDefinition().MainRuleSet;
+				}
+			}
+			
+			public HighlightingRuleSet GetNamedRuleSet(string name)
+			{
+				return GetDefinition().GetNamedRuleSet(name);
+			}
+			
+			public HighlightingColor GetNamedColor(string name)
+			{
+				return GetDefinition().GetNamedColor(name);
+			}
+			
+			public override string ToString()
+			{
+				return this.Name;
+			}
 		}
 		
-		Dictionary<string, RegisteredHighlighting> highlightingsByName = new Dictionary<string, RegisteredHighlighting>();
-		Dictionary<string, RegisteredHighlighting> highlightingsByExtension = new Dictionary<string, RegisteredHighlighting>(StringComparer.OrdinalIgnoreCase);
+		readonly object lockObj = new object();
+		Dictionary<string, IHighlightingDefinition> highlightingsByName = new Dictionary<string, IHighlightingDefinition>();
+		Dictionary<string, IHighlightingDefinition> highlightingsByExtension = new Dictionary<string, IHighlightingDefinition>(StringComparer.OrdinalIgnoreCase);
+		List<IHighlightingDefinition> allHighlightings = new List<IHighlightingDefinition>();
 		
 		/// <summary>
 		/// Gets a highlighting definition by name.
@@ -33,18 +113,36 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public IHighlightingDefinition GetDefinition(string name)
 		{
-			RegisteredHighlighting rh;
-			if (highlightingsByName.TryGetValue(name, out rh))
-				return GetDefinition(rh);
-			else
-				return null;
+			lock (lockObj) {
+				IHighlightingDefinition rh;
+				if (highlightingsByName.TryGetValue(name, out rh))
+					return rh;
+				else
+					return null;
+			}
+		}
+		
+		/// <summary>
+		/// Gets a copy of all highlightings.
+		/// </summary>
+		public ReadOnlyCollection<IHighlightingDefinition> Highlightings {
+			get {
+				lock (lockObj) {
+					return Array.AsReadOnly(allHighlightings.ToArray());
+				}
+			}
 		}
 		
 		/// <summary>
 		/// Gets the names of the registered highlightings.
 		/// </summary>
+		[ObsoleteAttribute("Use the Highlightings property instead.")]
 		public IEnumerable<string> HighlightingNames {
-			get { return highlightingsByName.Keys; }
+			get {
+				lock (lockObj) {
+					return new List<string>(highlightingsByName.Keys);
+				}
+			}
 		}
 		
 		/// <summary>
@@ -53,25 +151,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public IHighlightingDefinition GetDefinitionByExtension(string extension)
 		{
-			RegisteredHighlighting rh;
-			if (highlightingsByExtension.TryGetValue(extension, out rh))
-				return GetDefinition(rh);
-			else
-				return null;
-		}
-		
-		static IHighlightingDefinition GetDefinition(RegisteredHighlighting rh)
-		{
-			if (rh != null) {
-				var func = rh.LazyLoadingFunction;
-				if (func != null) {
-					// prevent endless recursion when there are cyclic references between syntax definitions
-					rh.LazyLoadingFunction = null;
-					rh.Definition = func();
-				}
-				return rh.Definition;
-			} else {
-				return null;
+			lock (lockObj) {
+				IHighlightingDefinition rh;
+				if (highlightingsByExtension.TryGetValue(extension, out rh))
+					return rh;
+				else
+					return null;
 			}
 		}
 		
@@ -85,7 +170,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (highlighting == null)
 				throw new ArgumentNullException("highlighting");
-			RegisterHighlighting(name, extensions, new RegisteredHighlighting { Definition = highlighting });
+			
+			lock (lockObj) {
+				allHighlightings.Add(highlighting);
+				if (name != null) {
+					highlightingsByName[name] = highlighting;
+				}
+				if (extensions != null) {
+					foreach (string ext in extensions) {
+						highlightingsByExtension[ext] = highlighting;
+					}
+				}
+			}
 		}
 		
 		/// <summary>
@@ -98,19 +194,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (lazyLoadedHighlighting == null)
 				throw new ArgumentNullException("lazyLoadedHighlighting");
-			RegisterHighlighting(name, extensions, new RegisteredHighlighting { LazyLoadingFunction = lazyLoadedHighlighting });
-		}
-		
-		void RegisterHighlighting(string name, string[] extensions, RegisteredHighlighting rh)
-		{
-			if (name != null) {
-				highlightingsByName[name] = rh;
-			}
-			if (extensions != null) {
-				foreach (string ext in extensions) {
-					highlightingsByExtension[ext] = rh;
-				}
-			}
+			RegisterHighlighting(name, extensions, new DelayLoadedHighlightingDefinition(name, lazyLoadedHighlighting));
 		}
 		
 		/// <summary>
@@ -136,7 +220,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			internal void RegisterHighlighting(string name, string[] extensions, string resourceName)
 			{
 				try {
-					#if DEBUG
+					#if false //DEBUG
 					// don't use lazy-loading in debug builds, show errors immediately
 					Xshd.XshdSyntaxDefinition xshd;
 					using (Stream s = Resources.OpenStream(resourceName)) {
@@ -151,17 +235,17 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 						Debug.Assert(xshd.Extensions.Count == 0);
 					
 					// round-trip xshd:
-					string resourceFileName = Path.Combine(Path.GetTempPath(), resourceName);
-					using (XmlTextWriter writer = new XmlTextWriter(resourceFileName, System.Text.Encoding.UTF8)) {
-						writer.Formatting = Formatting.Indented;
-						new Xshd.SaveXshdVisitor(writer).WriteDefinition(xshd);
-					}
-					using (FileStream fs = File.Create(resourceFileName + ".bin")) {
-						new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(fs, xshd);
-					}
-					using (FileStream fs = File.Create(resourceFileName + ".compiled")) {
-						new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(fs, Xshd.HighlightingLoader.Load(xshd, this));
-					}
+//					string resourceFileName = Path.Combine(Path.GetTempPath(), resourceName);
+//					using (XmlTextWriter writer = new XmlTextWriter(resourceFileName, System.Text.Encoding.UTF8)) {
+//						writer.Formatting = Formatting.Indented;
+//						new Xshd.SaveXshdVisitor(writer).WriteDefinition(xshd);
+//					}
+//					using (FileStream fs = File.Create(resourceFileName + ".bin")) {
+//						new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(fs, xshd);
+//					}
+//					using (FileStream fs = File.Create(resourceFileName + ".compiled")) {
+//						new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(fs, Xshd.HighlightingLoader.Load(xshd, this));
+//					}
 					
 					RegisterHighlighting(name, extensions, Xshd.HighlightingLoader.Load(xshd, this));
 					#else
