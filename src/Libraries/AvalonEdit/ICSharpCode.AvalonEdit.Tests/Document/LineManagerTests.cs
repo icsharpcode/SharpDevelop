@@ -63,7 +63,6 @@ namespace ICSharpCode.AvalonEdit.Document
 			Assert.AreEqual(0, line.Length);
 			Assert.AreEqual(0, line.TotalLength);
 			Assert.AreEqual(0, line.DelimiterLength);
-			Assert.AreEqual("", line.Text);
 		}
 		
 		[Test]
@@ -87,7 +86,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			document.Insert(0, "a");
 			Assert.AreEqual(document.LineCount, 1);
 			DocumentLine line = document.GetLineByNumber(1);
-			Assert.AreEqual("a", line.Text);
+			Assert.AreEqual("a", document.GetText(line));
 		}
 		
 		[Test]
@@ -96,7 +95,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			document.Text = "a";
 			Assert.AreEqual(document.LineCount, 1);
 			DocumentLine line = document.GetLineByNumber(1);
-			Assert.AreEqual("a", line.Text);
+			Assert.AreEqual("a", document.GetText(line));
 		}
 		
 		[Test]
@@ -235,7 +234,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			for (int i = 1; i < 4; i++) {
 				DocumentLine line = document.GetLineByNumber(i);
 				Assert.AreEqual(i, line.LineNumber);
-				Assert.AreEqual("line " + i, line.Text);
+				Assert.AreEqual("line " + i, document.GetText(line));
 			}
 			Assert.AreEqual(1, document.GetLineByNumber(1).DelimiterLength);
 			Assert.AreEqual(2, document.GetLineByNumber(2).DelimiterLength);
@@ -299,6 +298,17 @@ namespace ICSharpCode.AvalonEdit.Document
 			document.Text = "a\nb\nc";
 			document.Remove(2, 1);
 			Assert.AreEqual("a\n\nc", document.Text);
+			CheckDocumentLines("a",
+			                   "",
+			                   "c");
+		}
+		
+		[Test]
+		public void RemoveLineContentAndJoinNonMatchingDelimiters2()
+		{
+			document.Text = "a\nb\rc";
+			document.Remove(2, 1);
+			Assert.AreEqual("a\n\rc", document.Text);
 			CheckDocumentLines("a",
 			                   "",
 			                   "c");
@@ -397,7 +407,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			Assert.AreEqual(lines.Length, document.LineCount, "LineCount");
 			for (int i = 0; i < lines.Length; i++) {
-				Assert.AreEqual(lines[i], document.Lines[i].Text, "Text of line " + (i + 1));
+				Assert.AreEqual(lines[i],  document.GetText(document.Lines[i]), "Text of line " + (i + 1));
 			}
 		}
 		

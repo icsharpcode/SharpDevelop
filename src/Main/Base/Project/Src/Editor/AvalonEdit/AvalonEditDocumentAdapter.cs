@@ -55,11 +55,14 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		
 		sealed class LineAdapter : IDocumentLine
 		{
+			readonly TextDocument document;
 			readonly DocumentLine line;
 			
-			public LineAdapter(DocumentLine line)
+			public LineAdapter(TextDocument document, DocumentLine line)
 			{
+				Debug.Assert(document != null);
 				Debug.Assert(line != null);
+				this.document = document;
 				this.line = line;
 			}
 			
@@ -84,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			}
 			
 			public string Text {
-				get { return line.Text; }
+				get { return document.GetText(line); }
 			}
 		}
 		
@@ -108,12 +111,12 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		
 		public IDocumentLine GetLine(int lineNumber)
 		{
-			return new LineAdapter(document.GetLineByNumber(lineNumber));
+			return new LineAdapter(document, document.GetLineByNumber(lineNumber));
 		}
 		
 		public IDocumentLine GetLineForOffset(int offset)
 		{
-			return new LineAdapter(document.GetLineByOffset(offset));
+			return new LineAdapter(document, document.GetLineByOffset(offset));
 		}
 		
 		public int PositionToOffset(int line, int column)

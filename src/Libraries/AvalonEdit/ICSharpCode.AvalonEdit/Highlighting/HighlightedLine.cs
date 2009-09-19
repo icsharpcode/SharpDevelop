@@ -22,16 +22,24 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Creates a new HighlightedLine instance.
 		/// </summary>
-		public HighlightedLine(DocumentLine documentLine)
+		public HighlightedLine(TextDocument document, DocumentLine documentLine)
 		{
-			if (documentLine == null)
-				throw new ArgumentNullException("documentLine");
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (!document.Lines.Contains(documentLine))
+				throw new ArgumentException("Line is null or not part of document");
+			this.Document = document;
 			this.DocumentLine = documentLine;
 			this.Sections = new NullSafeCollection<HighlightedSection>();
 		}
 		
 		/// <summary>
-		/// Gets/Sets the document line associated with this HighlightedLine.
+		/// Gets the document associated with this HighlightedLine.
+		/// </summary>
+		public TextDocument Document { get; private set; }
+		
+		/// <summary>
+		/// Gets the document line associated with this HighlightedLine.
 		/// </summary>
 		public DocumentLine DocumentLine { get; private set; }
 		
@@ -112,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 			elements.Sort();
 			
-			TextDocument document = DocumentLine.Document;
+			TextDocument document = this.Document;
 			StringBuilder b = new StringBuilder();
 			int textOffset = startOffset;
 			foreach (HtmlElement e in elements) {

@@ -25,6 +25,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the length of the segment.
 		/// </summary>
+		/// <remarks>Must not be negative.</remarks>
 		int Length { get; }
 		
 		/// <summary>

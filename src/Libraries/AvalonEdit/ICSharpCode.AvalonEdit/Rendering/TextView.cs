@@ -505,7 +505,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			if (documentLine == null)
 				throw new ArgumentNullException("documentLine");
-			if (documentLine.Document != this.Document)
+			if (!this.Document.Lines.Contains(documentLine))
 				throw new InvalidOperationException("Line belongs to wrong document");
 			VerifyAccess();
 			

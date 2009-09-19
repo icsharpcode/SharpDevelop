@@ -57,8 +57,8 @@
 				<ComboBox Name="propertyGridComboBox" DockPanel.Dock="Top"
 				          SelectedIndex="0" SelectionChanged="propertyGridComboBoxSelectionChanged">
 					<ComboBoxItem>TextEditor</ComboBoxItem>
-					<ComboBoxItem>Options</ComboBoxItem>
 					<ComboBoxItem>TextArea</ComboBoxItem>
+					<ComboBoxItem>Options</ComboBoxItem>
 				</ComboBox>
 				<WindowsFormsHost DockPanel.Dock="Right" Name="propertyGridHost">
 					<forms:PropertyGrid x:Name="propertyGrid"/>

@@ -17,7 +17,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	public sealed partial class DocumentLine : ISegment
 	{
 		#region Constructor
-		readonly TextDocument document;
+		internal readonly TextDocument document;
 		internal bool isDeleted;
 		
 		internal DocumentLine(TextDocument document)
@@ -32,6 +32,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Gets the text document that owns this DocumentLine. O(1).
 		/// </summary>
 		/// <remarks>This property is still available even if the line was deleted.</remarks>
+		[ObsoleteAttribute("Supporting this property causes DocumentLine to use more memory than otherwise necessary. It will be removed in a future AvalonEdit version.")]
 		public TextDocument Document {
 			get {
 				document.DebugVerifyAccess();
@@ -44,6 +45,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Gets the text on this line.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">The line was deleted.</exception>
+		[ObsoleteAttribute("Supporting this property causes DocumentLine to use more memory than otherwise necessary. It will be removed in a future AvalonEdit version.")]
 		public string Text {
 			get {
 				return document.GetText(this.Offset, this.Length);

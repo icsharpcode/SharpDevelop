@@ -98,7 +98,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			int textOffset = parentVisualLine.FirstDocumentLine.Offset + this.RelativeTextOffset;
 			TextSourceView view = new TextSourceView(
-				parentVisualLine.FirstDocumentLine.Document,
+				parentVisualLine.Document,
 				new SimpleSegment(textOffset, this.DocumentLength));
 			int pos = TextUtilities.GetNextCaretPosition(view, visualColumn - this.VisualColumn, direction, mode);
 			if (pos < 0)

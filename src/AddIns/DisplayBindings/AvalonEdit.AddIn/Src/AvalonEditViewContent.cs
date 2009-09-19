@@ -103,7 +103,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public override INavigationPoint BuildNavPoint()
 		{
 			int lineNumber = this.Line;
-			string txt = codeEditor.Document.GetLineByNumber(lineNumber).Text;
+			string txt = codeEditor.Document.GetText(codeEditor.Document.GetLineByNumber(lineNumber));
 			return new TextNavigationPoint(this.PrimaryFileName, lineNumber, this.Column, txt);
 		}
 		

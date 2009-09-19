@@ -29,6 +29,10 @@ namespace AvalonEdit.Sample
 		public Window1()
 		{
 			InitializeComponent();
+			propertyGridComboBox.SelectedIndex = 2;
+			
+			textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(".xml");
+			//textEditor.TextArea.TextView.ElementGenerators.Add(new WordFilterElementGenerator());
 		}
 		
 		string currentFileName;
@@ -67,10 +71,10 @@ namespace AvalonEdit.Sample
 					propertyGrid.SelectedObject = textEditor;
 					break;
 				case 1:
-					propertyGrid.SelectedObject = textEditor.Options;
+					propertyGrid.SelectedObject = textEditor.TextArea;
 					break;
 				case 2:
-					propertyGrid.SelectedObject = textEditor.TextArea;
+					propertyGrid.SelectedObject = textEditor.Options;
 					break;
 			}
 		}

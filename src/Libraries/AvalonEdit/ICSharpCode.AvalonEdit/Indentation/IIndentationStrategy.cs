@@ -19,11 +19,11 @@ namespace ICSharpCode.AvalonEdit.Indentation
 		/// Sets the indentation for the specified line.
 		/// Usually this is constructed from the indentation of the previous line.
 		/// </summary>
-		void IndentLine(DocumentLine line);
+		void IndentLine(TextDocument document, DocumentLine line);
 		
 		/// <summary>
 		/// Reindents a set of lines.
 		/// </summary>
-		void IndentLines(int beginLine, int endLine);
+		void IndentLines(TextDocument document, int beginLine, int endLine);
 	}
 }

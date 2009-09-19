@@ -86,7 +86,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				if (highlighter != null)
 					highlightedLine = highlighter.HighlightLine(line);
 				else
-					highlightedLine = new HighlightedLine(line);
+					highlightedLine = new HighlightedLine(document, line);
 				SimpleSegment s = segment.GetOverlap(line);
 				if (html.Length > 0)
 					html.AppendLine("<br>");

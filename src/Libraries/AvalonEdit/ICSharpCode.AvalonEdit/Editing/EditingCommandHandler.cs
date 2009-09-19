@@ -206,7 +206,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			TransformSelectedLines(
 				delegate (TextArea textArea, DocumentLine line) {
 					int offset = line.Offset;
-					ISegment s = TextUtilities.GetSingleIndentationSegment(line.Document, offset, textArea.Options.IndentationSize);
+					ISegment s = TextUtilities.GetSingleIndentationSegment(textArea.Document, offset, textArea.Options.IndentationSize);
 					if (s.Length > 0) {
 						s = textArea.GetDeletableSegments(s).FirstOrDefault();
 						if (s != null && s.Length > 0) {
@@ -396,7 +396,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TransformSelectedLines(
 				delegate (TextArea textArea, DocumentLine line) {
-					line.Document.Remove(TextUtilities.GetLeadingWhitespace(line));
+					textArea.Document.Remove(TextUtilities.GetLeadingWhitespace(textArea.Document, line));
 				}, target, args, DefaultSegmentType.WholeDocument);
 		}
 		
@@ -404,7 +404,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TransformSelectedLines(
 				delegate (TextArea textArea, DocumentLine line) {
-					line.Document.Remove(TextUtilities.GetTrailingWhitespace(line));
+					textArea.Document.Remove(TextUtilities.GetTrailingWhitespace(textArea.Document, line));
 				}, target, args, DefaultSegmentType.WholeDocument);
 		}
 		
@@ -417,7 +417,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TransformSelectedLines(
 				delegate (TextArea textArea, DocumentLine line) {
-					ConvertTabsToSpaces(textArea, TextUtilities.GetLeadingWhitespace(line));
+					ConvertTabsToSpaces(textArea, TextUtilities.GetLeadingWhitespace(textArea.Document, line));
 				}, target, args, DefaultSegmentType.WholeDocument);
 		}
 		
@@ -443,7 +443,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TransformSelectedLines(
 				delegate (TextArea textArea, DocumentLine line) {
-					ConvertSpacesToTabs(textArea, TextUtilities.GetLeadingWhitespace(line));
+					ConvertSpacesToTabs(textArea, TextUtilities.GetLeadingWhitespace(textArea.Document, line));
 				}, target, args, DefaultSegmentType.WholeDocument);
 		}
 		
@@ -525,7 +525,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 						start = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.Offset).LineNumber;
 						end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.EndOffset).LineNumber;
 					}
-					textArea.IndentationStrategy.IndentLines(start, end);
+					textArea.IndentationStrategy.IndentLines(textArea.Document, start, end);
 				}
 				textArea.Caret.BringCaretToView();
 				args.Handled = true;

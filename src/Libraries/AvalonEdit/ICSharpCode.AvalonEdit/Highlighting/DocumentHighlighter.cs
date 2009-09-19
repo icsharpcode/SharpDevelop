@@ -128,7 +128,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			try {
 				int targetLineNumber = line.LineNumber;
 				HighlightUpTo(targetLineNumber);
-				highlightedLine = new HighlightedLine(line);
+				highlightedLine = new HighlightedLine(document, line);
 				HighlightLineAndUpdateTreeList(line, targetLineNumber);
 				return highlightedLine;
 			} finally {
@@ -223,7 +223,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		void HighlightLineInternal(DocumentLine line)
 		{
 			lineStartOffset = line.Offset;
-			lineText = line.Text;
+			lineText = document.GetText(line.Offset, line.Length);
 			position = 0;
 			ResetColorStack();
 			HighlightingRuleSet currentRuleSet = this.CurrentRuleSet;

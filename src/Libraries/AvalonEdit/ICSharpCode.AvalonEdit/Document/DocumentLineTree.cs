@@ -639,7 +639,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		int IList<DocumentLine>.IndexOf(DocumentLine item)
 		{
 			document.VerifyAccess();
-			if (item == null || item.Document != document || item.IsDeleted)
+			if (item == null || item.document != document || item.IsDeleted)
 				return -1;
 			else
 				return item.LineNumber - 1;
@@ -668,7 +668,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		bool ICollection<DocumentLine>.Contains(DocumentLine item)
 		{
 			document.VerifyAccess();
-			return item != null && item.Document == document && !item.IsDeleted;
+			return item != null && item.document == document && !item.IsDeleted;
 		}
 		
 		void ICollection<DocumentLine>.CopyTo(DocumentLine[] array, int arrayIndex)

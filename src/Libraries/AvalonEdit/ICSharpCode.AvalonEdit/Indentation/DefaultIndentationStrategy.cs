@@ -18,11 +18,12 @@ namespace ICSharpCode.AvalonEdit.Indentation
 	public class DefaultIndentationStrategy : IIndentationStrategy
 	{
 		/// <inheritdoc/>
-		public virtual void IndentLine(DocumentLine line)
+		public virtual void IndentLine(TextDocument document, DocumentLine line)
 		{
+			if (document == null)
+				throw new ArgumentNullException("document");
 			if (line == null)
 				throw new ArgumentNullException("line");
-			TextDocument document = line.Document;
 			DocumentLine previousLine = line.PreviousLine;
 			if (previousLine != null) {
 				ISegment indentationSegment = TextUtilities.GetWhitespaceAfter(document, previousLine.Offset);
@@ -36,7 +37,7 @@ namespace ICSharpCode.AvalonEdit.Indentation
 		/// <summary>
 		/// Does nothing: indenting multiple lines is useless without a smart indentation strategy.
 		/// </summary>
-		public virtual void IndentLines(int beginLine, int endLine)
+		public virtual void IndentLines(TextDocument document, int beginLine, int endLine)
 		{
 		}
 	}

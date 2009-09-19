@@ -135,12 +135,12 @@ namespace ICSharpCode.AvalonEdit.Document
 	public enum AnchorMovementType
 	{
 		/// <summary>
-		/// Behaves like a start marker - when text is inserted at the anchor position, the anchor will stay
+		/// When text is inserted at the anchor position, the anchor will stay
 		/// before the inserted text.
 		/// </summary>
 		BeforeInsertion,
 		/// <summary>
-		/// Behave like an end marker - when text is insered at the anchor position, the anchor will move
+		/// When text is insered at the anchor position, the anchor will move
 		/// after the inserted text.
 		/// </summary>
 		AfterInsertion

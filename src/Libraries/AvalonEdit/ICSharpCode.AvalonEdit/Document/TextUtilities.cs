@@ -125,13 +125,22 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the leading whitespace segment on the document line.
 		/// </summary>
+		[ObsoleteAttribute("Supporting this method causes DocumentLine to use more memory than otherwise necessary. It will be removed in a future AvalonEdit version.")]
+		public static ISegment GetLeadingWhitespace(DocumentLine documentLine)
+		{
+			return GetLeadingWhitespace(documentLine.Document, documentLine);
+		}
+		
+		/// <summary>
+		/// Gets the leading whitespace segment on the document line.
+		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
 		                                                 Justification = "WPF uses 'Whitespace'")]
-		public static ISegment GetLeadingWhitespace(DocumentLine documentLine)
+		public static ISegment GetLeadingWhitespace(TextDocument document, DocumentLine documentLine)
 		{
 			if (documentLine == null)
 				throw new ArgumentNullException("documentLine");
-			return GetWhitespaceAfter(documentLine.Document, documentLine.Offset);
+			return GetWhitespaceAfter(document, documentLine.Offset);
 		}
 		
 		/// <summary>
@@ -139,11 +148,22 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
 		                                                 Justification = "WPF uses 'Whitespace'")]
+		[ObsoleteAttribute("Supporting this method causes DocumentLine to use more memory than otherwise necessary. It will be removed in a future AvalonEdit version.")]
 		public static ISegment GetTrailingWhitespace(DocumentLine documentLine)
+		{
+			return GetTrailingWhitespace(documentLine.Document, documentLine);
+		}
+		
+		/// <summary>
+		/// Gets the trailing whitespace segment on the document line.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
+		                                                 Justification = "WPF uses 'Whitespace'")]
+		public static ISegment GetTrailingWhitespace(TextDocument document, DocumentLine documentLine)
 		{
 			if (documentLine == null)
 				throw new ArgumentNullException("documentLine");
-			ISegment segment = GetWhitespaceBefore(documentLine.Document, documentLine.EndOffset);
+			ISegment segment = GetWhitespaceBefore(document, documentLine.EndOffset);
 			// If the whole line consists of whitespace, we consider all of it as leading whitespace,
 			// so return an empty segment as trailing whitespace.
 			if (segment.Offset == documentLine.Offset)

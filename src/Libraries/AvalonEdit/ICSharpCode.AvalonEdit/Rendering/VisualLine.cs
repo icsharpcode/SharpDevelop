@@ -28,6 +28,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		List<VisualLineElement> elements;
 		
 		/// <summary>
+		/// Gets the document to which this VisualLine belongs.
+		/// </summary>
+		public TextDocument Document { get; private set; }
+		
+		/// <summary>
 		/// Gets the first document line displayed by this visual line.
 		/// </summary>
 		public DocumentLine FirstDocumentLine { get; private set; }
@@ -67,6 +72,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			Debug.Assert(textView != null);
 			Debug.Assert(firstDocumentLine != null);
 			this.textView = textView;
+			this.Document = textView.Document;
 			this.FirstDocumentLine = firstDocumentLine;
 		}
 		
@@ -87,7 +93,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		void PerformVisualElementConstruction(VisualLineElementGenerator[] generators)
 		{
-			TextDocument document = FirstDocumentLine.Document;
+			TextDocument document = this.Document;
 			int offset = FirstDocumentLine.Offset;
 			int currentLineEnd = offset + FirstDocumentLine.Length;
 			LastDocumentLine = FirstDocumentLine;

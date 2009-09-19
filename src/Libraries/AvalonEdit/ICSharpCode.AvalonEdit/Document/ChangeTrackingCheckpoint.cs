@@ -27,6 +27,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		readonly object documentIdentifier;
 		
 		// 'value' is the change from the previous checkpoint to this checkpoint
+		// TODO: store the change in the older checkpoint instead - if only a reference to the
+		// newest document version exists, the GC should be able to collect all DocumentChangeEventArgs.
 		readonly DocumentChangeEventArgs value;
 		readonly int id;
 		ChangeTrackingCheckpoint next;

@@ -750,7 +750,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				ReplaceSelectionWithText(newLine);
 				if (this.IndentationStrategy != null) {
 					DocumentLine line = this.Document.GetLineByNumber(this.Caret.Line);
-					this.IndentationStrategy.IndentLine(line);
+					this.IndentationStrategy.IndentLine(this.Document, line);
 				}
 			}
 		}

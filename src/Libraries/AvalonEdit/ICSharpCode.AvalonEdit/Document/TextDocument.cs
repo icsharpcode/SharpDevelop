@@ -142,8 +142,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Gets/Sets the text of the whole document.
-		/// Get: O(n)
-		/// Set: O(n * log n)
 		/// </summary>
 		public string Text {
 			get {
