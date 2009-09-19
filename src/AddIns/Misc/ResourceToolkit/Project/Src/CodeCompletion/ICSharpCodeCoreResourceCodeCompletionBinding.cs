@@ -5,12 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using Hornung.ResourceToolkit.Resolver;
 using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace Hornung.ResourceToolkit.CodeCompletion
 {
@@ -18,10 +18,9 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 	/// Provides code completion for inserting resource keys
 	/// for ICSharpCode.Core resources references ("${res: ... }").
 	/// </summary>
-	public class ICSharpCodeCoreResourceCodeCompletionBinding : DefaultCodeCompletionBinding
+	public class ICSharpCodeCoreResourceCodeCompletionBinding : ICodeCompletionBinding
 	{
-		
-		public override CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
+		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			
 			if (ch == ':') {
@@ -48,7 +47,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 					}
 					
 					if (content != null) {
-						editor.ShowCompletionWindow(new ResourceCodeCompletionDataProvider(content, null, null), ch);
+						editor.ShowCompletionWindow(new ResourceCodeCompletionItemList(content, null, null));
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					
@@ -61,7 +60,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 				if (ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreHostResourceSet(editor.FileName).ResourceFileContent != null ||
 				    ICSharpCodeCoreResourceResolver.GetICSharpCodeCoreLocalResourceSet(editor.FileName).ResourceFileContent != null) {
 					
-					editor.ShowCompletionWindow(new ICSharpCodeCoreTagCompletionDataProvider(), ch);
+					editor.ShowCompletionWindow(new ICSharpCodeCoreTagCompletionItemList(editor));
 					return CodeCompletionKeyPressResult.Completed;
 					
 				}
@@ -71,5 +70,9 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 			return CodeCompletionKeyPressResult.None;
 		}
 		
+		public bool CtrlSpace(ITextEditor editor)
+		{
+			return false;
+		}
 	}
 }

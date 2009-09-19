@@ -5,70 +5,83 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Windows.Controls;
 using System.Windows.Forms;
+
 using Hornung.ResourceToolkit.Gui;
 using Hornung.ResourceToolkit.Refactoring;
 using Hornung.ResourceToolkit.Resolver;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
+using MenuItem = System.Windows.Controls.MenuItem;
 
 namespace Hornung.ResourceToolkit.Commands
 {
 	/// <summary>
 	/// Builds context menu for editing string resources.
 	/// </summary>
-	public class TextEditorContextMenuBuilder : ISubmenuBuilder
+	public sealed class TextEditorContextMenuBuilder : IMenuItemBuilder
 	{
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		static readonly System.Windows.Controls.Control[] EmptyControlArray = new System.Windows.Controls.Control[0];
+		
+		System.Collections.ICollection IMenuItemBuilder.BuildItems(Codon codon, object owner)
 		{
-			TextEditorControl editor = owner as TextEditorControl;
-			
+			ITextEditor editor = owner as ITextEditor;
 			if (editor == null) {
-				return new ToolStripItem[0];
+				ITextEditorProvider provider = owner as ITextEditorProvider;
+				if (provider == null) {
+					return EmptyControlArray;
+				}
+				editor = provider.TextEditor;
 			}
 			
-			ResourceResolveResult result = ResourceResolverService.Resolve(new TextEditorAdapter(editor), null);
+			ResourceResolveResult result = ResourceResolverService.Resolve(editor, null);
 			if (result != null && result.ResourceFileContent != null && result.Key != null) {
 				
-				List<ToolStripItem> items = new List<ToolStripItem>();
-				MenuCommand cmd;
+				List<MenuItem> items = new List<MenuItem>();
+				MenuItem item = new MenuItem();
 				
 				// add resource (if key does not exist) / edit resource (if key exists)
 				if (result.ResourceFileContent.ContainsKey(result.Key)) {
-					cmd = new MenuCommand("${res:Hornung.ResourceToolkit.TextEditorContextMenu.EditResource}", this.EditResource);
+					item.Header = MenuService.ConvertLabel(StringParser.Parse("${res:Hornung.ResourceToolkit.TextEditorContextMenu.EditResource}"));
 				} else {
-					cmd = new MenuCommand("${res:Hornung.ResourceToolkit.TextEditorContextMenu.AddResource}", this.EditResource);
+					item.Header = MenuService.ConvertLabel(StringParser.Parse("${res:Hornung.ResourceToolkit.TextEditorContextMenu.AddResource}"));
 				}
-				cmd.Tag = result;
-				items.Add(cmd);
+				item.Click += this.EditResource;
+				item.Tag = result;
+				items.Add(item);
 				
 				// find references
-				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", this.FindReferences);
-				cmd.Tag = result;
-				items.Add(cmd);
+				item = new MenuItem();
+				item.Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindReferencesCommand}"));
+				item.Click += this.FindReferences;
+				item.Tag = result;
+				items.Add(item);
 				
 				// rename
-				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", this.Rename);
-				cmd.Tag = result;
-				items.Add(cmd);
+				item = new MenuItem();
+				item.Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.RenameCommand}"));
+				item.Click += this.Rename;
+				item.Tag = result;
+				items.Add(item);
 				
 				
 				// put the resource menu items into a submenu
 				// with the resource key as title
-				ToolStripMenuItem subMenu = new ToolStripMenuItem(result.Key);
-				subMenu.DropDownItems.AddRange(items.ToArray());
-				return new ToolStripItem[] { subMenu, new MenuSeparator() };
+				item = new MenuItem();
+				item.Header = result.Key;
+				item.ItemsSource = items;
+				return new System.Windows.Controls.Control[] { item, new Separator() };
 				
 			}
 			
-			return new ToolStripItem[0];
+			return EmptyControlArray;
 		}
 		
 		// ********************************************************************************************************************************
@@ -76,12 +89,12 @@ namespace Hornung.ResourceToolkit.Commands
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "ICSharpCode.Core.MessageService.ShowWarning(System.String)")]
 		void EditResource(object sender, EventArgs e)
 		{
-			MenuCommand cmd = sender as MenuCommand;
-			if (cmd == null) {
+			MenuItem item = sender as MenuItem;
+			if (item == null) {
 				return;
 			}
 			
-			ResourceResolveResult result = cmd.Tag as ResourceResolveResult;
+			ResourceResolveResult result = item.Tag as ResourceResolveResult;
 			if (result == null) {
 				return;
 			}
@@ -117,12 +130,12 @@ namespace Hornung.ResourceToolkit.Commands
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body")]
 		void FindReferences(object sender, EventArgs e)
 		{
-			MenuCommand cmd = sender as MenuCommand;
-			if (cmd == null) {
+			MenuItem item = sender as MenuItem;
+			if (item == null) {
 				return;
 			}
 			
-			ResourceResolveResult result = cmd.Tag as ResourceResolveResult;
+			ResourceResolveResult result = item.Tag as ResourceResolveResult;
 			if (result == null) {
 				return;
 			}
@@ -137,12 +150,12 @@ namespace Hornung.ResourceToolkit.Commands
 		
 		void Rename(object sender, EventArgs e)
 		{
-			MenuCommand cmd = sender as MenuCommand;
-			if (cmd == null) {
+			MenuItem item = sender as MenuItem;
+			if (item == null) {
 				return;
 			}
 			
-			ResourceResolveResult result = cmd.Tag as ResourceResolveResult;
+			ResourceResolveResult result = item.Tag as ResourceResolveResult;
 			if (result == null) {
 				return;
 			}
@@ -151,6 +164,5 @@ namespace Hornung.ResourceToolkit.Commands
 			Application.DoEvents();
 			ResourceRefactoringService.Rename(result);
 		}
-		
 	}
 }

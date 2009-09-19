@@ -38,7 +38,7 @@
 	
 	<!-- Context menus -->
 	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		<MenuItem id = "StringResources" insertbefore = "Refactoring" type = "Builder" class = "Hornung.ResourceToolkit.Commands.TextEditorContextMenuBuilder" />
 	</Path>
 	
@@ -134,6 +134,7 @@
 		<String id="Alternative1" text="..\Startup\Project\Resources"/>
 		<String id="Alternative2" text="..\Startup\Resources"/>
 		<String id="ICSharpCodeCoreDemo" text="..\Startup"/>
+		<String id="SharpDevelop4" text="..\data\resources"/>
 	</Path>
 	
 	<Path name="/AddIns/ResourceToolkit/ICSharpCodeCoreResourceResolver/LocalResourcesLocations">

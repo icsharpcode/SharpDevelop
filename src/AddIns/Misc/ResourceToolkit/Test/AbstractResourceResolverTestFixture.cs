@@ -11,8 +11,9 @@ using Hornung.ResourceToolkit;
 using Hornung.ResourceToolkit.Resolver;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 
 namespace ResourceToolkit.Tests
@@ -52,9 +53,9 @@ namespace ResourceToolkit.Tests
 		protected ResourceResolveResult Resolve(string fileName, string code, int caretLine, int caretColumn, char? charTyped, bool parseFile)
 		{
 			this.EnlistTestFile(fileName, code, parseFile);
-			IDocument doc = new DocumentFactory().CreateDocument();
-			doc.TextContent = code;
-			return ResourceResolverService.Resolve(fileName, new TextEditorDocument(doc), caretLine, caretColumn, charTyped);
+			IDocument doc = new AvalonEditDocumentAdapter();
+			doc.Text = code;
+			return ResourceResolverService.Resolve(fileName, doc, caretLine, caretColumn, charTyped);
 		}
 		
 		/// <summary>

@@ -39,6 +39,12 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -49,14 +55,17 @@
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\CodeCompletion\AbstractNRefactoryResourceCodeCompletionBinding.cs" />
     <Compile Include="Src\CodeCompletion\CSharpResourceCodeCompletionBinding.cs" />
     <Compile Include="Src\CodeCompletion\ICSharpCodeCoreResourceCodeCompletionBinding.cs" />
-    <Compile Include="Src\CodeCompletion\NewResourceCodeCompletionData.cs" />
-    <Compile Include="Src\CodeCompletion\ResourceCodeCompletionData.cs" />
-    <Compile Include="Src\CodeCompletion\ResourceCodeCompletionDataProvider.cs" />
+    <Compile Include="Src\CodeCompletion\NewResourceCodeCompletionItem.cs" />
+    <Compile Include="Src\CodeCompletion\ResourceCodeCompletionItem.cs" />
+    <Compile Include="Src\CodeCompletion\ResourceCodeCompletionItemList.cs" />
     <Compile Include="Src\CodeCompletion\VBNetResourceCodeCompletionBinding.cs" />
     <Compile Include="Src\Commands\RefactoringCommands.cs" />
     <Compile Include="Src\Commands\TextEditorContextMenuBuilder.cs" />
@@ -103,9 +112,14 @@
     <EmbeddedResource Include="Resources\EditStringResourceDialog.xfrm" />
     <Compile Include="Src\Resolver\MemberFindAstVisitor.cs" />
     <Compile Include="Src\Resolver\MemberEqualityComparer.cs" />
-    <Compile Include="Src\CodeCompletion\ICSharpCodeCoreTagCompletionDataProvider.cs" />
+    <Compile Include="Src\CodeCompletion\ICSharpCodeCoreTagCompletionItemList.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
@@ -139,11 +153,6 @@
     <Folder Include="Src\ToolTips" />
     <Folder Include="Resources" />
     <Folder Include="Configuration" />
-    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>

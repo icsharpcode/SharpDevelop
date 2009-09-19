@@ -5,22 +5,21 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using Hornung.ResourceToolkit.Resolver;
 using Hornung.ResourceToolkit.ResourceFileContent;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace Hornung.ResourceToolkit.CodeCompletion
 {
 	/// <summary>
 	/// Provides a base class for code completion for inserting resource keys using NRefactory.
 	/// </summary>
-	public abstract class AbstractNRefactoryResourceCodeCompletionBinding : DefaultCodeCompletionBinding
+	public abstract class AbstractNRefactoryResourceCodeCompletionBinding : ICodeCompletionBinding
 	{
-		
-		public override CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
+		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			
 			if (this.CompletionPossible(editor, ch)) {
@@ -41,7 +40,7 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 							}
 						}
 						
-						editor.ShowCompletionWindow(new ResourceCodeCompletionDataProvider(content, this.OutputVisitor, result.CallingClass != null ? result.CallingClass.Name+"." : null), ch);
+						editor.ShowCompletionWindow(new ResourceCodeCompletionItemList(content, this.OutputVisitor, result.CallingClass != null ? result.CallingClass.Name+"." : null));
 						return CodeCompletionKeyPressResult.Completed;
 					}
 				}
@@ -49,6 +48,11 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 			}
 			
 			return CodeCompletionKeyPressResult.None;
+		}
+		
+		public bool CtrlSpace(ITextEditor editor)
+		{
+			return false;
 		}
 		
 		// ********************************************************************************************************************************
@@ -64,6 +68,5 @@ namespace Hornung.ResourceToolkit.CodeCompletion
 		protected abstract IOutputAstVisitor OutputVisitor {
 			get;
 		}
-		
 	}
 }
