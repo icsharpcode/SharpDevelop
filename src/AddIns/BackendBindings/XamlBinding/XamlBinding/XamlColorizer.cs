@@ -245,28 +245,30 @@ namespace ICSharpCode.XamlBinding
 		void ColorizeMember(HighlightingInfo info, DocumentLine line, IMember member)
 		{
 			try {
-				if (info.Token.StartsWith(info.Context.XamlNamespacePrefix + ":", StringComparison.Ordinal)) {
-					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
+				Action<VisualLineElement> handler = null;
+				
+				if (info.Token.StartsWith(info.Context.XamlNamespacePrefix + ":", StringComparison.Ordinal))
+					handler = HighlightProperty;
+				else if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":", StringComparison.Ordinal)))
+					handler = HighlightIgnored;
+				else if (member != null) {
+					if (member is IEvent)
+						handler = HighlightEvent;
+					else
+						handler = HighlightProperty;
 				} else {
-					if (info.Context.IgnoredXmlns.Any(item => info.Token.StartsWith(item + ":", StringComparison.Ordinal))) {
-						ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightIgnored);
-					} else {
-						if (member != null) {
-							if (member is IEvent)
-								ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightEvent);
-							else
-								ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightProperty);
-						} else {
-							if (info.Token.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase) || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":", StringComparison.OrdinalIgnoreCase))
-								ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, HighlightNamespaceDeclaration);
-							else
-								Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
-						}
-					}
+					if (info.Token.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase) || info.Token.StartsWith(Utils.GetNamespacePrefix(CompletionDataHelper.MarkupCompatibilityNamespace, info.Context) + ":", StringComparison.OrdinalIgnoreCase))
+						handler = HighlightNamespaceDeclaration;
+					else if (info.Token.StartsWith("xml:", StringComparison.OrdinalIgnoreCase))
+						handler = HighlightProperty;
+					else
+						Core.LoggingService.Debug(info.Token + " not highlighted; line " + line.LineNumber);
 				}
+				if (handler != null)
+					ChangeLinePart(line.Offset + info.StartOffset, line.Offset + info.EndOffset, handler);
 			} catch (ArgumentOutOfRangeException) {}
 		}
-		
+
 		void ColorizeInvalidated()
 		{
 			foreach (var item in highlightCache.ToArray()) {
@@ -281,7 +283,7 @@ namespace ICSharpCode.XamlBinding
 				}
 			}
 		}
-		
+
 		void InvalidateLines(DocumentLine line)
 		{
 			DocumentLine current = line;
@@ -293,55 +295,55 @@ namespace ICSharpCode.XamlBinding
 				current = current.NextLine;
 			}
 		}
-		
+
 		#region highlight helpers
 		void HighlightProperty(VisualLineElement element)
 		{
 			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.PropertyForegroundColor.ToBrush());
 			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.PropertyBackgroundColor.ToBrush());
 		}
-		
+
 		void HighlightEvent(VisualLineElement element)
 		{
 			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.EventForegroundColor.ToBrush());
 			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.EventBackgroundColor.ToBrush());
 		}
-		
+
 		void HighlightNamespaceDeclaration(VisualLineElement element)
 		{
 			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.NamespaceDeclarationForegroundColor.ToBrush());
 			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.NamespaceDeclarationBackgroundColor.ToBrush());
 		}
-		
+
 		void HighlightIgnored(VisualLineElement element)
 		{
 			element.TextRunProperties.SetForegroundBrush(XamlBindingOptions.IgnoredForegroundColor.ToBrush());
 			element.TextRunProperties.SetBackgroundBrush(XamlBindingOptions.IgnoredBackgroundColor.ToBrush());
 		}
 		#endregion
-		
+
 		#region ILineTracker implementation
 		public void BeforeRemoveLine(DocumentLine line)
 		{
 			InvalidateLines(line.NextLine);
 		}
-		
+
 		public void SetLineLength(DocumentLine line, int newTotalLength)
 		{
 			InvalidateLines(line);
 		}
-		
+
 		public void LineInserted(DocumentLine insertionPos, DocumentLine newLine)
 		{
 			InvalidateLines(newLine);
 		}
-		
+
 		public void RebuildDocument()
 		{
 			highlightCache.Clear();
 		}
 		#endregion
-		
+
 		public struct HighlightingInfo
 		{
 			string token;

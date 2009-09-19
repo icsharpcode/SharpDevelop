@@ -207,7 +207,7 @@ namespace ICSharpCode.XamlBinding
 					// DO NOT USE CompletionDataHelper.CreateListForContext here!!! results in endless recursion!!!!
 					if (context.Attribute != null) {
 						if (!DoMarkupExtensionCompletion(context)) {
-							var completionList = new XamlCompletionItemList();
+							var completionList = new XamlCompletionItemList(context);
 							completionList.PreselectionLength = editor.GetWordBeforeCaretExtended().Length;
 							
 							if ((context.ActiveElement.Name == "Setter" || context.ActiveElement.Name == "EventSetter") &&
@@ -216,6 +216,11 @@ namespace ICSharpCode.XamlBinding
 							else if ((context.ActiveElement.Name.EndsWith("Trigger") || context.ActiveElement.Name == "Condition") && context.Attribute.Name == "Value")
 								DoTriggerCompletion(context, completionList);
 							else {
+								if (context.Attribute.Name == "xml:space") {
+									completionList.Items.AddRange(new[] { new SpecialCompletionItem("preserve"),
+									                              	new SpecialCompletionItem("default") });
+								}
+								
 								var mrr = XamlResolver.Resolve(context.Attribute.Name, context) as MemberResolveResult;
 								if (mrr != null && mrr.ResolvedType != null) {
 									completionList.Items.AddRange(CompletionDataHelper.MemberCompletion(context, mrr.ResolvedType, string.Empty));

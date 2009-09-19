@@ -22,9 +22,19 @@ namespace ICSharpCode.XamlBinding
 {
 	public class XamlCompletionItemList : DefaultCompletionItemList
 	{
+		XamlContext context;
+		
+		public XamlCompletionItemList(XamlContext context)
+		{
+			this.context = context;
+		}
+		
 		public override CompletionItemListKeyResult ProcessInput(char key)
 		{
 			if (key == ':' || key == '/')
+				return CompletionItemListKeyResult.NormalKey;
+			
+			if (key == '.' && (context.InAttributeValueOrMarkupExtension && context.Attribute.Name.StartsWith("xmlns")))
 				return CompletionItemListKeyResult.NormalKey;
 			
 			return base.ProcessInput(key);
@@ -110,6 +120,7 @@ namespace ICSharpCode.XamlBinding
 				if (item is XamlCompletionItem && xamlContext.Description == XamlContextDescription.InTag) {
 					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 					context.Editor.Caret.Offset--;
+					XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 				}
 				
 				switch (item.Text) {

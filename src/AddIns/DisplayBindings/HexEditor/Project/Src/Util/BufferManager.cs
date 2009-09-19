@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
@@ -27,7 +27,7 @@ namespace HexEditor.Util
 		/// <summary>
 		/// Currently used, but not good for really big files (like 590 MB)
 		/// </summary>
-		List<byte> buffer;
+		Rope<byte> buffer;
 		
 		/// <summary>
 		/// Creates a new BufferManager and attaches it to a control.
@@ -37,7 +37,7 @@ namespace HexEditor.Util
 		{
 			this.parent = parent;
 			
-			this.buffer = new List<byte>();
+			this.buffer = new Rope<byte>();
 		}
 		
 		/// <summary>
@@ -67,7 +67,7 @@ namespace HexEditor.Util
 					
 					while (reader.PeekChar() != -1) {
 						this.buffer.AddRange(reader.ReadBytes(524288));
-						UpdateProgress((int)(((double)this.buffer.Count / (double)reader.BaseStream.Length) * 100));
+						UpdateProgress((int)(this.buffer.Count / (double)reader.BaseStream.Length) * 100);
 					}
 					
 					reader.Close();
