@@ -17,5 +17,6 @@ namespace ICSharpCode.Data.Core.Interfaces
         string SchemaName { get; set; }
         DatabaseObjectsCollection<IConstraint> Constraints { get; }
         bool HasKeyDefined { get; }
+        bool HasCompositeKey { get; }
     }
 }

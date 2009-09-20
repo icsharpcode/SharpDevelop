@@ -72,6 +72,17 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             }
         }
 
+        public bool HasCompositeKey
+        {
+            get
+            {
+                if (Items.Where(column => column.IsPrimaryKey).Count() > 1)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
         public override bool IsSelected
         {
             get

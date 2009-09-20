@@ -93,7 +93,7 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
     {
         #region Fields
 
-        private DatabaseObjectsCollection<T> _datasources = null;
+        private DatabaseObjectsCollection<T> _datasources = new DatabaseObjectsCollection<T>();
         
         #endregion
                 
