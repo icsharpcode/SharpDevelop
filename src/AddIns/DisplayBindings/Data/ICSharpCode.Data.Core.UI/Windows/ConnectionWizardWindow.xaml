@@ -84,7 +84,7 @@
         
         <Expander Grid.Row="5" Grid.Column="1" Margin="2" Header="Connection String" VerticalAlignment="Top"
             IsExpanded="{Binding SelectedDatasource.UseUserDefinedConnectionString, ElementName=This}">
-            <TextBox Text="{Binding SelectedDatasource.ConnectionString, ElementName=This}" MinLines="5" />
+            <TextBox Text="{Binding SelectedDatasource.UserDefinedConnectionString, ElementName=This}" MinLines="5" />
         </Expander>
         
         <userControls:LoadingCircle Grid.Row="6" Margin="3" IsActivated="{Binding IsLoading, ElementName=This}" />

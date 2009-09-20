@@ -123,9 +123,9 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             {
                 IColumn pkColumn = PKColumns.First();
 
-                //if (pkColumn.IsPrimaryKey && pkColumn.IsForeignKey)
-                //    return Cardinality.One;
-                //else 
+                if (pkColumn.IsPrimaryKey && pkColumn.IsForeignKey)
+                    return Cardinality.One;
+                else 
                 if (pkColumn.IsPrimaryKey)
                     return Cardinality.Many;
                 else if (!pkColumn.IsPrimaryKey && !FKColumns.First().IsNullable)

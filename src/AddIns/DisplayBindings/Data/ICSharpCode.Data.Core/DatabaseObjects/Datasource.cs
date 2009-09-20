@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows;
+using System.Data.SqlClient;
 
 #endregion
 
@@ -139,10 +140,13 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             }
             catch (Exception exception)
             {
-                _databaseDriver.RemoveDatasource(Name);
-                MessageBox.Show("Error while trying to populate databases.\n\n" + exception.Message, _databaseDriver.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                return false;
+                return HandlePopulateDatabasesException(exception);
             }
+        }
+
+        protected virtual bool HandlePopulateDatabasesException(Exception exception)
+        {
+            return false;
         }
 
         public string GetConnectionStringSetting(string setting)

@@ -7,6 +7,7 @@ using ICSharpCode.Data.SQLServer.ControlPanel;
 using System.Windows;
 using System.Windows.Threading;
 using System;
+using System.Data.SqlClient;
 
 #endregion
 
@@ -88,6 +89,26 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
             {
                 _controlPanel = new SQLServerControlPanel(this);
             }));
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override bool HandlePopulateDatabasesException(Exception exception)
+        {
+            SqlException sqlException = exception as SqlException;
+            
+            if (sqlException.Number == 67)
+            {
+                DatabaseDriver.RemoveDatasource(Name);
+                MessageBox.Show("Error while trying to populate databases.\n\n" + exception.Message, DatabaseDriver.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
+            }
+            else
+            {
+                throw exception;
+            }
         }
 
         #endregion

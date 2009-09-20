@@ -112,6 +112,11 @@ namespace ICSharpCode.Data.Core.UI.Windows
             Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { DatasourceException = exception; }));
         }
 
+        private void SetSelectedDatasource(IDatasource datasource)
+        {
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { SelectedDatasource = datasource; }));
+        }
+
         private void PopulateDatasources()
         {
             Thread thread = new Thread(new ThreadStart(delegate()
@@ -185,7 +190,17 @@ namespace ICSharpCode.Data.Core.UI.Windows
                 if (SelectedDatabaseDriver != null)
                 {
                     IDatasource newDatasource = SelectedDatabaseDriver.AddNewDatasource(cboDatasources.Text);
-                    newDatasource.PopulateDatabases();
+
+                    try
+                    {
+                        if (newDatasource.PopulateDatabases())
+                            SetSelectedDatasource(newDatasource);
+                    }
+                    catch (Exception ex)
+                    {
+                        SetException(ex);
+                        SetSelectedDatasource(newDatasource);
+                    }
                 }
             }
         }

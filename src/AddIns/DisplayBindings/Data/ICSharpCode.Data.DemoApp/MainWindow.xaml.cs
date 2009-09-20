@@ -1,10 +1,10 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
-#region Usings
-
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -15,6 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ICSharpCode.Data.EDMDesigner.Core.Windows;
 using ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard;
+using System.Data.Sql;
+using System.Data;
 
 #endregion
 
@@ -35,6 +37,9 @@ namespace ICSharpCode.Data.DemoApp
             //EDMWizardWindow edmWizardWindow = new EDMWizardWindow("C:\\TEMP\\test.ssdl");
             //EDMWizardWindow edmWizardWindow = new EDMWizardWindow(new OpenedFile()
             //edmWizardWindow.ShowDialog();
+            MessageBox.Show("Test");
+            DataTable dt = SqlDataSourceEnumerator.Instance.GetDataSources();
+            MessageBox.Show(dt.Rows.Count.ToString());
         }
     }
 }
