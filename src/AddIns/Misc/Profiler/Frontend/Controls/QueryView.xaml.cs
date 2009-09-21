@@ -166,16 +166,26 @@ namespace ICSharpCode.Profiler.Controls
 			this.Translation = new ControlsTranslation();
 			
 			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
-				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 &&
-				    (nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) > 0) {
-					double newValue = e.NewSize.Width - this.callCountColumn.Width
+				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0) {
+					double adjustedNameColumnWidth = nameColumn.Width + e.NewSize.Width - e.PreviousSize.Width;
+					double matchingNameColumnWidth = e.NewSize.Width - this.callCountColumn.Width
 						- this.percentColumn.Width - this.timeSpentColumn.Width
 						- this.timeSpentSelfColumn.Width - this.timeSpentPerCallColumn.Width
-						- this.timeSpentSelfPerCallColumn.Width;
-					if ((nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) >= newValue)
-						this.nameColumn.Width = newValue - 25;
-					else
-						nameColumn.Width += (e.NewSize.Width - e.PreviousSize.Width);
+						- this.timeSpentSelfPerCallColumn.Width - 25;
+					
+					// always keep name column at least 75 pixels wide
+					if (matchingNameColumnWidth < 75)
+						matchingNameColumnWidth = 75;
+					
+					if (e.NewSize.Width >= e.PreviousSize.Width) {
+						// treeView got wider: also make name column wider if there's space free
+						if (adjustedNameColumnWidth <= matchingNameColumnWidth)
+							nameColumn.Width = adjustedNameColumnWidth;
+					} else {
+						// treeView got smaller: make column smaller unless there's space free
+						if (adjustedNameColumnWidth >= matchingNameColumnWidth)
+							nameColumn.Width = adjustedNameColumnWidth;
+					}
 				}
 			};
 		}

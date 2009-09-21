@@ -20,9 +20,4 @@ namespace ICSharpCode.Profiler.Controls
 			
 		}
 	}
-	
-	class EventItem
-	{
-		int dataSet;
-	}
 }
