@@ -22,67 +22,6 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
-	sealed class TargetFramework
-	{
-		public readonly static TargetFramework Net20 = new TargetFramework("v2.0", ".NET Framework 2.0");
-		public readonly static TargetFramework Net30 = new TargetFramework("v3.0", ".NET Framework 3.0") { BasedOn = Net20 };
-		public readonly static TargetFramework Net35 = new TargetFramework("v3.5", ".NET Framework 3.5") { BasedOn = Net30 };
-		public readonly static TargetFramework Net40 = new TargetFramework("v4.0", ".NET Framework 4.0") { BasedOn = Net35 };
-		public readonly static TargetFramework CF = new TargetFramework("CF", null);
-		public readonly static TargetFramework CF20 = new TargetFramework("CF 2.0", "Compact Framework 2.0") { BasedOn = CF };
-		public readonly static TargetFramework CF35 = new TargetFramework("CF 3.5", "Compact Framework 3.5") { BasedOn = CF20 };
-		
-		public readonly static TargetFramework[] TargetFrameworks = {
-			Net40, Net35, Net30, Net20,
-			CF, CF35, CF20
-		};
-		
-		public const string DefaultTargetFrameworkName = "v4.0";
-		
-		public static TargetFramework GetByName(string name)
-		{
-			foreach (TargetFramework tf in TargetFrameworks) {
-				if (tf.Name == name)
-					return tf;
-			}
-			throw new ArgumentException("No target framework '" + name + "' exists");
-		}
-		
-		string name, displayName;
-		
-		public string Name {
-			get { return name; }
-		}
-		
-		public string DisplayName {
-			get { return displayName; }
-		}
-		
-		public TargetFramework BasedOn;
-		
-		public bool IsBasedOn(TargetFramework potentialBase)
-		{
-			TargetFramework tmp = this;
-			while (tmp != null) {
-				if (tmp == potentialBase)
-					return true;
-				tmp = tmp.BasedOn;
-			}
-			return false;
-		}
-		
-		public TargetFramework(string name, string displayName)
-		{
-			this.name = name;
-			this.displayName = displayName;
-		}
-		
-		public override string ToString()
-		{
-			return DisplayName;
-		}
-	}
-	
 	/// <summary>
 	/// This class defines and holds the new project templates.
 	/// </summary>

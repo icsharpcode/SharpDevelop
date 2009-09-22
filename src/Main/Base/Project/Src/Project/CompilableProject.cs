@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project.Converter;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -31,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// A compilable project based on MSBuild.
 	/// </summary>
-	public abstract class CompilableProject : MSBuildBasedProject
+	public abstract class CompilableProject : MSBuildBasedProject, IUpgradableProject
 	{
 		#region Static methods
 		/// <summary>
@@ -476,6 +477,54 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected internal virtual void AddOrRemoveExtensions()
 		{
 		}
+		
+		
+		#region IUpgradableProject
+		bool IUpgradableProject.UpgradeDesired {
+			get {
+				return MinimumSolutionVersion < Solution.SolutionVersionVS2010;
+			}
+		}
+		
+		static readonly CompilerVersion msbuild20 = new CompilerVersion(new Version(2, 0), "MSBuild 2.0");
+		static readonly CompilerVersion msbuild35 = new CompilerVersion(new Version(3, 5), "MSBuild 3.5");
+		static readonly CompilerVersion msbuild40 = new CompilerVersion(new Version(4, 0), "MSBuild 4.0");
+		
+		public virtual CompilerVersion CurrentCompilerVersion {
+			get {
+				switch (MinimumSolutionVersion) {
+					case Solution.SolutionVersionVS2005:
+						return msbuild20;
+					case Solution.SolutionVersionVS2008:
+						return msbuild35;
+					case Solution.SolutionVersionVS2010:
+						return msbuild40;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+		}
+		
+		public virtual TargetFramework CurrentTargetFramework {
+			get {
+				string fxVersion = this.TargetFrameworkVersion;
+				foreach (TargetFramework fx in TargetFramework.TargetFrameworks)
+					if (fx.Name == fxVersion)
+						return fx;
+				return null;
+			}
+		}
+		
+		public virtual IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
+		{
+			return new[] { msbuild20, msbuild35, msbuild40 };
+		}
+		
+		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
 	}
 	
 	namespace Commands
@@ -485,7 +534,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			public override void Run()
 			{
 				CompilableProject project = (CompilableProject)Owner;
-				if (project.TargetFrameworkVersion == "v3.5") {
+				TargetFramework fx = project.CurrentTargetFramework;
+				if (fx != null && fx.IsBasedOn(TargetFramework.Net35)) {
 					project.AddDotnet40References();
 				}
 			}

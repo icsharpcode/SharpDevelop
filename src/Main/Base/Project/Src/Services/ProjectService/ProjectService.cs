@@ -289,6 +289,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			// Create project contents for solution
 			ParserService.OnSolutionLoaded();
 			
+			Project.Converter.UpgradeViewContent.ShowIfRequired(openSolution);
+			
 			// preferences must be read before OnSolutionLoad is called to enable
 			// the event listeners to read e.Solution.Preferences.Properties
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));

@@ -131,6 +131,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Resolves the location of the reference files.
+		/// </summary>
+		/// <param name="baseProject">The base project.</param>
+		/// <param name="referenceReplacements">A different set of references to use instead of those in the project.
+		/// Used by the GacReferencePanel.</param>
 		internal static void ResolveAssemblyReferences(MSBuildBasedProject baseProject, ReferenceProjectItem[] referenceReplacements)
 		{
 			ProjectInstance project = baseProject.CreateProjectInstance();
@@ -164,7 +170,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string[] targets = { "ResolveAssemblyReferences" };
 			BuildRequestData requestData = new BuildRequestData(project, targets, new HostServices());
-			ILogger[] loggers = { new SimpleErrorLogger() };
+			List<ILogger> loggers = new List<ILogger>();
+			if (referenceReplacements == null)
+				loggers.Add(new SimpleErrorLogger());
 			
 			using (ParallelMSBuildManager buildManager = new ParallelMSBuildManager(baseProject.MSBuildProjectCollection)) {
 				BuildSubmission submission = buildManager.StartBuild(requestData, loggers, null);

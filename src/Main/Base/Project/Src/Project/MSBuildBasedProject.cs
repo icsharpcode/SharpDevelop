@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Build.Evaluation;
+using ICSharpCode.SharpDevelop.Project.Converter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +17,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
 using MSBuild = Microsoft.Build.Evaluation;
 using StringPair = ICSharpCode.SharpDevelop.Pair<string, string>;
 
@@ -398,7 +399,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				globalProps["Configuration"] = configuration;
 				
 				//HACK: the ActivePlatform property should be set properly before entering here, but sometimes it does not
-				if (platform != null)	
+				if (platform != null)
 					globalProps["Platform"] = platform;
 				MSBuild.Project project = MSBuildInternals.LoadProject(projectCollection, projectFile, globalProps);
 				if (openCurrentConfiguration)

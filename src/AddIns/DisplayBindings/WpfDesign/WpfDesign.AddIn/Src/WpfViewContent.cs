@@ -95,6 +95,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
+			settings.IndentChars = SharpDevelopTextEditorProperties.Instance.IndentationString;
 			settings.NewLineOnAttributes = true;
 			using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
 				designer.SaveDesigner(xmlWriter);

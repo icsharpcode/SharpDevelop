@@ -447,38 +447,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return "";
 		}
 		
-		/// <summary>
-		/// Reads the specified solution file. The project-location-guid information is written into the conversion class.
-		/// </summary>
-		/// <returns>The version number of the solution.</returns>
-		public static string ReadSolutionInformation(string solutionFileName, Converter.PrjxToSolutionProject.Conversion conversion)
-		{
-			LoggingService.Debug("ReadSolutionInformation: " + solutionFileName);
-			string solutionDirectory = Path.GetDirectoryName(solutionFileName);
-			using (StreamReader sr = File.OpenText(solutionFileName)) {
-				string line = GetFirstNonCommentLine(sr);
-				Match match = versionPattern.Match(line);
-				if (!match.Success) {
-					return null;
-				}
-				string version = match.Result("${Version}");
-				while ((line = sr.ReadLine()) != null) {
-					match = projectLinePattern.Match(line);
-					if (match.Success) {
-						string projectGuid  = match.Result("${ProjectGuid}");
-						string title        = match.Result("${Title}");
-						string location     = Path.Combine(solutionDirectory, match.Result("${Location}"));
-						string guid         = match.Result("${Guid}");
-						LoggingService.Debug(guid + ": " + title);
-						conversion.NameToGuid[title] = new Guid(guid);
-						conversion.NameToPath[title] = location;
-						conversion.GuidToPath[new Guid(guid)] = location;
-					}
-				}
-				return version;
-			}
-		}
-		
 		static bool SetupSolution(Solution newSolution)
 		{
 			ProjectSection nestedProjectsSection = null;
@@ -743,7 +711,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					changed = true;
 				}
 			}
-					
+			
 			// remove all configuration entries belonging to removed projects
 			prjSec.Items.RemoveAll(
 				item => {
@@ -1205,34 +1173,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			newSolution.Name     = Path.GetFileNameWithoutExtension(fileName);
 			
 			string extension = Path.GetExtension(fileName).ToUpperInvariant();
-			if (extension == ".CMBX") {
-				if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ImportCmbx}")) {
+			newSolution.fileName = fileName;
+			newSolution.isLoading = true;
+			try {
+				if (!SetupSolution(newSolution)) {
 					return null;
 				}
-				newSolution.fileName = Path.ChangeExtension(fileName, ".sln");
-				ICSharpCode.SharpDevelop.Project.Converter.CombineToSolution.ConvertSolution(newSolution, fileName);
-				if (newSolution.FixSolutionConfiguration(newSolution.Projects)) {
-					newSolution.Save();
-				}
-			} else if (extension == ".PRJX") {
-				if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ImportPrjx}")) {
-					return null;
-				}
-				newSolution.fileName = Path.ChangeExtension(fileName, ".sln");
-				ICSharpCode.SharpDevelop.Project.Converter.CombineToSolution.ConvertProject(newSolution, fileName);
-				if (newSolution.FixSolutionConfiguration(newSolution.Projects)) {
-					newSolution.Save();
-				}
-			} else {
-				newSolution.fileName = fileName;
-				newSolution.isLoading = true;
-				try {
-					if (!SetupSolution(newSolution)) {
-						return null;
-					}
-				} finally {
-					newSolution.isLoading = false;
-				}
+			} finally {
+				newSolution.isLoading = false;
 			}
 			
 			solutionBeingLoaded = null;

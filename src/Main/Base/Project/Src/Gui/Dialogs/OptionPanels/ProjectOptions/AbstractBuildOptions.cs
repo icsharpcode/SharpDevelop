@@ -245,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (project.MinimumSolutionVersion <= Solution.SolutionVersionVS2008) {
 					// VS05/VS08 project
 					targetFrameworkComboBox.Enabled = false;
-					convertProjectToMSBuild35Button.Click += OnConvertProjectToMSBuild35ButtonClick;
+					convertProjectToMSBuild35Button.Enabled = false;
 					return;
 				} else {
 					// VS2010 project
@@ -260,7 +260,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			targetFrameworkBinding = helper.BindStringEnum(
 				"targetFrameworkComboBox", TargetFrameworkProperty,
 				"v2.0",
-				(from targetFramework in Internal.Templates.TargetFramework.TargetFrameworks
+				(from targetFramework in TargetFramework.TargetFrameworks
 				 where targetFramework.DisplayName != null
 				 select new StringPair(targetFramework.Name, targetFramework.DisplayName)).ToArray());
 			targetFrameworkBinding.CreateLocationButton("targetFrameworkLabel");
@@ -268,27 +268,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				CompilableProject cProject = (CompilableProject)project;
 				cProject.AddOrRemoveExtensions();
 			};
-		}
-		
-		void OnConvertProjectToMSBuild35ButtonClick(object sender, EventArgs e)
-		{
-			using (ConvertToMSBuild35Dialog dlg = new ConvertToMSBuild35Dialog(project.Language + " newversion")) {
-				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					if (dlg.ConvertAllProjects) {
-						foreach (IProject p in ProjectService.OpenSolution.Projects) {
-							MSBuildBasedProject msbp = p as MSBuildBasedProject;
-							if (msbp != null)
-								msbp.ConvertToMSBuild40(dlg.ChangeTargetFramework);
-						}
-					} else {
-						project.ConvertToMSBuild40(dlg.ChangeTargetFramework);
-					}
-					if (project.MinimumSolutionVersion < Solution.SolutionVersionVS2010)
-						throw new InvalidOperationException("Project did not convert to MSBuild 4.0");
-					ProjectService.SaveSolution();
-					InitTargetFramework();
-				}
-			}
 		}
 	}
 }

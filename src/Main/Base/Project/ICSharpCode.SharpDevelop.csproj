@@ -178,10 +178,6 @@
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ConvertToMSBuild35Dialog.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ConvertToMSBuild35Dialog.Designer.cs">
-      <DependentUpon>ConvertToMSBuild35Dialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\XmlFormsOptionPanel.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.Designer.cs">
@@ -219,6 +215,12 @@
     <Compile Include="Src\Internal\Templates\File\INewFileCreator.cs" />
     <Compile Include="Src\Project\BuildEngine.cs" />
     <Compile Include="Src\Project\ContextSpecificProperties.cs" />
+    <Compile Include="Src\Project\Converter\IUpgradableProject.cs" />
+    <Compile Include="Src\Project\Converter\UpgradeView.xaml.cs">
+      <DependentUpon>UpgradeView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Project\Converter\UpgradeViewContent.cs" />
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
     <Compile Include="Src\Project\MSBuildEngine\BuildLogFileLogger.cs" />
@@ -232,6 +234,7 @@
     <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
     <Compile Include="Src\Project\Solution\Project_TypeGuids.cs" />
+    <Compile Include="Src\Project\TargetFramework.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\DebuggerPopup.cs" />
@@ -545,8 +548,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\SolutionFolderRemoveVisitor.cs" />
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeViewComparer.cs" />
     <Compile Include="Src\Project\WebReferenceUrl.cs" />
-    <Compile Include="Src\Project\Converter\CombineToSolution.cs" />
-    <Compile Include="Src\Project\Converter\PrjxToSolutionProject.cs" />
     <EmbeddedResource Include="Resources\CodeGenerationOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\CombineStartupPanel.xfrm" />
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />
@@ -816,9 +817,6 @@
     <EmbeddedResource Include="Src\Gui\Dialogs\NewProjectDialog.resx">
       <DependentUpon>NewProjectDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ConvertToMSBuild35Dialog.resx">
-      <DependentUpon>ConvertToMSBuild35Dialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.resx">
       <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -887,6 +885,7 @@
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
+    <Page Include="Src\Project\Converter\UpgradeView.xaml" />
     <Page Include="Src\Services\Debugger\Tooltips\DebuggerTooltipControl.xaml" />
     <Page Include="Src\Services\Debugger\Tooltips\VisualizerPicker.xaml" />
   </ItemGroup>
