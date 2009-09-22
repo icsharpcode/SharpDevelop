@@ -81,6 +81,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// This error message sink is used for GUI builds.
+		/// </summary>
 		sealed class MessageViewSink : IBuildFeedbackSink
 		{
 			Gui.MessageViewCategory messageView;
@@ -92,6 +95,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void ReportError(BuildError error)
 			{
+				WorkbenchSingleton.SafeThreadAsyncCall(
+					delegate {
+						TaskService.Add(new Task(error));
+					});
 			}
 			
 			public void ReportMessage(string message)

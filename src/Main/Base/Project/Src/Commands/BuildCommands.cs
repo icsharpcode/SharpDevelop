@@ -65,7 +65,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		protected void CallbackMethod(BuildResults results)
 		{
 			lastBuildResults = results;
-			ShowResults(results);
 			AfterBuild();
 			OnBuildComplete(EventArgs.Empty);
 		}
@@ -78,20 +77,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			if (BuildComplete != null) {
 				BuildComplete(this, e);
-			}
-		}
-		
-		public static void ShowResults(BuildResults results)
-		{
-			if (results != null) {
-				TaskService.InUpdate = true;
-				foreach (BuildError error in results.Errors) {
-					TaskService.Add(new Task(error));
-				}
-				TaskService.InUpdate = false;
-				if (results.Errors.Count > 0 && ErrorListPad.ShowAfterBuild) {
-					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-				}
 			}
 		}
 		
