@@ -18,15 +18,12 @@ class MainClass
 		Console.WriteLine("Initializing changelog application...");
 		try {
 			if (!File.Exists("SharpDevelop.sln")) {
-				if (File.Exists(@"..\..\..\..\SharpDevelop.sln")) {
-					Directory.SetCurrentDirectory(@"..\..\..\..");
-				}
-				if (File.Exists("..\\src\\SharpDevelop.sln")) {
-					Directory.SetCurrentDirectory("..\\src");
+				if (File.Exists(@"..\..\..\..\..\SharpDevelop.sln")) {
+					Directory.SetCurrentDirectory(@"..\..\..\..\..");
 				}
 			}
 			if (!File.Exists("SharpDevelop.sln")) {
-				Console.WriteLine("Working directory must be SharpDevelop\\src or SharpDevelop\\bin!");
+				Console.WriteLine("Working directory must be 'SharpDevelop'");
 				return 2;
 			}
 
@@ -105,9 +102,9 @@ class MainClass
 		XmlTextReader input = new XmlTextReader(new StringReader(writer.ToString()));
 		
 		XslCompiledTransform xsl = new XslCompiledTransform();
-		xsl.Load(@"..\data\ConversionStyleSheets\SVNChangelogToXml.xsl");
+		xsl.Load(Path.Combine(Path.GetDirectoryName(typeof(MainClass).Assembly.Location), "SVNChangelogToXml.xsl"));
 		
-		StreamWriter tw = new StreamWriter(@"..\doc\ChangeLog.xml", false, Encoding.UTF8);
+		StreamWriter tw = new StreamWriter(@"doc\ChangeLog.xml", false, Encoding.UTF8);
 		xmlWriter = new XmlTextWriter(tw);
 		xmlWriter.Formatting = Formatting.Indented;
 		xsl.Transform(input, xmlWriter);

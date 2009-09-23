@@ -52,5 +52,10 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="SVNChangelogToXml.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

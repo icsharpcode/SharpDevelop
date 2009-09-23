@@ -71,8 +71,16 @@
 	
 	<Target Name="Rebuild" DependsOnTargets="Build"/>
 	
+	<ItemGroup>
+		<PrepareReleaseProject Include="SVNChangeLogToXml\SVNChangeLogToXml.csproj" />
+	</ItemGroup>
+	
 	<Target Name="PrepareRelease">
+		<MSBuild Projects="@(PrepareReleaseProject)" Targets="Build"/>
+		<Exec Command="SVNChangelogToXml.exe --START 3392" WorkingDirectory="SVNChangeLogToXml\bin\Release" Timeout = "60000" IgnoreExitCode = "false"/>
 		<Exec WorkingDirectory="UpdateAssemblyInfo\bin\Debug" Command="UpdateAssemblyInfo.exe --REVISION"  Timeout = "60000" IgnoreExitCode = "false"/>
+		<RemoveDir Directories="SVNChangeLogToXml\bin" />
+		<RemoveDir Directories="SVNChangeLogToXml\obj" />
 	</Target>
 	
 	<ItemGroup>
