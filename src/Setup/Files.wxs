@@ -712,13 +712,8 @@
 						<Directory Id="DataFolder" Name="data">
 							<Directory Id="ConversionStyleSheetsFolder" Name="ConversionStyleSheets">
 								<Component Guid="EEC59BAB-23BE-4FD3-8788-4A6023A6B394" Id="ConversionStyleSheetFiles" DiskId="1">
-									<File Source="..\..\data\ConversionStyleSheets\CSharp_prjx2csproj.xsl" Id="CSharp_prjx2csproj.xsl" Name="CSharp_prjx2csproj.xsl" />
-									<File Source="..\..\data\ConversionStyleSheets\CSharp_prjx2csproj_user.xsl" Id="CSharp_prjx2csproj_user.xsl" Name="CSharp_prjx2csproj_user.xsl" />
-									<File Source="..\..\data\ConversionStyleSheets\ShowChangeLog.xsl" Id="ShowChangeLog.xsl" Name="ShowChangeLog.xsl" />
 									<File Source="..\..\data\ConversionStyleSheets\ShowXmlDocumentation.xsl" Id="ShowXmlDocumentation.xsl" Name="ShowXmlDocumentation.xsl" />
 									<File Source="..\..\data\ConversionStyleSheets\SVNChangelogToXml.xsl" Id="SVNChangelogToXml.xsl" Name="SVNChangelogToXml.xsl" />
-									<File Source="..\..\data\ConversionStyleSheets\vsnet2msbuild.xsl" Id="vsnet2msbuild.xsl" Name="vsnet2msbuild.xsl" />
-									<File Source="..\..\data\ConversionStyleSheets\vsnet2msbuild_user.xsl" Id="vsnet2msbuild_user.xsl" Name="vsnet2msbuild_user.xsl" />
 								</Component>
 							</Directory>
 							<Directory Id="ModesFolder" Name="modes">
