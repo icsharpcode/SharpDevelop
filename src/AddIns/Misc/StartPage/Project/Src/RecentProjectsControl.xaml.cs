@@ -28,7 +28,7 @@ namespace ICSharpCode.StartPage
 		{
 			InitializeComponent();
 			
-			SetBinding(HeaderProperty, new LocalizeExtension("StartPage.StartMenu.BarNameName").CreateBinding());
+			this.SetValueToExtension(HeaderProperty, new LocalizeExtension("StartPage.StartMenu.BarNameName"));
 			BuildRecentProjectList();
 		}
 		

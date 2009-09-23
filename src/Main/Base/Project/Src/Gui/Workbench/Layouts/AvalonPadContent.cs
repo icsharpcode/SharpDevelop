@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.layout = layout;
 			
 			this.Name = descriptor.Class.Replace('.', '_');
-			this.SetBinding(TitleProperty, new StringParseExtension(descriptor.Title).CreateBinding());
+			this.SetValueToExtension(TitleProperty, new StringParseExtension(descriptor.Title));
 			placeholder = new TextBlock { Text = this.Title };
 			this.Content = placeholder;
 			this.Icon = PresentationResourceService.GetPixelSnappedImage(descriptor.Icon);

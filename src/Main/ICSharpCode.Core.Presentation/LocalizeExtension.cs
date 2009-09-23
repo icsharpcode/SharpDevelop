@@ -69,17 +69,18 @@ namespace ICSharpCode.Core.Presentation
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (UpdateOnLanguageChange) {
-				return CreateBinding().ProvideValue(serviceProvider);
+				Binding binding = new Binding("Value") { Source = this, Mode = BindingMode.OneWay };
+				return binding.ProvideValue(serviceProvider);
 			} else {
 				return this.Value;
 			}
 		}
 		
+		[Obsolete("Use ExtensionMethods.SetValueToExtension instead of directly fetching the binding from this extension")]
 		public Binding CreateBinding()
 		{
 			return new Binding("Value") { Source = this, Mode = BindingMode.OneWay };
 		}
-		
 		
 		event System.ComponentModel.PropertyChangedEventHandler ChangedEvent;
 		

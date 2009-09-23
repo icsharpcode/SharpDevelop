@@ -147,20 +147,4 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 		}
 	}
-	
-	public class SplitTextEditor : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-			
-			if (viewContent == null || !(viewContent is ITextEditorControlProvider)) {
-				return;
-			}
-			TextEditorControl textEditorControl = ((ITextEditorControlProvider)viewContent).TextEditorControl;
-			if (textEditorControl != null) {
-				textEditorControl.Split();
-			}
-		}
-	}
 }

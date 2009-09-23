@@ -1,113 +1,119 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
-  x:ClassModifier="internal"
-  x:Class="ICSharpCode.SharpDevelop.Project.Converter.UpgradeView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition
-        Height="Auto" />
-      <RowDefinition
-        Height="*" />
-      <RowDefinition
-        Height="Auto" />
-      <RowDefinition
-        Height="Auto" />
-    </Grid.RowDefinitions>
-    <TextBlock
-      Grid.Column="0"
-      Grid.Row="0"
-      Margin="8,8,8,4">
-  		This solution was created using a previous version of SharpDevelop.
-  		You might want to upgrade it so that you can use new language or framework features.
-  	</TextBlock>
-    <ListView
-      x:Name="listView"
-      Grid.Column="0"
-      Grid.Row="1"
-      Margin="8,4,8,4"
-      SelectionMode="Multiple"
-      SelectionChanged="ListView_SelectionChanged">
-      <ListView.View>
-        <GridView>
-          <GridViewColumn
-            Header="Project">
-            <GridViewColumn.CellTemplate>
-              <DataTemplate>
-                <CheckBox
-                  Content="{Binding Name}"
-                  IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Path=IsSelected}" />
-              </DataTemplate>
-            </GridViewColumn.CellTemplate>
-          </GridViewColumn>
-          <GridViewColumn
-            DisplayMemberBinding="{Binding CompilerVersionName}"
-            Header="Compiler Version" />
-          <GridViewColumn
-            DisplayMemberBinding="{Binding TargetFrameworkName}"
-            Header="Target Framework" />
-        </GridView>
-      </ListView.View>
-    </ListView>
-    <CheckBox
-      Content="Select _all"
-      Grid.Row="2"
-      Name="selectAllCheckBox"
-      Checked="SelectAllCheckBox_Checked"
-      Unchecked="SelectAllCheckBox_Unchecked"
-      HorizontalAlignment="Left"
-      Margin="10,0,0,0" />
-    <GroupBox
-      Grid.Column="0"
-      Grid.Row="3"
-      HorizontalAlignment="Stretch"
-      VerticalAlignment="Stretch"
-      Margin="8,0,8,8"
-      Header="Change version of selected projects">
-      <Grid
-        Margin="4">
-        <Grid.RowDefinitions>
-          <RowDefinition
-            Height="Auto" />
-          <RowDefinition
-            Height="Auto" />
-          <RowDefinition
-            Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition
-            Width="Auto" />
-          <ColumnDefinition
-            Width="120" />
-        </Grid.ColumnDefinitions>
-        <Label
-          Content="Convert selected _projects to:"
-          Grid.Column="0"
-          Grid.Row="0"
-          Target="{Binding ElementName=newVersionComboBox}" />
-        <ComboBox
-          Name="newVersionComboBox"
-          Grid.Column="1"
-          Grid.Row="0"
-          Height="22" />
-        <Label
-          Content="Change _target framework:"
-          Grid.Column="0"
-          Grid.Row="1"
-          Target="{Binding ElementName=newFrameworkComboBox}" />
-        <ComboBox
-          Name="newFrameworkComboBox"
-          Grid.Column="1"
-          Grid.Row="1"
-          Height="22" />
-        <Button
-          Name="convertButton"
-          Width="90"
-          Height="22"
-          Content="_Convert"
-          Grid.Column="0"
-          Grid.ColumnSpan="2"
-          Grid.Row="2" />
-      </Grid>
-    </GroupBox>
-  </Grid>
+	x:ClassModifier="internal"
+	x:Class="ICSharpCode.SharpDevelop.Project.Converter.UpgradeView" 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="Auto" />
+			<RowDefinition
+				Height="*" />
+			<RowDefinition
+				Height="Auto" />
+			<RowDefinition
+				Height="Auto" />
+		</Grid.RowDefinitions>
+		<TextBlock
+			Grid.Column="0"
+			Grid.Row="0"
+			TextWrapping="WrapWithOverflow"
+			Margin="8,8,8,4">
+			This solution was created using a previous version of SharpDevelop.
+			You might want to upgrade it so that you can use new language or framework features.
+		</TextBlock>
+		<ListView
+			x:Name="listView"
+			core:SortableGridViewColumn.SortMode="Automatic"
+			Grid.Column="0"
+			Grid.Row="1"
+			Margin="8,4,8,4"
+			SelectionMode="Multiple"
+			SelectionChanged="ListView_SelectionChanged">
+			<ListView.View>
+				<GridView>
+					<core:SortableGridViewColumn
+						SortBy="Name"
+						Header="Project">
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<CheckBox
+									Content="{Binding Name}"
+									IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Path=IsSelected}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</core:SortableGridViewColumn>
+					<core:SortableGridViewColumn
+						DisplayMemberBinding="{Binding CompilerVersionName}"
+						Header="Compiler Version" />
+					<core:SortableGridViewColumn
+						DisplayMemberBinding="{Binding TargetFrameworkName}"
+						Header="Target Framework" />
+				</GridView>
+			</ListView.View>
+		</ListView>
+		<CheckBox
+			Content="Select _all"
+			Grid.Row="2"
+			Name="selectAllCheckBox"
+			Checked="SelectAllCheckBox_Checked"
+			Unchecked="SelectAllCheckBox_Unchecked"
+			HorizontalAlignment="Left"
+			Margin="10,0,0,0" />
+		<GroupBox
+			Grid.Column="0"
+			Grid.Row="3"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			Margin="8,0,8,8"
+			Header="Change version of selected projects">
+			<Grid
+				Margin="4">
+				<Grid.RowDefinitions>
+					<RowDefinition
+						Height="Auto" />
+					<RowDefinition
+						Height="Auto" />
+					<RowDefinition
+						Height="Auto" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition
+						Width="Auto" />
+					<ColumnDefinition
+						Width="120" />
+				</Grid.ColumnDefinitions>
+				<Label
+					Content="Convert selected _projects to:"
+					Grid.Column="0"
+					Grid.Row="0"
+					Target="{Binding ElementName=newVersionComboBox}" />
+				<ComboBox
+					Name="newVersionComboBox"
+					Grid.Column="1"
+					Grid.Row="0"
+					Height="22" />
+				<Label
+					Content="Change _target framework:"
+					Grid.Column="0"
+					Grid.Row="1"
+					Target="{Binding ElementName=newFrameworkComboBox}" />
+				<ComboBox
+					Name="newFrameworkComboBox"
+					Grid.Column="1"
+					Grid.Row="1"
+					Height="22" />
+				<Button
+					Name="convertButton"
+					Width="90"
+					Height="22"
+					Content="_Convert"
+					Grid.Column="0"
+					Grid.ColumnSpan="2"
+					Grid.Row="2" />
+			</Grid>
+		</GroupBox>
+	</Grid>
 </UserControl>

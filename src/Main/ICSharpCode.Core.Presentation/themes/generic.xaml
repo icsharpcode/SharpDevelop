@@ -2,10 +2,12 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:ICSharpCode.Core.Presentation"
 >
+	<!-- Colors for DropDownButton and SplitButton -->
 	<SolidColorBrush x:Key="{ComponentResourceKey {x:Type local:DropDownButton}, ActiveBorder}" Color="#FF0A246A"/>
 	<SolidColorBrush x:Key="{ComponentResourceKey {x:Type local:DropDownButton}, ActiveBackground}" Color="#FFB6BDD2"/>
 	<SolidColorBrush x:Key="{ComponentResourceKey {x:Type local:SplitButton}, PressedBackground}" Color="#FF8592B5"/>
 	
+	<!-- Style and Template for DropDownButton -->
 	<Style TargetType="{x:Type local:DropDownButton}">
 		<Setter Property="TextElement.Foreground" Value = "{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
 		<Setter Property="Control.Padding" Value="2,2,2,2"/>
@@ -68,6 +70,7 @@
 		</Setter>
 	</Style>
 	
+	<!-- Style and Template for SplitButton -->
 	<Style TargetType="{x:Type local:SplitButton}">
 		<Setter Property="TextElement.Foreground" Value = "{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
 		<Setter Property="Control.Padding" Value="2,2,2,2"/>
@@ -144,7 +147,8 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
-
+	
+	<!-- Template for CollapsiblePanel -->
 	<Style TargetType="{x:Type local:CollapsiblePanel}">
 		<Setter Property="Template">
 			<Setter.Value>
@@ -177,6 +181,8 @@
 		</Setter>
 	</Style>
 	
+	<!-- Template for RadioButtonGroup -->
+	<!-- Necessary because Selector does not have a template by default. -->
 	<Style TargetType="{x:Type local:RadioButtonGroup}">
 		<Setter Property="Template">
 			<Setter.Value>
@@ -199,4 +205,25 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+	
+	<!-- SortableGridViewColumn.
+		Displays an up arrow or down arrow in the column header when the grid is sorted using that column.
+	-->
+	<local:ColumnSortDirectionToVisibilityConverter x:Key="ColumnSortDirectionToVisibilityConverter"/>
+	
+	<DataTemplate x:Key="{ComponentResourceKey {x:Type local:SortableGridViewColumn}, ColumnHeaderTemplate}">
+		<StackPanel Orientation="Horizontal">
+			<TextBlock HorizontalAlignment="Center" Text="{Binding}"/>
+			<Path x:Name="upArrow"
+			      Visibility="{Binding Path=Column.SortDirection, ConverterParameter={x:Static local:ColumnSortDirection.Ascending}, RelativeSource={RelativeSource AncestorType={x:Type GridViewColumnHeader}}, Converter={StaticResource ColumnSortDirectionToVisibilityConverter}}"
+			      StrokeThickness = "1"
+			      Fill            = "Gray"
+			      Data            = "M 5,10 L 15,10 L 10,5 L 5,10"/>
+			<Path x:Name="downArrow"
+			      Visibility="{Binding Path=Column.SortDirection, ConverterParameter={x:Static local:ColumnSortDirection.Descending}, RelativeSource={RelativeSource AncestorType={x:Type GridViewColumnHeader}}, Converter={StaticResource ColumnSortDirectionToVisibilityConverter}}"
+			      StrokeThickness = "1"					  
+			      Fill            = "Gray"
+			      Data            = "M 5,5 L 10,10 L 15,5 L 5,5"/>
+		</StackPanel>
+	</DataTemplate>
 </ResourceDictionary>
