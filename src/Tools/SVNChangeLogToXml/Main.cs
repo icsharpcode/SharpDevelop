@@ -58,7 +58,7 @@ class MainClass
 			rev = version.Start;
 		}
 		Console.WriteLine(rev);
-		using (StreamWriter writer = new StreamWriter("../REVISION")) {
+		using (StreamWriter writer = new StreamWriter("REVISION")) {
 			writer.Write(rev.ToString());
 		}
 	}
@@ -76,7 +76,7 @@ class MainClass
 		xmlWriter.WriteStartElement("log");
 		int progressCount = 0;
 		client.Log(
-			"..",
+			Environment.CurrentDirectory,
 			new SvnLogArgs {
 				// retrieve log in reverse order
 				Start = SvnRevision.Base,
