@@ -75,6 +75,11 @@
 		                 projectfileextension=".vcxproj"
 		                 class="ICSharpCode.CppBinding.CppLanguageBinding" />
 	</Path>
+	
+	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
+		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
+		<String id="cl" text = "cl"/>
+	</Path>
 
 	<!--
 	<Path name="/Workspace/Parser">

@@ -5,11 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using ICSharpCode.Profiler.Controller.Queries;
 using NUnit.Framework;
 
 namespace Profiler.Tests.Controller.Queries

@@ -200,11 +200,17 @@ namespace ICSharpCode.Profiler.Controller
 			get { return profilerOutput.ToString(); }
 		}
 		
+		/// <summary>
+		/// Enables collection of datasets.
+		/// </summary>
 		public void EnableDataCollection()
 		{
 			this.enableDC = true;
 		}
 		
+		/// <summary>
+		/// Disables collection of datasets.
+		/// </summary>
 		public void DisableDataCollection()
 		{
 			this.enableDC = false;

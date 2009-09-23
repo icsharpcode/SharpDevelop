@@ -9,10 +9,10 @@ using System;
 
 namespace ICSharpCode.Profiler.Controller.Data
 {
-	public class PerformanceCounterDescriptor
-	{
-		public PerformanceCounterDescriptor()
-		{
-		}
-	}
+//	public class PerformanceCounterDescriptor
+//	{
+//		public PerformanceCounterDescriptor()
+//		{
+//		}
+//	}
 }

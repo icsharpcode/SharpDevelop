@@ -228,8 +228,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				CREATE TABLE CounterData(
 					datasetid INTEGER NOT NULL,
 					counterid INTEGER NOT NULL,
-					value INTEGER NOT NULL,
-					CONSTRAINT PK_couterdata PRIMARY KEY (datasetid, counterid)
+					value INTEGER NOT NULL
 				);
 	";
 			

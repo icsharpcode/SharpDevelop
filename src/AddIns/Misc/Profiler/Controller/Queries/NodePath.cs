@@ -98,6 +98,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 			return GetEnumerator();
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return ((previous != null) ? previous.ToString() + "->" : "") + lastId;

@@ -152,9 +152,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Controller\Controller.csproj">
+    <ProjectReference Include="..\..\Controller\Profiler.Controller.csproj">
       <Project>{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F}</Project>
-      <Name>Controller</Name>
+      <Name>Profiler.Controller</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

@@ -1,0 +1,8 @@
+﻿<UserControl x:Class="ICSharpCode.Profiler.AddIn.Views.ComparisonView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:controls="clr-namespace:ICSharpCode.Profiler.Controls;assembly=ICSharpCode.Profiler.Controls"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid>
+		<controls:CompareView />
+	</Grid>
+</UserControl>

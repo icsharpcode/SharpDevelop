@@ -13,16 +13,16 @@ using System.Windows.Shapes;
 
 namespace ICSharpCode.Profiler.Controls
 {
-    /// <summary>
-    /// Interaction logic for ExtendedTimeLineControl.xaml
-    /// </summary>
-
-    public partial class ExtendedTimeLineControl : UserControl
-    {
-        public ExtendedTimeLineControl()
-        {
-            InitializeComponent();
-        }
-
-    }
+	/// <summary>
+	/// Interaction logic for ExtendedTimeLineControl.xaml
+	/// </summary>
+	public partial class ExtendedTimeLineControl : UserControl
+	{
+		public ExtendedTimeLineControl()
+		{
+			InitializeComponent();
+		}
+		
+		
+	}
 }

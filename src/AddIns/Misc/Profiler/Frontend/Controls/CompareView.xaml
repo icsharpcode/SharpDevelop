@@ -1,18 +1,49 @@
-﻿<UserControl
-	x:Class="ICSharpCode.Profiler.Controls.CompareView" 
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="ICSharpCode.Profiler.Controls.CompareView"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
-    <GridSplitter Grid.Column="1" HorizontalAlignment="Left" Width="5" />
-    <StackPanel Grid.Column="1" Orientation="Vertical">
-      <Button Content="Part2" Margin="3" />
-    </StackPanel>
-    <StackPanel Orientation="Vertical">
-      <Button Content="Part1" Margin="3" />
-    </StackPanel>
-  </Grid>
+	<DockPanel>
+		<DockPanel DockPanel.Dock="Top">
+			<GroupBox Header="Test2" DockPanel.Dock="Right">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Label Content="Column:" />
+					<ComboBox Grid.Column="1">
+						<ComboBoxItem Content="Number of calls" Tag="CallCount" IsSelected="True" />
+					</ComboBox>
+					<Label Content="Threshold:" Grid.Row="1" />
+					<TextBox Text="1" Grid.Row="1" Grid.Column="1" />
+				</Grid>
+			</GroupBox>
+			<GroupBox Header="Files selected for comparison">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Label Content="Base file:" Margin="3" />
+					<ComboBox x:Name="baseFileName" IsEditable="True" Grid.Column="1" Margin="3" />
+					<Button Content="..." Grid.Column="2" Margin="3" Padding="10,0" />
+					<Label Content="Comparison file:" Grid.Row="1" Margin="3" />
+					<ComboBox x:Name="compareFileName" IsEditable="True" Grid.Row="1" Grid.Column="1" Margin="3" />
+					<Button Content="..." Grid.Row="1" Grid.Column="2" Margin="3" Padding="10,0" />
+					<Button Content="Compare" Grid.Column="1" Grid.Row="2" Margin="3" />
+				</Grid>
+			</GroupBox>
+		</DockPanel>
+		<ListView />
+	</DockPanel>
 </UserControl>

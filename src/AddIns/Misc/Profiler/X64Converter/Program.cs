@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory;
 using System.IO;
+using System.Linq;
+
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
+using ICSharpCode.NRefactory.Visitors;
 
 namespace X64Converter
 {
@@ -14,41 +14,48 @@ namespace X64Converter
 	{
 		static int Main(string[] args)
 		{
-			List<string> map = new List<string>()
-			{
-				"..\\Controller\\Profiler",
-				"..\\Controller\\Data\\UnmanagedCallTreeNode",
-				"..\\Controller\\structs"
-			};
-
-			foreach (string path in map)
-			{
-				using (IParser parser = ParserFactory.CreateParser(path + ".cs"))
+			File.Delete("conversion.log");
+			
+			try {
+				List<string> map = new List<string>()
 				{
-					parser.Parse();
+					"..\\Controller\\Profiler",
+					"..\\Controller\\Data\\UnmanagedCallTreeNode",
+					"..\\Controller\\structs"
+				};
 
-					if (parser.Errors.Count > 0)
+				foreach (string path in map)
+				{
+					using (IParser parser = ParserFactory.CreateParser(path + ".cs"))
 					{
-						string message = "Parser errors in file " + path + ":\n" + parser.Errors.ErrorOutput;
-						Console.WriteLine(message);
-						File.WriteAllText(path + "64.cs", message);
-						return 2;
-					}
-					
-					var specials = parser.Lexer.SpecialTracker.RetrieveSpecials().Where(item => item is PreprocessingDirective);
-					
-					parser.CompilationUnit.AcceptVisitor(new Converter(), null);
-					CSharpOutputVisitor output = new CSharpOutputVisitor();					
-					SpecialNodesInserter.Install(specials, output);
-					parser.CompilationUnit.AcceptVisitor(output, null);
+						parser.Parse();
 
-					if (!File.Exists(path + "64.cs") || File.ReadAllText(path + "64.cs") != output.Text) {
-						File.WriteAllText(path + "64.cs", output.Text);
+						if (parser.Errors.Count > 0)
+						{
+							string message = "Parser errors in file " + path + ":\n" + parser.Errors.ErrorOutput;
+							Console.WriteLine(message);
+							File.WriteAllText(path + "64.cs", message);
+							return 2;
+						}
+						
+						var specials = parser.Lexer.SpecialTracker.RetrieveSpecials().Where(item => item is PreprocessingDirective);
+						
+						parser.CompilationUnit.AcceptVisitor(new Converter(), null);
+						CSharpOutputVisitor output = new CSharpOutputVisitor();
+						SpecialNodesInserter.Install(specials, output);
+						parser.CompilationUnit.AcceptVisitor(output, null);
+
+						if (!File.Exists(path + "64.cs") || File.ReadAllText(path + "64.cs") != output.Text) {
+							File.WriteAllText(path + "64.cs", output.Text);
+						}
 					}
 				}
-			}
 
-			return 0;
+				return 0;
+			} catch (Exception e) {
+				File.WriteAllText("conversion.log", e.ToString());
+				return -1;
+			}
 		}
 	}
 
