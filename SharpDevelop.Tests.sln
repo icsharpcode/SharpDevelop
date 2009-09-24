@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 10
-# SharpDevelop 4.0.0.4966
+# SharpDevelop 4.0.0.4979
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{256F5C28-532C-44C0-8AB8-D8EC5E492E01}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -556,6 +556,8 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -950,6 +952,10 @@ Global
 		{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68D5EE3B-0C35-4DF1-BD29-6606851A02C1}.Debug|Win32.Build.0 = Debug|Win32
+		{68D5EE3B-0C35-4DF1-BD29-6606851A02C1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{68D5EE3B-0C35-4DF1-BD29-6606851A02C1}.Release|Win32.Build.0 = Release|Win32
+		{68D5EE3B-0C35-4DF1-BD29-6606851A02C1}.Release|Win32.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

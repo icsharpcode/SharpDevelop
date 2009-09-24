@@ -386,7 +386,7 @@ namespace AvalonDock
             }
             else if (e.Command == CloseCommand)
             {
-                Close();
+                CloseOrHide();
                 e.Handled = true;
             }
             else if (e.Command == ShowOptionsCommand)
@@ -481,21 +481,18 @@ namespace AvalonDock
                 GetManager().ToggleAutoHide(this);
         }
 
+
         /// <summary>
-        /// Close current content
+        /// Closes or hides current content depending on HideOnClose property
         /// </summary>
-        internal virtual void Close()
+        internal void CloseOrHide()
         {
-            //GetManager().Hide(SelectedItem as DockableContent);
-            if (SelectedItem is DockableContent)
-            {
-                DockableContent item = SelectedItem as DockableContent;
-                if (item.HideOnClose)
-                    GetManager().Hide(SelectedItem as DockableContent);
-                else
-                    this.Items.Remove(SelectedItem as DockableContent);
-            }
+            CloseOrHide(SelectedItem as DockableContent);
         }
+
+
+
+        
 	    #endregion    
     
     }

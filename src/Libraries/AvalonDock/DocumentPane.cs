@@ -144,7 +144,7 @@ namespace AvalonDock
             DockableContent dockableContent = contentToClose as DockableContent;
 
             if (dockableContent != null)
-                GetManager().Hide(dockableContent);
+                CloseOrHide(dockableContent);
             else
             {
                 DocumentContent documentContent = contentToClose as DocumentContent;

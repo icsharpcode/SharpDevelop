@@ -178,7 +178,8 @@ namespace AvalonDock
 
             while (HostedPane.Items.Count > 0)
             {
-                Manager.Hide(HostedPane.Items[0] as DockableContent);
+                //Manager.Hide(HostedPane.Items[0] as DockableContent);
+                HostedPane.CloseOrHide(HostedPane.Items[0] as DockableContent);
             }
 
             Manager.UnregisterFloatingWindow(this);
@@ -228,8 +229,9 @@ namespace AvalonDock
             }
             else if (e.Command == CloseCommand)
             {
-                DockableContent currentContent = HostedPane.SelectedItem as DockableContent;
-                Manager.Hide(currentContent);
+                //DockableContent currentContent = HostedPane.SelectedItem as DockableContent;
+                //Manager.Hide(currentContent);
+                HostedPane.CloseOrHide();
                 if (HostedPane.Items.Count == 0)
                     this.Close();
                 e.Handled = true;

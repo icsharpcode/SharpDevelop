@@ -101,9 +101,11 @@ namespace AvalonDock
         {
             GetManager().ToggleAutoHide(_referencedPane);
         }
-        internal override void Close()
-        {
-            GetManager().Hide(SelectedItem as DockableContent);
-        }
+        //internal override void Close()
+        //{
+        //    DockingManager manager = GetManager();
+        //    if (manager != null)
+        //    Manager.Hide(SelectedItem as DockableContent);
+        //}
    }
 }

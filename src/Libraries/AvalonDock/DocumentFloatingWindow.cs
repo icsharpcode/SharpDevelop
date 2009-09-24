@@ -343,6 +343,11 @@ namespace AvalonDock
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            base.OnClosing(e);
+
+            if (e.Cancel)
+                return;
+            
             if (this.HostedPane.Items.Count > 0)
             {
                 DocumentContent docContent = this.HostedPane.Items[0] as DocumentContent;
@@ -352,7 +357,6 @@ namespace AvalonDock
                     this.HostedPane.Items.Remove(docContent);
             }
             
-            base.OnClosing(e);
         }
     }
 }

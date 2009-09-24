@@ -204,9 +204,20 @@ namespace AvalonDock
         /// </summary>
         internal void InternalClose()
         {
+
+
             DocumentPane parentPane = ContainerPane as DocumentPane;
             DockingManager manager = Manager;
 
+            if (manager != null)
+            {
+                if (manager.ActiveContent == this)
+                    manager.ActiveContent = null;
+
+                if (manager.ActiveDocument == this)
+                    manager.ActiveDocument = null;
+            }           
+            
             if (parentPane != null)
             {
                 parentPane.Items.Remove(this);
@@ -219,20 +230,15 @@ namespace AvalonDock
                 if (floatingParentPane != null)
                 {
                     floatingParentPane.RemoveContent(0);
-                    floatingParentPane.FloatingWindow.Close();
+                    if (floatingParentPane.FloatingWindow != null &&
+                        !floatingParentPane.FloatingWindow.IsClosing)
+                        floatingParentPane.FloatingWindow.Close();
                 }
             }
 
 
 
-            if (manager != null)
-            {
-                if (manager.ActiveDocument == this)
-                    manager.ActiveDocument = null;
 
-                if (manager.ActiveContent == this)
-                    manager.ActiveContent = null;
-            }
         }
 
         /// <summary>
@@ -277,9 +283,9 @@ namespace AvalonDock
                 oldManager.FireDocumentClosedEvent();
 
 
-            if (Parent != null)
-                throw new InvalidOperationException("Parent MUST bu null after Doc is closed");
-
+            //if (Parent != null)
+            //    throw new InvalidOperationException();
+            Debug.Assert(Parent == null, "Parent MUST bu null after Doc is closed");
             return true;
         }
      

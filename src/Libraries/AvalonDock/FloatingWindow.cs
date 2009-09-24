@@ -141,6 +141,21 @@ namespace AvalonDock
         } 
         #endregion
 
+        #region IsClosing Flag Management
+        internal bool IsClosing { get; private set; }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            IsClosing = true;
+            base.OnClosing(e);
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            IsClosing = false;
+            base.OnClosed(e);
+        }
+        #endregion
 
         public abstract Pane ClonePane();
 

@@ -260,6 +260,21 @@ namespace AvalonDock
             return LogicalTreeHelper.GetParent(this) as ResizingPanel;
         }
 
+        /// <summary>
+        /// Closes or hides provided content depending on HideOnClose property
+        /// </summary>
+        internal virtual void CloseOrHide(DockableContent cntToCloseOrHide)
+        {
+            Debug.Assert(cntToCloseOrHide != null);
+
+            DockingManager manager = GetManager();
+            if (cntToCloseOrHide.HideOnClose && manager != null)
+                manager.Hide(cntToCloseOrHide);
+            else
+                RemoveContent(Items.IndexOf(cntToCloseOrHide));
+        }
+
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;

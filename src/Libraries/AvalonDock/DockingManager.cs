@@ -265,6 +265,9 @@ namespace AvalonDock
 
                     _activeDocument = value;
                     NotifyPropertyChanged("ActiveDocument");
+
+                    if (ActiveContent == null)
+                        ActiveContent = value;
                 }
             }
         }
@@ -340,11 +343,12 @@ namespace AvalonDock
             {
                 List<DockableContent> contents = FindContents<DockableContent>();
 
-                foreach (FloatingWindow flWindow in _floatingWindows)
-                {
-                    foreach (DockableContent content in flWindow.HostedPane.Items)
-                        contents.Add(content);
-                }
+                //FindContents already returns contents from FloatingWindows (sg #68987)
+                //foreach (FloatingWindow flWindow in _floatingWindows)
+                //{
+                //    foreach (DockableContent content in flWindow.HostedPane.Items)
+                //        contents.Add(content);
+                //}
 
                 foreach (DockableContent content in _hiddenContents)
                     contents.Add(content);
