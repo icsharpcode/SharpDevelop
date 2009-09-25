@@ -1616,12 +1616,12 @@
 											<File Source="..\..\AddIns\AddIns\Misc\Profiler\ICSharpCode.Profiler.Controls.dll" Name="ICSharpCode.Profiler.Controls.dll" Id="ICSharpCode.Profiler.Controls.dll" KeyPath="yes" />
 										</Component>
 										<Component Guid="30373CF2-3D49-41E1-987F-5C870531FB75" Id="SystemDataSQLiteDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\Profiler\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="System.Data.SQLite.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\Misc\Profiler\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="Profiler.System.Data.SQLite.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="UsageDataCollector" Name="UsageDataCollector">
 										<Component Guid="952BD2C8-F477-4C87-A869-80E4B5E955D6" Id="UDCSystemDataSQLiteDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="System.Data.SQLite.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="UDC.System.Data.SQLite.dll" KeyPath="yes" />
 										</Component>
 										<Component Guid="F0D830A5-C1AE-43E4-B74C-CF78B7E8A849" Id="UsageDataCollectorAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\UsageDataCollector.addin" Name="UsageDataCollector.addin" Id="UsageDataCollector.addin" />

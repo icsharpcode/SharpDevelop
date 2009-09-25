@@ -88,7 +88,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
       <HintPath>..\..\..\..\Libraries\SQLite\System.Data.SQLite.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
