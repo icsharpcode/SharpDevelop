@@ -9,7 +9,7 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public sealed class TargetFramework
+	public class TargetFramework
 	{
 		public readonly static TargetFramework Net20 = new TargetFramework("v2.0", ".NET Framework 2.0") { MinimumMSBuildVersion = new Version(2, 0) };
 		public readonly static TargetFramework Net30 = new TargetFramework("v3.0", ".NET Framework 3.0") { BasedOn = Net20, MinimumMSBuildVersion = new Version(3, 5) };

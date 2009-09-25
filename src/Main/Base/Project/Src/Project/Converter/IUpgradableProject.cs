@@ -70,5 +70,20 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			this.MSBuildVersion = msbuildVersion;
 			this.DisplayName = displayName;
 		}
+		
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+				return false;
+			if (GetType() != obj.GetType())
+				return false;
+			CompilerVersion v = (CompilerVersion)obj;
+			return this.MSBuildVersion == v.MSBuildVersion;
+		}
+		
+		public override int GetHashCode()
+		{
+			return MSBuildVersion.GetHashCode();
+		}
 	}
 }

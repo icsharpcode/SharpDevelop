@@ -109,11 +109,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public virtual void ConvertToMSBuild40(bool changeTargetFrameworkToNet40)
+		protected void SetToolsVersion(string newToolsVersion)
 		{
 			lock (SyncRoot) {
-				projectFile.ToolsVersion = "4.0";
-				userProjectFile.ToolsVersion = "4.0";
+				UnloadCurrentlyOpenProject();
+				projectFile.ToolsVersion = newToolsVersion;
+				userProjectFile.ToolsVersion = newToolsVersion;
+				CreateItemsListFromMSBuild();
 			}
 		}
 		

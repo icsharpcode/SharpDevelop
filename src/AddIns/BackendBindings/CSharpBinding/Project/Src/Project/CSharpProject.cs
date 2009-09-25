@@ -5,15 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Converter;
 
 namespace CSharpBinding
 {
@@ -90,6 +93,30 @@ namespace CSharpBinding
 			}
 		}
 		
+		static readonly CompilerVersion msbuild20 = new CompilerVersion(new Version(2, 0), "C# 2.0");
+		static readonly CompilerVersion msbuild35 = new CompilerVersion(new Version(3, 5), "C# 3.0");
+		static readonly CompilerVersion msbuild40 = new CompilerVersion(new Version(4, 0), "C# 4.0");
+		
+		public override CompilerVersion CurrentCompilerVersion {
+			get {
+				switch (MinimumSolutionVersion) {
+					case Solution.SolutionVersionVS2005:
+						return msbuild20;
+					case Solution.SolutionVersionVS2008:
+						return msbuild35;
+					case Solution.SolutionVersionVS2010:
+						return msbuild40;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+		}
+		
+		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
+		{
+			return new[] { msbuild20, msbuild35, msbuild40 };
+		}
+		
 		/*
 		protected override void AddOrRemoveExtensions()
 		{
@@ -126,6 +153,6 @@ namespace CSharpBinding
 				}
 			}
 		}
-		*/
+		 */
 	}
 }

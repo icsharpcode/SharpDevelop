@@ -409,67 +409,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override void ConvertToMSBuild40(bool changeTargetFrameworkToNet40)
+		protected internal virtual void AddDotnet35References()
 		{
-			lock (SyncRoot) {
-				base.ConvertToMSBuild40(changeTargetFrameworkToNet40);
-				
-				throw new NotImplementedException();
-				/*
-				var winFxImport = MSBuildProject.Imports.Cast<Microsoft.Build.BuildEngine.Import>()
-					.Where(import => !import.IsImported)
-					.FirstOrDefault(import => string.Equals(import.ProjectPath, "$(MSBuildBinPath)\\Microsoft.WinFX.targets", StringComparison.OrdinalIgnoreCase));
-				if (winFxImport != null) {
-					MSBuildProject.Imports.RemoveImport(winFxImport);
-				}
-				if (changeTargetFrameworkToNet40) {
-					bool isDotNet40 = TargetFrameworkVersion == "v4.0";
-					SetProperty(null, null, "TargetFrameworkVersion", "v4.0", PropertyStorageLocations.Base, true);
-					
-					if (!isDotNet40) {
-						AddDotnet40References();
-					}
-				} else {
-					foreach (string config in ConfigurationNames) {
-						foreach (string platform in PlatformNames) {
-							PropertyStorageLocations loc;
-							string targetFrameworkVersion = GetProperty(config, platform, "TargetFrameworkVersion", out loc);
-							if (string.IsNullOrEmpty(targetFrameworkVersion))
-								targetFrameworkVersion = "v2.0";
-							switch (targetFrameworkVersion) {
-								case "CF 1.0":
-									targetFrameworkVersion = "CF 2.0";
-									break;
-								case "v1.0":
-								case "v1.1":
-									targetFrameworkVersion = "v2.0";
-									break;
-							}
-							if (targetFrameworkVersion == "v2.0" && winFxImport != null)
-								targetFrameworkVersion = "v3.0";
-							SetProperty(config, platform, "TargetFrameworkVersion", targetFrameworkVersion, loc, true);
-						}
-					}
-				}
-				 */
-			}
-			AddOrRemoveExtensions();
-		}
-		
-		protected internal virtual void AddDotnet40References()
-		{
-			ReferenceProjectItem rpi = new ReferenceProjectItem(this, "System.Core");
-			rpi.SetMetadata("RequiredTargetFramework", "3.5");
-			ProjectService.AddProjectItem(this, rpi);
+			AddReferenceIfNotExists("System.Core", "3.5");
 			
 			if (GetItemsOfType(ItemType.Reference).Any(r => r.Include == "System.Data")) {
-				rpi = new ReferenceProjectItem(this, "System.Data.DataSetExtensions");
-				rpi.SetMetadata("RequiredTargetFramework", "3.5");
-				ProjectService.AddProjectItem(this, rpi);
+				AddReferenceIfNotExists("System.Data.DataSetExtensions", "3.5");
 			}
 			if (GetItemsOfType(ItemType.Reference).Any(r => r.Include == "System.Xml")) {
-				rpi = new ReferenceProjectItem(this, "System.Xml.Linq");
-				rpi.SetMetadata("RequiredTargetFramework", "3.5");
+				AddReferenceIfNotExists("System.Xml.Linq", "3.5");
+			}
+		}
+		
+		void AddReferenceIfNotExists(string name, string requiredTargetFramework)
+		{
+			if (!(GetItemsOfType(ItemType.Reference).Any(r => r.Include == name))) {
+				ReferenceProjectItem rpi = new ReferenceProjectItem(this, name);
+				if (requiredTargetFramework != null)
+					rpi.SetMetadata("RequiredTargetFramework", requiredTargetFramework);
 				ProjectService.AddProjectItem(this, rpi);
 			}
 		}
@@ -480,7 +437,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		
 		#region IUpgradableProject
-		bool IUpgradableProject.UpgradeDesired {
+		public virtual bool UpgradeDesired {
 			get {
 				return MinimumSolutionVersion < Solution.SolutionVersionVS2010;
 			}
@@ -522,7 +479,51 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
-			throw new NotImplementedException();
+			if (!this.ReadOnly) {
+				lock (SyncRoot) {
+					TargetFramework oldFramework = this.CurrentTargetFramework;
+					if (newVersion != null && GetAvailableCompilerVersions().Contains(newVersion)) {
+						SetToolsVersion(newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor);
+					}
+					if (newFramework != null) {
+						SetProperty(null, null, "TargetFrameworkVersion", newFramework.Name, PropertyStorageLocations.Base, true);
+						if (oldFramework != null && !oldFramework.IsBasedOn(TargetFramework.Net35) && newFramework.IsBasedOn(TargetFramework.Net35))
+							AddDotnet35References();
+					}
+					/*
+				var winFxImport = MSBuildProject.Imports.Cast<Microsoft.Build.BuildEngine.Import>()
+					.Where(import => !import.IsImported)
+					.FirstOrDefault(import => string.Equals(import.ProjectPath, "$(MSBuildBinPath)\\Microsoft.WinFX.targets", StringComparison.OrdinalIgnoreCase));
+				if (winFxImport != null) {
+					MSBuildProject.Imports.RemoveImport(winFxImport);
+				}
+				if (!changeTargetFrameworkToNet40) {
+					foreach (string config in ConfigurationNames) {
+						foreach (string platform in PlatformNames) {
+							PropertyStorageLocations loc;
+							string targetFrameworkVersion = GetProperty(config, platform, "TargetFrameworkVersion", out loc);
+							if (string.IsNullOrEmpty(targetFrameworkVersion))
+								targetFrameworkVersion = "v2.0";
+							switch (targetFrameworkVersion) {
+								case "CF 1.0":
+									targetFrameworkVersion = "CF 2.0";
+									break;
+								case "v1.0":
+								case "v1.1":
+									targetFrameworkVersion = "v2.0";
+									break;
+							}
+							if (targetFrameworkVersion == "v2.0" && winFxImport != null)
+								targetFrameworkVersion = "v3.0";
+							SetProperty(config, platform, "TargetFrameworkVersion", targetFrameworkVersion, loc, true);
+						}
+					}
+				}
+					 */
+					AddOrRemoveExtensions();
+					Save();
+				}
+			}
 		}
 		#endregion
 	}
@@ -536,7 +537,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				CompilableProject project = (CompilableProject)Owner;
 				TargetFramework fx = project.CurrentTargetFramework;
 				if (fx != null && fx.IsBasedOn(TargetFramework.Net35)) {
-					project.AddDotnet40References();
+					project.AddDotnet35References();
 				}
 			}
 		}
