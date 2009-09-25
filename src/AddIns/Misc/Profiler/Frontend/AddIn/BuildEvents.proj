@@ -4,7 +4,8 @@
 		<PrepareForRunDependsOn>$(PrepareForRunDependsOn);MyPostBuildTarget</PrepareForRunDependsOn>
 	</PropertyGroup>
 	<ItemGroup>
-		<CopyHook Include="..\..\bin\Hook*" />
+		<CopyHook Include="..\..\bin\Hook*.dll" />
+		<CopyHook Include="..\..\bin\Hook*.pdb" />
 	</ItemGroup>
 	<Target Name="MyPostBuildTarget">
 		<Copy SourceFiles="@(CopyHook)" DestinationFolder="$(OutputPath)" />

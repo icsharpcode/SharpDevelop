@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ICSharpCode.Profiler.Controller</RootNamespace>
     <AssemblyName>ICSharpCode.Profiler.Controller</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -135,7 +135,6 @@
     </Compile>
     <None Include="BuildEvents.proj" />
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
-    <None Include="Migrated rules for Profiler.Controller.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

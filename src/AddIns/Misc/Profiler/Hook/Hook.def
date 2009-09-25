@@ -1,5 +1,3 @@
-LIBRARY      "Hook.DLL"
-
 EXPORTS
 	DllCanUnloadNow		PRIVATE
 	DllGetClassObject	PRIVATE
