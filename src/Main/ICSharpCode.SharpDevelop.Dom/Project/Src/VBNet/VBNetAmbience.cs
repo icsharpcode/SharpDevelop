@@ -552,6 +552,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		static IReturnType GetElementType(IReturnType potentialArrayType)
 		{
+			if (potentialArrayType == null)
+				return null;
 			ArrayReturnType result;
 			while ((result = potentialArrayType.CastToArrayReturnType()) != null) {
 				potentialArrayType = result.ArrayElementType;
