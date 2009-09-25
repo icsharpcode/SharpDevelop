@@ -1596,7 +1596,7 @@
 											<File Source="..\..\AddIns\AddIns\Misc\SharpRefactoring\SharpRefactoring.dll" Name="SharpRefactoring.dll" Id="SharpRefactoring.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
-									<!--<Directory Id="Profiler" Name="Profiler">
+									<Directory Id="Profiler" Name="Profiler">
 										<Component Guid="C46A4B2C-D5DE-4548-B4A9-4B0AB8C105F3" Id="Hook32Dll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\Profiler\Hook32.dll" Name="Hook32.dll" Id="Hook32.dll" KeyPath="yes" />
 										</Component>
@@ -1618,7 +1618,7 @@
 										<Component Guid="30373CF2-3D49-41E1-987F-5C870531FB75" Id="SystemDataSQLiteDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\Profiler\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="System.Data.SQLite.dll" KeyPath="yes" />
 										</Component>
-									</Directory>-->
+									</Directory>
 									<Directory Id="UsageDataCollector" Name="UsageDataCollector">
 										<Component Guid="952BD2C8-F477-4C87-A869-80E4B5E955D6" Id="UDCSystemDataSQLiteDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="System.Data.SQLite.dll" KeyPath="yes" />

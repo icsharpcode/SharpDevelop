@@ -92,6 +92,8 @@
 		<CleanupDirectories Include="..\..\bin\setup\help"/>
 		<CleanupDirectories Include="..\..\AddIns\Addins"/>
 		<CleanupDirectories Include="..\setup\bin"/>
+		<CleanupDirectories Include="..\AddIns\Misc\Profiler\bin"/>
+		<CleanupDirectories Include="..\AddIns\Misc\Profiler\Hook\obj"/>
 	</ItemGroup>
 	
 	<Target Name="Clean">

@@ -157,6 +157,11 @@
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
+	<PostBuildEvent>
+	  <Command>$(MSBuildBinPath)\MSBuild Hook.vcxproj /p:Configuration=$(Configuration) /p:Platform=x64</Command>
+	</PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="allocator.h" />
     <ClInclude Include="Callback.h" />
