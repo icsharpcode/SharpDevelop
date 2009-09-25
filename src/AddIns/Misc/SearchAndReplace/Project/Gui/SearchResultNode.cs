@@ -116,15 +116,23 @@ namespace SearchAndReplace
 			if (provider != null) {
 				ITextMarkerService markerService = provider.TextEditor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 				if (markerService != null) {
-					ITextMarker marker = markerService.Create(provider.TextEditor.Document.PositionToOffset(lineNumber, column), result.Length);
-					marker.BackgroundColor = Colors.Orange;
-					marker.Tag = this;
-					EventHandler remover = null;
-					remover = (sender, e) => {
-						marker.Delete();
-						provider.TextEditor.Caret.PositionChanged -= remover;
-					};
-					provider.TextEditor.Caret.PositionChanged += remover;
+					ITextMarker marker = null;
+					try {
+						marker = markerService.Create(provider.TextEditor.Document.PositionToOffset(lineNumber, column), result.Length);
+					} catch (ArgumentOutOfRangeException) {
+						// can happen if lineNumber/column is after the end of the document; or if
+						// result.Length is too long
+					}
+					if (marker != null) {
+						marker.BackgroundColor = Colors.Orange;
+						marker.Tag = this;
+						EventHandler remover = null;
+						remover = (sender, e) => {
+							marker.Delete();
+							provider.TextEditor.Caret.PositionChanged -= remover;
+						};
+						provider.TextEditor.Caret.PositionChanged += remover;
+					}
 				}
 			}
 		}
