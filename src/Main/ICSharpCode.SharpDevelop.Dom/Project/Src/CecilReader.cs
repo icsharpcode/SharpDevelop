@@ -324,6 +324,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (MethodDefinition method in type.Constructors) {
 					AddMethod(method);
 				}
+				this.AddDefaultConstructorIfRequired = (this.ClassType == ClassType.Struct || this.ClassType == ClassType.Enum);
 				foreach (MethodDefinition method in type.Methods) {
 					if (!method.IsSpecialName) {
 						AddMethod(method);

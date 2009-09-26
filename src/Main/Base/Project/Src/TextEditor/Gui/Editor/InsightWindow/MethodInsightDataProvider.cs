@@ -144,11 +144,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (trr != null || expressionResult.Context == ExpressionContext.BaseConstructorCall) {
 					if (results.ResolvedType != null) {
 						methods.AddRange(GetConstructorMethods(results.ResolvedType.GetMethods()));
-						IClass resolvedClass = (trr != null) ? trr.ResolvedClass : results.ResolvedType.GetUnderlyingClass();
-						if (methods.Count == 0 && resolvedClass != null && !resolvedClass.IsStatic) {
-							// add default constructor
-							methods.Add(Constructor.CreateDefault(resolvedClass));
-						}
 					}
 				}
 			} else {

@@ -172,6 +172,22 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
+		public void DateTimeDefaultConstructor()
+		{
+			IClass c = mscorlib.GetClass("System.DateTime", 0);
+			Assert.IsFalse(c.Methods.Any(p => p.IsConstructor && p.Parameters.Count == 0));
+			Assert.IsTrue(c.GetAddDefaultConstructorIfRequired());
+		}
+		
+		[Test]
+		public void NoEncodingInfoDefaultConstructor()
+		{
+			IClass c = mscorlib.GetClass("System.Text.EncodingInfo", 0);
+			Assert.IsFalse(c.Methods.Any(p => p.IsConstructor)); // EncodingInfo only has an internal constructor
+			Assert.IsFalse(c.GetAddDefaultConstructorIfRequired());
+		}
+		
+		[Test]
 		public void ParameterComparisonTest()
 		{
 			DefaultParameter p1 = new DefaultParameter("a", mscorlib.GetClass("System.String", 0).DefaultReturnType, DomRegion.Empty);

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -28,10 +29,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual(2, cu.Classes.Count);
 			Assert.AreEqual(1, cu.Classes[0].Methods.Count + cu.Classes[0].Properties.Count);
 			IMember virtualMember;
-			if (cu.Classes[0].Methods.Count > 0)
-				virtualMember = cu.Classes[0].Methods[0];
-			else //if (cu.Classes[0].Properties.Count > 0)
+			if (cu.Classes[0].Properties.Count > 0)
 				virtualMember = cu.Classes[0].Properties[0];
+			else
+				virtualMember = cu.Classes[0].Methods[0];
 			CSharpCodeGenerator ccg = new CSharpCodeGenerator();
 			AttributedNode result = ccg.GetOverridingMethod(virtualMember, new ClassFinder(cu.Classes[1], 3, 1));
 			Assert.IsNotNull(result);

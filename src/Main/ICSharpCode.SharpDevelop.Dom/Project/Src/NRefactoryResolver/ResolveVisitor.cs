@@ -444,11 +444,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			bool resultIsAcceptable;
 			IMethod result = MemberLookupHelper.FindOverload(methods, argumentTypes, out resultIsAcceptable);
 			
-			if (result == null) {
-				IClass c = rt.GetUnderlyingClass();
-				if (c != null)
-					result = Constructor.CreateDefault(c);
-			}
 			ResolveResult rr = CreateMemberResolveResult(result);
 			if (rr != null)
 				rr.ResolvedType = rt;

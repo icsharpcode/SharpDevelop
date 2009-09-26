@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 24;
+		public const short FileVersion = 25;
 		
 		ProjectContentRegistry registry;
 		string cacheDirectory;
@@ -384,7 +384,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				writer.Write((int)c.Modifiers);
 				if (c is DefaultClass) {
-					writer.Write(((DefaultClass)c).Flags);
+					writer.Write(((DefaultClass)c).CalculatedFlags);
 				} else {
 					writer.Write((byte)0);
 				}
@@ -453,7 +453,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					c.BaseTypes.Add(ReadType());
 				}
 				c.Modifiers = (ModifierEnum)reader.ReadInt32();
-				c.Flags = reader.ReadByte();
+				c.CalculatedFlags = reader.ReadByte();
 				c.ClassType = (ClassType)reader.ReadByte();
 				ReadAttributes(c);
 				count = reader.ReadInt32();

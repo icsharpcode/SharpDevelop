@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public class DefaultClass : AbstractEntity, IClass, IComparable
+	public class DefaultClass : AbstractEntity, IClass2, IComparable
 	{
 		ClassType classType;
 		DomRegion region;
@@ -64,13 +64,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		 */
 		
-		byte flags;
+		byte flags = addDefaultConstructorIfRequiredFlag;
+		const byte calculatedFlagsReady                 = 0x01;
 		const byte hasPublicOrInternalStaticMembersFlag = 0x02;
 		const byte hasExtensionMethodsFlag              = 0x04;
-		internal byte Flags {
+		const byte addDefaultConstructorIfRequiredFlag  = 0x08;
+		
+		internal byte CalculatedFlags {
 			get {
-				if (flags == 0) {
-					flags = 1;
+				if ((flags & calculatedFlagsReady) == 0) {
+					flags |= calculatedFlagsReady;
 					foreach (IMember m in this.Fields) {
 						if (m.IsStatic && (m.IsPublic || m.IsInternal)) {
 							flags |= hasPublicOrInternalStaticMembersFlag;
@@ -112,12 +115,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		public bool HasPublicOrInternalStaticMembers {
 			get {
-				return (Flags & hasPublicOrInternalStaticMembersFlag) == hasPublicOrInternalStaticMembersFlag;
+				return (CalculatedFlags & hasPublicOrInternalStaticMembersFlag) == hasPublicOrInternalStaticMembersFlag;
 			}
 		}
 		public bool HasExtensionMethods {
 			get {
-				return (Flags & hasExtensionMethodsFlag) == hasExtensionMethodsFlag;
+				return (CalculatedFlags & hasExtensionMethodsFlag) == hasExtensionMethodsFlag;
+			}
+		}
+		public bool AddDefaultConstructorIfRequired {
+			get {
+				return (flags & addDefaultConstructorIfRequiredFlag) == addDefaultConstructorIfRequiredFlag;
+			}
+			set {
+				if (value)
+					flags |= addDefaultConstructorIfRequiredFlag;
+				else
+					flags &= unchecked((byte)~addDefaultConstructorIfRequiredFlag);
 			}
 		}
 		

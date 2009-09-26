@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using ICSharpCode.NRefactory;
@@ -241,6 +242,68 @@ class Outer<T1> where T1 : IDisposable {
 			Assert.AreSame(method.TypeParameters[0], method.Parameters[2].ReturnType.CastToGenericReturnType().TypeParameter);
 			
 			Assert.AreSame(inner.TypeParameters[1], method.TypeParameters[0].Constraints[0].CastToGenericReturnType().TypeParameter);
+		}
+		
+		[Test]
+		public void DefaultConstructorTest()
+		{
+			ICompilationUnit cu = Parse("class X { }", SupportedLanguage.CSharp, true);
+			
+			Assert.AreEqual(0, cu.Classes[0].Methods.Count);
+			
+			IMethod ctor = cu.Classes[0].DefaultReturnType.GetMethods().Single(m => m.IsConstructor);
+			Assert.AreEqual(ModifierEnum.Public | ModifierEnum.Synthetic, ctor.Modifiers);
+			Assert.AreEqual(0, ctor.Parameters.Count);
+		}
+		
+		[Test]
+		public void DefaultConstructorOnAbstractClassTest()
+		{
+			ICompilationUnit cu = Parse("abstract class X { }", SupportedLanguage.CSharp, true);
+			
+			Assert.AreEqual(0, cu.Classes[0].Methods.Count);
+			
+			IMethod ctor = cu.Classes[0].DefaultReturnType.GetMethods().Single(m => m.IsConstructor);
+			Assert.AreEqual(ModifierEnum.Protected | ModifierEnum.Synthetic, ctor.Modifiers);
+			Assert.AreEqual(0, ctor.Parameters.Count);
+		}
+		
+		[Test]
+		public void NoDefaultConstructorWithExplicitConstructorTest()
+		{
+			ICompilationUnit cu = Parse("class X { private X(int a) {} }", SupportedLanguage.CSharp, true);
+			
+			Assert.AreEqual(1, cu.Classes[0].Methods.Count);
+			
+			IMethod ctor = cu.Classes[0].DefaultReturnType.GetMethods().Single(m => m.IsConstructor);
+			Assert.AreEqual(ModifierEnum.Private, ctor.Modifiers);
+			Assert.AreEqual(1, ctor.Parameters.Count);
+		}
+		
+		[Test]
+		public void DefaultConstructorWithExplicitConstructorOnStructTest()
+		{
+			ICompilationUnit cu = Parse("struct X { private X(int a) {} }", SupportedLanguage.CSharp, true);
+			
+			Assert.AreEqual(1, cu.Classes[0].Methods.Count);
+			
+			List<IMethod> ctors = cu.Classes[0].DefaultReturnType.GetMethods().FindAll(m => m.IsConstructor);
+			Assert.AreEqual(2, ctors.Count);
+			
+			Assert.AreEqual(ModifierEnum.Private, ctors[0].Modifiers);
+			Assert.AreEqual(1, ctors[0].Parameters.Count);
+			
+			Assert.AreEqual(ModifierEnum.Public | ModifierEnum.Synthetic, ctors[1].Modifiers);
+			Assert.AreEqual(0, ctors[1].Parameters.Count);
+		}
+		
+		[Test]
+		public void NoDefaultConstructorOnStaticClassTest()
+		{
+			ICompilationUnit cu = Parse("static class X { }", SupportedLanguage.CSharp, true);
+			
+			Assert.AreEqual(0, cu.Classes[0].Methods.Count);
+			Assert.IsFalse(cu.Classes[0].DefaultReturnType.GetMethods().Any(m => m.IsConstructor));
 		}
 	}
 }
