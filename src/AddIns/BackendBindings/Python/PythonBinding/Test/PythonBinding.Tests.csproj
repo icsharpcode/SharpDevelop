@@ -306,6 +306,7 @@
     <Compile Include="Parsing\ParseSingleClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidClassTestFixture.cs" />
     <Compile Include="PythonBindingAddInFile.cs" />
+    <Compile Include="PythonIndentationTests.cs" />
     <Compile Include="PythonLanguagePropertiesTests.cs" />
     <Compile Include="PythonOptionsPanelTestFixture.cs" />
     <Compile Include="CreateNewPythonProjectTestFixture.cs" />

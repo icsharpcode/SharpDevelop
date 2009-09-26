@@ -24,6 +24,10 @@
 		            resource="ICSharpCode.PythonBinding.Resources.Python.xshd"/>
 	</Path>
 	
+	<Path name="/AddIns/DefaultTextEditor/Formatter/Python">
+		<Class id="PythonFormatter" class="ICSharpCode.PythonBinding.PythonFormattingStrategy"/>
+	</Path>
+	
 	<!-- Add the "Python" entry to the Open File Dialog -->
 	<Path name="/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id="Python"

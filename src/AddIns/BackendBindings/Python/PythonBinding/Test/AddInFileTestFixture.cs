@@ -51,6 +51,7 @@ namespace PythonBinding.Tests
 		Codon pythonProjectIconCodon;
 		Codon convertCSharpProjectCodon;
 		Codon convertVBNetProjectCodon;
+		Codon formattingStrategyCodon;
 		
 		[TestFixtureSetUp]
 		public void SetupFixture()
@@ -83,6 +84,7 @@ namespace PythonBinding.Tests
 				pythonProjectIconCodon = GetCodon("/Workspace/Icons", "PythonProjectIcon");
 				convertCSharpProjectCodon = GetCodon("/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert", "CSharpProjectToPythonProjectConverter");
 				convertVBNetProjectCodon = GetCodon("/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert", "VBNetProjectToPythonProjectConverter");
+				formattingStrategyCodon = GetCodon("/AddIns/DefaultTextEditor/Formatter/Python", "PythonFormatter");
 					
 				// Get the PythonBinding runtime.
 				foreach (Runtime runtime in addin.Runtimes) {
@@ -748,6 +750,12 @@ namespace PythonBinding.Tests
 		public void PythonDebugRunConditionIsSameAsPythonRunCondition()
 		{
 			Assert.AreEqual(pythonWithoutDebuggerRunMenuItemCodon.Conditions[0], pythonRunMenuItemCodon.Conditions[0]);
+		}
+
+		[Test]
+		public void PythonFormatterClass()
+		{
+			Assert.AreEqual("ICSharpCode.PythonBinding.PythonFormattingStrategy", formattingStrategyCodon["class"]);
 		}
 		
 		Codon GetCodon(string name, string extensionPath)

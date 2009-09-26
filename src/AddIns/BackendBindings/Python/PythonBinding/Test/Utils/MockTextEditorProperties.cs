@@ -17,6 +17,7 @@ namespace PythonBinding.Tests.Utils
 	{
 		public MockTextEditorProperties()
 		{
+			FontContainer = new FontContainer(SystemFonts.MenuFont);
 		}
 		
 		public bool CaretLine { get; set; }
