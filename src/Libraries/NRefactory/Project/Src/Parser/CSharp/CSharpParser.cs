@@ -503,9 +503,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			string val = la.val;
 
 			return (cur == Tokens.Event || cur == Tokens.Return ||
-			        (Tokens.IdentifierTokens[cur] &&
-			         (val == "field" || val == "method"   || val == "module" ||
-			          val == "param" || val == "property" || val == "type"))) &&
+			        Tokens.IdentifierTokens[cur]) &&
 				Peek(1).kind == Tokens.Colon;
 		}
 

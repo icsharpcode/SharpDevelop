@@ -297,12 +297,7 @@ AttributeSection<out AttributeSection section>
 	[ IF (IsLocalAttrTarget())
 		( "event"                       (. attributeTarget = "event";.)
 		| "return"                      (. attributeTarget = "return";.)
-		| Identifier                    (. if (t.val != "field"   && t.val != "method" &&
-		                                      t.val != "param" &&
-		                                      t.val != "property" && t.val != "type")
-		                                    Error("attribute target specifier (field, event, method, param, property, return or type) expected");
-		                                   attributeTarget = t.val;
-		                                .)
+		| Identifier                    (. attributeTarget = t.val; .)
 		) ":" 
 	]
 	/*--- attribute list: */
