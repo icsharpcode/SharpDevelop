@@ -209,6 +209,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		void convertButton_Click(object sender, RoutedEventArgs e)
 		{
+			Core.AnalyticsMonitorService.TrackFeature("UpgradeView.convertButton_Click");
+			
 			CompilerVersion selectedCompiler = newVersionComboBox.SelectedValue as CompilerVersion;
 			TargetFramework selectedFramework = newFrameworkComboBox.SelectedValue as TargetFramework;
 			if (selectedCompiler is UnchangedCompilerVersion)

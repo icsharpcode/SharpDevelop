@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		public static void ShowIfRequired(Solution solution)
 		{
 			if (solution.Projects.OfType<IUpgradableProject>().Any(u => u.UpgradeDesired)) {
+				Core.AnalyticsMonitorService.TrackFeature("UpgradeView opened automatically");
 				WorkbenchSingleton.Workbench.ShowView(new UpgradeViewContent(solution));
 			}
 		}

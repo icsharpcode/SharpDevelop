@@ -43,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.AssertMainThread();
 			if (guiBuildProgressMonitor != null) {
 				BuildResults results = new BuildResults();
+				StatusBarService.ShowErrorMessage(Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
 				results.Add(new BuildError(null, Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning")));
 				results.Result = BuildResultCode.MSBuildAlreadyRunning;
 				if (options.Callback != null) {
@@ -51,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			} else {
 				guiBuildProgressMonitor = new CancellableProgressMonitor(StatusBarService.CreateProgressMonitor());
 				guiBuildTrackedFeature = AnalyticsMonitorService.TrackFeature("Build");
-				Gui.WorkbenchSingleton.Workbench.GetPad(typeof(Gui.CompilerMessageView)).BringPadToFront();
+				StatusBarService.SetMessage(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildVerb}..."));
 				ProjectService.RaiseEventBuildStarted(new BuildEventArgs(project, options));
 				StartBuild(project, options,
 				           new MessageViewSink(TaskService.BuildMessageViewCategory),
@@ -120,6 +121,21 @@ namespace ICSharpCode.SharpDevelop.Project
 							guiBuildTrackedFeature.EndTracking();
 							guiBuildTrackedFeature = null;
 						}
+						string message;
+						if (results.Result == BuildResultCode.Cancelled) {
+							message = "${res:MainWindow.CompilerMessages.BuildCancelled}";
+						} else {
+							if (results.Result == BuildResultCode.Success)
+								message = "${res:MainWindow.CompilerMessages.BuildFinished}";
+							else
+								message = "${res:MainWindow.CompilerMessages.BuildFailed}";
+							
+							if (results.ErrorCount > 0)
+								message += " " + results.ErrorCount + " error(s)";
+							if (results.WarningCount > 0)
+								message += " " + results.WarningCount + " warning(s)";
+						}
+						StatusBarService.SetMessage(StringParser.Parse(message));
 						ProjectService.RaiseEventBuildFinished(new BuildEventArgs(buildable, options, results));
 					});
 			}
@@ -594,7 +610,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return;
 				buildIsCancelled = true;
 			}
-			results.Add(new BuildError(null, "Build was cancelled."));
+			results.Add(new BuildError(null, StringParser.Parse("${res:MainWindow.CompilerMessages.BuildCancelled}")));
 		}
 		#endregion
 		

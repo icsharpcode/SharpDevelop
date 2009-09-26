@@ -301,9 +301,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 					break;
 				}
 			}
-			//if (!this.IsVisible) {
-			//	ActivateThisPad();
-			//}
 		}
 		
 		void SelectCategory(string categoryName, string text)
