@@ -24,30 +24,27 @@ void _declspec(naked) FunctionEnterNaked(FunctionID functionID, UINT_PTR clientD
 		#define FrameSize (SavedRegisterOffset + SavedRegisterSize)
 		
 		// stack layout:
-		// esp +  0   -> functionID       \
-		//     +  4   -> low bits of tsc  |- parameters for FunctionEnterGlobal
-		//     +  8   -> high bits of tsc /
-		//     + 12   -> saved edx
-		//     + 16   -> saved ecx
-		//     + 20   -> saved eax
-		//     + 24   -> saved esi
-		//     + 28   -> return address
-		//     + 32   -> functionID      \
-		//     + 36   -> clientData      |- parameters for FunctionEnterNaked
-		//     + 40   -> ...             /
+		// esp +  0   -> saved edx
+		//     +  4   -> saved ecx
+		//     +  8   -> saved eax
+		//     + 12   -> saved esi
+		//     + 16   -> return address
+		//     + 20   -> functionID      \
+		//     + 24   -> clientData      |- parameters for FunctionEnterNaked
+		//     + 28   -> ...             /
 		
 		sub esp, FrameSize
 		// eax, ecx and edx are scratch registers in stdcall, so we need to save those
 		mov SavedRegister(8), eax
 		mov SavedRegister(4), ecx
 		mov SavedRegister(0), edx
-				
+		
 		mov ecx, [esp+FrameSize+8] // get clientData = custom FunctionID
-		// first argument is in ecx
+		// first argument to FunctionEnterGlobal is in ecx (__fastcall)
 		
 		call    FunctionEnterGlobal
 		// the call causes CallPopSize bytes to be popped from the stack
-				
+		
 		mov edx, SavedRegister(0 - CallPopSize)
 		mov ecx, SavedRegister(4 - CallPopSize)
 		mov eax, SavedRegister(8 - CallPopSize)

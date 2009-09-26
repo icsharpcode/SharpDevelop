@@ -16,7 +16,7 @@ struct FunctionInfo
 	//            other 55 bits: number of CPU cycles
 	ULONGLONG TimeSpent;
 	int FillCount; // Number of elements in the hash table
-	int LastChildIndex;        // (Capacity - 1)  Binary value in the from 000001111 for some number of ones
+	int LastChildIndex;        // (Capacity - 1)  Binary value in the form 000001111 for some number of ones
 	                           // Therefore it can be used as bit mask
 	FunctionInfo* Children[0]; // Inline array.  Must be the last element.
 	                           // Overruns behind the struct.  The size must be power of 2.
