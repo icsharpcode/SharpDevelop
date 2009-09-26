@@ -48,12 +48,12 @@ namespace ICSharpCode.XamlBinding
 			if (tokens.Count > 0)
 				return tokens.Dequeue();
 			else
-				return new MarkupExtensionToken(MarkupExtensionTokenKind.EndOfFile, "");
+				return new MarkupExtensionToken(MarkupExtensionTokenKind.EndOfFile, "") { StartOffset = pos, EndOffset = pos };
 		}
 		
 		void AddToken(MarkupExtensionTokenKind kind, string val)
 		{
-			tokens.Enqueue(new MarkupExtensionToken(kind, val) { StartOffset = startPos });
+			tokens.Enqueue(new MarkupExtensionToken(kind, val) { StartOffset = startPos, EndOffset = startPos + val.Length });
 		}
 		
 		void ParseBeginning()
@@ -73,24 +73,21 @@ namespace ICSharpCode.XamlBinding
 		{
 			ConsumeWhitespace();
 			if (pos < text.Length) {
+				startPos = pos;
 				switch (text[pos]) {
 					case '}':
 						AddToken(MarkupExtensionTokenKind.CloseBrace, "}");
 						pos++;
-						startPos = pos;
 						break;
 					case '=':
 						AddToken(MarkupExtensionTokenKind.Equals, "=");
 						pos++;
-						startPos = pos;
 						break;
 					case ',':
 						AddToken(MarkupExtensionTokenKind.Comma, ",");
 						pos++;
-						startPos = pos;
 						break;
 					default:
-						startPos = pos;
 						MembernameOrString();
 						break;
 				}

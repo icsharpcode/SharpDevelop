@@ -13,9 +13,13 @@ namespace ICSharpCode.XamlBinding
 	{
 		public static MarkupExtensionInfo Parse(string text)
 		{
+			return Parse(text, 0);
+		}
+		
+		static MarkupExtensionInfo Parse(string text, int offset)
+		{
 			var info = new MarkupExtensionInfo();
 			string argumentName = null;
-			int namedArgsStart = 0;
 			MarkupExtensionTokenizer tokenizer = new MarkupExtensionTokenizer(text);
 			
 			MarkupExtensionToken token = null;
@@ -25,36 +29,41 @@ namespace ICSharpCode.XamlBinding
 				
 				while (token.Kind != MarkupExtensionTokenKind.EndOfFile) {
 					switch (token.Kind) {
+						case MarkupExtensionTokenKind.OpenBrace:
+							info.StartOffset = token.StartOffset + offset;
+							break;
+						case MarkupExtensionTokenKind.CloseBrace:
+							info.EndOffset = token.EndOffset + offset;
+							break;
 						case MarkupExtensionTokenKind.TypeName:
 							info.ExtensionType = token.Value;
-							info.StartOffset = token.StartOffset;
 							break;
 						case MarkupExtensionTokenKind.MemberName:
 							// if there is an open member without a value add the member name
 							if (argumentName != null)
-								info.TryAddNamedArgument(argumentName, new AttributeValue(string.Empty));
+								info.TryAddNamedArgument(argumentName, ParseValue("", token.EndOffset + offset));
 							argumentName = token.Value;
-							namedArgsStart = token.StartOffset;
 							break;
 						case MarkupExtensionTokenKind.String:
 							if (argumentName != null) {
-								info.TryAddNamedArgument(argumentName, ParseValue(token.Value, namedArgsStart));
+								info.TryAddNamedArgument(argumentName, ParseValue(token.Value, token.StartOffset + offset));
 								argumentName = null;
 							} else {
-								info.PositionalArguments.Add(ParseValue(token.Value, token.StartOffset));
+								info.PositionalArguments.Add(ParseValue(token.Value, token.StartOffset + offset));
 							}
 							break;
 					}
+					
 					token = tokenizer.NextToken();
 				}
 			} catch (MarkupExtensionParseException) {
 				// ignore parser errors
 			} finally {
 				if (token != null && argumentName != null)
-					info.TryAddNamedArgument(argumentName, ParseValue(token.Value, namedArgsStart));
+					info.TryAddNamedArgument(argumentName, ParseValue(token.Value, token.StartOffset + offset));
 			}
 			
-			return info;
+			 return info;
 		}
 		
 		static void TryAddNamedArgument(this MarkupExtensionInfo info, string name, AttributeValue value)
@@ -69,13 +78,13 @@ namespace ICSharpCode.XamlBinding
 			return ParseValue(text, 0);
 		}
 		
-		public static AttributeValue ParseValue(string text, int offset)
+		static AttributeValue ParseValue(string text, int offset)
 		{
 			if (string.IsNullOrEmpty(text))
 				return new AttributeValue(string.Empty) { StartOffset = offset };
 			
 			if (text.StartsWith("{", StringComparison.OrdinalIgnoreCase))
-				return new AttributeValue(Parse(text)) { StartOffset = offset };
+				return new AttributeValue(Parse(text, offset)) { StartOffset = offset };
 			else
 				return new AttributeValue(text) { StartOffset = offset };
 		}

@@ -35,22 +35,20 @@ namespace ICSharpCode.XamlBinding
 		
 		public sealed class HighlightTask {
 			// input
-			public string FileName { get; private set; }
-			public string LineText { get; private set; }
-			public int LineNumber { get; private set; }
-			public int Offset { get; private set; }
+			readonly string fileName;
+			readonly string lineText;
+			readonly int offset;
 			
 			TextView textView;
 			ITextBuffer snapshot;
 			
 			public HighlightTask(ITextEditor editor, DocumentLine currentLine, TextView textView)
 			{
-				this.FileName = editor.FileName;
+				this.fileName = editor.FileName;
 				this.textView = textView;
 				this.snapshot = editor.Document.CreateSnapshot();
-				this.LineNumber = currentLine.LineNumber;
-				this.LineText = currentLine.Text;
-				this.Offset = currentLine.Offset;
+				this.lineText = textView.Document.GetText(currentLine);
+				this.offset = currentLine.Offset;
 				this.task = new Task(Process);
 			}
 			
@@ -120,7 +118,7 @@ namespace ICSharpCode.XamlBinding
 			void InvokeRedraw()
 			{
 				task.Wait();
-				textView.Redraw(this.Offset, this.LineText.Length, DispatcherPriority.Background);
+				textView.Redraw(this.offset, this.lineText.Length, DispatcherPriority.Background);
 			}
 			
 			IEnumerable<HighlightingInfo> GetInfo()
@@ -129,12 +127,12 @@ namespace ICSharpCode.XamlBinding
 				XamlContext context = null;
 				
 				do {
-					if (index + 1 >= LineText.Length)
+					if (index + 1 >= lineText.Length)
 						break;
 
-					index = LineText.IndexOfAny(index + 1, '=', '.');
+					index = lineText.IndexOfAny(index + 1, '=', '.');
 					if (index > -1) {
-						context = CompletionDataHelper.ResolveContext(snapshot, FileName, Offset + index);
+						context = CompletionDataHelper.ResolveContext(snapshot, fileName, offset + index);
 						
 						if (context.ActiveElement == null || context.InAttributeValueOrMarkupExtension || context.InCommentOrCData)
 							continue;
@@ -152,21 +150,21 @@ namespace ICSharpCode.XamlBinding
 									continue;
 								
 								propertyName = token.Substring(propertyNameIndex + 1);
-								startIndex = LineText.IndexOf(propertyName, index, StringComparison.Ordinal);
+								startIndex = lineText.IndexOf(propertyName, index, StringComparison.Ordinal);
 								break;
 							case XamlContextDescription.InTag:
-								if (LineText[index] == '.' || context.Attribute == null)
+								if (lineText[index] == '.' || context.Attribute == null)
 									continue;
 								
 								token = propertyName = context.Attribute.Name;
-								startIndex = LineText.LastIndexOf(propertyName, index, StringComparison.Ordinal);
+								startIndex = lineText.LastIndexOf(propertyName, index, StringComparison.Ordinal);
 								break;
 							default:
 								continue;
 						}
 						
 						if (startIndex > -1) {
-							yield return new HighlightingInfo(token, startIndex, startIndex + propertyName.Length, Offset, context);
+							yield return new HighlightingInfo(token, startIndex, startIndex + propertyName.Length, offset, context);
 						}
 					}
 				} while (index > -1);

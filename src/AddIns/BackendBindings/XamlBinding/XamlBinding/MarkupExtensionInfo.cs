@@ -12,16 +12,18 @@ using System.Linq;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.XmlEditor;
+using System.Text;
 
 namespace ICSharpCode.XamlBinding
 {
-	public class MarkupExtensionInfo
+	public class MarkupExtensionInfo : IEquatable<MarkupExtensionInfo>
 	{
 		public string ExtensionType { get; set; }
 		public IList<AttributeValue> PositionalArguments { get; private set; }
 		public IDictionary<string, AttributeValue> NamedArguments { get; private set; }
 		
 		public int StartOffset { get; set; }
+		public int EndOffset { get; set; }
 		
 		public MarkupExtensionInfo()
 			: this(string.Empty, new List<AttributeValue>(), new Dictionary<string, AttributeValue>(StringComparer.OrdinalIgnoreCase))
@@ -34,14 +36,124 @@ namespace ICSharpCode.XamlBinding
 			this.PositionalArguments = posArgs;
 			this.NamedArguments = namedArgs;
 		}
+		
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as MarkupExtensionInfo);
+		}
+		
+		public override int GetHashCode()
+		{
+			unchecked {
+				int hash = ExtensionType.GetHashCode() ^
+					StartOffset.GetHashCode() ^
+					EndOffset.GetHashCode();
+				
+				foreach (var value in PositionalArguments)
+					hash ^= value.GetHashCode();
+				
+				foreach (var pair in NamedArguments)
+					hash = hash ^ pair.Key.GetHashCode() ^ pair.Value.GetHashCode();
+				
+				return hash;
+			}
+		}
+		
+		public bool Equals(MarkupExtensionInfo other)
+		{
+			if (ReferenceEquals(other, null))
+				return false;
+			
+			if (other.ExtensionType != ExtensionType)
+				return false;
+			
+			if (other.StartOffset != StartOffset)
+				return false;
+			
+			if (other.EndOffset != EndOffset)
+				return false;
+			
+			if (other.NamedArguments.Count != NamedArguments.Count)
+				return false;
+			
+			if (other.PositionalArguments.Count != PositionalArguments.Count)
+				return false;
+			
+			for (int i = 0; i < PositionalArguments.Count; i++) {
+				if (!PositionalArguments[i].Equals(other.PositionalArguments[i]))
+					return false;
+			}
+			
+			List<KeyValuePair<string, AttributeValue>> myItems = NamedArguments.ToList();
+			List<KeyValuePair<string, AttributeValue>> otherItems = other.NamedArguments.ToList();
+			
+			for (int i = 0; i < myItems.Count; i++) {
+				if (myItems[i].Key != otherItems[i].Key)
+					return false;
+				
+				if (!myItems[i].Value.Equals(otherItems[i].Value))
+					return false;
+			}
+			
+			return true;
+		}
+		
+		public static bool operator ==(MarkupExtensionInfo lhs, MarkupExtensionInfo rhs)
+		{
+			if (object.ReferenceEquals(lhs, rhs))
+				return true;
+			
+			if (((object)lhs) == null)
+				return false;
+			
+			return lhs.Equals(rhs);
+		}
+		
+		public static bool operator !=(MarkupExtensionInfo lhs, MarkupExtensionInfo rhs)
+		{
+			return !(lhs == rhs);
+		}
+		
+		public override string ToString()
+		{
+			StringBuilder builder = new StringBuilder("{");
+			
+			foreach (var pos in PositionalArguments)
+				builder.Append(pos + ",");
+			
+			builder.Append("}");
+			
+			string posArgs = builder.ToString();
+			
+			builder = new StringBuilder("{");
+			
+			foreach (var pair in NamedArguments)
+				builder.Append(pair.Key + "=" + pair.Value + ",");
+			
+			builder.Append("}");
+			
+			string namedArgs = builder.ToString();
+			
+			return string.Format("[MarkupExtensionInfo Type={0}, Start={1}, End={2}, Pos={3}, Named={4}]",
+			                    ExtensionType, StartOffset, EndOffset, posArgs, namedArgs);
+		}
 	}
 	
-	public class AttributeValue
+	public class AttributeValue : IEquatable<AttributeValue>
 	{
 		string stringValue;
 		MarkupExtensionInfo extensionValue;
 		
 		public int StartOffset { get; set; }
+		
+		public int EndOffset {
+			get {
+				if (IsString)
+					return StartOffset + StringValue.Length;
+				
+				return extensionValue.EndOffset;
+			}
+		}
 		
 		public bool IsString {
 			get { return stringValue != null; }
@@ -69,6 +181,71 @@ namespace ICSharpCode.XamlBinding
 				throw new ArgumentNullException("value");
 			
 			this.extensionValue = value;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			if (obj is string)
+				return Equals(obj as string);
+			
+			if (obj is AttributeValue)
+				return Equals(obj as AttributeValue);
+			
+			return false;
+		}
+		
+		public override int GetHashCode()
+		{
+			int hash = StartOffset.GetHashCode() ^ EndOffset.GetHashCode();
+			
+			if (IsString)
+				return hash ^ StringValue.GetHashCode();
+			
+			return hash ^ ExtensionValue.GetHashCode();
+		}
+		
+		public bool Equals(AttributeValue other)
+		{
+			if (ReferenceEquals(other, null))
+				return false;
+			
+			if (IsString != other.IsString)
+				return false;
+			
+			if (StartOffset != other.StartOffset)
+				return false;
+			
+			if (EndOffset != other.EndOffset)
+				return false;
+			
+			if (IsString)
+				return other.StringValue == StringValue;
+			else
+				return other.ExtensionValue == extensionValue;
+		}
+		
+		public static bool operator ==(AttributeValue lhs, AttributeValue rhs)
+		{
+			if (object.ReferenceEquals(lhs, rhs))
+				return true;
+			
+			if (((object)rhs) == null)
+				return false;
+			
+			return rhs.Equals(lhs);
+		}
+		
+		public static bool operator !=(AttributeValue lhs, AttributeValue rhs)
+		{
+			return !(lhs == rhs);
+		}
+		
+		public override string ToString()
+		{
+			if (IsString)
+				return string.Format("[AttributeValue Start={1}, End={2}, String={0}]", StringValue, StartOffset, EndOffset);
+			
+			return string.Format("[AttributeValue Start={1}, End={2}, Extension={0}]", ExtensionValue, StartOffset, EndOffset);
 		}
 	}
 }

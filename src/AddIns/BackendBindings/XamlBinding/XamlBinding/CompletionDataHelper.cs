@@ -502,15 +502,17 @@ namespace ICSharpCode.XamlBinding
 							ns = word.Substring(0, pos);
 						
 						string element = word.Substring(pos + 1, word.Length - pos - 1);
-						string className = element;
+						string className = word;
 						int propertyStart = element.IndexOf('.');
-						if (propertyStart != -1)
-							className = element.Substring(0, propertyStart).TrimEnd('.');
+						if (propertyStart != -1) {
+							element = element.Substring(0, propertyStart).TrimEnd('.');
+							className = className.Substring(0, propertyStart + pos + 1).TrimEnd('.');
+						}
 						TypeResolveResult trr = XamlResolver.Resolve(className, context) as TypeResolveResult;
 						IClass typeClass = (trr != null && trr.ResolvedType != null) ? trr.ResolvedType.GetUnderlyingClass() : null;
 						
 						if (typeClass != null && typeClass.HasAttached(true, true))
-							list.Items.AddRange(GetListOfAttached(context, className, ns, true, true));
+							list.Items.AddRange(GetListOfAttached(context, element, ns, true, true));
 					} else {
 						QualifiedNameWithLocation last = context.ActiveElement.ToQualifiedName();
 						TypeResolveResult trr = XamlResolver.Resolve(last.Name, context) as TypeResolveResult;
@@ -552,7 +554,7 @@ namespace ICSharpCode.XamlBinding
 
 		public static IEnumerable<IInsightItem> CreateMarkupExtensionInsight(XamlCompletionContext context)
 		{
-			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.Editor.Caret.Offset);
+			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
 			var type = ResolveType(markup.ExtensionType, context) ?? ResolveType(markup.ExtensionType + "Extension", context);
 			
 			if (type != null) {
@@ -568,12 +570,12 @@ namespace ICSharpCode.XamlBinding
 		public static ICompletionItemList CreateMarkupExtensionCompletion(XamlCompletionContext context)
 		{
 			var list = new XamlCompletionItemList(context);
-			string visibleValue = context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1);
+			string visibleValue = context.RawAttributeValue.Substring(0, Utils.MinMax(context.ValueStartOffset, 0, context.RawAttributeValue.Length));
 			if (context.PressedKey == '=')
 				visibleValue += "=";
-			context.RawAttributeValue = visibleValue;
-			context.AttributeValue = MarkupExtensionParser.ParseValue(visibleValue);
-			var markup = Utils.GetInnermostMarkupExtensionInfo(context.AttributeValue.ExtensionValue);
+//			context.RawAttributeValue = visibleValue;
+//			context.AttributeValue = MarkupExtensionParser.ParseValue(visibleValue);
+			var markup = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset);
 			var type = ResolveType(markup.ExtensionType, context) ?? ResolveType(markup.ExtensionType + "Extension", context);
 			
 			if (type == null) {
@@ -627,7 +629,7 @@ namespace ICSharpCode.XamlBinding
 				case "System.Windows.Markup.TypeExtension":
 					if (context.AttributeValue.ExtensionValue.PositionalArguments.Count <= 1) {
 						list.Items.AddRange(GetClassesFromContext(context).FlattenToList());
-						AttributeValue selItem = Utils.GetInnermostMarkupExtensionInfo(context.AttributeValue.ExtensionValue)
+						AttributeValue selItem = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset)
 							.PositionalArguments.LastOrDefault();
 						string word = context.Editor.GetWordBeforeCaret().TrimEnd();
 						if (selItem != null && selItem.IsString && word == selItem.StringValue) {
@@ -1058,7 +1060,7 @@ namespace ICSharpCode.XamlBinding
 
 		static bool DoStaticExtensionCompletion(XamlCompletionItemList list, XamlCompletionContext context)
 		{
-			AttributeValue selItem = Utils.GetInnermostMarkupExtensionInfo(context.AttributeValue.ExtensionValue)
+			AttributeValue selItem = Utils.GetMarkupExtensionAtPosition(context.AttributeValue.ExtensionValue, context.ValueStartOffset)
 				.PositionalArguments.LastOrDefault();
 			if (context.PressedKey == '.') {
 				if (selItem != null && selItem.IsString) {

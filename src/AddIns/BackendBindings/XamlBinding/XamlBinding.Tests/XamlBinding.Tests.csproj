@@ -71,6 +71,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ExtensionsTests.cs" />
+    <Compile Include="GetMarkupExtensionAtPositionTests.cs" />
     <Compile Include="MockTextEditor.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

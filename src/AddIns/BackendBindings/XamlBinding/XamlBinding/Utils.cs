@@ -24,28 +24,6 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public static class Utils
 	{
-		public static MarkupExtensionInfo GetInnermostMarkupExtensionInfo(MarkupExtensionInfo info)
-		{
-			var lastNamed = info.NamedArguments.LastOrDefault();
-			var lastPositional = info.PositionalArguments.LastOrDefault();
-			
-			if (lastNamed.Value != null) {
-				if (lastNamed.Value.IsString)
-					return info;
-				
-				return GetInnermostMarkupExtensionInfo(lastNamed.Value.ExtensionValue);
-			} else {
-				if (lastPositional != null) {
-					if (lastPositional.IsString)
-						return info;
-					
-					return GetInnermostMarkupExtensionInfo(lastPositional.ExtensionValue);
-				}
-			}
-			
-			return info;
-		}
-		
 		public static int MinMax(int value, int lower, int upper)
 		{
 			return Math.Min(Math.Max(value, lower), upper);
@@ -102,39 +80,44 @@ namespace ICSharpCode.XamlBinding
 		/// An AttributeValue, if at the offset is a positional argument. <br />
 		/// A KeyValuePair&lt;string, AttributeValue>, if at the offset is a named argument.
 		/// </returns>
+		/// <remarks>offset != Caret.Offset, but offset == ValueStartOffset</remarks>
 		public static object GetMarkupDataAtPosition(MarkupExtensionInfo info, int offset)
 		{
 			object previous = info.ExtensionType;
+			int endOffset = info.StartOffset + info.ExtensionType.Length;
 			
 			foreach (var item in info.PositionalArguments) {
-				if (item.StartOffset > offset)
-					break;
-				previous = item.IsString ? item : GetMarkupDataAtPosition(item.ExtensionValue, offset - item.StartOffset);
+				if (item.StartOffset <= offset && offset <= item.EndOffset)
+					previous = item.IsString ? item : GetMarkupDataAtPosition(item.ExtensionValue, offset);
+				
+				endOffset = item.EndOffset;
 			}
 			
 			foreach (var pair in info.NamedArguments) {
-				if (pair.Value.StartOffset > offset)
-					break;
-				previous = pair.Value.IsString ? pair : GetMarkupDataAtPosition(pair.Value.ExtensionValue, offset - pair.Value.StartOffset);
+				if (pair.Value.StartOffset <= offset && offset <= pair.Value.EndOffset)
+					previous = pair.Value.IsString ? pair : GetMarkupDataAtPosition(pair.Value.ExtensionValue, offset);
+				else if (endOffset <= offset && offset <= pair.Value.StartOffset)
+					previous = pair;
+				
+				endOffset = pair.Value.EndOffset;
 			}
 			
 			return previous;
 		}
 		
+		/// <remarks>offset != Caret.Offset, but offset == ValueStartOffset</remarks>
 		public static MarkupExtensionInfo GetMarkupExtensionAtPosition(MarkupExtensionInfo info, int offset)
 		{
 			MarkupExtensionInfo tmp = info;
 			
 			foreach (var item in info.PositionalArguments) {
-				if (item.StartOffset > offset)
-					break;
-				tmp = item.IsString ? tmp : GetMarkupExtensionAtPosition(item.ExtensionValue, offset - item.StartOffset);
+				if (item.StartOffset < offset && offset < item.EndOffset)
+					tmp = item.IsString ? tmp : GetMarkupExtensionAtPosition(item.ExtensionValue, offset);
 			}
 			
 			foreach (var pair in info.NamedArguments) {
-				if (pair.Value.StartOffset > offset)
-					break;
-				tmp = pair.Value.IsString ? tmp : GetMarkupExtensionAtPosition(pair.Value.ExtensionValue, offset - pair.Value.StartOffset);
+				if (pair.Value.StartOffset < offset && offset < pair.Value.EndOffset)
+					tmp = pair.Value.IsString ? tmp : GetMarkupExtensionAtPosition(pair.Value.ExtensionValue, offset);
 			}
 			
 			return tmp;
