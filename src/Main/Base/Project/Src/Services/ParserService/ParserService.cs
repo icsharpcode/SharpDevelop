@@ -164,6 +164,9 @@ namespace ICSharpCode.SharpDevelop
 			string fileName = viewContent.PrimaryFileName;
 			if (fileName == null)
 				return;
+			if (GetParser(fileName) == null)
+				return;
+			
 			ITextBuffer snapshot;
 			IEditable editable = viewContent as IEditable;
 			if (editable != null)

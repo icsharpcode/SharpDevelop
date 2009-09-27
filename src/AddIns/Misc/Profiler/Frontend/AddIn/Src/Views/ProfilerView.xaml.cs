@@ -24,7 +24,11 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 		public ProfilerView(ProfilingDataProvider provider)
 		{
+			// workaround for bug in .NET 4.0 Beta 1
+			AppDomain.CurrentDomain.AssemblyResolve += AppDomain_CurrentDomain_AssemblyResolve;
 			InitializeComponent();
+			AppDomain.CurrentDomain.AssemblyResolve -= AppDomain_CurrentDomain_AssemblyResolve;
+			
 			this.provider = provider;
 			
 			this.timeLine.IsEnabled = true;
@@ -55,6 +59,14 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			
 			InitializeLastItems();
 			InitializeOldTabs();
+		}
+
+		System.Reflection.Assembly AppDomain_CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+		{
+			if (args.Name == "ICSharpCode.Profiler.Controls, PublicKeyToken=null")
+				return typeof(QueryView).Assembly;
+			else
+				return null;
 		}
 
 		void TimeLineRangeChanged(object sender, RangeEventArgs e)

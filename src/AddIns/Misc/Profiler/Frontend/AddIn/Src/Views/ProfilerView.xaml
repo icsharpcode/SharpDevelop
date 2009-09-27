@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
              xmlns:y="clr-namespace:ICSharpCode.Profiler.Controls;assembly=ICSharpCode.Profiler.Controls"
-             xmlns:local="clr-namespace:ICSharpCode.Profiler.AddIn.Views">
+             xmlns:local="clr-namespace:ICSharpCode.Profiler.AddIn.Views;assembly=ICSharpCode.Profiler.AddIn">
 	<UserControl.Resources>
 		<Style x:Key="CloseButton" TargetType="{x:Type Button}">
 			<Setter Property="Template">
