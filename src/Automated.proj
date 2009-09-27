@@ -11,7 +11,7 @@
 		<SharpDevelopSrc>$(ProjectDir)\src</SharpDevelopSrc>
 		<SharpDevelopBin>$(ProjectDir)\bin</SharpDevelopBin>
 		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
-		<ArtefactPrefix>SharpDevelop_3.1.0.</ArtefactPrefix>
+		<ArtefactPrefix>SharpDevelop_3.1.1.</ArtefactPrefix>
 		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
 		<ProfilerSrc>$(SharpDevelopSrc)\AddIns\Misc\Profiler</ProfilerSrc>
 		

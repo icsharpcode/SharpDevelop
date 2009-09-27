@@ -8,14 +8,14 @@
 	-->
 
 	<Product Id="*" 
-		Name="SharpDevelop 3.1"
+		Name="SharpDevelop 3.1.1"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
 		UpgradeCode="757486BE-1F27-4BED-9A3B-737906728F1C"
 		Version="3.1.$(var.PRODUCTBUILDVERSION)">
 
-		<Package Description="SharpDevelop 3.1.0.$(var.PRODUCTBUILDVERSION)"
+		<Package Description="SharpDevelop 3.1.1.$(var.PRODUCTBUILDVERSION)"
 			InstallerVersion="300"
 			Compressed="yes"/>
 		
