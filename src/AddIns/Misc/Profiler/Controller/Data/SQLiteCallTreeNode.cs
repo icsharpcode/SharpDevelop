@@ -26,6 +26,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 		CallTreeNode parent;
 		ProfilingDataSQLiteProvider provider;
 		internal List<int> ids = new List<int>();
+		internal bool hasChildren;
+		internal int activeCallCount;
+		internal int selectionStartIndex;
 		
 		/// <summary>
 		/// Creates a new CallTreeNode.
@@ -91,6 +94,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 				return CpuCyclesSpent / (1000.0 * this.provider.ProcessorFrequency);
 			}
 		}
+		
+		public override double TimeSpentSelf {
+			get {
+				return CpuCyclesSpentSelf / (1000.0 * this.provider.ProcessorFrequency);
+			}
+		}
 
 		/// <summary>
 		/// Gets whether the function call started in a previous data set that's not selected.
@@ -101,8 +110,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
+		public override int CallCount {
+			get { return callCount + activeCallCount; }
+		}
+		
 		/// <summary>
-		/// Merges a collection of CallTreeNodes into one CallTreeNode, all valuess are accumulated.
+		/// Merges a collection of CallTreeNodes into one CallTreeNode, all values are accumulated.
 		/// </summary>
 		/// <param name="nodes">The collection of nodes to process.</param>
 		/// <returns>A new CallTreeNode.</returns>
@@ -110,8 +123,10 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			SQLiteCallTreeNode mergedNode = new SQLiteCallTreeNode(0, null, this.provider);
 			bool initialised = false;
+			
 			foreach (SQLiteCallTreeNode node in nodes) {
 				mergedNode.ids.AddRange(node.ids);
+				mergedNode.selectionStartIndex = Math.Min(mergedNode.selectionStartIndex, node.selectionStartIndex);
 				mergedNode.callCount += node.callCount;
 				mergedNode.cpuCyclesSpent += node.cpuCyclesSpent;
 				if (!initialised || mergedNode.nameId == node.nameId)
@@ -167,6 +182,10 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 			
 			return hash;
+		}
+		
+		public override bool HasChildren {
+			get { return this.hasChildren; }
 		}
 	}
 }

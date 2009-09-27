@@ -79,12 +79,17 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public abstract long CpuCyclesSpent { get; }
 		
+		long cpuCyclesSpentSelf = -1;
+		
 		/// <summary>
 		/// Gets how many CPU cycles were spent inside this method, excluding sub calls.
 		/// </summary>
 		public virtual long CpuCyclesSpentSelf {
 			get {
-				return GetCpuCyclesSelf();
+				if (cpuCyclesSpentSelf == -1)
+					cpuCyclesSpentSelf = GetCpuCyclesSelf();
+				
+				return cpuCyclesSpentSelf;
 			}
 		}
 		
@@ -116,9 +121,17 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <summary>
 		/// Determines whether this node is a thread node or not.
 		/// </summary>
-		public bool IsThread
-		{
+		public bool IsThread {
 			get { return this.Name.StartsWith("Thread#", StringComparison.Ordinal); }
+		}
+		
+		/// <summary>
+		/// Determines whether this node has chil
+		/// </summary>
+		public virtual bool HasChildren {
+			get {
+				return this.Children.Any();
+			}
 		}
 		
 		/// <summary>
@@ -135,6 +148,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// Gets the time spent inside the method (including sub calls) in milliseconds.
 		/// </summary>
 		public abstract double TimeSpent { get; }
+		
+		/// <summary>
+		/// Gets the time spent inside the method (excluding sub calls) in milliseconds.
+		/// </summary>
+		public abstract double TimeSpentSelf { get; }
 		
 		/// <summary>
 		/// Gets a reference to the parent of this CallTreeNode.
