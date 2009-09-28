@@ -242,6 +242,7 @@
     <Compile Include="Designer\GetResourcesFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
+    <Compile Include="Designer\InsertEventHandlerWithSpaceIndentTestFixture.cs" />
     <Compile Include="Designer\InsertNewEventHandlerTestFixture.cs" />
     <Compile Include="Designer\InsertSecondEventHandlerTestFixture.cs" />
     <Compile Include="Designer\IsFullyQualifiedBaseClassFormDesignableTestFixture.cs" />
@@ -315,6 +316,7 @@
     <Compile Include="Parsing\ParseSingleClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidClassTestFixture.cs" />
     <Compile Include="PythonBindingAddInFile.cs" />
+    <Compile Include="PythonIndentationTests.cs" />
     <Compile Include="PythonLanguagePropertiesTests.cs" />
     <Compile Include="PythonOptionsPanelTestFixture.cs" />
     <Compile Include="CreateNewPythonProjectTestFixture.cs" />

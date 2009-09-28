@@ -26,11 +26,13 @@ namespace PythonBinding.Tests.Designer
 		protected DerivedFormDesignerViewContent viewContent;
 		protected string fileName = @"C:\Projects\Python\mainform.py";
 		protected DerivedPythonDesignerGenerator generator;
+		protected MockTextEditorProperties textEditorProperties;
 
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			generator = new DerivedPythonDesignerGenerator();
+			textEditorProperties = new MockTextEditorProperties();
+			generator = new DerivedPythonDesignerGenerator(textEditorProperties);
 			mockViewContent = new MockTextEditorViewContent();
 			viewContent = new DerivedFormDesignerViewContent(mockViewContent, new MockOpenedFile(fileName));
 			generator.Attach(viewContent);

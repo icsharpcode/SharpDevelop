@@ -418,15 +418,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 					if (callingClass != null)
 						isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(trr.ResolvedClass);
 					
-					foreach (IMethod m in trr.ResolvedClass.Methods) {
+					foreach (IMethod m in trr.ResolvedClass.DefaultReturnType.GetMethods()) {
 						if (m.IsConstructor && !m.IsStatic
 						    && m.IsAccessible(callingClass, isClassInInheritanceTree))
 						{
 							methods.Add(m);
 						}
-					}
-					if (methods.Count == 0) {
-						methods.Add(ICSharpCode.SharpDevelop.Dom.Constructor.CreateDefault(trr.ResolvedClass));
 					}
 					ResolveInvocation(methods, node.Arguments);
 					if (resolveResult != null)

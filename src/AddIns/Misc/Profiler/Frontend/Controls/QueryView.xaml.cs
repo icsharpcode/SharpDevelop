@@ -190,16 +190,26 @@ namespace ICSharpCode.Profiler.Controls
 			this.visibleColumnsSelection.ItemsSource = this.gridView.Columns.Select(col => new GridViewColumnModel(col));
 			
 			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
-				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0 &&
-				    (nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) > 0) {
-					double newValue = e.NewSize.Width - this.callCountColumn.Width
+				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0) {
+					double adjustedNameColumnWidth = nameColumn.Width + e.NewSize.Width - e.PreviousSize.Width;
+					double matchingNameColumnWidth = e.NewSize.Width - this.callCountColumn.Width
 						- this.percentColumn.Width - this.timeSpentColumn.Width
 						- this.timeSpentSelfColumn.Width - this.timeSpentPerCallColumn.Width
-						- this.timeSpentSelfPerCallColumn.Width;
-					if ((nameColumn.Width + (e.NewSize.Width - e.PreviousSize.Width)) >= newValue)
-						this.nameColumn.Width = newValue - 25;
-					else
-						nameColumn.Width += (e.NewSize.Width - e.PreviousSize.Width);
+						- this.timeSpentSelfPerCallColumn.Width - 25;
+					
+					// always keep name column at least 75 pixels wide
+					if (matchingNameColumnWidth < 75)
+						matchingNameColumnWidth = 75;
+					
+					if (e.NewSize.Width >= e.PreviousSize.Width) {
+						// treeView got wider: also make name column wider if there's space free
+						if (adjustedNameColumnWidth <= matchingNameColumnWidth)
+							nameColumn.Width = adjustedNameColumnWidth;
+					} else {
+						// treeView got smaller: make column smaller unless there's space free
+						if (adjustedNameColumnWidth >= matchingNameColumnWidth)
+							nameColumn.Width = adjustedNameColumnWidth;
+					}
 				}
 			};
 		}
@@ -332,17 +342,17 @@ namespace ICSharpCode.Profiler.Controls
 		void BtnExpandHotPathSubtreeClick(object sender, RoutedEventArgs e)
 		{
 			foreach (CallTreeNodeViewModel node in this.SelectedItems.ToArray()) {
-				ExpandHotPathItems(node);
+				ExpandHotPathItems(node, node);
 			}
 		}
 		
-		void ExpandHotPathItems(CallTreeNodeViewModel parent)
+		void ExpandHotPathItems(CallTreeNodeViewModel parent, CallTreeNodeViewModel selectedRoot)
 		{
-			if (parent.HotPathIndicatorVisibility == Visibility.Visible) {
+			if ((parent.CpuCyclesSpent / (double)selectedRoot.CpuCyclesSpent) >= 0.2) {
 				parent.IsExpanded = true;
 				
 				foreach (CallTreeNodeViewModel node in parent.Children)
-					ExpandHotPathItems(node);
+					ExpandHotPathItems(node, selectedRoot);
 			}
 		}
 		

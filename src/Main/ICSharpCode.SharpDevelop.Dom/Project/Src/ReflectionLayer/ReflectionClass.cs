@@ -55,6 +55,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 					Methods.Add(new ReflectionMethod(methodInfo, this));
 				}
 			}
+			this.AddDefaultConstructorIfRequired = (this.ClassType == ClassType.Struct || this.ClassType == ClassType.Enum);
 			
 			foreach (EventInfo eventInfo in type.GetEvents(flags)) {
 				Events.Add(new ReflectionEvent(eventInfo, this));

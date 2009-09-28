@@ -81,6 +81,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			using (var busyLock = busyManager.Enter(this)) {
 				if (busyLock.Success) {
 					l.AddRange(c.Methods);
+					if (c.GetAddDefaultConstructorIfRequired() && !c.IsStatic) {
+						// A constructor is added for classes that do not have a default constructor;
+						// and for all structs.
+						if (c.ClassType == ClassType.Class && !l.Exists(m => m.IsConstructor)) {
+							l.Add(Constructor.CreateDefault(c));
+						} else if (c.ClassType == ClassType.Struct || c.ClassType == ClassType.Enum) {
+							l.Add(Constructor.CreateDefault(c));
+						}
+					}
+					
 					if (c.ClassType == ClassType.Interface) {
 						if (c.BaseTypes.Count == 0) {
 							AddMethodsFromBaseType(l, c.ProjectContent.SystemTypes.Object);

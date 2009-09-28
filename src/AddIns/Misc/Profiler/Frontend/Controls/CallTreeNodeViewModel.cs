@@ -330,20 +330,18 @@ namespace ICSharpCode.Profiler.Controls
 		
 		public string TimeSpentSelf {
 			get {
-				if (!node.IsThread) {
-					double value = node.TimeSpent - node.Children.Aggregate(0.0, (sum, item) => sum + item.TimeSpent);
-					return value.ToString("f6") + "ms";
-				} else
+				if (!node.IsThread)
+					return node.TimeSpentSelf.ToString("f6") + "ms";
+				else
 					return null;
 			}
 		}
 		
 		public string TimeSpentSelfPerCall {
 			get {
-				if (!node.IsThread) {
-					double value = node.TimeSpent - node.Children.Aggregate(0.0, (sum, item) => sum + item.TimeSpent);
-					return (value / node.CallCount).ToString("f6") + "ms";
-				} else
+				if (!node.IsThread)
+					return (node.TimeSpentSelf / node.CallCount).ToString("f6") + "ms";
+				else
 					return null;
 			}
 		}
@@ -369,7 +367,7 @@ namespace ICSharpCode.Profiler.Controls
 		public Visibility CheckBoxVisibility
 		{
 			get {
-				if (this.Children.Count > 0)
+				if (node.HasChildren)
 					return Visibility.Visible;
 				else
 					return Visibility.Hidden;

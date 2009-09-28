@@ -96,6 +96,7 @@
     <Compile Include="Src\PythonDesignerLoader.cs" />
     <Compile Include="Src\PythonDesignerLoaderProvider.cs" />
     <Compile Include="Src\PythonExpressionFinder.cs" />
+    <Compile Include="Src\PythonFormattingStrategy.cs" />
     <Compile Include="Src\PythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Src\PythonComponentWalker.cs" />
     <Compile Include="Src\PythonComponentWalkerException.cs" />

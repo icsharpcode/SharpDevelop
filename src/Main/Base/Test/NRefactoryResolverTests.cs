@@ -579,9 +579,48 @@ class A {
 			IMethod m = (IMethod)result.ResolvedMember;
 			Assert.IsNotNull(m);
 			Assert.AreEqual("A", result.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual(0, m.Parameters.Count);
 			
 			var ar = result.GetCompletionData(result.CallingClass.ProjectContent);
 			Assert.IsTrue(ContainsMember(ar, "A.Method"));
+		}
+		
+		[Test]
+		public void DefaultStructCTorOverloadLookupTest()
+		{
+			string program = @"struct A {
+	void Method() {
+		
+	}
+	
+	public A(int x) {}
+}
+";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "new A()", 3);
+			IMethod m = (IMethod)result.ResolvedMember;
+			Assert.IsNotNull(m);
+			Assert.AreEqual("A", result.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual(0, m.Parameters.Count);
+			
+			var ar = result.GetCompletionData(result.CallingClass.ProjectContent);
+			Assert.IsTrue(ContainsMember(ar, "A.Method"));
+		}
+		
+		[Test]
+		public void ReflectionStructCTorOverloadLookupTest()
+		{
+			string program = @"using System;
+class A {
+	void Method() {
+		
+	}
+}
+";
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "new DateTime()", 4);
+			IMethod m = (IMethod)result.ResolvedMember;
+			Assert.IsNotNull(m);
+			Assert.AreEqual("System.DateTime", result.ResolvedType.FullyQualifiedName);
+			Assert.AreEqual(0, m.Parameters.Count);
 		}
 		
 		[Test]

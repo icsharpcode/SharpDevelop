@@ -131,7 +131,7 @@ namespace ICSharpCode.PythonBinding
 				// Insert the event handler at the end of the class with an extra 
 				// new line before it.
 				IDocument doc = viewContent.DesignerCodeFileDocument;
-				string eventHandler = CreateEventHandler(eventMethodName, body, "\t");
+				string eventHandler = CreateEventHandler(eventMethodName, body, NRefactoryToPythonConverter.GetIndentString(textEditorProperties));
 				int line = doc.TotalNumberOfLines;
 				IDocumentLine lastLineSegment = doc.GetLine(line);
 				int offset = lastLineSegment.Offset + lastLineSegment.Length;
@@ -228,6 +228,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Returns the generated event handler.
 		/// </summary>
+		/// <param name="indentation">The indent string to use for the event handler.</param>
 		protected string CreateEventHandler(string eventMethodName, string body, string indentation)
 		{			
 			if (String.IsNullOrEmpty(body)) {
@@ -240,9 +241,9 @@ namespace ICSharpCode.PythonBinding
 			eventHandler.Append("def ");
 			eventHandler.Append(eventMethodName);
 			eventHandler.Append("(self, sender, e):");
-			eventHandler.AppendLine();
+			eventHandler.AppendLine();			
 			eventHandler.Append(indentation);
-			eventHandler.Append("\t");
+			eventHandler.Append(NRefactoryToPythonConverter.GetIndentString(textEditorProperties));
 			eventHandler.Append(body);
 			
 			return eventHandler.ToString();

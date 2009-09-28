@@ -59,39 +59,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 			this.Dispose();
 		}
 		
-		internal IQueryable<CallTreeNode> GetChildren(SQLiteCallTreeNode parent)
-		{
-			SQLiteCommand cmd;
-			using (LockAndCreateCommand(out cmd)) {
-				cmd.CommandText = @"SELECT id, nameid, callcount, timespent, isactiveatstart
-									FROM FunctionData
-									WHERE parentid IN(" + string.Join(",", parent.ids.Select(a => a.ToString(CultureInfo.InvariantCulture.NumberFormat)).ToArray()) + @")
-									ORDER BY id;";
-
-				using (SQLiteDataReader reader = cmd.ExecuteReader()) {
-					List<SQLiteCallTreeNode> items = new List<SQLiteCallTreeNode>();
-
-					while (reader.Read()) {
-						int childNameId = reader.GetInt32(1);
-						SQLiteCallTreeNode newItem = items.Find(node => node.nameId == childNameId);
-						if (newItem == null) {
-							newItem = new SQLiteCallTreeNode(childNameId, (parent.nameId == 0) ? null : parent, this);
-							items.Add(newItem);
-
-							// works because of ORDER BY id
-							newItem.isActiveAtStart = reader.GetBoolean(4);
-						}
-
-						newItem.callCount += reader.GetInt32(2);
-						newItem.cpuCyclesSpent += (ulong)reader.GetInt64(3);
-						newItem.ids.Add(reader.GetInt32(0));
-					}
-
-					return items.Cast<CallTreeNode>().AsQueryable();
-				}
-			}
-		}
-		
 		internal IQueryable<CallTreeNode> GetCallers(SQLiteCallTreeNode item)
 		{
 			SQLiteCommand cmd;
@@ -115,6 +82,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 						SQLiteCallTreeNode newItem = items.Find(node => node.nameId == childNameId);
 						if (newItem == null) {
 							newItem = new SQLiteCallTreeNode(childNameId, null, this);
+							newItem.selectionStartIndex = item.selectionStartIndex;
 							items.Add(newItem);
 
 							// works because of ORDER BY id
@@ -292,6 +260,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 				
 				using (SQLiteDataReader reader = cmd.ExecuteReader()) {
 					SQLiteCallTreeNode root = new SQLiteCallTreeNode(0, null, this);
+					
+					root.selectionStartIndex = startIndex;
 
 					while (reader.Read()) {
 						root.callCount += reader.GetInt32(2);
@@ -304,6 +274,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
+		#region Properties
 		/// <inheritdoc/>
 		public override void SetProperty(string name, string value)
 		{
@@ -350,6 +321,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			return null;
 		}
+		#endregion
 		
 		int processorFrequency = -1;
 		
@@ -376,45 +348,54 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override IQueryable<CallTreeNode> GetFunctions(int startIndex, int endIndex)
 		{
-			Expression<Func<SingleCall, bool>> filterLambda = c => startIndex <= c.DataSetID && c.DataSetID <= endIndex;
-			return CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)));
-		}
-		
-		/*
 			if (startIndex < 0 || startIndex >= this.dataSets.Count)
 				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + endIndex);
 			if (endIndex < startIndex || endIndex >= this.DataSets.Count)
 				throw new ArgumentOutOfRangeException("endIndex", endIndex, "Value must be between " + startIndex + " and " + (this.DataSets.Count - 1));
 			
-			IList<CallTreeNode> functions = new List<CallTreeNode>();
+			Expression<Func<SingleCall, bool>> filterLambda = c => startIndex <= c.DataSetID && c.DataSetID <= endIndex;
+			return from c in CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)))
+				where c.NameMapping.Id != 0 && !c.NameMapping.Name.StartsWith("Thread#", StringComparison.Ordinal)
+				select c;
+		}
+		
+		/*
+		IQueryable<CallTreeNode> GetMergedFunctionData(string condition, int startIndex)
+		{
+			IList<CallTreeNode> result = new List<CallTreeNode>();
 			
 			SQLiteCommand cmd;
 			using (LockAndCreateCommand(out cmd)) {
-				cmd.CommandText = @"SELECT GROUP_CONCAT(id), nameid, SUM(timespent), SUM(callcount)
-									FROM FunctionData
-									WHERE datasetid BETWEEN @start AND @end
-									GROUP BY nameid;";
-				cmd.Parameters.Add(new SQLiteParameter("@start", startIndex));
-				cmd.Parameters.Add(new SQLiteParameter("@end", endIndex));
+				cmd.CommandText = @"SELECT
+										GROUP_CONCAT(id),
+										nameid,
+										SUM(timespent),
+										SUM(callcount),
+										MAX(id != endid) AS hasChildren,
+										SUM((datasetid = " + startIndex + @") AND isActiveAtStart) AS activeCallCount
+									  FROM FunctionData
+									  WHERE " + condition + @"
+									  GROUP BY nameid;";
 				
 				using (SQLiteDataReader reader = cmd.ExecuteReader()) {
-					
 					while (reader.Read()) {
 						SQLiteCallTreeNode node = new SQLiteCallTreeNode(reader.GetInt32(1), null, this);
+						node.selectionStartIndex = startIndex;
 						node.callCount = reader.GetInt32(3);
 						node.cpuCyclesSpent = (ulong)reader.GetInt64(2);
 						node.ids = reader.GetString(0).Split(',').Select(s => int.Parse(s)).ToList();
 						node.ids.Sort();
+						node.hasChildren = reader.GetBoolean(4);
+						node.activeCallCount = reader.GetInt32(5);
 						// Can not do filtering of root and thread nodes here,
 						// because retrieval of names needs access to DB
 						// which is forbidden now (we are inside the lock!)
-						functions.Add(node);
+						result.Add(node);
 					}
 				}
 			}
 			
-			// Do filtering now via LINQ
-			return functions.SkipWhile(i => i.NameMapping.Id == 0 || i.NameMapping.Name.StartsWith("Thread#", StringComparison.Ordinal)).AsQueryable();
+			return result.AsQueryable();
 		}
 		 */
 		

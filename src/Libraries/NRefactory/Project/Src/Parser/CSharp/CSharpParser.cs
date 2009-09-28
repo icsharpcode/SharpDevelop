@@ -503,9 +503,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			string val = la.val;
 
 			return (cur == Tokens.Event || cur == Tokens.Return ||
-			        (Tokens.IdentifierTokens[cur] &&
-			         (val == "field" || val == "method"   || val == "module" ||
-			          val == "param" || val == "property" || val == "type"))) &&
+			        Tokens.IdentifierTokens[cur]) &&
 				Peek(1).kind == Tokens.Colon;
 		}
 
@@ -551,8 +549,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				TypeReference targetType = GetTypeReferenceFromExpression(member.TargetObject);
 				if (targetType != null) {
 					if (targetType.GenericTypes.Count == 0 && targetType.IsArrayType == false) {
-						TypeReference tr = new TypeReference(targetType.Type + "." + member.MemberName, member.TypeArguments);
-						tr.IsGlobal = targetType.IsGlobal;
+						TypeReference tr = targetType.Clone();
+						tr.Type = tr.Type + "." + member.MemberName;
+						tr.GenericTypes.AddRange(member.TypeArguments);
 						return tr;
 					} else {
 						return new InnerClassTypeReference(targetType, member.MemberName, member.TypeArguments);

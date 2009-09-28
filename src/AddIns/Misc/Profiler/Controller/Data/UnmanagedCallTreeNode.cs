@@ -94,6 +94,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 				return this.CpuCyclesSpent / (1000.0 * this.dataSet.ProcessorFrequency);
 			}
 		}
+		
+		public override double TimeSpentSelf {
+			get {
+				return this.CpuCyclesSpentSelf / (1000.0 * this.dataSet.ProcessorFrequency);
+			}
+		}
 
 		public override CallTreeNode Merge(IEnumerable<CallTreeNode> nodes)
 		{

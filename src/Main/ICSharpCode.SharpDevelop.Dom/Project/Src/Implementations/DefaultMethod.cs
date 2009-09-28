@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -36,7 +37,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (c == null)
 				throw new ArgumentNullException("c");
 			
-			Constructor con = new Constructor(ModifierEnum.Public, c.Region, c.Region, c);
+			ModifierEnum modifiers = ModifierEnum.Synthetic;
+			if (c.IsAbstract)
+				modifiers |= ModifierEnum.Protected;
+			else
+				modifiers |= ModifierEnum.Public;
+			DomRegion region = new DomRegion(c.Region.BeginLine, c.Region.BeginColumn, c.Region.BeginLine, c.Region.BeginColumn);
+			Constructor con = new Constructor(modifiers, region, region, c);
 			con.Documentation = "Default constructor of " + c.Name;
 			return con;
 		}

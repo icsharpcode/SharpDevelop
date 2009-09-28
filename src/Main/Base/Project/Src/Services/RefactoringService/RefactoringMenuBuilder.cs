@@ -196,6 +196,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				item.Items.Add(subItem);
 				subItem.Click += delegate {
 					NamespaceRefactoringService.AddUsingDeclaration(callingClass.CompilationUnit, textArea.Document, newNamespace, true);
+					ParserService.BeginParse(textArea.FileName, textArea.Document);
 				};
 			}
 			return item;

@@ -148,4 +148,30 @@ namespace ICSharpCode.SharpDevelop.Dom
 		///// </summary>
 		//IClass Unfreeze();
 	}
+	
+	public interface IClass2 : IClass
+	{
+		/// <summary>
+		/// Gets whether a default constructor should be added to this class if it is required.
+		/// Such automatic default constructors will not appear in IClass.Methods, but will be present
+		/// in IClass.DefaultReturnType.GetMethods().
+		/// </summary>
+		/// <remarks>This way of creating the default constructor is necessary because
+		/// we cannot create it directly in the IClass - we need to consider partial classes.</remarks>
+		bool AddDefaultConstructorIfRequired {
+			get;
+		}
+	}
+	
+	public static class Class2Compatibility
+	{
+		public static bool GetAddDefaultConstructorIfRequired(this IClass c)
+		{
+			IClass2 c2 = c as IClass2;
+			if (c2 != null)
+				return c2.AddDefaultConstructorIfRequired;
+			else
+				return false;
+		}
+	}
 }

@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				member.DeclaringType.ProjectContent.Language.CodeGenerator != null
 				&& !FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType);
 			
-			if (method == null || !method.IsConstructor) {
+			if (method == null || !method.IsConstructor && !method.IsOperator) {
 				if (!FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType) &&
 				    !(member is IProperty && ((IProperty)member).IsIndexer)) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);

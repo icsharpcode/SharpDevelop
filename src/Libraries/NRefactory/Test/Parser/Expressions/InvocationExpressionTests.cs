@@ -117,6 +117,47 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(new Location(4, 1), mre.TargetObject.StartLocation);
 			Assert.AreEqual(new Location(6, 1), mre.TargetObject.EndLocation);
 		}
+		
+		[Test]
+		public void InvocationOnGenericType()
+		{
+			InvocationExpression expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("A<T>.Foo()");
+			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
+			Assert.AreEqual("Foo", mre.MemberName);
+			TypeReferenceExpression tre = (TypeReferenceExpression)mre.TargetObject;
+			Assert.AreEqual("A", tre.TypeReference.Type);
+			Assert.AreEqual("T", tre.TypeReference.GenericTypes[0].Type);
+		}
+		
+		[Test]
+		public void InvocationOnInnerClassInGenericType()
+		{
+			InvocationExpression expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("A<T>.B.Foo()");
+			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
+			Assert.AreEqual("Foo", mre.MemberName);
+			MemberReferenceExpression mre2 = (MemberReferenceExpression)mre.TargetObject;
+			Assert.AreEqual("B", mre2.MemberName);
+			TypeReferenceExpression tre = (TypeReferenceExpression)mre2.TargetObject;
+			Assert.AreEqual("A", tre.TypeReference.Type);
+			Assert.AreEqual("T", tre.TypeReference.GenericTypes[0].Type);
+		}
+		
+		[Test]
+		public void InvocationOnGenericInnerClassInGenericType()
+		{
+			InvocationExpression expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("A<T>.B.C<U>.Foo()");
+			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
+			Assert.AreEqual("Foo", mre.MemberName);
+			TypeReferenceExpression tre = (TypeReferenceExpression)mre.TargetObject;
+			InnerClassTypeReference ictr = (InnerClassTypeReference)tre.TypeReference;
+			Assert.AreEqual("B.C", ictr.Type);
+			Assert.AreEqual(1, ictr.GenericTypes.Count);
+			Assert.AreEqual("U", ictr.GenericTypes[0].Type);
+			
+			Assert.AreEqual("A", ictr.BaseType.Type);
+			Assert.AreEqual(1, ictr.BaseType.GenericTypes.Count);
+			Assert.AreEqual("T", ictr.BaseType.GenericTypes[0].Type);
+		}
 		#endregion
 		
 		#region VB.NET
@@ -143,6 +184,49 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			InvocationExpression ie = ParseUtilVBNet.ParseExpression<InvocationExpression>("546.ToString()");
 			Assert.AreEqual(0, ie.Arguments.Count);
+		}
+		
+		[Test]
+		public void VBInvocationOnGenericType()
+		{
+			InvocationExpression expr = ParseUtilVBNet.ParseExpression<InvocationExpression>("A(Of T).Foo()");
+			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
+			Assert.AreEqual("Foo", mre.MemberName);
+			IdentifierExpression tre = (IdentifierExpression)mre.TargetObject;
+			Assert.AreEqual("A", tre.Identifier);
+			Assert.AreEqual("T", tre.TypeArguments[0].Type);
+		}
+		
+		[Test]
+		public void VBInvocationOnInnerClassInGenericType()
+		{
+			InvocationExpression expr = ParseUtilVBNet.ParseExpression<InvocationExpression>("A(Of T).B.Foo()");
+			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
+			Assert.AreEqual("Foo", mre.MemberName);
+			MemberReferenceExpression mre2 = (MemberReferenceExpression)mre.TargetObject;
+			Assert.AreEqual("B", mre2.MemberName);
+			IdentifierExpression tre = (IdentifierExpression)mre2.TargetObject;
+			Assert.AreEqual("A", tre.Identifier);
+			Assert.AreEqual("T", tre.TypeArguments[0].Type);
+		}
+		
+		[Test]
+		public void VBInvocationOnGenericInnerClassInGenericType()
+		{
+			InvocationExpression expr = ParseUtilVBNet.ParseExpression<InvocationExpression>("A(Of T).B.C(Of U).Foo()");
+			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
+			Assert.AreEqual("Foo", mre.MemberName);
+			
+			MemberReferenceExpression mre2 = (MemberReferenceExpression)mre.TargetObject;
+			Assert.AreEqual("C", mre2.MemberName);
+			Assert.AreEqual("U", mre2.TypeArguments[0].Type);
+			
+			MemberReferenceExpression mre3 = (MemberReferenceExpression)mre2.TargetObject;
+			Assert.AreEqual("B", mre3.MemberName);
+			
+			IdentifierExpression tre = (IdentifierExpression)mre3.TargetObject;
+			Assert.AreEqual("A", tre.Identifier);
+			Assert.AreEqual("T", tre.TypeArguments[0].Type);
 		}
 		
 		#endregion

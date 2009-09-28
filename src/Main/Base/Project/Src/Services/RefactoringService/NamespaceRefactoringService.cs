@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				} else if (!IsSystemNamespace(u1) && IsSystemNamespace(u2)) {
 					return 1;
 				}
-				return a.Usings[0].CompareTo(b.Usings[0]);
+				return u1.CompareTo(u2);
 			}
 			if (a.Aliases.Count != 0 && b.Aliases.Count != 0) {
 				return a.Aliases.Keys.First().CompareTo(b.Aliases.Keys.First());
@@ -96,6 +96,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void AddUsingDeclaration(ICompilationUnit cu, IDocument document, string newNamespace, bool sortExistingUsings)
 		{
+			if (cu == null)
+				throw new ArgumentNullException("cu");
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (newNamespace == null)
+				throw new ArgumentNullException("newNamespace");
+			
+			ParseInformation info = ParserService.ParseFile(cu.FileName, document);
+			if (info != null)
+				cu = info.CompilationUnit;
+			
 			IUsing newUsingDecl = new DefaultUsing(cu.ProjectContent);
 			newUsingDecl.Usings.Add(newNamespace);
 			
@@ -105,9 +116,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			bool inserted = false;
 			for (int i = 0; i < newUsings.Count; i++) {
-				if (newUsings[i].Usings.Count >= 1
-				    && cu.ProjectContent.Language.NameComparer.Compare(newNamespace, newUsings[i].Usings[0]) <= 0)
-				{
+				if (CompareUsings(newUsingDecl, newUsings[i]) <= 0) {
 					newUsings.Insert(i, newUsingDecl);
 					inserted = true;
 					break;
