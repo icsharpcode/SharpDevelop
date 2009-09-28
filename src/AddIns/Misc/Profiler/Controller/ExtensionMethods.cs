@@ -3,6 +3,8 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -32,11 +34,23 @@ namespace ICSharpCode.Profiler.Controller
 		}
 
 		/// <summary>
-		/// Returns a  CallTreeNode with all merged items.
+		/// Returns a CallTreeNode with all merged items.
 		/// </summary>
 		public static CallTreeNode Merge(this IEnumerable<CallTreeNode> items)
 		{
-			return items.First().Merge(items);
+			if (items == null)
+				throw new ArgumentNullException("items");
+			
+			Debug.Assert(MethodBase.GetCurrentMethod() == Data.Linq.KnownMembers.Merge);
+			
+			IQueryable<CallTreeNode> query = items as IQueryable<CallTreeNode>;
+			if (query != null) {
+				return query.Provider.Execute<CallTreeNode>(
+					Expression.Call(Data.Linq.KnownMembers.Merge, query.Expression));
+			} else {
+				var itemList = items.ToList();
+				return itemList.First().Merge(items);
+			}
 		}
 		
 		/// <summary>

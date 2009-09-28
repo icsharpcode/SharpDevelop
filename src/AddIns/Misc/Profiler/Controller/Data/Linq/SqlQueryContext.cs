@@ -19,6 +19,13 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 {
 	sealed class SqlQueryContext
 	{
+		public readonly int StartDataSetID;
+		
+		public SqlQueryContext(SQLiteQueryProvider provider)
+		{
+			this.StartDataSetID = provider.startDataSetID;
+		}
+		
 		int uniqueVariableIndex;
 		
 		public string GenerateUniqueVariableName()

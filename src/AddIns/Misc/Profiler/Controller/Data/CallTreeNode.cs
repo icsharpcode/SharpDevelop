@@ -79,8 +79,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public abstract long CpuCyclesSpent { get; }
 		
-		long cpuCyclesSpentSelf = -1;
-		
 		/// <summary>
 		/// Gets how many CPU cycles were spent inside this method, excluding sub calls.
 		/// </summary>

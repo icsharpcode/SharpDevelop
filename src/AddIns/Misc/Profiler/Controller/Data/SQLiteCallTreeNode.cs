@@ -13,30 +13,27 @@ using System.Data.SQLite;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using IQToolkit;
 
 namespace ICSharpCode.Profiler.Controller.Data
 {
 	/// <summary>
 	/// A CallTreeNode based on a ProfilingDataSQLiteProvider.
 	/// </summary>
-	class SQLiteCallTreeNode : CallTreeNode
+	sealed class SQLiteCallTreeNode : CallTreeNode
 	{
 		internal int nameId;
-		internal bool isActiveAtStart;
 		internal int callCount;
 		internal ulong cpuCyclesSpent;
 		CallTreeNode parent;
-		ProfilingDataSQLiteProvider provider;
+		SQLiteQueryProvider provider;
 		internal List<int> ids = new List<int>();
 		internal bool hasChildren;
 		internal int activeCallCount;
-		internal int selectionStartIndex;
 		
 		/// <summary>
 		/// Creates a new CallTreeNode.
 		/// </summary>
-		public SQLiteCallTreeNode(int nameId, CallTreeNode parent, ProfilingDataSQLiteProvider provider)
+		public SQLiteCallTreeNode(int nameId, CallTreeNode parent, SQLiteQueryProvider provider)
 		{
 			this.nameId = nameId;
 			this.parent = parent;
@@ -110,7 +107,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public override bool IsActiveAtStart {
 			get {
-				return isActiveAtStart;
+				return activeCallCount > 0;
 			}
 		}
 		
@@ -130,7 +127,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			foreach (SQLiteCallTreeNode node in nodes) {
 				mergedNode.ids.AddRange(node.ids);
-				mergedNode.selectionStartIndex = Math.Min(mergedNode.selectionStartIndex, node.selectionStartIndex);
 				mergedNode.callCount += node.callCount;
 				mergedNode.cpuCyclesSpent += node.cpuCyclesSpent;
 				if (!initialised || mergedNode.nameId == node.nameId)
@@ -150,7 +146,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				if (this.parent != null)
 					return (new CallTreeNode[] { this.parent }).AsQueryable();
 				
-				return provider.GetCallers(this);
+				throw new NotImplementedException();
 			}
 		}
 		

@@ -101,12 +101,12 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				return expression + " AS " + newName;
 		}
 		
-		public virtual IEnumerable<CallTreeNode> Execute(ProfilingDataSQLiteProvider provider)
+		public virtual IQueryable<CallTreeNode> Execute(SQLiteQueryProvider provider)
 		{
 			StringBuilder b = new StringBuilder();
-			BuildSql(b, new SqlQueryContext());
+			BuildSql(b, new SqlQueryContext(provider));
 			Console.WriteLine(b.ToString());
-			return Enumerable.Empty<CallTreeNode>().AsQueryable();
+			return provider.RunSQL(b.ToString()).AsQueryable();
 		}
 	}
 	
@@ -138,7 +138,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			             + SqlAs("timespent", newNames.TimeSpent) + ", "
 			             + SqlAs("callcount", newNames.CallCount) + ", "
 			             + SqlAs("(id != endid)", newNames.HasChildren) + ", "
-			             + SqlAs("((datasetid = @start) AND isActiveAtStart)", newNames.ActiveCallCount));
+			             + SqlAs("((datasetid = " + context.StartDataSetID + ") AND isActiveAtStart)", newNames.ActiveCallCount));
 			b.AppendLine("FROM FunctionData");
 			return SqlStatementKind.Select;
 		}

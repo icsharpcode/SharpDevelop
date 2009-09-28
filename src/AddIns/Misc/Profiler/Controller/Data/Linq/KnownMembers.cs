@@ -28,6 +28,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public static readonly PropertyInfo NameMapping_ID = PropertyOf((NameMapping n) => n.Id);
 		public static readonly MethodInfo QuerableOfCallTreeNode_Select = MethodOf((IQueryable<CallTreeNode> q) => q.Select(x => x));
 		public static readonly MethodInfo QuerableOfCallTreeNode_Where = MethodOf((IQueryable<CallTreeNode> q) => q.Where(x => true));
+		public static readonly MethodInfo Merge = MethodOf((IQueryable<CallTreeNode> q) => q.Merge());
 		
 		#region InfoOf Helper Methods
 		static MethodInfo MethodOf<T, R>(Expression<Func<T, R>> ex)
