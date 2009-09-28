@@ -106,6 +106,12 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							throw new NotSupportedException(mc.Method.ToString());
 						}
 					}
+				case ExpressionType.Not:
+					w.Write("(NOT ");
+					UnaryExpression unary = (UnaryExpression)expression;
+					w.Write(unary.Operand);
+					w.Write(")");
+					break;
 				default:
 					throw new NotSupportedException(expression.NodeType.ToString());
 			}

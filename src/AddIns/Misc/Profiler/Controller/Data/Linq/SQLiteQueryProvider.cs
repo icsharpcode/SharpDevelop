@@ -48,6 +48,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			The set of valid expressions is:
 				- Integer constants
 				- Binary operators: < <= > >= == != && ||
+				- Unary operator: !
 				- value(List<int>).Contains(validExpr)
 				- if c is the lambda parameter, then these expressions are valid:
 					c.NameMapping.ID
@@ -111,7 +112,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			
 			Because all constructed SELECT queries always select fields with the same meaning in the same order, executing the query is
 			a matter of simply filling the SQLiteCallTreeNodes with the query results.
-		*/
+		 */
 		
 		readonly ProfilingDataSQLiteProvider sqliteProvider;
 		internal readonly int startDataSetID;
@@ -307,6 +308,13 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							else
 								return null;
 						}
+					case ExpressionType.Not:
+						UnaryExpression unary = (UnaryExpression)expr;
+						Expression imported = Import(unary.Operand);
+						if (imported != null)
+							return Expression.Not(imported);
+						else
+							return null;
 					default:
 						return null;
 				}
