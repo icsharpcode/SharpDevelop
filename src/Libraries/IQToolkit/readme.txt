@@ -1,0 +1,2 @@
+This is a stripped-down version of IQToolkit; it uses the .NET 4 ExpressionVisitor instead of the custom one.
+This is necessary for .NET 4-style extension classes to expression trees as used by the SharpDevelop profiler.
