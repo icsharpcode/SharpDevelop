@@ -19,6 +19,10 @@ using System.Text;
 
 namespace ICSharpCode.Profiler.Controller.Data.Linq
 {
+	/// <summary>
+	/// Performs query optimizations.
+	/// See the documentation on SQLiteQueryProvider for the list of optimizations being performed.
+	/// </summary>
 	sealed class OptimizeQueryExpressionVisitor : System.Linq.Expressions.ExpressionVisitor
 	{
 		QueryNode Visit(QueryNode queryNode)
@@ -52,11 +56,11 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		QueryNode ReorderFilter(Filter filter)
 		{
 			if (filter.Target is Filter) {
-				// Filter(Filter(x, y), z) => Filter(x, y AND z)
+				// x.Filter(y).Filter(z) -> x.Filter(y && z)
 				Filter innerFilter = (Filter)filter.Target;
 				return ReorderFilter(new Filter(innerFilter.Target, innerFilter.Conditions.Concat(filter.Conditions).ToArray()));
 			} else if (filter.Target is MergeByName) {
-				// Filter(MergeByName(x), <criteria>) => MergeByName(Filter(x, <criteria>)) for some safe criterias
+				// x.MergeByName().Filter(<criteria>) -> x.Filter(x, <criteria>).MergeByName() for some safe criterias
 				QueryNode innerTarget = filter.Target.Target;
 				var conditionsToMoveIntoFilter = filter.Conditions.Where(c => IsConditionSafeForMoveIntoMergeByName.Test(c)).ToArray();
 				if (conditionsToMoveIntoFilter.Length != 0) {
@@ -83,23 +87,21 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			}
 			
 			static readonly MemberInfo[] SafeMembers = {
-				KnownMembers.CallTreeNode_NameMapping,
-				KnownMembers.NameMapping_ID,
-				KnownMembers.ListOfInt_Contains,
+				KnownMembers.CallTreeNode_NameMapping
 			};
 			
 			bool IsSafe = true;
 			
 			protected override Expression VisitMember(MemberExpression node)
 			{
-				if (!SafeMembers.Contains(node.Member))
+				if (node.Expression.NodeType == ExpressionType.Parameter && !SafeMembers.Contains(node.Member))
 					IsSafe = false;
 				return base.VisitMember(node);
 			}
 			
 			protected override Expression VisitMethodCall(MethodCallExpression node)
 			{
-				if (!SafeMembers.Contains(node.Method))
+				if (node.Object.NodeType == ExpressionType.Parameter && !SafeMembers.Contains(node.Method))
 					IsSafe = false;
 				return base.VisitMethodCall(node);
 			}

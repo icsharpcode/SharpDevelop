@@ -66,6 +66,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		
 		protected abstract override Expression VisitChildren(Func<Expression, Expression> visitor);
 		
+		/// <summary>
+		/// SQL construction documentation see SQLiteQueryProvider documentation.
+		/// </summary>
 		public abstract SqlStatementKind BuildSql(StringBuilder b, SqlQueryContext context);
 		
 		/// <summary>
@@ -87,6 +90,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			context.CurrentNameSet = newNames;
 		}
 		
+		/// <summary>
+		/// Helper function that builds the text 'expression AS newName'
+		/// </summary>
 		protected static string SqlAs(string expression, string newName)
 		{
 			if (expression == newName)

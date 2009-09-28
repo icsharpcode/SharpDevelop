@@ -108,8 +108,9 @@ Is the syntax highlighting part of the model?
 <p>In my quest for a good representation of the model, I decided on a radical strategy:
 <b>if it's not a <code>char</code>, it's not in the model</b>!
 
-<p>The main class of the model is <code>ICSharpCode.AvalonEdit.Document.TextDocument</code>,
-and it's sort of a <code>StringBuilder</code> with events.
+<p>The main class of the model is <code>ICSharpCode.AvalonEdit.Document.TextDocument</code>.
+Basically, the document is a <code>StringBuilder</code> with events.
+However, the <code>Document</code> namespace also contains several features that are useful to applications working with the text editor.
 
 <p><i>Simplified</i> definition of TextDocument:
 <pre lang="cs">public sealed class TextDocument : ITextSource

@@ -31,6 +31,76 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 	/// 4. Execution of Queries (by converting them to SQL and running it on the DB)
 	/// 5. Execution of remaining query using LINQ-to-Objects
 	/// </summary>
+	/// <remarks>
+	/// The base class of all QueryAst nodes is QueryNode. A QueryNode represents a query of type IQueryable{CallTreeNode}.
+	/// For QueryNodes that have input, that input must be another QueryNode.
+	/// 
+	/// QueryAst nodes:
+	/// 	AllCalls: represents the whole FunctionData table
+	/// 	input.Filter(x => condition1(x) &amp;&amp; y => condition2(y)): WHERE clause with multiple conditions
+	/// 	input.MergeByName(): GROUP BY nameid
+	/// 
+	/// Valid expressions in QueryAst nodes:
+	/// 	Only a limited set of expressions are valid in conditions and sort descriptors.
+	/// 	These are checked by the SafeExpressionImporter.
+	/// 		- Integer constants
+	/// 		- Binary operators: &lt; &lt;= &gt; &gt;= == !=
+	/// 		- value(List{int}).Contains(validExpr)
+	/// 		- if c is the lambda parameter, then these expressions are valid:
+	/// 			c.NameMapping.ID
+	/// 
+	/// 	Additionally, field references on a lambda parameter of type SingleCall are valid inside
+	/// 	filters that operate directly on "AllCalls" (e.g. AllCalls.Filter()).
+	/// 	In other cases (other filters, sort descriptors), SingleCall usage is invalid.
+	/// 	SingleCall usage cannot be imported using SafeExpressionImporter; but is created directly for
+	/// 	some expressions on SQLiteCallTreeNode (see translation rules below).
+	/// 
+	/// Translation rules from CallTreeNode object model to QueryAst:
+	/// 	Properties serving as query roots:
+	/// 		sqliteCallTreeNode.Children = AllCalls.Filter((SingleCall c) -> sqliteCallTreeNode.ids.Contains(c.ParentID))
+	/// 		profilingDataSQLiteProvider.GetFunctions = AllCalls.Filter((SingleCall c) -> @start &lt;= c.DataSetId &amp;&amp; c.DataSetId &lt;= @end).MergeByName()
+	/// 	
+	/// 	Translation rules for query nodes:
+	/// 		input.Where(x => f(x)) -> input.Filter(x => f'(x)), if f(x) is a safe expression
+	/// 			Note: if the root expression of a filter condition is the '&amp;&amp;' operator, a filter with multiple conditions is created.
+	/// 				input.Where(c => c.CallCount > 10 &amp;&amp; c.TimeSpent > 1)
+	/// 					-> input.Filter(c => c.CallCount > 10 &amp;&amp; c => c.TimeSpent > 1)
+	/// 	
+	/// 		input.Select(x => x) -> input
+	/// 			This rule is necessary to remove degenerate selects so that the parts of the query continuing after the select
+	/// 			can also be represented as QueryNodes.
+	/// 	
+	/// 	Translation rules for expression importer:
+	/// 		Any valid expressions (as defined in 'valid expressions in QueryAst nodes') are copied over directly.
+	/// 		Moreover, these expressions are be converted into valid expressions:
+	/// 			c.IsUserCode -> c.NameMapping.ID > 0
+	/// 
+	/// Optimization of QueryAst:
+	/// 	The OptimizeQueryExpressionVisitor is performing these optimizations:
+	/// 		x.Filter(y).Filter(z) -> x.Filter(y &amp;&amp; z)
+	/// 		x.MergeByName().Filter(criteria) -> x.Filter(x, criteria).MergeByName() for some safe criterias
+	/// 			Criterias are safe if they access no CallTreeNode properties except for NameMapping
+	/// 
+	/// SQL string building and execution:
+	/// 	It must be possible to create SQL for every combination of QueryNodes, even if they do strange things like merging multiple times.
+	/// 	To solve this, we define that every SQL query must have the same set of result fields, which are dynamically named to
+	/// 	ensure unique names even with nested queries. The current set of names is held in the SqlQueryContext.
+	/// 	Indeed, conceptually we build a nested query for every QueryNode.
+	/// 	
+	/// 	The query is built inside-out: the innermost nested query is appended first to the StringBuilder, the outer queries will
+	/// 	then insert "SELECT ... FROM (" into the beginning of the StringBuilder and append ") outer query" at the end.
+	/// 
+	/// 	The return value of the QueryNode.BuildSql method contains the kind of SQL statement that is currently in the StringBuilder.
+	/// 	This allows us to simply append clauses in the majority of cases, only rarely the QueryNode.WrapSqlIntoNestedStatement
+	/// 	method will be used to create an outer query.
+	/// 	For example, a Filter will simply append a WHERE to a "SELECT .. FROM .." query. To a "SELECT .. FROM .. GROUP BY .." query,
+	/// 	a Filter will append HAVING. Only in rare cases like filtering after sorting or after limiting the number of elements,
+	/// 	a Filter query node will create a nested query.
+	/// 
+	/// 	Because all constructed SELECT queries always select fields with the same meaning in the same order, executing the query is
+	/// 	a matter of simply filling the SQLiteCallTreeNodes with the query results.
+	/// 
+	/// </remarks>
 	sealed class SQLiteQueryProvider : QueryProvider
 	{
 		readonly ProfilingDataSQLiteProvider sqliteProvider;
