@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Profiler.Controller.Data.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,9 +14,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-
-using ICSharpCode.Profiler.Interprocess;
+using System.Linq.Expressions;
 using System.Threading;
+using ICSharpCode.Profiler.Interprocess;
 
 namespace ICSharpCode.Profiler.Controller.Data
 {
@@ -367,9 +368,19 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
+		internal IQueryable<CallTreeNode> CreateQuery(QueryNode query)
+		{
+			return new IQToolkit.Query<CallTreeNode>(new SQLiteQueryProvider(this), query);
+		}
+		
 		/// <inheritdoc/>
 		public override IQueryable<CallTreeNode> GetFunctions(int startIndex, int endIndex)
 		{
+			Expression<Func<SingleCall, bool>> filterLambda = c => startIndex <= c.DataSetID && c.DataSetID <= endIndex;
+			return CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)));
+		}
+		
+		/*
 			if (startIndex < 0 || startIndex >= this.dataSets.Count)
 				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + endIndex);
 			if (endIndex < startIndex || endIndex >= this.DataSets.Count)
@@ -405,6 +416,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			// Do filtering now via LINQ
 			return functions.SkipWhile(i => i.NameMapping.Id == 0 || i.NameMapping.Name.StartsWith("Thread#", StringComparison.Ordinal)).AsQueryable();
 		}
+		 */
 		
 		LockObject LockAndCreateCommand(out SQLiteCommand cmd)
 		{

@@ -1618,6 +1618,9 @@
 										<Component Guid="30373CF2-3D49-41E1-987F-5C870531FB75" Id="SystemDataSQLiteDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\Profiler\System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Id="Profiler.System.Data.SQLite.dll" KeyPath="yes" />
 										</Component>
+										<Component Guid="E1C27BD1-4FEA-4CAA-884F-1FD93D861426" Id="IQToolkitDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\Profiler\IQToolkit.dll" Name="IQToolkit.dll" Id="IQToolkit.dll" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="UsageDataCollector" Name="UsageDataCollector">
 										<Component Guid="952BD2C8-F477-4C87-A869-80E4B5E955D6" Id="UDCSystemDataSQLiteDll" DiskId="1">

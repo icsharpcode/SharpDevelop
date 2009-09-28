@@ -29,7 +29,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 	/// </summary>
 	public class QueryCompiler
 	{
-		static readonly CSharpCodeProvider csc = new CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+		static readonly CSharpCodeProvider csc = new CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v4.0" } });
 
 		static readonly string text = "using System;" + Environment.NewLine +
 			"using System.Collections.Generic;" + Environment.NewLine +

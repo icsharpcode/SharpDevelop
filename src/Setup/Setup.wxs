@@ -438,7 +438,8 @@
 				<ComponentRef Id="ICSharpCodeProfilerControllerDll"/>
 				<ComponentRef Id="ICSharpCodeProfilerControlsDll"/>
 				<ComponentRef Id="SystemDataSQLiteDll"/>
-			
+				<ComponentRef Id="IQToolkitDll"/>
+				
 				<ComponentRef Id="CppBindingAddin"/>
 				<ComponentRef Id="CppBindingDll"/>
 				<ComponentRef Id="CppBindingTemplates"/>

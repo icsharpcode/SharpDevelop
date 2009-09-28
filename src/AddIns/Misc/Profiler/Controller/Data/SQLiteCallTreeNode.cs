@@ -5,12 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Profiler.Controller.Data.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
+using IQToolkit;
 
 namespace ICSharpCode.Profiler.Controller.Data
 {
@@ -79,7 +82,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public override IQueryable<CallTreeNode> Children {
 			get {
-				return this.provider.GetChildren(this);
+				Expression<Func<SingleCall, bool>> filterLambda = c => this.ids.Contains(c.ParentID);
+				return provider.CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)));
 			}
 		}
 

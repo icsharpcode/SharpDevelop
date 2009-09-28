@@ -297,7 +297,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return "[" + this.NameMapping.Id + " " + this.NameMapping.Name + "]";
+			return "[" + GetType().Name + " " + this.NameMapping.Id + " " + this.NameMapping.Name + "]";
 		}
 	}
 }
