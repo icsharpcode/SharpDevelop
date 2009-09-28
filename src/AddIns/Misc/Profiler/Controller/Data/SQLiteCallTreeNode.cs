@@ -20,7 +20,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 	class SQLiteCallTreeNode : CallTreeNode
 	{
 		internal int nameId;
-		internal bool isActiveAtStart;
 		internal int callCount;
 		internal ulong cpuCyclesSpent;
 		CallTreeNode parent;
@@ -106,12 +105,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public override bool IsActiveAtStart {
 			get {
-				return isActiveAtStart;
+				return activeCallCount > 0;
 			}
 		}
 		
 		public override int CallCount {
-			get { return callCount + activeCallCount; }
+			get { return Math.Max(1, callCount + activeCallCount); }
 		}
 		
 		/// <summary>
@@ -122,13 +121,17 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public override CallTreeNode Merge(IEnumerable<CallTreeNode> nodes)
 		{
 			SQLiteCallTreeNode mergedNode = new SQLiteCallTreeNode(0, null, this.provider);
+			mergedNode.selectionStartIndex = int.MaxValue;
 			bool initialised = false;
 			
 			foreach (SQLiteCallTreeNode node in nodes) {
 				mergedNode.ids.AddRange(node.ids);
+				mergedNode.hasChildren |= node.hasChildren;
 				mergedNode.selectionStartIndex = Math.Min(mergedNode.selectionStartIndex, node.selectionStartIndex);
 				mergedNode.callCount += node.callCount;
+				mergedNode.activeCallCount += node.activeCallCount;
 				mergedNode.cpuCyclesSpent += node.cpuCyclesSpent;
+				
 				if (!initialised || mergedNode.nameId == node.nameId)
 					mergedNode.nameId = node.nameId;
 				else

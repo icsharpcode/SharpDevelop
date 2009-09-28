@@ -5,10 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Profiler.Controller.Data;
+using ICSharpCode.Core;
 using System;
 using System.IO;
 using ICSharpCode.Profiler.Controller;
+using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Profiler.AddIn.Views
@@ -29,7 +30,12 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		
 		public ICSharpCode.SharpDevelop.Gui.IViewContent CreateContentForFile(OpenedFile file)
 		{
-			return new WpfViewer(file);
+			try {
+				return new WpfViewer(file);
+			} catch (IncompatibleDatabaseException e) {
+				MessageService.ShowErrorFormatted("${res:AddIns.Profiler.DatabaseTooNewError}", e.ActualVersion.ToString(), e.ExpectedVersion.ToString());
+				return null;
+			}
 		}
 	}
 }

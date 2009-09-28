@@ -42,6 +42,16 @@ namespace ICSharpCode.Profiler.Controller.Data
 			this.connection = new SQLiteConnection(conn.ConnectionString);
 			
 			this.connection.Open();
+			
+			CheckFileVersion();
+		}
+		
+		void CheckFileVersion()
+		{
+			string version = GetProperty("version");
+			
+			if (version != "1.0")
+				throw new IncompatibleDatabaseException(new Version(1, 0), new Version(version));
 		}
 		
 		/// <summary>
@@ -69,42 +79,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		internal IQueryable<CallTreeNode> GetCallers(SQLiteCallTreeNode item)
 		{
-			SQLiteCommand cmd;
-			using (LockAndCreateCommand(out cmd)) {
-				cmd.CommandText = @"SELECT id, nameid, callcount, timespent, isactiveatstart
-									FROM FunctionData
-									WHERE id IN(
-										SELECT parentid
-										FROM FunctionData
-										WHERE id IN(" + string.Join(",", item.ids.Select(s => s.ToString()).ToArray()) + @")
-									)
-									ORDER BY id;";
-				
-				Debug.Print("GetCallers cmd: " + cmd.CommandText);
-
-				using (SQLiteDataReader reader = cmd.ExecuteReader()) {
-					List<SQLiteCallTreeNode> items = new List<SQLiteCallTreeNode>();
-
-					while (reader.Read()) {
-						int childNameId = reader.GetInt32(1);
-						SQLiteCallTreeNode newItem = items.Find(node => node.nameId == childNameId);
-						if (newItem == null) {
-							newItem = new SQLiteCallTreeNode(childNameId, null, this);
-							newItem.selectionStartIndex = item.selectionStartIndex;
-							items.Add(newItem);
-
-							// works because of ORDER BY id
-							newItem.isActiveAtStart = reader.GetBoolean(4);
-						}
-
-						newItem.callCount += reader.GetInt32(2);
-						newItem.cpuCyclesSpent += (ulong)reader.GetInt64(3);
-						newItem.ids.Add(reader.GetInt32(0));
-					}
-
-					return items.Cast<CallTreeNode>().AsQueryable(); // TODO : remove Cast<> in .NET 4.0
-				}
-			}
+			return GetMergedFunctionData(@"id IN(
+													SELECT parentid
+													FROM FunctionData
+													WHERE id IN(" + string.Join(",", item.ids.Select(s => s.ToString()).ToArray()) + ")" +
+			                             ")", item.selectionStartIndex);
 		}
 		
 		/// <inheritdoc/>
