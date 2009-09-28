@@ -84,16 +84,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public virtual long CpuCyclesSpentSelf {
 			get {
-				if (cpuCyclesSpentSelf == -1)
-					cpuCyclesSpentSelf = GetCpuCyclesSelf();
-				
-				return cpuCyclesSpentSelf;
+				return CpuCyclesSpent - Children.Aggregate(0L, (sum, item) => sum + item.CpuCyclesSpent);
 			}
-		}
-		
-		long GetCpuCyclesSelf()
-		{
-			return CpuCyclesSpent - Children.Aggregate(0L, (sum, item) => sum + item.CpuCyclesSpent);
 		}
 		
 		/// <summary>

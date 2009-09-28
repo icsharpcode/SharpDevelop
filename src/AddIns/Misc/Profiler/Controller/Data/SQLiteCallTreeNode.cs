@@ -23,7 +23,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 	{
 		internal int nameId;
 		internal int callCount;
-		internal ulong cpuCyclesSpent;
+		internal long cpuCyclesSpent;
 		CallTreeNode parent;
 		SQLiteQueryProvider provider;
 		internal List<int> ids = new List<int>();
@@ -64,8 +64,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public override long CpuCyclesSpent {
 			get{
-				return (long)this.cpuCyclesSpent;
+				return this.cpuCyclesSpent;
 			}
+		}
+		
+		public override long CpuCyclesSpentSelf {
+			get { return 0; }
 		}
 
 		/// <summary>

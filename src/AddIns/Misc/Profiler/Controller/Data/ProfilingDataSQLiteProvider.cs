@@ -311,7 +311,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 					while (reader.Read()) {
 						SQLiteCallTreeNode node = new SQLiteCallTreeNode(reader.GetInt32(1), null, queryProvider);
 						node.callCount = reader.GetInt32(3);
-						node.cpuCyclesSpent = (ulong)reader.GetInt64(2);
+						node.cpuCyclesSpent = reader.GetInt64(2);
 						object ids = reader.GetValue(0);
 						if (ids is long) {
 							node.ids = new List<int> { (int)(long)ids };
