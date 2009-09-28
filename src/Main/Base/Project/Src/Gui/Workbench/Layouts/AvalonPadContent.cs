@@ -51,24 +51,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				style = AnchorStyle.Bottom;
 			else
 				style = AnchorStyle.Right;
+			
 			layout.DockingManager.Show(this, DockableContentState.Docked, style);
-			SetPaneSizeWorkaround(this.ContainerPane);
 			if ((descriptor.DefaultPosition & DefaultPadPositions.Hidden) != 0)
 				layout.DockingManager.Hide(this);
-		}
-		
-		static void SetPaneSizeWorkaround(Pane pane)
-		{
-			ResizingPanel panel = pane.Parent as ResizingPanel;
-			if (panel != null) {
-				if (panel.Orientation == Orientation.Horizontal) {
-					if (ResizingPanel.GetResizeWidth(pane).Value == 0)
-						ResizingPanel.SetResizeWidth(pane, new GridLength(200));
-				} else if (panel.Orientation == Orientation.Vertical) {
-					if (ResizingPanel.GetResizeHeight(pane).Value == 0)
-						ResizingPanel.SetResizeHeight(pane, new GridLength(150));
-				}
-			}
 		}
 		
 		void AvalonPadContent_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

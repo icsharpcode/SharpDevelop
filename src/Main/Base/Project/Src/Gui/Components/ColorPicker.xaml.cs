@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ButtonClick(object sender, RoutedEventArgs e)
 		{
-			if (dialog.ShowWpfDialog() ?? false) {
+			if (dialog.ShowWpfDialog() == true) {
 				this.Value = dialog.WpfColor;
 			}
 		}

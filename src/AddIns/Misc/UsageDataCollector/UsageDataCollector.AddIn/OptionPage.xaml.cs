@@ -35,14 +35,14 @@ namespace ICSharpCode.UsageDataCollector
 				else
 					declineRadio.IsChecked = true;
 			}
-			showCollectedDataButton.IsEnabled = acceptRadio.IsChecked ?? false;
+			showCollectedDataButton.IsEnabled = acceptRadio.IsChecked == true;
 		}
 		
 		public override bool SaveOptions()
 		{
-			if (acceptRadio.IsChecked ?? false)
+			if (acceptRadio.IsChecked == true)
 				AnalyticsMonitor.Enabled = true;
-			else if (declineRadio.IsChecked ?? false)
+			else if (declineRadio.IsChecked == true)
 				AnalyticsMonitor.Enabled = false;
 			return base.SaveOptions();
 		}

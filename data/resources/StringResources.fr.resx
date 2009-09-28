@@ -424,6 +424,181 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Utiliser le langage du projet courant</value>
   </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Résultat</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Noeuds fusionnés</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Toutes les fonctions concernant {0}</value>
+  </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>Session de profilage SharpDevelop</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Ce projet ne peut pas démarrer, exécutable introuvable, assurez-vous que le projet et toutes ses dépendances sont construites.</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Aucun projet n'est démarrable. Arrêt...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject" xml:space="preserve">
+    <value>Ce projet ne peut pas démarrer. Voulez-vous profiler le projet de démarrage de la solution à la place?</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>Préparation pour l'analyse...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>Impossible d'inscrire le profileur dans le registre COM. Impossible de démarrer le profilage!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.UnregisterFailed" xml:space="preserve">
+    <value>Désenregistrement du profiler du registre COM impossible!</value>
+  </data>
+  <data name="AddIns.Profiler.MessageViewCategory" xml:space="preserve">
+    <value>Profiler</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.CombineRecursiveCalls" xml:space="preserve">
+    <value>Combiner les appels récursifs.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.DoNotProfileNetInternals" xml:space="preserve">
+    <value>Ne pas profiler les appels internes du framework.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDC" xml:space="preserve">
+    <value>Collecter les données uniquement à la fin de la session.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup" xml:space="preserve">
+    <value>Commencer la collecte des données au démarrage de la session.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.Header" xml:space="preserve">
+    <value>Collection de données</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
+    <value>Taille du fichier de stockage temporaire:</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
+    <value>Général</value>
+  </data>
+  <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
+    <value>Profilage</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileCurrentProject" xml:space="preserve">
+    <value>Profiler le projet en cours</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable" xml:space="preserve">
+    <value>Sélectionner l'exécutable à profiler</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable.ErrorMessage" xml:space="preserve">
+    <value>Données invalides, veuillez re-essayer!</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.CmdLineArgsText" xml:space="preserve">
+    <value>Arguments de la ligne de commande:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.DescriptionText" xml:space="preserve">
+    <value>Sélectionnez le chemin de l'exécutable à profiler.
+En option, vous pouvez spécifer un répertoire de travail et des arguments en ligne de commande.</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.ExePathText" xml:space="preserve">
+    <value>Chemin de l'exécutable:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.StartText" xml:space="preserve">
+    <value>Démarrer le profilage</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.Title" xml:space="preserve">
+    <value>Profiler l'exécutable</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.WorkingDirText" xml:space="preserve">
+    <value>Répertoire de travail:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.CollectData" xml:space="preserve">
+    <value>Collecter des données</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Shutdown" xml:space="preserve">
+    <value>Arrêter</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Title" xml:space="preserve">
+    <value>Fenêtre de contrôle du profileur</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallCountColumnText" xml:space="preserve">
+    <value>Nombre d'appels</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallsText" xml:space="preserve">
+    <value>Appels:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ClearQueryHistoryText" xml:space="preserve">
+    <value>Effacer l'historique des requêtes</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData" xml:space="preserve">
+    <value>Copier les données sélectionnées</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopyStacktrace" xml:space="preserve">
+    <value>Copier stacktrace</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.FindCallsOfSelected" xml:space="preserve">
+    <value>Trouver les appels des fonctions sélectionnées</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition" xml:space="preserve">
+    <value>Aller à la définition</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.SetAsRoot" xml:space="preserve">
+    <value>Choisir comme racine/Fusionner</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions" xml:space="preserve">
+    <value>Monter les fonctions</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
+    <value>Cycles CPU:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExecuteQueryText" xml:space="preserve">
+    <value>Executer la requête</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExpandHotPathSubtreeText" xml:space="preserve">
+    <value>Voir le chemin sélectionné</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.OverviewTabText" xml:space="preserve">
+    <value>Vue générale</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.QueryHistoryText" xml:space="preserve">
+    <value>Historique des requêtes</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.SearchLabelText" xml:space="preserve">
+    <value>Chercher:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ShowQueryBarText" xml:space="preserve">
+    <value>Afficher la barre de requête</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimePercentageOfParentColumnText" xml:space="preserve">
+    <value>% de parents</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentColumnText" xml:space="preserve">
+    <value>Temps passé</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentPerCallColumnText" xml:space="preserve">
+    <value>Temps passé/appel</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfColumnText" xml:space="preserve">
+    <value>Temps passé (profileur)</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfPerCallColumnText" xml:space="preserve">
+    <value>Temps passé (ce code) par appel</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeText" xml:space="preserve">
+    <value>Temps:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Title" xml:space="preserve">
+    <value>Analyseur de session de profilage</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Top20TabText" xml:space="preserve">
+    <value>Top 20</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.WaitBarText" xml:space="preserve">
+    <value>Rafraîchissement de la vue, veuillez patienter...</value>
+  </data>
+  <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
+    <value>Exécuter avec le profileur</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extraire la méthode</value>
   </data>
@@ -593,8 +768,17 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   <data name="AddIns.XamlBinding.Options.CodeCompletionGroupLabel" xml:space="preserve">
     <value>Complétion de code</value>
   </data>
+  <data name="AddIns.XamlBinding.Options.EventColor" xml:space="preserve">
+    <value>Couleur de l'évènement:</value>
+  </data>
   <data name="AddIns.XamlBinding.Options.EventHandlerNamePattern" xml:space="preserve">
     <value>Pattern pour le nom du gestionnaire d'évènement:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.NamespaceDeclarationColor" xml:space="preserve">
+    <value>Couleur de la déclaration d'espace de nom XML:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.PropertyColor" xml:space="preserve">
+    <value>Couleur de la propriété:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.SwitchToCodeViewAfterInsertion" xml:space="preserve">
     <value>Aller au code aprés l'insertion d'un nouveau gestionnaire d'évènement</value>
@@ -4351,7 +4535,7 @@ Allez dans 'Outils/Options-&gt;Style Visuel pour changer l'ambiance actuelle.</v
     <value>Toutes les occurences ont été marquées.</value>
   </data>
   <data name="ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone" xml:space="preserve">
-    <value>Toutes les occurences ont été remplacées.</value>
+    <value>${Count} remplacements effectués.</value>
   </data>
   <data name="ICSharpCode.UnitTesting.AllTestsTreeNode.Text" xml:space="preserve">
     <value>Tous les tests</value>
@@ -6679,6 +6863,12 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   <data name="Templates.Project.ConsoleProject.Name" xml:space="preserve">
     <value>Application console</value>
   </data>
+  <data name="Templates.Project.ConsoleProject.Unmanaged.Description" xml:space="preserve">
+    <value>Un projet qui crée une application non-managée (native) en ligne de commande.</value>
+  </data>
+  <data name="Templates.Project.ConsoleProject.Unmanaged.Name" xml:space="preserve">
+    <value>Projet console non-managé</value>
+  </data>
   <data name="Templates.Project.Direct3DApplication.Description" xml:space="preserve">
     <value>Projet pour la création d'application utilisant Direct3D.</value>
   </data>
@@ -6830,7 +7020,7 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>&amp;Déboguer</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Attach" xml:space="preserve">
-    <value>Lier au Processus...</value>
+    <value>Lier au processus...</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Break" xml:space="preserve">
     <value>&amp;Arrêt</value>
@@ -7280,7 +7470,7 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Trouver la &amp;sélection suivante</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Goto" xml:space="preserve">
-    <value>&amp;Aller à la ligne...</value>
+    <value>&amp;Aller à...</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.GotoBrace" xml:space="preserve">
     <value>&amp;Accolade correspondante</value>

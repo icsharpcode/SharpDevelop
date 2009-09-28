@@ -425,6 +425,181 @@ Installieren Sie das .NET Framework SDK.</value>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Aktuelle Projektsprache berücksichtigen</value>
   </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Ergebnis</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Zusammengefasste Knoten</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Alle Funktionen für {0}</value>
+  </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>SharpDevelop Profiling Sitzung</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Das Projekt kann nicht gestartet werden, weil die ausführbare Datei nicht gefunden werden konnte. Bitte stellen Sie sicher, dass das Projekt und alle Abhängigkeiten korrekt kompiliert wurden!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Es wurde kein ausführbares Projekt gefunden. Abbruch ...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject" xml:space="preserve">
+    <value>Dieses Projekt kann nicht gestartet werden. Wollen Sie stattdessen das Startprojekt der Projektmappe profilen?</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>Bereite Analyse vor ...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>Der Profiler konnte nicht in der COM-Registrierungsdatenbank eingetragen werden. Die Sitzung kann nicht gestartet werden!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.UnregisterFailed" xml:space="preserve">
+    <value>Der Profiler konnte nicht aus der COM-Registrierungsdatenbank entfernt werden!</value>
+  </data>
+  <data name="AddIns.Profiler.MessageViewCategory" xml:space="preserve">
+    <value>Profilen</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.CombineRecursiveCalls" xml:space="preserve">
+    <value>Rekursive Aufrufe zusammenfassen.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.DoNotProfileNetInternals" xml:space="preserve">
+    <value>Interne .NET Aufrufe nicht profilen.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDC" xml:space="preserve">
+    <value>Daten nur am Ende der Sitzung sammeln.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup" xml:space="preserve">
+    <value>Sofort nach Beginn der Sitzung mit der Datensammlung beginnen.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.Header" xml:space="preserve">
+    <value>Datensammlung</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
+    <value>Größe des temporären Zwischenspeichers:</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
+    <value>Allgemein</value>
+  </data>
+  <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
+    <value>Profiler</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileCurrentProject" xml:space="preserve">
+    <value>Aktuelles Projekt profilen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable" xml:space="preserve">
+    <value>Ausführbare Datei profilen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable.ErrorMessage" xml:space="preserve">
+    <value>Ungültige Daten, probieren Sie es noch einmal!</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.CmdLineArgsText" xml:space="preserve">
+    <value>Kommandozeilen-Argumente:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.DescriptionText" xml:space="preserve">
+    <value>Wählen Sie den Pfad zur ausführbaren Datei die Sie profilen wollen.
+Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente angeben.</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.ExePathText" xml:space="preserve">
+    <value>Pfad zur ausführbaren Datei:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.StartText" xml:space="preserve">
+    <value>Profiler starten</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.Title" xml:space="preserve">
+    <value>Ausführbare Datei profilen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.WorkingDirText" xml:space="preserve">
+    <value>Arbeitsverzeichnis:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.CollectData" xml:space="preserve">
+    <value>Daten sammeln</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Shutdown" xml:space="preserve">
+    <value>Beenden</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Title" xml:space="preserve">
+    <value>Profiler-Steuerung</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallCountColumnText" xml:space="preserve">
+    <value>Aufrufanzahl</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallsText" xml:space="preserve">
+    <value>Aufrufe:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ClearQueryHistoryText" xml:space="preserve">
+    <value>Abfrageverlauf löschen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData" xml:space="preserve">
+    <value>Gewählte Daten kopieren</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopyStacktrace" xml:space="preserve">
+    <value>Stacktrace kopieren</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.FindCallsOfSelected" xml:space="preserve">
+    <value>Aufrufe gewählter Funktionen finden</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition" xml:space="preserve">
+    <value>Gehe zur Definition</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.SetAsRoot" xml:space="preserve">
+    <value>Als Wurzelknoten setzen/zusammenfassen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions" xml:space="preserve">
+    <value>Zeige Funktionen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
+    <value>CPU Zyklen:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExecuteQueryText" xml:space="preserve">
+    <value>Abfrage ausführen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExpandHotPathSubtreeText" xml:space="preserve">
+    <value>Gewählten Hot-Path ausklappen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.OverviewTabText" xml:space="preserve">
+    <value>Übersicht</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.QueryHistoryText" xml:space="preserve">
+    <value>Abfrageverlauf</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.SearchLabelText" xml:space="preserve">
+    <value>Suche:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ShowQueryBarText" xml:space="preserve">
+    <value>Zeige Abfrageleiste</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimePercentageOfParentColumnText" xml:space="preserve">
+    <value>% des Elternknotens</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentColumnText" xml:space="preserve">
+    <value>Zeit</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentPerCallColumnText" xml:space="preserve">
+    <value>Zeit/Aufruf</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfColumnText" xml:space="preserve">
+    <value>Zeit (ohne Kindknoten)</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfPerCallColumnText" xml:space="preserve">
+    <value>Zeit (ohne Kindknoten)/Aufruf</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeText" xml:space="preserve">
+    <value>Zeit:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Title" xml:space="preserve">
+    <value>Profiler-Sitzungsanalyse</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Top20TabText" xml:space="preserve">
+    <value>Top 20</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.WaitBarText" xml:space="preserve">
+    <value>Aktualisiere Ansicht, bitte warten ...</value>
+  </data>
+  <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
+    <value>Mit Profiler starten</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Methode extrahieren</value>
   </data>
@@ -586,14 +761,26 @@ Sie müssen diese Dateien speichern, bevor die Operation ausgeführt werden kann
   <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
     <value>Margin entfernen</value>
   </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes" xml:space="preserve">
+    <value>Nicht benötigte Attribute entfernen</value>
+  </data>
   <data name="AddIns.XamlBinding.NewEventHandlerItem" xml:space="preserve">
     <value>&lt;Neuer Ereignishandler&gt;</value>
   </data>
   <data name="AddIns.XamlBinding.Options.CodeCompletionGroupLabel" xml:space="preserve">
     <value>Code Vervollständigung</value>
   </data>
+  <data name="AddIns.XamlBinding.Options.EventColor" xml:space="preserve">
+    <value>Farbe Ereignis:</value>
+  </data>
   <data name="AddIns.XamlBinding.Options.EventHandlerNamePattern" xml:space="preserve">
     <value>Muster für Ereignishandler Namen:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.NamespaceDeclarationColor" xml:space="preserve">
+    <value>Farbe XML Namespace Deklaration:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.PropertyColor" xml:space="preserve">
+    <value>Farbe Eigenschaft:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.SwitchToCodeViewAfterInsertion" xml:space="preserve">
     <value>Nach dem Einfügen des neuen Ereignishandlers zum Code wechseln</value>
@@ -856,8 +1043,14 @@ Wählen Sie ein Objekt oder ein Ereignis im Objekte-Panel und klicken Sie mit de
   <data name="ComponentInspector.FindDialog.ObjectTreeValueCheckBox" xml:space="preserve">
     <value>Wert</value>
   </data>
+  <data name="ComponentInspector.FindDialog.SelectNameOrValueDialogTitle" xml:space="preserve">
+    <value>Bitte Name/Wert Auswählen</value>
+  </data>
   <data name="ComponentInspector.FindDialog.SelectNameOrValueMessage" xml:space="preserve">
     <value>Bitte Namen und/oder Wert auswählen, umd den Objektbaum zu durchsuchen.</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.SelectNodeInTreeNameMessage" xml:space="preserve">
+    <value>Sie müssen einen Knoten im {0} Baum auswählen. Das Resultat wird mit diesem Knoten beginnen.</value>
   </data>
   <data name="ComponentInspector.FindDialog.ShowItemMenuItem" xml:space="preserve">
     <value>Element anzeigen</value>
@@ -942,6 +1135,9 @@ Um ActiveX/COM-Objekte zu generieren, ziehen sie eine Klasse aus einer Typbiblio
   <data name="ComponentInspector.InspectorMenu.OpenAssembly" xml:space="preserve">
     <value>Assembly ö&amp;ffnen..</value>
   </data>
+  <data name="ComponentInspector.InspectorMenu.TypeHandlerOptionsPanel.Title" xml:space="preserve">
+    <value>Typ-Handler</value>
+  </data>
   <data name="ComponentInspector.InvokeMethodMenuItem" xml:space="preserve">
     <value>Rufe &amp;Methode auf</value>
   </data>
@@ -995,6 +1191,9 @@ Um ActiveX/COM-Objekte zu generieren, ziehen sie eine Klasse aus einer Typbiblio
   </data>
   <data name="ComponentInspector.ObjectBrowserForm.TracingMenuItem" xml:space="preserve">
     <value>&amp;Nachverfolgen...</value>
+  </data>
+  <data name="ComponentInspector.ObjectBrowserForm.TypeHandlersMenuItem" xml:space="preserve">
+    <value>&amp;Typ Handler...</value>
   </data>
   <data name="ComponentInspector.ObjectTreeOptionsPanel.CategoriesGroupBox" xml:space="preserve">
     <value>Kategorien</value>
@@ -1094,6 +1293,9 @@ Um ActiveX/COM-Objekte zu generieren, ziehen sie eine Klasse aus einer Typbiblio
   </data>
   <data name="ComponentInspector.TreeListPanel.HeaderPanel" xml:space="preserve">
     <value>Name</value>
+  </data>
+  <data name="ComponentInspector.TypeHandlerOptionsPanel.InformationLabel" xml:space="preserve">
+    <value>Typ-Handler stellen die unterhalb markierten Klassen in einer geeigneteren, unnötige Details unterdrückenderen Form dar.</value>
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Information" xml:space="preserve">
     <value>Warte auf Start der Anwendung. Wenn die Anwendung nicht erfolgreich startet, können Sie mit "Abbrechen" abbrechen.</value>
@@ -3603,6 +3805,9 @@ Bitte stellen Sie den Pfad zur NAnt-Anwendung in den SharpDevelop-Optionen ein.<
   <data name="ICSharpCode.PythonBinding.PythonProjectFiles" xml:space="preserve">
     <value>Python-Projektdateien</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
+    <value>Konnte Typ '{0}' nicht finden. Fehlt eine Assembly-Referenz?</value>
+  </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Konnte Datei ${FileNameWithoutPath} im Verzeichns ${Path} nicht laden.
 Überprüfen Sie ob die Datei existiert und das Sie Leserecht für dir Datei besitzen.</value>
@@ -3756,7 +3961,7 @@ Achtung: Dies beinflusst nicht selbsterstellte Layouts.</value>
     <value>Konnte Datei "${FileName}" nicht als Projektmappe oder Projekt öffnen.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject" xml:space="preserve">
-    <value>SharpDevelop hat die Solution '${SolutionName}' geladen, aber sie enthält nicht das Projekt '${ProjectName}'.</value>
+    <value>SharpDevelop hat die Projektmappe '${SolutionName}' geladen, aber sie enthält nicht das Projekt '${ProjectName}'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.AddProjectToSolution" xml:space="preserve">
     <value>Füge '${ProjectName}' zu '${SolutionName}' hinzu.</value>
@@ -4993,6 +5198,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails" xml:space="preserve">
     <value>Verstecke Ausnahmen-Details</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException" xml:space="preserve">
+    <value>--- Ende des Stacktrace der inneren Ausnahme ---</value>
+  </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols" xml:space="preserve">
     <value>bei {0}</value>
   </data>
@@ -5941,7 +6149,7 @@ Bitte einen anderen verwenden.</value>
 {1}</value>
   </data>
   <data name="SharpDevelop.Solution.CannotSave.ReadOnly" xml:space="preserve">
-    <value>Kann Solution-Datei {0} nicht speichern, da diese schreibgeschützt ist.</value>
+    <value>Kann Projektmappen-Datei {0} nicht speichern, da diese schreibgeschützt ist.</value>
   </data>
   <data name="SharpDevelop.Solution.CannotSave.UnauthorizedAccessException" xml:space="preserve">
     <value>Konnte {0} nicht speichern:
@@ -6156,6 +6364,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="SharpReport.ReportGenerator" xml:space="preserve">
     <value>Report-Generator</value>
+  </data>
+  <data name="SharpReport.ReportViewer" xml:space="preserve">
+    <value>ReportViewer</value>
   </data>
   <data name="SharpReport.ReportViewer.FirstPageMessage" xml:space="preserve">
     <value>Erste Seite</value>
@@ -7269,7 +7480,7 @@ Soll der Debugger angehalten werden?</value>
     <value>Finde nächste &amp;Markierung</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Goto" xml:space="preserve">
-    <value>Z&amp;u Zeile springen...</value>
+    <value>Springe z&amp;u...</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.GotoBrace" xml:space="preserve">
     <value>Zur passenden Klammer</value>

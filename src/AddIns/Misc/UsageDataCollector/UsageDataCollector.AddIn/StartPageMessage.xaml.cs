@@ -36,7 +36,7 @@ namespace ICSharpCode.UsageDataCollector
 		
 		void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
-			bool accepted = acceptRadio.IsChecked ?? false;
+			bool accepted = acceptRadio.IsChecked == true;
 			AnalyticsMonitor.Enabled = accepted;
 			mainPanel.IsCollapsed = true;
 			acceptedMessage.IsCollapsed = !accepted;

@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			bool? result = ShowTreeOptions(
 				ResourceService.GetString("Dialog.Options.TreeViewOptions.DialogName"),
 				AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"));
-			if (result ?? false) {
+			if (result == true) {
 				// save properties after changing options
 				PropertyService.Save();
 			}

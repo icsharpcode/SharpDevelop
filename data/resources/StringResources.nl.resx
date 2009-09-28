@@ -226,7 +226,7 @@
     <value>Invoegtoepassing Beheer</value>
   </data>
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
-    <value>Onbekende bestand indeling:</value>
+    <value>Onbekend bestandsformaat:</value>
   </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagram weergeven</value>
@@ -423,6 +423,181 @@ Om het help systeem te verkrijgen dient u de .NET Framework SDK te installeren.<
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Gebruik de momentele project taal</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Resultaat</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Gevoegde knopen</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Alle functies van {0}</value>
+  </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>SharpDevelop Profileer Sessie</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Dit project kan niet gestart worden omdat het uitvoerend bestand niet gevonden werd. Ga aub na, of het project en alle afhankelijkheden correct gebouwd werden!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Geen opstartbaar project gevonden. Voortijdig einde ...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject" xml:space="preserve">
+    <value>Dit project kan niet gestart worden. Wilt u in de plaats het opstartproject van de oplossing profileren?</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>Analyse wordt voorbereid ...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>Kan de profiler niet bij COM register registreren. Kan niet starten met profileren!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.UnregisterFailed" xml:space="preserve">
+    <value>Kan de profiler niet bij het COM register uitboeken!</value>
+  </data>
+  <data name="AddIns.Profiler.MessageViewCategory" xml:space="preserve">
+    <value>Profileer</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.CombineRecursiveCalls" xml:space="preserve">
+    <value>Combineer recursieve aanroepen</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.DoNotProfileNetInternals" xml:space="preserve">
+    <value>Profileer geen interne .NET aanroepen</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDC" xml:space="preserve">
+    <value>Verzamel alleen data aan het eind van de sessie.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup" xml:space="preserve">
+    <value>Verzamel data direct na aanvang van de profiler sessie.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.Header" xml:space="preserve">
+    <value>Data verzameling</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
+    <value>Grootte van tijdelijke opslag bestanden</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
+    <value>Algemeen</value>
+  </data>
+  <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
+    <value>Profileren</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileCurrentProject" xml:space="preserve">
+    <value>Profileer momentele project</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable" xml:space="preserve">
+    <value>Kies te profileren uitvoerbaar bestand</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable.ErrorMessage" xml:space="preserve">
+    <value>Ongeldige data, probeer aub opnieuw!</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.CmdLineArgsText" xml:space="preserve">
+    <value>Commmandoprompt argumenten:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.DescriptionText" xml:space="preserve">
+    <value>Selecteer het pad van het te profileren uitvoerend bestand.
+Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.ExePathText" xml:space="preserve">
+    <value>Uitvoerend bestand pad:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.StartText" xml:space="preserve">
+    <value>Start profileren</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.Title" xml:space="preserve">
+    <value>Profileer uitvoerend bestand</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.WorkingDirText" xml:space="preserve">
+    <value>Werkmap:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.CollectData" xml:space="preserve">
+    <value>Verzamel data</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Shutdown" xml:space="preserve">
+    <value>Afsluiten</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Title" xml:space="preserve">
+    <value>Profiler controle venster</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallCountColumnText" xml:space="preserve">
+    <value>Aanroepen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallsText" xml:space="preserve">
+    <value>Aanroepen:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ClearQueryHistoryText" xml:space="preserve">
+    <value>Opvraagverleden wissen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData" xml:space="preserve">
+    <value>Kopie van gegevens selectie</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopyStacktrace" xml:space="preserve">
+    <value>Kopie van volgstapel</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.FindCallsOfSelected" xml:space="preserve">
+    <value>Vind aanroepen van geselecteerde functies</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition" xml:space="preserve">
+    <value>Ga naar definitie</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.SetAsRoot" xml:space="preserve">
+    <value>Stel als basis in/Meng</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions" xml:space="preserve">
+    <value>Functies weergeven</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
+    <value>CPU cycli:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExecuteQueryText" xml:space="preserve">
+    <value>Opvraging uitvoeren</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExpandHotPathSubtreeText" xml:space="preserve">
+    <value>Heet pad selectie uitbreiden</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.OverviewTabText" xml:space="preserve">
+    <value>Overzicht</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.QueryHistoryText" xml:space="preserve">
+    <value>Opvraag verleden</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.SearchLabelText" xml:space="preserve">
+    <value>Zoeken:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ShowQueryBarText" xml:space="preserve">
+    <value>Opvraag werkbalk tonen</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimePercentageOfParentColumnText" xml:space="preserve">
+    <value>% van de ouder</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentColumnText" xml:space="preserve">
+    <value>Tijdgebruik</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentPerCallColumnText" xml:space="preserve">
+    <value>Tijdgebruik/aanroep</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfColumnText" xml:space="preserve">
+    <value>Eigen tijdgebruik</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfPerCallColumnText" xml:space="preserve">
+    <value>Tijdsduur (zelf)/aanroep</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeText" xml:space="preserve">
+    <value>Tijd:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Title" xml:space="preserve">
+    <value>Profileer Sessie Analiseren</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Top20TabText" xml:space="preserve">
+    <value>Top 20</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.WaitBarText" xml:space="preserve">
+    <value>Bezig met vernieuwen, even geduld aub ...</value>
+  </data>
+  <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
+    <value>Voer uit met profiler</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Onttrekken</value>
@@ -1149,7 +1324,7 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
     <value>Versie</value>
   </data>
   <data name="Dialog.About.label2Text" xml:space="preserve">
-    <value>Opbouwen</value>
+    <value>Bouwen</value>
   </data>
   <data name="Dialog.About.License" xml:space="preserve">
     <value>Uitgegeven onder de bepalingen van de ${License}.</value>
@@ -1809,10 +1984,10 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Code Sjablonen</value>
   </data>
   <data name="Dialog.Options.CombineOptions.Configurations.BuildCheckBox" xml:space="preserve">
-    <value>Opbouwen</value>
+    <value>Bouwen</value>
   </data>
   <data name="Dialog.Options.CombineOptions.Configurations.BuildColumnHeader" xml:space="preserve">
-    <value>Opbouwen</value>
+    <value>Bouwen</value>
   </data>
   <data name="Dialog.Options.CombineOptions.Configurations.CombineConfigLabel" xml:space="preserve">
     <value>Instellingen combineren</value>
@@ -2142,7 +2317,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Algemeen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.AutoLoadExternalChanges" xml:space="preserve">
-    <value>&amp;Automatisch wijzigingen laden, indien interne wijzigingen zijn opgeslagen.</value>
+    <value>&amp;Autoladen externe wijzigingen..</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>Gebruik &amp;tijdelijk bestand voor opslaan</value>
@@ -2157,7 +2332,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Laden</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadUserDataCheckBox" xml:space="preserve">
-    <value>&amp;Laden van gebruikersafhankelijke instellingen met document</value>
+    <value>&amp;Laad gebruiker specifieke instellingen met document</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
     <value>Macintosh</value>
@@ -2190,7 +2365,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Profielmaker</value>
   </data>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.BuildAndRunGroupBox" xml:space="preserve">
-    <value>Opbouw en uitvoering opties</value>
+    <value>Opties bouw en uitvoering</value>
   </data>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.InvalidProjectPathSpecified" xml:space="preserve">
     <value>Ongeldig projectpad ingegeven.</value>
@@ -2226,7 +2401,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Bouw alleen gewijzigde projecten</value>
   </data>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.DoNotBuild" xml:space="preserve">
-    <value>Niet opbouwen</value>
+    <value>Nu niet bouwen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Bouw alle projecten.</value>
@@ -2256,7 +2431,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Werkbalk weergeven</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectStyle.UseProfessionalStyleCheckBox" xml:space="preserve">
-    <value>Blauwe (Office 2003) stijl toepassen bij menu's en werkbalken.</value>
+    <value>Office 2003 stijl toepassen voor menus en werkbalken.</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectStyle.UseProjectAmbience" xml:space="preserve">
     <value>Houd indien mogelijk project voorkeurstijl aan</value>
@@ -2472,7 +2647,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Bestand kon niet gekopieerd worden.</value>
   </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteButton" xml:space="preserve">
-    <value>Verwijderen</value>
+    <value>Verwijder</value>
   </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteConfirm" xml:space="preserve">
     <value>Weet u zeker dat u dit gebruiker bepaald schema wilt verwijderen?</value>
@@ -2634,16 +2809,16 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>&amp;XML documentatie:</value>
   </data>
   <data name="Dialog.ProjectOptions.BuildEvents" xml:space="preserve">
-    <value>Opbouw gebeurtenissen</value>
+    <value>Bouw gebeurtenissen</value>
   </data>
   <data name="Dialog.ProjectOptions.BuildEvents.PostBuild" xml:space="preserve">
-    <value>P&amp;ost-Opbouw gebeurtenis opdracht:</value>
+    <value>P&amp;ost-bouw gebeurtenis promptregel:</value>
   </data>
   <data name="Dialog.ProjectOptions.BuildEvents.PreBuild" xml:space="preserve">
-    <value>P&amp;re-Opbouw gebeurtenis opdracht:</value>
+    <value>Pré-bouw gebeurtenis promptregel:</value>
   </data>
   <data name="Dialog.ProjectOptions.BuildEvents.RunPostBuild" xml:space="preserve">
-    <value>Post-Opbouw gebeurtenis uitvoeren:</value>
+    <value>Voer post-bouw gebeurtenis uit:</value>
   </data>
   <data name="Dialog.ProjectOptions.BuildOptions" xml:space="preserve">
     <value>Compileren</value>
@@ -2757,7 +2932,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Als bij het bouwen de projectuitvoer bijwerkt wordt</value>
   </data>
   <data name="Dialog.ProjectOptions.RunPostBuildEvent.OnSuccessfulBuild" xml:space="preserve">
-    <value>Als de opbouw geslaagd is</value>
+    <value>Als de bouw geslaagd is</value>
   </data>
   <data name="Dialog.ProjectOptions.SelectFolderTitle" xml:space="preserve">
     <value>Map selecteren</value>
@@ -3707,32 +3882,32 @@ Configureer a.u.b. in SharpDevelop opties de locatie van NAnt's uitvoerend besta
     <value>Van C# naar VB.NET</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.DebugItem" xml:space="preserve">
-    <value>Foutopsporing indeling</value>
+    <value>Foutopsporen</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.DefaultItem" xml:space="preserve">
-    <value>Standaard indeling</value>
+    <value>Standaard</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditItem" xml:space="preserve">
     <value>&lt;Bewerken&gt;</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.AddLayout" xml:space="preserve">
-    <value>Indeling toevoegen</value>
+    <value>Voeg opmaak toe</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.Label" xml:space="preserve">
-    <value>Bewerk de lijst met gebruiker bepaalde indelingen:</value>
+    <value>Bewerk lijst met gebruiker bepaalde opmaak:</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.Title" xml:space="preserve">
-    <value>Indelingen bewerken</value>
+    <value>Opmaak bewerken</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.PlainItem" xml:space="preserve">
-    <value>Basis indeling</value>
+    <value>Basis opmaak</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultItem" xml:space="preserve">
     <value>&lt;Terug naar standaard&gt;</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultsQuestion" xml:space="preserve">
-    <value>Weet u zeker dat u de indelingsinstellingen wilt resetten?
-Notitie: Dit heeft geen invloed op de aangepaste indelingen.</value>
+    <value>Weet u zeker dat u de opmaak configuratie wilt resetten?
+Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert" xml:space="preserve">
     <value>Overzetten</value>
@@ -4248,10 +4423,10 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
     <value>Bezig met ontleden</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.BuildAction" xml:space="preserve">
-    <value>Opbouw actie</value>
+    <value>Bouw actie</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.BuildAction.Description" xml:space="preserve">
-    <value>De opbouw actie van dat bestand</value>
+    <value>De bouw actie van dat bestand</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CopyToOutputDirectory" xml:space="preserve">
     <value>Kopieer naar uitgangsmap</value>
@@ -4790,7 +4965,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Fout tijdens laden van project-sjabloon:</value>
   </data>
   <data name="MainWindow.CannotCloseWithBuildInProgressMessage" xml:space="preserve">
-    <value>De opbouw dient te worden voltooid, voordat SharpDevelop kan worden afgesloten.</value>
+    <value>Bouwen moet voltooid zijn, voordat SharpDevelop kan worden afgesloten.</value>
   </data>
   <data name="MainWindow.CompilerMessages.BuildCancelled" xml:space="preserve">
     <value>Opbouw werd afgebroken.</value>
@@ -4805,7 +4980,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Bouwen is gestart.</value>
   </data>
   <data name="MainWindow.CompilerMessages.BuildStartedOutput" xml:space="preserve">
-    <value>------ Opbouwen gestart: project: ${Project} configuratie: ${Config} ------</value>
+    <value>------ Bouwen gestart: project: ${Project} configuratie: ${Config} ------</value>
   </data>
   <data name="MainWindow.CompilerMessages.BuildVerb" xml:space="preserve">
     <value>Bezig met bouwen van</value>
@@ -4826,7 +5001,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Bezig met hoofdcompilatie...</value>
   </data>
   <data name="MainWindow.CompilerMessages.ProjectStatsOutput" xml:space="preserve">
-    <value>Opbouwen gereed -- ${Errors} fouten, ${Warnings} waarschuwingen</value>
+    <value>Bouwen gereed -- ${Errors} fouten, ${Warnings} waarschuwingen</value>
   </data>
   <data name="MainWindow.CompilerMessages.SkipProjectNoChanges" xml:space="preserve">
     <value>Overgeslagen ${Name} (Ongewijzigd binnen SharpDevelop)</value>
@@ -5252,7 +5427,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Uitvoer</value>
   </data>
   <data name="MainWindow.Windows.OutputWindow.BuildCategory" xml:space="preserve">
-    <value>Opbouwen</value>
+    <value>Bouwen</value>
   </data>
   <data name="MainWindow.Windows.OutputWindow.DebugCategory" xml:space="preserve">
     <value>Foutopsporing</value>
@@ -5483,7 +5658,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Genereer documentatie van XML aantekeningen</value>
   </data>
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.NeedToEditBuildOptions" xml:space="preserve">
-    <value>U dient de project Opbouw-opties te bewerken om een XML documentatie bestand te genereren.</value>
+    <value>Om XML documentatie te genereren, dient dit te worden ingeschakeld in de project bouw opties.</value>
   </data>
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled" xml:space="preserve">
     <value>U dient het project te compileren.</value>
@@ -5705,7 +5880,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Weet u zeker dat u de geselecteerde hulpbron(nen) wilt verwijderen?</value>
   </data>
   <data name="ResourceEditor.DeleteEntry.Title" xml:space="preserve">
-    <value>Hulpbron verwijderen</value>
+    <value>Verwijder hulpbron</value>
   </data>
   <data name="ResourceEditor.Messages.CantLoadResource" xml:space="preserve">
     <value>Kan hulpbron niet laden</value>
@@ -6296,14 +6471,14 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>T&amp;ab toevoegen</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTab" xml:space="preserve">
-    <value>Tab verwij&amp;deren</value>
+    <value>Verwij&amp;der tab</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabHeaderQuestion" xml:space="preserve">
     <value>Wilt u tab "${TabHeader}" verwijderen (dit wist ook alle items in de tab)?
 </value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItem" xml:space="preserve">
-    <value>Item verwij&amp;deren</value>
+    <value>Verwij&amp;der item</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Wilt u item "${TabItem}" echt verwijderen?</value>
@@ -6689,6 +6864,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.Project.ConsoleProject.Name" xml:space="preserve">
     <value>Console toepassing</value>
   </data>
+  <data name="Templates.Project.ConsoleProject.Unmanaged.Description" xml:space="preserve">
+    <value>Project dat een commandoregel applicatie in unmanaged (native) code creëert.</value>
+  </data>
+  <data name="Templates.Project.ConsoleProject.Unmanaged.Name" xml:space="preserve">
+    <value>Unmanaged console project</value>
+  </data>
   <data name="Templates.Project.Direct3DApplication.Description" xml:space="preserve">
     <value>Project om een toepassing met Direct3D interface te maken.</value>
   </data>
@@ -6795,10 +6976,10 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>&amp;Analyseren</value>
   </data>
   <data name="XML.MainMenu.BuildMenu" xml:space="preserve">
-    <value>&amp;Opbouwen</value>
+    <value>Bo&amp;uwen</value>
   </data>
   <data name="XML.MainMenu.BuildMenu.AbortBuild" xml:space="preserve">
-    <value>Opbouw afbreken</value>
+    <value>Bouw afbreken</value>
   </data>
   <data name="XML.MainMenu.BuildMenu.BreakKey" xml:space="preserve">
     <value>Break</value>
@@ -6927,7 +7108,7 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>Knip selectie naar klembord</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Delete" xml:space="preserve">
-    <value>Verwij&amp;deren</value>
+    <value>Verwij&amp;der</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Delete.Description" xml:space="preserve">
     <value>Verwijder</value>
