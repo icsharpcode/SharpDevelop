@@ -299,9 +299,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 			return c => startIndex <= c.DataSetID && c.DataSetID <= endIndex;
 		}
 		
-		internal IList<CallTreeNode> RunSQL(SQLiteQueryProvider queryProvider, string command)
+		internal IList<CallTreeNode> RunSQLNodeList(SQLiteQueryProvider queryProvider, string command)
 		{
-			IList<CallTreeNode> result = new List<CallTreeNode>();
+			List<CallTreeNode> result = new List<CallTreeNode>();
 			
 			SQLiteCommand cmd;
 			using (LockAndCreateCommand(out cmd)) {
@@ -326,6 +326,25 @@ namespace ICSharpCode.Profiler.Controller.Data
 				}
 			}
 			
+			return result;
+		}
+		
+		/// <summary>
+		/// Executes an SQL command that returns a list of integers.
+		/// </summary>
+		internal List<int> RunSQLIDList(string command)
+		{
+			List<int> result = new List<int>();
+			SQLiteCommand cmd;
+			using (LockAndCreateCommand(out cmd)) {
+				cmd.CommandText = command;
+				
+				using (SQLiteDataReader reader = cmd.ExecuteReader()) {
+					while (reader.Read()) {
+						result.Add(reader.GetInt32(0));
+					}
+				}
+			}
 			return result;
 		}
 		

@@ -45,6 +45,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		Valid expressions in QueryAst nodes:
 			Only a limited set of expressions are valid in conditions and sort descriptors.
 			These are checked by the SafeExpressionImporter.
+			The set of valid expressions is:
 				- Integer constants
 				- Binary operators: < <= > >= == != && ||
 				- value(List<int>).Contains(validExpr)
@@ -61,6 +62,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			Properties serving as query roots:
 				sqliteCallTreeNode.Children
 					-> AllCalls.Filter((SingleCall c) => sqliteCallTreeNode.ids.Contains(c.ParentID))
+				sqliteCallTreeNode.Callers
+					-> AllCalls.Filter((SingleCall c) => idList.Contains(c.ID)) where idList is calculated using a manual SQL query
 				profilingDataSQLiteProvider.GetFunctions
 					-> AllCalls.Filter((SingleCall c) => @start <= c.DataSetId && c.DataSetId <= @end).MergeByName()
 				profilingDataSQLiteProvider.GetRoot
@@ -88,6 +91,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				x.Filter(y).Filter(z) -> x.Filter(y && z)
 				x.MergeByName().Filter(criteria) -> x.Filter(x, criteria).MergeByName() for some safe criterias
 					Criterias are safe if they access no CallTreeNode properties except for NameMapping
+				x.MergeByName().MergeByName() -> x.MergeByName()
 		
 		SQL string building and execution:
 			It must be possible to create SQL for every combination of QueryNodes, even if they do strange things like merging multiple times.
@@ -131,9 +135,17 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			get { return sqliteProvider.ProcessorFrequency; }
 		}
 		
-		internal IList<CallTreeNode> RunSQL(string command)
+		public IList<CallTreeNode> RunSQLNodeList(string command)
 		{
-			return sqliteProvider.RunSQL(this, command);
+			return sqliteProvider.RunSQLNodeList(this, command);
+		}
+		
+		/// <summary>
+		/// Executes an SQL command that returns a list of integers.
+		/// </summary>
+		public List<int> RunSQLIDList(string command)
+		{
+			return sqliteProvider.RunSQLIDList(command);
 		}
 		
 		public IQueryable<CallTreeNode> CreateQuery(QueryNode query)

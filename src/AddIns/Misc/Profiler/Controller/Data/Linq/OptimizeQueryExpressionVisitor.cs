@@ -33,12 +33,16 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		protected override Expression VisitExtension(Expression node)
 		{
 			Filter filter = node as Filter;
+			MergeByName mergeByName = node as MergeByName;
 			if (filter != null)
 				return VisitFilter(filter);
+			else if (mergeByName != null)
+				return VisitMergeByName(mergeByName);
 			else
 				return base.VisitExtension(node);
 		}
 		
+		#region Filter optimizations
 		QueryNode VisitFilter(Filter filter)
 		{
 			QueryNode result = OptimizeFilter(filter);
@@ -130,9 +134,24 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			else
 				return new Filter(target, newConditions.ToArray());
 		}
+		#endregion
+		
+		#region MergeByName Optimizations
+		QueryNode VisitMergeByName(MergeByName merge)
+		{
+			// First optimize the Target expression
+			QueryNode target = Visit(merge.Target);
+			if (target is MergeByName) {
+				// x.MergeByName().MergeByName() -> x.MergeByName()
+				return target;
+			}
+			return new MergeByName(target);
+		}
+		#endregion
 		
 		protected override Expression VisitMethodCall(MethodCallExpression node)
 		{
+			// Optimize List<int>.Contains when the list has 0 or 1 elements
 			if (node.Method == KnownMembers.ListOfInt_Contains && node.Object.NodeType == ExpressionType.Constant && node.Arguments[0].Type == typeof(int)) {
 				List<int> list = (List<int>)((ConstantExpression)node.Object).Value;
 				if (list.Count == 0)

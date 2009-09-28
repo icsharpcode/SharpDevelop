@@ -10,9 +10,11 @@ using NUnit.Framework;
 
 namespace Profiler.Tests.Controller.Queries
 {
+	/*
 	[TestFixture]
 	public class NodePathTests
 	{
 		
 	}
+	*/
 }

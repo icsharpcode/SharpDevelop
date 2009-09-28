@@ -106,7 +106,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			StringBuilder b = new StringBuilder();
 			BuildSql(b, new SqlQueryContext(provider));
 			Console.WriteLine(b.ToString());
-			return provider.RunSQL(b.ToString()).AsQueryable();
+			return provider.RunSQLNodeList(b.ToString()).AsQueryable();
 		}
 	}
 	

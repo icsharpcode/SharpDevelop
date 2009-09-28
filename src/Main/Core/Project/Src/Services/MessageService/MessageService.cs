@@ -41,7 +41,7 @@ namespace ICSharpCode.Core
 		/// <see cref="StringParser"/>,
 		/// then through <see cref="string.Format(string, object)"/>, using the formatitems as arguments.
 		/// </summary>
-		public static void ShowErrorFormatted(string formatstring, params string[] formatitems)
+		public static void ShowErrorFormatted(string formatstring, params object[] formatitems)
 		{
 			ShowError(Format(formatstring, formatitems));
 		}
@@ -71,7 +71,7 @@ namespace ICSharpCode.Core
 		/// <see cref="StringParser"/>,
 		/// then through <see cref="string.Format(string, object)"/>, using the formatitems as arguments.
 		/// </summary>
-		public static void ShowWarningFormatted(string formatstring, params string[] formatitems)
+		public static void ShowWarningFormatted(string formatstring, params object[] formatitems)
 		{
 			ShowWarning(Format(formatstring, formatitems));
 		}
@@ -85,12 +85,12 @@ namespace ICSharpCode.Core
 			return ServiceManager.Instance.MessageService.AskQuestion(question, caption);
 		}
 		
-		public static bool AskQuestionFormatted(string caption, string formatstring, params string[] formatitems)
+		public static bool AskQuestionFormatted(string caption, string formatstring, params object[] formatitems)
 		{
 			return AskQuestion(Format(formatstring, formatitems), caption);
 		}
 		
-		public static bool AskQuestionFormatted(string formatstring, params string[] formatitems)
+		public static bool AskQuestionFormatted(string formatstring, params object[] formatitems)
 		{
 			return AskQuestion(Format(formatstring, formatitems));
 		}
@@ -167,12 +167,12 @@ namespace ICSharpCode.Core
 			ShowMessage(message, DefaultMessageBoxTitle);
 		}
 		
-		public static void ShowMessageFormatted(string formatstring, params string[] formatitems)
+		public static void ShowMessageFormatted(string formatstring, params object[] formatitems)
 		{
 			ShowMessage(Format(formatstring, formatitems));
 		}
 		
-		public static void ShowMessageFormatted(string caption, string formatstring, params string[] formatitems)
+		public static void ShowMessageFormatted(string caption, string formatstring, params object[] formatitems)
 		{
 			ShowMessage(Format(formatstring, formatitems), caption);
 		}
@@ -183,7 +183,7 @@ namespace ICSharpCode.Core
 			ServiceManager.Instance.MessageService.ShowMessage(message, caption);
 		}
 		
-		static string Format(string formatstring, string[] formatitems)
+		static string Format(string formatstring, object[] formatitems)
 		{
 			try {
 				return String.Format(StringParser.Parse(formatstring), formatitems);
@@ -191,7 +191,7 @@ namespace ICSharpCode.Core
 				LoggingService.Warn(ex);
 				
 				StringBuilder b = new StringBuilder(StringParser.Parse(formatstring));
-				foreach(string formatitem in formatitems) {
+				foreach(object formatitem in formatitems) {
 					b.Append("\nItem: ");
 					b.Append(formatitem);
 				}

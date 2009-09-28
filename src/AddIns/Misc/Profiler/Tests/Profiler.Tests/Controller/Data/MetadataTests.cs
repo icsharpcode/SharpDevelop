@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 
 namespace Profiler.Tests.Controller.Data
 {
+	/*
 	[TestFixture]
 	public class MetadataTests
 	{
@@ -20,4 +21,5 @@ namespace Profiler.Tests.Controller.Data
 			
 		}
 	}
+	*/
 }

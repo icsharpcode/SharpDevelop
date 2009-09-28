@@ -133,6 +133,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 				mergedNode.ids.AddRange(node.ids);
 				mergedNode.callCount += node.callCount;
 				mergedNode.cpuCyclesSpent += node.cpuCyclesSpent;
+				mergedNode.activeCallCount += node.activeCallCount;
+				mergedNode.hasChildren |= node.hasChildren;
 				if (!initialised || mergedNode.nameId == node.nameId)
 					mergedNode.nameId = node.nameId;
 				else
@@ -150,7 +152,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 				if (this.parent != null)
 					return (new CallTreeNode[] { this.parent }).AsQueryable();
 				
-				throw new NotImplementedException();
+				List<int> parentIDList = provider.RunSQLIDList(
+					"SELECT parentid FROM FunctionData "
+					+ "WHERE id IN(" + string.Join(",", this.ids.Select(s => s.ToString()).ToArray()) + @")");
+				
+				Expression<Func<SingleCall, bool>> filterLambda = c => parentIDList.Contains(c.ID);
+				return provider.CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)));
 			}
 		}
 		

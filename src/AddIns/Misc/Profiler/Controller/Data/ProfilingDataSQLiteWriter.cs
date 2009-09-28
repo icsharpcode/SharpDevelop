@@ -79,6 +79,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		/// <summary>
 		/// Sets or gets the processor frequency of the computer, where the profiling session was created.
+		/// The processor frequency is measured in MHz.
 		/// </summary>
 		public int ProcessorFrequency {
 			get {
