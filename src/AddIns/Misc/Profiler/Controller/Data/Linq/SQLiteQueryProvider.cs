@@ -6,16 +6,12 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
 using IQToolkit;
-using System.Text;
 
 namespace ICSharpCode.Profiler.Controller.Data.Linq
 {
@@ -46,14 +42,14 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			Only a limited set of expressions are valid in conditions and sort descriptors.
 			These are checked by the SafeExpressionImporter.
 			The set of valid expressions is:
-			 - Integer constants
-			 - String constants
-			 - Binary operators: < <= > >= == != && || LIKE GLOB
-			 - Unary operator: !
-			 - value(List<int>).Contains(validExpr)
-			 - if c is the lambda parameter, then these expressions are valid:
-			   c.NameMapping.ID
-			   c.NameMapping.Name
+				- Integer constants
+				- String constants
+				- Binary operators: < <= > >= == != && || LIKE GLOB
+				- Unary operator: !
+				- value(List<int>).Contains(validExpr)
+				- if c is the lambda parameter, then these expressions are valid:
+					c.NameMapping.ID
+					c.NameMapping.Name
 			
 			Additionally, field references on a lambda parameter of type SingleCall are valid inside
 			filters that operate directly on "AllCalls" (e.g. AllCalls.Filter()).
@@ -94,7 +90,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		Optimization of QueryAst:
 			The OptimizeQueryExpressionVisitor is performing these optimizations:
 				x.Filter(y).Filter(z) -> x.Filter(y && z)
-				x.MergeByName().Filter(criteria) -> x.Filter(x, criteria).MergeByName() for some safe criterias
+				x.MergeByName().Filter(criteria) -> x.Filter(criteria).MergeByName() for some safe criterias
 					Criterias are safe if they access no CallTreeNode properties except for NameMapping
 				x.MergeByName().MergeByName() -> x.MergeByName()
 		
@@ -200,8 +196,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		{
 			protected override Expression VisitExtension(Expression node)
 			{
-				// The .NET ExpressionVisitor cannot recurse into our query nodes -
-				// but those don't need conversion anymore.
+				// We found a query that's already converted, let's keep it as it is.
 				QueryNode query = node as QueryNode;
 				if (query != null)
 					return query;
@@ -252,6 +247,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				this.callTreeNodeParameter = callTreeNodeParameter;
 			}
 			
+			/// <summary>
+			/// Imports 'expr' and adds the imported conditions to 'filters'.
+			/// </summary>
+			/// <returns>True if the import was successful.</returns>
 			public bool AddConditionsToFilterList(Expression expr, List<LambdaExpression> filters)
 			{
 				if (expr.NodeType == ExpressionType.AndAlso) {
@@ -279,6 +278,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			/// </summary>
 			static readonly char[] forbiddenGlobChars = new[] { '*', '?', '[', ']' };
 			
+			/// <summary>
+			/// Imports an expresion.
+			/// </summary>
+			/// <returns>The imported expression; or null if the expression was not safe for import.</returns>
 			public Expression Import(Expression expr)
 			{
 				switch (expr.NodeType) {
@@ -372,6 +375,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 					.Replace("?", escape + "?");
 			}
 			
+			/// <summary>
+			/// Tests if expr is 'c.NameMapping'.
+			/// </summary>
 			bool IsNameMappingOnParameter(Expression expr)
 			{
 				if (expr.NodeType == ExpressionType.MemberAccess) {

@@ -80,12 +80,20 @@ namespace ICSharpCode.Profiler.Controller.Data
 				return this.parent;
 			}
 		}
-
+		
+		readonly static IQueryable<CallTreeNode> EmptyQueryable = Enumerable.Empty<CallTreeNode>().AsQueryable();
+		
 		/// <summary>
 		/// Returns all children of the current CallTreeNode, sorted by order of first call.
 		/// </summary>
 		public override IQueryable<CallTreeNode> Children {
 			get {
+				// Approx. half of all nodes in a complex data set are leafs.
+				// Not doing an SQL Query in these cases can safe time when someone recursively walks the call-tree
+				// (e.g. RingDiagramControl)
+				if (!hasChildren)
+					return EmptyQueryable;
+				
 				Expression<Func<SingleCall, bool>> filterLambda = c => this.ids.Contains(c.ParentID);
 				return provider.CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)));
 			}

@@ -70,7 +70,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public void Close()
 		{
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+				// create index at the end (after inserting data), this is faster
 				cmd.CommandText = @"CREATE INDEX Parents ON FunctionData(parentid ASC);";
+				cmd.ExecuteNonQuery();
+				
+				// make SQLite analyze the indices available; this will help the query planner later
+				cmd.CommandText = @"ANALYZE;";
 				cmd.ExecuteNonQuery();
 			}
 			

@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -35,6 +34,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public static readonly FieldInfo DataSetIdField = typeof(SingleCall).GetField("DataSetID");
 	}
 	
+	/// <summary>
+	/// Base class for nodes in the Query AST.
+	/// </summary>
 	abstract class QueryNode : Expression
 	{
 		public enum SqlStatementKind
@@ -110,6 +112,11 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		}
 	}
 	
+	/// <summary>
+	/// Query AST node representing the whole 'FunctionData' table.
+	/// This is the source of all queries.
+	/// Produces SELECT .. FROM .. in SQL.
+	/// </summary>
 	sealed class AllCalls : QueryNode
 	{
 		public static readonly AllCalls Instance = new AllCalls();
@@ -144,6 +151,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		}
 	}
 	
+	/// <summary>
+	/// Query node that represents the 'group by nameid and merge' operation. Produces SELECT ... GROUP BY .. in SQL.
+	/// </summary>
 	sealed class MergeByName : QueryNode
 	{
 		public MergeByName(QueryNode target)
@@ -187,6 +197,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		}
 	}
 	
+	/// <summary>
+	/// Query node that filters the input using conditions. Produces WHERE or HAVING in SQL.
+	/// </summary>
 	sealed class Filter : QueryNode
 	{
 		/// <summary>

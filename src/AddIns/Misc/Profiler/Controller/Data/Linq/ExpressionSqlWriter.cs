@@ -7,13 +7,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 
 namespace ICSharpCode.Profiler.Controller.Data.Linq
 {
@@ -107,6 +102,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 						MethodCallExpression mc = (MethodCallExpression)expression;
 						if (mc.Method == KnownMembers.ListOfInt_Contains) {
 							List<int> list = (List<int>)((ConstantExpression)mc.Object).Value;
+							w.Write('(');
 							Write(mc.Arguments[0]);
 							w.Write(" IN (");
 							for (int i = 0; i < list.Count; i++) {
@@ -114,7 +110,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 									w.Write(',');
 								w.Write(list[i]);
 							}
-							w.Write(')');
+							w.Write("))");
 							break;
 						} else if (mc.Method == KnownMembers.Like) {
 							w.Write("( ");
