@@ -1305,6 +1305,18 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Lib\__future__.py" Name="__future__.py" Id="__future__.py" KeyPath="yes" />
 											</Component>
 										</Directory>
+										<Component Guid="694B49D9-3EDA-4B3E-AE21-C4462A99ED0D" Id="IronPythonModulesXml" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.Modules.xml" Name="IronPython.Modules.xml" Id="IronPython.Modules.xml" KeyPath="yes" />
+										</Component>
+										<Component Guid="0234CFCB-0064-4D59-B39F-0C33735C9B5B" Id="IronPythonXml" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.xml" Name="IronPython.xml" Id="IronPython.xml" KeyPath="yes" />
+										</Component>
+										<Component Guid="6E1D93BF-A105-4526-8BA0-13B69EEB1360" Id="MicrosoftDynamicDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Dynamic.dll" Name="Microsoft.Dynamic.dll" Id="Microsoft.Dynamic.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Dynamic.dll" AssemblyManifest="Microsoft.Dynamic.dll" />
+										</Component>
+										<Component Guid="8A1A4691-E6BD-451F-AA5D-BE9C716D56A0" Id="MicrosoftScriptingDebuggingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Debugging.dll" Name="Microsoft.Scripting.Debugging.dll" Id="Microsoft.Scripting.Debugging.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Debugging.dll" AssemblyManifest="Microsoft.Scripting.Debugging.dll" />
+										</Component>
 									</Directory>
 									<Directory Id="FSharpBinding" Name="FSharpBinding">
 										<Component Guid="6B4F28AF-133C-4FEB-98DB-67A5405AEB12" Id="FSharpBindingAddin" DiskId="1">

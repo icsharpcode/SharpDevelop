@@ -96,8 +96,8 @@ namespace ICSharpCode.Python.Build.Tasks
 			
 			// Compile the source files to a dll first.
 			ScriptEngine engine = IronPython.Hosting.Python.CreateEngine();
-			PythonDictionary dictionary = new PythonDictionary();
-			dictionary.setdefault("mainModule", mainFile);
+			Dictionary<string, object> dictionary = new Dictionary<string, object>();
+			dictionary.Add("mainModule", mainFile);
 			string outputAssemblyDll = Path.ChangeExtension(outputAssembly, ".dll");
 			ClrModule.CompileModules(DefaultContext.Default, outputAssemblyDll, dictionary, ToStringArray(sourceFiles));
 	

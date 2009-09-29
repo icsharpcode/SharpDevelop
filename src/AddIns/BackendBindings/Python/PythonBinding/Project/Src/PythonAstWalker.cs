@@ -79,6 +79,10 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override bool Walk(FunctionDefinition node)
 		{
+			if (node.Body == null) {
+				return true;
+			}
+			
 			bool ignoreFirstMethodParameter = true;
 			IClass c = currentClass;
 			if (currentClass == null) {
@@ -89,7 +93,7 @@ namespace ICSharpCode.PythonBinding
 			}
 
 			// Create method.
-			string methodName = node.Name.ToString();
+			string methodName = node.Name;
 			DomRegion bodyRegion = GetBodyRegion(node.Body, node.Header);
 			DomRegion region = GetMethodRegion(node);
 			
@@ -167,7 +171,7 @@ namespace ICSharpCode.PythonBinding
 				NameExpression nameExpression = expression as NameExpression;
 				MemberExpression memberExpression = expression as MemberExpression;
 				if (nameExpression != null) {
-					AddBaseType(c, nameExpression.Name.ToString());
+					AddBaseType(c, nameExpression.Name);
 				} else if (memberExpression != null) {
 					AddBaseType(c, PythonControlFieldExpression.GetMemberName(memberExpression));
 				}
@@ -187,7 +191,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		/// <remarks>If the parameters belong to a class method then the first
 		/// "self" parameter can be ignored.</remarks>
-		IParameter[] ConvertParameters(Parameter[] parameters, bool ignoreFirstParameter)
+		IParameter[] ConvertParameters(IList<Parameter> parameters, bool ignoreFirstParameter)
 		{
 			List<IParameter> convertedParameters = new List<IParameter>();
 
@@ -196,8 +200,8 @@ namespace ICSharpCode.PythonBinding
 				startingIndex = 1;
 			}
 			
-			for (int i = startingIndex; i < parameters.Length; ++i) {				
-				DefaultParameter parameter = new DefaultParameter(parameters[i].Name.ToString(), null, new DomRegion());
+			for (int i = startingIndex; i < parameters.Count; ++i) {				
+				DefaultParameter parameter = new DefaultParameter(parameters[i].Name, null, new DomRegion());
 				convertedParameters.Add(parameter);
 			}
 			return convertedParameters.ToArray();
@@ -209,7 +213,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		string GetFullyQualifiedClassName(ClassDefinition classDef)
 		{
-			return String.Concat(ns, ".", classDef.Name.ToString());
+			return String.Concat(ns, ".", classDef.Name);
 		}
 		
 		/// <summary>

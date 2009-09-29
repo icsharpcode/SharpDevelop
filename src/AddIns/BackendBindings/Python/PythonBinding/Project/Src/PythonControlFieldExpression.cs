@@ -164,13 +164,13 @@ namespace ICSharpCode.PythonBinding
 		{
 			List<string> names = new List<string>();
 			while (expression != null) {
-				names.Insert(0, expression.Name.ToString());
+				names.Insert(0, expression.Name);
 				
 				NameExpression nameExpression = expression.Target as NameExpression;
 				expression = expression.Target as MemberExpression;
 				if (expression == null) {
 					if (nameExpression != null) {
-						names.Insert(0, nameExpression.Name.ToString());
+						names.Insert(0, nameExpression.Name);
 					}
 				}
 			}
@@ -273,7 +273,7 @@ namespace ICSharpCode.PythonBinding
 			object component = GetComponent(componentCreator);
 			PropertyDescriptor property = GetProperty(component, memberName);
 			if (property != null) {
-				string name = nameExpression.Name.ToString();
+				string name = nameExpression.Name;
 				if (property.PropertyType != typeof(bool)) {
 					object instance = componentCreator.GetInstance(name);
 					if (instance != null) {

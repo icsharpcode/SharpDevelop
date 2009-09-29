@@ -15,7 +15,7 @@ using PythonBinding.Tests;
 namespace PythonBinding.Tests.Parsing
 {
 	/// <summary>
-	/// The IronPython parser will throw an invalid cast exception for the following code:
+	/// The IronPython 2.0.2 parser will throw an invalid cast exception for the following code:
 	/// 
 	/// class Project(id): 
 	///     def __init__ Project_ID(): 
@@ -31,6 +31,8 @@ namespace PythonBinding.Tests.Parsing
     /// at IronPython.Compiler.Parser.ParseStmt()
     /// at IronPython.Compiler.Parser.ParseFile(Boolean makeModule)
     /// at ICSharpCode.PythonBinding.PythonParser.CreateAst(String fileName, String fileContent)
+    /// 
+    /// This test just ensures that this bug is fixed with IronPython 2.6
 	/// </summary>
 	[TestFixture]
 	public class InvalidCastInPythonParserTestFixture
@@ -40,11 +42,10 @@ namespace PythonBinding.Tests.Parsing
 					  "        #i\r\n";
 		
 		/// <summary>
-		/// Check that IronPython bug still exists.
+		/// Check that IronPython bug has been fixed exists.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(InvalidCastException))]
-		public void CreateAstShouldThrowInvalidCastException()
+		public void CreateAstShouldNotThrowInvalidCastException()
 		{
 			PythonParser parser = new PythonParser();
 			PythonAst ast = parser.CreateAst(@"d:\projects\test\test.py", code);
@@ -55,7 +56,7 @@ namespace PythonBinding.Tests.Parsing
 		{
 			PythonParser parser = new PythonParser();
 			ICompilationUnit unit = parser.Parse(new DefaultProjectContent(), @"d:\projects\test\test.py", code);
-			Assert.AreEqual(0, unit.Classes.Count);
+			Assert.AreEqual(1, unit.Classes.Count);
 		}
 	}
 }

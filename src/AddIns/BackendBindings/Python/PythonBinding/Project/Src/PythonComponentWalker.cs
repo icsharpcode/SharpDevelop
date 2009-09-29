@@ -61,12 +61,12 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public static string GetBaseClassName(ClassDefinition classDefinition)
 		{
-			if (classDefinition.Bases.Length > 0) {
+			if (classDefinition.Bases.Count > 0) {
 				Expression baseClassExpression = classDefinition.Bases[0];
 				NameExpression nameExpression = baseClassExpression as NameExpression;
 				MemberExpression memberExpression = baseClassExpression as MemberExpression;
 				if (nameExpression != null) {
-					return nameExpression.Name.ToString();
+					return nameExpression.Name;
 				}
 				return PythonControlFieldExpression.GetMemberName(memberExpression);
 			}
@@ -76,7 +76,7 @@ namespace ICSharpCode.PythonBinding
 		public override bool Walk(ClassDefinition node)
 		{
 			classDefinition = node;
-			componentName = node.Name.ToString();
+			componentName = node.Name;
 			if (node.Body != null) {
 				node.Body.Walk(this);
 			}

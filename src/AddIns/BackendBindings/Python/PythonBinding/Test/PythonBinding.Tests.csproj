@@ -47,6 +47,9 @@
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Tasks" />
     <Reference Include="Microsoft.Build.Utilities" />
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\RequiredLibraries\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
     </Reference>

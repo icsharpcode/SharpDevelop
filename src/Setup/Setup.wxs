@@ -141,7 +141,7 @@
 			each be a feature if the user wants to heavily customise the installation.
 		-->
 		<Feature Id="Complete"
-		         Title="SharpDevelop 3.1"
+		         Title="SharpDevelop 3.1.1"
 		         Description="Installs SharpDevelop and registers file associations"
 		         Level="1"
 		         ConfigurableDirectory="INSTALLDIR"
@@ -404,7 +404,8 @@
 				<ComponentRef Id="PartCoverExe"/>
 				<ComponentRef Id="PartCoverExeConfig"/>
 				<ComponentRef Id="PartCoverFrameworkDll"/>
-				<ComponentRef Id="PartCoverToNCoverXslt"/>		
+				<ComponentRef Id="PartCoverToNCoverXslt"/>
+				
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>	
 				<ComponentRef Id="PythonEmptyClassTemplate"/>	
 				<ComponentRef Id="PythonEmptyFormTemplate"/>	
@@ -414,10 +415,14 @@
 				<ComponentRef Id="PythonLibraryProjectTemplate"/>	
 				<ComponentRef Id="IpyExe"/>	
 				<ComponentRef Id="IronPythonModulesDll"/>	
+				<ComponentRef Id="IronPythonModulesXml"/>	
 				<ComponentRef Id="IronPythonDll"/>	
+				<ComponentRef Id="IronPythonXml"/>	
+				<ComponentRef Id="MicrosoftDynamicDll"/>
 				<ComponentRef Id="MicrosoftScriptingDll"/>	
 				<ComponentRef Id="MicrosoftScriptingCoreDll"/>	
-				<ComponentRef Id="MicrosoftScriptingExtensionAttributeDll"/>	
+				<ComponentRef Id="MicrosoftScriptingDebuggingDll"/>	
+				<ComponentRef Id="MicrosoftScriptingExtensionAttributeDll"/>				
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
 				<ComponentRef Id="PythonBindingDll"/>
