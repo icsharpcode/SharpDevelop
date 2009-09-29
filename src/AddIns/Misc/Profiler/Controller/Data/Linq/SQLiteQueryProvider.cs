@@ -46,12 +46,14 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			Only a limited set of expressions are valid in conditions and sort descriptors.
 			These are checked by the SafeExpressionImporter.
 			The set of valid expressions is:
-				- Integer constants
-				- Binary operators: < <= > >= == != && ||
-				- Unary operator: !
-				- value(List<int>).Contains(validExpr)
-				- if c is the lambda parameter, then these expressions are valid:
-					c.NameMapping.ID
+			 - Integer constants
+			 - String constants
+			 - Binary operators: < <= > >= == != && || LIKE GLOB
+			 - Unary operator: !
+			 - value(List<int>).Contains(validExpr)
+			 - if c is the lambda parameter, then these expressions are valid:
+			   c.NameMapping.ID
+			   c.NameMapping.Name
 			
 			Additionally, field references on a lambda parameter of type SingleCall are valid inside
 			filters that operate directly on "AllCalls" (e.g. AllCalls.Filter()).
@@ -86,6 +88,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				Any valid expressions (as defined in 'valid expressions in QueryAst nodes') are copied over directly.
 				Moreover, these expressions are be converted into valid expressions:
 					c.IsUserCode -> c.NameMapping.ID > 0
+					c.NameMapping.Name.StartsWith(constantString, StringComparison.Ordinal) -> Glob(c.NameMapping.Name, constantString);
+					c.NameMapping.Name.StartsWith(constantString, StringComparison.OrdinalIgnoreCase) -> Like(c.NameMapping.Name, constantString);
 		
 		Optimization of QueryAst:
 			The OptimizeQueryExpressionVisitor is performing these optimizations:
@@ -265,15 +269,27 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				}
 			}
 			
+			object GetConstantValue(Expression expr)
+			{
+				return ((ConstantExpression)expr).Value;
+			}
+			
+			/// <summary>
+			/// The list of characters forbidden in GLOB arguments.
+			/// </summary>
+			static readonly char[] forbiddenGlobChars = new[] { '*', '?', '[', ']' };
+			
 			public Expression Import(Expression expr)
 			{
 				switch (expr.NodeType) {
 					case ExpressionType.Constant:
-						// Only integer constants are supported
+						// Only integer and string constants are supported
 						if (expr.Type == typeof(int))
 							return expr;
-						else
-							return null;
+						else if (expr.Type == typeof(string))
+							return expr;
+						
+						return null;
 					case ExpressionType.MemberAccess:
 						{
 							MemberExpression me = (MemberExpression)expr;
@@ -289,6 +305,28 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 								if (me.Member == KnownMembers.NameMapping_ID)
 									return me;
 							}
+						}
+						return null;
+					case ExpressionType.Call:
+						{
+							MethodCallExpression mc = (MethodCallExpression)expr;
+							
+							if (IsMemberOnNameMappingOnParameter(mc.Object, KnownMembers.NameMapping_Name)) {
+								if (mc.Arguments[0].NodeType == ExpressionType.Constant && mc.Arguments[1].NodeType == ExpressionType.Constant) {
+									StringComparison cmp = (StringComparison)GetConstantValue(mc.Arguments[1]);
+									string pattern = (string)GetConstantValue(mc.Arguments[0]);
+									
+									if (mc.Method == KnownMembers.String_StartsWith) {
+										if (cmp == StringComparison.Ordinal && pattern.IndexOfAny(forbiddenGlobChars) == -1)
+											return Expression.Call(KnownMembers.Glob, mc.Object, Expression.Constant(pattern + "*"));
+										else if (cmp == StringComparison.OrdinalIgnoreCase)
+											return Expression.Call(KnownMembers.Like, mc.Object, Expression.Constant(EscapeLikeExpr(pattern, "\\") + "%"));
+										else
+											return null;
+									}
+								}
+							}
+							
 							return null;
 						}
 					case ExpressionType.AndAlso:
@@ -320,14 +358,38 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				}
 			}
 			
+			string EscapeLikeExpr(string expression, string escape)
+			{
+				return expression.Replace(escape, escape + escape)
+					.Replace("%", escape + "%")
+					.Replace("_", escape + "_");
+			}
+			
+			string EscapeGlobExpr(string expression, string escape)
+			{
+				return expression.Replace(escape, escape + escape)
+					.Replace("*", escape + "*")
+					.Replace("?", escape + "?");
+			}
+			
 			bool IsNameMappingOnParameter(Expression expr)
 			{
 				if (expr.NodeType == ExpressionType.MemberAccess) {
 					var me = (MemberExpression)expr;
 					return me.Expression == callTreeNodeParameter && me.Member == KnownMembers.CallTreeNode_NameMapping;
-				} else {
-					return false;
 				}
+				
+				return false;
+			}
+			
+			bool IsMemberOnNameMappingOnParameter(Expression expr, MemberInfo member)
+			{
+				if (expr.NodeType == ExpressionType.MemberAccess) {
+					var me = (MemberExpression)expr;
+					return IsNameMappingOnParameter(me.Expression) && me.Member == member;
+				}
+				
+				return false;
 			}
 		}
 		#endregion

@@ -34,6 +34,11 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			this.callTreeNodeParameter = callTreeNodeParameter;
 		}
 		
+		string EscapeString(string str)
+		{
+			return "'" + str.Replace("'", "''") + "'";
+		}
+		
 		public void Write(Expression expression)
 		{
 			switch (expression.NodeType) {
@@ -57,7 +62,13 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 						break;
 					}
 				case ExpressionType.Constant:
-					w.Write((int)((ConstantExpression)expression).Value);
+					var ce = (ConstantExpression)expression;
+					if (ce.Type == typeof(int))
+						w.Write((int)ce.Value);
+					else if (ce.Type == typeof(string))
+						w.Write(EscapeString((string)ce.Value));
+					else
+						throw new NotSupportedException("constant of type not supported: " + ce.Type.FullName);
 					break;
 				case ExpressionType.MemberAccess:
 					{
@@ -81,6 +92,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							if (me.Member == KnownMembers.NameMapping_ID) {
 								w.Write(nameSet.NameID);
 								break;
+							} else if (me.Member == KnownMembers.NameMapping_Name) {
+								w.Write("(SELECT name FROM namemapping WHERE namemapping.id = " + nameSet.NameID + ")");
+								break;
 							} else {
 								throw new NotSupportedException(me.Member.ToString());
 							}
@@ -102,6 +116,20 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							}
 							w.Write(')');
 							break;
+						} else if (mc.Method == KnownMembers.Like) {
+							w.Write("( ");
+							Write(mc.Arguments[0]);
+							w.Write(" LIKE ");
+							Write(mc.Arguments[1]);
+							w.Write(" ESCAPE '\' )");
+							break;
+						} else if (mc.Method == KnownMembers.Glob) {
+							w.Write("( ");
+							Write(mc.Arguments[0]);
+							w.Write(" GLOB ");
+							Write(mc.Arguments[1]);
+							w.Write(" )");
+							break;
 						} else {
 							throw new NotSupportedException(mc.Method.ToString());
 						}
@@ -109,7 +137,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				case ExpressionType.Not:
 					w.Write("(NOT ");
 					UnaryExpression unary = (UnaryExpression)expression;
-					w.Write(unary.Operand);
+					Write(unary.Operand);
 					w.Write(")");
 					break;
 				default:
