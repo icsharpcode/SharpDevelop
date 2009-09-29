@@ -147,6 +147,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 						return Path.GetFileName(ProjectService.OpenSolution.FileName);
 					} catch (Exception) {}
 					break;
+				case "SHARPDEVELOPBINPATH":
+					return Path.GetDirectoryName(typeof(SharpDevelopStringTagProvider).Assembly.Location);
 				case "STARTUPPATH":
 					return Application.StartupPath;
 			}

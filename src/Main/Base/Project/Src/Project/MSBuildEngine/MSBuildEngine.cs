@@ -10,8 +10,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Build.Construction;
@@ -60,6 +63,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static readonly IList<IMSBuildAdditionalLogger> AdditionalMSBuildLoggers;
 		
+		public static string SharpDevelopBinPath {
+			get {
+				return Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location);
+			}
+		}
+		
 		static MSBuildEngine()
 		{
 			CompileTaskNames = new Set<string>(
@@ -70,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			AdditionalMSBuildLoggers = AddInTree.BuildItems<IMSBuildAdditionalLogger>(AdditionalLoggersPath, null, false);
 			
 			MSBuildProperties = new SortedList<string, string>();
-			MSBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
+			MSBuildProperties.Add("SharpDevelopBinPath", SharpDevelopBinPath);
 			// 'BuildingInsideVisualStudio' tells MSBuild that we took care of building a project's dependencies
 			// before trying to build the project itself. This speeds up compilation because it prevents MSBuild from
 			// repeatedly looking if a project needs to be rebuilt.
@@ -189,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			List<ILogger> loggers = new List<ILogger> {
 				new SharpDevelopLogger(this),
-				//new BuildLogFileLogger(fileName + ".log", LoggerVerbosity.Diagnostic)
+				//new BuildLogFileLogger(project.FileName + ".log", LoggerVerbosity.Diagnostic)
 			};
 			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
 				loggers.Add(loggerProvider.CreateLogger(this));
@@ -206,11 +215,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			// Using projects with in-memory modifications doesn't work with parallel build.
 			// As a work-around, we'll write our modifications to a file and force MSBuild to include that file using a custom property.
 			temporaryFileName = Path.GetTempFileName();
-			using (StreamWriter w = new StreamWriter(temporaryFileName)) {
-				w.WriteLine("<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
+			using (XmlWriter w = new XmlTextWriter(temporaryFileName, Encoding.UTF8)) {
+				const string xmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
+				w.WriteStartElement("Project", xmlNamespace);
 				
 				foreach (string import in additionalTargetFiles) {
-					w.WriteLine("  <Import Project=\"" + import + "\" />");
+					w.WriteStartElement("Import", xmlNamespace);
+					w.WriteAttributeString("Project", MSBuildInternals.Escape(import));
+					w.WriteEndElement();
 				}
 				
 				if (globalProperties.ContainsKey("BuildingInsideVisualStudio")) {
@@ -219,7 +231,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					// We override the target '_ComputeNonExistentFileProperty' which is responsible
 					// for recompiling each time - our _ComputeNonExistentFileProperty does nothing,
 					// which re-enables the MSBuild's usual change detection.
-					w.WriteLine("  <Target Name=\"_ComputeNonExistentFileProperty\" />");
+					w.WriteStartElement("Target", xmlNamespace);
+					w.WriteAttributeString("Name", "_ComputeNonExistentFileProperty");
+					w.WriteEndElement();
 				}
 				
 				// 'MsTestToolsTargets' is preferred because it's at the end of the MSBuild 3.5 and 4.0 target file,
@@ -230,13 +244,20 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				// because we'll replace the hijackedProperty, manually write the corresponding include
 				if (globalProperties.ContainsKey(hijackedProperty)) {
-					w.WriteLine("  <Import Project=\"" + globalProperties[hijackedProperty] + "\" />");
+					// we need to escape the project name because properties passed to MSBuild will not be evaluated
+					w.WriteStartElement("Import", xmlNamespace);
+					w.WriteAttributeString("Project", MSBuildInternals.Escape(globalProperties[hijackedProperty]));
+					w.WriteEndElement();
 				}
-				w.WriteLine("</Project>");
+				w.WriteEndElement();
 				
 				// inject our imports at the end of 'Microsoft.Common.Targets' by replacing the hijackedProperty.
 				globalProperties[hijackedProperty] = temporaryFileName;
 			}
+			
+			#if DEBUG
+			LoggingService.Debug(File.ReadAllText(temporaryFileName));
+			#endif
 			
 			string fileName = project.FileName;
 			string[] targets = { options.Target.TargetName };

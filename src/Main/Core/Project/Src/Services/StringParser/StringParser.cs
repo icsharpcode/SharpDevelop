@@ -53,7 +53,7 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Parses an array and replaces the elements in the existing array.
 		/// </summary>
-		[Obsolete("Call Parse(string) in a loop / consider suing LINQ Select instead")]
+		[Obsolete("Call Parse(string) in a loop / consider using LINQ Select instead")]
 		public static void Parse(string[] inputs)
 		{
 			for (int i = 0; i < inputs.Length; ++i) {

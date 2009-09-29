@@ -87,7 +87,7 @@ namespace CSharpBinding
 				                         options,
 				                         feedbackSink,
 				                         MSBuildEngine.AdditionalTargetFiles.Concat(
-				                         	new [] { "$(SharpDevelopBinPath)/SharpDevelop.CheckMSBuild35Features.targets" }));
+				                         	new [] { Path.Combine(MSBuildEngine.SharpDevelopBinPath, "SharpDevelop.CheckMSBuild35Features.targets") }));
 			} else {
 				base.StartBuild(buildServices, options, feedbackSink);
 			}

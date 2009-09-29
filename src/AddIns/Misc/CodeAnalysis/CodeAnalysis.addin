@@ -14,7 +14,7 @@
 	
 	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalProperties">
 		<!-- Replace the MS CodeAnalysis targets with our own -->
-     	<String id="CodeAnalysisTargets" text = "$(SharpDevelopBinPath)/SharpDevelop.CodeAnalysis.targets"/>
+     	<String id="CodeAnalysisTargets" text = "${SharpDevelopBinPath}/SharpDevelop.CodeAnalysis.targets"/>
 		<!-- Tell our FxCop task where FxCop can be found -->
 		<String id="FxCopDir" text = "${property:CodeAnalysis.FxCopPath}"/>
 	</Path>

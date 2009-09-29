@@ -88,10 +88,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				LoggingService.Info("ParallelMSBuildManager: got start permisson, starting...");
 				BuildParameters parameters = new BuildParameters(this.ProjectCollection);
 				parameters.Loggers = new ILogger[] {
-					new CentralLogger(this),
-					#if DEBUG
-					new ConsoleLogger(LoggerVerbosity.Normal),
-					#endif
+					new CentralLogger(this)
 				};
 				parameters.EnableNodeReuse = false;
 				parameters.MaxNodeCount = BuildOptions.DefaultParallelProjectCount;

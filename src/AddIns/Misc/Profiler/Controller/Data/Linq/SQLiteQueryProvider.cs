@@ -314,6 +314,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 						{
 							MethodCallExpression mc = (MethodCallExpression)expr;
 							
+							// TODO: accept StartsWith on any object (not only NameMapping.Name)
+							// accept NameMapping.Name also in other contexts
 							if (IsMemberOnNameMappingOnParameter(mc.Object, KnownMembers.NameMapping_Name)) {
 								if (mc.Arguments[0].NodeType == ExpressionType.Constant && mc.Arguments[1].NodeType == ExpressionType.Constant) {
 									StringComparison cmp = (StringComparison)GetConstantValue(mc.Arguments[1]);
