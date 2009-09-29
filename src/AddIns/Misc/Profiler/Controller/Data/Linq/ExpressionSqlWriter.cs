@@ -29,7 +29,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			this.callTreeNodeParameter = callTreeNodeParameter;
 		}
 		
-		string EscapeString(string str)
+		static string EscapeString(string str)
 		{
 			return "'" + str.Replace("'", "''") + "'";
 		}
@@ -37,6 +37,12 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public void Write(Expression expression)
 		{
 			switch (expression.NodeType) {
+				case ExpressionType.MemberAccess:
+					WriteMemberAccess((MemberExpression)expression);
+					break;
+				case ExpressionType.Call:
+					WriteMethodCall((MethodCallExpression)expression);
+					break;
 				case ExpressionType.AndAlso:
 				case ExpressionType.OrElse:
 				case ExpressionType.LessThan:
@@ -45,17 +51,15 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				case ExpressionType.GreaterThanOrEqual:
 				case ExpressionType.Equal:
 				case ExpressionType.NotEqual:
-					{
-						BinaryExpression binary = (BinaryExpression)expression;
-						w.Write('(');
-						Write(binary.Left);
-						w.Write(' ');
-						w.Write(GetOperatorSymbol(expression.NodeType));
-						w.Write(' ');
-						Write(binary.Right);
-						w.Write(')');
-						break;
-					}
+					BinaryExpression binary = (BinaryExpression)expression;
+					w.Write('(');
+					Write(binary.Left);
+					w.Write(' ');
+					w.Write(GetOperatorSymbol(expression.NodeType));
+					w.Write(' ');
+					Write(binary.Right);
+					w.Write(')');
+					break;
 				case ExpressionType.Constant:
 					var ce = (ConstantExpression)expression;
 					if (ce.Type == typeof(int))
@@ -65,71 +69,6 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 					else
 						throw new NotSupportedException("constant of type not supported: " + ce.Type.FullName);
 					break;
-				case ExpressionType.MemberAccess:
-					{
-						MemberExpression me = (MemberExpression)expression;
-						if (me.Expression == callTreeNodeParameter) {
-							if (!nameSet.IsCalls)
-								throw new InvalidOperationException("SingleCall references are invalid here");
-							if (me.Member == SingleCall.IDField) {
-								w.Write("id");
-								break;
-							} else if (me.Member == SingleCall.DataSetIdField) {
-								w.Write("datasetid");
-								break;
-							} else if (me.Member == SingleCall.ParentIDField) {
-								w.Write("parentid");
-								break;
-							} else {
-								throw new NotSupportedException(me.Member.ToString());
-							}
-						} else if (IsNameMappingOnParameter(me.Expression)) {
-							if (me.Member == KnownMembers.NameMapping_ID) {
-								w.Write(nameSet.NameID);
-								break;
-							} else if (me.Member == KnownMembers.NameMapping_Name) {
-								w.Write("(SELECT name FROM namemapping WHERE namemapping.id = " + nameSet.NameID + ")");
-								break;
-							} else {
-								throw new NotSupportedException(me.Member.ToString());
-							}
-						} else {
-							throw new NotSupportedException(me.Member.ToString());
-						}
-					}
-				case ExpressionType.Call:
-					{
-						MethodCallExpression mc = (MethodCallExpression)expression;
-						if (mc.Method == KnownMembers.ListOfInt_Contains) {
-							List<int> list = (List<int>)((ConstantExpression)mc.Object).Value;
-							w.Write('(');
-							Write(mc.Arguments[0]);
-							w.Write(" IN (");
-							for (int i = 0; i < list.Count; i++) {
-								if (i > 0)
-									w.Write(',');
-								w.Write(list[i]);
-							}
-							w.Write("))");
-							break;
-						} else if (mc.Method == KnownMembers.Like) {
-							w.Write("( ");
-							Write(mc.Arguments[0]);
-							w.Write(" LIKE ");
-							Write(mc.Arguments[1]);
-							w.Write(" ESCAPE '\' )");
-							break;
-						} else if (mc.Method == KnownMembers.Glob) {
-							w.Write("( ");
-							Write(mc.Arguments[0]);
-							w.Write(" GLOB ");
-							Write(mc.Arguments[1]);
-							w.Write(" )");
-							break;
-						} else {
-							throw new NotSupportedException(mc.Method.ToString());
-						}
-					}
 				case ExpressionType.Not:
 					w.Write("(NOT ");
 					UnaryExpression unary = (UnaryExpression)expression;
@@ -140,17 +79,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 					throw new NotSupportedException(expression.NodeType.ToString());
 			}
 		}
-		
-		bool IsNameMappingOnParameter(Expression expr)
-		{
-			if (expr.NodeType == ExpressionType.MemberAccess) {
-				var me = (MemberExpression)expr;
-				return me.Expression == callTreeNodeParameter && me.Member == KnownMembers.CallTreeNode_NameMapping;
-			} else {
-				return false;
-			}
-		}
-		
+
 		static string GetOperatorSymbol(ExpressionType nodeType)
 		{
 			switch (nodeType) {
@@ -172,6 +101,73 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 					return "!=";
 				default:
 					throw new NotSupportedException(nodeType.ToString());
+			}
+		}
+		
+		void WriteMemberAccess(MemberExpression me)
+		{
+			if (me.Expression == callTreeNodeParameter) {
+				if (!nameSet.IsCalls)
+					throw new InvalidOperationException("SingleCall references are invalid here");
+				if (me.Member == SingleCall.IDField) {
+					w.Write("id");
+				} else if (me.Member == SingleCall.DataSetIdField) {
+					w.Write("datasetid");
+				} else if (me.Member == SingleCall.ParentIDField) {
+					w.Write("parentid");
+				} else {
+					throw new NotSupportedException(me.Member.ToString());
+				}
+			} else if (IsNameMappingOnParameter(me.Expression)) {
+				if (me.Member == KnownMembers.NameMapping_ID) {
+					w.Write(nameSet.NameID);
+				} else if (me.Member == KnownMembers.NameMapping_Name) {
+					w.Write("(SELECT name FROM namemapping WHERE namemapping.id = " + nameSet.NameID + ")");
+				} else {
+					throw new NotSupportedException(me.Member.ToString());
+				}
+			} else {
+				throw new NotSupportedException(me.Member.ToString());
+			}
+		}
+		
+		bool IsNameMappingOnParameter(Expression expr)
+		{
+			if (expr.NodeType == ExpressionType.MemberAccess) {
+				var me = (MemberExpression)expr;
+				return me.Expression == callTreeNodeParameter && me.Member == KnownMembers.CallTreeNode_NameMapping;
+			} else {
+				return false;
+			}
+		}
+		
+		void WriteMethodCall(MethodCallExpression mc)
+		{
+			if (mc.Method == KnownMembers.ListOfInt_Contains) {
+				List<int> list = (List<int>)((ConstantExpression)mc.Object).Value;
+				w.Write('(');
+				Write(mc.Arguments[0]);
+				w.Write(" IN (");
+				for (int i = 0; i < list.Count; i++) {
+					if (i > 0)
+						w.Write(',');
+					w.Write(list[i]);
+				}
+				w.Write("))");
+			} else if (mc.Method == KnownMembers.Like) {
+				w.Write("( ");
+				Write(mc.Arguments[0]);
+				w.Write(" LIKE ");
+				Write(mc.Arguments[1]);
+				w.Write(" ESCAPE '' )");
+			} else if (mc.Method == KnownMembers.Glob) {
+				w.Write("( ");
+				Write(mc.Arguments[0]);
+				w.Write(" GLOB ");
+				Write(mc.Arguments[1]);
+				w.Write(" )");
+			} else {
+				throw new NotSupportedException(mc.Method.ToString());
 			}
 		}
 	}

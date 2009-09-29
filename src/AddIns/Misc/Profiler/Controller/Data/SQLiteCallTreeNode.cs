@@ -171,8 +171,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		public override bool Equals(CallTreeNode other)
 		{
-			if (other is SQLiteCallTreeNode) {
-				SQLiteCallTreeNode node = other as SQLiteCallTreeNode;
+			SQLiteCallTreeNode node = other as SQLiteCallTreeNode;
+			if (node != null) {
 				
 				if (node.ids.Count != this.ids.Count)
 					return false;

@@ -34,11 +34,6 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			return (MethodInfo)InfoOf(ex);
 		}
 		
-		static MethodInfo MethodOf<T1, T2, R>(Expression<Func<T1, T2, R>> ex)
-		{
-			return (MethodInfo)InfoOf(ex);
-		}
-		
 		static MethodInfo MethodOf<R>(Expression<Func<R>> ex)
 		{
 			return (MethodInfo)InfoOf(ex);
@@ -61,11 +56,15 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		}
 		#endregion
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
 		static bool LikeImpl(string input, string pattern)
 		{
 			throw new NotImplementedException();
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
 		static bool GlobImpl(string input, string pattern)
 		{
 			throw new NotImplementedException();

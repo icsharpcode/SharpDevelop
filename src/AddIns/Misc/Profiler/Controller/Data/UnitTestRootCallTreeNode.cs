@@ -83,7 +83,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override bool Equals(CallTreeNode other)
 		{
-			return (other is UnitTestRootCallTreeNode) && (other as UnitTestRootCallTreeNode).unitTests.SequenceEqual(unitTests);
+			UnitTestRootCallTreeNode node = other as UnitTestRootCallTreeNode;
+			return node != null && node.unitTests.SequenceEqual(unitTests);
 		}
 		
 		/// <inheritdoc/>

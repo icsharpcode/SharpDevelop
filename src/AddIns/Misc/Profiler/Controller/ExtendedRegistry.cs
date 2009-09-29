@@ -57,7 +57,7 @@ namespace ICSharpCode.Profiler.Controller
 			
 			[DllImport("kernel32", SetLastError = true)]
 			[return: MarshalAs(UnmanagedType.Bool)]
-			internal static extern bool IsWow64Process(IntPtr hProcess, out bool wow64Process);
+			internal static extern bool IsWow64Process(IntPtr hProcess, [MarshalAs(UnmanagedType.Bool)] out bool wow64Process);
 		}
 		
 		[Flags]

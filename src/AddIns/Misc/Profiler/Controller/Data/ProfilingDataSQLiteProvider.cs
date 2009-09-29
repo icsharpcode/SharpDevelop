@@ -132,22 +132,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
-		double GetCpuUsage(int index) {
-			SQLiteCommand cmd;
-			using (LockAndCreateCommand(out cmd)) {
-				cmd.CommandText = @"SELECT cpuusage
-									FROM DataSets
-									WHERE id = " + index + ";";
-				
-				using (SQLiteDataReader reader = cmd.ExecuteReader()) {
-					while (reader.Read())
-						return reader.GetDouble(0);
-
-					return 0;
-				}
-			}
-		}
-		
 		class SQLiteDataSet : IProfilingDataSet
 		{
 			ProfilingDataSQLiteProvider provider;

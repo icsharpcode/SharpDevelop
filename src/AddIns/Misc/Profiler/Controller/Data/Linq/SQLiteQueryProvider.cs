@@ -84,8 +84,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				Any valid expressions (as defined in 'valid expressions in QueryAst nodes') are copied over directly.
 				Moreover, these expressions are be converted into valid expressions:
 					c.IsUserCode -> c.NameMapping.ID > 0
-					c.NameMapping.Name.StartsWith(constantString, StringComparison.Ordinal) -> Glob(c.NameMapping.Name, constantString);
-					c.NameMapping.Name.StartsWith(constantString, StringComparison.OrdinalIgnoreCase) -> Like(c.NameMapping.Name, constantString);
+					s.StartsWith(constantString, StringComparison.Ordinal) -> Glob(s, constantString + "*");
+					s.StartsWith(constantString, StringComparison.OrdinalIgnoreCase) -> Like(s, constantString + "%");
 		
 		Optimization of QueryAst:
 			The OptimizeQueryExpressionVisitor is performing these optimizations:
@@ -268,7 +268,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				}
 			}
 			
-			object GetConstantValue(Expression expr)
+			static object GetConstantValue(Expression expr)
 			{
 				return ((ConstantExpression)expr).Value;
 			}
@@ -363,18 +363,11 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				}
 			}
 			
-			string EscapeLikeExpr(string expression, string escape)
+			static string EscapeLikeExpr(string expression, string escape)
 			{
 				return expression.Replace(escape, escape + escape)
 					.Replace("%", escape + "%")
 					.Replace("_", escape + "_");
-			}
-			
-			string EscapeGlobExpr(string expression, string escape)
-			{
-				return expression.Replace(escape, escape + escape)
-					.Replace("*", escape + "*")
-					.Replace("?", escape + "?");
 			}
 			
 			/// <summary>

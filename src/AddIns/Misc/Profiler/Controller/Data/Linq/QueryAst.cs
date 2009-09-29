@@ -8,6 +8,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -77,7 +78,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		/// Wraps the current SQL statement into an inner select, allowing to continue with "WHERE" queries
 		/// even after ORDER BY or LIMIT.
 		/// </summary>
-		protected void WrapSqlIntoNestedStatement(StringBuilder b, SqlQueryContext context)
+		protected static void WrapSqlIntoNestedStatement(StringBuilder b, SqlQueryContext context)
 		{
 			CallTreeNodeSqlNameSet oldNames = context.CurrentNameSet;
 			CallTreeNodeSqlNameSet newNames = new CallTreeNodeSqlNameSet(context, false);
@@ -274,10 +275,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			return resultKind;
 		}
 		
-		void BuildSqlForCondition(StringBuilder b, SqlQueryContext context, LambdaExpression condition)
+		static void BuildSqlForCondition(StringBuilder b, SqlQueryContext context, LambdaExpression condition)
 		{
 			Debug.Assert(condition.Parameters.Count == 1);
-			StringWriter w = new StringWriter();
+			StringWriter w = new StringWriter(CultureInfo.InvariantCulture);
 			ExpressionSqlWriter writer = new ExpressionSqlWriter(w, context.CurrentNameSet, condition.Parameters[0]);
 			writer.Write(condition.Body);
 			b.Append(w.ToString());

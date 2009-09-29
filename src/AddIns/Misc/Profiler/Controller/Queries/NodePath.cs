@@ -14,11 +14,13 @@ namespace ICSharpCode.Profiler.Controller.Queries
 	/// <summary>
 	/// Describes an absolute path to an CallTreeNode.
 	/// </summary>
-	public class NodePath : IEquatable<NodePath>, IEnumerable<int>
+	public sealed class NodePath : IEquatable<NodePath>, IEnumerable<int>
 	{
 		/// <summary>
 		/// Describes an empty NodePath.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes",
+		                                                 Justification = "NodePath is immutable")]
 		public static readonly NodePath Empty = new NodePath(0, null);
 		
 		int lastId;
@@ -47,9 +49,9 @@ namespace ICSharpCode.Profiler.Controller.Queries
 		/// <summary>
 		/// Creates a new NodePath from this with a new Name Id segment attached.
 		/// </summary>
-		public NodePath Append(int newVal)
+		public NodePath Append(int newValue)
 		{
-			return new NodePath(newVal, this);
+			return new NodePath(newValue, this);
 		}
 		
 		/// <summary>

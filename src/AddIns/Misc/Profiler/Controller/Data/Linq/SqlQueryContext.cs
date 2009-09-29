@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Globalization;
 
 namespace ICSharpCode.Profiler.Controller.Data.Linq
 {
@@ -22,7 +23,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		
 		public string GenerateUniqueVariableName()
 		{
-			return "v" + (++uniqueVariableIndex).ToString();
+			return "v" + (++uniqueVariableIndex).ToString(CultureInfo.InvariantCulture);
 		}
 		
 		public CallTreeNodeSqlNameSet CurrentNameSet;

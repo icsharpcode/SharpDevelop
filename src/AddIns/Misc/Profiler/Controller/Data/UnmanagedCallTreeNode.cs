@@ -119,9 +119,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		public override bool Equals(CallTreeNode other)
 		{
-			if (other is UnmanagedCallTreeNode32) {
-				UnmanagedCallTreeNode32 node = other as UnmanagedCallTreeNode32;
-				
+			UnmanagedCallTreeNode32 node = other as UnmanagedCallTreeNode32;
+			if (node != null) {
 				return node.data == this.data;
 			}
 			

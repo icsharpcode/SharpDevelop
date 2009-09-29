@@ -16,6 +16,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 	/// <summary>
 	/// Performs query optimizations.
 	/// See the documentation on SQLiteQueryProvider for the list of optimizations being performed.
+	/// 
+	/// Nodes returned from 'Visit' can be assumed to be fully optimized (they won't contain any of the patterns
+	/// described in the SQLiteQueryProvider optimization documentation).
 	/// </summary>
 	sealed class OptimizeQueryExpressionVisitor : System.Linq.Expressions.ExpressionVisitor
 	{
@@ -81,6 +84,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			public static bool Test(Expression ex)
 			{
 				var visitor = new IsConditionSafeForMoveIntoMergeByName();
+				visitor.Visit(ex);
 				return visitor.IsSafe;
 			}
 			
@@ -99,8 +103,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			
 			protected override Expression VisitMethodCall(MethodCallExpression node)
 			{
-				if (node.Object.NodeType == ExpressionType.Parameter && !SafeMembers.Contains(node.Method))
-					IsSafe = false;
+				if (node.Object != null) {
+					if (node.Object.NodeType == ExpressionType.Parameter && !SafeMembers.Contains(node.Method))
+						IsSafe = false;
+				}
 				return base.VisitMethodCall(node);
 			}
 		}
@@ -146,11 +152,11 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		protected override Expression VisitMethodCall(MethodCallExpression node)
 		{
 			// Optimize List<int>.Contains when the list has 0 or 1 elements
-			if (node.Method == KnownMembers.ListOfInt_Contains && node.Object.NodeType == ExpressionType.Constant && node.Arguments[0].Type == typeof(int)) {
+			if (node.Method == KnownMembers.ListOfInt_Contains && node.Object.NodeType == ExpressionType.Constant) {
 				List<int> list = (List<int>)((ConstantExpression)node.Object).Value;
-				if (list.Count == 0)
-					return Expression.Constant(false);
-				else if (list.Count == 1)
+//				if (list.Count == 0)
+//					return Expression.Constant(false); // we cannot optimize to 'false' because bool constants are not valid
+				if (list.Count == 1)
 					return Expression.Equal(Visit(node.Arguments[0]), Expression.Constant(list[0]));
 			}
 			return base.VisitMethodCall(node);

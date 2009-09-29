@@ -21,7 +21,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 	/// Stores recorded profiling data in a temporary file, which is deleted when the file database is closed.
 	/// Instance members of this class are not thread-safe.
 	/// </summary>
-	public class TempFileDatabase : IDisposable
+	public sealed class TempFileDatabase : IDisposable
 	{
 		FileStream file;
 		int processorFrequency;
