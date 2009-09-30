@@ -105,8 +105,11 @@ namespace ICSharpCode.Profiler.Controller
 			if (logOutput == null)
 				throw new ArgumentNullException("logOutput");
 			
-			logOutput.WriteLine("The query did not use LINQ-to-Profiler.");
+			IQueryable<CallTreeNode> query = items as IQueryable<CallTreeNode>;
+			if (query != null)
+				return query.WithQueryLog(logOutput);
 			
+			logOutput.WriteLine("The query did not use LINQ-to-Profiler.");
 			return items;
 		}
 		

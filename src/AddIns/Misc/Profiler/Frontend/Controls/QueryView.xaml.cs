@@ -292,7 +292,7 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			try {
 				if (compiler.Compile()) {
-					var data = compiler.ExecuteQuery(provider, rangeStart, rangeEnd);
+					IEnumerable<CallTreeNode> data = compiler.ExecuteQuery(provider, rangeStart, rangeEnd);
 					#if DEBUG
 					data = data.WithQueryLog(Console.Out);
 					#endif

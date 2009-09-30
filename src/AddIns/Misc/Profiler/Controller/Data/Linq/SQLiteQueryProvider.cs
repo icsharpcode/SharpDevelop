@@ -162,6 +162,17 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			return expression.ToString();
 		}
 		
+		/// <summary>
+		/// Optimizes the query without executing it.
+		/// Used for unit tests.
+		/// </summary>
+		public Expression OptimizeQuery(Expression inputExpression)
+		{
+			Expression partiallyEvaluatedExpression = PartialEvaluator.Eval(inputExpression, CanBeEvaluatedStatically);
+			Expression expression = new ConvertToQueryAstVisitor(new QueryExecutionOptions()).Visit(partiallyEvaluatedExpression);
+			return new OptimizeQueryExpressionVisitor().Visit(expression);
+		}
+		
 		public override object Execute(Expression inputExpression)
 		{
 			Stopwatch watch = Stopwatch.StartNew();
