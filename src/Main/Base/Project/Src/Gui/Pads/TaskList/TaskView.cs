@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (!string.IsNullOrEmpty(t.FileName)) {
 					b.Append(" - ");
 					b.Append(t.FileName);
-					if (t.Line >= 0) {
+					if (t.Line >= 1) {
 						b.Append(':');
 						b.Append(t.Line);
 						if (t.Column > 1) {

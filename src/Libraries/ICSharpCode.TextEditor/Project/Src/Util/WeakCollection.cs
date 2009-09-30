@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.TextEditor.Util
 {
 	/// <summary>
-	/// A collection that does not allows its elements to be garbage-collected (unless there are other
+	/// A collection that allows its elements to be garbage-collected (unless there are other
 	/// references to the elements). Elements will disappear from the collection when they are
 	/// garbage-collected.
 	/// 

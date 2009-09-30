@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop
 		bool isDisposed;
 		
 		/// <summary>
-		/// Deregisters the event handlers so the error drawer (and associated TextEditorControl)
+		/// Deregisters the event handlers so the error painter (and associated TextEditor)
 		/// can be garbage collected.
 		/// </summary>
 		public void Dispose()
@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (textEditor.FileName == null)
 				return false;
-			if (task.FileName == null || task.FileName.Length == 0 || task.Column < 0)
+			if (task.FileName == null || task.Column <= 0)
 				return false;
 			if (task.TaskType != TaskType.Warning && task.TaskType != TaskType.Error)
 				return false;
@@ -105,9 +105,13 @@ namespace ICSharpCode.SharpDevelop
 		
 		void AddTask(Task task)
 		{
-			if (!CheckTask(task)) return;
+			if (DebuggerService.IsDebuggerLoaded && DebuggerService.CurrentDebugger.IsDebugging)
+				return;
+			if (!CheckTask(task))
+				return;
 			
-			if (task.Line >= 0 && task.Line < textEditor.Document.TotalNumberOfLines) {
+			if (task.Line >= 1 && task.Line <= textEditor.Document.TotalNumberOfLines) {
+				LoggingService.Debug(task.ToString());
 				int offset = textEditor.Document.PositionToOffset(task.Line, task.Column);
 				int length = textEditor.Document.GetWordAt(offset).Length;
 				
@@ -144,6 +148,8 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public void UpdateErrors()
 		{
+			if (isDisposed)
+				return;
 			ClearErrors();
 			foreach (Task task in TaskService.Tasks) {
 				AddTask(task);

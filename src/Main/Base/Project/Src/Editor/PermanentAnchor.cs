@@ -80,6 +80,14 @@ namespace ICSharpCode.SharpDevelop.Editor
 			this.fileName = newName;
 		}
 		
+		internal void FileDeleted()
+		{
+			Debug.Assert(currentDocument == null);
+			if (!surviveDeletion) {
+				baseAnchor_Deleted(null, EventArgs.Empty);
+			}
+		}
+		
 		void baseAnchor_Deleted(object sender, EventArgs e)
 		{
 			isDeleted = true;
@@ -174,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 				if (baseAnchor != null)
 					return baseAnchor.Column;
 				else
-					return line;
+					return column;
 			}
 		}
 	}
@@ -191,6 +199,47 @@ namespace ICSharpCode.SharpDevelop.Editor
 			IDocument doc;
 			if (openDocuments.TryGetValue(anchor.FileName, out doc))
 				anchor.AttachTo(doc);
+		}
+		
+		/// <summary>
+		/// Renames anchors without document.
+		/// </summary>
+		internal static void FileRenamed(FileRenameEventArgs e)
+		{
+			FileName sourceFile = new FileName(e.SourceFile);
+			FileName targetFile = new FileName(e.TargetFile);
+			
+			foreach (PermanentAnchor anchor in permanentAnchors) {
+				if (anchor.CurrentDocument == null) {
+					if (e.IsDirectory) {
+						if (FileUtility.IsBaseDirectory(e.SourceFile, anchor.FileName)) {
+							anchor.SetFileName(new FileName(FileUtility.RenameBaseDirectory(anchor.FileName, e.SourceFile, e.TargetFile)));
+						}
+					} else {
+						if (anchor.FileName == sourceFile)
+							anchor.SetFileName(targetFile);
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Deletes anchors without document.
+		/// </summary>
+		internal static void FileDeleted(FileEventArgs e)
+		{
+			FileName fileName = new FileName(e.FileName);
+			foreach (PermanentAnchor anchor in permanentAnchors) {
+				if (anchor.CurrentDocument == null) {
+					if (e.IsDirectory) {
+						if (FileUtility.IsBaseDirectory(fileName, anchor.FileName))
+							anchor.FileDeleted();
+					} else {
+						if (fileName == anchor.FileName)
+							anchor.FileDeleted();
+					}
+				}
+			}
 		}
 		
 		/// <summary>

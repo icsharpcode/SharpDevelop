@@ -117,7 +117,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 					() => {
 						WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 						TaskService.ClearExceptCommentTasks();
-						TaskService.AddRange(errors.Select(error => new Task("", error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)));
+						TaskService.AddRange(errors.Select(error => new Task(null, error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)));
 					}
 				)
 			);

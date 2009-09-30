@@ -139,7 +139,7 @@ namespace ICSharpCode.CodeCoverage
 		void DisplayCoverageResults(string fileName)
 		{
 			if (!File.Exists(fileName)) {
-				Task task = new Task(String.Empty, String.Concat(StringParser.Parse("${res:ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated}"), " ", fileName), 0, 0, TaskType.Error);
+				Task task = new Task(null, String.Concat(StringParser.Parse("${res:ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated}"), " ", fileName), 0, 0, TaskType.Error);
 				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.Add, task);
 				return;
 			}

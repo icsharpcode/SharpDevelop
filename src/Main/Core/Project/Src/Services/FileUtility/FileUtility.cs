@@ -166,6 +166,11 @@ namespace ICSharpCode.Core
 			return path.IndexOf("://", StringComparison.Ordinal) > 0;
 		}
 		
+		public static bool IsEqualFileName(FileName fileName1, FileName fileName2)
+		{
+			return fileName1 == fileName2;
+		}
+		
 		public static string GetCommonBaseDirectory(string dir1, string dir2)
 		{
 			if (dir1 == null || dir2 == null) return null;

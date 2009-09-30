@@ -95,11 +95,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (!string.IsNullOrEmpty(oldFileName))
 					ParserService.ClearParseInformation(oldFileName);
 				
+				
+				BookmarksNotifyNameChange(oldFileName, newFileName);
+				// changing the filename on the codeEditor raises several events; ensure
+				// we got our state updated first (bookmarks, persistent anchors) before other code
+				// processes the file name change
+				
 				codeEditor.FileName = newFileName;
 				
 				ParserService.BeginParse(file.FileName, codeEditor.DocumentAdapter);
-				
-				BookmarksNotifyNameChange(oldFileName, newFileName);
 			}
 		}
 		

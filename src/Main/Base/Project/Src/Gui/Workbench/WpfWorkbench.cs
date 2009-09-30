@@ -158,6 +158,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			}
+			Editor.PermanentAnchorService.FileDeleted(e);
 		}
 		
 		void CheckRenamedFile(object sender, FileRenameEventArgs e)
@@ -169,15 +170,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			} else {
-				foreach (OpenedFile file in FileService.OpenedFiles) {
-					if (file.FileName != null &&
-					    FileUtility.IsEqualFileName(file.FileName, e.SourceFile))
-					{
-						file.FileName = new FileName(e.TargetFile);
-						return;
-					}
+				OpenedFile file = FileService.GetOpenedFile(e.SourceFile);
+				if (file != null) {
+					file.FileName = new FileName(e.TargetFile);
 				}
 			}
+			Editor.PermanentAnchorService.FileRenamed(e);
 		}
 		
 		void UpdateMenu()

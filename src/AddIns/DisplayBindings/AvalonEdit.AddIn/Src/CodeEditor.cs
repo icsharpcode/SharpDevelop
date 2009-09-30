@@ -117,10 +117,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (secondaryTextEditorAdapter != null)
 						secondaryTextEditorAdapter.FileNameChanged();
 					
-					if (this.errorPainter != null)
-						this.errorPainter.Dispose();
-					
-					this.errorPainter = new ErrorPainter(primaryTextEditorAdapter);
+					if (this.errorPainter == null) {
+						this.errorPainter = new ErrorPainter(primaryTextEditorAdapter);
+					} else {
+						this.errorPainter.UpdateErrors();
+					}
 					
 					FetchParseInformation();
 				}

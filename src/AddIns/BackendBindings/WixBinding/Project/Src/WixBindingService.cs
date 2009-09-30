@@ -13,12 +13,12 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
 {
-	public sealed class WixBindingService 
+	public sealed class WixBindingService
 	{
 		WixBindingService()
 		{
 		}
-	
+		
 		/// <summary>
 		/// Clears the error list and the output messages.
 		/// </summary>
@@ -43,7 +43,7 @@ namespace ICSharpCode.WixBinding
 		/// Adds an error to the error list.
 		/// </summary>
 		public static void AddErrorToErrorList(string fileName, Exception ex)
-		{			
+		{
 			AddError(fileName, ex);
 		}
 		
@@ -67,11 +67,11 @@ namespace ICSharpCode.WixBinding
 			
 			XmlException xmlEx = ex as XmlException;
 			if (xmlEx != null) {
-				column = xmlEx.LinePosition - 1;
-				line = xmlEx.LineNumber - 1;
+				column = xmlEx.LinePosition;
+				line = xmlEx.LineNumber;
 			}
 			LoggingService.Debug(ex.ToString());
-			TaskService.Add(new Task(fileName, ex.Message, column, line, TaskType.Error));
+			TaskService.Add(new Task(FileName.Create(fileName), ex.Message, column, line, TaskType.Error));
 		}
 	}
 }

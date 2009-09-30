@@ -21,19 +21,21 @@ namespace ICSharpCode.Core
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
+			if (fileName.Length == 0)
+				throw new ArgumentException("The empty string is not a valid FileName");
 			this.normalizedFileName = FileUtility.NormalizePath(fileName);
 		}
 		
 		/// <summary>
 		/// Creates a FileName instance from the string.
-		/// It is valid to pass null to this method (in that case, a null reference will be returned).
+		/// It is valid to pass null or an empty string to this method (in that case, a null reference will be returned).
 		/// </summary>
 		public static FileName Create(string fileName)
 		{
-			if (fileName != null)
-				return new FileName(fileName);
-			else
+			if (string.IsNullOrEmpty(fileName))
 				return null;
+			else
+				return new FileName(fileName);
 		}
 		
 		public static implicit operator string(FileName fileName)

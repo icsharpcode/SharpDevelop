@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
@@ -23,19 +25,18 @@ namespace ICSharpCode.SharpDevelop
 		public const string DefaultContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/TaskContextMenu";
 		
 		string   description;
-		string   fileName;
 		TaskType type;
-		int      line;
-		int      column;
+		PermanentAnchor position;
+		bool hasLocation;
 		string contextMenuAddInTreeEntry = DefaultContextMenuAddInTreeEntry;
 		object tag;
 
 		public override string ToString()
 		{
 			return String.Format("[Task:File={0}, Line={1}, Column={2}, Type={3}, Description={4}",
-			                     fileName,
-			                     line,
-			                     column,
+			                     FileName,
+			                     Line,
+			                     Column,
 			                     type,
 			                     description);
 		}
@@ -45,7 +46,10 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public int Line {
 			get {
-				return line;
+				if (hasLocation && !position.IsDeleted)
+					return position.Line;
+				else
+					return 0;
 			}
 		}
 		
@@ -54,7 +58,10 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public int Column {
 			get {
-				return column;
+				if (hasLocation && !position.IsDeleted)
+					return position.Column;
+				else
+					return 0;
 			}
 		}
 		
@@ -64,12 +71,12 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public string FileName {
+		public FileName FileName {
 			get {
-				return fileName;
-			}
-			set {
-				fileName = value;
+				if (position != null)
+					return position.FileName;
+				else
+					return null;
 			}
 		}
 		
@@ -102,21 +109,44 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public BuildError BuildError { get; private set; }
 		
-		public Task(string fileName, string description, int column, int line, TaskType type)
+		/// <summary>
+		/// Creates a new Task instance.
+		/// </summary>
+		/// <param name="fileName">The file that the task refers to. Use null if the task does not refer to a file.</param>
+		/// <param name="description">Description of the task. This parameter cannot be null.</param>
+		/// <param name="column">Task column (1-based), use 0 if no column is known</param>
+		/// <param name="line">Task line (1-based), use 0 if no line number is known</param>
+		/// <param name="type">Type of the task</param>
+		public Task(FileName fileName, string description, int column, int line, TaskType type)
 		{
+			if (description == null)
+				throw new ArgumentNullException("description");
 			this.type        = type;
-			this.fileName    = fileName;
 			this.description = description.Trim();
-			this.column      = column;
-			this.line        = line;
+			if (fileName != null) {
+				hasLocation = line >= 1;
+				this.position = new PermanentAnchor(fileName, Math.Max(1, line), Math.Max(1, column));
+				position.Deleted += position_Deleted;
+			}
+		}
+		
+		void position_Deleted(object sender, EventArgs e)
+		{
+			TaskService.Remove(this);
 		}
 		
 		public Task(BuildError error)
 		{
-			type         = error.IsWarning ? TaskType.Warning : TaskType.Error;
-			column       = Math.Max(error.Column, 1);
-			line         = Math.Max(error.Line, 1);
-			fileName     = error.FileName;
+			if (error == null)
+				throw new ArgumentNullException("error");
+			type = error.IsWarning ? TaskType.Warning : TaskType.Error;
+			int line = Math.Max(error.Line, 1);
+			int column = Math.Max(error.Column, 1);
+			if (!string.IsNullOrEmpty(error.FileName)) {
+				hasLocation = error.Line >= 1;
+				this.position = new PermanentAnchor(FileName.Create(error.FileName), line, column);
+				position.Deleted += position_Deleted;
+			}
 			if (string.IsNullOrEmpty(error.ErrorCode)) {
 				description = error.ErrorText;
 			} else {
@@ -131,7 +161,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public void JumpToPosition()
 		{
-			FileService.JumpToFilePosition(fileName, line, column);
+			if (hasLocation && !position.IsDeleted)
+				FileService.JumpToFilePosition(position.FileName, position.Line, position.Column);
+			else if (position != null)
+				FileService.OpenFile(position.FileName);
 		}
 	}
 }

@@ -209,7 +209,7 @@ namespace ICSharpCode.XmlEditor
 		
 		static void AddTask(string fileName, string message, int column, int line, TaskType taskType)
 		{
-			TaskService.Add(new Task(fileName, message, column, line, taskType));
+			TaskService.Add(new Task(FileName.Create(fileName), message, column, line, taskType));
 		}
 		
 		#region XmlView methods

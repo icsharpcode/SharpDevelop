@@ -81,39 +81,12 @@ namespace ICSharpCode.SharpDevelop
 		
 		static TaskService()
 		{
-			FileService.FileRenamed += CheckFileRename;
-			FileService.FileRemoved += CheckFileRemove;
-			
 			ProjectService.SolutionClosed += new EventHandler(ProjectServiceSolutionClosed);
 		}
 		
 		static void ProjectServiceSolutionClosed(object sender, EventArgs e)
 		{
 			Clear();
-		}
-		
-		static void CheckFileRemove(object sender, FileEventArgs e)
-		{
-			for (int i = 0; i < tasks.Count; ++i) {
-				Task curTask = tasks[i];
-				if (FileUtility.IsEqualFileName(curTask.FileName, e.FileName)) {
-					Remove(curTask);
-					--i;
-				}
-			}
-		}
-		
-		static void CheckFileRename(object sender, FileRenameEventArgs e)
-		{
-			for (int i = 0; i < tasks.Count; ++i) {
-				Task curTask = tasks[i];
-				if (FileUtility.IsEqualFileName(curTask.FileName, e.SourceFile)) {
-					Remove(curTask);
-					curTask.FileName = FileUtility.NormalizePath(e.TargetFile);
-					Add(curTask);
-					--i;
-				}
-			}
 		}
 		
 		public static void Clear()
@@ -164,10 +137,10 @@ namespace ICSharpCode.SharpDevelop
 			if (fileName == null || tagComments == null) {
 				return;
 			}
-			WorkbenchSingleton.SafeThreadAsyncCall(UpdateCommentTagsInvoked, fileName, tagComments);
+			WorkbenchSingleton.SafeThreadAsyncCall(UpdateCommentTagsInvoked, FileName.Create(fileName), tagComments);
 		}
 		
-		static void UpdateCommentTagsInvoked(string fileName, IList<TagComment> tagComments)
+		static void UpdateCommentTagsInvoked(FileName fileName, IList<TagComment> tagComments)
 		{
 			List<Task> newTasks = new List<Task>();
 			foreach (TagComment tag in tagComments) {
@@ -180,7 +153,7 @@ namespace ICSharpCode.SharpDevelop
 			List<Task> oldTasks = new List<Task>();
 			
 			foreach (Task task in CommentTasks) {
-				if (FileUtility.IsEqualFileName(task.FileName, fileName)) {
+				if (task.FileName == fileName) {
 					oldTasks.Add(task);
 				}
 			}

@@ -150,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			if (textEditor.FileName == null)
 				return false;
-			if (task.FileName == null || task.FileName.Length == 0 || task.Column < 0)
+			if (task.FileName == null || task.Column < 0)
 				return false;
 			if (task.TaskType != TaskType.Warning && task.TaskType != TaskType.Error)
 				return false;

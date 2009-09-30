@@ -253,10 +253,10 @@ namespace ICSharpCode.UnitTesting
 				lineRef = FindTest(result.Name);
 			}
 			if (lineRef != null) {
-				return new Task(Path.GetFullPath(lineRef.FileName),
+				return new Task(FileName.Create(lineRef.FileName),
 				                message, lineRef.Column, lineRef.Line, taskType);
 			}
-			return new Task(String.Empty, message, 0, 0, taskType);
+			return new Task(null, message, 0, 0, taskType);
 		}
 		
 		/// <summary>
