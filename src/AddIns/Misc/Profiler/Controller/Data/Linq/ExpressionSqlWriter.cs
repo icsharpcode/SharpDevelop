@@ -107,7 +107,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		void WriteMemberAccess(MemberExpression me)
 		{
 			if (me.Expression == callTreeNodeParameter) {
-				if (!nameSet.IsCalls)
+				if (me.Member.DeclaringType == typeof(SingleCall) && !nameSet.IsCalls)
 					throw new InvalidOperationException("SingleCall references are invalid here");
 				if (me.Member == SingleCall.IDField) {
 					w.Write("id");
@@ -115,6 +115,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 					w.Write("datasetid");
 				} else if (me.Member == SingleCall.ParentIDField) {
 					w.Write("parentid");
+				} else if (me.Member == KnownMembers.CallTreeNode_CallCount) {
+					w.Write(nameSet.CallCount);
+				} else if (me.Member == KnownMembers.CallTreeNode_CpuCyclesSpent) {
+					w.Write(nameSet.CpuCyclesSpent);
 				} else {
 					throw new NotSupportedException(me.Member.ToString());
 				}

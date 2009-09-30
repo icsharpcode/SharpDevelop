@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -84,7 +85,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			CallTreeNodeSqlNameSet newNames = new CallTreeNodeSqlNameSet(context, false);
 			b.Insert(0, "SELECT " + SqlAs(oldNames.ID, newNames.ID) + ", "
 			         + SqlAs(oldNames.NameID, newNames.NameID) + ", "
-			         + SqlAs(oldNames.TimeSpent, newNames.TimeSpent) + ", "
+			         + SqlAs(oldNames.CpuCyclesSpent, newNames.CpuCyclesSpent) + ", "
 			         + SqlAs(oldNames.CallCount, newNames.CallCount) + ", "
 			         + SqlAs(oldNames.HasChildren, newNames.HasChildren) + ", "
 			         + SqlAs(oldNames.ActiveCallCount, newNames.ActiveCallCount)
@@ -143,7 +144,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			b.AppendLine("SELECT "
 			             + SqlAs("id", newNames.ID) + ", "
 			             + SqlAs("nameid", newNames.NameID) + ", "
-			             + SqlAs("timespent", newNames.TimeSpent) + ", "
+			             + SqlAs("timespent", newNames.CpuCyclesSpent) + ", " // TODO : change to CpuCyclesSpent
 			             + SqlAs("callcount", newNames.CallCount) + ", "
 			             + SqlAs("(id != endid)", newNames.HasChildren) + ", "
 			             + SqlAs("((datasetid = " + context.StartDataSetID + ") AND isActiveAtStart)", newNames.ActiveCallCount));
@@ -186,7 +187,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			b.Insert(0, "SELECT "
 			         + SqlAs("GROUP_CONCAT(" + oldNames.ID + ")", newNames.ID) + ", "
 			         + SqlAs(oldNames.NameID, newNames.NameID) + ", "
-			         + SqlAs("SUM(" + oldNames.TimeSpent + ")", newNames.TimeSpent) + ", "
+			         + SqlAs("SUM(" + oldNames.CpuCyclesSpent + ")", newNames.CpuCyclesSpent) + ", "
 			         + SqlAs("SUM(" + oldNames.CallCount + ")", newNames.CallCount) + ", "
 			         + SqlAs("MAX(" + oldNames.HasChildren + ")", newNames.HasChildren) + ", "
 			         + SqlAs("SUM(" + oldNames.ActiveCallCount + ")", newNames.ActiveCallCount)
@@ -282,6 +283,128 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			ExpressionSqlWriter writer = new ExpressionSqlWriter(w, context.CurrentNameSet, condition.Parameters[0]);
 			writer.Write(condition.Body);
 			b.Append(w.ToString());
+		}
+	}
+	
+	/// <summary>
+	/// Query node that limits the amount of data selected. Produces LIMIT in SQL.
+	/// </summary>
+	sealed class Limit : QueryNode
+	{
+		public int Start { get; private set; }
+		public int Length { get; private set; }
+		
+		public Limit(QueryNode target, int start, int length)
+			: base(target)
+		{
+			this.Start = start;
+			this.Length = length;
+		}
+		
+		protected override Expression VisitChildren(Func<Expression, Expression> visitor)
+		{
+			QueryNode newTarget = (QueryNode)visitor(Target);
+			if (newTarget == Target)
+				return this;
+			else
+				return new Limit(newTarget, Start, Length);
+		}
+		
+		public override string ToString()
+		{
+			return Target + ".Limit(" + Start + "," + Length + ")";
+		}
+		
+		public override SqlStatementKind BuildSql(StringBuilder b, SqlQueryContext context)
+		{
+			SqlStatementKind kind = Target.BuildSql(b, context);
+			if (kind == SqlStatementKind.SelectLimit)
+				WrapSqlIntoNestedStatement(b, context);
+			
+			b.Append(" LIMIT " + Length);
+			b.AppendLine(" OFFSET " + Start);
+			
+			return SqlStatementKind.SelectLimit;
+		}
+	}
+	
+	struct SortArgument {
+		LambdaExpression arg;
+		bool desc;
+		
+		public SortArgument(LambdaExpression arg, bool desc)
+		{
+			this.arg = arg;
+			this.desc = desc;
+		}
+		
+		public bool Descending {
+			get { return desc; }
+		}
+		public LambdaExpression Argument {
+			get { return arg; }
+		}
+	}
+	
+	sealed class Sort : QueryNode
+	{
+		ReadOnlyCollection<SortArgument> arguments;
+		
+		public Sort(QueryNode target, LambdaExpression argument, bool desc)
+			: this(target, new[] { new SortArgument(argument, desc) })
+		{
+		}
+		
+		Sort(QueryNode target, IList<SortArgument> args)
+			: base(target)
+		{
+			this.arguments = new ReadOnlyCollection<SortArgument>(args);
+		}
+		
+		public override SqlStatementKind BuildSql(StringBuilder b, SqlQueryContext context)
+		{
+			SqlStatementKind kind = Target.BuildSql(b, context);
+			if (kind == SqlStatementKind.SelectOrderBy)
+				WrapSqlIntoNestedStatement(b, context);
+			
+			b.Append(" ORDER BY ");
+			
+			for (int i = 0; i < arguments.Count; i++) {
+				StringWriter w = new StringWriter();
+				ExpressionSqlWriter writer = new ExpressionSqlWriter(w, context.CurrentNameSet, arguments[i].Argument.Parameters[0]);
+				writer.Write(arguments[i].Argument.Body);
+				
+				if (i == 0)
+					b.Append(w.ToString());
+				else
+					b.Append(", " + w.ToString());
+				
+				if (arguments[i].Descending)
+					b.Append(" DESC");
+				else
+					b.Append(" ASC");
+			}
+			
+			return SqlStatementKind.SelectOrderBy;
+		}
+		
+		protected override Expression VisitChildren(Func<Expression, Expression> visitor)
+		{
+			QueryNode newTarget = (QueryNode)visitor(Target);
+			if (newTarget == Target)
+				return this;
+			else
+				return new Sort(newTarget, arguments);
+		}
+		
+		public override string ToString()
+		{
+			StringBuilder builder = new StringBuilder();
+			
+			foreach (var item in arguments)
+				builder.Append(item.Argument + " " + (item.Descending ? "DESC" : "ASC") + ",");
+			
+			return Target + ".Sort( {" + builder.ToString() + "} )";
 		}
 	}
 }

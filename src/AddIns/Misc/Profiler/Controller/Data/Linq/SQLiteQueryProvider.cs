@@ -206,7 +206,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			
 			protected override Expression VisitMethodCall(MethodCallExpression node)
 			{
-				if (node.Method == KnownMembers.QuerableOfCallTreeNode_Select && node.Arguments[1].NodeType == ExpressionType.Quote) {
+				if (node.Method == KnownMembers.QueryableOfCallTreeNode_Select && node.Arguments[1].NodeType == ExpressionType.Quote) {
 					// CallTreeNode[].Select:
 					// selects are not supported by query evaluator, but we will detect and remove
 					// degenerate selects (.Select(x => x)).
@@ -216,7 +216,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 						if (lambda.Parameters.Count == 1 && lambda.Body == lambda.Parameters[0])
 							return Visit(node.Arguments[0]);
 					}
-				} else if (node.Method == KnownMembers.QuerableOfCallTreeNode_Where && node.Arguments[1].NodeType == ExpressionType.Quote) {
+				} else if (node.Method == KnownMembers.QueryableOfCallTreeNode_Where && node.Arguments[1].NodeType == ExpressionType.Quote) {
 					// CallTreeNode[].Where:
 					// if the target is a QueryNode and the condition can be safely imported, convert the Where call to Filter
 					UnaryExpression quote = (UnaryExpression)node.Arguments[1];
@@ -231,6 +231,38 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 									return new Filter(target, conditions.ToArray());
 								}
 							}
+						}
+					}
+				} else if (node.Method == KnownMembers.QueryableOfCallTreeNode_Take && node.Arguments[1].NodeType == ExpressionType.Constant) {
+					ConstantExpression ce = (ConstantExpression)node.Arguments[1];
+					if (ce.Type == typeof(int)) {
+						QueryNode target = Visit(node.Arguments[0]) as QueryNode;
+						if (target != null) {
+							return new Limit(target, 0, (int)ce.Value);
+						}
+					}
+				} else if (node.Method.IsGenericMethod && node.Method.GetGenericMethodDefinition() == KnownMembers.Queryable_OrderBy &&
+				           node.Method.GetGenericArguments()[0] == typeof(CallTreeNode) &&
+				           node.Arguments[1].NodeType == ExpressionType.Quote) {
+					UnaryExpression quote = (UnaryExpression)node.Arguments[1];
+					if (quote.Operand.NodeType == ExpressionType.Lambda) {
+						LambdaExpression lambda = (LambdaExpression)quote.Operand;
+						if (lambda.Parameters.Count == 1) {
+							QueryNode target = Visit(node.Arguments[0]) as QueryNode;
+							if (target != null) {
+								SafeExpressionImporter importer = new SafeExpressionImporter(lambda.Parameters[0]);
+								var imported = importer.Import(lambda.Body);
+								if (imported != null)
+									return new Sort(target, Expression.Lambda(imported, lambda.Parameters[0]), false);
+							}
+						}
+					}
+				} else if (node.Method == KnownMembers.QueryableOfCallTreeNode_OrderByDesc && node.Arguments[1].NodeType == ExpressionType.Quote) {
+					ConstantExpression ce = (ConstantExpression)node.Arguments[1];
+					if (ce.Type == typeof(int)) {
+						QueryNode target = Visit(node.Arguments[0]) as QueryNode;
+						if (target != null) {
+							return new Limit(target, 0, (int)ce.Value);
 						}
 					}
 				}
@@ -304,6 +336,12 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 											KnownMembers.NameMapping_ID),
 										Expression.Constant(0));
 								}
+								
+								if (me.Member == KnownMembers.CallTreeNode_CallCount)
+									return me;
+								
+								if (me.Member == KnownMembers.CallTreeNode_CpuCyclesSpent)
+									return me;
 							} else if (IsNameMappingOnParameter(me.Expression)) {
 								if (me.Member == KnownMembers.NameMapping_ID)
 									return me;

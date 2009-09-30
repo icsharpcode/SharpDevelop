@@ -33,7 +33,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 	{
 		public readonly string ID;
 		public readonly string NameID = "nameid";
-		public readonly string TimeSpent;
+		public readonly string CpuCyclesSpent;
 		public readonly string CallCount;
 		public readonly string HasChildren;
 		public readonly string ActiveCallCount;
@@ -50,11 +50,11 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			string prefix = c.GenerateUniqueVariableName();
 			if (isCalls) {
 				ID = "id";
-				TimeSpent = "timespent";
+				CpuCyclesSpent = "cpucyclesspent";
 				CallCount = "callcount";
 			} else {
 				ID = prefix + "ID";
-				TimeSpent = prefix + "TimeSpent";
+				CpuCyclesSpent = prefix + "CpuCyclesSpent";
 				CallCount = prefix + "CallCount";
 			}
 			HasChildren = prefix + "HasChildren";

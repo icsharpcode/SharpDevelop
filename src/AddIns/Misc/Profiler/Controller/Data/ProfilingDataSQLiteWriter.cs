@@ -185,6 +185,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		void InitializeTables()
 		{
 			//NameMapping { Id, ReturnType, Name, Parameters }
+			// TODO : update db schema: change FunctionData.TimeSpent to cpucyclesspent
 			//FunctionData { DataSetId, Id, ParentId, NameId, TimeSpent, CallCount }
 			//DataSets { Id, CPUUsage, RootId }
 			//
