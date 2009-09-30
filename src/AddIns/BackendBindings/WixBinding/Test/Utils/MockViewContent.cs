@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -41,7 +42,7 @@ namespace WixBinding.Tests.Utils
 		{
 			public MockOpenedFile(string fileName, bool isUntitled)
 			{
-				base.FileName = fileName;
+				base.FileName = FileName.Create(fileName);
 				base.IsUntitled = isUntitled;
 			}
 			
@@ -79,7 +80,7 @@ namespace WixBinding.Tests.Utils
 			get { return primaryFile; }
 		}
 		
-		public string PrimaryFileName {
+		public FileName PrimaryFileName {
 			get { return primaryFile.FileName; }
 		}
 		

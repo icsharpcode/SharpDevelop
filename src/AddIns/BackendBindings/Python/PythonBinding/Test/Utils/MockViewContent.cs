@@ -8,6 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -18,7 +20,7 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class MockViewContent : IViewContent
 	{
-		string fileName = String.Empty;
+		FileName fileName;
 		List<IViewContent> secondaryViewContents = new List<IViewContent>();
 		
 		public MockViewContent()
@@ -149,7 +151,7 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public string PrimaryFileName {
+		public FileName PrimaryFileName {
 			get { return fileName; }
 			set { fileName = value; }
 		}

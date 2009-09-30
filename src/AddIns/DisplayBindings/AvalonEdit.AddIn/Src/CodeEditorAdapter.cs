@@ -5,10 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Indentation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using ICSharpCode.AvalonEdit.Indentation;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -30,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.codeEditor = codeEditor;
 		}
 		
-		public override string FileName {
+		public override FileName FileName {
 			get { return codeEditor.FileName; }
 		}
 		

@@ -29,7 +29,7 @@ namespace PythonBinding.Tests.Converter
 			mockViewContent = new MockEditableViewContent();
 			mockViewContent.Text = "class Foo\r\n" +
 									"end class";
-			mockViewContent.PrimaryFileName = "test.vb";
+			mockViewContent.PrimaryFileName = new ICSharpCode.Core.FileName("test.vb");
 			
 			MockWorkbench workbench = new MockWorkbench();
 			MockWorkbenchWindow window = new MockWorkbenchWindow();

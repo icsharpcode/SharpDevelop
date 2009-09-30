@@ -5,13 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
@@ -141,8 +143,8 @@ namespace ICSharpCode.SharpDevelop
 		public ITextEditorCaret Caret { get; private set; }
 		public ITextEditorOptions Options { get; private set; }
 		
-		public string FileName {
-			get { return editor.FileName; }
+		public FileName FileName {
+			get { return FileName.Create(editor.FileName); }
 		}
 		
 		public void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider)

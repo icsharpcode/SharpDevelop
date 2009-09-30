@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
@@ -94,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		void JumpTo(int line, int column);
 		
-		string FileName { get; }
+		FileName FileName { get; }
 		
 		ICompletionListWindow ShowCompletionWindow(ICompletionItemList data);
 		

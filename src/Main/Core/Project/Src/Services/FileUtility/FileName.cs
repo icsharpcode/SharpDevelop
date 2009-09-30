@@ -24,6 +24,10 @@ namespace ICSharpCode.Core
 			this.normalizedFileName = FileUtility.NormalizePath(fileName);
 		}
 		
+		/// <summary>
+		/// Creates a FileName instance from the string.
+		/// It is valid to pass null to this method (in that case, a null reference will be returned).
+		/// </summary>
 		public static FileName Create(string fileName)
 		{
 			if (fileName != null)

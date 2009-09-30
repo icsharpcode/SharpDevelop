@@ -30,7 +30,7 @@ namespace PythonBinding.Tests
 		{
 			// Create dummy view content with the Python script.
 			MockViewContent viewContent = new MockViewContent();
-			viewContent.PrimaryFileName = @"C:\Projects\test.py";
+			viewContent.PrimaryFileName = new FileName(@"C:\Projects\test.py");
 			MockWorkbenchWindow workbenchWindow = new MockWorkbenchWindow();
 			workbenchWindow.ActiveViewContent = viewContent;
 			MockWorkbench workbench = new MockWorkbench();

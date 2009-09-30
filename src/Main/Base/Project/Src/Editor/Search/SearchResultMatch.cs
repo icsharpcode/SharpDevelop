@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
@@ -20,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			set { providedDocumentInformation = value; }
 		}
 		
-		public string FileName {
+		public FileName FileName {
 			get {
 				return providedDocumentInformation.FileName;
 			}

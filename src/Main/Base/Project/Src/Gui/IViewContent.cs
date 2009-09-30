@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
+
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	public delegate void SaveEventHandler(object sender, SaveEventArgs e);
@@ -112,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the name of the primary file being edited. Might return null if no file is edited.
 		/// </summary>
-		string PrimaryFileName { get; }
+		FileName PrimaryFileName { get; }
 		
 		/// <summary>
 		/// Builds an <see cref="INavigationPoint"/> for the current position.

@@ -690,7 +690,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (file.FileName != null &&
 					    FileUtility.IsEqualFileName(file.FileName, fileName))
 					{
-						file.FileName  = copiedFileName;
+						file.FileName = new FileName(copiedFileName);
 					}
 				}
 				FileService.RemoveFile(fileName, false);

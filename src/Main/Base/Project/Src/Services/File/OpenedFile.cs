@@ -70,25 +70,21 @@ namespace ICSharpCode.SharpDevelop
 			protected set { isUntitled = value; }
 		}
 		
-		string fileName;
+		FileName fileName;
 		
 		/// <summary>
 		/// Gets the name of the file.
 		/// </summary>
-		public string FileName {
+		public FileName FileName {
 			get { return fileName; }
 			set {
-				if (fileName == value) return;
-				
-				value = FileUtility.NormalizePath(value);
-				
 				if (fileName != value) {
 					ChangeFileName(value);
 				}
 			}
 		}
 		
-		protected virtual void ChangeFileName(string newValue)
+		protected virtual void ChangeFileName(FileName newValue)
 		{
 			WorkbenchSingleton.AssertMainThread();
 			
@@ -111,7 +107,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public void SaveToDisk(string newFileName)
 		{
-			this.FileName = newFileName;
+			this.FileName = new FileName(newFileName);
 			this.IsUntitled = false;
 			SaveToDisk();
 		}
@@ -349,13 +345,13 @@ namespace ICSharpCode.SharpDevelop
 		List<IViewContent> registeredViews = new List<IViewContent>();
 		FileChangeWatcher fileChangeWatcher;
 		
-		protected override void ChangeFileName(string newValue)
+		protected override void ChangeFileName(FileName newValue)
 		{
 			FileService.OpenedFileFileNameChange(this, this.FileName, newValue);
 			base.ChangeFileName(newValue);
 		}
 		
-		internal FileServiceOpenedFile(string fileName)
+		internal FileServiceOpenedFile(FileName fileName)
 		{
 			this.FileName = fileName;
 			IsUntitled = false;

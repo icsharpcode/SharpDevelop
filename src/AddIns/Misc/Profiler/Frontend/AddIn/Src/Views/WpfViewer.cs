@@ -41,7 +41,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			}
 		}
 		
-		public override string PrimaryFileName {
+		public override FileName PrimaryFileName {
 			get { return file.FileName; }
 		}
 		

@@ -6,18 +6,19 @@
 // </file>
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop
 {
 	public class ParseInformationEventArgs : EventArgs
 	{
-		string fileName;
+		FileName fileName;
 		IProjectContent projectContent;
 		ICompilationUnit oldCompilationUnit;
 		ICompilationUnit newCompilationUnit;
 		
-		public string FileName {
+		public FileName FileName {
 			get { return fileName; }
 		}
 		
@@ -39,8 +40,12 @@ namespace ICSharpCode.SharpDevelop
 			get { return newCompilationUnit; }
 		}
 		
-		public ParseInformationEventArgs(string fileName, IProjectContent projectContent, ICompilationUnit oldCompilationUnit, ICompilationUnit newCompilationUnit)
+		public ParseInformationEventArgs(FileName fileName, IProjectContent projectContent, ICompilationUnit oldCompilationUnit, ICompilationUnit newCompilationUnit)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			if (projectContent == null)
+				throw new ArgumentNullException("projectContent");
 			this.fileName = fileName;
 			this.projectContent = projectContent;
 			this.oldCompilationUnit = oldCompilationUnit;
@@ -50,18 +55,18 @@ namespace ICSharpCode.SharpDevelop
 	
 	public class ParserUpdateStepEventArgs : EventArgs
 	{
-		string fileName;
+		FileName fileName;
 		ITextBuffer content;
 		ParseInformation parseInformation;
 		
-		public ParserUpdateStepEventArgs(string fileName, ITextBuffer content, ParseInformation parseInformation)
+		public ParserUpdateStepEventArgs(FileName fileName, ITextBuffer content, ParseInformation parseInformation)
 		{
 			this.fileName = fileName;
 			this.content = content;
 			this.parseInformation = parseInformation;
 		}
 		
-		public string FileName {
+		public FileName FileName {
 			get {
 				return fileName;
 			}

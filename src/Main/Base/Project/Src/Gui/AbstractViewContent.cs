@@ -5,12 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -245,7 +247,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Gets the name of the primary file being edited. Might return null if no file is edited.
 		/// </summary>
-		public virtual string PrimaryFileName {
+		public virtual FileName PrimaryFileName {
 			get {
 				OpenedFile file = PrimaryFile;
 				if (file != null)

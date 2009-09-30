@@ -28,7 +28,7 @@ namespace PythonBinding.Tests.Converter
 		{
 			mockViewContent = new MockEditableViewContent();
 			mockViewContent.Text = "class Foo { }";
-			mockViewContent.PrimaryFileName = "test.cs";
+			mockViewContent.PrimaryFileName = new ICSharpCode.Core.FileName("test.cs");
 			
 			MockWorkbench workbench = new MockWorkbench();
 			MockWorkbenchWindow window = new MockWorkbenchWindow();

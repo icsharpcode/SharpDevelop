@@ -39,8 +39,8 @@ namespace CSharpBinding.Tests
 			this.TextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
 		}
 		
-		public override string FileName {
-			get { return "mockFileName.cs"; }
+		public override FileName FileName {
+			get { return new FileName("mockFileName.cs"); }
 		}
 		
 		public void CreateParseInformation()

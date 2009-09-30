@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 	{
 		public MockOpenedFile(string fileName)
 		{
-			base.FileName = fileName;
+			base.FileName = new ICSharpCode.Core.FileName(fileName);
 			base.IsUntitled = true;
 			SetData(new byte[0]);
 		}

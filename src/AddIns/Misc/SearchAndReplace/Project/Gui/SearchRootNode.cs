@@ -22,19 +22,6 @@ namespace SearchAndReplace
 {
 	sealed class SearchRootNode : SearchNode
 	{
-		sealed class FileNameComparer : IEqualityComparer<string>
-		{
-			public bool Equals(string x, string y)
-			{
-				return FileUtility.IsEqualFileName(x, y);
-			}
-			
-			public int GetHashCode(string obj)
-			{
-				return StringComparer.OrdinalIgnoreCase.GetHashCode(FileUtility.NormalizePath(obj));
-			}
-		}
-		
 		IList<SearchResultNode> results;
 		int fileCount;
 		
@@ -45,7 +32,7 @@ namespace SearchAndReplace
 			this.Title = title;
 			this.results = results.Select(r => new SearchResultNode(r)).ToArray();
 			
-			fileCount = results.GroupBy(r => r.FileName, new FileNameComparer()).Count();
+			fileCount = results.GroupBy(r => r.FileName).Count();
 			this.Children = this.results;
 			this.IsExpanded = true;
 		}

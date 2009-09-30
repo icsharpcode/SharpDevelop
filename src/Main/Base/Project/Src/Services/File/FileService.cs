@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		#region OpenedFile
-		static Dictionary<string, OpenedFile> openedFileDict = new Dictionary<string, OpenedFile>(StringComparer.OrdinalIgnoreCase);
+		static Dictionary<FileName, OpenedFile> openedFileDict = new Dictionary<FileName, OpenedFile>();
 		
 		/// <summary>
 		/// Gets a collection containing all currently opened files.
@@ -78,15 +78,33 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static OpenedFile GetOpenedFile(string fileName)
 		{
+			return GetOpenedFile(FileName.Create(fileName));
+		}
+		
+		/// <summary>
+		/// Gets an opened file, or returns null if the file is not opened.
+		/// </summary>
+		public static OpenedFile GetOpenedFile(FileName fileName)
+		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			
 			WorkbenchSingleton.AssertMainThread();
 			
-			fileName = FileUtility.NormalizePath(fileName);
 			OpenedFile file;
 			openedFileDict.TryGetValue(fileName, out file);
 			return file;
+		}
+		
+				/// <summary>
+		/// Gets or creates an opened file.
+		/// Warning: the opened file will be a file without any views attached.
+		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
+		/// unload the OpenedFile instance if no views were attached to it.
+		/// </summary>
+		public static OpenedFile GetOrCreateOpenedFile(string fileName)
+		{
+			return GetOrCreateOpenedFile(FileName.Create(fileName));
 		}
 		
 		/// <summary>
@@ -95,12 +113,11 @@ namespace ICSharpCode.SharpDevelop
 		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
 		/// unload the OpenedFile instance if no views were attached to it.
 		/// </summary>
-		public static OpenedFile GetOrCreateOpenedFile(string fileName)
+		public static OpenedFile GetOrCreateOpenedFile(FileName fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			
-			fileName = FileUtility.NormalizePath(fileName);
 			OpenedFile file;
 			if (!openedFileDict.TryGetValue(fileName, out file)) {
 				openedFileDict[fileName] = file = new FileServiceOpenedFile(fileName);
@@ -117,13 +134,13 @@ namespace ICSharpCode.SharpDevelop
 				throw new ArgumentNullException("defaultName");
 			
 			OpenedFile file = new FileServiceOpenedFile(content);
-			file.FileName = file.GetHashCode() + "/" + defaultName;
+			file.FileName = new FileName(file.GetHashCode() + "/" + defaultName);
 			openedFileDict[file.FileName] = file;
 			return file;
 		}
 		
 		/// <summary>Called by OpenedFile.set_FileName to update the dictionary.</summary>
-		internal static void OpenedFileFileNameChange(OpenedFile file, string oldName, string newName)
+		internal static void OpenedFileFileNameChange(OpenedFile file, FileName oldName, FileName newName)
 		{
 			if (oldName == null) return; // File just created with NewFile where name is being initialized.
 			
@@ -186,7 +203,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			public void Invoke(string fileName)
 			{
-				OpenedFile file = FileService.GetOrCreateOpenedFile(fileName);
+				OpenedFile file = FileService.GetOrCreateOpenedFile(FileName.Create(fileName));
 				IViewContent newContent = binding.CreateContentForFile(file);
 				if (newContent != null) {
 					DisplayBindingService.AttachSubWindows(newContent, false);

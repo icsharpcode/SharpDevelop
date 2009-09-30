@@ -23,7 +23,7 @@ namespace PythonBinding.Tests.Utils
 		
 		public MockOpenedFile(string fileName)
 		{
-			this.FileName = fileName;
+			this.FileName = new ICSharpCode.Core.FileName(fileName);
 		}
 		
 		public override IList<IViewContent> RegisteredViewContents {

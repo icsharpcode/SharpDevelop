@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			}
 		}
 		
-		public virtual string FileName {
+		public virtual ICSharpCode.Core.FileName FileName {
 			get { return null; }
 		}
 		

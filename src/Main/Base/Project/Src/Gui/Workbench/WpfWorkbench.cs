@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (e.IsDirectory) {
 				foreach (OpenedFile file in FileService.OpenedFiles) {
 					if (file.FileName != null && FileUtility.IsBaseDirectory(e.SourceFile, file.FileName)) {
-						file.FileName = FileUtility.RenameBaseDirectory(file.FileName, e.SourceFile, e.TargetFile);
+						file.FileName = new FileName(FileUtility.RenameBaseDirectory(file.FileName, e.SourceFile, e.TargetFile));
 					}
 				}
 			} else {
@@ -173,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (file.FileName != null &&
 					    FileUtility.IsEqualFileName(file.FileName, e.SourceFile))
 					{
-						file.FileName  = e.TargetFile;
+						file.FileName = new FileName(e.TargetFile);
 						return;
 					}
 				}

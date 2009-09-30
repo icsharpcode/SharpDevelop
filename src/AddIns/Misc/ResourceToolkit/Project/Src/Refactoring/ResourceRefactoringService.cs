@@ -418,7 +418,7 @@ namespace Hornung.ResourceToolkit.Refactoring
 		static void AddFilesFromViewContent(IList<string> files, IViewContent vc)
 		{
 			files.AddRange(vc.Files
-			               .Select(f => f.FileName)
+			               .Select(f => f.FileName.ToString())
 			               .Where(name => name != null && IsPossibleFile(name))
 			              );
 		}

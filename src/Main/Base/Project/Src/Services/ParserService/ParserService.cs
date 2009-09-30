@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop
 		static readonly object syncLock = new object();
 		static IList<ParserDescriptor> parserDescriptors;
 		static Dictionary<IProject, IProjectContent> projectContents = new Dictionary<IProject, IProjectContent>();
-		static Dictionary<string, FileEntry> fileEntryDict = new Dictionary<string, FileEntry>(StringComparer.OrdinalIgnoreCase);
+		static Dictionary<FileName, FileEntry> fileEntryDict = new Dictionary<FileName, FileEntry>();
 		static DefaultProjectContent defaultProjectContent;
 		
 		#region Manage Project Contents
@@ -161,7 +161,7 @@ namespace ICSharpCode.SharpDevelop
 			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			if (viewContent == null)
 				return;
-			string fileName = viewContent.PrimaryFileName;
+			FileName fileName = viewContent.PrimaryFileName;
 			if (fileName == null)
 				return;
 			if (GetParser(fileName) == null)
@@ -308,14 +308,14 @@ namespace ICSharpCode.SharpDevelop
 		
 		sealed class FileEntry
 		{
-			readonly string fileName;
+			readonly FileName fileName;
 			internal readonly IParser parser;
 			volatile ParseInformation parseInfo;
 			ITextBufferVersion bufferVersion;
 			ICompilationUnit[] oldUnits = emptyCompilationUnitArray;
 			bool disposed;
 			
-			public FileEntry(string fileName)
+			public FileEntry(FileName fileName)
 			{
 				this.fileName = fileName;
 				this.parser = CreateParser(fileName);
@@ -483,16 +483,17 @@ namespace ICSharpCode.SharpDevelop
 		
 		static FileEntry GetFileEntry(string fileName, bool createOnDemand)
 		{
-			if (string.IsNullOrEmpty(fileName))
-				throw new ArgumentException("fileName");
-			fileName = FileUtility.NormalizePath(fileName);
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			FileName f = new FileName(fileName);
+			
 			FileEntry entry;
 			lock (syncLock) {
-				if (!fileEntryDict.TryGetValue(fileName, out entry)) {
+				if (!fileEntryDict.TryGetValue(f, out entry)) {
 					if (!createOnDemand)
 						return null;
-					entry = new FileEntry(fileName);
-					fileEntryDict.Add(fileName, entry);
+					entry = new FileEntry(f);
+					fileEntryDict.Add(f, entry);
 				}
 			}
 			return entry;
@@ -504,16 +505,16 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void ClearParseInformation(string fileName)
 		{
-			if (string.IsNullOrEmpty(fileName))
-				throw new ArgumentException("fileName");
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
 			
-			LoggingService.Info("ClearParseInformation: " + fileName);
+			FileName f = new FileName(fileName);
+			LoggingService.Info("ClearParseInformation: " + f);
 			
-			fileName = FileUtility.NormalizePath(fileName);
 			FileEntry entry;
 			lock (syncLock) {
-				if (fileEntryDict.TryGetValue(fileName, out entry)) {
-					fileEntryDict.Remove(fileName);
+				if (fileEntryDict.TryGetValue(f, out entry)) {
+					fileEntryDict.Remove(f);
 				}
 			}
 			if (entry != null)

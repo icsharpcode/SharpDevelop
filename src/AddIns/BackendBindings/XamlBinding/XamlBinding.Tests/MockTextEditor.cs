@@ -58,8 +58,8 @@ namespace ICSharpCode.XamlBinding.Tests
 			new XamlLanguageBinding().Attach(this);
 		}
 		
-		public override string FileName {
-			get { return "mockFileName.xaml"; }
+		public override FileName FileName {
+			get { return new FileName("mockFileName.xaml"); }
 		}
 		
 		public void CreateParseInformation()

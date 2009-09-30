@@ -32,7 +32,7 @@ namespace PythonBinding.Tests
 			displayBinding = new DerivedPythonFormsDesignerDisplayBinding();
 			viewContent = new MockTextEditorViewContent();
 			parseInfo = new ParseInformation(new DefaultCompilationUnit(new DefaultProjectContent()));
-			viewContent.PrimaryFileName = "test.py";
+			viewContent.PrimaryFileName = new ICSharpCode.Core.FileName("test.py");
 			viewContent.TextEditor.Document.Text = "text content";
 			displayBinding.ParseServiceParseInfoToReturn = parseInfo;
 			displayBinding.IsParseInfoDesignable = true;
@@ -99,7 +99,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void NonPythonFileNameCannotBeAttachedTo()
 		{
-			viewContent.PrimaryFileName = "test.cs";
+			viewContent.PrimaryFileName = new ICSharpCode.Core.FileName("test.cs");
 			Assert.IsFalse(displayBinding.CanAttachTo(viewContent));
 		}
 		

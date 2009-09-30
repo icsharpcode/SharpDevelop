@@ -88,7 +88,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void FileNameSameAsDocumentFileName()
 		{
-			Assert.AreEqual(viewContent.DesignerCodeFile.FileName, file);
+			Assert.AreEqual(viewContent.DesignerCodeFile.FileName.ToString(), file);
 		}
 	}
 }
