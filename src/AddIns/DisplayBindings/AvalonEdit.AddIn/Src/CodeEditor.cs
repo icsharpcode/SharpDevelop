@@ -105,9 +105,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return iconBarManager; }
 		}
 		
-		string fileName;
+		FileName fileName;
 		
-		public string FileName {
+		public FileName FileName {
 			get { return fileName; }
 			set {
 				if (fileName != value) {
@@ -171,7 +171,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(CodeEditor), this);
 			
 			textEditor.Background = Brushes.White;
-			textEditor.FontFamily = new FontFamily("Consolas");
+			textEditor.FontFamily = new FontFamily("Consolas, Courier New");
 			textEditor.FontSize = 13;
 			textEditor.ShowLineNumbers = true;
 			textEditor.TextArea.TextEntering += TextAreaTextEntering;

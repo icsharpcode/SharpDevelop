@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory;
 using System;
 using System.ComponentModel;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -19,12 +20,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		public SDBookmark(string fileName, Location location) : base(location)
 		{
-			this.fileName = fileName;
+			this.fileName = FileName.Create(fileName);
 		}
 		
-		string fileName;
+		FileName fileName;
 		
-		public string FileName {
+		public FileName FileName {
 			get {
 				return fileName;
 			}

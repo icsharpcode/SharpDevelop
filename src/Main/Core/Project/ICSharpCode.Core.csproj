@@ -88,6 +88,7 @@
     <Compile Include="Src\Services\AnalyticsMonitor\AnalyticsMonitorService.cs" />
     <Compile Include="Src\Services\AnalyticsMonitor\IAnalyticsMonitor.cs" />
     <Compile Include="Src\Services\ApplicationStateInfoService.cs" />
+    <Compile Include="Src\Services\FileUtility\FileName.cs" />
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.Minimal.cs" />

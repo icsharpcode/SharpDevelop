@@ -10,6 +10,9 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
+	/// <summary>
+	/// Represents an anchored location inside an <see cref="IDocument"/>.
+	/// </summary>
 	public interface ITextAnchor
 	{
 		/// <summary>

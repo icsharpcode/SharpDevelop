@@ -107,6 +107,7 @@
     <Compile Include="Src\Editor\IDocumentLine.cs" />
     <Compile Include="Src\Editor\IFileDocumentProvider.cs" />
     <Compile Include="Src\Editor\IFormattingStrategy.cs" />
+    <Compile Include="Src\Editor\PermanentAnchor.cs" />
     <Compile Include="Src\Editor\ISyntaxHighlighter.cs" />
     <Compile Include="Src\Editor\ITextAnchor.cs" />
     <Compile Include="Src\Editor\ITextAreaToolTipProvider.cs">

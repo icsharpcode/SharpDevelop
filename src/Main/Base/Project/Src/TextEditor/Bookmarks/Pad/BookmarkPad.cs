@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -38,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		Panel       myPanel          = new Panel();
 		ExtTreeView bookmarkTreeView = new ExtTreeView();
 		
-		Dictionary<string, BookmarkFolderNode> fileNodes = new Dictionary<string, BookmarkFolderNode>();
+		Dictionary<FileName, BookmarkFolderNode> fileNodes = new Dictionary<FileName, BookmarkFolderNode>();
 		
 		public override object Control {
 			get {

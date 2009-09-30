@@ -26,13 +26,15 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public static List<SDBookmark> GetBookmarks(string fileName)
+		public static List<SDBookmark> GetBookmarks(FileName fileName)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			
 			List<SDBookmark> marks = new List<SDBookmark>();
 			
 			foreach (SDBookmark mark in bookmarks) {
-				if (mark.FileName == null) continue;
-				if (FileUtility.IsEqualFileName(mark.FileName, fileName)) {
+				if (fileName == mark.FileName) {
 					marks.Add(mark);
 				}
 			}
@@ -57,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				return false;
 			if (a.GetType() != b.GetType())
 				return false;
-			if (!FileUtility.IsEqualFileName(a.FileName, b.FileName))
+			if (a.FileName != b.FileName)
 				return false;
 			return a.LineNumber == b.LineNumber;
 		}
@@ -111,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		                                  Predicate<SDBookmark> canToggle,
 		                                  Func<Location, SDBookmark> bookmarkFactory)
 		{
-			foreach (SDBookmark bookmark in GetBookmarks(editor.FileName)) {
+			foreach (SDBookmark bookmark in GetBookmarks(new FileName(editor.FileName))) {
 				if (canToggle(bookmark) && bookmark.LineNumber == line) {
 					BookmarkManager.RemoveMark(bookmark);
 					return;

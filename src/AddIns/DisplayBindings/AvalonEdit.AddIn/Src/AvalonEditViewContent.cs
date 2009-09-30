@@ -78,7 +78,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				codeEditor.Load(stream);
 				// we set the file name after loading because this will place the fold markers etc.
-				codeEditor.FileName = file.FileName;
+				codeEditor.FileName = FileName.Create(file.FileName);
 				BookmarksAttach();
 			} finally {
 				isLoading = false;
@@ -89,14 +89,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			base.OnFileNameChanged(file);
 			if (file == PrimaryFile) {
-				if (!string.IsNullOrEmpty(codeEditor.FileName))
-					ParserService.ClearParseInformation(codeEditor.FileName);
+				FileName oldFileName = codeEditor.FileName;
+				FileName newFileName = FileName.Create(file.FileName);
 				
-				codeEditor.FileName = file.FileName;
+				if (!string.IsNullOrEmpty(oldFileName))
+					ParserService.ClearParseInformation(oldFileName);
+				
+				codeEditor.FileName = newFileName;
 				
 				ParserService.BeginParse(file.FileName, codeEditor.DocumentAdapter);
 				
-				BookmarksNotifyNameChange(file.FileName);
+				BookmarksNotifyNameChange(oldFileName, newFileName);
 			}
 		}
 		
@@ -121,10 +124,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			BookmarkManager.Added += BookmarkManager_Added;
 			BookmarkManager.Removed += BookmarkManager_Removed;
+			
+			PermanentAnchorService.AttachDocument(codeEditor.FileName, codeEditor.DocumentAdapter);
 		}
 
 		void BookmarksDetach()
 		{
+			if (codeEditor.FileName != null) {
+				PermanentAnchorService.DetachDocument(codeEditor.FileName, codeEditor.DocumentAdapter);
+			}
+			
 			BookmarkManager.Added -= BookmarkManager_Added;
 			BookmarkManager.Removed -= BookmarkManager_Removed;
 			foreach (SDBookmark bookmark in codeEditor.IconBarManager.Bookmarks.OfType<SDBookmark>()) {
@@ -151,8 +160,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void BookmarksNotifyNameChange(string newFileName)
+		void BookmarksNotifyNameChange(FileName oldFileName, FileName newFileName)
 		{
+			PermanentAnchorService.RenameDocument(oldFileName, newFileName, codeEditor.DocumentAdapter);
+			
 			foreach (SDBookmark bookmark in codeEditor.IconBarManager.Bookmarks.OfType<SDBookmark>()) {
 				bookmark.FileName = newFileName;
 			}

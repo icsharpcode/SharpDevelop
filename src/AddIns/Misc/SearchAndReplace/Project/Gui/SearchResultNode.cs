@@ -28,7 +28,7 @@ namespace SearchAndReplace
 		static readonly FontFamily resultLineFamily = new FontFamily("Consolas, Courier New");
 		
 		SearchResultMatch result;
-		int lineNumber, column;
+		PermanentAnchor anchor;
 		HighlightedInlineBuilder inlineBuilder;
 		
 		public SearchResultNode(SearchResultMatch result)
@@ -37,8 +37,10 @@ namespace SearchAndReplace
 			
 			IDocument document = result.CreateDocument();
 			var startPosition = result.GetStartPosition(document);
-			this.lineNumber = startPosition.Line;
-			this.column = startPosition.Column;
+			int lineNumber = startPosition.Line;
+			int column = startPosition.Column;
+			this.anchor = new PermanentAnchor(FileName.Create(result.FileName), lineNumber, column);
+			anchor.SurviveDeletion = true;
 			
 			if (lineNumber >= 1 && lineNumber <= document.TotalNumberOfLines) {
 				IDocumentLine matchedLine = document.GetLine(lineNumber);
@@ -87,10 +89,12 @@ namespace SearchAndReplace
 		
 		protected override object CreateText()
 		{
-			LoggingService.Debug("Creating text for search result (" + lineNumber + ", " + column + ") ");
+			var location = anchor.Location;
+			
+			LoggingService.Debug("Creating text for search result (" + location.Line + ", " + location.Column + ") ");
 			
 			TextBlock textBlock = new TextBlock();
-			textBlock.Inlines.Add("(" + lineNumber + ", " + column + ")\t");
+			textBlock.Inlines.Add("(" + location.Line + ", " + location.Column + ")\t");
 			
 			string displayText = result.DisplayText;
 			if (displayText != null) {
@@ -103,7 +107,7 @@ namespace SearchAndReplace
 				textBlock.Inlines.Add(
 					new Run {
 						Text = StringParser.Parse("\t${res:MainWindow.Windows.SearchResultPanel.In} ")
-							+ Path.GetFileName(result.FileName) + "(" + Path.GetDirectoryName(result.FileName) +")",
+							+ Path.GetFileName(anchor.FileName) + "(" + Path.GetDirectoryName(anchor.FileName) +")",
 						FontStyle = FontStyles.Italic
 					});
 			}
@@ -112,13 +116,14 @@ namespace SearchAndReplace
 		
 		public override void ActivateItem()
 		{
-			ITextEditorProvider provider = FileService.JumpToFilePosition(result.FileName, lineNumber, column) as ITextEditorProvider;
+			var location = anchor.Location;
+			ITextEditorProvider provider = FileService.JumpToFilePosition(anchor.FileName, location.Line, location.Column) as ITextEditorProvider;
 			if (provider != null) {
 				ITextMarkerService markerService = provider.TextEditor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 				if (markerService != null) {
 					ITextMarker marker = null;
 					try {
-						marker = markerService.Create(provider.TextEditor.Document.PositionToOffset(lineNumber, column), result.Length);
+						marker = markerService.Create(provider.TextEditor.Document.PositionToOffset(location.Line, location.Column), result.Length);
 					} catch (ArgumentOutOfRangeException) {
 						// can happen if lineNumber/column is after the end of the document; or if
 						// result.Length is too long
