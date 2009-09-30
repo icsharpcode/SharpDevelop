@@ -29,7 +29,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public static readonly MethodInfo QueryableOfCallTreeNode_Where = MethodOf((IQueryable<CallTreeNode> q) => q.Where(x => true));
 		public static readonly MethodInfo QueryableOfCallTreeNode_Take = MethodOf((IQueryable<CallTreeNode> q) => q.Take(1));
 		public static readonly MethodInfo Queryable_OrderBy = MethodOf((IQueryable<CallTreeNode> q) => q.OrderBy(x => x)).GetGenericMethodDefinition();
-		public static readonly MethodInfo QueryableOfCallTreeNode_OrderByDesc = MethodOf((IOrderedQueryable<CallTreeNode> q) => q.OrderByDescending(x => default(int)));
+		public static readonly MethodInfo Queryable_OrderByDesc = MethodOf((IQueryable<CallTreeNode> q) => q.OrderByDescending(x => x)).GetGenericMethodDefinition();
 		public static readonly MethodInfo String_StartsWith = MethodOf((string s) => s.StartsWith(s, default(StringComparison)));
 		
 		public static readonly MethodInfo Queryable_Merge = MethodOf((IQueryable<CallTreeNode> q) => q.Merge());

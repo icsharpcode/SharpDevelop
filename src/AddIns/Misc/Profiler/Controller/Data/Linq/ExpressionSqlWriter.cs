@@ -116,7 +116,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				} else if (me.Member == SingleCall.ParentIDField) {
 					w.Write("parentid");
 				} else if (me.Member == KnownMembers.CallTreeNode_CallCount) {
-					w.Write(nameSet.CallCount);
+					w.Write("(" + nameSet.CallCount + " + " + nameSet.ActiveCallCount + ")");
 				} else if (me.Member == KnownMembers.CallTreeNode_CpuCyclesSpent) {
 					w.Write(nameSet.CpuCyclesSpent);
 				} else {

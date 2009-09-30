@@ -52,6 +52,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				- if c is the lambda parameter, then these expressions are valid:
 					c.NameMapping.ID
 					c.NameMapping.Name
+					c.CallCount
+					c.CpuCyclesSpent
+					c.IsThread
+					c.IsUserCode
 			
 			Additionally, field references on a lambda parameter of type SingleCall are valid inside
 			filters that operate directly on "AllCalls" (e.g. AllCalls.Filter()).
@@ -81,6 +85,14 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				input.Select(x => x) -> input
 					This rule is necessary to remove degenerate selects so that the parts of the query continuing after the select
 					can also be represented as QueryNodes.
+				
+				input.Take(count) -> input.Limit(0, count)
+					Note: Skip/Take combinations are not combined (Skip is not supported).
+				
+				input.OrderBy(x => x.SomeField) -> input.Sort({ [x.SomeField, ascending] })
+					Note: ThenBy is not supported.
+					
+				input.OrderByDescending(x => x.SomeField) -> input.Sort({ [x.SomeField, descending] })
 			
 			Translation rules for expression importer:
 				Any valid expressions (as defined in 'valid expressions in QueryAst nodes') are copied over directly.
@@ -237,6 +249,13 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 					return base.VisitExtension(node);
 			}
 			
+			bool IsGenericMethodInfoOfCallTreeNode(MethodCallExpression node, MethodInfo info)
+			{
+				return node.Method.IsGenericMethod &&
+					node.Method.GetGenericMethodDefinition() == info &&
+					node.Method.GetGenericArguments()[0] == typeof(CallTreeNode);
+			}
+			
 			protected override Expression VisitMethodCall(MethodCallExpression node)
 			{
 				if (node.Method == KnownMembers.QueryableOfCallTreeNode_Select && node.Arguments[1].NodeType == ExpressionType.Quote) {
@@ -277,9 +296,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							return new Limit(target, 0, (int)ce.Value);
 						}
 					}
-				} else if (node.Method.IsGenericMethod && node.Method.GetGenericMethodDefinition() == KnownMembers.Queryable_OrderBy &&
-				           node.Method.GetGenericArguments()[0] == typeof(CallTreeNode) &&
+				} else if ((IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_OrderBy) ||
+				           IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_OrderByDesc)) &&
 				           node.Arguments[1].NodeType == ExpressionType.Quote) {
+					
 					UnaryExpression quote = (UnaryExpression)node.Arguments[1];
 					if (quote.Operand.NodeType == ExpressionType.Lambda) {
 						LambdaExpression lambda = (LambdaExpression)quote.Operand;
@@ -287,18 +307,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							QueryNode target = Visit(node.Arguments[0]) as QueryNode;
 							if (target != null) {
 								SafeExpressionImporter importer = new SafeExpressionImporter(lambda.Parameters[0]);
-								var imported = importer.Import(lambda.Body);
+								Expression imported = importer.Import(lambda.Body);
 								if (imported != null)
-									return new Sort(target, Expression.Lambda(imported, lambda.Parameters[0]), false);
+									return new Sort(target, Expression.Lambda(imported, lambda.Parameters[0]), IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_OrderByDesc));
 							}
-						}
-					}
-				} else if (node.Method == KnownMembers.QueryableOfCallTreeNode_OrderByDesc && node.Arguments[1].NodeType == ExpressionType.Quote) {
-					ConstantExpression ce = (ConstantExpression)node.Arguments[1];
-					if (ce.Type == typeof(int)) {
-						QueryNode target = Visit(node.Arguments[0]) as QueryNode;
-						if (target != null) {
-							return new Limit(target, 0, (int)ce.Value);
 						}
 					}
 				}
@@ -387,6 +399,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							} else if (IsNameMappingOnParameter(me.Expression)) {
 								if (me.Member == KnownMembers.NameMapping_ID)
 									return me;
+								if (me.Member == KnownMembers.NameMapping_Name)
+									return me;
 							}
 						}
 						return null;
@@ -394,23 +408,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 						{
 							MethodCallExpression mc = (MethodCallExpression)expr;
 							
-							// TODO: accept StartsWith on any object (not only NameMapping.Name)
-							// accept NameMapping.Name also in other contexts
-							if (IsMemberOnNameMappingOnParameter(mc.Object, KnownMembers.NameMapping_Name)) {
-								if (mc.Arguments[0].NodeType == ExpressionType.Constant && mc.Arguments[1].NodeType == ExpressionType.Constant) {
-									StringComparison cmp = (StringComparison)GetConstantValue(mc.Arguments[1]);
-									string pattern = (string)GetConstantValue(mc.Arguments[0]);
-									
-									if (mc.Method == KnownMembers.String_StartsWith) {
-										if (cmp == StringComparison.Ordinal && pattern.IndexOfAny(forbiddenGlobChars) == -1)
-											return Expression.Call(KnownMembers.Glob, mc.Object, Expression.Constant(pattern + "*"));
-										else if (cmp == StringComparison.OrdinalIgnoreCase)
-											return Expression.Call(KnownMembers.Like, mc.Object, Expression.Constant(EscapeLikeExpr(pattern, "\\") + "%"));
-										else
-											return null;
-									}
-								}
-							}
+							if (mc.Method == KnownMembers.String_StartsWith)
+								return CreateCall(mc, (pattern, wildcard) => pattern + wildcard);
 							
 							return null;
 						}
@@ -441,6 +440,22 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 					default:
 						return null;
 				}
+			}
+
+			Expression CreateCall(MethodCallExpression mc, Func<string, string, string> expressionOf)
+			{
+				Expression imported = Import(mc.Object);
+				if (imported != null && mc.Arguments[0].NodeType == ExpressionType.Constant && mc.Arguments[1].NodeType == ExpressionType.Constant) {
+					StringComparison cmp = (StringComparison)GetConstantValue(mc.Arguments[1]);
+					string pattern = (string)GetConstantValue(mc.Arguments[0]);
+					
+					if (cmp == StringComparison.Ordinal && pattern.IndexOfAny(forbiddenGlobChars) == -1)
+						return Expression.Call(KnownMembers.Glob, imported, Expression.Constant(expressionOf(pattern, "*")));
+					else if (cmp == StringComparison.OrdinalIgnoreCase)
+						return Expression.Call(KnownMembers.Like, imported, Expression.Constant(expressionOf(EscapeLikeExpr(pattern, "\\"), "%")));
+				}
+				
+				return null;
 			}
 			
 			static string EscapeLikeExpr(string expression, string escape)
