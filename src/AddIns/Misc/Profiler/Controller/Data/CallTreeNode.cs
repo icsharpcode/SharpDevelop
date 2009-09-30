@@ -109,9 +109,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		/// <summary>
-		/// Determines whether this node is a thread node or not.
+		/// Determines whether this node is a thread node.
 		/// </summary>
-		public bool IsThread {
+		public virtual bool IsThread {
 			get { return this.Name.StartsWith("Thread#", StringComparison.Ordinal); }
 		}
 		

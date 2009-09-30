@@ -65,7 +65,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public virtual IQueryable<CallTreeNode> GetFunctions(int startIndex, int endIndex)
 		{
-			return GetRoot(startIndex, endIndex).Descendants.GroupBy(n => n.NameMapping).Select(g => g.Merge());
+			return GetRoot(startIndex, endIndex).Descendants.Where(c => !c.IsThread).MergeByName();
 		}
 	}
 }

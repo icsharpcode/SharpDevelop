@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -82,8 +84,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			
 			Translation rules for expression importer:
 				Any valid expressions (as defined in 'valid expressions in QueryAst nodes') are copied over directly.
-				Moreover, these expressions are be converted into valid expressions:
+				Moreover, these expressions are converted into valid expressions:
 					c.IsUserCode -> c.NameMapping.ID > 0
+					c.IsThread -> Glob(c.NameMapping.Name, "Thread#*")
 					s.StartsWith(constantString, StringComparison.Ordinal) -> Glob(s, constantString + "*");
 					s.StartsWith(constantString, StringComparison.OrdinalIgnoreCase) -> Like(s, constantString + "%");
 		
@@ -159,31 +162,43 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			return expression.ToString();
 		}
 		
-		public override object Execute(Expression expression)
+		public override object Execute(Expression inputExpression)
 		{
-			Console.WriteLine("Input expression: " + expression);
+			Stopwatch watch = Stopwatch.StartNew();
+			Expression partiallyEvaluatedExpression = PartialEvaluator.Eval(inputExpression, CanBeEvaluatedStatically);
 			
-			expression = PartialEvaluator.Eval(expression, CanBeEvaluatedStatically);
-			Console.WriteLine("Partially evaluated expression: " + expression);
-			
-			expression = new ConvertToQueryAstVisitor().Visit(expression);
-			Console.WriteLine("Converted to Query AST: " + expression);
+			QueryExecutionOptions options = new QueryExecutionOptions();
+			Expression expression = new ConvertToQueryAstVisitor(options).Visit(partiallyEvaluatedExpression);
+			// options have been initialized by ConvertToQueryAstVisitor, start logging:
+			if (options.HasLoggers) {
+				options.WriteLogLine("Input expression: " + inputExpression);
+				options.WriteLogLine("Partially evaluated expression: " + partiallyEvaluatedExpression);
+				options.WriteLogLine("Converted to Query AST: " + expression);
+			}
 			
 			expression = new OptimizeQueryExpressionVisitor().Visit(expression);
-			Console.WriteLine("Optimized Query AST: " + expression);
+			if (options.HasLoggers) {
+				options.WriteLogLine("Optimized Query AST: " + expression);
+				options.WriteLogLine("Query preparation time: " + watch.Elapsed);
+			}
 			
+			object result;
 			// If the whole query was converted, execute it:
 			QueryNode query = expression as QueryNode;
-			if (query != null)
-				return query.Execute(this);
-			
-			// Query not converted completely: we have to use a LINQ-To-Objects / LINQ-To-Profiler mix
-			expression = new ExecuteAllQueriesVisitor(this).Visit(expression);
-			if (expression.Type.IsValueType) {
-				expression = Expression.Convert(expression, typeof(object));
+			if (query != null) {
+				result = query.Execute(this, options);
+			} else {
+				// Query not converted completely: we have to use a LINQ-To-Objects / LINQ-To-Profiler mix
+				expression = new ExecuteAllQueriesVisitor(this, options).Visit(expression);
+				if (expression.Type.IsValueType) {
+					expression = Expression.Convert(expression, typeof(object));
+				}
+				var lambdaExpression = Expression.Lambda<Func<object>>(expression);
+				result = lambdaExpression.Compile()();
 			}
-			var lambdaExpression = Expression.Lambda<Func<object>>(expression);
-			return lambdaExpression.Compile()();
+			watch.Stop();
+			options.WriteLogLine("Total query execution time: " + watch.Elapsed);
+			return result;
 		}
 		
 		static bool CanBeEvaluatedStatically(Expression expression)
@@ -194,6 +209,13 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		#region Convert Expression Tree To Query AST
 		sealed class ConvertToQueryAstVisitor : System.Linq.Expressions.ExpressionVisitor
 		{
+			readonly QueryExecutionOptions options;
+			
+			public ConvertToQueryAstVisitor(QueryExecutionOptions options)
+			{
+				this.options = options;
+			}
+			
 			protected override Expression VisitExtension(Expression node)
 			{
 				// We found a query that's already converted, let's keep it as it is.
@@ -233,6 +255,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							}
 						}
 					}
+				} else if (node.Method == KnownMembers.Queryable_WithQueryLog && node.Arguments[1].NodeType == ExpressionType.Constant) {
+					options.AddLogger((TextWriter)(((ConstantExpression)node.Arguments[1]).Value));
+					return Visit(node.Arguments[0]);
 				} else if (node.Method == KnownMembers.QueryableOfCallTreeNode_Take && node.Arguments[1].NodeType == ExpressionType.Constant) {
 					ConstantExpression ce = (ConstantExpression)node.Arguments[1];
 					if (ce.Type == typeof(int)) {
@@ -269,10 +294,12 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				return base.VisitMethodCall(node);
 			}
 		}
+		#endregion
 		
+		#region SafeExpressionImporter
 		sealed class SafeExpressionImporter
 		{
-			ParameterExpression callTreeNodeParameter;
+			readonly ParameterExpression callTreeNodeParameter;
 			
 			public SafeExpressionImporter(ParameterExpression callTreeNodeParameter)
 			{
@@ -335,6 +362,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 											Expression.Property(callTreeNodeParameter, KnownMembers.CallTreeNode_NameMapping),
 											KnownMembers.NameMapping_ID),
 										Expression.Constant(0));
+								} else if (me.Member == KnownMembers.CallTreeNode_IsThread) {
+									return Expression.Call(KnownMembers.Glob,
+									                       Expression.Property(Expression.Property(callTreeNodeParameter, KnownMembers.CallTreeNode_NameMapping), KnownMembers.NameMapping_Name),
+									                       Expression.Constant("Thread#*"));
 								}
 								
 								if (me.Member == KnownMembers.CallTreeNode_CallCount)
@@ -437,21 +468,44 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		sealed class ExecuteAllQueriesVisitor : System.Linq.Expressions.ExpressionVisitor
 		{
 			readonly SQLiteQueryProvider sqliteProvider;
+			readonly QueryExecutionOptions options;
 			
-			public ExecuteAllQueriesVisitor(SQLiteQueryProvider sqliteProvider)
+			public ExecuteAllQueriesVisitor(SQLiteQueryProvider sqliteProvider, QueryExecutionOptions options)
 			{
 				this.sqliteProvider = sqliteProvider;
+				this.options = options;
 			}
 			
 			protected override Expression VisitExtension(Expression node)
 			{
 				QueryNode query = node as QueryNode;
 				if (query != null)
-					return Expression.Constant(query.Execute(sqliteProvider));
+					return Expression.Constant(query.Execute(sqliteProvider, options));
 				else
 					return base.VisitExtension(node);
 			}
 		}
 		#endregion
+	}
+	
+	sealed class QueryExecutionOptions
+	{
+		List<TextWriter> loggers = new List<TextWriter>();
+		
+		public void AddLogger(TextWriter w)
+		{
+			if (w != null)
+				loggers.Add(w);
+		}
+		
+		public bool HasLoggers {
+			get { return loggers.Count > 0; }
+		}
+		
+		public void WriteLogLine(string text)
+		{
+			foreach (TextWriter w in loggers)
+				w.WriteLine(text);
+		}
 	}
 }

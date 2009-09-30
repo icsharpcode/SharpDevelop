@@ -189,29 +189,32 @@ namespace ICSharpCode.Profiler.Controls
 			this.Translation = new ControlsTranslation();
 			this.visibleColumnsSelection.ItemsSource = this.gridView.Columns.Select(col => new GridViewColumnModel(col));
 			
-			this.treeView.SizeChanged += delegate(object sender, SizeChangedEventArgs e) {
-				if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0) {
-					double adjustedNameColumnWidth = nameColumn.Width + e.NewSize.Width - e.PreviousSize.Width;
-					double matchingNameColumnWidth = e.NewSize.Width - this.callCountColumn.Width
-						- this.percentColumn.Width - this.timeSpentColumn.Width
-						- this.timeSpentSelfColumn.Width - this.timeSpentPerCallColumn.Width
-						- this.timeSpentSelfPerCallColumn.Width - 25;
-					
-					// always keep name column at least 75 pixels wide
-					if (matchingNameColumnWidth < 75)
-						matchingNameColumnWidth = 75;
-					
-					if (e.NewSize.Width >= e.PreviousSize.Width) {
-						// treeView got wider: also make name column wider if there's space free
-						if (adjustedNameColumnWidth <= matchingNameColumnWidth)
-							nameColumn.Width = adjustedNameColumnWidth;
-					} else {
-						// treeView got smaller: make column smaller unless there's space free
-						if (adjustedNameColumnWidth >= matchingNameColumnWidth)
-							nameColumn.Width = adjustedNameColumnWidth;
-					}
+			this.treeView.SizeChanged += QueryView_SizeChanged;
+		}
+
+		void QueryView_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			if (e.NewSize.Width > 0 && e.PreviousSize.Width > 0) {
+				double adjustedNameColumnWidth = nameColumn.Width + e.NewSize.Width - e.PreviousSize.Width;
+				double matchingNameColumnWidth = e.NewSize.Width - this.callCountColumn.Width
+					- this.percentColumn.Width - this.timeSpentColumn.Width
+					- this.timeSpentSelfColumn.Width - this.timeSpentPerCallColumn.Width
+					- this.timeSpentSelfPerCallColumn.Width - 25;
+				
+				// always keep name column at least 75 pixels wide
+				if (matchingNameColumnWidth < 75)
+					matchingNameColumnWidth = 75;
+				
+				if (e.NewSize.Width >= e.PreviousSize.Width) {
+					// treeView got wider: also make name column wider if there's space free
+					if (adjustedNameColumnWidth <= matchingNameColumnWidth)
+						nameColumn.Width = adjustedNameColumnWidth;
+				} else {
+					// treeView got smaller: make column smaller unless there's space free
+					if (adjustedNameColumnWidth >= matchingNameColumnWidth)
+						nameColumn.Width = adjustedNameColumnWidth;
 				}
-			};
+			}
 		}
 		
 		public void SetRange(int start, int end)
@@ -290,6 +293,9 @@ namespace ICSharpCode.Profiler.Controls
 			try {
 				if (compiler.Compile()) {
 					var data = compiler.ExecuteQuery(provider, rangeStart, rangeEnd);
+					#if DEBUG
+					data = data.WithQueryLog(Console.Out);
+					#endif
 					var nodes = data.Select(i => new CallTreeNodeViewModel(i, null)).ToList();
 					return new HierarchyList<CallTreeNodeViewModel>(nodes);
 				}

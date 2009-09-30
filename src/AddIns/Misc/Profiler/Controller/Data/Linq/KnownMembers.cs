@@ -16,6 +16,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 	static class KnownMembers
 	{
 		public static readonly PropertyInfo CallTreeNode_IsUserCode = PropertyOf((CallTreeNode c) => c.IsUserCode);
+		public static readonly PropertyInfo CallTreeNode_IsThread = PropertyOf((CallTreeNode c) => c.IsThread);
 		public static readonly PropertyInfo CallTreeNode_CpuCyclesSpent = PropertyOf((CallTreeNode c) => c.CpuCyclesSpent);
 		public static readonly PropertyInfo CallTreeNode_CallCount = PropertyOf((CallTreeNode c) => c.CallCount);
 		public static readonly PropertyInfo CallTreeNode_NameMapping = PropertyOf((CallTreeNode c) => c.NameMapping);
@@ -29,8 +30,12 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public static readonly MethodInfo QueryableOfCallTreeNode_Take = MethodOf((IQueryable<CallTreeNode> q) => q.Take(1));
 		public static readonly MethodInfo Queryable_OrderBy = MethodOf((IQueryable<CallTreeNode> q) => q.OrderBy(x => x)).GetGenericMethodDefinition();
 		public static readonly MethodInfo QueryableOfCallTreeNode_OrderByDesc = MethodOf((IOrderedQueryable<CallTreeNode> q) => q.OrderByDescending(x => default(int)));
-		public static readonly MethodInfo Merge = MethodOf((IQueryable<CallTreeNode> q) => q.Merge());
 		public static readonly MethodInfo String_StartsWith = MethodOf((string s) => s.StartsWith(s, default(StringComparison)));
+		
+		public static readonly MethodInfo Queryable_Merge = MethodOf((IQueryable<CallTreeNode> q) => q.Merge());
+		public static readonly MethodInfo Queryable_MergeByName = MethodOf((IQueryable<CallTreeNode> q) => q.MergeByName());
+		public static readonly MethodInfo Queryable_WithQueryLog = MethodOf((IQueryable<CallTreeNode> q) => q.WithQueryLog(null));
+		
 		public static readonly MethodInfo Like = MethodOf(() => LikeImpl("", ""));
 		public static readonly MethodInfo Glob = MethodOf(() => GlobImpl("", ""));
 		

@@ -591,7 +591,7 @@ namespace ICSharpCode.Profiler.Controller
 			this.stopDC = true;
 
 			Debug.WriteLine("Closing native to managed buffer");
-			nativeToManagedBuffer.Close();
+			nativeToManagedBuffer.Close(true);
 
 			Debug.WriteLine("Joining logger thread...");
 			this.logger.Join();
@@ -786,7 +786,7 @@ namespace ICSharpCode.Profiler.Controller
 			if (!isDisposed) {
 				isDisposed = true;
 				stopDC = true;
-				nativeToManagedBuffer.Close();
+				nativeToManagedBuffer.Close(true);
 				try {
 					this.profilee.Kill();
 				} catch (InvalidOperationException) {

@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using ICSharpCode.Profiler.Controller;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.Profiler.Controller.Data.Linq;
 using NUnit.Framework;
@@ -129,7 +130,7 @@ namespace Profiler.Tests.Controller.Data
 		[Test]
 		public void TestFunctions()
 		{
-			CallTreeNode[] functions = provider.GetFunctions(1, 2).OrderBy(f => f.Name).ToArray();
+			CallTreeNode[] functions = provider.GetFunctions(1, 2).OrderBy(f => f.Name).WithQueryLog(Console.Out).ToArray();
 			Assert.AreEqual(2, functions.Length);
 			
 			Assert.AreEqual("m1", functions[0].Name);

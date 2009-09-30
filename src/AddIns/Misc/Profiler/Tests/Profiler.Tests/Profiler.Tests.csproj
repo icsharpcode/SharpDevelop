@@ -92,6 +92,7 @@
     <Compile Include="Controller\Data\SQLiteTests.cs" />
     <Compile Include="Controller\Data\CallTreeNodeStub.cs" />
     <Compile Include="Controller\Queries\NodePathTests.cs" />
+    <Compile Include="Controller\UnmanagedCircularBufferTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

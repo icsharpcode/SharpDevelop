@@ -165,14 +165,20 @@ namespace ICSharpCode.Profiler.Interprocess
 		/// <summary>
 		/// Closes the circular buffer.
 		/// </summary>
-		public void Close()
+		/// <param name="waitForReaderThreadExit">
+		/// Specifies whether the close method should wait for the active reader thread to exit.
+		/// If you pass true, but there is no reader thread; the Close method will deadlock.
+		/// If you pass false, but there is a reader thread; the reader thread will crash.
+		/// </param>
+		public void Close(bool waitForReaderThreadExit)
 		{
 			lock (closeLock) {
 				if (isClosed)
 					return;
 				isClosed = true;
 				nonEmptyEvent.Set();
-				Monitor.Wait(closeLock);
+				if (waitForReaderThreadExit)
+					Monitor.Wait(closeLock);
 			}
 			nonEmptyEvent.Close();
 			nonFullEvent.Close();
@@ -181,7 +187,7 @@ namespace ICSharpCode.Profiler.Interprocess
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
 		void IDisposable.Dispose()
 		{
-			Close();
+			Close(false);
 		}
 		#endregion
 		
@@ -374,7 +380,7 @@ namespace ICSharpCode.Profiler.Interprocess
 				int writeCount = Math.Min(count, writeEndOffset - endOffset);
 				Debug.Assert(writeCount > 0);
 				
-				Debug.WriteLine("UnmanagedCircularBuffer: write amount " + writeCount);
+				//Debug.WriteLine("UnmanagedCircularBuffer: write amount " + writeCount);
 				
 				Marshal.Copy(buffer, offset, new IntPtr(circularBuffer.data + endOffset), writeCount);
 				endOffset += writeCount; // advance endOffset

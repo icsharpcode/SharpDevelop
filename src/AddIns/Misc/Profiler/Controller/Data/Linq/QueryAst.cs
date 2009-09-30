@@ -105,12 +105,19 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				return expression + " AS " + newName;
 		}
 		
-		public virtual IQueryable<CallTreeNode> Execute(SQLiteQueryProvider provider)
+		public IQueryable<CallTreeNode> Execute(SQLiteQueryProvider provider, QueryExecutionOptions options)
 		{
 			StringBuilder b = new StringBuilder();
 			BuildSql(b, new SqlQueryContext(provider));
-			Console.WriteLine(b.ToString());
-			return provider.RunSQLNodeList(b.ToString()).AsQueryable();
+			if (options.HasLoggers)
+				options.WriteLogLine(b.ToString());
+			Stopwatch w = Stopwatch.StartNew();
+			IList<CallTreeNode> result = provider.RunSQLNodeList(b.ToString());
+			w.Stop();
+			if (options.HasLoggers) {
+				options.WriteLogLine("Query returned " + result.Count + " rows in " + w.Elapsed);
+			}
+			return result.AsQueryable();
 		}
 	}
 	

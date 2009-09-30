@@ -274,7 +274,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			var query = queryProvider.CreateQuery(new MergeByName(new Filter(AllCalls.Instance, DataSetFilter(startIndex, endIndex))));
 			return from c in query
-				where c.NameMapping.Id != 0 && !c.NameMapping.Name.StartsWith("Thread#", StringComparison.Ordinal)
+				where c.NameMapping.Id != 0 && !c.IsThread
 				select c;
 		}
 		

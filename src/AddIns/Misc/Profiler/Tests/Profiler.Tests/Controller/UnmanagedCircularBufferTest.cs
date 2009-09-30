@@ -10,6 +10,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 
+using ICSharpCode.Profiler.Interprocess;
 using NUnit.Framework;
 
 namespace Profiler.Interprocess
@@ -83,7 +84,7 @@ namespace Profiler.Interprocess
 				using (Stream ws = ncb.CreateWritingStream()) {
 					ws.WriteByte(0x42);
 				}
-				using (UnmanagedCircularBuffer ncb2 = UnmanagedCircularBuffer.Open(memoryStart, memoryLength)) {
+				using (UnmanagedCircularBuffer ncb2 = UnmanagedCircularBuffer.Open(memoryStart)) {
 					using (Stream rs = ncb2.CreateReadingStream()) {
 						Assert.AreEqual(0x42, rs.ReadByte());
 					}
@@ -104,7 +105,7 @@ namespace Profiler.Interprocess
 						using (MemoryMappedFile mmf2 = MemoryMappedFile.Open("Local\\TestMemory")) {
 							using (UnmanagedMemory view2 = mmf1.MapView(0, 1024)) {
 								Assert.AreNotEqual(view1.Start, view2.Start);
-								using (UnmanagedCircularBuffer ncb2 = UnmanagedCircularBuffer.Open(view2.Start, (int)view2.Length)) {
+								using (UnmanagedCircularBuffer ncb2 = UnmanagedCircularBuffer.Open(view2.Start)) {
 									using (Stream rs = ncb2.CreateReadingStream()) {
 										Assert.AreEqual(0x42, rs.ReadByte());
 									}

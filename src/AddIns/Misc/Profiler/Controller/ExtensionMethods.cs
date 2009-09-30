@@ -2,6 +2,7 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -32,7 +33,19 @@ namespace ICSharpCode.Profiler.Controller
 
 			return builder.ToString();
 		}
-
+		
+		/// <summary>
+		/// Returns a CallTreeNode with all merged items.
+		/// </summary>
+		public static CallTreeNode Merge(this IQueryable<CallTreeNode> items)
+		{
+			if (items == null)
+				throw new ArgumentNullException("items");
+			
+			return items.Provider.Execute<CallTreeNode>(
+				Expression.Call(Data.Linq.KnownMembers.Queryable_Merge, items.Expression));
+		}
+		
 		/// <summary>
 		/// Returns a CallTreeNode with all merged items.
 		/// </summary>
@@ -41,16 +54,60 @@ namespace ICSharpCode.Profiler.Controller
 			if (items == null)
 				throw new ArgumentNullException("items");
 			
-			Debug.Assert(MethodBase.GetCurrentMethod() == Data.Linq.KnownMembers.Merge);
+			var itemList = items.ToList();
+			return itemList.First().Merge(items);
+		}
+		
+		/// <summary>
+		/// Merges CallTreeNodes with identical name mappings.
+		/// </summary>
+		public static IQueryable<CallTreeNode> MergeByName(this IQueryable<CallTreeNode> items)
+		{
+			if (items == null)
+				throw new ArgumentNullException("items");
 			
-			IQueryable<CallTreeNode> query = items as IQueryable<CallTreeNode>;
-			if (query != null) {
-				return query.Provider.Execute<CallTreeNode>(
-					Expression.Call(Data.Linq.KnownMembers.Merge, query.Expression));
-			} else {
-				var itemList = items.ToList();
-				return itemList.First().Merge(items);
-			}
+			return items.Provider.CreateQuery<CallTreeNode>(
+				Expression.Call(Data.Linq.KnownMembers.Queryable_MergeByName, items.Expression));
+		}
+		
+		/// <summary>
+		/// Merges CallTreeNodes with identical name mappings.
+		/// </summary>
+		public static IEnumerable<CallTreeNode> MergeByName(this IEnumerable<CallTreeNode> items)
+		{
+			if (items == null)
+				throw new ArgumentNullException("items");
+			
+			return items.GroupBy(c => c.NameMapping).Select(g => g.Merge());
+		}
+		
+		/// <summary>
+		/// Tells the query execution to add logging to the query.
+		/// </summary>
+		public static IQueryable<CallTreeNode> WithQueryLog(this IQueryable<CallTreeNode> items, TextWriter logOutput)
+		{
+			if (items == null)
+				throw new ArgumentNullException("items");
+			if (logOutput == null)
+				throw new ArgumentNullException("logOutput");
+			
+			return items.Provider.CreateQuery<CallTreeNode>(
+				Expression.Call(Data.Linq.KnownMembers.Queryable_WithQueryLog, items.Expression, Expression.Constant(logOutput)));
+		}
+		
+		/// <summary>
+		/// Tells the query execution to add logging to the query.
+		/// </summary>
+		public static IEnumerable<CallTreeNode> WithQueryLog(this IEnumerable<CallTreeNode> items, TextWriter logOutput)
+		{
+			if (items == null)
+				throw new ArgumentNullException("items");
+			if (logOutput == null)
+				throw new ArgumentNullException("logOutput");
+			
+			logOutput.WriteLine("The query did not use LINQ-to-Profiler.");
+			
+			return items;
 		}
 		
 		/// <summary>
