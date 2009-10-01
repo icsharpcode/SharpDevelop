@@ -12,9 +12,7 @@
 	<Runtime>
 		<Import assembly=":ICSharpCode.SharpDevelop"/>
 		<Import assembly="$ICSharpCode.FormsDesigner/FormsDesigner.dll"/>
-		<Import assembly="PythonBinding.dll">
-			<ConditionEvaluator name="IsPythonRunning" class="ICSharpCode.PythonBinding.IsPythonRunningCondition"/>
-		</Import>
+		<Import assembly="PythonBinding.dll"/>
 	</Runtime>
 	
 	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
