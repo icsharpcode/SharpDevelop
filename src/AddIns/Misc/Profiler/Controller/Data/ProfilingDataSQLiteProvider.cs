@@ -43,7 +43,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 			this.connection = new SQLiteConnection(conn.ConnectionString);
 			
 			try {
-				
 				this.connection.Open();
 				
 				CheckFileVersion(allowUpgrade);
@@ -365,10 +364,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 				using (SQLiteDataReader reader = cmd.ExecuteReader()) {
 					while (reader.Read()) {
 						SQLiteCallTreeNode node = new SQLiteCallTreeNode(reader.GetInt32(0), null, queryProvider);
-						node.callCount = reader.GetInt32(2);
+						node.callCount = reader.GetInt32(3);
 						node.cpuCyclesSpent = reader.GetInt64(1);
+						node.cpuCyclesSpentSelf = reader.GetInt64(2);
 						if (hasIdList) {
-							object ids = reader.GetValue(5);
+							object ids = reader.GetValue(6);
 							if (ids is long) {
 								node.IdList = new int[] { (int)(long)ids };
 							} else {
@@ -377,8 +377,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 								node.IdList = idList;
 							}
 						}
-						node.hasChildren = reader.GetBoolean(3);
-						node.activeCallCount = reader.GetInt32(4);
+						node.hasChildren = reader.GetBoolean(4);
+						node.activeCallCount = reader.GetInt32(5);
 						result.Add(node);
 					}
 				}

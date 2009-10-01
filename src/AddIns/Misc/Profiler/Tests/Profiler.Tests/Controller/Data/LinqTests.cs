@@ -33,7 +33,7 @@ namespace Profiler.Tests.Controller.Data
 			NameMapping method0 = new NameMapping(0, "r0", "m0", new List<string>());
 			NameMapping method1 = new NameMapping(1, "r1", "m1", new List<string>());
 			NameMapping method2 = new NameMapping(2, "r2", "m2", new List<string>());
-			using (var writer = new ProfilingDataSQLiteWriter(databaseFileName, false, null)) {
+			using (var writer = new ProfilingDataSQLiteWriter(databaseFileName)) {
 				writer.ProcessorFrequency = 2000; // MHz
 				writer.WriteMappings(new[] { method0, method1, method2 } );
 				CallTreeNodeStub dataSet;

@@ -24,6 +24,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		internal int nameId;
 		internal int callCount;
 		internal long cpuCyclesSpent;
+		internal long cpuCyclesSpentSelf;
 		CallTreeNode parent;
 		SQLiteQueryProvider provider;
 		internal bool hasChildren;
@@ -88,7 +89,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		public override long CpuCyclesSpentSelf {
-			get { return 0; }
+			get { return this.cpuCyclesSpentSelf; }
 		}
 
 		/// <summary>
@@ -133,7 +134,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				return CpuCyclesSpentSelf / (1000.0 * this.provider.ProcessorFrequency);
 			}
 		}
-
+		
 		/// <summary>
 		/// Gets whether the function call started in a previous data set that's not selected.
 		/// </summary>
@@ -163,6 +164,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				mergedNode.callCount += node.callCount;
 
 				mergedNode.cpuCyclesSpent += node.cpuCyclesSpent;
+				mergedNode.cpuCyclesSpentSelf += node.cpuCyclesSpentSelf;
 				mergedNode.activeCallCount += node.activeCallCount;
 				mergedNode.hasChildren |= node.hasChildren;
 				if (!initialised || mergedNode.nameId == node.nameId)

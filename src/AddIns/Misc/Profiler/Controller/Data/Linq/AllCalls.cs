@@ -49,6 +49,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			b.AppendLine("SELECT "
 			             + SqlAs("nameid", newNames.NameID) + ", "
 			             + SqlAs("cpucyclesspent", newNames.CpuCyclesSpent) + ", "
+			             + SqlAs("cpucyclesspentself", newNames.CpuCyclesSpentSelf) + ", "
 			             + SqlAs("callcount", newNames.CallCount) + ", "
 			             + SqlAs("(id != endid)", newNames.HasChildren) + ", "
 			             + SqlAs("((id BETWEEN " + context.StartDataSet.RootID + " AND " + context.StartDataSet.CallEndID

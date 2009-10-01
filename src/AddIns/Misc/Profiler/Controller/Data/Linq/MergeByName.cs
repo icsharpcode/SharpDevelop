@@ -53,6 +53,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			string query = "SELECT "
 				+ SqlAs(oldNames.NameID, newNames.NameID) + ", "
 				+ SqlAs("SUM(" + oldNames.CpuCyclesSpent + ")", newNames.CpuCyclesSpent) + ", "
+				+ SqlAs("SUM(" + oldNames.CpuCyclesSpentSelf + ")", newNames.CpuCyclesSpentSelf) + ", "
 				+ SqlAs("SUM(" + oldNames.CallCount + ")", newNames.CallCount) + ", "
 				+ SqlAs("MAX(" + oldNames.HasChildren + ")", newNames.HasChildren) + ", "
 				+ SqlAs("SUM(" + oldNames.ActiveCallCount + ")", newNames.ActiveCallCount);

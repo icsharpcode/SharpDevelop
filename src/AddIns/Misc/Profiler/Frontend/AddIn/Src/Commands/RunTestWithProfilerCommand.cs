@@ -34,7 +34,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			startInfo.WorkingDirectory = UnitTestApplicationStartHelper.UnitTestApplicationDirectory;
 			LoggingService.Info("starting profiler...");
 			
-			runner = new ProfilerRunner(startInfo, true, new ProfilingDataSQLiteWriter(path, true, GetUnitTestNames(helper).ToArray()));
+			runner = new ProfilerRunner(startInfo, true, new UnitTestWriter(new ProfilingDataSQLiteWriter(path), GetUnitTestNames(helper).ToArray()));
 			
 			runner.RunFinished += delegate {
 				WorkbenchSingleton.SafeThreadCall(() => FileService.OpenFile(path));

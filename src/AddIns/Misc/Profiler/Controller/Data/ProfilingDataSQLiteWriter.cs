@@ -30,13 +30,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 		int functionInfoCount;
 		bool isDisposed;
 		int processorFrequency;
-		bool profileUnitTests;
-		string[] unitTestNames;
 		
 		/// <summary>
 		/// Creates a new SQLite profiling data provider and opens or creates a new database stored in a file.
 		/// </summary>
-		public ProfilingDataSQLiteWriter(string fileName, bool profileUnitTests, string[] unitTestNames)
+		public ProfilingDataSQLiteWriter(string fileName)
 		{
 			if (File.Exists(fileName))
 				throw new IOException("File already exists!");
@@ -56,12 +54,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 			InitializeTables();
 			
 			File.SetAttributes(fileName, FileAttributes.Compressed);
-			
-			this.profileUnitTests = profileUnitTests;
-			this.unitTestNames = unitTestNames;
-			
-			if (profileUnitTests && unitTestNames == null)
-				throw new InvalidOperationException("Please add unit tests to filter!");
 		}
 		
 		/// <summary>
@@ -71,11 +63,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
 				// create index at the end (after inserting data), this is faster
-				cmd.CommandText = @"CREATE INDEX Parents ON FunctionData(parentid ASC);";
-				cmd.ExecuteNonQuery();
-				
-				// make SQLite analyze the indices available; this will help the query planner later
-				cmd.CommandText = @"ANALYZE;";
+				cmd.CommandText = CallsAndFunctionsIndexDefs;
 				cmd.ExecuteNonQuery();
 			}
 			
@@ -118,67 +106,42 @@ namespace ICSharpCode.Profiler.Controller.Data
 				cmd.CommandText = "INSERT INTO DataSets(id, cpuusage, isfirst, rootid)" +
 					"VALUES(?,?,?,?);";
 				
+				int dataSetStartId = functionInfoCount;
+				
 				using (SQLiteCommand loopCommand = this.connection.CreateCommand()) {
 					CallTreeNode node = dataSet.RootNode;
 					
-					loopCommand.CommandText = "INSERT INTO FunctionData(datasetid, id, endid, parentid, nameid, timespent, isactiveatstart, callcount)" +
+					loopCommand.CommandText = "INSERT INTO Calls(id, endid, parentid, nameid, cpucyclesspent, cpucyclesspentself, isactiveatstart, callcount)" +
 						"VALUES(?,?,?,?,?,?,?,?);";
 					
-					FunctionDataParams dataParams = new FunctionDataParams();
-					loopCommand.Parameters.Add(dataParams.dataSetId = new SQLiteParameter());
+					CallsParams dataParams = new CallsParams();
 					loopCommand.Parameters.Add(dataParams.functionInfoId = new SQLiteParameter());
 					loopCommand.Parameters.Add(dataParams.endId = new SQLiteParameter());
 					loopCommand.Parameters.Add(dataParams.parentId = new SQLiteParameter());
 					loopCommand.Parameters.Add(dataParams.nameId = new SQLiteParameter());
 					loopCommand.Parameters.Add(dataParams.cpuCyclesSpent = new SQLiteParameter());
+					loopCommand.Parameters.Add(dataParams.cpuCyclesSpentSelf = new SQLiteParameter());
 					loopCommand.Parameters.Add(dataParams.isActiveAtStart = new SQLiteParameter());
 					loopCommand.Parameters.Add(dataParams.callCount = new SQLiteParameter());
-					
-					bool addedData = true;
-					
-					if (profileUnitTests)
-						addedData = FindUnitTestsAndInsert(loopCommand, node, dataSet, dataParams);
-					else
-						InsertTree(loopCommand, node, -1, dataSet, dataParams);
-					
-					if (addedData) {
-						cmd.ExecuteNonQuery();
-						dataSetCount++;
-					}
+
+					InsertCalls(loopCommand, node, -1, dataParams);
 				}
 				
+				using (SQLiteCommand functionsCommand = this.connection.CreateCommand()) {
+					functionsCommand.CommandText = string.Format(@"
+						INSERT INTO Functions
+						SELECT {0}, nameid, SUM(cpucyclesspent), SUM(cpucyclesspentself), SUM(isactiveatstart), SUM(callcount), MAX(id != endid)
+	 					FROM Calls
+	 					WHERE id BETWEEN {1} AND {2}
+	 					GROUP BY nameid;", dataSetCount, dataSetStartId, functionInfoCount - 1);
+					
+					functionsCommand.ExecuteNonQuery();
+				}
+				
+				cmd.ExecuteNonQuery();
+				dataSetCount++;
+				
 				transaction.Commit();
-			}
-		}
-		
-		bool IsUnitTest(NameMapping name)
-		{
-			return unitTestNames.Contains(name.Name);
-		}
-		
-		bool FindUnitTestsAndInsert(SQLiteCommand cmd, CallTreeNode node, IProfilingDataSet dataSet, FunctionDataParams dataParams)
-		{
-			List<CallTreeNode> list = new List<CallTreeNode>();
-
-			FindUnitTests(node, list);
-			
-			if (list.Count > 0) {
-				InsertTree(cmd, new UnitTestRootCallTreeNode(list), -1, dataSet, dataParams);
-				return true;
-			}
-			
-			return false;
-		}
-		
-		void FindUnitTests(CallTreeNode parentNode, IList<CallTreeNode> list)
-		{
-			if (IsUnitTest(parentNode.NameMapping)) {
-				list.Add(parentNode);
-				return;
-			}
-			
-			foreach (var node in parentNode.Children) {
-				FindUnitTests(node, list);
 			}
 		}
 		
@@ -202,24 +165,25 @@ namespace ICSharpCode.Profiler.Controller.Data
 				callcount INTEGER NOT NULL,
 				hasChildren INTEGER NOT NULL
 			);";
-				
+		
 		internal const string CallsAndFunctionsIndexDefs =
 			"CREATE INDEX CallsParent ON Calls(parentid ASC);" // required for searching the children
 			+ " ANALYZE;"; // make SQLite analyze the indices available; this will help the query planner later
 		
 		void InitializeTables()
 		{
-			//NameMapping { Id, ReturnType, Name, Parameters }
-			// TODO : update db schema: change FunctionData.TimeSpent to cpucyclesspent
-			//FunctionData { DataSetId, Id, ParentId, NameId, TimeSpent, CallCount }
-			//DataSets { Id, CPUUsage, RootId }
+			// NameMapping { Id, ReturnType, Name, Parameters }
+			// Calls { id, endid, parentid, nameid, cpucyclesspent, cpucyclesspentself, isactiveatstart, callcount }
+			// Functions { datasetid, nameid, cpucyclesspent, cpucyclesspentself, activecallcount, callcount, haschildren }
+			// DataSets { Id, CPUUsage, RootId }
 			//
-			//NameMapping.Id <-> FunctionData.NameId 1:N
-			//FunctionData.ParentId <-> FunctionData.Id 1:N
+			// NameMapping.Id <-> FunctionData.NameId 1:N
+			// FunctionData.ParentId <-> FunctionData.Id 1:N
 			
 			SQLiteCommand cmd = this.connection.CreateCommand();
 			
-			cmd.CommandText = @"
+			cmd.CommandText = CallsAndFunctionsTableDefs + @"
+			
 				CREATE TABLE NameMapping(
 					id INTEGER NOT NULL PRIMARY KEY,
 					returntype TEXT NOT NULL,
@@ -227,16 +191,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 					parameters TEXT NOT NULL
 				);
 				
-				CREATE TABLE FunctionData(
-					datasetid INTEGER NOT NULL,
-					id INTEGER NOT NULL PRIMARY KEY,
-					endid INTEGER NOT NULL,
-					parentid INTEGER NOT NULL,
-					nameid INTEGER NOT NULL,
-					timespent INT8 NOT NULL,
-					isactiveatstart INTEGER NOT NULL,
-					callcount INTEGER NOT NULL
-				);
+				/* for CREATE TABLE of Calls and Functions see CallsAndFunctionsTableDefs */
 				
 				CREATE TABLE DataSets(
 					id INTEGER NOT NULL PRIMARY KEY,
@@ -250,7 +205,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 					value TEXT NOT NULL
 				);
 				
-				INSERT INTO Properties(name, value) VALUES('version', '1.0');
+				INSERT INTO Properties(name, value) VALUES('version', '1.1');
 				
 				CREATE TABLE PerformanceCounter(
 					id INTEGER NOT NULL PRIMARY KEY,
@@ -267,18 +222,19 @@ namespace ICSharpCode.Profiler.Controller.Data
 			cmd.ExecuteNonQuery();
 		}
 		
-		class FunctionDataParams
+		class CallsParams
 		{
-			public SQLiteParameter dataSetId, functionInfoId,
-			parentId, nameId, cpuCyclesSpent, isActiveAtStart, callCount, endId;
+			public SQLiteParameter functionInfoId,
+			parentId, nameId, cpuCyclesSpent, cpuCyclesSpentSelf,
+			isActiveAtStart, callCount, endId;
 		}
 		
-		void InsertTree(SQLiteCommand cmd, CallTreeNode node, int parentId, IProfilingDataSet dataSet, FunctionDataParams dataParams)
+		void InsertCalls(SQLiteCommand cmd, CallTreeNode node, int parentId, CallsParams dataParams)
 		{
 			int thisID = functionInfoCount++;
 			
 			foreach (CallTreeNode child in node.Children) {
-				InsertTree(cmd, child, thisID, dataSet, dataParams);
+				InsertCalls(cmd, child, thisID, dataParams);
 			}
 			
 			// we sometimes saw invalid data with the 0x0080000000000000L bit set
@@ -286,10 +242,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 				throw new InvalidOperationException("Too large CpuCyclesSpent - there's something wrong in the data");
 			}
 			
+			if (node.NameMapping.Id != 0 && (node.CpuCyclesSpentSelf > node.CpuCyclesSpent || node.CpuCyclesSpentSelf < 0)) {
+				throw new InvalidOperationException("Too large/small CpuCyclesSpentSelf (" + node.CpuCyclesSpentSelf + ") - there's something wrong in the data");
+			}
+			
 			dataParams.callCount.Value = node.RawCallCount;
 			dataParams.isActiveAtStart.Value = node.IsActiveAtStart;
 			dataParams.cpuCyclesSpent.Value = node.CpuCyclesSpent;
-			dataParams.dataSetId.Value = dataSetCount;
+			dataParams.cpuCyclesSpentSelf.Value = node.CpuCyclesSpentSelf;
+
 			dataParams.functionInfoId.Value = thisID;
 			dataParams.nameId.Value = node.NameMapping.Id;
 			dataParams.parentId.Value = parentId;

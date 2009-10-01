@@ -28,7 +28,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			string path = currentProj.GetSessionFileName();
 			Directory.CreateDirectory(Path.GetDirectoryName(path));
 			
-			IProfilingDataWriter writer = new ProfilingDataSQLiteWriter(path, false, null);
+			IProfilingDataWriter writer = new ProfilingDataSQLiteWriter(path);
 			ProfilerRunner runner = ProfilerRunner.CreateRunner(writer);
 			
 			if (runner != null) {

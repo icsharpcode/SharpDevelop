@@ -79,6 +79,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public readonly string ID;
 		public readonly string NameID;
 		public readonly string CpuCyclesSpent;
+		public readonly string CpuCyclesSpentSelf;
 		public readonly string CallCount;
 		public readonly string HasChildren;
 		public readonly string ActiveCallCount;
@@ -89,6 +90,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			ID = prefix + "ID";
 			NameID = prefix + "NameID";
 			CpuCyclesSpent = prefix + "CpuCyclesSpent";
+			CpuCyclesSpentSelf = prefix + "CpuCyclesSpentSelf";
 			CallCount = prefix + "CallCount";
 			HasChildren = prefix + "HasChildren";
 			ActiveCallCount = prefix + "ActiveCallCount";

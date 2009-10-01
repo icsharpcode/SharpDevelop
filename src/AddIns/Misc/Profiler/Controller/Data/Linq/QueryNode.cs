@@ -87,6 +87,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			string query = "SELECT "
 				+ SqlAs(oldNames.NameID, newNames.NameID) + ", "
 				+ SqlAs(oldNames.CpuCyclesSpent, newNames.CpuCyclesSpent) + ", "
+				+ SqlAs(oldNames.CpuCyclesSpentSelf, newNames.CpuCyclesSpentSelf) + ", "
 				+ SqlAs(oldNames.CallCount, newNames.CallCount) + ", "
 				+ SqlAs(oldNames.HasChildren, newNames.HasChildren) + ", "
 				+ SqlAs(oldNames.ActiveCallCount, newNames.ActiveCallCount);

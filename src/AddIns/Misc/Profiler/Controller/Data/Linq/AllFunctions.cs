@@ -56,6 +56,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			b.AppendLine("SELECT "
 			             + SqlAs("nameid", newNames.NameID) + ", "
 			             + SqlAs("SUM(cpucyclesspent)", newNames.CpuCyclesSpent) + ", "
+			             + SqlAs("SUM(cpucyclesspentself)", newNames.CpuCyclesSpentSelf) + ", "
 			             + SqlAs("SUM(callcount)", newNames.CallCount) + ", "
 			             + SqlAs("MAX(hasChildren)", newNames.HasChildren) + ", "
 			             + SqlAs("SUM(CASE WHEN datasetid = " + context.StartDataSet.ID + " THEN activecallcount ELSE 0 END)", newNames.ActiveCallCount));
