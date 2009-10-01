@@ -1084,8 +1084,6 @@ namespace ICSharpCode.SharpDevelop.Project
 					object item = codon.BuildItem(null, new System.Collections.ArrayList());
 					if (item != null) {
 						string text = item.ToString();
-						if (!codon.Properties.Get("text", "").Contains("$("))
-							text = MSBuildInternals.Escape(text);
 						globalProperties[codon.Id] = text;
 					}
 				}

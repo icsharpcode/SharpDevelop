@@ -44,10 +44,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets a list where addins can add additional properties for use in MSBuild.
-		/// You can add items to this dictionary by putting strings into
-		/// "/SharpDevelop/MSBuildEngine/AdditionalProperties".
 		/// </summary>
-		public static readonly IDictionary<string, string> MSBuildProperties;
+		/// <remarks>
+		/// Please use the AddIn Tree path "/SharpDevelop/MSBuildEngine/AdditionalProperties"
+		/// instead of this list.
+		/// </remarks>
+		public static readonly IDictionary<string, string> MSBuildProperties = new SortedList<string, string> {
+			{ "SharpDevelopBinPath", SharpDevelopBinPath },
+			// 'BuildingInsideVisualStudio' tells MSBuild that we took care of building a project's dependencies
+			// before trying to build the project itself. This speeds up compilation because it prevents MSBuild from
+			// repeatedly looking if a project needs to be rebuilt.
+			{ "BuildingInsideVisualStudio", "true" }
+		};
 		
 		/// <summary>
 		/// Gets a list of additional target files that are automatically loaded into all projects.
@@ -77,15 +85,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			);
 			AdditionalTargetFiles = AddInTree.BuildItems<string>(AdditionalTargetFilesPath, null, false);
 			AdditionalMSBuildLoggers = AddInTree.BuildItems<IMSBuildAdditionalLogger>(AdditionalLoggersPath, null, false);
-			
-			MSBuildProperties = new SortedList<string, string>();
-			MSBuildProperties.Add("SharpDevelopBinPath", SharpDevelopBinPath);
-			// 'BuildingInsideVisualStudio' tells MSBuild that we took care of building a project's dependencies
-			// before trying to build the project itself. This speeds up compilation because it prevents MSBuild from
-			// repeatedly looking if a project needs to be rebuilt.
-			MSBuildProperties.Add("BuildingInsideVisualStudio", "true");
 		}
-		
 		
 		public static void StartBuild(IProject project, ThreadSafeServiceContainer serviceContainer, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
 		{
@@ -186,6 +186,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			globalProperties["SolutionPath"] = solution.FileName;
 			
 			foreach (KeyValuePair<string, string> pair in options.Properties) {
+				LoggingService.Debug("Setting property " + pair.Key + " to '" + pair.Value + "'");
 				globalProperties[pair.Key] = pair.Value;
 			}
 			globalProperties["Configuration"] = options.Configuration;
@@ -244,7 +245,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				// because we'll replace the hijackedProperty, manually write the corresponding include
 				if (globalProperties.ContainsKey(hijackedProperty)) {
-					// we need to escape the project name because properties passed to MSBuild will not be evaluated
+					// global properties passed to MSBuild are not be evaluated (and are not escaped),
+					// so we need to escape them for writing them into an MSBuild file
 					w.WriteStartElement("Import", xmlNamespace);
 					w.WriteAttributeString("Project", MSBuildInternals.Escape(globalProperties[hijackedProperty]));
 					w.WriteEndElement();
