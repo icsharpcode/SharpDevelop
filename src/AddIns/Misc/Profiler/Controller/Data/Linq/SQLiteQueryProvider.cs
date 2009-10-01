@@ -37,7 +37,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		For QueryNodes that have input, that input must be another QueryNode.
 		
 		QueryAst nodes:
-			AllCalls: represents the whole FunctionData table
+			AllCalls: represents the whole Calls table
+			AllFunctions: represents the whole Functions table
 			input.Filter(x => condition1(x) && y => condition2(y)): WHERE clause with multiple conditions
 			input.MergeByName(): GROUP BY nameid
 		
@@ -137,15 +138,23 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		 */
 		
 		readonly ProfilingDataSQLiteProvider sqliteProvider;
-		internal readonly int startDataSetID, endDataSetID;
+		public readonly ProfilingDataSQLiteProvider.SQLiteDataSet StartDataSet;
+		public readonly ProfilingDataSQLiteProvider.SQLiteDataSet EndDataSet;
 		
 		public SQLiteQueryProvider(ProfilingDataSQLiteProvider sqliteProvider, int startDataSetID, int endDataSetID)
 		{
 			if (sqliteProvider == null)
 				throw new ArgumentNullException("sqliteProvider");
 			this.sqliteProvider = sqliteProvider;
-			this.startDataSetID = startDataSetID;
-			this.endDataSetID = endDataSetID;
+			
+			this.StartDataSet = FindDataSetById(startDataSetID);
+			this.EndDataSet = FindDataSetById(endDataSetID);
+		}
+		
+		public ProfilingDataSQLiteProvider.SQLiteDataSet FindDataSetById(int id)
+		{
+			var dataSets = sqliteProvider.DataSets.Cast<ProfilingDataSQLiteProvider.SQLiteDataSet>();
+			return dataSets.Single(d => d.ID == id);
 		}
 		
 		// Implement GetMapping and ProcessorFrequency so that SQLiteQueryProvider can be used in place of
@@ -176,8 +185,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		{
 			string command = string.Format(
 				CultureInfo.InvariantCulture,
-				"SELECT id FROM FunctionData WHERE (nameid = {0}) AND (datasetid BETWEEN {1} AND {2});",
-				nameid, startDataSetID, endDataSetID);
+				"SELECT id FROM Calls WHERE (nameid = {0}) AND (id BETWEEN {1} AND {2});",
+				nameid, StartDataSet.RootID, EndDataSet.CallEndID);
 			return sqliteProvider.RunSQLIDList(command).ToArray();
 		}
 		

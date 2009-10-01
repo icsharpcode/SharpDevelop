@@ -12,7 +12,7 @@ using System.Text;
 namespace ICSharpCode.Profiler.Controller.Data.Linq
 {
 	/// <summary>
-	/// Query AST node representing the whole 'FunctionData' table.
+	/// Query AST node representing the whole 'Functions' table.
 	/// This is the source of all queries.
 	/// Produces SELECT .. FROM .. in SQL.
 	/// </summary>
@@ -55,11 +55,11 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			
 			b.AppendLine("SELECT "
 			             + SqlAs("nameid", newNames.NameID) + ", "
-			             + SqlAs("SUM(timespent)", newNames.CpuCyclesSpent) + ", "
+			             + SqlAs("SUM(cpucyclesspent)", newNames.CpuCyclesSpent) + ", "
 			             + SqlAs("SUM(callcount)", newNames.CallCount) + ", "
-			             + SqlAs("MAX(id != endid)", newNames.HasChildren) + ", "
-			             + SqlAs("SUM((datasetid = " + context.StartDataSetID + ") AND isActiveAtStart)", newNames.ActiveCallCount));
-			b.AppendLine("FROM FunctionData");
+			             + SqlAs("MAX(hasChildren)", newNames.HasChildren) + ", "
+			             + SqlAs("SUM(CASE WHEN datasetid = " + context.StartDataSet.ID + " THEN activecallcount ELSE 0 END)", newNames.ActiveCallCount));
+			b.AppendLine("FROM Functions");
 			if (StartDataSet >= 0)
 				b.AppendLine("WHERE datasetid BETWEEN " + StartDataSet + " AND " + EndDataSet);
 			b.AppendLine("GROUP BY nameid");

@@ -19,7 +19,7 @@ using System.Text;
 namespace ICSharpCode.Profiler.Controller.Data.Linq
 {
 	/// <summary>
-	/// Query AST node representing the whole 'FunctionData' table.
+	/// Query AST node representing the whole 'Calls' table.
 	/// This is the source of all queries.
 	/// Produces SELECT .. FROM .. in SQL.
 	/// </summary>
@@ -48,12 +48,13 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			
 			b.AppendLine("SELECT "
 			             + SqlAs("nameid", newNames.NameID) + ", "
-			             + SqlAs("timespent", newNames.CpuCyclesSpent) + ", " // TODO : change to CpuCyclesSpent
+			             + SqlAs("cpucyclesspent", newNames.CpuCyclesSpent) + ", "
 			             + SqlAs("callcount", newNames.CallCount) + ", "
 			             + SqlAs("(id != endid)", newNames.HasChildren) + ", "
-			             + SqlAs("((datasetid = " + context.StartDataSetID + ") AND isActiveAtStart)", newNames.ActiveCallCount) + ", "
+			             + SqlAs("((id BETWEEN " + context.StartDataSet.RootID + " AND " + context.StartDataSet.CallEndID
+			                     + ") AND isActiveAtStart)", newNames.ActiveCallCount) + ", "
 			             + SqlAs("id", newNames.ID));
-			b.AppendLine("FROM FunctionData");
+			b.AppendLine("FROM Calls");
 			return SqlStatementKind.Select;
 		}
 	}

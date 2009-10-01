@@ -182,6 +182,31 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
+		internal const string CallsAndFunctionsTableDefs = @"
+			CREATE TABLE Calls (
+				id INTEGER NOT NULL PRIMARY KEY,
+				endid INTEGER NOT NULL,
+				parentid INTEGER NOT NULL,
+				nameid INTEGER NOT NULL,
+				cpucyclesspent INTEGER NOT NULL,
+				cpucyclesspentself INTEGER NOT NULL,
+				isactiveatstart INTEGER NOT NULL,
+				callcount INTEGER NOT NULL
+			);
+			CREATE TABLE Functions (
+				datasetid INTEGER NOT NULL,
+				nameid INTEGER NOT NULL,
+				cpucyclesspent INTEGER NOT NULL,
+				cpucyclesspentself INTEGER NOT NULL,
+				activecallcount INTEGER NOT NULL,
+				callcount INTEGER NOT NULL,
+				hasChildren INTEGER NOT NULL
+			);";
+				
+		internal const string CallsAndFunctionsIndexDefs =
+			"CREATE INDEX CallsParent ON Calls(parentid ASC);" // required for searching the children
+			+ " ANALYZE;"; // make SQLite analyze the indices available; this will help the query planner later
+		
 		void InitializeTables()
 		{
 			//NameMapping { Id, ReturnType, Name, Parameters }
@@ -197,9 +222,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 			cmd.CommandText = @"
 				CREATE TABLE NameMapping(
 					id INTEGER NOT NULL PRIMARY KEY,
-					returntype VARCHAR2(100) NOT NULL,
-					name VARCHAR2(255) NOT NULL,
-					parameters VARCHAR2(1000) NOT NULL
+					returntype TEXT NOT NULL,
+					name TEXT NOT NULL,
+					parameters TEXT NOT NULL
 				);
 				
 				CREATE TABLE FunctionData(
@@ -221,15 +246,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 				);
 				
 				CREATE TABLE Properties(
-					name VARCHAR2(100) NOT NULL PRIMARY KEY,
-					value VARCHAR2(100) NOT NULL
+					name TEXT NOT NULL PRIMARY KEY,
+					value TEXT NOT NULL
 				);
 				
 				INSERT INTO Properties(name, value) VALUES('version', '1.0');
 				
 				CREATE TABLE PerformanceCounter(
 					id INTEGER NOT NULL PRIMARY KEY,
-					name VARCHAR2(100) NOT NULL
+					name TEXT NOT NULL
 				);
 				
 				CREATE TABLE CounterData(

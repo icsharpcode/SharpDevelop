@@ -144,7 +144,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		public override int CallCount {
-			get { return callCount + activeCallCount; }
+			get { return Math.Max(1, callCount + activeCallCount); }
 		}
 		
 		/// <summary>
@@ -161,6 +161,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			foreach (SQLiteCallTreeNode node in nodes) {
 				mergedIds.AddRange(node.IdList);
 				mergedNode.callCount += node.callCount;
+
 				mergedNode.cpuCyclesSpent += node.cpuCyclesSpent;
 				mergedNode.activeCallCount += node.activeCallCount;
 				mergedNode.hasChildren |= node.hasChildren;
@@ -184,7 +185,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 					return (new CallTreeNode[] { this.parent }).AsQueryable();
 				
 				List<int> parentIDList = provider.RunSQLIDList(
-					"SELECT parentid FROM FunctionData "
+					"SELECT parentid FROM Calls "
 					+ "WHERE id IN(" + string.Join(",", this.IdList.Select(s => s.ToString()).ToArray()) + @")");
 				
 				Expression<Func<SingleCall, bool>> filterLambda = c => parentIDList.Contains(c.ID);

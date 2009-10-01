@@ -35,7 +35,16 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				
 				foreach (CallTreeNodeViewModel node in list) {
 					if (node != null)
-					builder.AppendLine(new string('\t', node.Level) + node.Name + "\t" + node.CallCount + "\t" + node.TimeSpent + "\t" + node.TimePercentageOfParentAsText);
+						builder.AppendLine(
+							new string('\t', node.Level) +
+							node.Name + "\t" +
+							node.CallCount + "\t" +
+							node.TimeSpent + "\t" +
+							node.TimeSpentSelf + "\t" +
+							node.TimeSpentPerCall + "\t" +
+							node.TimeSpentSelfPerCall + "\t" +
+							node.TimePercentageOfParentAsText
+						);
 				}
 				
 				Clipboard.SetText(builder.ToString());

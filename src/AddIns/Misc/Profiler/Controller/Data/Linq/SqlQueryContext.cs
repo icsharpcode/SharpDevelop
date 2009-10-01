@@ -12,7 +12,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 {
 	sealed class SqlQueryContext
 	{
-		public readonly int StartDataSetID;
+		public readonly ProfilingDataSQLiteProvider.SQLiteDataSet StartDataSet;
+		public readonly ProfilingDataSQLiteProvider.SQLiteDataSet EndDataSet;
 		
 		public CallTreeNodeSqlNameSet CurrentNameSet { get; private set; }
 		
@@ -39,9 +40,18 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			this.HasIDList = hasIDList;
 		}
 		
+		SQLiteQueryProvider provider;
+		
 		public SqlQueryContext(SQLiteQueryProvider provider)
 		{
-			this.StartDataSetID = provider.startDataSetID;
+			this.provider = provider;
+			this.StartDataSet = provider.StartDataSet;
+			this.EndDataSet = provider.EndDataSet;
+		}
+		
+		public ProfilingDataSQLiteProvider.SQLiteDataSet FindDataSetById(int id)
+		{
+			return provider.FindDataSetById(id);
 		}
 		
 		int uniqueVariableIndex;
@@ -59,7 +69,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		/// </summary>
 		None,
 		/// <summary>
-		/// The FunctionData table
+		/// The Calls table
 		/// </summary>
 		Calls
 	}

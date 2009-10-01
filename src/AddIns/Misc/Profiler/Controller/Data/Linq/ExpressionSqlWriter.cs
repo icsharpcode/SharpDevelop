@@ -45,22 +45,46 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				case ExpressionType.Call:
 					WriteMethodCall((MethodCallExpression)expression);
 					break;
+				case ExpressionType.LessThanOrEqual:
+					{
+						BinaryExpression binary = (BinaryExpression)expression;
+						if (IsSingleCallDataSetId(binary.Left) && binary.Right.NodeType == ExpressionType.Constant) {
+							if (context.CurrentTable != SqlTableType.Calls)
+								throw new InvalidOperationException();
+							// datasetid <= c --> id <= dataset.endid
+							w.Write("(id <= ");
+							w.Write(context.FindDataSetById((int)((ConstantExpression)binary.Right).Value).CallEndID);
+							w.Write(')');
+							break;
+						} else if (IsSingleCallDataSetId(binary.Right) && binary.Left.NodeType == ExpressionType.Constant) {
+							if (context.CurrentTable != SqlTableType.Calls)
+								throw new InvalidOperationException();
+							// c <= datasetid --> dataset.rootid <= id
+							w.Write('(');
+							w.Write(context.FindDataSetById((int)((ConstantExpression)binary.Left).Value).RootID);
+							w.Write(" <= id)");
+							break;
+						} else {
+							goto case ExpressionType.LessThan;
+						}
+					}
 				case ExpressionType.AndAlso:
 				case ExpressionType.OrElse:
 				case ExpressionType.LessThan:
-				case ExpressionType.LessThanOrEqual:
 				case ExpressionType.GreaterThan:
 				case ExpressionType.GreaterThanOrEqual:
 				case ExpressionType.Equal:
 				case ExpressionType.NotEqual:
-					BinaryExpression binary = (BinaryExpression)expression;
-					w.Write('(');
-					Write(binary.Left);
-					w.Write(' ');
-					w.Write(GetOperatorSymbol(expression.NodeType));
-					w.Write(' ');
-					Write(binary.Right);
-					w.Write(')');
+					{
+						BinaryExpression binary = (BinaryExpression)expression;
+						w.Write('(');
+						Write(binary.Left);
+						w.Write(' ');
+						w.Write(GetOperatorSymbol(expression.NodeType));
+						w.Write(' ');
+						Write(binary.Right);
+						w.Write(')');
+					}
 					break;
 				case ExpressionType.Constant:
 					var ce = (ConstantExpression)expression;
@@ -106,6 +130,12 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			}
 		}
 		
+		bool IsSingleCallDataSetId(Expression expr)
+		{
+			MemberExpression me = expr as MemberExpression;
+			return me != null && me.Expression == callTreeNodeParameter && me.Member == SingleCall.DataSetIdField;
+		}
+		
 		void WriteMemberAccess(MemberExpression me)
 		{
 			if (me.Expression == callTreeNodeParameter) {
@@ -114,7 +144,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				if (me.Member == SingleCall.IDField) {
 					w.Write("id");
 				} else if (me.Member == SingleCall.DataSetIdField) {
-					w.Write("datasetid");
+					throw new NotSupportedException("datasetid is only support in LessThan expressions!");
 				} else if (me.Member == SingleCall.ParentIDField) {
 					w.Write("parentid");
 				} else if (me.Member == KnownMembers.CallTreeNode_CallCount) {

@@ -34,7 +34,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <summary>
 		/// Creates a new SQLite profiling data provider and opens a database stored in a file.
 		/// </summary>
-		public ProfilingDataSQLiteProvider(string fileName)
+		private ProfilingDataSQLiteProvider(string fileName, bool allowUpgrade)
 		{
 			this.nameMappingCache = new Dictionary<int, NameMapping>();
 			
@@ -42,7 +42,78 @@ namespace ICSharpCode.Profiler.Controller.Data
 			conn.Add("Data Source", fileName);
 			this.connection = new SQLiteConnection(conn.ConnectionString);
 			
-			this.connection.Open();
+			try {
+				
+				this.connection.Open();
+				
+				CheckFileVersion(allowUpgrade);
+			} catch {
+				try {
+					connection.Dispose();
+				} catch {
+					// ignore errors during cleanup, rethrow the first error instead
+				}
+				throw;
+			}
+		}
+		
+		void CheckFileVersion(bool allowUpgrade)
+		{
+			string version = GetProperty("version");
+			
+			if (version == "1.0" && allowUpgrade) {
+				try {
+					using (SQLiteCommand cmd = connection.CreateCommand()) {
+						cmd.CommandText = "ALTER TABLE DataSets ADD COLUMN isfirst INTEGER NOT NULL DEFAULT(0);";
+						cmd.ExecuteNonQuery();
+					}
+				} catch (SQLiteException) {
+					// some 1.0 DBs already have that column, ignore 'duplicate column' error
+				}
+				using (SQLiteTransaction transaction = connection.BeginTransaction()) {
+					try {
+						using (SQLiteCommand cmd = connection.CreateCommand()) {
+							cmd.CommandText = ProfilingDataSQLiteWriter.CallsAndFunctionsTableDefs + @"
+								INSERT OR REPLACE INTO Properties(name, value) VALUES('version', '1.1');
+								
+								INSERT INTO Calls
+								SELECT f1.id, f1.endid, f1.parentid, f1.nameid, f1.timespent,
+								   (f1.timespent - (SELECT TOTAL(f2.timespent) FROM FunctionData AS f2 WHERE f2.parentid = f1.id)),
+								   f1.isactiveatstart, f1.callcount
+								   FROM FunctionData f1;
+
+								INSERT INTO Functions
+								SELECT f.datasetid, c.nameid, SUM(c.cpucyclesspent), SUM(c.cpucyclesspentself),
+										SUM(c.isactiveatstart), SUM(c.callcount), MAX(c.id != c.endid)
+									FROM Calls c
+									JOIN FunctionData f
+									  ON c.id = f.id
+									GROUP BY c.nameid, f.datasetid;
+								"
+								+ "DELETE FROM FunctionData;" // I would like to do DROP TABLE, but that causes locking errors
+								+ ProfilingDataSQLiteWriter.CallsAndFunctionsIndexDefs;
+							cmd.ExecuteNonQuery();
+						}
+						transaction.Commit();
+					} catch (Exception ex) {
+						Console.WriteLine(ex.ToString());
+						throw;
+					}
+				}
+				version = "1.1"; // new version that was upgraded to
+				try {
+					// VACUUM must be run outside the transaction
+					using (SQLiteCommand cmd = connection.CreateCommand()) {
+						cmd.CommandText = "VACUUM;"; // free the space used by the old FunctionData table
+						cmd.ExecuteNonQuery();
+					}
+				} catch (SQLiteException ex) {
+					Console.WriteLine(ex.ToString());
+				}
+			}
+			
+			if (version != "1.1")
+				throw new IncompatibleDatabaseException(new Version(1, 0), new Version(version));
 		}
 		
 		/// <summary>
@@ -50,7 +121,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public static ProfilingDataSQLiteProvider FromFile(string fileName)
 		{
-			return new ProfilingDataSQLiteProvider(fileName);
+			return new ProfilingDataSQLiteProvider(fileName, false);
+		}
+		
+		/// <summary>
+		/// Creates a new SQLite profiling data provider from a file.
+		/// </summary>
+		public static ProfilingDataSQLiteProvider UpgradeFromOldVersion(string fileName)
+		{
+			return new ProfilingDataSQLiteProvider(fileName, true);
 		}
 		
 		/// <inheritdoc/>
@@ -103,25 +182,16 @@ namespace ICSharpCode.Profiler.Controller.Data
 					
 					using (LockAndCreateCommand(out cmd)) {
 						SQLiteDataReader reader;
-						bool isFirstAllowed = true;
-						try {
-							cmd.CommandText = @"SELECT id, cpuusage, isfirst
-											FROM DataSets
-											ORDER BY id;";
-							
-							reader = cmd.ExecuteReader();
-						} catch (SQLiteException) {
-							cmd.CommandText = @"SELECT id, cpuusage
-											FROM DataSets
-											ORDER BY id;";
-							
-							reader = cmd.ExecuteReader();
-							
-							isFirstAllowed = false;
-						}
+						cmd.CommandText = @"SELECT d.id, d.cpuusage, d.isfirst, d.rootid, c.endid
+											FROM DataSets d
+											JOIN Calls c ON c.id = d.rootid
+											ORDER BY d.id;";
+						
+						reader = cmd.ExecuteReader();
 						
 						while (reader.Read()) {
-							list.Add(new SQLiteDataSet(this, reader.GetInt32(0), reader.GetDouble(1), isFirstAllowed ? reader.GetBoolean(2) : false));
+							list.Add(new SQLiteDataSet(this, reader.GetInt32(0), reader.GetDouble(1), reader.GetBoolean(2),
+							                           reader.GetInt32(3), reader.GetInt32(4)));
 						}
 					}
 					
@@ -132,19 +202,22 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
-		class SQLiteDataSet : IProfilingDataSet
+		internal sealed class SQLiteDataSet : IProfilingDataSet
 		{
 			ProfilingDataSQLiteProvider provider;
-			int index;
+			public readonly int ID;
 			double cpuUsage;
 			bool isFirst;
+			public readonly int RootID, CallEndID;
 			
-			public SQLiteDataSet(ProfilingDataSQLiteProvider provider, int index, double cpuUsage, bool isFirst)
+			public SQLiteDataSet(ProfilingDataSQLiteProvider provider, int id, double cpuUsage, bool isFirst, int rootID, int callEndID)
 			{
 				this.provider = provider;
-				this.index = index;
+				this.ID = id;
 				this.cpuUsage = cpuUsage;
 				this.isFirst = isFirst;
+				this.RootID = rootID;
+				this.CallEndID = callEndID;
 			}
 			
 			public double CpuUsage {
@@ -155,7 +228,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			public CallTreeNode RootNode {
 				get {
-					return this.provider.GetRoot(index, index);
+					return this.provider.GetRoot(ID, ID);
 				}
 			}
 			

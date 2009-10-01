@@ -23,15 +23,17 @@ namespace Profiler.Tests.Controller.Data
 		const int k = 1000;
 		ProfilingDataSQLiteProvider provider;
 		
+		const string databaseFileName = "test.sdps";
+		
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			if (File.Exists("temp.sdps"))
-				File.Delete("temp.sdps");
+			if (File.Exists(databaseFileName))
+				File.Delete(databaseFileName);
 			NameMapping method0 = new NameMapping(0, "r0", "m0", new List<string>());
 			NameMapping method1 = new NameMapping(1, "r1", "m1", new List<string>());
 			NameMapping method2 = new NameMapping(2, "r2", "m2", new List<string>());
-			using (var writer = new ProfilingDataSQLiteWriter("temp.sdps", false, null)) {
+			using (var writer = new ProfilingDataSQLiteWriter(databaseFileName, false, null)) {
 				writer.ProcessorFrequency = 2000; // MHz
 				writer.WriteMappings(new[] { method0, method1, method2 } );
 				CallTreeNodeStub dataSet;
@@ -86,14 +88,14 @@ namespace Profiler.Tests.Controller.Data
 				writer.WriteDataSet(new DataSetStub { CpuUsage = 0.1, IsFirst = false, RootNode = dataSet });
 				writer.Close();
 			}
-			provider = new ProfilingDataSQLiteProvider("temp.sdps");
+			provider = ProfilingDataSQLiteProvider.UpgradeFromOldVersion(databaseFileName);
 		}
 		
 		[TestFixtureTearDown]
 		public void FixtureCleanUp()
 		{
 			provider.Dispose();
-			File.Delete("temp.sdps");
+			File.Delete(databaseFileName);
 		}
 		
 		[Test]
