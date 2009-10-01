@@ -335,9 +335,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		}
 	}
 	
-	struct SortArgument {
-		LambdaExpression arg;
-		bool desc;
+	class SortArgument 
+	{
+		readonly LambdaExpression arg;
+		readonly bool desc;
 		
 		public SortArgument(LambdaExpression arg, bool desc)
 		{
@@ -351,18 +352,21 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public LambdaExpression Argument {
 			get { return arg; }
 		}
+		
+		public override string ToString()
+		{
+			if (Descending)
+				return Argument.ToString() + " DESC";
+			else
+				return Argument.ToString();
+		}
 	}
 	
 	sealed class Sort : QueryNode
 	{
 		ReadOnlyCollection<SortArgument> arguments;
 		
-		public Sort(QueryNode target, LambdaExpression argument, bool desc)
-			: this(target, new[] { new SortArgument(argument, desc) })
-		{
-		}
-		
-		Sort(QueryNode target, IList<SortArgument> args)
+		public Sort(QueryNode target, IList<SortArgument> args)
 			: base(target)
 		{
 			this.arguments = new ReadOnlyCollection<SortArgument>(args);
@@ -407,11 +411,12 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public override string ToString()
 		{
 			StringBuilder builder = new StringBuilder();
-			
-			foreach (var item in arguments)
-				builder.Append(item.Argument + " " + (item.Descending ? "DESC" : "ASC") + ",");
-			
-			return Target + ".Sort( {" + builder.ToString() + "} )";
+			for (int i = 0; i < arguments.Count; i++) {
+				if (i > 0)
+					builder.Append(", ");
+				builder.Append(arguments[i].ToString());
+			}
+			return Target + ".Sort(" + builder.ToString() + ")";
 		}
 	}
 }

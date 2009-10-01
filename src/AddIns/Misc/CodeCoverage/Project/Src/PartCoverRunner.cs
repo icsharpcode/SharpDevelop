@@ -26,7 +26,7 @@ namespace ICSharpCode.CodeCoverage
 		StringCollection include = new StringCollection();
 		StringCollection exclude = new StringCollection();
 		string output = String.Empty;
-				
+		
 		/// <summary>
 		/// Triggered when PartCover exits.
 		/// </summary>
@@ -38,7 +38,7 @@ namespace ICSharpCode.CodeCoverage
 		public event EventHandler Started;
 		
 		/// <summary>
-		/// The PartCover runner was stopped.  Being stopped is not the 
+		/// The PartCover runner was stopped.  Being stopped is not the
 		/// same as PartCover exiting.
 		/// </summary>
 		public event EventHandler Stopped;
@@ -53,7 +53,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 
 		/// <summary>
-		/// Gets or sets the full path to the PartCover 
+		/// Gets or sets the full path to the PartCover
 		/// executable.
 		/// </summary>
 		public string PartCoverFileName {
@@ -95,7 +95,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 
 		/// <summary>
-		/// Gets or sets the regular expressions which specify the items to 
+		/// Gets or sets the regular expressions which specify the items to
 		/// include in the report whilst profiling the target executable.
 		/// </summary>
 		public StringCollection Include {
@@ -103,7 +103,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 
 		/// <summary>
-		/// Gets or sets the regular expressions which specify the items to 
+		/// Gets or sets the regular expressions which specify the items to
 		/// exclude in the report whilst profiling the target executable.
 		/// </summary>
 		public StringCollection Exclude {
@@ -116,7 +116,7 @@ namespace ICSharpCode.CodeCoverage
 		public string Output {
 			get { return output; }
 			set { output = value; }
-		}		
+		}
 		
 		/// <summary>
 		/// Returns the full path used to run PartCover.
@@ -141,9 +141,9 @@ namespace ICSharpCode.CodeCoverage
 		/// so in order for this to be passed to PartCover as a single argument
 		/// we need to prefix each double quote by a backslash. For example:
 		/// 
-		/// Target args: "C:\Projects\My Tests\Test.dll" /output "C:\Projects\My Tests\Output.xml" 
+		/// Target args: "C:\Projects\My Tests\Test.dll" /output "C:\Projects\My Tests\Output.xml"
 		/// 
-		/// PartCover: --target-args "\"C:\Projects\My Tests\Test.dll\" /output \"C:\Projects\My Tests\Output.xml\"" 
+		/// PartCover: --target-args "\"C:\Projects\My Tests\Test.dll\" /output \"C:\Projects\My Tests\Output.xml\""
 		/// </remarks>
 		public string GetArguments()
 		{
@@ -170,15 +170,16 @@ namespace ICSharpCode.CodeCoverage
 			}
 			
 			arguments.Append(GetArguments("--exclude", exclude));
-						
+			
 			return arguments.ToString().Trim();
-		}		
+		}
 		
 		public void Start()
-		{			
+		{
 			string arguments = GetArguments();
 			
 			runner = new ProcessRunner();
+			runner.EnvironmentVariables.Add("COMPLUS_ProfAPI_ProfilerCompatibilitySetting", "EnableV2Profiler");
 			runner.WorkingDirectory = workingDirectory;
 			runner.ProcessExited += ProcessExited;
 			
@@ -186,7 +187,7 @@ namespace ICSharpCode.CodeCoverage
 				runner.OutputLineReceived += OnOutputLineReceived;
 				runner.ErrorLineReceived += OnOutputLineReceived;
 			}
-			runner.Start(partCoverFileName, arguments);	
+			runner.Start(partCoverFileName, arguments);
 			OnStarted();
 		}
 		
@@ -241,10 +242,10 @@ namespace ICSharpCode.CodeCoverage
 		/// <param name="e">The event arguments.</param>
 		void ProcessExited(object sender, EventArgs e)
 		{
-			ProcessRunner runner = (ProcessRunner)sender;		
+			ProcessRunner runner = (ProcessRunner)sender;
 			OnExited(runner.StandardOutput, runner.StandardError, runner.ExitCode);
-		}		
-	
+		}
+		
 		/// <summary>
 		/// Gets the command line option that can have multiple items as specified
 		/// in the string array. Each array item will have a separate command line

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
@@ -151,6 +152,12 @@ namespace ICSharpCode.SharpDevelop.Util
 			}
 		}
 		
+		Dictionary<string, string> environmentVariables = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		
+		public Dictionary<string, string> EnvironmentVariables {
+			get { return environmentVariables; }
+		}
+		
 		/// <summary>
 		/// Starts the process.
 		/// </summary>
@@ -173,6 +180,9 @@ namespace ICSharpCode.SharpDevelop.Util
 			process.ErrorDataReceived += OnErrorLineReceived;
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.Arguments = arguments;
+			
+			foreach (var pair in environmentVariables)
+				process.StartInfo.EnvironmentVariables.Add(pair.Key, pair.Value);
 			
 			if (ProcessExited != null) {
 				process.EnableRaisingEvents = true;

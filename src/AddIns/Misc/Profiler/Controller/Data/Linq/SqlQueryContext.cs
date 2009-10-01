@@ -32,7 +32,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 	sealed class CallTreeNodeSqlNameSet
 	{
 		public readonly string ID;
-		public readonly string NameID = "nameid";
+		public readonly string NameID;
 		public readonly string CpuCyclesSpent;
 		public readonly string CallCount;
 		public readonly string HasChildren;
@@ -48,15 +48,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			this.IsCalls = isCalls;
 			
 			string prefix = c.GenerateUniqueVariableName();
-			if (isCalls) {
-				ID = "id";
-				CpuCyclesSpent = "cpucyclesspent";
-				CallCount = "callcount";
-			} else {
-				ID = prefix + "ID";
-				CpuCyclesSpent = prefix + "CpuCyclesSpent";
-				CallCount = prefix + "CallCount";
-			}
+			ID = prefix + "ID";
+			NameID = prefix + "NameID";
+			CpuCyclesSpent = prefix + "CpuCyclesSpent";
+			CallCount = prefix + "CallCount";
 			HasChildren = prefix + "HasChildren";
 			ActiveCallCount = prefix + "ActiveCallCount";
 		}

@@ -30,7 +30,13 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public static readonly MethodInfo QueryableOfCallTreeNode_Take = MethodOf((IQueryable<CallTreeNode> q) => q.Take(1));
 		public static readonly MethodInfo Queryable_OrderBy = MethodOf((IQueryable<CallTreeNode> q) => q.OrderBy(x => x)).GetGenericMethodDefinition();
 		public static readonly MethodInfo Queryable_OrderByDesc = MethodOf((IQueryable<CallTreeNode> q) => q.OrderByDescending(x => x)).GetGenericMethodDefinition();
+		public static readonly MethodInfo Queryable_ThenBy = MethodOf((IOrderedQueryable<CallTreeNode> q) => q.ThenBy(x => x)).GetGenericMethodDefinition();
+		public static readonly MethodInfo Queryable_ThenBy2 = MethodOf((IOrderedQueryable<CallTreeNode> q) => q.ThenBy(x => x, null)).GetGenericMethodDefinition();
+		public static readonly MethodInfo Queryable_ThenByDesc = MethodOf((IOrderedQueryable<CallTreeNode> q) => q.ThenByDescending(x => x)).GetGenericMethodDefinition();
+		public static readonly MethodInfo Queryable_ThenByDesc2 = MethodOf((IOrderedQueryable<CallTreeNode> q) => q.ThenByDescending(x => x, null)).GetGenericMethodDefinition();
+		
 		public static readonly MethodInfo String_StartsWith = MethodOf((string s) => s.StartsWith(s, default(StringComparison)));
+		public static readonly MethodInfo String_EndsWith = MethodOf((string s) => s.EndsWith(s, default(StringComparison)));
 		
 		public static readonly MethodInfo Queryable_Merge = MethodOf((IQueryable<CallTreeNode> q) => q.Merge());
 		public static readonly MethodInfo Queryable_MergeByName = MethodOf((IQueryable<CallTreeNode> q) => q.MergeByName());

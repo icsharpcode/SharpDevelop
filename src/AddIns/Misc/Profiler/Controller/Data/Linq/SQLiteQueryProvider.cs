@@ -178,7 +178,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		/// Optimizes the query without executing it.
 		/// Used for unit tests.
 		/// </summary>
-		public Expression OptimizeQuery(Expression inputExpression)
+		public static Expression OptimizeQuery(Expression inputExpression)
 		{
 			Expression partiallyEvaluatedExpression = PartialEvaluator.Eval(inputExpression, CanBeEvaluatedStatically);
 			Expression expression = new ConvertToQueryAstVisitor(new QueryExecutionOptions()).Visit(partiallyEvaluatedExpression);
@@ -296,25 +296,79 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							return new Limit(target, 0, (int)ce.Value);
 						}
 					}
-				} else if ((IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_OrderBy) ||
-				           IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_OrderByDesc)) &&
-				           node.Arguments[1].NodeType == ExpressionType.Quote) {
-					
+				} else if (IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_OrderBy) ||
+				           IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_OrderByDesc)) {
+					SortArgument sortArgument = GetSortArgumentFromSortCall(node);
+					if (sortArgument != null) {
+						QueryNode target = Visit(node.Arguments[0]) as QueryNode;
+						if (target != null) {
+							return new Sort(target, new [] { sortArgument });
+						}
+					}
+				} else if (IsThenByCall(node)) {
+					// 'ThenBy' is dangerous: we must not translate an OrderBy inside a ThenBy that we do not support
+					List<MethodCallExpression> thenByCalls = new List<MethodCallExpression>();
+					Expression tmp = node;
+					while (IsThenByCall(tmp)) {
+						thenByCalls.Add((MethodCallExpression)tmp);
+						tmp = ((MethodCallExpression)tmp).Arguments[0];
+					}
+					MethodCallExpression mc = tmp as MethodCallExpression;
+					if (mc != null &&
+					    (IsGenericMethodInfoOfCallTreeNode(mc, KnownMembers.Queryable_OrderBy) ||
+					     IsGenericMethodInfoOfCallTreeNode(mc, KnownMembers.Queryable_OrderByDesc)))
+					{
+						// TODO: add support for safe expressions in ThenBy
+						
+						// this is an unsupported OrderBy/ThenBy sequence
+						// skip visiting the sequence and go directly into the base object
+						tmp = Visit(mc.Arguments[0]);
+						// now reconstruct the OrderBy/ThenBy sequence
+						tmp = Expression.Call(mc.Method, new[] { tmp }.Concat(mc.Arguments.Skip(1))); // reconstruct OrderBy
+						for (int i = thenByCalls.Count - 1; i >= 0; i--) {
+							// reconstruct ThenBy
+							tmp = Expression.Call(thenByCalls[i].Method, new[] { tmp }.Concat(thenByCalls[i].Arguments.Skip(1)));
+						}
+						return tmp;
+					}
+					// else: we couldn't detect the OrderBy belonging to this ThenBy; so it's probably not one
+					// of the OrderBy overloads that we support. Go down recursively
+				}
+				return base.VisitMethodCall(node);
+			}
+			
+			SortArgument GetSortArgumentFromSortCall(MethodCallExpression node)
+			{
+				if (node.Arguments[1].NodeType == ExpressionType.Quote) {
 					UnaryExpression quote = (UnaryExpression)node.Arguments[1];
 					if (quote.Operand.NodeType == ExpressionType.Lambda) {
 						LambdaExpression lambda = (LambdaExpression)quote.Operand;
 						if (lambda.Parameters.Count == 1) {
-							QueryNode target = Visit(node.Arguments[0]) as QueryNode;
-							if (target != null) {
-								SafeExpressionImporter importer = new SafeExpressionImporter(lambda.Parameters[0]);
-								Expression imported = importer.Import(lambda.Body);
-								if (imported != null)
-									return new Sort(target, Expression.Lambda(imported, lambda.Parameters[0]), IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_OrderByDesc));
-							}
+							SafeExpressionImporter importer = new SafeExpressionImporter(lambda.Parameters[0]);
+							Expression imported = importer.Import(lambda.Body);
+							if (imported != null)
+								return new SortArgument(
+									Expression.Lambda(imported, lambda.Parameters[0]),
+									IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_OrderByDesc)
+									|| IsGenericMethodInfoOfCallTreeNode(node, KnownMembers.Queryable_ThenByDesc)
+								);
 						}
 					}
 				}
-				return base.VisitMethodCall(node);
+				return null;
+			}
+			
+			bool IsThenByCall(Expression potentialCall)
+			{
+				MethodCallExpression mc = potentialCall as MethodCallExpression;
+				if (mc != null) {
+					return IsGenericMethodInfoOfCallTreeNode(mc, KnownMembers.Queryable_ThenBy) ||
+						IsGenericMethodInfoOfCallTreeNode(mc, KnownMembers.Queryable_ThenBy2) ||
+						IsGenericMethodInfoOfCallTreeNode(mc, KnownMembers.Queryable_ThenByDesc) ||
+						IsGenericMethodInfoOfCallTreeNode(mc, KnownMembers.Queryable_ThenByDesc2);
+				} else {
+					return false;
+				}
 			}
 		}
 		#endregion
@@ -409,7 +463,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 							MethodCallExpression mc = (MethodCallExpression)expr;
 							
 							if (mc.Method == KnownMembers.String_StartsWith)
-								return CreateCall(mc, (pattern, wildcard) => pattern + wildcard);
+								return CreateStringMatchCall(mc, (pattern, wildcard) => pattern + wildcard);
+							if (mc.Method == KnownMembers.String_EndsWith)
+								return CreateStringMatchCall(mc, (pattern, wildcard) => wildcard + pattern);
 							
 							return null;
 						}
@@ -442,7 +498,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				}
 			}
 
-			Expression CreateCall(MethodCallExpression mc, Func<string, string, string> expressionOf)
+			Expression CreateStringMatchCall(MethodCallExpression mc, Func<string, string, string> expressionOf)
 			{
 				Expression imported = Import(mc.Object);
 				if (imported != null && mc.Arguments[0].NodeType == ExpressionType.Constant && mc.Arguments[1].NodeType == ExpressionType.Constant) {

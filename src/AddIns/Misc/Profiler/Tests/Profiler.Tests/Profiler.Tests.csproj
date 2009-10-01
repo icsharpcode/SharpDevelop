@@ -74,6 +74,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="IQToolkit">
+      <HintPath>..\..\..\..\..\Libraries\IQToolkit\IQToolkit.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\..\..\bin\Tools\NUnit\nunit.framework.dll</HintPath>
     </Reference>

@@ -143,5 +143,53 @@ namespace Profiler.Tests.Controller.Data
 			Assert.AreEqual(1, functions[1].CallCount);
 			Assert.AreEqual(350 * k, functions[1].CpuCyclesSpent);
 		}
+		
+		[Test]
+		public void TestSupportedOrderByOnRootChildren()
+		{
+			CallTreeNode root = provider.GetRoot(0, 0);
+			var query = root.Children.OrderBy(f => f.CallCount);
+			Assert.AreEqual("AllCalls.Filter(c => (c.ParentID == 0)).MergeByName().Sort(f => f.CallCount)",
+			                SQLiteQueryProvider.OptimizeQuery(query.Expression).ToString());
+		}
+		
+		[Test]
+		public void TestOrderByNameMappingName()
+		{
+			CallTreeNode root = provider.GetRoot(0, 0);
+			var query = root.Children.OrderBy(f => f.NameMapping.Name);
+			Assert.AreEqual("AllCalls.Filter(c => (c.ParentID == 0)).MergeByName().Sort(f => f.NameMapping.Name)",
+			                SQLiteQueryProvider.OptimizeQuery(query.Expression).ToString());
+		}
+		
+		[Test]
+		public void TestOrderByWithUnsupporedThenBy()
+		{
+			CallTreeNode root = provider.GetRoot(0, 0);
+			var query = root.Children.OrderBy(f => f.CallCount).ThenBy(f => f.Ancestors.Count());
+			Assert.AreEqual("AllCalls.Filter(c => (c.ParentID == 0)).MergeByName()" +
+			                ".OrderBy(f => f.CallCount).ThenBy(f => f.Ancestors.Count())",
+			                SQLiteQueryProvider.OptimizeQuery(query.Expression).ToString());
+		}
+		
+		[Test]
+		public void TestOrderBySupportedThenByButUnsupportedConverter()
+		{
+			CallTreeNode root = provider.GetRoot(0, 0);
+			var query = root.Children.OrderBy(f => f.CallCount).ThenBy(f => f.NameMapping.Name, StringComparer.CurrentCultureIgnoreCase);
+			Assert.AreEqual("AllCalls.Filter(c => (c.ParentID == 0)).MergeByName()" +
+			                ".OrderBy(f => f.CallCount).ThenBy(f => f.NameMapping.Name, value(System.CultureAwareComparer))",
+			                SQLiteQueryProvider.OptimizeQuery(query.Expression).ToString());
+		}
+		
+		[Test]
+		public void TestOrderByWithMultiLevelUnsupporedThenBy()
+		{
+			CallTreeNode root = provider.GetRoot(0, 0);
+			var query = root.Children.OrderBy(f => f.CallCount).ThenBy(f => f.NameMapping.Name).ThenBy(f => f.Ancestors.Count());
+			Assert.AreEqual("AllCalls.Filter(c => (c.ParentID == 0)).MergeByName()" +
+			                ".OrderBy(f => f.CallCount).ThenBy(f => f.NameMapping.Name).ThenBy(f => f.Ancestors.Count())",
+			                SQLiteQueryProvider.OptimizeQuery(query.Expression).ToString());
+		}
 	}
 }
