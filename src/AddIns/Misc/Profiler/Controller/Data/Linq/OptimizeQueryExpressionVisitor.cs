@@ -50,6 +50,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			return ReorderFilter(filter);
 		}
 		
+		static readonly MemberInfo[] SafeMembersForMoveIntoMergeByName = { KnownMembers.CallTreeNode_NameMapping };
+		
 		/// <summary>
 		/// Tries to combine nested filters;
 		/// move 'MergeByName' nodes out of filter, if possible
@@ -63,7 +65,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			} else if (filter.Target is MergeByName) {
 				// x.MergeByName().Filter(<criteria>) -> x.Filter(x, <criteria>).MergeByName() for some safe criterias
 				QueryNode innerTarget = filter.Target.Target;
-				var conditionsToMoveIntoFilter = filter.Conditions.Where(c => IsConditionSafeForMoveIntoMergeByName.Test(c)).ToArray();
+				var conditionsToMoveIntoFilter = filter.Conditions.Where(c => IsConditionSafeVisitor.Test(c, SafeMembersForMoveIntoMergeByName)).ToArray();
 				if (conditionsToMoveIntoFilter.Length != 0) {
 					MergeByName newTarget = new MergeByName(ReorderFilter(new Filter(innerTarget, conditionsToMoveIntoFilter)));
 					var conditionsKeptOutsideFilter = filter.Conditions.Except(conditionsToMoveIntoFilter).ToArray();
@@ -76,38 +78,6 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				}
 			} else {
 				return filter;
-			}
-		}
-		
-		sealed class IsConditionSafeForMoveIntoMergeByName : System.Linq.Expressions.ExpressionVisitor
-		{
-			public static bool Test(Expression ex)
-			{
-				var visitor = new IsConditionSafeForMoveIntoMergeByName();
-				visitor.Visit(ex);
-				return visitor.IsSafe;
-			}
-			
-			static readonly MemberInfo[] SafeMembers = {
-				KnownMembers.CallTreeNode_NameMapping
-			};
-			
-			bool IsSafe = true;
-			
-			protected override Expression VisitMember(MemberExpression node)
-			{
-				if (node.Expression.NodeType == ExpressionType.Parameter && !SafeMembers.Contains(node.Member))
-					IsSafe = false;
-				return base.VisitMember(node);
-			}
-			
-			protected override Expression VisitMethodCall(MethodCallExpression node)
-			{
-				if (node.Object != null) {
-					if (node.Object.NodeType == ExpressionType.Parameter && !SafeMembers.Contains(node.Method))
-						IsSafe = false;
-				}
-				return base.VisitMethodCall(node);
 			}
 		}
 		
@@ -145,7 +115,58 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				// x.MergeByName().MergeByName() -> x.MergeByName()
 				return target;
 			}
+			if (target == AllCalls.Instance) {
+				// AllCalls.MergeByName() -> AllFunctions
+				return new AllFunctions();
+			}
+			if (target is Filter && target.Target == AllCalls.Instance) {
+				// AllCalls.Filter(criteria).MergeByName() -> AllFunctions.Filter(criteria)
+				// If criteria accesses no CallTreeNode properties except for NameMapping.
+				// Criteria of the form 'start <= c.DataSetID && c.DataSetID <= end' will be converted into AllFunctions(start,end)
+				List<LambdaExpression> newConditions = new List<LambdaExpression>();
+				bool allIsSafe = true;
+				int startDataSetID = -1;
+				int endDataSetID = -1;
+				foreach (LambdaExpression condition in ((Filter)target).Conditions) {
+					if (IsConditionSafeVisitor.Test(condition, SafeMembersForMoveIntoMergeByName)) {
+						newConditions.Add(condition);
+					} else if (condition.Body.NodeType == ExpressionType.AndAlso && startDataSetID < 0) {
+						// try match 'constant <= c.DataSetID && c.DataSetID <= constant', but only if we
+						// haven't found it already (startDataSetID is still -1)
+						BinaryExpression bin = (BinaryExpression)condition.Body;
+						if (bin.Left.NodeType == ExpressionType.LessThanOrEqual && bin.Right.NodeType == ExpressionType.LessThanOrEqual) {
+							BinaryExpression left = (BinaryExpression)bin.Left;
+							BinaryExpression right = (BinaryExpression)bin.Right;
+							if (left.Left.NodeType == ExpressionType.Constant && left.Right.NodeType == ExpressionType.MemberAccess
+							    && right.Left.NodeType == ExpressionType.MemberAccess && right.Right.NodeType == ExpressionType.Constant
+							    && ((MemberExpression)left.Right).Member == SingleCall.DataSetIdField
+							    && ((MemberExpression)right.Left).Member == SingleCall.DataSetIdField)
+							{
+								startDataSetID = (int)GetConstantValue(left.Left);
+								endDataSetID = (int)GetConstantValue(right.Right);
+							} else {
+								allIsSafe = false;
+							}
+						} else {
+							allIsSafe = false;
+						}
+					} else {
+						allIsSafe = false;
+					}
+				}
+				if (allIsSafe) {
+					if (newConditions.Count > 0)
+						return new Filter(new AllFunctions(startDataSetID, endDataSetID), newConditions.ToArray());
+					else
+						return new AllFunctions(startDataSetID, endDataSetID);
+				}
+			}
 			return new MergeByName(target);
+		}
+		
+		static object GetConstantValue(Expression expr)
+		{
+			return ((ConstantExpression)expr).Value;
 		}
 		#endregion
 		
@@ -158,6 +179,38 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 //					return Expression.Constant(false); // we cannot optimize to 'false' because bool constants are not valid
 				if (list.Count == 1)
 					return Expression.Equal(Visit(node.Arguments[0]), Expression.Constant(list[0]));
+			}
+			return base.VisitMethodCall(node);
+		}
+	}
+	
+	
+	sealed class IsConditionSafeVisitor : System.Linq.Expressions.ExpressionVisitor
+	{
+		public static bool Test(Expression ex, params MemberInfo[] safeMembers)
+		{
+			var visitor = new IsConditionSafeVisitor();
+			visitor.SafeMembers = safeMembers;
+			visitor.Visit(ex);
+			return visitor.IsSafe;
+		}
+		
+		MemberInfo[] SafeMembers;
+		
+		bool IsSafe = true;
+		
+		protected override Expression VisitMember(MemberExpression node)
+		{
+			if (node.Expression.NodeType == ExpressionType.Parameter && !SafeMembers.Contains(node.Member))
+				IsSafe = false;
+			return base.VisitMember(node);
+		}
+		
+		protected override Expression VisitMethodCall(MethodCallExpression node)
+		{
+			if (node.Object != null) {
+				if (node.Object.NodeType == ExpressionType.Parameter && !SafeMembers.Contains(node.Method))
+					IsSafe = false;
 			}
 			return base.VisitMethodCall(node);
 		}

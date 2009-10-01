@@ -26,7 +26,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 		internal long cpuCyclesSpent;
 		CallTreeNode parent;
 		SQLiteQueryProvider provider;
-		internal List<int> ids = new List<int>();
 		internal bool hasChildren;
 		internal int activeCallCount;
 		
@@ -38,6 +37,26 @@ namespace ICSharpCode.Profiler.Controller.Data
 			this.nameId = nameId;
 			this.parent = parent;
 			this.provider = provider;
+		}
+		
+		volatile int[] ids;
+		
+		/// <summary>
+		/// Gets/Sets the ID list.
+		/// For function nodes, the usually long ID list is delay-loaded.
+		/// </summary>
+		internal int[] IdList {
+			get {
+				int[] tmp = this.ids;
+				if (tmp == null) {
+					tmp = provider.LoadIDListForFunction(nameId);
+					this.ids = tmp;
+				}
+				return tmp;
+			}
+			set {
+				this.ids = value;
+			}
 		}
 
 		/// <summary>
@@ -94,7 +113,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 				if (!hasChildren)
 					return EmptyQueryable;
 				
-				Expression<Func<SingleCall, bool>> filterLambda = c => this.ids.Contains(c.ParentID);
+				List<int> ids = this.IdList.ToList();
+				Expression<Func<SingleCall, bool>> filterLambda = c => ids.Contains(c.ParentID);
 				return provider.CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)));
 			}
 		}
@@ -135,10 +155,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public override CallTreeNode Merge(IEnumerable<CallTreeNode> nodes)
 		{
 			SQLiteCallTreeNode mergedNode = new SQLiteCallTreeNode(0, null, this.provider);
+			List<int> mergedIds = new List<int>();
 			bool initialised = false;
 			
 			foreach (SQLiteCallTreeNode node in nodes) {
-				mergedNode.ids.AddRange(node.ids);
+				mergedIds.AddRange(node.IdList);
 				mergedNode.callCount += node.callCount;
 				mergedNode.cpuCyclesSpent += node.cpuCyclesSpent;
 				mergedNode.activeCallCount += node.activeCallCount;
@@ -149,6 +170,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 					mergedNode.nameId = 0;
 				initialised = true;
 			}
+			mergedIds.Sort();
+			mergedNode.IdList = mergedIds.ToArray();
 			
 			return mergedNode;
 		}
@@ -162,7 +185,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				
 				List<int> parentIDList = provider.RunSQLIDList(
 					"SELECT parentid FROM FunctionData "
-					+ "WHERE id IN(" + string.Join(",", this.ids.Select(s => s.ToString()).ToArray()) + @")");
+					+ "WHERE id IN(" + string.Join(",", this.IdList.Select(s => s.ToString()).ToArray()) + @")");
 				
 				Expression<Func<SingleCall, bool>> filterLambda = c => parentIDList.Contains(c.ID);
 				return provider.CreateQuery(new MergeByName(new Filter(AllCalls.Instance, filterLambda)));
@@ -174,11 +197,13 @@ namespace ICSharpCode.Profiler.Controller.Data
 			SQLiteCallTreeNode node = other as SQLiteCallTreeNode;
 			if (node != null) {
 				
-				if (node.ids.Count != this.ids.Count)
+				int[] a = this.IdList;
+				int[] b = node.IdList;
+				if (a.Length != b.Length)
 					return false;
 				
-				for (int i = 0; i < this.ids.Count; i++) {
-					if (node.ids[i] != this.ids[i])
+				for (int i = 0; i < a.Length; i++) {
+					if (a[i] != b[i])
 						return false;
 				}
 				
@@ -195,7 +220,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			int hash = 0;
 			
 			unchecked {
-				foreach (int i in this.ids) {
+				foreach (int i in this.IdList) {
 					hash = hash * hashPrime + i;
 				}
 			}

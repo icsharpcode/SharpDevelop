@@ -95,10 +95,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\IProfilingDataComparer.cs" />
+    <Compile Include="Data\Linq\AllCalls.cs" />
+    <Compile Include="Data\Linq\AllFunctions.cs" />
     <Compile Include="Data\Linq\ExpressionSqlWriter.cs" />
+    <Compile Include="Data\Linq\Filter.cs" />
     <Compile Include="Data\Linq\KnownMembers.cs" />
+    <Compile Include="Data\Linq\Limit.cs" />
+    <Compile Include="Data\Linq\MergeByName.cs" />
     <Compile Include="Data\Linq\OptimizeQueryExpressionVisitor.cs" />
-    <Compile Include="Data\Linq\QueryAst.cs" />
+    <Compile Include="Data\Linq\QueryNode.cs" />
+    <Compile Include="Data\Linq\Sort.cs" />
     <Compile Include="Data\Linq\SQLiteQueryProvider.cs" />
     <Compile Include="Data\Linq\SqlQueryContext.cs" />
     <Compile Include="Data\PerformanceCounterDescriptor.cs" />

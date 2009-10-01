@@ -16,16 +16,18 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 	{
 		readonly TextWriter w;
 		readonly ParameterExpression callTreeNodeParameter;
+		readonly SqlQueryContext context;
 		readonly CallTreeNodeSqlNameSet nameSet;
 		
-		public ExpressionSqlWriter(TextWriter w, CallTreeNodeSqlNameSet nameSet, ParameterExpression callTreeNodeParameter)
+		public ExpressionSqlWriter(TextWriter w, SqlQueryContext context, ParameterExpression callTreeNodeParameter)
 		{
 			if (w == null)
 				throw new ArgumentNullException("w");
-			if (nameSet == null)
-				throw new ArgumentNullException("nameSet");
+			if (context == null)
+				throw new ArgumentNullException("context");
 			this.w = w;
-			this.nameSet = nameSet;
+			this.context = context;
+			this.nameSet = context.CurrentNameSet;
 			this.callTreeNodeParameter = callTreeNodeParameter;
 		}
 		
@@ -107,7 +109,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		void WriteMemberAccess(MemberExpression me)
 		{
 			if (me.Expression == callTreeNodeParameter) {
-				if (me.Member.DeclaringType == typeof(SingleCall) && !nameSet.IsCalls)
+				if (me.Member.DeclaringType == typeof(SingleCall) && context.CurrentTable != SqlTableType.Calls)
 					throw new InvalidOperationException("SingleCall references are invalid here");
 				if (me.Member == SingleCall.IDField) {
 					w.Write("id");

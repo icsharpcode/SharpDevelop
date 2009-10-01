@@ -61,11 +61,19 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public abstract string GetProperty(string name);
 		
 		/// <summary>
+		/// Returns the list of all calls in a specified range of datasets.
+		/// </summary>
+		public virtual IQueryable<CallTreeNode> GetAllCalls(int startIndex, int endIndex)
+		{
+			return GetRoot(startIndex, endIndex).Descendants;
+		}
+		
+		/// <summary>
 		/// Returns the list of all functions called in a specified range of datasets.
 		/// </summary>
 		public virtual IQueryable<CallTreeNode> GetFunctions(int startIndex, int endIndex)
 		{
-			return GetRoot(startIndex, endIndex).Descendants.Where(c => !c.IsThread).MergeByName();
+			return GetAllCalls(startIndex, endIndex).Where(c => !c.IsThread).MergeByName();
 		}
 	}
 }

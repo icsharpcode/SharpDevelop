@@ -14,6 +14,31 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 	{
 		public readonly int StartDataSetID;
 		
+		public CallTreeNodeSqlNameSet CurrentNameSet { get; private set; }
+		
+		/// <summary>
+		/// The type of the table currently being accessed (the current FROM clause).
+		/// Is 'None' when reading from an inner query.
+		/// </summary>
+		public SqlTableType CurrentTable { get; private set; }
+		
+		/// <summary>
+		/// Passed down the query tree to signalize that the ID list is required.
+		/// </summary>
+		public bool RequireIDList;
+		
+		/// <summary>
+		/// Passed up the query tree to signalize whether an ID list is present.
+		/// </summary>
+		public bool HasIDList { get; private set; }
+		
+		public void SetCurrent(CallTreeNodeSqlNameSet nameSet, SqlTableType table, bool hasIDList)
+		{
+			this.CurrentNameSet = nameSet;
+			this.CurrentTable = table;
+			this.HasIDList = hasIDList;
+		}
+		
 		public SqlQueryContext(SQLiteQueryProvider provider)
 		{
 			this.StartDataSetID = provider.startDataSetID;
@@ -25,8 +50,18 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		{
 			return "v" + (++uniqueVariableIndex).ToString(CultureInfo.InvariantCulture);
 		}
-		
-		public CallTreeNodeSqlNameSet CurrentNameSet;
+	}
+	
+	enum SqlTableType
+	{
+		/// <summary>
+		/// No direct table
+		/// </summary>
+		None,
+		/// <summary>
+		/// The FunctionData table
+		/// </summary>
+		Calls
 	}
 	
 	sealed class CallTreeNodeSqlNameSet
@@ -38,15 +73,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public readonly string HasChildren;
 		public readonly string ActiveCallCount;
 		
-		/// <summary>
-		/// Gets whether this nameset represents non-merged calls.
-		/// </summary>
-		public readonly bool IsCalls;
-		
-		public CallTreeNodeSqlNameSet(SqlQueryContext c, bool isCalls)
+		public CallTreeNodeSqlNameSet(SqlQueryContext c)
 		{
-			this.IsCalls = isCalls;
-			
 			string prefix = c.GenerateUniqueVariableName();
 			ID = prefix + "ID";
 			NameID = prefix + "NameID";

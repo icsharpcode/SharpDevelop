@@ -191,7 +191,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				endIndex = help;
 			}
 			
-			SQLiteQueryProvider queryProvider = new SQLiteQueryProvider(this, startIndex);
+			SQLiteQueryProvider queryProvider = new SQLiteQueryProvider(this, startIndex, endIndex);
 			Expression<Func<SingleCall, bool>> filterLambda = c => c.ParentID == -1;
 			return queryProvider.CreateQuery(new Filter(AllCalls.Instance, DataSetFilter(startIndex, endIndex), filterLambda)).Merge();
 		}
@@ -263,19 +263,17 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		/// <inheritdoc/>
-		public override IQueryable<CallTreeNode> GetFunctions(int startIndex, int endIndex)
+		public override IQueryable<CallTreeNode> GetAllCalls(int startIndex, int endIndex)
 		{
-			if (startIndex < 0 || startIndex >= this.dataSets.Count)
+			if (startIndex < 0 || startIndex >= this.DataSets.Count)
 				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + endIndex);
 			if (endIndex < startIndex || endIndex >= this.DataSets.Count)
 				throw new ArgumentOutOfRangeException("endIndex", endIndex, "Value must be between " + startIndex + " and " + (this.DataSets.Count - 1));
 			
-			SQLiteQueryProvider queryProvider = new SQLiteQueryProvider(this, startIndex);
+			SQLiteQueryProvider queryProvider = new SQLiteQueryProvider(this, startIndex, endIndex);
 			
-			var query = queryProvider.CreateQuery(new MergeByName(new Filter(AllCalls.Instance, DataSetFilter(startIndex, endIndex))));
-			return from c in query
-				where c.NameMapping.Id != 0 && !c.IsThread
-				select c;
+			var query = queryProvider.CreateQuery(new Filter(AllCalls.Instance, DataSetFilter(startIndex, endIndex)));
+			return query.Where(c => c.NameMapping.Id != 0);
 		}
 		
 		Expression<Func<SingleCall, bool>> DataSetFilter(int startIndex, int endIndex)
@@ -283,7 +281,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			return c => startIndex <= c.DataSetID && c.DataSetID <= endIndex;
 		}
 		
-		internal IList<CallTreeNode> RunSQLNodeList(SQLiteQueryProvider queryProvider, string command)
+		internal IList<CallTreeNode> RunSQLNodeList(SQLiteQueryProvider queryProvider, string command, bool hasIdList)
 		{
 			List<CallTreeNode> result = new List<CallTreeNode>();
 			
@@ -293,18 +291,21 @@ namespace ICSharpCode.Profiler.Controller.Data
 				
 				using (SQLiteDataReader reader = cmd.ExecuteReader()) {
 					while (reader.Read()) {
-						SQLiteCallTreeNode node = new SQLiteCallTreeNode(reader.GetInt32(1), null, queryProvider);
-						node.callCount = reader.GetInt32(3);
-						node.cpuCyclesSpent = reader.GetInt64(2);
-						object ids = reader.GetValue(0);
-						if (ids is long) {
-							node.ids = new List<int> { (int)(long)ids };
-						} else {
-							node.ids = reader.GetString(0).Split(',').Select(s => int.Parse(s)).ToList();
-							node.ids.Sort();
+						SQLiteCallTreeNode node = new SQLiteCallTreeNode(reader.GetInt32(0), null, queryProvider);
+						node.callCount = reader.GetInt32(2);
+						node.cpuCyclesSpent = reader.GetInt64(1);
+						if (hasIdList) {
+							object ids = reader.GetValue(5);
+							if (ids is long) {
+								node.IdList = new int[] { (int)(long)ids };
+							} else {
+								int[] idList = ids.ToString().Split(',').Select(s => int.Parse(s)).ToArray();
+								Array.Sort(idList);
+								node.IdList = idList;
+							}
 						}
-						node.hasChildren = reader.GetBoolean(4);
-						node.activeCallCount = reader.GetInt32(5);
+						node.hasChildren = reader.GetBoolean(3);
+						node.activeCallCount = reader.GetInt32(4);
 						result.Add(node);
 					}
 				}

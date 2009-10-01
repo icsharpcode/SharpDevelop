@@ -144,6 +144,36 @@ namespace Profiler.Tests.Controller.Data
 			Assert.AreEqual(350 * k, functions[1].CpuCyclesSpent);
 		}
 		
+		
+		[Test]
+		public void TestFunctionsChildren()
+		{
+			CallTreeNode[] functions = provider.GetFunctions(1, 2).OrderBy(f => f.Name).WithQueryLog(Console.Out).ToArray();
+			CallTreeNode[] children = functions[1].Children.ToArray();
+			
+			Assert.AreEqual(1, children.Length);
+			Assert.AreEqual("m1", children[0].Name);
+			Assert.IsFalse(children[0].HasChildren);
+			Assert.AreEqual(5, children[0].CallCount);
+			Assert.AreEqual(1 * k, children[0].CpuCyclesSpent);
+		}
+		
+		[Test]
+		public void TestFunctionsQuery()
+		{
+			var query = provider.GetFunctions(0, 1);
+			Assert.AreEqual("AllFunctions(0, 1).Filter(c => (c.NameMapping.Id != 0) && c => Not(GlobImpl(c.NameMapping.Name, \"Thread#*\")))",
+			                SQLiteQueryProvider.OptimizeQuery(query.Expression).ToString());
+		}
+		
+		[Test]
+		public void TestAllCallsMergedToFunctions()
+		{
+			var query = provider.GetAllCalls(0, 1).MergeByName();
+			Assert.AreEqual("AllFunctions(0, 1).Filter(c => (c.NameMapping.Id != 0))",
+			                SQLiteQueryProvider.OptimizeQuery(query.Expression).ToString());
+		}
+		
 		[Test]
 		public void TestSupportedOrderByOnRootChildren()
 		{

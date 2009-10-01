@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -90,9 +91,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 					Note: Skip/Take combinations are not combined (Skip is not supported).
 				
 				input.OrderBy(x => x.SomeField) -> input.Sort({ [x.SomeField, ascending] })
-					Note: ThenBy is not supported.
-					
 				input.OrderByDescending(x => x.SomeField) -> input.Sort({ [x.SomeField, descending] })
+					Note: OrderBy is not converted into Sort if followed by a ThenBy.
+				
+				input.MergeByName() -> new MergeByName(input)
 			
 			Translation rules for expression importer:
 				Any valid expressions (as defined in 'valid expressions in QueryAst nodes') are copied over directly.
@@ -101,6 +103,8 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 					c.IsThread -> Glob(c.NameMapping.Name, "Thread#*")
 					s.StartsWith(constantString, StringComparison.Ordinal) -> Glob(s, constantString + "*");
 					s.StartsWith(constantString, StringComparison.OrdinalIgnoreCase) -> Like(s, constantString + "%");
+					s.EndsWith(constantString, StringComparison.Ordinal) -> Glob(s, "*" + constantString);
+					s.EndsWith(constantString, StringComparison.OrdinalIgnoreCase) -> Like(s, "%" + constantString);
 		
 		Optimization of QueryAst:
 			The OptimizeQueryExpressionVisitor is performing these optimizations:
@@ -108,6 +112,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				x.MergeByName().Filter(criteria) -> x.Filter(criteria).MergeByName() for some safe criterias
 					Criterias are safe if they access no CallTreeNode properties except for NameMapping
 				x.MergeByName().MergeByName() -> x.MergeByName()
+				AllCalls.Filter(criteria).MergeByName() -> AllFunctions.Filter(criteria)
+					If criteria accesses no CallTreeNode properties except for NameMapping.
+					Criteria of the form 'start <= c.DataSetID && c.DataSetID <= end' will be converted into AllFunctions(start,end)
 		
 		SQL string building and execution:
 			It must be possible to create SQL for every combination of QueryNodes, even if they do strange things like merging multiple times.
@@ -130,14 +137,15 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		 */
 		
 		readonly ProfilingDataSQLiteProvider sqliteProvider;
-		internal readonly int startDataSetID;
+		internal readonly int startDataSetID, endDataSetID;
 		
-		public SQLiteQueryProvider(ProfilingDataSQLiteProvider sqliteProvider, int startDataSetID)
+		public SQLiteQueryProvider(ProfilingDataSQLiteProvider sqliteProvider, int startDataSetID, int endDataSetID)
 		{
 			if (sqliteProvider == null)
 				throw new ArgumentNullException("sqliteProvider");
 			this.sqliteProvider = sqliteProvider;
 			this.startDataSetID = startDataSetID;
+			this.endDataSetID = endDataSetID;
 		}
 		
 		// Implement GetMapping and ProcessorFrequency so that SQLiteQueryProvider can be used in place of
@@ -151,9 +159,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			get { return sqliteProvider.ProcessorFrequency; }
 		}
 		
-		public IList<CallTreeNode> RunSQLNodeList(string command)
+		public IList<CallTreeNode> RunSQLNodeList(string command, bool hasIdList)
 		{
-			return sqliteProvider.RunSQLNodeList(this, command);
+			return sqliteProvider.RunSQLNodeList(this, command, hasIdList);
 		}
 		
 		/// <summary>
@@ -162,6 +170,15 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 		public List<int> RunSQLIDList(string command)
 		{
 			return sqliteProvider.RunSQLIDList(command);
+		}
+		
+		public int[] LoadIDListForFunction(int nameid)
+		{
+			string command = string.Format(
+				CultureInfo.InvariantCulture,
+				"SELECT id FROM FunctionData WHERE (nameid = {0}) AND (datasetid BETWEEN {1} AND {2});",
+				nameid, startDataSetID, endDataSetID);
+			return sqliteProvider.RunSQLIDList(command).ToArray();
 		}
 		
 		public IQueryable<CallTreeNode> CreateQuery(QueryNode query)
@@ -288,6 +305,10 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 				} else if (node.Method == KnownMembers.Queryable_WithQueryLog && node.Arguments[1].NodeType == ExpressionType.Constant) {
 					options.AddLogger((TextWriter)(((ConstantExpression)node.Arguments[1]).Value));
 					return Visit(node.Arguments[0]);
+				} else if (node.Method == KnownMembers.Queryable_MergeByName) {
+					QueryNode target = Visit(node.Arguments[0]) as QueryNode;
+					if (target != null)
+						return new MergeByName(target);
 				} else if (node.Method == KnownMembers.QueryableOfCallTreeNode_Take && node.Arguments[1].NodeType == ExpressionType.Constant) {
 					ConstantExpression ce = (ConstantExpression)node.Arguments[1];
 					if (ce.Type == typeof(int)) {
