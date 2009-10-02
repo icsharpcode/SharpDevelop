@@ -34,6 +34,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		// TODO: a possible optimization would be to combine 'totalLength' and the small fields into a single uint.
 		// delimiterSize takes only two bits, the two bools take another two bits; so there's still 
 		// 28 bits left for totalLength. 268435455 characters per line should be enough for everyone :)
+		// TODO: remove the 'document' pointer in release builds
 		
 		/// <summary>
 		/// Resets the line to enable its reuse after a document rebuild.

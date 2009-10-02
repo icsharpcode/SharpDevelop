@@ -92,6 +92,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		public SystemColorHighlightingBrush(PropertyInfo property)
 		{
 			Debug.Assert(property.ReflectedType == typeof(SystemColors));
+			Debug.Assert(typeof(Brush).IsAssignableFrom(property.PropertyType));
 			this.property = property;
 		}
 		

@@ -33,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			
 			hlm.RegisterHighlighting("Boo", new[] { ".boo" }, "Boo.xshd");
 			hlm.RegisterHighlighting("Coco", new[] { ".atg" }, "Coco-Mode.xshd");
-			hlm.RegisterHighlighting("C++.NET", new[] { ".c", ".h", ".cc", ".cpp" , ".hpp" }, "CPP-Mode.xshd");
+			hlm.RegisterHighlighting("C++", new[] { ".c", ".h", ".cc", ".cpp" , ".hpp" }, "CPP-Mode.xshd");
 			hlm.RegisterHighlighting("Java", new[] { ".java" }, "Java-Mode.xshd");
 			hlm.RegisterHighlighting("Patch", new[] { ".patch", ".diff" }, "Patch-Mode.xshd");
 			hlm.RegisterHighlighting("PHP", new[] { ".php" }, "PHP-Mode.xshd");

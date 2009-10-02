@@ -2,7 +2,7 @@
 <!-- syntaxdefinition for C/C++ 2001 by Andrea Paatz and Mike Krueger 
 	this should be rewritten to xshd v2.0 syntax to handle c++/cli keywords with whitespaces properly -->
 
-<SyntaxDefinition name = "C++.NET" extensions = ".c;.h;.cc;.cpp;.hpp">
+<SyntaxDefinition name = "C++" extensions = ".c;.h;.cc;.cpp;.hpp">
 	
 	<Properties>
 		<Property name="LineComment" value="//"/>

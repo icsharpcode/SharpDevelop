@@ -85,7 +85,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			return foldMarkers;
 		}
 		
-		int GetOffset(TextDocument document, XmlReader reader)
+		static int GetOffset(TextDocument document, XmlReader reader)
 		{
 			IXmlLineInfo info = reader as IXmlLineInfo;
 			if (info != null && info.HasLineInfo()) {
@@ -100,7 +100,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 		/// </summary>
 		/// <remarks>The text displayed when the comment is folded is the first
 		/// line of the comment.</remarks>
-		void CreateCommentFold(TextDocument document, List<NewFolding> foldMarkers, XmlReader reader)
+		static void CreateCommentFold(TextDocument document, List<NewFolding> foldMarkers, XmlReader reader)
 		{
 			string comment = reader.Value;
 			if (comment != null) {
@@ -148,7 +148,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 		/// Create an element fold if the start and end tag are on
 		/// different lines.
 		/// </summary>
-		void CreateElementFold(TextDocument document, List<NewFolding> foldMarkers, XmlReader reader, XmlFoldStart foldStart)
+		static void CreateElementFold(TextDocument document, List<NewFolding> foldMarkers, XmlReader reader, XmlFoldStart foldStart)
 		{
 			IXmlLineInfo lineInfo = (IXmlLineInfo)reader;
 			int endLine = lineInfo.LineNumber;
@@ -168,7 +168,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 		/// line of the start tag.  It does not cater for elements where attributes
 		/// are not on the same line as the start tag.
 		/// </remarks>
-		string GetAttributeFoldText(XmlReader reader)
+		static string GetAttributeFoldText(XmlReader reader)
 		{
 			StringBuilder text = new StringBuilder();
 			

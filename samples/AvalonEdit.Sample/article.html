@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<!--------------------------------------------------------------------------->  
+<!------------------------------------------------------------>
 <!--                           INTRODUCTION                                
 
  The Code Project article submission template (HTML version)
@@ -15,7 +15,7 @@ That's all there is to it! All formatting will be done by our submission
 scripts and style sheets. 
 
 -->  
-<!--------------------------------------------------------------------------->  
+<!------------------------------------------------------------>
 <!--                        IGNORE THIS SECTION                            -->
 <html>
 <head>
@@ -32,14 +32,14 @@ CODE { COLOR: #990000; FONT-FAMILY: "Courier New", Courier, mono; }
 <link rel="stylesheet" type="text/css" href="http://www.codeproject.com/App_Themes/NetCommunity/CodeProject.css">
 </head>
 <body bgcolor="#FFFFFF" color=#000000>
-<!--------------------------------------------------------------------------->  
+<!------------------------------------------------------------>
 
 
-<!-------------------------------     STEP 1      --------------------------->
+<!------------------------------------------------------------>
 <!--  Fill in the details (CodeProject will reformat this section for you) -->
 
 
-<!-------------------------------     STEP 2      --------------------------->
+<!------------------------------------------------------------>
 <!--  Include download and sample image information.                       --> 
 
 <ul class=download>
@@ -50,7 +50,7 @@ CODE { COLOR: #990000; FONT-FAMILY: "Courier New", Courier, mono; }
 <p><img src="Article.gif" alt="Sample Image - maximum width is 600 pixels" width=400 height=200></p>
 
 
-<!-------------------------------     STEP 3      --------------------------->
+<!------------------------------------------------------------>
 
 <!--  Add the article text. Please use simple formatting (<h2>, <p> etc)   --> 
 
@@ -90,15 +90,17 @@ You can use it just similar to a normal WPF TextBox:
 
 <p>To enable syntax highlighting, use:
 
-<pre lang="cs">textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(".cs");</pre>
+<pre lang="cs">textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");</pre>
 AvalonEdit has syntax highlighting definitions built in for:
-ASP.NET, Batch files, Boo, Coco/R grammars, C++, C#, HTML, Java, JavaScript, Patch files, PHP, TeX, VB.NET, XML
+ASP.NET, Boo, Coco/R grammars, C++, C#, HTML, Java, JavaScript, Patch files, PHP, TeX, VB, XML
 
 <p>If you need more of AvalonEdit than a simple text box with syntax highlighting, you will first have to learn more about the architecture of AvalonEdit.
 
+<!------------------------------------------------------------>
 <h2>Architecture</h2>
 TODO: overview of the namespaces, insert graph from NDepend
 
+<!------------------------------------------------------------>
 <h2>Document (The Model)</h2>
 
 <p>So, what is the model of a text editor that has support for complex features like syntax highlighting and folding?<br>
@@ -243,7 +245,7 @@ The property <code>TextAnchor.MovementType</code> will be used to determine whic
 
 <h3>TextSegmentCollection</h3>
 <p>Sometimes it is useful to store a list of segments and be able to efficiently find all segments overlapping with some other segment.<br>
-Example: you might want to store a large number compiler warnings and render squiggly underlines only those that are in the visible region of the document.
+Example: you might want to store a large number compiler warnings and render squiggly underlines only for those that are in the visible region of the document.
 
 <p>The <code>TextSegmentCollection</code> serves this purpose. Connected to a document, it will automatically update the offsets of all TextSegment instances inside the collection;
 but it also has the useful methods <code>FindOverlappingSegments</code> and <code>FindFirstSegmentWithStartAfter</code>.
@@ -257,6 +259,7 @@ It returns an immutable snapshot of the document. The snapshot is thread-safe, s
 The overload <code>CreateSnapshot(out ChangeTrackingCheckpoint)</code> also returns a <code>ChangeTrackingCheckpoint</code> for the document snapshot.
 Once you have two checkpoints, you can call <code>GetChangesTo</code> to retrieve the complete list of document changes that happened between those versions of the document.
 
+<!------------------------------------------------------------>
 <h2>Rendering</h2>
 
 Noticed how through the whole Document section, there was no mention of extensibility?
@@ -268,11 +271,112 @@ It takes care of getting the document onto the screen.
 <p>To do this in an extensible way, the TextView uses its own kind of model: the <code>VisualLine</code>.
 VisualLines are created only for the visible part of the document.
 <p>The creation process looks like this:<br>
-<img src="renderingPipeline.png" alt="rendering pipeline">
+<img src="AvalonEdit/renderingPipeline.png" alt="rendering pipeline">
+
+<h3>Lifetime of VisualLines</h3>
+When the <code>TextView</code> needs to construct VisualLines (usually before rendering), it first
+determines which <code>DocumentLine</code> is the top-most visible line in the currently viewed region.
+From there, it starts to build <code>VisualLine</code>s and also immediately does the conversion to <code>TextLine</code> (word-wrapping).
+The process stops once the viewed document region is filled.
+<p>
+The resulting <code>VisualLine</code>s (and <code>TextLine</code>s) will be cached and reused in future rendering passes.
+When the user scrolls down, only the VisualLines coming into view are created, the rest is reused.
+<p>
+The <code>TextView.Redraw</code> methods are used to remove <code>VisualLine</code>s from the cache.
+AvalonEdit calls <code>Redraw</code> automatically on the affected lines when the document is changed; and will invalidate the whole cache
+when any editor options are changed. You will only have to call <code>Redraw</code> manually if you write extensions to the VisualLine creation process
+that maintain their own data source. For example, the <code>FoldingManager</code> is calling <code>Redraw</code> when text sections are expanded or collapsed.
+<p>
+Calling <code>Redraw</code> does not cause immediate recreation of the lines.
+They are just removed from the cache so that the next rendering step will recreate them.
+All <code>Redraw</code> methods will trigger a new rendering step, but they will delay it using the WPF Dispatcher using a low priority.
+
+<h3>Element Generators</h3>
+
+You can extend the text view by registering a custom class deriving from <code>VisualLineElementGenerator</code> in the <code>TextView.ElementGenerators</code> collection.
+This allows you to add custom VisualLineElements.
+Using the <code>InlineObjectElement</code> class, you can even put interactive WPF controls into the text document.
+<p>
+For all document text not consumed by element generators, AvalonEdit will create <code>VisualLineText</code> elements.
+<p>
+Usually, the construction of the <code>VisualLine</code> will stop at the end of the <code>DocumentLine</code>. However, if some <code>VisualLineElementGenerator</code>
+creates an element that's longer than the rest of the line, construction of the <code>VisualLine</code> may resume in another <code>DocumentLine</code>.
+Currently, only the <code>FoldingElementGenerator</code> can cause one <code>VisualLine</code> to span multiple <code>DocumentLine</code>s.
+<p>
+<img src="AvalonEdit/folding.png" alt="Screenshot Folding and ImageElementGenerator">
+<p>
+Here is the full source code for a class that implements embedding images into AvalonEdit:
+<pre lang="cs">public class ImageElementGenerator : VisualLineElementGenerator
+{
+	readonly static Regex imageRegex = new Regex(@"&lt;img src=""([\.\/\w\d]+)""/?>", RegexOptions.IgnoreCase);
+	readonly string basePath;
+	
+	public ImageElementGenerator(string basePath)
+	{
+		if (basePath == null)
+			throw new ArgumentNullException("basePath");
+		this.basePath = basePath;
+	}
+	
+	Match FindMatch(int startOffset)
+	{
+		// fetch the end offset of the VisualLine being generated
+		int endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
+		string relevantText = CurrentContext.Document.GetText(startOffset, endOffset - startOffset);
+		return imageRegex.Match(relevantText);
+	}
+	
+	// Gets the first offset >= startOffset where the generator wants to construct an element.
+	// Return -1 to signal no interest.
+	public override int GetFirstInterestedOffset(int startOffset)
+	{
+		Match m = FindMatch(startOffset);
+		return m.Success ? (startOffset + m.Index) : -1;
+	}
+	
+	// Constructs an element at the specified offset.
+	// May return null if no element should be constructed.
+	public override VisualLineElement ConstructElement(int offset)
+	{
+		Match m = FindMatch(offset);
+		// check whether there's a match exactly at offset
+		if (m.Success &amp;&amp; m.Index == 0) {
+			BitmapImage bitmap = LoadBitmap(m.Groups[1].Value);
+			if (bitmap != null) {
+				Image image = new Image();
+				image.Source = bitmap;
+				image.Width = bitmap.PixelWidth;
+				image.Height = bitmap.PixelHeight;
+				// Pass the length of the match to the 'documentLength' parameter of InlineObjectElement.
+				return new InlineObjectElement(m.Length, image);
+			}
+		}
+		return null;
+	}
+	
+	BitmapImage LoadBitmap(string fileName)
+	{
+		// TODO: add some kind of cache to avoid reloading the image whenever the VisualLine is reconstructed
+		try {
+			string fullFileName = Path.Combine(basePath, fileName);
+			if (File.Exists(fullFileName)) {
+				BitmapImage bitmap = new BitmapImage(new Uri(fullFileName));
+				bitmap.Freeze();
+				return bitmap;
+			}
+		} catch (ArgumentException) {
+			// invalid filename syntax
+		} catch (IOException) {
+			// other IO error
+		}
+		return null;
+	}
+}</pre>
 
 <h2>Editing</h2>
 
-TODO: write this section
+The <code>TextArea</code> class is handling user input and executing the appropriate actions.
+Both the caret and the selection are controlled by the <code>TextArea</code>.
 
 <h2>Points of Interest</h2>
 
@@ -283,7 +387,7 @@ do anything particularly clever or wild or zany?
 
 <p>Keep a running update of any changes or improvements you've made here.
 
-<p><b>Note: although my sample code is provided under the BSD license, ICSharpCode.AvalonEdit itself is provided under the terms of the GNU LGPL.</b>
+<p><b>Note: although my sample code is provided under the MIT license, ICSharpCode.AvalonEdit itself is provided under the terms of the GNU LGPL.</b>
 
 <!-------------------------------    That's it!   --------------------------->
 </body>

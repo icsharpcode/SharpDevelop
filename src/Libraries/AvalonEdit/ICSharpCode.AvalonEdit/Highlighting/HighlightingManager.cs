@@ -47,6 +47,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				}
 			}
 			
+			[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
+			                                                 Justification = "The exception will be rethrown")]
 			IHighlightingDefinition GetDefinition()
 			{
 				Func<IHighlightingDefinition> func;
@@ -125,7 +127,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Gets a copy of all highlightings.
 		/// </summary>
-		public ReadOnlyCollection<IHighlightingDefinition> Highlightings {
+		public ReadOnlyCollection<IHighlightingDefinition> HighlightingDefinitions {
 			get {
 				lock (lockObj) {
 					return Array.AsReadOnly(allHighlightings.ToArray());
@@ -136,7 +138,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Gets the names of the registered highlightings.
 		/// </summary>
-		[ObsoleteAttribute("Use the Highlightings property instead.")]
+		[ObsoleteAttribute("Use the HighlightingDefinitions property instead.")]
 		public IEnumerable<string> HighlightingNames {
 			get {
 				lock (lockObj) {

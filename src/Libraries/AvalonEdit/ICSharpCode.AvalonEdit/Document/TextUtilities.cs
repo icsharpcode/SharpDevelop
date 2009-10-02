@@ -136,6 +136,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
 		                                                 Justification = "WPF uses 'Whitespace'")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters",
+		                                                 Justification = "Parameter cannot be ITextSource because it must belong to the DocumentLine")]
 		public static ISegment GetLeadingWhitespace(TextDocument document, DocumentLine documentLine)
 		{
 			if (documentLine == null)
@@ -159,6 +161,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
 		                                                 Justification = "WPF uses 'Whitespace'")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters",
+		                                                 Justification = "Parameter cannot be ITextSource because it must belong to the DocumentLine")]
 		public static ISegment GetTrailingWhitespace(TextDocument document, DocumentLine documentLine)
 		{
 			if (documentLine == null)

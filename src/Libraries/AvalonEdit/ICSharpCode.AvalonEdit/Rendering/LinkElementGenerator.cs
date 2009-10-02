@@ -71,8 +71,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		Match GetMatch(int startOffset)
 		{
-			DocumentLine endLine = CurrentContext.VisualLine.LastDocumentLine;
-			int endOffset = endLine.Offset + endLine.Length;
+			int endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
 			string relevantText = CurrentContext.Document.GetText(startOffset, endOffset - startOffset);
 			return linkRegex.Match(relevantText);
 		}

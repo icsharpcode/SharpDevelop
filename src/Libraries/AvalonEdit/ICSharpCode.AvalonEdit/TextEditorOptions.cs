@@ -183,6 +183,10 @@ namespace ICSharpCode.AvalonEdit
 			set {
 				if (value < 1)
 					throw new ArgumentOutOfRangeException("value", value, "value must be positive");
+				// sanity check; a too large value might cause WPF to crash internally much later
+				// (it only crashed in the hundred thousands for me; but might crash earlier with larger fonts)
+				if (value > 1000)
+					throw new ArgumentOutOfRangeException("value", value, "indentation size is too large");
 				if (_indentationSize != value) {
 					_indentationSize = value;
 					OnPropertyChanged("IndentationSize");

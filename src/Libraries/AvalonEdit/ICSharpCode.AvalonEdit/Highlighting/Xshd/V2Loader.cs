@@ -285,7 +285,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		{
 			Debug.Assert(name.StartsWith("SystemColors.", StringComparison.Ordinal));
 			string shortName = name.Substring(13);
-			var property = typeof(SystemColors).GetProperty(shortName + "BrushKey");
+			var property = typeof(SystemColors).GetProperty(shortName + "Brush");
 			if (property == null)
 				throw Error(lineInfo, "Cannot find '" + name + "'.");
 			return new SystemColorHighlightingBrush(property);
