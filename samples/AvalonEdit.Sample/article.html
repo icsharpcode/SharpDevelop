@@ -32,6 +32,7 @@ CODE { COLOR: #990000; FONT-FAMILY: "Courier New", Courier, mono; }
 <link rel="stylesheet" type="text/css" href="http://www.codeproject.com/App_Themes/NetCommunity/CodeProject.css">
 </head>
 <body bgcolor="#FFFFFF" color=#000000>
+<div style="width:600px;">
 <!------------------------------------------------------------>
 
 
@@ -70,7 +71,7 @@ stuff like class diagrams right into the source code!
 <p>
 With, <b>Easy to use</b>, I'm referring to the programming API. It should just work&trade;.
 For example, this means if you change the document text,
-the editor should automatically redraw without having to call Invalidate().
+the editor should automatically redraw without having to call <code>Invalidate()</code>.
 
 And if you do something wrong, you should get a meaningful exception, not corrupted state and crash later at an unrelated location.
 
@@ -81,12 +82,12 @@ the mscorlib XML documentation file, 7 MB, 74100 LOC), even when features like f
 <h2>Using the Code</h2>
 
 <p>The main class of the editor is <code>ICSharpCode.AvalonEdit.TextEditor</code>.
-You can use it just similar to a normal WPF TextBox:
-<pre lang="cs">&lt;avalonEdit:TextEditor
-	xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-	Name="textEditor"
-	FontFamily="Consolas"
-	FontSize="10pt"/&gt;</pre>
+You can use it just similar to a normal WPF <code>TextBox</code>:
+<pre lang="xml">&lt;avalonEdit:TextEditor
+    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+    Name="textEditor"
+    FontFamily="Consolas"
+    FontSize="10pt"/&gt;</pre>
 
 <p>To enable syntax highlighting, use:
 
@@ -100,8 +101,29 @@ ASP.NET, Boo, Coco/R grammars, C++, C#, HTML, Java, JavaScript, Patch files, PHP
 <h2>Architecture</h2>
 TODO: overview of the namespaces, insert graph from NDepend
 
+As you can see in this dependency graph, AvalonEdit consists of a few sub-namespaces that have cleanly separated jobs.
+Most of the namespaces have a kind of 'main' class.
+<ul>
+<li>ICSharpCode.AvalonEdit.Utils: Various utility classes</li>
+<li>ICSharpCode.AvalonEdit.Document: <code>TextDocument</code> &mdash; text model</li>
+<li>ICSharpCode.AvalonEdit.Rendering: <code>TextView</code> &mdash; extensible view onto the document</li>
+<li>ICSharpCode.AvalonEdit.Editing: <code>TextArea</code> &mdash; controls text editing (e.g. caret, selection, handles user input)</li>
+<li>ICSharpCode.AvalonEdit.Highlighting: <code>HighlightingManager</code> &mdash; highlighting engine</li>
+<li>ICSharpCode.AvalonEdit.Highlighting.Xshd: <code>HighlightingLoader</code> &mdash; XML syntax highlighting definition support (.xshd files)</li>
+<li>ICSharpCode.AvalonEdit.Folding: <code>FoldingManager</code> &mdash; enables code collapsing</li>
+<li>ICSharpCode.AvalonEdit: <code>TextEditor</code> &mdash; the main control that brings it all together</li>
+</ul>
+
+<p>
+Here is the visual tree of the <code>TextEditor</code> control:<br>
+<img src="AvalonEdit/snoop.png" alt="Visual Tree"/>
+<p>
+It's important to understand that AvalonEdit is a composite control with the three layers: <code>TextEditor</code> (main control), <code>TextArea</code> (editing), <code>TextView</code> (rendering).
+While the main control provides some convenience methods for common tasks, for most advanced features you have to work directly with the inner controls. You can access them using <code>textEditor.TextArea</code>
+or <code>textEditor.TextArea.TextView</code>.
+
 <!------------------------------------------------------------>
-<h2>Document (The Model)</h2>
+<h2>Document (The Text Model)</h2>
 
 <p>So, what is the model of a text editor that has support for complex features like syntax highlighting and folding?<br>
 Would you expect to be able to access collapsed text using the document model, given that the text is folded away?<br>
@@ -114,7 +136,11 @@ Is the syntax highlighting part of the model?
 Basically, the document is a <code>StringBuilder</code> with events.
 However, the <code>Document</code> namespace also contains several features that are useful to applications working with the text editor.
 
-<p><i>Simplified</i> definition of TextDocument:
+<p>In the text editor, all three controls (<code>TextEditor</code>, <code>TextArea</code>, <code>TextView</code>) have a <code>Document</code> property pointing to the <code>TextDocument</code> instance.
+You can change the <code>Document</code> property to bind the editor to another document; but please only do so on the outermost control (usually <code>TextEditor</code>), it will inform its child controls about that change.
+Changing the document only on a child control would leave the outer controls confused.
+
+<p><i>Simplified</i> definition of <code>TextDocument</code>:
 <pre lang="cs">public sealed class TextDocument : ITextSource
 {
     public event EventHandler UpdateStarted;
@@ -153,34 +179,34 @@ However, the <code>Document</code> namespace also contains several features that
 In AvalonEdit, an index into the document is called an <b>offset</b>.
 
 <p>Offsets usually represent the position between two characters.
-The first offset at the start of the document is 0, the offset after the first <code>char</code> in the document is 1.
+The first offset at the start of the document is 0; the offset after the first <code>char</code> in the document is 1.
 The last valid offset is <code>document.TextLength</code>, representing the end of the document.
 
 <p>This is exactly the same as the 'index' parameter used by methods in the .NET <code>String</code> or <code>StringBuilder</code> classes.
-Offsets are used because they are dead simple. Want to get all text between offset 10 and offset 30?
-Simply call <code>document.GetText(10, 20)</code> - just like <code>String.Substring</code>, AvalonEdit usually uses <code>Offset / Length</code> pairs to refer to text segments.
+Offsets are used because they are dead simple. To all text between offset 10 and offset 30,
+simply call <code>document.GetText(10, 20)</code> &ndash; just like <code>String.Substring</code>, AvalonEdit usually uses <code>Offset / Length</code> pairs to refer to text segments.
 
 <p>To easily pass such segments around, AvalonEdit defines the <code>ISegment</code> interface:
 <pre lang="cs">public interface ISegment
 {
-	int Offset { get; }
-	int Length { get; } // must be non-negative
-	int EndOffset { get; } // must return Offset+Length
+    int Offset { get; }
+    int Length { get; } // must be non-negative
+    int EndOffset { get; } // must return Offset+Length
 }</pre>
-All TextDocument methods taking Offset/Length parameters also have an overload taking an <code>ISegment</code> instance - I have just removed those from the code listing above to make it easier to read.
+All <code>TextDocument</code> methods taking Offset/Length parameters also have an overload taking an <code>ISegment</code> instance &ndash; I have just removed those from the code listing above to make it easier to read.
 
 <h3>Lines</h3>
 Offsets are easy to use, but sometimes you need Line / Column pairs instead.
-AvalonEdit defines a struct called <code>TextLocation</code> for those.
+AvalonEdit defines a <code>struct</code> called <code>TextLocation</code> for those.
 
-<p>The TextDocument provides the methods <code>GetLocation</code> and <code>GetOffset</code> to convert between offsets and <code>TextLocation</code>s.
-Those are convenience methods built on top of the <code>DocumentLine</code>.
+<p>The document provides the methods <code>GetLocation</code> and <code>GetOffset</code> to convert between offsets and <code>TextLocation</code>s.
+Those are convenience methods built on top of the <code>DocumentLine</code> class.
 
-<p>The TextDocument.Lines collection contains one DocumentLine instance for every line in the document.
+<p>The <code>TextDocument.Lines</code> collection contains one <code>DocumentLine</code> instance for every line in the document.
 This collection is read-only to user code and is automatically updated to always<sup><small>*</small></sup> reflect the current document content.
 
-<p>Internally, the DocumentLine instances build a binary tree that allows for both efficient updates and lookup.
-Looking up the start offset from a line number is possible in O(lg N) time, and the data structure also updates all offsets in O(lg N) time whenever text is inserted/removed.
+<p>Internally, the <code>DocumentLine</code> instances are arranged in a binary tree that allows for both efficient updates and lookup.
+Converting between offset and line number is possible in O(lg N) time, and the data structure also updates all offsets in O(lg N) whenever text is inserted/removed.
 
 
 <p><small>* tiny exception: it is possible to see the line collection in an inconsistent state inside <code>ILineTracker</code> callbacks. Don't use <code>ILineTracker</code>
@@ -208,10 +234,10 @@ Here is the order in which events are raised during a document update:
 <li><code>UpdateFinished</code> event is raised</li></ul>
 
 <p>If the insert/remove/replace methods are called without a call to <code>BeginUpdate()</code>, they will call
-<code>BeginUpdate()</code> and <code>EndUpdate()</code> to ensure no change happens outside of UpdateStarted/UpdateFinished.
+<code>BeginUpdate()</code> and <code>EndUpdate()</code> to ensure no change happens outside of <code>UpdateStarted</code>/<code>UpdateFinished</code>.
 
 <p>There can be multiple document changes between the <code>BeginUpdate()</code> and <code>EndUpdate()</code> calls.
-In this case, the events associated with EndUpdate will be raised only once after the whole document update is done.
+In this case, the events associated with <code>EndUpdate</code> will be raised only once after the whole document update is done.
 
 <p>The <code>UndoStack</code> listens to the <code>UpdateStarted</code> and <code>UpdateFinished</code> events to group
 all changes into a single undo step.
@@ -245,9 +271,9 @@ The property <code>TextAnchor.MovementType</code> will be used to determine whic
 
 <h3>TextSegmentCollection</h3>
 <p>Sometimes it is useful to store a list of segments and be able to efficiently find all segments overlapping with some other segment.<br>
-Example: you might want to store a large number compiler warnings and render squiggly underlines only for those that are in the visible region of the document.
+Example: you might want to store a large number of compiler warnings and render squiggly underlines only for those that are in the visible region of the document.
 
-<p>The <code>TextSegmentCollection</code> serves this purpose. Connected to a document, it will automatically update the offsets of all TextSegment instances inside the collection;
+<p>The <code>TextSegmentCollection</code> serves this purpose. Connected to a document, it will automatically update the offsets of all <code>TextSegment</code> instances inside the collection;
 but it also has the useful methods <code>FindOverlappingSegments</code> and <code>FindFirstSegmentWithStartAfter</code>.
 The underlying data structure is a hybrid between the one used for text anchors and an <a href="http://en.wikipedia.org/wiki/Interval_tree#Augmented_tree">interval tree</a>, so it is able to do both jobs quite fast.
 
@@ -255,128 +281,235 @@ The underlying data structure is a hybrid between the one used for text anchors 
 <p>The <code>TextDocument</code> class is not thread-safe. It expects to have a single owner thread and will throw an <code>InvalidOperationException</code> when accessed from another thread.
 
 <p>However, there is a single method that is thread-safe: <code>CreateSnapshot()</code><br>
-It returns an immutable snapshot of the document. The snapshot is thread-safe, so it is very useful for features like a background parser that is running on its own thread.
+It returns an immutable snapshot of the document, and may be safely called even when the owner thread is concurrently modifying the document.
+This is very useful for features like a background parser that is running on its own thread.
 The overload <code>CreateSnapshot(out ChangeTrackingCheckpoint)</code> also returns a <code>ChangeTrackingCheckpoint</code> for the document snapshot.
 Once you have two checkpoints, you can call <code>GetChangesTo</code> to retrieve the complete list of document changes that happened between those versions of the document.
 
 <!------------------------------------------------------------>
 <h2>Rendering</h2>
 
-Noticed how through the whole Document section, there was no mention of extensibility?
+Noticed how through the whole 'Document' section, there was no mention of extensibility?
 The text rendering infrastructure now has to compensate for that by being completely extensible.
 
 <p>The <code>ICSharpCode.AvalonEdit.Rendering.TextView</code> class is the heart of AvalonEdit.
 It takes care of getting the document onto the screen.
 
-<p>To do this in an extensible way, the TextView uses its own kind of model: the <code>VisualLine</code>.
-VisualLines are created only for the visible part of the document.
-<p>The creation process looks like this:<br>
-<img src="AvalonEdit/renderingPipeline.png" alt="rendering pipeline">
+<p>To do this in an extensible way, the <code>TextView</code> uses its own kind of model: the <code>VisualLine</code>.
+Visual lines are created only for the visible part of the document.
+<p>The rendering process looks like this:<br>
+<img src="AvalonEdit/renderingPipeline.png" alt="rendering pipeline"><br>
+The last step in the pipeline is the conversion to one or more <code>System.Windows.Media.TextFormatting.TextLine</code> instances. WPF then takes care of the actual text rendering.
 
-<h3>Lifetime of VisualLines</h3>
-When the <code>TextView</code> needs to construct VisualLines (usually before rendering), it first
+<h3>Lifetime of visual lines</h3>
+When the <code>TextView</code> needs to construct visual lines (usually before rendering), it first
 determines which <code>DocumentLine</code> is the top-most visible line in the currently viewed region.
-From there, it starts to build <code>VisualLine</code>s and also immediately does the conversion to <code>TextLine</code> (word-wrapping).
+From there, it starts to build visual lines and also immediately does the conversion to <code>TextLine</code> (word-wrapping).
 The process stops once the viewed document region is filled.
 <p>
-The resulting <code>VisualLine</code>s (and <code>TextLine</code>s) will be cached and reused in future rendering passes.
-When the user scrolls down, only the VisualLines coming into view are created, the rest is reused.
+The resulting visual lines (and <code>TextLine</code>s) will be cached and reused in future rendering passes.
+When the user scrolls down, only the visual lines coming into view are created, the rest is reused.
 <p>
-The <code>TextView.Redraw</code> methods are used to remove <code>VisualLine</code>s from the cache.
-AvalonEdit calls <code>Redraw</code> automatically on the affected lines when the document is changed; and will invalidate the whole cache
-when any editor options are changed. You will only have to call <code>Redraw</code> manually if you write extensions to the VisualLine creation process
-that maintain their own data source. For example, the <code>FoldingManager</code> is calling <code>Redraw</code> when text sections are expanded or collapsed.
+The <code>TextView.Redraw</code> methods are used to remove visual lines from the cache.
+AvalonEdit will redraw automatically on the affected lines when the document is changed; and will invalidate the whole cache
+when any editor options are changed. You will only have to call <code>Redraw</code> manually if you write extensions to the visual line creation process
+that maintain their own data source. For example, the <code>FoldingManager</code> invokes <code>Redraw</code> whenever text sections are expanded or collapsed.
 <p>
 Calling <code>Redraw</code> does not cause immediate recreation of the lines.
 They are just removed from the cache so that the next rendering step will recreate them.
-All <code>Redraw</code> methods will trigger a new rendering step, but they will delay it using the WPF Dispatcher using a low priority.
+All redraw methods will enqueue a new rendering step, using the WPF Dispatcher with a low priority.
+
+<h3>Elements inside visual line</h3>
+A visual line consists of a series of elements. These have both a <code>DocumentLength</code> measured in characters as well as a logical length called <code>VisualLength</code>.
+For normal text elements, the two lengths are identical; but some elements like fold markers may have a huge document length, yet a logical length of 1.
+On the other hand, some elements that are simply inserted by element generators may have a document length of 0, but still need a logical length of at least 1 to allow
+addressing elements inside the visual line.
+<p>
+The <code>VisualColumn</code> is a position inside a visual line as measured by the logical length of elements. It is counted starting from 0 at the begin of the visual line.<br>
+Also, inside visual lines, instead of normal offsets to the text document; relative offsets are used.<br>
+<code>Absolute offset = relative offset + VisualLine.FirstDocumentLine.Offset</code><br>
+This means that offsets inside the visual line do not have to be adjusted when text is inserted or removed in front of the visual line; we simply rely on the document
+automatically updating <code>DocumentLine.Offset</code>.
+<p>
+The main job of a visual line element is to implement the <code>CreateTextRun</code> method.
+This method should return a <code>System.Windows.Media.TextFormatting.TextRun</code> instance that can be rendered using the <code>TextLine</code> class.
+<p>
+Visual line elements can also handle mouse clicks and control how the caret should move. The mouse click handling might suffice as a light-weight alternative
+to embedding inline <code>UIElement</code>s in the visual lines.
 
 <h3>Element Generators</h3>
 
 You can extend the text view by registering a custom class deriving from <code>VisualLineElementGenerator</code> in the <code>TextView.ElementGenerators</code> collection.
-This allows you to add custom VisualLineElements.
-Using the <code>InlineObjectElement</code> class, you can even put interactive WPF controls into the text document.
+This allows you to add custom <code>VisualLineElements</code>.
+Using the <code>InlineObjectElement</code> class, you can even put interactive WPF controls (anything derived from <code>UIElement</code>) into the text document.
 <p>
 For all document text not consumed by element generators, AvalonEdit will create <code>VisualLineText</code> elements.
 <p>
-Usually, the construction of the <code>VisualLine</code> will stop at the end of the <code>DocumentLine</code>. However, if some <code>VisualLineElementGenerator</code>
-creates an element that's longer than the rest of the line, construction of the <code>VisualLine</code> may resume in another <code>DocumentLine</code>.
-Currently, only the <code>FoldingElementGenerator</code> can cause one <code>VisualLine</code> to span multiple <code>DocumentLine</code>s.
+Usually, the construction of the visual line will stop at the end of the <code>DocumentLine</code>. However, if some <code>VisualLineElementGenerator</code>
+creates an element that's longer than the rest of the line, construction of the visual line may resume in another <code>DocumentLine</code>.
+Currently, only the <code>FoldingElementGenerator</code> can cause one visual line to span multiple <code>DocumentLine</code>s.
 <p>
 <img src="AvalonEdit/folding.png" alt="Screenshot Folding and ImageElementGenerator">
 <p>
 Here is the full source code for a class that implements embedding images into AvalonEdit:
 <pre lang="cs">public class ImageElementGenerator : VisualLineElementGenerator
 {
-	readonly static Regex imageRegex = new Regex(@"&lt;img src=""([\.\/\w\d]+)""/?>", RegexOptions.IgnoreCase);
-	readonly string basePath;
-	
-	public ImageElementGenerator(string basePath)
-	{
-		if (basePath == null)
-			throw new ArgumentNullException("basePath");
-		this.basePath = basePath;
-	}
-	
-	Match FindMatch(int startOffset)
-	{
-		// fetch the end offset of the VisualLine being generated
-		int endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
-		string relevantText = CurrentContext.Document.GetText(startOffset, endOffset - startOffset);
-		return imageRegex.Match(relevantText);
-	}
-	
-	// Gets the first offset >= startOffset where the generator wants to construct an element.
-	// Return -1 to signal no interest.
-	public override int GetFirstInterestedOffset(int startOffset)
-	{
-		Match m = FindMatch(startOffset);
-		return m.Success ? (startOffset + m.Index) : -1;
-	}
-	
-	// Constructs an element at the specified offset.
-	// May return null if no element should be constructed.
-	public override VisualLineElement ConstructElement(int offset)
-	{
-		Match m = FindMatch(offset);
-		// check whether there's a match exactly at offset
-		if (m.Success &amp;&amp; m.Index == 0) {
-			BitmapImage bitmap = LoadBitmap(m.Groups[1].Value);
-			if (bitmap != null) {
-				Image image = new Image();
-				image.Source = bitmap;
-				image.Width = bitmap.PixelWidth;
-				image.Height = bitmap.PixelHeight;
-				// Pass the length of the match to the 'documentLength' parameter of InlineObjectElement.
-				return new InlineObjectElement(m.Length, image);
-			}
-		}
-		return null;
-	}
-	
-	BitmapImage LoadBitmap(string fileName)
-	{
-		// TODO: add some kind of cache to avoid reloading the image whenever the VisualLine is reconstructed
-		try {
-			string fullFileName = Path.Combine(basePath, fileName);
-			if (File.Exists(fullFileName)) {
-				BitmapImage bitmap = new BitmapImage(new Uri(fullFileName));
-				bitmap.Freeze();
-				return bitmap;
-			}
-		} catch (ArgumentException) {
-			// invalid filename syntax
-		} catch (IOException) {
-			// other IO error
-		}
-		return null;
-	}
+    readonly static Regex imageRegex = new Regex(@"&lt;img src=""([\.\/\w\d]+)""/?>",
+                                                 RegexOptions.IgnoreCase);
+    readonly string basePath;
+    
+    public ImageElementGenerator(string basePath)
+    {
+        if (basePath == null)
+            throw new ArgumentNullException("basePath");
+        this.basePath = basePath;
+    }
+    
+    Match FindMatch(int startOffset)
+    {
+        // fetch the end offset of the VisualLine being generated
+        int endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
+        TextDocument document = CurrentContext.Document;
+        string relevantText = document.GetText(startOffset, endOffset - startOffset);
+        return imageRegex.Match(relevantText);
+    }
+    
+    /// Gets the first offset >= startOffset where the generator wants to construct
+    /// an element.
+    /// Return -1 to signal no interest.
+    public override int GetFirstInterestedOffset(int startOffset)
+    {
+        Match m = FindMatch(startOffset);
+        return m.Success ? (startOffset + m.Index) : -1;
+    }
+    
+    /// Constructs an element at the specified offset.
+    /// May return null if no element should be constructed.
+    public override VisualLineElement ConstructElement(int offset)
+    {
+        Match m = FindMatch(offset);
+        // check whether there's a match exactly at offset
+        if (m.Success &amp;&amp; m.Index == 0) {
+            BitmapImage bitmap = LoadBitmap(m.Groups[1].Value);
+            if (bitmap != null) {
+                Image image = new Image();
+                image.Source = bitmap;
+                image.Width = bitmap.PixelWidth;
+                image.Height = bitmap.PixelHeight;
+                // Pass the length of the match to the 'documentLength' parameter
+                // of InlineObjectElement.
+                return new InlineObjectElement(m.Length, image);
+            }
+        }
+        return null;
+    }
+    
+    BitmapImage LoadBitmap(string fileName)
+    {
+        // TODO: add some kind of cache to avoid reloading the image whenever the
+        // VisualLine is reconstructed
+        try {
+            string fullFileName = Path.Combine(basePath, fileName);
+            if (File.Exists(fullFileName)) {
+                BitmapImage bitmap = new BitmapImage(new Uri(fullFileName));
+                bitmap.Freeze();
+                return bitmap;
+            }
+        } catch (ArgumentException) {
+            // invalid filename syntax
+        } catch (IOException) {
+            // other IO error
+        }
+        return null;
+    }
 }</pre>
+
+<h3>Line Transformers</h3>
+
+Line transformers can modify the visual lines after they have been generated. The main usage of this is to colorize the text,
+as done both by syntax highlighting and the selection.
+<p>
+The base classes <code>ColorizingTransformer</code> and <code>DocumentColorizingTransformer</code> help with this task
+by providing helper methods for colorizing that split up visual line elements where necessary. The difference between
+the two classes is that one works using visual columns whereas the other one uses offsets into the document.
+<p>
+Here is an example <code>DocumentColorizingTransformer</code> that highlights the word 'AvalonEdit' using bold font:
+<pre lang="cs">public class ColorizeAvalonEdit : DocumentColorizingTransformer
+{
+    protected override void ColorizeLine(DocumentLine line)
+    {
+        int lineStartOffset = line.Offset;
+        string text = CurrentContext.Document.GetText(line);
+        int start = 0;
+        int index;
+        while ((index = text.IndexOf("AvalonEdit", start)) >= 0) {
+            base.ChangeLinePart(
+                lineStartOffset + index, // startOffset
+                lineStartOffset + index + 10, // endOffset
+                (VisualLineElement element) => {
+                    // This lambda gets called once for every VisualLineElement
+                    // between the specified offsets.
+                    Typeface tf = element.TextRunProperties.Typeface;
+                    // Replace the typeface with a modified version of the same typeface
+                    element.TextRunProperties.SetTypeface(new Typeface(
+                        tf.FontFamily,
+                        FontStyles.Italic,
+                        FontWeights.Bold,
+                        tf.Stretch
+                    ));
+                });
+            start = index + 1; // search for next occurrence
+}   }   }</pre>
+
+<h3>Background renderers</h3>
+
+Background renderers are simple objects that allow you to draw anything in the text view.
+They can be used to draw nice-looking backgrounds behind the text.
+<p>
+AvalonEdit contains the class <code>BackgroundGeometryBuilder</code> that helps with this task.
+You can use the static <code>BackgroundGeometryBuilder.GetRectsForSegment</code> to fetch a list of rectangles that
+contain text from the specified segment (you will get one rectangle per <code>TextLine</code>);
+or you can use the instance methods to build a <code>PathGeometry</code> for the text's outline.
+AvalonEdit also internally uses this geometry builder to create the selection with the rounded corners.
+<p>
+Inside SharpDevelop, the first option (getting list of rectangles) is used to render the squiggly red line that for compiler errors,
+while the second option is used to produce nice-looking breakpoint markers.
 
 <h2>Editing</h2>
 
 The <code>TextArea</code> class is handling user input and executing the appropriate actions.
 Both the caret and the selection are controlled by the <code>TextArea</code>.
+<p>
+You can customize the text area by modifying the <code>TextArea.DefaultInputHandler</code> by adding new or replacing existing
+WPF input bindings in it. You can also set <code>TextArea.ActiveInputHandler</code> to something different than the default
+to switch the text area into another mode. You could use this to implement an "incremental search" feature, or even a VI emulator.
+<p>
+The text area has the useful <code>LeftMargins</code> property - use it to add controls to the left of the text view that look like
+they're inside the scroll viewer, but don't actually scroll. The <code>AbstractMargin</code> base class contains some useful code
+to detect when the margin is attached/detaching from a text view; or when the active document changes. However, you're not forced to use it;
+any <code>UIElement</code> can be used as margin.
+
+<h2>Folding</h2>
+Folding (code collapsing) could be implemented as an extension to the editor without having to modify the AvalonEdit code.
+A <code>VisualLineElementGenerator</code> takes care of the collapsed sections in the text document; and a custom margin draws the plus and minus
+buttons.
+<p>
+That's exactly how folding is implemented in AvalonEdit. However, to make it a bit easier to use; the static <code>FoldingManager.Install</code>
+method will create and register the necessary parts automatically.
+<p>
+All that's left for you is to regularly call <code>FoldingManager.UpdateFoldings</code> with the list of foldings you want to provide.
+<p>
+Here is the full code required to enable folding:
+<pre lang="cs">foldingManager = FoldingManager.Install(textEditor.TextArea);
+foldingStrategy = new XmlFoldingStrategy();
+foldingStrategy.UpdateFoldings(foldingManager, textEditor.Document);</pre>
+If you want the folding markers to update when the text is changed, you have to repeat the <code>foldingStrategy.UpdateFoldings</code> call regularly.
+<p>
+The sample application to this article also contains the <code>BraceFoldingStrategy</code> that folds using { and }.
+However, it is a very simple implementation and does not realize that { and } inside strings or comments are not code.
+
+<h2>Syntax highlighting</h2>
+TODO: write this section
 
 <h2>Points of Interest</h2>
 
@@ -390,6 +523,6 @@ do anything particularly clever or wild or zany?
 <p><b>Note: although my sample code is provided under the MIT license, ICSharpCode.AvalonEdit itself is provided under the terms of the GNU LGPL.</b>
 
 <!-------------------------------    That's it!   --------------------------->
-</body>
+</div></body>
 
 </html>

@@ -69,7 +69,7 @@
 				Name="textEditor"
 				FontFamily="Consolas"
 				FontSize="10pt"
-			>This is AvalonEdit! Embedded image: &lt;img src="Images/Open.png"/&gt;
+			>Welcome to AvalonEdit! Embedded image: &lt;img src="Images/Open.png"/&gt;
 			</avalonEdit:TextEditor>
 			<GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Left"/>
 			<DockPanel Grid.Column="1" Margin="4 0 0 0">

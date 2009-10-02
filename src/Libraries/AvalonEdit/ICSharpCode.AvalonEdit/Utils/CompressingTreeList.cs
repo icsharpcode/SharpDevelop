@@ -17,11 +17,15 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// and that saves memory by allocating only one node when a value is repeated in adjacent indices.
 	/// Based on this "compression", it also supports efficient InsertRange/SetRange/RemoveRange operations.
 	/// </summary>
+	/// <remarks>
+	/// Current memory usage: 5*IntPtr.Size + 12 + sizeof(T) per node.
+	/// Use this class only if lots of adjacent values are identical (can share one node).
+	/// </remarks>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix",
 	                                                 Justification = "It's an IList<T> implementation")]
 	public sealed class CompressingTreeList<T> : IList<T>
 	{
-		// Further optimization: this tree could work without parent pointers. But that
+		// Further memory optimization: this tree could work without parent pointers. But that
 		// requires changing most of tree manipulating logic.
 		// Also possible is to remove the count field and calculate it as totalCount-left.totalCount-right.totalCount
 		// - but that would make tree manipulations more difficult to handle.

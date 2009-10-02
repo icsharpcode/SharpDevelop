@@ -34,7 +34,8 @@ namespace AvalonEdit.Sample
 	/// </summary>
 	public class ImageElementGenerator : VisualLineElementGenerator
 	{
-		readonly static Regex imageRegex = new Regex(@"<img src=""([\.\/\w\d]+)""/?>", RegexOptions.IgnoreCase);
+		readonly static Regex imageRegex = new Regex(@"<img src=""([\.\/\w\d]+)""/?>",
+		                                             RegexOptions.IgnoreCase);
 		readonly string basePath;
 		
 		public ImageElementGenerator(string basePath)
@@ -48,12 +49,14 @@ namespace AvalonEdit.Sample
 		{
 			// fetch the end offset of the VisualLine being generated
 			int endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
-			string relevantText = CurrentContext.Document.GetText(startOffset, endOffset - startOffset);
+			TextDocument document = CurrentContext.Document;
+			string relevantText = document.GetText(startOffset, endOffset - startOffset);
 			return imageRegex.Match(relevantText);
 		}
 		
 		/// <summary>
-		/// Gets the first offset >= startOffset where the generator wants to construct an element.
+		/// Gets the first offset >= startOffset where the generator wants to construct
+		/// an element.
 		/// Return -1 to signal no interest.
 		/// </summary>
 		public override int GetFirstInterestedOffset(int startOffset)
@@ -77,7 +80,8 @@ namespace AvalonEdit.Sample
 					image.Source = bitmap;
 					image.Width = bitmap.PixelWidth;
 					image.Height = bitmap.PixelHeight;
-					// Pass the length of the match to the 'documentLength' parameter of InlineObjectElement.
+					// Pass the length of the match to the 'documentLength' parameter
+					// of InlineObjectElement.
 					return new InlineObjectElement(m.Length, image);
 				}
 			}
@@ -86,7 +90,8 @@ namespace AvalonEdit.Sample
 		
 		BitmapImage LoadBitmap(string fileName)
 		{
-			// TODO: add some kind of cache to avoid reloading the image whenever the VisualLine is reconstructed
+			// TODO: add some kind of cache to avoid reloading the image whenever the
+			// VisualLine is reconstructed
 			try {
 				string fullFileName = Path.Combine(basePath, fileName);
 				if (File.Exists(fullFileName)) {

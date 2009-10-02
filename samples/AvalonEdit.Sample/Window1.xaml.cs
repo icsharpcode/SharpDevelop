@@ -46,6 +46,7 @@ namespace AvalonEdit.Sample
 			
 			textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
 			textEditor.TextArea.TextView.ElementGenerators.Add(new ImageElementGenerator(Path.GetFullPath("../..")));
+			textEditor.TextArea.TextView.LineTransformers.Add(new ColorizeAvalonEdit());
 			
 			DispatcherTimer foldingUpdateTimer = new DispatcherTimer();
 			foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
