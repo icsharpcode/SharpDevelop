@@ -124,21 +124,5 @@ namespace PythonBinding.Tests.Designer
 					"\tdef InitializeComponents(self):\r\n" +
 					"\t\tpass\r\n";	
 		}
-				
-		string GetPythonCode()
-		{
-			return "from System.Windows.Forms import Form\r\n" +
-					"\r\n" +
-					"class MainForm(Form):\r\n" +
-					"\tdef __init__(self):\r\n" +
-					"\t\tself.InitializeComponent()\r\n" +
-					"\t\r\n" +
-					"\tdef InitializeComponent(self):\r\n" +
-					"\t\tself.SuspendLayout()\r\n" +
-					"\t\tself.ClientSize = System.Drawing.Size(499, 309)\r\n" +
-					"\t\tself.Name = 'MainForm'\r\n" +
-					"\t\tself.ResumeLayout(False)\r\n" +
-					"\t\tself.PerformLayout()\r\n";						
-		}
 	}
 }
