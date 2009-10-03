@@ -44,11 +44,14 @@ CODE { COLOR: #990000; FONT-FAMILY: "Courier New", Courier, mono; }
 <!--  Include download and sample image information.                       --> 
 
 <ul class=download>
-<li><a href="Article_demo.zip">Download demo project - XXX Kb </a></li>
-<li><a href="Article_src.zip">Download source - XXX Kb</a></li>
+<li><a href="AvalonEdit/AvalonEdit_Binaries.zip">Download binaries - 206.5 KB</a></li>
+<li><a href="AvalonEdit/AvalonEdit_Source.zip">Download source code - 350.29 KB</a></li>
+<li><a href="AvalonEdit/AvalonEdit_CHM_Documentation.zip">Download .chm documentation file - 1.88 MB</a></li>
 </ul>
+<p>The latest version of AvalonEdit can be found as part of the <a href="http://www.icsharpcode.net/OpenSource/SD/">SharpDevelop</a> project.
+For details on AvalonEdit, please see <a href="http://www.avalonedit.net/">www.avalonedit.net</a>.</p>
 
-<p><img src="Article.gif" alt="Sample Image - maximum width is 600 pixels" width=400 height=200></p>
+<p><img src="AvalonEdit/screenshot.png" width="611" height="441" alt="Sample Image" /></p>
 
 
 <!------------------------------------------------------------>
@@ -99,8 +102,8 @@ ASP.NET, Boo, Coco/R grammars, C++, C#, HTML, Java, JavaScript, Patch files, PHP
 
 <!------------------------------------------------------------>
 <h2>Architecture</h2>
-TODO: overview of the namespaces, insert graph from NDepend
-
+<img src="AvalonEdit/dependencies.png" width="583" height="439" alt="Namespace Dependency Graph"/>
+<p>
 As you can see in this dependency graph, AvalonEdit consists of a few sub-namespaces that have cleanly separated jobs.
 Most of the namespaces have a kind of 'main' class.
 <ul>
@@ -117,7 +120,7 @@ Most of the namespaces have a kind of 'main' class.
 
 <p>
 Here is the visual tree of the <code>TextEditor</code> control:<br>
-<img src="AvalonEdit/snoop.png" alt="Visual Tree"/>
+<img src="AvalonEdit/snoop.png" width="272" height="351" alt="Visual Tree"/>
 <p>
 It's important to understand that AvalonEdit is a composite control with the three layers: <code>TextEditor</code> (main control), <code>TextArea</code> (editing), <code>TextView</code> (rendering).
 While the main control provides some convenience methods for common tasks, for most advanced features you have to work directly with the inner controls. You can access them using <code>textEditor.TextArea</code>
@@ -188,7 +191,7 @@ It takes care of getting the document onto the screen.
 <p>To do this in an extensible way, the <code>TextView</code> uses its own kind of model: the <code>VisualLine</code>.
 Visual lines are created only for the visible part of the document.
 <p>The rendering process looks like this:<br>
-<img src="AvalonEdit/renderingPipeline.png" alt="rendering pipeline"><br>
+<img src="AvalonEdit/renderingPipeline.png" width="443" height="570" alt="rendering pipeline"/><br>
 The last step in the pipeline is the conversion to one or more <code>System.Windows.Media.TextFormatting.TextLine</code> instances. WPF then takes care of the actual text rendering.
 <p>
 The "element generators", "line transformers" and "background renderers" are the extension points; it is possible to add custom implementations of
@@ -331,7 +334,7 @@ especially in languages like C# where sequences of <code>//</code> or <code>///<
 You only have to handle the text entering events to determine when you want to show the window; all the UI is already done for you.
 <p>
 Here's how you can use it:
-<pre>    // in the constructor:
+<pre lang="cs">    // in the constructor:
     textEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
     textEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
 }
@@ -375,7 +378,7 @@ The <code>CompletionWindow</code> will actually never have focus - instead, it h
 on the text area and passes them through its <code>ListBox</code>.
 This allows selecting entries in the completion list using the keyboard and normal typing in the editor at the same time.
 <p>For the sake of completeness, here is the implementation of the <code>MyCompletionData</code> class used in the code above:
-<pre>/// Implements AvalonEdit ICompletionData interface to provide the entries in the
+<pre lang="cs">/// Implements AvalonEdit ICompletionData interface to provide the entries in the
 /// completion drop down.
 public class MyCompletionData : ICompletionData
 {
