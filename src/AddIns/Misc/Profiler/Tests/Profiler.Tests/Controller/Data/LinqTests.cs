@@ -168,6 +168,8 @@ namespace Profiler.Tests.Controller.Data
 			                SQLiteQueryProvider.OptimizeQuery(query.Expression).ToString());
 		}
 		
+		/*
+		 We currently do not support querying on GetAllCalls - doing this would require support for merging by path id
 		[Test]
 		public void TestAllCallsMergedToFunctions()
 		{
@@ -175,6 +177,7 @@ namespace Profiler.Tests.Controller.Data
 			Assert.AreEqual("AllFunctions(0, 1).Filter(c => (c.NameMapping.Id != 0))",
 			                SQLiteQueryProvider.OptimizeQuery(query.Expression).ToString());
 		}
+		*/
 		
 		[Test]
 		public void TestSupportedOrderByOnRootChildren()
