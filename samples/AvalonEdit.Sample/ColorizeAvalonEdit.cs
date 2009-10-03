@@ -44,7 +44,8 @@ namespace AvalonEdit.Sample
 						// This lambda gets called once for every VisualLineElement
 						// between the specified offsets.
 						Typeface tf = element.TextRunProperties.Typeface;
-						// Replace the typeface with a modified version of the same typeface
+						// Replace the typeface with a modified version of
+						// the same typeface
 						element.TextRunProperties.SetTypeface(new Typeface(
 							tf.FontFamily,
 							FontStyles.Italic,
