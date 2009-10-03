@@ -12,13 +12,18 @@ using System.Collections.Generic;
 namespace ICSharpCode.Profiler.Controller.Data
 {
 	/// <summary>
-	/// Description of UnitTestWriter.
+	/// Filters the data being written to remove NUnit internals and show the unit tests more clearly.
 	/// </summary>
 	public class UnitTestWriter : IProfilingDataWriter
 	{
 		IProfilingDataWriter targetWriter;
-		string[] unitTestNames;
+		HashSet<string> unitTestNames;
 		
+		/// <summary>
+		/// Creates a new UnitTestWriter instance.
+		/// </summary>
+		/// <param name="targetWriter">The target IProfilingDataWriter where the output should be written to.</param>
+		/// <param name="unitTestNames">The fully qualified names of the unit test methods.</param>
 		public UnitTestWriter(IProfilingDataWriter targetWriter, string[] unitTestNames)
 		{
 			if (targetWriter == null)
@@ -28,7 +33,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				throw new ArgumentNullException("unitTestNames");
 			
 			this.targetWriter = targetWriter;
-			this.unitTestNames = unitTestNames;
+			this.unitTestNames = new HashSet<string>(unitTestNames);
 		}
 		
 		sealed class UnitTestDataSet : IProfilingDataSet
@@ -47,11 +52,13 @@ namespace ICSharpCode.Profiler.Controller.Data
 			public CallTreeNode RootNode { get; private set; }
 		}
 		
+		/// <inheritdoc/>
 		public int ProcessorFrequency {
 			get { return this.targetWriter.ProcessorFrequency; }
 			set { this.targetWriter.ProcessorFrequency = value; }
 		}
 		
+		/// <inheritdoc/>
 		public void WriteDataSet(IProfilingDataSet dataSet)
 		{
 			if (dataSet == null)
@@ -85,11 +92,13 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
+		/// <inheritdoc/>
 		public void WriteMappings(System.Collections.Generic.IEnumerable<NameMapping> mappings)
 		{
 			this.targetWriter.WriteMappings(mappings);
 		}
 		
+		/// <inheritdoc/>
 		public void Close()
 		{
 			this.targetWriter.Close();

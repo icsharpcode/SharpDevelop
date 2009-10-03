@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// </summary>
 		public static string GetWordAt(this ITextBuffer document, int offset)
 		{
-			if (offset < 0 || offset > document.TextLength || !IsWordPart(document.GetCharAt(offset))) {
+			if (offset < 0 || offset >= document.TextLength || !IsWordPart(document.GetCharAt(offset))) {
 				return String.Empty;
 			}
 			int startOffset = offset;

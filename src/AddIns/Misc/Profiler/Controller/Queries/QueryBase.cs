@@ -40,7 +40,7 @@ namespace ICSharpCode.Profiler.Controller.Queries
 		/// <summary>
 		/// Returns all calls.
 		/// </summary>
-		public IQueryable<CallTreeNode> Calls { get { return Root.Descendants; } }
+		public IQueryable<CallTreeNode> Calls { get { return Provider.GetAllCalls(StartDataSetIndex, EndDataSetIndex); } }
 		
 		/// <summary>
 		/// Returns all functions.

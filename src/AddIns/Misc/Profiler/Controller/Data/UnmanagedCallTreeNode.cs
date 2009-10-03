@@ -45,7 +45,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				
 				children.Sort((a,b) => a.Index.CompareTo(b.Index));
 				
-				return children.Cast<CallTreeNode>().AsQueryable(); // TODO : remove Cast<> in .NET 4.0
+				return children.AsQueryable();
 			}
 		}
 		

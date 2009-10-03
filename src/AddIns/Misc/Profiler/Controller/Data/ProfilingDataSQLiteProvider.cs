@@ -335,7 +335,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		}
 		
 		/// <inheritdoc/>
-		public override IQueryable<CallTreeNode> GetAllCalls(int startIndex, int endIndex)
+		public override IQueryable<CallTreeNode> GetFunctions(int startIndex, int endIndex)
 		{
 			if (startIndex < 0 || startIndex >= this.DataSets.Count)
 				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + endIndex);
@@ -345,7 +345,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			SQLiteQueryProvider queryProvider = new SQLiteQueryProvider(this, startIndex, endIndex);
 			
 			var query = queryProvider.CreateQuery(new Filter(AllCalls.Instance, DataSetFilter(startIndex, endIndex)));
-			return query.Where(c => c.NameMapping.Id != 0);
+			return query.Where(c => c.NameMapping.Id != 0 && !c.IsThread).MergeByName();
 		}
 		
 		Expression<Func<SingleCall, bool>> DataSetFilter(int startIndex, int endIndex)
