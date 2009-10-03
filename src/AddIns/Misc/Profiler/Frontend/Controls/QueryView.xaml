@@ -331,19 +331,19 @@
 				</Style>
 			</ListView.ItemContainerStyle>
 		</local:TreeListView>
-		<ToolBar Height="26" Grid.Row="0" Grid.ColumnSpan="2">
-			<Label Content="{Binding Translation.SearchLabelText, ElementName=queryView}" />
-			<TextBox Name="txtSearch" Width="150" KeyDown="txtSearchKeyDown" />
-			<CheckBox Content="{Binding Translation.ShowQueryBarText, ElementName=queryView}" IsChecked="{Binding ShowQueryItems}" />
-			<Button Content="{Binding Translation.ExpandHotPathSubtreeText, ElementName=queryView}" Name="btnExpandHotPathSubtree" Click="BtnExpandHotPathSubtreeClick" />
-			<ComboBox Name="visibleColumnsSelection" Style="{StaticResource styleColumnsComboBox}">
+		<StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+			<Label Content="{Binding Translation.SearchLabelText, ElementName=queryView}" Margin="3" VerticalAlignment="Center" />
+			<TextBox Name="txtSearch" Width="150" KeyDown="txtSearchKeyDown" VerticalAlignment="Center" />
+			<ToggleButton Content="{Binding Translation.ShowQueryBarText, ElementName=queryView}" IsChecked="{Binding ShowQueryItems}" Margin="3" VerticalAlignment="Center" />
+			<Button Content="{Binding Translation.ExpandHotPathSubtreeText, ElementName=queryView}" Name="btnExpandHotPathSubtree" Click="BtnExpandHotPathSubtreeClick" Margin="3" VerticalAlignment="Center" />
+			<ComboBox Name="visibleColumnsSelection" Style="{StaticResource styleColumnsComboBox}" Margin="3" VerticalAlignment="Center">
 				<ComboBox.ItemTemplate>
 					<DataTemplate>
 						<CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" Content="{Binding Column.Header}" />
 					</DataTemplate>
 				</ComboBox.ItemTemplate>
 			</ComboBox>
-		</ToolBar>
+		</StackPanel>
 		<DockPanel Name="queryPanel" Visibility="{Binding ShowQueryItems, Converter={StaticResource VisibilityConverter}}" Grid.Row="1" Grid.ColumnSpan="2">
 			<Button Name="btnExecuteQuery" DockPanel.Dock="Right" Click="btnExecuteQueryClick" Content="{Binding Translation.ExecuteQueryText, ElementName=queryView}" />
 			<TextBox Name="txtQuery" TextChanged="txtQueryTextChanged" KeyDown="txtQueryKeyDown" />

@@ -37,13 +37,18 @@ namespace ICSharpCode.Profiler.Controller.Data
 			get { return nameMappings.Select(i => i.Value).ToList().AsReadOnly(); }
 		}
 		
+		List<PerformanceCounterDescriptor> counters = new List<PerformanceCounterDescriptor>();
+		
+		public ReadOnlyCollection<PerformanceCounterDescriptor> Counters {
+			get { return counters.AsReadOnly(); }
+		}
+		
 		struct StreamInfo
 		{
 			public TargetProcessPointer NativeStartPosition { get; set; }
 			public TargetProcessPointer NativeRootFuncInfoStartPosition { get; set; }
 			public long StreamStartPosition { get; set; }
 			public long StreamLength { get; set; }
-			public double CpuUsage { get; set; }
 			public bool IsFirst { get; set; }
 		}
 		
@@ -55,8 +60,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			public DataSet(TempFileDatabase database, UnmanagedMemory view,
 			               TargetProcessPointer nativeStartPosition, TargetProcessPointer nativeRootFuncInfoStartPosition,
-			               double cpuUsage, bool isFirst)
-				: base(nativeStartPosition, nativeRootFuncInfoStartPosition, view.Pointer, view.Length, cpuUsage, isFirst, database.is64Bit)
+			               bool isFirst)
+				: base(nativeStartPosition, nativeRootFuncInfoStartPosition, view.Pointer, view.Length, isFirst, database.is64Bit)
 			{
 				this.database = database;
 				this.view = view;
@@ -117,7 +122,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				if (dataSet == null)
 					throw new InvalidOperationException("TempFileDatabase cannot write DataSets other than UnmanagedProfilingDataSet!");
 				
-				database.AddDataset((byte *)uDataSet.StartPtr.ToPointer(), uDataSet.Length, uDataSet.NativeStartPosition, uDataSet.NativeRootFuncInfoPosition, uDataSet.CpuUsage, uDataSet.IsFirst);
+				database.AddDataset((byte *)uDataSet.StartPtr.ToPointer(), uDataSet.Length, uDataSet.NativeStartPosition, uDataSet.NativeRootFuncInfoPosition, uDataSet.IsFirst);
 				this.database.is64Bit = uDataSet.Is64Bit;
 			}
 			
@@ -132,6 +137,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 			{
 				foreach (NameMapping nm in mappings)
 					this.database.nameMappings.Add(nm.Id, nm);
+			}
+			
+			public void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters)
+			{
+				this.database.counters.AddRange(counters);
 			}
 		}
 		#endregion
@@ -150,14 +160,14 @@ namespace ICSharpCode.Profiler.Controller.Data
 			this.file = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite, 4096, FileOptions.Asynchronous | FileOptions.DeleteOnClose);
 		}
 		
-		unsafe void AddDataset(byte *ptr, long length, TargetProcessPointer nativeStartPosition, TargetProcessPointer nativeRootFuncInfoStartPosition, double cpuUsage, bool isFirst)
+		unsafe void AddDataset(byte *ptr, long length, TargetProcessPointer nativeStartPosition, TargetProcessPointer nativeRootFuncInfoStartPosition, bool isFirst)
 		{
 			byte[] data = new byte[length];
 			Marshal.Copy(new IntPtr(ptr), data, 0, (int)length);
 			if (this.currentWrite != null)
 				this.file.EndWrite(this.currentWrite);
 			this.streamInfos.Add(new StreamInfo { NativeStartPosition = nativeStartPosition, NativeRootFuncInfoStartPosition = nativeRootFuncInfoStartPosition,
-			                     	StreamStartPosition = this.file.Length, StreamLength = length, CpuUsage = cpuUsage, IsFirst = isFirst });
+			                     	StreamStartPosition = this.file.Length, StreamLength = length, IsFirst = isFirst });
 			this.currentWrite = this.file.BeginWrite(data, 0, (int)length, null, null);
 		}
 		
@@ -206,8 +216,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				throw new InvalidOperationException("All writers have to be closed before reading the data from the database!");
 			
 			return new DataSet(this, mmf.MapView(streamInfos[index].StreamStartPosition, streamInfos[index].StreamLength), streamInfos[index].NativeStartPosition,
-			                   streamInfos[index].NativeRootFuncInfoStartPosition,
-			                   streamInfos[index].CpuUsage, streamInfos[index].IsFirst);
+			                   streamInfos[index].NativeRootFuncInfoStartPosition, streamInfos[index].IsFirst);
 		}
 		
 		/// <summary>
@@ -219,6 +228,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			writer.ProcessorFrequency = this.processorFrequency;
 			writer.WriteMappings(this.nameMappings.Values);
+			writer.WritePerformanceCounterData(this.counters);
+			
 			for (int i = 0; i < this.DataSetCount; i++) {
 				using (UnmanagedProfilingDataSet dataSet = this.LoadDataSet(i))
 					writer.WriteDataSet(dataSet);

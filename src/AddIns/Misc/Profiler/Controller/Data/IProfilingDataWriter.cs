@@ -29,6 +29,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		void WriteMappings(IEnumerable<NameMapping> mappings);
 		
+		void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters);
+		
 		/// <summary>
 		/// Closes and disposes the underlying data structure.
 		/// </summary>

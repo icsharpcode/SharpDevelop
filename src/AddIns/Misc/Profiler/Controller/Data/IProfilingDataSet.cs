@@ -23,11 +23,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 	public interface IProfilingDataSet 
 	{
 		/// <summary>
-		/// Gets the percent of CPU power used by the profilee at a certain point.
-		/// </summary>
-		double CpuUsage { get; }
-		
-		/// <summary>
 		/// Gets whether this dataset is the first dataset of a profiling run.
 		/// </summary>
 		bool IsFirst { get; }

@@ -6,6 +6,11 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+
+using ICSharpCode.Profiler.Controller.Data;
 
 namespace ICSharpCode.Profiler.Controller
 {
@@ -19,11 +24,22 @@ namespace ICSharpCode.Profiler.Controller
 		/// </summary>
 		public const int DefaultSharedMemorySize = 64 * 1024 * 1024; // 64 mb
 		
+		public static readonly PerformanceCounterDescriptor[] DefaultCounters = new[] {
+			new PerformanceCounterDescriptor("Process", "% Processor Time", "_Total", ".", 0, 0, 100, "%"),
+			new PerformanceCounterDescriptor("Process", "IO Data Bytes/sec", "_Total", ".", 0, null, null, "bytes/sec")
+		};
+		
 		bool enableDC;
 		bool enableDCAtStart;
 		bool dotNotProfileDotNetInternals;
 		bool combineRecursiveFunction;
 		int sharedMemorySize;
+		
+		PerformanceCounterDescriptor[] counters;
+		
+		public PerformanceCounterDescriptor[] Counters {
+			get { return this.counters; }
+		}
 		
 		/// <summary>
 		/// Gets whether .NET internal calls are profiled or not.
@@ -63,20 +79,22 @@ namespace ICSharpCode.Profiler.Controller
 		/// <summary>
 		/// Creates new ProfilerOptions using the selected settings.
 		/// </summary>
-		public ProfilerOptions(bool enableDC, int sharedMemorySize, bool profileDotNetInternals, bool combineRecursiveFunction, bool enableDCAtStart)
+		public ProfilerOptions(bool enableDC, int sharedMemorySize, bool profileDotNetInternals,
+		                       bool combineRecursiveFunction, bool enableDCAtStart, IEnumerable<PerformanceCounterDescriptor> counters)
 		{
 			this.enableDC = enableDC;
 			this.sharedMemorySize = sharedMemorySize;
 			this.dotNotProfileDotNetInternals = profileDotNetInternals;
 			this.combineRecursiveFunction = combineRecursiveFunction;
 			this.enableDCAtStart = enableDCAtStart;
+			this.counters = counters.ToArray();
 		}
 		
 		/// <summary>
 		/// Creates default ProfilerOptions.
 		/// </summary>
 		public ProfilerOptions()
-			: this(true, DefaultSharedMemorySize, false, false, true)
+			: this(true, DefaultSharedMemorySize, false, false, true, DefaultCounters)
 		{
 		}
 	}

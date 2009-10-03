@@ -4,9 +4,10 @@
 //     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.Profiler.Controller;
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Profiler.Controller;
+using ICSharpCode.Profiler.Controller.Data;
 
 namespace ICSharpCode.Profiler.AddIn.OptionPanels
 {
@@ -46,7 +47,8 @@ namespace ICSharpCode.Profiler.AddIn.OptionPanels
 				properties.Get("SharedMemorySize", ProfilerOptions.DefaultSharedMemorySize),
 				properties.Get("DoNotProfileNetInternals", false),
 				properties.Get("CombineRecursiveFunction", false),
-				properties.Get("EnableDCAtStart", true)
+				properties.Get("EnableDCAtStart", true),
+				properties.Get("PerformanceCounters", ProfilerOptions.DefaultCounters)
 			);
 		}
 	}

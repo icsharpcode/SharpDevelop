@@ -135,7 +135,6 @@ namespace Profiler.Tests.Controller.Data
 	
 	public class DataSetStub : IProfilingDataSet
 	{
-		public double CpuUsage { get; set; }
 		public bool IsFirst { get; set; }
 		public CallTreeNode RootNode { get; set; }
 	}

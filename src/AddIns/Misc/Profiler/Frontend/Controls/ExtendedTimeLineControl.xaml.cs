@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using ICSharpCode.Profiler.Controller.Data;
+
 namespace ICSharpCode.Profiler.Controls
 {
 	/// <summary>
@@ -18,11 +22,77 @@ namespace ICSharpCode.Profiler.Controls
 	/// </summary>
 	public partial class ExtendedTimeLineControl : UserControl
 	{
+		ProfilingDataProvider provider;
+		
 		public ExtendedTimeLineControl()
 		{
 			InitializeComponent();
+			
+			this.timeLine.RangeChanged += (sender, e) => { OnRangeChanged(e); };
 		}
 		
+		public ProfilingDataProvider Provider
+		{
+			get { return this.provider; }
+			set {
+				this.provider = value;
+				
+				this.perfCounterList.ItemsSource = this.provider.GetPerformanceCounters();
+				this.perfCounterList.SelectedIndex = 0;
+				
+				Update();
+			}
+		}
 		
+		public int SelectedStartIndex {
+			get { return this.timeLine.SelectedStartIndex; }
+			set { this.timeLine.SelectedStartIndex = value; }
+		}
+		
+		public int SelectedEndIndex {
+			get { return this.timeLine.SelectedEndIndex; }
+			set { this.timeLine.SelectedEndIndex = value; }
+		}
+		
+		public event EventHandler<RangeEventArgs> RangeChanged;
+
+		protected virtual void OnRangeChanged(RangeEventArgs e)
+		{
+			if (RangeChanged != null)
+			{
+				RangeChanged(this, e);
+			}
+		}
+		
+		void Update()
+		{
+			this.timeLine.ValuesList.Clear();
+			
+			var selectedPerformanceCounter = this.perfCounterList.SelectedItem as PerformanceCounterDescriptor;
+			
+			if (selectedPerformanceCounter == null)
+				return;
+			
+			List<TimeLineSegment> segments = new List<TimeLineSegment>();
+			var values = this.provider.GetPerformanceCounterValues(this.perfCounterList.SelectedIndex);
+			var markers = this.provider.DataSets.Select(item => item.IsFirst).ToArray();
+			
+			this.timeLine.MaxValue = selectedPerformanceCounter.MaxValue ?? (values.Any() ? values.Max() : 0);
+			
+			this.maxLabel.Text = (selectedPerformanceCounter.MaxValue ?? (values.Any() ? values.Max() : 0)).ToString("0");
+			this.minLabel.Text = (selectedPerformanceCounter.MinValue ?? (values.Any() ? values.Min() : 0)).ToString("0");
+			
+			this.unitLabel.Text = this.timeLine.Unit = selectedPerformanceCounter.Unit;
+			
+			for (int i = 0; i < values.Length; i++)
+				segments.Add(new TimeLineSegment() { Value = values[i], TimeOffset = 0, DisplayMarker = markers[i] });
+			
+			this.timeLine.ValuesList.AddRange(segments);
+		}
+		
+		void PerfCounterListSelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			Update();
+		}
 	}
 }

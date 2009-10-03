@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -75,5 +76,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			return GetAllCalls(startIndex, endIndex).Where(c => !c.IsThread).MergeByName();
 		}
+		
+		public abstract PerformanceCounterDescriptor[] GetPerformanceCounters();
+		
+		public abstract float[] GetPerformanceCounterValues(int index);
 	}
 }

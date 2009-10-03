@@ -47,7 +47,7 @@ namespace Profiler.Tests.Controller.Data
 						}
 					}
 				};
-				writer.WriteDataSet(new DataSetStub { CpuUsage = 0.3, IsFirst = true, RootNode = dataSet });
+				writer.WriteDataSet(new DataSetStub { IsFirst = true, RootNode = dataSet });
 				dataSet = new CallTreeNodeStub {
 					NameMappingValue = method0,
 					IsActiveAtStartValue = true,
@@ -65,7 +65,7 @@ namespace Profiler.Tests.Controller.Data
 						}
 					}
 				};
-				writer.WriteDataSet(new DataSetStub { CpuUsage = 0.4, IsFirst = false, RootNode = dataSet });
+				writer.WriteDataSet(new DataSetStub { IsFirst = false, RootNode = dataSet });
 				dataSet = new CallTreeNodeStub {
 					NameMappingValue = method0,
 					IsActiveAtStartValue = true,
@@ -85,7 +85,7 @@ namespace Profiler.Tests.Controller.Data
 						}
 					}
 				};
-				writer.WriteDataSet(new DataSetStub { CpuUsage = 0.1, IsFirst = false, RootNode = dataSet });
+				writer.WriteDataSet(new DataSetStub { IsFirst = false, RootNode = dataSet });
 				writer.Close();
 			}
 			provider = ProfilingDataSQLiteProvider.UpgradeFromOldVersion(databaseFileName);
@@ -102,9 +102,6 @@ namespace Profiler.Tests.Controller.Data
 		public void TestDataSets()
 		{
 			Assert.AreEqual(3, provider.DataSets.Count);
-			Assert.AreEqual(0.3, provider.DataSets[0].CpuUsage);
-			Assert.AreEqual(0.4, provider.DataSets[1].CpuUsage);
-			Assert.AreEqual(0.1, provider.DataSets[2].CpuUsage);
 			
 			Assert.IsTrue(provider.DataSets[0].IsFirst);
 			Assert.IsFalse(provider.DataSets[1].IsFirst);

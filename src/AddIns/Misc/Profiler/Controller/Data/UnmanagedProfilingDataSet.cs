@@ -23,7 +23,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 		TargetProcessPointer nativeStartPosition;
 		TargetProcessPointer nativeRootFuncInfoPosition;
 		bool isDisposed;
-		double cpuUsage;
 		bool isFirst;
 		bool is64Bit;
 		
@@ -59,14 +58,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public IntPtr StartPtr {
 			get { return startPtr; }
 		}
-		
-		/// <summary>
-		/// Gets the percentage of the CPU usage by the profilee.
-		/// </summary>
-		public double CpuUsage
-		{
-			get { return cpuUsage; }
-		}
 
 		internal abstract unsafe void *TranslatePointer(TargetProcessPointer ptr);
 		
@@ -83,10 +74,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public abstract NameMapping GetMapping(int nameId);
 		
 		internal UnmanagedProfilingDataSet(TargetProcessPointer nativeStartPosition, TargetProcessPointer nativeRootFuncInfoPosition,
-		                                   byte *startPtr, long length, double cpuUsage, bool isFirst, bool is64Bit)
+		                                   byte *startPtr, long length, bool isFirst, bool is64Bit)
 		{
 			this.nativeStartPosition = nativeStartPosition;
-			this.cpuUsage = cpuUsage;
 			this.nativeRootFuncInfoPosition = nativeRootFuncInfoPosition;
 			this.is64Bit = is64Bit;
 			this.isFirst = isFirst;

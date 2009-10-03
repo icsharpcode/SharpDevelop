@@ -1,42 +1,31 @@
 <UserControl x:Class="ICSharpCode.Profiler.Controls.ExtendedTimeLineControl"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:y="clr-namespace:ICSharpCode.Profiler.Controls">
+	xmlns:local="clr-namespace:ICSharpCode.Profiler.Controls">
 	<DockPanel>
 		<DockPanel Margin="3,0">
 			<TextBlock Text="Performance Counters" DockPanel.Dock="Top" />
-			<ListBox x:Name="perfCounterList" ItemsSource="{Binding}" />
+			<ListBox x:Name="perfCounterList" SelectionChanged="PerfCounterListSelectionChanged" />
 		</DockPanel>
 		<Grid Margin="3,0">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="20" />
 				<RowDefinition Height="20" />
-				<RowDefinition Height="Auto" />
+				<RowDefinition Height="100" />
 			</Grid.RowDefinitions>
-			<TextBlock Grid.Row="0" Text="Time" />
+			<TextBlock Text="Time" />
 			<TextBlock Grid.Row="1" Text="Events" />
-			<TextBlock Grid.Row="2" Text="Graph" />
+			<DockPanel Grid.Row="2">
+				<StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+					<TextBlock Text="Graph    " />
+					<TextBlock x:Name="maxLabel" HorizontalAlignment="Right" />
+				</StackPanel>
+				<TextBlock x:Name="minLabel" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+				<TextBlock x:Name="unitLabel" VerticalAlignment="Center" HorizontalAlignment="Right" />
+			</DockPanel>
 		</Grid>
 		<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="3,0">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="20" />
-					<RowDefinition Height="20" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
-				<StackPanel Grid.Row="0" Orientation="Horizontal">
-					<TextBlock Text="Test" />
-					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
-					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
-					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
-					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
-					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
-					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
-					<TextBlock Text="a aa aaa aaaa aaaaa aaaaaa aaaaaaa aaaaaaaa aaaaaaaaa" />
-				</StackPanel>
-				<y:TimeLineControl x:Name="t1" Grid.Row="1" />
-				<TextBlock Grid.Row="2" Text="Test" />
-			</Grid>
+			<local:TimeLineControl x:Name="timeLine" />
 		</ScrollViewer>
 	</DockPanel>
 </UserControl>

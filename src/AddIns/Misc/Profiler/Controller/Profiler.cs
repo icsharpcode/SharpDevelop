@@ -84,6 +84,8 @@ namespace ICSharpCode.Profiler.Controller
 		readonly string MutexId = "Local\\Profiler.Mutex.{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
 		readonly string AccessEventId = "Local\\Profiler.Events.{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
 		
+		string performanceCounterInstanceName;
+		
 		/// <summary>
 		/// The Guid of the CProfiler class in the Hook.
 		/// </summary>
@@ -101,8 +103,7 @@ namespace ICSharpCode.Profiler.Controller
 		UnmanagedCircularBuffer nativeToManagedBuffer;
 		IProfilingDataWriter dataWriter;
 		
-		Dictionary<string, PerformanceCounter> performanceCounters;
-		PerformanceCounter cpuUsageCounter;
+		PerformanceCounterDescriptor[] performanceCounters;
 		
 		/// <summary>
 		/// The currently used data provider.
@@ -118,7 +119,7 @@ namespace ICSharpCode.Profiler.Controller
 		// before the profilee can open it.
 		MemoryMappedFile file;
 		
-		ProfilerOptions profilerOptions = new ProfilerOptions();
+		ProfilerOptions profilerOptions;
 		
 		/// <summary>
 		/// Gets all settings used by this profiler instance.
@@ -248,7 +249,11 @@ namespace ICSharpCode.Profiler.Controller
 			this.is64Bit = DetectBinaryType.RunsAs64Bit(info.FileName);
 
 			this.profilerOutput = new StringBuilder();
-			this.performanceCounters = new Dictionary<string, PerformanceCounter>();
+			this.performanceCounters = options.Counters;
+			
+			foreach (var counter in performanceCounters)
+				counter.Reset();
+			
 			this.dataWriter = dataWriter;
 
 			this.threadListMutex = new Mutex(false, MutexId);
@@ -360,14 +365,13 @@ namespace ICSharpCode.Profiler.Controller
 
 				item = (ThreadLocalData32*)TranslatePointer(item->Predecessor);
 			}
+			
 			if (this.enableDC) {
 				this.AddDataset(fullView.Pointer,
 				                memHeader32->NativeAddress + memHeader32->HeapOffset,
 				                memHeader32->Allocator.startPos - memHeader32->NativeAddress,
 				                memHeader32->Allocator.pos - memHeader32->Allocator.startPos,
-				                (cpuUsageCounter == null) ? 0 : cpuUsageCounter.NextValue(),
-				                isFirstDC,
-				                memHeader32->RootFuncInfoAddress);
+				                isFirstDC, memHeader32->RootFuncInfoAddress);
 				isFirstDC = false;
 			}
 
@@ -409,11 +413,20 @@ namespace ICSharpCode.Profiler.Controller
 			}
 		}
 		
-		unsafe void AddDataset(byte *ptr, TargetProcessPointer nativeStartPosition, long offset, long length, double cpuUsage, bool isFirst, TargetProcessPointer nativeRootFuncInfoPosition)
+		unsafe void AddDataset(byte *ptr, TargetProcessPointer nativeStartPosition, long offset, long length, bool isFirst, TargetProcessPointer nativeRootFuncInfoPosition)
 		{
-			using (DataSet dataSet = new DataSet(this, ptr + offset, length, nativeStartPosition, nativeRootFuncInfoPosition, cpuUsage, isFirst, is64Bit)) {
+			using (DataSet dataSet = new DataSet(this, ptr + offset, length, nativeStartPosition, nativeRootFuncInfoPosition, isFirst, is64Bit)) {
 				lock (this.dataWriter) {
 					this.dataWriter.WriteDataSet(dataSet);
+					
+					if (performanceCounterInstanceName == null)
+						performanceCounterInstanceName = PerformanceCounterDescriptor.GetProcessInstanceName(profilee.Id);
+					
+					if (performanceCounterInstanceName == null)
+						LogString("instance not found!");
+					
+					foreach (var counter in performanceCounters)
+						counter.Collect(performanceCounterInstanceName);
 				}
 			}
 		}
@@ -519,8 +532,6 @@ namespace ICSharpCode.Profiler.Controller
 			Debug.WriteLine("Launching profiler for " + this.psi.FileName + "...");
 			this.profilee.Start();
 			
-			this.cpuUsageCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total", ".");
-			
 			this.logger.Start(nativeToManagedBuffer.CreateReadingStream());
 
 			// GC references currentSession
@@ -599,17 +610,15 @@ namespace ICSharpCode.Profiler.Controller
 			if (this.profilerOptions.EnableDC)
 				this.dataCollector.Join();
 			
-			// unload all counters to prevent exception during last collection!
-			this.cpuUsageCounter = null;
-			this.performanceCounters = null;
-			
-			// Take last shot
+			// Do last data collection
 			if (this.is64Bit)
 				CollectData64();
 			else
 				CollectData32();
 			
 			isRunning = false;
+			
+			this.dataWriter.WritePerformanceCounterData(performanceCounters);
 			
 			this.dataWriter.Close();
 			
@@ -820,9 +829,8 @@ namespace ICSharpCode.Profiler.Controller
 			Profiler profiler;
 			
 			public DataSet(Profiler profiler, byte *startPtr, long length, TargetProcessPointer nativeStartPosition,
-			               TargetProcessPointer nativeRootFuncInfoPosition,
-			               double cpuUsage, bool isFirst, bool is64Bit)
-				: base(nativeStartPosition, nativeRootFuncInfoPosition, startPtr, length, cpuUsage, isFirst, is64Bit)
+			               TargetProcessPointer nativeRootFuncInfoPosition, bool isFirst, bool is64Bit)
+				: base(nativeStartPosition, nativeRootFuncInfoPosition, startPtr, length, isFirst, is64Bit)
 			{
 				this.profiler = profiler;
 			}

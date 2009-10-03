@@ -31,11 +31,10 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			
 			this.provider = provider;
 			
-			this.timeLine.IsEnabled = true;
-			this.timeLine.ValuesList.Clear();
-			this.timeLine.ValuesList.AddRange(this.provider.DataSets.Select(i => new TimeLineInfo() { value = i.CpuUsage / 100, displayMarker = i.IsFirst }));
-			this.timeLine.SelectedStartIndex = 0;
-			this.timeLine.SelectedEndIndex = this.timeLine.ValuesList.Count;
+			this.timeLine2.IsEnabled = true;
+			this.timeLine2.Provider = provider;
+			this.timeLine2.SelectedStartIndex = 0;
+			this.timeLine2.SelectedEndIndex = provider.DataSets.Count;
 			
 			var translation = new SharpDevelopTranslation();
 			
@@ -45,7 +44,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 					view.Reporter = new ErrorReporter(UpdateErrorList);
 					view.Provider = provider;
 					view.Translation = translation;
-					view.SetRange(this.timeLine.SelectedStartIndex, this.timeLine.SelectedEndIndex);
+					view.SetRange(this.timeLine2.SelectedStartIndex, this.timeLine2.SelectedEndIndex);
 					view.ContextMenuOpening += delegate(object sender, ContextMenuEventArgs e) {
 						object source = (e.OriginalSource is Shape) ? e.OriginalSource : view;
 						MenuService.CreateContextMenu(source, "/AddIns/Profiler/QueryView/ContextMenu").IsOpen = true;
@@ -85,9 +84,9 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 		void DoSelectAll()
 		{
-			if (this.timeLine.IsEnabled) {
-				this.timeLine.SelectedStartIndex = 0;
-				this.timeLine.SelectedEndIndex = this.timeLine.ValuesList.Count;
+			if (this.timeLine2.IsEnabled) {
+				this.timeLine2.SelectedStartIndex = 0;
+				this.timeLine2.SelectedEndIndex = this.timeLine2.Provider.DataSets.Count;
 			}
 		}
 		
@@ -99,7 +98,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 		void CanDoSelectAll(CanExecuteRoutedEventArgs e)
 		{
-			e.CanExecute = this.timeLine.IsEnabled && this.timeLine.ValuesList.Count > 0;
+			e.CanExecute = this.timeLine2.IsEnabled && this.timeLine2.Provider.DataSets.Count > 0;
 		}
 
 		void CloseButtonClick(object sender, RoutedEventArgs e)
@@ -192,7 +191,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 			view.Provider = this.provider;
 			view.Reporter = new ErrorReporter(UpdateErrorList);
-			view.SetRange(this.timeLine.SelectedStartIndex, this.timeLine.SelectedEndIndex);
+			view.SetRange(this.timeLine2.SelectedStartIndex, this.timeLine2.SelectedEndIndex);
 			
 			view.CurrentQuery = query;
 			view.ShowQueryItems = true;

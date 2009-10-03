@@ -240,16 +240,6 @@ namespace ICSharpCode.Profiler.Controls
 			if (!this.isDirty || this.Provider == null)
 				return;
 			
-			if (RangeStart > RangeEnd) {
-				int help = RangeStart;
-				RangeStart = RangeEnd;
-				RangeEnd = help;
-			}
-
-			if ((RangeEnd < 0 && RangeEnd >= Provider.DataSets.Count) &&
-			    (RangeStart < 0 && RangeStart >= Provider.DataSets.Count))
-				return;
-			
 			if (Provider.DataSets.Count == 0)
 				return;
 			

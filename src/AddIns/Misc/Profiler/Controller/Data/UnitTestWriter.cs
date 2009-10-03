@@ -38,14 +38,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		sealed class UnitTestDataSet : IProfilingDataSet
 		{
-			public UnitTestDataSet(CallTreeNode root, bool isFirst, double cpuUsage)
+			public UnitTestDataSet(CallTreeNode root, bool isFirst)
 			{
 				this.RootNode = root;
 				this.IsFirst = isFirst;
-				this.CpuUsage = cpuUsage;
 			}
-			
-			public double CpuUsage { get; private set; }
 			
 			public bool IsFirst { get; private set; }
 			
@@ -70,7 +67,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			if (list.Count > 0) {
 				this.targetWriter.WriteDataSet(
-					new UnitTestDataSet(new UnitTestRootCallTreeNode(list), dataSet.IsFirst, dataSet.CpuUsage)
+					new UnitTestDataSet(new UnitTestRootCallTreeNode(list), dataSet.IsFirst)
 				);
 			}
 		}
@@ -102,6 +99,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public void Close()
 		{
 			this.targetWriter.Close();
+		}
+		
+		public void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters)
+		{
+			this.targetWriter.WritePerformanceCounterData(counters);
 		}
 	}
 }

@@ -81,19 +81,23 @@ namespace ICSharpCode.Profiler.AddIn
 		void FinishSession()
 		{
 			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog(StringParser.Parse("${res:AddIns.Profiler.Messages.PreparingForAnalysis}"), true)) {
-				profiler.Dispose();
+				try {
+					profiler.Dispose();
 
-				WorkbenchSingleton.SafeThreadAsyncCall(() => { controlWindow.AllowClose = true; this.controlWindow.Close(); });
-				if (database != null) {
-					database.WriteTo(writer, progress => !dlg.IsCancelled);
-					writer.Close();
-					database.Close();
-				} else {
-					writer.Close();
+					WorkbenchSingleton.SafeThreadAsyncCall(() => { controlWindow.AllowClose = true; this.controlWindow.Close(); });
+					if (database != null) {
+						database.WriteTo(writer, progress => !dlg.IsCancelled);
+						writer.Close();
+						database.Close();
+					} else {
+						writer.Close();
+					}
+					
+					if (!dlg.IsCancelled)
+						OnRunFinished(EventArgs.Empty);
+				} catch (Exception ex) {
+					Debug.Print(ex.ToString());
 				}
-				
-				if (!dlg.IsCancelled)
-					OnRunFinished(EventArgs.Empty);
 			}
 		}
 		

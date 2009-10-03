@@ -99,12 +99,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 					dataSetCount = 0;
 				
 				cmd.Parameters.Add(new SQLiteParameter("id", dataSetCount));
-				cmd.Parameters.Add(new SQLiteParameter("cpuuage", dataSet.CpuUsage.ToString(CultureInfo.InvariantCulture)));
 				cmd.Parameters.Add(new SQLiteParameter("isfirst", dataSet.IsFirst));
 				cmd.Parameters.Add(new SQLiteParameter("rootid", functionInfoCount));
 				
-				cmd.CommandText = "INSERT INTO DataSets(id, cpuusage, isfirst, rootid)" +
-					"VALUES(?,?,?,?);";
+				cmd.CommandText = "INSERT INTO DataSets(id, isfirst, rootid)" +
+					"VALUES(?,?,?);";
 				
 				int dataSetStartId = functionInfoCount;
 				
@@ -164,7 +163,22 @@ namespace ICSharpCode.Profiler.Controller.Data
 				activecallcount INTEGER NOT NULL,
 				callcount INTEGER NOT NULL,
 				hasChildren INTEGER NOT NULL
-			);";
+			);
+			
+				CREATE TABLE PerformanceCounter(
+					id INTEGER NOT NULL PRIMARY KEY,
+					name TEXT NOT NULL,
+					minvalue REAL NULL,
+					maxvalue REAL NULL,
+					unit TEXT NOT NULL
+				);
+				
+				CREATE TABLE CounterData(
+					datasetid INTEGER NOT NULL,
+					counterid INTEGER NOT NULL,
+					value REAL NOT NULL
+				);
+";
 		
 		internal const string CallsAndFunctionsIndexDefs =
 			"CREATE INDEX CallsParent ON Calls(parentid ASC);" // required for searching the children
@@ -175,7 +189,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			// NameMapping { Id, ReturnType, Name, Parameters }
 			// Calls { id, endid, parentid, nameid, cpucyclesspent, cpucyclesspentself, isactiveatstart, callcount }
 			// Functions { datasetid, nameid, cpucyclesspent, cpucyclesspentself, activecallcount, callcount, haschildren }
-			// DataSets { Id, CPUUsage, RootId }
+			// DataSets { Id, IsFirst, RootId }
 			//
 			// NameMapping.Id <-> FunctionData.NameId 1:N
 			// FunctionData.ParentId <-> FunctionData.Id 1:N
@@ -195,7 +209,6 @@ namespace ICSharpCode.Profiler.Controller.Data
 				
 				CREATE TABLE DataSets(
 					id INTEGER NOT NULL PRIMARY KEY,
-					cpuusage REAL NOT NULL,
 					isfirst INTEGER NOT NULL,
 					rootid INTEGER NOT NULL
 				);
@@ -205,18 +218,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 					value TEXT NOT NULL
 				);
 				
-				INSERT INTO Properties(name, value) VALUES('version', '1.1');
-				
-				CREATE TABLE PerformanceCounter(
-					id INTEGER NOT NULL PRIMARY KEY,
-					name TEXT NOT NULL
-				);
-				
-				CREATE TABLE CounterData(
-					datasetid INTEGER NOT NULL,
-					counterid INTEGER NOT NULL,
-					value INTEGER NOT NULL
-				);
+				INSERT INTO Properties(name, value) VALUES('version', '1.2');
 	";
 			
 			cmd.ExecuteNonQuery();
@@ -298,6 +300,49 @@ namespace ICSharpCode.Profiler.Controller.Data
 				this.connection.Close();
 			
 			isDisposed = true;
+		}
+		
+		public void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters)
+		{
+			using (SQLiteTransaction trans = this.connection.BeginTransaction()) {
+				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+
+					SQLiteParameter idParam = new SQLiteParameter("id");
+					SQLiteParameter nameParam = new SQLiteParameter("name");
+					SQLiteParameter dataSetParam = new SQLiteParameter("dataset");
+					SQLiteParameter valueParam = new SQLiteParameter("value");
+					SQLiteParameter minParam = new SQLiteParameter("min");
+					SQLiteParameter maxParam = new SQLiteParameter("max");
+					SQLiteParameter unitParam = new SQLiteParameter("unit");
+					
+					cmd.CommandText =
+						"INSERT OR IGNORE INTO PerformanceCounter(id, name, minvalue, maxvalue, unit)" +
+						"VALUES(@id,@name,@min,@max,@unit);" +
+						"INSERT INTO CounterData(datasetid, counterid, value)" +
+						"VALUES(@dataset,@id,@value);";
+					
+					cmd.Parameters.AddRange(new SQLiteParameter[] { idParam, nameParam, dataSetParam, valueParam, minParam, maxParam, unitParam });
+					
+					int id = 0;
+					
+					foreach (PerformanceCounterDescriptor counter in counters) {
+						idParam.Value = id;
+						nameParam.Value = counter.Name;
+						minParam.Value = counter.MinValue;
+						maxParam.Value = counter.MaxValue;
+						unitParam.Value = counter.Unit;
+						
+						for (int i = 0; i < counter.Values.Count; i++) {
+							dataSetParam.Value = i;
+							valueParam.Value = counter.Values[i];
+							cmd.ExecuteNonQuery();
+						}
+						
+						id++;
+					}
+				}
+				trans.Commit();
+			}
 		}
 	}
 }

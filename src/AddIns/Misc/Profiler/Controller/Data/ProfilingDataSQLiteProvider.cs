@@ -56,6 +56,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
+		const string currentVersion = "1.2";
+		
 		void CheckFileVersion(bool allowUpgrade)
 		{
 			string version = GetProperty("version");
@@ -63,7 +65,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 			if (version == "1.0" && allowUpgrade) {
 				try {
 					using (SQLiteCommand cmd = connection.CreateCommand()) {
-						cmd.CommandText = "ALTER TABLE DataSets ADD COLUMN isfirst INTEGER NOT NULL DEFAULT(0);";
+						cmd.CommandText = "DROP TABLE CounterData;" +
+							"DROP TABLE PerformanceCounter;" +
+							"ALTER TABLE DataSets ADD COLUMN isfirst INTEGER NOT NULL DEFAULT(0);";
 						cmd.ExecuteNonQuery();
 					}
 				} catch (SQLiteException) {
@@ -73,7 +77,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 					try {
 						using (SQLiteCommand cmd = connection.CreateCommand()) {
 							cmd.CommandText = ProfilingDataSQLiteWriter.CallsAndFunctionsTableDefs + @"
-								INSERT OR REPLACE INTO Properties(name, value) VALUES('version', '1.1');
+								INSERT OR REPLACE INTO Properties(name, value) VALUES('version', '" + currentVersion + @"');
 								
 								INSERT INTO Calls
 								SELECT f1.id, f1.endid, f1.parentid, f1.nameid, f1.timespent,
@@ -88,8 +92,16 @@ namespace ICSharpCode.Profiler.Controller.Data
 									JOIN FunctionData f
 									  ON c.id = f.id
 									GROUP BY c.nameid, f.datasetid;
+									
+								INSERT INTO PerformanceCounters(id, name, minvalue, maxvalue, unit)
+								VALUES(0, '% Processor Time', 0, 100, '%');
+								
+								INSERT INTO CounterData
+								SELECT id, 0, cpuusage
+								FROM DataSets;
 								"
-								+ "DELETE FROM FunctionData;" // I would like to do DROP TABLE, but that causes locking errors
+								+ "DELETE FROM FunctionData;" +
+								"DROP TABLE FunctionData;" // I would like to do DROP TABLE, but that causes locking errors
 								+ ProfilingDataSQLiteWriter.CallsAndFunctionsIndexDefs;
 							cmd.ExecuteNonQuery();
 						}
@@ -99,7 +111,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 						throw;
 					}
 				}
-				version = "1.1"; // new version that was upgraded to
+				version = currentVersion; // new version that was upgraded to
 				try {
 					// VACUUM must be run outside the transaction
 					using (SQLiteCommand cmd = connection.CreateCommand()) {
@@ -111,7 +123,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				}
 			}
 			
-			if (version != "1.1")
+			if (version != currentVersion)
 				throw new IncompatibleDatabaseException(new Version(1, 0), new Version(version));
 		}
 		
@@ -181,7 +193,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 					
 					using (LockAndCreateCommand(out cmd)) {
 						SQLiteDataReader reader;
-						cmd.CommandText = @"SELECT d.id, d.cpuusage, d.isfirst, d.rootid, c.endid
+						cmd.CommandText = @"SELECT d.id, d.isfirst, d.rootid, c.endid
 											FROM DataSets d
 											JOIN Calls c ON c.id = d.rootid
 											ORDER BY d.id;";
@@ -189,8 +201,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 						reader = cmd.ExecuteReader();
 						
 						while (reader.Read()) {
-							list.Add(new SQLiteDataSet(this, reader.GetInt32(0), reader.GetDouble(1), reader.GetBoolean(2),
-							                           reader.GetInt32(3), reader.GetInt32(4)));
+							list.Add(new SQLiteDataSet(this, reader.GetInt32(0), reader.GetBoolean(1),
+							                           reader.GetInt32(2), reader.GetInt32(3)));
 						}
 					}
 					
@@ -205,24 +217,16 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			ProfilingDataSQLiteProvider provider;
 			public readonly int ID;
-			double cpuUsage;
 			bool isFirst;
 			public readonly int RootID, CallEndID;
 			
-			public SQLiteDataSet(ProfilingDataSQLiteProvider provider, int id, double cpuUsage, bool isFirst, int rootID, int callEndID)
+			public SQLiteDataSet(ProfilingDataSQLiteProvider provider, int id, bool isFirst, int rootID, int callEndID)
 			{
 				this.provider = provider;
 				this.ID = id;
-				this.cpuUsage = cpuUsage;
 				this.isFirst = isFirst;
 				this.RootID = rootID;
 				this.CallEndID = callEndID;
-			}
-			
-			public double CpuUsage {
-				get {
-					return cpuUsage;
-				}
 			}
 			
 			public CallTreeNode RootNode {
@@ -346,6 +350,53 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			var query = queryProvider.CreateQuery(new Filter(AllCalls.Instance, DataSetFilter(startIndex, endIndex)));
 			return query.Where(c => c.NameMapping.Id != 0 && !c.IsThread).MergeByName();
+		}
+		
+		public override PerformanceCounterDescriptor[] GetPerformanceCounters()
+		{
+			SQLiteCommand cmd;			
+			using (LockAndCreateCommand(out cmd)) {
+				cmd.CommandText = "SELECT name, minvalue, maxvalue, unit " +
+					"FROM PerformanceCounter " +
+					"ORDER BY id ASC;";
+				
+				List<PerformanceCounterDescriptor> list = new List<PerformanceCounterDescriptor>();
+				
+				var reader = cmd.ExecuteReader();
+				
+				while (reader.Read()) {
+					list.Add(
+						new PerformanceCounterDescriptor(
+							reader.GetString(0), 
+							reader.IsDBNull(1) ? null : new Nullable<float>(reader.GetFloat(1)),
+							reader.IsDBNull(2) ? null :  new Nullable<float>(reader.GetFloat(2)),
+							reader.GetString(3)
+						)
+					);
+				}
+				
+				return list.ToArray();
+			}
+		}
+		
+		public override float[] GetPerformanceCounterValues(int index)
+		{
+			SQLiteCommand cmd;			
+			using (LockAndCreateCommand(out cmd)) {
+				cmd.CommandText = "SELECT value " +
+					"FROM CounterData " +
+					"WHERE counterid = " + index + " " +
+					"ORDER BY datasetid ASC;";
+				
+				List<float> list = new List<float>();
+				
+				var reader = cmd.ExecuteReader();
+				
+				while (reader.Read())
+					list.Add(reader.GetFloat(0));
+				
+				return list.ToArray();
+			}
 		}
 		
 		Expression<Func<SingleCall, bool>> DataSetFilter(int startIndex, int endIndex)
