@@ -66,7 +66,7 @@ for <a href="http://www.codeproject.com/KB/edit/TextEditorControl.aspx">ICSharpC
 </ul>
 <p>
 <b>Extensible</b> means that I wanted SharpDevelop AddIns to be able to add features to the text editor.
-For example, an AddIn should be able to allow inserting images into comments - this way you could put
+For example, an AddIn should be able to allow inserting images into comments &ndash; this way you could put
 stuff like class diagrams right into the source code!
 <p>
 With, <b>Easy to use</b>, I'm referring to the programming API. It should just work&trade;.
@@ -108,9 +108,10 @@ Most of the namespaces have a kind of 'main' class.
 <li>ICSharpCode.AvalonEdit.Document: <code>TextDocument</code> &mdash; text model</li>
 <li>ICSharpCode.AvalonEdit.Rendering: <code>TextView</code> &mdash; extensible view onto the document</li>
 <li>ICSharpCode.AvalonEdit.Editing: <code>TextArea</code> &mdash; controls text editing (e.g. caret, selection, handles user input)</li>
+<li>ICSharpCode.AvalonEdit.Folding: <code>FoldingManager</code> &mdash; enables code collapsing</li>
 <li>ICSharpCode.AvalonEdit.Highlighting: <code>HighlightingManager</code> &mdash; highlighting engine</li>
 <li>ICSharpCode.AvalonEdit.Highlighting.Xshd: <code>HighlightingLoader</code> &mdash; XML syntax highlighting definition support (.xshd files)</li>
-<li>ICSharpCode.AvalonEdit.Folding: <code>FoldingManager</code> &mdash; enables code collapsing</li>
+<li>ICSharpCode.AvalonEdit.CodeCompletion: <code>CompletionWindow</code> &mdash; shows a drop-down list for code completion</li>
 <li>ICSharpCode.AvalonEdit: <code>TextEditor</code> &mdash; the main control that brings it all together</li>
 </ul>
 
@@ -192,8 +193,10 @@ The last step in the pipeline is the conversion to one or more <code>System.Wind
 <p>
 The "element generators", "line transformers" and "background renderers" are the extension points; it is possible to add custom implementations of
 them to the <code>TextView</code> to implement additional features in the editor.
+<!--
 <p>
 The extensibility features of the rendering namespace are discussed in detail in the article "AvalonEdit Rendering". (to be published soon)
+-->
 
 <h2>Editing</h2>
 
@@ -204,7 +207,7 @@ You can customize the text area by modifying the <code>TextArea.DefaultInputHand
 WPF input bindings in it. You can also set <code>TextArea.ActiveInputHandler</code> to something different than the default
 to switch the text area into another mode. You could use this to implement an "incremental search" feature, or even a VI emulator.
 <p>
-The text area has the <code>LeftMargins</code> property - use it to add controls to the left of the text view that look like
+The text area has the <code>LeftMargins</code> property &ndash; use it to add controls to the left of the text view that look like
 they're inside the scroll viewer, but don't actually scroll. The <code>AbstractMargin</code> base class contains some useful code
 to detect when the margin is attached/detaching from a text view; or when the active document changes. However, you're not forced to use it;
 any <code>UIElement</code> can be used as margin.
@@ -303,13 +306,13 @@ and yet usually requires only a few KB of memory even for large code files.
 <p><i>On-demand</i> means that when a document is opened, only the lines initially visible will be highlighted. When the user scrolls down, highlighting will
 continue from the point where it stopped the last time.
 If the user scrolls quickly, so that the first visible line is far below the last highlighted line, then the highlighting engine still has to process all the
-lines in between - there might be comment starts in them. However, it will only scan that region for changes in the span stack; highlighting rules will not
+lines in between &ndash; there might be comment starts in them. However, it will only scan that region for changes in the span stack; highlighting rules will not
 be tested.
 <p>The stack of active spans is stored at the beginning of every line. If the user scrolls back up, the lines getting into view can be highlighted immediately
 because the necessary context (the span stack) is still available.
 <p><i>Incrementally</i> means that even if the document is changed, the stored span stacks will be reused as far as possible. If the user types <code>/*</code>, that would
 theoretically cause the whole remainder of the file to become highlighted in the comment color. However, because the engine works on-demand, it will only update the
-span stacks within the currently visible region and keep a notice 'the highlighting state is not consistent between line X and X+1', where X is the last line 
+span stacks within the currently visible region and keep a notice 'the highlighting state is not consistent between line X and line X+1', where X is the last line 
 in the visible region. Now, if the user would scroll down, the highlighting state would be updated and the 'not consistent' notice would be moved down.
 But usually, the user will continue typing and type <code>*/</code> only a few lines later. Now the highlighting state in the visible region will revert to the
 normal 'only the main ruleset is on the stack of active spans'. When the user now scrolls down below the line with the 'not consistent' marker;
@@ -323,15 +326,98 @@ The memory usage of the highlighting engine is linear to the number of span stac
 This allows the highlighting engine to store the span stacks for big code files using only a tiny amount of memory,
 especially in languages like C# where sequences of <code>//</code> or <code>///</code> are more popular than <code>/* */</code> comments.
 
+<h2>Code Completion</h2>
+<p>AvalonEdit comes with a code completion drop down window.
+You only have to handle the text entering events to determine when you want to show the window; all the UI is already done for you.
+<p>
+Here's how you can use it:
+<pre>    // in the constructor:
+    textEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
+    textEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
+}
 
-<h2>Points of Interest</h2>
+CompletionWindow completionWindow;
 
-<p>Did you learn anything interesting/fun/annoying while writing the code? Did you
-do anything particularly clever or wild or zany?
+void textEditor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+{
+    if (e.Text == ".") {
+        // Open code completion after the user has pressed dot:
+        completionWindow = new CompletionWindow(textEditor.TextArea);
+        IList&lt;ICompletionData> data = completionWindow.CompletionList.CompletionData;
+        data.Add(new MyCompletionData("Item1"));
+        data.Add(new MyCompletionData("Item2"));
+        data.Add(new MyCompletionData("Item3"));
+        completionWindow.Show();
+        completionWindow.Closed += delegate {
+            completionWindow = null;
+        };
+    }
+}
+
+void textEditor_TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+{
+    if (e.Text.Length > 0 &amp;&amp; completionWindow != null) {
+        if (!char.IsLetterOrDigit(e.Text[0])) {
+            // Whenever a non-letter is typed while the completion window is open,
+            // insert the currently selected element.
+            completionWindow.CompletionList.RequestInsertion(e);
+        }
+    }
+    // Do not set e.Handled=true.
+    // We still want to insert the character that was typed.
+}</pre>
+This code will open the code completion window whenever '.' is pressed.
+By default, the <code>CompletionWindow</code> only handles key presses like Tab and Enter to insert the currently selected item. To also make
+it complete when keys like '.' or ';' are pressed, we attach another handler to the <code>TextEntering</code> event and tell the
+completion window to insert the selected item.
+<p>
+The <code>CompletionWindow</code> will actually never have focus - instead, it hijacks the WPF keyboard input events
+on the text area and passes them through its <code>ListBox</code>.
+This allows selecting entries in the completion list using the keyboard and normal typing in the editor at the same time.
+<p>For the sake of completeness, here is the implementation of the <code>MyCompletionData</code> class used in the code above:
+<pre>/// Implements AvalonEdit ICompletionData interface to provide the entries in the
+/// completion drop down.
+public class MyCompletionData : ICompletionData
+{
+    public MyCompletionData(string text)
+    {
+        this.Text = text;
+    }
+    
+    public System.Windows.Media.ImageSource Image {
+        get { return null; }
+    }
+    
+    public string Text { get; private set; }
+    
+    // Use this property if you want to show a fancy UIElement in the list.
+    public object Content {
+        get { return this.Text; }
+    }
+    
+    public object Description {
+        get { return "Description for " + this.Text; }
+    }
+    
+    public void Complete(TextArea textArea, ISegment completionSegment,
+        EventArgs insertionRequestEventArgs)
+    {
+        textArea.Document.Replace(completionSegment, this.Text);
+    }
+}</pre>
+Both the content and the description shown may be any content acceptable in WPF, including custom UIElements.
+You may also implement custom logic in the <code>Complete</code> method if you want to do more than simply inserting the text.
+The <code>insertionRequestEventArgs</code> can help decide which kind of insertion the user wants - depending on how the insertion
+was triggered, it is an instance of <code>TextCompositionEventArgs</code>, <code>KeyEventArgs</code> or <code>MouseEventArgs</code>.
 
 <h2>History</h2>
 
-<p>Keep a running update of any changes or improvements you've made here.
+<ul>
+<li>August 13, 2008: Work on AvalonEdit started</li>
+<li>November 7, 2008: First version of AvalonEdit added to SharpDevelop 4.0 trunk</li>
+<li>June 14, 2009: The SharpDevelop team switches to SharpDevelop 4 as their IDE for working on SharpDevelop; AvalonEdit starts to get used for real work</li>
+<li>October 4, 2009: This article first published on The Code Project</li>
+</ul>
 
 <p><b>Note: although my sample code is provided under the MIT license, ICSharpCode.AvalonEdit itself is provided under the terms of the GNU LGPL.</b>
 

@@ -111,7 +111,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			public TranslateElementVisitor(XmlHighlightingDefinition def, IHighlightingDefinitionReferenceResolver resolver)
 			{
 				Debug.Assert(def != null);
-				Debug.Assert(resolver != null);
 				this.def = def;
 				this.resolver = resolver;
 			}
@@ -240,6 +239,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			{
 				if (definitionName == null)
 					return def;
+				if (resolver == null)
+					throw Error(position, "Resolving references to other syntax definitions is not possible because the IHighlightingDefinitionReferenceResolver is null.");
 				IHighlightingDefinition d = resolver.GetDefinition(definitionName);
 				if (d == null)
 					throw Error(position, "Could not find definition with name '" + definitionName + "'.");

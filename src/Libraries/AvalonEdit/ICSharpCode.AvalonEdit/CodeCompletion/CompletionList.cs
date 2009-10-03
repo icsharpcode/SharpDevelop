@@ -76,7 +76,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		ObservableCollection<ICompletionData> completionData = new ObservableCollection<ICompletionData>();
 		
 		/// <summary>
-		/// Gets/Sets the completion data.
+		/// Gets the list to which completion data can be added.
 		/// </summary>
 		public IList<ICompletionData> CompletionData {
 			get { return completionData; }
