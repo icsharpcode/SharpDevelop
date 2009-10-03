@@ -130,8 +130,7 @@ Basically, the document is a <code>StringBuilder</code> with events.
 However, the <code>Document</code> namespace also contains several features that are useful to applications working with the text editor.
 
 <p>In the text editor, all three controls (<code>TextEditor</code>, <code>TextArea</code>, <code>TextView</code>) have a <code>Document</code> property pointing to the <code>TextDocument</code> instance.
-You can change the <code>Document</code> property to bind the editor to another document; but please only do so on the outermost control (usually <code>TextEditor</code>), it will inform its child controls about that change.
-Changing the document only on a child control would leave the outer controls confused.
+You can change the <code>Document</code> property to bind the editor to another document. It is possible to bind two editor instances to the same document; you can use this feature to create a split view.
 
 <p><i>Simplified</i> definition of <code>TextDocument</code>:
 <pre lang="cs">public sealed class TextDocument : ITextSource
@@ -205,7 +204,7 @@ You can customize the text area by modifying the <code>TextArea.DefaultInputHand
 WPF input bindings in it. You can also set <code>TextArea.ActiveInputHandler</code> to something different than the default
 to switch the text area into another mode. You could use this to implement an "incremental search" feature, or even a VI emulator.
 <p>
-The text area has the useful <code>LeftMargins</code> property - use it to add controls to the left of the text view that look like
+The text area has the <code>LeftMargins</code> property - use it to add controls to the left of the text view that look like
 they're inside the scroll viewer, but don't actually scroll. The <code>AbstractMargin</code> base class contains some useful code
 to detect when the margin is attached/detaching from a text view; or when the active document changes. However, you're not forced to use it;
 any <code>UIElement</code> can be used as margin.
@@ -233,7 +232,97 @@ The sample application to this article also contains the <code>BraceFoldingStrat
 However, it is a very simple implementation and does not handle { and } inside strings or comments correctly.
 
 <h2>Syntax highlighting</h2>
-TODO: write this section
+The highlighting engine in AvalonEdit is implemented in the class <code>DocumentHighlighter</code>.
+Highlighting is the process of taking a <code>DocumentLine</code> and constructing a <code>HighlightedLine</code> instance for it
+by assigning colors to different sections of the line.
+<p>
+The <code>HighlightingColorizer</code> class is the only link between highlighting and rendering. It uses a <code>DocumentHighlighter</code>
+to implement a line transformer that applies the highlighting to the visual lines in the rendering process.
+<p>
+Except for this single call, syntax highlighting is independent from the rendering namespace.
+To help with other potential uses of the highlighting engine, the <code>HighlightedLine</code> class has the method
+<code>ToHtml</code> to produces syntax highlighted HTML source code.
+<p>
+The rules for the highlighting are defined using an "extensible syntax highlighting definition" (.xshd) file.
+Here is a complete highlighting definition for a sub-set of C#:
+<pre lang="xml">&lt;SyntaxDefinition name="C#"
+        xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+    &lt;Color name="Comment" foreground="Green" />
+    &lt;Color name="String" foreground="Blue" />
+    
+    &lt;!-- This is the main ruleset. -->
+    &lt;RuleSet>
+        &lt;Span color="Comment" begin="//" />
+        &lt;Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+        
+        &lt;Span color="String">
+            &lt;Begin>"&lt;/Begin>
+            &lt;End>"&lt;/End>
+            &lt;RuleSet>
+                &lt;!-- nested span for escape sequences -->
+                &lt;Span begin="\\" end="." />
+            &lt;/RuleSet>
+        &lt;/Span>
+        
+        &lt;Keywords fontWeight="bold" foreground="Blue">
+            &lt;Word>if&lt;/Word>
+            &lt;Word>else&lt;/Word>
+            &lt;!-- ... -->
+        &lt;/Keywords>
+        
+        &lt;!-- Digits -->
+        &lt;Rule foreground="DarkBlue">
+            \b0[xX][0-9a-fA-F]+  # hex number
+        |    \b
+            (    \d+(\.[0-9]+)?   #number with optional floating point
+            |    \.[0-9]+         #or just starting with floating point
+            )
+            ([eE][+-]?[0-9]+)? # optional exponent
+        &lt;/Rule>
+    &lt;/RuleSet>
+&lt;/SyntaxDefinition></pre>
+The highlighting engine works with "spans" and "rules" that each have a color assigned to them. In the XSHD format, colors can be both
+referenced (<code>color="Comment"</code>) or directly specified (<code>fontWeight="bold" foreground="Blue"</code>).
+<p>
+Spans consist of two regular expressions (begin+end); while rules are simply a single regex with a color. The <code>&lt;Keywords></code> element is just a nice
+syntax to define a highlighting rule that matches a set of words; internally a single regex will be used for the whole keyword list.
+<p>
+The highlighting engine works by first analyzing the spans: whenever a begin regex matches some text, that span is pushed onto a stack.
+Whenever the end regex of the current span matches some text, the span is popped from the stack.
+<p>
+Each span has a nested rule set associated with it, which is empty by default.
+This is why keywords won't be highlighted inside comments: the span's empty ruleset is active there, so the keyword rule is not applied.
+<p>
+This feature is also used in the string span: the nested span will match when a backslash is encountered, and the character following the backslash
+will be consumed by the end regex of the nested span (<code>.</code> matches any character).
+This ensures that <code>\"</code> does not denote the end of the string span; but <code>\\"</code> still does.
+<p>
+What's great about the highlighting engine is that it highlights only on-demand, works incrementally,
+and yet usually requires only a few KB of memory even for large code files.
+
+<p><i>On-demand</i> means that when a document is opened, only the lines initially visible will be highlighted. When the user scrolls down, highlighting will
+continue from the point where it stopped the last time.
+If the user scrolls quickly, so that the first visible line is far below the last highlighted line, then the highlighting engine still has to process all the
+lines in between - there might be comment starts in them. However, it will only scan that region for changes in the span stack; highlighting rules will not
+be tested.
+<p>The stack of active spans is stored at the beginning of every line. If the user scrolls back up, the lines getting into view can be highlighted immediately
+because the necessary context (the span stack) is still available.
+<p><i>Incrementally</i> means that even if the document is changed, the stored span stacks will be reused as far as possible. If the user types <code>/*</code>, that would
+theoretically cause the whole remainder of the file to become highlighted in the comment color. However, because the engine works on-demand, it will only update the
+span stacks within the currently visible region and keep a notice 'the highlighting state is not consistent between line X and X+1', where X is the last line 
+in the visible region. Now, if the user would scroll down, the highlighting state would be updated and the 'not consistent' notice would be moved down.
+But usually, the user will continue typing and type <code>*/</code> only a few lines later. Now the highlighting state in the visible region will revert to the
+normal 'only the main ruleset is on the stack of active spans'. When the user now scrolls down below the line with the 'not consistent' marker;
+the engine will notice that the old stack and the new stack are identical; and will remove the 'not consistent' marker. This allows reusing the stored span stacks
+cached from before the user typed <code>/*</code>.
+
+<p>While the stack of active spans might change frequently inside the lines, it rarely changes from the beginning of one line to the beginning of the next line.
+With most languages, such changes happen only at the start and end of multiline comments. The highlighting engine exploits this property by storing
+the list of span stacks in a special data structure (<code>ICSharpCode.AvalonEdit.Utils.CompressingTreeList</code>).
+The memory usage of the highlighting engine is linear to the number of span stack changes; not to the total number of lines.
+This allows the highlighting engine to store the span stacks for big code files using only a tiny amount of memory,
+especially in languages like C# where sequences of <code>//</code> or <code>///</code> are more popular than <code>/* */</code> comments.
+
 
 <h2>Points of Interest</h2>
 

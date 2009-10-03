@@ -77,6 +77,8 @@ However, the <code>Document</code> namespace also contains several features that
 <p>In the text editor, all three controls (<code>TextEditor</code>, <code>TextArea</code>, <code>TextView</code>) have a <code>Document</code> property pointing to the <code>TextDocument</code> instance.
 You can change the <code>Document</code> property to bind the editor to another document; but please only do so on the outermost control (usually <code>TextEditor</code>), it will inform its child controls about that change.
 Changing the document only on a child control would leave the outer controls confused.
+<p>
+It is possible to bind two editor instances to the same document; you can use this feature to create a split view.
 
 <p><i>Simplified</i> definition of <code>TextDocument</code>:
 <pre lang="cs">public sealed class TextDocument : ITextSource
