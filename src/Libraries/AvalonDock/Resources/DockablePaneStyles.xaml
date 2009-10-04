@@ -22,7 +22,7 @@
         <MenuItem Header="Auto Hide" 
 			Command="ad:DockablePane.ToggleAutoHideCommand" />
         <MenuItem Header="Hide" 
-			Command="ad:DockableContent.HideCommand" />
+			Command="ad:DockableContent.HideCommand" Visibility="{Binding Path=IsCloseable, Converter={x:Static ad:Converters.BoolToVisibilityConverter}}" />
     </ContextMenu>
 
 
@@ -138,7 +138,7 @@
 							    BorderBrush="DarkGray"
                                 Height="18">
                                 <DockPanel LastChildFill="True">
-                                    <Button DockPanel.Dock="Right" Width="15" Height="15" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:DockablePane.CloseCommand">
+                                    <Button DockPanel.Dock="Right" Width="15" Height="15" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:DockablePane.CloseCommand" Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.IsCloseable, Converter={x:Static ad:Converters.BoolToVisibilityConverter}}">
 										<ad:AlignedImage>
 											<Image Source="Images\PinClose.png" Width="13" Height="13" Stretch="None"/>
 										</ad:AlignedImage>

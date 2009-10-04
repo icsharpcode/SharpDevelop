@@ -215,6 +215,8 @@ namespace AvalonDock
 
             if (cxOptions != null)
             {
+                cxOptions.DataContext = this.SelectedItem as DockableContent;
+
                 foreach (MenuItem menuItem in cxOptions.Items)
                     menuItem.CommandTarget = this.SelectedItem as DockableContent;
 
@@ -487,7 +489,7 @@ namespace AvalonDock
         /// </summary>
         internal void CloseOrHide()
         {
-            CloseOrHide(SelectedItem as DockableContent);
+            CloseOrHide(SelectedItem as DockableContent, false);
         }
 
 

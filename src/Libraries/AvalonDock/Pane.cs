@@ -265,7 +265,18 @@ namespace AvalonDock
         /// </summary>
         internal virtual void CloseOrHide(DockableContent cntToCloseOrHide)
         {
+            CloseOrHide(cntToCloseOrHide, false);
+        }
+
+        /// <summary>
+        /// Closes or hides provided content depending on HideOnClose property
+        /// </summary>
+        internal virtual void CloseOrHide(DockableContent cntToCloseOrHide, bool force)
+        {
             Debug.Assert(cntToCloseOrHide != null);
+
+            if (!force && !cntToCloseOrHide.IsCloseable)
+                return;
 
             DockingManager manager = GetManager();
             if (cntToCloseOrHide.HideOnClose && manager != null)

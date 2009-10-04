@@ -210,12 +210,7 @@ namespace AvalonDock
             else if (e.Command == CloseCommand)
             {
                 DocumentContent docContent = this.HostedPane.Items[0] as DocumentContent;
-                if (docContent.Close())
-                {
-                    HostedPane.RemoveContent(0);
-                    Close();
-                }
-                e.Handled = true;
+                e.Handled = docContent.Close();
             }
 
             base.OnExecuteCommand(sender, e);

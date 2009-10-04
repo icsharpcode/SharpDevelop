@@ -27,6 +27,6 @@
 	</section>
 	
 	<relatedTopics>
-		<codeEntityReference>T:ICSharpCode.AvalonEdit.Gui.FoldingManager</codeEntityReference>
+		<codeEntityReference>T:ICSharpCode.AvalonEdit.Folding.FoldingManager</codeEntityReference>
 	</relatedTopics>
 </developerConceptualDocument>

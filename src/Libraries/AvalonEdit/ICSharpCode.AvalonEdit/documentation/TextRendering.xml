@@ -48,7 +48,7 @@
 			
 			<alert class="note">
 			  <para>If external data used by your text editor extension changes, call
-				TextView.<codeEntityReference>M:ICSharpCode.AvalonEdit.Gui.TextView.Redraw</codeEntityReference>
+				TextView.<codeEntityReference>M:ICSharpCode.AvalonEdit.Rendering.TextView.Redraw</codeEntityReference>
 				to invalidate the VisualLine.
 			  </para>
 			</alert>
@@ -71,11 +71,11 @@
 			    What happens in this case depends on the method you are calling -
 			    the new visual line might get created automatically,
 			    null could be returned, or you may get a
-				<codeEntityReference>T:ICSharpCode.AvalonEdit.Gui.VisualLinesInvalidException</codeEntityReference>.
+				<codeEntityReference>T:ICSharpCode.AvalonEdit.Rendering.VisualLinesInvalidException</codeEntityReference>.
 			  </para>
 			  <para>
 				You can call
-				<codeEntityReference>M:ICSharpCode.AvalonEdit.Gui.TextView.EnsureVisualLines</codeEntityReference>
+				<codeEntityReference>M:ICSharpCode.AvalonEdit.Rendering.TextView.EnsureVisualLines</codeEntityReference>
 				to make the text view create all VisualLines in the visible region.
 			  </para>
 			</alert>
@@ -162,7 +162,7 @@
 			  <listItem>Caret layer: renders a blinking caret</listItem>
 			</list>
 			It's also possible to insert new layers into the TextView using the
-			<codeEntityReference>M:ICSharpCode.AvalonEdit.Gui.TextView.InsertLayer</codeEntityReference>
+			<codeEntityReference>M:ICSharpCode.AvalonEdit.Rendering.TextView.InsertLayer</codeEntityReference>
 			method.
 			This allows adding custom interactive components to the editor
 			while being in full control of the Z-Order.
@@ -170,6 +170,6 @@
 		</content>
 	</section>
 	<relatedTopics>
-		<codeEntityReference>T:ICSharpCode.AvalonEdit.Gui.TextView</codeEntityReference>
+		<codeEntityReference>T:ICSharpCode.AvalonEdit.Rendering.TextView</codeEntityReference>
 	</relatedTopics>
 </developerConceptualDocument>

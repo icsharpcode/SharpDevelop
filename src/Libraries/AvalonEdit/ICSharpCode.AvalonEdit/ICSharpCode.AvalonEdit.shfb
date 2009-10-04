@@ -1,18 +1,21 @@
-<project schemaVersion="1.6.0.7">
+﻿<project schemaVersion="1.6.0.7">
     <assemblies>
         <assembly assemblyPath=".\ICSharpCode.AvalonEdit.dll" xmlCommentsPath=".\ICSharpCode.AvalonEdit.xml" commentsOnly="False" />
     </assemblies>
     <namespaceSummaries>
         <namespaceSummaryItem name="" isDocumented="False" />
-        <namespaceSummaryItem name="ICSharpCode.AvalonEdit" isDocumented="True">Main namespace summary</namespaceSummaryItem>
+        <namespaceSummaryItem name="ICSharpCode.AvalonEdit" isDocumented="True">This is the main AvalonEdit namespace.</namespaceSummaryItem>
+        <namespaceSummaryItem name="ICSharpCode.AvalonEdit.CodeCompletion" isDocumented="True">This namespace contains classes to show the code completion window.</namespaceSummaryItem>
         <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Document" isDocumented="True">This namespace contains the document model.
 The most important class here is TextDocument, which represents document that can be displayed and edited in the text editor.</namespaceSummaryItem>
-        <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Gui" isDocumented="True">This namespace contains the classes related to the text editor gui.
-You can extend the text view using these classes.</namespaceSummaryItem>
+        <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Editing" isDocumented="True">This namespace is the home of the TextArea class. It manages user input and handles the caret and the selection.</namespaceSummaryItem>
+        <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Folding" isDocumented="True">This namespace contains the folding implementation.</namespaceSummaryItem>
         <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Highlighting" isDocumented="True">This namespace contains the engine for highlighting text documents (DocumentHighlighter).
 Additionally, the class HighlightingColorizer provides integration of the highlighting engine into the text editor GUI.</namespaceSummaryItem>
         <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Highlighting.Xshd" isDocumented="True">This namespace contains a document model for syntax highlighting definitions (.xshd files).</namespaceSummaryItem>
-        <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Utils" isDocumented="True">This namespace contains miscellaneous utility classes</namespaceSummaryItem>
+        <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Indentation" isDocumented="True">This namespace contains the logic for automatic indentation.</namespaceSummaryItem>
+        <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Rendering" isDocumented="True">This namespace contains the text rendering infrastructure.</namespaceSummaryItem>
+        <namespaceSummaryItem name="ICSharpCode.AvalonEdit.Utils" isDocumented="True">This namespace contains various utility classes</namespaceSummaryItem>
         <namespaceSummaryItem name="XamlGeneratedNamespace" isDocumented="False" />
     </namespaceSummaries>
     <conceptualContent snippetFile="">
@@ -45,7 +48,7 @@ Additionally, the class HighlightingColorizer provides integration of the highli
     <CppCommentsFixup>False</CppCommentsFixup>
     <FrameworkVersion>3.5</FrameworkVersion>
     <IndentHtml>False</IndentHtml>
-    <Preliminary>True</Preliminary>
+    <Preliminary>False</Preliminary>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <RootNamespaceTitle />
     <HelpTitle>AvalonEdit</HelpTitle>
@@ -69,6 +72,6 @@ Additionally, the class HighlightingColorizer provides integration of the highli
     <CollectionTocStyle>Hierarchical</CollectionTocStyle>
     <IncludeStopWordList>True</IncludeStopWordList>
     <PlugInNamespaces>ms.vsipcc+, ms.vsexpresscc+</PlugInNamespaces>
-    <HelpFileVersion>0.1.0.0</HelpFileVersion>
+    <HelpFileVersion>4.0.0.5048</HelpFileVersion>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
 </project>

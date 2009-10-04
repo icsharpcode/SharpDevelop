@@ -253,6 +253,9 @@ namespace AvalonDock
         /// </remarks>
         public bool Close()
         {
+            if (!IsCloseable)
+                return false;
+
             //if documents are attached to an external source via DockingManager.DocumentsSource
             //let application host handle the document closing by itself
             if (Manager.DocumentsSource != null)

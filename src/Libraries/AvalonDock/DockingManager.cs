@@ -1611,6 +1611,9 @@ namespace AvalonDock
             if (content.State == DockableContentState.Hidden)
                 return;
 
+            if (!content.IsCloseable)
+                return;
+
             content.SaveCurrentStateAndPosition();
 
             if (content.State == DockableContentState.AutoHide)
@@ -2713,7 +2716,7 @@ namespace AvalonDock
                     parentContainer.Items.Count == 1)
                 {
                     FloatingWindow floatingWindow = Window.GetWindow(content) as FloatingWindow;
-                    floatingWindow.Close();
+                    floatingWindow.Close(true);
                 }
             }
             //this content can be hidden also if was contained in closed floating window 
@@ -2964,8 +2967,8 @@ namespace AvalonDock
             if (doc.DocumentElement == null ||
                 doc.DocumentElement.Name != "DockingManager")
             {
-                Debug.Assert(false, "Layout file had not a valid structure!");
-                return;
+                Debug.Assert(false, "Layout file hasn't a valid structure!");
+                throw new InvalidOperationException("Layout file had not a valid structure!");
             }
 
             if (doc.DocumentElement.ChildNodes.Count != 3 ||
@@ -2974,11 +2977,17 @@ namespace AvalonDock
                 doc.DocumentElement.ChildNodes[2].Name != "Windows")
             {
                 Debug.Assert(false, "Layout file hasn't a valid structure!");
-                return;
+                throw new InvalidOperationException("Layout file hasn't a valid structure!");
             }
 
+            //Hide temp windows
+            HideAutoHideWindow();
+            HideNavigatorWindow();
+            HideDocumentNavigatorWindow();
+
             DockableContent[] actualContents = DockableContents;
-            
+           
+
             //show all hidden contents
             ShowAllHiddenContents();
 
@@ -3022,6 +3031,9 @@ namespace AvalonDock
             //restore floating windows
             foreach (XmlElement flWindowElement in doc.DocumentElement.ChildNodes[2].ChildNodes)
             {
+                if (flWindowElement.ChildNodes.Count != 1)
+                    continue;//handles invalid layouts structures
+
                 bool isDockableWindow = XmlConvert.ToBoolean(flWindowElement.GetAttribute("IsDockableWindow"));
                 Point location = new Point(XmlConvert.ToDouble(flWindowElement.GetAttribute("Left")), XmlConvert.ToDouble(flWindowElement.GetAttribute("Top")));
                 Size size = new Size(XmlConvert.ToDouble(flWindowElement.GetAttribute("Width")), XmlConvert.ToDouble(flWindowElement.GetAttribute("Height")));

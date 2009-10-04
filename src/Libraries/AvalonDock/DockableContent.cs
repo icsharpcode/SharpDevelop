@@ -415,7 +415,7 @@ namespace AvalonDock
             }
             else if (!e.Handled && e.Command == DockableContent.HideCommand)
             {
-                //Manager.Hide(this);
+                Manager.Hide(this);
                 
                 e.Handled = true;
             }

@@ -58,7 +58,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				throw new ArgumentNullException("textView");
 			if (segment == null)
 				throw new ArgumentNullException("segment");
-			
+			return GetRectsForSegmentImpl(textView, segment);
+		}
+		
+		static IEnumerable<Rect> GetRectsForSegmentImpl(TextView textView, ISegment segment)
+		{
 			Vector scrollOffset = textView.ScrollOffset;
 			int segmentStart = segment.Offset;
 			int segmentEnd = segment.Offset + segment.Length;

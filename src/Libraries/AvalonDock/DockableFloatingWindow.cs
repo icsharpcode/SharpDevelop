@@ -172,14 +172,18 @@ namespace AvalonDock
             }
         }
 
+        
+
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
 
-            while (HostedPane.Items.Count > 0)
+            DockableContent[] cntsToClose = new DockableContent[HostedPane.Items.Count];
+            HostedPane.Items.CopyTo(cntsToClose, 0);
+
+            foreach (DockableContent cntToClose in cntsToClose)
             {
-                //Manager.Hide(HostedPane.Items[0] as DockableContent);
-                HostedPane.CloseOrHide(HostedPane.Items[0] as DockableContent);
+                HostedPane.CloseOrHide(HostedPane.Items[0] as DockableContent, ForcedClosing);
             }
 
             Manager.UnregisterFloatingWindow(this);

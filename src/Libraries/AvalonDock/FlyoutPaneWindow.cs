@@ -862,7 +862,13 @@ namespace AvalonDock
 
         void ApplyRegion(Rect wndRect)
         {
-            //Debug.WriteLine(wndRect);
+            if (!this.CanTransform())
+                return;
+
+            wndRect = new Rect(
+                this.TransformFromDeviceDPI(wndRect.TopLeft),
+                this.TransformFromDeviceDPI(wndRect.Size));
+
             _lastApplyRect = wndRect;
 
             if (PresentationSource.FromVisual(this) == null)

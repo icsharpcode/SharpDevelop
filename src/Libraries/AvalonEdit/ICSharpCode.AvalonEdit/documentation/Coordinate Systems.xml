@@ -67,7 +67,7 @@
 			<para>Relative text offsets are used to store document offsets in visual lines.</para>
 			<para>You can convert between relative text offsets and document offsets
 			by adding/subtracting
-			<codeEntityReference>T:ICSharpCode.AvalonEdit.Gui.VisualLine</codeEntityReference>.<codeEntityReference>P:ICSharpCode.AvalonEdit.Gui.VisualLine.FirstDocumentLine</codeEntityReference>.<codeEntityReference>P:ICSharpCode.AvalonEdit.Document.DocumentLine.Offset</codeEntityReference>.
+			<codeEntityReference>T:ICSharpCode.AvalonEdit.Rendering.VisualLine</codeEntityReference>.<codeEntityReference>P:ICSharpCode.AvalonEdit.Rendering.VisualLine.FirstDocumentLine</codeEntityReference>.<codeEntityReference>P:ICSharpCode.AvalonEdit.Document.DocumentLine.Offset</codeEntityReference>.
 			</para>
 		</content>
 	</section>
@@ -83,9 +83,9 @@
 			newline markers take 1 visual column; folding markers take just 1 visual column
 			even though they are longer in the document text.</para>
 			<para>Use the
-			<codeEntityReference>M:ICSharpCode.AvalonEdit.Gui.VisualLine.GetVisualColumn(System.Int32)</codeEntityReference>
+			<codeEntityReference>M:ICSharpCode.AvalonEdit.Rendering.VisualLine.GetVisualColumn(System.Int32)</codeEntityReference>
 			and 
-			<codeEntityReference>M:ICSharpCode.AvalonEdit.Gui.VisualLine.GetRelativeOffset(System.Int32)</codeEntityReference>
+			<codeEntityReference>M:ICSharpCode.AvalonEdit.Rendering.VisualLine.GetRelativeOffset(System.Int32)</codeEntityReference>
 			methods to convert between
 			visual columns and relative text offsets.</para>
 		
@@ -121,7 +121,7 @@
 			element from the top left document corner measured in device-independent pixels.</para>
 			<para>To convert a VisualPosition to or from a (mouse) position inside
 			the TextView, simply subtract or add
-			TextView.<codeEntityReference>P:ICSharpCode.AvalonEdit.Gui.TextView.ScrollOffset</codeEntityReference>
+			TextView.<codeEntityReference>P:ICSharpCode.AvalonEdit.Rendering.TextView.ScrollOffset</codeEntityReference>
 			to it.
 			</para>
 		</content>

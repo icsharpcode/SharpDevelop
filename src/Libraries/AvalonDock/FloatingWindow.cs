@@ -41,6 +41,7 @@ using System.Diagnostics;
 using System.Windows.Threading;
 using System.Windows.Media.Animation;
 using System.Windows.Interop;
+using System.Runtime.InteropServices;
 
 namespace AvalonDock
 {
@@ -142,10 +143,30 @@ namespace AvalonDock
         #endregion
 
         #region IsClosing Flag Management
+        public void Close(bool force)
+        {
+            ForcedClosing = force;
+            base.Close();
+        }
+
+        protected bool ForcedClosing { get; private set; }
+
+
         internal bool IsClosing { get; private set; }
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            if (HostedPane.Items.Count > 0 && !ForcedClosing)
+            {
+                ManagedContent cntToClose = HostedPane.Items[0] as ManagedContent;
+                if (!cntToClose.IsCloseable)
+                {
+                    e.Cancel = true;
+                    base.OnClosing(e);
+                    return;
+                }
+            }
+
             IsClosing = true;
             base.OnClosing(e);
         }
@@ -158,6 +179,60 @@ namespace AvalonDock
         #endregion
 
         public abstract Pane ClonePane();
+
+
+        #region Enable/Disable window Close Button
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr GetSystemMenu(
+            IntPtr hWnd,
+            Int32 bRevert
+        );
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        private static extern int GetMenuItemCount(
+            IntPtr hMenu
+        );
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        private static extern int DrawMenuBar(
+            IntPtr hWnd
+        );
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        private static extern bool EnableMenuItem(
+            IntPtr hMenu,
+            Int32 uIDEnableItem,
+            Int32 uEnable
+        );
+
+        private const Int32 MF_BYPOSITION = 0x400;
+        private const Int32 MF_ENABLED = 0x0000;
+        private const Int32 MF_GRAYED = 0x0001;
+        private const Int32 MF_DISABLED = 0x0002;
+
+        void EnableXButton()
+        {
+            WindowInteropHelper helper = new WindowInteropHelper(this);
+            IntPtr hMenu = GetSystemMenu(helper.Handle, 0);
+
+            int menuItemCount = GetMenuItemCount(hMenu);
+
+            EnableMenuItem(hMenu, menuItemCount - 1, MF_BYPOSITION | MF_ENABLED);
+            DrawMenuBar(helper.Handle);
+        }
+
+        void DisableXButton()
+        {
+            WindowInteropHelper helper = new WindowInteropHelper(this);
+            IntPtr hMenu = GetSystemMenu(helper.Handle, 0);
+
+            int menuItemCount = GetMenuItemCount(hMenu);
+
+            EnableMenuItem(hMenu, menuItemCount - 1, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+            DrawMenuBar(helper.Handle);
+        }
+
+        #endregion
 
         #region Non-Client area management
 
@@ -185,6 +260,15 @@ namespace AvalonDock
             _hwndSource = HwndSource.FromHwnd(helper.Handle);
             _wndProcHandler = new HwndSourceHook(FilterMessage);
             _hwndSource.AddHook(_wndProcHandler);
+
+            if (HostedPane.Items.Count > 0)
+            {
+                ManagedContent cntHosted = HostedPane.Items[0] as ManagedContent;
+                if (!cntHosted.IsCloseable)
+                {
+                    DisableXButton();
+                }
+            }
         }
         protected void OnUnloaded(object sender, EventArgs e)
         {

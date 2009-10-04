@@ -30,10 +30,11 @@ using System.Windows.Data;
 using System.IO;
 using System.Reflection;
 using System.Windows.Media;
+using System.Windows;
 
 namespace AvalonDock
 {
-    internal class FindResourcePathConverter : IValueConverter
+    public class FindResourcePathConverter : IValueConverter
     {
 
         #region IValueConverter Members
@@ -57,5 +58,42 @@ namespace AvalonDock
         #endregion
     }
 
+    /// <summary>
+    /// Converter from boolean values to visibility (inverse mode)
+    /// </summary>
+    [ValueConversion(typeof(object), typeof(Visibility))]
+    public class BoolToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            return System.Convert.ToBoolean(value) ? Visibility.Visible :
+            (parameter != null && ((string)parameter) == "Hidden" ? Visibility.Hidden : Visibility.Collapsed);
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+
+    public static class Converters
+    {
+        static BoolToVisibilityConverter _BoolToVisibilityConverter = null;
+
+        public static BoolToVisibilityConverter BoolToVisibilityConverter
+        {
+            get
+            {
+                if (_BoolToVisibilityConverter == null)
+                    _BoolToVisibilityConverter = new BoolToVisibilityConverter();
+
+
+                return _BoolToVisibilityConverter;
+            }
+        }
+    
+    }
 }

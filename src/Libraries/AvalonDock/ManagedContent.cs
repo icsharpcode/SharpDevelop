@@ -519,6 +519,16 @@ namespace AvalonDock
         #endregion
 
 
+        public bool IsCloseable
+        {
+            get { return (bool)GetValue(IsCloseableProperty); }
+            set { SetValue(IsCloseableProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsCloseable.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsCloseableProperty =
+            DependencyProperty.Register("IsCloseable", typeof(bool), typeof(ManagedContent), new UIPropertyMetadata(true));
+
 
     }
 }
