@@ -248,42 +248,6 @@ AvalonEdit also internally uses this geometry builder to create the selection wi
 Inside SharpDevelop, the first option (getting list of rectangles) is used to render the squiggly red line that for compiler errors,
 while the second option is used to produce nice-looking breakpoint markers.
 
-<h2>Editing</h2>
-
-The <code>TextArea</code> class is handling user input and executing the appropriate actions.
-Both the caret and the selection are controlled by the <code>TextArea</code>.
-<p>
-You can customize the text area by modifying the <code>TextArea.DefaultInputHandler</code> by adding new or replacing existing
-WPF input bindings in it. You can also set <code>TextArea.ActiveInputHandler</code> to something different than the default
-to switch the text area into another mode. You could use this to implement an "incremental search" feature, or even a VI emulator.
-<p>
-The text area has the useful <code>LeftMargins</code> property - use it to add controls to the left of the text view that look like
-they're inside the scroll viewer, but don't actually scroll. The <code>AbstractMargin</code> base class contains some useful code
-to detect when the margin is attached/detaching from a text view; or when the active document changes. However, you're not forced to use it;
-any <code>UIElement</code> can be used as margin.
-
-<h2>Folding</h2>
-Folding (code collapsing) could be implemented as an extension to the editor without having to modify the AvalonEdit code.
-A <code>VisualLineElementGenerator</code> takes care of the collapsed sections in the text document; and a custom margin draws the plus and minus
-buttons.
-<p>
-That's exactly how folding is implemented in AvalonEdit. However, to make it a bit easier to use; the static <code>FoldingManager.Install</code>
-method will create and register the necessary parts automatically.
-<p>
-All that's left for you is to regularly call <code>FoldingManager.UpdateFoldings</code> with the list of foldings you want to provide.
-<p>
-Here is the full code required to enable folding:
-<pre lang="cs">foldingManager = FoldingManager.Install(textEditor.TextArea);
-foldingStrategy = new XmlFoldingStrategy();
-foldingStrategy.UpdateFoldings(foldingManager, textEditor.Document);</pre>
-If you want the folding markers to update when the text is changed, you have to repeat the <code>foldingStrategy.UpdateFoldings</code> call regularly.
-<p>
-The sample application to this article also contains the <code>BraceFoldingStrategy</code> that folds using { and }.
-However, it is a very simple implementation and does not handle { and } inside strings or comments correctly.
-
-<h2>Syntax highlighting</h2>
-TODO: write this section
-
 <h2>Points of Interest</h2>
 
 <p>Did you learn anything interesting/fun/annoying while writing the code? Did you

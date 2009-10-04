@@ -49,6 +49,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly CodeEditorAdapter primaryTextEditorAdapter;
 		CodeEditorView secondaryTextEditor;
 		CodeEditorAdapter secondaryTextEditorAdapter;
+		GridSplitter gridSplitter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
 		ErrorPainter errorPainter;
@@ -136,6 +137,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		const double minRowHeight = 40;
+		
 		public CodeEditor()
 		{
 			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
@@ -155,8 +158,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Document = primaryTextEditor.Document;
 			primaryTextEditor.SetBinding(TextEditor.DocumentProperty, new Binding("Document") { Source = this });
 			
+			this.ColumnDefinitions.Add(new ColumnDefinition());
 			this.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-			this.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+			this.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = minRowHeight });
 			SetRow(primaryTextEditor, 1);
 			
 			this.Children.Add(primaryTextEditor);
@@ -187,8 +191,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			textEditor.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
-			
-			textView.Services.AddService(typeof(ParserFoldingStrategy), new ParserFoldingStrategy(textEditor.TextArea));
 			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
@@ -244,7 +246,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (secondaryTextEditor == null) {
 				// create secondary editor
-				this.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+				this.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = minRowHeight });
 				secondaryTextEditor = CreateTextEditor();
 				secondaryTextEditorAdapter = (CodeEditorAdapter)secondaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 				Debug.Assert(primaryTextEditorAdapter != null);
@@ -254,19 +256,31 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				secondaryTextEditor.SyntaxHighlighting = primaryTextEditor.SyntaxHighlighting;
 				secondaryTextEditor.Options = primaryTextEditor.Options;
 				
+				gridSplitter = new GridSplitter { 
+					Height = 4, 
+					HorizontalAlignment = HorizontalAlignment.Stretch, 
+					VerticalAlignment = VerticalAlignment.Top
+				};
+				SetRow(gridSplitter, 2);
+				this.Children.Add(gridSplitter);
+				
+				secondaryTextEditor.Margin = new Thickness(0, 4, 0, 0);
 				SetRow(secondaryTextEditor, 2);
 				this.Children.Add(secondaryTextEditor);
 				
 				this.secondaryBracketRenderer = new BracketHighlightRenderer(secondaryTextEditor.TextArea.TextView);
 				
 				secondaryTextEditorAdapter.FileNameChanged();
+				FetchParseInformation();
 			} else {
 				// remove secondary editor
 				this.Children.Remove(secondaryTextEditor);
+				this.Children.Remove(gridSplitter);
 				DisposeTextEditor(secondaryTextEditor);
 				secondaryTextEditor = null;
 				secondaryTextEditorAdapter.Language.Detach();
 				secondaryTextEditorAdapter = null;
+				gridSplitter = null;
 				this.secondaryBracketRenderer = null;
 				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
 			}
@@ -527,19 +541,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (editor != null) {
 				IServiceContainer container = editor.GetService(typeof(IServiceContainer)) as IServiceContainer;
 				ParserFoldingStrategy folding = container.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
-				if (folding != null) {
-					if (parseInfo == null) {
+				if (parseInfo == null) {
+					if (folding != null) {
 						folding.Dispose();
 						container.RemoveService(typeof(ParserFoldingStrategy));
-					} else {
-						folding.UpdateFoldings(parseInfo);
 					}
 				} else {
-					TextArea textArea = editor.GetService(typeof(TextArea)) as TextArea;
-					if (parseInfo != null) {
+					if (folding == null) {
+						TextArea textArea = editor.GetService(typeof(TextArea)) as TextArea;
 						folding = new ParserFoldingStrategy(textArea);
 						container.AddService(typeof(ParserFoldingStrategy), folding);
 					}
+					folding.UpdateFoldings(parseInfo);
 				}
 			}
 		}
