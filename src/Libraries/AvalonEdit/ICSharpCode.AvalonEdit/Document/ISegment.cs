@@ -15,6 +15,8 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <summary>
 	/// An (Offset,Length)-pair.
 	/// </summary>
+	/// <seealso cref="TextSegment"/>
+	/// <seealso cref="AnchorSegment"/>
 	public interface ISegment
 	{
 		/// <summary>
@@ -137,12 +139,16 @@ namespace ICSharpCode.AvalonEdit.Document
 	}
 	
 	/// <summary>
-	/// A segment using text anchors as start and end positions.
+	/// A segment using <see cref="TextAnchor"/>s as start and end positions.
 	/// </summary>
 	/// <remarks>
+	/// <para>
 	/// For the constructors creating new anchors, the start position will be AfterInsertion and the end position will be BeforeInsertion.
 	/// Should the end position move before the start position, the segment will have length 0.
+	/// </para>
 	/// </remarks>
+	/// <seealso cref="ISegment"/>
+	/// <seealso cref="TextSegment"/>
 	public sealed class AnchorSegment : ISegment
 	{
 		readonly TextAnchor start, end;

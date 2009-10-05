@@ -14,6 +14,18 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <summary>
 	/// Represents a line inside a <see cref="TextDocument"/>.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// The <see cref="TextDocument.Lines"/> collection contains one DocumentLine instance
+	/// for every line in the document. This collection is read-only to user code and is automatically
+	/// updated to reflect the current document content.
+	/// </para>
+	/// <para>
+	/// Internally, the DocumentLine instances are arranged in a binary tree that allows for both efficient updates and lookup.
+	/// Converting between offset and line number is possible in O(lg N) time,
+	/// and the data structure also updates all offsets in O(lg N) whenever a line is inserted or removed.
+	/// </para>
+	/// </remarks>
 	public sealed partial class DocumentLine : ISegment
 	{
 		#region Constructor
@@ -120,7 +132,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
-		/// Gets the end offset of the line in the document's text (the offset before the newline character).
+		/// Gets the end offset of the line in the document's text (the offset before the line delimiter).
 		/// Runtime: O(log n)
 		/// </summary>
 		/// <exception cref="InvalidOperationException">The line was deleted.</exception>
@@ -135,7 +147,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		byte delimiterLength;
 		
 		/// <summary>
-		/// Gets the length of this line. O(1)
+		/// Gets the length of this line. The length does not include the line delimiter. O(1)
 		/// </summary>
 		/// <remarks>This property is still available even if the line was deleted;
 		/// in that case, it contains the line's length before the deletion.</remarks>
@@ -163,10 +175,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
-		/// Gets the length of the newline.
+		/// <para>Gets the length of the line delimiter.</para>
+		/// <para>The value is 1 for single <c>"\r"</c> or <c>"\n"</c>, 2 for the <c>"\r\n"</c> sequence;
+		/// and 0 for the last line in the document.</para>
 		/// </summary>
 		/// <remarks>This property is still available even if the line was deleted;
-		/// in that case, it contains the line's length before the deletion.</remarks>
+		/// in that case, it contains the line delimiter's length before the deletion.</remarks>
 		public int DelimiterLength {
 			get {
 				document.DebugVerifyAccess();
@@ -229,7 +243,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		#region ToString
 		/// <summary>
-		/// Gets a string representation of the line.
+		/// Gets a string with debug output showing the line number and offset.
+		/// Does not include the line's text.
 		/// </summary>
 		public override string ToString()
 		{

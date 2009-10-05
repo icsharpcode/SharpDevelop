@@ -11,13 +11,33 @@ using System.Diagnostics;
 namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
-	/// A segment that can be put into a TextSegmentCollection.
+	/// A segment that can be put into a <see cref="TextSegmentCollection{T}"/>.
 	/// </summary>
 	/// <remarks>
-	/// On insertions at the start or end offset of the text segment, a TextSegmentCollection handling the document
-	/// changes will keep the TextSegment small;
-	/// i.e. use AfterInsertion for the start position and BeforeInsertion for the end position.
+	/// <para>
+	/// A <see cref="TextSegment"/> can be stand-alone or part of a <see cref="TextSegmentCollection{T}"/>.
+	/// If the segment is stored inside a TextSegmentCollection, its Offset and Length will be updated by that collection.
+	/// </para>
+	/// <para>
+	/// When the document changes, the offsets of all text segments in the TextSegmentCollection will be adjusted accordingly.
+	/// Start offsets move like <see cref="AnchorMovementType">AnchorMovementType.AfterInsertion</see>,
+	/// end offsets move like <see cref="AnchorMovementType">AnchorMovementType.BeforeInsertion</see>
+	/// (i.e. the segment will always stay as small as possible).</para>
+	/// <para>
+	/// If a document change causes a segment to be deleted completely, it will be reduced to length 0, but segments are
+	/// never automatically removed from the collection.
+	/// Segments with length 0 will never expand due to document changes, and they move as <c>AfterInsertion</c>.
+	/// </para>
+	/// <para>
+	/// Thread-safety: a TextSegmentCollection that is connected to a <see cref="TextDocument"/> may only be used on that document's owner thread.
+	/// A disconnected TextSegmentCollection is safe for concurrent reads, but concurrent access is not safe when there are writes.
+	/// Keep in mind that reading the Offset properties of a text segment inside the collection is a read access on the
+	/// collection; and setting an Offset property of a text segment is a write access on the collection.
+	/// </para>
 	/// </remarks>
+	/// <seealso cref="ISegment"/>
+	/// <seealso cref="AnchorSegment"/>
+	/// <seealso cref="TextSegmentCollection{T}"/>
 	public class TextSegment : ISegment
 	{
 		internal ISegmentTree ownerTree;

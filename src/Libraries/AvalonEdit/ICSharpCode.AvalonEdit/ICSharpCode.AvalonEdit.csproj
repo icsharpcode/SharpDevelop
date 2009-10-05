@@ -370,18 +370,9 @@
     <EmbeddedResource Include="Highlighting\Resources\ModeV2.xsd" />
     <EmbeddedResource Include="Highlighting\Resources\CSharp-Mode.xshd" />
     <EmbeddedResource Include="Highlighting\Resources\XmlDoc.xshd" />
-    <None Include="documentation\Coordinate Systems.xml" />
-    <None Include="documentation\Folding.xml" />
-    <None Include="documentation\Introduction.xml" />
-    <None Include="documentation\SyntaxHighlighting.xml" />
-    <None Include="documentation\TextRendering.xml" />
-    <None Include="ICSharpCode.AvalonEdit.shfb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Document" />
-    <Folder Include="documentation" />
     <Folder Include="Folding" />
     <Folder Include="Highlighting" />
     <Folder Include="Highlighting\Xshd" />

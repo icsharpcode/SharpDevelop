@@ -12,8 +12,12 @@ namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
 	/// A line/column position.
-	/// Text editor lines/columns are counting from one.
+	/// Text editor lines/columns are counted started from one.
 	/// </summary>
+	/// <remarks>
+	/// The document provides the methods <see cref="TextDocument.GetLocation"/> and
+	/// <see cref="TextDocument.GetOffset(TextLocation)"/> to convert between offsets and TextLocations.
+	/// </remarks>
 	public struct TextLocation : IComparable<TextLocation>, IEquatable<TextLocation>
 	{
 		/// <summary>
@@ -23,8 +27,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Creates a TextLocation instance.
+		/// <para>
 		/// Warning: the parameters are (line, column).
 		/// Not (column, line) as in ICSharpCode.TextEditor!
+		/// </para>
 		/// </summary>
 		public TextLocation(int line, int column)
 		{

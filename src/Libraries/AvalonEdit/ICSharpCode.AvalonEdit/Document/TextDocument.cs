@@ -18,9 +18,13 @@ using ICSharpCode.AvalonEdit.Utils;
 namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
-	/// Runtimes:
-	/// n = number of lines in the document
+	/// This class is the main class of the text model. Basically, it is a <see cref="System.Text.StringBuilder"/> with events.
 	/// </summary>
+	/// <remarks>
+	/// <b>Thread safety:</b>
+	/// <inheritdoc cref="VerifyAccess"/>
+	/// <para>However, there is a single method that is thread-safe: <see cref="CreateSnapshot()"/> (and its overloads).</para>
+	/// </remarks>
 	public sealed class TextDocument : ITextSource
 	{
 		#region Thread ownership
@@ -31,6 +35,11 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Verifies that the current thread is the documents owner thread.
 		/// Throws an <see cref="InvalidOperationException"/> if the wrong thread accesses the TextDocument.
 		/// </summary>
+		/// <remarks>
+		/// <para>The TextDocument class is not thread-safe. A document instance expects to have a single owner thread
+		/// and will throw an <see cref="InvalidOperationException"/> when accessed from another thread.
+		/// It is possible to change the owner thread using the <see cref="SetOwnerThread"/> method.</para>
+		/// </remarks>
 		public void VerifyAccess()
 		{
 			if (Thread.CurrentThread != owner)
@@ -43,8 +52,11 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// for displaying the document.
 		/// </summary>
 		/// <remarks>
+		/// <inheritdoc cref="VerifyAccess"/>
+		/// <para>
 		/// The owner can be set to null, which means that no thread can access the document. But, if the document
-		/// has no owner thread, any thread may take ownership by calling SetOwnerThread.
+		/// has no owner thread, any thread may take ownership by calling <see cref="SetOwnerThread"/>.
+		/// </para>
 		/// </remarks>
 		public void SetOwnerThread(Thread newOwner)
 		{
@@ -162,6 +174,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <inheritdoc/>
+		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public event EventHandler TextChanged;
 		
 		/// <inheritdoc/>
@@ -175,26 +188,64 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Is raised when the TextLength property changes.
 		/// </summary>
+		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public event EventHandler TextLengthChanged;
 		
 		/// <summary>
 		/// Is raised before the document changes.
 		/// </summary>
+		/// <remarks>
+		/// <para>Here is the order in which events are raised during a document update:</para>
+		/// <list type="bullet">
+		/// <item><description><b><see cref="BeginUpdate">BeginUpdate()</see></b></description>
+		///   <list type="bullet">
+		///   <item><description><see cref="UpdateStarted"/> event is raised</description></item>
+		///   </list></item>
+		/// <item><description><b><see cref="Insert(int,string)">Insert()</see> / <see cref="Remove(int,int)">Remove()</see> / <see cref="Replace(int,int,string)">Replace()</see></b></description>
+		///   <list type="bullet">
+		///   <item><description><see cref="Changing"/> event is raised</description></item>
+		///   <item><description>The document is changed</description></item>
+		///   <item><description><see cref="TextAnchor.Deleted">TextAnchor.Deleted</see> event is raised if anchors were
+		///     in the deleted text portion</description></item>
+		///   <item><description><see cref="Changed"/> event is raised</description></item>
+		///   </list></item>
+		/// <item><description><b><see cref="EndUpdate">EndUpdate()</see></b></description>
+		///   <list type="bullet">
+		///   <item><description><see cref="TextChanged"/> event is raised</description></item>
+		///   <item><description><see cref="TextLengthChanged"/> event is raised</description></item>
+		///   <item><description><see cref="LineCountChanged"/> event is raised</description></item>
+		///   <item><description><see cref="UpdateFinished"/> event is raised</description></item>
+		///   </list></item>
+		/// </list>
+		/// <para>
+		/// If the insert/remove/replace methods are called without a call to <c>BeginUpdate()</c>,
+		/// they will call <c>BeginUpdate()</c> and <c>EndUpdate()</c> to ensure no change happens outside of <c>UpdateStarted</c>/<c>UpdateFinished</c>.
+		/// </para><para>
+		/// There can be multiple document changes between the <c>BeginUpdate()</c> and <c>EndUpdate()</c> calls.
+		/// In this case, the events associated with EndUpdate will be raised only once after the whole document update is done.
+		/// </para><para>
+		/// The <see cref="UndoStack"/> listens to the <c>UpdateStarted</c> and <c>UpdateFinished</c> events to group all changes into a single undo step.
+		/// </para>
+		/// </remarks>
 		public event EventHandler<DocumentChangeEventArgs> Changing;
 		
 		/// <summary>
 		/// Is raised after the document has changed.
 		/// </summary>
+		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public event EventHandler<DocumentChangeEventArgs> Changed;
 		
 		/// <summary>
 		/// Creates a snapshot of the current text.
 		/// </summary>
 		/// <remarks>
-		/// Unlike all other TextDocument methods, this method may be called from any thread; even when the owning thread
-		/// is concurrently writing to the document.
+		/// <para>This method returns an immutable snapshot of the document, and may be safely called even when
+		/// the document's owner thread is concurrently modifying the document.
+		/// </para><para>
 		/// This special thread-safety guarantee is valid only for TextDocument.CreateSnapshot(), not necessarily for other
 		/// classes implementing ITextSource.CreateSnapshot().
+		/// </para><para>
+		/// </para>
 		/// </remarks>
 		public ITextSource CreateSnapshot()
 		{
@@ -207,12 +258,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Creates a snapshot of the current text.
 		/// Additionally, creates a checkpoint that allows tracking document changes.
 		/// </summary>
-		/// <remarks>
-		/// Unlike all other TextDocument methods, this method may be called from any thread; even when the owning thread
-		/// is concurrently writing to the document.
-		/// This special thread-safety guarantee is valid only for TextDocument.CreateSnapshot(), not necessarily for other
-		/// classes implementing ITextSource.CreateSnapshot().
-		/// </remarks>
+		/// <remarks><inheritdoc cref="CreateSnapshot()"/><inheritdoc cref="ChangeTrackingCheckpoint"/></remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "Need to return snapshot and checkpoint together to ensure thread-safety")]
 		public ITextSource CreateSnapshot(out ChangeTrackingCheckpoint checkpoint)
 		{
@@ -236,12 +282,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Creates a snapshot of a part of the current text.
 		/// </summary>
-		/// <remarks>
-		/// Unlike all other TextDocument methods, this method may be called from any thread; even when the owning thread
-		/// is concurrently writing to the document.
-		/// This special thread-safety guarantee is valid only for TextDocument.CreateSnapshot(), not necessarily for other
-		/// classes implementing ITextSource.CreateSnapshot().
-		/// </remarks>
+		/// <remarks><inheritdoc cref="CreateSnapshot()"/></remarks>
 		public ITextSource CreateSnapshot(int offset, int length)
 		{
 			lock (lockObject) {
@@ -264,6 +305,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets if an update is running.
 		/// </summary>
+		/// <remarks><inheritdoc cref="BeginUpdate"/></remarks>
 		public bool IsInUpdate {
 			get {
 				VerifyAccess();
@@ -275,6 +317,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// Immediately calls <see cref="BeginUpdate()"/>,
 		/// and returns an IDisposable that calls <see cref="EndUpdate()"/>.
 		/// </summary>
+		/// <remarks><inheritdoc cref="BeginUpdate"/></remarks>
 		public IDisposable RunUpdate()
 		{
 			BeginUpdate();
@@ -282,12 +325,13 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
-		/// Begins a group of document changes.
-		/// Some events are suspended until EndUpdate is called, and the <see cref="UndoStack"/> will
-		/// group all changes into a single action.
-		/// Calling BeginUpdate several times increments a counter, only after the appropriate number
-		/// of EndUpdate calls the events resume their work.
+		/// <para>Begins a group of document changes.</para>
+		/// <para>Some events are suspended until EndUpdate is called, and the <see cref="UndoStack"/> will
+		/// group all changes into a single action.</para>
+		/// <para>Calling BeginUpdate several times increments a counter, only after the appropriate number
+		/// of EndUpdate calls the events resume their work.</para>
 		/// </summary>
+		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public void BeginUpdate()
 		{
 			VerifyAccess();
@@ -303,6 +347,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Ends a group of document changes.
 		/// </summary>
+		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public void EndUpdate()
 		{
 			VerifyAccess();
@@ -321,11 +366,13 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Occurs when a document change starts.
 		/// </summary>
+		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public event EventHandler UpdateStarted;
 		
 		/// <summary>
 		/// Occurs when a document change is finished.
 		/// </summary>
+		/// <remarks><inheritdoc cref="Changing"/></remarks>
 		public event EventHandler UpdateFinished;
 		#endregion
 		
@@ -573,6 +620,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets a read-only list of lines.
 		/// </summary>
+		/// <remarks><inheritdoc cref="DocumentLine"/></remarks>
 		public IList<DocumentLine> Lines {
 			get { return lineTree; }
 		}
@@ -606,6 +654,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the offset from a text location.
 		/// </summary>
+		/// <seealso cref="GetLocation"/>
 		public int GetOffset(TextLocation location)
 		{
 			return GetOffset(location.Line, location.Column);
@@ -614,6 +663,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the offset from a text location.
 		/// </summary>
+		/// <seealso cref="GetLocation"/>
 		public int GetOffset(int line, int column)
 		{
 			DocumentLine docLine = GetLineByNumber(line);
@@ -627,6 +677,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the location from an offset.
 		/// </summary>
+		/// <seealso cref="GetOffset(TextLocation)"/>
 		public TextLocation GetLocation(int offset)
 		{
 			DocumentLine line = GetLineByOffset(offset);
@@ -637,6 +688,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Gets the list of <see cref="ILineTracker"/>s attached to this document.
+		/// You can add custom line trackers to this list.
 		/// </summary>
 		public IList<ILineTracker> LineTrackers {
 			get {
@@ -655,8 +707,9 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
-		/// Creates a new text anchor at the specified offset.
+		/// Creates a new <see cref="TextAnchor"/> at the specified offset.
 		/// </summary>
+		/// <inheritdoc cref="TextAnchor" select="remarks|example"/>
 		public TextAnchor CreateAnchor(int offset)
 		{
 			VerifyAccess();

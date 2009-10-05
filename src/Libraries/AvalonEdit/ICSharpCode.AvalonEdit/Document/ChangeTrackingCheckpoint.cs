@@ -14,10 +14,16 @@ using System.Linq;
 namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
-	/// A checkpoint that allows tracking changes to a TextDocument.
-	/// 
+	/// <para>A checkpoint that allows tracking changes to a TextDocument.</para>
+	/// <para>
 	/// Use <see cref="TextDocument.CreateSnapshot(out ChangeTrackingCheckpoint)"/> to create a checkpoint.
+	/// </para>
 	/// </summary>
+	/// <remarks>
+	/// <para>The <see cref="ChangeTrackingCheckpoint"/> class allows tracking document changes, even from background threads.</para>
+	/// <para>Once you have two checkpoints, you can call <see cref="ChangeTrackingCheckpoint.GetChangesTo"/> to retrieve the complete list
+	/// of document changes that happened between those versions of the document.</para>
+	/// </remarks>
 	public sealed class ChangeTrackingCheckpoint
 	{
 		// Object that is unique per document.

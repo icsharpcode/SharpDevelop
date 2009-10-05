@@ -28,21 +28,13 @@ namespace ICSharpCode.AvalonEdit.Document
 	}
 	
 	/// <summary>
+	/// <para>
 	/// A collection of text segments that supports efficient lookup of segments
 	/// intersecting with another segment.
-	/// 
-	/// When the document changes, the offsets of all text segments in the collection will be adjusted accordingly.
-	/// Start offsets move like AnchorMovementType.AfterInsertion, end offsets move like AnchorMovementType.BeforeInsertion
-	/// (i.e. the segment will always stay as small as possible).
-	/// If a document change causes a segment to be deleted completely, it will be reduced to length 0, but segments are
-	/// never automatically removed. Segments with length 0 will never expand due to document changes and move as AfterInsertion.
+	/// </para>
 	/// </summary>
-	/// <remarks>
-	/// Thread-safety: a TextSegmentCollection that is connected to a TextDocument may only be used on that document's owner thread.
-	/// A disconnected TextSegmentCollection is safe for concurrent reads, but concurrent access is not safe when there are writes.
-	/// Keep in mind that reading the Offset properties of a <see cref="TextSegment"/> inside the collection is a read access on the
-	/// collection; and setting an Offset property of a <see cref="TextSegment"/> is a write access on the collection.
-	/// </remarks>
+	/// <remarks><inheritdoc cref="TextSegment"/></remarks>
+	/// <see cref="TextSegment"/>
 	public sealed class TextSegmentCollection<T> : ICollection<T>, ISegmentTree, IWeakEventListener where T : TextSegment
 	{
 		// Implementation: this is basically a mixture of an augmented interval tree

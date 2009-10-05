@@ -45,7 +45,7 @@ CODE { COLOR: #990000; FONT-FAMILY: "Courier New", Courier, mono; }
 
 <ul class=download>
 <li><a href="AvalonEdit/AvalonEdit_Binaries.zip">Download binaries - 206.5 KB</a></li>
-<li><a href="AvalonEdit/AvalonEdit_Source.zip">Download source code - 350.29 KB</a></li>
+<li><a href="AvalonEdit/AvalonEdit_Source.zip">Download source code - 391.3 KB</a></li>
 <li><a href="AvalonEdit/AvalonEdit_CHM_Documentation.zip">Download .chm documentation file - 1.88 MB</a></li>
 </ul>
 <p>The latest version of AvalonEdit can be found as part of the <a href="http://www.icsharpcode.net/OpenSource/SD/">SharpDevelop</a> project.
@@ -72,7 +72,7 @@ for <a href="http://www.codeproject.com/KB/edit/TextEditorControl.aspx">ICSharpC
 For example, an AddIn should be able to allow inserting images into comments &ndash; this way you could put
 stuff like class diagrams right into the source code!
 <p>
-With, <b>Easy to use</b>, I'm referring to the programming API. It should just work&trade;.
+With, <b>Easy to use</b>, I'm referring to the programming API. It should just work.
 For example, this means if you change the document text,
 the editor should automatically redraw without having to call <code>Invalidate()</code>.
 
@@ -101,7 +101,7 @@ ASP.NET, Boo, Coco/R grammars, C++, C#, HTML, Java, JavaScript, Patch files, PHP
 <p>If you need more of AvalonEdit than a simple text box with syntax highlighting, you will first have to learn more about the architecture of AvalonEdit.
 
 <!------------------------------------------------------------>
-<h2>Architecture</h2>
+<h2>Architecture of AvalonEdit</h2>
 <img src="AvalonEdit/dependencies.png" width="583" height="439" alt="Namespace Dependency Graph"/>
 <p>
 As you can see in this dependency graph, AvalonEdit consists of a few sub-namespaces that have cleanly separated jobs.
@@ -127,7 +127,7 @@ While the main control provides some convenience methods for common tasks, for m
 or <code>textEditor.TextArea.TextView</code>.
 
 <!------------------------------------------------------------>
-<h2>Document (The Text Model)</h2>
+<h2>The Text Model: Document</h2>
 
 <p>The main class of the model is <code>ICSharpCode.AvalonEdit.Document.TextDocument</code>.
 Basically, the document is a <code>StringBuilder</code> with events.
@@ -179,7 +179,7 @@ Those are convenience methods built on top of the <code>DocumentLine</code> clas
 This collection is read-only to user code and is automatically updated to reflect the current document content.
 
 <!------------------------------------------------------------>
-<h2>Rendering</h2>
+<h2>Rendering: TextView</h2>
 
 In the whole 'Document' section, there was no mention of extensibility.
 The text rendering infrastructure now has to compensate for that by being completely extensible.
@@ -200,7 +200,7 @@ them to the <code>TextView</code> to implement additional features in the editor
 The extensibility features of the rendering namespace are discussed in detail in the article "AvalonEdit Rendering". (to be published soon)
 -->
 
-<h2>Editing</h2>
+<h2>Editing: TextArea</h2>
 
 The <code>TextArea</code> class is handling user input and executing the appropriate actions.
 Both the caret and the selection are controlled by the <code>TextArea</code>.
@@ -236,7 +236,7 @@ Currently, only the <code>XmlFoldingStrategy</code> is built into AvalonEdit.
 The sample application to this article also contains the <code>BraceFoldingStrategy</code> that folds using { and }.
 However, it is a very simple implementation and does not handle { and } inside strings or comments correctly.
 
-<h2>Syntax highlighting</h2>
+<h2>Syntax Highlighting</h2>
 The highlighting engine in AvalonEdit is implemented in the class <code>DocumentHighlighter</code>.
 Highlighting is the process of taking a <code>DocumentLine</code> and constructing a <code>HighlightedLine</code> instance for it
 by assigning colors to different sections of the line.
@@ -289,17 +289,17 @@ Here is a complete highlighting definition for a sub-set of C#:
 The highlighting engine works with "spans" and "rules" that each have a color assigned to them. In the XSHD format, colors can be both
 referenced (<code>color="Comment"</code>) or directly specified (<code>fontWeight="bold" foreground="Blue"</code>).
 <p>
-Spans consist of two regular expressions (begin+end); while rules are simply a single regex with a color. The <code>&lt;Keywords></code> element is just a nice
-syntax to define a highlighting rule that matches a set of words; internally a single regex will be used for the whole keyword list.
+Spans consist of two regular expressions (begin+end), while rules are simply a single RegEx with a color. The <code>&lt;Keywords></code> element is just a nice
+syntax to define a highlighting rule that matches a set of words; internally a single RegEx will be used for the whole keyword list.
 <p>
-The highlighting engine works by first analyzing the spans: whenever a begin regex matches some text, that span is pushed onto a stack.
-Whenever the end regex of the current span matches some text, the span is popped from the stack.
+The highlighting engine works by first analyzing the spans: whenever a begin RegEx matches some text, that span is pushed onto a stack.
+Whenever the end RegEx of the current span matches some text, the span is popped from the stack.
 <p>
 Each span has a nested rule set associated with it, which is empty by default.
 This is why keywords won't be highlighted inside comments: the span's empty ruleset is active there, so the keyword rule is not applied.
 <p>
 This feature is also used in the string span: the nested span will match when a backslash is encountered, and the character following the backslash
-will be consumed by the end regex of the nested span (<code>.</code> matches any character).
+will be consumed by the end RegEx of the nested span (<code>.</code> matches any character).
 This ensures that <code>\"</code> does not denote the end of the string span; but <code>\\"</code> still does.
 <p>
 What's great about the highlighting engine is that it highlights only on-demand, works incrementally,

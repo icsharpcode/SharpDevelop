@@ -11,13 +11,15 @@ namespace ICSharpCode.AvalonEdit.Document
 {
 	/// <summary>
 	/// Allows for low-level line tracking.
+	/// </summary>
+	/// <remarks>
 	/// The methods on this interface are called by the TextDocument's LineManager immediately after the document
 	/// has changed, *while* the DocumentLineTree is updating.
 	/// Thus, the DocumentLineTree may be in an invalid state when these methods are called.
 	/// This interface should only be used to update per-line data structures like the HeightTree.
 	/// Line trackers must not cause any events to be raised during an update to prevent other code from seeing
 	/// the invalid state.
-	/// </summary>
+	/// </remarks>
 	public interface ILineTracker
 	{
 		/// <summary>
