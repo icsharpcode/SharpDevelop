@@ -13,6 +13,7 @@
 		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
 		<ArtefactPrefix>SharpDevelop_3.1.1.</ArtefactPrefix>
 		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
+		<NUnitTempToolPath>$(SharpDevelopBin)\Tools\x86NUnit</NUnitTempToolPath>
 		<ProfilerSrc>$(SharpDevelopSrc)\AddIns\Misc\Profiler</ProfilerSrc>
 		
 		<!-- we cannot use <MSBuild> to build a solution because -->
@@ -83,11 +84,22 @@
 			<Output TaskParameter="Include" ItemName="UnitTestAssemblies"/>
 		</CreateItem>
 		
+		<!-- HACK: we cannot make the NUnit task run the x86 version; so instead we make a copy
+			of NUnit and rename nunit-console-x86 to nunit-console
+		-->
+		<CreateItem Include="$(NUnitToolPath)\lib\*.dll">
+			<Output TaskParameter="Include" ItemName="NUnitLibFiles"/>
+		</CreateItem>
+		<Copy SourceFiles="@(NUnitLibFiles)" DestinationFolder="$(NUnitTempToolPath)\lib"/>
+		<Copy SourceFiles="$(NUnitToolPath)\nunit.framework.dll" DestinationFolder="$(NUnitTempToolPath)"/>
+		<Copy SourceFiles="$(NUnitToolPath)\nunit-console-x86.exe" DestinationFiles="$(NUnitTempToolPath)\nunit-console.exe"/>
+		<Copy SourceFiles="$(NUnitToolPath)\nunit-console-x86.exe.config" DestinationFiles="$(NUnitTempToolPath)\nunit-console.exe.config"/>
+		
 		<!-- the %() portion is important; otherwise a single NUnit-console process is used for all tests -->
 		<NUnit Assemblies="@(UnitTestAssemblies)"
 		       OutputXmlFile="$(TestReportsDir)\%(UnitTestAssemblies.FileName).xml"
 		       WorkingDirectory="$(SharpDevelopBin)\UnitTests"
-		       ToolPath="$(NUnitToolPath)"/>
+		       ToolPath="$(NUnitTempToolPath)"/>
 	</Target>
 	
 	<!-- Yes, apparently we really need two identical clean tasks. MSBuild won't run the same task twice. -->
