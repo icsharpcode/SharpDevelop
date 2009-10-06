@@ -109,7 +109,6 @@
       <HintPath>..\..\..\..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Build" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
