@@ -276,7 +276,10 @@ namespace Debugger
 					"Project -> Project Options -> Compiling -> Target CPU = 32-bit Intel";
 			}
 			
-			System.Windows.Forms.MessageBox.Show(errorText);
+			if (Environment.UserInteractive)
+				System.Windows.Forms.MessageBox.Show(errorText);
+			else
+				throw new DebuggerException(errorText);
 
 			try {
 				pauseOnNextExit = true;
