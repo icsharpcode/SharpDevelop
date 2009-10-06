@@ -322,7 +322,7 @@ namespace Debugger.Tests
 			
 			string path = Path.GetTempPath();
 			path = Path.Combine(path, "SharpDevelop");
-			path = Path.Combine(path, "DebuggerTests");
+			path = Path.Combine(path, "DebuggerTestsX86");
 			path = Path.Combine(path, testName + "." + md5);
 			Directory.CreateDirectory(path);
 			
