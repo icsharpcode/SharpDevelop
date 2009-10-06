@@ -19,7 +19,11 @@ namespace Debugger.Tests.TestPrograms
 			System.Threading.Thread t = new System.Threading.Thread(WaitForALongTime);
 			t.Name = "Worker thread";
 			t.Start();
+			
+			// RACE CONDITION: this does not guarantee that the worker thread will have started
+			// when the debugger breaks.
 			System.Threading.Thread.Sleep(0);
+			
 			System.Diagnostics.Debugger.Break();
 		}
 		
@@ -35,6 +39,7 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
+		[NUnit.Framework.Ignore("Ignoring test due to race condition")]
 		public void MainThreadExit()
 		{
 			StartTest("MainThreadExit.cs");
