@@ -6,12 +6,14 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
 {
 	/// <summary>
 	/// A highlighting definition.
 	/// </summary>
+	[TypeConverter(typeof(HighlightingDefinitionTypeConverter))]
 	public interface IHighlightingDefinition
 	{
 		/// <summary>

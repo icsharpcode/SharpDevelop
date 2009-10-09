@@ -57,7 +57,8 @@ namespace AvalonEdit.Sample
 			propertyGridComboBox.SelectedIndex = 2;
 			
 			//textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
-			textEditor.SyntaxHighlighting = customHighlighting;
+			//textEditor.SyntaxHighlighting = customHighlighting;
+			// initial highlighting now set by XAML
 			
 			textEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
 			textEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;

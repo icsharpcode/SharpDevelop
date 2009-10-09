@@ -58,7 +58,7 @@
 			<ComboBox Name="highlightingComboBox"
 				SelectedItem="{Binding SyntaxHighlighting, ElementName=textEditor}"
 				ItemsSource="{Binding Source={x:Static avalonEdit:HighlightingManager.Instance}, Path=HighlightingDefinitions}"
-		SelectionChanged="HighlightingComboBox_SelectionChanged"/>
+				SelectionChanged="HighlightingComboBox_SelectionChanged"/>
 		</ToolBar>
 		<Grid>
 			<Grid.ColumnDefinitions>
@@ -69,6 +69,7 @@
 				Name="textEditor"
 				FontFamily="Consolas"
 				FontSize="10pt"
+				SyntaxHighlighting="C#"
 			>Welcome to AvalonEdit!
 			</avalonEdit:TextEditor>
 			<GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Left"/>

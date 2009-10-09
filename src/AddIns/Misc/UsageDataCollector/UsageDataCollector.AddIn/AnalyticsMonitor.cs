@@ -19,7 +19,7 @@ namespace ICSharpCode.UsageDataCollector
 	/// </summary>
 	public sealed class AnalyticsMonitor : IAnalyticsMonitor
 	{
-		const string UploadUrl = "http://build.sharpdevelop.net/udc.upload/uploadusagedata.svc";
+		const string UploadUrl = "http://usagedatacollector.sharpdevelop.net/upload/UploadUsageData.svc";
 		
 		public static readonly AnalyticsMonitor Instance = new AnalyticsMonitor();
 		
