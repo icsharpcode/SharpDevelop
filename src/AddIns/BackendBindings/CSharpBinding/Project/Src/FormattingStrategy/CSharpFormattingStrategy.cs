@@ -6,17 +6,13 @@
 // </file>
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 
-using ICSharpCode.NRefactory;
+using ICSharpCode.AvalonEdit.Indentation.CSharp;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.FormattingStrategy
@@ -33,12 +29,9 @@ namespace CSharpBinding.FormattingStrategy
 			int lineNr = line.LineNumber;
 			DocumentAccessor acc = new DocumentAccessor(editor.Document, lineNr, lineNr);
 			
-			IndentationSettings set = new IndentationSettings();
-			set.IndentString = editor.Options.IndentationString;
-			set.LeaveEmptyLines = false;
-			IndentationReformatter r = new IndentationReformatter();
-			
-			r.Reformat(acc, set);
+			CSharpIndentationStrategy indentStrategy = new CSharpIndentationStrategy();
+			indentStrategy.IndentationString = editor.Options.IndentationString;
+			indentStrategy.Indent(acc, false);
 			
 			string t = acc.Text;
 			if (t.Length == 0) {
@@ -49,11 +42,10 @@ namespace CSharpBinding.FormattingStrategy
 		
 		public override void IndentLines(ITextEditor editor, int beginLine, int endLine)
 		{
-			IndentationSettings set = new IndentationSettings();
-			set.IndentString = editor.Options.IndentationString;
-			IndentationReformatter r = new IndentationReformatter();
 			DocumentAccessor acc = new DocumentAccessor(editor.Document, beginLine, endLine);
-			r.Reformat(acc, set);
+			CSharpIndentationStrategy indentStrategy = new CSharpIndentationStrategy();
+			indentStrategy.IndentationString = editor.Options.IndentationString;
+			indentStrategy.Indent(acc, true);
 		}
 		#endregion
 		

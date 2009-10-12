@@ -122,9 +122,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ApplicationStateInfoService.UnregisterStateGetter(activeContentState);
 			
-			if (WorkbenchUnloaded != null) {
-				WorkbenchUnloaded(null, EventArgs.Empty);
-			}
+			WorkbenchUnloaded(null, EventArgs.Empty);
 			
 			FileService.Unload();
 		}
@@ -266,7 +264,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				delegate {
 					Timer t = new Timer();
 					t.Interval = delayMilliseconds;
-					t.Tick += delegate { 
+					t.Tick += delegate {
 						t.Stop();
 						t.Dispose();
 						method();
@@ -278,19 +276,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static void OnWorkbenchCreated()
 		{
-			if (WorkbenchCreated != null) {
-				WorkbenchCreated(null, EventArgs.Empty);
-			}
+			WorkbenchCreated(null, EventArgs.Empty);
 		}
 		
 		/// <summary>
 		/// Is called, when the workbench is created
 		/// </summary>
-		public static event EventHandler WorkbenchCreated;
+		public static event EventHandler WorkbenchCreated = delegate {};
 		
 		/// <summary>
 		/// Is called, when the workbench is unloaded
 		/// </summary>
-		public static event EventHandler WorkbenchUnloaded;
+		public static event EventHandler WorkbenchUnloaded = delegate {};
 	}
 }

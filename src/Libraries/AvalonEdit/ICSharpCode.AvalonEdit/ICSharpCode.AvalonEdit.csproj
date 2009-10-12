@@ -206,6 +206,9 @@
     <Compile Include="Highlighting\Xshd\XshdRuleSet.cs" />
     <Compile Include="Highlighting\Xshd\XshdSpan.cs" />
     <Compile Include="Highlighting\Xshd\XshdSyntaxDefinition.cs" />
+    <Compile Include="Indentation\CSharp\IndentationReformatter.cs" />
+    <Compile Include="Indentation\CSharp\CSharpIndentationStrategy.cs" />
+    <Compile Include="Indentation\CSharp\DocumentAccessor.cs" />
     <Compile Include="Indentation\DefaultIndentationStrategy.cs" />
     <Compile Include="Indentation\IIndentationStrategy.cs" />
     <Compile Include="Rendering\BackgroundGeometryBuilder.cs">
@@ -381,6 +384,7 @@
     <Folder Include="CodeCompletion" />
     <Folder Include="Indentation" />
     <Folder Include="Editing" />
+    <Folder Include="Indentation\CSharp" />
     <Folder Include="Rendering" />
     <Folder Include="Utils" />
     <Folder Include="themes" />

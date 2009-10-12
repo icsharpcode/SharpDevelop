@@ -7,23 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
-namespace CSharpBinding.FormattingStrategy
+namespace ICSharpCode.AvalonEdit.Indentation.CSharp
 {
-	public sealed class IndentationSettings
+	sealed class IndentationSettings
 	{
 		public string IndentString = "\t";
 		/// <summary>Leave empty lines empty.</summary>
 		public bool LeaveEmptyLines = true;
 	}
 	
-	public sealed class IndentationReformatter
+	sealed class IndentationReformatter
 	{
 		/// <summary>
 		/// An indentation block. Tracks the state of the indentation.
 		/// </summary>
-		public struct Block
+		struct Block
 		{
 			/// <summary>
 			/// The indentation outside of the block.
@@ -81,13 +82,13 @@ namespace CSharpBinding.FormattingStrategy
 			
 			public void Indent(IndentationSettings set)
 			{
-				Indent(set, set.IndentString);
+				Indent(set.IndentString);
 			}
 			
-			public void Indent(IndentationSettings set, string str)
+			public void Indent(string indentationString)
 			{
 				OuterIndent = InnerIndent;
-				InnerIndent += str;
+				InnerIndent += indentationString;
 				Continuation = false;
 				ResetOneLineBlock();
 				LastWord = "";
@@ -95,8 +96,10 @@ namespace CSharpBinding.FormattingStrategy
 			
 			public override string ToString()
 			{
-				return string.Format("[Block StartLine={0}, LastWord='{1}', Continuation={2}, OneLineBlock={3}, PreviousOneLineBlock={4}]",
-				                     this.StartLine, this.LastWord, this.Continuation, this.OneLineBlock, this.PreviousOneLineBlock);
+				return string.Format(
+					CultureInfo.InvariantCulture,
+					"[Block StartLine={0}, LastWord='{1}', Continuation={2}, OneLineBlock={3}, PreviousOneLineBlock={4}]",
+					this.StartLine, this.LastWord, this.Continuation, this.OneLineBlock, this.PreviousOneLineBlock);
 			}
 		}
 		
@@ -104,15 +107,15 @@ namespace CSharpBinding.FormattingStrategy
 		Stack<Block> blocks; // blocks contains all blocks outside of the current
 		Block block;  // block is the current block
 		
-		bool inString = false;
-		bool inChar   = false;
-		bool verbatim = false;
-		bool escape   = false;
+		bool inString;
+		bool inChar;
+		bool verbatim;
+		bool escape;
 		
-		bool lineComment  = false;
-		bool blockComment = false;
+		bool lineComment;
+		bool blockComment;
 		
-		char lastRealChar = ' '; // last non-comment char
+		char lastRealChar; // last non-comment char
 		
 		public void Reformat(IDocumentAccessor doc, IndentationSettings set)
 		{
@@ -271,7 +274,7 @@ namespace CSharpBinding.FormattingStrategy
 						blocks.Push(block);
 						block.StartLine = doc.LineNumber;
 						if (block.LastWord == "switch") {
-							block.Indent(set, set.IndentString + set.IndentString);
+							block.Indent(set.IndentString + set.IndentString);
 							/* oldBlock refers to the previous line, not the previous block
 							 * The block we want is not available anymore because it was never pushed.
 							 * } else if (oldBlock.OneLineBlock) {
@@ -306,8 +309,7 @@ namespace CSharpBinding.FormattingStrategy
 							block.InnerIndent = block.OuterIndent;
 						else
 							block.StartLine = doc.LineNumber;
-						block.Indent(set,
-						             Repeat(set.IndentString, oldBlock.OneLineBlock) +
+						block.Indent(Repeat(set.IndentString, oldBlock.OneLineBlock) +
 						             (oldBlock.Continuation ? set.IndentString : "") +
 						             (i == line.Length - 1 ? set.IndentString : new String(' ', i + 1)));
 						block.Bracket = c;
@@ -331,7 +333,10 @@ namespace CSharpBinding.FormattingStrategy
 						block.ResetOneLineBlock();
 						break;
 					case ':':
-						if (block.LastWord == "case" || line.StartsWith("case ") || line.StartsWith(block.LastWord + ":")) {
+						if (block.LastWord == "case" 
+						    || line.StartsWith("case ", StringComparison.Ordinal) 
+						    || line.StartsWith(block.LastWord + ":", StringComparison.Ordinal)) 
+						{
 							block.Continuation = false;
 							block.ResetOneLineBlock();
 						}
@@ -352,7 +357,7 @@ namespace CSharpBinding.FormattingStrategy
 			
 			if (startInString) return;
 			if (startInComment && line[0] != '*') return;
-			if (doc.Text.StartsWith("//\t") || doc.Text == "//")
+			if (doc.Text.StartsWith("//\t", StringComparison.Ordinal) || doc.Text == "//")
 				return;
 			
 			if (line[0] == '}') {
@@ -372,7 +377,7 @@ namespace CSharpBinding.FormattingStrategy
 			if (line[0] == ':') {
 				oldBlock.Continuation = true;
 			} else if (lastRealChar == ':' && indent.Length >= set.IndentString.Length) {
-				if (block.LastWord == "case" || line.StartsWith("case ") || line.StartsWith(block.LastWord + ":"))
+				if (block.LastWord == "case" || line.StartsWith("case ", StringComparison.Ordinal) || line.StartsWith(block.LastWord + ":", StringComparison.Ordinal))
 					indent.Remove(indent.Length - set.IndentString.Length, set.IndentString.Length);
 			} else if (lastRealChar == ')') {
 				if (IsSingleStatementKeyword(block.LastWord)) {
@@ -422,7 +427,7 @@ namespace CSharpBinding.FormattingStrategy
 				indent.Append(' ');
 			
 			if (indent.Length != (doc.Text.Length - line.Length) ||
-			    !doc.Text.StartsWith(indent.ToString()) ||
+			    !doc.Text.StartsWith(indent.ToString(), StringComparison.Ordinal) ||
 			    Char.IsWhiteSpace(doc.Text[indent.Length]))
 			{
 				doc.Text = indent.ToString() + line;
@@ -441,7 +446,7 @@ namespace CSharpBinding.FormattingStrategy
 			return b.ToString();
 		}
 		
-		bool IsSingleStatementKeyword(string keyword)
+		static bool IsSingleStatementKeyword(string keyword)
 		{
 			switch (keyword) {
 				case "if":
@@ -457,13 +462,13 @@ namespace CSharpBinding.FormattingStrategy
 			}
 		}
 		
-		bool TrimEnd(IDocumentAccessor doc)
+		static bool TrimEnd(IDocumentAccessor doc)
 		{
 			string line = doc.Text;
 			if (!Char.IsWhiteSpace(line[line.Length - 1])) return false;
 			
 			// one space after an empty comment is allowed
-			if (line.EndsWith("// ") || line.EndsWith("* "))
+			if (line.EndsWith("// ", StringComparison.Ordinal) || line.EndsWith("* ", StringComparison.Ordinal))
 				return false;
 			
 			doc.Text = line.TrimEnd();

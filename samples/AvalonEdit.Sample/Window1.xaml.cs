@@ -157,14 +157,17 @@ namespace AvalonEdit.Sample
 				switch (textEditor.SyntaxHighlighting.Name) {
 					case "XML":
 						foldingStrategy = new XmlFoldingStrategy();
+						textEditor.TextArea.IndentationStrategy = new ICSharpCode.AvalonEdit.Indentation.DefaultIndentationStrategy();
 						break;
 					case "C#":
 					case "C++":
 					case "PHP":
 					case "Java":
+						textEditor.TextArea.IndentationStrategy = new ICSharpCode.AvalonEdit.Indentation.CSharp.CSharpIndentationStrategy(textEditor.Options);
 						foldingStrategy = new BraceFoldingStrategy();
 						break;
 					default:
+						textEditor.TextArea.IndentationStrategy = new ICSharpCode.AvalonEdit.Indentation.DefaultIndentationStrategy();
 						foldingStrategy = null;
 						break;
 				}
