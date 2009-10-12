@@ -19,6 +19,8 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// This interface should only be used to update per-line data structures like the HeightTree.
 	/// Line trackers must not cause any events to be raised during an update to prevent other code from seeing
 	/// the invalid state.
+	/// Line trackers may be called while the TextDocument has taken a lock.
+	/// You must be careful not to dead-lock inside ILineTracker callbacks.
 	/// </remarks>
 	public interface ILineTracker
 	{
