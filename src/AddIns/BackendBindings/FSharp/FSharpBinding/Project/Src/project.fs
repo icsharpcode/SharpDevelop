@@ -174,18 +174,19 @@ module ProjectHelpers =
         doc.Load(project.FileName)
         let nsmgr = new XmlNamespaceManager(doc.NameTable)
         nsmgr.AddNamespace("proj", "http://schemas.microsoft.com/developer/msbuild/2003")
+        let d = new Dictionary<FileNode,XmlNode>()
         nodes |> forEachFileNode
          (fun node -> 
             let docNode = doc.SelectSingleNode(Printf.sprintf @"//proj:Compile[@Include=""%s""]" (Path.GetFileName(node.FileName)), nsmgr)
-            docNode.ParentNode.RemoveChild(docNode) |> ignore)
+            if docNode <> null then
+                d.[node] <- docNode
+                docNode.ParentNode.RemoveChild(docNode) |> ignore)
         let itemNode = doc.SelectSingleNode("//proj:ItemGroup", nsmgr)
         nodes |> forEachFileNode
          (fun node -> 
-            let xmlElem = doc.CreateElement("", "Compile", "http://schemas.microsoft.com/developer/msbuild/2003")
-            let xmlAttr = doc.CreateAttribute("Include")
-            xmlAttr.InnerText <- Path.GetFileName(node.FileName)
-            xmlElem.Attributes.Append(xmlAttr) |> ignore
-            itemNode.AppendChild(xmlElem) |> ignore)
+            let found, xmlElem = d.TryGetValue(node)
+            if found then
+                itemNode.AppendChild(xmlElem) |> ignore)
         doc.Save(project.FileName)
         
 

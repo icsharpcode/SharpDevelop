@@ -53,7 +53,7 @@ module TheControl =
         else
             let path = Environment.GetEnvironmentVariable("PATH")
             let paths = path.Split([|';'|])
-            let path =  paths |> Array.tryfind (fun x -> try File.Exists(Path.Combine(x, "fsi.exe")) with _ -> false)
+            let path =  paths |> Array.tryFind (fun x -> try File.Exists(Path.Combine(x, "fsi.exe")) with _ -> false)
             match path with
             | Some x -> 
                 fsiProcess.StartInfo.FileName <- Path.Combine(x, "fsi.exe")
