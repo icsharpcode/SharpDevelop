@@ -119,7 +119,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				DocumentChanged(this, EventArgs.Empty);
 		}
 		
-		/// <inheritdoc/>
+		/// <inheritdoc cref="IWeakEventListener.ReceiveWeakEvent"/>
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.Changing)) {
@@ -800,6 +800,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		protected override Size ArrangeOverride(Size finalSize)
 		{
+			if (!VisualLinesValid)
+				throw new VisualLinesInvalidException();
 			foreach (UIElement layer in layers) {
 				layer.Arrange(new Rect(new Point(0, 0), finalSize));
 			}
@@ -859,23 +861,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		void BackgroundRenderer_Added(IBackgroundRenderer renderer)
 		{
 			ConnectToTextView(renderer);
-			InvalidateVisualAndLayerVisuals();
+			InvalidateLayer(renderer.Layer);
 		}
 		
 		void BackgroundRenderer_Removed(IBackgroundRenderer renderer)
 		{
 			DisconnectFromTextView(renderer);
-			InvalidateVisualAndLayerVisuals();
-		}
-		
-		void InvalidateVisualAndLayerVisuals()
-		{
-			InvalidateVisual();
-			foreach (UIElement layer in this.Layers) {
-				// invalidate known layers
-				if (layer is Layer)
-					layer.InvalidateVisual();
-			}
+			InvalidateLayer(renderer.Layer);
 		}
 		
 		/// <inheritdoc/>
