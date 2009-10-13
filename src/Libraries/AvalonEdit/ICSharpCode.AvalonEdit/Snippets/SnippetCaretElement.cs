@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Snippets
@@ -13,6 +14,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 	/// <summary>
 	/// Sets the caret position after interactive mode has finished.
 	/// </summary>
+	[Serializable]
 	public class SnippetCaretElement : SnippetElement
 	{
 		/// <inheritdoc/>
@@ -20,8 +22,11 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		{
 			TextAnchor pos = context.Document.CreateAnchor(context.InsertionPosition);
 			pos.SurviveDeletion = true;
-			context.Deactivated += delegate {
-				context.TextArea.Caret.Offset = pos.Offset;
+			context.Deactivated += (sender, e) => {
+				KeyEventArgs ke = e as KeyEventArgs;
+				if (ke != null && ke.Key == Key.Return) {
+					context.TextArea.Caret.Offset = pos.Offset;
+				}
 			};
 		}
 	}

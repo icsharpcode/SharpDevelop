@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// </summary>
 	public sealed class BackgroundGeometryBuilder
 	{
-		double cornerRadius = 3;
+		double cornerRadius;
 		
 		/// <summary>
 		/// Gets/sets the radius of the rounded corners.

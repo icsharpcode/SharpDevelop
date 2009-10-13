@@ -23,10 +23,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// </summary>
 		public string Text {
 			get { return text; }
-			set {
-				CheckBeforeMutation();
-				text = value;
-			}
+			set { text = value; }
 		}
 		
 		/// <inheritdoc/>

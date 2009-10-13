@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -18,8 +19,19 @@ namespace ICSharpCode.AvalonEdit.Snippets
 	/// <summary>
 	/// Represents the context of a snippet insertion.
 	/// </summary>
-	public class InsertionContext
+	public class InsertionContext : IWeakEventListener
 	{
+		enum Status
+		{
+			Insertion,
+			RaisingInsertionCompleted,
+			Interactive,
+			RaisingDeactivated,
+			Deactivated
+		}
+		
+		Status currentStatus = Status.Insertion;
+		
 		/// <summary>
 		/// Creates a new InsertionContext instance.
 		/// </summary>
@@ -30,10 +42,12 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			this.TextArea = textArea;
 			this.Document = textArea.Document;
 			this.InsertionPosition = insertionPosition;
+			this.startPosition = insertionPosition;
 			
 			DocumentLine startLine = this.Document.GetLineByOffset(insertionPosition);
 			ISegment indentation = TextUtilities.GetWhitespaceAfter(this.Document, startLine.Offset);
 			this.Indentation = Document.GetText(indentation.Offset, Math.Min(indentation.EndOffset, insertionPosition) - indentation.Offset);
+			this.Tab = textArea.Options.IndentationString;
 			
 			this.LineTerminator = NewLineFinder.GetNewLineFromDocument(this.Document, startLine.LineNumber);
 		}
@@ -54,6 +68,11 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		public string Indentation { get; private set; }
 		
 		/// <summary>
+		/// Gets the indentation string for a single indentation level.
+		/// </summary>
+		public string Tab { get; private set; }
+		
+		/// <summary>
 		/// Gets the line terminator at the insertion position.
 		/// </summary>
 		public string LineTerminator { get; private set; }
@@ -63,6 +82,9 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// </summary>
 		public int InsertionPosition { get; set; }
 		
+		readonly int startPosition;
+		AnchorSegment wholeSnippetAnchor;
+		
 		/// <summary>
 		/// Inserts text at the insertion position and advances the insertion position.
 		/// </summary>
@@ -70,18 +92,25 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		{
 			if (text == null)
 				throw new ArgumentNullException("text");
-			int textOffset = 0;
-			SimpleSegment segment;
-			while ((segment = NewLineFinder.NextNewLine(text, textOffset)) != SimpleSegment.Invalid) {
-				string insertString = text.Substring(textOffset, segment.Offset - textOffset)
-					+ this.LineTerminator + this.Indentation;
-				this.Document.Insert(InsertionPosition, insertString);
-				this.InsertionPosition += insertString.Length;
-				textOffset = segment.EndOffset;
+			if (currentStatus != Status.Insertion)
+				throw new InvalidOperationException();
+			
+			text = text.Replace("\t", this.Tab);
+			
+			using (this.Document.RunUpdate()) {
+				int textOffset = 0;
+				SimpleSegment segment;
+				while ((segment = NewLineFinder.NextNewLine(text, textOffset)) != SimpleSegment.Invalid) {
+					string insertString = text.Substring(textOffset, segment.Offset - textOffset)
+						+ this.LineTerminator + this.Indentation;
+					this.Document.Insert(InsertionPosition, insertString);
+					this.InsertionPosition += insertString.Length;
+					textOffset = segment.EndOffset;
+				}
+				string remainingInsertString = text.Substring(textOffset);
+				this.Document.Insert(InsertionPosition, remainingInsertString);
+				this.InsertionPosition += remainingInsertString.Length;
 			}
-			string remainingInsertString = text.Substring(textOffset);
-			this.Document.Insert(InsertionPosition, remainingInsertString);
-			this.InsertionPosition += remainingInsertString.Length;
 		}
 		
 		Dictionary<SnippetElement, IActiveElement> elementMap = new Dictionary<SnippetElement, IActiveElement>();
@@ -99,6 +128,8 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				throw new ArgumentNullException("owner");
 			if (element == null)
 				throw new ArgumentNullException("element");
+			if (currentStatus != Status.Insertion)
+				throw new InvalidOperationException();
 			elementMap.Add(owner, element);
 			registeredElements.Add(element);
 		}
@@ -117,38 +148,52 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				return null;
 		}
 		
-		bool insertionCompleted;
+		/// <summary>
+		/// Gets the list of active elements.
+		/// </summary>
+		public IEnumerable<IActiveElement> ActiveElements {
+			get { return registeredElements; }
+		}
 		
 		/// <summary>
 		/// Calls the <see cref="IActiveElement.OnInsertionCompleted"/> method on all registered active elements
 		/// and raises the <see cref="InsertionCompleted"/> event.
 		/// </summary>
+		/// <param name="e">The EventArgs to use</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate",
 		                                                 Justification="There is an event and this method is raising it.")]
-		public void RaiseInsertionCompleted()
+		public void RaiseInsertionCompleted(EventArgs e)
 		{
+			if (currentStatus != Status.Insertion)
+				throw new InvalidOperationException();
+			if (e == null)
+				e = EventArgs.Empty;
+			
+			currentStatus = Status.RaisingInsertionCompleted;
+			int endPosition = this.InsertionPosition;
+			this.wholeSnippetAnchor = new AnchorSegment(Document, startPosition, endPosition - startPosition);
+			TextDocumentWeakEventManager.UpdateFinished.AddListener(Document, this);
+			
 			foreach (IActiveElement element in registeredElements) {
 				element.OnInsertionCompleted();
 			}
 			if (InsertionCompleted != null)
-				InsertionCompleted(this, EventArgs.Empty);
-			insertionCompleted = true;
+				InsertionCompleted(this, e);
+			currentStatus = Status.Interactive;
 			if (registeredElements.Count == 0) {
 				// deactivate immediately if there are no interactive elements
-				Deactivate();
+				Deactivate(EventArgs.Empty);
 			} else {
-				// register Escape key handler
-				TextArea.KeyDown += TextArea_KeyDown;
+				myInputHandler = new SnippetInputHandler(this);
+				foreach (ITextAreaInputHandler h in TextArea.StackedInputHandlers) {
+					if (h is SnippetInputHandler)
+						TextArea.PopStackedInputHandler(h);
+				}
+				TextArea.PushStackedInputHandler(myInputHandler);
 			}
 		}
-
-		void TextArea_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Key.Escape) {
-				Deactivate();
-				e.Handled = true;
-			}
-		}
+		
+		SnippetInputHandler myInputHandler;
 		
 		/// <summary>
 		/// Occurs when the all snippet elements have been inserted.
@@ -158,21 +203,48 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// <summary>
 		/// Calls the <see cref="IActiveElement.Deactivate"/> method on all registered active elements.
 		/// </summary>
-		public void Deactivate()
+		/// <param name="e">The EventArgs to use</param>
+		public void Deactivate(EventArgs e)
 		{
-			if (!insertionCompleted)
+			if (currentStatus == Status.Deactivated || currentStatus == Status.RaisingDeactivated)
+				return;
+			if (currentStatus != Status.Interactive)
 				throw new InvalidOperationException("Cannot call Deactivate() until RaiseInsertionCompleted() has finished.");
-			TextArea.KeyDown -= TextArea_KeyDown;
+			if (e == null)
+				e = EventArgs.Empty;
+			
+			TextDocumentWeakEventManager.UpdateFinished.RemoveListener(Document, this);
+			currentStatus = Status.RaisingDeactivated;
+			TextArea.PopStackedInputHandler(myInputHandler);
 			foreach (IActiveElement element in registeredElements) {
 				element.Deactivate();
 			}
 			if (Deactivated != null)
-				Deactivated(this, EventArgs.Empty);
+				Deactivated(this, e);
+			currentStatus = Status.Deactivated;
 		}
 		
 		/// <summary>
 		/// Occurs when the interactive mode is deactivated.
 		/// </summary>
 		public event EventHandler Deactivated;
+		
+		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			return ReceiveWeakEvent(managerType, sender, e);
+		}
+		
+		/// <inheritdoc cref="IWeakEventListener.ReceiveWeakEvent"/>
+		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		{
+			if (managerType == typeof(TextDocumentWeakEventManager.UpdateFinished)) {
+				// Deactivate if snippet is deleted. This is necessary for correctly leaving interactive
+				// mode if Undo is pressed after a snippet insertion.
+				if (wholeSnippetAnchor.Length == 0)
+					Deactivate(e);
+				return true;
+			}
+			return false;
+		}
 	}
 }

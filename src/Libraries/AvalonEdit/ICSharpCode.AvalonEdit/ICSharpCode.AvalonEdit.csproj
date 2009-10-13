@@ -278,6 +278,7 @@
       <DependentUpon>VisualLine.cs</DependentUpon>
     </Compile>
     <Compile Include="Snippets\IActiveElement.cs" />
+    <Compile Include="Snippets\SnippetInputHandler.cs" />
     <Compile Include="Snippets\Snippet.cs" />
     <Compile Include="Snippets\SnippetBoundElement.cs" />
     <Compile Include="Snippets\SnippetCaretElement.cs" />
@@ -318,7 +319,6 @@
     <Compile Include="Utils\Empty.cs" />
     <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\FileReader.cs" />
-    <Compile Include="Utils\IFreezable.cs" />
     <Compile Include="Utils\ImmutableStack.cs" />
     <Compile Include="Utils\NullSafeCollection.cs" />
     <Compile Include="Utils\ObserveAddRemoveCollection.cs" />

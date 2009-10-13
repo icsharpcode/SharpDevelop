@@ -16,6 +16,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// <summary>
 	/// A set of input bindings and event handlers for the text area.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// There is one active input handler per text area (<see cref="Editing.TextArea.ActiveInputHandler"/>), plus
+	/// a number of active stacked input handlers.
+	/// </para>
+	/// <para>
+	/// The text area also stores a reference to a default input handler, but that is not necessarily active.
+	/// </para>
+	/// <para>
+	/// Stacked input handlers work in addition to the set of currently active handlers (without detaching them).
+	/// They are detached in the reverse order of being attached.
+	/// </para>
+	/// </remarks>
 	public interface ITextAreaInputHandler
 	{
 		/// <summary>
@@ -39,6 +52,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// <summary>
 	/// Default-implementation of <see cref="ITextAreaInputHandler"/>.
 	/// </summary>
+	/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
 	public class TextAreaInputHandler : ITextAreaInputHandler
 	{
 		readonly ObserveAddRemoveCollection<CommandBinding> commandBindings;

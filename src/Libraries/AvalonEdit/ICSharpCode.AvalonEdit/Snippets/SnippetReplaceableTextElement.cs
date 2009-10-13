@@ -7,9 +7,12 @@
 
 using System;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
+using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit.Snippets
 {
@@ -61,7 +64,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		
 		void AnchorDeleted(object sender, EventArgs e)
 		{
-			context.Deactivate();
+			context.Deactivate(EventArgs.Empty);
 		}
 		
 		public void OnInsertionCompleted()
@@ -76,17 +79,43 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			end.Deleted += AnchorDeleted;
 			
 			// Be careful with references from the document to the editing/snippet layer - use weak events
-			// to prevent memory leaks when text areas get dropped from the UI while the snippet is active.
+			// to prevent memory leaks when the text area control gets dropped from the UI while the snippet is active.
 			// The InsertionContext will keep us alive as long as the snippet is in interactive mode.
 			TextDocumentWeakEventManager.TextChanged.AddListener(context.Document, this);
 			
+			background = new Renderer { Layer = KnownLayer.Background, element = this };
+			foreground = new Renderer { Layer = KnownLayer.Text, element = this };
+			context.TextArea.TextView.BackgroundRenderers.Add(background);
+			context.TextArea.TextView.BackgroundRenderers.Add(foreground);
+			context.TextArea.Caret.PositionChanged += Caret_PositionChanged;
+			Caret_PositionChanged(null, null);
+			
 			this.Text = GetText();
 		}
-		
+
 		public void Deactivate()
 		{
 			TextDocumentWeakEventManager.TextChanged.RemoveListener(context.Document, this);
+			context.TextArea.TextView.BackgroundRenderers.Remove(background);
+			context.TextArea.TextView.BackgroundRenderers.Remove(foreground);
+			context.TextArea.Caret.PositionChanged -= Caret_PositionChanged;
 		}
+		
+		bool isCaretInside;
+		
+		void Caret_PositionChanged(object sender, EventArgs e)
+		{
+			ISegment s = this.Segment;
+			if (s != null) {
+				bool newIsCaretInside = s.Contains(context.TextArea.Caret.Offset);
+				if (newIsCaretInside != isCaretInside) {
+					isCaretInside = newIsCaretInside;
+					context.TextArea.TextView.InvalidateLayer(foreground.Layer);
+				}
+			}
+		}
+		
+		Renderer background, foreground;
 		
 		public string Text { get; private set; }
 		
@@ -112,6 +141,69 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				return true;
 			}
 			return false;
+		}
+		
+		public bool IsEditable {
+			get { return true; }
+		}
+		
+		public ISegment Segment {
+			get {
+				if (start.IsDeleted || end.IsDeleted)
+					return null;
+				else
+					return new SimpleSegment(start.Offset, Math.Max(0, end.Offset - start.Offset));
+			}
+		}
+		
+		sealed class Renderer : IBackgroundRenderer
+		{
+			static readonly Brush backgroundBrush = CreateBackgroundBrush();
+			static readonly Pen activeBorderPen = CreateBorderPen();
+			
+			static Brush CreateBackgroundBrush()
+			{
+				SolidColorBrush b = new SolidColorBrush(Colors.LimeGreen);
+				b.Opacity = 0.4;
+				b.Freeze();
+				return b;
+			}
+			
+			static Pen CreateBorderPen()
+			{
+				Pen p = new Pen(Brushes.Black, 1);
+				p.DashStyle = DashStyles.Dot;
+				p.Freeze();
+				return p;
+			}
+			
+			internal ReplaceableActiveElement element;
+			
+			public KnownLayer Layer { get; set; }
+			
+			public void Draw(TextView textView, System.Windows.Media.DrawingContext drawingContext)
+			{
+				ISegment s = element.Segment;
+				if (s != null) {
+					BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder();
+					if (Layer == KnownLayer.Background) {
+						geoBuilder.AddSegment(textView, s);
+						drawingContext.DrawGeometry(backgroundBrush, null, geoBuilder.CreateGeometry());
+					} else {
+						// draw foreground only if active
+						if (element.isCaretInside) {
+							geoBuilder.AddSegment(textView, s);
+							foreach (BoundActiveElement boundElement in element.context.ActiveElements.OfType<BoundActiveElement>()) {
+								if (boundElement.targetElement == element) {
+									geoBuilder.AddSegment(textView, boundElement.Segment);
+									geoBuilder.CloseFigure();
+								}
+							}
+							drawingContext.DrawGeometry(null, activeBorderPen, geoBuilder.CreateGeometry());
+						}
+					}
+				}
+			}
 		}
 	}
 }

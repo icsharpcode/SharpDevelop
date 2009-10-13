@@ -106,7 +106,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.TextArea.MouseWheel += textArea_MouseWheel;
 			this.TextArea.PreviewTextInput += textArea_PreviewTextInput;
 			myInputHandler = new InputHandler(this);
-			this.TextArea.ActiveInputHandler = myInputHandler;
+			this.TextArea.PushStackedInputHandler(myInputHandler);
 		}
 		
 		/// <inheritdoc/>
@@ -116,8 +116,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.TextArea.MouseWheel -= textArea_MouseWheel;
 			this.TextArea.PreviewTextInput -= textArea_PreviewTextInput;
 			base.DetachEvents();
-			if (this.TextArea.ActiveInputHandler == myInputHandler)
-				this.TextArea.ActiveInputHandler = this.TextArea.DefaultInputHandler;
+			this.TextArea.PopStackedInputHandler(myInputHandler);
 		}
 		
 		#region InputHandler
@@ -142,14 +141,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			
 			public void Attach()
 			{
-				this.TextArea.DefaultInputHandler.Attach();
 			}
 			
 			public void Detach()
 			{
-				this.TextArea.DefaultInputHandler.Detach();
-				// close with dispatcher so we don't get reentrance problems in input handler Detach/Attach
-				window.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(window.Close));
+				window.Close();
 			}
 		}
 		#endregion

@@ -23,10 +23,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// </summary>
 		public SnippetReplaceableTextElement TargetElement {
 			get { return targetElement; }
-			set {
-				CheckBeforeMutation();
-				targetElement = value;
-			}
+			set { targetElement = value; }
 		}
 		
 		/// <summary>
@@ -58,7 +55,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		InsertionContext context;
 		SnippetReplaceableTextElement targetSnippetElement;
 		SnippetBoundElement boundElement;
-		IReplaceableActiveElement targetElement;
+		internal IReplaceableActiveElement targetElement;
 		AnchorSegment segment;
 		
 		public BoundActiveElement(InsertionContext context, SnippetReplaceableTextElement targetSnippetElement, SnippetBoundElement boundElement, AnchorSegment segment)
@@ -79,18 +76,31 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		
 		void targetElement_TextChanged(object sender, EventArgs e)
 		{
-			int offset = segment.Offset;
-			int length = segment.Length;
-			string text = boundElement.ConvertText(targetElement.Text);
-			context.Document.Replace(offset, length, text);
-			if (length == 0) {
-				// replacing an empty anchor segment with text won't enlarge it, so we have to recreate it
-				segment = new AnchorSegment(context.Document,  offset, text.Length);
+			// Don't copy text if the segments overlap (we would get an endless loop).
+			// This can happen if the user deletes the text between the replaceable element and the bound element.
+			if (segment.GetOverlap(targetElement.Segment) == SimpleSegment.Invalid) {
+				int offset = segment.Offset;
+				int length = segment.Length;
+				string text = boundElement.ConvertText(targetElement.Text);
+				context.Document.Replace(offset, length, text);
+				if (length == 0) {
+					// replacing an empty anchor segment with text won't enlarge it, so we have to recreate it
+					segment = new AnchorSegment(context.Document, offset, text.Length);
+				}
 			}
 		}
 		
 		public void Deactivate()
 		{
+		}
+		
+		
+		public bool IsEditable {
+			get { return false; }
+		}
+		
+		public ISegment Segment {
+			get { return segment; }
 		}
 	}
 }

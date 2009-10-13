@@ -18,20 +18,13 @@ namespace ICSharpCode.AvalonEdit.Snippets
 	[Serializable]
 	public class SnippetContainerElement : SnippetElement
 	{
-		FreezableNullSafeCollection<SnippetElement> elements = new FreezableNullSafeCollection<SnippetElement>();
+		NullSafeCollection<SnippetElement> elements = new NullSafeCollection<SnippetElement>();
 		
 		/// <summary>
 		/// Gets the list of child elements.
 		/// </summary>
 		public IList<SnippetElement> Elements {
 			get { return elements; }
-		}
-		
-		/// <inheritdoc/>
-		protected override void FreezeInternal()
-		{
-			elements.Freeze();
-			base.FreezeInternal();
 		}
 		
 		/// <inheritdoc/>

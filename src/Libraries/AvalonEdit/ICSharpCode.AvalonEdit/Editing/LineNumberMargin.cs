@@ -104,7 +104,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			OnDocumentLineCountChanged();
 		}
 		
-		/// <inheritdoc/>
+		/// <inheritdoc cref="IWeakEventListener.ReceiveWeakEvent"/>
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.LineCountChanged)) {

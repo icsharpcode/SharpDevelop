@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -83,24 +84,39 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <summary>
 		/// Gets the default input handler.
 		/// </summary>
+		/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
 		public TextAreaDefaultInputHandler DefaultInputHandler { get; private set; }
 		
 		ITextAreaInputHandler activeInputHandler;
+		bool isChangingInputHandler;
 		
 		/// <summary>
 		/// Gets/Sets the active input handler.
+		/// This property does not return currently active stacked input handlers. Setting this property detached all stacked input handlers.
 		/// </summary>
+		/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
 		public ITextAreaInputHandler ActiveInputHandler {
 			get { return activeInputHandler; }
 			set {
 				if (value != null && value.TextArea != this)
 					throw new ArgumentException("The input handler was created for a different text area than this one.");
+				if (isChangingInputHandler)
+					throw new InvalidOperationException("Cannot set ActiveInputHandler recursively");
 				if (activeInputHandler != value) {
-					if (activeInputHandler != null)
-						activeInputHandler.Detach();
-					activeInputHandler = value;
-					if (value != null)
-						value.Attach();
+					isChangingInputHandler = true;
+					try {
+						// pop the whole stack
+						PopStackedInputHandler(stackedInputHandlers.LastOrDefault());
+						Debug.Assert(stackedInputHandlers.IsEmpty);
+						
+						if (activeInputHandler != null)
+							activeInputHandler.Detach();
+						activeInputHandler = value;
+						if (value != null)
+							value.Attach();
+					} finally {
+						isChangingInputHandler = false;
+					}
 					if (ActiveInputHandlerChanged != null)
 						ActiveInputHandlerChanged(this, EventArgs.Empty);
 				}
@@ -111,6 +127,46 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// Occurs when the ActiveInputHandler property changes.
 		/// </summary>
 		public event EventHandler ActiveInputHandlerChanged;
+		
+		ImmutableStack<ITextAreaInputHandler> stackedInputHandlers = ImmutableStack<ITextAreaInputHandler>.Empty;
+		
+		/// <summary>
+		/// Gets the list of currently active stacked input handlers.
+		/// </summary>
+		/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
+		public ImmutableStack<ITextAreaInputHandler> StackedInputHandlers {
+			get { return stackedInputHandlers; }
+		}
+		
+		/// <summary>
+		/// Pushes an input handler onto the list of stacked input handlers.
+		/// </summary>
+		/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
+		public void PushStackedInputHandler(ITextAreaInputHandler inputHandler)
+		{
+			if (inputHandler == null)
+				throw new ArgumentNullException("inputHandler");
+			stackedInputHandlers = stackedInputHandlers.Push(inputHandler);
+			inputHandler.Attach();
+		}
+		
+		/// <summary>
+		/// Pops the stacked input handler (and all input handlers above it).
+		/// If <paramref name="inputHandler"/> is not found in the currently stacked input handlers, or is null, this method
+		/// does nothing.
+		/// </summary>
+		/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
+		public void PopStackedInputHandler(ITextAreaInputHandler inputHandler)
+		{
+			if (stackedInputHandlers.Any(i => i == inputHandler)) {
+				ITextAreaInputHandler oldHandler;
+				do {
+					oldHandler = stackedInputHandlers.Peek();
+					stackedInputHandlers = stackedInputHandlers.Pop();
+					oldHandler.Detach();
+				} while (oldHandler != inputHandler);
+			}
+		}
 		#endregion
 		
 		#region Document property
@@ -202,7 +258,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		#endregion
 		
 		#region ReceiveWeakEvent
-		/// <inheritdoc/>
+		/// <inheritdoc cref="IWeakEventListener.ReceiveWeakEvent"/>
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.Changing)) {

@@ -25,11 +25,10 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
-			Freeze();
 			InsertionContext context = new InsertionContext(textArea, textArea.Caret.Offset);
 			using (context.Document.RunUpdate()) {
 				Insert(context);
-				context.RaiseInsertionCompleted();
+				context.RaiseInsertionCompleted(EventArgs.Empty);
 			}
 		}
 	}
