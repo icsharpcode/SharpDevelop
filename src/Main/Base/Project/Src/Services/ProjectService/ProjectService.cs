@@ -322,7 +322,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static void LoadProject(string fileName)
 		{
-			FileUtility.ObservedLoad(LoadSolutionInternal, fileName);
+			FileUtility.ObservedLoad(LoadProjectInternal, fileName);
 		}
 		
 		static void LoadProjectInternal(string fileName)
