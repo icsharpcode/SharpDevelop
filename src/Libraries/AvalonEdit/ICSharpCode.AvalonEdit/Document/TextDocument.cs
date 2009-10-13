@@ -199,6 +199,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <list type="bullet">
 		/// <item><description><b><see cref="BeginUpdate">BeginUpdate()</see></b></description>
 		///   <list type="bullet">
+		///   <item><description>Start of change group (on undo stack)</description></item>
 		///   <item><description><see cref="UpdateStarted"/> event is raised</description></item>
 		///   </list></item>
 		/// <item><description><b><see cref="Insert(int,string)">Insert()</see> / <see cref="Remove(int,int)">Remove()</see> / <see cref="Replace(int,int,string)">Replace()</see></b></description>
@@ -214,6 +215,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		///   <item><description><see cref="TextChanged"/> event is raised</description></item>
 		///   <item><description><see cref="TextLengthChanged"/> event is raised</description></item>
 		///   <item><description><see cref="LineCountChanged"/> event is raised</description></item>
+		///   <item><description>End of change group (on undo stack)</description></item>
 		///   <item><description><see cref="UpdateFinished"/> event is raised</description></item>
 		///   </list></item>
 		/// </list>
@@ -355,11 +357,15 @@ namespace ICSharpCode.AvalonEdit.Document
 				throw new InvalidOperationException("Cannot end update within document change.");
 			if (beginUpdateCount == 0)
 				throw new InvalidOperationException("No update is active.");
-			beginUpdateCount -= 1;
-			if (beginUpdateCount == 0) {
+			if (beginUpdateCount == 1) {
+				// fire change events inside the change group - event handlers might add additional
+				// document changes to the change group
 				FireChangeEvents();
+				beginUpdateCount = 0;
 				if (UpdateFinished != null)
 					UpdateFinished(this, EventArgs.Empty);
+			} else {
+				beginUpdateCount -= 1;
 			}
 		}
 		
@@ -382,30 +388,29 @@ namespace ICSharpCode.AvalonEdit.Document
 		bool fireTextChanged;
 		
 		/// <summary>
-		/// Fires TextChanged, TextLengthChanged, TotalHeightChanged, LineCountChanged if required.
+		/// Fires TextChanged, TextLengthChanged, LineCountChanged if required.
 		/// </summary>
 		internal void FireChangeEvents()
 		{
-			if (beginUpdateCount > 0)
-				return;
-			
-			if (fireTextChanged) {
+			// it may be necessary to fire the event multiple times if the document is changed
+			// from inside the event handlers
+			while (fireTextChanged) {
 				fireTextChanged = false;
 				if (TextChanged != null)
 					TextChanged(this, EventArgs.Empty);
-			}
-			
-			int textLength = rope.Length;
-			if (textLength != oldTextLength) {
-				oldTextLength = textLength;
-				if (TextLengthChanged != null)
-					TextLengthChanged(this, EventArgs.Empty);
-			}
-			int lineCount = lineTree.LineCount;
-			if (lineCount != oldLineCount) {
-				oldLineCount = lineCount;
-				if (LineCountChanged != null)
-					LineCountChanged(this, EventArgs.Empty);
+				
+				int textLength = rope.Length;
+				if (textLength != oldTextLength) {
+					oldTextLength = textLength;
+					if (TextLengthChanged != null)
+						TextLengthChanged(this, EventArgs.Empty);
+				}
+				int lineCount = lineTree.LineCount;
+				if (lineCount != oldLineCount) {
+					oldLineCount = lineCount;
+					if (LineCountChanged != null)
+						LineCountChanged(this, EventArgs.Empty);
+				}
 			}
 		}
 		#endregion
