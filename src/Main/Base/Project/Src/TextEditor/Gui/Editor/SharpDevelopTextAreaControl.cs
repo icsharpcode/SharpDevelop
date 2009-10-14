@@ -299,7 +299,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			string word = GetWordBeforeCaret();
 			if (word != null) {
-				CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(FileName);
+				/*CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(FileName);
 				if (templateGroup != null) {
 					foreach (CodeTemplate template in templateGroup.Templates) {
 						if (template.Shortcut == word) {
@@ -313,7 +313,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 							return true;
 						}
 					}
-				}
+				}*/
 			}
 			return false;
 		}
@@ -358,53 +358,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			int start = TextUtilities.FindPrevWordStart(Document, ActiveTextAreaControl.TextArea.Caret.Offset);
 			Document.Remove(start, ActiveTextAreaControl.TextArea.Caret.Offset - start);
 			return start;
-		}
-		
-		/// <remarks>
-		/// This method inserts a code template at the current caret position
-		/// </remarks>
-		public void InsertTemplate(CodeTemplate template)
-		{
-			string selectedText = String.Empty;
-			Document.UndoStack.StartUndoGroup();
-			if (base.ActiveTextAreaControl.TextArea.SelectionManager.HasSomethingSelected) {
-				selectedText = base.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
-				ActiveTextAreaControl.TextArea.Caret.Position = ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection[0].StartPosition;
-				base.ActiveTextAreaControl.TextArea.SelectionManager.RemoveSelectedText();
-			}
-			
-			// save old properties, these properties cause strange effects, when not
-			// be turned off (like insert curly braces or other formatting stuff)
-			
-			string templateText = StringParser.Parse(template.Text, new string[,] { { "Selection", selectedText } });
-			int finalCaretOffset = templateText.IndexOf('|');
-			if (finalCaretOffset >= 0) {
-				templateText = templateText.Remove(finalCaretOffset, 1);
-			} else {
-				finalCaretOffset = templateText.Length;
-			}
-			int caretOffset = ActiveTextAreaControl.TextArea.Caret.Offset;
-			
-			BeginUpdate();
-			int beginLine = ActiveTextAreaControl.TextArea.Caret.Line;
-			Document.Insert(caretOffset, templateText);
-			
-			ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(caretOffset + finalCaretOffset);
-			int endLine = Document.OffsetToPosition(caretOffset + templateText.Length).Y;
-			
-			IndentStyle save1 = TextEditorProperties.IndentStyle;
-			TextEditorProperties.IndentStyle = IndentStyle.Smart;
-			Console.WriteLine("Indent between {0} and {1}", beginLine, endLine);
-			
-			Document.FormattingStrategy.IndentLines(ActiveTextAreaControl.TextArea, beginLine, endLine);
-			
-			Document.UndoStack.EndUndoGroup();
-			EndUpdate();
-			Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-			Document.CommitUpdate();
-			
-			// restore old property settings
-			TextEditorProperties.IndentStyle = save1;
 		}
 		
 		protected override void OnReloadHighlighting(object sender, EventArgs e)

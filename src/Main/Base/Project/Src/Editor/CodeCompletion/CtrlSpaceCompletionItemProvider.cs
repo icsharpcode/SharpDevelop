@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using System.Collections.Generic;
@@ -43,43 +44,27 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// </summary>
 		public bool ShowTemplates { get; set; }
 		
-		// TODO: AVALONEDIT implement templates
-		/*
-		void AddTemplates(ITextEditor editor, char charTyped)
+		void AddTemplates(ITextEditor editor, DefaultCompletionItemList list)
 		{
-			if (!ShowTemplates)
+			if (list == null)
 				return;
-			ICompletionData suggestedData = DefaultIndex >= 0 ? completionData[DefaultIndex] : null;
-			var templateCompletion = new TemplateCompletionItemProvider().GenerateCompletionList(editor);
-			if (templateCompletion == null || templateCompletionData.Length == 0)
-				return;
-			for (int i = 0; i < completionData.Count; i++) {
-				if (completionData[i].ImageIndex == ClassBrowserIconService.KeywordIndex) {
-					string text = completionData[i].Text;
-					for (int j = 0; j < templateCompletionData.Length; j++) {
-						if (templateCompletionData[j] != null && templateCompletionData[j].Text == text) {
-							// replace keyword with template
-							completionData[i] = templateCompletionData[j];
-							templateCompletionData[j] = null;
-						}
-					}
-				}
-			}
-			// add non-keyword code templates
-			for (int j = 0; j < templateCompletionData.Length; j++) {
-				if (templateCompletionData[j] != null)
-					completionData.Add(templateCompletionData[j]);
-			}
-			if (suggestedData != null) {
-				completionData.Sort(DefaultCompletionData.Compare);
-				DefaultIndex = completionData.IndexOf(suggestedData);
-			}
+			List<ICompletionItem> snippets = editor.GetSnippets().ToList();
+			list.Items.RemoveAll(item => item.Image == ClassBrowserIconService.Keyword && snippets.Exists(i => i.Text == item.Text));
+			list.Items.AddRange(snippets);
+			list.SortItems();
 		}
-		 */
 		
 		int preselectionLength;
 		
 		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
+		{
+			ICompletionItemList list = GenerateCompletionListCore(editor);
+			if (ShowTemplates)
+				AddTemplates(editor, list as DefaultCompletionItemList);
+			return list;
+		}
+		
+		ICompletionItemList GenerateCompletionListCore(ITextEditor editor)
 		{
 			preselectionLength = 0;
 			if (!allowCompleteExistingExpression) {

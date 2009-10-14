@@ -50,6 +50,54 @@ namespace ICSharpCode.AvalonEdit.Editing
 	}
 	
 	/// <summary>
+	/// Stacked input handler.
+	/// Uses OnEvent-methods instead of registering event handlers to ensure that the events are handled in the correct order.
+	/// </summary>
+	public abstract class TextAreaStackedInputHandler : ITextAreaInputHandler
+	{
+		readonly TextArea textArea;
+		
+		/// <inheritdoc/>
+		public TextArea TextArea {
+			get { return textArea; }
+		}
+		
+		/// <summary>
+		/// Creates a new TextAreaInputHandler.
+		/// </summary>
+		public TextAreaStackedInputHandler(TextArea textArea)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+			this.textArea = textArea;
+		}
+		
+		/// <inheritdoc/>
+		public virtual void Attach()
+		{
+		}
+		
+		/// <inheritdoc/>
+		public virtual void Detach()
+		{
+		}
+		
+		/// <summary>
+		/// Called for the PreviewKeyDown event.
+		/// </summary>
+		public virtual void OnPreviewKeyDown(KeyEventArgs e)
+		{
+		}
+		
+		/// <summary>
+		/// Called for the PreviewKeyUp event.
+		/// </summary>
+		public virtual void OnPreviewKeyUp(KeyEventArgs e)
+		{
+		}
+	}
+	
+	/// <summary>
 	/// Default-implementation of <see cref="ITextAreaInputHandler"/>.
 	/// </summary>
 	/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>

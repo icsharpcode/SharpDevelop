@@ -67,11 +67,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.TextArea.PreviewLostKeyboardFocus += TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
 			this.TextArea.DocumentChanged += TextAreaDocumentChanged;
-			this.TextArea.PreviewKeyDown += TextAreaPreviewKeyDown;
-			this.TextArea.PreviewKeyUp += TextAreaPreviewKeyUp;
 			if (parentWindow != null) {
 				parentWindow.LocationChanged += parentWindow_LocationChanged;
 			}
+			
+			myInputHandler = new InputHandler(this);
+			this.TextArea.PushStackedInputHandler(myInputHandler);
 		}
 		
 		/// <summary>
@@ -85,24 +86,50 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.TextArea.PreviewLostKeyboardFocus -= TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged -= TextViewScrollOffsetChanged;
 			this.TextArea.DocumentChanged -= TextAreaDocumentChanged;
-			this.TextArea.PreviewKeyDown -= TextAreaPreviewKeyDown;
-			this.TextArea.PreviewKeyUp -= TextAreaPreviewKeyUp;
 			if (parentWindow != null) {
 				parentWindow.LocationChanged -= parentWindow_LocationChanged;
 			}
+			this.TextArea.PopStackedInputHandler(myInputHandler);
 		}
 		
-		void TextAreaPreviewKeyDown(object sender, KeyEventArgs e)
-		{
-			e.Handled = RaiseEventPair(this, PreviewKeyDownEvent, KeyDownEvent,
-			                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
-		}
+		#region InputHandler
+		InputHandler myInputHandler;
 		
-		void TextAreaPreviewKeyUp(object sender, KeyEventArgs e)
+		/// <summary>
+		/// A dummy input handler (that justs invokes the default input handler).
+		/// This is used to ensure the completion window closes when any other input handler
+		/// becomes active.
+		/// </summary>
+		sealed class InputHandler : TextAreaStackedInputHandler
 		{
-			e.Handled = RaiseEventPair(this, PreviewKeyUpEvent, KeyUpEvent,
-			                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
+			readonly CompletionWindowBase window;
+			
+			public InputHandler(CompletionWindowBase window)
+				: base(window.TextArea)
+			{
+				Debug.Assert(window != null);
+				this.window = window;
+			}
+			
+			public override void Detach()
+			{
+				base.Detach();
+				window.Close();
+			}
+			
+			public override void OnPreviewKeyDown(KeyEventArgs e)
+			{
+				e.Handled = RaiseEventPair(window, PreviewKeyDownEvent, KeyDownEvent,
+				                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
+			}
+			
+			public override void OnPreviewKeyUp(KeyEventArgs e)
+			{
+				e.Handled = RaiseEventPair(window, PreviewKeyUpEvent, KeyUpEvent,
+				                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
+			}
 		}
+		#endregion
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
 		{

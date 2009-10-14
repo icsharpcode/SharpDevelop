@@ -149,8 +149,14 @@ namespace ICSharpCode.Core
 			return Parse(input, pairs);
 		}
 		
-		static string GetValue(string propertyName, StringTagPair[] customTags)
+		/// <summary>
+		/// Evaluates a property using the StringParser. Equivalent to StringParser.Parse("${" + propertyName + "}");
+		/// </summary>
+		public static string GetValue(string propertyName, params StringTagPair[] customTags)
 		{
+			if (propertyName == null)
+				throw new ArgumentNullException("propertyName");
+			
 			if (customTags != null) {
 				foreach (StringTagPair pair in customTags) {
 					if (propertyName.Equals(pair.Tag, StringComparison.OrdinalIgnoreCase)) {

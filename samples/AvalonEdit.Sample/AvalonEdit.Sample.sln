@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 4.0.0.5064
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonEdit.Sample", "AvalonEdit.Sample.csproj", "{13A5B497-BA12-45AE-9033-22620C3153FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13A5B497-BA12-45AE-9033-22620C3153FB}.Debug|x86.Build.0 = Debug|x86
+		{13A5B497-BA12-45AE-9033-22620C3153FB}.Debug|x86.ActiveCfg = Debug|x86
+		{13A5B497-BA12-45AE-9033-22620C3153FB}.Release|x86.Build.0 = Release|x86
+		{13A5B497-BA12-45AE-9033-22620C3153FB}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+EndGlobal

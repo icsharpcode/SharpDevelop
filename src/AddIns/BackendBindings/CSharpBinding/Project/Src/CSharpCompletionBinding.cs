@@ -94,13 +94,15 @@ namespace CSharpBinding
 			if (char.IsLetter(ch) && CodeCompletionOptions.CompleteWhenTyping) {
 				if (editor.SelectionLength > 0) {
 					// allow code completion when overwriting an identifier
-					cursor = editor.SelectionStart;
-					int endOffset = cursor + editor.SelectionLength;
+					int endOffset = editor.SelectionStart + editor.SelectionLength;
 					// but block code completion when overwriting only part of an identifier
 					if (endOffset < editor.Document.TextLength && char.IsLetterOrDigit(editor.Document.GetCharAt(endOffset)))
 						return CodeCompletionKeyPressResult.None;
+					
 					editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
-					editor.Caret.Offset = cursor;
+					// Read caret position again after removal - this is required because the document might change in other
+					// locations, too (e.g. bound elements in snippets).
+					cursor = editor.Caret.Offset;
 				}
 				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 				bool afterUnderscore = prevChar == '_';

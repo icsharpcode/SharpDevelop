@@ -75,4 +75,10 @@
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertLeadingSpacesToTabs"/>
 		</Condition>
 	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
+		<OptionPanel id = "CodeTemplates"
+		             label = "${res:Dialog.Options.CodeTemplatesText}"
+		             class = "ICSharpCode.AvalonEdit.AddIn.Snippets.SnippetOptionPanel"/>
+	</Path>
 </AddIn>

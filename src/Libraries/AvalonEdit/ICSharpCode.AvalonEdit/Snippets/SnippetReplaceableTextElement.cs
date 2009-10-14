@@ -6,10 +6,11 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -30,6 +31,12 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			base.Insert(context);
 			int end = context.InsertionPosition;
 			context.RegisterActiveElement(this, new ReplaceableActiveElement(context, start, end));
+		}
+		
+		/// <inheritdoc/>
+		public override Inline ToTextRun()
+		{
+			return new Italic(base.ToTextRun());
 		}
 	}
 	

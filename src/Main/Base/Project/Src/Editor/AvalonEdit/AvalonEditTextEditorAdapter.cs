@@ -5,13 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.AvalonEdit.Document;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
@@ -239,6 +241,11 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		public virtual ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)
 		{
 			return null;
+		}
+		
+		public virtual IEnumerable<ICompletionItem> GetSnippets()
+		{
+			return Enumerable.Empty<ICompletionItem>();
 		}
 		
 		public virtual ITextEditor PrimaryView {

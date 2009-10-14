@@ -16,32 +16,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class EditTemplateDialog : BaseSharpDevelopForm 
 	{
-		CodeTemplate codeTemplate;
-		
-		public CodeTemplate CodeTemplate {
-			get {
-				return codeTemplate;
-			}
-		}
-		
-		public EditTemplateDialog(CodeTemplate codeTemplate)
-		{
-			this.codeTemplate = codeTemplate;
-			InitializeComponents();
-		}
-		
 		void AcceptEvent(object sender, EventArgs e)
 		{
-			codeTemplate.Shortcut    = ControlDictionary["templateTextBox"].Text;
-			codeTemplate.Description = ControlDictionary["descriptionTextBox"].Text;
+//			codeTemplate.Shortcut    = ControlDictionary["templateTextBox"].Text;
+//			codeTemplate.Description = ControlDictionary["descriptionTextBox"].Text;
 		}
 		
 		void InitializeComponents()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.EditTemplateDialog.xfrm"));
 			
-			ControlDictionary["templateTextBox"].Text    = codeTemplate.Shortcut;
-			ControlDictionary["descriptionTextBox"].Text = codeTemplate.Description;
+//			ControlDictionary["templateTextBox"].Text    = codeTemplate.Shortcut;
+//			ControlDictionary["descriptionTextBox"].Text = codeTemplate.Description;
 			
 			ControlDictionary["okButton"].Click += new EventHandler(AcceptEvent);
 			

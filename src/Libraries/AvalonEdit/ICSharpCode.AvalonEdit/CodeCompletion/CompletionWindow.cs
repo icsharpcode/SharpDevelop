@@ -98,15 +98,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			base.OnSourceInitialized(e);
 		}
 		
-		InputHandler myInputHandler;
-		
 		void AttachEvents()
 		{
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			this.TextArea.MouseWheel += textArea_MouseWheel;
 			this.TextArea.PreviewTextInput += textArea_PreviewTextInput;
-			myInputHandler = new InputHandler(this);
-			this.TextArea.PushStackedInputHandler(myInputHandler);
 		}
 		
 		/// <inheritdoc/>
@@ -116,39 +112,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.TextArea.MouseWheel -= textArea_MouseWheel;
 			this.TextArea.PreviewTextInput -= textArea_PreviewTextInput;
 			base.DetachEvents();
-			this.TextArea.PopStackedInputHandler(myInputHandler);
 		}
-		
-		#region InputHandler
-		/// <summary>
-		/// A dummy input handler (that justs invokes the default input handler).
-		/// This is used to ensure the completion window closes when any other input handler
-		/// becomes active.
-		/// </summary>
-		sealed class InputHandler : ITextAreaInputHandler
-		{
-			readonly CompletionWindow window;
-			
-			public InputHandler(CompletionWindow window)
-			{
-				Debug.Assert(window != null);
-				this.window = window;
-			}
-			
-			public TextArea TextArea {
-				get { return window.TextArea; }
-			}
-			
-			public void Attach()
-			{
-			}
-			
-			public void Detach()
-			{
-				window.Close();
-			}
-		}
-		#endregion
 		
 		/// <inheritdoc/>
 		protected override void OnClosed(EventArgs e)

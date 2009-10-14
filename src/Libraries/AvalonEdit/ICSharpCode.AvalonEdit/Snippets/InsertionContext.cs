@@ -185,7 +185,8 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				Deactivate(EventArgs.Empty);
 			} else {
 				myInputHandler = new SnippetInputHandler(this);
-				foreach (ITextAreaInputHandler h in TextArea.StackedInputHandlers) {
+				// disable existing snippet input handlers - there can be only 1 active snippet
+				foreach (TextAreaStackedInputHandler h in TextArea.StackedInputHandlers) {
 					if (h is SnippetInputHandler)
 						TextArea.PopStackedInputHandler(h);
 				}

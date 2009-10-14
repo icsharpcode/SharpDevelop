@@ -82,9 +82,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 					
 					ValidatePosition();
 					InvalidateVisualColumn();
-					if (PositionChanged != null) {
-						PositionChanged(this, EventArgs.Empty);
-					}
+					RaisePositionChanged();
 					Log("Caret position changed to " + value);
 					if (visible)
 						Show();
@@ -218,12 +216,32 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		/// <summary>
 		/// Event raised when the caret position has changed.
-		/// This event might be raised multiple times during a big update operation.
-		/// You might want to check TextDocument.IsInUpdate and delay time-consuming
-		/// actions until the update operation ends.
-		/// TODO: only raise this event outside of document updates
+		/// If the caret position is changed inside a document update (between BeginUpdate/EndUpdate calls),
+		/// the PositionChanged event is raised only once at the end of the document update.
 		/// </summary>
 		public event EventHandler PositionChanged;
+		
+		bool raisePositionChangedOnUpdateFinished;
+		
+		void RaisePositionChanged()
+		{
+			if (textArea.Document != null && textArea.Document.IsInUpdate) {
+				raisePositionChangedOnUpdateFinished = true;
+			} else {
+				if (PositionChanged != null) {
+					PositionChanged(this, EventArgs.Empty);
+				}
+			}
+		}
+		
+		internal void OnDocumentUpdateFinished()
+		{
+			if (raisePositionChangedOnUpdateFinished) {
+				if (PositionChanged != null) {
+					PositionChanged(this, EventArgs.Empty);
+				}
+			}
+		}
 		
 		bool visualColumnValid;
 		

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows.Documents;
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Snippets
@@ -47,6 +48,18 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				AnchorSegment segment = new AnchorSegment(context.Document, start, end - start);
 				context.RegisterActiveElement(this, new BoundActiveElement(context, targetElement, this, segment));
 			}
+		}
+		
+		/// <inheritdoc/>
+		public override Inline ToTextRun()
+		{
+			if (targetElement != null) {
+				string inputText = targetElement.Text;
+				if (inputText != null) {
+					return new Italic(new Run(ConvertText(inputText)));
+				}
+			}
+			return base.ToTextRun();
 		}
 	}
 	

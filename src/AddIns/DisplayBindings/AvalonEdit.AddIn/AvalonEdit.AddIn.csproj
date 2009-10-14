@@ -78,6 +78,13 @@
     <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />
+    <Compile Include="Src\Snippets\CodeSnippet.cs" />
+    <Compile Include="Src\Snippets\CodeSnippetGroup.cs" />
+    <Compile Include="Src\Snippets\SnippetCompletionItem.cs" />
+    <Compile Include="Src\Snippets\SnippetManager.cs" />
+    <Compile Include="Src\Snippets\SnippetOptionPanel.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\ParserFoldingStrategy.cs" />
     <Compile Include="Src\QuickClassBrowser.cs">
       <SubType>Code</SubType>
@@ -90,6 +97,7 @@
   <ItemGroup>
     <Folder Include="Src" />
     <Folder Include="Src\Commands" />
+    <Folder Include="Src\Snippets" />
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
@@ -121,6 +129,9 @@
       <Private>False</Private>
     </ProjectReference>
     <Page Include="Src\Commands\SortOptionsDialog.xaml" />
+    <Page Include="Src\Snippets\SnippetOptionPanel.xaml">
+      <DependentUpon>SnippetOptionPanel.cs</DependentUpon>
+    </Page>
     <Page Include="Src\QuickClassBrowser.xaml">
       <DependentUpon>QuickClassBrowser.cs</DependentUpon>
     </Page>

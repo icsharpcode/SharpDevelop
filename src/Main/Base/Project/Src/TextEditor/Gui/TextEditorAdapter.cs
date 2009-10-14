@@ -264,6 +264,11 @@ namespace ICSharpCode.SharpDevelop
 				return this;
 			}
 		}
+		
+		public IEnumerable<ICompletionItem> GetSnippets()
+		{
+			return Enumerable.Empty<ICompletionItem>();
+		}
 	}
 	
 	sealed class CompletionItemListAdapter : ICompletionDataProvider

@@ -114,10 +114,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 	}
 	
+	/// <summary>
+	/// Completion item that supports complex content and description.
+	/// </summary>
+	public interface IFancyCompletionItem : ICompletionItem
+	{
+		object Content { get; }
+		new object Description { get; }
+	}
+	
 	sealed class CodeCompletionDataAdapter : ICompletionData
 	{
 		readonly SharpDevelopCompletionWindow window;
 		readonly ICompletionItem item;
+		readonly IFancyCompletionItem fancyCompletionItem;
 		
 		public CodeCompletionDataAdapter(SharpDevelopCompletionWindow window, ICompletionItem item)
 		{
@@ -127,6 +137,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				throw new ArgumentNullException("item");
 			this.window = window;
 			this.item = item;
+			this.fancyCompletionItem = item as IFancyCompletionItem;
 		}
 		
 		public ICompletionItem Item {
@@ -138,12 +149,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public object Content {
-			get { return item.Text; }
+			get {
+				return (fancyCompletionItem != null) ? fancyCompletionItem.Content : item.Text;
+			}
 		}
 		
 		public object Description {
 			get {
-				return item.Description;
+				return (fancyCompletionItem != null) ? fancyCompletionItem.Description : item.Description;
 			}
 		}
 		

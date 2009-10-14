@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows.Documents;
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Snippets
@@ -31,6 +32,12 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		{
 			if (text != null)
 				context.InsertText(text);
+		}
+		
+		/// <inheritdoc/>
+		public override Inline ToTextRun()
+		{
+			return new Run(text ?? string.Empty);
 		}
 	}
 }

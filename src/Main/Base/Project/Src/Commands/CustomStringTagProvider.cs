@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				case "STARTUPPATH":
 					return Application.StartupPath;
 			}
-			return String.Empty;
+			return null;
 		}
 	}
 

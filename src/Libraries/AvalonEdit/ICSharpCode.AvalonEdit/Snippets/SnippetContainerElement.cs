@@ -7,6 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Windows.Documents;
+
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Utils;
 
@@ -33,6 +36,18 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			foreach (SnippetElement e in this.Elements) {
 				e.Insert(context);
 			}
+		}
+		
+		/// <inheritdoc/>
+		public override Inline ToTextRun()
+		{
+			Span span = new Span();
+			foreach (SnippetElement e in this.Elements) {
+				Inline r = e.ToTextRun();
+				if (r != null)
+					span.Inlines.Add(r);
+			}
+			return span;
 		}
 	}
 }

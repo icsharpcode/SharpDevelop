@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
+using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Indentation;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -25,7 +27,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		readonly CodeEditor codeEditor;
 		
-		public CodeEditorAdapter(CodeEditor codeEditor, TextEditor textEditor) : base(textEditor)
+		public CodeEditorAdapter(CodeEditor codeEditor, CodeEditorView textEditor) : base(textEditor)
 		{
 			if (codeEditor == null)
 				throw new ArgumentNullException("codeEditor");
@@ -93,6 +95,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public override ITextEditor PrimaryView {
 			get { return codeEditor.PrimaryTextEditorAdapter; }
+		}
+		
+		public override IEnumerable<ICompletionItem> GetSnippets()
+		{
+			CodeSnippetGroup g = SnippetManager.Instance.FindGroup(Path.GetExtension(this.FileName));
+			if (g != null) {
+				return g.Snippets.Select(s => s.CreateCompletionItem(this));
+			} else {
+				return base.GetSnippets();
+			}
 		}
 	}
 }

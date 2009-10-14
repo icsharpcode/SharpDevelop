@@ -74,7 +74,13 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		public void SortItems()
 		{
 			// the user might use method names is his language, so sort using CurrentCulture
-			items.Sort((a,b) => string.Compare(a.Text, b.Text, StringComparison.CurrentCultureIgnoreCase));
+			items.Sort((a,b) => {
+			           	int r = string.Compare(a.Text, b.Text, StringComparison.CurrentCultureIgnoreCase);
+			           	if (r != 0)
+			           		return r;
+			           	else
+			           		return string.Compare(a.Text, b.Text, StringComparison.CurrentCulture);
+			           });
 		}
 		
 		/// <inheritdoc/>

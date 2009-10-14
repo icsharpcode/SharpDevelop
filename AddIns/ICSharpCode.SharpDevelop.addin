@@ -167,16 +167,6 @@
 		            class      = "ICSharpCode.SharpDevelop.Project.LoadSolution"
 		            extensions = "*.sln"/>
 		
-		<FileFilter id         = "Combine"
-		            name       = "${res:SharpDevelop.FileFilter.CombineFiles}"
-		            class      = "ICSharpCode.SharpDevelop.Project.LoadSolution"
-		            extensions = "*.cmbx"/>
-		
-		<FileFilter id         = "Prjx"
-		            name       = "${res:SharpDevelop.FileFilter.PrjxFiles}"
-		            class      = "ICSharpCode.SharpDevelop.Project.LoadSolution"
-		            extensions = "*.prjx"/>
-		
 		<FileFilter id         = "AllFiles"
 		            name       = "${res:SharpDevelop.FileFilter.AllFiles}"
 		            extensions = "*.*"/>
@@ -1718,12 +1708,6 @@
 	
 	<!-- TEXT EDITOR -->
 	
-	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
-		<OptionPanel id = "CodeTemplates"
-		             label = "${res:Dialog.Options.CodeTemplatesText}"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeTemplatePanel"/>
-	</Path>
-	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "OldText"
 		                insertafter = "Text"
@@ -1960,16 +1944,6 @@
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
 		</OptionPanel>
-	</Path>
-	
-	<!-- Note : Most actions are put directly into the control, because
-	            they're used for the standalone version too, only put keys in the
-	            tree that are sharpdevelop specific, general keys put into TextAreaControl.GenerateDefaultActions --> 
-	<Path name = "/AddIns/DefaultTextEditor/EditActions">
-		<EditAction id = "TemplateCompletion"  class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.TemplateCompletion"  keys = "Control|J"/>
-		<EditAction id = "CodeCompletionPopup" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.CodeCompletionPopup"  keys = "Control|Space"/>
-		<EditAction id = "GoToDefinition"      class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.GoToDefinition"  keys = "Control|Enter"/>
-		<EditAction id = "ExpandTemplateAction" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.ExpandTemplateAction"  keys = "Tab"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">

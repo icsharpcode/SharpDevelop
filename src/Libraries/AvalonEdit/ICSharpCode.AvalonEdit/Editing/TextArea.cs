@@ -128,13 +128,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public event EventHandler ActiveInputHandlerChanged;
 		
-		ImmutableStack<ITextAreaInputHandler> stackedInputHandlers = ImmutableStack<ITextAreaInputHandler>.Empty;
+		ImmutableStack<TextAreaStackedInputHandler> stackedInputHandlers = ImmutableStack<TextAreaStackedInputHandler>.Empty;
 		
 		/// <summary>
 		/// Gets the list of currently active stacked input handlers.
 		/// </summary>
 		/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
-		public ImmutableStack<ITextAreaInputHandler> StackedInputHandlers {
+		public ImmutableStack<TextAreaStackedInputHandler> StackedInputHandlers {
 			get { return stackedInputHandlers; }
 		}
 		
@@ -142,7 +142,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// Pushes an input handler onto the list of stacked input handlers.
 		/// </summary>
 		/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
-		public void PushStackedInputHandler(ITextAreaInputHandler inputHandler)
+		public void PushStackedInputHandler(TextAreaStackedInputHandler inputHandler)
 		{
 			if (inputHandler == null)
 				throw new ArgumentNullException("inputHandler");
@@ -156,7 +156,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// does nothing.
 		/// </summary>
 		/// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
-		public void PopStackedInputHandler(ITextAreaInputHandler inputHandler)
+		public void PopStackedInputHandler(TextAreaStackedInputHandler inputHandler)
 		{
 			if (stackedInputHandlers.Any(i => i == inputHandler)) {
 				ITextAreaInputHandler oldHandler;
@@ -198,11 +198,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 				TextDocumentWeakEventManager.Changing.RemoveListener(oldValue, this);
 				TextDocumentWeakEventManager.Changed.RemoveListener(oldValue, this);
 				TextDocumentWeakEventManager.UpdateStarted.RemoveListener(oldValue, this);
+				TextDocumentWeakEventManager.UpdateFinished.RemoveListener(oldValue, this);
 			}
 			if (newValue != null) {
 				TextDocumentWeakEventManager.Changing.AddListener(newValue, this);
 				TextDocumentWeakEventManager.Changed.AddListener(newValue, this);
 				TextDocumentWeakEventManager.UpdateStarted.AddListener(newValue, this);
+				TextDocumentWeakEventManager.UpdateFinished.AddListener(newValue, this);
 			}
 			if (DocumentChanged != null)
 				DocumentChanged(this, EventArgs.Empty);
@@ -262,13 +264,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.Changing)) {
-				caret.OnDocumentChanging();
+				OnDocumentChanging();
 				return true;
 			} else if (managerType == typeof(TextDocumentWeakEventManager.Changed)) {
 				OnDocumentChanged((DocumentChangeEventArgs)e);
 				return true;
 			} else if (managerType == typeof(TextDocumentWeakEventManager.UpdateStarted)) {
 				OnUpdateStarted();
+				return true;
+			} else if (managerType == typeof(TextDocumentWeakEventManager.UpdateFinished)) {
+				OnUpdateFinished();
 				return true;
 			} else if (managerType == typeof(PropertyChangedWeakEventManager)) {
 				OnOptionChanged((PropertyChangedEventArgs)e);
@@ -284,6 +289,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		#endregion
 		
 		#region Caret handling on document changes
+		void OnDocumentChanging()
+		{
+			caret.OnDocumentChanging();
+		}
+		
 		void OnDocumentChanged(DocumentChangeEventArgs e)
 		{
 			caret.OnDocumentChanged(e);
@@ -293,6 +303,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		void OnUpdateStarted()
 		{
 			Document.UndoStack.PushOptional(new RestoreCaretAndSelectionUndoAction(this));
+		}
+		
+		void OnUpdateFinished()
+		{
+			caret.OnDocumentUpdateFinished();
 		}
 		
 		sealed class RestoreCaretAndSelectionUndoAction : IUndoableOperation
@@ -870,6 +885,28 @@ namespace ICSharpCode.AvalonEdit.Editing
 		#endregion
 		
 		#region OnKeyDown/OnKeyUp
+		/// <inheritdoc/>
+		protected override void OnPreviewKeyDown(KeyEventArgs e)
+		{
+			base.OnPreviewKeyDown(e);
+			foreach (TextAreaStackedInputHandler h in stackedInputHandlers) {
+				if (e.Handled)
+					break;
+				h.OnPreviewKeyDown(e);
+			}
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnPreviewKeyUp(KeyEventArgs e)
+		{
+			base.OnPreviewKeyUp(e);
+			foreach (TextAreaStackedInputHandler h in stackedInputHandlers) {
+				if (e.Handled)
+					break;
+				h.OnPreviewKeyUp(e);
+			}
+		}
+		
 		// Make life easier for text editor extensions that use a different cursor based on the pressed modifier keys.
 		/// <inheritdoc/>
 		protected override void OnKeyDown(KeyEventArgs e)

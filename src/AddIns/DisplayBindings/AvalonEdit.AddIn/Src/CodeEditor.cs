@@ -73,13 +73,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			private set {
 				if (document != value) {
-					if (document != null)
-						document.UpdateFinished -= DocumentUpdateFinished;
-					
 					document = value;
-					
-					if (document != null)
-						document.UpdateFinished += DocumentUpdateFinished;
 					
 					if (DocumentChanged != null) {
 						DocumentChanged(this, EventArgs.Empty);
@@ -287,23 +281,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public event EventHandler CaretPositionChanged;
-		bool caretPositionWasChanged;
 		
 		void TextAreaCaretPositionChanged(object sender, EventArgs e)
 		{
 			Debug.Assert(sender is Caret);
+			Debug.Assert(!document.IsInUpdate);
 			if (sender == this.ActiveTextEditor.TextArea.Caret) {
-				if (document.IsInUpdate)
-					caretPositionWasChanged = true;
-				else
-					HandleCaretPositionChange();
-			}
-		}
-		
-		void DocumentUpdateFinished(object sender, EventArgs e)
-		{
-			if (caretPositionWasChanged) {
-				caretPositionWasChanged = false;
 				HandleCaretPositionChange();
 			}
 		}

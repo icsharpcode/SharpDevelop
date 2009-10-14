@@ -579,12 +579,20 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			Dispatcher.VerifyAccess();
 			if (inMeasure)
 				throw new InvalidOperationException("The visual line build process is already running! Cannot EnsureVisualLines() during Measure!");
-			if (visibleVisualLines == null) {
+			if (!VisualLinesValid) {
 				// increase priority for re-measure
 				InvalidateMeasure(DispatcherPriority.Normal);
 				// force immediate re-measure
 				UpdateLayout();
 			}
+			// Sometimes we still have invalid lines after UpdateLayout - work around the problem
+			// by calling MeasureOverride directly.
+			if (!VisualLinesValid) {
+				Debug.WriteLine("UpdateLayout() failed in EnsureVisualLines");
+				MeasureOverride(lastAvailableSize);
+			}
+			if (!VisualLinesValid)
+				throw new VisualLinesInvalidException("Internal error: visual lines invalid after EnsureVisualLines call");
 		}
 		#endregion
 		
@@ -800,8 +808,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		protected override Size ArrangeOverride(Size finalSize)
 		{
-			if (!VisualLinesValid)
-				throw new VisualLinesInvalidException();
+			EnsureVisualLines();
+			
 			foreach (UIElement layer in layers) {
 				layer.Arrange(new Rect(new Point(0, 0), finalSize));
 			}

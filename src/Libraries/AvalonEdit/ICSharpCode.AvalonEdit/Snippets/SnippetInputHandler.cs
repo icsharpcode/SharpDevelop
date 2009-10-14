@@ -16,42 +16,32 @@ using ICSharpCode.AvalonEdit.Editing;
 
 namespace ICSharpCode.AvalonEdit.Snippets
 {
-	sealed class SnippetInputHandler : ITextAreaInputHandler
+	sealed class SnippetInputHandler : TextAreaStackedInputHandler
 	{
 		readonly InsertionContext context;
 		
 		public SnippetInputHandler(InsertionContext context)
+			: base(context.TextArea)
 		{
 			this.context = context;
 		}
 		
-		public TextArea TextArea {
-			get { return context.TextArea; }
-		}
-		
-		public void Attach()
+		public override void Attach()
 		{
-			TextArea.PreviewKeyDown += TextArea_PreviewKeyDown;
+			base.Attach();
 			
 			SelectElement(FindNextEditableElement(-1, false));
 		}
 		
-		void SelectElement(IActiveElement element)
+		public override void Detach()
 		{
-			if (element != null) {
-				TextArea.Selection = new SimpleSelection(element.Segment);
-				TextArea.Caret.Offset = element.Segment.EndOffset;
-			}
-		}
-		
-		public void Detach()
-		{
-			TextArea.PreviewKeyDown -= TextArea_PreviewKeyDown;
+			base.Detach();
 			context.Deactivate(EventArgs.Empty);
 		}
 		
-		void TextArea_PreviewKeyDown(object sender, KeyEventArgs e)
+		public override void OnPreviewKeyDown(KeyEventArgs e)
 		{
+			base.OnPreviewKeyDown(e);
 			if (e.Key == Key.Escape || e.Key == Key.Return) {
 				context.Deactivate(e);
 				e.Handled = true;
@@ -59,6 +49,14 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				bool backwards = e.KeyboardDevice.Modifiers == ModifierKeys.Shift;
 				SelectElement(FindNextEditableElement(TextArea.Caret.Offset, backwards));
 				e.Handled = true;
+			}
+		}
+		
+		void SelectElement(IActiveElement element)
+		{
+			if (element != null) {
+				TextArea.Selection = new SimpleSelection(element.Segment);
+				TextArea.Caret.Offset = element.Segment.EndOffset;
 			}
 		}
 		

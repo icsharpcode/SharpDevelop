@@ -15,17 +15,6 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 {
-	public class TemplateCompletion : AbstractEditAction
-	{
-		public override void Execute(TextArea services)
-		{
-			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
-			services.AutoClearSelection = false;
-			
-			new ICSharpCode.SharpDevelop.Editor.CodeCompletion.TemplateCompletionItemProvider().ShowCompletion(sdtac.Adapter);
-		}
-	}
-	
 	public class CodeCompletionPopup : AbstractEditAction
 	{
 		public override void Execute(TextArea textArea)

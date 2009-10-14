@@ -92,7 +92,6 @@
     <Compile Include="Src\Editor\CodeCompletion\OverrideCompletionItem.cs">
     </Compile>
     <Compile Include="Src\Editor\CodeCompletion\OverrideCompletionItemProvider.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\TemplateCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\TextCompletionItemProvider.cs" />
     <Compile Include="Src\Editor\Commands\CommentRegion.cs" />
     <Compile Include="Src\Editor\Commands\GoToDefinition.cs" />
@@ -208,7 +207,6 @@
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\IOptionPanel.cs" />
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
-    <Compile Include="Src\Internal\Templates\CodeTemplate.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\FileDescriptionTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\FileTemplate.cs" />
@@ -271,13 +269,13 @@
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
+    <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
     <Compile Include="Src\Services\Tasks\TaskService.cs" />
     <Compile Include="Src\Services\DisplayBinding\IDisplayBinding.cs" />
     <Compile Include="Src\Internal\ExternalTool\ToolLoader.cs" />
-    <Compile Include="Src\Internal\Templates\CodeTemplateLoader.cs" />
     <Compile Include="Src\Services\ProjectBinding\IProjectBinding.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectCreateInformation.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
@@ -417,7 +415,6 @@
     </Compile>
     <Compile Include="Src\Gui\ContentInterfaces\IParseInformationListener.cs" />
     <Compile Include="Src\Commands\CustomStringTagProvider.cs" />
-    <Compile Include="Src\Internal\Templates\CodeTemplateGroup.cs" />
     <Compile Include="Src\Commands\VBConverter\CSharpConvertBuffer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveViewContentUntitledEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerService.cs" />
@@ -465,7 +462,6 @@
     <Compile Include="Src\Services\ProjectService\ProjectEventHandler.cs" />
     <Compile Include="Src\Commands\FileMenuCommands.cs" />
     <Compile Include="Src\Services\ParserService\ParseInformationEventArgs.cs" />
-    <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectConfigurationEventHandler.cs" />
     <Compile Include="Src\Commands\DebugCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\AbstractProjectBrowserTreeNode.cs" />
@@ -566,7 +562,6 @@
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <EmbeddedResource Include="Resources\BehaviorTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\GeneralTextEditorPanel.xfrm" />
-    <EmbeddedResource Include="Resources\CodeTemplatePanel.xfrm" />
     <EmbeddedResource Include="Resources\MarkersTextEditorPanel.xfrm" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\Commands\MenuCommands.cs" />
@@ -621,9 +616,6 @@
     <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextEditorProperties.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\TextEditorDisplayBinding.cs" />
     <Compile Include="Src\TextEditor\Gui\OptionPanels\BehaviorTextEditorPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeTemplatePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\TextEditor\Gui\OptionPanels\GeneralTextEditorPanel.cs">

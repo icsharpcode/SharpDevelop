@@ -27,6 +27,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			return v;
 		}
 		
+		public override string GetFieldName(string propertyName)
+		{
+			return "m_" + propertyName;
+		}
+		
 		public override PropertyDeclaration CreateProperty(IField field, bool createGetter, bool createSetter)
 		{
 			string propertyName = GetPropertyName(field.Name);

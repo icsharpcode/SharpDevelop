@@ -1,19 +1,20 @@
-﻿/*
- * Created by SharpDevelop.
- * User: daniel
- * Date: 31.08.2009
- * Time: 14:55
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Daniel Grunwald"/>
+//     <version>$Revision$</version>
+// </file>
+
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
+using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
@@ -41,6 +42,50 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;
 			this.MouseLeave += TextEditorMouseLeave;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
+			
+			var editingKeyBindings = this.TextArea.DefaultInputHandler.Editing.InputBindings.OfType<KeyBinding>();
+			var tabBinding = editingKeyBindings.Single(b => b.Key == Key.Tab && b.Modifiers == ModifierKeys.None);
+			tabBinding.Command = new CustomTabCommand(this, tabBinding.Command);
+		}
+		
+		sealed class CustomTabCommand : ICommand
+		{
+			CodeEditorView editor;
+			ICommand baseCommand;
+			
+			public CustomTabCommand(CodeEditorView editor, ICommand baseCommand)
+			{
+				this.editor = editor;
+				this.baseCommand = baseCommand;
+			}
+			
+			public event EventHandler CanExecuteChanged {
+				add {}
+				remove {}
+			}
+			
+			public bool CanExecute(object parameter)
+			{
+				return true;
+			}
+			
+			public void Execute(object parameter)
+			{
+				if (editor.SelectionLength == 0) {
+					int wordStart = DocumentUtilitites.FindPrevWordStart(editor.Adapter.Document, editor.CaretOffset);
+					if (wordStart > 0) {
+						string word = editor.Adapter.Document.GetText(wordStart, editor.CaretOffset - wordStart);
+						CodeSnippet snippet = SnippetManager.Instance.FindSnippet(Path.GetExtension(editor.Adapter.FileName),
+						                                                          word);
+						if (snippet != null) {
+							editor.Adapter.Document.Remove(wordStart, editor.CaretOffset - wordStart);
+							snippet.CreateAvalonEditSnippet(editor.Adapter).Insert(editor.TextArea);
+							return;
+						}
+					}
+				}
+				baseCommand.Execute(parameter);
+			}
 		}
 		
 		#region Help
