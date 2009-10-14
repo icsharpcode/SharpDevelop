@@ -61,8 +61,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		{
 			if (context.Editor != this.textEditor)
 				throw new ArgumentException("wrong editor");
-			context.Editor.Document.Remove(context.StartOffset, context.Length);
-			CreateSnippet().Insert(textArea);
+			using (context.Editor.Document.OpenUndoGroup()) {
+				if (context.CompletionChar == '\t') {
+					context.Editor.Document.Remove(context.StartOffset, context.Length);
+					CreateSnippet().Insert(textArea);
+				} else {
+					context.Editor.Document.Replace(context.StartOffset, context.Length, this.Text);
+				}
+			}
 		}
 		
 		Snippet CreateSnippet()

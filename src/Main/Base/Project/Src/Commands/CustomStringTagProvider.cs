@@ -58,43 +58,42 @@ namespace ICSharpCode.SharpDevelop.Commands
 						return "<no current project>";
 					else
 						return ProjectService.CurrentProject.Name;
-					
 			}
 			switch (tag.ToUpperInvariant()) {
 				case "ITEMPATH":
 					try {
 						return GetCurrentItemPath() ?? string.Empty;
 					} catch (Exception) {}
-					break;
+					return string.Empty;
 				case "ITEMDIR":
 					try {
 						return Path.GetDirectoryName(GetCurrentItemPath()) ?? string.Empty;
 					} catch (Exception) {}
-					break;
+					return string.Empty;
 				case "ITEMFILENAME":
 					try {
 						return Path.GetFileName(GetCurrentItemPath()) ?? string.Empty;
 					} catch (Exception) {}
-					break;
+					return string.Empty;
 				case "ITEMEXT":
 					try {
 						return Path.GetExtension(GetCurrentItemPath()) ?? string.Empty;
 					} catch (Exception) {}
-					break;
+					return string.Empty;
 					
 				case "CURLINE":
 					{
 						IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
 						if (positionable != null)
 							return positionable.Line.ToString();
-						break;
+						return string.Empty;
 					}
 				case "CURCOL":
 					{
 						IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
 						if (positionable != null)
 							return positionable.Column.ToString();
-						break;
+						return string.Empty;
 					}
 				case "CURTEXT":
 					{
@@ -102,42 +101,40 @@ namespace ICSharpCode.SharpDevelop.Commands
 						if (tecp != null) {
 							return tecp.TextEditor.SelectedText;
 						}
-						break;
+						return string.Empty;
 					}
 				case "TARGETPATH":
 					try {
 						return GetCurrentTargetPath() ?? string.Empty;
 					} catch (Exception) {}
-					break;
+					return string.Empty;
 				case "TARGETDIR":
 					try {
 						return Path.GetDirectoryName(GetCurrentTargetPath()) ?? string.Empty;
 					} catch (Exception) {}
-					break;
+					return string.Empty;
 				case "TARGETNAME":
 					try {
 						return Path.GetFileName(GetCurrentTargetPath()) ?? string.Empty;
 					} catch (Exception) {}
-					break;
+					return string.Empty;
 				case "TARGETEXT":
 					try {
 						return Path.GetExtension(GetCurrentTargetPath()) ?? string.Empty;
 					} catch (Exception) {}
-					break;
-					
+					return string.Empty;
 				case "PROJECTDIR":
 					if (ProjectService.CurrentProject != null) {
 						return ProjectService.CurrentProject.Directory;
 					}
-					break;
+					return string.Empty;
 				case "PROJECTFILENAME":
 					if (ProjectService.CurrentProject != null) {
 						try {
 							return Path.GetFileName(ProjectService.CurrentProject.FileName);
 						} catch (Exception) {}
 					}
-					break;
-					
+					return string.Empty;
 				case "COMBINEDIR":
 				case "SOLUTIONDIR":
 					return Path.GetDirectoryName(ProjectService.OpenSolution.FileName);
@@ -146,13 +143,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 					try {
 						return Path.GetFileName(ProjectService.OpenSolution.FileName);
 					} catch (Exception) {}
-					break;
+					return string.Empty;
 				case "SHARPDEVELOPBINPATH":
 					return Path.GetDirectoryName(typeof(SharpDevelopStringTagProvider).Assembly.Location);
 				case "STARTUPPATH":
 					return Application.StartupPath;
+				default:
+					return null;
 			}
-			return null;
 		}
 	}
 
