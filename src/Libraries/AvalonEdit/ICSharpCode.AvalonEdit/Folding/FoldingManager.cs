@@ -164,7 +164,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 		}
 		
 		/// <summary>
-		/// Gets all foldings that contain <param name="offset" />.
+		/// Gets all foldings that contain <paramref name="offset" />.
 		/// </summary>
 		public ReadOnlyCollection<FoldingSection> GetFoldingsContaining(int offset)
 		{

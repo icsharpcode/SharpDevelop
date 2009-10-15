@@ -6,15 +6,13 @@
 			<RowDefinition
 				Height="Auto" />
 			<RowDefinition
-				Height="1*" />
+				Height="2*" MinHeight="120" />
 			<RowDefinition
-				Height="1*" />
+				Height="1*" MinHeight="80" />
 		</Grid.RowDefinitions>
 		<Grid
 			Grid.Column="0"
-			Grid.Row="0"
-			HorizontalAlignment="Stretch"
-			VerticalAlignment="Top">
+			Grid.Row="0">
 			<Grid.RowDefinitions>
 				<RowDefinition
 					Height="Auto" />
@@ -37,6 +35,7 @@
 				DisplayMemberPath="Extensions"
 				Grid.Column="1"
 				Grid.Row="0"
+				Margin="0,0,4,0"
 				Height="23" />
 			<StackPanel
 				Grid.Column="0"
@@ -88,35 +87,39 @@
 					Padding="9,1,9,1"
 					Click="RemoveSnippetButton_Click" />
 			</StackPanel>-->
-		<DataGrid
+		<core:RestrictDesiredSize
 			Grid.Row="1"
-			Grid.Column="0"
-			x:Name="dataGrid"
-			SelectionMode="Single"
-			CanUserAddRows="True"
-			CanUserDeleteRows="True"
-			SelectionUnit="FullRow"
-			HeadersVisibility="Column"
-			CanUserResizeRows="False"
-			AutoGenerateColumns="False"
-			ItemsSource="{Binding ElementName=extensionComboBox, Path=SelectedItem.Snippets}"
-			SelectionChanged="DataGrid_SelectionChanged">
-			<DataGrid.Columns>
-				<DataGridTextColumn
-					Header="{core:Localize Dialog.Options.CodeTemplate.Template}"
-					Binding="{Binding Name}" />
-				<DataGridTextColumn
-					Header="{core:Localize Dialog.Options.CodeTemplate.Description}"
-					Width="*"
-					Binding="{Binding Description}" />
-			</DataGrid.Columns>
-		</DataGrid>
+			Grid.Column="0">
+			<DataGrid
+				x:Name="dataGrid"
+				SelectionMode="Single"
+				CanUserAddRows="True"
+				CanUserDeleteRows="True"
+				SelectionUnit="FullRow"
+				HeadersVisibility="Column"
+				CanUserResizeRows="False"
+				AutoGenerateColumns="False"
+				ItemsSource="{Binding ElementName=extensionComboBox, Path=SelectedItem.Snippets}"
+				SelectionChanged="DataGrid_SelectionChanged">
+				<DataGrid.Columns>
+					<DataGridTextColumn
+						Header="{core:Localize Dialog.Options.CodeTemplate.Template}"
+						Binding="{Binding Name}" />
+					<DataGridTextColumn
+						Header="{core:Localize Dialog.Options.CodeTemplate.Description}"
+						Width="*"
+						Binding="{Binding Description}" />
+				</DataGrid.Columns>
+			</DataGrid>
+		</core:RestrictDesiredSize>
 		<!--</DockPanel>-->
-		<AvalonEdit:TextEditor
-			x:Name="snippetTextBox"
+		<core:RestrictDesiredSize
 			Grid.Column="0"
-			Grid.Row="2"
-			FontFamily="Consolas, Courier New"
-			TextChanged="SnippetTextBox_TextChanged"/>
+			Grid.Row="2">
+			<AvalonEdit:TextEditor
+				x:Name="snippetTextBox"
+				FontFamily="Consolas, Courier New"
+				TextChanged="SnippetTextBox_TextChanged"/>
+		</core:RestrictDesiredSize>
 	</Grid>
 </UserControl>

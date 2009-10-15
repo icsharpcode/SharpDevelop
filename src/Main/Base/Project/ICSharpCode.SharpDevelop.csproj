@@ -351,9 +351,6 @@
     <Compile Include="Src\Gui\Dialogs\WordCountDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\EditTemplateDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -550,7 +547,6 @@
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\EditStandardHeaderPanel.xfrm" />
-    <EmbeddedResource Include="Resources\EditTemplateDialog.xfrm" />
     <EmbeddedResource Include="Resources\ExternalToolOptions.xfrm" />
     <EmbeddedResource Include="Resources\FontSelectionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />

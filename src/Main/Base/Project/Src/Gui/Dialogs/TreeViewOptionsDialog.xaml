@@ -3,6 +3,8 @@
         x:Class="ICSharpCode.SharpDevelop.Gui.TreeViewOptionsDialog"
         Height="414"
         Width="552"
+        MinHeight="260"
+        MinWidth="480"
         Style="{StaticResource DialogWindow}">
 	<Grid>
 		<Grid.RowDefinitions>
