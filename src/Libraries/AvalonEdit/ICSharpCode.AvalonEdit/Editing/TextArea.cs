@@ -924,6 +924,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 		#endregion
 		
 		/// <inheritdoc/>
+		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
+		{
+			// accept clicks even where the text area draws no background
+			return new PointHitTestResult(this, hitTestParameters.HitPoint);
+		}
+		
+		/// <inheritdoc/>
 		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);

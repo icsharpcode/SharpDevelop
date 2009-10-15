@@ -111,15 +111,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 								return;
 						}
 					}
-					// no bookmark on the line: create a new breakpoint
-					ITextEditor textEditor = textView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-					if (textEditor != null) {
-						ICSharpCode.SharpDevelop.Debugging.DebuggerService.ToggleBreakpointAt(textEditor, line);
+					if (e.ChangedButton == MouseButton.Left) {
+						// no bookmark on the line: create a new breakpoint
+						ITextEditor textEditor = textView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+						if (textEditor != null) {
+							ICSharpCode.SharpDevelop.Debugging.DebuggerService.ToggleBreakpointAt(textEditor, line);
+						}
 					}
 				}
 			}
 			// don't allow selecting text through the IconBarMargin
-			e.Handled = true;
+			if (e.ChangedButton == MouseButton.Left)
+				e.Handled = true;
 		}
 	}
 }

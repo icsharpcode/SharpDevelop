@@ -188,8 +188,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
-			textEditor.TextArea.TextView.MouseRightButtonDown += TextViewMouseRightButtonDown;
-			textEditor.TextArea.TextView.ContextMenuOpening += TextViewContextMenuOpening;
+			textEditor.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
+			textEditor.TextArea.ContextMenuOpening += TextAreaContextMenuOpening;
 			textEditor.TextArea.TextCopied += textEditor_TextArea_TextCopied;
 			
 			return textEditor;
@@ -209,13 +209,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.LeftMargins.OfType<IconBarMargin>().Single().TextView = null;
 		}
 		
-		void TextViewContextMenuOpening(object sender, ContextMenuEventArgs e)
+		void TextAreaContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
 			ITextEditor adapter = GetAdapterFromSender(sender);
 			MenuService.CreateContextMenu(adapter, contextMenuPath).IsOpen = true;
 		}
 		
-		void TextViewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		void TextAreaMouseRightButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			TextEditor textEditor = GetTextEditorFromSender(sender);
 			var position = textEditor.GetPositionFromPoint(e.GetPosition(textEditor));
