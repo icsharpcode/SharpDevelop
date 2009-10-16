@@ -76,10 +76,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		void completionList_InsertionRequested(object sender, EventArgs e)
 		{
+			Close();
+			// The window must close before Complete() is called.
+			// If the Complete callback pushes stacked input handlers, we don't want to pop those when the CC window closes.
 			var item = completionList.SelectedItem;
 			if (item != null)
 				item.Complete(this.TextArea, new AnchorSegment(this.TextArea.Document, this.StartOffset, this.EndOffset - this.StartOffset), e);
-			Close();
 		}
 		
 		/// <inheritdoc/>

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -71,6 +72,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				parentWindow.LocationChanged += parentWindow_LocationChanged;
 			}
 			
+			// close previous completion windows of same type
+			foreach (InputHandler x in this.TextArea.StackedInputHandlers.OfType<InputHandler>()) {
+				if (x.window.GetType() == this.GetType())
+					this.TextArea.PopStackedInputHandler(x);
+			}
+			
 			myInputHandler = new InputHandler(this);
 			this.TextArea.PushStackedInputHandler(myInputHandler);
 		}
@@ -102,7 +109,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		sealed class InputHandler : TextAreaStackedInputHandler
 		{
-			readonly CompletionWindowBase window;
+			internal readonly CompletionWindowBase window;
 			
 			public InputHandler(CompletionWindowBase window)
 				: base(window.TextArea)
