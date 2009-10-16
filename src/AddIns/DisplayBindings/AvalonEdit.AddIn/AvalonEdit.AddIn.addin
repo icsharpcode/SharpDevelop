@@ -81,4 +81,21 @@
 		             label = "${res:Dialog.Options.CodeTemplatesText}"
 		             class = "ICSharpCode.AvalonEdit.AddIn.Snippets.SnippetOptionPanel"/>
 	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
+		<OptionPanel id    = "TextEditorOptions"
+		             insertafter = "CodingOptions"
+		             insertbefore = "ToolsOptions"
+		             label = "${res:Dialog.Options.IDEOptions.TextEditorOptionsText}">
+			<OptionPanel id = "General"
+			             label = "${res:Dialog.Options.IDEOptions.General}"
+			             class = "ICSharpCode.AvalonEdit.AddIn.Options.GeneralEditorOptions"/>
+			<OptionPanel id = "Markers"
+			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
+			             class = "ICSharpCode.AvalonEdit.AddIn.Options.TextViewOptions"/>
+			<OptionPanel id = "Behavior"
+			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
+			             class = "ICSharpCode.AvalonEdit.AddIn.Options.BehaviorOptions"/>
+		</OptionPanel>
+	</Path>
 </AddIn>

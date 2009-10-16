@@ -39,8 +39,10 @@ namespace ICSharpCode.Core.Presentation
 		
 		DependencyObject target;
 		DependencyProperty dp;
+		bool isStatic;
+		Type propertyDeclaringType;
 		
-		object propertyInfo;
+		MemberInfo propertyInfo;
 		
 		public OptionBinding(string propertyName)
 		{
@@ -65,9 +67,21 @@ namespace ICSharpCode.Core.Presentation
 			
 			string[] name =  PropertyName.Split('.');
 			IXamlTypeResolver typeResolver = provider.GetService(typeof(IXamlTypeResolver)) as IXamlTypeResolver;
-			Type t = typeResolver.Resolve(name[0]);
+			propertyDeclaringType = typeResolver.Resolve(name[0]);
+			if (propertyDeclaringType == null)
+				throw new ArgumentException("Could not find type " + name[0]);
 			
-			this.propertyInfo = t.GetProperty(name[1]);
+			this.propertyInfo = propertyDeclaringType.GetProperty(name[1]);
+			if (this.propertyInfo != null) {
+				isStatic = (propertyInfo as PropertyInfo).GetGetMethod().IsStatic;
+			} else {
+				this.propertyInfo = propertyDeclaringType.GetField(name[1]);
+				if (this.propertyInfo != null) {
+					isStatic = (propertyInfo as FieldInfo).IsStatic;
+				} else {
+					throw new ArgumentException("Could not find property " + name[1]);
+				}
+			}
 			
 			IOptionBindingContainer container = TryFindContainer(target as FrameworkElement);
 			
@@ -76,21 +90,36 @@ namespace ICSharpCode.Core.Presentation
 			
 			container.AddBinding(this);
 			
+			object instance = isStatic ? null : FetchInstance(propertyDeclaringType);
 			try {
 				object result = null;
 				
-				if (this.propertyInfo is PropertyInfo)
-					result = (propertyInfo as PropertyInfo).GetValue(null, null);
-				else {
-					this.propertyInfo = t.GetField(name[1]);
+				if (this.propertyInfo is PropertyInfo) {
+					result = (propertyInfo as PropertyInfo).GetValue(instance, null);
+				} else {
 					if (this.propertyInfo is FieldInfo)
-						result = (propertyInfo as FieldInfo).GetValue(null);
+						result = (propertyInfo as FieldInfo).GetValue(instance);
 				}
 
 				return ConvertOnDemand(result, dp.PropertyType);
 			} catch (Exception e) {
-				throw new Exception("Failing to convert " + dp.Name + " " + dp.PropertyType, e);
+				throw new Exception("Failing to convert " + this.PropertyName + " to " +
+				                    dp.OwnerType.Name + "." + dp.Name + " (" + dp.PropertyType + ")", e);
 			}
+		}
+		
+		/// <summary>
+		/// Gets the 'Instance' from a singleton type.
+		/// </summary>
+		static object FetchInstance(Type type)
+		{
+			PropertyInfo instanceProp = type.GetProperty("Instance", type);
+			if (instanceProp != null)
+				return instanceProp.GetValue(null, null);
+			FieldInfo instanceField = type.GetField("Instance");
+			if (instanceField != null)
+				return instanceField.GetValue(null);
+			throw new ArgumentException("Type " + type.FullName + " has no 'Instance' property. Only singletons can be used with OptionBinding.");
 		}
 
 		object ConvertOnDemand(object result, Type returnType)
@@ -138,13 +167,14 @@ namespace ICSharpCode.Core.Presentation
 			
 			value = ConvertOnDemand(value, returnType);
 			
+			object instance = isStatic ? null : FetchInstance(propertyDeclaringType);
 			if (propertyInfo is PropertyInfo) {
-				(propertyInfo as PropertyInfo).SetValue(null, value, null);
+				(propertyInfo as PropertyInfo).SetValue(instance, value, null);
 				return true;
 			}
 			
 			if (propertyInfo is FieldInfo) {
-				(propertyInfo as FieldInfo).SetValue(null, value);
+				(propertyInfo as FieldInfo).SetValue(instance, value);
 				return true;
 			}
 			

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<gui:OptionPanel
+	x:Class="ICSharpCode.AvalonEdit.AddIn.Options.BehaviorOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options">
+	<StackPanel>
+		<GroupBox
+			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.TabsGroupBox}">
+			<StackPanel>
+				<StackPanel
+					Orientation="Horizontal">
+					<Label
+						Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentLabel}" />
+					<TextBox
+						Text="{core:OptionBinding local:CodeEditorOptions.IndentationSize}"
+						Width="40"/>
+				</StackPanel>
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.ConvertTabsToSpaces}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox}" />
+				<CheckBox
+					Content="(TODO: translate) Use smart indentation" />
+			</StackPanel>
+		</GroupBox>
+		<GroupBox
+			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.BehaviourGroupBox}">
+			<StackPanel>
+				<CheckBox
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.MouseWheelZoomCheckBoxCheckBox}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.CutCopyWholeLine}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine}" />
+				<CheckBox
+					Content="(TODO: translate) Word-wrap" />
+				<CheckBox
+					Content="(TODO: translate) Use Ctrl+Click for &quot;Go to Definition&quot;" />
+			</StackPanel>
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel>

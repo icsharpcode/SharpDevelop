@@ -37,6 +37,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public CodeEditorView()
 		{
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
+			this.Options = ICSharpCode.AvalonEdit.AddIn.Options.CodeEditorOptions.Instance;
 			
 			this.MouseHover += TextEditorMouseHover;
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;

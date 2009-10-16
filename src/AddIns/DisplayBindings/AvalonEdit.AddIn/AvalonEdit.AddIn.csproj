@@ -55,6 +55,9 @@
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WindowsFormsIntegration">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="AvalonEdit.AddIn.addin">
@@ -78,6 +81,15 @@
     <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />
+    <Compile Include="Src\Options\BehaviorOptions.xaml.cs">
+      <DependentUpon>BehaviorOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Options\GeneralEditorOptions.xaml.cs">
+      <DependentUpon>GeneralEditorOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Options\CodeEditorOptions.cs" />
     <Compile Include="Src\Snippets\CodeSnippet.cs" />
     <Compile Include="Src\Snippets\CodeSnippetGroup.cs" />
     <Compile Include="Src\Snippets\SnippetCompletionItem.cs" />
@@ -97,6 +109,7 @@
   <ItemGroup>
     <Folder Include="Src" />
     <Folder Include="Src\Commands" />
+    <Folder Include="Src\Options" />
     <Folder Include="Src\Snippets" />
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
@@ -129,6 +142,8 @@
       <Private>False</Private>
     </ProjectReference>
     <Page Include="Src\Commands\SortOptionsDialog.xaml" />
+    <Page Include="Src\Options\BehaviorOptions.xaml" />
+    <Page Include="Src\Options\GeneralEditorOptions.xaml" />
     <Page Include="Src\Snippets\SnippetOptionPanel.xaml">
       <DependentUpon>SnippetOptionPanel.cs</DependentUpon>
     </Page>

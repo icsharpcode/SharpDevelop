@@ -1926,24 +1926,11 @@
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.NewWindow"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
-		<OptionPanel id    = "TextEditorOptions"
-		             insertafter = "CodingOptions"
-		             insertbefore = "ToolsOptions"
-		             label = "${res:Dialog.Options.IDEOptions.TextEditorOptionsText}">
-			<OptionPanel id = "General"
-			             label = "${res:Dialog.Options.IDEOptions.General}"
-			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
-			<OptionPanel id = "Markers"
-			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
-			<OptionPanel id = "Behavior"
-			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
-			<OptionPanel id = "CodeCompletion"
-			             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
-		</OptionPanel>
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+		<OptionPanel id = "CodeCompletion"
+		             insertafter="Behavior"
+		             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
+		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">
