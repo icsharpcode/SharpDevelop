@@ -180,7 +180,44 @@ namespace ICSharpCode.SharpDevelop
 			SetContent(contentControl, content, null);
 		}
 		
+		public static void SetContent(this ContentPresenter contentControl, object content)
+		{
+			SetContent(contentControl, content, null);
+		}
+		
 		public static void SetContent(this ContentControl contentControl, object content, object serviceObject)
+		{
+			if (contentControl == null)
+				throw new ArgumentNullException("contentControl");
+			// serviceObject = object implementing the old clipboard/undo interfaces
+			// to allow WinForms AddIns to handle WPF commands
+			
+			var host = contentControl.Content as SDWindowsFormsHost;
+			if (host != null) {
+				if (host.Child == content) {
+					host.ServiceObject = serviceObject;
+					return;
+				}
+				host.Dispose();
+			}
+			if (content is WinForms.Control) {
+				contentControl.Content = new SDWindowsFormsHost {
+					Child = (WinForms.Control)content,
+					ServiceObject = serviceObject,
+					DisposeChild = false
+				};
+			} else if (content is string) {
+				contentControl.Content = new TextBlock {
+					Text = content.ToString(),
+					TextWrapping = TextWrapping.Wrap
+				};
+			} else {
+				contentControl.Content = content;
+			}
+		}
+		
+		
+		public static void SetContent(this ContentPresenter contentControl, object content, object serviceObject)
 		{
 			if (contentControl == null)
 				throw new ArgumentNullException("contentControl");

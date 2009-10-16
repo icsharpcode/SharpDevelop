@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
+using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -34,10 +35,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		public ITextEditor Adapter { get; set; }
 		
+		CodeEditorOptions options;
+		
 		public CodeEditorView()
 		{
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
-			this.Options = ICSharpCode.AvalonEdit.AddIn.Options.CodeEditorOptions.Instance;
+			options = ICSharpCode.AvalonEdit.AddIn.Options.CodeEditorOptions.Instance;
+			options.BindToTextEditor(this);
 			
 			this.MouseHover += TextEditorMouseHover;
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;
@@ -269,7 +273,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			// close existing popup immediately on text editor mouse down
 			TryCloseExistingPopup(false);
-			if (e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
+			if (options.CtrlClickGoToDefinition && e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
 				var position = GetPositionFromPoint(e.GetPosition(this));
 				if (position != null) {
 					Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");

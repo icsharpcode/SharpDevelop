@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		System.Windows.Controls.ContentControl contentControl;
+		System.Windows.Controls.ContentPresenter contentControl;
 		Panel panel;
 		ComboBox comboBox;
 		PropertyGrid grid;
@@ -154,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public PropertyPad()
 		{
 			instance = this;
-			contentControl = new System.Windows.Controls.ContentControl();
+			contentControl = new System.Windows.Controls.ContentPresenter();
 			panel = new Panel();
 			
 			grid = new PropertyGrid();

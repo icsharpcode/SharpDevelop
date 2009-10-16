@@ -167,9 +167,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(CodeEditor), this);
 			
 			textEditor.Background = Brushes.White;
-			textEditor.FontFamily = new FontFamily("Consolas, Courier New");
-			textEditor.FontSize = 13;
-			textEditor.ShowLineNumbers = true;
 			textEditor.TextArea.TextEntering += TextAreaTextEntering;
 			textEditor.TextArea.TextEntered += TextAreaTextEntered;
 			textEditor.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;

@@ -17,6 +17,8 @@
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.ConvertTabsToSpaces}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox}" />
 				<CheckBox
+					IsEnabled="False"
+					IsChecked="True"
 					Content="(TODO: translate) Use smart indentation" />
 			</StackPanel>
 		</GroupBox>
@@ -24,13 +26,13 @@
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.BehaviourGroupBox}">
 			<StackPanel>
 				<CheckBox
+					IsEnabled="False"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.MouseWheelZoomCheckBoxCheckBox}" />
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.CutCopyWholeLine}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine}" />
 				<CheckBox
-					Content="(TODO: translate) Word-wrap" />
-				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.CtrlClickGoToDefinition}"
 					Content="(TODO: translate) Use Ctrl+Click for &quot;Go to Definition&quot;" />
 			</StackPanel>
 		</GroupBox>

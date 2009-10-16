@@ -50,6 +50,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
@@ -90,6 +91,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Options\CodeEditorOptions.cs" />
+    <Compile Include="Src\Options\TextViewOptions.xaml.cs">
+      <DependentUpon>TextViewOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Snippets\CodeSnippet.cs" />
     <Compile Include="Src\Snippets\CodeSnippetGroup.cs" />
     <Compile Include="Src\Snippets\SnippetCompletionItem.cs" />
@@ -136,6 +141,11 @@
       <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
@@ -144,6 +154,7 @@
     <Page Include="Src\Commands\SortOptionsDialog.xaml" />
     <Page Include="Src\Options\BehaviorOptions.xaml" />
     <Page Include="Src\Options\GeneralEditorOptions.xaml" />
+    <Page Include="Src\Options\TextViewOptions.xaml" />
     <Page Include="Src\Snippets\SnippetOptionPanel.xaml">
       <DependentUpon>SnippetOptionPanel.cs</DependentUpon>
     </Page>

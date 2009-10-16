@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public class OutlinePad : AbstractPadContent
 	{
-		ContentControl contentControl = new ContentControl();
+		ContentPresenter contentControl = new ContentPresenter();
 		
 		public override object Control {
 			get {

@@ -11,7 +11,7 @@
 	
 	<TreeView.ItemTemplate>
 		<HierarchicalDataTemplate ItemsSource="{Binding Children}">
-			<ContentControl Focusable="False" Content="{Binding Text}"/>
+			<ContentPresenter Content="{Binding Text}"/>
 		</HierarchicalDataTemplate>
 	</TreeView.ItemTemplate>
 </TreeView>

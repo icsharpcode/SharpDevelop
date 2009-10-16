@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		DockPanel dockPanel;
 		ToolBar toolBar;
-		ContentControl contentPlaceholder;
+		ContentPresenter contentPlaceholder;
 		IList defaultToolbarItems;
 		
 		public SearchResultsPad()
@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 			
 			DockPanel.SetDock(toolBar, Dock.Top);
-			contentPlaceholder = new ContentControl();
+			contentPlaceholder = new ContentPresenter();
 			dockPanel = new DockPanel {
 				Children = { toolBar, contentPlaceholder }
 			};

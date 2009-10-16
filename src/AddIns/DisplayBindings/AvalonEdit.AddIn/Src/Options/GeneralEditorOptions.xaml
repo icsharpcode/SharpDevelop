@@ -1,19 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <gui:OptionPanel
-	x:Class="ICSharpCode.AvalonEdit.AddIn.Options.GeneralEditorOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:winforms="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop">
+	x:Class="ICSharpCode.AvalonEdit.AddIn.Options.GeneralEditorOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:winforms="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options">
 	<StackPanel>
 		<GroupBox
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox}">
-			<winforms:WindowsFormsHost>
+			<winforms:WindowsFormsHost Height="112">
 				<gui:FontSelectionPanel x:Name="fontSelectionPanel" />
 			</winforms:WindowsFormsHost>
 		</GroupBox>
 		<GroupBox
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.GeneralOptionsGroupBox}">
 			<StackPanel>
-				<CheckBox Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FoldingCheckBox}" />
-				<CheckBox Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.ShowQuickClassBrowserCheckBox}" />
-				<CheckBox Content="(TODO: translate) show line numbers" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.WordWrap}"
+					Content="(TODO: translate) Word-wrap" />
+				<CheckBox 
+					IsEnabled="False"
+					IsChecked="True"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FoldingCheckBox}" />
+				<CheckBox 
+					IsEnabled="False"
+					IsChecked="True"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.ShowQuickClassBrowserCheckBox}" />
+				<CheckBox 
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.ShowLineNumbers}" 
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.LineNumberCheckBox}" />
 			</StackPanel>
 		</GroupBox>
 	</StackPanel>

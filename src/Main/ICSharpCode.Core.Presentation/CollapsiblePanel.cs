@@ -22,6 +22,8 @@ namespace ICSharpCode.Core.Presentation
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(CollapsiblePanel),
 			                                         new FrameworkPropertyMetadata(typeof(CollapsiblePanel)));
+			FocusableProperty.OverrideMetadata(typeof(CollapsiblePanel),
+			                                   new FrameworkPropertyMetadata(false));
 		}
 		
 		public static readonly DependencyProperty IsCollapsedProperty = DependencyProperty.Register(

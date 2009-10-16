@@ -119,6 +119,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				get {
 					if (optionPanel == null) {
 						optionPanel = OptionPanelDescriptor.OptionPanel;
+						if (optionPanel == null) {
+							return null;
+						}
 						optionPanel.LoadOptions();
 						dialog.optionPanels.Add(optionPanel);
 					}

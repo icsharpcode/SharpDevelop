@@ -60,7 +60,7 @@
 							</LinearGradientBrush>
 						</TextBlock.Background>
 					</TextBlock>
-					<ContentControl Name="optionPanelContent" />
+					<ContentPresenter Name="optionPanelContent" />
 				</DockPanel>
 			</ScrollViewer>
 		</Grid>

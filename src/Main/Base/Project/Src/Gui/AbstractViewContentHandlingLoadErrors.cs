@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public abstract class AbstractViewContentHandlingLoadErrors : AbstractViewContent
 	{
-		ContentControl contentControl = new ContentControl();
+		ContentPresenter contentControl = new ContentPresenter();
 		object userContent;
 		
 		protected AbstractViewContentHandlingLoadErrors()

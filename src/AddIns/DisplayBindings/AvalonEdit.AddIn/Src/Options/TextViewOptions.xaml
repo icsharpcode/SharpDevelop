@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<gui:OptionPanel
+	x:Class="ICSharpCode.AvalonEdit.AddIn.Options.TextViewOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options">
+	<StackPanel>
+		<GroupBox
+			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox}">
+			<StackPanel>
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.ShowSpaces}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.ShowTabs}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.TabsCheckBox}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.ShowEndOfLine}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox}" />
+				<CheckBox
+					Margin="0,16,0,0"
+					IsChecked="True"
+					IsEnabled="False"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.UnderLineErrorsCheckBox}" />
+				<CheckBox
+					IsChecked="True"
+					IsEnabled="False"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox}" />
+			</StackPanel>
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel>

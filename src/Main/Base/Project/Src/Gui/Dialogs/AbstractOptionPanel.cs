@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -20,9 +21,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public class OptionPanel : UserControl, IOptionPanel, IOptionBindingContainer
 	{
+		static OptionPanel()
+		{
+			MarginProperty.OverrideMetadata(typeof(OptionPanel),
+			                                new FrameworkPropertyMetadata(new Thickness(2, 0, 4, 0)));
+		}
+		
 		public virtual object Owner { get; set; }
 		
-		IList<OptionBinding> bindings;
+		IList<OptionBinding> bindings = new List<OptionBinding>();
 		
 		public IList<OptionBinding> Bindings {
 			get {
@@ -48,11 +55,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			return true;
-		}
-		
-		public OptionPanel()
-		{
-			this.bindings = new List<OptionBinding>();
 		}
 		
 		public void AddBinding(OptionBinding binding)
