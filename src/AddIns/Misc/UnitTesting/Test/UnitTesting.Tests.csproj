@@ -69,6 +69,7 @@
     <Compile Include="Project\InnerClassTestFixtureAttributeRemovedTestFixture.cs" />
     <Compile Include="Project\InnerClassTestFixtureBase.cs" />
     <Compile Include="Project\RemovedClassesTestFixture.cs" />
+    <Compile Include="Project\TwoBaseClassesWithTestMethodsTestFixture.cs" />
     <Compile Include="TestableConditionTests.cs" />
     <Compile Include="Tree\MultipleTestProjectsTestFixture.cs" />
     <Compile Include="Tree\TreeNodeContextMenuTestFixture.cs" />
