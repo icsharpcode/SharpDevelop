@@ -27,11 +27,11 @@
 		/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
 		<LanguageBinding
-			id="XML"
-		    class="ICSharpCode.XmlEditor.XmlLanguageBinding"
-		    extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco" />
+			id = "Xml"
+		    class = "ICSharpCode.XmlEditor.XmlLanguageBinding"
+		    extensions = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">

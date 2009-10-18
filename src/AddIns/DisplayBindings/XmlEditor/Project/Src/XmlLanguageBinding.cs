@@ -11,9 +11,6 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
 {
-	/// <summary>
-	/// Description of XmlLanguageBinding.
-	/// </summary>
 	public class XmlLanguageBinding : DefaultLanguageBinding
 	{
 		public override IFormattingStrategy FormattingStrategy {

@@ -75,6 +75,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Completion\FirstCompletionListItemSelectedTestFixture.cs" />
     <Compile Include="Completion\ProcessKeyTests.cs" />
+    <Compile Include="Editor\XmlEditorFileExtensionsTestFixture.cs" />
     <Compile Include="Parser\XamlMixedNamespaceTestFixture.cs" />
     <Compile Include="Paths\QualifiedNameToStringTests.cs" />
     <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />
@@ -205,6 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion" />
+    <Folder Include="Editor" />
     <Folder Include="Schema\" />
     <Folder Include="Parser\" />
     <Folder Include="Paths\" />

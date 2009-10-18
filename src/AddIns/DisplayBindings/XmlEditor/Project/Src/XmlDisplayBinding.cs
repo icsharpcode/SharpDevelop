@@ -58,25 +58,31 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Returns the extensions defined in the @extensions property of the first codon in the tree node.
+		/// </summary>
+		public static string[] GetXmlFileExtensions(AddInTreeNode node)
+		{
+			if (node != null) {			
+				foreach (Codon codon in node.Codons) {
+					if (codon.Id == "Xml") {
+						List<string> extensions = new List<string>();
+						foreach (string ext in codon.Properties["extensions"].Split(';')) {
+							extensions.Add(ext.Trim());
+						}
+						return extensions.ToArray();								
+					}
+				}
+			}
+			return new string[0];
+		}
+		
+		/// <summary>
 		/// Gets the known xml file extensions.
 		/// </summary>
 		public static string[] GetXmlFileExtensions()
-		{			
-			foreach (ParserDescriptor parser in AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false)) {
-				if (parser.Language == "XmlFoldingParser") {
-					return parser.Supportedextensions;
-				}
-			}
-
-//			// Did not find the XmlFoldingParser so default to those files defined by the
-//			// HighlightingManager.
-			// TODO : not supported in AvalonEdit
-//			IHighlightingStrategy strategy = HighlightingManager.Manager.FindHighlighter("XML");
-//			if (strategy != null) {
-//				return strategy.Extensions;
-//			}
-			
-			return new string[] { ".xml", ".addin" };
+		{
+			AddInTreeNode node = AddInTree.GetTreeNode("/AddIns/DefaultTextEditor/CodeCompletion", false);
+			return GetXmlFileExtensions(node);
 		}
 		
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
