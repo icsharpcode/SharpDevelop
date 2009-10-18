@@ -592,7 +592,10 @@ namespace ICSharpCode.XmlEditor
 			try	{
 				XmlSchema schema = XmlSchema.Read(xmlReader, new ValidationEventHandler(SchemaValidation));
 				if (schema != null) {
-					schema.Compile(new ValidationEventHandler(SchemaValidation));
+					XmlSchemaSet schemaSet = new XmlSchemaSet();
+					schemaSet.Add(schema);
+					schemaSet.ValidationEventHandler += SchemaValidation;
+					schemaSet.Compile();
 				}
 			} catch (XmlSchemaException ex) {
 				DisplayValidationError(File.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);

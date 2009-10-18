@@ -398,9 +398,14 @@ namespace ICSharpCode.XmlEditor
 		{
 			try	{
 				schema = XmlSchema.Read(reader, new ValidationEventHandler(SchemaValidation));
-				schema.Compile(new ValidationEventHandler(SchemaValidation));
-			
-				namespaceUri = schema.TargetNamespace;
+				if (schema != null) {
+					XmlSchemaSet schemaSet = new XmlSchemaSet();
+					schemaSet.ValidationEventHandler += SchemaValidation;
+					schemaSet.Add(schema);
+					schemaSet.Compile();
+				
+					namespaceUri = schema.TargetNamespace;
+				}
 			} finally {
 				reader.Close();
 			}
@@ -1092,7 +1097,7 @@ namespace ICSharpCode.XmlEditor
 				XmlSchemaSimpleType simpleType = attribute.AttributeSchemaType as XmlSchemaSimpleType;
 				
 				if (simpleType != null) {
-					if (simpleType.Name == "boolean") {
+					if (simpleType.Datatype.TypeCode == XmlTypeCode.Boolean) {
 						data.AddRange(GetBooleanAttributeValueCompletionData());
 					} else {
 						data.AddRange(GetAttributeValueCompletionData(simpleType));
