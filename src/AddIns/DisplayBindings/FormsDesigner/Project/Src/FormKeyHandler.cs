@@ -76,8 +76,9 @@ namespace ICSharpCode.FormsDesigner
 			if (formDesigner == null || formDesigner.Host == null) {
 				return false;
 			}
-			if (!((Control)formDesigner.Control).ContainsFocus)
+			if (formDesigner.UserContent != null && !((Control)formDesigner.UserContent).ContainsFocus) {
 				return false;
+			}
 			
 			Control originControl = Control.FromChildHandle(m.HWnd);
 			if (originControl != null && formDesigner.UserContent != null && !(formDesigner.UserContent == originControl || formDesigner.UserContent.Contains(originControl))) {
