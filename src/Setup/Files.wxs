@@ -1344,13 +1344,13 @@
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Id="ClassDiagram.Diagrams.dll" Name="Diagrams.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.Diagrams.dll" AssemblyManifest="ClassDiagram.Diagrams.dll" />
 										</Component>
 									</Directory>
-									<Directory Id="WorkflowDesignerFolder" Name="WorkflowDesigner">
+									<!--<Directory Id="WorkflowDesignerFolder" Name="WorkflowDesigner">
 										<Component Guid="0A5A0835-4280-4E64-9BBE-A87E7BCF640B" Id="WorkflowDesignerAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\WorkflowDesigner.addin" Id="WorkflowDesigner.addin" Name="WorkflowDesigner.addin" />
 										</Component>
 										<Component Guid="69BD4F05-0ADD-48C9-AD46-72D9B0C4A569" Id="WorkflowDesignerDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\WorkflowDesigner.dll" Id="WorkflowDesigner.dll" Name="WorkflowDesigner.dll" />
-										</Component>
+										</Component>-->
 										<!-- <Directory Id="WorkflowDesignerTemplatesFolder" Name="Templates">
 											<Directory Id="WorkflowDesignerFilesFolder" Name="Files">
 												<Component Guid="DA3146B7-E769-4240-9C6E-74956A395782" Id="NoCodeSequentialWorkflowXft" DiskId="1">
@@ -1374,26 +1374,7 @@
 												</Directory>
 											</Directory>
 										</Directory> -->
-									</Directory>
-									<!--
-									<Directory Id="WpfDesign" Name="WpfDesign">
-										<Component Guid="977C5C76-AB21-409B-B011-F06AB793607D" Id="WpfDesignAddInFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\WpfDesign.addin" Id="WpfDesign.addin" Name="WpfDesign.addin" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.AddIn.dll" Id="ICSharpCode.WpfDesign.AddIn.dll" Name="ICSharpCode.WpfDesign.AddIn.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.WpfDesign.AddIn.dll" AssemblyManifest="ICSharpCode.WpfDesign.AddIn.dll" />
-										</Component>
-										<Component Guid="327338E7-9438-4080-A0D8-12880FD7A801" Id="WpfDesignDesignerFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.dll" Id="ICSharpCode.WpfDesign.Designer.dll" Name="ICSharpCode.WpfDesign.Designer.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.WpfDesign.Designer.dll" AssemblyManifest="ICSharpCode.WpfDesign.Designer.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml" Id="ICSharpCode.WpfDesign.Designer.xml" Name="ICSharpCode.WpfDesign.Designer.xml" />
-										</Component>
-										<Component Guid="592CD7A1-8696-4499-9989-C1301221B805" Id="WpfDesignFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.dll" Id="ICSharpCode.WpfDesign.dll" Name="ICSharpCode.WpfDesign.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.WpfDesign.dll" AssemblyManifest="ICSharpCode.WpfDesign.dll" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.xml" Id="ICSharpCode.WpfDesign.xml" Name="ICSharpCode.WpfDesign.xml" />
-										</Component>
-										<Component Guid="128DB371-040F-4A3A-9983-652CBCDC234C" Id="WpfDesignXamlDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.Xaml.dll" Id="ICSharpCode.Xaml.dll" Name="ICSharpCode.Xaml.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Xaml.dll" AssemblyManifest="ICSharpCode.Xaml.dll" />
-										</Component>
-									</Directory>
-									-->
+									<!-- </Directory> -->
 									<Directory Id="AvalonEdit" Name="AvalonEdit">
 										<Component Guid="A3376E4E-F07D-4554-ABF5-E91F2DA918E3" Id="AvalonEditAddInAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\AvalonEdit\AvalonEdit.AddIn.addin" Name="AvalonEdit.AddIn.addin" Id="AvalonEdit.AddIn.addin" KeyPath="yes" />

@@ -343,8 +343,8 @@
 				<ComponentRef Id="ICSharpCodeXamlBindingDll"/>
 				<ComponentRef Id="XamlBindingAddin"/>
 				
-				<ComponentRef Id="WorkflowDesignerAddin"/>
-				<ComponentRef Id="WorkflowDesignerDll"/>
+				<!--<ComponentRef Id="WorkflowDesignerAddin"/>
+				<ComponentRef Id="WorkflowDesignerDll"/>-->
 				
 				<ComponentRef Id="XmlEditorFiles"/>
 				<ComponentRef Id="AddInManagerFiles"/>
