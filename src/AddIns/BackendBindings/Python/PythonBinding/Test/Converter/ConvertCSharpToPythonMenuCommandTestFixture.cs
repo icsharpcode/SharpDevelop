@@ -62,6 +62,23 @@ namespace PythonBinding.Tests.Converter
 			Assert.AreEqual("Python", language);
 		}
 		
+		[Test]
+		public void TabIndent()
+		{
+			MockTextEditorProperties properties = new MockTextEditorProperties();
+			properties.ConvertTabsToSpaces = false;
+			Assert.AreEqual("\t", NRefactoryToPythonConverter.GetIndentString(properties));
+		}
+		
+		[Test]
+		public void TwoChaSpaceIndent()
+		{
+			MockTextEditorProperties properties = new MockTextEditorProperties();
+			properties.ConvertTabsToSpaces = true;
+			properties.IndentationSize = 2;
+			Assert.AreEqual("  ", NRefactoryToPythonConverter.GetIndentString(properties));
+		}		
+		
 		protected override void NewFile(string defaultName, string language, string content)
 		{
 			defaultFileName = defaultName;

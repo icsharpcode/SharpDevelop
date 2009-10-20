@@ -38,7 +38,6 @@ namespace PythonBinding.Tests
 		Codon projectBindingCodon;
 		Codon projectFileFilterCodon;
 		Codon codeCompletionBindingCodon;
-		LazyConditionEvaluator isPythonRunningConditionEvaluator;
 		Codon applicationSettingsOptionsCodon;
 		Codon buildEventsCodon;
 		Codon compilingOptionsCodon;
@@ -89,13 +88,7 @@ namespace PythonBinding.Tests
 				// Get the PythonBinding runtime.
 				foreach (Runtime runtime in addin.Runtimes) {
 					if (runtime.Assembly == "PythonBinding.dll") {
-						pythonBindingRuntime = runtime;
-						
-						foreach (LazyConditionEvaluator conditionEvaluator in runtime.DefinedConditionEvaluators) {
-							if (conditionEvaluator.Name == "IsPythonRunning") {
-								isPythonRunningConditionEvaluator = conditionEvaluator;
-							}
-						}
+						pythonBindingRuntime = runtime;						
 					} else if (runtime.Assembly == "$ICSharpCode.FormsDesigner/FormsDesigner.dll") {
 						formsDesignerRuntime = runtime;
 					}
@@ -139,18 +132,6 @@ namespace PythonBinding.Tests
 		public void RuntimeExists()
 		{
 			Assert.IsNotNull(pythonBindingRuntime);
-		}
-		
-		[Test]
-		public void IsPythonRunningConditionExists()
-		{
-			Assert.IsNotNull(isPythonRunningConditionEvaluator);
-		}
-		
-		[Test]
-		public void IsPythonRunningConditionClassName()
-		{
-			Assert.AreEqual("ICSharpCode.PythonBinding.IsPythonRunningCondition", isPythonRunningConditionEvaluator.ClassName);
 		}
 		
 		[Test]

@@ -346,7 +346,7 @@ namespace Debugger.Tests
 			
 			string path = Path.GetTempPath();
 			path = Path.Combine(path, "SharpDevelop");
-			path = Path.Combine(path, "DebuggerTests");
+			path = Path.Combine(path, "DebuggerTestsX86");
 			path = Path.Combine(path, testName + "." + md5);
 			Directory.CreateDirectory(path);
 			
@@ -368,7 +368,7 @@ namespace Debugger.Tests
 			compParams.IncludeDebugInformation = true;
 			compParams.ReferencedAssemblies.Add("System.dll");
 			compParams.OutputAssembly = exeFilename;
-			compParams.CompilerOptions = "/unsafe /target:winexe";
+			compParams.CompilerOptions = "/unsafe /platform:x86 /target:winexe";
 			compParams.ReferencedAssemblies.Add(typeof(TestFixtureAttribute).Assembly.Location);
 			
 			CSharpCodeProvider compiler = new CSharpCodeProvider();

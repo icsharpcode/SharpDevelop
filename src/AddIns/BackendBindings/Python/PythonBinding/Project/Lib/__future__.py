@@ -13,7 +13,13 @@
 #
 #####################################################################################
 
+all_feature_names = ['nested_scopes', 'generators', 'division', 
+                     'absolute_import', 'with_statement', 'print_function', 
+                     'unicode_literals']
+
 division=1
 with_statement=1
 generators=1
 absolute_import=1
+print_function=1
+unicode_literals=1

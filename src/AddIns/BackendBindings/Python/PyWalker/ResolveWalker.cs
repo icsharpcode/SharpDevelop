@@ -78,10 +78,10 @@ namespace PyWalker
 		
 		public override bool Walk(ClassDefinition node)
 		{
-			if (node.Bases.Length > 0) {
-				writer.WriteLine("Class: " + node.Name.ToString() + " BaseTypes: " + GetBaseTypes(node.Bases));
+			if (node.Bases.Count > 0) {
+				writer.WriteLine("Class: " + node.Name + " BaseTypes: " + GetBaseTypes(node.Bases));
 			} else {
-				writer.WriteLine("Class: " + node.Name.ToString());
+				writer.WriteLine("Class: " + node.Name);
 			}
 			return base.Walk(node);
 		}

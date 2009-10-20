@@ -129,7 +129,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		object Deserialize(NameExpression nameExpression)
 		{
-			string name = nameExpression.Name.ToString();
+			string name = nameExpression.Name;
 			if ("self" == name.ToLowerInvariant()) {
 				return componentCreator.RootComponent;
 			} else {
@@ -157,8 +157,8 @@ namespace ICSharpCode.PythonBinding
 			ListExpression list = callExpression.Args[0].Expression as ListExpression;
 			MemberExpression arrayTypeMemberExpression = target.Index as MemberExpression;
 			Type arrayType = componentCreator.GetType(PythonControlFieldExpression.GetMemberName(arrayTypeMemberExpression));
-			Array array = Array.CreateInstance(arrayType, list.Items.Length);
-			for (int i = 0; i < list.Items.Length; ++i) {
+			Array array = Array.CreateInstance(arrayType, list.Items.Count);
+			for (int i = 0; i < list.Items.Count; ++i) {
 				Expression listItemExpression = list.Items[i];
 				ConstantExpression constantExpression = listItemExpression as ConstantExpression;
 				MemberExpression memberExpression = listItemExpression as MemberExpression;
@@ -167,10 +167,10 @@ namespace ICSharpCode.PythonBinding
 				if (constantExpression != null) {
 					array.SetValue(constantExpression.Value, i);
 				} else if (memberExpression != null) {
-					string name = PythonControlFieldExpression.GetVariableName(memberExpression.Name.ToString());
+					string name = PythonControlFieldExpression.GetVariableName(memberExpression.Name);
 					array.SetValue(componentCreator.GetComponent(name), i);
 				} else if (nameExpression != null) {
-					array.SetValue(componentCreator.GetInstance(nameExpression.Name.ToString()), i);
+					array.SetValue(componentCreator.GetInstance(nameExpression.Name), i);
 				} else if (listItemCallExpression != null) {
 					object instance = componentCreator.CreateInstance(arrayType, GetArguments(listItemCallExpression), null, false);
 					array.SetValue(instance, i);
@@ -191,7 +191,7 @@ namespace ICSharpCode.PythonBinding
 			if (type != null) {
 				foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.Static)) {
 					if (method.Name == field.MemberName) {
-						if (method.GetParameters().Length == callExpression.Args.Length) {
+						if (method.GetParameters().Length == callExpression.Args.Count) {
 							return method.Invoke(null, GetArguments(callExpression).ToArray());
 						}
 					}

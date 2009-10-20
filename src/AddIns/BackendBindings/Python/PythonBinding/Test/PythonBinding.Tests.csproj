@@ -45,6 +45,9 @@
     </Reference>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\RequiredLibraries\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
     </Reference>
@@ -369,7 +372,6 @@
     <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
     <Compile Include="Utils\MockPadDescriptor.cs" />
-    <Compile Include="Utils\MockProcessRunner.cs" />
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockPropertyDescriptor.cs" />

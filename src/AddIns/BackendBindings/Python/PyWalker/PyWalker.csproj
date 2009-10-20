@@ -43,6 +43,9 @@
     <Reference Include="IronPython.Modules">
       <HintPath>..\RequiredLibraries\IronPython.Modules.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\RequiredLibraries\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
     </Reference>

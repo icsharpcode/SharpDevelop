@@ -73,7 +73,7 @@ namespace ICSharpCode.PythonBinding
 		public override bool Walk(NameExpression node)
 		{
 			if (currentAssignStatement != null) {
-				string nodeName = node.Name.ToString();
+				string nodeName = node.Name;
 				if (nodeName == variableName) {
 					foundVariableAssignment = true;
 				}
@@ -119,14 +119,14 @@ namespace ICSharpCode.PythonBinding
 			do {
 				nameExpression = node as NameExpression;
 				MemberExpression memberExpression = node as MemberExpression;
-				SymbolId symbol = new SymbolId(0);
+				string name = String.Empty;
 				if (memberExpression != null) {
-					symbol = memberExpression.Name;
+					name = memberExpression.Name;
 					node = memberExpression.Target;
 				} else if (nameExpression != null) {
-					symbol = nameExpression.Name;
+					name = nameExpression.Name;
 				}
-				names.Add(symbol.ToString());
+				names.Add(name);
 			} while (nameExpression == null);
 			
 			// Create the fully qualified type name by adding the names

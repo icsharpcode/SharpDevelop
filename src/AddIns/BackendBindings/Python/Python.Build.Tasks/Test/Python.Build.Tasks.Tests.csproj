@@ -47,6 +47,9 @@
     <Reference Include="Microsoft.Build.Utilities.v3.5">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\RequiredLibraries\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
     </Reference>

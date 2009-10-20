@@ -63,10 +63,6 @@ namespace ${StandardNamespace}
 	/// </summary>
 	public partial class App : Application
 	{
-		public App()
-		{
-			InitializeComponent();
-		}
 	}
 }]]></File>
 			<File name="Window1.xaml" buildAction="Page" language="XML"><![CDATA[<Window x:Class="${StandardNamespace}.Window1"

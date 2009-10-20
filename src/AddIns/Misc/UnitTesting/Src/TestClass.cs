@@ -323,16 +323,18 @@ namespace ICSharpCode.UnitTesting
 			}
 			
 			// Add base class test methods.
-			if (c.BaseClass != null) {
+			IClass declaringType = c;
+			while (c.BaseClass != null) {
 				foreach (IMethod method in c.BaseClass.Methods) {
 					if (TestMethod.IsTestMethod(method)) {
-						BaseTestMethod baseTestMethod = new BaseTestMethod(c, method);
+						BaseTestMethod baseTestMethod = new BaseTestMethod(declaringType, method);
 						TestMethod testMethod = new TestMethod(c.BaseClass.Name, baseTestMethod);
 						if (!testMethods.Contains(testMethod.Name)) {
 							testMethods.Add(testMethod);
 						}
 					}
 				}
+				c = c.BaseClass;
 			}
 			return testMethods;
 		}
@@ -381,10 +383,14 @@ namespace ICSharpCode.UnitTesting
 		TestMethod GetPrefixedTestMethod(string testResultName)
 		{
 			IClass baseClass = c.BaseClass;
-			if (baseClass != null) {
+			while (baseClass != null) {
 				string methodName = TestMethod.GetMethodName(testResultName);
 				string actualMethodName = String.Concat(baseClass.Name, ".", methodName);
-				return GetTestMethod(actualMethodName);
+				TestMethod method = GetTestMethod(actualMethodName);
+				if (method != null) {
+					return method;
+				}
+				baseClass = baseClass.BaseClass;
 			}
 			return null;
 		}

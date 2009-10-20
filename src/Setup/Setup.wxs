@@ -390,7 +390,8 @@
 				<ComponentRef Id="PartCoverExe"/>
 				<ComponentRef Id="PartCoverExeConfig"/>
 				<ComponentRef Id="PartCoverFrameworkDll"/>
-				<ComponentRef Id="PartCoverToNCoverXslt"/>		
+				<ComponentRef Id="PartCoverToNCoverXslt"/>
+				
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>	
 				<ComponentRef Id="PythonEmptyClassTemplate"/>	
 				<ComponentRef Id="PythonEmptyFormTemplate"/>	
@@ -400,9 +401,13 @@
 				<ComponentRef Id="PythonLibraryProjectTemplate"/>	
 				<ComponentRef Id="IpyExe"/>	
 				<ComponentRef Id="IronPythonModulesDll"/>	
+				<ComponentRef Id="IronPythonModulesXml"/>	
 				<ComponentRef Id="IronPythonDll"/>	
+				<ComponentRef Id="IronPythonXml"/>	
+				<ComponentRef Id="MicrosoftDynamicDll"/>
 				<ComponentRef Id="MicrosoftScriptingDll"/>	
 				<ComponentRef Id="MicrosoftScriptingCoreDll"/>	
+				<ComponentRef Id="MicrosoftScriptingDebuggingDll"/>	
 				<ComponentRef Id="MicrosoftScriptingExtensionAttributeDll"/>	
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	

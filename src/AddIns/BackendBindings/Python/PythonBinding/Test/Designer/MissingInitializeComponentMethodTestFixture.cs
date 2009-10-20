@@ -53,7 +53,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void ClassWithNoBody()
 		{
-			ClassDefinition classDef = new ClassDefinition(new SymbolId(10), null, null);
+			ClassDefinition classDef = new ClassDefinition("classWithNoBody", null, null);
 			PythonComponentWalker walker = new PythonComponentWalker(this);
 			walker.Walk(classDef);
 		}

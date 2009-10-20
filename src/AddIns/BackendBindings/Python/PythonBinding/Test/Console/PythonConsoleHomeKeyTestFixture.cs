@@ -41,5 +41,15 @@ namespace PythonBinding.Tests.Console
 			int expectedColumn = prompt.Length;
 			Assert.AreEqual(expectedColumn, textEditor.Column);
 		}
+		
+		[Test]
+		public void HomeKeyPressedWhenTextInConsole()
+		{
+			textEditor.RaiseKeyPressEvent('a');
+			textEditor.RaiseDialogKeyPressEvent(Keys.Home);
+
+			int expectedColumn = prompt.Length;
+			Assert.AreEqual(expectedColumn, textEditor.Column);
+		}		
 	}
 }

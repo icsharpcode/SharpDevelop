@@ -46,6 +46,9 @@
     <Reference Include="IronPython.Modules">
       <HintPath>..\..\RequiredLibraries\IronPython.Modules.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\RequiredLibraries\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
     </Reference>
@@ -76,7 +79,6 @@
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IPadDescriptor.cs" />
-    <Compile Include="Src\IProcessRunner.cs" />
     <Compile Include="Src\ITextEditor.cs" />
     <Compile Include="Src\NRefactoryToPythonConverter.cs" />
     <Compile Include="Src\PythonAstWalker.cs" />
@@ -106,7 +108,6 @@
     <Compile Include="Src\PythonOutputStream.cs" />
     <Compile Include="Src\PythonOutputWindowPadDescriptor.cs" />
     <Compile Include="Src\PythonParser.cs" />
-    <Compile Include="Src\PythonProcessRunner.cs" />
     <Compile Include="Src\PythonProject.cs" />
     <Compile Include="Src\PythonPropertyValueAssignment.cs" />
     <Compile Include="Src\PythonResolver.cs" />
