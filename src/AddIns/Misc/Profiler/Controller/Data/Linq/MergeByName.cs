@@ -29,9 +29,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			Debug.Assert(target != null);
 		}
 		
-		protected override Expression VisitChildren(Func<Expression, Expression> visitor)
+		protected override Expression VisitChildren(ExpressionVisitor visitor)
 		{
-			QueryNode newTarget = (QueryNode)visitor(Target);
+			QueryNode newTarget = (QueryNode)visitor.Visit(Target);
 			if (newTarget == Target)
 				return this;
 			else

@@ -33,9 +33,9 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			this.Length = length;
 		}
 		
-		protected override Expression VisitChildren(Func<Expression, Expression> visitor)
+		protected override Expression VisitChildren(ExpressionVisitor visitor)
 		{
-			QueryNode newTarget = (QueryNode)visitor(Target);
+			QueryNode newTarget = (QueryNode)visitor.Visit(Target);
 			if (newTarget == Target)
 				return this;
 			else

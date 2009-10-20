@@ -38,13 +38,13 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			this.Conditions = Array.AsReadOnly(conditions);
 		}
 		
-		protected override Expression VisitChildren(Func<Expression, Expression> visitor)
+		protected override Expression VisitChildren(ExpressionVisitor visitor)
 		{
-			QueryNode newTarget = (QueryNode)visitor(Target);
+			QueryNode newTarget = (QueryNode)visitor.Visit(Target);
 			LambdaExpression[] newConditions = new LambdaExpression[Conditions.Count];
 			bool unchanged = (newTarget == Target);
 			for (int i = 0; i < newConditions.Length; i++) {
-				newConditions[i] = (LambdaExpression)visitor(Conditions[i]);
+				newConditions[i] = (LambdaExpression)visitor.Visit(Conditions[i]);
 				unchanged &= newConditions[i] == Conditions[i];
 			}
 			if (unchanged)

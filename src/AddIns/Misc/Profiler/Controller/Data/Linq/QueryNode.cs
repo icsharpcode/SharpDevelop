@@ -58,17 +58,15 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			this.Target = target;
 		}
 		
-		protected override ExpressionType NodeTypeImpl()
-		{
-			return ExpressionType.Extension;
+		public override ExpressionType NodeType {
+			get { return ExpressionType.Extension; }
 		}
 		
-		protected override Type TypeImpl()
-		{
-			return typeof(IQueryable<CallTreeNode>);
+		public override Type Type {
+			get { return typeof(IQueryable<CallTreeNode>); }
 		}
 		
-		protected abstract override Expression VisitChildren(Func<Expression, Expression> visitor);
+		protected abstract override Expression VisitChildren(ExpressionVisitor visitor);
 		
 		/// <summary>
 		/// SQL construction documentation see SQLiteQueryProvider documentation.

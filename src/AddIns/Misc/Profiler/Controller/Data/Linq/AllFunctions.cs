@@ -32,7 +32,7 @@ namespace ICSharpCode.Profiler.Controller.Data.Linq
 			this.EndDataSet = endDataSet;
 		}
 		
-		protected override Expression VisitChildren(Func<Expression, Expression> visitor)
+		protected override Expression VisitChildren(ExpressionVisitor visitor)
 		{
 			return this;
 		}
