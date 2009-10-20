@@ -18,6 +18,7 @@ using NUnit.Framework;
 namespace Profiler.Tests.Controller.Data
 {
 	[TestFixture]
+	[Ignore("Disabled because SQLite does not work in .NET 4.0 Beta 2")]
 	public class LinqTests
 	{
 		const int k = 1000;
