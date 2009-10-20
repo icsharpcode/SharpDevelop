@@ -93,10 +93,14 @@ namespace ICSharpCode.XamlBinding
 					foreach (HighlightingInfo info in GetInfo()) {
 						IMember member = null;
 						
-						if (task.IsCancellationRequested) {
-							task.AcknowledgeCancellation();
-							return;
-						}
+						// Commented out because task doesn't come with cancellation support in .NET 4.0 Beta 2
+						// (use CancellationToken instead)
+						// I didn't have to remove any call to task.Cancel(), so apparently this was dead code.
+						//if (task.IsCancellationRequested) {
+						//	task.AcknowledgeCancellation();
+						//	return;
+						//}
+						// TODO: implement cancellation support
 						
 						if (!info.Token.StartsWith("xmlns", StringComparison.OrdinalIgnoreCase)) {
 							MemberResolveResult rr = XamlResolver.Resolve(info.Token, info.Context) as MemberResolveResult;
