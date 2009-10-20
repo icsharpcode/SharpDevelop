@@ -39,6 +39,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			Dictionary<string, string> referencedAssemblies = new Dictionary<string, string>() {
 				{ "System", null },
 				{ "System.Xml", null },
+				{ "System.Xaml", typeof(System.Xaml.XamlReader).Assembly.Location },
 				{ "WindowsBase", typeof(System.Windows.Media.Matrix).Assembly.Location },
 				{ "System.Core", null },
 				{ "PresentationCore", typeof(System.Windows.Media.Brush).Assembly.Location },

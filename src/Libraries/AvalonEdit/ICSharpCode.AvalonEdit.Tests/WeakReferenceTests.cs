@@ -105,7 +105,7 @@ namespace ICSharpCode.AvalonEdit
 		static void GarbageCollect()
 		{
 			GC.WaitForPendingFinalizers();
-			GC.Collect();
+			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
 			GC.WaitForPendingFinalizers();
 		}
 		
