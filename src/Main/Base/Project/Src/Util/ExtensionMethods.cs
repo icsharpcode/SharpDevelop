@@ -29,13 +29,6 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public static class ExtensionMethods
 	{
-		// TODO: Remove this method in .NET 4.0 Beta 2
-		public static void ThrowIfCancellationRequested(this CancellationToken ct)
-		{
-			if (ct.IsCancellationRequested)
-				throw new OperationCanceledException("The operation was canceled.", ct);
-		}
-		
 		/// <summary>
 		/// Raises the event.
 		/// Does nothing if eventHandler is null.
