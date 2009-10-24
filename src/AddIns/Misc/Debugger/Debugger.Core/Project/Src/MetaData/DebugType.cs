@@ -1045,7 +1045,7 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		static Type CorElementTypeToManagedType(CorElementType corElementType)
+		internal static Type CorElementTypeToManagedType(CorElementType corElementType)
 		{
 			switch(corElementType) {
 				case CorElementType.BOOLEAN: return typeof(System.Boolean);
@@ -1132,7 +1132,6 @@ namespace Debugger.MetaData
 			// Load fields
 			foreach(FieldProps field in module.MetaData.EnumFieldProps((uint)this.MetadataToken)) {
 				DebugFieldInfo fieldInfo = new DebugFieldInfo(this, field);
-				if (fieldInfo.IsStatic && fieldInfo.IsLiteral) continue; // Skip static literals TODO: Why?
 				AddMember(fieldInfo);
 			};
 			

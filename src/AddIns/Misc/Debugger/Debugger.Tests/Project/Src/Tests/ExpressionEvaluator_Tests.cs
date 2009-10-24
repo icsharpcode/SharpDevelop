@@ -39,6 +39,10 @@ namespace Debugger.Tests
 			public char SetterOnlyProperty { set { ; } }
 			
 			new public static string StaticField = "derived static field";
+			public const int ConstInt = 42;
+			public const string ConstString = "const string";
+			public const object ConstNull = null;
+			public const MyEnum ConstEnum = MyEnum.B;
 			
 			public static string StaticProperty {
 				get {
@@ -61,6 +65,8 @@ namespace Debugger.Tests
 				return "derived Foo - string";
 			}
 		}
+		
+		public enum MyEnum { A = 3, B = 6 };
 		
 		string instanceField = "instance field value";
 		static string staticField = "static field value";
@@ -216,7 +222,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:88,4-88,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:94,4-94,40</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -268,6 +274,10 @@ namespace Debugger.Tests {
     <Eval> flag = True </Eval>
     <Eval> !flag = False </Eval>
     <Eval> </Eval>
+    <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstInt = 42 </Eval>
+    <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstString = "const string" </Eval>
+    <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstNull = null </Eval>
+    <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstEnum = B </Eval>
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).name = "derived name" </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.StaticField = "derived static field" </Eval>
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Name = "derived name" </Eval>

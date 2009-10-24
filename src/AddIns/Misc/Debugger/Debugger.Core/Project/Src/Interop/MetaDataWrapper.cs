@@ -501,8 +501,6 @@ namespace Debugger.Interop.MetaData
 			FieldProps ret = new FieldProps();
 			IntPtr sigPtr = IntPtr.Zero;
 			uint sigSize = 0;
-			IntPtr constPtr = IntPtr.Zero;
-			uint constSize = 0;
 			ret.Token = fieldDef;
 			ret.Name = Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
 				metaData.GetFieldProps(
@@ -512,13 +510,12 @@ namespace Debugger.Interop.MetaData
 					out ret.Flags,
 					out sigPtr,
 					out sigSize,
-					out ret.CPlusTypeFlag,
-					out constPtr,
-					out constSize
+					out ret.ConstantType,
+					out ret.ConstantPtr,
+					out ret.ConstantStringLength
 				);
 			});
 			ret.SigBlob = new Blob(sigPtr, sigSize);
-			ret.ConstantValue = new Blob(constPtr, constSize);
 			return ret;
 		}
 		
@@ -539,8 +536,6 @@ namespace Debugger.Interop.MetaData
 			MemberProps ret = new MemberProps();
 			IntPtr sigPtr = IntPtr.Zero;
 			uint sigSize = 0;
-			IntPtr constPtr = IntPtr.Zero;
-			uint constSize = 0;
 			ret.Token = token;
 			ret.Name = Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
 				metaData.GetMemberProps(
@@ -552,13 +547,12 @@ namespace Debugger.Interop.MetaData
 					out sigSize,
 					out ret.RVA,
 					out ret.ImplFlags,
-					out ret.CPlusTypeFlag,
-					out constPtr,
-					out constSize
+					out ret.ConstantType,
+					out ret.ConstantPtr,
+					out ret.ConstantStringLength
 				);
 			});
 			ret.SigBlob = new Blob(sigPtr, sigSize);
-			ret.Constant = new Blob(constPtr, constSize);
 			return ret;
 		}
 		
@@ -663,8 +657,6 @@ namespace Debugger.Interop.MetaData
 		public ParamProps GetParamProps(uint paramToken)
 		{
 			ParamProps ret = new ParamProps();
-			IntPtr constPtr = IntPtr.Zero;
-			uint constSize = 0;
 			ret.ParamDef = paramToken;
 			ret.Name = Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
 				metaData.GetParamProps(
@@ -673,12 +665,11 @@ namespace Debugger.Interop.MetaData
 					out ret.Sequence,
 					pString, pStringLenght, out stringLenght,
 					out ret.Flags,
-					out ret.CPlusTypeFlag,
-					out constPtr,
-					out constSize
+					out ret.ConstantType,
+					out ret.ConstantPtr,
+					out ret.ConstantStringLength
 				);
 			});
-			ret.Constant = new Blob(constPtr, constSize);
 			return ret;
 		}
 		
@@ -718,8 +709,6 @@ namespace Debugger.Interop.MetaData
 			PropertyProps ret = new PropertyProps();
 			IntPtr sigPtr = IntPtr.Zero;
 			uint sigSize = 0;
-			IntPtr defValPtr = IntPtr.Zero;
-			uint defValSize = 0;
 			ret.Propery = prop;
 			ret.Name = Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
 				ret.OtherMethods = new uint[DefaultBufferSize];
@@ -732,9 +721,9 @@ namespace Debugger.Interop.MetaData
 						out ret.Flags,
 						out sigPtr,
 						out sigSize,
-						out ret.CPlusTypeFlag,
-						out defValPtr,
-						out defValSize,
+						out ret.DefaultValueType,
+						out ret.DefaultValuePtr,
+						out ret.DefaultValueStringLength,
 						out ret.SetterMethod,
 						out ret.GetterMethod,
 						ret.OtherMethods, (uint)ret.OtherMethods.Length, out returned
@@ -745,7 +734,6 @@ namespace Debugger.Interop.MetaData
 				Array.Resize(ref ret.OtherMethods, (int)returned);
 			});
 			ret.SigBlob = new Blob(sigPtr, sigSize);
-			ret.DefaultValue = new Blob(defValPtr, defValSize);
 			return ret;
 		}
 		
@@ -1009,8 +997,9 @@ namespace Debugger.Interop.MetaData
 		public uint DeclaringClass;
 		public uint Flags;
 		public Blob SigBlob;
-		public uint CPlusTypeFlag;
-		public Blob ConstantValue;
+		public uint ConstantType;
+		public IntPtr ConstantPtr;
+		public uint ConstantStringLength;
 	}
 	
 	public class InterfaceImplProps
@@ -1029,8 +1018,9 @@ namespace Debugger.Interop.MetaData
 		public Blob SigBlob;
 		public uint RVA;
 		public uint ImplFlags;
-		public uint CPlusTypeFlag;
-		public Blob Constant;
+		public uint ConstantType;
+		public IntPtr ConstantPtr;
+		public uint ConstantStringLength;
 	}
 	
 	public class MemberRefProps
@@ -1077,8 +1067,9 @@ namespace Debugger.Interop.MetaData
 		public uint Sequence;
 		public string Name;
 		public uint Flags;
-		public uint CPlusTypeFlag;
-		public Blob Constant;
+		public uint ConstantType;
+		public IntPtr ConstantPtr;
+		public uint ConstantStringLength;
 	}
 	
 	public class PermissionSetProps
@@ -1103,8 +1094,9 @@ namespace Debugger.Interop.MetaData
 		public string Name;
 		public uint Flags;
 		public Blob SigBlob;
-		public uint CPlusTypeFlag;
-		public Blob DefaultValue;
+		public uint DefaultValueType;
+		public IntPtr DefaultValuePtr;
+		public uint DefaultValueStringLength;
 		public uint SetterMethod;
 		public uint GetterMethod;
 		public uint[] OtherMethods;

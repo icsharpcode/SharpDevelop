@@ -30,6 +30,10 @@ namespace Debugger.MetaData
 			get { return declaringType; }
 		}
 		
+		internal FieldProps FieldProps {
+			get { return fieldProps; }
+		}
+		
 		/// <summary> The AppDomain in which this member is declared </summary>
 		public AppDomain AppDomain {
 			get { return declaringType.AppDomain; }

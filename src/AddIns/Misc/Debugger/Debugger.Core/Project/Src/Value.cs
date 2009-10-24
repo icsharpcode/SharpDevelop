@@ -9,8 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using Debugger.MetaData;
 using Debugger.Interop.CorDebug;
+using Debugger.MetaData;
+using System.Runtime.InteropServices;
 
 namespace Debugger
 {
@@ -414,26 +415,30 @@ namespace Debugger
 		
 		#endregion
 		
-		/// <summary> Get the value of given field. </summary>
-		/// <param name="objectInstance">null if field is static</param>
-		public static Value GetFieldValue(Value objectInstance, FieldInfo fieldInfo)
-		{
-			return new Value(
-				((DebugFieldInfo)fieldInfo).AppDomain,
-				GetFieldCorValue(objectInstance, fieldInfo)
-			);
-		}
-		
 		public static Value SetFieldValue(Value objectInstance, FieldInfo fieldInfo, Value newValue)
 		{
 			// TODO
 			throw new NotImplementedException();
 		}
 		
-		static ICorDebugValue GetFieldCorValue(Value objectInstance, FieldInfo fieldInfo)
+		/// <summary> Get the value of given field. </summary>
+		/// <param name="objectInstance">null if field is static</param>
+		public static Value GetFieldValue(Value objectInstance, FieldInfo fieldInfo)
 		{
 			CheckObject(objectInstance, fieldInfo);
 			
+			if (fieldInfo.IsStatic && fieldInfo.IsLiteral) {
+				return GetLiteralValue((DebugFieldInfo)fieldInfo);
+			} else {
+				return new Value(
+					((DebugFieldInfo)fieldInfo).AppDomain,
+					GetFieldCorValue(objectInstance, fieldInfo)
+				);
+			}
+		}
+		
+		static ICorDebugValue GetFieldCorValue(Value objectInstance, FieldInfo fieldInfo)
+		{
 			Process process = ((DebugFieldInfo)fieldInfo).Process;
 			
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
@@ -452,8 +457,32 @@ namespace Debugger
 				} else {
 					return objectInstance.CorObjectValue.GetFieldValue(((DebugType)fieldInfo.DeclaringType).CorType.GetClass(), (uint)fieldInfo.MetadataToken);
 				}
-			} catch {
-				throw new GetValueException("Can not get value of field");
+			} catch (COMException e) {
+				throw new GetValueException("Can not get value of field", e);
+			}
+		}
+		
+		static Value GetLiteralValue(DebugFieldInfo fieldInfo)
+		{
+			CorElementType corElemType = (CorElementType)fieldInfo.FieldProps.ConstantType;
+			if (corElemType == CorElementType.CLASS) {
+				// Only null literals are allowed
+				return Eval.CreateValue(fieldInfo.AppDomain, null);
+			} else if (corElemType == CorElementType.STRING) {
+				string str = Marshal.PtrToStringUni(fieldInfo.FieldProps.ConstantPtr, (int)fieldInfo.FieldProps.ConstantStringLength);
+				return Eval.CreateValue(fieldInfo.AppDomain, str);
+			} else {
+				DebugType type = DebugType.CreateFromType(fieldInfo.AppDomain.Mscorlib, DebugType.CorElementTypeToManagedType(corElemType));
+				if (fieldInfo.FieldType.IsEnum && fieldInfo.FieldType.GetEnumUnderlyingType() == type) {
+					Value val = Eval.NewObjectNoConstructor((DebugType)fieldInfo.FieldType);
+					Value backingField = val.GetMemberValue("value__");
+					backingField.CorGenericValue.SetValue(fieldInfo.FieldProps.ConstantPtr);
+					return val;
+				} else {
+					Value val = Eval.NewObjectNoConstructor(type);
+					val.CorGenericValue.SetValue(fieldInfo.FieldProps.ConstantPtr);
+					return val;
+				}
 			}
 		}
 		

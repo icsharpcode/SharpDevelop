@@ -41,6 +41,11 @@ namespace Debugger
 			this.error = error;
 		}
 		
+		public GetValueException(string error, System.Exception inner):base(error, inner)
+		{
+			this.error = error;
+		}
+		
 		public GetValueException(string error):base(error)
 		{
 			this.error = error;
