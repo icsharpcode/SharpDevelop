@@ -20,7 +20,7 @@ namespace Debugger.AddIn.Visualizers
 	{
 		public bool IsVisualizerAvailable(DebugType type)
 		{
-			return type.IsString;
+			return type.FullName == typeof(string).FullName;
 		}
 		
 		public IVisualizerCommand CreateVisualizerCommand(Expression expression)

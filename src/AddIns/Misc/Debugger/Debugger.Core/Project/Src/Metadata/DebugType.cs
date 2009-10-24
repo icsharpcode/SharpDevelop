@@ -14,11 +14,10 @@ using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 using ICSharpCode.NRefactory.Ast;
 using Mono.Cecil.Signatures;
+using System.Text;
 
 namespace Debugger.MetaData
 {
-	public enum DebugTypeKind { Array, Class, ValueType, Primitive, Pointer, Void };
-	
 	/// <summary>
 	/// Represents a type in a debugee. That is, a class, array, value type or a primitive type.
 	/// This class mimics the <see cref="System.Type"/> class.
@@ -32,20 +31,17 @@ namespace Debugger.MetaData
 		public const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 		public const BindingFlags BindingFlagsAllDeclared = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 		
-		AppDomain appDomain;
-		Process   process;
+		Module module;
 		ICorDebugType corType;
 		CorElementType corElementType;
+		Type primitiveType;
+		TypeDefProps classProps;
+		string ns;
 		string name;
 		string fullName;
-		
-		// Class/ValueType specific
-		Module module;
-		TypeDefProps classProps;
-		
-		// Class/ValueType/Array/Ref/Ptr specific
-		List<DebugType>    typeArguments = new List<DebugType>();
-		List<DebugType>    interfaces = new List<DebugType>();
+		DebugType elementType;
+		List<DebugType> genericArguments = new List<DebugType>();
+		List<DebugType> interfaces = new List<DebugType>();
 		
 		// Members of the type; empty if not applicable
 		Dictionary<string, List<MemberInfo>> membersByName = new Dictionary<string, List<MemberInfo>>();
@@ -54,6 +50,10 @@ namespace Debugger.MetaData
 		// Stores all DebugType instances. FullName is the key
 		static Dictionary<ICorDebugType, DebugType> loadedTypes = new Dictionary<ICorDebugType, DebugType>();
 		
+		internal ICorDebugType CorType {
+			get { return corType; }
+		}
+		
 		public override Type DeclaringType {
 			get { throw new NotSupportedException(); }
 		}
@@ -61,13 +61,13 @@ namespace Debugger.MetaData
 		/// <summary> The AppDomain in which this type is loaded </summary>
 		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
-			get { return appDomain; }
+			get { return module.AppDomain; }
 		}
 		
 		/// <summary> The Process in which this type is loaded </summary>
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get { return process; }
+			get { return module.Process; }
 		}
 		
 		/// <summary> The Module in which this type is loaded </summary>
@@ -79,7 +79,6 @@ namespace Debugger.MetaData
 		[Debugger.Tests.Ignore]
 		public override int MetadataToken {
 			get {
-				AssertClassOrValueType();
 				return (int)classProps.Token;
 			}
 		}
@@ -152,13 +151,13 @@ namespace Debugger.MetaData
 				}
 				// corType.Base does not work for arrays
 				if (this.IsArray) {
-					return DebugType.CreateFromType(this.AppDomain, typeof(System.Array));
+					return DebugType.CreateFromType(this.AppDomain, typeof(Array));
 				}
 				// corType.Base does not work for primitive types
 				if (this.IsPrimitive) {
-					return DebugType.CreateFromType(this.AppDomain, typeof(object));
+					return DebugType.CreateFromType(this.AppDomain, typeof(ValueType));
 				}
-				if (this.IsPointer || this.IsVoid) {
+				if (this.IsPointer || corElementType == CorElementType.VOID) {
 					return null;
 				}
 				ICorDebugType baseType = corType.Base;
@@ -192,9 +191,8 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		// TODO
 		public override string Namespace {
-			get { throw new NotSupportedException(); }
+			get { return ns; }
 		}
 		
 		//		public virtual StructLayoutAttribute StructLayoutAttribute { get; }
@@ -204,7 +202,7 @@ namespace Debugger.MetaData
 		}
 		
 		public override Type UnderlyingSystemType {
-			get { throw new NotSupportedException(); }
+			get { return this; }
 		}
 		
 		public override int GetArrayRank()
@@ -234,11 +232,7 @@ namespace Debugger.MetaData
 		
 		public override Type GetElementType()
 		{
-			if (this.IsArray || this.IsPointer) {
-				return typeArguments[0];
-			} else {
-				return null;
-			}
+			return elementType;
 		}
 		
 		const BindingFlags supportedFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.FlattenHierarchy;
@@ -340,11 +334,7 @@ namespace Debugger.MetaData
 		
 		public override Type[] GetGenericArguments()
 		{
-			if (this.IsArray || this.IsPointer) {
-				return new Type[] {};
-			} else {
-				return typeArguments.ToArray();
-			}
+			return genericArguments.ToArray();
 		}
 		
 		internal ICorDebugType[] GenericArgumentsAsCorDebugType {
@@ -474,10 +464,8 @@ namespace Debugger.MetaData
 		
 		protected override bool HasElementTypeImpl()
 		{
-			return this.IsArray || this.IsPointer;
+			return elementType != null;
 		}
-		
-		//		internal virtual bool HasProxyAttributeImpl();
 		
 		public override object InvokeMember(string name, BindingFlags invokeAttr, Binder binder, object target, object[] args, ParameterModifier[] modifiers, CultureInfo culture, string[] namedParameters)
 		{
@@ -486,14 +474,46 @@ namespace Debugger.MetaData
 		
 		protected override bool IsArrayImpl()
 		{
-			return this.Kind == DebugTypeKind.Array;
+			return corElementType == CorElementType.ARRAY ||
+			       corElementType == CorElementType.SZARRAY;
 		}
-		
-		//		public virtual bool IsAssignableFrom(Type c);
 		
 		protected override bool IsByRefImpl()
 		{
-			throw new NotSupportedException();
+			return corElementType == CorElementType.BYREF;
+		}
+		
+		protected override bool IsPointerImpl()
+		{
+			return corElementType == CorElementType.PTR;
+		}
+		
+//		public bool IsClass {
+//			get {
+//				return !this.IsInterface && !this.IsSubclassOf(valueType);
+//			}
+//		}
+//		
+//		public bool IsInterface {
+//			get {
+//				return ((this.GetAttributeFlagsImpl() & TypeAttributes.Interface) != 0);
+//			}
+//		}
+		
+		protected override bool IsValueTypeImpl()
+		{
+			// ValueType and Enum are exceptions and are threated as classes
+			return this.FullName != typeof(ValueType).FullName &&
+			       this.FullName != typeof(Enum).FullName &&
+			       this.IsSubclassOf(this.AppDomain.ValueType);
+		}
+		
+		public override bool IsSubclassOf(Type superType)
+		{
+			if (!(superType is DebugType)) {
+				superType = CreateFromType(this.AppDomain, superType);
+			}
+			return base.IsSubclassOf(superType);
 		}
 		
 		protected override bool IsCOMObjectImpl()
@@ -501,13 +521,27 @@ namespace Debugger.MetaData
 			throw new NotSupportedException();
 		}
 		
+		public override bool IsInstanceOfType(object o)
+		{
+			if (o == null) return false;
+			if (!(o is Value)) return false;
+			return this.IsAssignableFrom(((Value)o).Type);
+		}
+		
+		public override bool IsAssignableFrom(Type c)
+		{
+			// TODO: Finsih
+			if (this == c) return true;
+			return c.IsSubclassOf(this);
+		}
+		
 		//		protected virtual bool IsContextfulImpl();
-		//		public virtual bool IsInstanceOfType(object o);
 		//		protected virtual bool IsMarshalByRefImpl();
 		
-		protected override bool IsPointerImpl()
-		{
-			return this.Kind == DebugTypeKind.Pointer;
+		/// <summary> Returns simple managed type coresponding to the primitive type. </summary>
+		[Tests.Ignore]
+		public System.Type PrimitiveType {
+			get { return primitiveType; }
 		}
 		
 		protected override bool IsPrimitiveImpl()
@@ -515,142 +549,10 @@ namespace Debugger.MetaData
 			return this.PrimitiveType != null;
 		}
 		
-		public override bool IsSubclassOf(Type superType)
-		{
-			return base.IsSubclassOf(superType);
-		}
-		
-		protected override bool IsValueTypeImpl()
-		{
-			return this.Kind == DebugTypeKind.ValueType;
-		}
-		
-		void AssertClassOrValueType()
-		{
-			if(!IsClass && !IsValueType) {
-				throw new DebuggerException("The type is not a class or value type.");
-			}
-		}
-		
-		internal ICorDebugType CorType {
-			get { return corType; }
-		}
-		
-		/// <summary> Returns what kind of type this is. (eg. value type) </summary>
-		public DebugTypeKind Kind {
-			get {
-				switch (this.corElementType) {
-					case CorElementType.BOOLEAN:
-					case CorElementType.CHAR:
-					case CorElementType.I1:
-					case CorElementType.U1:
-					case CorElementType.I2:
-					case CorElementType.U2:
-					case CorElementType.I4:
-					case CorElementType.U4:
-					case CorElementType.I8:
-					case CorElementType.U8:
-					case CorElementType.R4:
-					case CorElementType.R8:
-					case CorElementType.I:
-					case CorElementType.U:
-					case CorElementType.STRING:    return DebugTypeKind.Primitive;
-					case CorElementType.ARRAY:
-					case CorElementType.SZARRAY:   return DebugTypeKind.Array;
-					case CorElementType.CLASS:
-					case CorElementType.OBJECT:    return DebugTypeKind.Class;
-					case CorElementType.VALUETYPE: return DebugTypeKind.ValueType;
-					case CorElementType.PTR:
-					case CorElementType.BYREF:     return DebugTypeKind.Pointer;
-					case CorElementType.VOID:      return DebugTypeKind.Void;
-					default: throw new DebuggerException("Unknown kind of type");
-				}
-			}
-		}
-		
-		private bool primitiveTypeCached;
-		private System.Type primitiveType;
-		
-		/// <summary> Returns simple managed type coresponding to the primitive type. </summary>
-		[Tests.Ignore]
-		public System.Type PrimitiveType {
-			get {
-				if (!primitiveTypeCached) {
-					primitiveTypeCached = true;
-					primitiveType = GetPrimitiveType();
-				}
-				return primitiveType;
-			}
-		}
-		
-		/// <summary> Returns simple managed type coresponding to the primitive type. </summary>
-		private System.Type GetPrimitiveType()
-		{
-			if (corElementType == CorElementType.VALUETYPE) {
-				CorElementType corType;
-				try {
-					corType = TypeNameToCorElementType(this.FullName);
-				} catch (DebuggerException) {
-					return null;
-				}
-				return CorElementTypeToManagedType(corType);
-			} else {
-				return CorElementTypeToManagedType(corElementType);
-			}
-		}
-		
-		internal static Type CorElementTypeToManagedType(CorElementType corElementType)
-		{
-			switch(corElementType) {
-					case CorElementType.BOOLEAN: return typeof(System.Boolean);
-					case CorElementType.CHAR:    return typeof(System.Char);
-					case CorElementType.I1:      return typeof(System.SByte);
-					case CorElementType.U1:      return typeof(System.Byte);
-					case CorElementType.I2:      return typeof(System.Int16);
-					case CorElementType.U2:      return typeof(System.UInt16);
-					case CorElementType.I4:      return typeof(System.Int32);
-					case CorElementType.U4:      return typeof(System.UInt32);
-					case CorElementType.I8:      return typeof(System.Int64);
-					case CorElementType.U8:      return typeof(System.UInt64);
-					case CorElementType.R4:      return typeof(System.Single);
-					case CorElementType.R8:      return typeof(System.Double);
-					case CorElementType.I:       return typeof(System.IntPtr);
-					case CorElementType.U:       return typeof(System.UIntPtr);
-					case CorElementType.STRING:  return typeof(System.String);
-					default: return null;
-			}
-		}
-		
-		internal static CorElementType TypeNameToCorElementType(string fullname)
-		{
-			switch (fullname) {
-					case "System.Boolean": return CorElementType.BOOLEAN;
-					case "System.Char":    return CorElementType.CHAR;
-					case "System.SByte":   return CorElementType.I1;
-					case "System.Byte":    return CorElementType.U1;
-					case "System.Int16":   return CorElementType.I2;
-					case "System.UInt16":  return CorElementType.U2;
-					case "System.Int32":   return CorElementType.I4;
-					case "System.UInt32":  return CorElementType.U4;
-					case "System.Int64":   return CorElementType.I8;
-					case "System.UInt64":  return CorElementType.U8;
-					case "System.Single":  return CorElementType.R4;
-					case "System.Double":  return CorElementType.R8;
-					case "System.IntPtr":  return CorElementType.I;
-					case "System.UIntPtr": return CorElementType.U;
-					case "System.String":  return CorElementType.STRING;
-					default: throw new DebuggerException("Not a primitive type");
-			}
-		}
-		
 		/// <summary> Gets a value indicating whether the type is an integer type </summary>
-		[Tests.Ignore]
 		public bool IsInteger {
 			get {
-				if (this.PrimitiveType == null) {
-					return false;
-				}
-				switch (this.PrimitiveType.FullName) {
+				switch (this.FullName) {
 					case "System.SByte":
 					case "System.Byte":
 					case "System.Int16":
@@ -664,20 +566,33 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether the type is an string </summary>
-		[Tests.Ignore]
-		public bool IsString {
+		public bool IsCompilerGenerated {
 			get {
-				return this.corElementType == CorElementType.STRING;
+				if (this.IsClass || this.IsValueType) {
+					return IsDefined(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
+				} else {
+					return false;
+				}
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether the type is the void type </summary>
-		[Tests.Ignore]
-		public bool IsVoid {
+		public bool IsDisplayClass {
 			get {
-				return this.Kind == DebugTypeKind.Void;
+				return this.Name.StartsWith("<>") && this.Name.Contains("__DisplayClass");
 			}
+		}
+		
+		public bool IsYieldEnumerator {
+			get {
+				if (this.IsCompilerGenerated) {
+					return GetInterface(typeof(System.Collections.IEnumerator).FullName) != null;
+				}
+				return false;
+			}
+		}
+		
+		bool IDebugMemberInfo.IsStatic {
+			get { return false; }
 		}
 		
 		public static DebugType CreateFromTypeDefOrRef(Module module, bool? valueType, uint token, DebugType[] genericArguments)
@@ -911,6 +826,18 @@ namespace Debugger.MetaData
 		/// <summary> Obtains instance of DebugType. Same types will return identical instance. </summary>
 		public static DebugType CreateFromCorType(AppDomain appDomain, ICorDebugType corType)
 		{
+			// Convert primitive type to class
+			CorElementType corElemType = (CorElementType)(corType.Type);
+			Type primitiveType = CorElementTypeToManagedType(corElemType);
+			if (primitiveType != null) {
+				// TODO: Look only in mscorlib
+				corType = CreateFromType(appDomain, primitiveType).CorType;
+			}
+			if (corElemType == CorElementType.VOID) {
+				// TODO: Look only in mscorlib
+				corType = CreateFromType(appDomain, typeof(void)).CorType;
+			}
+			
 			if (loadedTypes.ContainsKey(corType)) return loadedTypes[corType];
 			
 			return new DebugType(appDomain, corType);
@@ -921,35 +848,59 @@ namespace Debugger.MetaData
 			if (corType == null) throw new ArgumentNullException("corType");
 			DateTime startTime = Util.HighPrecisionTimer.Now;
 			
-			this.appDomain = appDomain;
-			this.process = appDomain.Process;
 			this.corType = corType;
 			this.corElementType = (CorElementType)corType.Type;
 			
 			// Loading might access the type again
 			loadedTypes[corType] = this;
+			appDomain.Process.Exited += delegate { loadedTypes.Remove(corType); };
 			
-			// We need to know generic arguments before getting name
-			if (this.IsClass || this.IsValueType || this.IsArray || this.IsPointer) {
+			if (corElementType == CorElementType.ARRAY ||
+			    corElementType == CorElementType.SZARRAY ||
+			    corElementType == CorElementType.PTR ||
+			    corElementType == CorElementType.BYREF)
+			{
+				this.elementType = CreateFromCorType(appDomain, corType.FirstTypeParameter);
+				this.module = appDomain.Mscorlib;
+				this.classProps = new TypeDefProps();
+				// Get names
+				string suffix = string.Empty;
+				if (corElementType == CorElementType.SZARRAY) suffix = "[]";
+				if (corElementType == CorElementType.ARRAY)   suffix = "[" + new String(',', GetArrayRank() - 1) + "]";
+				if (corElementType == CorElementType.PTR)     suffix = "*";
+				if (corElementType == CorElementType.BYREF)   suffix = "&";
+				this.ns = this.GetElementType().Namespace;
+				this.name = this.GetElementType().Name + suffix;
+				this.fullName = this.GetElementType().FullName + suffix;
+			}
+			
+			if (corElementType == CorElementType.OBJECT ||
+			    corElementType == CorElementType.CLASS ||
+			    corElementType == CorElementType.VALUETYPE)
+			{
+				// We need to know generic arguments before getting name
 				foreach(ICorDebugType t in corType.EnumerateTypeParameters().Enumerator) {
-					typeArguments.Add(DebugType.CreateFromCorType(appDomain, t));
+					genericArguments.Add(DebugType.CreateFromCorType(appDomain, t));
 				}
-			}
-			
-			// We need class props for getting name
-			if (this.IsClass || this.IsValueType) {
-				this.module = process.Modules[corType.Class.Module];
+				// We need class props for getting name
+				this.module = appDomain.Process.Modules[corType.Class.Module];
 				this.classProps = module.MetaData.GetTypeDefProps(corType.Class.Token);
+				// Get names
+				int index = classProps.Name.LastIndexOf('.');
+				if (index == -1) {
+					this.ns = string.Empty;
+					this.name = classProps.Name;
+				} else {
+					this.ns = classProps.Name.Substring(0, index);
+					this.name = classProps.Name.Substring(index + 1);
+				}
+				this.fullName = GetFullClassName();
+				this.primitiveType = NameToManagedType(this.FullName);
+				LoadMembers();
 			}
 			
-			this.fullName = GetName(true);
-			this.name = GetName(false);
-			
-			if (this.IsClass || this.IsValueType) {
-				LoadMemberInfo();
-			}
-			
-			this.Process.Exited += delegate { loadedTypes.Remove(corType); };
+			if (module == null)
+				throw new DebuggerException("Unexpected: " + corElementType);
 			
 			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
 			if (appDomain.Process.Options.Verbose) {
@@ -961,58 +912,80 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		string GetName(bool includeNamespace)
+		static Type CorElementTypeToManagedType(CorElementType corElementType)
 		{
-			if (IsArray) {
-				return Trim(this.GetElementType().FullName, includeNamespace) + "[" + new String(',', GetArrayRank() - 1) + "]";
-			} else if (IsClass || IsValueType) {
-				List<string> argNames = new List<string>();
+			switch(corElementType) {
+				case CorElementType.BOOLEAN: return typeof(System.Boolean);
+				case CorElementType.CHAR:    return typeof(System.Char);
+				case CorElementType.I1:      return typeof(System.SByte);
+				case CorElementType.U1:      return typeof(System.Byte);
+				case CorElementType.I2:      return typeof(System.Int16);
+				case CorElementType.U2:      return typeof(System.UInt16);
+				case CorElementType.I4:      return typeof(System.Int32);
+				case CorElementType.U4:      return typeof(System.UInt32);
+				case CorElementType.I8:      return typeof(System.Int64);
+				case CorElementType.U8:      return typeof(System.UInt64);
+				case CorElementType.R4:      return typeof(System.Single);
+				case CorElementType.R8:      return typeof(System.Double);
+				case CorElementType.I:       return typeof(System.IntPtr);
+				case CorElementType.U:       return typeof(System.UIntPtr);
+				case CorElementType.STRING:  return typeof(System.String);
+				default: return null;
+			}
+		}
+		
+		static Type NameToManagedType(string fullname)
+		{
+			switch (fullname) {
+				case "System.Boolean": return typeof(System.Boolean);
+				case "System.Char":    return typeof(System.Char);
+				case "System.SByte":   return typeof(System.SByte);
+				case "System.Byte":    return typeof(System.Byte);
+				case "System.Int16":   return typeof(System.Int16);
+				case "System.UInt16":  return typeof(System.UInt16);
+				case "System.Int32":   return typeof(System.Int32);
+				case "System.UInt32":  return typeof(System.UInt32);
+				case "System.Int64":   return typeof(System.Int64);
+				case "System.UInt64":  return typeof(System.UInt64);
+				case "System.Single":  return typeof(System.Single);
+				case "System.Double":  return typeof(System.Double);
+				case "System.IntPtr":  return typeof(System.IntPtr);
+				case "System.UIntPtr": return typeof(System.UIntPtr);
+				case "System.String":  return typeof(System.String);
+				default: return null;
+			}
+		}
+		
+		string GetFullClassName()
+		{
+			StringBuilder name = new StringBuilder();
+			
+			if (classProps.IsNested) {
+				uint enclosingTk = module.MetaData.GetNestedClassProps((uint)this.MetadataToken).EnclosingClass;
+				DebugType enclosingType = DebugType.CreateFromTypeDefOrRef(this.DebugModule, null, enclosingTk, genericArguments.ToArray());
+				name.Append(enclosingType.FullName);
+				name.Append(".");
+			}
+			
+			// '`' might be missing in nested generic classes
+			name.Append(classProps.Name);
+			
+			if (this.GetGenericArguments().Length > 0) {
+				name.Append("[[");
+				bool first = true;
 				foreach(DebugType arg in this.GetGenericArguments()) {
-					argNames.Add(includeNamespace ? arg.FullName : arg.Name);
+					if (!first)
+						name.Append(", ");
+					first = false;
+					name.Append(arg.FullName);
 				}
-				string className = Trim(classProps.Name, includeNamespace);
-				// Remove generic parameter count at the end
-				// '`' might be missing in nested generic classes
-				int index = className.LastIndexOf('`');
-				if (index != -1) {
-					className = className.Substring(0, index);
-				}
-				if (argNames.Count > 0) {
-					className += "<" + String.Join(",", argNames.ToArray()) + ">";
-				}
-				/*
-				if (classProps.IsNested) {
-					uint enclosingTk = module.MetaData.GetNestedClassProps(this.Token).EnclosingClass;
-					DebugType enclosingType = DebugType.CreateFromTypeDefOrRef(this.Module, null, enclosingTk, this.GenericArguments.ToArray());
-					className = enclosingType.FullName + "." + className;
-				}
-				*/
-				return className;
-			} else if (IsPrimitive) {
-				return Trim(this.PrimitiveType.ToString(), includeNamespace);
-			} else if (IsPointer) {
-				return Trim(this.GetElementType().FullName, includeNamespace) + (this.corElementType == CorElementType.BYREF ? "&" : "*");
-			} else if (IsVoid) {
-				return includeNamespace ? "System.Void" : "Void";
-			} else {
-				throw new DebuggerException("Unknown type: " + this.corElementType.ToString());
+				name.Append("]]");
 			}
+			
+			return name.ToString();
 		}
 		
-		string Trim(string name, bool includeNamespace)
-		{
-			if (includeNamespace) {
-				return name;
-			}
-			int index = name.LastIndexOf('.');
-			if (index == -1) {
-				return name;
-			} else {
-				return name.Substring(index + 1);
-			}
-		}
-		
-		void LoadMemberInfo()
+		void LoadMembers()
 		{
 			// Load interfaces
 			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps((uint)this.MetadataToken)) {
@@ -1067,35 +1040,6 @@ namespace Debugger.MetaData
 				membersByName.Add(member.Name, new List<MemberInfo>(1));
 			membersByName[member.Name].Add(member);
 			membersByToken[member.MetadataToken] = member;
-		}
-		
-		public bool IsCompilerGenerated {
-			get {
-				if (this.IsClass || this.IsValueType) {
-					return IsDefined(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
-				} else {
-					return false;
-				}
-			}
-		}
-		
-		public bool IsDisplayClass {
-			get {
-				return this.Name.StartsWith("<>") && this.Name.Contains("__DisplayClass");
-			}
-		}
-		
-		public bool IsYieldEnumerator {
-			get {
-				if (this.IsCompilerGenerated) {
-					return GetInterface(typeof(System.Collections.IEnumerator).FullName) != null;
-				}
-				return false;
-			}
-		}
-		
-		bool IDebugMemberInfo.IsStatic {
-			get { return false; }
 		}
 		
 		public override string ToString()

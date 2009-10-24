@@ -5,8 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger.MetaData;
 using System;
-
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
@@ -28,15 +28,30 @@ namespace Debugger
 			}
 		}
 		
+		Module mscorlib;
+		
 		public Module Mscorlib {
 			get {
+				if (mscorlib != null) return mscorlib;
 				foreach(Module m in Process.Modules) {
-					if (m.FullPath == "mscorlib.dll" &&
+					if (m.Filename == "mscorlib.dll" &&
 					    m.AppDomain == this) {
-						return m;
+						mscorlib = m;
+						return mscorlib;
 					}
 				}
 				throw new DebuggerException("Mscorlib not loaded");
+			}
+		}
+		
+		DebugType valueType;
+		
+		internal DebugType ValueType {
+			get {
+				// TODO: Search only mscorlib module
+				if (valueType == null)
+					valueType = DebugType.CreateFromType(this, typeof(ValueType));
+				return valueType;
 			}
 		}
 		

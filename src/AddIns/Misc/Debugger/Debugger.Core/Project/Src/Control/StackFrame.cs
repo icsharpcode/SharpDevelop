@@ -316,6 +316,18 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary> Gets argument with a given name </summary>
+		/// <returns> Null if not found </returns>
+		public Value GetArgumentValue(string name)
+		{
+			for(int i = 0; i < this.ArgumentCount; i++) {
+				if (this.MethodInfo.GetParameters()[i].Name == name) {
+					return GetArgumentValue(i);
+				}
+			}
+			return null;
+		}
+		
 		/// <summary> Gets argument with a given index </summary>
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgumentValue(int index)
@@ -350,34 +362,6 @@ namespace Debugger
 			return corValue;
 		}
 		
-		#region Convenience methods
-		
-		/// <summary> Gets argument with a given name </summary>
-		/// <returns> Null if not found </returns>
-		public Value GetArgumentValue(string name)
-		{
-			for(int i = 0; i < this.ArgumentCount; i++) {
-				if (this.MethodInfo.GetParameters()[i].Name == name) {
-					return GetArgumentValue(i);
-				}
-			}
-			return null;
-		}
-		
-		/// <summary> Gets all arguments of the stack frame. </summary>
-		public List<Value> GetArgumentValues()
-		{
-			List<Value> values = new List<Value>();
-			for (int i = 0; i < ArgumentCount; i++) {
-				values.Add(GetArgumentValue(i));
-			}
-			return values;
-		}
-		
-		#endregion
-		
-		#region Convenience methods
-		
 		/// <summary> Get local variable with given name </summary>
 		/// <returns> Null if not found </returns>
 		public Value GetLocalVariableValue(string name)
@@ -389,18 +373,6 @@ namespace Debugger
 			}
 			return null;
 		}
-		
-		/// <summary> Returns all local variables of the stack frame. </summary>
-		public List<Value> GetLocalVariableValues()
-		{
-			List<Value> values = new List<Value>();
-			foreach(DebugLocalVariableInfo locVar in this.MethodInfo.GetLocalVariables()) {
-				values.Add(locVar.GetValue(this));
-			}
-			return values;
-		}
-		
-		#endregion
 		
 		public override bool Equals(object obj)
 		{

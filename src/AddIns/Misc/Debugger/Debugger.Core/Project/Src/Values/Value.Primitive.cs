@@ -36,7 +36,7 @@ namespace Debugger
 		public object PrimitiveValue { 
 			get {
 				if (this.Type.PrimitiveType == null) throw new DebuggerException("Value is not a primitive type");
-				if (this.Type.IsString) {
+				if (this.Type.FullName == typeof(string).FullName) {
 					if (this.IsNull) return null;
 					return this.CorReferenceValue.Dereference().CastTo<ICorDebugStringValue>().String;
 				} else {
@@ -45,7 +45,7 @@ namespace Debugger
 			}
 			set {
 				if (this.Type.PrimitiveType == null) throw new DebuggerException("Value is not a primitive type");
-				if (this.Type.IsString) {
+				if (this.Type.FullName == typeof(string).FullName) {
 					this.SetValue(Eval.NewString(this.AppDomain, value.ToString()));
 				} else {
 					if (value == null) throw new DebuggerException("Can not set primitive value to null");
