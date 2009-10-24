@@ -413,6 +413,12 @@ namespace Debugger.MetaData
 			return GetMembers<MemberInfo>(null, bindingAttr, null);
 		}
 		
+		/// <summary> Return method with the given token</summary>
+		public MethodInfo GetMethod(uint token)
+		{
+			return (MethodInfo)membersByToken[(int)token];
+		}
+		
 		/// <summary> Return method overload with given parameter names </summary>
 		/// <returns> Null if not found </returns>
 		public MethodInfo GetMethod(string name, string[] paramNames)
@@ -1141,26 +1147,12 @@ namespace Debugger.MetaData
 			}
 			
 			// Load properties
-			// TODO: Handle properties properly
-			// TODO: Handle indexers ("get_Item") in other code
-			// Collect data
-			Dictionary<string, MethodInfo> accessors = new Dictionary<string, MethodInfo>();
-			Dictionary<string, object> propertyNames = new Dictionary<string, object>();
-			foreach(MethodInfo method in this.GetMethods(BindingFlagsAllDeclared)) {
-				if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))) {
-					// There can be many get_Items
-					// TODO: This returns only last, return all
-					accessors[method.Name] = method;
-					propertyNames[method.Name.Remove(0,4)] = null;
-				}
-			}
-			// Pair up getters and setters
-			foreach(KeyValuePair<string, object> kvp in propertyNames) {
-				MethodInfo getter = null;
-				MethodInfo setter = null;
-				accessors.TryGetValue("get_" + kvp.Key, out getter);
-				accessors.TryGetValue("set_" + kvp.Key, out setter);
-				AddMember(new DebugPropertyInfo(this, getter, setter));
+			foreach(PropertyProps prop in module.MetaData.EnumPropertyProps((uint)this.MetadataToken)) {
+				AddMember(new DebugPropertyInfo(
+					this,
+					prop.GetterMethod != 0x06000000 ? GetMethod(prop.GetterMethod) : null,
+					prop.SetterMethod != 0x06000000 ? GetMethod(prop.SetterMethod) : null
+				));
 			}
 		}
 		

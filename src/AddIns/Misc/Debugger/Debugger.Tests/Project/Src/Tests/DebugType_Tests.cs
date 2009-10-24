@@ -48,11 +48,7 @@ namespace Debugger.Tests
 		
 		public unsafe class MyInterfaceImpl<R> : MyInterface<R, MyClass, MyStruct>
 		{
-			public void* voidPtr;
-			
 			public List<R> Prop { get { return new List<R>(); } }
-			
-			public char SetterOnlyProp { set { ; } }
 			
 			public R Fun<M>(MyClass a, MyStruct b, M m)
 			{
@@ -62,6 +58,22 @@ namespace Debugger.Tests
 			public M[] Fun2<M>(ref int** iPtrPtr, ref M[,] mdArray, ref List<M>.Enumerator listEnum)
 			{
 				throw new NotImplementedException();
+			}
+		}
+		
+		public unsafe class Members
+		{
+			public void* voidPtr;
+			public char SetterOnlyProp { set { ; } }
+			public const int IntLiteral = 42;
+			
+			public char this[int i] {
+				get { throw new NotImplementedException(); }
+				set { throw new NotImplementedException(); }
+			}
+			
+			public char this[string s] {
+				get { throw new NotImplementedException(); }
 			}
 		}
 		
@@ -119,6 +131,7 @@ namespace Debugger.Tests
 			Enum enumType = null;
 			MyEnum myEnum = MyEnum.B;
 			
+			Members members = new Members();
 			Access access = new Access();
 			
 			System.Diagnostics.Debugger.Break();
@@ -189,6 +202,7 @@ namespace Debugger.Tests {
 			ObjectDump("DefinedTypes", process.Modules["DebugType_Tests.exe"].GetNamesOfDefinedTypes());
 			ObjectDump("DefinedTypes", process.Modules["DebugType_Tests.exe"].GetDefinedTypes());
 			
+			ObjectDump("Members", process.SelectedStackFrame.GetLocalVariableValue("members").Type.GetMembers(DebugType.BindingFlagsAllDeclared));
 			ObjectDump("Access-Members", process.SelectedStackFrame.GetLocalVariableValue("access").Type.GetMembers());
 			ObjectDump("MyInterfaceImpl-Members", process.SelectedStackFrame.GetLocalVariableValue("myInterfaceImpl").Type.GetMembers());
 			PrintLocalVariables();
@@ -209,10 +223,10 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType_Tests.cs:124,4-124,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_Tests.cs:137,4-137,40</DebuggingPaused>
     <DefinedTypes
       Capacity="16"
-      Count="11">
+      Count="12">
       <Item>Debugger.Tests.DebugType_Tests</Item>
       <Item>AddDelegate</Item>
       <Item>MyEnum</Item>
@@ -223,11 +237,12 @@ namespace Debugger.Tests {
       <Item>MyGenNestedStruct`1</Item>
       <Item>MyInterface`3</Item>
       <Item>MyInterfaceImpl`1</Item>
+      <Item>Members</Item>
       <Item>Access</Item>
     </DefinedTypes>
     <DefinedTypes
       Capacity="8"
-      Count="6">
+      Count="7">
       <Item>
         <DebugType
           Attributes="AutoLayout, AnsiClass, Class, Public, BeforeFieldInit"
@@ -295,6 +310,20 @@ namespace Debugger.Tests {
         <DebugType
           Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
           BaseType="System.Object"
+          FullName="Debugger.Tests.DebugType_Tests+Members"
+          GetFields="{System.Int32 IntLiteral, System.Void* voidPtr}"
+          GetMembers="{System.Int32 IntLiteral, System.Void* voidPtr, void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), System.Char SetterOnlyProp, System.Char Item, System.Char Item, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          GetMethods="{void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          GetProperties="{System.Char SetterOnlyProp, System.Char Item, System.Char Item}"
+          IsClass="True"
+          IsNested="True">
+          <GetElementType>null</GetElementType>
+        </DebugType>
+      </Item>
+      <Item>
+        <DebugType
+          Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
+          BaseType="System.Object"
           FullName="Debugger.Tests.DebugType_Tests+Access"
           GetFields="{System.Int32 publicField}"
           GetMembers="{System.Int32 publicField, System.Int32 Debugger.Tests.DebugType_Tests+Access.get_publicProperty(), void Debugger.Tests.DebugType_Tests+Access.publicMethod(), void Debugger.Tests.DebugType_Tests+Access..ctor(), System.Int32 publicProperty, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
@@ -306,6 +335,85 @@ namespace Debugger.Tests {
         </DebugType>
       </Item>
     </DefinedTypes>
+    <Members>
+      <Item>
+        <DebugFieldInfo
+          Attributes="Public, Static, Literal, HasDefault"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FieldType="System.Int32"
+          IsLiteral="True"
+          Name="IntLiteral" />
+      </Item>
+      <Item>
+        <DebugFieldInfo
+          Attributes="Public"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FieldType="System.Void*"
+          Name="voidPtr" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FullName="Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value)"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+Members this}"
+          Name="set_SetterOnlyProp" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FullName="Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i)"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+Members this}"
+          Name="get_Item"
+          ReturnType="System.Char" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FullName="Debugger.Tests.DebugType_Tests+Members.get_Item(String s)"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+Members this}"
+          Name="get_Item"
+          ReturnType="System.Char" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FullName="Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value)"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+Members this}"
+          Name="set_Item" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName, RTSpecialName"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FullName="Debugger.Tests.DebugType_Tests+Members..ctor()"
+          Name=".ctor"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugPropertyInfo
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          Name="SetterOnlyProp"
+          PropertyType="System.Char" />
+      </Item>
+      <Item>
+        <DebugPropertyInfo
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          GetIndexParameters="{System.Int32 i}"
+          Name="Item"
+          PropertyType="System.Char" />
+      </Item>
+      <Item>
+        <DebugPropertyInfo
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          GetIndexParameters="{System.String s}"
+          Name="Item"
+          PropertyType="System.Char" />
+      </Item>
+    </Members>
     <Access-Members>
       <Item>
         <DebugFieldInfo
@@ -392,13 +500,6 @@ namespace Debugger.Tests {
     </Access-Members>
     <MyInterfaceImpl-Members>
       <Item>
-        <DebugFieldInfo
-          Attributes="Public"
-          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
-          FieldType="System.Void*"
-          Name="voidPtr" />
-      </Item>
-      <Item>
         <DebugMethodInfo
           Attributes="PrivateScope, Public, HideBySig, SpecialName"
           DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
@@ -406,14 +507,6 @@ namespace Debugger.Tests {
           GetLocalVariables="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32] this}"
           Name="get_Prop"
           ReturnType="System.Collections.Generic.List`1[System.Int32]" />
-      </Item>
-      <Item>
-        <DebugMethodInfo
-          Attributes="PrivateScope, Public, HideBySig, SpecialName"
-          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
-          FullName="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].set_SetterOnlyProp(Char value)"
-          GetLocalVariables="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32] this}"
-          Name="set_SetterOnlyProp" />
       </Item>
       <Item>
         <DebugMethodInfo
@@ -446,12 +539,6 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
           Name="Prop"
           PropertyType="System.Collections.Generic.List`1[System.Int32]" />
-      </Item>
-      <Item>
-        <DebugPropertyInfo
-          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
-          Name="SetterOnlyProp"
-          PropertyType="System.Char" />
       </Item>
       <Item>
         <DebugMethodInfo
@@ -1151,12 +1238,11 @@ namespace Debugger.Tests {
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
               FullName="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
-              GetFields="{System.Void* voidPtr}"
               GetGenericArguments="{System.Int32}"
               GetInterfaces="{Debugger.Tests.DebugType_Tests+MyInterface`3[System.Int32,Debugger.Tests.DebugType_Tests+MyClass,Debugger.Tests.DebugType_Tests+MyStruct]}"
-              GetMembers="{System.Void* voidPtr, System.Collections.Generic.List`1[System.Int32] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].get_Prop(), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m), System.Object[] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]..ctor(), System.Collections.Generic.List`1[System.Int32] Prop, System.Char SetterOnlyProp, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetMethods="{System.Collections.Generic.List`1[System.Int32] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].get_Prop(), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m), System.Object[] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetProperties="{System.Collections.Generic.List`1[System.Int32] Prop, System.Char SetterOnlyProp}"
+              GetMembers="{System.Collections.Generic.List`1[System.Int32] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].get_Prop(), System.Int32 Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m), System.Object[] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]..ctor(), System.Collections.Generic.List`1[System.Int32] Prop, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{System.Collections.Generic.List`1[System.Int32] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].get_Prop(), System.Int32 Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m), System.Object[] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetProperties="{System.Collections.Generic.List`1[System.Int32] Prop}"
               IsClass="True"
               IsGenericType="True"
               IsNested="True">
@@ -1304,6 +1390,27 @@ namespace Debugger.Tests {
               IsEnum="True"
               IsNested="True"
               IsValueType="True">
+              <GetElementType>null</GetElementType>
+            </DebugType>
+          </Type>
+        </LocalVariable>
+      </Item>
+      <Item>
+        <LocalVariable
+          Name="members"
+          Type="Debugger.Tests.DebugType_Tests+Members"
+          Value="{Debugger.Tests.DebugType_Tests+Members}">
+          <Type>
+            <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
+              BaseType="System.Object"
+              FullName="Debugger.Tests.DebugType_Tests+Members"
+              GetFields="{System.Int32 IntLiteral, System.Void* voidPtr}"
+              GetMembers="{System.Int32 IntLiteral, System.Void* voidPtr, void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), System.Char SetterOnlyProp, System.Char Item, System.Char Item, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetProperties="{System.Char SetterOnlyProp, System.Char Item, System.Char Item}"
+              IsClass="True"
+              IsNested="True">
               <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
