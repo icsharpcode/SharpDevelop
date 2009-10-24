@@ -7,70 +7,131 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
 using ICSharpCode.NRefactory.Ast;
 using Mono.Cecil.Signatures;
-using System.Runtime.InteropServices;
 
 namespace Debugger.MetaData
 {
-	/// <summary>
-	/// Provides information about a method in a class
-	/// </summary>
-	public class MethodInfo: MemberInfo
+	public class DebugMethodInfo: System.Reflection.MethodInfo
 	{
+		DebugType declaringType;
 		MethodProps methodProps;
 		
-		/// <summary> Gets the name of this method </summary>
+		internal DebugMethodInfo(DebugType declaringType, MethodProps methodProps)
+		{
+			this.declaringType = declaringType;
+			this.methodProps = methodProps;
+		}
+		
+		public override Type DeclaringType {
+			get {
+				return declaringType;
+			}
+		}
+		
+		public override uint MetadataToken {
+			get {
+				return methodProps.Token;
+			}
+		}
+		//		public virtual Module Module { get; }
+		
 		public override string Name {
 			get {
 				return methodProps.Name;
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether this member has the private access modifier</summary>
-		public override bool IsPrivate  {
-			get { return methodProps.IsPrivate; }
-		}
-		
-		/// <summary> Gets a value indicating whether this member has the internal access modifier</summary>
-		public override bool IsInternal  {
-			get { return methodProps.IsInternal; }
-		}
-		
-		/// <summary> Gets a value indicating whether this member has the protected access modifier</summary>
-		public override bool IsProtected  {
-			get { return methodProps.IsProtected; }
-		}
-		
-		/// <summary> Gets a value indicating whether this member has the public access modifier</summary>
-		public override bool IsPublic {
-			get { return methodProps.IsPublic; }
-		}
-		
-		/// <summary> Gets a value indicating whether the name of this method
-		/// is marked as specail.</summary>
-		/// <remarks> For example, property accessors are marked as special </remarks>
-		public bool IsSpecialName {
+		public override Type ReflectedType {
 			get {
-				return methodProps.HasSpecialName;
+				throw new NotSupportedException();
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether this method is static </summary>
-		public override bool IsStatic {
+		public override object[] GetCustomAttributes(bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override bool IsDefined(Type attributeType, bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		public virtual Type[] GetGenericArguments();
+		//		public virtual MethodBody GetMethodBody();
+		//		internal virtual RuntimeMethodHandle GetMethodHandle();
+		
+		public override MethodImplAttributes GetMethodImplementationFlags()
+		{
+			return methodProps.ImplFlags;
+		}
+		
+		//		internal virtual uint GetOneTimeFlags();
+		//		internal virtual uint GetOneTimeSpecificFlags();
+		
+		public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override MethodAttributes Attributes {
 			get {
-				return methodProps.IsStatic;
+				return (MethodAttributes)methodProps.Flags;
 			}
 		}
 		
-		/// <summary> Gets the metadata token associated with this method </summary>
-		[Debugger.Tests.Ignore]
-		public override uint MetadataToken {
+		//		public virtual CallingConventions CallingConvention { get; }
+		//		public virtual bool ContainsGenericParameters { get; }
+		//		public virtual bool IsGenericMethod { get; }
+		//		public virtual bool IsGenericMethodDefinition { get; }
+		//		internal virtual bool IsOverloaded { get; }
+		
+		public override RuntimeMethodHandle MethodHandle {
 			get {
-				return methodProps.Token;
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override MethodInfo GetBaseDefinition()
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		public override Type[] GetGenericArguments();
+		//		public virtual MethodInfo GetGenericMethodDefinition();
+		//		internal virtual MethodInfo GetParentDefinition();
+		//		internal override Type GetReturnType();
+		//		public virtual MethodInfo MakeGenericMethod(params Type[] typeArguments);
+		//		public override bool ContainsGenericParameters { get; }
+		//		public override bool IsGenericMethod { get; }
+		//		public override bool IsGenericMethodDefinition { get; }
+		//		public virtual ParameterInfo ReturnParameter { get; }
+		
+		public override Type GetReturnType()
+		{
+			if (this.MethodDefSig.RetType.Void) return null;
+			if (returnType == null) {
+				returnType = DebugType.CreateFromSignature(this.Module, this.MethodDefSig.RetType.Type, this.DeclaringType);
+			}
+			return returnType;
+		}
+		
+		public override ICustomAttributeProvider ReturnTypeCustomAttributes {
+			get {
+				throw new NotSupportedException();
 			}
 		}
 		
@@ -88,30 +149,27 @@ namespace Debugger.MetaData
 		
 		DebugType returnType;
 		
-		/// <summary> The type of the return value as specified in the method signature </summary>
-		/// <returns> Null if the return type is Void</returns>
-		public DebugType ReturnType {
-			get {
-				if (this.MethodDefSig.RetType.Void) return null;
-				if (returnType == null) {
-					returnType = DebugType.CreateFromSignature(this.Module, this.MethodDefSig.RetType.Type, this.DeclaringType);
+		ParameterInfo[] parameters;
+		
+		public override ParameterInfo[] GetParameters()
+		{
+			if (parameters == null) {
+				parameters = new ParameterInfo[this.MethodDefSig.ParamCount];
+				for(int i = 0; i < parameters.Length; i++) {
+					parameters[i] =
+						new DebugParameterInfo() {
+							Member = this,
+							Name = this.GetParameterName(i),
+							Position = i,
+							ParameterType = DebugType.CreateFromSignature(this.Module, this.MethodDefSig.Parameters[i].Type, this.DeclaringType),
+						};
 				}
-				return returnType;
 			}
+			return parameters;
 		}
 		
-		/// <summary>
-		/// Gets the types of the parameters of the method
-		/// </summary>
-		public DebugType[] ParameterTypes {
-			get {
-				List<DebugType> types = new List<DebugType>();
-				foreach(Param param in this.methodDefSig.Parameters) {
-					types.Add(DebugType.CreateFromSignature(this.Module, param.Type, this.DeclaringType));
-				}
-				return types.ToArray();
-			}
-		}
+		//		internal virtual Type[] GetParameterTypes();
+		//		internal virtual ParameterInfo[] GetParametersNoCopy();
 		
 		internal ICorDebugFunction CorFunction {
 			get {
@@ -141,11 +199,6 @@ namespace Debugger.MetaData
 				}
 				return false;
 			}
-		}
-		
-		internal MethodInfo(DebugType declaringType, MethodProps methodProps):base (declaringType)
-		{
-			this.methodProps = methodProps;
 		}
 		
 		// TODO: More accurate
@@ -412,7 +465,6 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Get names of all parameters in order </summary>
-		[Tests.Ignore]
 		public string[] ParameterNames {
 			get {
 				List<string> names = new List<string>();
@@ -423,7 +475,6 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		[Debugger.Tests.Ignore]
 		public List<LocalVariableInfo> LocalVariables {
 			get {
 				if (this.SymMethod != null) { // TODO: Is this needed?

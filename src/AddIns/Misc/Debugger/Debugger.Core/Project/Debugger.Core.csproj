@@ -220,14 +220,11 @@
     <Compile Include="Src\Interop\MetaData\COR_FIELD_OFFSET.cs" />
     <Compile Include="Src\Interop\MetaData\IMetaDataImport.cs" />
     <Compile Include="Src\Metadata\BindingFlags.cs" />
-    <Compile Include="Src\Metadata\DebugMemberInfo.cs" />
-    <Compile Include="Src\Metadata\DebugMethodInfo.cs" />
     <Compile Include="Src\Metadata\DebugParameterInfo.cs" />
     <Compile Include="Src\Metadata\DebugType-Helpers.cs" />
     <Compile Include="Src\Metadata\DebugType.cs" />
     <Compile Include="Src\Metadata\DebugType2.cs" />
     <Compile Include="Src\Metadata\FieldInfo.cs" />
-    <Compile Include="Src\Metadata\MemberInfo.cs" />
     <Compile Include="Src\Metadata\MethodInfo.cs" />
     <Compile Include="Src\Metadata\PropertyInfo.cs" />
     <Compile Include="Src\Mono.Cecil\Mono.Cecil.Binary\ImageFormatException.cs" />
