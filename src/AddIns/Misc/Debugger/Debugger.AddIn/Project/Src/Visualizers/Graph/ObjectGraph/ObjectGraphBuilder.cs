@@ -60,10 +60,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// Binding flags for getting member expressions.
 		/// </summary>
 		private readonly Debugger.MetaData.BindingFlags memberBindingFlags =
-			BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
+			BindingFlags.Public | BindingFlags.Instance;
 		
 		private readonly Debugger.MetaData.BindingFlags nonPublicInstanceMemberFlags =
-			BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
+			BindingFlags.NonPublic | BindingFlags.Instance;
 		
 		/// <summary>
 		/// Creates ObjectGraphBuilder.
@@ -225,7 +225,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
 			
-			foreach (MemberInfo memberProp in shownType.GetFieldsAndProperties(flags))
+			foreach (MemberInfo memberProp in shownType.GetFieldsAndNonIndexedProperties(flags))
 			{
 				// skip backing fields
 				if (memberProp.Name.Contains("<"))

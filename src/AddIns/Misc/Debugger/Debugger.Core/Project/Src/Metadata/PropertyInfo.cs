@@ -134,5 +134,19 @@ namespace Debugger.MetaData
 		{
 			throw new NotSupportedException();
 		}
+		
+		public bool IsPublic {
+			get {
+				if (getMethod != null && getMethod.IsPublic) return true;
+				if (setMethod != null && setMethod.IsPublic) return true;
+				return false;
+			}
+		}
+		
+		public bool IsStatic {
+			get {
+				return (getMethod ?? setMethod).IsStatic;
+			}
+		}
 	}
 }

@@ -211,6 +211,93 @@ namespace Debugger.MetaData
 			return this.GenericArguments[0];
 		}
 		
+		const BindingFlags supportedFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.FlattenHierarchy;
+		
+		public T GetMember<T>(string name, BindingFlags bindingFlags, Predicate<T> filter) where T:MemberInfo
+		{
+			T[] res = GetMembersImpl<T>(name, bindingFlags, filter);
+			if (res.Length > 0) {
+				return res[0];
+			} else {
+				return null;
+			}
+		}
+		
+		public T[] GetMembers<T>(string name, BindingFlags bindingFlags, Predicate<T> filter) where T:MemberInfo
+		{
+			BindingFlags unsupported = bindingFlags & ~supportedFlags;
+			if (unsupported != 0)
+				throw new NotSupportedException("BindingFlags: " + unsupported);
+			
+			if ((bindingFlags & (BindingFlags.Public | BindingFlags.NonPublic)) == 0)
+				throw new ArgumentException("Public or NonPublic flag must be included", "bindingFlags");
+			
+			if ((bindingFlags & (BindingFlags.Instance | BindingFlags.Static)) == 0)
+				throw new ArgumentException("Instance or Static flag must be included", "bindingFlags");
+			
+			List<T> results = new List<T>();
+			foreach(MemberInfo memberInfo in members) {
+				// Filter by type
+				if (!(memberInfo is T)) continue; // Reject item
+				
+				// Filter by name
+				if (name != null) {
+					if (memberInfo.Name != name) continue; // Reject item
+				}
+				
+				// Filter by access
+				bool memberIsPublic;
+				if (memberInfo is FieldInfo) {
+					memberIsPublic = ((FieldInfo)memberInfo).IsPublic;
+				} else if (memberInfo is DebugPropertyInfo) {
+					memberIsPublic = ((DebugPropertyInfo)memberInfo).IsPublic;
+				} else if (memberInfo is MethodInfo) {
+					memberIsPublic = ((MethodInfo)memberInfo).IsPublic;
+				} else {
+					throw new DebuggerException("Unexpected type: " + memberInfo.GetType());
+				}
+				if (memberIsPublic) {
+					if ((bindingFlags & BindingFlags.Public) == 0) continue; // Reject item
+				} else {
+					if ((bindingFlags & BindingFlags.NonPublic) == 0) continue; // Reject item
+				}
+				
+				// Filter by static / instance
+				bool memberIsStatic;
+				if (memberInfo is FieldInfo) {
+					memberIsStatic = ((FieldInfo)memberInfo).IsStatic;
+				} else if (memberInfo is DebugPropertyInfo) {
+					memberIsStatic = ((DebugPropertyInfo)memberInfo).IsStatic;
+				} else if (memberInfo is MethodInfo) {
+					memberIsStatic = ((MethodInfo)memberInfo).IsStatic;
+				} else {
+					throw new DebuggerException("Unexpected type: " + memberInfo.GetType());
+				}
+				if (memberIsStatic) {
+					if ((bindingFlags & BindingFlags.Static) == 0) continue; // Reject item
+				} else {
+					if ((bindingFlags & BindingFlags.Instance) == 0) continue; // Reject item
+				}
+				
+				// Filter using predicate
+				if (filter != null && !filter((T)memberInfo)) continue; // Reject item
+				
+				results.Add((T)memberInfo);
+			}
+			
+			// Query supertype
+			if ((bindingFlags & BindingFlags.DeclaredOnly) == 0 && this.BaseType != null) {
+				if ((bindingFlags & BindingFlags.FlattenHierarchy) == 0) {
+					// Do not include static types
+					bindingFlags = bindingFlags & ~BindingFlags.Static;
+				}
+				List<T> superResults = this.BaseType.QueryMembers<T>(bindingFlags, name, token);
+				results.AddRange(superResults);
+			}
+			
+			return results.ToArray();
+		}
+		
 		public override EventInfo GetEvent(string name, BindingFlags bindingAttr)
 		{
 			throw new NotSupportedException();
@@ -225,12 +312,12 @@ namespace Debugger.MetaData
 		
 		public override FieldInfo GetField(string name, BindingFlags bindingAttr)
 		{
-			throw new NotSupportedException();
+			return GetMember<FieldInfo>(name, bindingAttr, null);
 		}
 		
 		public override FieldInfo[] GetFields(BindingFlags bindingAttr)
 		{
-			throw new NotSupportedException();
+			return GetMembers<FieldInfo>(null, bindingAttr, null);
 		}
 		
 		//		public virtual Type[] GetGenericArguments();
@@ -249,22 +336,62 @@ namespace Debugger.MetaData
 			return this.interfaces.ToArray();
 		}
 		
-		//		public virtual MemberInfo[] GetMember(string name, BindingFlags bindingAttr);
-		//		public virtual MemberInfo[] GetMember(string name, MemberTypes type, BindingFlags bindingAttr);
+		public override MemberInfo[] GetMember(string name, MemberTypes type, BindingFlags bindingAttr)
+		{
+			return GetMembers<MemberInfo>(name, bindingAttr, delegate(MemberInfo info) { return (info.MemberType & type) != 0; });
+		}
 		
 		public override MemberInfo[] GetMembers(BindingFlags bindingAttr)
 		{
-			throw new NotSupportedException();
+			return GetMembers<MemberInfo>(null, bindingAttr, null);
 		}
 		
-		protected override MethodInfo GetMethodImpl(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers)
+		/// <summary> Return first method with the given token</summary>
+		public MethodInfo GetMethod(uint token)
 		{
-			throw new NotSupportedException();
+			return QueryMember<MethodInfo>(token);
+		}
+		
+		/// <summary> Return method overload with given parameter names </summary>
+		/// <returns> Null if not found </returns>
+		public MethodInfo GetMethod(string name, string[] paramNames)
+		{
+			foreach(MethodInfo candidate in GetMethod(name)) {
+				if (candidate.ParameterCount == paramNames.Length) {
+					bool match = true;
+					for(int i = 0; i < paramNames.Length; i++) {
+						if (paramNames[i] != candidate.ParameterNames[i])
+							match = false;
+					}
+					if (match)
+						return candidate;
+				}
+			}
+			return null;
+		}
+		
+		protected override MethodInfo GetMethodImpl(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] paramTypes, ParameterModifier[] modifiers)
+		{
+			// TODO: Finish
+			foreach(MethodInfo candidate in GetMembers<MethodInfo>(name, bindingAttr, null))) {
+				if (paramTypes == null)
+					return candidate;
+				if (candidate.ParameterCount == paramTypes.Length) {
+					bool match = true;
+					for(int i = 0; i < paramTypes.Length; i++) {
+						if (paramTypes[i] != candidate.ParameterTypes[i])
+							match = false;
+					}
+					if (match)
+						return candidate;
+				}
+			}
+			return null;
 		}
 		
 		public override MethodInfo[] GetMethods(BindingFlags bindingAttr)
 		{
-			throw new NotSupportedException();
+			return GetMembers<MethodInfo>(null, bindingAttr, null);
 		}
 		
 		public override Type GetNestedType(string name, BindingFlags bindingAttr)
@@ -277,14 +404,28 @@ namespace Debugger.MetaData
 			throw new NotSupportedException();
 		}
 		
+		public MemberInfo[] GetFieldsAndNonIndexedProperties(BindingFlags bindingAttr)
+		{
+			return GetMembers<MemberInfo>(null, bindingAttr, delegate (MemberInfo info) {
+			                              	if (info is FieldInfo)
+			                              		return true;
+			                              	if (info is PropertyInfo) {
+			                              		return ((PropertyInfo)info).GetGetMethod(true) != null &&
+			                              		       ((PropertyInfo)info).GetGetMethod(true).GetParameters().Length == 0;
+			                              	}
+			                              	return false;
+			                              });
+		}
+		
 		public override PropertyInfo[] GetProperties(BindingFlags bindingAttr)
 		{
-			throw new NotSupportedException();
+			return GetMembers<PropertyInfo>(null, bindingAttr, null);
 		}
 		
 		protected override PropertyInfo GetPropertyImpl(string name, BindingFlags bindingAttr, Binder binder, Type returnType, Type[] types, ParameterModifier[] modifiers)
 		{
-			throw new NotSupportedException();
+			// TODO: Finsih
+			return GetMember<PropertyInfo>(name, bindingAttr, null);
 		}
 		
 		//		internal virtual Type GetRootElementType();

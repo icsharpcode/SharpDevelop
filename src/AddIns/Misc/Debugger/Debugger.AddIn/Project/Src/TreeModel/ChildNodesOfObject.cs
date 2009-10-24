@@ -4,14 +4,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Services;
 using System.Collections;
 using System.Collections.Generic;
+using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
-using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.SharpDevelop.Services;
+using System.Reflection;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -19,42 +20,41 @@ namespace Debugger.AddIn.TreeModel
 	{
 		public static IEnumerable<TreeNode> LazyGetChildNodesOfObject(Expression targetObject, DebugType shownType)
 		{
-			BindingFlags publicStaticFlags        = BindingFlags.Public | BindingFlags.Static | BindingFlags.Field | BindingFlags.GetProperty;
-			BindingFlags publicInstanceFlags      = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
-			BindingFlags nonPublicStaticFlags     = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Field | BindingFlags.GetProperty;
-			BindingFlags nonPublicInstanceFlags   = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
+			MemberInfo[] publicStatic      = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.Public    | BindingFlags.Static   | BindingFlags.DeclaredOnly);
+			MemberInfo[] publicInstance    = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.Public    | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+			MemberInfo[] nonPublicStatic   = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.NonPublic | BindingFlags.Static   | BindingFlags.DeclaredOnly);
+			MemberInfo[] nonPublicInstance = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 			
 			DebugType baseType = shownType.BaseType;
 			if (baseType != null) {
 				yield return new TreeNode(
 					DebuggerResourceService.GetImage("Icons.16x16.Class"),
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}"),
-					//string.Empty,
 					baseType.Name,
 					baseType.FullName,
 					baseType.FullName == "System.Object" ? null : Utils.LazyGetChildNodesOfObject(targetObject, baseType)
 				);
 			}
 			
-			if (shownType.HasMembers(nonPublicInstanceFlags)) {
+			if (nonPublicInstance.Length > 0) {
 				yield return new TreeNode(
 					null,
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}"),
 					string.Empty,
 					string.Empty,
-					Utils.LazyGetMembersOfObject(targetObject, shownType, nonPublicInstanceFlags)
+					Utils.LazyGetMembersOfObject(targetObject, shownType, nonPublicInstance)
 				);
 			}
 			
-			if (shownType.HasMembers(publicStaticFlags) || shownType.HasMembers(nonPublicStaticFlags)) {
-				IEnumerable<TreeNode> childs = Utils.LazyGetMembersOfObject(targetObject, shownType, publicStaticFlags);
-				if (shownType.HasMembers(nonPublicStaticFlags)) {
+			if (publicStatic.Length > 0 || nonPublicStatic.Length > 0) {
+				IEnumerable<TreeNode> childs = Utils.LazyGetMembersOfObject(targetObject, shownType, publicStatic);
+				if (nonPublicStatic.Length > 0) {
 					TreeNode nonPublicStaticNode = new TreeNode(
 						null,
 						StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicStaticMembers}"),
 						string.Empty,
 						string.Empty,
-						Utils.LazyGetMembersOfObject(targetObject, shownType, nonPublicStaticFlags)
+						Utils.LazyGetMembersOfObject(targetObject, shownType, nonPublicStatic)
 					);
 					childs = Utils.PrependNode(nonPublicStaticNode, childs);
 				}
@@ -78,24 +78,20 @@ namespace Debugger.AddIn.TreeModel
 				}
 			}
 			
-			foreach(TreeNode node in LazyGetMembersOfObject(targetObject, shownType, publicInstanceFlags)) {
+			foreach(TreeNode node in LazyGetMembersOfObject(targetObject, shownType, publicInstance)) {
 				yield return node;
 			}
 		}
 		
-		public static IEnumerable<TreeNode> LazyGetMembersOfObject(Expression expression, DebugType type, BindingFlags bindingFlags)
+		public static IEnumerable<TreeNode> LazyGetMembersOfObject(Expression expression, MemberInfo[] members)
 		{
-			List<TreeNode> members = new List<TreeNode>();
-			
-			foreach(FieldInfo field in type.GetFields(bindingFlags)) {
-				members.Add(new ExpressionNode(ExpressionNode.GetImageForMember(field), field.Name, expression.AppendMemberReference(field)));
+			List<TreeNode> nodes = new List<TreeNode>();
+			foreach(MemberInfo memberInfo in members) {
+				members.Add(new ExpressionNode(ExpressionNode.GetImageForMember(memberInfo), memberInfo.Name, expression.AppendMemberReference(memberInfo)));
+				
 			}
-			foreach(PropertyInfo property in type.GetProperties(bindingFlags)) {
-				members.Add(new ExpressionNode(ExpressionNode.GetImageForMember(property), property.Name, expression.AppendMemberReference(property)));
-			}
-			
-			members.Sort();
-			return members;
+			nodes.Sort();
+			return nodes;
 		}
 
 		

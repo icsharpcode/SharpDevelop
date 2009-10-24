@@ -6,9 +6,10 @@
 // </file>
 using System;
 using System.Collections.Generic;
+using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
-using Debugger.AddIn.Visualizers.Utils;
+using System.Reflection;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -18,9 +19,6 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// </summary>
 	public class GridValuesProvider
 	{
-		protected readonly BindingFlags memberBindingFlags =
-			BindingFlags.Public | BindingFlags.Instance | BindingFlags.Field | BindingFlags.GetProperty;
-		
 		/// <summary> Used to quickly find MemberInfo by member name - DebugType.GetMember(name) uses a loop to search members </summary>
 		protected Dictionary<string, MemberInfo> memberFromNameMap;
 		
@@ -42,7 +40,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 		/// </summary>
 		public IList<MemberInfo> GetItemTypeMembers()
 		{
-			return itemType.GetMembers(this.memberBindingFlags);
+			return itemType.GetFieldsAndNonIndexedProperties(BindingFlags.Public | BindingFlags.Instance);
 		}
 	}
 }

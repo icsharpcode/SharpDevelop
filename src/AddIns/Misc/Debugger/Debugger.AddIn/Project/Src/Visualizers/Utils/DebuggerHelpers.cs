@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.Collections.Generic;
 using Debugger;
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
-using ICSharpCode.SharpDevelop.Services;
-using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Services;
+using System.Reflection;
 
 namespace Debugger.AddIn.Visualizers.Utils
 {
@@ -66,16 +67,6 @@ namespace Debugger.AddIn.Visualizers.Utils
 			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetObjectAddress();
 		}
 		
-		public static IEnumerable<MemberInfo> GetFieldsAndProperties(this DebugType type, BindingFlags bindingFlags)
-		{
-			foreach(FieldInfo field in type.GetFields(bindingFlags)) {
-				yield return field;
-			}
-			foreach(PropertyInfo property in type.GetProperties(bindingFlags)) {
-				yield return property;
-			}
-		}
-		
 		/// <summary>
 		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
 		/// </summary>
@@ -91,7 +82,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 			if (DebuggerHelpers.hashCodeMethod == null || DebuggerHelpers.hashCodeMethod.Process.HasExited)
 			{
 				DebugType typeRuntimeHelpers = DebugType.CreateFromType(value.AppDomain, typeof(System.Runtime.CompilerServices.RuntimeHelpers));
-				DebuggerHelpers.hashCodeMethod = typeRuntimeHelpers.GetMember("GetHashCode", BindingFlags.Public | BindingFlags.Static | BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
+				DebuggerHelpers.hashCodeMethod = typeRuntimeHelpers.GetMethod("GetHashCode", BindingFlags.Public | BindingFlags.Static);
 				if (DebuggerHelpers.hashCodeMethod == null)
 				{
 					throw new DebuggerException("Cannot obtain method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode");

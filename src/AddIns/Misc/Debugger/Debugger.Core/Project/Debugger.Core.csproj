@@ -219,7 +219,6 @@
     <Compile Include="Src\Interop\Enums\CorTokenType.cs" />
     <Compile Include="Src\Interop\MetaData\COR_FIELD_OFFSET.cs" />
     <Compile Include="Src\Interop\MetaData\IMetaDataImport.cs" />
-    <Compile Include="Src\Metadata\BindingFlags.cs" />
     <Compile Include="Src\Metadata\DebugParameterInfo.cs" />
     <Compile Include="Src\Metadata\DebugType-Helpers.cs" />
     <Compile Include="Src\Metadata\DebugType.cs" />

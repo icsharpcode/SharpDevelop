@@ -4,21 +4,26 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.NRefactory.PrettyPrinter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
+
 using Debugger.MetaData;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 
 namespace Debugger
 {
 	public class ExpressionEvaluator: NotImplementedAstVisitor
 	{
+		const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+		const BindingFlags BindingFlagsAllDeclared = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+		
 		public static INode Parse(string code, SupportedLanguage language)
 		{
 			SnippetParser parser = new SnippetParser(language);
@@ -333,9 +338,9 @@ namespace Debugger
 				}
 			}
 			MethodInfo method;
-			IList<MemberInfo> methods = targetType.GetMembers(methodName, BindingFlags.Method);
+			IList<MemberInfo> methods = targetType.GetMember(methodName, MemberTypes.Method, BindingFlagsAllDeclared);
 			if (methods.Count == 0)
-				methods = targetType.GetMembers(methodName, BindingFlags.Method | BindingFlags.IncludeSuperType);
+				methods = targetType.GetMember(methodName, MemberTypes.Method, BindingFlagsAll);
 			if (methods.Count == 0) {
 				throw new GetValueException("Method " + methodName + " not found");
 			} else if (methods.Count == 1) {
@@ -378,9 +383,9 @@ namespace Debugger
 		{
 			Value target = Evaluate(memberReferenceExpression.TargetObject);
 			DebugType targetType = GetDebugType(memberReferenceExpression.TargetObject) ?? target.Type;
-			MemberInfo memberInfo = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlags.AllInThisType);
+			MemberInfo memberInfo = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAllDeclared);
 			if (memberInfo == null)
-				memberInfo = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlags.All);
+				memberInfo = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAll);
 			if (memberInfo == null)
 				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
 			Value member = target.GetMemberValue(memberInfo);
