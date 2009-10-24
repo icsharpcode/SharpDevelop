@@ -292,7 +292,7 @@ namespace Debugger.Tests {
     <Eval> (5 + 6) % (1 + 2) = 2 </Eval>
     <Eval> 3 % 2 == 1 = True </Eval>
     <Eval> 15 &amp; 255 = 15 </Eval>
-    <Eval> 15 &amp;&amp; 255 = Error evaluating "15 &amp;&amp; 255": Unsupported operator for integers: LogicalAnd </Eval>
+    <Eval> 15 &amp;&amp; 255 = Unsupported operator for integers: LogicalAnd </Eval>
     <Eval> b + 3 == i = True </Eval>
     <Eval> b + 4 == i = False </Eval>
     <Eval> true == true = True </Eval>
@@ -309,9 +309,7 @@ namespace Debugger.Tests {
     <Eval> hi[1] = 'i' </Eval>
     <Eval> "abcd"[2] = 'c' </Eval>
     <Eval> </Eval>
-    <Eval> list.Add(42); list.Add(52); = Error evaluating "list.Add(42);
-list.Add(52);
-": Incorrect parameter type for 'item'. Excpeted System.Char, seen System.Int32 </Eval>
+    <Eval> list.Add(42); list.Add(52); = Incorrect parameter type for 'item'. Excpeted System.Char, seen System.Int32 </Eval>
     <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o'} </Eval>
     <Eval> </Eval>
     <Eval> i = 10 = 10 </Eval>
@@ -345,13 +343,13 @@ list.Add(52);
     <Eval> myClass.Foo(myClass) = "derived Foo - object" </Eval>
     <Eval> myClass.Foo(1) = "derived Foo - int" </Eval>
     <Eval> myClass.Foo("abc") = "derived Foo - string" </Eval>
-    <Eval> myClass[1] = Error evaluating "myClass[1]": More then one applicable overload found:
+    <Eval> myClass[1] = More then one applicable overload found:
   System.String Item[Double d]
   System.String Item[Int64 i] </Eval>
     <Eval> myClass[(long)1] = "base indexer - long" </Eval>
     <Eval> myClass[1.0] = "derived indexer - double" </Eval>
     <Eval> myClass["abc"] = "derived indexer - string" </Eval>
-    <Eval> myClass.Convert(1, 2) = Error evaluating "myClass.Convert(1, 2)": Incorrect parameter type for 's'. Excpeted System.String, seen System.Int32 </Eval>
+    <Eval> myClass.Convert(1, 2) = Incorrect parameter type for 's'. Excpeted System.String, seen System.Int32 </Eval>
     <Eval> myClass.Convert("abc", 2) = "converted to abc and 2" </Eval>
     <Eval> </Eval>
     <ProcessExited />

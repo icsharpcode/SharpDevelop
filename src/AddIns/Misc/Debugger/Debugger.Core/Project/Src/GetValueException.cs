@@ -30,7 +30,8 @@ namespace Debugger
 				if (expression == null) {
 					return error;
 				} else {
-					return String.Format("Error evaluating \"{0}\": {1}", expression.PrettyPrint(), error);
+					return error;
+					// return String.Format("Error evaluating \"{0}\": {1}", expression.PrettyPrint(), error);
 				}
 			}
 		}
