@@ -78,6 +78,7 @@ namespace Debugger.Tests
 			                          	"Type.IsNestedPublic",
 			                          	"Type.IsSealed",
 			                          	"Type.IsSerializable",
+			                          	"Type.IsVisible",
 			                          	"Type.IsNotPublic",
 			                          	"Type.Name",
 			                          	"Type.Namespace",

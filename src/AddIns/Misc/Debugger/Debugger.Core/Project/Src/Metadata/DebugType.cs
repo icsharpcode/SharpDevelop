@@ -40,6 +40,7 @@ namespace Debugger.MetaData
 		string ns;
 		string name;
 		string fullName;
+		DebugType declaringType;
 		DebugType elementType;
 		List<DebugType> genericArguments = new List<DebugType>();
 		List<DebugType> interfaces = new List<DebugType>();
@@ -57,7 +58,7 @@ namespace Debugger.MetaData
 		
 		/// <inheritdoc/>
 		public override Type DeclaringType {
-			get { throw new NotSupportedException(); }
+			get { return declaringType; }
 		}
 		
 		/// <summary> The AppDomain in which this type is loaded </summary>
@@ -855,6 +856,7 @@ namespace Debugger.MetaData
 			if (genericArguments.Length < metaData.GetGenericParamCount(corClass.Token)) {
 				throw new DebuggerException("Not enough generic arguments");
 			}
+			Array.Resize(ref genericArguments, metaData.GetGenericParamCount(corClass.Token));
 			
 			List<ICorDebugType> corGenArgs = new List<ICorDebugType>(genericArguments.Length);
 			foreach(DebugType genAgr in genericArguments) {
@@ -921,14 +923,19 @@ namespace Debugger.MetaData
 			    corElementType == CorElementType.CLASS ||
 			    corElementType == CorElementType.VALUETYPE)
 			{
-				// We need to know generic arguments before getting name
+				// Get generic arguments
 				foreach(ICorDebugType t in corType.EnumerateTypeParameters().Enumerator) {
 					genericArguments.Add(DebugType.CreateFromCorType(appDomain, t));
 				}
-				// We need class props for getting name
+				// Get class props
 				this.module = appDomain.Process.Modules[corType.Class.Module];
 				this.classProps = module.MetaData.GetTypeDefProps(corType.Class.Token);
-				// Get names
+				// Get the enclosing class
+				if (classProps.IsNested) {
+					uint enclosingTk = module.MetaData.GetNestedClassProps((uint)this.MetadataToken).EnclosingClass;
+					this.declaringType = DebugType.CreateFromTypeDefOrRef(this.DebugModule, null, enclosingTk, genericArguments.ToArray());
+				}
+				// Get names (it depends on the previous steps)
 				int index = classProps.Name.LastIndexOf('.');
 				if (index == -1) {
 					this.ns = string.Empty;
@@ -1001,26 +1008,25 @@ namespace Debugger.MetaData
 		{
 			StringBuilder name = new StringBuilder();
 			
-			if (classProps.IsNested) {
-				uint enclosingTk = module.MetaData.GetNestedClassProps((uint)this.MetadataToken).EnclosingClass;
-				DebugType enclosingType = DebugType.CreateFromTypeDefOrRef(this.DebugModule, null, enclosingTk, genericArguments.ToArray());
-				name.Append(enclosingType.FullName);
-				name.Append(".");
+			for(Type enclosing = this.DeclaringType; enclosing != null; enclosing = enclosing.DeclaringType) {
+				name.Insert(0, enclosing.Name + "+");
+				if (enclosing.Namespace != string.Empty)
+					name.Insert(0, enclosing.Namespace + ".");
 			}
 			
 			// '`' might be missing in nested generic classes
 			name.Append(classProps.Name);
 			
 			if (this.GetGenericArguments().Length > 0) {
-				name.Append("[[");
+				name.Append("[");
 				bool first = true;
 				foreach(DebugType arg in this.GetGenericArguments()) {
 					if (!first)
-						name.Append(", ");
+						name.Append(",");
 					first = false;
 					name.Append(arg.FullName);
 				}
-				name.Append("]]");
+				name.Append("]");
 			}
 			
 			return name.ToString();

@@ -100,7 +100,7 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="deleg"
-          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses.IntDelegate"
+          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses+IntDelegate"
           Value="null" />
       </Item>
       <Item>
@@ -151,8 +151,8 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="nestedDeleg"
-          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses.IntDelegate"
-          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses.IntDelegate}" />
+          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses+IntDelegate"
+          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses+IntDelegate}" />
       </Item>
       <Item>
         <LocalVariable
