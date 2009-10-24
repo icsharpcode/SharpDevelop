@@ -29,7 +29,7 @@ namespace Debugger.MetaData
 	[Debugger.Tests.IgnoreOnException]
 	public class DebugType: System.Type, IDebugMemberInfo
 	{
-		public const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+		public const BindingFlags BindingFlagsAll = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 		public const BindingFlags BindingFlagsAllDeclared = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 		
 		Module module;
@@ -147,7 +147,7 @@ namespace Debugger.MetaData
 		public override Type BaseType {
 			get {
 				// corType.Base *sometimes* does not work for object and can cause "Value does not fall within the expected range." exception
-				if (this.FullName == "System.Object") {
+				if (this.FullName == typeof(object).FullName) {
 					return null;
 				}
 				// corType.Base does not work for arrays
@@ -155,9 +155,9 @@ namespace Debugger.MetaData
 					return DebugType.CreateFromType(this.AppDomain, typeof(Array));
 				}
 				// corType.Base does not work for primitive types
-				if (this.IsPrimitive) {
-					return DebugType.CreateFromType(this.AppDomain, typeof(ValueType));
-				}
+//				if (this.IsPrimitive) {
+//					return DebugType.CreateFromType(this.AppDomain, typeof(ValueType));
+//				}
 				if (this.IsPointer || corElementType == CorElementType.VOID) {
 					return null;
 				}

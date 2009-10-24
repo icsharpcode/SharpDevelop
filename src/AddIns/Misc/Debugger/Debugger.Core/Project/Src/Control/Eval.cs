@@ -230,13 +230,16 @@ namespace Debugger
 				}
 				corArgs.Add(thisValue.CorValue);
 			}
-			foreach(Value arg in args) {
-				// TODO: It is importatnt to pass the parameted in the correct form (boxed/unboxed)
-				// This is just a good guess
-				if (arg.Type.IsValueType) {
-					corArgs.Add(arg.CorGenericValue.CastTo<ICorDebugValue>());
+			for(int i = 0; i < args.Length; i++) {
+				// It is importatnt to pass the parameted in the correct form (boxed/unboxed)
+				if (method.GetParameters()[i].ParameterType.IsValueType) {
+					corArgs.Add(args[i].CorGenericValue.CastTo<ICorDebugValue>());
 				} else {
-					corArgs.Add(arg.CorValue);
+					if (args[i].Type.IsValueType) {
+						corArgs.Add(args[i].Box().CorValue);
+					} else {
+						corArgs.Add(args[i].CorValue);
+					}
 				}
 			}
 			

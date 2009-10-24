@@ -98,7 +98,7 @@ namespace Debugger
 			}
 		}
 		
-		Value Box()
+		public Value Box()
 		{
 			byte[] rawValue = this.CorGenericValue.RawValue;
 			// Box the value type

@@ -54,7 +54,6 @@
     <Compile Include="Src\TestPrograms\ControlFlow_DebuggeeKilled.cs" />
     <Compile Include="Src\TestPrograms\DebugType.cs" />
     <Compile Include="Src\TestPrograms\Exception_Custom.cs" />
-    <Compile Include="Src\TestPrograms\Expressions.cs" />
     <Compile Include="Src\TestPrograms\StackFrame_Lifetime.cs" />
     <Compile Include="Src\TestPrograms\StackFrame_VariablesLifetime.cs" />
     <Compile Include="Src\TestPrograms\Value_GenericDictionary.cs" />
@@ -84,7 +83,6 @@
     <EmbeddedResource Include="Src\TestPrograms\Exception_Custom.cs" />
     <EmbeddedResource Include="Src\TestPrograms\Exception_StackOverflow.cs" />
     <EmbeddedResource Include="Src\TestPrograms\ExpressionEvaluator.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Expressions.cs" />
     <EmbeddedResource Include="Src\TestPrograms\Process_MemoryReadWrite.cs" />
     <EmbeddedResource Include="Src\TestPrograms\StackFrame_Callstack.cs" />
     <EmbeddedResource Include="Src\TestPrograms\StackFrame_Lifetime.cs" />

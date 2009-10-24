@@ -84,6 +84,7 @@ namespace Debugger.Tests.TestPrograms
 			int i = 42;
 			bool b = true;
 			char c = 'a';
+			string s = "abc";
 			object obj = new object();
 			MyClass myClass = new MyClass();
 			MyStruct myStruct = new MyStruct();
@@ -222,7 +223,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType.cs:137,4-137,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType.cs:138,4-138,40</DebuggingPaused>
     <DefinedTypes
       Capacity="16"
       Count="13">
@@ -520,15 +521,15 @@ namespace Debugger.Tests {
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, Public, Sealed, Serializable, BeforeFieldInit"
-              BaseType="System.ValueType"
+              BaseType="System.Object"
               FullName="System.String"
               GetFields="{System.String Empty}"
               GetInterfaces="{System.IComparable, System.ICloneable, System.IConvertible, System.IComparable`1[[System.String]], System.Collections.Generic.IEnumerable`1[[System.Char]], System.Collections.IEnumerable, System.IEquatable`1[[System.String]]}"
-              GetMembers="{System.String Empty, Join, Join, Equals, Equals, Equals, Equals, Equals, op_Equality, op_Inequality, get_Chars, CopyTo, ToCharArray, ToCharArray, IsNullOrEmpty, GetHashCode, get_Length, Split, Split, Split, Split, Split, Split, Substring, Substring, Trim, Trim, TrimStart, TrimEnd, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, IsNormalized, IsNormalized, Normalize, Normalize, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, CompareTo, CompareTo, CompareOrdinal, CompareOrdinal, Contains, EndsWith, EndsWith, EndsWith, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOfAny, IndexOfAny, IndexOfAny, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOfAny, LastIndexOfAny, LastIndexOfAny, PadLeft, PadLeft, PadRight, PadRight, StartsWith, StartsWith, StartsWith, ToLower, ToLower, ToLowerInvariant, ToUpper, ToUpper, ToUpperInvariant, ToString, ToString, Clone, Insert, Replace, Replace, Remove, Remove, Format, Format, Format, Format, Format, Copy, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Intern, IsInterned, GetTypeCode, GetEnumerator, System.Char Chars, System.Int32 Length, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
-              GetMethods="{Join, Join, Equals, Equals, Equals, Equals, Equals, op_Equality, op_Inequality, get_Chars, CopyTo, ToCharArray, ToCharArray, IsNullOrEmpty, GetHashCode, get_Length, Split, Split, Split, Split, Split, Split, Substring, Substring, Trim, Trim, TrimStart, TrimEnd, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, IsNormalized, IsNormalized, Normalize, Normalize, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, CompareTo, CompareTo, CompareOrdinal, CompareOrdinal, Contains, EndsWith, EndsWith, EndsWith, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOfAny, IndexOfAny, IndexOfAny, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOfAny, LastIndexOfAny, LastIndexOfAny, PadLeft, PadLeft, PadRight, PadRight, StartsWith, StartsWith, StartsWith, ToLower, ToLower, ToLowerInvariant, ToUpper, ToUpper, ToUpperInvariant, ToString, ToString, Clone, Insert, Replace, Replace, Remove, Remove, Format, Format, Format, Format, Format, Copy, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Intern, IsInterned, GetTypeCode, GetEnumerator, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMembers="{System.String Empty, Join, Join, Equals, Equals, Equals, Equals, Equals, op_Equality, op_Inequality, get_Chars, CopyTo, ToCharArray, ToCharArray, IsNullOrEmpty, GetHashCode, get_Length, Split, Split, Split, Split, Split, Split, Substring, Substring, Trim, Trim, TrimStart, TrimEnd, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, IsNormalized, IsNormalized, Normalize, Normalize, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, CompareTo, CompareTo, CompareOrdinal, CompareOrdinal, Contains, EndsWith, EndsWith, EndsWith, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOfAny, IndexOfAny, IndexOfAny, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOfAny, LastIndexOfAny, LastIndexOfAny, PadLeft, PadLeft, PadRight, PadRight, StartsWith, StartsWith, StartsWith, ToLower, ToLower, ToLowerInvariant, ToUpper, ToUpper, ToUpperInvariant, ToString, ToString, Clone, Insert, Replace, Replace, Remove, Remove, Format, Format, Format, Format, Format, Copy, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Intern, IsInterned, GetTypeCode, GetEnumerator, System.Char Chars, System.Int32 Length, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Join, Join, Equals, Equals, Equals, Equals, Equals, op_Equality, op_Inequality, get_Chars, CopyTo, ToCharArray, ToCharArray, IsNullOrEmpty, GetHashCode, get_Length, Split, Split, Split, Split, Split, Split, Substring, Substring, Trim, Trim, TrimStart, TrimEnd, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, IsNormalized, IsNormalized, Normalize, Normalize, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, CompareTo, CompareTo, CompareOrdinal, CompareOrdinal, Contains, EndsWith, EndsWith, EndsWith, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOfAny, IndexOfAny, IndexOfAny, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOfAny, LastIndexOfAny, LastIndexOfAny, PadLeft, PadLeft, PadRight, PadRight, StartsWith, StartsWith, StartsWith, ToLower, ToLower, ToLowerInvariant, ToUpper, ToUpper, ToUpperInvariant, ToString, ToString, Clone, Insert, Replace, Replace, Remove, Remove, Format, Format, Format, Format, Format, Copy, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Intern, IsInterned, GetTypeCode, GetEnumerator, .ctor, ToString, Equals, GetHashCode, GetType}"
               GetProperties="{System.Char Chars, System.Int32 Length}"
-              IsPrimitive="True"
-              IsValueType="True">
+              IsClass="True"
+              IsPrimitive="True">
               <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
@@ -609,6 +610,28 @@ namespace Debugger.Tests {
               GetMethods="{GetHashCode, Equals, Equals, CompareTo, CompareTo, ToString, ToString, ToString, Parse, TryParse, IsDigit, IsDigit, IsLetter, IsLetter, IsWhiteSpace, IsWhiteSpace, IsUpper, IsUpper, IsLower, IsLower, IsPunctuation, IsPunctuation, IsLetterOrDigit, IsLetterOrDigit, ToUpper, ToUpper, ToUpperInvariant, ToLower, ToLower, ToLowerInvariant, GetTypeCode, IsControl, IsControl, IsNumber, IsNumber, IsSeparator, IsSeparator, IsSurrogate, IsSurrogate, IsSymbol, IsSymbol, GetUnicodeCategory, GetUnicodeCategory, GetNumericValue, GetNumericValue, IsHighSurrogate, IsHighSurrogate, IsLowSurrogate, IsLowSurrogate, IsSurrogatePair, IsSurrogatePair, ConvertFromUtf32, ConvertToUtf32, ConvertToUtf32, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
               IsPrimitive="True"
               IsValueType="True">
+              <GetElementType>null</GetElementType>
+            </DebugType>
+          </Type>
+        </LocalVariable>
+      </Item>
+      <Item>
+        <LocalVariable
+          Name="s"
+          Type="System.String"
+          Value="abc">
+          <Type>
+            <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, Public, Sealed, Serializable, BeforeFieldInit"
+              BaseType="System.Object"
+              FullName="System.String"
+              GetFields="{System.String Empty}"
+              GetInterfaces="{System.IComparable, System.ICloneable, System.IConvertible, System.IComparable`1[[System.String]], System.Collections.Generic.IEnumerable`1[[System.Char]], System.Collections.IEnumerable, System.IEquatable`1[[System.String]]}"
+              GetMembers="{System.String Empty, Join, Join, Equals, Equals, Equals, Equals, Equals, op_Equality, op_Inequality, get_Chars, CopyTo, ToCharArray, ToCharArray, IsNullOrEmpty, GetHashCode, get_Length, Split, Split, Split, Split, Split, Split, Substring, Substring, Trim, Trim, TrimStart, TrimEnd, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, IsNormalized, IsNormalized, Normalize, Normalize, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, CompareTo, CompareTo, CompareOrdinal, CompareOrdinal, Contains, EndsWith, EndsWith, EndsWith, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOfAny, IndexOfAny, IndexOfAny, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOfAny, LastIndexOfAny, LastIndexOfAny, PadLeft, PadLeft, PadRight, PadRight, StartsWith, StartsWith, StartsWith, ToLower, ToLower, ToLowerInvariant, ToUpper, ToUpper, ToUpperInvariant, ToString, ToString, Clone, Insert, Replace, Replace, Remove, Remove, Format, Format, Format, Format, Format, Copy, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Intern, IsInterned, GetTypeCode, GetEnumerator, System.Char Chars, System.Int32 Length, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Join, Join, Equals, Equals, Equals, Equals, Equals, op_Equality, op_Inequality, get_Chars, CopyTo, ToCharArray, ToCharArray, IsNullOrEmpty, GetHashCode, get_Length, Split, Split, Split, Split, Split, Split, Substring, Substring, Trim, Trim, TrimStart, TrimEnd, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, IsNormalized, IsNormalized, Normalize, Normalize, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, CompareTo, CompareTo, CompareOrdinal, CompareOrdinal, Contains, EndsWith, EndsWith, EndsWith, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOfAny, IndexOfAny, IndexOfAny, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOfAny, LastIndexOfAny, LastIndexOfAny, PadLeft, PadLeft, PadRight, PadRight, StartsWith, StartsWith, StartsWith, ToLower, ToLower, ToLowerInvariant, ToUpper, ToUpper, ToUpperInvariant, ToString, ToString, Clone, Insert, Replace, Replace, Remove, Remove, Format, Format, Format, Format, Format, Copy, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Intern, IsInterned, GetTypeCode, GetEnumerator, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Char Chars, System.Int32 Length}"
+              IsClass="True"
+              IsPrimitive="True">
               <GetElementType>null</GetElementType>
             </DebugType>
           </Type>

@@ -113,6 +113,10 @@ namespace Debugger
 				}
 				sb.Append("}");
 				return sb.ToString();
+			} else if (val.Type.FullName == typeof(char).FullName) {
+				return "'" + val.PrimitiveValue.ToString() + "'";
+			} else if (val.Type.FullName == typeof(string).FullName) {
+				return "\"" + val.PrimitiveValue.ToString() + "\"";
 			} else if (val.Type.IsPrimitive) {
 				return val.PrimitiveValue.ToString();
 			} else {

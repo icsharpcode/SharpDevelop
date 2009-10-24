@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbeck�" email="dsrbecky@gmail.com"/>
+//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -10,6 +10,45 @@ using System.Collections.Generic;
 
 namespace Debugger.Tests.TestPrograms
 {
+		// TODO: Make nested
+		
+		public class BaseClass
+		{
+			string name = "base name";
+			
+			public string Name {
+				get { return name; }
+			}
+			
+			public static string StaticValue = "base static value";
+			
+			public string Foo(int i)
+			{
+				return "base Foo - int";
+			}
+		}
+		
+		public class DerivedClass: BaseClass
+		{
+			string name = "derived name";
+			
+			new public string Name {
+				get { return name; }
+			}
+			
+			new public static string StaticValue = "derived static value";
+			
+			new public string Foo(int i)
+			{
+				return "derived Foo - int";
+			}
+			
+			public string Foo(string s)
+			{
+				return "derived Foo - string";
+			}
+		}
+	
 	public class ExpressionEvaluator
 	{
 		public static void Main()
@@ -25,6 +64,8 @@ namespace Debugger.Tests.TestPrograms
 			char[][] arrays = new char[][] {array, array2};
 			List<char> list = new List<char>(array);
 			
+			DerivedClass myClass = new DerivedClass();
+			
 			System.Diagnostics.Debugger.Break();
 		}
 	}
@@ -32,6 +73,8 @@ namespace Debugger.Tests.TestPrograms
 
 #if TEST_CODE
 namespace Debugger.Tests {
+	using Debugger.MetaData;
+	using System.Reflection;
 	using ICSharpCode.NRefactory;
 	using ICSharpCode.NRefactory.Ast;
 	
@@ -56,6 +99,7 @@ namespace Debugger.Tests {
 				pi + ' ' + hi
 				
 				(5 + 6) % (1 + 2)
+				3 % 2 == 1
 				15 & 255
 				15 && 255
 				b + 3 == i
@@ -95,6 +139,24 @@ namespace Debugger.Tests {
 				Eval(line.Trim());
 			}
 			
+			// Test member hiding / overloading
+			
+			Value myClass = process.SelectedStackFrame.GetLocalVariableValue("myClass");
+			
+			List<Expression> expressions = new List<Expression>();
+			foreach(MemberInfo memberInfo in myClass.Type.GetMembers(Debugger.MetaData.DebugType.BindingFlagsAll)) {
+				if (memberInfo.Name == typeof(object).Name) continue;
+				if (memberInfo.MemberType == MemberTypes.Field || memberInfo.MemberType == MemberTypes.Property)
+					expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((IDebugMemberInfo)memberInfo));
+			}
+			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)((DebugType)myClass.Type.BaseType).GetMethod("Foo", new string[] { "i" }), new PrimitiveExpression(1)));
+			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("Foo", new string[] { "i" }), new PrimitiveExpression(1)));
+			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("Foo", new string[] { "s" }), new PrimitiveExpression("a")));
+			
+			foreach(Expression expr in expressions) {
+				Eval(expr.PrettyPrint());
+			}
+			
 			EndTest();
 		}
 		
@@ -129,7 +191,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator.cs:28,4-28,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator.cs:69,4-69,40</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -139,11 +201,12 @@ namespace Debugger.Tests {
     <Eval> i + b = 5 </Eval>
     <Eval> b + pi = 4.14000010490417 </Eval>
     <Eval> pi + b = 4.14000010490417 </Eval>
-    <Eval> hi + pi = hi3.14 </Eval>
-    <Eval> pi + hi = 3.14hi </Eval>
-    <Eval> pi + " " + hi = 3.14 hi </Eval>
+    <Eval> hi + pi = "hi3.14" </Eval>
+    <Eval> pi + hi = "3.14hi" </Eval>
+    <Eval> pi + " " + hi = "3.14 hi" </Eval>
     <Eval> </Eval>
     <Eval> (5 + 6) % (1 + 2) = 2 </Eval>
+    <Eval> 3 % 2 == 1 = True </Eval>
     <Eval> 15 &amp; 255 = 15 </Eval>
     <Eval> 15 &amp;&amp; 255 = Error evaluating "15 &amp;&amp; 255": Unsupported operator for integers: LogicalAnd </Eval>
     <Eval> b + 3 == i = True </Eval>
@@ -151,19 +214,19 @@ namespace Debugger.Tests {
     <Eval> true == true = True </Eval>
     <Eval> true == false = False </Eval>
     <Eval> </Eval>
-    <Eval> array = Char[] {H, e, l, l, o} </Eval>
-    <Eval> arrays = Char[][] {Char[] {H, e, l, l, o}, Char[] {w, o, r, l, d}} </Eval>
-    <Eval> array[1] = e </Eval>
-    <Eval> array[i] = o </Eval>
-    <Eval> array[i - 1] = l </Eval>
-    <Eval> list = List`1 {H, e, l, l, o} </Eval>
-    <Eval> list[1] = e </Eval>
-    <Eval> list[i] = o </Eval>
-    <Eval> hi[1] = i </Eval>
-    <Eval> "abcd"[2] = c </Eval>
+    <Eval> array = Char[] {'H', 'e', 'l', 'l', 'o'} </Eval>
+    <Eval> arrays = Char[][] {Char[] {'H', 'e', 'l', 'l', 'o'}, Char[] {'w', 'o', 'r', 'l', 'd'}} </Eval>
+    <Eval> array[1] = 'e' </Eval>
+    <Eval> array[i] = 'o' </Eval>
+    <Eval> array[i - 1] = 'l' </Eval>
+    <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o'} </Eval>
+    <Eval> list[1] = 'e' </Eval>
+    <Eval> list[i] = 'o' </Eval>
+    <Eval> hi[1] = 'i' </Eval>
+    <Eval> "abcd"[2] = 'c' </Eval>
     <Eval> </Eval>
     <Eval> list.Add(42); list.Add(52);</Eval>
-    <Eval> list = List`1 {H, e, l, l, o, *, 4} </Eval>
+    <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o', '*', '4'} </Eval>
     <Eval> </Eval>
     <Eval> i = 10 = 10 </Eval>
     <Eval> -i = -10 </Eval>
@@ -176,6 +239,15 @@ namespace Debugger.Tests {
     <Eval> flag = True </Eval>
     <Eval> !flag = False </Eval>
     <Eval> </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.DerivedClass)(myClass)).name = "derived name" </Eval>
+    <Eval> Debugger.Tests.TestPrograms.DerivedClass.StaticValue = Error evaluating "Debugger.Tests.TestPrograms.DerivedClass.StaticValue": Identifier "Debugger" not found in this context </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.DerivedClass)(myClass)).Name = "derived name" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.BaseClass)(myClass)).name = "base name" </Eval>
+    <Eval> Debugger.Tests.TestPrograms.BaseClass.StaticValue = Error evaluating "Debugger.Tests.TestPrograms.BaseClass.StaticValue": Identifier "Debugger" not found in this context </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.BaseClass)(myClass)).Name = "base name" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.BaseClass)(myClass)).Foo((System.Int32)(1)) = "base Foo - int" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.DerivedClass)(myClass)).Foo((System.Int32)(1)) = "derived Foo - int" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.DerivedClass)(myClass)).Foo((System.String)("a")) = "derived Foo - string" </Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>
