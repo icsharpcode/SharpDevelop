@@ -16,7 +16,6 @@ namespace Debugger
 		Process process;
 		PausedReason pausedReason;
 		
-		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return process; }
 		}

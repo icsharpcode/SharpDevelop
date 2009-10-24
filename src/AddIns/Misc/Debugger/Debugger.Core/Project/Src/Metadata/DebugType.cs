@@ -60,28 +60,22 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> The AppDomain in which this type is loaded </summary>
-		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
 			get { return module.AppDomain; }
 		}
 		
 		/// <summary> The Process in which this type is loaded </summary>
-		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return module.Process; }
 		}
 		
 		/// <summary> The Module in which this type is loaded </summary>
-		[Debugger.Tests.Ignore]
 		public Debugger.Module DebugModule {
 			get { return module; }
 		}
 		
-		[Debugger.Tests.Ignore]
 		public override int MetadataToken {
-			get {
-				return (int)classProps.Token;
-			}
+			get { return (int)classProps.Token; }
 		}
 		
 		public override System.Reflection.Module Module {
@@ -540,7 +534,7 @@ namespace Debugger.MetaData
 		//		protected virtual bool IsMarshalByRefImpl();
 		
 		/// <summary> Returns simple managed type coresponding to the primitive type. </summary>
-		[Tests.Ignore]
+		[Debugger.Tests.Ignore]
 		public System.Type PrimitiveType {
 			get { return primitiveType; }
 		}

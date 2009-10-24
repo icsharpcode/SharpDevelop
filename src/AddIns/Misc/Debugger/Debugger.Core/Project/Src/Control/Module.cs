@@ -36,12 +36,10 @@ namespace Debugger
 			}
 		}
 		
-		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
 			get { return appDomain; }
 		}
 		
-		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return process; }
 		}

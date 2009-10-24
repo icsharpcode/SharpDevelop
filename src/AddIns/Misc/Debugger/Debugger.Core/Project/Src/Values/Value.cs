@@ -46,12 +46,10 @@ namespace Debugger
 		}
 		
 		/// <summary> The appdomain that owns the value </summary>
-		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
 			get { return appDomain; }
 		}
 		
-		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return appDomain.Process; }
 		}
@@ -65,7 +63,7 @@ namespace Debugger
 			}
 		}
 		
-		[Tests.Ignore]
+		[Debugger.Tests.Ignore]
 		public ICorDebugValue CorValue {
 			get {
 				if (this.IsInvalid)
@@ -85,7 +83,7 @@ namespace Debugger
 		/// <summary>
 		/// Gets the address in memory where this value is stored
 		/// </summary>
-		[Debugger.Tests.IgnoreAttribute]
+		[Debugger.Tests.Ignore]
 		public ulong Address {
 			get { return corValue.Address; }
 		}
@@ -156,7 +154,7 @@ namespace Debugger
 			get { return type; }
 		}
 		
-		[Tests.Ignore]
+		[Debugger.Tests.Ignore]
 		public ulong PointerAddress {
 			get {
 				if (!this.Type.IsPointer) throw new DebuggerException("Not a pointer");

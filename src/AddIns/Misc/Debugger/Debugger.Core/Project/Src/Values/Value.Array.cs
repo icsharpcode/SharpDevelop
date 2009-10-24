@@ -102,9 +102,9 @@ namespace Debugger
 		}
 		
 		/// <summary> Returns all elements in the array </summary>
-		[Debugger.Tests.Ignore]
 		public Value[] GetArrayElements()
 		{
+			if (!this.Type.IsArray) return null;
 			List<Value> values = new List<Value>();
 			foreach(int[] indices in this.ArrayDimensions.Indices) {
 				values.Add(GetArrayElement(indices));

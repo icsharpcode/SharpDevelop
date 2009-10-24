@@ -17,7 +17,6 @@ namespace Debugger
 		
 		ICorDebugAppDomain corAppDomain;
 		
-		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return process; }
 		}

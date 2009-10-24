@@ -37,7 +37,6 @@ namespace Debugger
 		public event EventHandler<ThreadEventArgs> NameChanged;
 		public event EventHandler<ThreadEventArgs> Exited;
 		
-		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return process; }
 		}
@@ -269,7 +268,6 @@ namespace Debugger
 		
 		/// <summary> Gets the whole callstack of the Thread. </summary>
 		/// <remarks> If the thread is in invalid state returns empty array </remarks>
-		[Debugger.Tests.Ignore]
 		public StackFrame[] GetCallstack()
 		{
 			return new List<StackFrame>(CallstackEnum).ToArray();
@@ -427,7 +425,6 @@ namespace Debugger
 	{
 		Thread thread;
 		
-		[Debugger.Tests.Ignore]
 		public Thread Thread {
 			get {
 				return thread;

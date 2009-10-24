@@ -41,7 +41,7 @@ namespace Debugger.Tests {
 			
 			Value array = process.SelectedStackFrame.GetLocalVariableValue("array").GetPermanentReference();
 			ObjectDump("array.Length", array.GetMemberValue("Length"));
-			ObjectDump("array elements", array.GetArrayElements());
+			ObjectDump("array", array);
 			
 			EndTest();
 		}
@@ -96,32 +96,17 @@ namespace Debugger.Tests {
         PrimitiveValue="4"
         Type="System.Int32" />
     </array.Length>
-    <array_elements>
-      <Item>
-        <Value
-          AsString="0"
-          PrimitiveValue="0"
-          Type="System.Int32" />
-      </Item>
-      <Item>
-        <Value
-          AsString="1"
-          PrimitiveValue="1"
-          Type="System.Int32" />
-      </Item>
-      <Item>
-        <Value
-          AsString="2"
-          PrimitiveValue="2"
-          Type="System.Int32" />
-      </Item>
-      <Item>
-        <Value
-          AsString="3"
-          PrimitiveValue="3"
-          Type="System.Int32" />
-      </Item>
-    </array_elements>
+    <array>
+      <Value
+        ArrayDimensions="{2, 2}"
+        ArrayLength="4"
+        ArrayRank="2"
+        AsString="{System.Int32[,]}"
+        GetArrayElements="{0, 1, 2, 3}"
+        IsReference="True"
+        PrimitiveValue="{Exception: Value is not a primitive type}"
+        Type="System.Int32[,]" />
+    </array>
     <ProcessExited />
   </Test>
 </DebuggerTests>

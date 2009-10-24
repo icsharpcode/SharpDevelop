@@ -36,24 +36,20 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> The AppDomain in which this member is declared </summary>
-		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
 			get { return declaringType.AppDomain; }
 		}
 		
 		/// <summary> The Process in which this member is declared </summary>
-		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return declaringType.Process; }
 		}
 		
 		/// <summary> The Module in which this member is declared </summary>
-		[Debugger.Tests.Ignore]
 		public Debugger.Module DebugModule {
 			get { return declaringType.DebugModule; }
 		}
 		
-		[Debugger.Tests.Ignore]
 		public override int MetadataToken {
 			get { return (int)methodProps.Token; }
 		}
@@ -597,8 +593,16 @@ namespace Debugger.MetaData
 		
 		public override string ToString()
 		{
-			// TODO: Use full name
-			return this.Name;
+			string txt = string.Empty;
+			if (this.IsStatic)
+				txt += "static ";
+			if (this.ReturnType != null) {
+				txt += this.ReturnType.FullName + " ";
+			} else {
+				txt += "void ";
+			}
+			txt += this.FullName;
+			return txt;
 		}
 	}
 }

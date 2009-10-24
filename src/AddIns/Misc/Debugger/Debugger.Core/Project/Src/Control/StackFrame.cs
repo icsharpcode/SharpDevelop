@@ -37,12 +37,10 @@ namespace Debugger
 		uint frameIndex;
 		
 		/// <summary> The process in which this stack frame is executed </summary>
-		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
 			get { return appDomain; }
 		}
 		
-		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return process; }
 		}
@@ -53,11 +51,8 @@ namespace Debugger
 		}
 		
 		/// <summary> A thread in which the stack frame is executed </summary>
-		[Debugger.Tests.Ignore]
 		public Thread Thread {
-			get {
-				return thread;
-			}
+			get { return thread; }
 		}
 		
 		/// <summary> Internal index of the stack chain.  The value is increasing with age. </summary>
@@ -125,8 +120,7 @@ namespace Debugger
 		/// <summary> Returns diagnostic description of the frame </summary>
 		public override string ToString()
 		{
-			// TODO: Use full name
-			return this.MethodInfo.DeclaringType.FullName + "." + this.MethodInfo.Name;
+			return this.MethodInfo.ToString();
 		}
 		
 		internal ICorDebugILFrame CorILFrame {
