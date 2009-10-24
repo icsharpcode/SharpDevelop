@@ -41,6 +41,7 @@ namespace Debugger.MetaData
 		string ns;
 		string name;
 		string fullName;
+		string fullNameWithoutGenericArguments;
 		DebugType declaringType;
 		DebugType elementType;
 		List<DebugType> genericArguments = new List<DebugType>();
@@ -192,6 +193,11 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override string FullName {
 			get { return fullName; }
+		}
+		
+		[Debugger.Tests.Ignore]
+		public string FullNameWithoutGenericArguments {
+			get { return fullNameWithoutGenericArguments; }
 		}
 		
 		/// <inheritdoc/>
@@ -517,9 +523,10 @@ namespace Debugger.MetaData
 		public override Type GetInterface(string name, bool ignoreCase)
 		{
 			foreach(DebugType inter in this.GetInterfaces()) {
-				if (string.Equals(inter.FullName, name, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)) {
+				if (string.Equals(inter.FullName, name, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
 					return inter;
-				}
+				if (string.Equals(inter.FullNameWithoutGenericArguments, name, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+					return inter;
 			}
 			if (BaseType != null) {
 				return BaseType.GetInterface(fullName);
@@ -1112,6 +1119,7 @@ namespace Debugger.MetaData
 				if (corElementType == CorElementType.BYREF)   suffix = "&";
 				this.ns = this.GetElementType().Namespace;
 				this.name = this.GetElementType().Name + suffix;
+				this.fullNameWithoutGenericArguments = ((DebugType)this.GetElementType()).FullNameWithoutGenericArguments + suffix;
 				this.fullName = this.GetElementType().FullName + suffix;
 			}
 			
@@ -1141,7 +1149,7 @@ namespace Debugger.MetaData
 					this.ns = classProps.Name.Substring(0, index);
 					this.name = classProps.Name.Substring(index + 1);
 				}
-				this.fullName = GetFullClassName();
+				LoadFullName();
 				this.primitiveType = GetPrimitiveType(this.FullName);
 			}
 			
@@ -1193,32 +1201,33 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		string GetFullClassName()
+		void LoadFullName()
 		{
-			StringBuilder name = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 			
-			for(Type enclosing = this.DeclaringType; enclosing != null; enclosing = enclosing.DeclaringType) {
-				name.Insert(0, enclosing.Name + "+");
-				if (enclosing.Namespace != string.Empty)
-					name.Insert(0, enclosing.Namespace + ".");
+			if (declaringType != null) {
+				sb.Append(declaringType.FullNameWithoutGenericArguments);
+				sb.Append('+');
 			}
 			
 			// '`' might be missing in nested generic classes
-			name.Append(classProps.Name);
+			sb.Append(classProps.Name);
+			
+			this.fullNameWithoutGenericArguments = sb.ToString();
 			
 			if (this.GetGenericArguments().Length > 0) {
-				name.Append("[");
+				sb.Append("[");
 				bool first = true;
 				foreach(DebugType arg in this.GetGenericArguments()) {
 					if (!first)
-						name.Append(",");
+						sb.Append(",");
 					first = false;
-					name.Append(arg.FullName);
+					sb.Append(arg.FullName);
 				}
-				name.Append("]");
+				sb.Append("]");
 			}
 			
-			return name.ToString();
+			this.fullName = sb.ToString();
 		}
 		
 		void LoadMembers()

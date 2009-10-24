@@ -73,8 +73,7 @@ namespace Debugger.AddIn.TreeModel
 				yield return new IListNode(targetObject);
 			} else {
 				DebugType iEnumerableType, itemType;
-				if (shownType.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
-				{
+				if (shownType.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
 					yield return new IEnumerableNode(targetObject, itemType);
 				}
 			}

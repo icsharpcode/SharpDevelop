@@ -161,7 +161,11 @@ namespace Debugger.AddIn.TreeModel
 			// Note that these return enumerators so they are lazy-evaluated
 			if (val.IsNull) {
 			} else if (val.Type.IsClass || val.Type.IsValueType) {
-				this.ChildNodes = Utils.LazyGetChildNodesOfObject(this.Expression, val.Type);
+				if (val.Type.FullNameWithoutGenericArguments == typeof(List<>).FullName) {
+					this.ChildNodes = Utils.LazyGetItemsOfIList(this.expression);
+				} else {
+					this.ChildNodes = Utils.LazyGetChildNodesOfObject(this.Expression, val.Type);
+				}
 			} else if (val.Type.IsArray) {
 				this.ChildNodes = Utils.LazyGetChildNodesOfArray(this.Expression, val.ArrayDimensions);
 			} else if (val.Type.IsPointer) {

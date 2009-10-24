@@ -132,7 +132,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TreeModel\DebuggerResourceService.cs" />
-    <Compile Include="TreeModel\IEnumerableNode.cs" />
     <Compile Include="Visualizers\Commands\ExpressionVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\GridVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\IVisualizerCommandDescriptor.cs" />
@@ -172,6 +171,7 @@
     <Compile Include="Visualizers\Graph\TreeModel\NonPublicMembersNode.cs" />
     <Compile Include="Visualizers\Graph\TreeModel\PropertyNode.cs" />
     <Compile Include="Visualizers\GridVisualizer\ValueProviders\GridValuesProvider.cs" />
+    <Compile Include="Visualizers\IEnumerableNode.cs" />
     <Compile Include="Visualizers\PresentationBindings\GridViewColumnHider.cs" />
     <Compile Include="Visualizers\PresentationBindings\GridViewHideableColumn.cs" />
     <Compile Include="Visualizers\PresentationBindings\ScrollUtils.cs" />
@@ -267,7 +267,7 @@
       <DependentUpon>ObjectGraphWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Visualizers\ICorDebug.cs" />
-    <Compile Include="Visualizers\IList.cs" />
+    <Compile Include="Visualizers\IListNode.cs" />
     <Compile Include="Visualizers\PresentationBindings\DisplayAttribute.cs" />
     <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
     <Compile Include="Visualizers\PresentationBindings\ViewModelBase.cs" />
