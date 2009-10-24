@@ -5,8 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using System.Collections.Generic;
-
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger

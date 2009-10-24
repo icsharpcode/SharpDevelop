@@ -5,8 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Debugger.MetaData;
 using System;
+using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger

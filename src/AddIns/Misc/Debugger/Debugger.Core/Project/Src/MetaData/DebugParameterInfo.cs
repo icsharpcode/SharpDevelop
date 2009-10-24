@@ -6,13 +6,7 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Reflection;
-using Debugger.Wrappers.CorDebug;
-using Debugger.Wrappers.MetaData;
-using ICSharpCode.NRefactory.Ast;
-using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
 {

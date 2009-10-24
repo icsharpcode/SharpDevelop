@@ -4,17 +4,15 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using Debugger;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+
+using Debugger;
 using Debugger.MetaData;
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.NRefactory.Visitors
 {

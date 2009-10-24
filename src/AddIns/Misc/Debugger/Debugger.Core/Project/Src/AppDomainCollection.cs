@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-
 using Debugger.Wrappers.CorDebug;
 
 namespace Debugger

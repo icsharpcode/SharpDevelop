@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-
 namespace Debugger
 {
 	public enum ExceptionType

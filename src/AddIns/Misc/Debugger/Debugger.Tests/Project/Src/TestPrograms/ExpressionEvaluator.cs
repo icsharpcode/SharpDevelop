@@ -191,8 +191,8 @@ namespace Debugger.Tests {
 				restultFmted = null;
 			} else {
 				try {
-					Value result = Debugger.ExpressionEvaluator.Evaluate(expr, SupportedLanguage.CSharp, process.SelectedStackFrame);
-					restultFmted = Debugger.ExpressionEvaluator.FormatValue(result);
+					Value result = ICSharpCode.NRefactory.Visitors.ExpressionEvaluator.Evaluate(expr, SupportedLanguage.CSharp, process.SelectedStackFrame);
+					restultFmted = ICSharpCode.NRefactory.Visitors.ExpressionEvaluator.FormatValue(result);
 				} catch (GetValueException e) {
 					restultFmted = e.Message;
 				}

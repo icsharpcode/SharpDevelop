@@ -10,9 +10,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 
-using Debugger.Wrappers.CorDebug;
-using Debugger.Wrappers.MetaData;
-
 namespace Debugger.MetaData
 {
 	public class DebugPropertyInfo : System.Reflection.PropertyInfo, IDebugMemberInfo

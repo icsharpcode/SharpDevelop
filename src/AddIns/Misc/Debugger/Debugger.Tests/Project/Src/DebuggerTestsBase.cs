@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.Ast;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
@@ -16,11 +15,10 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
-using Debugger;
-using Debugger.Interop;
+
+using Debugger.Internal;
 using Microsoft.CSharp;
 using NUnit.Framework;
-using SRPropertyInfo = System.Reflection.PropertyInfo;
 
 namespace Debugger.Tests
 {

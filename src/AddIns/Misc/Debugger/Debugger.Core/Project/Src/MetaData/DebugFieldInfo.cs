@@ -6,11 +6,9 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 
-using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 using Mono.Cecil.Signatures;
 

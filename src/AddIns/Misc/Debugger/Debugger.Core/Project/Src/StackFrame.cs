@@ -11,10 +11,7 @@ using System.Runtime.InteropServices;
 
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
-using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
-
-using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger
 {

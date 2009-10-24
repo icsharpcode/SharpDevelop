@@ -10,13 +10,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
-using ICSharpCode.NRefactory.Ast;
 using Mono.Cecil.Signatures;
-using System.Text;
 
 namespace Debugger.MetaData
 {

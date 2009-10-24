@@ -7,10 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
-using ICSharpCode.NRefactory.Ast;
-using System.Reflection;
 
 namespace Debugger
 {

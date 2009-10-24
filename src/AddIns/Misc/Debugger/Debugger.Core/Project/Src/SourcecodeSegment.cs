@@ -8,10 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
-using System.Runtime.InteropServices;
 
 namespace Debugger
 {
