@@ -16,7 +16,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class NDebugger: DebuggerObject
+	public class NDebugger: DebuggerObject
 	{
 		ICorDebug                  corDebug;
 		ManagedCallbackSwitch      managedCallbackSwitch;

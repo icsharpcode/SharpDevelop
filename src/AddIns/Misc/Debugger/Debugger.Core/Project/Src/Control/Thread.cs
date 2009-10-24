@@ -15,7 +15,7 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
-	public partial class Thread: DebuggerObject
+	public class Thread: DebuggerObject
 	{
 		// AppDomain for thread can be changing
 		Process   process;

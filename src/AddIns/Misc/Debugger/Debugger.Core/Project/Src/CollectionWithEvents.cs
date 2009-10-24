@@ -88,7 +88,7 @@ namespace Debugger
 			if (list.Remove(item)) {
 				OnRemoved(item);
 			} else {
-				throw new DebuggerException("Item is not in the collecti");
+				throw new DebuggerException("Item is not in the collection");
 			}
 		}
 		
