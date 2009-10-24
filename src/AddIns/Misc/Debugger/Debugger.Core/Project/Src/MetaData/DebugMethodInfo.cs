@@ -179,7 +179,7 @@ namespace Debugger.MetaData
 		public override ParameterInfo ReturnParameter {
 			get {
 				if (this.MethodDefSig.RetType.Void) return null;
-				return new DebugParameterInfo(this, string.Empty, this.ReturnType, -1);
+				return new DebugParameterInfo(this, string.Empty, this.ReturnType, -1, delegate { throw new NotSupportedException(); });
 			}
 		}
 		
@@ -207,6 +207,15 @@ namespace Debugger.MetaData
 		
 		ParameterInfo[] parameters;
 		
+		public DebugParameterInfo GetParameter(string name)
+		{
+			foreach(DebugParameterInfo par in GetParameters()) {
+				if (par.Name == name)
+					return par;
+			}
+			return null;
+		}
+		
 		/// <inheritdoc/>
 		public override ParameterInfo[] GetParameters()
 		{
@@ -220,12 +229,14 @@ namespace Debugger.MetaData
 					} catch {
 						name = String.Empty;
 					}
+					int iCopy = i;
 					parameters[i] =
 						new DebugParameterInfo(
 							this,
 							name,
 							DebugType.CreateFromSignature(this.DebugModule, this.MethodDefSig.Parameters[i].Type, declaringType),
-							i
+							i,
+							delegate (StackFrame context) { return context.GetArgumentValue(iCopy); }
 						);
 				}
 			}
@@ -467,6 +478,15 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		public DebugLocalVariableInfo GetLocalVariable(string name)
+		{
+			foreach(DebugLocalVariableInfo loc in GetLocalVariables()) {
+				if (loc.Name == name)
+					return loc;
+			}
+			return null;
+		}
+		
 		List<DebugLocalVariableInfo> localVariables;
 		
 		public List<DebugLocalVariableInfo> GetLocalVariables()
@@ -628,6 +648,10 @@ namespace Debugger.MetaData
 		IntPtr IOverloadable.GetSignarture()
 		{
 			return methodProps.SigBlob.Adress;
+		}
+		
+		DebugType IDebugMemberInfo.MemberType {
+			get { return (DebugType)this.ReturnType; }
 		}
 	}
 }

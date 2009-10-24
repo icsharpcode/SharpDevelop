@@ -127,5 +127,9 @@ namespace Debugger.MetaData
 		{
 			return this.FieldType + " " + this.Name;
 		}
+		
+		DebugType IDebugMemberInfo.MemberType {
+			get { return (DebugType)this.FieldType; }
+		}
 	}
 }

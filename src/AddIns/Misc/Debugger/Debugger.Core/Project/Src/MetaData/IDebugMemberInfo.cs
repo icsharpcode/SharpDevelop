@@ -19,5 +19,6 @@ namespace Debugger.MetaData
 		bool IsAssembly { get; }
 		bool IsFamily { get; }
 		bool IsPrivate { get; }
+		DebugType MemberType { get; }
 	}
 }

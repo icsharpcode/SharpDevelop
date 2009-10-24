@@ -314,12 +314,10 @@ namespace Debugger
 		/// <returns> Null if not found </returns>
 		public Value GetArgumentValue(string name)
 		{
-			for(int i = 0; i < this.ArgumentCount; i++) {
-				if (this.MethodInfo.GetParameters()[i].Name == name) {
-					return GetArgumentValue(i);
-				}
-			}
-			return null;
+			DebugParameterInfo par = this.MethodInfo.GetParameter(name);
+			if (par == null)
+				return null;
+			return GetArgumentValue(par.Position);
 		}
 		
 		/// <summary> Gets argument with a given index </summary>
@@ -360,12 +358,10 @@ namespace Debugger
 		/// <returns> Null if not found </returns>
 		public Value GetLocalVariableValue(string name)
 		{
-			foreach(DebugLocalVariableInfo locVar in this.MethodInfo.GetLocalVariables()) {
-				if (locVar.Name == name) {
-					return locVar.GetValue(this);
-				}
-			}
-			return null;
+			DebugLocalVariableInfo loc = this.MethodInfo.GetLocalVariable(name);
+			if (loc == null)
+				return null;
+			return loc.GetValue(this);
 		}
 		
 		public override bool Equals(object obj)

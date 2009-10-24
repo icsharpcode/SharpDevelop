@@ -262,6 +262,14 @@ namespace Debugger.Tests {
 				}
 			}
 			
+			// Type equality
+			
+			DebugLocalVariableInfo loc = process.SelectedStackFrame.MethodInfo.GetLocalVariable("list");
+			Type locType = loc.LocalType;
+			Type valType = loc.GetValue(process.SelectedStackFrame).Type;
+			ObjectDump("TypesIdentitcal", object.ReferenceEquals(locType, valType));
+			ObjectDump("TypesEqual", locType == valType);
+			
 			EndTest();
 		}
 		
@@ -379,6 +387,8 @@ namespace Debugger.Tests {
     <Eval> </Eval>
     <TypeResulution> typeof(System.Int32*[][,]) = System.Int32*[,][] (ok)</TypeResulution>
     <TypeResulution> typeof(Debugger.Tests.ExpressionEvaluator_Tests.A&lt;System.Int32&gt;.B.C&lt;System.Char&gt;[][,]) = Debugger.Tests.ExpressionEvaluator_Tests+A`1+B+C`1[System.Int32,System.Char][,][] (ok)</TypeResulution>
+    <TypesIdentitcal>False</TypesIdentitcal>
+    <TypesEqual>True</TypesEqual>
     <ProcessExited />
   </Test>
 </DebuggerTests>

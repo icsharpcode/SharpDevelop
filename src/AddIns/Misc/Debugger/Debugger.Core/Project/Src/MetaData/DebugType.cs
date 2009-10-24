@@ -31,6 +31,7 @@ namespace Debugger.MetaData
 	{
 		public const BindingFlags BindingFlagsAll = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 		public const BindingFlags BindingFlagsAllDeclared = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+		public const BindingFlags BindingFlagsAllInScope = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 		
 		Module module;
 		ICorDebugType corType;
@@ -286,9 +287,11 @@ namespace Debugger.MetaData
 			// Filter by name
 			IEnumerable<List<MemberInfo>> searchScope;
 			if (name != null) {
-				if (!membersByName.ContainsKey(name))
-					return new T[] {};
-				searchScope = new List<MemberInfo>[] { membersByName[name] };
+				if (membersByName.ContainsKey(name)) {
+					searchScope = new List<MemberInfo>[] { membersByName[name] };
+				} else {
+					searchScope = new List<MemberInfo>[] { };
+				}
 			} else {
 				searchScope = membersByName.Values;
 			}
@@ -326,8 +329,11 @@ namespace Debugger.MetaData
 					// Do not include static types
 					bindingFlags = bindingFlags & ~BindingFlags.Static;
 				}
-				T[] superResults = ((DebugType)this.BaseType).GetMembers<T>(name, bindingFlags, filter);
-				results.AddRange(superResults);
+				// Any flags left?
+				if ((bindingFlags & (BindingFlags.Instance | BindingFlags.Static)) != 0) {
+					T[] superResults = ((DebugType)this.BaseType).GetMembers<T>(name, bindingFlags, filter);
+					results.AddRange(superResults);
+				}
 			}
 			
 			return results.ToArray();
@@ -590,15 +596,18 @@ namespace Debugger.MetaData
 		
 		public MemberInfo[] GetFieldsAndNonIndexedProperties(BindingFlags bindingAttr)
 		{
-			return GetMembers<MemberInfo>(null, bindingAttr, delegate (MemberInfo info) {
-			                              	if (info is FieldInfo)
-			                              		return true;
-			                              	if (info is PropertyInfo) {
-			                              		return ((PropertyInfo)info).GetGetMethod(true) != null &&
-			                              		       ((PropertyInfo)info).GetGetMethod(true).GetParameters().Length == 0;
-			                              	}
-			                              	return false;
-			                              });
+			return GetMembers<MemberInfo>(null, bindingAttr, IsFieldOrNonIndexedProperty);
+		}
+		
+		public static bool IsFieldOrNonIndexedProperty(MemberInfo info)
+		{
+			if (info is FieldInfo)
+				return true;
+			if (info is PropertyInfo) {
+				return ((PropertyInfo)info).GetGetMethod(true) != null &&
+				       ((PropertyInfo)info).GetGetMethod(true).GetParameters().Length == 0;
+			}
+			return false;
 		}
 		
 		public PropertyInfo[] GetProperties(string name, BindingFlags bindingAttr)
@@ -1241,10 +1250,43 @@ namespace Debugger.MetaData
 			membersByToken[member.MetadataToken] = member;
 		}
 		
+		public override bool Equals(object o)
+		{
+			DebugType other = o as DebugType;
+			if (other == null)
+				return false;
+			return this.MetadataToken == other.MetadataToken && // Performance optimization
+			       this.DebugModule == other.DebugModule &&
+			       this.FullName == other.FullName;
+		}
+		
+		public override int GetHashCode()
+		{
+			return this.FullName.GetHashCode();
+		}
+		
+		public static bool operator == (DebugType a, DebugType b)
+		{
+			if ((object)a == (object)b)
+				return true;
+			if (((object)a == null) || ((object)b == null))
+				return false;
+			return a.Equals(b);
+		}
+		
+		public static bool operator != (DebugType a, DebugType b)
+		{
+			return !(a == b);
+		}
+		
 		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.FullName;
+		}
+		
+		DebugType IDebugMemberInfo.MemberType {
+			get { return null; }
 		}
 	}
 }

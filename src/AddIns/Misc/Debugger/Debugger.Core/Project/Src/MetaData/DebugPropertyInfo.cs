@@ -193,6 +193,20 @@ namespace Debugger.MetaData
 			get { return (getMethod ?? setMethod).IsStatic; }
 		}
 		
+		DebugType IDebugMemberInfo.MemberType {
+			get { return (DebugType)this.PropertyType; }
+		}
+		
+		ParameterInfo[] IOverloadable.GetParameters()
+		{
+			return GetIndexParameters();
+		}
+		
+		IntPtr IOverloadable.GetSignarture()
+		{
+			return ((IOverloadable)(getMethod ?? setMethod)).GetSignarture();
+		}
+		
 		/// <inheritdoc/>
 		public override string ToString()
 		{
@@ -214,16 +228,6 @@ namespace Debugger.MetaData
 				sb.Append("]");
 			}
 			return sb.ToString();
-		}
-		
-		ParameterInfo[] IOverloadable.GetParameters()
-		{
-			return GetIndexParameters();
-		}
-		
-		IntPtr IOverloadable.GetSignarture()
-		{
-			return ((IOverloadable)(getMethod ?? setMethod)).GetSignarture();
 		}
 	}
 }

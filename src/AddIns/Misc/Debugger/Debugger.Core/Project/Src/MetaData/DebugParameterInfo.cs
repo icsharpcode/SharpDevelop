@@ -12,6 +12,7 @@ namespace Debugger.MetaData
 {
 	public class DebugParameterInfo : System.Reflection.ParameterInfo
 	{
+		ValueGetter getter;
 		MemberInfo member;
 		string name;
 		Type parameterType;
@@ -37,12 +38,18 @@ namespace Debugger.MetaData
 			get { return position; }
 		}
 		
-		public DebugParameterInfo(MemberInfo member, string name, Type parameterType, int position)
+		public DebugParameterInfo(MemberInfo member, string name, Type parameterType, int position, ValueGetter getter)
 		{
 			this.member = member;
 			this.name = name;
 			this.parameterType = parameterType;
 			this.position = position;
+			this.getter = getter;
+		}
+		
+		public Value GetValue(StackFrame context)
+		{
+			return getter(context);
 		}
 			
 		//		public virtual ParameterAttributes Attributes { get; }

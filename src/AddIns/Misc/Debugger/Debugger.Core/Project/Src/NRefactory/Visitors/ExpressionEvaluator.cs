@@ -22,6 +22,30 @@ namespace ICSharpCode.NRefactory.Visitors
 		public EvaluateException(INode code, string msgFmt, params object[] msgArgs):base(code, string.Format(msgFmt, msgArgs)) {}
 	}
 	
+	class TypedValue
+	{
+		Value value;
+		DebugType type;
+		
+		public Value Value {
+			get { return value; }
+		}
+		
+		public DebugType Type {
+			get { return type; }
+		}
+		
+		public object PrimitiveValue {
+			get { return value.PrimitiveValue; }
+		}
+		
+		public TypedValue(Value value, DebugType type)
+		{
+			this.value = value;
+			this.type = type;
+		}
+	}
+	
 	public class ExpressionEvaluator: NotImplementedAstVisitor
 	{
 		const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
@@ -64,7 +88,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (context == null) throw new ArgumentNullException("context");
 			if (context.IsInvalid) throw new DebuggerException("The context is no longer valid");
 			
-			return new ExpressionEvaluator(context).Evaluate(code, false);
+			return new ExpressionEvaluator(context).Evaluate(code, false).Value;
 		}
 		
 		/// <summary>
@@ -127,28 +151,27 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 		}
 		
-		Value Evaluate(INode expression)
+		TypedValue Evaluate(INode expression)
 		{
 			return Evaluate(expression, true);
 		}
 		
-		Value Evaluate(INode expression, bool permRef)
+		TypedValue Evaluate(INode expression, bool permRef)
 		{
 			// Try to get the value from cache
 			// (the cache is cleared when the process is resumed)
-			Value val;
+			TypedValue val;
 			if (context.Process.CachedExpressions.TryGetValue(expression, out val)) {
-				if (val == null || !val.IsInvalid) {
+				if (val == null || !val.Value.IsInvalid)
 					return val;
-				}
 			}
 			
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
 			try {
-				val = (Value)expression.AcceptVisitor(this, null);
+				val = (TypedValue)expression.AcceptVisitor(this, null);
 				if (val != null && permRef)
-					val = val.GetPermanentReference();
+					val = new TypedValue(val.Value.GetPermanentReference(), val.Type);
 			} catch (GetValueException e) {
 				e.Expression = expression;
 				throw;
@@ -159,7 +182,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				context.Process.TraceMessage("Evaluated: {0} in {1} ms total", expression.PrettyPrint(), watch.ElapsedMilliseconds);
 			}
 			
-			if (val != null && val.IsInvalid)
+			if (val != null && val.Value.IsInvalid)
 				throw new DebuggerException("Expression \"" + expression.PrettyPrint() + "\" is invalid right after evaluation");
 			
 			// Add the result to cache
@@ -179,7 +202,25 @@ namespace ICSharpCode.NRefactory.Visitors
 			this.context = context;
 		}
 		
-		public DebugType GetDebugType(INode expr)
+		Value[] GetValues(List<TypedValue> typedVals)
+		{
+			List<Value> vals = new List<Value>(typedVals.Count);
+			foreach(TypedValue typedVal in typedVals) {
+				vals.Add(typedVal.Value);
+			}
+			return vals.ToArray();
+		}
+		
+		DebugType[] GetTypes(List<TypedValue> typedVals)
+		{
+			List<DebugType> types = new List<DebugType>(typedVals.Count);
+			foreach(TypedValue typedVal in typedVals) {
+				types.Add(typedVal.Type);
+			}
+			return types.ToArray();
+		}
+		
+		DebugType GetDebugType(INode expr)
 		{
 			if (expr is ParenthesizedExpression) {
 				return GetDebugType(((ParenthesizedExpression)expr).Expression);
@@ -188,6 +229,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			} else {
 				return null;
 			}
+		}
+		
+		TypedValue CreateValue(object primitiveValue)
+		{
+			Value val = Eval.CreateValue(context.AppDomain, primitiveValue);
+			return new TypedValue(val, val.Type);
 		}
 		
 		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
@@ -211,7 +258,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				default: throw new GetValueException("Unknown operator " + assignmentExpression.Op);
 			}
 			
-			Value right;
+			TypedValue right;
 			if (op == BinaryOperatorType.None) {
 				right = Evaluate(assignmentExpression.Right);
 			} else {
@@ -223,16 +270,16 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 			
 			// We can not have perfRef because we need to be able to set the value
-			Value left = (Value)assignmentExpression.Left.AcceptVisitor(this, null);
+			TypedValue left = (TypedValue)assignmentExpression.Left.AcceptVisitor(this, null);
 			
 			if (left == null) {
 				// Can this happen?
 				throw new GetValueException(string.Format("\"{0}\" can not be set", assignmentExpression.Left.PrettyPrint()));
 			}
-			if (!left.IsReference && left.Type.FullName != right.Type.FullName) {
+			if (!left.Value.IsReference && left.Type.FullName != right.Type.FullName) {
 				throw new GetValueException(string.Format("Type {0} expected, {1} seen", left.Type.FullName, right.Type.FullName));
 			}
-			left.SetValue(right);
+			left.Value.SetValue(right.Value);
 			return right;
 		}
 		
@@ -257,7 +304,12 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitCastExpression(CastExpression castExpression, object data)
 		{
-			return Evaluate(castExpression.Expression);
+			TypedValue val = Evaluate(castExpression.Expression);
+			DebugType castTo = castExpression.CastTo.ResolveType(context.AppDomain);
+			if (!castTo.IsAssignableFrom(val.Value.Type))
+				throw new GetValueException("Can not cast {0} to {1}", val.Value.Type.FullName, castTo.FullName);
+			// TODO: Primitive values
+			return new TypedValue(val.Value, castTo);
 		}
 		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
@@ -266,91 +318,93 @@ namespace ICSharpCode.NRefactory.Visitors
 			
 			if (identifier == "__exception") {
 				if (context.Thread.CurrentException != null) {
-					return context.Thread.CurrentException.Value;
+					return new TypedValue(
+						context.Thread.CurrentException.Value,
+						DebugType.CreateFromType(context.AppDomain.Mscorlib, typeof(System.Exception))
+					);
 				} else {
 					throw new GetValueException("No current exception");
 				}
 			}
 			
-			Value arg = context.GetArgumentValue(identifier);
-			if (arg != null) return arg;
+			DebugParameterInfo par = context.MethodInfo.GetParameter(identifier);
+			if (par != null)
+				return new TypedValue(par.GetValue(context), (DebugType)par.ParameterType);
 			
-			Value local = context.GetLocalVariableValue(identifier);
-			if (local != null) return local;
+			DebugLocalVariableInfo loc = context.MethodInfo.GetLocalVariable(identifier);
+			if (loc != null)
+				return new TypedValue(loc.GetValue(context), (DebugType)loc.LocalType);
 			
 			// Instance class members
-			Value thisValue = GetThisValue();
+			// Note that the method might be generated instance method that represents anonymous method
+			TypedValue thisValue = GetThisValue();
 			if (thisValue != null) {
-				Value member = thisValue.GetMemberValue(identifier);
-				if (member != null) return member;
+				IDebugMemberInfo instMember = (IDebugMemberInfo)thisValue.Type.GetMember<MemberInfo>(identifier, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, DebugType.IsFieldOrNonIndexedProperty);
+				if (instMember != null)
+					return new TypedValue(Value.GetMemberValue(thisValue.Value, (MemberInfo)instMember), instMember.MemberType);
 			}
 			
 			// Static class members
-			IDebugMemberInfo memberInfo = 
-				(IDebugMemberInfo)context.MethodInfo.DeclaringType.GetField(identifier) ??
-				(IDebugMemberInfo)context.MethodInfo.DeclaringType.GetProperty(identifier);
-			if (memberInfo != null && memberInfo.IsStatic) {
-				return Value.GetMemberValue(null, (MemberInfo)memberInfo, null);
-			}
+			// TODO: Static members in outter class
+			IDebugMemberInfo statMember = (IDebugMemberInfo)((DebugType)context.MethodInfo.DeclaringType).GetMember<MemberInfo>(identifier, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static, DebugType.IsFieldOrNonIndexedProperty);
+			if (statMember != null)
+				return new TypedValue(Value.GetMemberValue(null, (MemberInfo)statMember), statMember.MemberType);
 			
 			throw new GetValueException("Identifier \"" + identifier + "\" not found in this context");
 		}
 		
 		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
-			List<Value> indexes = new List<Value>();
-			foreach(Expression indexExpr in indexerExpression.Indexes) {
-				Value indexValue = Evaluate(indexExpr);
-				indexes.Add(indexValue);
-			}
+			TypedValue target = Evaluate(indexerExpression.TargetObject);
 			
-			Value target = Evaluate(indexerExpression.TargetObject);
+			List<TypedValue> indexes = new List<TypedValue>();
+			foreach(Expression indexExpr in indexerExpression.Indexes) {
+				indexes.Add(Evaluate(indexExpr));
+			}
 			
 			if (target.Type.IsArray) {
 				List<int> intIndexes = new List<int>();
-				foreach(Value index in indexes) {
-					if (!index.Type.IsInteger) throw new GetValueException("Integer expected for indexer");
+				foreach(TypedValue index in indexes) {
+					if (!index.Type.IsInteger)
+						throw new GetValueException("Integer expected for indexer");
 					intIndexes.Add((int)index.PrimitiveValue);
 				}
-				return target.GetArrayElement(intIndexes.ToArray());
+				return new TypedValue(
+					target.Value.GetArrayElement(intIndexes.ToArray()),
+					(DebugType)target.Type.GetElementType()
+				);
 			}
 			
-			if (target.Type.IsPrimitive && target.PrimitiveValue is string) {
+			if (target.Type.FullName == typeof(string).FullName) {
 				if (indexes.Count == 1 && indexes[0].Type.IsInteger) {
 					int index = (int)indexes[0].PrimitiveValue;
-					return Eval.CreateValue(context.AppDomain, ((string)target.PrimitiveValue)[index]);
+					return CreateValue(((string)target.PrimitiveValue)[index]);
 				} else {
 					throw new GetValueException("Expected single integer index");
 				}
 			}
 			
-			Type[] indexerTypes = GetTypes(indexerExpression.Indexes);
-			DebugPropertyInfo pi = (DebugPropertyInfo)target.Type.GetProperty("Item", indexerTypes);
-			if (pi == null) throw new GetValueException("The object does not have an indexer property");
-			return target.GetPropertyValue(pi, indexes.ToArray());
-		}
-		
-		Type[] GetTypes(List<Expression> args)
-		{
-			List<DebugType> argTypes = new List<DebugType>();
-			foreach(Expression arg in args) {
-				DebugType argType = GetDebugType(arg) ?? Evaluate(arg).Type;
-				argTypes.Add(argType);
-			}
-			return argTypes.ToArray();
+			DebugPropertyInfo pi = (DebugPropertyInfo)target.Type.GetProperty("Item", GetTypes(indexes));
+			if (pi == null)
+				throw new GetValueException("The object does not have an indexer property");
+			return new TypedValue(
+				target.Value.GetPropertyValue(pi, GetValues(indexes)),
+				(DebugType)pi.PropertyType
+			);
 		}
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
-			Value target;
+			TypedValue target;
 			DebugType targetType;
 			string methodName;
 			MemberReferenceExpression memberRef = invocationExpression.TargetObject as MemberReferenceExpression;
 			if (memberRef != null) {
+				// TODO: Optimize
 				try {
 					// Instance
 					target = Evaluate(memberRef.TargetObject);
-					targetType = GetDebugType(memberRef.TargetObject) ?? target.Type;
+					targetType = target.Type;
 				} catch (GetValueException) {
 					// Static
 					target = null;
@@ -369,43 +423,42 @@ namespace ICSharpCode.NRefactory.Visitors
 					throw new GetValueException("Member reference expected for method invocation");
 				}
 			}
-			Type[] argTypes = GetTypes(invocationExpression.Arguments);
-			MethodInfo method = targetType.GetMethod(methodName, BindingFlagsAll, null, argTypes, null);
-			if (method == null)
-				throw new GetValueException("Method " + methodName + " not found");
-			List<Value> args = new List<Value>();
+			List<TypedValue> args = new List<TypedValue>();
 			foreach(Expression expr in invocationExpression.Arguments) {
 				args.Add(Evaluate(expr));
 			}
-			return Value.InvokeMethod(target, method, args.ToArray());
+			MethodInfo method = targetType.GetMethod(methodName, DebugType.BindingFlagsAllInScope, null, GetTypes(args), null);
+			if (method == null)
+				throw new GetValueException("Method " + methodName + " not found");
+			Value retVal = Value.InvokeMethod(target != null ? target.Value : null, method, GetValues(args));
+			if (retVal == null)
+				return null;
+			return new TypedValue(retVal, (DebugType)method.ReturnType);
 		}
 		
 		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			List<Expression> constructorParameters = objectCreateExpression.Parameters;
-			DebugType[] constructorParameterTypes = new DebugType[constructorParameters.Count];
-			for (int i = 0; i < constructorParameters.Count; i++) {
-				constructorParameterTypes[i] = GetDebugType(constructorParameters[i]);
+			List<TypedValue> ctorArgs = new List<TypedValue>(objectCreateExpression.Parameters.Count);
+			foreach(Expression argExpr in objectCreateExpression.Parameters) {
+				ctorArgs.Add(Evaluate(argExpr));
 			}
-			Value[] constructorParameterValues = new Value[constructorParameters.Count];
-			for (int i = 0; i < constructorParameters.Count; i++) {
-				constructorParameterValues[i] = Evaluate(constructorParameters[i]);
-			}
-			return Eval.NewObject(
-				objectCreateExpression.CreateType.ResolveType(context.AppDomain),
-				constructorParameterValues,
-				constructorParameterTypes
+			// TODO: Use reflection
+			// TODO: Arrays
+			DebugType type = objectCreateExpression.CreateType.ResolveType(context.AppDomain);
+			return new TypedValue(
+				Eval.NewObject((DebugType)type, GetValues(ctorArgs), GetTypes(ctorArgs)),
+				type
 			);
 		}
 		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			Value target;
+			TypedValue target;
 			DebugType targetType;
 			try {
 				// Instance
 				target = Evaluate(memberReferenceExpression.TargetObject);
-				targetType = GetDebugType(memberReferenceExpression.TargetObject) ?? target.Type;
+				targetType = target.Type;
 			} catch (GetValueException) {
 				// Static
 				target = null;
@@ -413,13 +466,13 @@ namespace ICSharpCode.NRefactory.Visitors
 				if (targetType == null)
 					throw;
 			}
-			MemberInfo[] memberInfos = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAllDeclared);
-			if (memberInfos.Length == 0)
-				memberInfos = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAll);
+			MemberInfo[] memberInfos = targetType.GetMember(memberReferenceExpression.MemberName, DebugType.BindingFlagsAllInScope);
 			if (memberInfos.Length == 0)
 				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
-			Value member = Value.GetMemberValue(target, memberInfos[0]);
-			return member;
+			return new TypedValue(
+				Value.GetMemberValue(target != null ? target.Value : null, memberInfos[0]),
+				((IDebugMemberInfo)memberInfos[0]).MemberType
+			);
 		}
 		
 		public override object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
@@ -429,38 +482,41 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
-			return Eval.CreateValue(context.AppDomain, primitiveExpression.Value);
+			return CreateValue(primitiveExpression.Value);
 		}
 		
-		Value GetThisValue()
+		TypedValue GetThisValue()
 		{
 			// This is needed so that captured 'this' is supported
 			foreach(DebugLocalVariableInfo locVar in context.MethodInfo.GetLocalVariables()) {
 				if (locVar.IsThis)
-					return locVar.GetValue(context);
+					return new TypedValue(locVar.GetValue(context), (DebugType)locVar.LocalType);
 			}
 			return null;
 		}
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
-			Value thisValue = GetThisValue();
+			TypedValue thisValue = GetThisValue();
 			if (thisValue == null)
-				throw new GetValueException(context.MethodInfo.FullName + " does not have \"this\"");
+				throw new GetValueException(context.MethodInfo.FullName + " is static method and does not have \"this\"");
 			return thisValue;
 		}
 		
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
-			Value value = Evaluate(unaryOperatorExpression.Expression);
+			TypedValue value = Evaluate(unaryOperatorExpression.Expression);
 			UnaryOperatorType op = unaryOperatorExpression.Op;
 			
 			if (op == UnaryOperatorType.Dereference) {
-				if (!value.Type.IsPointer) throw new GetValueException("Target object is not a pointer");
-				return value.Dereference(); // TODO: Test
+				if (!value.Type.IsPointer)
+					throw new GetValueException("Target object is not a pointer");
+				// TODO: Test
+				return new TypedValue(value.Value.Dereference(), (DebugType)value.Type.GetElementType());
 			}
 			
-			if (!value.Type.IsPrimitive) throw new GetValueException("Primitive value expected");
+			if (!value.Type.IsPrimitive)
+				throw new GetValueException("Primitive value expected");
 			
 			object val = value.PrimitiveValue;
 			
@@ -507,34 +563,36 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			
-			if (result == null) throw new GetValueException("Unsuppored unary expression " + op);
+			if (result == null)
+				throw new GetValueException("Unsuppored unary expression " + op);
 			
-			return Eval.CreateValue(context.AppDomain, result);
+			return CreateValue(result);
 		}
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
-			Value left = Evaluate(binaryOperatorExpression.Left);
-			Value right = Evaluate(binaryOperatorExpression.Right);
+			TypedValue left = Evaluate(binaryOperatorExpression.Left);
+			TypedValue right = Evaluate(binaryOperatorExpression.Right);
 			
 			object result = VisitBinaryOperatorExpressionInternal(left, right, binaryOperatorExpression.Op);
 			// Conver long to int if possible
-			if (result is long && int.MinValue <= (long)result && (long)result <= int.MaxValue) result = (int)(long)result;
-			return Eval.CreateValue(context.AppDomain, result);
+			if (result is long && int.MinValue <= (long)result && (long)result <= int.MaxValue)
+				result = (int)(long)result;
+			return CreateValue(result);
 		}
 		
-		public object VisitBinaryOperatorExpressionInternal(Value leftValue, Value rightValue, BinaryOperatorType op)
+		object VisitBinaryOperatorExpressionInternal(TypedValue leftValue, TypedValue rightValue, BinaryOperatorType op)
 		{
 			object left = leftValue.Type.IsPrimitive ? leftValue.PrimitiveValue : null;
 			object right = rightValue.Type.IsPrimitive ? rightValue.PrimitiveValue : null;
 			
 			// Both are classes - do reference comparison
 			if (left == null && right == null) {
-				if (leftValue.IsNull || rightValue.IsNull) {
-					return leftValue.IsNull && rightValue.IsNull;
+				if (leftValue.Value.IsNull || rightValue.Value.IsNull) {
+					return leftValue.Value.IsNull && rightValue.Value.IsNull;
 				} else {
 					// TODO: Make sure this works for byrefs and arrays
-					return leftValue.Address == rightValue.Address;
+					return leftValue.Value.Address == rightValue.Value.Address;
 				}
 			}
 			

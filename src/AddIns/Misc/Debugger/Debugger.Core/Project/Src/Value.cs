@@ -381,6 +381,16 @@ namespace Debugger
 		
 		#region Convenience overload methods
 		
+		/// <summary> Get a field or property of an object with a given name. </summary>
+		/// <returns> Null if not found </returns>
+		public Value GetMemberValue(string name)
+		{
+			MemberInfo memberInfo = this.Type.GetMember<MemberInfo>(name, DebugType.BindingFlagsAllInScope, DebugType.IsFieldOrNonIndexedProperty);
+			if (memberInfo == null)
+				return null;
+			return GetMemberValue(memberInfo);
+		}
+		
 		/// <summary> Get the value of given member. </summary>
 		public Value GetMemberValue(MemberInfo memberInfo, params Value[] arguments)
 		{
@@ -598,26 +608,6 @@ namespace Debugger
 				methodInfo.IsStatic ? null : objectInstance,
 				arguments ?? new Value[0]
 			);
-		}
-		
-		/// <summary> Get a field or property of an object with a given name. </summary>
-		/// <returns> Null if not found </returns>
-		public Value GetMemberValue(string name)
-		{
-			DebugType currentType = this.Type;
-			while (currentType != null) {
-				MemberInfo memberInfo = currentType.GetMember<MemberInfo>(name, DebugType.BindingFlagsAll, null);
-				if (memberInfo != null) {
-					if (memberInfo is DebugFieldInfo) {
-						return this.GetFieldValue((DebugFieldInfo)memberInfo);
-					}
-					if (memberInfo is DebugPropertyInfo) {
-						return this.GetPropertyValue((DebugPropertyInfo)memberInfo);
-					}
-				}
-				currentType = (DebugType)currentType.BaseType;
-			}
-			return null;
 		}
 		
 		#endregion

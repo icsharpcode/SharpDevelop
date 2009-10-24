@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Debugger.Internal;
+using ICSharpCode.NRefactory.Visitors;
 using System;
 using System.Collections.Generic;
+using Debugger.Internal;
 using Debugger.Interop.CorDebug;
 using ICSharpCode.NRefactory.Ast;
 
@@ -214,7 +215,7 @@ namespace Debugger
 		
 		internal bool TerminateCommandIssued = false;
 		internal Queue<Breakpoint> BreakpointHitEventQueue = new Queue<Breakpoint>();
-		internal Dictionary<INode, Value> CachedExpressions = new Dictionary<INode, Value>();
+		internal Dictionary<INode, TypedValue> CachedExpressions = new Dictionary<INode, TypedValue>();
 		
 		#region Events
 		
