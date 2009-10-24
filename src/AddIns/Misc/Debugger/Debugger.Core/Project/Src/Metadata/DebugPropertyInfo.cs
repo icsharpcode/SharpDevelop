@@ -15,7 +15,7 @@ using Debugger.Wrappers.MetaData;
 
 namespace Debugger.MetaData
 {
-	public class DebugPropertyInfo : System.Reflection.PropertyInfo
+	public class DebugPropertyInfo : System.Reflection.PropertyInfo, IDebugMemberInfo
 	{
 		DebugType declaringType;
 		MethodInfo getMethod;
@@ -47,6 +47,13 @@ namespace Debugger.MetaData
 		public Process Process {
 			get {
 				return declaringType.Process;
+			}
+		}
+		
+		/// <summary> The Module in which this member is loaded </summary>
+		public Debugger.Module DebugModule {
+			get {
+				return declaringType.DebugModule;
 			}
 		}
 		

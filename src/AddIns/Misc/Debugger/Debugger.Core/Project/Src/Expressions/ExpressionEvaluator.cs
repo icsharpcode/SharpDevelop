@@ -107,7 +107,7 @@ namespace Debugger
 				int count = (int)val.GetMemberValue("Count").PrimitiveValue;
 				for(int i = 0; i < count; i++) {
 					if (i > 0) sb.Append(", ");
-					PropertyInfo itemProperty = val.Type.GetProperty("Item");
+					DebugPropertyInfo itemProperty = (DebugPropertyInfo)val.Type.GetProperty("Item");
 					Value item = val.GetPropertyValue(itemProperty, Eval.CreateValue(val.AppDomain, i));
 					sb.Append(FormatValue(item));
 				}
@@ -275,9 +275,11 @@ namespace Debugger
 				Value member = context.GetThisValue().GetMemberValue(identifier);
 				if (member != null) return member;
 			} else {
-				MemberInfo memberInfo = context.MethodInfo.DeclaringType.GetMember(identifier);
+				IDebugMemberInfo memberInfo = 
+					(IDebugMemberInfo)context.MethodInfo.DeclaringType.GetField(identifier) ??
+					(IDebugMemberInfo)context.MethodInfo.DeclaringType.GetProperty(identifier);
 				if (memberInfo != null && memberInfo.IsStatic) {
-					return Value.GetMemberValue(null, memberInfo, null);
+					return Value.GetMemberValue(null, (MemberInfo)memberInfo, null);
 				}
 			}
 			
@@ -312,7 +314,7 @@ namespace Debugger
 				}
 			}
 			
-			PropertyInfo pi = target.Type.GetProperty("Item");
+			DebugPropertyInfo pi = (DebugPropertyInfo)target.Type.GetProperty("Item");
 			if (pi == null) throw new GetValueException("The object does not have an indexer property");
 			return target.GetPropertyValue(pi, indexes.ToArray());
 		}
@@ -361,7 +363,7 @@ namespace Debugger
 			foreach(Expression expr in invocationExpression.Arguments) {
 				args.Add(Evaluate(expr));
 			}
-			return target.InvokeMethod(method, args.ToArray());
+			return target.InvokeMethod((DebugMethodInfo)method, args.ToArray());
 		}
 		
 		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
@@ -383,12 +385,12 @@ namespace Debugger
 		{
 			Value target = Evaluate(memberReferenceExpression.TargetObject);
 			DebugType targetType = GetDebugType(memberReferenceExpression.TargetObject) ?? target.Type;
-			MemberInfo memberInfo = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAllDeclared);
-			if (memberInfo == null)
-				memberInfo = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAll);
-			if (memberInfo == null)
+			MemberInfo[] memberInfos = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAllDeclared);
+			if (memberInfos.Length == 0)
+				memberInfos = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAll);
+			if (memberInfos.Length == 0)
 				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
-			Value member = target.GetMemberValue(memberInfo);
+			Value member = target.GetMemberValue(memberInfos[0]);
 			return member;
 		}
 		

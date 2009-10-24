@@ -40,7 +40,7 @@ namespace Debugger
 			return indexerExpr;
 		}
 		
-		public static Expression AppendMemberReference(this Expression expresion, MemberInfo memberInfo, params Expression[] args)
+		public static Expression AppendMemberReference(this Expression expresion, IDebugMemberInfo memberInfo, params Expression[] args)
 		{
 			Expression target;
 			if (memberInfo.IsStatic) {
@@ -77,7 +77,7 @@ namespace Debugger
 						throw new DebuggerException("Arguments expected only for the Item property");
 					return new IndexerExpression(
 						target,
-						AddExplicitTypes(propInfo.GetMethod ?? propInfo.SetMethod, args)
+						AddExplicitTypes(propInfo.GetGetMethod() ?? propInfo.GetSetMethod(), args)
 					);
 				} else {
 					return new MemberReferenceExpression(target, memberInfo.Name);
@@ -88,13 +88,13 @@ namespace Debugger
 		
 		static List<Expression> AddExplicitTypes(MethodInfo method, Expression[] args)
 		{
-			if (args.Length != method.ParameterCount)
+			if (args.Length != method.GetParameters().Length)
 				throw new DebuggerException("Incorrect number of arguments");
 			List<Expression> typedArgs = new List<Expression>(args.Length);
 			for(int i = 0; i < args.Length; i++) {
 				typedArgs.Add(
 					new CastExpression(
-						method.ParameterTypes[i].ToTypeReference(),
+						method.GetParameters()[i].ParameterType.ToTypeReference(),
 						new ParenthesizedExpression(args[i]),
 						CastType.Cast
 					)
@@ -103,7 +103,7 @@ namespace Debugger
 			return typedArgs;
 		}
 		
-		public static TypeReference ToTypeReference(this DebugType type)
+		public static TypeReference ToTypeReference(this Type type)
 		{
 			List<int> arrayRanks = new List<int>();
 			int pointerNest = 0;
@@ -112,10 +112,10 @@ namespace Debugger
 				// TODO: Check
 				if (type.IsArray) {
 					arrayRanks.Insert(0, type.GetArrayRank() - 1);
-					type = type.ElementType;
+					type = type.GetElementType();
 				} else if (type.IsPointer) {
 					pointerNest++;
-					type = type.ElementType;
+					type = type.GetElementType();
 				} else {
 					break;
 				}
@@ -124,7 +124,7 @@ namespace Debugger
 			if (name.IndexOf('<') != -1)
 				name = name.Substring(0, name.IndexOf('<'));
 			List<TypeReference> genArgs = new List<TypeReference>();
-			foreach(DebugType genArg in type.GenericArguments) {
+			foreach(DebugType genArg in type.GetGenericArguments()) {
 				genArgs.Add(genArg.ToTypeReference());
 			}
 			TypeReference typeRef = new TypeReference(name, pointerNest, arrayRanks.ToArray(), genArgs);

@@ -29,8 +29,8 @@ namespace Debugger.MetaData
 	/// </remarks>
 	public class DebugType: System.Type
 	{
-		const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
-		const BindingFlags BindingFlagsAllDeclared = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+		public const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+		public const BindingFlags BindingFlagsAllDeclared = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 		
 		AppDomain appDomain;
 		Process   process;
@@ -48,7 +48,8 @@ namespace Debugger.MetaData
 		List<DebugType>    interfaces = new List<DebugType>();
 		
 		// Members of the type; empty if not applicable
-		Dictionary<string, List<MemberInfo>> members = new Dictionary<string, List<MemberInfo>>();
+		Dictionary<string, List<MemberInfo>> membersByName = new Dictionary<string, List<MemberInfo>>();
+		Dictionary<int, MemberInfo> membersByToken = new Dictionary<int, MemberInfo>();
 		
 		// Stores all DebugType instances. FullName is the key
 		static Dictionary<ICorDebugType, DebugType> loadedTypes = new Dictionary<ICorDebugType, DebugType>();
@@ -56,6 +57,29 @@ namespace Debugger.MetaData
 		public override Type DeclaringType {
 			get {
 				throw new NotSupportedException();
+			}
+		}
+		
+		/// <summary> The AppDomain in which this type is loaded </summary>
+		[Debugger.Tests.Ignore]
+		public AppDomain AppDomain {
+			get {
+				return appDomain;
+			}
+		}
+		
+		/// <summary> The Process in which this member is loaded </summary>
+		[Debugger.Tests.Ignore]
+		public Process Process {
+			get {
+				return process;
+			}
+		}
+		
+		/// <summary> The Module in which this member is loaded </summary>
+		public Debugger.Module DebugModule {
+			get {
+				return module;
 			}
 		}
 		
@@ -160,8 +184,7 @@ namespace Debugger.MetaData
 		
 		public override System.Reflection.Module Module {
 			get {
-				AssertClassOrValueType();
-				return module;
+				throw new NotSupportedException();
 			}
 		}
 		
@@ -211,10 +234,20 @@ namespace Debugger.MetaData
 		
 		public override Type GetElementType()
 		{
-			return this.GenericArguments[0];
+			if (this.IsArray || this.IsPointer) {
+				return typeArguments[0];
+			} else {
+				return null;
+			}
 		}
 		
 		const BindingFlags supportedFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.FlattenHierarchy;
+		
+		/// <summary> Return member with the given token</summary>
+		public MemberInfo GetMember(uint token)
+		{
+			return membersByToken[(int)token];
+		}
 		
 		public T GetMember<T>(string name, BindingFlags bindingFlags, Predicate<T> filter) where T:MemberInfo
 		{
@@ -239,7 +272,7 @@ namespace Debugger.MetaData
 				throw new ArgumentException("Instance or Static flag must be included", "bindingFlags");
 			
 			List<T> results = new List<T>();
-			foreach(List<MemberInfo> memberInfos in members.Values) {
+			foreach(List<MemberInfo> memberInfos in membersByName.Values) {
 				foreach(MemberInfo memberInfo in memberInfos) {
 					// Filter by type
 					if (!(memberInfo is T)) continue; // Reject item
@@ -250,34 +283,14 @@ namespace Debugger.MetaData
 					}
 					
 					// Filter by access
-					bool memberIsPublic;
-					if (memberInfo is FieldInfo) {
-						memberIsPublic = ((FieldInfo)memberInfo).IsPublic;
-					} else if (memberInfo is DebugPropertyInfo) {
-						memberIsPublic = ((DebugPropertyInfo)memberInfo).IsPublic;
-					} else if (memberInfo is MethodInfo) {
-						memberIsPublic = ((MethodInfo)memberInfo).IsPublic;
-					} else {
-						throw new DebuggerException("Unexpected type: " + memberInfo.GetType());
-					}
-					if (memberIsPublic) {
+					if (((IDebugMemberInfo)memberInfo).IsPublic) {
 						if ((bindingFlags & BindingFlags.Public) == 0) continue; // Reject item
 					} else {
 						if ((bindingFlags & BindingFlags.NonPublic) == 0) continue; // Reject item
 					}
 					
 					// Filter by static / instance
-					bool memberIsStatic;
-					if (memberInfo is FieldInfo) {
-						memberIsStatic = ((FieldInfo)memberInfo).IsStatic;
-					} else if (memberInfo is DebugPropertyInfo) {
-						memberIsStatic = ((DebugPropertyInfo)memberInfo).IsStatic;
-					} else if (memberInfo is MethodInfo) {
-						memberIsStatic = ((MethodInfo)memberInfo).IsStatic;
-					} else {
-						throw new DebuggerException("Unexpected type: " + memberInfo.GetType());
-					}
-					if (memberIsStatic) {
+					if (((IDebugMemberInfo)memberInfo).IsStatic) {
 						if ((bindingFlags & BindingFlags.Static) == 0) continue; // Reject item
 					} else {
 						if ((bindingFlags & BindingFlags.Instance) == 0) continue; // Reject item
@@ -296,7 +309,7 @@ namespace Debugger.MetaData
 					// Do not include static types
 					bindingFlags = bindingFlags & ~BindingFlags.Static;
 				}
-				List<T> superResults = this.BaseType.GetMembers<T>(name, bindingFlags, filter);
+				T[] superResults = ((DebugType)this.BaseType).GetMembers<T>(name, bindingFlags, filter);
 				results.AddRange(superResults);
 			}
 			
@@ -325,7 +338,25 @@ namespace Debugger.MetaData
 			return GetMembers<FieldInfo>(null, bindingAttr, null);
 		}
 		
-		//		public virtual Type[] GetGenericArguments();
+		public override Type[] GetGenericArguments()
+		{
+			if (this.IsArray || this.IsPointer) {
+				return new Type[] {};
+			} else {
+				return typeArguments.ToArray();
+			}
+		}
+		
+		internal ICorDebugType[] GenericArgumentsAsCorDebugType {
+			get {
+				List<ICorDebugType> types = new List<ICorDebugType>();
+				foreach(DebugType arg in GetGenericArguments()) {
+					types.Add(arg.CorType);
+				}
+				return types.ToArray();
+			}
+		}
+		
 		//		public virtual Type[] GetGenericParameterConstraints();
 		//		public virtual Type GetGenericTypeDefinition();
 		
@@ -360,17 +391,11 @@ namespace Debugger.MetaData
 			return GetMembers<MemberInfo>(null, bindingAttr, null);
 		}
 		
-		/// <summary> Return first method with the given token</summary>
-		public MethodInfo GetMethod(uint token)
-		{
-			return QueryMember<MethodInfo>(token);
-		}
-		
 		/// <summary> Return method overload with given parameter names </summary>
 		/// <returns> Null if not found </returns>
 		public MethodInfo GetMethod(string name, string[] paramNames)
 		{
-			foreach(MethodInfo candidate in GetMethod(name)) {
+			foreach(DebugMethodInfo candidate in GetMembers<DebugMethodInfo>(name, BindingFlagsAll, null)) {
 				if (candidate.ParameterCount == paramNames.Length) {
 					bool match = true;
 					for(int i = 0; i < paramNames.Length; i++) {
@@ -387,13 +412,13 @@ namespace Debugger.MetaData
 		protected override MethodInfo GetMethodImpl(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] paramTypes, ParameterModifier[] modifiers)
 		{
 			// TODO: Finish
-			foreach(DebugMethodInfo candidate in GetMembers<DebugMethodInfo>(name, bindingAttr, null)) {
+			foreach(DebugMethodInfo candidate in GetMethods(name, bindingAttr)) {
 				if (paramTypes == null)
 					return candidate;
 				if (candidate.ParameterCount == paramTypes.Length) {
 					bool match = true;
 					for(int i = 0; i < paramTypes.Length; i++) {
-						if (paramTypes[i] != candidate.ParameterTypes[i])
+						if (paramTypes[i] != candidate.GetParameters()[i].ParameterType)
 							match = false;
 					}
 					if (match)
@@ -401,6 +426,11 @@ namespace Debugger.MetaData
 				}
 			}
 			return null;
+		}
+		
+		public MethodInfo[] GetMethods(string name, BindingFlags bindingAttr)
+		{
+			return GetMembers<MethodInfo>(name, bindingAttr, null);
 		}
 		
 		public override MethodInfo[] GetMethods(BindingFlags bindingAttr)
@@ -506,17 +536,6 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets the appdomain in which the type was loaded </summary>
-		[Debugger.Tests.Ignore]
-		public AppDomain AppDomain {
-			get { return appDomain; }
-		}
-		
-		[Debugger.Tests.Ignore]
-		public Process Process {
-			get { return process; }
-		}
-		
 		internal ICorDebugType CorType {
 			get { return corType; }
 		}
@@ -524,38 +543,6 @@ namespace Debugger.MetaData
 		/// <summary> Gets a list of all interfaces that this type implements </summary>
 		public List<DebugType> Interfaces {
 			get { return interfaces; }
-		}
-		
-		/// <summary> Get an element type for array or pointer. </summary>
-		public DebugType ElementType {
-			get {
-				if (this.IsArray || this.IsPointer) {
-					return typeArguments[0];
-				} else {
-					return null;
-				}
-			}
-		}
-		
-		/// <summary> Gets generics arguments for a type or an empty List for non-generic types. </summary>
-		public List<DebugType> GenericArguments {
-			get {
-				if (this.IsArray || this.IsPointer) {
-					return new List<DebugType>();
-				} else {
-					return typeArguments;
-				}
-			}
-		}
-		
-		internal ICorDebugType[] GenericArgumentsAsCorDebugType {
-			get {
-				List<ICorDebugType> types = new List<ICorDebugType>();
-				foreach(DebugType arg in this.GenericArguments) {
-					types.Add(arg.CorType);
-				}
-				return types.ToArray();
-			}
 		}
 		
 		/// <summary> Returns what kind of type this is. (eg. value type) </summary>
@@ -737,7 +724,7 @@ namespace Debugger.MetaData
 		{
 			if (genericArguments != null) {
 				if (enclosingType != null)
-					typeName = GetQualifiedName(typeName, genericArguments.Length - enclosingType.GenericArguments.Count);
+					typeName = GetQualifiedName(typeName, genericArguments.Length - enclosingType.GetGenericArguments().Length);
 				else
 					typeName = GetQualifiedName(typeName, genericArguments.Length);
 			}
@@ -745,7 +732,7 @@ namespace Debugger.MetaData
 				if (module.AppDomain == appDomain) {
 					uint token;
 					try {
-						token = module.MetaData.FindTypeDefPropsByName(typeName, enclosingType == null ? 0 : enclosingType.MetadataToken).Token;
+						token = module.MetaData.FindTypeDefPropsByName(typeName, enclosingType == null ? 0 : (uint)enclosingType.MetadataToken).Token;
 					} catch {
 						continue;
 					}
@@ -822,7 +809,7 @@ namespace Debugger.MetaData
 			// Numbered generic reference
 			if (sigType is VAR) {
 				if (declaringType == null) throw new DebuggerException("declaringType is needed");
-				return declaringType.GenericArguments[((VAR)sigType).Index];
+				return (DebugType)declaringType.GetGenericArguments()[((VAR)sigType).Index];
 			}
 			
 			// Numbered generic reference
@@ -986,10 +973,10 @@ namespace Debugger.MetaData
 		string GetName(bool includeNamespace)
 		{
 			if (IsArray) {
-				return Trim(this.ElementType.FullName, includeNamespace) + "[" + new String(',', GetArrayRank() - 1) + "]";
+				return Trim(this.GetElementType().FullName, includeNamespace) + "[" + new String(',', GetArrayRank() - 1) + "]";
 			} else if (IsClass || IsValueType) {
 				List<string> argNames = new List<string>();
-				foreach(DebugType arg in this.GenericArguments) {
+				foreach(DebugType arg in this.GetGenericArguments()) {
 					argNames.Add(includeNamespace ? arg.FullName : arg.Name);
 				}
 				string className = Trim(classProps.Name, includeNamespace);
@@ -1013,7 +1000,7 @@ namespace Debugger.MetaData
 			} else if (IsPrimitive) {
 				return Trim(this.PrimitiveType.ToString(), includeNamespace);
 			} else if (IsPointer) {
-				return Trim(this.ElementType.FullName, includeNamespace) + (this.corElementType == CorElementType.BYREF ? "&" : "*");
+				return Trim(this.GetElementType().FullName, includeNamespace) + (this.corElementType == CorElementType.BYREF ? "&" : "*");
 			} else if (IsVoid) {
 				return includeNamespace ? "System.Void" : "Void";
 			} else {
@@ -1085,15 +1072,16 @@ namespace Debugger.MetaData
 		
 		void AddMember(MemberInfo member)
 		{
-			if (!members.ContainsKey(member.Name))
-				members.Add(member.Name, new List<MemberInfo>(1));
-			members[member.Name].Add(member);
+			if (!membersByName.ContainsKey(member.Name))
+				membersByName.Add(member.Name, new List<MemberInfo>(1));
+			membersByName[member.Name].Add(member);
+			membersByToken[member.MetadataToken] = member;
 		}
 		
 		public bool IsCompilerGenerated {
 			get {
 				if (this.IsClass || this.IsValueType) {
-					return MethodInfo.HasAnyAttribute(this.Module.MetaData, this.MetadataToken, typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute));
+					return DebugMethodInfo.HasAnyAttribute(this.DebugModule.MetaData, (uint)this.MetadataToken, typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute));
 				} else {
 					return false;
 				}

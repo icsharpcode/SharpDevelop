@@ -37,7 +37,7 @@ namespace Debugger
 			}
 		}
 		
-		static void CheckObject(Value objectInstance, MemberInfo memberInfo)
+		static void CheckObject(Value objectInstance, IDebugMemberInfo memberInfo)
 		{
 			if (!memberInfo.IsStatic) {
 				if (objectInstance == null) {
@@ -70,10 +70,10 @@ namespace Debugger
 			if (memberInfo is DebugFieldInfo) {
 				if (arguments.Length > 0) throw new GetValueException("Arguments can not be used for a field");
 				return GetFieldValue(objectInstance, (DebugFieldInfo)memberInfo);
-			} else if (memberInfo is PropertyInfo) {
-				return GetPropertyValue(objectInstance, (PropertyInfo)memberInfo, arguments);
-			} else if (memberInfo is MethodInfo) {
-				return InvokeMethod(objectInstance, (MethodInfo)memberInfo, arguments);
+			} else if (memberInfo is DebugPropertyInfo) {
+				return GetPropertyValue(objectInstance, (DebugPropertyInfo)memberInfo, arguments);
+			} else if (memberInfo is DebugMethodInfo) {
+				return InvokeMethod(objectInstance, (DebugMethodInfo)memberInfo, arguments);
 			}
 			throw new DebuggerException("Unknown member type: " + memberInfo.GetType());
 		}
@@ -114,9 +114,9 @@ namespace Debugger
 			
 			try {
 				if (fieldInfo.IsStatic) {
-					return fieldInfo.DeclaringType.CorType.GetStaticFieldValue(fieldInfo.MetadataToken, curFrame);
+					return ((DebugType)fieldInfo.DeclaringType).CorType.GetStaticFieldValue((uint)fieldInfo.MetadataToken, curFrame);
 				} else {
-					return objectInstance.CorObjectValue.GetFieldValue(fieldInfo.DeclaringType.CorType.Class, fieldInfo.MetadataToken);
+					return objectInstance.CorObjectValue.GetFieldValue(((DebugType)fieldInfo.DeclaringType).CorType.Class, (uint)fieldInfo.MetadataToken);
 				}
 			} catch {
 				throw new GetValueException("Can not get value of field");
@@ -126,7 +126,7 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Get the value of the property using the get accessor </summary>
-		public Value GetPropertyValue(PropertyInfo propertyInfo, params Value[] arguments)
+		public Value GetPropertyValue(DebugPropertyInfo propertyInfo, params Value[] arguments)
 		{
 			return GetPropertyValue(this, propertyInfo, arguments);
 		}
@@ -134,13 +134,13 @@ namespace Debugger
 		#endregion
 		
 		/// <summary> Get the value of the property using the get accessor </summary>
-		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, params Value[] arguments)
+		public static Value GetPropertyValue(Value objectInstance, DebugPropertyInfo propertyInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, propertyInfo);
 			
-			if (propertyInfo.GetMethod == null) throw new GetValueException("Property does not have a get method");
+			if (propertyInfo.GetGetMethod() == null) throw new GetValueException("Property does not have a get method");
 			
-			Value val = Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments);
+			Value val = Value.InvokeMethod(objectInstance, (DebugMethodInfo)propertyInfo.GetGetMethod(), arguments);
 			
 			return val;
 		}
@@ -148,19 +148,19 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public Value SetPropertyValue(PropertyInfo propertyInfo, Value newValue)
+		public Value SetPropertyValue(DebugPropertyInfo propertyInfo, Value newValue)
 		{
 			return SetPropertyValue(this, propertyInfo, null, newValue);
 		}
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public Value SetPropertyValue(PropertyInfo propertyInfo, Value[] arguments, Value newValue)
+		public Value SetPropertyValue(DebugPropertyInfo propertyInfo, Value[] arguments, Value newValue)
 		{
 			return SetPropertyValue(this, propertyInfo, arguments, newValue);
 		}
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value newValue)
+		public static Value SetPropertyValue(Value objectInstance, DebugPropertyInfo propertyInfo, Value newValue)
 		{
 			return SetPropertyValue(objectInstance, propertyInfo, null, newValue);
 		}
@@ -168,11 +168,11 @@ namespace Debugger
 		#endregion
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments, Value newValue)
+		public static Value SetPropertyValue(Value objectInstance, DebugPropertyInfo propertyInfo, Value[] arguments, Value newValue)
 		{
 			CheckObject(objectInstance, propertyInfo);
 			
-			if (propertyInfo.SetMethod == null) throw new GetValueException("Property does not have a set method");
+			if (propertyInfo.GetSetMethod() == null) throw new GetValueException("Property does not have a set method");
 			
 			arguments = arguments ?? new Value[0];
 			
@@ -180,13 +180,13 @@ namespace Debugger
 			allParams[0] = newValue;
 			arguments.CopyTo(allParams, 1);
 			
-			return Value.InvokeMethod(objectInstance, propertyInfo.SetMethod, allParams);
+			return Value.InvokeMethod(objectInstance, (DebugMethodInfo)propertyInfo.GetSetMethod(), allParams);
 		}
 		
 		#region Convenience overload methods
 		
 		/// <summary> Synchronously invoke the method </summary>
-		public Value InvokeMethod(MethodInfo methodInfo, params Value[] arguments)
+		public Value InvokeMethod(DebugMethodInfo methodInfo, params Value[] arguments)
 		{
 			return InvokeMethod(this, methodInfo, arguments);
 		}
@@ -194,7 +194,7 @@ namespace Debugger
 		#endregion
 		
 		/// <summary> Synchronously invoke the method </summary>
-		public static Value InvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
+		public static Value InvokeMethod(Value objectInstance, DebugMethodInfo methodInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, methodInfo);
 			
@@ -217,7 +217,7 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Asynchronously invoke the method </summary>
-		public Eval AsyncInvokeMethod(MethodInfo methodInfo, params Value[] arguments)
+		public Eval AsyncInvokeMethod(DebugMethodInfo methodInfo, params Value[] arguments)
 		{
 			return AsyncInvokeMethod(this, methodInfo, arguments);
 		}
@@ -225,7 +225,7 @@ namespace Debugger
 		#endregion
 		
 		/// <summary> Asynchronously invoke the method </summary>
-		public static Eval AsyncInvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
+		public static Eval AsyncInvokeMethod(Value objectInstance, DebugMethodInfo methodInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, methodInfo);
 			
@@ -242,49 +242,18 @@ namespace Debugger
 		{
 			DebugType currentType = this.Type;
 			while (currentType != null) {
-				MemberInfo memberInfo = currentType.GetMember(name);
+				MemberInfo memberInfo = currentType.GetMember<MemberInfo>(name, DebugType.BindingFlagsAll, null);
 				if (memberInfo != null) {
 					if (memberInfo is DebugFieldInfo) {
 						return this.GetFieldValue((DebugFieldInfo)memberInfo);
 					}
-					if (memberInfo is PropertyInfo) {
-						return this.GetPropertyValue((PropertyInfo)memberInfo);
+					if (memberInfo is DebugPropertyInfo) {
+						return this.GetPropertyValue((DebugPropertyInfo)memberInfo);
 					}
 				}
 				currentType = (DebugType)currentType.BaseType;
 			}
 			return null;
-		}
-		
-		/// <summary> Get all fields and properties of an object. </summary>
-		public IEnumerable<Value> GetMemberValues()
-		{
-			return GetMemberValues(BindingFlags.All);
-		}
-		
-		/// <summary>
-		/// Get fields and properties of an object which are defined by a given type.
-		/// </summary>
-		/// <param name="type"> Limit to type, null for all types </param>
-		/// <param name="bindingFlags"> Get only members with certain flags </param>
-		public IEnumerable<Value> GetMemberValues(BindingFlags bindingFlags)
-		{
-			if (this.Type.IsClass || this.Type.IsValueType) {
-				return this.GetPermanentReference().GetObjectMembersEnum(bindingFlags);
-			} else {
-				return new Value[0];
-			}
-		}
-		
-		IEnumerable<Value> GetObjectMembersEnum(BindingFlags bindingFlags)
-		{
-			foreach(DebugFieldInfo field in this.Type.GetFields(bindingFlags)) {
-				yield return this.GetFieldValue(field);
-			}
-			foreach(PropertyInfo property in this.Type.GetProperties(bindingFlags)) {
-				if (property.GetMethod.ParameterCount > 0) continue;
-				yield return this.GetPropertyValue(property);
-			}
 		}
 	}
 }

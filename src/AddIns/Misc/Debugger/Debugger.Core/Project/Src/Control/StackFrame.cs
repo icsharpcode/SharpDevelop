@@ -119,7 +119,7 @@ namespace Debugger
 				corFunction.Class,
 				genArgs.ToArray()
 			);
-			this.methodInfo = debugType.GetMethod(corFunction.Token);
+			this.methodInfo = (DebugMethodInfo)debugType.GetMember(corFunction.Token);
 		}
 		
 		/// <summary> Returns diagnostic description of the frame </summary>
@@ -151,7 +151,7 @@ namespace Debugger
 		
 		SourcecodeSegment GetSegmentForOffet(uint offset)
 		{
-			return SourcecodeSegment.Resolve(this.MethodInfo.Module, corFunction, offset);
+			return SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, corFunction, offset);
 		}
 		
 		/// <summary> Step into next instruction </summary>
@@ -197,7 +197,7 @@ namespace Debugger
 		
 		void AsyncStep(bool stepIn)
 		{
-			if (this.MethodInfo.Module.HasSymbols == false) {
+			if (this.MethodInfo.DebugModule.HasSymbols == false) {
 				throw new DebuggerException("Unable to step. No symbols loaded.");
 			}
 			
@@ -256,7 +256,7 @@ namespace Debugger
 		{
 			process.AssertPaused();
 			
-			SourcecodeSegment segment = SourcecodeSegment.Resolve(this.MethodInfo.Module, filename, null, line, column);
+			SourcecodeSegment segment = SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, filename, null, line, column);
 			
 			if (segment != null && segment.CorFunction.Token == this.MethodInfo.MetadataToken) {
 				try {

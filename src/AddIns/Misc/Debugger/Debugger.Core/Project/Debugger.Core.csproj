@@ -225,6 +225,7 @@
     <Compile Include="Src\Metadata\DebugFieldInfo.cs" />
     <Compile Include="Src\Metadata\DebugMethodInfo.cs" />
     <Compile Include="Src\Metadata\DebugPropertyInfo.cs" />
+    <Compile Include="Src\Metadata\IDebugMemberInfo.cs" />
     <Compile Include="Src\Mono.Cecil\Mono.Cecil.Binary\ImageFormatException.cs" />
     <Compile Include="Src\Mono.Cecil\Mono.Cecil.Metadata\CodedIndex.cs" />
     <Compile Include="Src\Mono.Cecil\Mono.Cecil.Metadata\ElementType.cs" />

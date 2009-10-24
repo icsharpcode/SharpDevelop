@@ -16,7 +16,7 @@ using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
 {
-	public class DebugFieldInfo : System.Reflection.FieldInfo
+	public class DebugFieldInfo : System.Reflection.FieldInfo, IDebugMemberInfo
 	{
 		DebugType declaringType;
 		FieldProps fieldProps;
@@ -44,6 +44,13 @@ namespace Debugger.MetaData
 		public Process Process {
 			get {
 				return declaringType.Process;
+			}
+		}
+		
+		/// <summary> The Module in which this member is loaded </summary>
+		public Debugger.Module DebugModule {
+			get {
+				return declaringType.DebugModule;
 			}
 		}
 		
@@ -99,7 +106,7 @@ namespace Debugger.MetaData
 			get {
 				SignatureReader sigReader = new SignatureReader(fieldProps.SigBlob.GetData());
 				FieldSig fieldSig = sigReader.GetFieldSig(0);
-				return DebugType.CreateFromSignature(this.Module, fieldSig.Type, declaringType);
+				return DebugType.CreateFromSignature(this.DebugModule, fieldSig.Type, declaringType);
 			}
 		}
 		

@@ -250,7 +250,7 @@ namespace Debugger
 				}
 			}
 			
-			ICorDebugType[] genericArgs = method.DeclaringType.GenericArgumentsAsCorDebugType;
+			ICorDebugType[] genericArgs = ((DebugType)method.DeclaringType).GenericArgumentsAsCorDebugType;
 			eval.CorEval.CastTo<ICorDebugEval2>().CallParameterizedFunction(
 				method.CorFunction,
 				(uint)genericArgs.Length, genericArgs,
@@ -338,7 +338,7 @@ namespace Debugger
 		public static Eval AsyncNewObject(DebugType debugType, Value[] constructorArguments, DebugType[] constructorArgumentsTypes)
 		{
 			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
-			DebugMethodInfo constructor = debugType.GetMethod(".ctor", constructorArgumentsTypes);
+			DebugMethodInfo constructor = (DebugMethodInfo)debugType.GetMethod(".ctor", constructorArgumentsTypes);
 			if (constructor == null) {
 				throw new DebuggerException(string.Format("Type {0} has no constructor overload with given argument types.", debugType.FullName));
 			}
@@ -347,7 +347,7 @@ namespace Debugger
 				"New object: " + debugType.FullName,
 				delegate(Eval eval) {
 					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObject(
-						constructor.CorFunction, (uint)debugType.GenericArguments.Count, debugType.GenericArgumentsAsCorDebugType,
+						constructor.CorFunction, (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType,
 						(uint)constructorArgsCorDebug.Length, constructorArgsCorDebug);
 				}
 			);
@@ -359,7 +359,7 @@ namespace Debugger
 				debugType.AppDomain,
 				"New object: " + debugType.FullName,
 				delegate(Eval eval) {
-					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GenericArguments.Count, debugType.GenericArgumentsAsCorDebugType);
+					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType);
 				}
 			);
 		}

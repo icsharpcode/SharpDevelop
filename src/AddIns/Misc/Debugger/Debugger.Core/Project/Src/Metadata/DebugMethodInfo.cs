@@ -19,7 +19,7 @@ using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
 {
-	public class DebugMethodInfo: System.Reflection.MethodInfo
+	public class DebugMethodInfo: System.Reflection.MethodInfo, IDebugMemberInfo
 	{
 		DebugType declaringType;
 		MethodProps methodProps;
@@ -47,6 +47,13 @@ namespace Debugger.MetaData
 		public Process Process {
 			get {
 				return declaringType.Process;
+			}
+		}
+		
+		/// <summary> The Module in which this member is loaded </summary>
+		public Debugger.Module DebugModule {
+			get {
+				return declaringType.DebugModule;
 			}
 		}
 		
@@ -144,7 +151,7 @@ namespace Debugger.MetaData
 		{
 			if (this.MethodDefSig.RetType.Void) return null;
 			if (returnType == null) {
-				returnType = DebugType.CreateFromSignature(this.Module, this.MethodDefSig.RetType.Type, declaringType);
+				returnType = DebugType.CreateFromSignature(this.DebugModule, this.MethodDefSig.RetType.Type, declaringType);
 			}
 			return returnType;
 		}
@@ -180,7 +187,7 @@ namespace Debugger.MetaData
 						new DebugParameterInfo(
 							this,
 							this.GetParameterName(i),
-							DebugType.CreateFromSignature(this.Module, this.MethodDefSig.Parameters[i].Type, declaringType),
+							DebugType.CreateFromSignature(this.DebugModule, this.MethodDefSig.Parameters[i].Type, declaringType),
 							i
 						);
 				}
@@ -193,7 +200,7 @@ namespace Debugger.MetaData
 		
 		internal ICorDebugFunction CorFunction {
 			get {
-				return this.Module.CorModule.GetFunctionFromToken(this.MetadataToken);
+				return this.DebugModule.CorModule.GetFunctionFromToken((uint)this.MetadataToken);
 			}
 		}
 		
@@ -317,7 +324,7 @@ namespace Debugger.MetaData
 			if (token != 0) {
 				// process.TraceMessage("Token: " + token.ToString("x"));
 				
-				MemberInfo member = this.DeclaringType.GetMember(token);
+				MemberInfo member = declaringType.GetMember(token);
 				
 				if (member == null) return null;
 				if (!(member is DebugFieldInfo)) return null;
@@ -387,13 +394,13 @@ namespace Debugger.MetaData
 				
 				hasDebuggerAttributeCache =
 					// Look on the method
-					HasAnyAttribute(this.Module.MetaData, methodProps.Token,
+					HasAnyAttribute(this.DebugModule.MetaData, methodProps.Token,
 					                typeof(System.Diagnostics.DebuggerStepThroughAttribute),
 					                typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
 					                typeof(System.Diagnostics.DebuggerHiddenAttribute))
 					||
 					// Look on the type
-					HasAnyAttribute(this.Module.MetaData, (uint)this.DeclaringType.MetadataToken,
+					HasAnyAttribute(this.DebugModule.MetaData, (uint)this.DeclaringType.MetadataToken,
 					                typeof(System.Diagnostics.DebuggerStepThroughAttribute),
 					                typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
 					                typeof(System.Diagnostics.DebuggerHiddenAttribute));
@@ -435,7 +442,7 @@ namespace Debugger.MetaData
 		/// <summary>
 		/// Get a method from a managed type, method name and argument count
 		/// </summary>
-		public static MethodInfo GetFromName(AppDomain appDomain, System.Type type, string methodName, int paramCount)
+		public static DebugMethodInfo GetFromName(AppDomain appDomain, System.Type type, string methodName, int paramCount)
 		{
 			if (type.IsNested) throw new DebuggerException("Not implemented for nested types");
 			if (type.IsGenericType) throw new DebuggerException("Not implemented for generic types");
@@ -446,7 +453,7 @@ namespace Debugger.MetaData
 				throw new DebuggerException("Type " + type.FullName + " not found");
 			}
 			
-			foreach(MethodInfo methodInfo in debugType.GetMethods(methodName)) {
+			foreach(DebugMethodInfo methodInfo in debugType.GetMethods(methodName, DebugType.BindingFlagsAll)) {
 				if (methodInfo.ParameterCount == paramCount) {
 					return methodInfo;
 				}
@@ -456,9 +463,9 @@ namespace Debugger.MetaData
 		
 		internal ISymUnmanagedMethod SymMethod {
 			get {
-				if (this.Module.SymReader == null) return null;
+				if (this.DebugModule.SymReader == null) return null;
 				try {
-					return this.Module.SymReader.GetMethod(this.MetadataToken);
+					return this.DebugModule.SymReader.GetMethod((uint)this.MetadataToken);
 				} catch {
 					return null;
 				}
@@ -478,7 +485,7 @@ namespace Debugger.MetaData
 		{
 			// index = 0 is return parameter
 			try {
-				return this.Module.MetaData.GetParamPropsForMethodIndex(this.MetadataToken, (uint)index + 1).Name;
+				return this.DebugModule.MetaData.GetParamPropsForMethodIndex((uint)this.MetadataToken, (uint)index + 1).Name;
 			} catch {
 				return String.Empty;
 			}
@@ -551,7 +558,7 @@ namespace Debugger.MetaData
 				if (!this.IsStatic) {
 					DebugLocalVariableInfo thisVar = new DebugLocalVariableInfo(
 						"this",
-						this.DeclaringType,
+						declaringType,
 						delegate(StackFrame context) {
 							return context.GetThisValue();
 						}
@@ -571,7 +578,7 @@ namespace Debugger.MetaData
 					if (fieldInfo.Name.StartsWith("CS$")) continue; // Ignore
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
 						fieldInfo.Name,
-						fieldInfo.FieldType,
+						(DebugType)fieldInfo.FieldType,
 						delegate(StackFrame context) {
 							return getCaptureClass(context).GetFieldValue(fieldInfoCopy);
 						}
@@ -610,7 +617,7 @@ namespace Debugger.MetaData
 				int start;
 				SignatureReader sigReader = new SignatureReader(symVar.Signature);
 				LocalVarSig.LocalVariable locVarSig = sigReader.ReadLocalVariable(sigReader.Blob, 0, out start);
-				DebugType locVarType = DebugType.CreateFromSignature(this.Module, locVarSig.Type, declaringType);
+				DebugType locVarType = DebugType.CreateFromSignature(this.DebugModule, locVarSig.Type, declaringType);
 				// Compiler generated?
 				// NB: Display class does not have the compiler-generated flag
 				if ((symVar.Attributes & 1) == 1 || symVar.Name.StartsWith("CS$")) {
