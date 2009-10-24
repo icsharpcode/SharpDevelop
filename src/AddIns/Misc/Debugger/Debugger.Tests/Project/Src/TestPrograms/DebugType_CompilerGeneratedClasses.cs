@@ -70,20 +70,11 @@ namespace Debugger.Tests {
 		public void DebugType_CompilerGeneratedClasses()
 		{
 			StartTest("DebugType_CompilerGeneratedClasses.cs");
-			ObjectDump("YieldLocalVariables",
-			           process.SelectedStackFrame.MethodInfo.LocalVariables.
-			           Select(v => new { v.Name, Value = v.GetValue(process.SelectedStackFrame) })
-			          );
+			PrintLocalVariables("YieldLocalVariables");
 			process.Continue();
-			ObjectDump("OutterDelegateLocalVariables",
-			           process.SelectedStackFrame.MethodInfo.LocalVariables.
-			           Select(v => new { v.Name, Value = v.GetValue(process.SelectedStackFrame) })
-			          );
+			PrintLocalVariables("OutterDelegateLocalVariables");
 			process.Continue();
-			ObjectDump("InnterDelegateLocalVariables",
-			           process.SelectedStackFrame.MethodInfo.LocalVariables.
-			           Select(v => new { v.Name, Value = v.GetValue(process.SelectedStackFrame) })
-			          );
+			PrintLocalVariables("InnterDelegateLocalVariables");
 			EndTest();
 		}
 	}
@@ -101,134 +92,159 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:35,5-35,41</DebuggingPaused>
     <YieldLocalVariables>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateLessVar"
+          Type="System.Int32"
           Value="201" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="deleg"
+          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses.IntDelegate"
           Value="null" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateLessVar_DelegRef"
+          Type="System.Int32"
           Value="202" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateLessVar_NestedDelegRef"
+          Type="System.Int32"
           Value="203" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="this"
+          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses"
           Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateFullVar"
+          Type="System.Int32"
           Value="101" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateFullVar_DelegRef"
+          Type="System.Int32"
           Value="102" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateFullVar_NestedDelegRef"
+          Type="System.Int32"
           Value="103" />
       </Item>
     </YieldLocalVariables>
     <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:54,6-54,42</DebuggingPaused>
     <OutterDelegateLocalVariables>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="delegVar"
+          Type="System.Int32"
           Value="301" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="nestedDeleg"
-          Value="{IntDelegate}" />
+          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses.IntDelegate"
+          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses.IntDelegate}" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="delegVar_NestedDelegRef"
+          Type="System.Int32"
           Value="302" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="delegArg_NestedDelegRef"
+          Type="System.Int32"
           Value="401" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateLessVar_DelegRef"
+          Type="System.Int32"
           Value="202" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateLessVar_NestedDelegRef"
+          Type="System.Int32"
           Value="203" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateFullVar_DelegRef"
+          Type="System.Int32"
           Value="102" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateFullVar_NestedDelegRef"
+          Type="System.Int32"
           Value="103" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="this"
+          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses"
           Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </OutterDelegateLocalVariables>
     <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:51,7-51,43</DebuggingPaused>
     <InnterDelegateLocalVariables>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="nestedDelegVar"
+          Type="System.Int32"
           Value="303" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="delegVar_NestedDelegRef"
+          Type="System.Int32"
           Value="302" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="delegArg_NestedDelegRef"
+          Type="System.Int32"
           Value="401" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateLessVar_DelegRef"
+          Type="System.Int32"
           Value="202" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateLessVar_NestedDelegRef"
+          Type="System.Int32"
           Value="203" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateFullVar_DelegRef"
+          Type="System.Int32"
           Value="102" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="stateFullVar_NestedDelegRef"
+          Type="System.Int32"
           Value="103" />
       </Item>
       <Item>
-        <AnonymousType
+        <LocalVariable
           Name="this"
+          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses"
           Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </InnterDelegateLocalVariables>

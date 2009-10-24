@@ -156,14 +156,14 @@ namespace Debugger.Tests {
     <Eval> array[1] = e </Eval>
     <Eval> array[i] = o </Eval>
     <Eval> array[i - 1] = l </Eval>
-    <Eval> list = List&lt;Char&gt; {H, e, l, l, o} </Eval>
+    <Eval> list = List`1 {H, e, l, l, o} </Eval>
     <Eval> list[1] = e </Eval>
     <Eval> list[i] = o </Eval>
     <Eval> hi[1] = i </Eval>
     <Eval> "abcd"[2] = c </Eval>
     <Eval> </Eval>
     <Eval> list.Add(42); list.Add(52);</Eval>
-    <Eval> list = List&lt;Char&gt; {H, e, l, l, o, *, 4} </Eval>
+    <Eval> list = List`1 {H, e, l, l, o, *, 4} </Eval>
     <Eval> </Eval>
     <Eval> i = 10 = 10 </Eval>
     <Eval> -i = -10 </Eval>

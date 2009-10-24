@@ -46,6 +46,11 @@ namespace Debugger.Tests.TestPrograms
 			}
 		}
 		
+		public enum MyEnum: byte
+		{
+			A, B
+		}
+		
 		public interface MyInterface<R, A, B>
 		{
 			R Fun<M>(A a, B b, M m);
@@ -57,7 +62,7 @@ namespace Debugger.Tests.TestPrograms
 			
 			public List<R> Prop { get { return new List<R>(); } }
 			
-			R MyInterface<R, MyClass, MyStruct>.Fun<M>(MyClass a, MyStruct b, M m)
+			public R Fun<M>(MyClass a, MyStruct b, M m)
 			{
 				throw new NotImplementedException();
 			}
@@ -81,7 +86,7 @@ namespace Debugger.Tests.TestPrograms
 			char c = 'a';
 			object obj = new object();
 			MyClass myClass = new MyClass();
-			MyStruct point = new MyStruct();
+			MyStruct myStruct = new MyStruct();
 			object box = 40;
 			
 			// Pointers
@@ -89,7 +94,7 @@ namespace Debugger.Tests.TestPrograms
 			int** iPtrPtr = &iPtr;
 			bool* bPtr = &b;
 			void* voidPtr = &i;
-			MyStruct* pointPtr = &point;
+			MyStruct* myStructPtr = &myStruct;
 			IntPtr ptr = IntPtr.Zero;
 			
 			// Arrays
@@ -119,10 +124,13 @@ namespace Debugger.Tests.TestPrograms
 			
 			// TypeRef generics
 			List<int> list = new List<int>();
-			List<int>.Enumerator listEnum = list.GetEnumerator();
+			List<int>.Enumerator listEnumerator = list.GetEnumerator();
 			
 			// Other
 			AddDelegate fnPtr = Add;
+			ValueType valueType = null;
+			Enum enumType = null;
+			MyEnum myEnum = MyEnum.B;
 			
 			Access access = new Access();
 			
@@ -162,15 +170,20 @@ namespace Debugger.Tests {
 		class LocalVariable
 		{
 			public string Name { get; set; }
-			public DebugType Type { get; set; }
+			public Type Type { get; set; }
 			public Value Value { get; set; }
 		}
 		
 		void PrintLocalVariables()
 		{
+			PrintLocalVariables("LocalVariables");
+		}
+		
+		void PrintLocalVariables(string msg)
+		{
 			ObjectDump(
-				"LocalVariables",
-				process.SelectedStackFrame.MethodInfo.LocalVariables.Select(v => new LocalVariable() { Name = v.Name, Type = v.Type, Value = v.GetValue(process.SelectedStackFrame) })
+				msg,
+				process.SelectedStackFrame.MethodInfo.GetLocalVariables().Select(v => new LocalVariable() { Name = v.Name, Type = v.LocalType, Value = v.GetValue(process.SelectedStackFrame) })
 			);
 		}
 		
@@ -179,7 +192,7 @@ namespace Debugger.Tests {
 		{
 			ExpandProperties(
 				"LocalVariable.Type",
-				"DebugType.ElementType"
+				"DebugType.GetElementType"
 			);
 			StartTest("DebugType.cs");
 			
@@ -209,10 +222,10 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType.cs:129,4-129,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType.cs:137,4-137,40</DebuggingPaused>
     <DefinedTypes
       Capacity="16"
-      Count="12">
+      Count="13">
       <Item>Debugger.Tests.TestPrograms.DebugType</Item>
       <Item>AddDelegate</Item>
       <Item>MyClass</Item>
@@ -222,171 +235,263 @@ namespace Debugger.Tests {
       <Item>MyStruct</Item>
       <Item>MyGenStruct`1</Item>
       <Item>MyGenNestedStruct`1</Item>
+      <Item>MyEnum</Item>
       <Item>MyInterface`3</Item>
       <Item>MyInterfaceImpl`1</Item>
       <Item>Access</Item>
     </DefinedTypes>
     <DefinedTypes
       Capacity="8"
-      Count="5">
+      Count="6">
       <Item>
         <DebugType
+          Attributes="AutoLayout, AnsiClass, Class, Public, BeforeFieldInit"
           BaseType="System.Object"
           FullName="Debugger.Tests.TestPrograms.DebugType"
-          Kind="Class"
-          Module="DebugType.exe"
-          Name="DebugType">
-          <ElementType>null</ElementType>
+          GetMembers="{Add, Main, .ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+          GetMethods="{Add, Main, .ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+          IsClass="True">
+          <GetElementType>null</GetElementType>
         </DebugType>
       </Item>
       <Item>
         <DebugType
+          Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
           BaseType="System.MulticastDelegate"
-          FullName="AddDelegate"
-          Kind="Class"
-          Module="DebugType.exe"
-          Name="AddDelegate">
-          <ElementType>null</ElementType>
+          FullName="Debugger.Tests.TestPrograms.DebugType.AddDelegate"
+          GetMembers="{.ctor, Invoke, BeginInvoke, EndInvoke, GetObjectData, Equals, GetInvocationList, GetHashCode, DynamicInvoke, Equals, GetHashCode, GetInvocationList, get_Method, get_Target, Clone, GetObjectData, System.Reflection.MethodInfo Method, System.Object Target, .ctor, ToString, Equals, GetHashCode, GetType}"
+          GetMethods="{.ctor, Invoke, BeginInvoke, EndInvoke, GetObjectData, Equals, GetInvocationList, GetHashCode, DynamicInvoke, Equals, GetHashCode, GetInvocationList, get_Method, get_Target, Clone, GetObjectData, .ctor, ToString, Equals, GetHashCode, GetType}"
+          GetProperties="{System.Reflection.MethodInfo Method, System.Object Target}"
+          IsClass="True">
+          <GetElementType>null</GetElementType>
         </DebugType>
       </Item>
       <Item>
         <DebugType
+          Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
           BaseType="System.Object"
-          FullName="MyClass"
-          Kind="Class"
-          Module="DebugType.exe"
-          Name="MyClass">
-          <ElementType>null</ElementType>
+          FullName="Debugger.Tests.TestPrograms.DebugType.MyClass"
+          GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+          GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+          IsClass="True">
+          <GetElementType>null</GetElementType>
         </DebugType>
       </Item>
       <Item>
         <DebugType
+          Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
           BaseType="System.ValueType"
-          FullName="MyStruct"
-          Kind="ValueType"
-          Module="DebugType.exe"
-          Name="MyStruct">
-          <ElementType>null</ElementType>
+          FullName="Debugger.Tests.TestPrograms.DebugType.MyStruct"
+          GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+          GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+          IsValueType="True">
+          <GetElementType>null</GetElementType>
         </DebugType>
       </Item>
       <Item>
         <DebugType
+          Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
+          BaseType="System.Enum"
+          FullName="Debugger.Tests.TestPrograms.DebugType.MyEnum"
+          GetEnumUnderlyingType="System.Byte"
+          GetFields="{System.Byte value__}"
+          GetMembers="{System.Byte value__, Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+          GetMethods="{Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+          IsEnum="True"
+          IsValueType="True">
+          <GetElementType>null</GetElementType>
+        </DebugType>
+      </Item>
+      <Item>
+        <DebugType
+          Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
           BaseType="System.Object"
-          FullName="Access"
-          Kind="Class"
-          Module="DebugType.exe"
-          Name="Access">
-          <ElementType>null</ElementType>
+          FullName="Debugger.Tests.TestPrograms.DebugType.Access"
+          GetFields="{System.Int32 publicField}"
+          GetMembers="{System.Int32 publicField, get_publicProperty, publicMethod, .ctor, System.Int32 publicProperty, .ctor, ToString, Equals, GetHashCode, GetType}"
+          GetMethods="{get_publicProperty, publicMethod, .ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+          GetProperties="{System.Int32 publicProperty}"
+          IsClass="True">
+          <GetElementType>null</GetElementType>
         </DebugType>
       </Item>
     </DefinedTypes>
-    <Access-Members
-      Capacity="8"
-      Count="5">
+    <Access-Members>
       <Item>
-        <FieldInfo
-          DeclaringType="Access"
-          FullName="Access.publicField"
-          IsPublic="True"
-          Module="DebugType.exe"
-          Name="publicField"
-          Type="System.Int32" />
+        <DebugFieldInfo
+          Attributes="Public"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType.Access"
+          FieldType="System.Int32"
+          Name="publicField" />
       </Item>
       <Item>
-        <MethodInfo
-          DeclaringType="Access"
-          FullName="Access.get_publicProperty"
-          IsPublic="True"
-          IsSpecialName="True"
-          LocalVariableNames="{this}"
-          Module="DebugType.exe"
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType.Access"
+          FullName="Debugger.Tests.TestPrograms.DebugType.Access.get_publicProperty()"
+          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType.Access this}"
           Name="get_publicProperty"
           ReturnType="System.Int32" />
       </Item>
       <Item>
-        <MethodInfo
-          DeclaringType="Access"
-          FullName="Access.publicMethod"
-          IsPublic="True"
-          LocalVariableNames="{this}"
-          Module="DebugType.exe"
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType.Access"
+          FullName="Debugger.Tests.TestPrograms.DebugType.Access.publicMethod()"
+          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType.Access this}"
           Name="publicMethod" />
       </Item>
       <Item>
-        <MethodInfo
-          DeclaringType="Access"
-          FullName="Access..ctor"
-          IsPublic="True"
-          IsSpecialName="True"
-          LocalVariableNames="{this}"
-          Module="DebugType.exe"
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName, RTSpecialName"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType.Access"
+          FullName="Debugger.Tests.TestPrograms.DebugType.Access..ctor()"
+          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType.Access this}"
           Name=".ctor" />
       </Item>
       <Item>
-        <PropertyInfo
-          DeclaringType="Access"
-          FullName="Access.publicProperty"
-          GetMethod="get_publicProperty"
-          IsPublic="True"
-          Module="DebugType.exe"
+        <DebugPropertyInfo
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType.Access"
           Name="publicProperty"
-          Type="System.Int32" />
-      </Item>
-    </Access-Members>
-    <MyInterfaceImpl-Members
-      Capacity="8"
-      Count="5">
-      <Item>
-        <FieldInfo
-          DeclaringType="MyInterfaceImpl&lt;System.Int32&gt;"
-          FullName="MyInterfaceImpl&lt;System.Int32&gt;.voidPtr"
-          IsPublic="True"
-          Module="DebugType.exe"
-          Name="voidPtr"
-          Type="System.Void*" />
+          PropertyType="System.Int32" />
       </Item>
       <Item>
-        <MethodInfo
-          DeclaringType="MyInterfaceImpl&lt;System.Int32&gt;"
-          FullName="MyInterfaceImpl&lt;System.Int32&gt;.get_Prop"
-          IsPublic="True"
-          IsSpecialName="True"
-          LocalVariableNames="{this}"
-          Module="DebugType.exe"
-          Name="get_Prop"
-          ReturnType="System.Collections.Generic.List&lt;System.Int32&gt;" />
-      </Item>
-      <Item>
-        <MethodInfo
-          DeclaringType="MyInterfaceImpl&lt;System.Int32&gt;"
-          FullName="MyInterfaceImpl&lt;System.Int32&gt;.Fun2"
-          IsPublic="True"
-          LocalVariableNames="{this}"
-          Module="DebugType.exe"
-          Name="Fun2"
-          ParameterCount="3"
-          ParameterTypes="{System.Int32**, System.Object[,], Enumerator&lt;System.Object&gt;}"
-          ReturnType="System.Object[]" />
-      </Item>
-      <Item>
-        <MethodInfo
-          DeclaringType="MyInterfaceImpl&lt;System.Int32&gt;"
-          FullName="MyInterfaceImpl&lt;System.Int32&gt;..ctor"
-          IsPublic="True"
-          IsSpecialName="True"
-          Module="DebugType.exe"
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName, RTSpecialName"
+          DeclaringType="System.Object"
+          FullName="System.Object..ctor()"
           Name=".ctor"
           StepOver="True" />
       </Item>
       <Item>
-        <PropertyInfo
-          DeclaringType="MyInterfaceImpl&lt;System.Int32&gt;"
-          FullName="MyInterfaceImpl&lt;System.Int32&gt;.Prop"
-          GetMethod="get_Prop"
-          IsPublic="True"
-          Module="DebugType.exe"
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask"
+          DeclaringType="System.Object"
+          FullName="System.Object.ToString()"
+          Name="ToString"
+          ReturnType="System.String"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask"
+          DeclaringType="System.Object"
+          FullName="System.Object.Equals(Object obj)"
+          Name="Equals"
+          ReturnType="System.Boolean"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask"
+          DeclaringType="System.Object"
+          FullName="System.Object.GetHashCode()"
+          Name="GetHashCode"
+          ReturnType="System.Int32"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig"
+          DeclaringType="System.Object"
+          FullName="System.Object.GetType()"
+          Name="GetType"
+          ReturnType="System.Type"
+          StepOver="True" />
+      </Item>
+    </Access-Members>
+    <MyInterfaceImpl-Members>
+      <Item>
+        <DebugFieldInfo
+          Attributes="Public"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
+          FieldType="System.Void*"
+          Name="voidPtr" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
+          FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]].get_Prop()"
+          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]] this}"
+          Name="get_Prop"
+          ReturnType="System.Collections.Generic.List`1[[System.Int32]]" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, Final, Virtual, HideBySig, VtableLayoutMask"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
+          FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]].Fun(MyClass a, MyStruct b, Object m)"
+          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]] this}"
+          Name="Fun"
+          ReturnType="System.Int32" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
+          FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum)"
+          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]] this}"
+          Name="Fun2"
+          ReturnType="System.Object[]" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName, RTSpecialName"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
+          FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]..ctor()"
+          Name=".ctor"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugPropertyInfo
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
           Name="Prop"
-          Type="System.Collections.Generic.List&lt;System.Int32&gt;" />
+          PropertyType="System.Collections.Generic.List`1[[System.Int32]]" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName, RTSpecialName"
+          DeclaringType="System.Object"
+          FullName="System.Object..ctor()"
+          Name=".ctor"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask"
+          DeclaringType="System.Object"
+          FullName="System.Object.ToString()"
+          Name="ToString"
+          ReturnType="System.String"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask"
+          DeclaringType="System.Object"
+          FullName="System.Object.Equals(Object obj)"
+          Name="Equals"
+          ReturnType="System.Boolean"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, Virtual, HideBySig, VtableLayoutMask"
+          DeclaringType="System.Object"
+          FullName="System.Object.GetHashCode()"
+          Name="GetHashCode"
+          ReturnType="System.Int32"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig"
+          DeclaringType="System.Object"
+          FullName="System.Object.GetType()"
+          Name="GetType"
+          ReturnType="System.Type"
+          StepOver="True" />
       </Item>
     </MyInterfaceImpl-Members>
     <LocalVariables>
@@ -397,11 +502,12 @@ namespace Debugger.Tests {
           Value="null">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, Public, Serializable, BeforeFieldInit"
               FullName="System.Object"
-              Kind="Class"
-              Module="mscorlib.dll"
-              Name="Object">
-              <ElementType>null</ElementType>
+              GetMembers="{.ctor, ToString, Equals, Equals, ReferenceEquals, GetHashCode, GetType}"
+              GetMethods="{.ctor, ToString, Equals, Equals, ReferenceEquals, GetHashCode, GetType}"
+              IsClass="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -413,13 +519,17 @@ namespace Debugger.Tests {
           Value="null">
           <Type>
             <DebugType
-              BaseType="System.Object"
+              Attributes="AutoLayout, AnsiClass, Class, Public, Sealed, Serializable, BeforeFieldInit"
+              BaseType="System.ValueType"
               FullName="System.String"
-              Interfaces="{System.IComparable, System.ICloneable, System.IConvertible, System.IComparable&lt;System.String&gt;, System.Collections.Generic.IEnumerable&lt;System.Char&gt;, System.Collections.IEnumerable, System.IEquatable&lt;System.String&gt;}"
-              Kind="Class"
-              Module="mscorlib.dll"
-              Name="String">
-              <ElementType>null</ElementType>
+              GetFields="{System.String Empty}"
+              GetInterfaces="{System.IComparable, System.ICloneable, System.IConvertible, System.IComparable`1[[System.String]], System.Collections.Generic.IEnumerable`1[[System.Char]], System.Collections.IEnumerable, System.IEquatable`1[[System.String]]}"
+              GetMembers="{System.String Empty, Join, Join, Equals, Equals, Equals, Equals, Equals, op_Equality, op_Inequality, get_Chars, CopyTo, ToCharArray, ToCharArray, IsNullOrEmpty, GetHashCode, get_Length, Split, Split, Split, Split, Split, Split, Substring, Substring, Trim, Trim, TrimStart, TrimEnd, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, IsNormalized, IsNormalized, Normalize, Normalize, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, CompareTo, CompareTo, CompareOrdinal, CompareOrdinal, Contains, EndsWith, EndsWith, EndsWith, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOfAny, IndexOfAny, IndexOfAny, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOfAny, LastIndexOfAny, LastIndexOfAny, PadLeft, PadLeft, PadRight, PadRight, StartsWith, StartsWith, StartsWith, ToLower, ToLower, ToLowerInvariant, ToUpper, ToUpper, ToUpperInvariant, ToString, ToString, Clone, Insert, Replace, Replace, Remove, Remove, Format, Format, Format, Format, Format, Copy, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Intern, IsInterned, GetTypeCode, GetEnumerator, System.Char Chars, System.Int32 Length, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Join, Join, Equals, Equals, Equals, Equals, Equals, op_Equality, op_Inequality, get_Chars, CopyTo, ToCharArray, ToCharArray, IsNullOrEmpty, GetHashCode, get_Length, Split, Split, Split, Split, Split, Split, Substring, Substring, Trim, Trim, TrimStart, TrimEnd, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, .ctor, IsNormalized, IsNormalized, Normalize, Normalize, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, Compare, CompareTo, CompareTo, CompareOrdinal, CompareOrdinal, Contains, EndsWith, EndsWith, EndsWith, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOf, IndexOfAny, IndexOfAny, IndexOfAny, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOf, LastIndexOfAny, LastIndexOfAny, LastIndexOfAny, PadLeft, PadLeft, PadRight, PadRight, StartsWith, StartsWith, StartsWith, ToLower, ToLower, ToLowerInvariant, ToUpper, ToUpper, ToUpperInvariant, ToString, ToString, Clone, Insert, Replace, Replace, Remove, Remove, Format, Format, Format, Format, Format, Copy, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Concat, Intern, IsInterned, GetTypeCode, GetEnumerator, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Char Chars, System.Int32 Length}"
+              IsPrimitive="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -427,16 +537,17 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="nullMyClass"
-          Type="MyClass"
+          Type="Debugger.Tests.TestPrograms.DebugType.MyClass"
           Value="null">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="MyClass"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="MyClass">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType.MyClass"
+              GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsClass="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -448,13 +559,16 @@ namespace Debugger.Tests {
           Value="42">
           <Type>
             <DebugType
-              BaseType="System.Object"
+              Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
+              BaseType="System.ValueType"
               FullName="System.Int32"
-              Interfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable&lt;System.Int32&gt;, System.IEquatable&lt;System.Int32&gt;}"
-              Kind="ValueType"
-              Module="mscorlib.dll"
-              Name="Int32">
-              <ElementType>null</ElementType>
+              GetInterfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable`1[[System.Int32]], System.IEquatable`1[[System.Int32]]}"
+              GetMembers="{CompareTo, CompareTo, Equals, Equals, GetHashCode, ToString, ToString, ToString, ToString, Parse, Parse, Parse, Parse, TryParse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{CompareTo, CompareTo, Equals, Equals, GetHashCode, ToString, ToString, ToString, ToString, Parse, Parse, Parse, Parse, TryParse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsInteger="True"
+              IsPrimitive="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -466,13 +580,16 @@ namespace Debugger.Tests {
           Value="True">
           <Type>
             <DebugType
-              BaseType="System.Object"
+              Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
+              BaseType="System.ValueType"
               FullName="System.Boolean"
-              Interfaces="{System.IComparable, System.IConvertible, System.IComparable&lt;System.Boolean&gt;, System.IEquatable&lt;System.Boolean&gt;}"
-              Kind="ValueType"
-              Module="mscorlib.dll"
-              Name="Boolean">
-              <ElementType>null</ElementType>
+              GetFields="{System.String TrueString, System.String FalseString}"
+              GetInterfaces="{System.IComparable, System.IConvertible, System.IComparable`1[[System.Boolean]], System.IEquatable`1[[System.Boolean]]}"
+              GetMembers="{System.String TrueString, System.String FalseString, GetHashCode, ToString, ToString, Equals, Equals, CompareTo, CompareTo, Parse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{GetHashCode, ToString, ToString, Equals, Equals, CompareTo, CompareTo, Parse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsPrimitive="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -484,13 +601,15 @@ namespace Debugger.Tests {
           Value="a">
           <Type>
             <DebugType
-              BaseType="System.Object"
+              Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
+              BaseType="System.ValueType"
               FullName="System.Char"
-              Interfaces="{System.IComparable, System.IConvertible, System.IComparable&lt;System.Char&gt;, System.IEquatable&lt;System.Char&gt;}"
-              Kind="ValueType"
-              Module="mscorlib.dll"
-              Name="Char">
-              <ElementType>null</ElementType>
+              GetInterfaces="{System.IComparable, System.IConvertible, System.IComparable`1[[System.Char]], System.IEquatable`1[[System.Char]]}"
+              GetMembers="{GetHashCode, Equals, Equals, CompareTo, CompareTo, ToString, ToString, ToString, Parse, TryParse, IsDigit, IsDigit, IsLetter, IsLetter, IsWhiteSpace, IsWhiteSpace, IsUpper, IsUpper, IsLower, IsLower, IsPunctuation, IsPunctuation, IsLetterOrDigit, IsLetterOrDigit, ToUpper, ToUpper, ToUpperInvariant, ToLower, ToLower, ToLowerInvariant, GetTypeCode, IsControl, IsControl, IsNumber, IsNumber, IsSeparator, IsSeparator, IsSurrogate, IsSurrogate, IsSymbol, IsSymbol, GetUnicodeCategory, GetUnicodeCategory, GetNumericValue, GetNumericValue, IsHighSurrogate, IsHighSurrogate, IsLowSurrogate, IsLowSurrogate, IsSurrogatePair, IsSurrogatePair, ConvertFromUtf32, ConvertToUtf32, ConvertToUtf32, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{GetHashCode, Equals, Equals, CompareTo, CompareTo, ToString, ToString, ToString, Parse, TryParse, IsDigit, IsDigit, IsLetter, IsLetter, IsWhiteSpace, IsWhiteSpace, IsUpper, IsUpper, IsLower, IsLower, IsPunctuation, IsPunctuation, IsLetterOrDigit, IsLetterOrDigit, ToUpper, ToUpper, ToUpperInvariant, ToLower, ToLower, ToLowerInvariant, GetTypeCode, IsControl, IsControl, IsNumber, IsNumber, IsSeparator, IsSeparator, IsSurrogate, IsSurrogate, IsSymbol, IsSymbol, GetUnicodeCategory, GetUnicodeCategory, GetNumericValue, GetNumericValue, IsHighSurrogate, IsHighSurrogate, IsLowSurrogate, IsLowSurrogate, IsSurrogatePair, IsSurrogatePair, ConvertFromUtf32, ConvertToUtf32, ConvertToUtf32, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsPrimitive="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -502,11 +621,12 @@ namespace Debugger.Tests {
           Value="{System.Object}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, Public, Serializable, BeforeFieldInit"
               FullName="System.Object"
-              Kind="Class"
-              Module="mscorlib.dll"
-              Name="Object">
-              <ElementType>null</ElementType>
+              GetMembers="{.ctor, ToString, Equals, Equals, ReferenceEquals, GetHashCode, GetType}"
+              GetMethods="{.ctor, ToString, Equals, Equals, ReferenceEquals, GetHashCode, GetType}"
+              IsClass="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -514,33 +634,35 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myClass"
-          Type="MyClass"
-          Value="{MyClass}">
+          Type="Debugger.Tests.TestPrograms.DebugType.MyClass"
+          Value="{Debugger.Tests.TestPrograms.DebugType.MyClass}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="MyClass"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="MyClass">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType.MyClass"
+              GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsClass="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
       </Item>
       <Item>
         <LocalVariable
-          Name="point"
-          Type="MyStruct"
-          Value="{MyStruct}">
+          Name="myStruct"
+          Type="Debugger.Tests.TestPrograms.DebugType.MyStruct"
+          Value="{Debugger.Tests.TestPrograms.DebugType.MyStruct}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="MyStruct"
-              Kind="ValueType"
-              Module="DebugType.exe"
-              Name="MyStruct">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType.MyStruct"
+              GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -549,14 +671,15 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="box"
           Type="System.Object"
-          Value="{System.Int32}">
+          Value="40">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, Public, Serializable, BeforeFieldInit"
               FullName="System.Object"
-              Kind="Class"
-              Module="mscorlib.dll"
-              Name="Object">
-              <ElementType>null</ElementType>
+              GetMembers="{.ctor, ToString, Equals, Equals, ReferenceEquals, GetHashCode, GetType}"
+              GetMethods="{.ctor, ToString, Equals, Equals, ReferenceEquals, GetHashCode, GetType}"
+              IsClass="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -568,22 +691,27 @@ namespace Debugger.Tests {
           Value="{System.Int32*}">
           <Type>
             <DebugType
-              ElementType="System.Int32"
+              Attributes="NotPublic"
               FullName="System.Int32*"
-              Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}"
-              Name="Int32*">
-              <ElementType>
+              GetElementType="System.Int32"
+              HasElementType="True"
+              IsClass="True"
+              IsCompilerGenerated="True"
+              IsPointer="True">
+              <GetElementType>
                 <DebugType
-                  BaseType="System.Object"
+                  Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
+                  BaseType="System.ValueType"
                   FullName="System.Int32"
-                  Interfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable&lt;System.Int32&gt;, System.IEquatable&lt;System.Int32&gt;}"
-                  Kind="ValueType"
-                  Module="mscorlib.dll"
-                  Name="Int32">
-                  <ElementType>null</ElementType>
+                  GetInterfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable`1[[System.Int32]], System.IEquatable`1[[System.Int32]]}"
+                  GetMembers="{CompareTo, CompareTo, Equals, Equals, GetHashCode, ToString, ToString, ToString, ToString, Parse, Parse, Parse, Parse, TryParse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  GetMethods="{CompareTo, CompareTo, Equals, Equals, GetHashCode, ToString, ToString, ToString, ToString, Parse, Parse, Parse, Parse, TryParse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  IsInteger="True"
+                  IsPrimitive="True"
+                  IsValueType="True">
+                  <GetElementType>null</GetElementType>
                 </DebugType>
-              </ElementType>
+              </GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -595,31 +723,38 @@ namespace Debugger.Tests {
           Value="{System.Int32**}">
           <Type>
             <DebugType
-              ElementType="System.Int32*"
+              Attributes="NotPublic"
               FullName="System.Int32**"
-              Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}"
-              Name="Int32**">
-              <ElementType>
+              GetElementType="System.Int32*"
+              HasElementType="True"
+              IsClass="True"
+              IsCompilerGenerated="True"
+              IsPointer="True">
+              <GetElementType>
                 <DebugType
-                  ElementType="System.Int32"
+                  Attributes="NotPublic"
                   FullName="System.Int32*"
-                  Kind="Pointer"
-                  Module="{Exception: The type is not a class or value type.}"
-                  Name="Int32*">
-                  <ElementType>
+                  GetElementType="System.Int32"
+                  HasElementType="True"
+                  IsClass="True"
+                  IsCompilerGenerated="True"
+                  IsPointer="True">
+                  <GetElementType>
                     <DebugType
-                      BaseType="System.Object"
+                      Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
+                      BaseType="System.ValueType"
                       FullName="System.Int32"
-                      Interfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable&lt;System.Int32&gt;, System.IEquatable&lt;System.Int32&gt;}"
-                      Kind="ValueType"
-                      Module="mscorlib.dll"
-                      Name="Int32">
-                      <ElementType>null</ElementType>
+                      GetInterfaces="{System.IComparable, System.IFormattable, System.IConvertible, System.IComparable`1[[System.Int32]], System.IEquatable`1[[System.Int32]]}"
+                      GetMembers="{CompareTo, CompareTo, Equals, Equals, GetHashCode, ToString, ToString, ToString, ToString, Parse, Parse, Parse, Parse, TryParse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                      GetMethods="{CompareTo, CompareTo, Equals, Equals, GetHashCode, ToString, ToString, ToString, ToString, Parse, Parse, Parse, Parse, TryParse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                      IsInteger="True"
+                      IsPrimitive="True"
+                      IsValueType="True">
+                      <GetElementType>null</GetElementType>
                     </DebugType>
-                  </ElementType>
+                  </GetElementType>
                 </DebugType>
-              </ElementType>
+              </GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -631,22 +766,27 @@ namespace Debugger.Tests {
           Value="{System.Boolean*}">
           <Type>
             <DebugType
-              ElementType="System.Boolean"
+              Attributes="NotPublic"
               FullName="System.Boolean*"
-              Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}"
-              Name="Boolean*">
-              <ElementType>
+              GetElementType="System.Boolean"
+              HasElementType="True"
+              IsClass="True"
+              IsCompilerGenerated="True"
+              IsPointer="True">
+              <GetElementType>
                 <DebugType
-                  BaseType="System.Object"
+                  Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
+                  BaseType="System.ValueType"
                   FullName="System.Boolean"
-                  Interfaces="{System.IComparable, System.IConvertible, System.IComparable&lt;System.Boolean&gt;, System.IEquatable&lt;System.Boolean&gt;}"
-                  Kind="ValueType"
-                  Module="mscorlib.dll"
-                  Name="Boolean">
-                  <ElementType>null</ElementType>
+                  GetFields="{System.String TrueString, System.String FalseString}"
+                  GetInterfaces="{System.IComparable, System.IConvertible, System.IComparable`1[[System.Boolean]], System.IEquatable`1[[System.Boolean]]}"
+                  GetMembers="{System.String TrueString, System.String FalseString, GetHashCode, ToString, ToString, Equals, Equals, CompareTo, CompareTo, Parse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  GetMethods="{GetHashCode, ToString, ToString, Equals, Equals, CompareTo, CompareTo, Parse, TryParse, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  IsPrimitive="True"
+                  IsValueType="True">
+                  <GetElementType>null</GetElementType>
                 </DebugType>
-              </ElementType>
+              </GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -658,47 +798,53 @@ namespace Debugger.Tests {
           Value="{System.Void*}">
           <Type>
             <DebugType
-              ElementType="System.Void"
+              Attributes="NotPublic"
               FullName="System.Void*"
-              Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}"
-              Name="Void*">
-              <ElementType>
+              GetElementType="System.Void"
+              HasElementType="True"
+              IsClass="True"
+              IsCompilerGenerated="True"
+              IsPointer="True">
+              <GetElementType>
                 <DebugType
+                  Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
                   BaseType="System.ValueType"
                   FullName="System.Void"
-                  Kind="ValueType"
-                  Module="mscorlib.dll"
-                  Name="Void">
-                  <ElementType>null</ElementType>
+                  GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  IsValueType="True">
+                  <GetElementType>null</GetElementType>
                 </DebugType>
-              </ElementType>
+              </GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
       </Item>
       <Item>
         <LocalVariable
-          Name="pointPtr"
-          Type="MyStruct*"
-          Value="{MyStruct*}">
+          Name="myStructPtr"
+          Type="Debugger.Tests.TestPrograms.DebugType.MyStruct*"
+          Value="{Debugger.Tests.TestPrograms.DebugType.MyStruct*}">
           <Type>
             <DebugType
-              ElementType="MyStruct"
-              FullName="MyStruct*"
-              Kind="Pointer"
-              Module="{Exception: The type is not a class or value type.}"
-              Name="MyStruct*">
-              <ElementType>
+              Attributes="NotPublic"
+              FullName="Debugger.Tests.TestPrograms.DebugType.MyStruct*"
+              GetElementType="Debugger.Tests.TestPrograms.DebugType.MyStruct"
+              HasElementType="True"
+              IsClass="True"
+              IsCompilerGenerated="True"
+              IsPointer="True">
+              <GetElementType>
                 <DebugType
+                  Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
                   BaseType="System.ValueType"
-                  FullName="MyStruct"
-                  Kind="ValueType"
-                  Module="DebugType.exe"
-                  Name="MyStruct">
-                  <ElementType>null</ElementType>
+                  FullName="Debugger.Tests.TestPrograms.DebugType.MyStruct"
+                  GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  IsValueType="True">
+                  <GetElementType>null</GetElementType>
                 </DebugType>
-              </ElementType>
+              </GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -707,16 +853,19 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="ptr"
           Type="System.IntPtr"
-          Value="0">
+          Value="{System.IntPtr}">
           <Type>
             <DebugType
-              BaseType="System.Object"
+              Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
+              BaseType="System.ValueType"
               FullName="System.IntPtr"
-              Interfaces="{System.Runtime.Serialization.ISerializable}"
-              Kind="ValueType"
-              Module="mscorlib.dll"
-              Name="IntPtr">
-              <ElementType>null</ElementType>
+              GetFields="{System.IntPtr Zero}"
+              GetInterfaces="{System.Runtime.Serialization.ISerializable}"
+              GetMembers="{System.IntPtr Zero, .ctor, .ctor, .ctor, Equals, GetHashCode, ToInt32, ToInt64, ToString, ToString, op_Explicit, op_Explicit, op_Explicit, op_Explicit, op_Explicit, op_Explicit, op_Equality, op_Inequality, get_Size, ToPointer, System.Int32 Size, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, .ctor, .ctor, Equals, GetHashCode, ToInt32, ToInt64, ToString, ToString, op_Explicit, op_Explicit, op_Explicit, op_Explicit, op_Explicit, op_Explicit, op_Equality, op_Inequality, get_Size, ToPointer, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Int32 Size}"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -728,23 +877,31 @@ namespace Debugger.Tests {
           Value="{System.Char[]}">
           <Type>
             <DebugType
+              Attributes="NotPublic"
               BaseType="System.Array"
-              ElementType="System.Char"
               FullName="System.Char[]"
-              Kind="Array"
-              Module="{Exception: The type is not a class or value type.}"
-              Name="Char[]">
-              <ElementType>
+              GetArrayRank="1"
+              GetElementType="System.Char"
+              GetMembers="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized}"
+              HasElementType="True"
+              IsArray="True"
+              IsClass="True"
+              IsCompilerGenerated="True">
+              <GetElementType>
                 <DebugType
-                  BaseType="System.Object"
+                  Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
+                  BaseType="System.ValueType"
                   FullName="System.Char"
-                  Interfaces="{System.IComparable, System.IConvertible, System.IComparable&lt;System.Char&gt;, System.IEquatable&lt;System.Char&gt;}"
-                  Kind="ValueType"
-                  Module="mscorlib.dll"
-                  Name="Char">
-                  <ElementType>null</ElementType>
+                  GetInterfaces="{System.IComparable, System.IConvertible, System.IComparable`1[[System.Char]], System.IEquatable`1[[System.Char]]}"
+                  GetMembers="{GetHashCode, Equals, Equals, CompareTo, CompareTo, ToString, ToString, ToString, Parse, TryParse, IsDigit, IsDigit, IsLetter, IsLetter, IsWhiteSpace, IsWhiteSpace, IsUpper, IsUpper, IsLower, IsLower, IsPunctuation, IsPunctuation, IsLetterOrDigit, IsLetterOrDigit, ToUpper, ToUpper, ToUpperInvariant, ToLower, ToLower, ToLowerInvariant, GetTypeCode, IsControl, IsControl, IsNumber, IsNumber, IsSeparator, IsSeparator, IsSurrogate, IsSurrogate, IsSymbol, IsSymbol, GetUnicodeCategory, GetUnicodeCategory, GetNumericValue, GetNumericValue, IsHighSurrogate, IsHighSurrogate, IsLowSurrogate, IsLowSurrogate, IsSurrogatePair, IsSurrogatePair, ConvertFromUtf32, ConvertToUtf32, ConvertToUtf32, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  GetMethods="{GetHashCode, Equals, Equals, CompareTo, CompareTo, ToString, ToString, ToString, Parse, TryParse, IsDigit, IsDigit, IsLetter, IsLetter, IsWhiteSpace, IsWhiteSpace, IsUpper, IsUpper, IsLower, IsLower, IsPunctuation, IsPunctuation, IsLetterOrDigit, IsLetterOrDigit, ToUpper, ToUpper, ToUpperInvariant, ToLower, ToLower, ToLowerInvariant, GetTypeCode, IsControl, IsControl, IsNumber, IsNumber, IsSeparator, IsSeparator, IsSurrogate, IsSurrogate, IsSymbol, IsSymbol, GetUnicodeCategory, GetUnicodeCategory, GetNumericValue, GetNumericValue, IsHighSurrogate, IsHighSurrogate, IsLowSurrogate, IsLowSurrogate, IsSurrogatePair, IsSurrogatePair, ConvertFromUtf32, ConvertToUtf32, ConvertToUtf32, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  IsPrimitive="True"
+                  IsValueType="True">
+                  <GetElementType>null</GetElementType>
                 </DebugType>
-              </ElementType>
+              </GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -756,23 +913,31 @@ namespace Debugger.Tests {
           Value="{System.Char[,]}">
           <Type>
             <DebugType
+              Attributes="NotPublic"
               BaseType="System.Array"
-              ElementType="System.Char"
               FullName="System.Char[,]"
-              Kind="Array"
-              Module="{Exception: The type is not a class or value type.}"
-              Name="Char[,]">
-              <ElementType>
+              GetArrayRank="2"
+              GetElementType="System.Char"
+              GetMembers="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized}"
+              HasElementType="True"
+              IsArray="True"
+              IsClass="True"
+              IsCompilerGenerated="True">
+              <GetElementType>
                 <DebugType
-                  BaseType="System.Object"
+                  Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
+                  BaseType="System.ValueType"
                   FullName="System.Char"
-                  Interfaces="{System.IComparable, System.IConvertible, System.IComparable&lt;System.Char&gt;, System.IEquatable&lt;System.Char&gt;}"
-                  Kind="ValueType"
-                  Module="mscorlib.dll"
-                  Name="Char">
-                  <ElementType>null</ElementType>
+                  GetInterfaces="{System.IComparable, System.IConvertible, System.IComparable`1[[System.Char]], System.IEquatable`1[[System.Char]]}"
+                  GetMembers="{GetHashCode, Equals, Equals, CompareTo, CompareTo, ToString, ToString, ToString, Parse, TryParse, IsDigit, IsDigit, IsLetter, IsLetter, IsWhiteSpace, IsWhiteSpace, IsUpper, IsUpper, IsLower, IsLower, IsPunctuation, IsPunctuation, IsLetterOrDigit, IsLetterOrDigit, ToUpper, ToUpper, ToUpperInvariant, ToLower, ToLower, ToLowerInvariant, GetTypeCode, IsControl, IsControl, IsNumber, IsNumber, IsSeparator, IsSeparator, IsSurrogate, IsSurrogate, IsSymbol, IsSymbol, GetUnicodeCategory, GetUnicodeCategory, GetNumericValue, GetNumericValue, IsHighSurrogate, IsHighSurrogate, IsLowSurrogate, IsLowSurrogate, IsSurrogatePair, IsSurrogatePair, ConvertFromUtf32, ConvertToUtf32, ConvertToUtf32, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  GetMethods="{GetHashCode, Equals, Equals, CompareTo, CompareTo, ToString, ToString, ToString, Parse, TryParse, IsDigit, IsDigit, IsLetter, IsLetter, IsWhiteSpace, IsWhiteSpace, IsUpper, IsUpper, IsLower, IsLower, IsPunctuation, IsPunctuation, IsLetterOrDigit, IsLetterOrDigit, ToUpper, ToUpper, ToUpperInvariant, ToLower, ToLower, ToLowerInvariant, GetTypeCode, IsControl, IsControl, IsNumber, IsNumber, IsSeparator, IsSeparator, IsSurrogate, IsSurrogate, IsSymbol, IsSymbol, GetUnicodeCategory, GetUnicodeCategory, GetNumericValue, GetNumericValue, IsHighSurrogate, IsHighSurrogate, IsLowSurrogate, IsLowSurrogate, IsSurrogatePair, IsSurrogatePair, ConvertFromUtf32, ConvertToUtf32, ConvertToUtf32, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  IsPrimitive="True"
+                  IsValueType="True">
+                  <GetElementType>null</GetElementType>
                 </DebugType>
-              </ElementType>
+              </GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -780,17 +945,20 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="nullable_value"
-          Type="System.Nullable&lt;System.Int32&gt;"
-          Value="{System.Nullable&lt;System.Int32&gt;}">
+          Type="System.Nullable`1[[System.Int32]]"
+          Value="{System.Nullable`1[[System.Int32]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="System.Nullable&lt;System.Int32&gt;"
-              GenericArguments="{System.Int32}"
-              Kind="ValueType"
-              Module="mscorlib.dll"
-              Name="Nullable&lt;Int32&gt;">
-              <ElementType>null</ElementType>
+              FullName="System.Nullable`1[[System.Int32]]"
+              GetGenericArguments="{System.Int32}"
+              GetMembers="{.ctor, get_HasValue, get_Value, GetValueOrDefault, GetValueOrDefault, Equals, GetHashCode, ToString, op_Implicit, op_Explicit, System.Boolean HasValue, System.Int32 Value, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, get_HasValue, get_Value, GetValueOrDefault, GetValueOrDefault, Equals, GetHashCode, ToString, op_Implicit, op_Explicit, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Boolean HasValue, System.Int32 Value}"
+              IsGenericType="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -798,17 +966,20 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="nullable_null"
-          Type="System.Nullable&lt;System.Int32&gt;"
-          Value="{System.Nullable&lt;System.Int32&gt;}">
+          Type="System.Nullable`1[[System.Int32]]"
+          Value="{System.Nullable`1[[System.Int32]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, Public, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="System.Nullable&lt;System.Int32&gt;"
-              GenericArguments="{System.Int32}"
-              Kind="ValueType"
-              Module="mscorlib.dll"
-              Name="Nullable&lt;Int32&gt;">
-              <ElementType>null</ElementType>
+              FullName="System.Nullable`1[[System.Int32]]"
+              GetGenericArguments="{System.Int32}"
+              GetMembers="{.ctor, get_HasValue, get_Value, GetValueOrDefault, GetValueOrDefault, Equals, GetHashCode, ToString, op_Implicit, op_Explicit, System.Boolean HasValue, System.Int32 Value, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, get_HasValue, get_Value, GetValueOrDefault, GetValueOrDefault, Equals, GetHashCode, ToString, op_Implicit, op_Explicit, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Boolean HasValue, System.Int32 Value}"
+              IsGenericType="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -816,17 +987,19 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenClass_int"
-          Type="MyGenClass&lt;System.Int32&gt;"
-          Value="{MyGenClass&lt;System.Int32&gt;}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="MyGenClass&lt;System.Int32&gt;"
-              GenericArguments="{System.Int32}"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="MyGenClass&lt;Int32&gt;">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]"
+              GetGenericArguments="{System.Int32}"
+              GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsClass="True"
+              IsGenericType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -834,27 +1007,35 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="array_MyGenClass_int"
-          Type="MyGenClass&lt;System.Int32&gt;[]"
-          Value="{MyGenClass&lt;System.Int32&gt;[]}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]][]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]][]}">
           <Type>
             <DebugType
+              Attributes="NotPublic"
               BaseType="System.Array"
-              ElementType="MyGenClass&lt;System.Int32&gt;"
-              FullName="MyGenClass&lt;System.Int32&gt;[]"
-              Kind="Array"
-              Module="{Exception: The type is not a class or value type.}"
-              Name="Int32&gt;[]">
-              <ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]][]"
+              GetArrayRank="1"
+              GetElementType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]"
+              GetMembers="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized}"
+              HasElementType="True"
+              IsArray="True"
+              IsClass="True"
+              IsCompilerGenerated="True">
+              <GetElementType>
                 <DebugType
+                  Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
                   BaseType="System.Object"
-                  FullName="MyGenClass&lt;System.Int32&gt;"
-                  GenericArguments="{System.Int32}"
-                  Kind="Class"
-                  Module="DebugType.exe"
-                  Name="MyGenClass&lt;Int32&gt;">
-                  <ElementType>null</ElementType>
+                  FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]"
+                  GetGenericArguments="{System.Int32}"
+                  GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  IsClass="True"
+                  IsGenericType="True">
+                  <GetElementType>null</GetElementType>
                 </DebugType>
-              </ElementType>
+              </GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -862,17 +1043,19 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenClass_MyGenStruct_int"
-          Type="MyGenClass&lt;MyGenStruct&lt;System.Int32&gt;&gt;"
-          Value="{MyGenClass&lt;MyGenStruct&lt;System.Int32&gt;&gt;}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]].MyGenClass`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]].MyGenClass`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="MyGenClass&lt;MyGenStruct&lt;System.Int32&gt;&gt;"
-              GenericArguments="{MyGenStruct&lt;System.Int32&gt;}"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="MyGenClass&lt;MyGenStruct&lt;Int32&gt;&gt;">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]].MyGenClass`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]]"
+              GetGenericArguments="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]}"
+              GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsClass="True"
+              IsGenericType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -880,17 +1063,19 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myNestedClass"
-          Type="MyNestedClass&lt;System.Int32&gt;"
-          Value="{MyNestedClass&lt;System.Int32&gt;}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]].MyNestedClass[[System.Int32]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]].MyNestedClass[[System.Int32]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="MyNestedClass&lt;System.Int32&gt;"
-              GenericArguments="{System.Int32}"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="MyNestedClass&lt;Int32&gt;">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]].MyNestedClass[[System.Int32]]"
+              GetGenericArguments="{System.Int32}"
+              GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsClass="True"
+              IsGenericType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -898,17 +1083,19 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenNestedClass"
-          Type="MyGenNestedClass&lt;System.Int32,System.Char&gt;"
-          Value="{MyGenNestedClass&lt;System.Int32,System.Char&gt;}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenClass`1[[System.Int32, System.Char]].MyGenNestedClass`1[[System.Int32, System.Char]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenClass`1[[System.Int32, System.Char]].MyGenNestedClass`1[[System.Int32, System.Char]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="MyGenNestedClass&lt;System.Int32,System.Char&gt;"
-              GenericArguments="{System.Int32, System.Char}"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="MyGenNestedClass&lt;Int32,Char&gt;">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenClass`1[[System.Int32, System.Char]].MyGenNestedClass`1[[System.Int32, System.Char]]"
+              GetGenericArguments="{System.Int32, System.Char}"
+              GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsClass="True"
+              IsGenericType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -916,17 +1103,19 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenStruct_int"
-          Type="MyGenStruct&lt;System.Int32&gt;"
-          Value="{MyGenStruct&lt;System.Int32&gt;}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="MyGenStruct&lt;System.Int32&gt;"
-              GenericArguments="{System.Int32}"
-              Kind="ValueType"
-              Module="DebugType.exe"
-              Name="MyGenStruct&lt;Int32&gt;">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]"
+              GetGenericArguments="{System.Int32}"
+              GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsGenericType="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -934,27 +1123,35 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="array_MyGenStruct_int"
-          Type="MyGenStruct&lt;System.Int32&gt;[]"
-          Value="{MyGenStruct&lt;System.Int32&gt;[]}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]][]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]][]}">
           <Type>
             <DebugType
+              Attributes="NotPublic"
               BaseType="System.Array"
-              ElementType="MyGenStruct&lt;System.Int32&gt;"
-              FullName="MyGenStruct&lt;System.Int32&gt;[]"
-              Kind="Array"
-              Module="{Exception: The type is not a class or value type.}"
-              Name="Int32&gt;[]">
-              <ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]][]"
+              GetArrayRank="1"
+              GetElementType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]"
+              GetMembers="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized}"
+              HasElementType="True"
+              IsArray="True"
+              IsClass="True"
+              IsCompilerGenerated="True">
+              <GetElementType>
                 <DebugType
+                  Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
                   BaseType="System.ValueType"
-                  FullName="MyGenStruct&lt;System.Int32&gt;"
-                  GenericArguments="{System.Int32}"
-                  Kind="ValueType"
-                  Module="DebugType.exe"
-                  Name="MyGenStruct&lt;Int32&gt;">
-                  <ElementType>null</ElementType>
+                  FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]"
+                  GetGenericArguments="{System.Int32}"
+                  GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+                  IsGenericType="True"
+                  IsValueType="True">
+                  <GetElementType>null</GetElementType>
                 </DebugType>
-              </ElementType>
+              </GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -962,17 +1159,19 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenStruct_MyGenClass_int"
-          Type="MyGenStruct&lt;MyGenClass&lt;System.Int32&gt;&gt;"
-          Value="{MyGenStruct&lt;MyGenClass&lt;System.Int32&gt;&gt;}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]].MyGenStruct`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]].MyGenStruct`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="MyGenStruct&lt;MyGenClass&lt;System.Int32&gt;&gt;"
-              GenericArguments="{MyGenClass&lt;System.Int32&gt;}"
-              Kind="ValueType"
-              Module="DebugType.exe"
-              Name="MyGenStruct&lt;MyGenClass&lt;Int32&gt;&gt;">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]].MyGenStruct`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]]"
+              GetGenericArguments="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]}"
+              GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsGenericType="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -980,17 +1179,19 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenNestedStruct"
-          Type="MyGenNestedStruct&lt;System.Int32,System.Char&gt;"
-          Value="{MyGenNestedStruct&lt;System.Int32,System.Char&gt;}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenStruct`1[[System.Int32, System.Char]].MyGenNestedStruct`1[[System.Int32, System.Char]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenStruct`1[[System.Int32, System.Char]].MyGenNestedStruct`1[[System.Int32, System.Char]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="MyGenNestedStruct&lt;System.Int32,System.Char&gt;"
-              GenericArguments="{System.Int32, System.Char}"
-              Kind="ValueType"
-              Module="DebugType.exe"
-              Name="MyGenNestedStruct&lt;Int32,Char&gt;">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenStruct`1[[System.Int32, System.Char]].MyGenNestedStruct`1[[System.Int32, System.Char]]"
+              GetGenericArguments="{System.Int32, System.Char}"
+              GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsGenericType="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -998,18 +1199,22 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myInterfaceImpl"
-          Type="MyInterfaceImpl&lt;System.Int32&gt;"
-          Value="{MyInterfaceImpl&lt;System.Int32&gt;}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="MyInterfaceImpl&lt;System.Int32&gt;"
-              GenericArguments="{System.Int32}"
-              Interfaces="{MyInterface&lt;System.Int32,MyClass,MyStruct&gt;}"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="MyInterfaceImpl&lt;Int32&gt;">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
+              GetFields="{System.Void* voidPtr}"
+              GetGenericArguments="{System.Int32}"
+              GetInterfaces="{Debugger.Tests.TestPrograms.DebugType[[System.Int32, Debugger.Tests.TestPrograms.DebugType.MyClass, Debugger.Tests.TestPrograms.DebugType.MyStruct]].MyInterface`3[[System.Int32, Debugger.Tests.TestPrograms.DebugType.MyClass, Debugger.Tests.TestPrograms.DebugType.MyStruct]]}"
+              GetMembers="{System.Void* voidPtr, get_Prop, Fun, Fun2, .ctor, System.Collections.Generic.List`1[[System.Int32]] Prop, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{get_Prop, Fun, Fun2, .ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Collections.Generic.List`1[[System.Int32]] Prop}"
+              IsClass="True"
+              IsGenericType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -1017,16 +1222,18 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myInterface"
-          Type="MyInterface&lt;System.Int32,MyClass,MyStruct&gt;"
-          Value="{MyInterfaceImpl&lt;System.Int32&gt;}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32, Debugger.Tests.TestPrograms.DebugType.MyClass, Debugger.Tests.TestPrograms.DebugType.MyStruct]].MyInterface`3[[System.Int32, Debugger.Tests.TestPrograms.DebugType.MyClass, Debugger.Tests.TestPrograms.DebugType.MyStruct]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]}">
           <Type>
             <DebugType
-              FullName="MyInterface&lt;System.Int32,MyClass,MyStruct&gt;"
-              GenericArguments="{System.Int32, MyClass, MyStruct}"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="MyInterface&lt;Int32,MyClass,MyStruct&gt;">
-              <ElementType>null</ElementType>
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, ClassSemanticsMask, Abstract"
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32, Debugger.Tests.TestPrograms.DebugType.MyClass, Debugger.Tests.TestPrograms.DebugType.MyStruct]].MyInterface`3[[System.Int32, Debugger.Tests.TestPrograms.DebugType.MyClass, Debugger.Tests.TestPrograms.DebugType.MyStruct]]"
+              GetGenericArguments="{System.Int32, Debugger.Tests.TestPrograms.DebugType.MyClass, Debugger.Tests.TestPrograms.DebugType.MyStruct}"
+              GetMembers="{Fun}"
+              GetMethods="{Fun}"
+              IsGenericType="True"
+              IsInterface="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -1034,37 +1241,43 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="list"
-          Type="System.Collections.Generic.List&lt;System.Int32&gt;"
-          Value="{System.Collections.Generic.List&lt;System.Int32&gt;}">
+          Type="System.Collections.Generic.List`1[[System.Int32]]"
+          Value="{System.Collections.Generic.List`1[[System.Int32]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, Public, Serializable, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="System.Collections.Generic.List&lt;System.Int32&gt;"
-              GenericArguments="{System.Int32}"
-              Interfaces="{System.Collections.Generic.IList&lt;System.Int32&gt;, System.Collections.Generic.ICollection&lt;System.Int32&gt;, System.Collections.Generic.IEnumerable&lt;System.Int32&gt;, System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
-              Kind="Class"
-              Module="mscorlib.dll"
-              Name="List&lt;Int32&gt;">
-              <ElementType>null</ElementType>
+              FullName="System.Collections.Generic.List`1[[System.Int32]]"
+              GetGenericArguments="{System.Int32}"
+              GetInterfaces="{System.Collections.Generic.IList`1[[System.Int32]], System.Collections.Generic.ICollection`1[[System.Int32]], System.Collections.Generic.IEnumerable`1[[System.Int32]], System.Collections.IList, System.Collections.ICollection, System.Collections.IEnumerable}"
+              GetMembers="{.ctor, .ctor, .ctor, get_Capacity, set_Capacity, get_Count, get_Item, set_Item, Add, AddRange, AsReadOnly, BinarySearch, BinarySearch, BinarySearch, Clear, Contains, ConvertAll, CopyTo, CopyTo, CopyTo, Exists, Find, FindAll, FindIndex, FindIndex, FindIndex, FindLast, FindLastIndex, FindLastIndex, FindLastIndex, ForEach, GetEnumerator, GetRange, IndexOf, IndexOf, IndexOf, Insert, InsertRange, LastIndexOf, LastIndexOf, LastIndexOf, Remove, RemoveAll, RemoveAt, RemoveRange, Reverse, Reverse, Sort, Sort, Sort, Sort, ToArray, TrimExcess, TrueForAll, System.Int32 Capacity, System.Int32 Count, System.Int32 Item, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, .ctor, .ctor, get_Capacity, set_Capacity, get_Count, get_Item, set_Item, Add, AddRange, AsReadOnly, BinarySearch, BinarySearch, BinarySearch, Clear, Contains, ConvertAll, CopyTo, CopyTo, CopyTo, Exists, Find, FindAll, FindIndex, FindIndex, FindIndex, FindLast, FindLastIndex, FindLastIndex, FindLastIndex, ForEach, GetEnumerator, GetRange, IndexOf, IndexOf, IndexOf, Insert, InsertRange, LastIndexOf, LastIndexOf, LastIndexOf, Remove, RemoveAll, RemoveAt, RemoveRange, Reverse, Reverse, Sort, Sort, Sort, Sort, ToArray, TrimExcess, TrueForAll, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Int32 Capacity, System.Int32 Count, System.Int32 Item}"
+              IsClass="True"
+              IsGenericType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
       </Item>
       <Item>
         <LocalVariable
-          Name="listEnum"
-          Type="Enumerator&lt;System.Int32&gt;"
-          Value="{Enumerator&lt;System.Int32&gt;}">
+          Name="listEnumerator"
+          Type="System.Collections.Generic.List`1[[System.Int32]].Enumerator[[System.Int32]]"
+          Value="{System.Collections.Generic.List`1[[System.Int32]].Enumerator[[System.Int32]]}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, Serializable, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="Enumerator&lt;System.Int32&gt;"
-              GenericArguments="{System.Int32}"
-              Interfaces="{System.Collections.Generic.IEnumerator&lt;System.Int32&gt;, System.IDisposable, System.Collections.IEnumerator}"
-              Kind="ValueType"
-              Module="mscorlib.dll"
-              Name="Enumerator&lt;Int32&gt;">
-              <ElementType>null</ElementType>
+              FullName="System.Collections.Generic.List`1[[System.Int32]].Enumerator[[System.Int32]]"
+              GetGenericArguments="{System.Int32}"
+              GetInterfaces="{System.Collections.Generic.IEnumerator`1[[System.Int32]], System.IDisposable, System.Collections.IEnumerator}"
+              GetMembers="{Dispose, MoveNext, get_Current, System.Int32 Current, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Dispose, MoveNext, get_Current, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Int32 Current}"
+              IsGenericType="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -1072,16 +1285,76 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="fnPtr"
-          Type="AddDelegate"
-          Value="{AddDelegate}">
+          Type="Debugger.Tests.TestPrograms.DebugType.AddDelegate"
+          Value="{Debugger.Tests.TestPrograms.DebugType.AddDelegate}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
               BaseType="System.MulticastDelegate"
-              FullName="AddDelegate"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="AddDelegate">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType.AddDelegate"
+              GetMembers="{.ctor, Invoke, BeginInvoke, EndInvoke, GetObjectData, Equals, GetInvocationList, GetHashCode, DynamicInvoke, Equals, GetHashCode, GetInvocationList, get_Method, get_Target, Clone, GetObjectData, System.Reflection.MethodInfo Method, System.Object Target, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{.ctor, Invoke, BeginInvoke, EndInvoke, GetObjectData, Equals, GetInvocationList, GetHashCode, DynamicInvoke, Equals, GetHashCode, GetInvocationList, get_Method, get_Target, Clone, GetObjectData, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Reflection.MethodInfo Method, System.Object Target}"
+              IsClass="True">
+              <GetElementType>null</GetElementType>
+            </DebugType>
+          </Type>
+        </LocalVariable>
+      </Item>
+      <Item>
+        <LocalVariable
+          Name="valueType"
+          Type="System.ValueType"
+          Value="null">
+          <Type>
+            <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, Public, Abstract, Serializable, BeforeFieldInit"
+              BaseType="System.Object"
+              FullName="System.ValueType"
+              GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsClass="True">
+              <GetElementType>null</GetElementType>
+            </DebugType>
+          </Type>
+        </LocalVariable>
+      </Item>
+      <Item>
+        <LocalVariable
+          Name="enumType"
+          Type="System.Enum"
+          Value="null">
+          <Type>
+            <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, Public, Abstract, Serializable, BeforeFieldInit"
+              BaseType="System.ValueType"
+              FullName="System.Enum"
+              GetInterfaces="{System.IComparable, System.IFormattable, System.IConvertible}"
+              GetMembers="{Parse, Parse, GetUnderlyingType, GetValues, GetName, GetNames, ToObject, ToObject, ToObject, ToObject, ToObject, ToObject, ToObject, ToObject, ToObject, IsDefined, Format, Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Parse, Parse, GetUnderlyingType, GetValues, GetName, GetNames, ToObject, ToObject, ToObject, ToObject, ToObject, ToObject, ToObject, ToObject, ToObject, IsDefined, Format, Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsClass="True">
+              <GetElementType>null</GetElementType>
+            </DebugType>
+          </Type>
+        </LocalVariable>
+      </Item>
+      <Item>
+        <LocalVariable
+          Name="myEnum"
+          Type="Debugger.Tests.TestPrograms.DebugType.MyEnum"
+          Value="{Debugger.Tests.TestPrograms.DebugType.MyEnum}">
+          <Type>
+            <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
+              BaseType="System.Enum"
+              FullName="Debugger.Tests.TestPrograms.DebugType.MyEnum"
+              GetEnumUnderlyingType="System.Byte"
+              GetFields="{System.Byte value__}"
+              GetMembers="{System.Byte value__, Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+              IsEnum="True"
+              IsValueType="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>
@@ -1089,16 +1362,19 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="access"
-          Type="Access"
-          Value="{Access}">
+          Type="Debugger.Tests.TestPrograms.DebugType.Access"
+          Value="{Debugger.Tests.TestPrograms.DebugType.Access}">
           <Type>
             <DebugType
+              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="Access"
-              Kind="Class"
-              Module="DebugType.exe"
-              Name="Access">
-              <ElementType>null</ElementType>
+              FullName="Debugger.Tests.TestPrograms.DebugType.Access"
+              GetFields="{System.Int32 publicField}"
+              GetMembers="{System.Int32 publicField, get_publicProperty, publicMethod, .ctor, System.Int32 publicProperty, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{get_publicProperty, publicMethod, .ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Int32 publicProperty}"
+              IsClass="True">
+              <GetElementType>null</GetElementType>
             </DebugType>
           </Type>
         </LocalVariable>

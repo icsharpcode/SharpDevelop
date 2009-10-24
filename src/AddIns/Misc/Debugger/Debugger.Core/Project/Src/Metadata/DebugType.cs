@@ -354,7 +354,7 @@ namespace Debugger.MetaData
 		public override Type GetInterface(string name, bool ignoreCase)
 		{
 			foreach(DebugType inter in this.GetInterfaces()) {
-				if (string.Equals(inter.FullName, fullName, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)) {
+				if (string.Equals(inter.FullName, name, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)) {
 					return inter;
 				}
 			}
@@ -569,11 +569,7 @@ namespace Debugger.MetaData
 		
 		public bool IsCompilerGenerated {
 			get {
-				if (this.IsClass || this.IsValueType) {
-					return IsDefined(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
-				} else {
-					return false;
-				}
+				return IsDefined(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
 			}
 		}
 		
@@ -950,8 +946,6 @@ namespace Debugger.MetaData
 				case "System.UInt64":  return typeof(System.UInt64);
 				case "System.Single":  return typeof(System.Single);
 				case "System.Double":  return typeof(System.Double);
-				case "System.IntPtr":  return typeof(System.IntPtr);
-				case "System.UIntPtr": return typeof(System.UIntPtr);
 				case "System.String":  return typeof(System.String);
 				default: return null;
 			}
