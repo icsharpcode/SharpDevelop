@@ -150,6 +150,7 @@ namespace ICSharpCode.NRefactory.Ast
 				name = type.Namespace + "." + name;
 			
 			List<Type> genArgs = new List<Type>();
+			// This inludes the generic arguments of the outter types
 			genArgs.AddRange(type.GetGenericArguments());
 			if (type.DeclaringType != null)
 				genArgs.RemoveRange(0, type.DeclaringType.GetGenericArguments().Length);
@@ -172,8 +173,9 @@ namespace ICSharpCode.NRefactory.Ast
 		/// <summary>
 		/// Converts tree into nested TypeReference/InnerClassTypeReference.
 		/// Dotted names are split into separate nodes.
+		/// It does not normalize generic arguments.
 		/// </summary>
-		public static TypeReference NormalizeTypeReference(this INode expr)
+		static TypeReference NormalizeTypeReference(this INode expr)
 		{
 			if (expr is IdentifierExpression) {
 				return new TypeReference(
@@ -250,22 +252,35 @@ namespace ICSharpCode.NRefactory.Ast
 				genArgs.Add(ResolveType(genTypeRef, appDomain));
 			}
 			
+			return ResolveTypeInternal(typeRef, genArgs.ToArray(), appDomain);
+		}
+		
+		/// <summary>
+		/// For performance this is separate method.
+		/// 'genArgs' should hold type for each generic parameter in 'typeRef'.
+		/// </summary>
+		static DebugType ResolveTypeInternal(TypeReference typeRef, DebugType[] genArgs, Debugger.AppDomain appDomain)
+		{
 			DebugType type = null;
 			
 			// Try to construct non-nested type
 			// If there are generic types up in the tree, it must be nested type
-			if (genArgs.Count == typeRef.GenericTypes.Count) {
+			if (genArgs.Length == typeRef.GenericTypes.Count) {
 				string name = GetNameWithArgCounts(typeRef);
-				type = DebugType.CreateFromName(appDomain, name, null, genArgs.ToArray());
+				type = DebugType.CreateFromName(appDomain, name, null, genArgs);
 			}
 			
 			// Try to construct nested type
 			if (type == null && typeRef is InnerClassTypeReference) {
-				DebugType outter = ResolveType(((InnerClassTypeReference)typeRef).BaseType, appDomain);
+				DebugType[] outterGenArgs = genArgs;
+				// Do not pass our generic arguments to outter type
+				Array.Resize(ref outterGenArgs, genArgs.Length - typeRef.GenericTypes.Count);
+				
+				DebugType outter = ResolveTypeInternal(((InnerClassTypeReference)typeRef).BaseType, outterGenArgs, appDomain);
 				if (outter == null)
 					return null;
 				string nestedName = typeRef.GenericTypes.Count == 0 ? typeRef.Type : typeRef.Type + "`" + typeRef.GenericTypes.Count;
-				type = DebugType.CreateFromName(appDomain, nestedName, outter, genArgs.ToArray());
+				type = DebugType.CreateFromName(appDomain, nestedName, outter, genArgs);
 			}
 			
 			if (type == null)
