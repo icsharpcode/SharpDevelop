@@ -32,21 +32,15 @@ namespace ComExtensionMethodGenerator
 		
 		public static void Main(string[] args)
 		{
-			new ComExtensionMethodGenerator() {
-				InputFile = path + "CorDebug.cs",
-				OutputFile = path + "CorDebugExtensionMethods.generated.cs",
-				Header = header,
-				Namespace = "Debugger.Interop.CorDebug",
-				TypeName = "CorDebugExtensionMethods",
-			}.Generate();
-			
-			new ComExtensionMethodGenerator() {
-				InputFile = path + "CorSym.cs",
-				OutputFile = path + "CorSymExtensionMethods.generated.cs",
-				Header = header,
-				Namespace = "Debugger.Interop.CorSym",
-				TypeName = "CorSymExtensionMethods",
-			}.Generate();
+			foreach(string name in new string[] { "CorDebug", "CorSym", "CorPublish" })  {
+				new ComExtensionMethodGenerator() {
+					InputFile = path + name + ".cs",
+					OutputFile = path + name + "ExtensionMethods.generated.cs",
+					Header = header,
+					Namespace = "Debugger.Interop." + name,
+					TypeName = name + "ExtensionMethods",
+				}.Generate();
+			}
 		}
 	}
 	
