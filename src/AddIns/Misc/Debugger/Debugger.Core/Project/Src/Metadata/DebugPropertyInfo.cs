@@ -54,7 +54,7 @@ namespace Debugger.MetaData
 		
 		[Debugger.Tests.Ignore]
 		public override int MetadataToken {
-			get { return (getMethod ?? setMethod).MetadataToken; }
+			get { return 0; }
 		}
 		
 		public override System.Reflection.Module Module {
@@ -99,7 +99,13 @@ namespace Debugger.MetaData
 		}
 		
 		public override Type PropertyType {
-			get { return getMethod.ReturnType; }
+			get {
+				if (getMethod != null) {
+					return getMethod.ReturnType;
+				} else {
+					return setMethod.GetParameters()[setMethod.GetParameters().Length - 1].ParameterType;
+				}
+			}
 		}
 		
 		public override MethodInfo[] GetAccessors(bool nonPublic)

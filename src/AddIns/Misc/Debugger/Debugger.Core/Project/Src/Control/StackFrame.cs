@@ -125,7 +125,8 @@ namespace Debugger
 		/// <summary> Returns diagnostic description of the frame </summary>
 		public override string ToString()
 		{
-			return this.MethodInfo.FullName;
+			// TODO: Use full name
+			return this.MethodInfo.DeclaringType.FullName + "." + this.MethodInfo.Name;
 		}
 		
 		internal ICorDebugILFrame CorILFrame {
@@ -281,6 +282,7 @@ namespace Debugger
 		/// Gets the instance of the class asociated with the current frame.
 		/// That is, 'this' in C#.
 		/// </summary>
+		[Debugger.Tests.Ignore]
 		public Value GetThisValue()
 		{
 			return new Value(appDomain, GetThisCorValue());

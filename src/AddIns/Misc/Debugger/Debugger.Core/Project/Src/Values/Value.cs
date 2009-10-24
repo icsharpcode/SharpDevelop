@@ -24,7 +24,6 @@ namespace Debugger
 	public partial class Value: DebuggerObject
 	{
 		AppDomain      appDomain;
-		Process        process;
 		ICorDebugValue corValue;
 		PauseSession   corValue_pauseSession;
 		DebugType      type;
@@ -40,15 +39,9 @@ namespace Debugger
 		/// <summary> Gets a string representation of the value </summary>
 		public string AsString {
 			get {
-				if (this.IsNull)           return "null";
-				if (this.Type.IsArray)     return "{" + this.Type.FullName + "}";
-				if (this.Type.IsClass)     return "{" + this.Type.FullName + "}";
-				if (this.Type.IsValueType) return "{" + this.Type.FullName + "}";
+				if (this.IsNull) return "null";
 				if (this.Type.IsPrimitive) return PrimitiveValue.ToString();
-				// Does not work well with unit tests: (variable value)
-				// if (this.Type.IsPointer)   return "0x" + this.CorValue.CastTo<ICorDebugReferenceValue>().Address.ToString("X8");
-				if (this.Type.IsPointer)   return "{" + this.Type.FullName + "}";
-				throw new DebuggerException("Unknown type");
+				return "{" + this.Type.FullName + "}";
 			}
 		}
 		
@@ -60,14 +53,14 @@ namespace Debugger
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get { return process; }
+			get { return appDomain.Process; }
 		}
 		
 		/// <summary> Returns true if the Value can not be used anymore.
 		/// Value is valid only until the debuggee is resummed. </summary>
 		public bool IsInvalid {
 			get {
-				return corValue_pauseSession != process.PauseSession &&
+				return corValue_pauseSession != this.Process.PauseSession &&
 				       !corValue.Is<ICorDebugHandleValue>();
 			}
 		}
@@ -75,18 +68,16 @@ namespace Debugger
 		[Tests.Ignore]
 		public ICorDebugValue CorValue {
 			get {
-				if (this.IsInvalid) {
+				if (this.IsInvalid)
 					throw new GetValueException("Value is no longer valid");
-				}
-				
 				return corValue;
 			}
 		}
 		
 		ICorDebugReferenceValue CorReferenceValue {
 			get {
-				if (!this.IsReference) throw new DebuggerException("Reference value expected");
-				
+				if (!this.CorValue.Is<ICorDebugReferenceValue>())
+					throw new DebuggerException("Reference value expected");
 				return this.CorValue.CastTo<ICorDebugReferenceValue>();
 			}
 		}
@@ -96,9 +87,7 @@ namespace Debugger
 		/// </summary>
 		[Debugger.Tests.IgnoreAttribute]
 		public ulong Address {
-			get {
-				return corValue.Address;
-			}
+			get { return corValue.Address; }
 		}
 		
 		/// <summary> Gets value indication whether the value is a reference </summary>
@@ -129,32 +118,25 @@ namespace Debugger
 			return newValue;
 		}
 		
+		[Debugger.Tests.Ignore]
 		public Value GetPermanentReference()
 		{
-			ICorDebugValue corValue = this.CorValue;
-			if (this.Type.IsClass) {
-				corValue = this.CorObjectValue.CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+			if (this.CorValue.Is<ICorDebugHandleValue>()) {
+				return this;
+			} else if (this.CorValue.Is<ICorDebugReferenceValue>()) {
+				return new Value(appDomain, this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>());
+			} else {
+				return this.Box();
 			}
-			if (this.Type.IsValueType || this.Type.IsPrimitive) {
-				if (!corValue.Is<ICorDebugReferenceValue>()) {
-					return this.Box();
-				} else {
-					// Make the reference to box permanent
-					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
-				}
-			}
-			return new Value(appDomain, corValue);
 		}
 		
 		internal Value(AppDomain appDomain, ICorDebugValue corValue)
 		{
-			if (corValue == null) {
+			if (corValue == null)
 				throw new ArgumentNullException("corValue");
-			}
 			this.appDomain = appDomain;
-			this.process = appDomain.Process;
 			this.corValue = corValue;
-			this.corValue_pauseSession = process.PauseSession;
+			this.corValue_pauseSession = this.Process.PauseSession;
 			
 			if (corValue.Is<ICorDebugReferenceValue>() &&
 			    corValue.CastTo<ICorDebugReferenceValue>().Value == 0 &&
@@ -171,9 +153,7 @@ namespace Debugger
 		
 		/// <summary> Returns the <see cref="Debugger.DebugType"/> of the value </summary>
 		public DebugType Type {
-			get {
-				return type;
-			}
+			get { return type; }
 		}
 		
 		[Tests.Ignore]
@@ -202,10 +182,9 @@ namespace Debugger
 		{
 			ICorDebugValue newCorValue = newValue.CorValue;
 			
-			if (this.IsReference) {
-				if (!newCorValue.Is<ICorDebugReferenceValue>()) {
+			if (this.CorValue.Is<ICorDebugReferenceValue>()) {
+				if (!newCorValue.Is<ICorDebugReferenceValue>())
 					newCorValue = newValue.Box().CorValue;
-				}
 				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().Value);
 			} else {
 				corValue.CastTo<ICorDebugGenericValue>().RawValue = newValue.CorGenericValue.RawValue;

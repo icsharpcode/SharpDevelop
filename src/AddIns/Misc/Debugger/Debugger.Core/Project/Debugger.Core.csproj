@@ -90,6 +90,7 @@
     <Compile Include="Src\Internal\MTA2STA.cs" />
     <Compile Include="Src\Internal\Tests\ExpandAttribute.cs" />
     <Compile Include="Src\Internal\Tests\IgnoreAttribute.cs" />
+    <Compile Include="Src\Internal\Tests\IgnoreOnExceptionAttribute.cs" />
     <Compile Include="Src\Interop\CorDebug\CorDebug.cs" />
     <Compile Include="Src\Interop\CorDebug\CorDebugChainReason.cs" />
     <Compile Include="Src\Interop\CorDebug\CorDebugClass.cs" />

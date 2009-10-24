@@ -9,7 +9,7 @@ using System;
 
 namespace Debugger.Tests
 {
-	[AttributeUsage(AttributeTargets.Property)]
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
 	public class IgnoreAttribute: Attribute
 	{
 		

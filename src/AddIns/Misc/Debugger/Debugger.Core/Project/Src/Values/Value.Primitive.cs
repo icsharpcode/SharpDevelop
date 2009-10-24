@@ -17,14 +17,17 @@ namespace Debugger
 	{
 		internal ICorDebugGenericValue CorGenericValue {
 			get {
-				if (!this.Type.IsPrimitive && !this.Type.IsValueType) throw new DebuggerException("Value is not a 'generic'");
+				if (IsNull) throw new GetValueException("Value is null");
 				
-				// Dereference and unbox
-				if (this.CorValue.Is<ICorDebugReferenceValue>()) {
-					return this.CorReferenceValue.Dereference().CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugGenericValue>();
-				} else {
-					return this.CorValue.CastTo<ICorDebugGenericValue>();
-				}
+				ICorDebugValue corValue = this.CorValue;
+				// Dereference and unbox if necessary
+				if (corValue.Is<ICorDebugReferenceValue>())
+					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
+				if (corValue.Is<ICorDebugBoxValue>())
+					corValue = corValue.CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugValue>();
+				if (!corValue.Is<ICorDebugGenericValue>())
+					throw new DebuggerException("Value is not an generic value");
+				return corValue.CastTo<ICorDebugGenericValue>();
 			}
 		}
 		

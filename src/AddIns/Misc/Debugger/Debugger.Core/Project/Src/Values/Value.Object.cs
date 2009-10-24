@@ -21,19 +21,15 @@ namespace Debugger
 			get {
 				if (IsNull) throw new GetValueException("Value is null");
 				
-				if (this.Type.IsClass) {
-					return this.CorReferenceValue.Dereference().CastTo<ICorDebugObjectValue>();
-				}
-				if (this.Type.IsValueType) {
-					if (this.CorValue.Is<ICorDebugReferenceValue>()) {
-						// Dereference and unbox
-						return this.CorReferenceValue.Dereference().CastTo<ICorDebugBoxValue>().Object;
-					} else {
-						return this.CorValue.CastTo<ICorDebugObjectValue>();
-					}
-				}
-				
-				throw new DebuggerException("Value is not an object");
+				ICorDebugValue corValue = this.CorValue;
+				// Dereference and unbox if necessary
+				if (corValue.Is<ICorDebugReferenceValue>())
+					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
+				if (corValue.Is<ICorDebugBoxValue>())
+					return corValue.CastTo<ICorDebugBoxValue>().Object;
+				if (!corValue.Is<ICorDebugObjectValue>())
+					throw new DebuggerException("Value is not an object");
+				return corValue.CastTo<ICorDebugObjectValue>();
 			}
 		}
 		

@@ -26,6 +26,7 @@ namespace Debugger.MetaData
 	/// If two types are identical, the references to DebugType will also be identical 
 	/// Type will be loaded once per each appdomain.
 	/// </remarks>
+	[Debugger.Tests.IgnoreOnException]
 	public class DebugType: System.Type, IDebugMemberInfo
 	{
 		public const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;

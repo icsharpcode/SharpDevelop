@@ -102,6 +102,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Returns all elements in the array </summary>
+		[Debugger.Tests.Ignore]
 		public Value[] GetArrayElements()
 		{
 			List<Value> values = new List<Value>();

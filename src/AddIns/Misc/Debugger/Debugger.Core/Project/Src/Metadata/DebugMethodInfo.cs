@@ -156,16 +156,17 @@ namespace Debugger.MetaData
 		//		public virtual MethodInfo MakeGenericMethod(params Type[] typeArguments);
 		//		public override bool ContainsGenericParameters { get; }
 		
+		public override Type ReturnType {
+			get {
+				if (this.MethodDefSig.RetType.Void) return null;
+				return DebugType.CreateFromSignature(this.DebugModule, this.MethodDefSig.RetType.Type, declaringType);
+			}
+		}
+		
 		public override ParameterInfo ReturnParameter {
 			get {
-				return new DebugParameterInfo(
-					this,
-					string.Empty,
-					this.MethodDefSig.RetType.Void ?
-						null :
-						DebugType.CreateFromSignature(this.DebugModule, this.MethodDefSig.RetType.Type, declaringType),
-					-1
-				);
+				if (this.MethodDefSig.RetType.Void) return null;
+				return new DebugParameterInfo(this, string.Empty, this.ReturnType, -1);
 			}
 		}
 		
@@ -596,7 +597,8 @@ namespace Debugger.MetaData
 		
 		public override string ToString()
 		{
-			return this.FullName;
+			// TODO: Use full name
+			return this.Name;
 		}
 	}
 }
