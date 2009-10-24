@@ -39,7 +39,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// </summary>
 		public static ulong GetObjectAddress(this Value val)
 		{
-			ICorDebugReferenceValue refVal = val.CorValue.CastTo<ICorDebugReferenceValue>();
+			ICorDebugReferenceValue refVal = val.CorReferenceValue;
 			return refVal.GetValue();
 		}
 		

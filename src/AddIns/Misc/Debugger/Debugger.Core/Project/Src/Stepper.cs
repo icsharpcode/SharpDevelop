@@ -62,7 +62,7 @@ namespace Debugger
 			
 			if (justMyCode) {
 				corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-				corStepper.CastTo<ICorDebugStepper2>().SetJMC(1);
+				((ICorDebugStepper2)corStepper).SetJMC(1);
 			}
 		}
 		

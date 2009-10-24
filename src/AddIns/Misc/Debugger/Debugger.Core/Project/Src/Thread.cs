@@ -221,14 +221,14 @@ namespace Debugger
 		/// if it can not be intercepted. </returns>
 		public bool InterceptCurrentException()
 		{
-			if (!this.CorThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
+			if (!(this.CorThread is ICorDebugThread2)) return false; // Is the debuggee .NET 2.0?
 			if (this.CorThread.GetCurrentException() == null) return false; // Is there any exception
 			if (this.MostRecentStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
 			
 			try {
 				// Interception will expire the CorValue so keep permanent reference
 				currentException.MakeValuePermanent();
-				this.CorThread.CastTo<ICorDebugThread2>().InterceptCurrentException(this.MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>());
+				((ICorDebugThread2)this.CorThread).InterceptCurrentException(this.MostRecentStackFrame.CorILFrame);
 			} catch (COMException e) {
 				// 0x80131C02: Cannot intercept this exception
 				if ((uint)e.ErrorCode == 0x80131C02) {
@@ -299,10 +299,10 @@ namespace Debugger
 					uint corFrameIndex = corChain.EnumerateFrames().GetCount();
 					foreach(ICorDebugFrame corFrame in corChain.EnumerateFrames().GetEnumerator()) {
 						corFrameIndex--;
-						if (!corFrame.Is<ICorDebugILFrame>()) continue; // Only IL frames
+						if (!(corFrame is ICorDebugILFrame)) continue; // Only IL frames
 						StackFrame stackFrame;
 						try {
-							stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>(), corChainIndex, corFrameIndex);
+							stackFrame = new StackFrame(this, (ICorDebugILFrame)corFrame, corChainIndex, corFrameIndex);
 						} catch (COMException) { // TODO
 							continue;
 						};
@@ -328,9 +328,9 @@ namespace Debugger
 			corFrameEnum.Skip(corFrameEnum.GetCount() - frameIndex - 1);
 			ICorDebugFrame corFrame = corFrameEnum.Next();
 			
-			if (!corFrame.Is<ICorDebugILFrame>()) throw new DebuggerException("The rquested frame is not IL frame");
+			if (!(corFrame is ICorDebugILFrame)) throw new DebuggerException("The rquested frame is not IL frame");
 			
-			StackFrame stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>(), chainIndex, frameIndex);
+			StackFrame stackFrame = new StackFrame(this, (ICorDebugILFrame)corFrame, chainIndex, frameIndex);
 			
 			return stackFrame;
 		}

@@ -49,8 +49,12 @@ namespace Debugger
 			get { return description; }
 		}
 		
-		ICorDebugEval CorEval {
+		public ICorDebugEval CorEval {
 			get { return corEval; }
+		}
+		
+		public ICorDebugEval2 CorEval2 {
+			get { return (ICorDebugEval2)corEval; }
 		}
 
 	    /// <exception cref="GetValueException">Evaluating...</exception>
@@ -153,11 +157,11 @@ namespace Debugger
 				if (!Evaluated) {
 					state = EvalState.EvaluatedTimeOut;
 					process.TraceMessage("Aboring eval: " + Description);
-					corEval.Abort();
+					this.CorEval.Abort();
 					process.WaitForPause(TimeSpan.FromMilliseconds(500));
 					if (!Evaluated) {
 						process.TraceMessage("Rude aboring eval: " + Description);
-						corEval.CastTo<ICorDebugEval2>().RudeAbort();
+						this.CorEval2.RudeAbort();
 						process.WaitForPause(TimeSpan.FromMilliseconds(500));
 						if (!Evaluated) {
 							throw new DebuggerException("Evaluation can not be stopped");
@@ -231,7 +235,7 @@ namespace Debugger
 			for(int i = 0; i < args.Length; i++) {
 				// It is importatnt to pass the parameted in the correct form (boxed/unboxed)
 				if (method.GetParameters()[i].ParameterType.IsValueType) {
-					corArgs.Add(args[i].CorGenericValue.CastTo<ICorDebugValue>());
+					corArgs.Add(args[i].CorGenericValue);
 				} else {
 					if (args[i].Type.IsValueType) {
 						corArgs.Add(args[i].Box().CorValue);
@@ -242,7 +246,7 @@ namespace Debugger
 			}
 			
 			ICorDebugType[] genericArgs = ((DebugType)method.DeclaringType).GenericArgumentsAsCorDebugType;
-			eval.CorEval.CastTo<ICorDebugEval2>().CallParameterizedFunction(
+			eval.CorEval2.CallParameterizedFunction(
 				method.CorFunction,
 				(uint)genericArgs.Length, genericArgs,
 				(uint)corArgs.Count, corArgs.ToArray()
@@ -307,7 +311,7 @@ namespace Debugger
 				appDomain,
 				"New string: " + textToCreate,
 				delegate(Eval eval) {
-					eval.CorEval.CastTo<ICorDebugEval2>().NewStringWithLength(textToCreate, (uint)textToCreate.Length);
+					eval.CorEval2.NewStringWithLength(textToCreate, (uint)textToCreate.Length);
 				}
 			);
 		}
@@ -337,7 +341,7 @@ namespace Debugger
 				debugType.AppDomain,
 				"New object: " + debugType.FullName,
 				delegate(Eval eval) {
-					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObject(
+					eval.CorEval2.NewParameterizedObject(
 						constructor.CorFunction, (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType,
 						(uint)constructorArgsCorDebug.Length, constructorArgsCorDebug);
 				}
@@ -350,7 +354,7 @@ namespace Debugger
 				debugType.AppDomain,
 				"New object: " + debugType.FullName,
 				delegate(Eval eval) {
-					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.GetClass(), (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType);
+					eval.CorEval2.NewParameterizedObjectNoConstructor(debugType.CorType.GetClass(), (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType);
 				}
 			);
 		}

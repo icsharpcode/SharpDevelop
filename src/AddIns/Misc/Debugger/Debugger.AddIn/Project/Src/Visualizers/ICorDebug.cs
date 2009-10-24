@@ -58,16 +58,16 @@ namespace Debugger.AddIn.TreeModel
 		{
 			List<TreeNode> items = new List<TreeNode>();
 			
-			if (corValue.Is<ICorDebugValue>()) {
+			if (corValue is ICorDebugValue) {
 				InfoNode info = new InfoNode("ICorDebugValue", "");
 				info.AddChild("Address", corValue.GetAddress().ToString("X8"));
 				info.AddChild("Type", ((CorElementType)corValue.GetTheType()).ToString());
 				info.AddChild("Size", corValue.GetSize().ToString());
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugValue2>()) {
+			if (corValue is ICorDebugValue2) {
 				InfoNode info = new InfoNode("ICorDebugValue2", "");
-				ICorDebugValue2 corValue2 = corValue.CastTo<ICorDebugValue2>();
+				ICorDebugValue2 corValue2 = (ICorDebugValue2)corValue;
 				string fullname;
 				try {
 					fullname = DebugType.CreateFromCorType(appDomain, corValue2.GetExactType()).FullName;
@@ -77,10 +77,10 @@ namespace Debugger.AddIn.TreeModel
 				info.AddChild("ExactType", fullname);
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugGenericValue>()) {
+			if (corValue is ICorDebugGenericValue) {
 				InfoNode info = new InfoNode("ICorDebugGenericValue", "");
 				try {
-					byte[] bytes = corValue.CastTo<ICorDebugGenericValue>().GetRawValue();
+					byte[] bytes = ((ICorDebugGenericValue)corValue).GetRawValue();
 					for(int i = 0; i < bytes.Length; i += 8) {
 						string val = "";
 						for(int j = i; j < bytes.Length && j < i + 8; j++) {
@@ -93,9 +93,9 @@ namespace Debugger.AddIn.TreeModel
 				}
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugReferenceValue>()) {
+			if (corValue is ICorDebugReferenceValue) {
 				InfoNode info = new InfoNode("ICorDebugReferenceValue", "");
-				ICorDebugReferenceValue refValue = corValue.CastTo<ICorDebugReferenceValue>();
+				ICorDebugReferenceValue refValue = (ICorDebugReferenceValue)corValue;
 				info.AddChild("IsNull", (refValue.IsNull() != 0).ToString());
 				if (refValue.IsNull() == 0) {
 					info.AddChild("Value", refValue.GetValue().ToString("X8"));
@@ -104,50 +104,49 @@ namespace Debugger.AddIn.TreeModel
 					} else {
 						info.AddChild("Dereference", "N/A");
 					}
-					
 				}
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugHeapValue>()) {
+			if (corValue is ICorDebugHeapValue) {
 				InfoNode info = new InfoNode("ICorDebugHeapValue", "");
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugHeapValue2>()) {
+			if (corValue is ICorDebugHeapValue2) {
 				InfoNode info = new InfoNode("ICorDebugHeapValue2", "");
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugObjectValue>()) {
+			if (corValue is ICorDebugObjectValue) {
 				InfoNode info = new InfoNode("ICorDebugObjectValue", "");
-				ICorDebugObjectValue objValue = corValue.CastTo<ICorDebugObjectValue>();
+				ICorDebugObjectValue objValue = (ICorDebugObjectValue)corValue;
 				info.AddChild("Class", objValue.GetClass().GetToken().ToString("X8"));
 				info.AddChild("IsValueClass", (objValue.IsValueClass() != 0).ToString());
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugObjectValue2>()) {
+			if (corValue is ICorDebugObjectValue2) {
 				InfoNode info = new InfoNode("ICorDebugObjectValue2", "");
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugBoxValue>()) {
+			if (corValue is ICorDebugBoxValue) {
 				InfoNode info = new InfoNode("ICorDebugBoxValue", "");
-				ICorDebugBoxValue boxValue = corValue.CastTo<ICorDebugBoxValue>();
-				info.AddChild("Object", "", GetDebugInfo(appDomain, boxValue.GetObject().CastTo<ICorDebugValue>()));
+				ICorDebugBoxValue boxValue = (ICorDebugBoxValue)corValue;
+				info.AddChild("Object", "", GetDebugInfo(appDomain, boxValue.GetObject()));
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugStringValue>()) {
+			if (corValue is ICorDebugStringValue) {
 				InfoNode info = new InfoNode("ICorDebugStringValue", "");
-				ICorDebugStringValue stringValue = corValue.CastTo<ICorDebugStringValue>();
+				ICorDebugStringValue stringValue = (ICorDebugStringValue)corValue;
 				info.AddChild("Length", stringValue.GetLength().ToString());
 				info.AddChild("String", stringValue.GetString());
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugArrayValue>()) {
+			if (corValue is ICorDebugArrayValue) {
 				InfoNode info = new InfoNode("ICorDebugArrayValue", "");
 				info.AddChild("...", "...");
 				items.Add(info);
 			}
-			if (corValue.Is<ICorDebugHandleValue>()) {
+			if (corValue is ICorDebugHandleValue) {
 				InfoNode info = new InfoNode("ICorDebugHandleValue", "");
-				ICorDebugHandleValue handleValue = corValue.CastTo<ICorDebugHandleValue>();
+				ICorDebugHandleValue handleValue = (ICorDebugHandleValue)corValue;
 				info.AddChild("HandleType", handleValue.GetHandleType().ToString());
 				items.Add(info);
 			}

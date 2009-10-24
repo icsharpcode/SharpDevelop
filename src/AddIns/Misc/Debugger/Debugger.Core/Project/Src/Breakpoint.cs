@@ -103,7 +103,7 @@ namespace Debugger
 		internal bool IsOwnerOf(ICorDebugBreakpoint breakpoint) 
 		{
 			foreach(ICorDebugFunctionBreakpoint corFunBreakpoint in corBreakpoints) {
-				if (corFunBreakpoint.CastTo<ICorDebugBreakpoint>().Equals(breakpoint)) return true;
+				if (((ICorDebugBreakpoint)corFunBreakpoint).Equals(breakpoint)) return true;
 			}
 			return false;
 		}

@@ -522,10 +522,10 @@ namespace Debugger.Internal
 		/// <exception cref="Exception">Unknown callback argument</exception>
 		public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
 		{
-			if (c.Is<ICorDebugAppDomain>()) {
-				EnterCallback(PausedReason.Other, "MDANotification", c.CastTo<ICorDebugAppDomain>());
-			} else if (c.Is<ICorDebugProcess>()){
-				EnterCallback(PausedReason.Other, "MDANotification", c.CastTo<ICorDebugProcess>());
+			if (c is ICorDebugAppDomain) {
+				EnterCallback(PausedReason.Other, "MDANotification", (ICorDebugAppDomain)c);
+			} else if (c is ICorDebugProcess){
+				EnterCallback(PausedReason.Other, "MDANotification", (ICorDebugProcess)c);
 			} else {
 				throw new System.Exception("Unknown callback argument");
 			}

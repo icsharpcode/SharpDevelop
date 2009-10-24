@@ -886,28 +886,28 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override Type MakeArrayType(int rank)
 		{
-			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.ARRAY, (uint)rank, this.CorType);
+			ICorDebugType res = this.AppDomain.CorAppDomain2.GetArrayOrPointerType((uint)CorElementType.ARRAY, (uint)rank, this.CorType);
 			return CreateFromCorType(this.AppDomain, res);
 		}
 		
 		/// <inheritdoc/>
 		public override Type MakeArrayType()
 		{
-			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.SZARRAY, 1, this.CorType);
+			ICorDebugType res = this.AppDomain.CorAppDomain2.GetArrayOrPointerType((uint)CorElementType.SZARRAY, 1, this.CorType);
 			return CreateFromCorType(this.AppDomain, res);
 		}
 		
 		/// <inheritdoc/>
 		public override Type MakePointerType()
 		{
-			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.PTR, 0, this.CorType);
+			ICorDebugType res = this.AppDomain.CorAppDomain2.GetArrayOrPointerType((uint)CorElementType.PTR, 0, this.CorType);
 			return CreateFromCorType(this.AppDomain, res);
 		}
 		
 		/// <inheritdoc/>
 		public override Type MakeByRefType()
 		{
-			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.BYREF, 0, this.CorType);
+			ICorDebugType res = this.AppDomain.CorAppDomain2.GetArrayOrPointerType((uint)CorElementType.BYREF, 0, this.CorType);
 			return CreateFromCorType(this.AppDomain, res);
 		}
 		
@@ -940,7 +940,7 @@ namespace Debugger.MetaData
 				corGenArgs.Add(genAgr.CorType);
 			}
 			
-			ICorDebugType corType = corClass.CastTo<ICorDebugClass2>().GetParameterizedType((uint)(valueType.Value ? CorElementType.VALUETYPE : CorElementType.CLASS), corGenArgs.ToArray());
+			ICorDebugType corType = ((ICorDebugClass2)corClass).GetParameterizedType((uint)(valueType.Value ? CorElementType.VALUETYPE : CorElementType.CLASS), corGenArgs.ToArray());
 			
 			return CreateFromCorType(appDomain, corType);
 		}

@@ -39,10 +39,10 @@ namespace Debugger.Internal
 		
 		public ManagedCallback GetProcessCallbackInterface(string name, ICorDebugController c)
 		{
-			if (c.Is<ICorDebugAppDomain>()) {
-				return GetProcessCallbackInterface(name, c.CastTo<ICorDebugAppDomain>());
-			} else if (c.Is<ICorDebugProcess>()){
-				return GetProcessCallbackInterface(name, c.CastTo<ICorDebugProcess>());
+			if (c is ICorDebugAppDomain) {
+				return GetProcessCallbackInterface(name, (ICorDebugAppDomain)c);
+			} else if (c is ICorDebugProcess){
+				return GetProcessCallbackInterface(name, (ICorDebugProcess)c);
 			} else {
 				throw new System.Exception("Unknown callback argument");
 			}

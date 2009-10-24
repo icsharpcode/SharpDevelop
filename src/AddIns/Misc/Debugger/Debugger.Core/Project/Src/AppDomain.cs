@@ -74,9 +74,11 @@ namespace Debugger
 		}
 		
 		internal ICorDebugAppDomain CorAppDomain {
-			get {
-				return corAppDomain;
-			}
+			get { return corAppDomain; }
+		}
+		
+		internal ICorDebugAppDomain2 CorAppDomain2 {
+			get { return (ICorDebugAppDomain2)corAppDomain; }
 		}
 		
 		public AppDomain(Process process, ICorDebugAppDomain corAppDomain)

@@ -97,7 +97,7 @@ namespace Debugger
 			MetaDataImport metaData = thread.Process.Modules[corFunction.GetClass().GetModule()].MetaData;
 			int methodGenArgs = metaData.GetGenericParamCount(corFunction.GetToken());
 			// Class parameters are first, then the method ones
-			List<ICorDebugType> corGenArgs = corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList();
+			List<ICorDebugType> corGenArgs = ((ICorDebugILFrame2)corILFrame).EnumerateTypeParameters().ToList();
 			// Remove method parametrs at the end
 			corGenArgs.RemoveRange(corGenArgs.Count - methodGenArgs, methodGenArgs);
 			List<DebugType> genArgs = new List<DebugType>(corGenArgs.Count);
@@ -293,7 +293,7 @@ namespace Debugger
 			}
 			// This can be 'by ref' for value types
 			if (corValue.GetTheType() == (uint)CorElementType.BYREF) {
-				corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
+				corValue = ((ICorDebugReferenceValue)corValue).Dereference();
 			}
 			return corValue;
 		}
@@ -342,7 +342,7 @@ namespace Debugger
 			// Method arguments can be passed 'by ref'
 			if (corValue.GetTheType() == (uint)CorElementType.BYREF) {
 				try {
-					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
+					corValue = ((ICorDebugReferenceValue)corValue).Dereference();
 				} catch (COMException e) {
 					if ((uint)e.ErrorCode == 0x80131305) {
 						// A reference value was found to be bad during dereferencing.

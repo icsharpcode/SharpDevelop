@@ -47,52 +47,56 @@ namespace Debugger
 			}
 		}
 		
-		ICorDebugReferenceValue CorReferenceValue {
+		[Debugger.Tests.Ignore]
+		public ICorDebugReferenceValue CorReferenceValue {
 			get {
-				if (!this.CorValue.Is<ICorDebugReferenceValue>())
+				if (!(this.CorValue is ICorDebugReferenceValue))
 					throw new DebuggerException("Reference value expected");
-				return this.CorValue.CastTo<ICorDebugReferenceValue>();
+				return (ICorDebugReferenceValue)this.CorValue;
 			}
 		}
 		
-		internal ICorDebugGenericValue CorGenericValue {
+		[Debugger.Tests.Ignore]
+		public ICorDebugGenericValue CorGenericValue {
 			get {
 				if (IsNull) throw new GetValueException("Value is null");
 				
 				ICorDebugValue corValue = this.CorValue;
 				// Dereference and unbox if necessary
-				if (corValue.Is<ICorDebugReferenceValue>())
-					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
-				if (corValue.Is<ICorDebugBoxValue>())
-					corValue = corValue.CastTo<ICorDebugBoxValue>().GetObject().CastTo<ICorDebugValue>();
-				if (!corValue.Is<ICorDebugGenericValue>())
+				if (corValue is ICorDebugReferenceValue)
+					corValue = ((ICorDebugReferenceValue)corValue).Dereference();
+				if (corValue is ICorDebugBoxValue)
+					corValue = ((ICorDebugBoxValue)corValue).GetObject();
+				if (!(corValue is ICorDebugGenericValue))
 					throw new DebuggerException("Value is not an generic value");
-				return corValue.CastTo<ICorDebugGenericValue>();
+				return (ICorDebugGenericValue)corValue;
 			}
 		}
 		
-		ICorDebugArrayValue CorArrayValue {
+		[Debugger.Tests.Ignore]
+		public ICorDebugArrayValue CorArrayValue {
 			get {
 				if (IsNull) throw new GetValueException("Value is null");
 				if (!this.Type.IsArray) throw new DebuggerException("Value is not an array");
 				
-				return this.CorReferenceValue.Dereference().CastTo<ICorDebugArrayValue>();
+				return (ICorDebugArrayValue)this.CorReferenceValue.Dereference();
 			}
 		}
 		
-		internal ICorDebugObjectValue CorObjectValue {
+		[Debugger.Tests.Ignore]
+		public ICorDebugObjectValue CorObjectValue {
 			get {
 				if (IsNull) throw new GetValueException("Value is null");
 				
 				ICorDebugValue corValue = this.CorValue;
 				// Dereference and unbox if necessary
-				if (corValue.Is<ICorDebugReferenceValue>())
-					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
-				if (corValue.Is<ICorDebugBoxValue>())
-					return corValue.CastTo<ICorDebugBoxValue>().GetObject();
-				if (!corValue.Is<ICorDebugObjectValue>())
+				if (corValue is ICorDebugReferenceValue)
+					corValue = ((ICorDebugReferenceValue)corValue).Dereference();
+				if (corValue is ICorDebugBoxValue)
+					return ((ICorDebugBoxValue)corValue).GetObject();
+				if (!(corValue is ICorDebugObjectValue))
 					throw new DebuggerException("Value is not an object");
-				return corValue.CastTo<ICorDebugObjectValue>();
+				return (ICorDebugObjectValue)corValue;
 			}
 		}
 		
@@ -106,7 +110,7 @@ namespace Debugger
 		public bool IsInvalid {
 			get {
 				return corValue_pauseSession != this.Process.PauseSession &&
-				       !corValue.Is<ICorDebugHandleValue>();
+				       !(corValue is ICorDebugHandleValue);
 			}
 		}
 		
@@ -114,15 +118,15 @@ namespace Debugger
 		/// <remarks> Value types also return true if they are boxed </remarks>
 		public bool IsReference {
 			get {
-				return this.CorValue.Is<ICorDebugReferenceValue>();
+				return this.CorValue is ICorDebugReferenceValue;
 			}
 		}
 		
 		/// <summary> Returns true if the value is null </summary>
 		public bool IsNull {
 			get {
-				return this.CorValue.Is<ICorDebugReferenceValue>() &&
-				       this.CorValue.CastTo<ICorDebugReferenceValue>().IsNull() != 0;
+				return this.CorValue is ICorDebugReferenceValue &&
+					   ((ICorDebugReferenceValue)this.CorValue).IsNull() != 0;
 			}
 		}
 		
@@ -137,8 +141,9 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ulong PointerAddress {
 			get {
-				if (!this.Type.IsPointer) throw new DebuggerException("Not a pointer");
-				return this.CorValue.CastTo<ICorDebugReferenceValue>().GetValue();
+				if (!(this.CorValue is ICorDebugReferenceValue))
+					throw new DebuggerException("Not a pointer");
+				return ((ICorDebugReferenceValue)this.CorValue).GetValue();
 			}
 		}
 		
@@ -159,15 +164,15 @@ namespace Debugger
 			this.corValue = corValue;
 			this.corValue_pauseSession = this.Process.PauseSession;
 			
-			if (corValue.Is<ICorDebugReferenceValue>() &&
-			    corValue.CastTo<ICorDebugReferenceValue>().GetValue() == 0 &&
-			    corValue.CastTo<ICorDebugValue2>().GetExactType() == null)
+			if (corValue is ICorDebugReferenceValue &&
+			    ((ICorDebugReferenceValue)corValue).GetValue() == 0 &&
+			    ((ICorDebugValue2)corValue).GetExactType() == null)
 			{
 				// We were passed null reference and no metadata description
 				// (happens during CreateThread callback for the thread object)
 				this.type = appDomain.ObjectType;
 			} else {
-				ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().GetExactType();
+				ICorDebugType exactType = ((ICorDebugValue2)this.CorValue).GetExactType();
 				this.type = DebugType.CreateFromCorType(appDomain, exactType);
 			}
 		}
@@ -177,11 +182,11 @@ namespace Debugger
 		{
 			byte[] rawValue = this.CorGenericValue.GetRawValue();
 			// The type must not be a primive type (always true in current design)
-			ICorDebugValue corValue = Eval.NewObjectNoConstructor(this.Type).CorValue;
+			ICorDebugReferenceValue corRefValue = Eval.NewObjectNoConstructor(this.Type).CorReferenceValue;
 			// Make the reference to box permanent
-			corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
+			corRefValue = ((ICorDebugHeapValue2)corRefValue.Dereference()).CreateHandle(CorDebugHandleType.HANDLE_STRONG);
 			// Create new value
-			Value newValue = new Value(appDomain, corValue);
+			Value newValue = new Value(appDomain, corRefValue);
 			// Copy the data inside the box
 			newValue.CorGenericValue.SetRawValue(rawValue);
 			return newValue;
@@ -190,10 +195,10 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public Value GetPermanentReference()
 		{
-			if (this.CorValue.Is<ICorDebugHandleValue>()) {
+			if (this.CorValue is ICorDebugHandleValue) {
 				return this;
-			} else if (this.CorValue.Is<ICorDebugReferenceValue>()) {
-				return new Value(appDomain, this.CorValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>());
+			} else if (this.CorValue is ICorDebugReferenceValue) {
+				return new Value(appDomain, ((ICorDebugHeapValue2)this.CorReferenceValue.Dereference()).CreateHandle(CorDebugHandleType.HANDLE_STRONG));
 			} else {
 				return this.Box();
 			}
@@ -204,7 +209,7 @@ namespace Debugger
 		public Value Dereference()
 		{
 			if (!this.Type.IsPointer) throw new DebuggerException("Not a pointer");
-			ICorDebugReferenceValue corRef = this.CorValue.CastTo<ICorDebugReferenceValue>();
+			ICorDebugReferenceValue corRef = (ICorDebugReferenceValue)this.CorValue;
 			if (corRef.GetValue() == 0 || corRef.Dereference() == null) {
 				return null;
 			} else {
@@ -217,12 +222,12 @@ namespace Debugger
 		{
 			ICorDebugValue newCorValue = newValue.CorValue;
 			
-			if (this.CorValue.Is<ICorDebugReferenceValue>()) {
-				if (!newCorValue.Is<ICorDebugReferenceValue>())
+			if (this.CorValue is ICorDebugReferenceValue) {
+				if (!(newCorValue is ICorDebugReferenceValue))
 					newCorValue = newValue.Box().CorValue;
-				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().GetValue());
+				this.CorReferenceValue.SetValue(((ICorDebugReferenceValue)newCorValue).GetValue());
 			} else {
-				corValue.CastTo<ICorDebugGenericValue>().SetRawValue(newValue.CorGenericValue.GetRawValue());
+				this.CorGenericValue.SetRawValue(newValue.CorGenericValue.GetRawValue());
 			}
 		}
 		
@@ -238,7 +243,7 @@ namespace Debugger
 				if (this.Type.PrimitiveType == null) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.FullName == typeof(string).FullName) {
 					if (this.IsNull) return null;
-					return this.CorReferenceValue.Dereference().CastTo<ICorDebugStringValue>().GetString();
+					return ((ICorDebugStringValue)this.CorReferenceValue.Dereference()).GetString();
 				} else {
 					return CorGenericValue.GetValue(this.Type.PrimitiveType);
 				}
@@ -255,7 +260,7 @@ namespace Debugger
 					} catch {
 						throw new NotSupportedException("Can not convert " + value.GetType().ToString() + " to " + this.Type.PrimitiveType.ToString());
 					}
-					CorGenericValue.SetValue(this.Type.PrimitiveType, newValue);
+					CorGenericValue.SetValue(newValue);
 				}
 			}
 		}
@@ -438,7 +443,7 @@ namespace Debugger
 			    process.SelectedThread.MostRecentStackFrame != null && 
 			    process.SelectedThread.MostRecentStackFrame.CorILFrame != null)
 			{
-				curFrame = process.SelectedThread.MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>();
+				curFrame = process.SelectedThread.MostRecentStackFrame.CorILFrame;
 			}
 			
 			try {

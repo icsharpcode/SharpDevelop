@@ -82,27 +82,31 @@ namespace Debugger
 			}
 		}
 		
+		[Debugger.Tests.Ignore]
 		public ICorDebugModule CorModule {
-			get {
-				return corModule;
-			}
+			get { return corModule; }
+		}
+		
+		[Debugger.Tests.Ignore]
+		public ICorDebugModule2 CorModule2 {
+			get { return (ICorDebugModule2)corModule; }
 		}
 		
 		public ulong BaseAdress { 
 			get {
-				return corModule.GetBaseAddress();
+				return this.CorModule.GetBaseAddress();
 			} 
 		}
 		
 		public bool IsDynamic { 
 			get {
-				return corModule.IsDynamic() == 1;
+				return this.CorModule.IsDynamic() == 1;
 			} 
 		}
 		
 		public bool IsInMemory { 
 			get {
-				return corModule.IsInMemory() == 1;
+				return this.CorModule.IsInMemory() == 1;
 			} 
 		}
 		
@@ -172,16 +176,15 @@ namespace Debugger
 			return names;
 		}
 		
-		internal Module(AppDomain appDomain, ICorDebugModule pModule)
+		internal Module(AppDomain appDomain, ICorDebugModule corModule)
 		{
 			this.appDomain = appDomain;
 			this.process = appDomain.Process;
+			this.corModule = corModule;
 			
-			corModule = pModule;
+			metaData = new MetaDataImport(corModule);
 			
-			metaData = new MetaDataImport(pModule);
-			
-			fullPath = pModule.GetName();
+			fullPath = corModule.GetName();
 			
 			LoadSymbols(process.Options.SymbolsSearchPaths);
 			
@@ -202,7 +205,7 @@ namespace Debugger
 		public void UpdateSymbolsFromStream(IStream pSymbolStream)
 		{
 			if (symReader != null) {
-				symReader.As<ISymUnmanagedDispose>().Destroy();
+				((ISymUnmanagedDispose)symReader).Destroy();
 			}
 			
 			symReader = metaData.GetSymReader(pSymbolStream);
@@ -218,24 +221,22 @@ namespace Debugger
 			uint unused = 0;
 			if (process.Options.StepOverNoSymbols && !this.HasSymbols) {
 				// Optimization - set the code as non-user right away
-				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(0, 0, ref unused);
+				this.CorModule2.SetJMCStatus(0, 0, ref unused);
 				return;
 			}
-			corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
+			this.CorModule2.SetJMCStatus(1, 0, ref unused);
 		}
 		
 		public void ApplyChanges(byte[] metadata, byte[] il)
 		{
-			if (corModule.Is<ICorDebugModule2>()) { // Is the debuggee .NET 2.0?
-				(corModule.CastTo<ICorDebugModule2>()).ApplyChanges((uint)metadata.Length, metadata, (uint)il.Length, il);
-			}
+			this.CorModule2.ApplyChanges((uint)metadata.Length, metadata, (uint)il.Length, il);
 		}
 		
 		public void Dispose()
 		{
 			metaData.Dispose();
 			if (symReader != null) {
-				symReader.As<ISymUnmanagedDispose>().Destroy();
+				((ISymUnmanagedDispose)symReader).Destroy();
 			}
 			
 			unloaded = true;

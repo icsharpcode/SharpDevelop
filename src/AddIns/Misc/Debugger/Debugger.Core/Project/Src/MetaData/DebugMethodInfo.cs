@@ -449,7 +449,7 @@ namespace Debugger.MetaData
 		
 		internal void MarkAsNonUserCode()
 		{
-			this.CorFunction.CastTo<ICorDebugFunction2>().SetJMCStatus(0 /* false */);
+			((ICorDebugFunction2)this.CorFunction).SetJMCStatus(0 /* false */);
 			
 			if (this.Process.Options.Verbose) {
 				this.Process.TraceMessage("Funciton {0} marked as non-user code", this.FullName);
