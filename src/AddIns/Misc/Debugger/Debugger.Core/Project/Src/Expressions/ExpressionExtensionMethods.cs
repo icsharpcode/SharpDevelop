@@ -103,6 +103,24 @@ namespace Debugger
 			return typedArgs;
 		}
 		
+		public static string GetDottedName(this Type type)
+		{
+			string fullName = null;
+			for(Type currentType = type; currentType != null; currentType = currentType.DeclaringType) {
+				string name = currentType.Name;
+				if (name.IndexOf('`') != -1)
+					name = name.Substring(0, name.IndexOf('`'));
+				if (currentType.Namespace != string.Empty)
+					name = currentType.Namespace + "." + name;
+				if (fullName == null) {
+					fullName = name;
+				} else {
+					fullName = name + "." + fullName;
+				}
+			}
+			return fullName;
+		}
+		
 		public static TypeReference ToTypeReference(this Type type)
 		{
 			List<int> arrayRanks = new List<int>();
@@ -120,9 +138,7 @@ namespace Debugger
 					break;
 				}
 			}
-			string name = type.FullName;
-			if (name.IndexOf('<') != -1)
-				name = name.Substring(0, name.IndexOf('<'));
+			string name = type.GetDottedName();
 			List<TypeReference> genArgs = new List<TypeReference>();
 			foreach(DebugType genArg in type.GetGenericArguments()) {
 				genArgs.Add(genArg.ToTypeReference());

@@ -158,7 +158,7 @@ namespace Debugger.MetaData
 				}
 				// corType.Base does not work for arrays
 				if (this.IsArray) {
-					return DebugType.CreateFromType(this.AppDomain, typeof(Array));
+					return DebugType.CreateFromType(this.AppDomain.Mscorlib, typeof(Array));
 				}
 				// corType.Base does not work for primitive types
 //				if (this.IsPrimitive) {
@@ -656,46 +656,102 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		public static DebugType CreateFromType(AppDomain appDomain, System.Type type, params DebugType[] genericArguments)
+		public static DebugType CreateFromDottedName(AppDomain appDomain, string dottedName, params DebugType[] genericArguments)
 		{
-			return CreateFromName(appDomain, type.FullName, genericArguments);
-		}
-		
-		public static DebugType CreateFromName(AppDomain appDomain, string typeName, params DebugType[] genericArguments)
-		{
-			return CreateFromName(appDomain, typeName, null, genericArguments);
-		}
-		
-		public static DebugType CreateFromName(AppDomain appDomain, string typeName, DebugType enclosingType, params DebugType[] genericArguments)
-		{
-			if (genericArguments != null) {
-				if (enclosingType != null)
-					typeName = GetQualifiedName(typeName, genericArguments.Length - enclosingType.GetGenericArguments().Length);
-				else
-					typeName = GetQualifiedName(typeName, genericArguments.Length);
-			}
-			foreach(Module module in appDomain.Process.Modules) {
-				if (module.AppDomain == appDomain) {
-					uint token;
-					try {
-						token = module.MetaData.FindTypeDefPropsByName(typeName, enclosingType == null ? 0 : (uint)enclosingType.MetadataToken).Token;
-					} catch {
-						continue;
+			// The most common case
+			DebugType result = CreateFromName(appDomain, dottedName, null, genericArguments);
+			if (result != null)
+				return result;
+			
+			string[] names = dottedName.Split('.');
+			for(int take = names.Length - 1; take > 0; take--) {
+				string enclosingName = string.Join(".", names, 0, take);
+				DebugType enclosingType = CreateFromName(appDomain, enclosingName, null, genericArguments);
+				if (enclosingType != null) {
+					for(int nested = take; nested < names.Length; nested++) {
+						string nestedName = names[nested];
+						enclosingType = CreateFromName(appDomain, nestedName, enclosingType, genericArguments);
+						if (enclosingType == null)
+							return null;
 					}
-					return CreateFromTypeDefOrRef(module, null, token, genericArguments);
+					return enclosingType;
 				}
 			}
-			throw new DebuggerException("Can not find type " + typeName);
+			return null;
 		}
 		
-		/// <summary> Converts type name to the form suitable for COM API. </summary>
-		static string GetQualifiedName(string typeName, int genericArgumentsCount)
+		public static DebugType CreateFromType(Module module, System.Type type)
 		{
-			if (genericArgumentsCount > 0 && !typeName.Contains("`")) {
-				return typeName + "`" + genericArgumentsCount;
-			} else 	{
-				return typeName;
+			if (type is DebugType)
+				throw new DebuggerException("You already have DebugType, no need to create it.");
+			if (type.GetGenericArguments().Length > 0)
+				throw new DebuggerException("Generic arguments not allowed in this overload");
+			
+			DebugType declaringType = null;
+			if (type.DeclaringType != null)
+				declaringType = CreateFromType(module, type.DeclaringType);
+			
+			DebugType result = CreateFromName(module, type.FullName, declaringType);
+			if (result == null)
+				throw new DebuggerException("Type not found: " + type);
+			return result;
+		}
+		
+		public static DebugType CreateFromType(AppDomain appDomain, System.Type type, params DebugType[] genericArgumentsOverride)
+		{
+			if (type is DebugType)
+				throw new DebuggerException("You already have DebugType, no need to create it.");
+			
+			// Get generic arguments for the type if they are not explicitely defined
+			if (genericArgumentsOverride == null) {
+				List<DebugType> genArgs = new List<DebugType>();
+				foreach(System.Type arg in type.GetGenericArguments()) {
+					genArgs.Add(CreateFromType(appDomain, arg, null /* implicit */));
+				}
+				genericArgumentsOverride = genArgs.ToArray();
 			}
+			
+			string name;
+			DebugType declaringType;
+			if (type.DeclaringType != null) {
+				name = type.Name;
+				declaringType = CreateFromType(appDomain, type.DeclaringType, genericArgumentsOverride);
+			} else {
+				name = string.IsNullOrEmpty(type.Namespace) ? type.Name : type.Namespace + "." + type.Name;
+				declaringType = null;
+			}
+			
+			DebugType result = CreateFromName(appDomain, name, declaringType, genericArgumentsOverride);
+			if (result == null)
+				throw new DebuggerException("Type not found: " + type);
+			return result;
+		}
+		
+		public static DebugType CreateFromName(AppDomain appDomain, string name, DebugType declaringType, params DebugType[] genericArguments)
+		{
+			if (declaringType != null)
+				return CreateFromName(declaringType.DebugModule, name, declaringType, genericArguments);
+			foreach(Module module in appDomain.Process.Modules) {
+				if (module.AppDomain != appDomain) continue;
+				DebugType result = CreateFromName(module, name, declaringType, genericArguments);
+				if (result != null)
+					return result;
+			}
+			return null;
+		}
+		
+		public static DebugType CreateFromName(Module module, string name, DebugType declaringType, params DebugType[] genericArguments)
+		{
+			if (declaringType != null && declaringType.DebugModule != module)
+				throw new DebuggerException("Declaring type must be in the same module");
+			
+			uint token;
+			try {
+				token = module.MetaData.FindTypeDefPropsByName(name, declaringType == null ? 0 : (uint)declaringType.MetadataToken).Token;
+			} catch {
+				return null;
+			}
+			return CreateFromTypeDefOrRef(module, null, token, genericArguments);
 		}
 		
 		public static DebugType CreateFromTypeSpec(Module module, uint token, DebugType declaringType)
@@ -715,7 +771,11 @@ namespace Debugger.MetaData
 			foreach(TypeReference argRef in typeRef.GenericTypes) {
 				genArgs.Add(CreateFromTypeReference(appDomain, argRef));
 			}
-			DebugType type = CreateFromName(appDomain, typeRef.Type, genArgs.ToArray());
+			// TODO: A<T>.C<U>
+			string name = typeRef.Type;
+			if (genArgs.Count > 0)
+				name += '`' + genArgs.Count;
+			DebugType type = CreateFromDottedName(appDomain, name, genArgs.ToArray());
 			for(int i = 0; i < typeRef.PointerNestingLevel; i++) {
 				type = (DebugType)type.MakePointerType();
 			}
@@ -737,11 +797,11 @@ namespace Debugger.MetaData
 		{
 			System.Type sysType = CorElementTypeToManagedType((CorElementType)(uint)sigType.ElementType);
 			if (sysType != null) {
-				return CreateFromType(module.AppDomain, sysType);
+				return CreateFromType(module.AppDomain.Mscorlib, sysType);
 			}
 			
 			if (sigType.ElementType == Mono.Cecil.Metadata.ElementType.Object) {
-				return CreateFromType(module.AppDomain, typeof(object));
+				return module.AppDomain.ObjectType;
 			}
 			
 			if (sigType is CLASS) {
@@ -760,7 +820,7 @@ namespace Debugger.MetaData
 			
 			// Numbered generic reference
 			if (sigType is MVAR) {
-				return CreateFromType(module.AppDomain, typeof(object));
+				return module.AppDomain.ObjectType;
 			}
 			
 			if (sigType is GENERICINST) {
@@ -790,7 +850,7 @@ namespace Debugger.MetaData
 				PTR ptrSig = (PTR)sigType;
 				DebugType elementType;
 				if (ptrSig.Void) {
-					elementType = CreateFromType(module.AppDomain, typeof(void));
+					elementType = module.AppDomain.VoidType;
 				} else {
 					elementType = CreateFromSignature(module, ptrSig.PtrType, declaringType);
 				}
@@ -875,12 +935,10 @@ namespace Debugger.MetaData
 			CorElementType corElemType = (CorElementType)(corType.Type);
 			Type primitiveType = CorElementTypeToManagedType(corElemType);
 			if (primitiveType != null) {
-				// TODO: Look only in mscorlib
-				corType = CreateFromType(appDomain, primitiveType).CorType;
+				corType = CreateFromType(appDomain.Mscorlib, primitiveType).CorType;
 			}
 			if (corElemType == CorElementType.VOID) {
-				// TODO: Look only in mscorlib
-				corType = CreateFromType(appDomain, typeof(void)).CorType;
+				corType = appDomain.VoidType.CorType;
 			}
 			
 			if (loadedTypes.ContainsKey(corType)) return loadedTypes[corType];

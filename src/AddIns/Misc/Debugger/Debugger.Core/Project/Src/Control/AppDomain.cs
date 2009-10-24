@@ -43,14 +43,33 @@ namespace Debugger
 			}
 		}
 		
+		DebugType objectType;
+		
+		public DebugType ObjectType {
+			get {
+				if (objectType == null)
+					objectType = DebugType.CreateFromType(this.Mscorlib, typeof(object));
+				return objectType;
+			}
+		}
+		
 		DebugType valueType;
 		
-		internal DebugType ValueType {
+		public DebugType ValueType {
 			get {
-				// TODO: Search only mscorlib module
 				if (valueType == null)
-					valueType = DebugType.CreateFromType(this, typeof(ValueType));
+					valueType = DebugType.CreateFromType(this.Mscorlib, typeof(ValueType));
 				return valueType;
+			}
+		}
+		
+		DebugType voidType;
+		
+		public DebugType VoidType {
+			get {
+				if (voidType == null)
+					voidType = DebugType.CreateFromType(this.Mscorlib, typeof(void));
+				return voidType;
 			}
 		}
 		

@@ -252,7 +252,7 @@ namespace Debugger
 	    public static Value CreateValue(AppDomain appDomain, object value)
 	    {
 	    	if (value == null) {
-				ICorDebugClass corClass = DebugType.CreateFromType(appDomain, typeof(object)).CorType.Class;
+				ICorDebugClass corClass = appDomain.ObjectType.CorType.Class;
 				ICorDebugEval corEval = CreateCorEval(appDomain);
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
 				return new Value(appDomain, corValue);
@@ -260,7 +260,7 @@ namespace Debugger
 	    		return Eval.NewString(appDomain, (string)value);
 			} else {
 	    		// TODO: Check if it is primitive type
-				Value val = Eval.NewObjectNoConstructor(DebugType.CreateFromType(appDomain, value.GetType()));
+				Value val = Eval.NewObjectNoConstructor(DebugType.CreateFromType(appDomain.Mscorlib, value.GetType()));
 				val.PrimitiveValue = value;
 				return val;
 			}

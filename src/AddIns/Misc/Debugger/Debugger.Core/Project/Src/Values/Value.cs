@@ -165,24 +165,19 @@ namespace Debugger
 			{
 				// We were passed null reference and no metadata description
 				// (happens during CreateThread callback for the thread object)
-				this.type = DebugType.CreateFromType(appDomain, typeof(object));
+				this.type = appDomain.ObjectType;
 			} else {
 				ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().ExactType;
 				this.type = DebugType.CreateFromCorType(appDomain, exactType);
 			}
 		}
 		
+		// Box value type
 		public Value Box()
 		{
 			byte[] rawValue = this.CorGenericValue.RawValue;
-			// Box the value type
-			ICorDebugValue corValue;
-			if (this.Type.IsPrimitive) {
-				// Get value type for the primive type
-				corValue = Eval.NewObjectNoConstructor(DebugType.CreateFromName(appDomain, this.Type.FullName)).CorValue;
-			} else {
-				corValue = Eval.NewObjectNoConstructor(this.Type).CorValue;
-			}
+			// The type must not be a primive type (always true in current design)
+			ICorDebugValue corValue = Eval.NewObjectNoConstructor(this.Type).CorValue;
 			// Make the reference to box permanent
 			corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
 			// Create new value
@@ -540,7 +535,7 @@ namespace Debugger
 			if (this.Type.IsPrimitive) return AsString;
 			if (this.Type.IsPointer) return "0x" + this.PointerAddress.ToString("X");
 			// if (!IsObject) // Can invoke on primitives
-			DebugMethodInfo methodInfo = (DebugMethodInfo)DebugType.CreateFromType(this.AppDomain, typeof(object)).GetMethod("ToString", new DebugType[] {});
+			DebugMethodInfo methodInfo = (DebugMethodInfo)this.AppDomain.ObjectType.GetMethod("ToString", new DebugType[] {});
 			return Eval.InvokeMethod(methodInfo, this, new Value[] {}).AsString;
 		}
 		
