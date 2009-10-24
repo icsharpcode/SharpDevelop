@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -100,7 +100,7 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Breakpoint(pAppDomain, pThread, pBreakpoint);
 		}
 		
-		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, Debugger.Wrappers.CorDebug.CorDebugStepReason reason)
+		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, Debugger.Interop.CorDebug.CorDebugStepReason reason)
 		{
 			this.WrappedObject.StepComplete(pAppDomain, pThread, pStepper, reason);
 		}

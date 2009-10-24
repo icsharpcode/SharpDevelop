@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
+using CorElementType = Debugger.Interop.CorDebug.CorElementType;
 
 namespace Debugger
 {

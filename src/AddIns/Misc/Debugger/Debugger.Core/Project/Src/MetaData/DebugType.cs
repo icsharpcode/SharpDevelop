@@ -15,6 +15,8 @@ using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 using ICSharpCode.NRefactory.Ast;
 using Mono.Cecil.Signatures;
+using CorElementType = Debugger.Interop.CorDebug.CorElementType;
+using CorTokenType = Debugger.Interop.MetaData.CorTokenType;
 
 namespace Debugger.MetaData
 {

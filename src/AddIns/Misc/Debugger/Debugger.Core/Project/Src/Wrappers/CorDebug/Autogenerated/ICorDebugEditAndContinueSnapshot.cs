@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -97,9 +97,10 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public System.Guid CopyMetaData(IStream pIStream)
 		{
-			System.Guid pMvid;
-			this.WrappedObject.CopyMetaData(pIStream.WrappedObject, out pMvid);
-			return pMvid;
+			throw new NotImplementedException();
+//			System.Guid pMvid;
+//			this.WrappedObject.CopyMetaData(pIStream.WrappedObject, out pMvid);
+//			return pMvid;
 		}
 		
 		public System.Guid Mvid
@@ -134,7 +135,8 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public void SetPEBytes(IStream pIStream)
 		{
-			this.WrappedObject.SetPEBytes(pIStream.WrappedObject);
+			throw new NotImplementedException();
+//			this.WrappedObject.SetPEBytes(pIStream.WrappedObject);
 		}
 		
 		public void SetILMap(uint mdFunction, uint cMapSize, ref Debugger.Interop.CorDebug._COR_IL_MAP map)
@@ -144,7 +146,8 @@ namespace Debugger.Wrappers.CorDebug
 		
 		public void SetPESymbolBytes(IStream pIStream)
 		{
-			this.WrappedObject.SetPESymbolBytes(pIStream.WrappedObject);
+			throw new NotImplementedException();
+//			this.WrappedObject.SetPESymbolBytes(pIStream.WrappedObject);
 		}
 	}
 }

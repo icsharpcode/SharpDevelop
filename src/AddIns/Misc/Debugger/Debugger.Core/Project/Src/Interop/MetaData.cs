@@ -7,11 +7,135 @@
 
 #pragma warning disable 108, 1591 
 
+using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
 namespace Debugger.Interop.MetaData
 {
-    using System;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.InteropServices;
+    [StructLayout(LayoutKind.Sequential, Pack=4)]
+    public struct COR_FIELD_OFFSET
+    {
+        public uint ridOfField;
+        public uint ulOffset;
+    }
+	[System.Flags()]
+	enum ClassFieldAttribute: uint
+	{
+		// member access mask - Use this mask to retrieve accessibility information.
+		fdFieldAccessMask           =   0x0007,
+		fdPrivateScope              =   0x0000,     // Member not referenceable.
+		fdPrivate                   =   0x0001,     // Accessible only by the parent type.  
+		fdFamANDAssem               =   0x0002,     // Accessible by sub-types only in this Assembly.
+		fdAssembly                  =   0x0003,     // Accessibly by anyone in the Assembly.
+		fdFamily                    =   0x0004,     // Accessible only by type and sub-types.    
+		fdFamORAssem                =   0x0005,     // Accessibly by sub-types anywhere, plus anyone in assembly.
+		fdPublic                    =   0x0006,     // Accessibly by anyone who has visibility to this scope.    
+		// end member access mask
+
+		// field contract attributes.
+		fdStatic                    =   0x0010,     // Defined on type, else per instance.
+		fdInitOnly                  =   0x0020,     // Field may only be initialized, not written to after init.
+		fdLiteral                   =   0x0040,     // Value is compile time constant.
+		fdNotSerialized             =   0x0080,     // Field does not have to be serialized when type is remoted.
+
+		fdSpecialName               =   0x0200,     // field is special.  Name describes how.
+
+		// interop attributes
+		fdPinvokeImpl               =   0x2000,     // Implementation is forwarded through pinvoke.
+
+		// Reserved flags for runtime use only.
+		fdReservedMask              =   0x9500,
+		fdRTSpecialName             =   0x0400,     // Runtime(metadata internal APIs) should check name encoding.
+		fdHasFieldMarshal           =   0x1000,     // Field has marshalling information.
+		fdHasDefault                =   0x8000,     // Field has default.
+		fdHasFieldRVA               =   0x0100,     // Field has RVA.
+	}
+	enum CorCallingConvention: uint
+	{
+	    IMAGE_CEE_CS_CALLCONV_DEFAULT   = 0x0,  
+	
+	    IMAGE_CEE_CS_CALLCONV_VARARG    = 0x5,  
+	    IMAGE_CEE_CS_CALLCONV_FIELD     = 0x6,  
+	    IMAGE_CEE_CS_CALLCONV_LOCAL_SIG = 0x7,
+	    IMAGE_CEE_CS_CALLCONV_PROPERTY  = 0x8,
+	    IMAGE_CEE_CS_CALLCONV_UNMGD     = 0x9,
+	    IMAGE_CEE_CS_CALLCONV_MAX       = 0x10,  // first invalid calling convention    
+	
+	
+	        // The high bits of the calling convention convey additional info   
+	    IMAGE_CEE_CS_CALLCONV_MASK      = 0x0f,  // Calling convention is bottom 4 bits 
+	    IMAGE_CEE_CS_CALLCONV_HASTHIS   = 0x20,  // Top bit indicates a 'this' parameter    
+	    IMAGE_CEE_CS_CALLCONV_EXPLICITTHIS = 0x40,  // This parameter is explicitly in the signature
+	}
+	enum CorMethodAttr: uint
+	{
+	    // member access mask - Use this mask to retrieve accessibility information.
+	    mdMemberAccessMask          =   0x0007,
+	    mdPrivateScope              =   0x0000,     // Member not referenceable.
+	    mdPrivate                   =   0x0001,     // Accessible only by the parent type.  
+	    mdFamANDAssem               =   0x0002,     // Accessible by sub-types only in this Assembly.
+	    mdAssem                     =   0x0003,     // Accessibly by anyone in the Assembly.
+	    mdFamily                    =   0x0004,     // Accessible only by type and sub-types.    
+	    mdFamORAssem                =   0x0005,     // Accessibly by sub-types anywhere, plus anyone in assembly.
+	    mdPublic                    =   0x0006,     // Accessibly by anyone who has visibility to this scope.    
+	    // end member access mask
+	
+	    // method contract attributes.
+	    mdStatic                    =   0x0010,     // Defined on type, else per instance.
+	    mdFinal                     =   0x0020,     // Method may not be overridden.
+	    mdVirtual                   =   0x0040,     // Method virtual.
+	    mdHideBySig                 =   0x0080,     // Method hides by name+sig, else just by name.
+	
+	    // vtable layout mask - Use this mask to retrieve vtable attributes.
+	    mdVtableLayoutMask          =   0x0100,
+	    mdReuseSlot                 =   0x0000,     // The default.
+	    mdNewSlot                   =   0x0100,     // Method always gets a new slot in the vtable.
+	    // end vtable layout mask
+	
+	    // method implementation attributes.
+	    mdCheckAccessOnOverride     =   0x0200,     // Overridability is the same as the visibility.
+	    mdAbstract                  =   0x0400,     // Method does not provide an implementation.
+	    mdSpecialName               =   0x0800,     // Method is special.  Name describes how.
+	    
+	    // interop attributes
+	    mdPinvokeImpl               =   0x2000,     // Implementation is forwarded through pinvoke.
+	    mdUnmanagedExport           =   0x0008,     // Managed method exported via thunk to unmanaged code.
+	
+	    // Reserved flags for runtime use only.
+	    mdReservedMask              =   0xd000,
+	    mdRTSpecialName             =   0x1000,     // Runtime should check name encoding.
+	    mdHasSecurity               =   0x4000,     // Method has security associate with it.
+	    mdRequireSecObject          =   0x8000,     // Method calls another method containing security code.
+	
+	}
+	public enum CorTokenType: uint
+	{
+		Module               = 0x00000000,       //          
+		TypeRef              = 0x01000000,       //          
+		TypeDef              = 0x02000000,       //          
+		FieldDef             = 0x04000000,       //           
+		MethodDef            = 0x06000000,       //       
+		ParamDef             = 0x08000000,       //           
+		InterfaceImpl        = 0x09000000,       //  
+		MemberRef            = 0x0a000000,       //       
+		CustomAttribute      = 0x0c000000,       //      
+		Permission           = 0x0e000000,       //       
+		Signature            = 0x11000000,       //       
+		Event                = 0x14000000,       //           
+		Property             = 0x17000000,       //           
+		ModuleRef            = 0x1a000000,       //       
+		TypeSpec             = 0x1b000000,       //           
+		Assembly             = 0x20000000,       //
+		AssemblyRef          = 0x23000000,       //
+		File                 = 0x26000000,       //
+		ExportedType         = 0x27000000,       //
+		ManifestResource     = 0x28000000,       //
+		
+		String               = 0x70000000,       //          
+		Name                 = 0x71000000,       //
+		BaseType             = 0x72000000,       // Leave this on the high end value. This does not correspond to metadata table
+	}
 
     [ComImport, InterfaceType((short) 1), Guid("7DAC8207-D3AE-4C75-9B67-92801A497D44"), ComConversionLoss]
     public interface IMetaDataImport
@@ -145,19 +269,12 @@ namespace Debugger.Interop.MetaData
         
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumGenericParams(ref IntPtr hEnum, uint tk, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rGenericParams, uint cMax, out uint pcGenericParams);    
-
         void GetGenericParamProps();
-        
         void GetMethodSpecProps();
-
         void EnumGenericParamConstraints();
-        
         void GetGenericParamConstraintProps();
-        
         void GetPEKind();
-
         void GetVersionString();
-
         void EnumMethodSpecs();
     }
 }

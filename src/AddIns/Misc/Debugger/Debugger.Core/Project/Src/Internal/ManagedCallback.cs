@@ -15,6 +15,9 @@
 using System;
 using System.Runtime.InteropServices;
 using Debugger.Wrappers.CorDebug;
+using CorDebugStepReason = Debugger.Interop.CorDebug.CorDebugStepReason;
+using CorDebugExceptionCallbackType = Debugger.Interop.CorDebug.CorDebugExceptionCallbackType;
+using CorDebugExceptionUnwindCallbackType = Debugger.Interop.CorDebug.CorDebugExceptionUnwindCallbackType;
 
 namespace Debugger.Internal
 {
