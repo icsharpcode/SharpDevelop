@@ -146,21 +146,13 @@ namespace Debugger.AddIn.TreeModel
 			
 			this.canSetText = val.Type.IsPrimitive;
 			
-			if (DebuggingOptions.Instance.ShowValuesInHexadecimal && val.Type.IsInteger) {
-				fullText = String.Format("0x{0:X}", val.PrimitiveValue);
-			} else if (val.Type.IsPointer) {
-				fullText = String.Format("0x{0:X}", val.PointerAddress);
-			} else {
-				fullText = val.AsString;
-			}
-			
 			this.expressionType = val.Type;
 			this.Type = val.Type.Name;
 			this.valueIsNull = val.IsNull;
 			
 			// Note that these return enumerators so they are lazy-evaluated
 			if (val.IsNull) {
-			} else if (val.Type.IsPrimitive) { // Must be before IsClass
+			} else if (val.Type.IsPrimitive || val.Type.FullName == typeof(string).FullName) { // Must be before IsClass
 			} else if (val.Type.IsArray) { // Must be before IsClass
 				if (val.ArrayLength > 0)
 					this.ChildNodes = Utils.LazyGetChildNodesOfArray(this.Expression, val.ArrayDimensions);
@@ -184,17 +176,78 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			// Do last since it may expire the object
-			if ((val.Type.IsClass || val.Type.IsValueType) && !val.IsNull) {
+			if (val.Type.IsInteger) {
+				fullText = FormatInteger(val.PrimitiveValue);
+			} else if (val.Type.IsPointer) {
+				fullText = String.Format("0x{0:X}", val.PointerAddress);
+			} else if ((val.Type.IsClass || val.Type.IsValueType) && !val.IsNull) {
 				try {
 					fullText = val.InvokeToString();
 				} catch (GetValueException e) {
 					error = e;
-					this.Text = e.Message;
+					fullText = e.Message;
 					return;
 				}
+			} else {
+				fullText = val.AsString;
 			}
 			
 			this.Text = (fullText.Length > 256) ? fullText.Substring(0, 256) + "..." : fullText;
+		}
+		
+		string FormatInteger(object i)
+		{
+			if (DebuggingOptions.Instance.ShowIntegersAs == ShowIntegersAs.Decimal)
+				return i.ToString();
+			
+			string hex = null;
+			for(int len = 1;; len *= 2) {
+				hex = string.Format("{0:X" + len + "}", i);
+				if (hex.Length == len)
+					break;
+			}
+			
+			if (DebuggingOptions.Instance.ShowIntegersAs == ShowIntegersAs.Hexadecimal) {
+				return "0x" + hex;
+			} else {
+				if (ShowAsHex(i)) {
+					return String.Format("{0} (0x{1})", i, hex);
+				} else {
+					return i.ToString();
+				}
+			}
+		}
+		
+		bool ShowAsHex(object i)
+		{
+			ulong val;
+			if (i is sbyte || i is short || i is int || i is long) {
+				unchecked { val = (ulong)Convert.ToInt64(i); }
+				if (val > (ulong)long.MaxValue)
+					val = ~val + 1;
+			} else {
+				val = Convert.ToUInt64(i);
+			}
+			if (val >= 0x10000)
+				return true;
+			
+			int ones = 0; // How many 1s there is
+			int runs = 0; // How many runs of 1s there is
+			int size = 0; // Size of the integer in bits
+			while(val != 0) { // There is at least one 1
+				while((val & 1) == 0) { // Skip 0s
+					val = val >> 1;
+					size++;
+				}
+				while((val & 1) == 1) { // Skip 1s
+					val = val >> 1;
+					size++;
+					ones++;
+				}
+				runs++;
+			}
+			
+			return size >= 7 && runs <= (size + 7) / 8;
 		}
 		
 		public bool SetText(string newText)
@@ -285,23 +338,23 @@ namespace Debugger.AddIn.TreeModel
 				ClipboardWrapper.SetText(fullText);
 			};
 			
-			ToolStripMenuItem hexView;
-			hexView = new ToolStripMenuItem();
-			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
-			hexView.Checked = DebuggingOptions.Instance.ShowValuesInHexadecimal;
-			hexView.Click += delegate {
-				// refresh all pads that use ValueNode for display
-				DebuggingOptions.Instance.ShowValuesInHexadecimal = !DebuggingOptions.Instance.ShowValuesInHexadecimal;
-				// always check if instance is null, might be null if pad is not opened
-				if (LocalVarPad.Instance != null)
-					LocalVarPad.Instance.RefreshPad();
-				if (WatchPad.Instance != null)
-					WatchPad.Instance.RefreshPad();
-			};
+//			ToolStripMenuItem hexView;
+//			hexView = new ToolStripMenuItem();
+//			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
+//			hexView.Checked = DebuggingOptions.Instance.ShowValuesInHexadecimal;
+//			hexView.Click += delegate {
+//				// refresh all pads that use ValueNode for display
+//				DebuggingOptions.Instance.ShowValuesInHexadecimal = !DebuggingOptions.Instance.ShowValuesInHexadecimal;
+//				// always check if instance is null, might be null if pad is not opened
+//				if (LocalVarPad.Instance != null)
+//					LocalVarPad.Instance.RefreshPad();
+//				if (WatchPad.Instance != null)
+//					WatchPad.Instance.RefreshPad();
+//			};
 			
 			menu.Items.AddRange(new ToolStripItem[] {
 			                    	copyItem,
-			                    	hexView
+			                    	//hexView
 			                    });
 			
 			return menu;

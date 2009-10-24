@@ -12,6 +12,8 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
+	public enum ShowIntegersAs { Auto, Decimal, Hexadecimal };
+	
 	public class DebuggingOptions: Options
 	{
 		public static DebuggingOptions Instance {
@@ -21,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 		
 		public bool ICorDebugVisualizerEnabled;
-		public bool ShowValuesInHexadecimal;
+		public ShowIntegersAs ShowIntegersAs = ShowIntegersAs.Auto;
 		public bool ShowArgumentNames;
 		public bool ShowArgumentValues;
 		public bool ShowExternalMethods;
