@@ -93,7 +93,6 @@ namespace Debugger
 		{
 			return new Value(
 				fieldInfo.AppDomain,
-				ExpressionExtensionMethods.AppendMemberReference(fieldInfo.IsStatic ? null : objectInstance.ExpressionTree, fieldInfo),
 				GetFieldCorValue(objectInstance, fieldInfo)
 			);
 		}
@@ -141,12 +140,6 @@ namespace Debugger
 			if (propertyInfo.GetMethod == null) throw new GetValueException("Property does not have a get method");
 			
 			Value val = Value.InvokeMethod(objectInstance, propertyInfo.GetMethod, arguments);
-			
-			List<Expression> argExprs = new List<Expression>();
-			foreach(Value arg in arguments) {
-				argExprs.Add(arg.ExpressionTree);
-			}
-			val.ExpressionTree = ExpressionExtensionMethods.AppendMemberReference(propertyInfo.IsStatic ? null : objectInstance.ExpressionTree, propertyInfo, argExprs.ToArray());
 			
 			return val;
 		}

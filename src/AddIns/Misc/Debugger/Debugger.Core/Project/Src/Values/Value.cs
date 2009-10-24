@@ -23,22 +23,9 @@ namespace Debugger
 	{
 		AppDomain      appDomain;
 		Process        process;
-		Expression     expression;
 		ICorDebugValue corValue;
 		PauseSession   corValue_pauseSession;
 		DebugType      type;
-		
-		/// <summary> Expression which can be used to reobtain this value. </summary>
-		public string Expression {
-			get { return expression.PrettyPrint(); }
-		}
-		
-		/// <summary> Abstract syntax tree of the expression which can be used to reobtain this value. </summary>
-		[Tests.Ignore]
-		public Expression ExpressionTree {
-			get { return expression; }
-			set { expression = value; }
-		}
 		
 		/// <summary> Returns true if the value is null </summary>
 		public bool IsNull {
@@ -135,7 +122,7 @@ namespace Debugger
 			// Make the reference to box permanent
 			corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
 			// Create new value
-			Value newValue = new Value(appDomain, expression, corValue);
+			Value newValue = new Value(appDomain, corValue);
 			// Copy the data inside the box
 			newValue.CorGenericValue.RawValue = rawValue;
 			return newValue;
@@ -155,17 +142,16 @@ namespace Debugger
 					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference().CastTo<ICorDebugHeapValue2>().CreateHandle(CorDebugHandleType.HANDLE_STRONG).CastTo<ICorDebugValue>();
 				}
 			}
-			return new Value(appDomain, expression, corValue);
+			return new Value(appDomain, corValue);
 		}
 		
-		internal Value(AppDomain appDomain, Expression expression, ICorDebugValue corValue)
+		internal Value(AppDomain appDomain, ICorDebugValue corValue)
 		{
 			if (corValue == null) {
 				throw new ArgumentNullException("corValue");
 			}
 			this.appDomain = appDomain;
 			this.process = appDomain.Process;
-			this.expression = expression;
 			this.corValue = corValue;
 			this.corValue_pauseSession = process.PauseSession;
 			
@@ -206,7 +192,7 @@ namespace Debugger
 			if (corRef.Value == 0 || corRef.Dereference() == null) {
 				return null;
 			} else {
-				return new Value(this.AppDomain, new UnaryOperatorExpression(this.ExpressionTree, UnaryOperatorType.Dereference), corRef.Dereference());
+				return new Value(this.AppDomain, corRef.Dereference());
 			}
 		}
 		
@@ -227,7 +213,7 @@ namespace Debugger
 		
 		public override string ToString()
 		{
-			return this.Expression + " = " + this.AsString;
+			return this.AsString;
 		}
 	}
 	

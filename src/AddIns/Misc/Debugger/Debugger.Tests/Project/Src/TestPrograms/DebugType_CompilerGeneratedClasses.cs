@@ -103,22 +103,22 @@ namespace Debugger.Tests {
       <Item>
         <AnonymousType
           Name="stateLessVar"
-          Value="stateLessVar = 201" />
+          Value="201" />
       </Item>
       <Item>
         <AnonymousType
           Name="deleg"
-          Value="deleg = null" />
+          Value="null" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateLessVar_DelegRef"
-          Value="(()(CS$&lt;&gt;8__locals5)).stateLessVar_DelegRef = 202" />
+          Value="202" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateLessVar_NestedDelegRef"
-          Value="(()(CS$&lt;&gt;8__locals5)).stateLessVar_NestedDelegRef = 203" />
+          Value="203" />
       </Item>
     </YieldLocalVariables>
     <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:54,6-54,42</DebuggingPaused>
@@ -126,47 +126,47 @@ namespace Debugger.Tests {
       <Item>
         <AnonymousType
           Name="delegVar"
-          Value="delegVar = 301" />
+          Value="301" />
       </Item>
       <Item>
         <AnonymousType
           Name="nestedDeleg"
-          Value="nestedDeleg = {IntDelegate}" />
+          Value="{IntDelegate}" />
       </Item>
       <Item>
         <AnonymousType
           Name="delegVar_NestedDelegRef"
-          Value="(()(CS$&lt;&gt;8__locals7)).delegVar_NestedDelegRef = 302" />
+          Value="302" />
       </Item>
       <Item>
         <AnonymousType
           Name="delegArg_NestedDelegRef"
-          Value="(()(CS$&lt;&gt;8__locals7)).delegArg_NestedDelegRef = 401" />
+          Value="401" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateLessVar_DelegRef"
-          Value="(()(this)).stateLessVar_DelegRef = 202" />
+          Value="202" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateLessVar_NestedDelegRef"
-          Value="(()(this)).stateLessVar_NestedDelegRef = 203" />
+          Value="203" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateFullVar_DelegRef"
-          Value="(()((()(this)).CS$&lt;&gt;8__locals3)).stateFullVar_DelegRef = 102" />
+          Value="102" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateFullVar_NestedDelegRef"
-          Value="(()((()(this)).CS$&lt;&gt;8__locals3)).stateFullVar_NestedDelegRef = 103" />
+          Value="103" />
       </Item>
       <Item>
         <AnonymousType
           Name="this"
-          Value="(()((()(this)).CS$&lt;&gt;8__locals3)).&lt;&gt;4__this = {Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
+          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </OutterDelegateLocalVariables>
     <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:51,7-51,43</DebuggingPaused>
@@ -174,42 +174,42 @@ namespace Debugger.Tests {
       <Item>
         <AnonymousType
           Name="nestedDelegVar"
-          Value="nestedDelegVar = 303" />
+          Value="303" />
       </Item>
       <Item>
         <AnonymousType
           Name="delegVar_NestedDelegRef"
-          Value="(()(this)).delegVar_NestedDelegRef = 302" />
+          Value="302" />
       </Item>
       <Item>
         <AnonymousType
           Name="delegArg_NestedDelegRef"
-          Value="(()(this)).delegArg_NestedDelegRef = 401" />
+          Value="401" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateLessVar_DelegRef"
-          Value="(()((()(this)).CS$&lt;&gt;8__locals5)).stateLessVar_DelegRef = 202" />
+          Value="202" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateLessVar_NestedDelegRef"
-          Value="(()((()(this)).CS$&lt;&gt;8__locals5)).stateLessVar_NestedDelegRef = 203" />
+          Value="203" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateFullVar_DelegRef"
-          Value="(()((()(this)).CS$&lt;&gt;8__locals3)).stateFullVar_DelegRef = 102" />
+          Value="102" />
       </Item>
       <Item>
         <AnonymousType
           Name="stateFullVar_NestedDelegRef"
-          Value="(()((()(this)).CS$&lt;&gt;8__locals3)).stateFullVar_NestedDelegRef = 103" />
+          Value="103" />
       </Item>
       <Item>
         <AnonymousType
           Name="this"
-          Value="(()((()(this)).CS$&lt;&gt;8__locals3)).&lt;&gt;4__this = {Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
+          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </InnterDelegateLocalVariables>
     <ProcessExited />

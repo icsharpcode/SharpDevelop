@@ -36,7 +36,6 @@ namespace Debugger
 		ICorDebugEval corEval;
 		Value         result;
 		EvalState     state;
-		Expression    expression;
 		
 		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
@@ -50,10 +49,6 @@ namespace Debugger
 		
 		public string Description {
 			get { return description; }
-		}
-		
-		public Expression Expression {
-			get { return expression; }
 		}
 		
 		ICorDebugEval CorEval {
@@ -87,12 +82,11 @@ namespace Debugger
 			}
 		}
 		
-		Eval(AppDomain appDomain, string description, Expression expression, EvalStarter evalStarter)
+		Eval(AppDomain appDomain, string description, EvalStarter evalStarter)
 		{
 			this.appDomain = appDomain;
 			this.process = appDomain.Process;
 			this.description = description;
-			this.expression = expression;
 			this.state = EvalState.Evaluating;
 			
 			this.corEval = CreateCorEval(appDomain);
@@ -192,7 +186,7 @@ namespace Debugger
 				} else {
 					state = EvalState.EvaluatedException;
 				}
-				result = new Value(AppDomain, expression, corEval.Result);
+				result = new Value(AppDomain, corEval.Result);
 			}
 		}
 		
@@ -218,15 +212,9 @@ namespace Debugger
 		
 		public static Eval AsyncInvokeMethod(MethodInfo method, Value thisValue, Value[] args)
 		{
-			List<Expression> argExprs = new List<Expression>();
-			foreach(Value arg in args) {
-				argExprs.Add(arg.ExpressionTree);
-			}
-			
 			return new Eval(
 				method.AppDomain,
 				"Function call: " + method.FullName,
-				ExpressionExtensionMethods.AppendMemberReference(method.IsStatic ? null : thisValue.ExpressionTree, method, argExprs.ToArray()),
 				delegate(Eval eval) {
 					MethodInvokeStarter(eval, method, thisValue, args);
 				}
@@ -275,14 +263,13 @@ namespace Debugger
 				ICorDebugClass corClass = DebugType.CreateFromType(appDomain, typeof(object)).CorType.Class;
 				ICorDebugEval corEval = CreateCorEval(appDomain);
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
-				return new Value(appDomain, new PrimitiveExpression(value), corValue);
+				return new Value(appDomain, corValue);
 			} else if (value is string) {
 	    		return Eval.NewString(appDomain, (string)value);
 			} else {
 	    		// TODO: Check if it is primitive type
 				Value val = Eval.NewObjectNoConstructor(DebugType.CreateFromType(appDomain, value.GetType()));
 				val.PrimitiveValue = value;
-				val.ExpressionTree = new PrimitiveExpression(value);
 				return val;
 			}
 	    }
@@ -327,7 +314,6 @@ namespace Debugger
 			return new Eval(
 				appDomain,
 				"New string: " + textToCreate,
-				new PrimitiveExpression(textToCreate),
 				delegate(Eval eval) {
 					eval.CorEval.CastTo<ICorDebugEval2>().NewStringWithLength(textToCreate, (uint)textToCreate.Length);
 				}
@@ -350,7 +336,6 @@ namespace Debugger
 		
 		public static Eval AsyncNewObject(DebugType debugType, Value[] constructorArguments, DebugType[] constructorArgumentsTypes)
 		{
-			List<Expression> constructorArgumentsExpressions = SelectExpressions(constructorArguments);
 			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
 			MethodInfo constructor = debugType.GetMethod(".ctor", constructorArgumentsTypes);
 			if (constructor == null) {
@@ -359,7 +344,6 @@ namespace Debugger
 			return new Eval(
 				debugType.AppDomain,
 				"New object: " + debugType.FullName,
-				new ObjectCreateExpression(new TypeReference(debugType.FullName), constructorArgumentsExpressions),
 				delegate(Eval eval) {
 					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObject(
 						constructor.CorFunction, (uint)debugType.GenericArguments.Count, debugType.GenericArgumentsAsCorDebugType,
@@ -373,7 +357,6 @@ namespace Debugger
 			return new Eval(
 				debugType.AppDomain,
 				"New object: " + debugType.FullName,
-				new ObjectCreateExpression(new TypeReference(debugType.FullName), new List<Expression>()),
 				delegate(Eval eval) {
 					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GenericArguments.Count, debugType.GenericArgumentsAsCorDebugType);
 				}
@@ -383,20 +366,10 @@ namespace Debugger
 		static ICorDebugValue[] ValuesAsCorDebug(Value[] values)
 		{
 			ICorDebugValue[] valuesAsCorDebug = new ICorDebugValue[values.Length];
-			for(int i = 0; i < values.Length; i++)
-			{
+			for(int i = 0; i < values.Length; i++) {
 				valuesAsCorDebug[i] = values[i].CorValue;
 			}
 			return valuesAsCorDebug;
-		}
-		
-		static List<Expression> SelectExpressions(Value[] values)
-		{
-			List<Expression> expressions = new List<Expression>(values.Length);
-			foreach (Value value in values) {
-				expressions.Add(value.ExpressionTree);
-			}
-			return expressions;
 		}
 	}
 }

@@ -389,7 +389,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="nullObject"
           Type="System.Object"
-          Value="nullObject = null">
+          Value="null">
           <Type>
             <DebugType
               FullName="System.Object"
@@ -405,7 +405,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="nullString"
           Type="System.String"
-          Value="nullString = null">
+          Value="null">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -423,7 +423,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="nullMyClass"
           Type="MyClass"
-          Value="nullMyClass = null">
+          Value="null">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -440,7 +440,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="i"
           Type="System.Int32"
-          Value="i = 42">
+          Value="42">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -458,7 +458,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="b"
           Type="System.Boolean"
-          Value="b = True">
+          Value="True">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -476,7 +476,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="c"
           Type="System.Char"
-          Value="c = a">
+          Value="a">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -494,7 +494,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="obj"
           Type="System.Object"
-          Value="obj = {System.Object}">
+          Value="{System.Object}">
           <Type>
             <DebugType
               FullName="System.Object"
@@ -510,7 +510,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myClass"
           Type="MyClass"
-          Value="myClass = {MyClass}">
+          Value="{MyClass}">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -527,7 +527,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="point"
           Type="MyStruct"
-          Value="point = {MyStruct}">
+          Value="{MyStruct}">
           <Type>
             <DebugType
               BaseType="System.ValueType"
@@ -544,7 +544,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="box"
           Type="System.Object"
-          Value="box = {System.Int32}">
+          Value="{System.Int32}">
           <Type>
             <DebugType
               FullName="System.Object"
@@ -560,7 +560,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="iPtr"
           Type="System.Int32*"
-          Value="iPtr = {System.Int32*}">
+          Value="{System.Int32*}">
           <Type>
             <DebugType
               ElementType="System.Int32"
@@ -587,7 +587,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="iPtrPtr"
           Type="System.Int32**"
-          Value="iPtrPtr = {System.Int32**}">
+          Value="{System.Int32**}">
           <Type>
             <DebugType
               ElementType="System.Int32*"
@@ -623,7 +623,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="bPtr"
           Type="System.Boolean*"
-          Value="bPtr = {System.Boolean*}">
+          Value="{System.Boolean*}">
           <Type>
             <DebugType
               ElementType="System.Boolean"
@@ -650,7 +650,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="voidPtr"
           Type="System.Void*"
-          Value="voidPtr = {System.Void*}">
+          Value="{System.Void*}">
           <Type>
             <DebugType
               ElementType="System.Void"
@@ -676,7 +676,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="pointPtr"
           Type="MyStruct*"
-          Value="pointPtr = {MyStruct*}">
+          Value="{MyStruct*}">
           <Type>
             <DebugType
               ElementType="MyStruct"
@@ -702,7 +702,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="ptr"
           Type="System.IntPtr"
-          Value="ptr = 0">
+          Value="0">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -720,7 +720,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="szArray"
           Type="System.Char[]"
-          Value="szArray = {System.Char[]}">
+          Value="{System.Char[]}">
           <Type>
             <DebugType
               BaseType="System.Array"
@@ -748,7 +748,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="mdArray"
           Type="System.Char[,]"
-          Value="mdArray = {System.Char[,]}">
+          Value="{System.Char[,]}">
           <Type>
             <DebugType
               BaseType="System.Array"
@@ -776,7 +776,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="nullable_value"
           Type="System.Nullable&lt;System.Int32&gt;"
-          Value="nullable_value = {System.Nullable&lt;System.Int32&gt;}">
+          Value="{System.Nullable&lt;System.Int32&gt;}">
           <Type>
             <DebugType
               BaseType="System.ValueType"
@@ -794,7 +794,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="nullable_null"
           Type="System.Nullable&lt;System.Int32&gt;"
-          Value="nullable_null = {System.Nullable&lt;System.Int32&gt;}">
+          Value="{System.Nullable&lt;System.Int32&gt;}">
           <Type>
             <DebugType
               BaseType="System.ValueType"
@@ -812,7 +812,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myGenClass_int"
           Type="MyGenClass&lt;System.Int32&gt;"
-          Value="myGenClass_int = {MyGenClass&lt;System.Int32&gt;}">
+          Value="{MyGenClass&lt;System.Int32&gt;}">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -830,7 +830,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="array_MyGenClass_int"
           Type="MyGenClass&lt;System.Int32&gt;[]"
-          Value="array_MyGenClass_int = {MyGenClass&lt;System.Int32&gt;[]}">
+          Value="{MyGenClass&lt;System.Int32&gt;[]}">
           <Type>
             <DebugType
               BaseType="System.Array"
@@ -858,7 +858,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myGenClass_MyGenStruct_int"
           Type="MyGenClass&lt;MyGenStruct&lt;System.Int32&gt;&gt;"
-          Value="myGenClass_MyGenStruct_int = {MyGenClass&lt;MyGenStruct&lt;System.Int32&gt;&gt;}">
+          Value="{MyGenClass&lt;MyGenStruct&lt;System.Int32&gt;&gt;}">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -876,7 +876,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myNestedClass"
           Type="MyNestedClass&lt;System.Int32&gt;"
-          Value="myNestedClass = {MyNestedClass&lt;System.Int32&gt;}">
+          Value="{MyNestedClass&lt;System.Int32&gt;}">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -894,7 +894,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myGenNestedClass"
           Type="MyGenNestedClass&lt;System.Int32,System.Char&gt;"
-          Value="myGenNestedClass = {MyGenNestedClass&lt;System.Int32,System.Char&gt;}">
+          Value="{MyGenNestedClass&lt;System.Int32,System.Char&gt;}">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -912,7 +912,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myGenStruct_int"
           Type="MyGenStruct&lt;System.Int32&gt;"
-          Value="myGenStruct_int = {MyGenStruct&lt;System.Int32&gt;}">
+          Value="{MyGenStruct&lt;System.Int32&gt;}">
           <Type>
             <DebugType
               BaseType="System.ValueType"
@@ -930,7 +930,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="array_MyGenStruct_int"
           Type="MyGenStruct&lt;System.Int32&gt;[]"
-          Value="array_MyGenStruct_int = {MyGenStruct&lt;System.Int32&gt;[]}">
+          Value="{MyGenStruct&lt;System.Int32&gt;[]}">
           <Type>
             <DebugType
               BaseType="System.Array"
@@ -958,7 +958,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myGenStruct_MyGenClass_int"
           Type="MyGenStruct&lt;MyGenClass&lt;System.Int32&gt;&gt;"
-          Value="myGenStruct_MyGenClass_int = {MyGenStruct&lt;MyGenClass&lt;System.Int32&gt;&gt;}">
+          Value="{MyGenStruct&lt;MyGenClass&lt;System.Int32&gt;&gt;}">
           <Type>
             <DebugType
               BaseType="System.ValueType"
@@ -976,7 +976,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myGenNestedStruct"
           Type="MyGenNestedStruct&lt;System.Int32,System.Char&gt;"
-          Value="myGenNestedStruct = {MyGenNestedStruct&lt;System.Int32,System.Char&gt;}">
+          Value="{MyGenNestedStruct&lt;System.Int32,System.Char&gt;}">
           <Type>
             <DebugType
               BaseType="System.ValueType"
@@ -994,7 +994,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myInterfaceImpl"
           Type="MyInterfaceImpl&lt;System.Int32&gt;"
-          Value="myInterfaceImpl = {MyInterfaceImpl&lt;System.Int32&gt;}">
+          Value="{MyInterfaceImpl&lt;System.Int32&gt;}">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -1013,7 +1013,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="myInterface"
           Type="MyInterface&lt;System.Int32,MyClass,MyStruct&gt;"
-          Value="myInterface = {MyInterfaceImpl&lt;System.Int32&gt;}">
+          Value="{MyInterfaceImpl&lt;System.Int32&gt;}">
           <Type>
             <DebugType
               FullName="MyInterface&lt;System.Int32,MyClass,MyStruct&gt;"
@@ -1030,7 +1030,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="list"
           Type="System.Collections.Generic.List&lt;System.Int32&gt;"
-          Value="list = {System.Collections.Generic.List&lt;System.Int32&gt;}">
+          Value="{System.Collections.Generic.List&lt;System.Int32&gt;}">
           <Type>
             <DebugType
               BaseType="System.Object"
@@ -1049,7 +1049,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="listEnum"
           Type="Enumerator&lt;System.Int32&gt;"
-          Value="listEnum = {Enumerator&lt;System.Int32&gt;}">
+          Value="{Enumerator&lt;System.Int32&gt;}">
           <Type>
             <DebugType
               BaseType="System.ValueType"
@@ -1068,7 +1068,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="fnPtr"
           Type="AddDelegate"
-          Value="fnPtr = {AddDelegate}">
+          Value="{AddDelegate}">
           <Type>
             <DebugType
               BaseType="System.MulticastDelegate"
@@ -1085,7 +1085,7 @@ namespace Debugger.Tests {
         <LocalVariable
           Name="access"
           Type="Access"
-          Value="access = {Access}">
+          Value="{Access}">
           <Type>
             <DebugType
               BaseType="System.Object"

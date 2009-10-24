@@ -19,9 +19,7 @@ namespace Debugger
 {
 	public class ExpressionEvaluator: NotImplementedAstVisitor
 	{
-		/// <summary> Evaluate given expression.  If you have expression tree already, use overloads of this method.</summary>
-		/// <returns> Returned value or null for statements </returns>
-		public static Value Evaluate(string code, SupportedLanguage language, StackFrame context)
+		public static INode Parse(string code, SupportedLanguage language)
 		{
 			SnippetParser parser = new SnippetParser(language);
 			INode astRoot = parser.Parse(code);
@@ -31,7 +29,14 @@ namespace Debugger
 			if (parser.SnippetType != SnippetType.Expression && parser.SnippetType != SnippetType.Statements) {
 				throw new GetValueException("Code must be expression or statement");
 			}
-			return Evaluate(astRoot, context);
+			return astRoot;
+		}
+		
+		/// <summary> Evaluate given expression.  If you have expression tree already, use overloads of this method.</summary>
+		/// <returns> Returned value or null for statements </returns>
+		public static Value Evaluate(string code, SupportedLanguage language, StackFrame context)
+		{
+			return Evaluate(Parse(code, language), context);
 		}
 		
 		public static Value Evaluate(INode code, Process context)
@@ -110,12 +115,12 @@ namespace Debugger
 			}
 		}
 		
-		public Value Evaluate(INode expression)
+		Value Evaluate(INode expression)
 		{
 			return Evaluate(expression, true);
 		}
 		
-		public Value Evaluate(INode expression, bool permRef)
+		Value Evaluate(INode expression, bool permRef)
 		{
 			// Try to get the value from cache
 			// (the cache is cleared when the process is resumed)

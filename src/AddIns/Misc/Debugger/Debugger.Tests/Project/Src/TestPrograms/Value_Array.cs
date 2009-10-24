@@ -61,7 +61,6 @@ namespace Debugger.Tests {
         ArrayLength="5"
         ArrayRank="1"
         AsString="{System.Int32[]}"
-        Expression="array"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="System.Int32[]" />
@@ -70,35 +69,30 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="0"
-          Expression="(array)[(System.Int32)0]"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
       <Item>
         <Value
           AsString="1"
-          Expression="(array)[(System.Int32)1]"
           PrimitiveValue="1"
           Type="System.Int32" />
       </Item>
       <Item>
         <Value
           AsString="2"
-          Expression="(array)[(System.Int32)2]"
           PrimitiveValue="2"
           Type="System.Int32" />
       </Item>
       <Item>
         <Value
           AsString="3"
-          Expression="(array)[(System.Int32)3]"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
       <Item>
         <Value
           AsString="4"
-          Expression="(array)[(System.Int32)4]"
           PrimitiveValue="4"
           Type="System.Int32" />
       </Item>
@@ -135,7 +129,6 @@ namespace Debugger.Tests {
     <array.Length>
       <Value
         AsString="5"
-        Expression="((System.Array)(array)).Length"
         PrimitiveValue="5"
         Type="System.Int32" />
     </array.Length>

@@ -55,7 +55,6 @@ namespace Debugger.Tests {
     <dict>
       <Value
         AsString="{System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;}"
-        Expression="dict"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="System.Collections.Generic.Dictionary&lt;System.String,System.Int32&gt;" />
@@ -67,7 +66,6 @@ namespace Debugger.Tests {
           ArrayLength="3"
           ArrayRank="1"
           AsString="{System.Int32[]}"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).buckets"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Int32[]" />
@@ -78,7 +76,6 @@ namespace Debugger.Tests {
           ArrayLength="3"
           ArrayRank="1"
           AsString="{Entry&lt;System.String,System.Int32&gt;[]}"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).entries"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="Entry&lt;System.String,System.Int32&gt;[]" />
@@ -86,35 +83,30 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="3"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).count"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
       <Item>
         <Value
           AsString="3"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).version"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
       <Item>
         <Value
           AsString="-1"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).freeList"
           PrimitiveValue="-1"
           Type="System.Int32" />
       </Item>
       <Item>
         <Value
           AsString="0"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).freeCount"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
       <Item>
         <Value
           AsString="{System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;}"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).comparer"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;" />
@@ -122,7 +114,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="null"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).keys"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -131,7 +122,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="null"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).values"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -140,7 +130,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="null"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict))._syncRoot"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -149,7 +138,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="null"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).m_siInfo"
           IsNull="True"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
@@ -158,7 +146,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="{System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;}"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Comparer"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.Collections.Generic.GenericEqualityComparer&lt;System.String&gt;" />
@@ -166,14 +153,12 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="3"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Count"
           PrimitiveValue="3"
           Type="System.Int32" />
       </Item>
       <Item>
         <Value
           AsString="{KeyCollection&lt;System.String,System.Int32&gt;}"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Keys"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="KeyCollection&lt;System.String,System.Int32&gt;" />
@@ -181,7 +166,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="{ValueCollection&lt;System.String,System.Int32&gt;}"
-          Expression="((System.Collections.Generic.Dictionary&lt;System.String, System.Int32&gt;)(dict)).Values"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="ValueCollection&lt;System.String,System.Int32&gt;" />

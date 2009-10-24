@@ -553,7 +553,7 @@ namespace Debugger.MetaData
 				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
 				throw;
 			}
-			return new Value(context.AppDomain, new IdentifierExpression(symVar.Name), corVal);
+			return new Value(context.AppDomain, corVal);
 		}
 	}
 	

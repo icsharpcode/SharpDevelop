@@ -76,7 +76,6 @@ namespace Debugger.Tests {
     <val>
       <Value
         AsString="{Debugger.Tests.TestPrograms.Value_Object}"
-        Expression="val"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="Debugger.Tests.TestPrograms.Value_Object" />
@@ -85,7 +84,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="c"
-          Expression="((Debugger.Tests.TestPrograms.Value_Object)(val)).privateField"
           IsReference="True"
           PrimitiveValue="c"
           Type="System.String" />
@@ -93,7 +91,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="d"
-          Expression="((Debugger.Tests.TestPrograms.Value_Object)(val)).publicFiled"
           IsReference="True"
           PrimitiveValue="d"
           Type="System.String" />
@@ -101,7 +98,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="a"
-          Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePublic"
           IsReference="True"
           PrimitiveValue="a"
           Type="System.String" />
@@ -109,7 +105,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="b"
-          Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePrivate"
           IsReference="True"
           PrimitiveValue="b"
           Type="System.String" />
@@ -117,7 +112,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="c"
-          Expression="((Debugger.Tests.TestPrograms.Value_Object)(val)).PublicProperty"
           IsReference="True"
           PrimitiveValue="c"
           Type="System.String" />
@@ -127,7 +121,6 @@ namespace Debugger.Tests {
     <val>
       <Value
         AsString="{Debugger.Tests.TestPrograms.Value_Object}"
-        Expression="val"
         IsReference="True"
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="Debugger.Tests.TestPrograms.Value_Object" />
@@ -136,7 +129,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="new private"
-          Expression="((Debugger.Tests.TestPrograms.Value_Object)(val)).privateField"
           IsReference="True"
           PrimitiveValue="new private"
           Type="System.String" />
@@ -144,7 +136,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="d"
-          Expression="((Debugger.Tests.TestPrograms.Value_Object)(val)).publicFiled"
           IsReference="True"
           PrimitiveValue="d"
           Type="System.String" />
@@ -152,7 +143,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="a"
-          Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePublic"
           IsReference="True"
           PrimitiveValue="a"
           Type="System.String" />
@@ -160,7 +150,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="b"
-          Expression="((Debugger.Tests.TestPrograms.BaseClass2)(val)).basePrivate"
           IsReference="True"
           PrimitiveValue="b"
           Type="System.String" />
@@ -168,7 +157,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="new private"
-          Expression="((Debugger.Tests.TestPrograms.Value_Object)(val)).PublicProperty"
           IsReference="True"
           PrimitiveValue="new private"
           Type="System.String" />

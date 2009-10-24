@@ -85,7 +85,7 @@ namespace Debugger
 		{
 			int[] indices = (int[])elementIndices.Clone();
 			
-			return new Value(this.AppDomain, this.ExpressionTree.AppendIndexer(indices), GetCorValueOfArrayElement(indices));
+			return new Value(this.AppDomain, GetCorValueOfArrayElement(indices));
 		}
 		
 		// May be called later

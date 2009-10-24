@@ -62,7 +62,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="True"
-          Expression="b"
           PrimitiveValue="True"
           Type="System.Boolean">
           <Type>
@@ -88,7 +87,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="5"
-          Expression="i"
           PrimitiveValue="5"
           Type="System.Int32">
           <Type>
@@ -114,7 +112,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="five"
-          Expression="s"
           IsReference="True"
           PrimitiveValue="five"
           Type="System.String">
@@ -141,7 +138,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="5.5"
-          Expression="d"
           PrimitiveValue="5.5"
           Type="System.Double">
           <Type>

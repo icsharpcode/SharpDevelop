@@ -283,7 +283,7 @@ namespace Debugger
 		/// </summary>
 		public Value GetThisValue()
 		{
-			return new Value(appDomain, new ThisReferenceExpression(), GetThisCorValue());
+			return new Value(appDomain, GetThisCorValue());
 		}
 		
 		ICorDebugValue GetThisCorValue()
@@ -320,7 +320,7 @@ namespace Debugger
 		/// <param name="index"> Zero-based index </param>
 		public Value GetArgumentValue(int index)
 		{
-			return new Value(appDomain, new IdentifierExpression(methodInfo.GetParameterName(index)), GetArgumentCorValue(index));
+			return new Value(appDomain, GetArgumentCorValue(index));
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)

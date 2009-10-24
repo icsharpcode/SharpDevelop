@@ -74,7 +74,7 @@ namespace Debugger.Tests {
           Name=""
           OldestStackFrame="Debugger.Tests.TestPrograms.ControlFlow_MainThreadExit.Main"
           Priority="Normal"
-          RuntimeValue=" = {System.Threading.Thread}"
+          RuntimeValue="{System.Threading.Thread}"
           SelectedStackFrame="Debugger.Tests.TestPrograms.ControlFlow_MainThreadExit.Main" />
       </Item>
       <Item>
@@ -87,7 +87,7 @@ namespace Debugger.Tests {
           Name="Worker thread"
           OldestStackFrame="System.Threading.ThreadHelper.ThreadStart"
           Priority="Normal"
-          RuntimeValue=" = {System.Threading.Thread}" />
+          RuntimeValue="{System.Threading.Thread}" />
       </Item>
     </ThreadsBeforeExit>
     <DebuggingPaused>ForcedBreak ControlFlow_MainThreadExit.cs:29,4-29,26</DebuggingPaused>
@@ -111,7 +111,7 @@ namespace Debugger.Tests {
           Name="Worker thread"
           OldestStackFrame="System.Threading.ThreadHelper.ThreadStart"
           Priority="Normal"
-          RuntimeValue=" = {System.Threading.Thread}"
+          RuntimeValue="{System.Threading.Thread}"
           SelectedStackFrame="Debugger.Tests.TestPrograms.ControlFlow_MainThreadExit.WaitForALongTime" />
       </Item>
     </ThreadsAfterExit>

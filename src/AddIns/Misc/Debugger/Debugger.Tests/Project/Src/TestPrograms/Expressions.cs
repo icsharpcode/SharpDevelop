@@ -77,6 +77,8 @@ namespace Debugger.Tests.TestPrograms
 
 #if TEST_CODE
 namespace Debugger.Tests {
+	using ICSharpCode.NRefactory.Ast;
+
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
@@ -90,16 +92,16 @@ namespace Debugger.Tests {
 			ObjectDump("methods", process.SelectedStackFrame.MethodInfo.DeclaringType.GetMethods());
 			Value thisVal = process.SelectedStackFrame.GetThisValue().GetPermanentReference();
 			
-			Value baseMethodVal = thisVal.GetMemberValue(thisVal.Type.BaseType.GetMethod("Foo", "i"), Debugger.Eval.CreateValue(process.SelectedStackFrame.AppDomain, 1));
-			ObjectDump("BaseMethod", baseMethodVal);
-			Value derivedMethodVal = thisVal.GetMemberValue(thisVal.Type.GetMethod("Foo", "i"), Debugger.Eval.CreateValue(process.SelectedStackFrame.AppDomain, 1));
-			ObjectDump("HiddenMethod", derivedMethodVal);
-			Value overloadMethodVal = thisVal.GetMemberValue(thisVal.Type.GetMethod("Foo", "s"), Debugger.Eval.CreateValue(process.SelectedStackFrame.AppDomain, "a"));
-			ObjectDump("HiddenMethod", overloadMethodVal);
+			Expression baseMethod = new ThisReferenceExpression().AppendMemberReference(thisVal.Type.BaseType.GetMethod("Foo", "i"), new PrimitiveExpression(1));
+			Expression derivedMethod = new ThisReferenceExpression().AppendMemberReference(thisVal.Type.GetMethod("Foo", "i"), new PrimitiveExpression(1));
+			Expression overloadMethod = new ThisReferenceExpression().AppendMemberReference(thisVal.Type.GetMethod("Foo", "s"), new PrimitiveExpression("a"));
 			
-			ObjectDump("BaseMethod_reeval", baseMethodVal.ExpressionTree.Evaluate(process));
-			ObjectDump("HiddenMethod_reeval", derivedMethodVal.ExpressionTree.Evaluate(process));
-			ObjectDump("HiddenMethod_reeval", overloadMethodVal.ExpressionTree.Evaluate(process));
+			ObjectDump("BaseMethod", baseMethod.PrettyPrint());
+			ObjectDump("BaseMethod-Eval", baseMethod.Evaluate(process));
+			ObjectDump("HiddenMethod", derivedMethod.PrettyPrint());
+			ObjectDump("HiddenMethod-Eval", derivedMethod.Evaluate(process));
+			ObjectDump("OverloadMethod", overloadMethod.PrettyPrint());
+			ObjectDump("OverloadMethod-Eval", overloadMethod.Evaluate(process));
 			
 			EndTest();
 		}
@@ -122,7 +124,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="argValue"
-          Expression="arg"
           IsReference="True"
           PrimitiveValue="argValue"
           Type="System.String" />
@@ -134,7 +135,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="0"
-          Expression="i"
           PrimitiveValue="0"
           Type="System.Int32" />
       </Item>
@@ -144,7 +144,6 @@ namespace Debugger.Tests {
           ArrayLength="3"
           ArrayRank="1"
           AsString="{System.String[]}"
-          Expression="array"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
@@ -155,7 +154,6 @@ namespace Debugger.Tests {
           ArrayLength="4"
           ArrayRank="2"
           AsString="{System.String[,]}"
-          Expression="array2"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[,]" />
@@ -163,7 +161,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="baseClassString"
-          Expression="BaseClass"
           IsReference="True"
           PrimitiveValue="baseClassString"
           Type="System.String" />
@@ -173,7 +170,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="derived name"
-          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).name"
           IsReference="True"
           PrimitiveValue="derived name"
           Type="System.String" />
@@ -181,7 +177,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="derived value"
-          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Value"
           IsReference="True"
           PrimitiveValue="derived value"
           Type="System.String" />
@@ -189,7 +184,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="field value"
-          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).field"
           IsReference="True"
           PrimitiveValue="field value"
           Type="System.String" />
@@ -200,7 +194,6 @@ namespace Debugger.Tests {
           ArrayLength="3"
           ArrayRank="1"
           AsString="{System.String[]}"
-          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).array"
           IsReference="True"
           PrimitiveValue="{Exception: Value is not a primitive type}"
           Type="System.String[]" />
@@ -208,7 +201,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="base name"
-          Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).name"
           IsReference="True"
           PrimitiveValue="base name"
           Type="System.String" />
@@ -216,7 +208,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="base value"
-          Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).Value"
           IsReference="True"
           PrimitiveValue="base value"
           Type="System.String" />
@@ -224,7 +215,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="derived name"
-          Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Name"
           IsReference="True"
           PrimitiveValue="derived name"
           Type="System.String" />
@@ -232,7 +222,6 @@ namespace Debugger.Tests {
       <Item>
         <Value
           AsString="base name"
-          Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).Name"
           IsReference="True"
           PrimitiveValue="base name"
           Type="System.String" />
@@ -324,54 +313,30 @@ namespace Debugger.Tests {
           Name=".ctor" />
       </Item>
     </methods>
-    <BaseMethod>
+    <BaseMethod>((Debugger.Tests.TestPrograms.BaseClass)(this)).Foo((System.Int32)(1))</BaseMethod>
+    <BaseMethod-Eval>
       <Value
         AsString="base-int"
-        Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).Foo((System.Int32)(1))"
         IsReference="True"
         PrimitiveValue="base-int"
         Type="System.String" />
-    </BaseMethod>
-    <HiddenMethod>
+    </BaseMethod-Eval>
+    <HiddenMethod>((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.Int32)(1))</HiddenMethod>
+    <HiddenMethod-Eval>
       <Value
         AsString="deriv-int"
-        Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.Int32)(1))"
         IsReference="True"
         PrimitiveValue="deriv-int"
         Type="System.String" />
-    </HiddenMethod>
-    <HiddenMethod>
+    </HiddenMethod-Eval>
+    <OverloadMethod>((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.String)("a"))</OverloadMethod>
+    <OverloadMethod-Eval>
       <Value
         AsString="deriv-string"
-        Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.String)(&quot;a&quot;))"
         IsReference="True"
         PrimitiveValue="deriv-string"
         Type="System.String" />
-    </HiddenMethod>
-    <BaseMethod_reeval>
-      <Value
-        AsString="base-int"
-        Expression="((Debugger.Tests.TestPrograms.BaseClass)(this)).Foo((System.Int32)(1))"
-        IsReference="True"
-        PrimitiveValue="base-int"
-        Type="System.String" />
-    </BaseMethod_reeval>
-    <HiddenMethod_reeval>
-      <Value
-        AsString="deriv-int"
-        Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.Int32)(1))"
-        IsReference="True"
-        PrimitiveValue="deriv-int"
-        Type="System.String" />
-    </HiddenMethod_reeval>
-    <HiddenMethod_reeval>
-      <Value
-        AsString="deriv-string"
-        Expression="((Debugger.Tests.TestPrograms.TestClass)(this)).Foo((System.String)(&quot;a&quot;))"
-        IsReference="True"
-        PrimitiveValue="deriv-string"
-        Type="System.String" />
-    </HiddenMethod_reeval>
+    </OverloadMethod-Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>

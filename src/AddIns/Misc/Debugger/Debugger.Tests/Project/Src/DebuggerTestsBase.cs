@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Ast;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
@@ -15,7 +16,6 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
-
 using Debugger;
 using Debugger.Interop;
 using Microsoft.CSharp;
@@ -345,7 +345,7 @@ namespace Debugger.Tests
 			string md5 = ToHexadecimal(new MD5CryptoServiceProvider().ComputeHash(Encoding.UTF8.GetBytes(code)));
 			
 			string path = Path.GetTempPath();
-			path = Path.Combine(path, "SharpDevelop");
+			path = Path.Combine(path, "SharpDevelop4.0");
 			path = Path.Combine(path, "DebuggerTestsX86");
 			path = Path.Combine(path, testName + "." + md5);
 			Directory.CreateDirectory(path);

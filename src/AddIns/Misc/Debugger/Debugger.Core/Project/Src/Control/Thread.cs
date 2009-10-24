@@ -160,7 +160,7 @@ namespace Debugger
 				process.AssertPaused();
 				
 				ICorDebugValue corValue = this.CorThread.Object;
-				return new Value(process.AppDomains[this.CorThread.AppDomain], Expression.Null, corValue);
+				return new Value(process.AppDomains[this.CorThread.AppDomain], corValue);
 			}
 		}
 		
