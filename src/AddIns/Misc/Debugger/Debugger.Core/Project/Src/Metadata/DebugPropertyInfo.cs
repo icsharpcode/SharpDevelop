@@ -171,17 +171,23 @@ namespace Debugger.MetaData
 		}
 		
 		public bool IsPublic {
-			get {
-				if (getMethod != null && getMethod.IsPublic) return true;
-				if (setMethod != null && setMethod.IsPublic) return true;
-				return false;
-			}
+			get { return (getMethod ?? setMethod).IsPublic; }
+		}
+		
+		public bool IsAssembly {
+			get { return (getMethod ?? setMethod).IsAssembly; }
+		}
+		
+		public bool IsFamily {
+			get { return (getMethod ?? setMethod).IsFamily; }
+		}
+		
+		public bool IsPrivate {
+			get { return (getMethod ?? setMethod).IsPrivate; }
 		}
 		
 		public bool IsStatic {
-			get {
-				return (getMethod ?? setMethod).IsStatic;
-			}
+			get { return (getMethod ?? setMethod).IsStatic; }
 		}
 		
 		/// <inheritdoc/>

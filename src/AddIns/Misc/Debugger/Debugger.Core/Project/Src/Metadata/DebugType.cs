@@ -636,6 +636,18 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		bool IDebugMemberInfo.IsAssembly {
+			get { return false; }
+		}
+		
+		bool IDebugMemberInfo.IsFamily {
+			get { return false; }
+		}
+		
+		bool IDebugMemberInfo.IsPrivate {
+			get { return this.IsNotPublic; }
+		}
+		
 		bool IDebugMemberInfo.IsStatic {
 			get { return false; }
 		}

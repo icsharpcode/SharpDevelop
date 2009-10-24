@@ -355,19 +355,21 @@ namespace Debugger
 		
 		#region Object
 		
-		static void CheckObject(Value objectInstance, IDebugMemberInfo memberInfo)
+		static void CheckObject(Value objectInstance, MemberInfo memberInfo)
 		{
-			if (!memberInfo.IsStatic) {
-				if (objectInstance == null) {
+			if (memberInfo == null)
+				throw new DebuggerException("memberInfo");
+			IDebugMemberInfo debugMemberInfo = memberInfo as IDebugMemberInfo;
+			if (debugMemberInfo == null)
+				throw new DebuggerException("DebugMemberInfo must be used");
+			if (!debugMemberInfo.IsStatic) {
+				if (objectInstance == null)
 					throw new DebuggerException("No target object specified");
-				}
-				if (objectInstance.IsNull) {
+				if (objectInstance.IsNull)
 					throw new GetValueException("Null reference");
-				}
 				//if (!objectInstance.IsObject) // eg Array.Length can be called
-				if (!memberInfo.DeclaringType.IsInstanceOfType(objectInstance)) {
-					throw new GetValueException("Object is not of type " + memberInfo.DeclaringType.FullName);
-				}
+				if (!debugMemberInfo.DeclaringType.IsInstanceOfType(objectInstance))
+					throw new GetValueException("Object is not of type " + debugMemberInfo.DeclaringType.FullName);
 			}
 		}
 		
@@ -385,13 +387,14 @@ namespace Debugger
 		/// <param name="objectInstance">null if member is static</param>
 		public static Value GetMemberValue(Value objectInstance, MemberInfo memberInfo, params Value[] arguments)
 		{
-			if (memberInfo is DebugFieldInfo) {
-				if (arguments.Length > 0) throw new GetValueException("Arguments can not be used for a field");
-				return GetFieldValue(objectInstance, (DebugFieldInfo)memberInfo);
-			} else if (memberInfo is DebugPropertyInfo) {
-				return GetPropertyValue(objectInstance, (DebugPropertyInfo)memberInfo, arguments);
-			} else if (memberInfo is DebugMethodInfo) {
-				return InvokeMethod(objectInstance, (DebugMethodInfo)memberInfo, arguments);
+			if (memberInfo is FieldInfo) {
+				if (arguments.Length > 0)
+					throw new GetValueException("Arguments can not be used for a field");
+				return GetFieldValue(objectInstance, (FieldInfo)memberInfo);
+			} else if (memberInfo is PropertyInfo) {
+				return GetPropertyValue(objectInstance, (PropertyInfo)memberInfo, arguments);
+			} else if (memberInfo is MethodInfo) {
+				return InvokeMethod(objectInstance, (MethodInfo)memberInfo, arguments);
 			}
 			throw new DebuggerException("Unknown member type: " + memberInfo.GetType());
 		}
@@ -399,7 +402,7 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Get the value of given field. </summary>
-		public Value GetFieldValue(DebugFieldInfo fieldInfo)
+		public Value GetFieldValue(FieldInfo fieldInfo)
 		{
 			return Value.GetFieldValue(this, fieldInfo);
 		}
@@ -408,32 +411,34 @@ namespace Debugger
 		
 		/// <summary> Get the value of given field. </summary>
 		/// <param name="objectInstance">null if field is static</param>
-		public static Value GetFieldValue(Value objectInstance, DebugFieldInfo fieldInfo)
+		public static Value GetFieldValue(Value objectInstance, FieldInfo fieldInfo)
 		{
 			return new Value(
-				fieldInfo.AppDomain,
+				((DebugFieldInfo)fieldInfo).AppDomain,
 				GetFieldCorValue(objectInstance, fieldInfo)
 			);
 		}
 		
-		public static Value SetFieldValue(Value objectInstance, DebugFieldInfo fieldInfo, Value newValue)
+		public static Value SetFieldValue(Value objectInstance, FieldInfo fieldInfo, Value newValue)
 		{
 			// TODO
 			throw new NotImplementedException();
 		}
 		
-		static ICorDebugValue GetFieldCorValue(Value objectInstance, DebugFieldInfo fieldInfo)
+		static ICorDebugValue GetFieldCorValue(Value objectInstance, FieldInfo fieldInfo)
 		{
 			CheckObject(objectInstance, fieldInfo);
 			
+			Process process = ((DebugFieldInfo)fieldInfo).Process;
+			
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
 			ICorDebugFrame curFrame = null;
-			if (fieldInfo.Process.IsPaused &&
-			    fieldInfo.Process.SelectedThread != null &&
-			    fieldInfo.Process.SelectedThread.MostRecentStackFrame != null && 
-			    fieldInfo.Process.SelectedThread.MostRecentStackFrame.CorILFrame != null) {
-				
-				curFrame = fieldInfo.Process.SelectedThread.MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>();
+			if (process.IsPaused &&
+			    process.SelectedThread != null &&
+			    process.SelectedThread.MostRecentStackFrame != null && 
+			    process.SelectedThread.MostRecentStackFrame.CorILFrame != null)
+			{
+				curFrame = process.SelectedThread.MostRecentStackFrame.CorILFrame.CastTo<ICorDebugFrame>();
 			}
 			
 			try {
@@ -450,7 +455,7 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Get the value of the property using the get accessor </summary>
-		public Value GetPropertyValue(DebugPropertyInfo propertyInfo, params Value[] arguments)
+		public Value GetPropertyValue(PropertyInfo propertyInfo, params Value[] arguments)
 		{
 			return GetPropertyValue(this, propertyInfo, arguments);
 		}
@@ -458,7 +463,7 @@ namespace Debugger
 		#endregion
 		
 		/// <summary> Get the value of the property using the get accessor </summary>
-		public static Value GetPropertyValue(Value objectInstance, DebugPropertyInfo propertyInfo, params Value[] arguments)
+		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, propertyInfo);
 			
@@ -472,19 +477,19 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public Value SetPropertyValue(DebugPropertyInfo propertyInfo, Value newValue)
+		public Value SetPropertyValue(PropertyInfo propertyInfo, Value newValue)
 		{
 			return SetPropertyValue(this, propertyInfo, null, newValue);
 		}
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public Value SetPropertyValue(DebugPropertyInfo propertyInfo, Value[] arguments, Value newValue)
+		public Value SetPropertyValue(PropertyInfo propertyInfo, Value[] arguments, Value newValue)
 		{
 			return SetPropertyValue(this, propertyInfo, arguments, newValue);
 		}
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public static Value SetPropertyValue(Value objectInstance, DebugPropertyInfo propertyInfo, Value newValue)
+		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value newValue)
 		{
 			return SetPropertyValue(objectInstance, propertyInfo, null, newValue);
 		}
@@ -492,7 +497,7 @@ namespace Debugger
 		#endregion
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public static Value SetPropertyValue(Value objectInstance, DebugPropertyInfo propertyInfo, Value[] arguments, Value newValue)
+		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments, Value newValue)
 		{
 			CheckObject(objectInstance, propertyInfo);
 			
@@ -510,7 +515,7 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Synchronously invoke the method </summary>
-		public Value InvokeMethod(DebugMethodInfo methodInfo, params Value[] arguments)
+		public Value InvokeMethod(MethodInfo methodInfo, params Value[] arguments)
 		{
 			return InvokeMethod(this, methodInfo, arguments);
 		}
@@ -518,12 +523,12 @@ namespace Debugger
 		#endregion
 		
 		/// <summary> Synchronously invoke the method </summary>
-		public static Value InvokeMethod(Value objectInstance, DebugMethodInfo methodInfo, params Value[] arguments)
+		public static Value InvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, methodInfo);
 			
 			return Eval.InvokeMethod(
-				methodInfo,
+				(DebugMethodInfo)methodInfo,
 				methodInfo.IsStatic ? null : objectInstance,
 				arguments ?? new Value[0]
 			);
@@ -542,7 +547,7 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Asynchronously invoke the method </summary>
-		public Eval AsyncInvokeMethod(DebugMethodInfo methodInfo, params Value[] arguments)
+		public Eval AsyncInvokeMethod(MethodInfo methodInfo, params Value[] arguments)
 		{
 			return AsyncInvokeMethod(this, methodInfo, arguments);
 		}
@@ -550,12 +555,12 @@ namespace Debugger
 		#endregion
 		
 		/// <summary> Asynchronously invoke the method </summary>
-		public static Eval AsyncInvokeMethod(Value objectInstance, DebugMethodInfo methodInfo, params Value[] arguments)
+		public static Eval AsyncInvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, methodInfo);
 			
 			return Eval.AsyncInvokeMethod(
-				methodInfo,
+				(DebugMethodInfo)methodInfo,
 				methodInfo.IsStatic ? null : objectInstance,
 				arguments ?? new Value[0]
 			);

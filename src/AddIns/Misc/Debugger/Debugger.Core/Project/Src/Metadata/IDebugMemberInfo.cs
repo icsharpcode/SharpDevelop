@@ -16,5 +16,8 @@ namespace Debugger.MetaData
 		int MetadataToken { get; }
 		bool IsStatic { get; }
 		bool IsPublic { get; }
+		bool IsAssembly { get; }
+		bool IsFamily { get; }
+		bool IsPrivate { get; }
 	}
 }
