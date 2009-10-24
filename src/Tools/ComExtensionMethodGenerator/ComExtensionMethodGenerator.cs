@@ -34,7 +34,7 @@ namespace ComExtensionMethodGenerator
 		{
 			new ComExtensionMethodGenerator() {
 				InputFile = path + "CorDebug.cs",
-				OutputFile = path + "CorDebugExtensionMethods.cs",
+				OutputFile = path + "CorDebugExtensionMethods.generated.cs",
 				Header = header,
 				Namespace = "Debugger.Interop.CorDebug",
 				TypeName = "CorDebugExtensionMethods",
@@ -42,7 +42,7 @@ namespace ComExtensionMethodGenerator
 			
 			new ComExtensionMethodGenerator() {
 				InputFile = path + "CorSym.cs",
-				OutputFile = path + "CorSymExtensionMethods.cs",
+				OutputFile = path + "CorSymExtensionMethods.generated.cs",
 				Header = header,
 				Namespace = "Debugger.Interop.CorSym",
 				TypeName = "CorSymExtensionMethods",
@@ -79,7 +79,7 @@ namespace ComExtensionMethodGenerator
 			}
 			if (generated.Children.OfType<UsingDeclaration>().Count() > 0)
 				generated.AddChild(new IdentifierExpression("\r\n"));
-			TypeDeclaration extensionMethodsType = new TypeDeclaration(Modifiers.Public | Modifiers.Static, new List<AttributeSection>()) { Name = TypeName };
+			TypeDeclaration extensionMethodsType = new TypeDeclaration(Modifiers.Public | Modifiers.Partial | Modifiers.Static, new List<AttributeSection>()) { Name = TypeName };
 			generated.AddChild(
 				Namespace == null ?
 					(INode)extensionMethodsType :

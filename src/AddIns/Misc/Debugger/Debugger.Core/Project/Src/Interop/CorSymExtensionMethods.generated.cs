@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace Debugger.Interop.CorSym
 {
-	public static class CorSymExtensionMethods
+	public static partial class CorSymExtensionMethods
 	{
 		static void ProcessOutParameter(object parameter)
 		{

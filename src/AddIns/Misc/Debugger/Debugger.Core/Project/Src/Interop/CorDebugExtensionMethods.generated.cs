@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace Debugger.Interop.CorDebug
 {
-	public static class CorDebugExtensionMethods
+	public static partial class CorDebugExtensionMethods
 	{
 		static void ProcessOutParameter(object parameter)
 		{
