@@ -54,6 +54,10 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interop\MTA2STA.cs" />
+    <Compile Include="ManagedCallback.cs" />
+    <Compile Include="ManagedCallbackProxy.cs" />
+    <Compile Include="ManagedCallbackSwitch.cs" />
     <Compile Include="MetaData\DebugConstructorInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppDomain.cs" />
@@ -71,10 +75,6 @@
     <Compile Include="Exception.cs" />
     <Compile Include="ExceptionType.cs" />
     <Compile Include="GetValueException.cs" />
-    <Compile Include="Internal\ManagedCallback.cs" />
-    <Compile Include="Internal\ManagedCallbackProxy.cs" />
-    <Compile Include="Internal\ManagedCallbackSwitch.cs" />
-    <Compile Include="Internal\MTA2STA.cs" />
     <Compile Include="Interop\Common.cs" />
     <Compile Include="Interop\CorDebug.cs" />
     <Compile Include="Interop\CorDebugExtensionMethods.cs" />
@@ -188,7 +188,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Internal" />
     <Folder Include="Interop" />
     <Folder Include="MetaData" />
     <Folder Include="Mono.Cecil" />

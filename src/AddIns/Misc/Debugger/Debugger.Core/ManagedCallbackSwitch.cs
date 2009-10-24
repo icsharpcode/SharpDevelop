@@ -12,12 +12,12 @@
 // Replace with:
 // \1\2\n\1{\n\1\tGetProcessCallbackInterface(\4).\3(\4, \5, \6, \7, \8, \9);\n\1}
 
-using Debugger.Interop;
 using System;
 using System.Runtime.InteropServices;
+using Debugger.Interop;
 using Debugger.Interop.CorDebug;
 
-namespace Debugger.Internal
+namespace Debugger
 {
 	/// <summary>
 	/// This class forwards the callback the the approprite process

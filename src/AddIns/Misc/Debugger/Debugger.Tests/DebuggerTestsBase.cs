@@ -16,7 +16,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 
-using Debugger.Internal;
 using Microsoft.CSharp;
 using NUnit.Framework;
 

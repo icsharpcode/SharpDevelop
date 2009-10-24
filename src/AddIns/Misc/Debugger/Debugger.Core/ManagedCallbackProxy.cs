@@ -18,7 +18,7 @@ using Debugger.Interop.CorDebug;
 // \1\2\n\1{\n\1\tCallbackReceived("\3", new object[] {\4, \5, \6, \7, \8, \9});\n\1}
 // \1\2\n\1{\n\1\tCall(delegate {\n\1\t     \trealCallback.\3(\n\1\t     \t\tMTA2STA.MarshalIntPtrTo(\4),\n\1\t     \t\tMTA2STA.MarshalIntPtrTo(\5),\n\1\t     \t\tMTA2STA.MarshalIntPtrTo(\6),\n\1\t     \t\tMTA2STA.MarshalIntPtrTo(\7),\n\1\t     \t\tMTA2STA.MarshalIntPtrTo(\8),\n\1\t     \t\tMTA2STA.MarshalIntPtrTo(\9),\n\1\t     \t);\n\1\t     });\n\1}
 
-namespace Debugger.Internal
+namespace Debugger
 {
 	/// <summary>
 	/// This proxy marshals the callback to the appropriate thread

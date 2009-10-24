@@ -12,12 +12,12 @@
 // Replace with:
 // \1\2\n\1{\n\1\tEnterCallback(PausedReason.Other, "\3");\n\1\t\n\1\tExitCallback_Continue();\n\1}
 
-using Debugger.Interop;
 using System;
 using System.Runtime.InteropServices;
+using Debugger.Interop;
 using Debugger.Interop.CorDebug;
 
-namespace Debugger.Internal
+namespace Debugger
 {
 	/// <summary>
 	/// Handles all callbacks of a given process

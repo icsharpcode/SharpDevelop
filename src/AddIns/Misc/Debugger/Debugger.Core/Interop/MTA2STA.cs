@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace Debugger.Internal
+namespace Debugger
 {
 	public delegate T MethodInvokerWithReturnValue<T>();
 	
