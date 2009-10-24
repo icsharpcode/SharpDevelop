@@ -21,46 +21,41 @@ namespace Debugger.Interop
 			return GetString(getter, 64, true);
 		}
 		
-		public static string GetString(UnmanagedStringGetter getter, uint defaultLength, bool trim)
+		public static unsafe string GetString(UnmanagedStringGetter getter, uint defaultLength, bool trim)
 		{
 			// 8M characters ought to be enough for everyone...
 			// (we need some limit to avoid OutOfMemoryExceptions when trying to load extremely large
 			// strings - see SD2-1470).
 			const uint MAX_LENGTH = 8 * 1024 * 1024;
 			string managedString;
-			IntPtr unmanagedString;
 			uint exactLength;
 
 			if (defaultLength > MAX_LENGTH)
 				defaultLength = MAX_LENGTH;
 			// First attempt
-			unmanagedString = Marshal.AllocHGlobal((int)defaultLength * 2 + 2); // + 2 for terminating zero
-			try {
-				getter(defaultLength, out exactLength, defaultLength > 0 ? unmanagedString : IntPtr.Zero);
+			// TODO: Consider removing "+ 2" for the zero
+			byte[] buffer = new byte[(int)defaultLength * 2 + 2];  // + 2 for terminating zero
+			fixed(byte* pBuffer = buffer) {
+				getter((uint)buffer.Length, out exactLength, defaultLength > 0 ? new IntPtr(pBuffer) : IntPtr.Zero);
 				
 				exactLength = (exactLength > MAX_LENGTH) ? MAX_LENGTH : exactLength;
 				
 				if(exactLength > defaultLength) {
 					// Second attempt
-					Marshal.FreeHGlobal(unmanagedString);
-					// TODO: Consider removing "+ 2" for the zero
-					unmanagedString = Marshal.AllocHGlobal((int)exactLength * 2 + 2); // + 2 for terminating zero
-					uint unused;
-					getter(exactLength, out unused, unmanagedString);
+					byte[] buffer2 = new byte[(int)exactLength * 2 + 2];  // + 2 for terminating zero
+					fixed(byte* pBuffer2 = buffer2) {
+						getter((uint)buffer2.Length, out exactLength, new IntPtr(pBuffer2));
+						managedString = Marshal.PtrToStringUni(new IntPtr(pBuffer2), (int)exactLength);
+					}
+				} else {
+					managedString = Marshal.PtrToStringUni(new IntPtr(pBuffer), (int)exactLength);
 				}
 				
 				// TODO:  Check how the trimming and the last 0 charater works
-				
-				// Return managed string and free unmanaged memory
-				managedString = Marshal.PtrToStringUni(unmanagedString, (int)exactLength);
-				//Console.WriteLine("Marshaled string from COM: \"" + managedString + "\" lenght=" + managedString.Length + " arrayLenght=" + exactLenght);
 				// The API might or might not include terminating null at the end
-				if (trim) {
-					managedString = managedString.TrimEnd('\0');
-				}
-			} finally {
-				Marshal.FreeHGlobal(unmanagedString);
 			}
+			if (trim)
+				managedString = managedString.TrimEnd('\0');
 			return managedString;
 		}
 	}

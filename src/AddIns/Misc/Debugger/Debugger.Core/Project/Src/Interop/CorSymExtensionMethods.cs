@@ -36,16 +36,19 @@ namespace Debugger.Interop.CorSym
 			return Util.GetString(symDoc.GetURL, 256, true);
 		}
 		
-		public static byte[] GetCheckSum(this ISymUnmanagedDocument symDoc)
+		public static unsafe byte[] GetCheckSum(this ISymUnmanagedDocument symDoc)
 		{
-			uint checkSumLength = 0;
-			symDoc.GetCheckSum(checkSumLength, out checkSumLength, IntPtr.Zero);
-			IntPtr checkSumPtr = Marshal.AllocHGlobal((int)checkSumLength);
-			symDoc.GetCheckSum(checkSumLength, out checkSumLength, checkSumPtr);
-			byte[] checkSumBytes = new byte[checkSumLength];
-			Marshal.Copy(checkSumPtr, checkSumBytes, 0, (int)checkSumLength);
-			Marshal.FreeHGlobal(checkSumPtr);
-			return checkSumBytes;
+			uint actualLength;
+			byte[] checkSum = new byte[20];
+			fixed(byte* pCheckSum = checkSum)
+				symDoc.GetCheckSum((uint)checkSum.Length, out actualLength, new IntPtr(pCheckSum));
+			if (actualLength > checkSum.Length) {
+				checkSum = new byte[actualLength];
+				fixed(byte* pCheckSum = checkSum)
+					symDoc.GetCheckSum((uint)checkSum.Length, out actualLength, new IntPtr(pCheckSum));
+			}
+			Array.Resize(ref checkSum, (int)actualLength);
+			return checkSum;
 		}
 		
 		// ISymUnmanagedMethod
