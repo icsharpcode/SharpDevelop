@@ -7,16 +7,16 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 
-	public partial class ICorDebugProcess
+	public static partial class CorDebugExtensionMethods
 	{
-		public bool HasQueuedCallbacks()
+		public static bool HasQueuedCallbacks(this ICorDebugProcess corProcess)
 		{
 			int pbQueued;
-			this.WrappedObject.HasQueuedCallbacks(null, out pbQueued);
+			corProcess.HasQueuedCallbacks(null, out pbQueued);
 			return pbQueued != 0;
 		}
 	}

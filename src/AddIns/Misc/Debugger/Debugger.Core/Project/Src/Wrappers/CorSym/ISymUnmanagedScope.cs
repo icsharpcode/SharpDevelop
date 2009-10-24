@@ -7,41 +7,38 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorSym
+namespace Debugger.Interop.CorSym
 {
 	using System;
 	
 	
-	public partial class ISymUnmanagedScope
+	public static partial class CorSymExtensionMethods
 	{
-		public ISymUnmanagedScope[] Children {
-			get {
-				uint count;
-				GetChildren(0, out count, new ISymUnmanagedScope[0]);
-				ISymUnmanagedScope[] children = new ISymUnmanagedScope[count];
-				GetChildren(count, out count, children);
-				return children;
-			}
+		public static ISymUnmanagedScope[] GetChildren(this ISymUnmanagedScope symScope)
+		{
+			uint count;
+			symScope.GetChildren(0, out count, new ISymUnmanagedScope[0]);
+			ISymUnmanagedScope[] children = new ISymUnmanagedScope[count];
+			symScope.GetChildren(count, out count, children);
+			return children;
 		}
 		
-		public ISymUnmanagedVariable[] Locals {
-			get {
-				uint count;
-				GetLocals(0, out count, new ISymUnmanagedVariable[0]);
-				ISymUnmanagedVariable[] locals = new ISymUnmanagedVariable[count];
-				GetLocals(count, out count, locals);
-				return locals;
-			}
+		public static ISymUnmanagedVariable[] GetLocals(this ISymUnmanagedScope symScope)
+		{
+			uint count;
+			symScope.GetLocals(0, out count, new ISymUnmanagedVariable[0]);
+			ISymUnmanagedVariable[] locals = new ISymUnmanagedVariable[count];
+			symScope.GetLocals(count, out count, locals);
+			return locals;
 		}
 		
-		public ISymUnmanagedNamespace[] Namespaces {
-			get {
-				uint count;
-				GetNamespaces(0, out count, new ISymUnmanagedNamespace[0]);
-				ISymUnmanagedNamespace[] namespaces = new ISymUnmanagedNamespace[count];
-				GetNamespaces(0, out count, namespaces);
-				return namespaces;
-			}
+		public static ISymUnmanagedNamespace[] GetNamespaces(this ISymUnmanagedScope symScope)
+		{
+			uint count;
+			symScope.GetNamespaces(0, out count, new ISymUnmanagedNamespace[0]);
+			ISymUnmanagedNamespace[] namespaces = new ISymUnmanagedNamespace[count];
+			symScope.GetNamespaces(0, out count, namespaces);
+			return namespaces;
 		}
 	}
 }

@@ -7,17 +7,17 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorSym
+namespace Debugger.Interop.CorSym
 {
 	using System;
 	using System.Runtime.InteropServices;
 	
-	public partial class ISymUnmanagedReader
+	public static partial class CorSymExtensionMethods
 	{
-		public ISymUnmanagedDocument GetDocument(string url, System.Guid language, System.Guid languageVendor, System.Guid documentType)
+		public static ISymUnmanagedDocument GetDocument(this ISymUnmanagedReader symReader, string url, System.Guid language, System.Guid languageVendor, System.Guid documentType)
 		{
 			IntPtr p = Marshal.StringToCoTaskMemUni(url);
-			ISymUnmanagedDocument res = GetDocument(p, language, languageVendor, documentType);
+			ISymUnmanagedDocument res = symReader.GetDocument(p, language, languageVendor, documentType);
 			Marshal.FreeCoTaskMem(p);
 			return res;
 		}

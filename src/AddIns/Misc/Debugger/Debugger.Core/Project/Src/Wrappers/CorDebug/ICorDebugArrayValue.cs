@@ -7,44 +7,38 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 
-	public partial class ICorDebugArrayValue
+	public static partial class CorDebugExtensionMethods
 	{
-		public unsafe uint[] Dimensions {
-			get {
-				uint[] dimensions = new uint[this.Rank];
-				fixed (void* pDimensions = dimensions) {
-					this.GetDimensions((uint)dimensions.Length, new IntPtr(pDimensions));
-				}
-				return dimensions;
-			}
-		}
-		
-		public unsafe uint[] BaseIndicies {
-			get {
-				uint[] baseIndicies = new uint[this.Rank];
-				fixed (void* pBaseIndicies = baseIndicies) {
-					this.GetBaseIndicies((uint)baseIndicies.Length, new IntPtr(pBaseIndicies));
-				}
-				return baseIndicies;
-			}
-		}
-		
-		public unsafe ICorDebugValue GetElement(uint[] indices)
+		public static unsafe uint[] GetDimensions(this ICorDebugArrayValue corArray)
 		{
-			fixed (void* pIndices = indices) {
-				return this.GetElement((uint)indices.Length, new IntPtr(pIndices));
-			}
+			uint[] dimensions = new uint[corArray.GetRank()];
+			fixed (void* pDimensions = dimensions)
+				corArray.GetDimensions((uint)dimensions.Length, new IntPtr(pDimensions));
+			return dimensions;
 		}
 		
-		public unsafe ICorDebugValue GetElement(int[] indices)
+		public static unsafe uint[] GetBaseIndicies(this ICorDebugArrayValue corArray)
 		{
-			fixed (void* pIndices = indices) {
-				return this.GetElement((uint)indices.Length, new IntPtr(pIndices));
-			}
+			uint[] baseIndicies = new uint[corArray.GetRank()];
+			fixed (void* pBaseIndicies = baseIndicies)
+				corArray.GetBaseIndicies((uint)baseIndicies.Length, new IntPtr(pBaseIndicies));
+			return baseIndicies;
+		}
+		
+		public static unsafe ICorDebugValue GetElement(this ICorDebugArrayValue corArray, uint[] indices)
+		{
+			fixed (void* pIndices = indices)
+				return corArray.GetElement((uint)indices.Length, new IntPtr(pIndices));
+		}
+		
+		public static unsafe ICorDebugValue GetElement(this ICorDebugArrayValue corArray, int[] indices)
+		{
+			fixed (void* pIndices = indices)
+				return corArray.GetElement((uint)indices.Length, new IntPtr(pIndices));
 		}
 	}
 }

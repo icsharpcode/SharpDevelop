@@ -7,17 +7,15 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 	
-	
-	public partial class ICorDebugStringValue
+	public static partial class CorDebugExtensionMethods
 	{
-		public string String {
-			get {
-				return Util.GetString(GetString, 64, false);
-			}
+		public static string GetString(this ICorDebugStringValue corString)
+		{
+			return Util.GetString(corString.GetString, 64, false);
 		}
 	}
 }

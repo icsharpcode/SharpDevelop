@@ -7,18 +7,16 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 	
-	
-	public partial class ICorDebugStepper
+	public static partial class CorDebugExtensionMethods
 	{
-		public unsafe void StepRange(bool bStepIn, int[] ranges)
+		public static unsafe void StepRange(this ICorDebugStepper corStepper, bool bStepIn, int[] ranges)
 		{
-			fixed (int* pRanges = ranges) {
-				this.StepRange(bStepIn?1:0, (IntPtr)pRanges, (uint)ranges.Length / 2);
-			}
+			fixed (int* pRanges = ranges)
+				corStepper.StepRange(bStepIn?1:0, (IntPtr)pRanges, (uint)ranges.Length / 2);
 		}
 	}
 }

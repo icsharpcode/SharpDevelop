@@ -7,32 +7,30 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorSym
+namespace Debugger.Interop.CorSym
 {
 	using System;
 
-	public partial class ISymUnmanagedVariable
+	public static partial class CorSymExtensionMethods
 	{
-		public string Name {
-			get {
-				return Util.GetString(GetName);
-			}
+		public static string GetName(this ISymUnmanagedVariable symVar)
+		{
+			return Util.GetString(symVar.GetName);
 		}
 		
 		const int defaultSigSize = 8;
 		
-		public unsafe byte[] Signature {
-			get {
-				byte[] sig = new byte[defaultSigSize];
-				uint acualSize;
+		public static unsafe byte[] GetSignature(this ISymUnmanagedVariable symVar)
+		{
+			byte[] sig = new byte[defaultSigSize];
+			uint acualSize;
+			fixed(byte* pSig = sig)
+				symVar.GetSignature((uint)sig.Length, out acualSize, new IntPtr(pSig));
+			Array.Resize(ref sig, (int)acualSize);
+			if (acualSize > defaultSigSize)
 				fixed(byte* pSig = sig)
-					this.GetSignature((uint)sig.Length, out acualSize, new IntPtr(pSig));
-				Array.Resize(ref sig, (int)acualSize);
-				if (acualSize > defaultSigSize)
-					fixed(byte* pSig = sig)
-						this.GetSignature((uint)sig.Length, out acualSize, new IntPtr(pSig));
-				return sig;
-			}
+					symVar.GetSignature((uint)sig.Length, out acualSize, new IntPtr(pSig));
+			return sig;
 		}
 	}
 }

@@ -7,32 +7,30 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 	using System.Collections.Generic;
 	
-	
-	public partial class ICorDebugTypeEnum
+	public static partial class CorDebugExtensionMethods
 	{
-		public IEnumerable<ICorDebugType> Enumerator {
-			get {
-				Reset();
-				while (true) {
-					ICorDebugType corType = Next();
-					if (corType != null) {
-						yield return corType;
-					} else {
-						break;
-					}
+		public static IEnumerable<ICorDebugType> GetEnumerator(this ICorDebugTypeEnum corTypeEnum)
+		{
+			corTypeEnum.Reset();
+			while (true) {
+				ICorDebugType corType = corTypeEnum.Next();
+				if (corType != null) {
+					yield return corType;
+				} else {
+					break;
 				}
 			}
 		}
 		
-		public ICorDebugType Next()
+		public static ICorDebugType Next(this ICorDebugTypeEnum corTypeEnum)
 		{
 			ICorDebugType[] corTypes = new ICorDebugType[1];
-			uint typesFetched = this.Next(1, corTypes);
+			uint typesFetched = corTypeEnum.Next(1, corTypes);
 			if (typesFetched == 0) {
 				return null;
 			} else {
@@ -40,9 +38,9 @@ namespace Debugger.Wrappers.CorDebug
 			}
 		}
 		
-		public List<ICorDebugType> ToList()
+		public static List<ICorDebugType> ToList(this ICorDebugTypeEnum corTypeEnum)
 		{
-			return new List<ICorDebugType>(this.Enumerator);
+			return new List<ICorDebugType>(corTypeEnum.GetEnumerator());
 		}
 	}
 }

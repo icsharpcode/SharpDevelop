@@ -7,18 +7,18 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorSym
+namespace Debugger.Interop.CorSym
 {
 	using System;
 	using System.Runtime.InteropServices;
 	
-	public partial class ISymUnmanagedBinder
+	public static partial class CorSymExtensionMethods
 	{
-		public ISymUnmanagedReader GetReaderForFile(object importer, string filename, string searchPath)
+		public static ISymUnmanagedReader GetReaderForFile(this ISymUnmanagedBinder symBinder, object importer, string filename, string searchPath)
 		{
 			IntPtr pfilename = Marshal.StringToCoTaskMemUni(filename);
 			IntPtr psearchPath = Marshal.StringToCoTaskMemUni(searchPath);
-			ISymUnmanagedReader res = GetReaderForFile(importer, pfilename, psearchPath);
+			ISymUnmanagedReader res = symBinder.GetReaderForFile(importer, pfilename, psearchPath);
 			Marshal.FreeCoTaskMem(pfilename);
 			Marshal.FreeCoTaskMem(psearchPath);
 			return res;

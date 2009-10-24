@@ -7,37 +7,38 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 	using System.Runtime.InteropServices;
 	
-	public partial class ICorDebugGenericValue
+	public static partial class CorDebugExtensionMethods
 	{
-		public unsafe Byte[] RawValue {
-			get {
-				// TODO: Unset fixing insead
-				Byte[] retValue = new Byte[(int)Size];
-				IntPtr pValue = Marshal.AllocHGlobal(retValue.Length);
-				GetValue(pValue);
-				Marshal.Copy(pValue, retValue, 0, retValue.Length);
-				Marshal.FreeHGlobal(pValue);
-				return retValue;
-			}
-			set {
-				if (Size != value.Length) throw new ArgumentException("Incorrect length");
-				IntPtr pValue = Marshal.AllocHGlobal(value.Length);
-				Marshal.Copy(value, 0, pValue, value.Length);
-				SetValue(pValue);
-				Marshal.FreeHGlobal(pValue);
-			}
+		public static unsafe Byte[] GetRawValue(this ICorDebugGenericValue corGenVal)
+		{
+			// TODO: Unset fixing insead
+			Byte[] retValue = new Byte[(int)corGenVal.GetSize()];
+			IntPtr pValue = Marshal.AllocHGlobal(retValue.Length);
+			corGenVal.GetValue(pValue);
+			Marshal.Copy(pValue, retValue, 0, retValue.Length);
+			Marshal.FreeHGlobal(pValue);
+			return retValue;
 		}
 		
-		public unsafe object GetValue(Type type)
+		public static unsafe void SetRawValue(this ICorDebugGenericValue corGenVal, byte[] value)
+		{
+			if (corGenVal.GetSize() != value.Length) throw new ArgumentException("Incorrect length");
+			IntPtr pValue = Marshal.AllocHGlobal(value.Length);
+			Marshal.Copy(value, 0, pValue, value.Length);
+			corGenVal.SetValue(pValue);
+			Marshal.FreeHGlobal(pValue);
+		}
+		
+		public static unsafe object GetValue(this ICorDebugGenericValue corGenVal,Type type)
 		{
 			object retValue;
-			IntPtr pValue = Marshal.AllocHGlobal((int)Size);
-			GetValue(pValue);
+			IntPtr pValue = Marshal.AllocHGlobal((int)corGenVal.GetSize());
+			corGenVal.GetValue(pValue);
 			switch(type.FullName) {
 				case "System.Boolean": retValue = *((System.Boolean*)pValue); break;
 				case "System.Char":    retValue = *((System.Char*)   pValue); break;
@@ -59,9 +60,9 @@ namespace Debugger.Wrappers.CorDebug
 			return retValue;
 		}
 		
-		public unsafe void SetValue(Type type, object value)
+		public static unsafe void SetValue(this ICorDebugGenericValue corGenVal, Type type, object value)
 		{
-			IntPtr pValue = Marshal.AllocHGlobal((int)Size);
+			IntPtr pValue = Marshal.AllocHGlobal((int)corGenVal.GetSize());
 			switch(type.FullName) {
 				case "System.Boolean": *((System.Boolean*)pValue) = (System.Boolean)value; break;
 				case "System.Char":    *((System.Char*)   pValue) = (System.Char)   value; break;
@@ -79,7 +80,7 @@ namespace Debugger.Wrappers.CorDebug
 				case "System.UIntPtr": *((System.UIntPtr*)pValue) = (System.UIntPtr)value; break;
 				default: throw new NotSupportedException();
 			}
-			SetValue(pValue);
+			corGenVal.SetValue(pValue);
 			Marshal.FreeHGlobal(pValue);
 		}
 	}

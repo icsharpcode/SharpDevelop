@@ -7,19 +7,18 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 	
-	public partial class ICorDebugCode
+	public static partial class CorDebugExtensionMethods
 	{
-		public unsafe byte[] GetCode()
+		public static unsafe byte[] GetCode(this ICorDebugCode corCode)
 		{
-			if (this.IsIL == 0) return null;
-			byte[] code = new byte[this.Size];
-			fixed(void* pCode = code) {
-				this.GetCode(0, (uint)code.Length, (uint)code.Length, new IntPtr(pCode));
-			}
+			if (corCode.IsIL() == 0) return null;
+			byte[] code = new byte[corCode.GetSize()];
+			fixed(void* pCode = code)
+				corCode.GetCode(0, (uint)code.Length, (uint)code.Length, new IntPtr(pCode));
 			return code;
 		}
 	}

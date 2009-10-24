@@ -7,30 +7,28 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorSym
+namespace Debugger.Interop.CorSym
 {
 	using System;
 	using System.Runtime.InteropServices;
 
-	public partial class ISymUnmanagedDocument
+	public static partial class CorSymExtensionMethods
 	{
-		public string URL {
-			get {
-				return Util.GetString(GetURL, 256, true);
-			}
+		public static string GetURL(this ISymUnmanagedDocument symDoc)
+		{
+			return Util.GetString(symDoc.GetURL, 256, true);
 		}
 		
-		public byte[] CheckSum {
-			get {
-				uint checkSumLength = 0;
-				GetCheckSum(checkSumLength, out checkSumLength, IntPtr.Zero);
-				IntPtr checkSumPtr = Marshal.AllocHGlobal((int)checkSumLength);
-				GetCheckSum(checkSumLength, out checkSumLength, checkSumPtr);
-				byte[] checkSumBytes = new byte[checkSumLength];
-				Marshal.Copy(checkSumPtr, checkSumBytes, 0, (int)checkSumLength);
-				Marshal.FreeHGlobal(checkSumPtr);
-				return checkSumBytes;
-			}
+		public static byte[] GetCheckSum(this ISymUnmanagedDocument symDoc)
+		{
+			uint checkSumLength = 0;
+			symDoc.GetCheckSum(checkSumLength, out checkSumLength, IntPtr.Zero);
+			IntPtr checkSumPtr = Marshal.AllocHGlobal((int)checkSumLength);
+			symDoc.GetCheckSum(checkSumLength, out checkSumLength, checkSumPtr);
+			byte[] checkSumBytes = new byte[checkSumLength];
+			Marshal.Copy(checkSumPtr, checkSumBytes, 0, (int)checkSumLength);
+			Marshal.FreeHGlobal(checkSumPtr);
+			return checkSumBytes;
 		}
 	}
 }

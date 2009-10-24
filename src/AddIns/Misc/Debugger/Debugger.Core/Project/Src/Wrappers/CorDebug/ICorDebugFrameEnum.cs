@@ -7,34 +7,32 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 	using System.Collections.Generic;
 	
 	
-	public partial class ICorDebugFrameEnum
+	public static partial class CorDebugExtensionMethods
 	{
-		public IEnumerable<ICorDebugFrame> Enumerator {
-			get {
-				Reset();
-				uint index = this.Count - 1;
-				while (true) {
-					ICorDebugFrame corFrame = Next();
-					if (corFrame != null) {
-						corFrame.Index = index--;
-						yield return corFrame;
-					} else {
-						break;
-					}
+		public static IEnumerable<ICorDebugFrame> GetEnumerator(this ICorDebugFrameEnum corFrameEnum)
+		{
+			// TODO: As list
+			corFrameEnum.Reset();
+			while (true) {
+				ICorDebugFrame corFrame = corFrameEnum.Next();
+				if (corFrame != null) {
+					yield return corFrame;
+				} else {
+					break;
 				}
 			}
 		}
 		
-		public ICorDebugFrame Next()
+		public static ICorDebugFrame Next(this ICorDebugFrameEnum corFrameEnum)
 		{
 			ICorDebugFrame[] corFrames = new ICorDebugFrame[1];
-			uint framesFetched = this.Next(1, corFrames);
+			uint framesFetched = corFrameEnum.Next(1, corFrames);
 			if (framesFetched == 0) {
 				return null;
 			} else {

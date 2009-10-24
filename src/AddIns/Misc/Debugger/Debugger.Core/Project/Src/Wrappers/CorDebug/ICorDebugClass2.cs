@@ -7,15 +7,15 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 
-	public partial class ICorDebugClass2
+	public static partial class CorDebugExtensionMethods
 	{
-		public ICorDebugType GetParameterizedType(uint elementType, ICorDebugType[] ppTypeArgs)
+		public static ICorDebugType GetParameterizedType(this ICorDebugClass2 corClass, uint elementType, ICorDebugType[] ppTypeArgs)
 		{
-			return this.GetParameterizedType(elementType, (uint)ppTypeArgs.Length, ppTypeArgs);
+			return corClass.GetParameterizedType(elementType, (uint)ppTypeArgs.Length, ppTypeArgs);
 		}
 	}
 }

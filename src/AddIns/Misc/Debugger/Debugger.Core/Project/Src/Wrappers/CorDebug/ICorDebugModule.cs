@@ -7,17 +7,16 @@
 
 #pragma warning disable 1591
 
-namespace Debugger.Wrappers.CorDebug
+namespace Debugger.Interop.CorDebug
 {
 	using System;
 	
 	
-	public partial class ICorDebugModule
+	public static partial class CorDebugExtensionMethods
 	{
-		public string Name {
-			get {
-				return Util.GetString(GetName);
-			}
+		public static string GetName(this ICorDebugModule corModule)
+		{
+			return Util.GetString(corModule.GetName);
 		}
 	}
 }
