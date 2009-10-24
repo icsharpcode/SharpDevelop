@@ -16,45 +16,50 @@ namespace Debugger.Interop
 	
 	public static class Util
 	{
-		public static string GetString(UnmanagedStringGetter getter)
+		const uint DefaultBufferSize = 16;
+		
+		public static unsafe string GetCorSymString(UnmanagedStringGetter getter)
 		{
-			return GetString(getter, 64, true);
+			// CorSym does not support truncated result - it thorws exception and does not set actualLength (even with preserve sig)
+			// ICorDebugStringValue does not support 0 as buffer size
+			
+			uint actualLength;
+			getter(0, out actualLength, IntPtr.Zero);
+			char[] buffer = new char[(int)actualLength];
+			string managedString;
+			fixed(char* pBuffer = buffer) {
+				getter(actualLength, out actualLength, new IntPtr(pBuffer));
+				managedString = Marshal.PtrToStringUni(new IntPtr(pBuffer), (int)actualLength);
+			}
+			managedString = managedString.TrimEnd('\0');
+			return managedString;
 		}
 		
-		public static unsafe string GetString(UnmanagedStringGetter getter, uint defaultLength, bool trim)
+		public static string GetString(UnmanagedStringGetter getter)
 		{
-			// 8M characters ought to be enough for everyone...
-			// (we need some limit to avoid OutOfMemoryExceptions when trying to load extremely large
-			// strings - see SD2-1470).
-			const uint MAX_LENGTH = 8 * 1024 * 1024;
+			return GetString(getter, DefaultBufferSize, true);
+		}
+		
+		public static unsafe string GetString(UnmanagedStringGetter getter, uint defaultBufferSize, bool trimNull)
+		{
 			string managedString;
-			uint exactLength;
-
-			if (defaultLength > MAX_LENGTH)
-				defaultLength = MAX_LENGTH;
-			// First attempt
-			// TODO: Consider removing "+ 2" for the zero
-			byte[] buffer = new byte[(int)defaultLength * 2 + 2];  // + 2 for terminating zero
-			fixed(byte* pBuffer = buffer) {
-				getter((uint)buffer.Length, out exactLength, defaultLength > 0 ? new IntPtr(pBuffer) : IntPtr.Zero);
+			
+			char[] buffer = new char[(int)defaultBufferSize];
+			fixed(char* pBuffer = buffer) {
+				uint actualLength = 0;
+				getter(defaultBufferSize, out actualLength, new IntPtr(pBuffer));
 				
-				exactLength = (exactLength > MAX_LENGTH) ? MAX_LENGTH : exactLength;
-				
-				if(exactLength > defaultLength) {
-					// Second attempt
-					byte[] buffer2 = new byte[(int)exactLength * 2 + 2];  // + 2 for terminating zero
-					fixed(byte* pBuffer2 = buffer2) {
-						getter((uint)buffer2.Length, out exactLength, new IntPtr(pBuffer2));
-						managedString = Marshal.PtrToStringUni(new IntPtr(pBuffer2), (int)exactLength);
+				if(actualLength > defaultBufferSize) {
+					char[] buffer2 = new char[(int)actualLength];
+					fixed(char* pBuffer2 = buffer2) {
+						getter(actualLength, out actualLength, new IntPtr(pBuffer2));
+						managedString = Marshal.PtrToStringUni(new IntPtr(pBuffer2), (int)actualLength);
 					}
 				} else {
-					managedString = Marshal.PtrToStringUni(new IntPtr(pBuffer), (int)exactLength);
+					managedString = Marshal.PtrToStringUni(new IntPtr(pBuffer), (int)actualLength);
 				}
-				
-				// TODO:  Check how the trimming and the last 0 charater works
-				// The API might or might not include terminating null at the end
 			}
-			if (trim)
+			if (trimNull)
 				managedString = managedString.TrimEnd('\0');
 			return managedString;
 		}

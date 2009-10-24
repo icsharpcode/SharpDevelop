@@ -33,7 +33,7 @@ namespace Debugger.Interop.CorSym
 		
 		public static string GetURL(this ISymUnmanagedDocument symDoc)
 		{
-			return Util.GetString(symDoc.GetURL, 256, true);
+			return Util.GetCorSymString(symDoc.GetURL);
 		}
 		
 		public static unsafe byte[] GetCheckSum(this ISymUnmanagedDocument symDoc)
@@ -134,7 +134,7 @@ namespace Debugger.Interop.CorSym
 		
 		public static string GetName(this ISymUnmanagedVariable symVar)
 		{
-			return Util.GetString(symVar.GetName);
+			return Util.GetCorSymString(symVar.GetName);
 		}
 		
 		const int defaultSigSize = 8;

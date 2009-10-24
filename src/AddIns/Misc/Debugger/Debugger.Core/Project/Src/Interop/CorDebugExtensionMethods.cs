@@ -186,7 +186,8 @@ namespace Debugger.Interop.CorDebug
 		
 		public static string GetName(this ICorDebugModule corModule)
 		{
-			return Util.GetString(corModule.GetName);
+			// The 'out' parameter returns the size of the needed buffer as in other functions
+			return Util.GetString(corModule.GetName, 256, true);
 		}
 		
 		// ICorDebugProcess
@@ -208,7 +209,8 @@ namespace Debugger.Interop.CorDebug
 		
 		public static string GetString(this ICorDebugStringValue corString)
 		{
-			return Util.GetString(corString.GetString, 64, false);
+			uint length = corString.GetLength();
+			return Util.GetString(corString.GetString, length, false);
 		}
 		
 		// ICorDebugTypeEnum
