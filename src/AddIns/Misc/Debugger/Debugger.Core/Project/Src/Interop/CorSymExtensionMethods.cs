@@ -6,8 +6,9 @@
 // </file>
 
 using System;
+using System.Runtime.InteropServices;
 
-namespace Debugger.Interop.CorDebug
+namespace Debugger.Interop.CorSym
 {
 	public static partial class CorSymExtensionMethods
 	{
@@ -146,12 +147,12 @@ namespace Debugger.Interop.CorDebug
 	
 	public class SequencePoint: IComparable<SequencePoint>
 	{
-		public ISymUnmanagedDocument Document { get; private set; }
-		public uint Offset { get; private set; }
-		public uint Line { get; private set; }
-		public uint Column { get; private set; }
-		public uint EndLine { get; private set; }
-		public uint EndColumn { get; private set; }
+		public ISymUnmanagedDocument Document { get; internal set; }
+		public uint Offset { get; internal set; }
+		public uint Line { get; internal set; }
+		public uint Column { get; internal set; }
+		public uint EndLine { get; internal set; }
+		public uint EndColumn { get; internal set; }
 		
 		public int CompareTo(SequencePoint other)
 		{

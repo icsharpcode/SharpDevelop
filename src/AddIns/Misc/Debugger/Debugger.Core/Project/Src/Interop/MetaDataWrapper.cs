@@ -34,17 +34,19 @@ namespace Debugger.Interop.MetaData
 		public ISymUnmanagedReader GetSymReader(string fullname, string searchPath)
 		{
 			try {
-				ISymUnmanagedBinder symBinder = new ISymUnmanagedBinder(new Debugger.Interop.CorSym.CorSymBinder_SxSClass());
+				// TODO: Track
+				ISymUnmanagedBinder symBinder = new Debugger.Interop.CorSym.CorSymBinder_SxSClass();
 				return symBinder.GetReaderForFile(metaData, fullname, searchPath);
 			} catch {
 				return null;
 			}
 		}
 		
-		public ISymUnmanagedReader GetSymReader(Debugger.Interop.CorDebug.IStream stream)
+		public ISymUnmanagedReader GetSymReader(Debugger.Interop.CorSym.IStream stream)
 		{
 			try {
-				ISymUnmanagedBinder symBinder = new ISymUnmanagedBinder(new Debugger.Interop.CorSym.CorSymBinder_SxSClass());
+				// TODO: Track
+				ISymUnmanagedBinder symBinder = new Debugger.Interop.CorSym.CorSymBinder_SxSClass();
 				return symBinder.GetReaderFromStream(metaData, stream);
 			} catch {
 				return null;

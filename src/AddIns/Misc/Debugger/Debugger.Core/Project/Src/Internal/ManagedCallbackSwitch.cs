@@ -54,7 +54,7 @@ namespace Debugger.Internal
 		{
 			ICorDebugProcess pProcess;
 			try {
-				pProcess = pThread.Process;
+				pProcess = pThread.GetProcess();
 			} catch (COMException e) {
 				debugger.TraceMessage("Ignoring callback \"" + name + "\": " + e.Message);
 				return null;
@@ -66,7 +66,7 @@ namespace Debugger.Internal
 		{
 			ICorDebugProcess pProcess;
 			try {
-				pProcess = pAppDomain.Process;
+				pProcess = pAppDomain.GetProcess();
 			} catch (COMException e) {
 				debugger.TraceMessage("Ignoring callback \"" + name + "\": " + e.Message);
 				return null;
@@ -96,7 +96,7 @@ namespace Debugger.Internal
 			}
 			// Check that the process is not exited
 			try {
-				int isRunning = process.CorProcess.IsRunning;
+				int isRunning = process.CorProcess.IsRunning();
 			} catch (COMException e) {
 				process.TraceMessage("Ignoring callback \"" + name + "\": " + e.Message);
 				return null;

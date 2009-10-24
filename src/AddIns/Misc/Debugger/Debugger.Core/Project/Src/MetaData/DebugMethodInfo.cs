@@ -294,13 +294,13 @@ namespace Debugger.MetaData
 			
 			ICorDebugCode corCode;
 			try {
-				corCode = this.CorFunction.ILCode;
+				corCode = this.CorFunction.GetILCode();
 			} catch {
 				return null;
 			}
 			
 			if (corCode == null) return null;
-			if (corCode.Size != 7 && corCode.Size != 12 && corCode.Size != 11) return null;
+			if (corCode.GetSize() != 7 && corCode.GetSize() != 12 && corCode.GetSize() != 11) return null;
 			
 			byte[] code = corCode.GetCode();
 			
@@ -396,7 +396,7 @@ namespace Debugger.MetaData
 				
 				if (isSingleLine.HasValue) return isSingleLine.Value;
 				
-				List<SequencePoint> seqPoints = new List<SequencePoint>(symMethod.SequencePoints);
+				List<SequencePoint> seqPoints = new List<SequencePoint>(symMethod.GetSequencePoints());
 				seqPoints.Sort();
 				
 				// Remove initial "{"
@@ -477,7 +477,7 @@ namespace Debugger.MetaData
 					
 			if (localVariables != null) return localVariables;
 			
-			localVariables = GetLocalVariablesInScope(this.SymMethod.RootScope);
+			localVariables = GetLocalVariablesInScope(this.SymMethod.GetRootScope());
 			if (declaringType.IsDisplayClass || declaringType.IsYieldEnumerator) {
 				// Get display class from self
 				AddCapturedLocalVariables(
@@ -561,15 +561,15 @@ namespace Debugger.MetaData
 		List<DebugLocalVariableInfo> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
 		{
 			List<DebugLocalVariableInfo> vars = new List<DebugLocalVariableInfo>();
-			foreach (ISymUnmanagedVariable symVar in symScope.Locals) {
+			foreach (ISymUnmanagedVariable symVar in symScope.GetLocals()) {
 				ISymUnmanagedVariable symVarCopy = symVar;
 				int start;
-				SignatureReader sigReader = new SignatureReader(symVar.Signature);
+				SignatureReader sigReader = new SignatureReader(symVar.GetSignature());
 				LocalVarSig.LocalVariable locVarSig = sigReader.ReadLocalVariable(sigReader.Blob, 0, out start);
 				DebugType locVarType = DebugType.CreateFromSignature(this.DebugModule, locVarSig.Type, declaringType);
 				// Compiler generated?
 				// NB: Display class does not have the compiler-generated flag
-				if ((symVar.Attributes & 1) == 1 || symVar.Name.StartsWith("CS$")) {
+				if ((symVar.GetAttributes() & 1) == 1 || symVar.GetName().StartsWith("CS$")) {
 					// Get display class from local variable
 					if (locVarType.IsDisplayClass) {
 						AddCapturedLocalVariables(
@@ -582,8 +582,8 @@ namespace Debugger.MetaData
 					}
 				} else {
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
-						symVar.Name,
-						(int)symVar.AddressField1,
+						symVar.GetName(),
+						(int)symVar.GetAddressField1(),
 						locVarType,
 						delegate(StackFrame context) {
 							return GetLocalVariableValue(context, symVarCopy);
@@ -592,7 +592,7 @@ namespace Debugger.MetaData
 					vars.Add(locVar);
 				}
 			}
-			foreach(ISymUnmanagedScope childScope in symScope.Children) {
+			foreach(ISymUnmanagedScope childScope in symScope.GetChildren()) {
 				vars.AddRange(GetLocalVariablesInScope(childScope));
 			}
 			return vars;
@@ -602,7 +602,7 @@ namespace Debugger.MetaData
 		{
 			ICorDebugValue corVal;
 			try {
-				corVal = context.CorILFrame.GetLocalVariable((uint)symVar.AddressField1);
+				corVal = context.CorILFrame.GetLocalVariable((uint)symVar.GetAddressField1());
 			} catch (COMException e) {
 				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
 				throw;

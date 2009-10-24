@@ -73,12 +73,12 @@ namespace Debugger.Internal
 		
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugAppDomain pAppDomain)
 		{
-			EnterCallback(pausedReason, name, pAppDomain.Process);
+			EnterCallback(pausedReason, name, pAppDomain.GetProcess());
 		}
 		
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugThread pThread)
 		{
-			EnterCallback(pausedReason, name, pThread.Process);
+			EnterCallback(pausedReason, name, pThread.GetProcess());
 			process.SelectedThread = process.Threads[pThread];
 		}
 		
@@ -297,7 +297,7 @@ namespace Debugger.Internal
 			
 			foreach (Module module in process.Modules) {
 				if (module.CorModule == pModule) {
-					process.TraceMessage("UpdateModuleSymbols: Found module: " + pModule.Name);
+					process.TraceMessage("UpdateModuleSymbols: Found module: " + pModule.GetName());
 					module.UpdateSymbolsFromStream(pSymbolStream);
 					process.Debugger.Breakpoints.SetInModule(module);
 					break;
@@ -339,7 +339,7 @@ namespace Debugger.Internal
 
 		public void LoadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
 		{
-			EnterCallback(PausedReason.Other, "LoadModule " + pModule.Name, pAppDomain);
+			EnterCallback(PausedReason.Other, "LoadModule " + pModule.GetName(), pAppDomain);
 			
 			process.Modules.Add(new Module(process.AppDomains[pAppDomain], pModule));
 			
@@ -371,7 +371,7 @@ namespace Debugger.Internal
 		{
 			// We can not use pThread since it has not been added yet
 			// and we continue from this callback anyway
-			EnterCallback(PausedReason.Other, "CreateThread " + pThread.ID, pAppDomain);
+			EnterCallback(PausedReason.Other, "CreateThread " + pThread.GetID(), pAppDomain);
 			
 			process.Threads.Add(new Thread(process, pThread));
 			
@@ -416,14 +416,14 @@ namespace Debugger.Internal
 		{
 			// ICorDebugThread is still not dead and can be used for some operations
 			if (process.Threads.Contains(pThread)) {
-				EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, pThread);
+				EnterCallback(PausedReason.Other, "ExitThread " + pThread.GetID(), pThread);
 				
 				process.Threads[pThread].NotifyExited();
 			} else {
-				EnterCallback(PausedReason.Other, "ExitThread " + pThread.ID, process.CorProcess);
+				EnterCallback(PausedReason.Other, "ExitThread " + pThread.GetID(), process.CorProcess);
 				
 				// TODO: Investigate
-				process.TraceMessage("ERROR: Thread does not exist " + pThread.ID);
+				process.TraceMessage("ERROR: Thread does not exist " + pThread.GetID());
 			}
 			
 			try {
@@ -484,7 +484,7 @@ namespace Debugger.Internal
 			// Watch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], process.SelectedThread.CorThread.CurrentException));
+			process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], process.SelectedThread.CorThread.GetCurrentException()));
 			process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
 			process.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
 			process.SelectedThread.CurrentExceptionIsUnhandled = (ExceptionType)exceptionType == ExceptionType.Unhandled;

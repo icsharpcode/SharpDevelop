@@ -125,7 +125,7 @@ namespace Debugger
 			managedCallbackProxy = new ManagedCallbackProxy(this, managedCallbackSwitch);
 			
 			corDebug.Initialize();
-			corDebug.SetManagedHandler(new ICorDebugManagedCallback(managedCallbackProxy));
+			corDebug.SetManagedHandler(managedCallbackProxy);
 			
 			TraceMessage("ICorDebug initialized, debugee version " + debuggeeVersion);
 		}

@@ -89,7 +89,7 @@ namespace Debugger
 			// "c:\project\file.cs" N/A
 			if (Path.IsPathRooted(filename) && checksum == null) {
 				foreach(ISymUnmanagedDocument symDoc in symDocs) {
-					if (symDoc.URL.ToLower() == filename) return symDoc;
+					if (symDoc.GetURL().ToLower() == filename) return symDoc;
 				}
 				return null; // Not found
 			}
@@ -97,7 +97,7 @@ namespace Debugger
 			// "c:\project\file.cs" 0123456789
 			if (Path.IsPathRooted(filename) && checksum != null) {
 				foreach(ISymUnmanagedDocument symDoc in symDocs) {
-					if (symDoc.URL.ToLower() == filename) return symDoc;
+					if (symDoc.GetURL().ToLower() == filename) return symDoc;
 				}
 				// Not found - try to find using checksum
 				filename = Path.GetFileName(filename);
@@ -109,7 +109,7 @@ namespace Debugger
 					filename = @"\" + filename;
 				}
 				foreach(ISymUnmanagedDocument symDoc in symDocs) {
-					if (symDoc.URL.ToLower().EndsWith(filename)) return symDoc;
+					if (symDoc.GetURL().ToLower().EndsWith(filename)) return symDoc;
 				}
 				return null; // Not found
 			}
@@ -120,8 +120,8 @@ namespace Debugger
 					filename = @"\" + filename;
 				}
 				foreach(ISymUnmanagedDocument symDoc in symDocs) {
-					if (!symDoc.URL.ToLower().EndsWith(filename)) continue;
-					byte[] symDocCheckSum = symDoc.CheckSum;
+					if (!symDoc.GetURL().ToLower().EndsWith(filename)) continue;
+					byte[] symDocCheckSum = symDoc.GetCheckSum();
 					if (symDocCheckSum.Length != checksum.Length) continue;
 					for (int i = 0; i < checksum.Length; i++) {
 						if (symDocCheckSum[i] != checksum[i]) continue;
@@ -153,7 +153,7 @@ namespace Debugger
 				return null; //Not found
 			}
 			
-			SequencePoint[] seqPoints = symMethod.SequencePoints;
+			SequencePoint[] seqPoints = symMethod.GetSequencePoints();
 			Array.Sort(seqPoints);
 			if (seqPoints.Length == 0) return null;
 			if (line < seqPoints[0].Line) return null;
@@ -163,13 +163,13 @@ namespace Debugger
 				if (line < sqPoint.EndLine || (line == sqPoint.EndLine && column < sqPoint.EndColumn)) {
 					SourcecodeSegment segment = new SourcecodeSegment();
 					segment.module        = module;
-					segment.filename      = symDoc.URL;
-					segment.checkSum      = symDoc.CheckSum;
+					segment.filename      = symDoc.GetURL();
+					segment.checkSum      = symDoc.GetCheckSum();
 					segment.startLine     = (int)sqPoint.Line;
 					segment.startColumn   = (int)sqPoint.Column;
 					segment.endLine       = (int)sqPoint.EndLine;
 					segment.endColumn     = (int)sqPoint.EndColumn;
-					segment.corFunction   = module.CorModule.GetFunctionFromToken(symMethod.Token);
+					segment.corFunction   = module.CorModule.GetFunctionFromToken(symMethod.GetToken());
 					segment.ilStart = (int)sqPoint.Offset;
 					segment.ilEnd   = (int)sqPoint.Offset;
 					segment.stepRanges    = null;
@@ -181,7 +181,7 @@ namespace Debugger
 		
 		static string GetFilenameFromSymDocument(Module module, ISymUnmanagedDocument symDoc)
 		{
-			if (File.Exists(symDoc.URL)) return symDoc.URL;
+			if (File.Exists(symDoc.GetURL())) return symDoc.GetURL();
 			
 			List<string> searchPaths = new List<string>();
 			
@@ -202,7 +202,7 @@ namespace Debugger
 			}
 			
 			List<string> filenames = new List<string>();
-			string filename = symDoc.URL;
+			string filename = symDoc.GetURL();
 			while (true) {
 				// Remove start of the path
 				int index = filename.IndexOf('\\');
@@ -225,7 +225,7 @@ namespace Debugger
 				}
 			}
 			
-			return symDoc.URL;
+			return symDoc.GetURL();
 		}
 		
 		/// <summary>
@@ -239,7 +239,7 @@ namespace Debugger
 			
 			ISymUnmanagedMethod symMethod;
 			try {
-				symMethod = symReader.GetMethod(corFunction.Token);
+				symMethod = symReader.GetMethod(corFunction.GetToken());
 			} catch (COMException) {
 				// Can not find the method
 				// eg. Compiler generated constructors are not in symbol store
@@ -247,15 +247,15 @@ namespace Debugger
 			}
 			if (symMethod == null) return null;
 			
-			uint sequencePointCount = symMethod.SequencePointCount;
-			SequencePoint[] sequencePoints = symMethod.SequencePoints;
+			uint sequencePointCount = symMethod.GetSequencePointCount();
+			SequencePoint[] sequencePoints = symMethod.GetSequencePoints();
 			
 			// Get i for which: offsets[i] <= offset < offsets[i + 1]
 			// or fallback to first element if  offset < offsets[0]
 			for (int i = (int)sequencePointCount - 1; i >= 0; i--) { // backwards
 				if (sequencePoints[i].Offset <= offset || i == 0) {
 					// Set inforamtion about current IL range
-					int codeSize = (int)corFunction.ILCode.Size;
+					int codeSize = (int)corFunction.GetILCode().GetSize();
 					
 					int ilStart = (int)sequencePoints[i].Offset;
 					int ilEnd = (i + 1 < sequencePointCount) ? (int)sequencePoints[i+1].Offset : codeSize;
@@ -302,7 +302,7 @@ namespace Debugger
 					SourcecodeSegment segment = new SourcecodeSegment();
 					segment.module        = module;
 					segment.filename      = GetFilenameFromSymDocument(module, sequencePoints[i].Document);
-					segment.checkSum      = sequencePoints[i].Document.CheckSum;
+					segment.checkSum      = sequencePoints[i].Document.GetCheckSum();
 					segment.startLine     = (int)sequencePoints[i].Line;
 					segment.startColumn   = (int)sequencePoints[i].Column;
 					segment.endLine       = (int)sequencePoints[i].EndLine;

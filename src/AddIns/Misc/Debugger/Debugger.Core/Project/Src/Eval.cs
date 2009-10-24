@@ -178,7 +178,7 @@ namespace Debugger
 			if (state == EvalState.EvaluatedTimeOut) {
 				return;
 			}
-			if (corEval.Result == null) {
+			if (corEval.GetResult() == null) {
 				state = EvalState.EvaluatedNoResult;
 			} else {
 				if (successful) {
@@ -186,7 +186,7 @@ namespace Debugger
 				} else {
 					state = EvalState.EvaluatedException;
 				}
-				result = new Value(AppDomain, corEval.Result);
+				result = new Value(AppDomain, corEval.GetResult());
 			}
 		}
 		
@@ -253,7 +253,7 @@ namespace Debugger
 	    public static Value CreateValue(AppDomain appDomain, object value)
 	    {
 	    	if (value == null) {
-				ICorDebugClass corClass = appDomain.ObjectType.CorType.Class;
+				ICorDebugClass corClass = appDomain.ObjectType.CorType.GetClass();
 				ICorDebugEval corEval = CreateCorEval(appDomain);
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
 				return new Value(appDomain, corValue);
@@ -351,7 +351,7 @@ namespace Debugger
 				debugType.AppDomain,
 				"New object: " + debugType.FullName,
 				delegate(Eval eval) {
-					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.Class, (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType);
+					eval.CorEval.CastTo<ICorDebugEval2>().NewParameterizedObjectNoConstructor(debugType.CorType.GetClass(), (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType);
 				}
 			);
 		}

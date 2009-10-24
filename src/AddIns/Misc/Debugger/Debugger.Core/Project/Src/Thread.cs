@@ -60,7 +60,7 @@ namespace Debugger
 		public bool IsInValidState {
 			get {
 				try {
-					CorThread.UserState.ToString();
+					CorThread.GetUserState().ToString();
 					CorThread.EnumerateChains();
 					return true;
 				} catch (COMException e) {
@@ -86,7 +86,7 @@ namespace Debugger
 		{
 			this.process = process;
 			this.corThread = corThread;
-			this.id = CorThread.ID;
+			this.id = CorThread.GetID();
 		}
 		
 		internal void NotifyExited()
@@ -119,7 +119,7 @@ namespace Debugger
 				
 				if (!IsInValidState) return false;
 				
-				return CorThread.UserState != CorDebugUserState.USER_UNSAFE_POINT;
+				return CorThread.GetUserState() != CorDebugUserState.USER_UNSAFE_POINT;
 			}
 		}
 		
@@ -130,7 +130,7 @@ namespace Debugger
 				
 				if (!IsInValidState) return false;
 				
-				return (CorThread.DebugState == CorDebugThreadState.THREAD_SUSPEND);
+				return (CorThread.GetDebugState() == CorDebugThreadState.THREAD_SUSPEND);
 			}
 			set {
 				CorThread.SetDebugState((value==true) ? CorDebugThreadState.THREAD_SUSPEND : CorDebugThreadState.THREAD_RUN);
@@ -158,8 +158,8 @@ namespace Debugger
 			get {
 				process.AssertPaused();
 				
-				ICorDebugValue corValue = this.CorThread.Object;
-				return new Value(process.AppDomains[this.CorThread.AppDomain], corValue);
+				ICorDebugValue corValue = this.CorThread.GetObject();
+				return new Value(process.AppDomains[this.CorThread.GetAppDomain()], corValue);
 			}
 		}
 		
@@ -222,7 +222,7 @@ namespace Debugger
 		public bool InterceptCurrentException()
 		{
 			if (!this.CorThread.Is<ICorDebugThread2>()) return false; // Is the debuggee .NET 2.0?
-			if (this.CorThread.CurrentException == null) return false; // Is there any exception
+			if (this.CorThread.GetCurrentException() == null) return false; // Is there any exception
 			if (this.MostRecentStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
 			
 			try {
@@ -292,9 +292,9 @@ namespace Debugger
 					yield break;
 				}
 				
-				foreach(ICorDebugChain corChain in CorThread.EnumerateChains().Enumerator) {
-					if (corChain.IsManaged == 0) continue; // Only managed ones
-					foreach(ICorDebugFrame corFrame in corChain.EnumerateFrames().Enumerator) {
+				foreach(ICorDebugChain corChain in CorThread.EnumerateChains().GetEnumerator()) {
+					if (corChain.IsManaged() == 0) continue; // Only managed ones
+					foreach(ICorDebugFrame corFrame in corChain.EnumerateFrames().GetEnumerator()) {
 						if (!corFrame.Is<ICorDebugILFrame>()) continue; // Only IL frames
 						StackFrame stackFrame;
 						try {
@@ -313,15 +313,15 @@ namespace Debugger
 			process.AssertPaused();
 			
 			ICorDebugChainEnum corChainEnum = CorThread.EnumerateChains();
-			if (chainIndex >= corChainEnum.Count) throw new DebuggerException("The requested chain index is too big");
-			corChainEnum.Skip(corChainEnum.Count - chainIndex - 1);
+			if (chainIndex >= corChainEnum.GetCount()) throw new DebuggerException("The requested chain index is too big");
+			corChainEnum.Skip(corChainEnum.GetCount() - chainIndex - 1);
 			ICorDebugChain corChain = corChainEnum.Next();
 			
-			if (corChain.IsManaged == 0) throw new DebuggerException("The requested chain is not managed");
+			if (corChain.IsManaged() == 0) throw new DebuggerException("The requested chain is not managed");
 			
 			ICorDebugFrameEnum corFrameEnum = corChain.EnumerateFrames();
-			if (frameIndex >= corFrameEnum.Count) throw new DebuggerException("The requested frame index is too big");
-			corFrameEnum.Skip(corFrameEnum.Count - frameIndex - 1);
+			if (frameIndex >= corFrameEnum.GetCount()) throw new DebuggerException("The requested frame index is too big");
+			corFrameEnum.Skip(corFrameEnum.GetCount() - frameIndex - 1);
 			ICorDebugFrame corFrame = corFrameEnum.Next();
 			
 			if (!corFrame.Is<ICorDebugILFrame>()) throw new DebuggerException("The rquested frame is not IL frame");
@@ -412,7 +412,7 @@ namespace Debugger
 			get {
 				process.AssertPaused();
 				if (this.IsInValidState) {
-					return corThread.ActiveChain.IsManaged == 0;
+					return corThread.GetActiveChain().IsManaged() == 0;
 				} else {
 					return false;
 				}

@@ -128,7 +128,7 @@ namespace Debugger
 			
 			originalLocation = segment;
 			
-			ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.ILCode.CreateBreakpoint((uint)segment.ILStart);
+			ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.GetILCode().CreateBreakpoint((uint)segment.ILStart);
 			corBreakpoint.Activate(enabled ? 1 : 0);
 			
 			corBreakpoints.Add(corBreakpoint);

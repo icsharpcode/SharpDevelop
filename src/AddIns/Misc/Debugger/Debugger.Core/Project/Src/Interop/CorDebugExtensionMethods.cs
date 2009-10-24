@@ -6,11 +6,31 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Debugger.Interop.CorDebug
 {
 	public static partial class CorDebugExtensionMethods
 	{
+		// TODO: Remove
+		public static T CastTo<T>(this object obj)
+		{
+			return (T)obj;
+		}
+		
+		// TODO: Remove
+		public static bool Is<T>(this object obj)
+		{
+			return obj is T;
+		}
+		
+		// TODO: Remove
+		public static T As<T>(this object obj) where T:class
+		{
+			return obj as T;
+		}
+		
 		// ICorDebugArrayValue
 		
 		public static unsafe uint[] GetDimensions(this ICorDebugArrayValue corArray)

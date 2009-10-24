@@ -89,25 +89,25 @@ namespace Debugger
 		
 		public ulong BaseAdress { 
 			get {
-				return corModule.BaseAddress;
+				return corModule.GetBaseAddress();
 			} 
 		}
 		
 		public bool IsDynamic { 
 			get {
-				return corModule.IsDynamic == 1;
+				return corModule.IsDynamic() == 1;
 			} 
 		}
 		
 		public bool IsInMemory { 
 			get {
-				return corModule.IsInMemory == 1;
+				return corModule.IsInMemory() == 1;
 			} 
 		}
 		
 		internal uint AppDomainID {
 			get {
-				return this.CorModule.Assembly.AppDomain.ID;
+				return this.CorModule.GetAssembly().GetAppDomain().GetID();
 			}
 		}
 		
@@ -180,7 +180,7 @@ namespace Debugger
 			
 			metaData = new MetaDataImport(pModule);
 			
-			fullPath = pModule.Name;
+			fullPath = pModule.GetName();
 			
 			LoadSymbols(process.Options.SymbolsSearchPaths);
 			

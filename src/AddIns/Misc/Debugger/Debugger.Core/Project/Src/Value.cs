@@ -64,7 +64,7 @@ namespace Debugger
 				if (corValue.Is<ICorDebugReferenceValue>())
 					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
 				if (corValue.Is<ICorDebugBoxValue>())
-					corValue = corValue.CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugValue>();
+					corValue = corValue.CastTo<ICorDebugBoxValue>().GetObject().CastTo<ICorDebugValue>();
 				if (!corValue.Is<ICorDebugGenericValue>())
 					throw new DebuggerException("Value is not an generic value");
 				return corValue.CastTo<ICorDebugGenericValue>();
@@ -89,7 +89,7 @@ namespace Debugger
 				if (corValue.Is<ICorDebugReferenceValue>())
 					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
 				if (corValue.Is<ICorDebugBoxValue>())
-					return corValue.CastTo<ICorDebugBoxValue>().Object;
+					return corValue.CastTo<ICorDebugBoxValue>().GetObject();
 				if (!corValue.Is<ICorDebugObjectValue>())
 					throw new DebuggerException("Value is not an object");
 				return corValue.CastTo<ICorDebugObjectValue>();
@@ -122,7 +122,7 @@ namespace Debugger
 		public bool IsNull {
 			get {
 				return this.CorValue.Is<ICorDebugReferenceValue>() &&
-				       this.CorValue.CastTo<ICorDebugReferenceValue>().IsNull != 0;
+				       this.CorValue.CastTo<ICorDebugReferenceValue>().IsNull() != 0;
 			}
 		}
 		
@@ -131,14 +131,14 @@ namespace Debugger
 		/// </summary>
 		[Debugger.Tests.Ignore]
 		public ulong Address {
-			get { return corValue.Address; }
+			get { return corValue.GetAddress(); }
 		}
 		
 		[Debugger.Tests.Ignore]
 		public ulong PointerAddress {
 			get {
 				if (!this.Type.IsPointer) throw new DebuggerException("Not a pointer");
-				return this.CorValue.CastTo<ICorDebugReferenceValue>().Value;
+				return this.CorValue.CastTo<ICorDebugReferenceValue>().GetValue();
 			}
 		}
 		
@@ -160,14 +160,14 @@ namespace Debugger
 			this.corValue_pauseSession = this.Process.PauseSession;
 			
 			if (corValue.Is<ICorDebugReferenceValue>() &&
-			    corValue.CastTo<ICorDebugReferenceValue>().Value == 0 &&
-			    corValue.CastTo<ICorDebugValue2>().ExactType == null)
+			    corValue.CastTo<ICorDebugReferenceValue>().GetValue() == 0 &&
+			    corValue.CastTo<ICorDebugValue2>().GetExactType() == null)
 			{
 				// We were passed null reference and no metadata description
 				// (happens during CreateThread callback for the thread object)
 				this.type = appDomain.ObjectType;
 			} else {
-				ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().ExactType;
+				ICorDebugType exactType = this.CorValue.CastTo<ICorDebugValue2>().GetExactType();
 				this.type = DebugType.CreateFromCorType(appDomain, exactType);
 			}
 		}
@@ -175,7 +175,7 @@ namespace Debugger
 		// Box value type
 		public Value Box()
 		{
-			byte[] rawValue = this.CorGenericValue.RawValue;
+			byte[] rawValue = this.CorGenericValue.GetRawValue();
 			// The type must not be a primive type (always true in current design)
 			ICorDebugValue corValue = Eval.NewObjectNoConstructor(this.Type).CorValue;
 			// Make the reference to box permanent
@@ -183,7 +183,7 @@ namespace Debugger
 			// Create new value
 			Value newValue = new Value(appDomain, corValue);
 			// Copy the data inside the box
-			newValue.CorGenericValue.RawValue = rawValue;
+			newValue.CorGenericValue.SetRawValue(rawValue);
 			return newValue;
 		}
 		
@@ -205,7 +205,7 @@ namespace Debugger
 		{
 			if (!this.Type.IsPointer) throw new DebuggerException("Not a pointer");
 			ICorDebugReferenceValue corRef = this.CorValue.CastTo<ICorDebugReferenceValue>();
-			if (corRef.Value == 0 || corRef.Dereference() == null) {
+			if (corRef.GetValue() == 0 || corRef.Dereference() == null) {
 				return null;
 			} else {
 				return new Value(this.AppDomain, corRef.Dereference());
@@ -220,9 +220,9 @@ namespace Debugger
 			if (this.CorValue.Is<ICorDebugReferenceValue>()) {
 				if (!newCorValue.Is<ICorDebugReferenceValue>())
 					newCorValue = newValue.Box().CorValue;
-				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().Value);
+				corValue.CastTo<ICorDebugReferenceValue>().SetValue(newCorValue.CastTo<ICorDebugReferenceValue>().GetValue());
 			} else {
-				corValue.CastTo<ICorDebugGenericValue>().RawValue = newValue.CorGenericValue.RawValue;
+				corValue.CastTo<ICorDebugGenericValue>().SetRawValue(newValue.CorGenericValue.GetRawValue());
 			}
 		}
 		
@@ -238,7 +238,7 @@ namespace Debugger
 				if (this.Type.PrimitiveType == null) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.FullName == typeof(string).FullName) {
 					if (this.IsNull) return null;
-					return this.CorReferenceValue.Dereference().CastTo<ICorDebugStringValue>().String;
+					return this.CorReferenceValue.Dereference().CastTo<ICorDebugStringValue>().GetString();
 				} else {
 					return CorGenericValue.GetValue(this.Type.PrimitiveType);
 				}
@@ -274,7 +274,7 @@ namespace Debugger
 		public int ArrayLength {
 			get {
 				if (!this.Type.IsArray) return 0;
-				return (int)CorArrayValue.Count;
+				return (int)CorArrayValue.GetCount();
 			}
 		}
 		
@@ -286,7 +286,7 @@ namespace Debugger
 		public int ArrayRank { 
 			get {
 				if (!this.Type.IsArray) return 0;
-				return (int)CorArrayValue.Rank;
+				return (int)CorArrayValue.GetRank();
 			}
 		}
 		
@@ -298,11 +298,11 @@ namespace Debugger
 				int rank = this.ArrayRank;
 				uint[] baseIndicies;
 				if (CorArrayValue.HasBaseIndicies() == 1) {
-					baseIndicies = CorArrayValue.BaseIndicies;
+					baseIndicies = CorArrayValue.GetBaseIndicies();
 				} else {
 					baseIndicies = new uint[this.ArrayRank];
 				}
-				uint[] dimensionCounts = CorArrayValue.Dimensions;
+				uint[] dimensionCounts = CorArrayValue.GetDimensions();
 				
 				List<ArrayDimension> dimensions = new List<ArrayDimension>();
 				for(int i = 0; i < rank; i++) {
@@ -445,7 +445,7 @@ namespace Debugger
 				if (fieldInfo.IsStatic) {
 					return ((DebugType)fieldInfo.DeclaringType).CorType.GetStaticFieldValue((uint)fieldInfo.MetadataToken, curFrame);
 				} else {
-					return objectInstance.CorObjectValue.GetFieldValue(((DebugType)fieldInfo.DeclaringType).CorType.Class, (uint)fieldInfo.MetadataToken);
+					return objectInstance.CorObjectValue.GetFieldValue(((DebugType)fieldInfo.DeclaringType).CorType.GetClass(), (uint)fieldInfo.MetadataToken);
 				}
 			} catch {
 				throw new GetValueException("Can not get value of field");

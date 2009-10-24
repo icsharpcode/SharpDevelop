@@ -169,7 +169,7 @@ namespace Debugger.MetaData
 				if (this.IsPointer || corElementType == CorElementType.VOID) {
 					return null;
 				}
-				ICorDebugType baseType = corType.Base;
+				ICorDebugType baseType = corType.GetBase();
 				if (baseType != null) {
 					return CreateFromCorType(this.AppDomain, baseType);
 				} else {
@@ -225,7 +225,7 @@ namespace Debugger.MetaData
 		{
 			if (!IsArray) throw new ArgumentException("Type is not array");
 			
-			return (int)corType.Rank;
+			return (int)corType.GetRank();
 		}
 		
 		/// <inheritdoc/>
@@ -915,10 +915,10 @@ namespace Debugger.MetaData
 		
 		public static DebugType CreateFromCorClass(AppDomain appDomain, bool? valueType, ICorDebugClass corClass, DebugType[] genericArguments)
 		{
-			MetaDataImport metaData = appDomain.Process.Modules[corClass.Module].MetaData;
+			MetaDataImport metaData = appDomain.Process.Modules[corClass.GetModule()].MetaData;
 			
 			if (valueType == null) {
-				uint superClassToken = metaData.GetTypeDefProps(corClass.Token).SuperClassToken;
+				uint superClassToken = metaData.GetTypeDefProps(corClass.GetToken()).SuperClassToken;
 				CorTokenType tkType = (CorTokenType)(superClassToken & 0xFF000000);
 				if (tkType == CorTokenType.TypeDef) {
 					valueType = metaData.GetTypeDefProps(superClassToken).Name == typeof(ValueType).FullName;
@@ -932,10 +932,10 @@ namespace Debugger.MetaData
 			}
 			
 			genericArguments = genericArguments ?? new DebugType[] {};
-			if (genericArguments.Length < metaData.GetGenericParamCount(corClass.Token)) {
+			if (genericArguments.Length < metaData.GetGenericParamCount(corClass.GetToken())) {
 				throw new DebuggerException("Not enough generic arguments");
 			}
-			Array.Resize(ref genericArguments, metaData.GetGenericParamCount(corClass.Token));
+			Array.Resize(ref genericArguments, metaData.GetGenericParamCount(corClass.GetToken()));
 			
 			List<ICorDebugType> corGenArgs = new List<ICorDebugType>(genericArguments.Length);
 			foreach(DebugType genAgr in genericArguments) {
@@ -951,7 +951,7 @@ namespace Debugger.MetaData
 		public static DebugType CreateFromCorType(AppDomain appDomain, ICorDebugType corType)
 		{
 			// Convert primitive type to class
-			CorElementType corElemType = (CorElementType)(corType.Type);
+			CorElementType corElemType = (CorElementType)(corType.GetType());
 			Type primitiveType = CorElementTypeToManagedType(corElemType);
 			if (primitiveType != null) {
 				corType = CreateFromType(appDomain.Mscorlib, primitiveType).CorType;
@@ -971,7 +971,7 @@ namespace Debugger.MetaData
 			DateTime startTime = Util.HighPrecisionTimer.Now;
 			
 			this.corType = corType;
-			this.corElementType = (CorElementType)corType.Type;
+			this.corElementType = (CorElementType)corType.GetType();
 			
 			// Loading might access the type again
 			loadedTypes[corType] = this;
@@ -982,7 +982,7 @@ namespace Debugger.MetaData
 			    corElementType == CorElementType.PTR ||
 			    corElementType == CorElementType.BYREF)
 			{
-				this.elementType = CreateFromCorType(appDomain, corType.FirstTypeParameter);
+				this.elementType = CreateFromCorType(appDomain, corType.GetFirstTypeParameter());
 				this.module = appDomain.Mscorlib;
 				this.classProps = new TypeDefProps();
 				// Get names
@@ -1001,12 +1001,12 @@ namespace Debugger.MetaData
 			    corElementType == CorElementType.VALUETYPE)
 			{
 				// Get generic arguments
-				foreach(ICorDebugType t in corType.EnumerateTypeParameters().Enumerator) {
+				foreach(ICorDebugType t in corType.EnumerateTypeParameters().GetEnumerator()) {
 					genericArguments.Add(DebugType.CreateFromCorType(appDomain, t));
 				}
 				// Get class props
-				this.module = appDomain.Process.Modules[corType.Class.Module];
-				this.classProps = module.MetaData.GetTypeDefProps(corType.Class.Token);
+				this.module = appDomain.Process.Modules[corType.GetClass().GetModule()];
+				this.classProps = module.MetaData.GetTypeDefProps(corType.GetClass().GetToken());
 				// Get the enclosing class
 				if (classProps.IsNested) {
 					uint enclosingTk = module.MetaData.GetNestedClassProps((uint)this.MetadataToken).EnclosingClass;

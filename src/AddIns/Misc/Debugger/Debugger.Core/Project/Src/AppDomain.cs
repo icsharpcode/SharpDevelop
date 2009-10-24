@@ -23,7 +23,7 @@ namespace Debugger
 		
 		public uint ID {
 			get {
-				return corAppDomain.ID;
+				return corAppDomain.GetID();
 			}
 		}
 		

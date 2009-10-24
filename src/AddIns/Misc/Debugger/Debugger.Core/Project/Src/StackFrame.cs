@@ -88,15 +88,15 @@ namespace Debugger
 		{
 			this.process = thread.Process;
 			this.thread = thread;
-			this.appDomain = process.AppDomains[corILFrame.Function.Class.Module.Assembly.AppDomain];
+			this.appDomain = process.AppDomains[corILFrame.GetFunction().GetClass().GetModule().GetAssembly().GetAppDomain()];
 			this.corILFrame = corILFrame;
 			this.corILFramePauseSession = process.PauseSession;
-			this.corFunction = corILFrame.Function;
+			this.corFunction = corILFrame.GetFunction();
 			this.chainIndex = chainIndex;
 			this.frameIndex = frameIndex;
 			
-			MetaDataImport metaData = thread.Process.Modules[corFunction.Class.Module].MetaData;
-			int methodGenArgs = metaData.GetGenericParamCount(corFunction.Token);
+			MetaDataImport metaData = thread.Process.Modules[corFunction.GetClass().GetModule()].MetaData;
+			int methodGenArgs = metaData.GetGenericParamCount(corFunction.GetToken());
 			// Class parameters are first, then the method ones
 			List<ICorDebugType> corGenArgs = corILFrame.CastTo<ICorDebugILFrame2>().EnumerateTypeParameters().ToList();
 			// Remove method parametrs at the end
@@ -109,10 +109,10 @@ namespace Debugger
 			DebugType debugType = DebugType.CreateFromCorClass(
 				this.AppDomain,
 				null,
-				corFunction.Class,
+				corFunction.GetClass(),
 				genArgs.ToArray()
 			);
-			this.methodInfo = (DebugMethodInfo)debugType.GetMember(corFunction.Token);
+			this.methodInfo = (DebugMethodInfo)debugType.GetMember(corFunction.GetToken());
 		}
 		
 		/// <summary> Returns diagnostic description of the frame </summary>
@@ -137,7 +137,8 @@ namespace Debugger
 		internal uint CorInstructionPtr {
 			get {
 				uint corInstructionPtr;
-				CorILFrame.GetIP(out corInstructionPtr);
+				CorDebugMappingResult mappingResult;
+				CorILFrame.GetIP(out corInstructionPtr, out mappingResult);
 				return corInstructionPtr;
 			}
 		}
@@ -251,7 +252,7 @@ namespace Debugger
 			
 			SourcecodeSegment segment = SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, filename, null, line, column);
 			
-			if (segment != null && segment.CorFunction.Token == this.MethodInfo.MetadataToken) {
+			if (segment != null && segment.CorFunction.GetToken() == this.MethodInfo.MetadataToken) {
 				try {
 					if (simulate) {
 						CorILFrame.CanSetIP((uint)segment.ILStart);
@@ -292,7 +293,7 @@ namespace Debugger
 				throw;
 			}
 			// This can be 'by ref' for value types
-			if (corValue.Type == (uint)CorElementType.BYREF) {
+			if (corValue.GetType() == (uint)CorElementType.BYREF) {
 				corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
 			}
 			return corValue;
@@ -302,7 +303,7 @@ namespace Debugger
 		public int ArgumentCount {
 			get {
 				ICorDebugValueEnum argumentEnum = CorILFrame.EnumerateArguments();
-				uint argCount = argumentEnum.Count;
+				uint argCount = argumentEnum.GetCount();
 				if (!this.MethodInfo.IsStatic) {
 					argCount--; // Remove 'this' from count
 				}
@@ -340,7 +341,7 @@ namespace Debugger
 				throw;
 			}
 			// Method arguments can be passed 'by ref'
-			if (corValue.Type == (uint)CorElementType.BYREF) {
+			if (corValue.GetType() == (uint)CorElementType.BYREF) {
 				try {
 					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
 				} catch (COMException e) {
