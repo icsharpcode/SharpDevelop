@@ -7,7 +7,7 @@
 
 using System;
 using Debugger.MetaData;
-using Debugger.Wrappers.CorDebug;
+using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {

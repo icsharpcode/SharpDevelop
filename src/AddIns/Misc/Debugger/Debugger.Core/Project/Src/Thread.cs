@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
-using Debugger.Wrappers.CorDebug;
+using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {

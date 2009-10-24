@@ -13,10 +13,10 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using Debugger.Interop.MetaData;
-using Debugger.Wrappers.CorDebug;
-using Debugger.Wrappers.CorSym;
+using Debugger.Interop.CorDebug;
+using Debugger.Interop.CorSym;
 
-namespace Debugger.Wrappers.MetaData
+namespace Debugger.Interop.MetaData
 {
 	/// <summary>Wrapper for the unmanaged metadata API.</summary>
 	/// <remarks>http://msdn.microsoft.com/en-us/library/ms230172.aspx</remarks>
@@ -41,7 +41,7 @@ namespace Debugger.Wrappers.MetaData
 			}
 		}
 		
-		public ISymUnmanagedReader GetSymReader(Debugger.Wrappers.CorDebug.IStream stream)
+		public ISymUnmanagedReader GetSymReader(Debugger.Interop.CorDebug.IStream stream)
 		{
 			try {
 				ISymUnmanagedBinder symBinder = new ISymUnmanagedBinder(new Debugger.Interop.CorSym.CorSymBinder_SxSClass());

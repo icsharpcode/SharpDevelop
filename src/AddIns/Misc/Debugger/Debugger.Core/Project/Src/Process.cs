@@ -8,7 +8,7 @@
 using Debugger.Internal;
 using System;
 using System.Collections.Generic;
-using Debugger.Wrappers.CorDebug;
+using Debugger.Interop.CorDebug;
 using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger
@@ -119,6 +119,11 @@ namespace Debugger
 				workingDirectory = System.IO.Path.GetDirectoryName(filename);
 			}
 			
+			_SECURITY_ATTRIBUTES secAttr = new _SECURITY_ATTRIBUTES();
+			secAttr.bInheritHandle = 0;
+			secAttr.lpSecurityDescriptor = IntPtr.Zero;
+			secAttr.nLength = (uint)sizeof(_SECURITY_ATTRIBUTES);
+			
 			fixed (uint* pprocessStartupInfo = processStartupInfo)
 				fixed (uint* pprocessInfo = processInfo)
 					outProcess =
@@ -126,8 +131,8 @@ namespace Debugger
 							filename,   // lpApplicationName
 							  // If we do not prepend " ", the first argument migh just get lost
 							" " + arguments,                       // lpCommandLine
-							ref _SECURITY_ATTRIBUTES.Default,                       // lpProcessAttributes
-							ref _SECURITY_ATTRIBUTES.Default,                      // lpThreadAttributes
+							ref secAttr,                       // lpProcessAttributes
+							ref secAttr,                      // lpThreadAttributes
 							1,//TRUE                    // bInheritHandles
 							0x00000010 /*CREATE_NEW_CONSOLE*/,    // dwCreationFlags
 							IntPtr.Zero,                       // lpEnvironment

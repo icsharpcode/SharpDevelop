@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using Debugger.Wrappers.CorDebug;
+using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {

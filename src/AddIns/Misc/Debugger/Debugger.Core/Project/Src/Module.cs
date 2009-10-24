@@ -8,9 +8,9 @@
 using System;
 using System.Collections.Generic;
 using Debugger.MetaData;
-using Debugger.Wrappers.CorDebug;
-using Debugger.Wrappers.CorSym;
-using Debugger.Wrappers.MetaData;
+using Debugger.Interop.CorDebug;
+using Debugger.Interop.CorSym;
+using Debugger.Interop.MetaData;
 
 namespace Debugger
 {
@@ -198,7 +198,7 @@ namespace Debugger
 			}
 		}
 		
-		public void UpdateSymbolsFromStream(Debugger.Wrappers.CorDebug.IStream pSymbolStream)
+		public void UpdateSymbolsFromStream(Debugger.Interop.CorDebug.IStream pSymbolStream)
 		{
 			if (symReader != null) {
 				symReader.As<ISymUnmanagedDispose>().Destroy();

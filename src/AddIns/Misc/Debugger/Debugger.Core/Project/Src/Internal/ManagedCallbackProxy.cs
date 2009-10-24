@@ -7,7 +7,7 @@
 
 using System;
 using System.Windows.Forms;
-using Debugger.Wrappers.CorDebug;
+using Debugger.Interop.CorDebug;
 using CorDebugStepReason = Debugger.Interop.CorDebug.CorDebugStepReason;
 using CorDebugExceptionCallbackType = Debugger.Interop.CorDebug.CorDebugExceptionCallbackType;
 using CorDebugExceptionUnwindCallbackType = Debugger.Interop.CorDebug.CorDebugExceptionUnwindCallbackType;
@@ -25,7 +25,7 @@ namespace Debugger.Internal
 	/// <summary>
 	/// This proxy marshals the callback to the appropriate thread
 	/// </summary>
-	class ManagedCallbackProxy : ICorDebugManagedCallbacks
+	class ManagedCallbackProxy : ICorDebugManagedCallback, ICorDebugManagedCallback2
 	{
 		NDebugger debugger;
 		ManagedCallbackSwitch callbackSwitch;

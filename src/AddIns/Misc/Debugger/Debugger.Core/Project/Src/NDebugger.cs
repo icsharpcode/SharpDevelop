@@ -11,7 +11,7 @@ using System.Threading;
 
 using Debugger.Internal;
 using Debugger.Interop;
-using Debugger.Wrappers.CorDebug;
+using Debugger.Interop.CorDebug;
 using Microsoft.Win32;
 
 namespace Debugger

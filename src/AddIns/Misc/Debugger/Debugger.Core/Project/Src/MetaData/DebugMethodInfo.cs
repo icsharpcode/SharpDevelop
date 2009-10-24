@@ -12,9 +12,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
-using Debugger.Wrappers.CorDebug;
-using Debugger.Wrappers.CorSym;
-using Debugger.Wrappers.MetaData;
+using Debugger.Interop.CorDebug;
+using Debugger.Interop.CorSym;
+using Debugger.Interop.MetaData;
 using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData

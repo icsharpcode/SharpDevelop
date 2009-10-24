@@ -10,7 +10,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Debugger.Wrappers
+namespace Debugger.Interop
 {
 	public delegate void UnmanagedStringGetter(uint pStringLength, out uint stringLength, System.IntPtr pString);
 	

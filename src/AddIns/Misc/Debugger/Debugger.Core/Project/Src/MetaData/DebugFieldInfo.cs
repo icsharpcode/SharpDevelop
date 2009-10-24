@@ -9,7 +9,7 @@ using System;
 using System.Globalization;
 using System.Reflection;
 
-using Debugger.Wrappers.MetaData;
+using Debugger.Interop.MetaData;
 using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
