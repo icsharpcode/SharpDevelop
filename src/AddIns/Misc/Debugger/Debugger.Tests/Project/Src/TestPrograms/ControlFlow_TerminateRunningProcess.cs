@@ -8,7 +8,7 @@
 using System;
 using System.Threading;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class ControlFlow_TerminateRunningProcess
 	{
@@ -33,7 +33,7 @@ namespace Debugger.Tests {
 		public void ControlFlow_TerminateRunningProcess()
 		{
 			for(int i = 0; i < 2; i++) {
-				StartTest("ControlFlow_TerminateRunningProcess.cs");
+				StartTest();
 				process.SelectedStackFrame.StepOver();
 				process.Paused += delegate {
 					Assert.Fail("Should not have received any callbacks after Terminate");

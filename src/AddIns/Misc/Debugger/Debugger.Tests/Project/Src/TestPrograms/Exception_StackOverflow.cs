@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class Exception_StackOverflow
 	{
@@ -33,7 +33,7 @@ namespace Debugger.Tests {
 //		[NUnit.Framework.Test]
 //		public void Exception_StackOverflow()
 //		{
-//			StartTest("Exception_StackOverflow.cs");
+//			StartTest();
 //			
 //			process.Continue();
 //			//ObjectDump("LastStackFrame", process.SelectedThread.MostRecentStackFrame);

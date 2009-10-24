@@ -7,9 +7,9 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
-	public class ValueTest
+	public class Value_Tests
 	{
 		public static void Main()
 		{
@@ -33,9 +33,9 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		public void ValueTest()
+		public void Value_Tests()
 		{
-			StartTest("ValueTest.cs");
+			StartTest();
 			
 			PrintLocalVariables();
 			
@@ -53,11 +53,11 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="ValueTest.cs">
+    name="Value_Tests.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>ValueTest.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ValueTest.cs:26,4-26,40</DebuggingPaused>
+    <ModuleLoaded>Value_Tests.exe (Has symbols)</ModuleLoaded>
+    <DebuggingPaused>Break Value_Tests.cs:26,4-26,40</DebuggingPaused>
     <LocalVariables>
       <Item>
         <LocalVariable

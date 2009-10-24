@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class ControlFlow_NoBreak
 	{
@@ -25,7 +25,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ControlFlow_NoBreak()
 		{
-			StartTest("ControlFlow_NoBreak.cs", false);
+			StartTestNoWait();
 			
 			process.WaitForExit();
 			

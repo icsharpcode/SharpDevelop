@@ -8,9 +8,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
-	public class ExpressionEvaluator
+	public class ExpressionEvaluator_Tests
 	{
 		public class BaseClass
 		{
@@ -67,7 +67,7 @@ namespace Debugger.Tests.TestPrograms
 		
 		public static void Main()
 		{
-			new ExpressionEvaluator().Fun("function argument");
+			new ExpressionEvaluator_Tests().Fun("function argument");
 		}
 	
 		public void Fun(string arg)
@@ -96,13 +96,14 @@ namespace Debugger.Tests {
 	using System.Reflection;
 	using ICSharpCode.NRefactory;
 	using ICSharpCode.NRefactory.Ast;
+	using ICSharpCode.NRefactory.Visitors;
 	
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		public void ExpressionEvaluator()
+		public void ExpressionEvaluator_Tests()
 		{
-			StartTest("ExpressionEvaluator.cs");
+			StartTest();
 			
 			string input = @"
 				b
@@ -211,11 +212,11 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="ExpressionEvaluator.cs">
+    name="ExpressionEvaluator_Tests.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>ExpressionEvaluator.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator.cs:88,4-88,40</DebuggingPaused>
+    <ModuleLoaded>ExpressionEvaluator_Tests.exe (Has symbols)</ModuleLoaded>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:88,4-88,40</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -267,18 +268,18 @@ namespace Debugger.Tests {
     <Eval> flag = True </Eval>
     <Eval> !flag = False </Eval>
     <Eval> </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).name = "derived name" </Eval>
-    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticField = "derived static field" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).Name = "derived name" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).SetterOnlyProperty = Error evaluating "((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).SetterOnlyProperty": Property does not have a get method </Eval>
-    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticProperty = "static property" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass)myClass).name = "base name" </Eval>
-    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass.StaticField = "base static field" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass)myClass).Name = "base name" </Eval>
-    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticMethod() = "static method" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass)myClass).Foo((System.Int32)1) = "base Foo - int" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).Foo((System.Int32)1) = "derived Foo - int" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).Foo((System.String)"a") = "derived Foo - string" </Eval>
+    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).name = "derived name" </Eval>
+    <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.StaticField = "derived static field" </Eval>
+    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Name = "derived name" </Eval>
+    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).SetterOnlyProperty = Error evaluating "((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).SetterOnlyProperty": Property does not have a get method </Eval>
+    <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.StaticProperty = "static property" </Eval>
+    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass).name = "base name" </Eval>
+    <Eval> Debugger.Tests.ExpressionEvaluator_Tests.BaseClass.StaticField = "base static field" </Eval>
+    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass).Name = "base name" </Eval>
+    <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.StaticMethod() = "static method" </Eval>
+    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass).Foo((System.Int32)1) = "base Foo - int" </Eval>
+    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Foo((System.Int32)1) = "derived Foo - int" </Eval>
+    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Foo((System.String)"a") = "derived Foo - string" </Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>

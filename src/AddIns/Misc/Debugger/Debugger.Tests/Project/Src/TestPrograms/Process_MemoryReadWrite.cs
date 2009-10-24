@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class Process_MemoryReadWrite
 	{
@@ -28,7 +28,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Process_MemoryReadWrite()
 		{
-			StartTest("Process_MemoryReadWrite.cs");
+			StartTest();
 			
 			ulong addrHello = process.SelectedStackFrame.GetLocalVariableValue("hello").Address;
 			ulong addrWorld = process.SelectedStackFrame.GetLocalVariableValue("world").Address;

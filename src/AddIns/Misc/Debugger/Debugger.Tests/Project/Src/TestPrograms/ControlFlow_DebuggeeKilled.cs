@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class ControlFlow_DebuggeeKilled
 	{
@@ -27,7 +27,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ControlFlow_DebuggeeKilled()
 		{
-			StartTest("ControlFlow_DebuggeeKilled.cs");
+			StartTest();
 			
 			foreach(System.Diagnostics.Process p in System.Diagnostics.Process.GetProcesses()) {
 				if (p.ProcessName.StartsWith("ControlFlow_DebuggeeKilled"))

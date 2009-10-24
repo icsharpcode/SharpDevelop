@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	class MyException: System.Exception
 	{
@@ -37,7 +37,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Exception_Custom()
 		{
-			StartTest("Exception_Custom.cs");
+			StartTest();
 			process.Terminate();
 			EndTest();
 		}
@@ -53,7 +53,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Exception_Custom.exe (Has symbols)</ModuleLoaded>
-    <ExceptionThrown>Debugger.Tests.TestPrograms.MyException: test2 ---&gt; Debugger.Tests.TestPrograms.MyException: test1</ExceptionThrown>
+    <ExceptionThrown>Debugger.Tests.MyException: test2 ---&gt; Debugger.Tests.MyException: test1</ExceptionThrown>
     <DebuggingPaused>ExceptionIntercepted Exception_Custom.cs:27,5-27,39</DebuggingPaused>
     <ProcessExited />
   </Test>

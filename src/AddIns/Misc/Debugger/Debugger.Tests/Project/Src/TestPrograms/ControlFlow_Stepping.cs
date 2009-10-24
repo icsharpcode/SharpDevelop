@@ -8,7 +8,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class ControlFlow_Stepping
 	{
@@ -121,7 +121,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ControlFlow_Stepping()
 		{
-			StartTest("ControlFlow_Stepping.cs");
+			StartTest();
 			
 			SourcecodeSegment start = process.SelectedStackFrame.NextStatement;
 			

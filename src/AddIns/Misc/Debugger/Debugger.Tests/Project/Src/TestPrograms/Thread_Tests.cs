@@ -7,9 +7,9 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
-	public class Thread_Name
+	public class Thread_Tests
 	{
 		public static void Main()
 		{
@@ -26,10 +26,10 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		public void Thread_Name()
+		public void Thread_Tests()
 		{
 			debugger.Processes.Added += debugger_ProcessStarted;
-			StartTest("Thread_Name.cs");
+			StartTest();
 			debugger.Processes.Added -= debugger_ProcessStarted;
 			ObjectDump("Thread", process.SelectedThread);
 			process.Continue();
@@ -51,7 +51,7 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="Thread_Name.cs">
+    name="Thread_Tests.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ThreadStartedEvent>
@@ -66,36 +66,36 @@ namespace Debugger.Tests {
         Priority="Normal"
         RuntimeValue="null" />
     </ThreadStartedEvent>
-    <ModuleLoaded>Thread_Name.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Thread_Name.cs:17,4-17,40</DebuggingPaused>
+    <ModuleLoaded>Thread_Tests.exe (Has symbols)</ModuleLoaded>
+    <DebuggingPaused>Break Thread_Tests.cs:17,4-17,40</DebuggingPaused>
     <Thread>
       <Thread
         CurrentExceptionType="0"
-        GetCallstack="{static void Debugger.Tests.TestPrograms.Thread_Name.Main()}"
+        GetCallstack="{static void Debugger.Tests.Thread_Tests.Main()}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="static void Debugger.Tests.TestPrograms.Thread_Name.Main()"
-        MostRecentStackFrameWithLoadedSymbols="static void Debugger.Tests.TestPrograms.Thread_Name.Main()"
+        MostRecentStackFrame="static void Debugger.Tests.Thread_Tests.Main()"
+        MostRecentStackFrameWithLoadedSymbols="static void Debugger.Tests.Thread_Tests.Main()"
         Name=""
-        OldestStackFrame="static void Debugger.Tests.TestPrograms.Thread_Name.Main()"
+        OldestStackFrame="static void Debugger.Tests.Thread_Tests.Main()"
         Priority="AboveNormal"
         RuntimeValue="{System.Threading.Thread}"
-        SelectedStackFrame="static void Debugger.Tests.TestPrograms.Thread_Name.Main()" />
+        SelectedStackFrame="static void Debugger.Tests.Thread_Tests.Main()" />
     </Thread>
-    <DebuggingPaused>Break Thread_Name.cs:19,4-19,40</DebuggingPaused>
+    <DebuggingPaused>Break Thread_Tests.cs:19,4-19,40</DebuggingPaused>
     <Thread>
       <Thread
         CurrentExceptionType="0"
-        GetCallstack="{static void Debugger.Tests.TestPrograms.Thread_Name.Main()}"
+        GetCallstack="{static void Debugger.Tests.Thread_Tests.Main()}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="static void Debugger.Tests.TestPrograms.Thread_Name.Main()"
-        MostRecentStackFrameWithLoadedSymbols="static void Debugger.Tests.TestPrograms.Thread_Name.Main()"
+        MostRecentStackFrame="static void Debugger.Tests.Thread_Tests.Main()"
+        MostRecentStackFrameWithLoadedSymbols="static void Debugger.Tests.Thread_Tests.Main()"
         Name="ThreadName"
-        OldestStackFrame="static void Debugger.Tests.TestPrograms.Thread_Name.Main()"
+        OldestStackFrame="static void Debugger.Tests.Thread_Tests.Main()"
         Priority="AboveNormal"
         RuntimeValue="{System.Threading.Thread}"
-        SelectedStackFrame="static void Debugger.Tests.TestPrograms.Thread_Name.Main()" />
+        SelectedStackFrame="static void Debugger.Tests.Thread_Tests.Main()" />
     </Thread>
     <ThreadStartedEvent>
       <Thread

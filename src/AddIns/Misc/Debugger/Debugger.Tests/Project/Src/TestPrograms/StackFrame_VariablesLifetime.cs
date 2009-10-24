@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class StackFrame_VariablesLifetime
 	{
@@ -48,7 +48,7 @@ namespace Debugger.Tests {
 			Value localInSubFunction = null;
 			Value @class   = null;
 			
-			StartTest("StackFrame_VariablesLifetime.cs"); // 1 - Enter program
+			StartTest(); // 1 - Enter program
 			
 			argument = process.SelectedStackFrame.GetArgumentValue(0);
 			local = process.SelectedStackFrame.GetLocalVariableValue("local");

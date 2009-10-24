@@ -166,12 +166,19 @@ namespace Debugger.Tests
 			}
 		}
 		
-		protected void StartTest(string testName)
+		protected void StartTest()
 		{
+			string testName = Path.GetFileName(new System.Diagnostics.StackTrace(true).GetFrame(1).GetFileName());
 			StartTest(testName, true);
 		}
 		
-		protected void StartTest(string testName, bool wait)
+		protected void StartTestNoWait()
+		{
+			string testName = Path.GetFileName(new System.Diagnostics.StackTrace(true).GetFrame(1).GetFileName());
+			StartTest(testName, false);
+		}
+		
+		void StartTest(string testName, bool wait)
 		{
 			this.testName = testName;
 			string exeFilename = CompileTest(testName);

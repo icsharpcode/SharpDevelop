@@ -7,9 +7,9 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
-	public class Breakpoint
+	public class Breakpoint_Tests
 	{
 		public static void Main()
 		{
@@ -30,12 +30,12 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		public void Breakpoint()
+		public void Breakpoint_Tests()
 		{
-			Breakpoint breakpoint1 = debugger.Breakpoints.Add(@"Breakpoint.cs", 18);
-			Breakpoint breakpoint2 = debugger.Breakpoints.Add(@"Breakpoint.cs", 19);
+			Breakpoint breakpoint1 = debugger.Breakpoints.Add(@"Breakpoint_Tests.cs", 18);
+			Breakpoint breakpoint2 = debugger.Breakpoints.Add(@"Breakpoint_Tests.cs", 19);
 			
-			StartTest("Breakpoint.cs");
+			StartTest();
 			
 			Assert.IsTrue(breakpoint1.IsSet);
 			Assert.IsTrue(breakpoint2.IsSet);
@@ -60,50 +60,50 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="Breakpoint.cs">
+    name="Breakpoint_Tests.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>Breakpoint.exe (Has symbols)</ModuleLoaded>
+    <ModuleLoaded>Breakpoint_Tests.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Breakpoint.cs:16,4-16,40</DebuggingPaused>
+    <DebuggingPaused>Break Breakpoint_Tests.cs:16,4-16,40</DebuggingPaused>
     <Breakpoint1>
       <Breakpoint
         Enabled="True"
-        FileName="Breakpoint.cs"
+        FileName="Breakpoint_Tests.cs"
         IsSet="True"
         Line="18"
-        OriginalLocation="Breakpoint.cs:18,4-18,49" />
+        OriginalLocation="Breakpoint_Tests.cs:18,4-18,49" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
         Enabled="True"
-        FileName="Breakpoint.cs"
+        FileName="Breakpoint_Tests.cs"
         IsSet="True"
         Line="19"
-        OriginalLocation="Breakpoint.cs:20,4-20,49" />
+        OriginalLocation="Breakpoint_Tests.cs:20,4-20,49" />
     </Breakpoint2>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Main 1\r\n</LogMessage>
-    <DebuggingPaused>Breakpoint Breakpoint.cs:18,4-18,49</DebuggingPaused>
+    <DebuggingPaused>Breakpoint Breakpoint_Tests.cs:18,4-18,49</DebuggingPaused>
     <LogMessage>Main 2\r\n</LogMessage>
-    <DebuggingPaused>Breakpoint Breakpoint.cs:20,4-20,49</DebuggingPaused>
+    <DebuggingPaused>Breakpoint Breakpoint_Tests.cs:20,4-20,49</DebuggingPaused>
     <LogMessage>Main 3\r\n</LogMessage>
-    <DebuggingPaused>Break Breakpoint.cs:21,4-21,40</DebuggingPaused>
+    <DebuggingPaused>Break Breakpoint_Tests.cs:21,4-21,40</DebuggingPaused>
     <ProcessExited />
     <Breakpoint1>
       <Breakpoint
         Enabled="True"
-        FileName="Breakpoint.cs"
+        FileName="Breakpoint_Tests.cs"
         Line="18"
-        OriginalLocation="Breakpoint.cs:18,4-18,49" />
+        OriginalLocation="Breakpoint_Tests.cs:18,4-18,49" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
         Enabled="True"
-        FileName="Breakpoint.cs"
+        FileName="Breakpoint_Tests.cs"
         Line="19"
-        OriginalLocation="Breakpoint.cs:20,4-20,49" />
+        OriginalLocation="Breakpoint_Tests.cs:20,4-20,49" />
     </Breakpoint2>
   </Test>
 </DebuggerTests>

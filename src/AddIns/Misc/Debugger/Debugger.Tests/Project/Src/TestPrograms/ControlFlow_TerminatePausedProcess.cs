@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class ControlFlow_TerminatePausedProcess
 	{
@@ -25,10 +25,10 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void ControlFlow_TerminatePausedProcess()
 		{
-			StartTest("ControlFlow_TerminatePausedProcess.cs");
+			StartTest();
 			process.Terminate();
 			
-			StartTest("ControlFlow_TerminatePausedProcess.cs");
+			StartTest();
 			process.Terminate();
 			
 			CheckXmlOutput();

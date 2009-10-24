@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class StackFrame_SetIP
 	{
@@ -28,7 +28,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void StackFrame_SetIP()
 		{
-			StartTest("StackFrame_SetIP.cs");
+			StartTest();
 			
 			Assert.IsNotNull(process.SelectedStackFrame.CanSetIP("StackFrame_SetIP.cs", 16, 0));
 			Assert.IsNull(process.SelectedStackFrame.CanSetIP("StackFrame_SetIP.cs", 100, 0));

@@ -8,9 +8,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
-	public class DebugType
+	public class DebugType_Tests
 	{
 		public delegate int AddDelegate(byte b1, byte b2);
 		
@@ -175,19 +175,19 @@ namespace Debugger.Tests {
 		}
 		
 		[NUnit.Framework.Test]
-		public void DebugType()
+		public void DebugType_Tests()
 		{
 			ExpandProperties(
 				"LocalVariable.Type",
 				"DebugType.GetElementType"
 			);
-			StartTest("DebugType.cs");
+			StartTest();
 			
 			process.Options.StepOverSingleLineProperties = false;
 			process.Options.StepOverFieldAccessProperties = true;
 			
-			ObjectDump("DefinedTypes", process.Modules["DebugType.exe"].GetNamesOfDefinedTypes());
-			ObjectDump("DefinedTypes", process.Modules["DebugType.exe"].GetDefinedTypes());
+			ObjectDump("DefinedTypes", process.Modules["DebugType_Tests.exe"].GetNamesOfDefinedTypes());
+			ObjectDump("DefinedTypes", process.Modules["DebugType_Tests.exe"].GetDefinedTypes());
 			
 			ObjectDump("Access-Members", process.SelectedStackFrame.GetLocalVariableValue("access").Type.GetMembers());
 			ObjectDump("MyInterfaceImpl-Members", process.SelectedStackFrame.GetLocalVariableValue("myInterfaceImpl").Type.GetMembers());
@@ -205,15 +205,15 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="DebugType.cs">
+    name="DebugType_Tests.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>DebugType.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType.cs:124,4-124,40</DebuggingPaused>
+    <ModuleLoaded>DebugType_Tests.exe (Has symbols)</ModuleLoaded>
+    <DebuggingPaused>Break DebugType_Tests.cs:124,4-124,40</DebuggingPaused>
     <DefinedTypes
       Capacity="16"
       Count="11">
-      <Item>Debugger.Tests.TestPrograms.DebugType</Item>
+      <Item>Debugger.Tests.DebugType_Tests</Item>
       <Item>AddDelegate</Item>
       <Item>MyEnum</Item>
       <Item>MyClass</Item>
@@ -232,9 +232,9 @@ namespace Debugger.Tests {
         <DebugType
           Attributes="AutoLayout, AnsiClass, Class, Public, BeforeFieldInit"
           BaseType="System.Object"
-          FullName="Debugger.Tests.TestPrograms.DebugType"
-          GetMembers="{static System.Int32 Debugger.Tests.TestPrograms.DebugType.Add(Byte b1, Byte b2), static void Debugger.Tests.TestPrograms.DebugType.Main(), void Debugger.Tests.TestPrograms.DebugType..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-          GetMethods="{static System.Int32 Debugger.Tests.TestPrograms.DebugType.Add(Byte b1, Byte b2), static void Debugger.Tests.TestPrograms.DebugType.Main(), void Debugger.Tests.TestPrograms.DebugType..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          FullName="Debugger.Tests.DebugType_Tests"
+          GetMembers="{static System.Int32 Debugger.Tests.DebugType_Tests.Add(Byte b1, Byte b2), static void Debugger.Tests.DebugType_Tests.Main(), void Debugger.Tests.DebugType_Tests..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          GetMethods="{static System.Int32 Debugger.Tests.DebugType_Tests.Add(Byte b1, Byte b2), static void Debugger.Tests.DebugType_Tests.Main(), void Debugger.Tests.DebugType_Tests..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
           IsClass="True">
           <GetElementType>null</GetElementType>
         </DebugType>
@@ -243,9 +243,9 @@ namespace Debugger.Tests {
         <DebugType
           Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
           BaseType="System.MulticastDelegate"
-          FullName="Debugger.Tests.TestPrograms.DebugType+AddDelegate"
-          GetMembers="{void Debugger.Tests.TestPrograms.DebugType+AddDelegate..ctor(Object object, IntPtr method), System.Int32 Debugger.Tests.TestPrograms.DebugType+AddDelegate.Invoke(Byte b1, Byte b2), System.IAsyncResult Debugger.Tests.TestPrograms.DebugType+AddDelegate.BeginInvoke(Byte b1, Byte b2, AsyncCallback callback, Object object), System.Int32 Debugger.Tests.TestPrograms.DebugType+AddDelegate.EndInvoke(IAsyncResult result), void System.MulticastDelegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Boolean System.MulticastDelegate.Equals(Object obj), System.Delegate[] System.MulticastDelegate.GetInvocationList(), System.Int32 System.MulticastDelegate.GetHashCode(), System.Object System.Delegate.DynamicInvoke(Object[] args), System.Boolean System.Delegate.Equals(Object obj), System.Int32 System.Delegate.GetHashCode(), System.Delegate[] System.Delegate.GetInvocationList(), System.Reflection.MethodInfo System.Delegate.get_Method(), System.Object System.Delegate.get_Target(), System.Object System.Delegate.Clone(), void System.Delegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Reflection.MethodInfo Method, System.Object Target, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-          GetMethods="{void Debugger.Tests.TestPrograms.DebugType+AddDelegate..ctor(Object object, IntPtr method), System.Int32 Debugger.Tests.TestPrograms.DebugType+AddDelegate.Invoke(Byte b1, Byte b2), System.IAsyncResult Debugger.Tests.TestPrograms.DebugType+AddDelegate.BeginInvoke(Byte b1, Byte b2, AsyncCallback callback, Object object), System.Int32 Debugger.Tests.TestPrograms.DebugType+AddDelegate.EndInvoke(IAsyncResult result), void System.MulticastDelegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Boolean System.MulticastDelegate.Equals(Object obj), System.Delegate[] System.MulticastDelegate.GetInvocationList(), System.Int32 System.MulticastDelegate.GetHashCode(), System.Object System.Delegate.DynamicInvoke(Object[] args), System.Boolean System.Delegate.Equals(Object obj), System.Int32 System.Delegate.GetHashCode(), System.Delegate[] System.Delegate.GetInvocationList(), System.Reflection.MethodInfo System.Delegate.get_Method(), System.Object System.Delegate.get_Target(), System.Object System.Delegate.Clone(), void System.Delegate.GetObjectData(SerializationInfo info, StreamingContext context), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          FullName="Debugger.Tests.DebugType_Tests+AddDelegate"
+          GetMembers="{void Debugger.Tests.DebugType_Tests+AddDelegate..ctor(Object object, IntPtr method), System.Int32 Debugger.Tests.DebugType_Tests+AddDelegate.Invoke(Byte b1, Byte b2), System.IAsyncResult Debugger.Tests.DebugType_Tests+AddDelegate.BeginInvoke(Byte b1, Byte b2, AsyncCallback callback, Object object), System.Int32 Debugger.Tests.DebugType_Tests+AddDelegate.EndInvoke(IAsyncResult result), void System.MulticastDelegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Boolean System.MulticastDelegate.Equals(Object obj), System.Delegate[] System.MulticastDelegate.GetInvocationList(), System.Int32 System.MulticastDelegate.GetHashCode(), System.Object System.Delegate.DynamicInvoke(Object[] args), System.Boolean System.Delegate.Equals(Object obj), System.Int32 System.Delegate.GetHashCode(), System.Delegate[] System.Delegate.GetInvocationList(), System.Reflection.MethodInfo System.Delegate.get_Method(), System.Object System.Delegate.get_Target(), System.Object System.Delegate.Clone(), void System.Delegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Reflection.MethodInfo Method, System.Object Target, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          GetMethods="{void Debugger.Tests.DebugType_Tests+AddDelegate..ctor(Object object, IntPtr method), System.Int32 Debugger.Tests.DebugType_Tests+AddDelegate.Invoke(Byte b1, Byte b2), System.IAsyncResult Debugger.Tests.DebugType_Tests+AddDelegate.BeginInvoke(Byte b1, Byte b2, AsyncCallback callback, Object object), System.Int32 Debugger.Tests.DebugType_Tests+AddDelegate.EndInvoke(IAsyncResult result), void System.MulticastDelegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Boolean System.MulticastDelegate.Equals(Object obj), System.Delegate[] System.MulticastDelegate.GetInvocationList(), System.Int32 System.MulticastDelegate.GetHashCode(), System.Object System.Delegate.DynamicInvoke(Object[] args), System.Boolean System.Delegate.Equals(Object obj), System.Int32 System.Delegate.GetHashCode(), System.Delegate[] System.Delegate.GetInvocationList(), System.Reflection.MethodInfo System.Delegate.get_Method(), System.Object System.Delegate.get_Target(), System.Object System.Delegate.Clone(), void System.Delegate.GetObjectData(SerializationInfo info, StreamingContext context), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
           GetProperties="{System.Reflection.MethodInfo Method, System.Object Target}"
           IsClass="True"
           IsNested="True">
@@ -256,7 +256,7 @@ namespace Debugger.Tests {
         <DebugType
           Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
           BaseType="System.Enum"
-          FullName="Debugger.Tests.TestPrograms.DebugType+MyEnum"
+          FullName="Debugger.Tests.DebugType_Tests+MyEnum"
           GetEnumUnderlyingType="System.Byte"
           GetFields="{System.Byte value__}"
           GetMembers="{System.Byte value__, System.Boolean System.Enum.Equals(Object obj), System.Int32 System.Enum.GetHashCode(), System.String System.Enum.ToString(), System.String System.Enum.ToString(String format, IFormatProvider provider), System.String System.Enum.ToString(String format), System.String System.Enum.ToString(IFormatProvider provider), System.Int32 System.Enum.CompareTo(Object target), System.TypeCode System.Enum.GetTypeCode(), System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
@@ -271,9 +271,9 @@ namespace Debugger.Tests {
         <DebugType
           Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
           BaseType="System.Object"
-          FullName="Debugger.Tests.TestPrograms.DebugType+MyClass"
-          GetMembers="{void Debugger.Tests.TestPrograms.DebugType+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-          GetMethods="{void Debugger.Tests.TestPrograms.DebugType+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          FullName="Debugger.Tests.DebugType_Tests+MyClass"
+          GetMembers="{void Debugger.Tests.DebugType_Tests+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          GetMethods="{void Debugger.Tests.DebugType_Tests+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
           IsClass="True"
           IsNested="True">
           <GetElementType>null</GetElementType>
@@ -283,7 +283,7 @@ namespace Debugger.Tests {
         <DebugType
           Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
           BaseType="System.ValueType"
-          FullName="Debugger.Tests.TestPrograms.DebugType+MyStruct"
+          FullName="Debugger.Tests.DebugType_Tests+MyStruct"
           GetMembers="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
           GetMethods="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
           IsNested="True"
@@ -295,10 +295,10 @@ namespace Debugger.Tests {
         <DebugType
           Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
           BaseType="System.Object"
-          FullName="Debugger.Tests.TestPrograms.DebugType+Access"
+          FullName="Debugger.Tests.DebugType_Tests+Access"
           GetFields="{System.Int32 publicField}"
-          GetMembers="{System.Int32 publicField, System.Int32 Debugger.Tests.TestPrograms.DebugType+Access.get_publicProperty(), void Debugger.Tests.TestPrograms.DebugType+Access.publicMethod(), void Debugger.Tests.TestPrograms.DebugType+Access..ctor(), System.Int32 publicProperty, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-          GetMethods="{System.Int32 Debugger.Tests.TestPrograms.DebugType+Access.get_publicProperty(), void Debugger.Tests.TestPrograms.DebugType+Access.publicMethod(), void Debugger.Tests.TestPrograms.DebugType+Access..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          GetMembers="{System.Int32 publicField, System.Int32 Debugger.Tests.DebugType_Tests+Access.get_publicProperty(), void Debugger.Tests.DebugType_Tests+Access.publicMethod(), void Debugger.Tests.DebugType_Tests+Access..ctor(), System.Int32 publicProperty, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          GetMethods="{System.Int32 Debugger.Tests.DebugType_Tests+Access.get_publicProperty(), void Debugger.Tests.DebugType_Tests+Access.publicMethod(), void Debugger.Tests.DebugType_Tests+Access..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
           GetProperties="{System.Int32 publicProperty}"
           IsClass="True"
           IsNested="True">
@@ -310,38 +310,38 @@ namespace Debugger.Tests {
       <Item>
         <DebugFieldInfo
           Attributes="Public"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+Access"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Access"
           FieldType="System.Int32"
           Name="publicField" />
       </Item>
       <Item>
         <DebugMethodInfo
           Attributes="PrivateScope, Public, HideBySig, SpecialName"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+Access"
-          FullName="Debugger.Tests.TestPrograms.DebugType+Access.get_publicProperty()"
-          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType+Access this}"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Access"
+          FullName="Debugger.Tests.DebugType_Tests+Access.get_publicProperty()"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+Access this}"
           Name="get_publicProperty"
           ReturnType="System.Int32" />
       </Item>
       <Item>
         <DebugMethodInfo
           Attributes="PrivateScope, Public, HideBySig"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+Access"
-          FullName="Debugger.Tests.TestPrograms.DebugType+Access.publicMethod()"
-          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType+Access this}"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Access"
+          FullName="Debugger.Tests.DebugType_Tests+Access.publicMethod()"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+Access this}"
           Name="publicMethod" />
       </Item>
       <Item>
         <DebugMethodInfo
           Attributes="PrivateScope, Public, HideBySig, SpecialName, RTSpecialName"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+Access"
-          FullName="Debugger.Tests.TestPrograms.DebugType+Access..ctor()"
-          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType+Access this}"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Access"
+          FullName="Debugger.Tests.DebugType_Tests+Access..ctor()"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+Access this}"
           Name=".ctor" />
       </Item>
       <Item>
         <DebugPropertyInfo
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+Access"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Access"
           Name="publicProperty"
           PropertyType="System.Int32" />
       </Item>
@@ -394,62 +394,62 @@ namespace Debugger.Tests {
       <Item>
         <DebugFieldInfo
           Attributes="Public"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
+          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
           FieldType="System.Void*"
           Name="voidPtr" />
       </Item>
       <Item>
         <DebugMethodInfo
           Attributes="PrivateScope, Public, HideBySig, SpecialName"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
-          FullName="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].get_Prop()"
-          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32] this}"
+          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
+          FullName="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].get_Prop()"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32] this}"
           Name="get_Prop"
           ReturnType="System.Collections.Generic.List`1[System.Int32]" />
       </Item>
       <Item>
         <DebugMethodInfo
           Attributes="PrivateScope, Public, HideBySig, SpecialName"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
-          FullName="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].set_SetterOnlyProp(Char value)"
-          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32] this}"
+          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
+          FullName="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].set_SetterOnlyProp(Char value)"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32] this}"
           Name="set_SetterOnlyProp" />
       </Item>
       <Item>
         <DebugMethodInfo
           Attributes="PrivateScope, Public, Final, Virtual, HideBySig, VtableLayoutMask"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
-          FullName="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m)"
-          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32] this}"
+          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
+          FullName="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m)"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32] this}"
           Name="Fun"
           ReturnType="System.Int32" />
       </Item>
       <Item>
         <DebugMethodInfo
           Attributes="PrivateScope, Public, HideBySig"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
-          FullName="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum)"
-          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32] this}"
+          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
+          FullName="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum)"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32] this}"
           Name="Fun2"
           ReturnType="System.Object[]" />
       </Item>
       <Item>
         <DebugMethodInfo
           Attributes="PrivateScope, Public, HideBySig, SpecialName, RTSpecialName"
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
-          FullName="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]..ctor()"
+          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
+          FullName="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]..ctor()"
           Name=".ctor"
           StepOver="True" />
       </Item>
       <Item>
         <DebugPropertyInfo
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
+          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
           Name="Prop"
           PropertyType="System.Collections.Generic.List`1[System.Int32]" />
       </Item>
       <Item>
         <DebugPropertyInfo
-          DeclaringType="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
+          DeclaringType="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
           Name="SetterOnlyProp"
           PropertyType="System.Char" />
       </Item>
@@ -541,15 +541,15 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="nullMyClass"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyClass"
+          Type="Debugger.Tests.DebugType_Tests+MyClass"
           Value="null">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyClass"
-              GetMembers="{void Debugger.Tests.TestPrograms.DebugType+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetMethods="{void Debugger.Tests.TestPrograms.DebugType+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              FullName="Debugger.Tests.DebugType_Tests+MyClass"
+              GetMembers="{void Debugger.Tests.DebugType_Tests+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{void Debugger.Tests.DebugType_Tests+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               IsClass="True"
               IsNested="True">
               <GetElementType>null</GetElementType>
@@ -661,15 +661,15 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myClass"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyClass"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyClass}">
+          Type="Debugger.Tests.DebugType_Tests+MyClass"
+          Value="{Debugger.Tests.DebugType_Tests+MyClass}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyClass"
-              GetMembers="{void Debugger.Tests.TestPrograms.DebugType+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetMethods="{void Debugger.Tests.TestPrograms.DebugType+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              FullName="Debugger.Tests.DebugType_Tests+MyClass"
+              GetMembers="{void Debugger.Tests.DebugType_Tests+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{void Debugger.Tests.DebugType_Tests+MyClass..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               IsClass="True"
               IsNested="True">
               <GetElementType>null</GetElementType>
@@ -680,13 +680,13 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myStruct"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyStruct"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyStruct}">
+          Type="Debugger.Tests.DebugType_Tests+MyStruct"
+          Value="{Debugger.Tests.DebugType_Tests+MyStruct}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyStruct"
+              FullName="Debugger.Tests.DebugType_Tests+MyStruct"
               GetMembers="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               GetMethods="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               IsNested="True"
@@ -852,13 +852,13 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myStructPtr"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyStruct*"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyStruct*}">
+          Type="Debugger.Tests.DebugType_Tests+MyStruct*"
+          Value="{Debugger.Tests.DebugType_Tests+MyStruct*}">
           <Type>
             <DebugType
               Attributes="NotPublic"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyStruct*"
-              GetElementType="Debugger.Tests.TestPrograms.DebugType+MyStruct"
+              FullName="Debugger.Tests.DebugType_Tests+MyStruct*"
+              GetElementType="Debugger.Tests.DebugType_Tests+MyStruct"
               HasElementType="True"
               IsClass="True"
               IsCompilerGenerated="True"
@@ -867,7 +867,7 @@ namespace Debugger.Tests {
                 <DebugType
                   Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
                   BaseType="System.ValueType"
-                  FullName="Debugger.Tests.TestPrograms.DebugType+MyStruct"
+                  FullName="Debugger.Tests.DebugType_Tests+MyStruct"
                   GetMembers="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
                   GetMethods="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
                   IsNested="True"
@@ -1017,16 +1017,16 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenClass_int"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32]"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32]}">
+          Type="Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32]"
+          Value="{Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32]}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32]"
+              FullName="Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32]"
               GetGenericArguments="{System.Int32}"
-              GetMembers="{void Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetMethods="{void Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMembers="{void Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{void Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               IsClass="True"
               IsGenericType="True"
               IsNested="True">
@@ -1038,15 +1038,15 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="array_MyGenClass_int"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32][]"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32][]}">
+          Type="Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32][]"
+          Value="{Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32][]}">
           <Type>
             <DebugType
               Attributes="NotPublic"
               BaseType="System.Array"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32][]"
+              FullName="Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32][]"
               GetArrayRank="1"
-              GetElementType="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32]"
+              GetElementType="Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32]"
               GetMembers="{System.Object System.Array.GetValue(Int32[] indices), System.Object System.Array.GetValue(Int32 index), System.Object System.Array.GetValue(Int32 index1, Int32 index2), System.Object System.Array.GetValue(Int32 index1, Int32 index2, Int32 index3), System.Object System.Array.GetValue(Int64 index), System.Object System.Array.GetValue(Int64 index1, Int64 index2), System.Object System.Array.GetValue(Int64 index1, Int64 index2, Int64 index3), System.Object System.Array.GetValue(Int64[] indices), void System.Array.SetValue(Object value, Int32 index), void System.Array.SetValue(Object value, Int32 index1, Int32 index2), void System.Array.SetValue(Object value, Int32 index1, Int32 index2, Int32 index3), void System.Array.SetValue(Object value, Int32[] indices), void System.Array.SetValue(Object value, Int64 index), void System.Array.SetValue(Object value, Int64 index1, Int64 index2), void System.Array.SetValue(Object value, Int64 index1, Int64 index2, Int64 index3), void System.Array.SetValue(Object value, Int64[] indices), System.Int32 System.Array.get_Length(), System.Int64 System.Array.get_LongLength(), System.Int32 System.Array.GetLength(Int32 dimension), System.Int64 System.Array.GetLongLength(Int32 dimension), System.Int32 System.Array.get_Rank(), System.Int32 System.Array.GetUpperBound(Int32 dimension), System.Int32 System.Array.GetLowerBound(Int32 dimension), System.Object System.Array.get_SyncRoot(), System.Boolean System.Array.get_IsReadOnly(), System.Boolean System.Array.get_IsFixedSize(), System.Boolean System.Array.get_IsSynchronized(), System.Object System.Array.Clone(), System.Int32 System.Array.CompareTo(Object other, IComparer comparer), System.Boolean System.Array.Equals(Object other, IEqualityComparer comparer), System.Int32 System.Array.GetHashCode(IEqualityComparer comparer), void System.Array.CopyTo(Array array, Int32 index), void System.Array.CopyTo(Array array, Int64 index), System.Collections.IEnumerator System.Array.GetEnumerator(), void System.Array.Initialize(), System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               GetMethods="{System.Object System.Array.GetValue(Int32[] indices), System.Object System.Array.GetValue(Int32 index), System.Object System.Array.GetValue(Int32 index1, Int32 index2), System.Object System.Array.GetValue(Int32 index1, Int32 index2, Int32 index3), System.Object System.Array.GetValue(Int64 index), System.Object System.Array.GetValue(Int64 index1, Int64 index2), System.Object System.Array.GetValue(Int64 index1, Int64 index2, Int64 index3), System.Object System.Array.GetValue(Int64[] indices), void System.Array.SetValue(Object value, Int32 index), void System.Array.SetValue(Object value, Int32 index1, Int32 index2), void System.Array.SetValue(Object value, Int32 index1, Int32 index2, Int32 index3), void System.Array.SetValue(Object value, Int32[] indices), void System.Array.SetValue(Object value, Int64 index), void System.Array.SetValue(Object value, Int64 index1, Int64 index2), void System.Array.SetValue(Object value, Int64 index1, Int64 index2, Int64 index3), void System.Array.SetValue(Object value, Int64[] indices), System.Int32 System.Array.get_Length(), System.Int64 System.Array.get_LongLength(), System.Int32 System.Array.GetLength(Int32 dimension), System.Int64 System.Array.GetLongLength(Int32 dimension), System.Int32 System.Array.get_Rank(), System.Int32 System.Array.GetUpperBound(Int32 dimension), System.Int32 System.Array.GetLowerBound(Int32 dimension), System.Object System.Array.get_SyncRoot(), System.Boolean System.Array.get_IsReadOnly(), System.Boolean System.Array.get_IsFixedSize(), System.Boolean System.Array.get_IsSynchronized(), System.Object System.Array.Clone(), System.Int32 System.Array.CompareTo(Object other, IComparer comparer), System.Boolean System.Array.Equals(Object other, IEqualityComparer comparer), System.Int32 System.Array.GetHashCode(IEqualityComparer comparer), void System.Array.CopyTo(Array array, Int32 index), void System.Array.CopyTo(Array array, Int64 index), System.Collections.IEnumerator System.Array.GetEnumerator(), void System.Array.Initialize(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               GetProperties="{System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized}"
@@ -1058,10 +1058,10 @@ namespace Debugger.Tests {
                 <DebugType
                   Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
                   BaseType="System.Object"
-                  FullName="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32]"
+                  FullName="Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32]"
                   GetGenericArguments="{System.Int32}"
-                  GetMembers="{void Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-                  GetMethods="{void Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+                  GetMembers="{void Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+                  GetMethods="{void Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
                   IsClass="True"
                   IsGenericType="True"
                   IsNested="True">
@@ -1075,16 +1075,16 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenClass_Nullable_int"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Nullable`1[System.Int32]]"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Nullable`1[System.Int32]]}">
+          Type="Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Nullable`1[System.Int32]]"
+          Value="{Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Nullable`1[System.Int32]]}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Nullable`1[System.Int32]]"
+              FullName="Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Nullable`1[System.Int32]]"
               GetGenericArguments="{System.Nullable`1[System.Int32]}"
-              GetMembers="{void Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Nullable`1[System.Int32]]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetMethods="{void Debugger.Tests.TestPrograms.DebugType+MyGenClass`1[System.Nullable`1[System.Int32]]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMembers="{void Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Nullable`1[System.Int32]]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{void Debugger.Tests.DebugType_Tests+MyGenClass`1[System.Nullable`1[System.Int32]]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               IsClass="True"
               IsGenericType="True"
               IsNested="True">
@@ -1096,13 +1096,13 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myNestedStruct"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1+MyNestedStruct[System.Int32]"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyGenClass`1+MyNestedStruct[System.Int32]}">
+          Type="Debugger.Tests.DebugType_Tests+MyGenClass`1+MyNestedStruct[System.Int32]"
+          Value="{Debugger.Tests.DebugType_Tests+MyGenClass`1+MyNestedStruct[System.Int32]}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1+MyNestedStruct[System.Int32]"
+              FullName="Debugger.Tests.DebugType_Tests+MyGenClass`1+MyNestedStruct[System.Int32]"
               GetGenericArguments="{System.Int32}"
               GetMembers="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               GetMethods="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
@@ -1117,13 +1117,13 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenNestedStruct"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1+MyGenNestedStruct`1[System.Int32,System.Char]"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyGenClass`1+MyGenNestedStruct`1[System.Int32,System.Char]}">
+          Type="Debugger.Tests.DebugType_Tests+MyGenClass`1+MyGenNestedStruct`1[System.Int32,System.Char]"
+          Value="{Debugger.Tests.DebugType_Tests+MyGenClass`1+MyGenNestedStruct`1[System.Int32,System.Char]}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyGenClass`1+MyGenNestedStruct`1[System.Int32,System.Char]"
+              FullName="Debugger.Tests.DebugType_Tests+MyGenClass`1+MyGenNestedStruct`1[System.Int32,System.Char]"
               GetGenericArguments="{System.Int32, System.Char}"
               GetMembers="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               GetMethods="{System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
@@ -1138,18 +1138,18 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myInterfaceImpl"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]}">
+          Type="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
+          Value="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]"
+              FullName="Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]"
               GetFields="{System.Void* voidPtr}"
               GetGenericArguments="{System.Int32}"
-              GetInterfaces="{Debugger.Tests.TestPrograms.DebugType+MyInterface`3[System.Int32,Debugger.Tests.TestPrograms.DebugType+MyClass,Debugger.Tests.TestPrograms.DebugType+MyStruct]}"
-              GetMembers="{System.Void* voidPtr, System.Collections.Generic.List`1[System.Int32] Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].get_Prop(), void Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m), System.Object[] Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum), void Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]..ctor(), System.Collections.Generic.List`1[System.Int32] Prop, System.Char SetterOnlyProp, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetMethods="{System.Collections.Generic.List`1[System.Int32] Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].get_Prop(), void Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m), System.Object[] Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum), void Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetInterfaces="{Debugger.Tests.DebugType_Tests+MyInterface`3[System.Int32,Debugger.Tests.DebugType_Tests+MyClass,Debugger.Tests.DebugType_Tests+MyStruct]}"
+              GetMembers="{System.Void* voidPtr, System.Collections.Generic.List`1[System.Int32] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].get_Prop(), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m), System.Object[] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]..ctor(), System.Collections.Generic.List`1[System.Int32] Prop, System.Char SetterOnlyProp, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{System.Collections.Generic.List`1[System.Int32] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].get_Prop(), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun(MyClass a, MyStruct b, Object m), System.Object[] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun2(Int32** iPtrPtr, Object[,] mdArray, Enumerator listEnum), void Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               GetProperties="{System.Collections.Generic.List`1[System.Int32] Prop, System.Char SetterOnlyProp}"
               IsClass="True"
               IsGenericType="True"
@@ -1162,15 +1162,15 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myInterface"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyInterface`3[System.Int32,Debugger.Tests.TestPrograms.DebugType+MyClass,Debugger.Tests.TestPrograms.DebugType+MyStruct]"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyInterfaceImpl`1[System.Int32]}">
+          Type="Debugger.Tests.DebugType_Tests+MyInterface`3[System.Int32,Debugger.Tests.DebugType_Tests+MyClass,Debugger.Tests.DebugType_Tests+MyStruct]"
+          Value="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32]}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, ClassSemanticsMask, Abstract"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyInterface`3[System.Int32,Debugger.Tests.TestPrograms.DebugType+MyClass,Debugger.Tests.TestPrograms.DebugType+MyStruct]"
-              GetGenericArguments="{System.Int32, Debugger.Tests.TestPrograms.DebugType+MyClass, Debugger.Tests.TestPrograms.DebugType+MyStruct}"
-              GetMembers="{System.Int32 Debugger.Tests.TestPrograms.DebugType+MyInterface`3[System.Int32,Debugger.Tests.TestPrograms.DebugType+MyClass,Debugger.Tests.TestPrograms.DebugType+MyStruct].Fun(MyClass a, MyStruct b, Object m)}"
-              GetMethods="{System.Int32 Debugger.Tests.TestPrograms.DebugType+MyInterface`3[System.Int32,Debugger.Tests.TestPrograms.DebugType+MyClass,Debugger.Tests.TestPrograms.DebugType+MyStruct].Fun(MyClass a, MyStruct b, Object m)}"
+              FullName="Debugger.Tests.DebugType_Tests+MyInterface`3[System.Int32,Debugger.Tests.DebugType_Tests+MyClass,Debugger.Tests.DebugType_Tests+MyStruct]"
+              GetGenericArguments="{System.Int32, Debugger.Tests.DebugType_Tests+MyClass, Debugger.Tests.DebugType_Tests+MyStruct}"
+              GetMembers="{System.Int32 Debugger.Tests.DebugType_Tests+MyInterface`3[System.Int32,Debugger.Tests.DebugType_Tests+MyClass,Debugger.Tests.DebugType_Tests+MyStruct].Fun(MyClass a, MyStruct b, Object m)}"
+              GetMethods="{System.Int32 Debugger.Tests.DebugType_Tests+MyInterface`3[System.Int32,Debugger.Tests.DebugType_Tests+MyClass,Debugger.Tests.DebugType_Tests+MyStruct].Fun(MyClass a, MyStruct b, Object m)}"
               IsGenericType="True"
               IsInterface="True"
               IsNested="True">
@@ -1227,15 +1227,15 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="fnPtr"
-          Type="Debugger.Tests.TestPrograms.DebugType+AddDelegate"
-          Value="{Debugger.Tests.TestPrograms.DebugType+AddDelegate}">
+          Type="Debugger.Tests.DebugType_Tests+AddDelegate"
+          Value="{Debugger.Tests.DebugType_Tests+AddDelegate}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
               BaseType="System.MulticastDelegate"
-              FullName="Debugger.Tests.TestPrograms.DebugType+AddDelegate"
-              GetMembers="{void Debugger.Tests.TestPrograms.DebugType+AddDelegate..ctor(Object object, IntPtr method), System.Int32 Debugger.Tests.TestPrograms.DebugType+AddDelegate.Invoke(Byte b1, Byte b2), System.IAsyncResult Debugger.Tests.TestPrograms.DebugType+AddDelegate.BeginInvoke(Byte b1, Byte b2, AsyncCallback callback, Object object), System.Int32 Debugger.Tests.TestPrograms.DebugType+AddDelegate.EndInvoke(IAsyncResult result), void System.MulticastDelegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Boolean System.MulticastDelegate.Equals(Object obj), System.Delegate[] System.MulticastDelegate.GetInvocationList(), System.Int32 System.MulticastDelegate.GetHashCode(), System.Object System.Delegate.DynamicInvoke(Object[] args), System.Boolean System.Delegate.Equals(Object obj), System.Int32 System.Delegate.GetHashCode(), System.Delegate[] System.Delegate.GetInvocationList(), System.Reflection.MethodInfo System.Delegate.get_Method(), System.Object System.Delegate.get_Target(), System.Object System.Delegate.Clone(), void System.Delegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Reflection.MethodInfo Method, System.Object Target, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetMethods="{void Debugger.Tests.TestPrograms.DebugType+AddDelegate..ctor(Object object, IntPtr method), System.Int32 Debugger.Tests.TestPrograms.DebugType+AddDelegate.Invoke(Byte b1, Byte b2), System.IAsyncResult Debugger.Tests.TestPrograms.DebugType+AddDelegate.BeginInvoke(Byte b1, Byte b2, AsyncCallback callback, Object object), System.Int32 Debugger.Tests.TestPrograms.DebugType+AddDelegate.EndInvoke(IAsyncResult result), void System.MulticastDelegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Boolean System.MulticastDelegate.Equals(Object obj), System.Delegate[] System.MulticastDelegate.GetInvocationList(), System.Int32 System.MulticastDelegate.GetHashCode(), System.Object System.Delegate.DynamicInvoke(Object[] args), System.Boolean System.Delegate.Equals(Object obj), System.Int32 System.Delegate.GetHashCode(), System.Delegate[] System.Delegate.GetInvocationList(), System.Reflection.MethodInfo System.Delegate.get_Method(), System.Object System.Delegate.get_Target(), System.Object System.Delegate.Clone(), void System.Delegate.GetObjectData(SerializationInfo info, StreamingContext context), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              FullName="Debugger.Tests.DebugType_Tests+AddDelegate"
+              GetMembers="{void Debugger.Tests.DebugType_Tests+AddDelegate..ctor(Object object, IntPtr method), System.Int32 Debugger.Tests.DebugType_Tests+AddDelegate.Invoke(Byte b1, Byte b2), System.IAsyncResult Debugger.Tests.DebugType_Tests+AddDelegate.BeginInvoke(Byte b1, Byte b2, AsyncCallback callback, Object object), System.Int32 Debugger.Tests.DebugType_Tests+AddDelegate.EndInvoke(IAsyncResult result), void System.MulticastDelegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Boolean System.MulticastDelegate.Equals(Object obj), System.Delegate[] System.MulticastDelegate.GetInvocationList(), System.Int32 System.MulticastDelegate.GetHashCode(), System.Object System.Delegate.DynamicInvoke(Object[] args), System.Boolean System.Delegate.Equals(Object obj), System.Int32 System.Delegate.GetHashCode(), System.Delegate[] System.Delegate.GetInvocationList(), System.Reflection.MethodInfo System.Delegate.get_Method(), System.Object System.Delegate.get_Target(), System.Object System.Delegate.Clone(), void System.Delegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Reflection.MethodInfo Method, System.Object Target, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{void Debugger.Tests.DebugType_Tests+AddDelegate..ctor(Object object, IntPtr method), System.Int32 Debugger.Tests.DebugType_Tests+AddDelegate.Invoke(Byte b1, Byte b2), System.IAsyncResult Debugger.Tests.DebugType_Tests+AddDelegate.BeginInvoke(Byte b1, Byte b2, AsyncCallback callback, Object object), System.Int32 Debugger.Tests.DebugType_Tests+AddDelegate.EndInvoke(IAsyncResult result), void System.MulticastDelegate.GetObjectData(SerializationInfo info, StreamingContext context), System.Boolean System.MulticastDelegate.Equals(Object obj), System.Delegate[] System.MulticastDelegate.GetInvocationList(), System.Int32 System.MulticastDelegate.GetHashCode(), System.Object System.Delegate.DynamicInvoke(Object[] args), System.Boolean System.Delegate.Equals(Object obj), System.Int32 System.Delegate.GetHashCode(), System.Delegate[] System.Delegate.GetInvocationList(), System.Reflection.MethodInfo System.Delegate.get_Method(), System.Object System.Delegate.get_Target(), System.Object System.Delegate.Clone(), void System.Delegate.GetObjectData(SerializationInfo info, StreamingContext context), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               GetProperties="{System.Reflection.MethodInfo Method, System.Object Target}"
               IsClass="True"
               IsNested="True">
@@ -1284,13 +1284,13 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myEnum"
-          Type="Debugger.Tests.TestPrograms.DebugType+MyEnum"
-          Value="{Debugger.Tests.TestPrograms.DebugType+MyEnum}">
+          Type="Debugger.Tests.DebugType_Tests+MyEnum"
+          Value="{Debugger.Tests.DebugType_Tests+MyEnum}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
               BaseType="System.Enum"
-              FullName="Debugger.Tests.TestPrograms.DebugType+MyEnum"
+              FullName="Debugger.Tests.DebugType_Tests+MyEnum"
               GetEnumUnderlyingType="System.Byte"
               GetFields="{System.Byte value__}"
               GetMembers="{System.Byte value__, System.Boolean System.Enum.Equals(Object obj), System.Int32 System.Enum.GetHashCode(), System.String System.Enum.ToString(), System.String System.Enum.ToString(String format, IFormatProvider provider), System.String System.Enum.ToString(String format), System.String System.Enum.ToString(IFormatProvider provider), System.Int32 System.Enum.CompareTo(Object target), System.TypeCode System.Enum.GetTypeCode(), System.Boolean System.ValueType.Equals(Object obj), System.Int32 System.ValueType.GetHashCode(), System.String System.ValueType.ToString(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
@@ -1306,16 +1306,16 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="access"
-          Type="Debugger.Tests.TestPrograms.DebugType+Access"
-          Value="{Debugger.Tests.TestPrograms.DebugType+Access}">
+          Type="Debugger.Tests.DebugType_Tests+Access"
+          Value="{Debugger.Tests.DebugType_Tests+Access}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="Debugger.Tests.TestPrograms.DebugType+Access"
+              FullName="Debugger.Tests.DebugType_Tests+Access"
               GetFields="{System.Int32 publicField}"
-              GetMembers="{System.Int32 publicField, System.Int32 Debugger.Tests.TestPrograms.DebugType+Access.get_publicProperty(), void Debugger.Tests.TestPrograms.DebugType+Access.publicMethod(), void Debugger.Tests.TestPrograms.DebugType+Access..ctor(), System.Int32 publicProperty, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetMethods="{System.Int32 Debugger.Tests.TestPrograms.DebugType+Access.get_publicProperty(), void Debugger.Tests.TestPrograms.DebugType+Access.publicMethod(), void Debugger.Tests.TestPrograms.DebugType+Access..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMembers="{System.Int32 publicField, System.Int32 Debugger.Tests.DebugType_Tests+Access.get_publicProperty(), void Debugger.Tests.DebugType_Tests+Access.publicMethod(), void Debugger.Tests.DebugType_Tests+Access..ctor(), System.Int32 publicProperty, void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{System.Int32 Debugger.Tests.DebugType_Tests+Access.get_publicProperty(), void Debugger.Tests.DebugType_Tests+Access.publicMethod(), void Debugger.Tests.DebugType_Tests+Access..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
               GetProperties="{System.Int32 publicProperty}"
               IsClass="True"
               IsNested="True">

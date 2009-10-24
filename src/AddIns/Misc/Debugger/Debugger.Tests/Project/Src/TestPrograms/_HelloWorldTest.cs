@@ -7,9 +7,9 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
-	public class _HelloWorld
+	public class _HelloWorldTest
 	{
 		public static void Main()
 		{
@@ -25,9 +25,9 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		[NUnit.Framework.Test]
-		public void _HelloWorld()
+		public void _HelloWorldTest()
 		{
-			StartTest("_HelloWorld.cs");
+			StartTest();
 			
 			EndTest();
 		}
@@ -39,15 +39,15 @@ namespace Debugger.Tests {
 <?xml version="1.0" encoding="utf-8"?>
 <DebuggerTests>
   <Test
-    name="_HelloWorld.cs">
+    name="_HelloWorldTest.cs">
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ModuleLoaded>_HelloWorld.exe (Has symbols)</ModuleLoaded>
+    <ModuleLoaded>_HelloWorldTest.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
-    <DebuggingPaused>Break _HelloWorld.cs:18,4-18,40</DebuggingPaused>
+    <DebuggingPaused>Break _HelloWorldTest.cs:18,4-18,40</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class DebugType_CompilerGeneratedClasses
 	{
@@ -72,7 +72,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void DebugType_CompilerGeneratedClasses()
 		{
-			StartTest("DebugType_CompilerGeneratedClasses.cs");
+			StartTest();
 			PrintLocalVariables("YieldLocalVariables");
 			process.Continue();
 			PrintLocalVariables("OutterDelegateLocalVariables");
@@ -106,7 +106,7 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="deleg"
-          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses+IntDelegate"
+          Type="Debugger.Tests.DebugType_CompilerGeneratedClasses+IntDelegate"
           Value="null" />
       </Item>
       <Item>
@@ -124,8 +124,8 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="this"
-          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses"
-          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
+          Type="Debugger.Tests.DebugType_CompilerGeneratedClasses"
+          Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses}" />
       </Item>
       <Item>
         <LocalVariable
@@ -157,8 +157,8 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="nestedDeleg"
-          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses+IntDelegate"
-          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses+IntDelegate}" />
+          Type="Debugger.Tests.DebugType_CompilerGeneratedClasses+IntDelegate"
+          Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses+IntDelegate}" />
       </Item>
       <Item>
         <LocalVariable
@@ -199,8 +199,8 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="this"
-          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses"
-          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
+          Type="Debugger.Tests.DebugType_CompilerGeneratedClasses"
+          Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </OutterDelegateLocalVariables>
     <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:54,7-54,43</DebuggingPaused>
@@ -250,8 +250,8 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="this"
-          Type="Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses"
-          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
+          Type="Debugger.Tests.DebugType_CompilerGeneratedClasses"
+          Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </InnterDelegateLocalVariables>
     <Eval> nestedDelegArg = 402 </Eval>

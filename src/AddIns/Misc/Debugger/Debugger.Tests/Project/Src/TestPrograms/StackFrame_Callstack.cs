@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Debugger.Tests.TestPrograms
+namespace Debugger.Tests
 {
 	public class StackFrame_Callstack
 	{
@@ -35,7 +35,7 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void StackFrame_Callstack()
 		{
-			StartTest("StackFrame_Callstack.cs");
+			StartTest();
 			
 			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
 			process.SelectedStackFrame.StepOut();
@@ -64,7 +64,7 @@ namespace Debugger.Tests {
           ChainIndex="1"
           FrameIndex="2"
           HasSymbols="True"
-          MethodInfo="static void Debugger.Tests.TestPrograms.StackFrame_Callstack.Sub2()"
+          MethodInfo="static void Debugger.Tests.StackFrame_Callstack.Sub2()"
           NextStatement="StackFrame_Callstack.cs:26,4-26,40"
           Thread="Thread Name =  Suspended = False" />
       </Item>
@@ -73,7 +73,7 @@ namespace Debugger.Tests {
           ChainIndex="1"
           FrameIndex="1"
           HasSymbols="True"
-          MethodInfo="static void Debugger.Tests.TestPrograms.StackFrame_Callstack.Sub1()"
+          MethodInfo="static void Debugger.Tests.StackFrame_Callstack.Sub1()"
           NextStatement="StackFrame_Callstack.cs:21,4-21,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
@@ -81,7 +81,7 @@ namespace Debugger.Tests {
         <StackFrame
           ChainIndex="1"
           HasSymbols="True"
-          MethodInfo="static void Debugger.Tests.TestPrograms.StackFrame_Callstack.Main()"
+          MethodInfo="static void Debugger.Tests.StackFrame_Callstack.Main()"
           NextStatement="StackFrame_Callstack.cs:16,4-16,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
@@ -93,7 +93,7 @@ namespace Debugger.Tests {
           ChainIndex="1"
           FrameIndex="1"
           HasSymbols="True"
-          MethodInfo="static void Debugger.Tests.TestPrograms.StackFrame_Callstack.Sub1()"
+          MethodInfo="static void Debugger.Tests.StackFrame_Callstack.Sub1()"
           NextStatement="StackFrame_Callstack.cs:21,4-21,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
@@ -101,7 +101,7 @@ namespace Debugger.Tests {
         <StackFrame
           ChainIndex="1"
           HasSymbols="True"
-          MethodInfo="static void Debugger.Tests.TestPrograms.StackFrame_Callstack.Main()"
+          MethodInfo="static void Debugger.Tests.StackFrame_Callstack.Main()"
           NextStatement="StackFrame_Callstack.cs:16,4-16,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
@@ -112,7 +112,7 @@ namespace Debugger.Tests {
         <StackFrame
           ChainIndex="1"
           HasSymbols="True"
-          MethodInfo="static void Debugger.Tests.TestPrograms.StackFrame_Callstack.Main()"
+          MethodInfo="static void Debugger.Tests.StackFrame_Callstack.Main()"
           NextStatement="StackFrame_Callstack.cs:16,4-16,11"
           Thread="Thread Name =  Suspended = False" />
       </Item>
