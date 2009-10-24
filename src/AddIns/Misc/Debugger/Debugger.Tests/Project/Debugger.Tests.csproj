@@ -46,7 +46,6 @@
     <Compile Include="Src\DebuggerTests.cs" />
     <Compile Include="Src\DebuggerTestsBase.cs" />
     <Compile Include="Src\TestPrograms\AppDomain.cs" />
-    <Compile Include="Src\TestPrograms\Value_Array.cs" />
     <Compile Include="Src\TestPrograms\ExpressionEvaluator.cs" />
     <Compile Include="Src\TestPrograms\Breakpoint.cs" />
     <Compile Include="Src\TestPrograms\StackFrame_Callstack.cs" />
@@ -56,13 +55,10 @@
     <Compile Include="Src\TestPrograms\Exception_Custom.cs" />
     <Compile Include="Src\TestPrograms\StackFrame_Lifetime.cs" />
     <Compile Include="Src\TestPrograms\StackFrame_VariablesLifetime.cs" />
-    <Compile Include="Src\TestPrograms\Value_GenericDictionary.cs" />
     <Compile Include="Src\TestPrograms\_HelloWorld.cs" />
     <Compile Include="Src\TestPrograms\ControlFlow_MainThreadExit.cs" />
     <Compile Include="Src\TestPrograms\Process_MemoryReadWrite.cs" />
-    <Compile Include="Src\TestPrograms\Value_Object.cs" />
-    <Compile Include="Src\TestPrograms\Value_Primitive.cs" />
-    <Compile Include="Src\TestPrograms\Value_Property.cs" />
+    <Compile Include="Src\TestPrograms\ValueTest.cs" />
     <Compile Include="Src\TestPrograms\StackFrame_SetIP.cs" />
     <Compile Include="Src\TestPrograms\Exception_StackOverflow.cs" />
     <Compile Include="Src\TestPrograms\ControlFlow_Stepping.cs" />
@@ -89,11 +85,7 @@
     <EmbeddedResource Include="Src\TestPrograms\StackFrame_SetIP.cs" />
     <EmbeddedResource Include="Src\TestPrograms\StackFrame_VariablesLifetime.cs" />
     <EmbeddedResource Include="Src\TestPrograms\Thread_Name.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Value_Array.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Value_GenericDictionary.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Value_Object.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Value_Primitive.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\Value_Property.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\ValueTest.cs" />
     <EmbeddedResource Include="Src\TestPrograms\_HelloWorld.cs" />
   </ItemGroup>
   <ItemGroup>

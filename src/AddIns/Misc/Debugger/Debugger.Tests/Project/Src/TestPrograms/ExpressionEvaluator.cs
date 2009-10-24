@@ -20,7 +20,7 @@ namespace Debugger.Tests.TestPrograms
 				get { return name; }
 			}
 			
-			public static string StaticValue = "base static value";
+			public static string StaticField = "base static field";
 			
 			public string Foo(int i)
 			{
@@ -36,7 +36,15 @@ namespace Debugger.Tests.TestPrograms
 				get { return name; }
 			}
 			
-			new public static string StaticValue = "derived static value";
+			public char SetterOnlyProperty { set { ; } }
+			
+			new public static string StaticField = "derived static field";
+			
+			public static string StaticProperty {
+				get {
+					return "static";
+				}
+			}
 			
 			new public string Foo(int i)
 			{
@@ -191,7 +199,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator.cs:69,4-69,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator.cs:77,4-77,40</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -240,10 +248,12 @@ namespace Debugger.Tests {
     <Eval> !flag = False </Eval>
     <Eval> </Eval>
     <Eval> ((Debugger.Tests.TestPrograms.DerivedClass)(myClass)).name = "derived name" </Eval>
-    <Eval> Debugger.Tests.TestPrograms.DerivedClass.StaticValue = Error evaluating "Debugger.Tests.TestPrograms.DerivedClass.StaticValue": Identifier "Debugger" not found in this context </Eval>
+    <Eval> Debugger.Tests.TestPrograms.DerivedClass.StaticField = Error evaluating "Debugger.Tests.TestPrograms.DerivedClass.StaticField": Identifier "Debugger" not found in this context </Eval>
     <Eval> ((Debugger.Tests.TestPrograms.DerivedClass)(myClass)).Name = "derived name" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.DerivedClass)(myClass)).SetterOnlyProperty = Error evaluating "((Debugger.Tests.TestPrograms.DerivedClass)(myClass)).SetterOnlyProperty": Property does not have a get method </Eval>
+    <Eval> Debugger.Tests.TestPrograms.DerivedClass.StaticProperty = Error evaluating "Debugger.Tests.TestPrograms.DerivedClass.StaticProperty": Identifier "Debugger" not found in this context </Eval>
     <Eval> ((Debugger.Tests.TestPrograms.BaseClass)(myClass)).name = "base name" </Eval>
-    <Eval> Debugger.Tests.TestPrograms.BaseClass.StaticValue = Error evaluating "Debugger.Tests.TestPrograms.BaseClass.StaticValue": Identifier "Debugger" not found in this context </Eval>
+    <Eval> Debugger.Tests.TestPrograms.BaseClass.StaticField = Error evaluating "Debugger.Tests.TestPrograms.BaseClass.StaticField": Identifier "Debugger" not found in this context </Eval>
     <Eval> ((Debugger.Tests.TestPrograms.BaseClass)(myClass)).Name = "base name" </Eval>
     <Eval> ((Debugger.Tests.TestPrograms.BaseClass)(myClass)).Foo((System.Int32)(1)) = "base Foo - int" </Eval>
     <Eval> ((Debugger.Tests.TestPrograms.DerivedClass)(myClass)).Foo((System.Int32)(1)) = "derived Foo - int" </Eval>

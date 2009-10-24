@@ -21,34 +21,24 @@ namespace Debugger.Tests.TestPrograms
 		
 		// The classes are intentionally nested for testing
 		
+		public enum MyEnum: byte { A, B }
+		
 		public class MyClass
 		{
-		}
-		
-		public class MyGenClass<T>
-		{
-			public class MyNestedClass
-			{
-			}
-			public class MyGenNestedClass<U>
-			{
-			}
 		}
 		
 		public struct MyStruct
 		{
 		}
 		
-		public struct MyGenStruct<T>
+		public class MyGenClass<T>
 		{
+			public struct MyNestedStruct
+			{
+			}
 			public struct MyGenNestedStruct<U>
 			{
 			}
-		}
-		
-		public enum MyEnum: byte
-		{
-			A, B
 		}
 		
 		public interface MyInterface<R, A, B>
@@ -61,6 +51,8 @@ namespace Debugger.Tests.TestPrograms
 			public void* voidPtr;
 			
 			public List<R> Prop { get { return new List<R>(); } }
+			
+			public char SetterOnlyProp { set { ; } }
 			
 			public R Fun<M>(MyClass a, MyStruct b, M m)
 			{
@@ -109,15 +101,9 @@ namespace Debugger.Tests.TestPrograms
 			// Generic class
 			MyGenClass<int> myGenClass_int = new MyGenClass<int>();
 			MyGenClass<int>[] array_MyGenClass_int = new MyGenClass<int>[] {};
-			MyGenClass<MyGenStruct<int>> myGenClass_MyGenStruct_int = new MyGenClass<MyGenStruct<int>>();
-			MyGenClass<int>.MyNestedClass myNestedClass = new MyGenClass<int>.MyNestedClass();
-			MyGenClass<int>.MyGenNestedClass<char> myGenNestedClass = new MyGenClass<int>.MyGenNestedClass<char>();
-			
-			// Generic struct
-			MyGenStruct<int> myGenStruct_int = new MyGenStruct<int>();
-			MyGenStruct<int>[] array_MyGenStruct_int = new MyGenStruct<int>[] {};
-			MyGenStruct<MyGenClass<int>> myGenStruct_MyGenClass_int = new MyGenStruct<MyGenClass<int>>();
-			MyGenStruct<int>.MyGenNestedStruct<char> myGenNestedStruct = new MyGenStruct<int>.MyGenNestedStruct<char>();
+			MyGenClass<int?> myGenClass_Nullable_int = new MyGenClass<int?>();
+			MyGenClass<int>.MyNestedStruct myNestedStruct = new MyGenClass<int>.MyNestedStruct();
+			MyGenClass<int>.MyGenNestedStruct<char> myGenNestedStruct = new MyGenClass<int>.MyGenNestedStruct<char>();
 			
 			// Generic interface
 			MyInterfaceImpl<int> myInterfaceImpl = new MyInterfaceImpl<int>();
@@ -223,20 +209,18 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType.cs:138,4-138,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType.cs:124,4-124,40</DebuggingPaused>
     <DefinedTypes
       Capacity="16"
-      Count="13">
+      Count="11">
       <Item>Debugger.Tests.TestPrograms.DebugType</Item>
       <Item>AddDelegate</Item>
-      <Item>MyClass</Item>
-      <Item>MyGenClass`1</Item>
-      <Item>MyNestedClass</Item>
-      <Item>MyGenNestedClass`1</Item>
-      <Item>MyStruct</Item>
-      <Item>MyGenStruct`1</Item>
-      <Item>MyGenNestedStruct`1</Item>
       <Item>MyEnum</Item>
+      <Item>MyClass</Item>
+      <Item>MyStruct</Item>
+      <Item>MyGenClass`1</Item>
+      <Item>MyNestedStruct</Item>
+      <Item>MyGenNestedStruct`1</Item>
       <Item>MyInterface`3</Item>
       <Item>MyInterfaceImpl`1</Item>
       <Item>Access</Item>
@@ -269,6 +253,20 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <DebugType
+          Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
+          BaseType="System.Enum"
+          FullName="Debugger.Tests.TestPrograms.DebugType.MyEnum"
+          GetEnumUnderlyingType="System.Byte"
+          GetFields="{System.Byte value__}"
+          GetMembers="{System.Byte value__, Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+          GetMethods="{Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
+          IsEnum="True"
+          IsValueType="True">
+          <GetElementType>null</GetElementType>
+        </DebugType>
+      </Item>
+      <Item>
+        <DebugType
           Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
           BaseType="System.Object"
           FullName="Debugger.Tests.TestPrograms.DebugType.MyClass"
@@ -285,20 +283,6 @@ namespace Debugger.Tests {
           FullName="Debugger.Tests.TestPrograms.DebugType.MyStruct"
           GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
           GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
-          IsValueType="True">
-          <GetElementType>null</GetElementType>
-        </DebugType>
-      </Item>
-      <Item>
-        <DebugType
-          Attributes="AutoLayout, AnsiClass, Class, NestedPublic, Sealed"
-          BaseType="System.Enum"
-          FullName="Debugger.Tests.TestPrograms.DebugType.MyEnum"
-          GetEnumUnderlyingType="System.Byte"
-          GetFields="{System.Byte value__}"
-          GetMembers="{System.Byte value__, Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
-          GetMethods="{Equals, GetHashCode, ToString, ToString, ToString, ToString, CompareTo, GetTypeCode, Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
-          IsEnum="True"
           IsValueType="True">
           <GetElementType>null</GetElementType>
         </DebugType>
@@ -420,6 +404,14 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
+          FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]].set_SetterOnlyProp(Char value)"
+          GetLocalVariables="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]] this}"
+          Name="set_SetterOnlyProp" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
           Attributes="PrivateScope, Public, Final, Virtual, HideBySig, VtableLayoutMask"
           DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
           FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]].Fun(MyClass a, MyStruct b, Object m)"
@@ -449,6 +441,12 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
           Name="Prop"
           PropertyType="System.Collections.Generic.List`1[[System.Int32]]" />
+      </Item>
+      <Item>
+        <DebugPropertyInfo
+          DeclaringType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyInterfaceImpl`1[[System.Int32]]"
+          Name="SetterOnlyProp"
+          PropertyType="System.Char" />
       </Item>
       <Item>
         <DebugMethodInfo
@@ -1065,15 +1063,15 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <LocalVariable
-          Name="myGenClass_MyGenStruct_int"
-          Type="Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]].MyGenClass`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]]"
-          Value="{Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]].MyGenClass`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]]}">
+          Name="myGenClass_Nullable_int"
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Nullable`1[[System.Int32]]]].MyGenClass`1[[System.Nullable`1[[System.Int32]]]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Nullable`1[[System.Int32]]]].MyGenClass`1[[System.Nullable`1[[System.Int32]]]]}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
-              FullName="Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]].MyGenClass`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]]]"
-              GetGenericArguments="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]}"
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Nullable`1[[System.Int32]]]].MyGenClass`1[[System.Nullable`1[[System.Int32]]]]"
+              GetGenericArguments="{System.Nullable`1[[System.Int32]]}"
               GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
               GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
               IsClass="True"
@@ -1085,111 +1083,15 @@ namespace Debugger.Tests {
       </Item>
       <Item>
         <LocalVariable
-          Name="myNestedClass"
-          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]].MyNestedClass[[System.Int32]]"
-          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]].MyNestedClass[[System.Int32]]}">
-          <Type>
-            <DebugType
-              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
-              BaseType="System.Object"
-              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]].MyNestedClass[[System.Int32]]"
-              GetGenericArguments="{System.Int32}"
-              GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
-              GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
-              IsClass="True"
-              IsGenericType="True">
-              <GetElementType>null</GetElementType>
-            </DebugType>
-          </Type>
-        </LocalVariable>
-      </Item>
-      <Item>
-        <LocalVariable
-          Name="myGenNestedClass"
-          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenClass`1[[System.Int32, System.Char]].MyGenNestedClass`1[[System.Int32, System.Char]]"
-          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenClass`1[[System.Int32, System.Char]].MyGenNestedClass`1[[System.Int32, System.Char]]}">
-          <Type>
-            <DebugType
-              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
-              BaseType="System.Object"
-              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenClass`1[[System.Int32, System.Char]].MyGenNestedClass`1[[System.Int32, System.Char]]"
-              GetGenericArguments="{System.Int32, System.Char}"
-              GetMembers="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
-              GetMethods="{.ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
-              IsClass="True"
-              IsGenericType="True">
-              <GetElementType>null</GetElementType>
-            </DebugType>
-          </Type>
-        </LocalVariable>
-      </Item>
-      <Item>
-        <LocalVariable
-          Name="myGenStruct_int"
-          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]"
-          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]}">
+          Name="myNestedStruct"
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]].MyNestedStruct[[System.Int32]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]].MyNestedStruct[[System.Int32]]}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]"
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]].MyNestedStruct[[System.Int32]]"
               GetGenericArguments="{System.Int32}"
-              GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
-              GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
-              IsGenericType="True"
-              IsValueType="True">
-              <GetElementType>null</GetElementType>
-            </DebugType>
-          </Type>
-        </LocalVariable>
-      </Item>
-      <Item>
-        <LocalVariable
-          Name="array_MyGenStruct_int"
-          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]][]"
-          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]][]}">
-          <Type>
-            <DebugType
-              Attributes="NotPublic"
-              BaseType="System.Array"
-              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]][]"
-              GetArrayRank="1"
-              GetElementType="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]"
-              GetMembers="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized, .ctor, ToString, Equals, GetHashCode, GetType}"
-              GetMethods="{GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, GetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, SetValue, get_Length, get_LongLength, GetLength, GetLongLength, get_Rank, GetUpperBound, GetLowerBound, get_SyncRoot, get_IsReadOnly, get_IsFixedSize, get_IsSynchronized, Clone, CompareTo, Equals, GetHashCode, CopyTo, CopyTo, GetEnumerator, Initialize, .ctor, ToString, Equals, GetHashCode, GetType}"
-              GetProperties="{System.Int32 Length, System.Int64 LongLength, System.Int32 Rank, System.Object SyncRoot, System.Boolean IsReadOnly, System.Boolean IsFixedSize, System.Boolean IsSynchronized}"
-              HasElementType="True"
-              IsArray="True"
-              IsClass="True"
-              IsCompilerGenerated="True">
-              <GetElementType>
-                <DebugType
-                  Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
-                  BaseType="System.ValueType"
-                  FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenStruct`1[[System.Int32]]"
-                  GetGenericArguments="{System.Int32}"
-                  GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
-                  GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
-                  IsGenericType="True"
-                  IsValueType="True">
-                  <GetElementType>null</GetElementType>
-                </DebugType>
-              </GetElementType>
-            </DebugType>
-          </Type>
-        </LocalVariable>
-      </Item>
-      <Item>
-        <LocalVariable
-          Name="myGenStruct_MyGenClass_int"
-          Type="Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]].MyGenStruct`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]]"
-          Value="{Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]].MyGenStruct`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]]}">
-          <Type>
-            <DebugType
-              Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
-              BaseType="System.ValueType"
-              FullName="Debugger.Tests.TestPrograms.DebugType[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]].MyGenStruct`1[[Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]]]"
-              GetGenericArguments="{Debugger.Tests.TestPrograms.DebugType[[System.Int32]].MyGenClass`1[[System.Int32]]}"
               GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
               GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
               IsGenericType="True"
@@ -1202,13 +1104,13 @@ namespace Debugger.Tests {
       <Item>
         <LocalVariable
           Name="myGenNestedStruct"
-          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenStruct`1[[System.Int32, System.Char]].MyGenNestedStruct`1[[System.Int32, System.Char]]"
-          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenStruct`1[[System.Int32, System.Char]].MyGenNestedStruct`1[[System.Int32, System.Char]]}">
+          Type="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenClass`1[[System.Int32, System.Char]].MyGenNestedStruct`1[[System.Int32, System.Char]]"
+          Value="{Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenClass`1[[System.Int32, System.Char]].MyGenNestedStruct`1[[System.Int32, System.Char]]}">
           <Type>
             <DebugType
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, SequentialLayout, Sealed, BeforeFieldInit"
               BaseType="System.ValueType"
-              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenStruct`1[[System.Int32, System.Char]].MyGenNestedStruct`1[[System.Int32, System.Char]]"
+              FullName="Debugger.Tests.TestPrograms.DebugType[[System.Int32, System.Char]].MyGenClass`1[[System.Int32, System.Char]].MyGenNestedStruct`1[[System.Int32, System.Char]]"
               GetGenericArguments="{System.Int32, System.Char}"
               GetMembers="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
               GetMethods="{Equals, GetHashCode, ToString, .ctor, ToString, Equals, GetHashCode, GetType}"
@@ -1232,9 +1134,9 @@ namespace Debugger.Tests {
               GetFields="{System.Void* voidPtr}"
               GetGenericArguments="{System.Int32}"
               GetInterfaces="{Debugger.Tests.TestPrograms.DebugType[[System.Int32, Debugger.Tests.TestPrograms.DebugType.MyClass, Debugger.Tests.TestPrograms.DebugType.MyStruct]].MyInterface`3[[System.Int32, Debugger.Tests.TestPrograms.DebugType.MyClass, Debugger.Tests.TestPrograms.DebugType.MyStruct]]}"
-              GetMembers="{System.Void* voidPtr, get_Prop, Fun, Fun2, .ctor, System.Collections.Generic.List`1[[System.Int32]] Prop, .ctor, ToString, Equals, GetHashCode, GetType}"
-              GetMethods="{get_Prop, Fun, Fun2, .ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
-              GetProperties="{System.Collections.Generic.List`1[[System.Int32]] Prop}"
+              GetMembers="{System.Void* voidPtr, get_Prop, set_SetterOnlyProp, Fun, Fun2, .ctor, System.Collections.Generic.List`1[[System.Int32]] Prop, System.Char SetterOnlyProp, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetMethods="{get_Prop, set_SetterOnlyProp, Fun, Fun2, .ctor, .ctor, ToString, Equals, GetHashCode, GetType}"
+              GetProperties="{System.Collections.Generic.List`1[[System.Int32]] Prop, System.Char SetterOnlyProp}"
               IsClass="True"
               IsGenericType="True">
               <GetElementType>null</GetElementType>
