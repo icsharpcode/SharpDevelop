@@ -188,7 +188,7 @@ namespace Debugger.Tests {
 				hi[1]
 				'abcd'[2]
 				
-				list.Add(42); list.Add(52);
+				list.Add((char)42); list.Add((char)52);
 				list
 				
 				i = 10
@@ -342,8 +342,8 @@ namespace Debugger.Tests {
     <Eval> hi[1] = 'i' </Eval>
     <Eval> "abcd"[2] = 'c' </Eval>
     <Eval> </Eval>
-    <Eval> list.Add(42); list.Add(52); = Incorrect parameter type for 'item'. Excpeted System.Char, seen System.Int32 </Eval>
-    <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o'} </Eval>
+    <Eval> list.Add((char)42); list.Add((char)52);</Eval>
+    <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o', '*', '4'} </Eval>
     <Eval> </Eval>
     <Eval> i = 10 = 10 </Eval>
     <Eval> -i = -10 </Eval>

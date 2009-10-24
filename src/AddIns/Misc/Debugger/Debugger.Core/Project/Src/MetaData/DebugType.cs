@@ -62,6 +62,16 @@ namespace Debugger.MetaData
 			get { return declaringType; }
 		}
 		
+		[Debugger.Tests.Ignore]
+		public IEnumerable<DebugType> GetSelfAndDeclaringTypes()
+		{
+			DebugType type = this;
+			while(type != null) {
+				yield return type;
+				type = (DebugType)type.DeclaringType;
+			}
+		}
+		
 		/// <summary> The AppDomain in which this type is loaded </summary>
 		public AppDomain AppDomain {
 			get { return module.AppDomain; }

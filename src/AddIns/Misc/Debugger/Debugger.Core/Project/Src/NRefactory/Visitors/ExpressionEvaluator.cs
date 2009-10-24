@@ -88,7 +88,10 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (context == null) throw new ArgumentNullException("context");
 			if (context.IsInvalid) throw new DebuggerException("The context is no longer valid");
 			
-			return new ExpressionEvaluator(context).Evaluate(code, false).Value;
+			TypedValue val = new ExpressionEvaluator(context).Evaluate(code, false);
+			if (val == null)
+				return null;
+			return val.Value;
 		}
 		
 		/// <summary>
@@ -306,9 +309,20 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			TypedValue val = Evaluate(castExpression.Expression);
 			DebugType castTo = castExpression.CastTo.ResolveType(context.AppDomain);
+			if (castTo.IsPrimitive && val.Type.IsPrimitive && castTo != val.Type) {
+				object oldVal = val.PrimitiveValue;
+				object newVal;
+				try {
+					newVal = Convert.ChangeType(oldVal, castTo.PrimitiveType);
+				} catch (InvalidCastException) {
+					throw new EvaluateException(castExpression, "Can not cast {0} to {1}", val.Type.FullName, castTo.FullName);
+				} catch (OverflowException) {
+					throw new EvaluateException(castExpression, "Overflow");
+				}
+				val = CreateValue(newVal);
+			}
 			if (!castTo.IsAssignableFrom(val.Value.Type))
 				throw new GetValueException("Can not cast {0} to {1}", val.Value.Type.FullName, castTo.FullName);
-			// TODO: Primitive values
 			return new TypedValue(val.Value, castTo);
 		}
 		
@@ -345,10 +359,11 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 			
 			// Static class members
-			// TODO: Static members in outter class
-			IDebugMemberInfo statMember = (IDebugMemberInfo)((DebugType)context.MethodInfo.DeclaringType).GetMember<MemberInfo>(identifier, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static, DebugType.IsFieldOrNonIndexedProperty);
-			if (statMember != null)
-				return new TypedValue(Value.GetMemberValue(null, (MemberInfo)statMember), statMember.MemberType);
+			foreach(DebugType declaringType in ((DebugType)context.MethodInfo.DeclaringType).GetSelfAndDeclaringTypes()) {
+				IDebugMemberInfo statMember = (IDebugMemberInfo)declaringType.GetMember<MemberInfo>(identifier, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static, DebugType.IsFieldOrNonIndexedProperty);
+				if (statMember != null)
+					return new TypedValue(Value.GetMemberValue(null, (MemberInfo)statMember), statMember.MemberType);
+			}
 			
 			throw new GetValueException("Identifier \"" + identifier + "\" not found in this context");
 		}
