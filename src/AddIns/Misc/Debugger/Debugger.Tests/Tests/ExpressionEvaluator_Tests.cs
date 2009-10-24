@@ -413,7 +413,7 @@ namespace Debugger.Tests {
     <Eval> </Eval>
     <TypeResulution> typeof(System.Int32*[][,]) = System.Int32*[,][] (ok)</TypeResulution>
     <TypeResulution> typeof(Debugger.Tests.ExpressionEvaluator_Tests.A&lt;System.Int32&gt;.B.C&lt;System.Char&gt;[][,]) = Debugger.Tests.ExpressionEvaluator_Tests+A`1+B+C`1[System.Int32,System.Char][,][] (ok)</TypeResulution>
-    <TypesIdentitcal>False</TypesIdentitcal>
+    <TypesIdentitcal>True</TypesIdentitcal>
     <TypesEqual>True</TypesEqual>
     <ProcessExited />
   </Test>

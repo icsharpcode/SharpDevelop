@@ -172,7 +172,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			// Try to get the value from cache
 			// (the cache is cleared when the process is resumed)
 			TypedValue val;
-			if (context.Process.CachedExpressions.TryGetValue(expression, out val)) {
+			if (context.Process.ExpressionsCache.TryGetValue(expression, out val)) {
 				if (val == null || !val.Value.IsInvalid)
 					return val;
 			}
@@ -197,7 +197,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				throw new DebuggerException("Expression \"" + expression.PrettyPrint() + "\" is invalid right after evaluation");
 			
 			// Add the result to cache
-			context.Process.CachedExpressions[expression] = val;
+			context.Process.ExpressionsCache[expression] = val;
 			
 			return val;
 		}

@@ -28,6 +28,8 @@ namespace Debugger
 		ISymUnmanagedReader symReader;
 		MetaDataImport metaData;
 		
+		internal Dictionary<string, DebugType> LoadedDebugTypes = new Dictionary<string, DebugType>();
+		
 		public event EventHandler<ModuleEventArgs> SymbolsLoaded;
 		
 		protected virtual void OnSymbolsLoaded(ModuleEventArgs e)

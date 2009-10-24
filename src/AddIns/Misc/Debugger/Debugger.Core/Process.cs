@@ -215,7 +215,7 @@ namespace Debugger
 		
 		internal bool TerminateCommandIssued = false;
 		internal Queue<Breakpoint> BreakpointHitEventQueue = new Queue<Breakpoint>();
-		internal Dictionary<INode, TypedValue> CachedExpressions = new Dictionary<INode, TypedValue>();
+		internal Dictionary<INode, TypedValue> ExpressionsCache = new Dictionary<INode, TypedValue>();
 		
 		#region Events
 		
@@ -295,7 +295,7 @@ namespace Debugger
 			if (action == DebuggeeStateAction.Clear) {
 				if (debuggeeState == null) throw new DebuggerException("Debugee state already cleared");
 				debuggeeState = null;
-				this.CachedExpressions.Clear();
+				this.ExpressionsCache.Clear();
 			}
 		}
 		

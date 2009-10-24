@@ -6,8 +6,9 @@
 // </file>
 
 using System;
-using Debugger.MetaData;
 using Debugger.Interop.CorDebug;
+using Debugger.MetaData;
+using System.Collections.Generic;
 
 namespace Debugger
 {
@@ -16,6 +17,8 @@ namespace Debugger
 		Process process;
 		
 		ICorDebugAppDomain corAppDomain;
+		
+		internal Dictionary<ICorDebugType, DebugType> DebugTypeCache = new Dictionary<ICorDebugType, DebugType>();
 		
 		public Process Process {
 			get { return process; }
@@ -43,34 +46,8 @@ namespace Debugger
 			}
 		}
 		
-		DebugType objectType;
-		
-		public DebugType ObjectType {
-			get {
-				if (objectType == null)
-					objectType = DebugType.CreateFromType(this.Mscorlib, typeof(object));
-				return objectType;
-			}
-		}
-		
-		DebugType valueType;
-		
-		public DebugType ValueType {
-			get {
-				if (valueType == null)
-					valueType = DebugType.CreateFromType(this.Mscorlib, typeof(ValueType));
-				return valueType;
-			}
-		}
-		
-		DebugType voidType;
-		
-		public DebugType VoidType {
-			get {
-				if (voidType == null)
-					voidType = DebugType.CreateFromType(this.Mscorlib, typeof(void));
-				return voidType;
-			}
+		internal DebugType ObjectType {
+			get { return DebugType.CreateFromType(this.Mscorlib, typeof(object)); }
 		}
 		
 		internal ICorDebugAppDomain CorAppDomain {

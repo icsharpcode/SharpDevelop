@@ -50,9 +50,6 @@ namespace Debugger.MetaData
 		Dictionary<string, List<MemberInfo>> membersByName = new Dictionary<string, List<MemberInfo>>();
 		Dictionary<int, MemberInfo> membersByToken = new Dictionary<int, MemberInfo>();
 		
-		// Stores all DebugType instances. FullName is the key
-		static Dictionary<ICorDebugType, DebugType> loadedTypes = new Dictionary<ICorDebugType, DebugType>();
-		
 		internal ICorDebugType CorType {
 			get { return corType; }
 		}
@@ -702,7 +699,7 @@ namespace Debugger.MetaData
 			// ValueType and Enum are exceptions and are threated as classes
 			return this.FullName != typeof(ValueType).FullName &&
 			       this.FullName != typeof(Enum).FullName &&
-			       this.IsSubclassOf(this.AppDomain.ValueType);
+			       this.IsSubclassOf(DebugType.CreateFromType(this.AppDomain.Mscorlib, typeof(ValueType)));
 		}
 		
 		/// <inheritdoc/>
@@ -840,6 +837,9 @@ namespace Debugger.MetaData
 			if (type.GetGenericArguments().Length > 0)
 				throw new DebuggerException("Generic arguments not allowed in this overload");
 			
+			if (module.LoadedDebugTypes.ContainsKey(type.FullName))
+				return module.LoadedDebugTypes[type.FullName];
+			
 			DebugType declaringType = null;
 			if (type.DeclaringType != null)
 				declaringType = CreateFromType(module, type.DeclaringType);
@@ -929,13 +929,8 @@ namespace Debugger.MetaData
 		internal static DebugType CreateFromSignature(Module module, SigType sigType, DebugType declaringType)
 		{
 			System.Type sysType = CorElementTypeToManagedType((CorElementType)(uint)sigType.ElementType);
-			if (sysType != null) {
+			if (sysType != null)
 				return CreateFromType(module.AppDomain.Mscorlib, sysType);
-			}
-			
-			if (sigType.ElementType == Mono.Cecil.Metadata.ElementType.Object) {
-				return module.AppDomain.ObjectType;
-			}
 			
 			if (sigType is CLASS) {
 				return CreateFromTypeDefOrRef(module, false, ((CLASS)sigType).Type.ToUInt(), null);
@@ -983,7 +978,7 @@ namespace Debugger.MetaData
 				PTR ptrSig = (PTR)sigType;
 				DebugType elementType;
 				if (ptrSig.Void) {
-					elementType = module.AppDomain.VoidType;
+					elementType = DebugType.CreateFromType(module.AppDomain.Mscorlib, typeof(void));
 				} else {
 					elementType = CreateFromSignature(module, ptrSig.PtrType, declaringType);
 				}
@@ -1064,33 +1059,40 @@ namespace Debugger.MetaData
 		/// <summary> Obtains instance of DebugType. Same types will return identical instance. </summary>
 		public static DebugType CreateFromCorType(AppDomain appDomain, ICorDebugType corType)
 		{
-			// Convert primitive type to class
-			CorElementType corElemType = (CorElementType)(corType.GetTheType());
-			Type primitiveType = CorElementTypeToManagedType(corElemType);
+			if (appDomain.DebugTypeCache.ContainsKey(corType))
+				return appDomain.DebugTypeCache[corType];
+			
+			// Convert short-form to class-form
+			Type primitiveType = CorElementTypeToManagedType((CorElementType)(corType.GetTheType()));
 			if (primitiveType != null) {
-				corType = CreateFromType(appDomain.Mscorlib, primitiveType).CorType;
+				DebugType type = CreateFromType(appDomain.Mscorlib, primitiveType);
+				// Use cache next time
+				appDomain.DebugTypeCache[corType] = type;
+				return type;
+			} else {
+				DebugType type = new DebugType(appDomain, corType);
+				// Ensure name-identity
+				if (type.DebugModule.LoadedDebugTypes.ContainsKey(type.FullName)) {
+					type = type.DebugModule.LoadedDebugTypes[type.FullName];
+					// corDebug cache needs to be fixed to this type - we do not want the semi-loaded type there
+					appDomain.DebugTypeCache[corType] = type;
+				} else {
+					type.LoadMembers();
+					type.DebugModule.LoadedDebugTypes[type.FullName] = type;
+				}
+				return type;
 			}
-			if (corElemType == CorElementType.VOID) {
-				corType = appDomain.VoidType.CorType;
-			}
-			
-			if (loadedTypes.ContainsKey(corType)) return loadedTypes[corType];
-			
-			return new DebugType(appDomain, corType);
 		}
 		
 		DebugType(AppDomain appDomain, ICorDebugType corType)
 		{
 			if (corType == null) throw new ArgumentNullException("corType");
-			System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-			stopwatch.Start();
 			
 			this.corType = corType;
 			this.corElementType = (CorElementType)corType.GetTheType();
 			
 			// Loading might access the type again
-			loadedTypes[corType] = this;
-			appDomain.Process.Exited += delegate { loadedTypes.Remove(corType); };
+			appDomain.DebugTypeCache[corType] = this;
 			
 			if (corElementType == CorElementType.ARRAY ||
 			    corElementType == CorElementType.SZARRAY ||
@@ -1110,12 +1112,9 @@ namespace Debugger.MetaData
 				this.ns = this.GetElementType().Namespace;
 				this.name = this.GetElementType().Name + suffix;
 				this.fullName = this.GetElementType().FullName + suffix;
-				if (corElementType == CorElementType.ARRAY || corElementType == CorElementType.SZARRAY)
-					LoadArrayMembers();
 			}
 			
-			if (corElementType == CorElementType.OBJECT ||
-			    corElementType == CorElementType.CLASS ||
+			if (corElementType == CorElementType.CLASS ||
 			    corElementType == CorElementType.VALUETYPE)
 			{
 				// Get generic arguments
@@ -1140,21 +1139,11 @@ namespace Debugger.MetaData
 					this.name = classProps.Name.Substring(index + 1);
 				}
 				this.fullName = GetFullClassName();
-				this.primitiveType = NameToManagedType(this.FullName);
-				LoadMembers();
+				this.primitiveType = GetPrimitiveType(this.FullName);
 			}
 			
 			if (module == null)
 				throw new DebuggerException("Unexpected: " + corElementType);
-			
-			stopwatch.Stop();
-			if (appDomain.Process.Options.Verbose) {
-				string prefix = this.IsInterface ? "interface" : "type";
-				appDomain.Process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, this.FullName, stopwatch.ElapsedMilliseconds);
-				foreach(DebugType inter in GetInterfaces()) {
-					appDomain.Process.TraceMessage(" - Implements {0}", inter.FullName);
-				}
-			}
 		}
 		
 		internal static Type CorElementTypeToManagedType(CorElementType corElementType)
@@ -1175,11 +1164,13 @@ namespace Debugger.MetaData
 				case CorElementType.I:       return typeof(System.IntPtr);
 				case CorElementType.U:       return typeof(System.UIntPtr);
 				case CorElementType.STRING:  return typeof(System.String);
+				case CorElementType.OBJECT:  return typeof(System.Object);
+				case CorElementType.VOID:    return typeof(void);
 				default: return null;
 			}
 		}
 		
-		static Type NameToManagedType(string fullname)
+		static Type GetPrimitiveType(string fullname)
 		{
 			switch (fullname) {
 				case "System.Boolean": return typeof(System.Boolean);
@@ -1194,6 +1185,7 @@ namespace Debugger.MetaData
 				case "System.UInt64":  return typeof(System.UInt64);
 				case "System.Single":  return typeof(System.Single);
 				case "System.Double":  return typeof(System.Double);
+				// String is not primitive type
 				default: return null;
 			}
 		}
@@ -1226,52 +1218,56 @@ namespace Debugger.MetaData
 			return name.ToString();
 		}
 		
-		void LoadArrayMembers()
-		{
-			// Arrays are special and normal loading does not work for them
-			DebugType iList = DebugType.CreateFromName(this.AppDomain.Mscorlib, typeof(IList<>).FullName, null, new DebugType[] { (DebugType)this.GetElementType() });
-			this.interfaces.Add(iList);
-			this.interfaces.AddRange(iList.interfaces);
-		}
-		
 		void LoadMembers()
 		{
-			// Load interfaces
-			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps((uint)this.MetadataToken)) {
-				CorTokenType tkType = (CorTokenType)(implProps.Interface & 0xFF000000);
-				if (tkType == CorTokenType.TypeDef || tkType == CorTokenType.TypeRef) {
-					this.interfaces.Add(DebugType.CreateFromTypeDefOrRef(module, false, implProps.Interface, null));
-				} else if (tkType == CorTokenType.TypeSpec) {
-					this.interfaces.Add(DebugType.CreateFromTypeSpec(module, implProps.Interface, this));
-				} else {
-					throw new DebuggerException("Uknown token type for interface: " + tkType);
+			System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+			
+			if (corElementType == CorElementType.ARRAY || corElementType == CorElementType.SZARRAY) {
+				// Arrays are special and normal loading does not work for them
+				DebugType iList = DebugType.CreateFromName(this.AppDomain.Mscorlib, typeof(IList<>).FullName, null, new DebugType[] { (DebugType)this.GetElementType() });
+				this.interfaces.Add(iList);
+				this.interfaces.AddRange(iList.interfaces);
+			} else {
+				// Load interfaces
+				foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps((uint)this.MetadataToken)) {
+					CorTokenType tkType = (CorTokenType)(implProps.Interface & 0xFF000000);
+					if (tkType == CorTokenType.TypeDef || tkType == CorTokenType.TypeRef) {
+						this.interfaces.Add(DebugType.CreateFromTypeDefOrRef(module, false, implProps.Interface, null));
+					} else if (tkType == CorTokenType.TypeSpec) {
+						this.interfaces.Add(DebugType.CreateFromTypeSpec(module, implProps.Interface, this));
+					} else {
+						throw new DebuggerException("Uknown token type for interface: " + tkType);
+					}
+				}
+				
+				// Load fields
+				foreach(FieldProps field in module.MetaData.EnumFieldProps((uint)this.MetadataToken)) {
+					DebugFieldInfo fieldInfo = new DebugFieldInfo(this, field);
+					AddMember(fieldInfo);
+				};
+				
+				// Load methods
+				foreach(MethodProps m in module.MetaData.EnumMethodProps((uint)this.MetadataToken)) {
+					AddMember(new DebugMethodInfo(this, m));
+				}
+				
+				// Load properties
+				foreach(PropertyProps prop in module.MetaData.EnumPropertyProps((uint)this.MetadataToken)) {
+					DebugPropertyInfo propInfo = new DebugPropertyInfo(
+						this,
+						prop.GetterMethod != 0x06000000 ? GetMethod(prop.GetterMethod) : null,
+						prop.SetterMethod != 0x06000000 ? GetMethod(prop.SetterMethod) : null
+					);
+					if (propInfo.GetGetMethod() != null)
+						((DebugMethodInfo)propInfo.GetGetMethod()).IsPropertyAccessor = true;
+					if (propInfo.GetSetMethod() != null)
+						((DebugMethodInfo)propInfo.GetSetMethod()).IsPropertyAccessor = true;
+					AddMember(propInfo);
 				}
 			}
 			
-			// Load fields
-			foreach(FieldProps field in module.MetaData.EnumFieldProps((uint)this.MetadataToken)) {
-				DebugFieldInfo fieldInfo = new DebugFieldInfo(this, field);
-				AddMember(fieldInfo);
-			};
-			
-			// Load methods
-			foreach(MethodProps m in module.MetaData.EnumMethodProps((uint)this.MetadataToken)) {
-				AddMember(new DebugMethodInfo(this, m));
-			}
-			
-			// Load properties
-			foreach(PropertyProps prop in module.MetaData.EnumPropertyProps((uint)this.MetadataToken)) {
-				DebugPropertyInfo propInfo = new DebugPropertyInfo(
-					this,
-					prop.GetterMethod != 0x06000000 ? GetMethod(prop.GetterMethod) : null,
-					prop.SetterMethod != 0x06000000 ? GetMethod(prop.SetterMethod) : null
-				);
-				if (propInfo.GetGetMethod() != null)
-					((DebugMethodInfo)propInfo.GetGetMethod()).IsPropertyAccessor = true;
-				if (propInfo.GetSetMethod() != null)
-					((DebugMethodInfo)propInfo.GetSetMethod()).IsPropertyAccessor = true;
-				AddMember(propInfo);
-			}
+			if (this.Process.Options.Verbose)
+				this.Process.TraceMessage("Loaded {0} ({1} ms)", this.FullName, stopwatch.ElapsedMilliseconds);
 		}
 		
 		void AddMember(MemberInfo member)
