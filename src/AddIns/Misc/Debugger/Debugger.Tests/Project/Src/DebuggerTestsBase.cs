@@ -59,6 +59,40 @@ namespace Debugger.Tests
 			testName = null;
 			
 			expandProperties = new List<string>();
+			ignoreProperties = new List<string>();
+			ignoreProperties.AddRange(new string [] {
+			                          	"*.GetType",
+			                          	"*.GetHashCode",
+			                          	"*.GetEnumerator",
+			                          	"MemberInfo.MemberType",
+			                          	"Type.DeclaringType",
+			                          	"Type.IsAbstract",
+			                          	"Type.IsAnsiClass",
+			                          	"Type.IsAutoLayout",
+			                          	"Type.IsLayoutSequential",
+			                          	"Type.IsPublic",
+			                          	"Type.IsNestedPublic",
+			                          	"Type.IsSealed",
+			                          	"Type.IsSerializable",
+			                          	"Type.Name",
+			                          	"Type.Namespace",
+			                          	"Type.UnderlyingSystemType",
+			                          	"MethodBase.CallingConvention",
+			                          	"MethodBase.GetMethodBody",
+			                          	"MethodBase.GetMethodImplementationFlags",
+			                          	"MethodBase.GetParameters",
+			                          	"MethodBase.IsHideBySig",
+			                          	"MethodBase.IsPublic",
+			                          	"MethodBase.IsVirtual",
+			                          	"MethodBase.IsSpecialName",
+			                          	"MethodBase.Name",
+			                          	"MethodBase.ReturnParameter",
+			                          	"MethodBase.ParameterCount",
+			                          	"PropertyInfo.CanRead",
+			                          	"PropertyInfo.CanWrite",
+			                          	"PropertyInfo.GetGetMethod",
+			                          	"PropertyInfo.GetSetMethod",
+			                          });
 			
 			testDoc = new XmlDocument();
 			testDoc.AppendChild(testDoc.CreateXmlDeclaration("1.0","utf-8",null));
@@ -211,20 +245,38 @@ namespace Debugger.Tests
 		}
 		
 		List<string> expandProperties;
+		List<string> ignoreProperties;
 		
 		protected void ExpandProperties(params string[] props)
 		{
 			expandProperties = new List<string>(props);
 		}
 		
-		bool ShouldExpandProperty(System.Reflection.PropertyInfo propertyInfo)
+		bool ListContains(List<string> list, MemberInfo memberInfo)
 		{
-			return
-				(propertyInfo.GetCustomAttributes(typeof(Debugger.Tests.ExpandAttribute), true).Length > 0) ||
-				expandProperties.Contains(propertyInfo.Name) ||
-				expandProperties.Contains("*") ||
-				expandProperties.Contains(propertyInfo.DeclaringType.Name + "." + propertyInfo.Name) ||
-				expandProperties.Contains(propertyInfo.DeclaringType.Name + ".*");
+			Type declaringType = memberInfo.DeclaringType;
+			while(declaringType != null) {
+				if (list.Contains(declaringType.Name + "." + memberInfo.Name) ||
+					list.Contains(declaringType.Name + ".*") ||
+					list.Contains("*." + memberInfo.Name) ||
+					list.Contains("*.*") ||
+					list.Contains("*"))
+					return true;
+				declaringType = declaringType.BaseType;
+			}
+			return false;
+		}
+		
+		bool ExpandProperty(MemberInfo memberInfo)
+		{
+			return (memberInfo.IsDefined(typeof(Debugger.Tests.ExpandAttribute), true)) ||
+			       ListContains(expandProperties, memberInfo);
+		}
+		
+		bool IgnoreProperty(MemberInfo memberInfo)
+		{
+			return (memberInfo.IsDefined(typeof(Debugger.Tests.IgnoreAttribute), true)) ||
+			       ListContains(ignoreProperties, memberInfo);
 		}
 		
 		public void Serialize(XmlElement container, object obj, int maxDepth, List<object> parents)
@@ -262,21 +314,39 @@ namespace Debugger.Tests
 				container = newContainer;
 			}
 			
-			List<SRPropertyInfo> properties = new List<SRPropertyInfo>();
-			properties.AddRange(type.GetProperties());
-			properties.Sort(delegate(SRPropertyInfo a, SRPropertyInfo b) { return a.Name.CompareTo(b.Name);});
+			List<MemberInfo> members = new List<MemberInfo>();
+			members.AddRange(type.GetMembers());
+			members.Sort(delegate(MemberInfo a, MemberInfo b) { return a.Name.CompareTo(b.Name);});
 			
-			foreach(SRPropertyInfo property in properties) {
+			foreach(MemberInfo member in members) {
 				if (type.BaseType == typeof(Array)) continue;
-				if (property.GetGetMethod() == null) continue;
-				if (property.GetGetMethod().GetParameters().Length > 0) continue;
-				if (property.GetCustomAttributes(typeof(Debugger.Tests.IgnoreAttribute), true).Length > 0) continue;
 				
+				MethodInfo method;
 				object val;
+				
+				PropertyInfo propertyInfo = member as PropertyInfo;
+				MethodInfo methodInfo = member as MethodInfo;
+				if (propertyInfo != null) {
+					if (propertyInfo.GetGetMethod() == null) continue;
+					method = propertyInfo.GetGetMethod();
+				} else if (methodInfo != null) {
+					if (!methodInfo.Name.StartsWith("Get")) continue;
+					method = methodInfo;
+				} else {
+					continue;
+				}
+				if (method.GetParameters().Length > 0) continue;
+				if (IgnoreProperty(member)) continue;
+				
 				try {
-					val = property.GetValue(obj, new object[] {});
+					val = method.Invoke(obj, new object[] {});
 				} catch (System.Exception e) {
 					while(e.InnerException != null) e = e.InnerException;
+					if (e is NotImplementedException || e is NotSupportedException)
+						continue;
+					if (type.IsDefined(typeof(Debugger.Tests.IgnoreOnExceptionAttribute), true) ||
+					    member.IsDefined(typeof(Debugger.Tests.IgnoreOnExceptionAttribute), true))
+						continue;
 					val = "{Exception: " + e.Message + "}";
 				}
 								
@@ -286,18 +356,18 @@ namespace Debugger.Tests
 						vals.Add(o.ToString());
 					}
 					if (vals.Count != 0) {
-						container.SetAttribute(property.Name, "{" + string.Join(", ", vals.ToArray()) + "}");
+						container.SetAttribute(member.Name, "{" + string.Join(", ", vals.ToArray()) + "}");
 					}
 				} else {
 					bool isDefault = false;
 						
-					if (property.PropertyType == typeof(bool)) {
+					if (method.ReturnType == typeof(bool)) {
 						isDefault = false.Equals(val);
-					} else if (property.PropertyType == typeof(string)) {
+					} else if (method.ReturnType == typeof(string)) {
 						isDefault = val == null;
-					} else if (property.PropertyType == typeof(int)) {
+					} else if (method.ReturnType == typeof(int)) {
 						isDefault = 0.Equals(val);
-					} else if (property.PropertyType == typeof(uint)) {
+					} else if (method.ReturnType == typeof(uint)) {
 						isDefault = ((uint)0).Equals(val);
 					} else {
 						isDefault = val == null;
@@ -305,13 +375,13 @@ namespace Debugger.Tests
 
 					if (val == null) val = "null";
 					if (!isDefault) {
-						container.SetAttribute(property.Name, val.ToString());
+						container.SetAttribute(member.Name, val.ToString());
 					}
 				}
 				
 				
-				if (ShouldExpandProperty(property)) {
-					XmlElement propertyNode = doc.CreateElement(property.Name);
+				if (ExpandProperty(member)) {
+					XmlElement propertyNode = doc.CreateElement(member.Name);
 					container.AppendChild(propertyNode);
 					Serialize(propertyNode, val, maxDepth - 1, parents);
 				}
