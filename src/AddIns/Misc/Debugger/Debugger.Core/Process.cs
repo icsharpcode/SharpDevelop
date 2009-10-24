@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Debugger.Interop.CorDebug;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
+using System.Runtime.InteropServices;
 
 namespace Debugger
 {
@@ -246,8 +247,8 @@ namespace Debugger
 		protected virtual void OnResumed()
 		{
 			AssertRunning();
-			// No real purpose - just additional check
-			if (callbackInterface.IsInCallback) throw new DebuggerException("Can not raise event within callback.");
+			if (callbackInterface.IsInCallback)
+				throw new DebuggerException("Can not raise event within callback.");
 			TraceMessage ("Debugger event: OnResumed()");
 			if (Resumed != null) {
 				Resumed(this, new ProcessEventArgs(this));
@@ -399,14 +400,52 @@ namespace Debugger
 			WaitForPause();
 		}
 		
-		public void AsyncContinue()
-		{
-			AsyncContinue(DebuggeeStateAction.Clear);
+		internal Thread[] UnsuspendedThreads {
+			get {
+				List<Thread> threadsToRun = new List<Thread>(this.Threads.Count);
+				foreach(Thread t in this.Threads) {
+					if (!t.Suspended)
+						threadsToRun.Add(t);
+				}
+				return threadsToRun.ToArray();
+			}
 		}
 		
-		internal void AsyncContinue(DebuggeeStateAction action)
+		/// <summary>
+		/// Resume execution and run all threads not marked by the user as susspended.
+		/// </summary>
+		public void AsyncContinue()
+		{
+			AsyncContinue(DebuggeeStateAction.Clear, this.UnsuspendedThreads);
+		}
+		
+		internal void AsyncContinue(DebuggeeStateAction action, Thread[] threadsToRun)
 		{
 			AssertPaused();
+			
+			if (threadsToRun != null) {
+//				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
+//				TODO: There is second unreported thread, stopping it prevents the debugee from exiting
+//				uint count = corProcess.EnumerateThreads().GetCount();
+//				ICorDebugThread[] ts = new ICorDebugThread[count];
+//				corProcess.EnumerateThreads().Next((uint)ts.Length, ts);
+//				uint helper = corProcess.GetHelperThreadID();
+				try {
+					foreach(Thread t in this.Threads) {
+						t.CorThread.SetDebugState(CorDebugThreadState.THREAD_SUSPEND);
+					}
+					foreach(Thread t in threadsToRun) {
+						t.CorThread.SetDebugState(CorDebugThreadState.THREAD_RUN);
+					}
+				} catch (COMException e) {
+					// The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)
+					// It can happen for threads that have not started yet
+					if ((uint)e.ErrorCode == 0x8013132D) {
+					} else {
+						throw;
+					}
+				}
+			}
 			
 			NotifyResumed(action);
 			corProcess.Continue(0);

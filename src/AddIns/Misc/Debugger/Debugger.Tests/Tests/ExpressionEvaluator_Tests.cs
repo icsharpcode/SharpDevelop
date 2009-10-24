@@ -116,6 +116,8 @@ namespace Debugger.Tests
 		{
 			new ExpressionEvaluator_Tests().Fun("function argument");
 		}
+		
+		static bool WorkerThreadMoved = false;
 	
 		public unsafe void Fun(string arg)
 		{
@@ -136,7 +138,13 @@ namespace Debugger.Tests
 			int*[][,] complexType1 = new int*[][,] { new int*[,] { { (int*)0xDA1D } } };
 			A<int>.B.C<char>[][,] complexType2 = new A<int>.B.C<char>[0][,];
 			
+			System.Threading.Thread bgWork = new System.Threading.Thread(
+				delegate() { WorkerThreadMoved = true; }
+			);
+			
 			System.Diagnostics.Debugger.Break();
+			bgWork.Start();
+			System.Threading.Thread.Sleep(100);
 		}
 	}
 }
@@ -192,6 +200,8 @@ namespace Debugger.Tests {
 		public void ExpressionEvaluator_Tests()
 		{
 			StartTest();
+			process.SelectedStackFrame.StepOver();
+			process.SelectedStackFrame.StepOver(); // Start worker thread
 			
 			EvalAll(expressionsInput);
 			
@@ -248,6 +258,10 @@ namespace Debugger.Tests {
 			ObjectDump("TypesIdentitcal", object.ReferenceEquals(locType, valType));
 			ObjectDump("TypesEqual", locType == valType);
 			
+			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString);
+			process.SelectedStackFrame.StepOver();
+			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString);
+			
 			EndTest();
 		}
 		
@@ -291,7 +305,9 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:139,4-139,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:145,4-145,40</DebuggingPaused>
+    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:146,4-146,19</DebuggingPaused>
+    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:147,4-147,39</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -421,6 +437,19 @@ namespace Debugger.Tests {
     <TypeResulution> typeof(Debugger.Tests.ExpressionEvaluator_Tests.A&lt;System.Int32&gt;.B.C&lt;System.Char&gt;[][,]) = Debugger.Tests.ExpressionEvaluator_Tests+A`1+B+C`1[System.Int32,System.Char][,][] (ok)</TypeResulution>
     <TypesIdentitcal>True</TypesIdentitcal>
     <TypesEqual>True</TypesEqual>
+    <WorkerThreadMoved>
+      <Value
+        AsString="True"
+        PrimitiveValue="True"
+        Type="System.Boolean" />
+    </WorkerThreadMoved>
+    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:148,3-148,4</DebuggingPaused>
+    <WorkerThreadMoved>
+      <Value
+        AsString="True"
+        PrimitiveValue="True"
+        Type="System.Boolean" />
+    </WorkerThreadMoved>
     <ProcessExited />
   </Test>
 </DebuggerTests>

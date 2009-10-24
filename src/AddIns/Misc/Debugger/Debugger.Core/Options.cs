@@ -17,5 +17,6 @@ namespace Debugger
 		public bool StepOverFieldAccessProperties = true;
 		public bool Verbose = false;
 		public string[] SymbolsSearchPaths = new string[0];
+		public bool SuspendOtherThreads = false;
 	}
 }

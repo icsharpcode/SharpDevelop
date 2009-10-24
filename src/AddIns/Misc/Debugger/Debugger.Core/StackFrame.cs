@@ -185,7 +185,7 @@ namespace Debugger
 		{
 			Stepper.StepOut(this, "normal");
 			
-			process.AsyncContinue(DebuggeeStateAction.Clear);
+			AsyncContinue();
 		}
 		
 		void AsyncStep(bool stepIn)
@@ -213,7 +213,16 @@ namespace Debugger
 				Stepper.StepOver(this, nextSt.StepRanges, "normal");
 			}
 			
-			process.AsyncContinue(DebuggeeStateAction.Clear);
+			AsyncContinue();
+		}
+		
+		void AsyncContinue()
+		{
+			if (process.Options.SuspendOtherThreads) {
+				process.AsyncContinue(DebuggeeStateAction.Clear, new Thread[] { this.Thread });
+			} else {
+				process.AsyncContinue(DebuggeeStateAction.Clear, this.Process.UnsuspendedThreads);
+			}
 		}
 		
 		/// <summary>

@@ -123,19 +123,7 @@ namespace Debugger
 			}
 		}
 		
-		/// <remarks> Returns false if the thread is in invalid state </remarks>
-		public bool Suspended {
-			get {
-				process.AssertPaused();
-				
-				if (!IsInValidState) return false;
-				
-				return (CorThread.GetDebugState() == CorDebugThreadState.THREAD_SUSPEND);
-			}
-			set {
-				CorThread.SetDebugState((value==true) ? CorDebugThreadState.THREAD_SUSPEND : CorDebugThreadState.THREAD_RUN);
-			}
-		}
+		public bool Suspended { get; set; }
 		
 		/// <remarks> Returns Normal if the thread is in invalid state </remarks>
 		public ThreadPriority Priority {
@@ -239,8 +227,7 @@ namespace Debugger
 				// May happen in release code with does not have any symbols
 				return false;
 			}
-			
-			process.AsyncContinue(DebuggeeStateAction.Keep);
+			process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { this /* needed */ });
 			process.WaitForPause();
 			return true;
 		}

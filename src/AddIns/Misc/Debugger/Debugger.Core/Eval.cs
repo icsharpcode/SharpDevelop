@@ -34,6 +34,7 @@ namespace Debugger
 		
 		string        description;
 		ICorDebugEval corEval;
+		Thread        thread;
 		Value         result;
 		EvalState     state;
 		
@@ -91,7 +92,7 @@ namespace Debugger
 			this.description = description;
 			this.state = EvalState.Evaluating;
 			
-			this.corEval = CreateCorEval(appDomain);
+			this.corEval = CreateCorEval(appDomain, out this.thread);
 			
 			try {
 				evalStarter(this);
@@ -116,38 +117,43 @@ namespace Debugger
 			}
 			
 			appDomain.Process.ActiveEvals.Add(this);
-			appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep);
+			
+			if (appDomain.Process.Options.SuspendOtherThreads) {
+				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { thread });
+			} else {
+				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, this.Process.UnsuspendedThreads);
+			}
 		}
 
-	    static ICorDebugEval CreateCorEval(AppDomain appDomain)
+	    static ICorDebugEval CreateCorEval(AppDomain appDomain, out Thread thread)
 		{
 			appDomain.Process.AssertPaused();
 			
-			Thread targetThread = appDomain.Process.SelectedThread;
+			thread = appDomain.Process.SelectedThread;
 			
-			if (targetThread.CorThread.GetAppDomain().GetID() != appDomain.ID) {
-				foreach(Thread thread in appDomain.Process.Threads) {
-					if (thread.CorThread.GetAppDomain().GetID() == appDomain.ID) {
-						targetThread = thread;
+			if (thread.CorThread.GetAppDomain().GetID() != appDomain.ID) {
+				foreach(Thread t in appDomain.Process.Threads) {
+					if (t.CorThread.GetAppDomain().GetID() == appDomain.ID &&
+					    !t.Suspended &&
+					    !t.IsMostRecentStackFrameNative &&
+					    t.IsAtSafePoint)
+					{
+						thread = t;
 						break;
 					}
 				}
 			}
 			
-			if (targetThread == null) {
+			if (thread == null)
 				throw new GetValueException("Can not evaluate because no thread is selected");
-			}
-			if (targetThread.IsMostRecentStackFrameNative) {
+			if (thread.IsMostRecentStackFrameNative)
 				throw new GetValueException("Can not evaluate because native frame is on top of stack");
-			}
-			if (!targetThread.IsAtSafePoint) {
+			if (!thread.IsAtSafePoint)
 				throw new GetValueException("Can not evaluate because thread is not at a safe point");
-			}
-			if (targetThread.Suspended) {
+			if (thread.Suspended)
 				throw new GetValueException("Can not evaluate on suspended thread");
-			}
 			
-			return targetThread.CorThread.CreateEval();
+			return thread.CorThread.CreateEval();
 		}
 
 		internal bool IsCorEval(ICorDebugEval corEval)
@@ -279,7 +285,8 @@ namespace Debugger
 	    {
 	    	if (value == null) {
 				ICorDebugClass corClass = appDomain.ObjectType.CorType.GetClass();
-				ICorDebugEval corEval = CreateCorEval(appDomain);
+				Thread thread;
+				ICorDebugEval corEval = CreateCorEval(appDomain, out thread);
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
 				return new Value(appDomain, corValue);
 			} else if (value is string) {

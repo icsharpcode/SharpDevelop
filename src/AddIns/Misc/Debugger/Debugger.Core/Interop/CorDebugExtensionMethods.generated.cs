@@ -3145,7 +3145,7 @@ namespace Debugger.Interop.CorDebug
 			return pcelt;
 		}
 		
-		public static uint Next(this ICorDebugThreadEnum instance, uint celt, IntPtr threads)
+		public static uint Next(this ICorDebugThreadEnum instance, uint celt, ICorDebugThread[] threads)
 		{
 			uint pceltFetched;
 			instance.__Next(celt, threads, out pceltFetched);

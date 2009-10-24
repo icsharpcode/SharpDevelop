@@ -53,7 +53,7 @@ namespace Debugger
 			if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak) {
 				process.TraceMessage("Processing post-break callback");
 				// This compensates for the break call and we are in normal callback handling mode
-				process.AsyncContinue(DebuggeeStateAction.Keep);
+				process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] {});
 				// Start of call back - create new pause session (as usual)
 				process.NotifyPaused(pausedReason);
 				// Make sure we stay pause after the callback is handled
@@ -83,19 +83,22 @@ namespace Debugger
 		void ExitCallback()
 		{
 			bool hasQueuedCallbacks = process.CorProcess.HasQueuedCallbacks();
-			if (hasQueuedCallbacks) {
+			if (hasQueuedCallbacks)
 				process.TraceMessage("Process has queued callbacks");
-			}
 			
-			// Ignore events during property evaluation
-			if (!pauseOnNextExit || process.Evaluating || hasQueuedCallbacks) {
-				process.AsyncContinue(DebuggeeStateAction.Keep);
-			} else {
-				if (process.Options.Verbose) {
+			if (hasQueuedCallbacks) {
+				// Exception has Exception2 queued after it
+				process.AsyncContinue(DebuggeeStateAction.Keep, null);
+			} else if (process.Evaluating) {
+				// Ignore events during property evaluation
+				process.AsyncContinue(DebuggeeStateAction.Keep, null);
+			} else if (pauseOnNextExit) {
+				if (process.Options.Verbose)
 					process.TraceMessage("Callback exit: Paused");
-				}
 				pauseOnNextExit = false;
 				Pause();
+			} else {
+				process.AsyncContinue(DebuggeeStateAction.Keep, null);
 			}
 			
 			isInCallback = false;
