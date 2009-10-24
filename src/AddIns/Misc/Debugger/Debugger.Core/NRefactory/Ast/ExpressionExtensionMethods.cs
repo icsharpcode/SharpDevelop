@@ -117,6 +117,16 @@ namespace ICSharpCode.NRefactory.Ast
 			return typedArgs;
 		}
 		
+		public static bool Is<T>(this Type type)
+		{
+			return type.FullName == typeof(T).FullName;
+		}
+		
+		public static bool CanPromoteTo(this Type type, Type toType)
+		{
+			return ((DebugType)type).CanImplicitelyConvertTo(toType);
+		}
+		
 		public static string PrettyPrint(this INode code)
 		{
 			if (code == null) return string.Empty;
@@ -220,7 +230,7 @@ namespace ICSharpCode.NRefactory.Ast
 				newRef.RankSpecifier = typeRef.RankSpecifier;
 				return newRef;
 			} else {
-				throw new EvaluateException(expr, "Type expected. {0} seen.", expr.GetType());
+				throw new EvaluateException(expr, "Type expected. {0} seen.", expr.GetType().FullName);
 			}
 		}
 		

@@ -325,11 +325,11 @@ namespace Debugger.Tests {
     <Eval> *i = Target object is not a pointer </Eval>
     <Eval> *iPtr = 4 </Eval>
     <Eval> pi = 3.14 </Eval>
-    <Eval> pi - 3 = 0.140000104904175 </Eval>
+    <Eval> pi - 3 = 0.1400001 </Eval>
     <Eval> b + i = 5 </Eval>
     <Eval> i + b = 5 </Eval>
-    <Eval> b + pi = 4.14000010490417 </Eval>
-    <Eval> pi + b = 4.14000010490417 </Eval>
+    <Eval> b + pi = 4.14 </Eval>
+    <Eval> pi + b = 4.14 </Eval>
     <Eval> hi + pi = "hi3.14" </Eval>
     <Eval> pi + hi = "3.14hi" </Eval>
     <Eval> pi + " " + hi = "3.14 hi" </Eval>
@@ -341,7 +341,7 @@ namespace Debugger.Tests {
     <Eval> (5 + 6) % (1 + 2) = 2 </Eval>
     <Eval> 3 % 2 == 1 = True </Eval>
     <Eval> 15 &amp; 255 = 15 </Eval>
-    <Eval> 15 &amp;&amp; 255 = Unsupported operator for integers: LogicalAnd </Eval>
+    <Eval> 15 &amp;&amp; 255 = Can not use the binary operator LogicalAnd for types System.Int32 and System.Int32 </Eval>
     <Eval> b + 3 == i = True </Eval>
     <Eval> b + 4 == i = False </Eval>
     <Eval> true == true = True </Eval>

@@ -599,6 +599,7 @@ namespace Debugger
 		public string InvokeToString()
 		{
 			if (this.Type.IsPrimitive) return AsString;
+			if (this.Type.FullName == typeof(string).FullName) return AsString;
 			if (this.Type.IsPointer) return "0x" + this.PointerAddress.ToString("X");
 			// if (!IsObject) // Can invoke on primitives
 			DebugMethodInfo methodInfo = (DebugMethodInfo)this.AppDomain.ObjectType.GetMethod("ToString", new DebugType[] {});
