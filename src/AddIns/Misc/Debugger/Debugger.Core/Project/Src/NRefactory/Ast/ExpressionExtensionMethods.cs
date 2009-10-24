@@ -127,12 +127,6 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		public static TypeReference GetTypeReference(this Type type)
 		{
-			int pointerNest = 0;
-			while(type.IsPointer) {
-				pointerNest++;
-				type = type.GetElementType();
-			}
-			
 			List<int> arrayRanks = new List<int>();
 			while(type.IsArray) {
 				// C# uses reverse array order
@@ -140,7 +134,13 @@ namespace ICSharpCode.NRefactory.Ast
 				type = type.GetElementType();
 			}
 			
-			if (type.IsPointer)
+			int pointerNest = 0;
+			while(type.IsPointer) {
+				pointerNest++;
+				type = type.GetElementType();
+			}
+			
+			if (type.IsArray)
 				throw new DebuggerException("C# does not support pointers to arrays");
 			
 			string name = type.Name;
@@ -149,19 +149,23 @@ namespace ICSharpCode.NRefactory.Ast
 			if (!string.IsNullOrEmpty(type.Namespace))
 				name = type.Namespace + "." + name;
 			
-			List<TypeReference> genArgs = new List<TypeReference>();
-			// TODO: Does it inlucde parent gen arguments
-			foreach(Type genArg in type.GetGenericArguments())
-				genArgs.Add(genArg.GetTypeReference());
+			List<Type> genArgs = new List<Type>();
+			genArgs.AddRange(type.GetGenericArguments());
+			if (type.DeclaringType != null)
+				genArgs.RemoveRange(0, type.DeclaringType.GetGenericArguments().Length);
+			List<TypeReference> genTypeRefs = new List<TypeReference>();
+			foreach(Type genArg in genArgs) {
+				genTypeRefs.Add(genArg.GetTypeReference());
+			}
 			
 			if (type.DeclaringType != null) {
 				TypeReference outterRef = type.DeclaringType.GetTypeReference();
-				InnerClassTypeReference innerRef = new InnerClassTypeReference(outterRef, name, genArgs);
+				InnerClassTypeReference innerRef = new InnerClassTypeReference(outterRef, name, genTypeRefs);
 				innerRef.PointerNestingLevel = pointerNest;
 				innerRef.RankSpecifier = arrayRanks.ToArray();
 				return innerRef;
 			} else {
-				return new TypeReference(name, pointerNest, arrayRanks.ToArray(), genArgs);
+				return new TypeReference(name, pointerNest, arrayRanks.ToArray(), genTypeRefs);
 			}
 		}
 		
@@ -185,6 +189,17 @@ namespace ICSharpCode.NRefactory.Ast
 				);
 			} else if (expr is TypeReferenceExpression) {
 				return NormalizeTypeReference(((TypeReferenceExpression)expr).TypeReference);
+			} else if (expr is InnerClassTypeReference) { // Frist - it is also TypeReference
+				InnerClassTypeReference typeRef = (InnerClassTypeReference)expr;
+				string[] names = typeRef.Type.Split('.');
+				TypeReference newRef = NormalizeTypeReference(typeRef.BaseType);
+				foreach(string name in names) {
+					newRef = new InnerClassTypeReference(newRef, name, new List<TypeReference>());
+				}
+				newRef.GenericTypes.AddRange(typeRef.GenericTypes);
+				newRef.PointerNestingLevel = typeRef.PointerNestingLevel;
+				newRef.RankSpecifier = typeRef.RankSpecifier;
+				return newRef;
 			} else if (expr is TypeReference) {
 				TypeReference typeRef = (TypeReference)expr;
 				string[] names = typeRef.Type.Split('.');
@@ -202,17 +217,6 @@ namespace ICSharpCode.NRefactory.Ast
 				newRef.PointerNestingLevel = typeRef.PointerNestingLevel;
 				newRef.RankSpecifier = typeRef.RankSpecifier;
 				return newRef;
-			} else if (expr is InnerClassTypeReference) {
-				InnerClassTypeReference typeRef = (InnerClassTypeReference)expr;
-				string[] names = typeRef.Type.Split('.');
-				TypeReference newRef = NormalizeTypeReference(typeRef.BaseType);
-				foreach(string name in names) {
-					newRef = new InnerClassTypeReference(newRef, name, new List<TypeReference>());
-				}
-				newRef.GenericTypes.AddRange(typeRef.GenericTypes);
-				newRef.PointerNestingLevel = typeRef.PointerNestingLevel;
-				newRef.RankSpecifier = typeRef.RankSpecifier;
-				return newRef;
 			} else {
 				throw new EvaluateException(expr, "Type expected. {0} seen.", expr.GetType());
 			}
@@ -222,7 +226,7 @@ namespace ICSharpCode.NRefactory.Ast
 		{
 			string name = typeRef.Type;
 			if (typeRef.GenericTypes.Count > 0)
-				name += '`' + typeRef.GenericTypes.Count;
+				name += "`" + typeRef.GenericTypes.Count.ToString();
 			if (typeRef is InnerClassTypeReference) {
 				return GetNameWithArgCounts(((InnerClassTypeReference)typeRef).BaseType) + "." + name;
 			} else {
@@ -256,8 +260,8 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 			
 			// Try to construct nested type
-			if (type != null && typeRef is InnerClassTypeReference) {
-				DebugType outter = ResolveType((InnerClassTypeReference)typeRef, appDomain);
+			if (type == null && typeRef is InnerClassTypeReference) {
+				DebugType outter = ResolveType(((InnerClassTypeReference)typeRef).BaseType, appDomain);
 				if (outter == null)
 					return null;
 				string nestedName = typeRef.GenericTypes.Count == 0 ? typeRef.Type : typeRef.Type + "`" + typeRef.GenericTypes.Count;
@@ -270,8 +274,10 @@ namespace ICSharpCode.NRefactory.Ast
 			for(int i = 0; i < typeRef.PointerNestingLevel; i++) {
 				type = (DebugType)type.MakePointerType();
 			}
-			for(int i = typeRef.RankSpecifier.Length - 1; i >= 0; i--) {
-				type = (DebugType)type.MakeArrayType(typeRef.RankSpecifier[i] + 1);
+			if (typeRef.RankSpecifier != null) {
+				for(int i = typeRef.RankSpecifier.Length - 1; i >= 0; i--) {
+					type = (DebugType)type.MakeArrayType(typeRef.RankSpecifier[i] + 1);
+				}
 			}
 			return type;
 		}

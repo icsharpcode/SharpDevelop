@@ -104,12 +104,20 @@ namespace Debugger.Tests
 		string instanceField = "instance field value";
 		static string staticField = "static field value";
 		
+		public class A<T> {
+			public class B {
+				public class C<U> {
+					
+				}
+			}
+		}
+		
 		public static void Main()
 		{
 			new ExpressionEvaluator_Tests().Fun("function argument");
 		}
 	
-		public void Fun(string arg)
+		public unsafe void Fun(string arg)
 		{
 			bool flag = true;
 			byte b = 1;
@@ -124,6 +132,9 @@ namespace Debugger.Tests
 			
 			DerivedClass myClass = new DerivedClass();
 			
+			int*[][,] complexType1 = new int*[][,] { new int*[,] { { (int*)0xDA1D } } };
+			A<int>.B.C<char>[][,] complexType2 = new A<int>.B.C<char>[0][,];
+			
 			System.Diagnostics.Debugger.Break();
 		}
 	}
@@ -136,15 +147,11 @@ namespace Debugger.Tests {
 	using ICSharpCode.NRefactory;
 	using ICSharpCode.NRefactory.Ast;
 	using ICSharpCode.NRefactory.Visitors;
+	using NUnit.Framework;
 	
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test]
-		public void ExpressionEvaluator_Tests()
-		{
-			StartTest();
-			
-			string input = @"
+		string expressionsInput = @"
 				b
 				i
 				pi
@@ -195,16 +202,21 @@ namespace Debugger.Tests {
 				flag
 				!flag
 			";
+		
+		[NUnit.Framework.Test]
+		public void ExpressionEvaluator_Tests()
+		{
+			StartTest();
 			
-			input = input.Replace("'", "\"");
+			expressionsInput = expressionsInput.Replace("'", "\"");
 			
-			foreach(string line in input.Split('\n')) {
+			foreach(string line in expressionsInput.Split('\n')) {
 				Eval(line.Trim());
 			}
 			
 			// Test member hiding / overloading
 			
-			Value myClass = process.SelectedStackFrame.GetLocalVariableValue("myClass");
+			Value myClass = process.SelectedStackFrame.GetLocalVariableValue("myClass").GetPermanentReference();
 			
 			List<Expression> expressions = new List<Expression>();
 			foreach(MemberInfo memberInfo in myClass.Type.GetFieldsAndNonIndexedProperties(DebugType.BindingFlagsAll)) {
@@ -235,6 +247,19 @@ namespace Debugger.Tests {
 			input2 = input2.Replace("'", "\"");
 			foreach(string line in input2.Split('\n')) {
 				Eval(line.Trim());
+			}
+			
+			// Test type round tripping
+			
+			foreach(DebugLocalVariableInfo locVar in process.SelectedStackFrame.MethodInfo.GetLocalVariables()) {
+				if (locVar.Name.StartsWith("complexType")) {
+					TypeReference complexTypeRef = locVar.LocalType.GetTypeReference();
+					string code = "typeof(" + complexTypeRef.PrettyPrint() + ")";
+					TypeOfExpression complexTypeRefRT = (TypeOfExpression)ExpressionEvaluator.Parse(code, SupportedLanguage.CSharp);
+					DebugType type = complexTypeRefRT.TypeReference.ResolveType(process.SelectedStackFrame.AppDomain);
+					string status = locVar.LocalType.FullName == type.FullName ? "ok" : "fail";
+					ObjectDumpToString("TypeResulution", string.Format(" {0} = {1} ({2})", code, type.FullName, status));
+				}
 			}
 			
 			EndTest();
@@ -271,7 +296,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:127,4-127,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:138,4-138,40</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -352,6 +377,8 @@ namespace Debugger.Tests {
     <Eval> myClass.Convert(1, 2) = Incorrect parameter type for 's'. Excpeted System.String, seen System.Int32 </Eval>
     <Eval> myClass.Convert("abc", 2) = "converted to abc and 2" </Eval>
     <Eval> </Eval>
+    <TypeResulution> typeof(System.Int32*[][,]) = System.Int32*[,][] (ok)</TypeResulution>
+    <TypeResulution> typeof(Debugger.Tests.ExpressionEvaluator_Tests.A&lt;System.Int32&gt;.B.C&lt;System.Char&gt;[][,]) = Debugger.Tests.ExpressionEvaluator_Tests+A`1+B+C`1[System.Int32,System.Char][,][] (ok)</TypeResulution>
     <ProcessExited />
   </Test>
 </DebuggerTests>
