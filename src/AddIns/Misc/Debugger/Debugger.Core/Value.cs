@@ -153,6 +153,7 @@ namespace Debugger
 			get {
 				if (this.IsNull) return "null";
 				if (this.Type.IsPrimitive) return PrimitiveValue.ToString();
+				if (this.Type.FullName == typeof(string).FullName) return PrimitiveValue.ToString();
 				return "{" + this.Type.FullName + "}";
 			}
 		}
@@ -248,20 +249,23 @@ namespace Debugger
 		/// </summary>
 		public object PrimitiveValue { 
 			get {
-				if (this.Type.PrimitiveType == null) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.FullName == typeof(string).FullName) {
 					if (this.IsNull) return null;
 					return ((ICorDebugStringValue)this.CorReferenceValue.Dereference()).GetString();
 				} else {
+					if (this.Type.PrimitiveType == null)
+						throw new DebuggerException("Value is not a primitive type");
 					return CorGenericValue.GetValue(this.Type.PrimitiveType);
 				}
 			}
 			set {
-				if (this.Type.PrimitiveType == null) throw new DebuggerException("Value is not a primitive type");
 				if (this.Type.FullName == typeof(string).FullName) {
 					this.SetValue(Eval.NewString(this.AppDomain, value.ToString()));
 				} else {
-					if (value == null) throw new DebuggerException("Can not set primitive value to null");
+					if (this.Type.PrimitiveType == null)
+						throw new DebuggerException("Value is not a primitive type");
+					if (value == null)
+						throw new DebuggerException("Can not set primitive value to null");
 					object newValue;
 					try {
 						newValue = Convert.ChangeType(value, this.Type.PrimitiveType);

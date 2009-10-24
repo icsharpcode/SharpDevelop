@@ -656,8 +656,8 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		object VisitBinaryOperatorExpressionInternal(TypedValue leftValue, TypedValue rightValue, BinaryOperatorType op)
 		{
-			object left = leftValue.Type.IsPrimitive ? leftValue.PrimitiveValue : null;
-			object right = rightValue.Type.IsPrimitive ? rightValue.PrimitiveValue : null;
+			object left = leftValue.Type.IsPrimitive || leftValue.Type.FullName == typeof(string).FullName ? leftValue.PrimitiveValue : null;
+			object right = rightValue.Type.IsPrimitive || rightValue.Type.FullName == typeof(string).FullName ? rightValue.PrimitiveValue : null;
 			
 			// Both are classes - do reference comparison
 			if (left == null && right == null) {

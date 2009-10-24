@@ -127,7 +127,9 @@ namespace Debugger.MetaData
 		
 		public static bool IsDefined(IDebugMemberInfo member, bool inherit, params Type[] attributeTypes)
 		{
-			// TODO: Support inherit
+			if (inherit)
+				throw new NotSupportedException("inherit");
+			
 			MetaDataImport metaData = member.DebugModule.MetaData;
 			uint token = (uint)member.MetadataToken;
 			foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(token, 0)) {
@@ -1192,8 +1194,6 @@ namespace Debugger.MetaData
 				case "System.UInt64":  return typeof(System.UInt64);
 				case "System.Single":  return typeof(System.Single);
 				case "System.Double":  return typeof(System.Double);
-				// TODO: Remove, not a primitve type
-				case "System.String":  return typeof(System.String);
 				default: return null;
 			}
 		}
