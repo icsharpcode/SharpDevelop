@@ -122,6 +122,7 @@ namespace Debugger.Tests
 			bool flag = true;
 			byte b = 1;
 			int i = 4;
+			int* iPtr = &i;
 			float pi = 3.14f;
 			string hi = "hi";
 			
@@ -154,6 +155,8 @@ namespace Debugger.Tests {
 		string expressionsInput = @"
 				b
 				i
+				*i
+				*iPtr
 				pi
 				pi - 3
 				b + i
@@ -162,7 +165,7 @@ namespace Debugger.Tests {
 				pi + b
 				hi + pi
 				pi + hi
-				pi + ' ' + hi
+				pi + '' '' + hi
 				
 				arg
 				instanceField
@@ -182,11 +185,19 @@ namespace Debugger.Tests {
 				array[1]
 				array[i]
 				array[i - 1]
+				new char[3]
+				new char[b] {'a'}
+				new char[3] {'a', 'b', 'c'}
+				new char[] {'a', 'b', 'c'}
+				new char[][] { new char[] { 'a', 'b' }, new char[] { 'c', 'd' } }
+				new char[5] {'a', 'b', 'c'}
+				new char[1,2]
+				new char[pi]
 				list
 				list[1]
 				list[i]
 				hi[1]
-				'abcd'[2]
+				''abcd''[2]
 				
 				list.Add((char)42); list.Add((char)52);
 				list
@@ -208,7 +219,7 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			expressionsInput = expressionsInput.Replace("'", "\"");
+			expressionsInput = expressionsInput.Replace("''", "\"");
 			
 			foreach(string line in expressionsInput.Split('\n')) {
 				Eval(line.Trim());
@@ -235,16 +246,16 @@ namespace Debugger.Tests {
 				myClass.Foo(1.0)
 				myClass.Foo(myClass)
 				myClass.Foo(1)
-				myClass.Foo('abc')
+				myClass.Foo(''abc'')
 				myClass[1]
 				myClass[(long)1]
 				myClass[1.0]
-				myClass['abc']
+				myClass[''abc'']
 				myClass.Convert(1, 2)
-				myClass.Convert('abc', 2)
+				myClass.Convert(''abc'', 2)
 			";
 			
-			input2 = input2.Replace("'", "\"");
+			input2 = input2.Replace("''", "\"");
 			foreach(string line in input2.Split('\n')) {
 				Eval(line.Trim());
 			}
@@ -287,6 +298,7 @@ namespace Debugger.Tests {
 				}
 			}
 			if (restultFmted != null) {
+				restultFmted = restultFmted.Replace("\0", "\\0");
 				ObjectDump("Eval", " " + expr + " = " + restultFmted + " ");
 			} else {
 				ObjectDump("Eval", " " + expr);
@@ -304,10 +316,12 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:138,4-138,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:139,4-139,40</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
+    <Eval> *i = Target object is not a pointer </Eval>
+    <Eval> *iPtr = 4 </Eval>
     <Eval> pi = 3.14 </Eval>
     <Eval> pi - 3 = 0.140000104904175 </Eval>
     <Eval> b + i = 5 </Eval>
@@ -336,6 +350,14 @@ namespace Debugger.Tests {
     <Eval> array[1] = 'e' </Eval>
     <Eval> array[i] = 'o' </Eval>
     <Eval> array[i - 1] = 'l' </Eval>
+    <Eval> new char[3] = Char[] {'\0', '\0', '\0'} </Eval>
+    <Eval> new char[b] {'a'} = Char[] {'a'} </Eval>
+    <Eval> new char[3] {'a', 'b', 'c'} = Char[] {'a', 'b', 'c'} </Eval>
+    <Eval> new char[] {'a', 'b', 'c'} = Char[] {'a', 'b', 'c'} </Eval>
+    <Eval> new char[][] { new char[] { 'a', 'b' }, new char[] { 'c', 'd' } } = Char[][] {Char[] {'a', 'b'}, Char[] {'c', 'd'}} </Eval>
+    <Eval> new char[5] {'a', 'b', 'c'} = Incorrect initializer length </Eval>
+    <Eval> new char[1,2] = Multi-dimensional arrays are not suppored </Eval>
+    <Eval> new char[pi] = Integer expected </Eval>
     <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o'} </Eval>
     <Eval> list[1] = 'e' </Eval>
     <Eval> list[i] = 'o' </Eval>

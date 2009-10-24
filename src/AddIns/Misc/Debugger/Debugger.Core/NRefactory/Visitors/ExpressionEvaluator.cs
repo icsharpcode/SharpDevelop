@@ -584,7 +584,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (op == UnaryOperatorType.Dereference) {
 				if (!value.Type.IsPointer)
 					throw new GetValueException("Target object is not a pointer");
-				// TODO: Test
 				return new TypedValue(value.Value.Dereference(), (DebugType)value.Type.GetElementType());
 			}
 			

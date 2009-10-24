@@ -22,6 +22,11 @@ namespace Debugger.Tests
 			array[0,1] = 1;
 			array[1,0] = 2;
 			array[1,1] = 3;
+			char[,] lbArray = (char[,])Array.CreateInstance(typeof(char), new int[] { 2, 2 }, new int[] { 10, 20 });
+			lbArray[10, 20] = 'a';
+			lbArray[10, 21] = 'b';
+			lbArray[11, 20] = 'c';
+			lbArray[11, 21] = 'd';
 			
 			System.Diagnostics.Debugger.Break();
 		}
@@ -43,6 +48,10 @@ namespace Debugger.Tests {
 			ObjectDump("array.Length", array.GetMemberValue("Length"));
 			ObjectDump("array", array);
 			
+			Value lbArray = process.SelectedStackFrame.GetLocalVariableValue("lbArray").GetPermanentReference();
+			ObjectDump("lbArray", lbArray);
+			ObjectDump("lbArray-10-20", lbArray.GetArrayElement(new int[] {10, 20}));
+			
 			EndTest();
 		}
 	}
@@ -57,7 +66,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Value_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Value_Tests.cs:26,4-26,40</DebuggingPaused>
+    <DebuggingPaused>Break Value_Tests.cs:31,4-31,40</DebuggingPaused>
     <LocalVariables>
       <Item>
         <LocalVariable
@@ -89,6 +98,12 @@ namespace Debugger.Tests {
           Type="System.Int32[,]"
           Value="{System.Int32[,]}" />
       </Item>
+      <Item>
+        <LocalVariable
+          Name="lbArray"
+          Type="System.Char[,]"
+          Value="{System.Char[,]}" />
+      </Item>
     </LocalVariables>
     <array.Length>
       <Value
@@ -107,6 +122,23 @@ namespace Debugger.Tests {
         PrimitiveValue="{Exception: Value is not a primitive type}"
         Type="System.Int32[,]" />
     </array>
+    <lbArray>
+      <Value
+        ArrayDimensions="{10..11, 20..21}"
+        ArrayLength="4"
+        ArrayRank="2"
+        AsString="{System.Char[,]}"
+        GetArrayElements="{a, b, c, d}"
+        IsReference="True"
+        PrimitiveValue="{Exception: Value is not a primitive type}"
+        Type="System.Char[,]" />
+    </lbArray>
+    <lbArray-10-20>
+      <Value
+        AsString="a"
+        PrimitiveValue="a"
+        Type="System.Char" />
+    </lbArray-10-20>
     <ProcessExited />
   </Test>
 </DebuggerTests>

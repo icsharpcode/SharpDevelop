@@ -199,7 +199,14 @@ namespace Debugger
 			if (this.CorValue is ICorDebugHandleValue) {
 				return this;
 			} else if (this.CorValue is ICorDebugReferenceValue) {
-				return new Value(appDomain, ((ICorDebugHeapValue2)this.CorReferenceValue.Dereference()).CreateHandle(CorDebugHandleType.HANDLE_STRONG));
+				ICorDebugValue deRef = this.CorReferenceValue.Dereference();
+				if (deRef is ICorDebugHeapValue2) {
+					return new Value(appDomain, ((ICorDebugHeapValue2)deRef).CreateHandle(CorDebugHandleType.HANDLE_STRONG));
+				} else {
+					// For exampe int* is a refernce not pointing to heap
+					// TODO: It isn't permanent
+					return this;
+				}
 			} else {
 				return this.Box();
 			}
@@ -269,8 +276,6 @@ namespace Debugger
 		#endregion
 		
 		#region Array
-		
-		// TODO: Test non-zero LowerBound
 		
 		/// <summary>
 		/// Gets the number of elements in the array.
