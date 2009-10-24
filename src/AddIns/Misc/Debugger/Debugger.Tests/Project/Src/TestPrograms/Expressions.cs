@@ -130,8 +130,8 @@ namespace Debugger.Tests {
       </Item>
     </Arguments>
     <LocalVariables
-      Capacity="4"
-      Count="4">
+      Capacity="8"
+      Count="5">
       <Item>
         <Value
           AsString="0"
@@ -164,6 +164,13 @@ namespace Debugger.Tests {
           IsReference="True"
           PrimitiveValue="baseClassString"
           Type="System.String" />
+      </Item>
+      <Item>
+        <Value
+          AsString="{Debugger.Tests.TestPrograms.TestClass}"
+          IsReference="True"
+          PrimitiveValue="{Exception: Value is not a primitive type}"
+          Type="Debugger.Tests.TestPrograms.TestClass" />
       </Item>
     </LocalVariables>
     <this>
@@ -236,6 +243,7 @@ namespace Debugger.Tests {
           FullName="Debugger.Tests.TestPrograms.TestClass.get_Name"
           IsPublic="True"
           IsSpecialName="True"
+          LocalVariableNames="{this}"
           Module="Expressions.exe"
           Name="get_Name"
           ReturnType="System.String"
@@ -255,7 +263,7 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.TestClass"
           FullName="Debugger.Tests.TestPrograms.TestClass.Test"
           IsPublic="True"
-          LocalVariableNames="{array, array2, BaseClass, i}"
+          LocalVariableNames="{array, array2, BaseClass, i, this}"
           Module="Expressions.exe"
           Name="Test"
           ParameterCount="1"
@@ -266,6 +274,7 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.TestClass"
           FullName="Debugger.Tests.TestPrograms.TestClass.Test"
           IsPublic="True"
+          LocalVariableNames="{this}"
           Module="Expressions.exe"
           Name="Test"
           ParameterCount="1"
@@ -276,6 +285,7 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.TestClass"
           FullName="Debugger.Tests.TestPrograms.TestClass.Test"
           IsPublic="True"
+          LocalVariableNames="{this}"
           Module="Expressions.exe"
           Name="Test"
           ParameterCount="1"
@@ -286,6 +296,7 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.TestClass"
           FullName="Debugger.Tests.TestPrograms.TestClass.Foo"
           IsPublic="True"
+          LocalVariableNames="{this}"
           Module="Expressions.exe"
           Name="Foo"
           ParameterCount="1"
@@ -297,6 +308,7 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.TestPrograms.TestClass"
           FullName="Debugger.Tests.TestPrograms.TestClass.Foo"
           IsPublic="True"
+          LocalVariableNames="{this}"
           Module="Expressions.exe"
           Name="Foo"
           ParameterCount="1"
@@ -309,6 +321,7 @@ namespace Debugger.Tests {
           FullName="Debugger.Tests.TestPrograms.TestClass..ctor"
           IsPublic="True"
           IsSpecialName="True"
+          LocalVariableNames="{this}"
           Module="Expressions.exe"
           Name=".ctor" />
       </Item>

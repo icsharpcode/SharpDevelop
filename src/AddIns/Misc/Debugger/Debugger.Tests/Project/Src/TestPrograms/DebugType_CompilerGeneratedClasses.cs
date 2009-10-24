@@ -120,6 +120,26 @@ namespace Debugger.Tests {
           Name="stateLessVar_NestedDelegRef"
           Value="203" />
       </Item>
+      <Item>
+        <AnonymousType
+          Name="this"
+          Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
+      </Item>
+      <Item>
+        <AnonymousType
+          Name="stateFullVar"
+          Value="101" />
+      </Item>
+      <Item>
+        <AnonymousType
+          Name="stateFullVar_DelegRef"
+          Value="102" />
+      </Item>
+      <Item>
+        <AnonymousType
+          Name="stateFullVar_NestedDelegRef"
+          Value="103" />
+      </Item>
     </YieldLocalVariables>
     <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:54,6-54,42</DebuggingPaused>
     <OutterDelegateLocalVariables>

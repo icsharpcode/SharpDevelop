@@ -399,7 +399,12 @@ namespace Debugger
 		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
-			return context.GetThisValue();
+			// This is needed so that captured 'this' is supported
+			foreach(LocalVariableInfo locVar in context.MethodInfo.LocalVariables) {
+				if (locVar.IsThis)
+					return locVar.GetValue(context);
+			}
+			throw new GetValueException(context.MethodInfo.FullName + " does not have \"this\"");
 		}
 		
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)

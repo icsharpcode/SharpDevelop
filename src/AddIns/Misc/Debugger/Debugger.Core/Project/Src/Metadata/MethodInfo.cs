@@ -453,57 +453,82 @@ namespace Debugger.MetaData
 			if (localVariables != null) return localVariables;
 			
 			localVariables = GetLocalVariablesInScope(this.SymMethod.RootScope);
-			if (!this.IsStatic && this.DeclaringType.IsDisplayClass) {
+			if (this.DeclaringType.IsDisplayClass || this.DeclaringType.IsYieldEnumerator) {
 				// Get display class from self
-				localVariables.AddRange(GetLocalVariablesFromDisplayClass(
+				AddCapturedLocalVariables(
+					localVariables,
 					delegate(StackFrame context) {
 						return context.GetThisValue();
 					},
 					this.DeclaringType
-				));
+				);
 				// Get dispaly classes from fields
 				foreach(FieldInfo fieldInfo in this.DeclaringType.GetFields()) {
 					FieldInfo fieldInfoCopy = fieldInfo;
 					if (fieldInfo.Name.StartsWith("CS$")) {
-						localVariables.AddRange(GetLocalVariablesFromDisplayClass(
+						AddCapturedLocalVariables(
+							localVariables,
 							delegate(StackFrame context) {
 								return context.GetThisValue().GetFieldValue(fieldInfoCopy);
 							},
 							fieldInfo.Type
-						));
+						);
 					}
 				}
-			}
-			if (this.DeclaringType.IsYieldEnumerator) {
-				
+			} else {
+				// Add this
+				if (!this.IsStatic) {
+					LocalVariableInfo thisVar = new LocalVariableInfo(
+						"this",
+						this.DeclaringType,
+						delegate(StackFrame context) {
+							return context.GetThisValue();
+						}
+					);
+					thisVar.IsThis = true;
+					localVariables.Add(thisVar);
+				}
 			}
 			return localVariables;
 		}
 		
-		List<LocalVariableInfo> GetLocalVariablesFromDisplayClass(ValueGetter getDisplayClass, DebugType displayClassType)
+		static void AddCapturedLocalVariables(List<LocalVariableInfo> vars, ValueGetter getCaptureClass, DebugType captureClassType)
 		{
-			List<LocalVariableInfo> vars = new List<LocalVariableInfo>();
-			if (displayClassType.IsDisplayClass) {
-				foreach(FieldInfo fieldInfo in displayClassType.GetFields()) {
+			if (captureClassType.IsDisplayClass || captureClassType.IsYieldEnumerator) {
+				foreach(FieldInfo fieldInfo in captureClassType.GetFields()) {
 					FieldInfo fieldInfoCopy = fieldInfo;
-					if (!fieldInfo.Name.StartsWith("CS$")) {
-						LocalVariableInfo locVar = new LocalVariableInfo(
-							fieldInfo.Name,
-							fieldInfo.Type,
-							delegate(StackFrame context) {
-								return getDisplayClass(context).GetFieldValue(fieldInfoCopy);
+					if (fieldInfo.Name.StartsWith("CS$")) continue; // Ignore
+					LocalVariableInfo locVar = new LocalVariableInfo(
+						fieldInfo.Name,
+						fieldInfo.Type,
+						delegate(StackFrame context) {
+							return getCaptureClass(context).GetFieldValue(fieldInfoCopy);
+						}
+					);
+					locVar.IsCaptured = true;
+					if (locVar.Name.StartsWith("<>")) {
+						bool hasThis = false;
+						foreach(LocalVariableInfo l in vars) {
+							if (l.IsThis) {
+								hasThis = true;
+								break;
 							}
-						);
-						locVar.IsCapturedByDelegate = true;
-						if (fieldInfo.Name.StartsWith("<>") && fieldInfo.Name.EndsWith("__this")) {
+						}
+						if (!hasThis && locVar.Name.EndsWith("__this")) {
 							locVar.Name = "this";
 							locVar.IsThis = true;
+						} else {
+							continue; // Ignore
 						}
-						vars.Add(locVar);
 					}
+					if (locVar.Name.StartsWith("<")) {
+						int endIndex = locVar.Name.IndexOf('>');
+						if (endIndex == -1) continue; // Ignore
+						locVar.Name = fieldInfo.Name.Substring(1, endIndex - 1);
+					}
+					vars.Add(locVar);
 				}
 			}
-			return vars;
 		}
 		
 		List<LocalVariableInfo> GetLocalVariablesInScope(ISymUnmanagedScope symScope)
@@ -520,12 +545,13 @@ namespace Debugger.MetaData
 				if ((symVar.Attributes & 1) == 1 || symVar.Name.StartsWith("CS$")) {
 					// Get display class from local variable
 					if (locVarType.IsDisplayClass) {
-						vars.AddRange(GetLocalVariablesFromDisplayClass(
+						AddCapturedLocalVariables(
+							vars,
 							delegate(StackFrame context) {
 								return GetLocalVariableValue(context, symVarCopy);
 							},
 							locVarType
-						));
+						);
 					}
 				} else {
 					LocalVariableInfo locVar = new LocalVariableInfo(
@@ -566,7 +592,7 @@ namespace Debugger.MetaData
 		public string Name { get; internal set; }
 		public DebugType Type { get; private set; }
 		public bool IsThis { get; internal set; }
-		public bool IsCapturedByDelegate { get; internal set; }
+		public bool IsCaptured { get; internal set; }
 		
 		public LocalVariableInfo(string name, DebugType type, ValueGetter getter)
 		{

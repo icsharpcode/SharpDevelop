@@ -298,6 +298,7 @@ namespace Debugger.Tests {
           FullName="Access.get_publicProperty"
           IsPublic="True"
           IsSpecialName="True"
+          LocalVariableNames="{this}"
           Module="DebugType.exe"
           Name="get_publicProperty"
           ReturnType="System.Int32" />
@@ -307,6 +308,7 @@ namespace Debugger.Tests {
           DeclaringType="Access"
           FullName="Access.publicMethod"
           IsPublic="True"
+          LocalVariableNames="{this}"
           Module="DebugType.exe"
           Name="publicMethod" />
       </Item>
@@ -316,6 +318,7 @@ namespace Debugger.Tests {
           FullName="Access..ctor"
           IsPublic="True"
           IsSpecialName="True"
+          LocalVariableNames="{this}"
           Module="DebugType.exe"
           Name=".ctor" />
       </Item>
@@ -348,6 +351,7 @@ namespace Debugger.Tests {
           FullName="MyInterfaceImpl&lt;System.Int32&gt;.get_Prop"
           IsPublic="True"
           IsSpecialName="True"
+          LocalVariableNames="{this}"
           Module="DebugType.exe"
           Name="get_Prop"
           ReturnType="System.Collections.Generic.List&lt;System.Int32&gt;" />
@@ -357,6 +361,7 @@ namespace Debugger.Tests {
           DeclaringType="MyInterfaceImpl&lt;System.Int32&gt;"
           FullName="MyInterfaceImpl&lt;System.Int32&gt;.Fun2"
           IsPublic="True"
+          LocalVariableNames="{this}"
           Module="DebugType.exe"
           Name="Fun2"
           ParameterCount="3"
