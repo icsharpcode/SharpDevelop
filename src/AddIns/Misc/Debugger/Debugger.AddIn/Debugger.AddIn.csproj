@@ -1,0 +1,426 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Debugger.AddIn</RootNamespace>
+    <AssemblyName>Debugger.AddIn</AssemblyName>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>116916224</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
+    <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\HP\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <PublishUrl>http://localhost/Debugger.AddIn/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework.Aero">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BreakpointChangeMenuBuilder.cs" />
+    <Compile Include="DisableBreakpointMenuCommand.cs" />
+    <Compile Include="EnableBreakpointMenuCommand.cs" />
+    <Compile Include="IsActiveBreakpointCondition.cs" />
+    <Compile Include="IsBreakpointCondition.cs" />
+    <Compile Include="Options\DebuggingOptions.cs" />
+    <Compile Include="Options\DebuggingOptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Options\DebuggingOptionsPanel.Designer.cs">
+      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Options\DebuggingSymbolsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Options\DebuggingSymbolsPanel.Designer.cs">
+      <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Pads\ObjectGraphPad.cs" />
+    <Compile Include="Pads\SelectLanguageCommand.cs" />
+    <Compile Include="Pads\WatchPadCommands.cs" />
+    <Compile Include="Pads\BreakPointsPad.cs" />
+    <Compile Include="Pads\CallStackPad.cs" />
+    <Compile Include="Pads\ConsolePad.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pads\LoadedModulesPad.cs" />
+    <Compile Include="Pads\LocalVarPad.cs" />
+    <Compile Include="Pads\RunningThreadsPad.cs" />
+    <Compile Include="Pads\WatchPad.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Pads\WatchPadModel.cs" />
+    <Compile Include="Service\AttachToProcessForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Service\DebuggeeExceptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Service\DebuggeeExceptionForm.Designer.cs">
+      <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Service\DebuggerEventForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Service\DebuggerEventForm.Designer.cs">
+      <DependentUpon>DebuggerEventForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Service\EditBreakpointScriptWindow.xaml.cs">
+      <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TreeModel\DebuggerResourceService.cs" />
+    <Compile Include="TreeModel\IEnumerableNode.cs" />
+    <Compile Include="Visualizers\Commands\ExpressionVisualizerCommand.cs" />
+    <Compile Include="Visualizers\Commands\GridVisualizerCommand.cs" />
+    <Compile Include="Visualizers\Commands\IVisualizerCommandDescriptor.cs" />
+    <Compile Include="Visualizers\Commands\ObjectGraphVisualizerCommand.cs" />
+    <Compile Include="Visualizers\Commands\GridVisualizerMenuCommand.cs" />
+    <Compile Include="Visualizers\Commands\ObjectGraphVisualizerMenuCommand.cs" />
+    <Compile Include="Visualizers\Commands\TextVisualizerCommand.cs" />
+    <Compile Include="Visualizers\Commands\VisualizerDescriptors.cs" />
+    <Compile Include="Visualizers\Commands\XmlVisualizerCommand.cs" />
+    <Compile Include="Visualizers\Common\DebuggerVisualizerException.cs" />
+    <Compile Include="Visualizers\Common\IEvaluate.cs" />
+    <Compile Include="Visualizers\Common\IListValuesProvider.cs" />
+    <Compile Include="Visualizers\Common\ObjectPropertyComparer.cs" />
+    <Compile Include="Visualizers\Common\VirtualizingCollection.cs" />
+    <Compile Include="Visualizers\Common\VirtualizingObservableCollection.cs" />
+    <Compile Include="Visualizers\Controls\DragScrollViewer.cs" />
+    <Compile Include="Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml.cs">
+      <DependentUpon>PositionedGraphNodeControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Visualizers\Graph\Expanded.cs" />
+    <Compile Include="Visualizers\Graph\ExpandedContentNodes.cs" />
+    <Compile Include="Visualizers\Graph\ExpandedExpressions.cs" />
+    <Compile Include="Visualizers\Graph\Layout\ContentNodeEventArgs.cs" />
+    <Compile Include="Visualizers\Graph\Layout\ContentPropertyNode.cs" />
+    <Compile Include="Visualizers\Graph\Layout\ContentNode.cs" />
+    <Compile Include="Visualizers\Graph\NodeControlCache.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraphControl.xaml.cs">
+      <DependentUpon>ObjectGraphControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Visualizers\Graph\ObjectGraph\NamedEdge.cs" />
+    <Compile Include="Visualizers\Graph\TreeModel\AbstractNode.cs" />
+    <Compile Include="Visualizers\Graph\TreeModel\BaseClassNode.cs" />
+    <Compile Include="Visualizers\Graph\TreeModel\ThisNode.cs" />
+    <Compile Include="Visualizers\Graph\TreeModel\NestedNodeType.cs" />
+    <Compile Include="Visualizers\Graph\TreeModel\NonPublicMembersNode.cs" />
+    <Compile Include="Visualizers\Graph\TreeModel\PropertyNode.cs" />
+    <Compile Include="Visualizers\GridVisualizer\ValueProviders\GridValuesProvider.cs" />
+    <Compile Include="Visualizers\PresentationBindings\GridViewColumnHider.cs" />
+    <Compile Include="Visualizers\PresentationBindings\GridViewHideableColumn.cs" />
+    <Compile Include="Visualizers\PresentationBindings\ScrollUtils.cs" />
+    <Compile Include="Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
+    <Compile Include="Visualizers\TextVisualizer\TextVisualizerMode.cs" />
+    <Compile Include="Visualizers\TextVisualizer\TextVisualizerWindow.xaml.cs">
+      <DependentUpon>TextVisualizerWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Visualizers\Utils\AtomicType.cs" />
+    <Compile Include="Visualizers\Utils\IEnumerableExtensions.cs" />
+    <Compile Include="Visualizers\Utils\ITreeNode.cs" />
+    <Compile Include="Visualizers\Utils\LinqUtils.cs" />
+    <Compile Include="Visualizers\Utils\ListHelper.cs" />
+    <Compile Include="Visualizers\Utils\StringHelper.cs" />
+    <Compile Include="Visualizers\Utils\TreeFlattener.cs" />
+    <Compile Include="Visualizers\Utils\TypeResolver.cs" />
+    <EmbeddedResource Include="Service\DebuggeeExceptionForm.resx">
+      <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Service\RemotingConfigurationHelpper.cs" />
+    <Compile Include="Service\RunToCursorCommand.cs" />
+    <Compile Include="Service\WindowsDebugger.cs" />
+    <EmbeddedResource Include="Options\DebuggingOptionsPanel.resx">
+      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Options\DebuggingSymbolsPanel.resx">
+      <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Service\DebuggerEventForm.resx">
+      <DependentUpon>DebuggerEventForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Service\SetCurrentStatementCommand.cs" />
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Pads\DebuggerPad.cs" />
+    <Compile Include="Pads\CallStackPad.Menu.cs" />
+    <Compile Include="Pads\RunningThreadsPad.Menu.cs" />
+    <Compile Include="TreeModel\TreeNode.cs" />
+    <Compile Include="TreeModel\Adapters\DynamicTreeDebuggerRow.cs" />
+    <Compile Include="TreeModel\Adapters\TreeViewVarNode.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TreeModel\ArrayRangeNode.cs" />
+    <Compile Include="TreeModel\ExpressionNode.cs" />
+    <Compile Include="TreeModel\IContextMenu.cs" />
+    <Compile Include="TreeModel\ISetText.cs" />
+    <Compile Include="TreeModel\ChildNodesOfObject.cs" />
+    <Compile Include="TreeModel\StackFrameNode.cs" />
+    <Compile Include="TreeModel\Utils.cs" />
+    <Compile Include="Visualizers\Graph\Drawing\CanvasLocationAdapter.cs" />
+    <Compile Include="Visualizers\Graph\Drawing\GraphDrawer.cs" />
+    <Compile Include="Visualizers\Graph\ExpandedPaths.cs" />
+    <Compile Include="Visualizers\Graph\Layout\GraphDiff.cs" />
+    <Compile Include="Visualizers\Graph\Layout\GraphMatcher.cs" />
+    <Compile Include="Visualizers\Graph\Layout\PositionedEdge.cs" />
+    <Compile Include="Visualizers\Graph\Layout\PositionedGraph.cs" />
+    <Compile Include="Visualizers\Graph\Layout\PositionedGraphNode.cs" />
+    <Compile Include="Visualizers\Graph\Layout\PositionedNodeProperty.cs" />
+    <Compile Include="Visualizers\Graph\Layout\PositionedPropertyEventArgs.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\BoxDotFormatter.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\DotFormatter.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\IdGenerator.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\LayoutDirection.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\NeatoDoubleFormatter.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\NeatoEdgeRouter.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\NeatoPositionTransform.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\NeatoProcess.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\RecordDotFormatter.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\TreeEdge.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\TreeLayouter.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\TreeGraphNode.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\TreeGraphNodeLR.cs" />
+    <Compile Include="Visualizers\Graph\Layout\Tree\TreeGraphNodeTB.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraph.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraphBuilder.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraphNode.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraph\ObjectGraphProperty.cs" />
+    <Compile Include="Visualizers\GridVisualizer\GridVisualizerWindow.xaml.cs">
+      <DependentUpon>GridVisualizerWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Visualizers\GridVisualizer\ObjectValue.cs" />
+    <Compile Include="Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
+    <Compile Include="Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
+    <Compile Include="Visualizers\ObjectProperty.cs" />
+    <Compile Include="Visualizers\Utils\DebuggerHelpers.cs" />
+    <Compile Include="Visualizers\Utils\DictionaryExtensions.cs" />
+    <Compile Include="Visualizers\Utils\Lookup.cs" />
+    <Compile Include="Visualizers\Utils\LookupValueCollection.cs" />
+    <Compile Include="Visualizers\Graph\ObjectGraphWindow.xaml.cs">
+      <DependentUpon>ObjectGraphWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Visualizers\ICorDebug.cs" />
+    <Compile Include="Visualizers\IList.cs" />
+    <Compile Include="Visualizers\PresentationBindings\DisplayAttribute.cs" />
+    <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
+    <Compile Include="Visualizers\PresentationBindings\ViewModelBase.cs" />
+    <None Include="COPYING" />
+    <None Include="Visualizers\Graph\Graphviz\cdt.dll" />
+    <None Include="Visualizers\Graph\Graphviz\cgraph.dll" />
+    <None Include="Visualizers\Graph\Graphviz\comctl32.dll" />
+    <None Include="Visualizers\Graph\Graphviz\config6" />
+    <None Include="Visualizers\Graph\Graphviz\graph.dll" />
+    <None Include="Visualizers\Graph\Graphviz\gvc.dll" />
+    <None Include="Visualizers\Graph\Graphviz\gvplugin_core.dll" />
+    <None Include="Visualizers\Graph\Graphviz\gvplugin_dot_layout.dll" />
+    <None Include="Visualizers\Graph\Graphviz\gvplugin_gd.dll" />
+    <None Include="Visualizers\Graph\Graphviz\gvplugin_neato_layout.dll" />
+    <None Include="Visualizers\Graph\Graphviz\gvplugin_pango.dll" />
+    <None Include="Visualizers\Graph\Graphviz\iconv.dll" />
+    <None Include="Visualizers\Graph\Graphviz\intl.dll" />
+    <None Include="Visualizers\Graph\Graphviz\jpeg62.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libcairo-2.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libexpat.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libfontconfig-1.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libfreetype-6.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libgdk_pixbuf-2.0-0.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libglib-2.0-0.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libgmodule-2.0-0.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libgobject-2.0-0.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libltdl-3.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libpango-1.0-0.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libpangocairo-1.0-0.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libpangoft2-1.0-0.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libpangowin32-1.0-0.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libpng12.dll" />
+    <None Include="Visualizers\Graph\Graphviz\libxml2.dll" />
+    <None Include="Visualizers\Graph\Graphviz\ltdl.dll" />
+    <None Include="Visualizers\Graph\Graphviz\msvcp80.dll" />
+    <None Include="Visualizers\Graph\Graphviz\msvcr80.dll" />
+    <None Include="Visualizers\Graph\Graphviz\neato.exe" />
+    <None Include="Visualizers\Graph\Graphviz\Pathplan.dll" />
+    <None Include="Visualizers\Graph\Graphviz\regex_win32.dll" />
+    <None Include="Visualizers\Graph\Graphviz\vmalloc.dll" />
+    <None Include="Visualizers\Graph\Graphviz\zlib1.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Debugger.AddIn.addin">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Debugger.Core\Debugger.Core.csproj">
+      <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
+      <Name>Debugger.Core</Name>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </ProjectReference>
+    <Content Include="PostBuildEvent.proj" />
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Service\EditBreakpointScriptWindow.xaml" />
+    <Page Include="Visualizers\Graph\Drawing\PlusToggleButton.xaml" />
+    <Page Include="Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
+    <Page Include="Visualizers\Graph\ObjectGraphControl.xaml" />
+    <Page Include="Visualizers\GridVisualizer\GridVisualizerWindow.xaml" />
+    <Page Include="Visualizers\TextVisualizer\TextVisualizerWindow.xaml" />
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\TreeViewAdv\Aga.Controls\Aga.Controls.csproj">
+      <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
+      <Name>Aga.Controls</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Folder Include="Visualizers\Graph" />
+    <Folder Include="Visualizers\Graph\Drawing" />
+    <Folder Include="Visualizers\Graph\Layout" />
+    <Folder Include="Visualizers\Graph\Layout\Tree" />
+    <Folder Include="Visualizers\Graph\Graphviz" />
+    <Folder Include="Visualizers\Graph\TreeModel" />
+    <Folder Include="Visualizers\Graph\ObjectGraph" />
+    <Folder Include="Visualizers\GridVisualizer\ValueProviders" />
+    <Folder Include="Visualizers\Controls" />
+    <Folder Include="Visualizers\Common" />
+    <Folder Include="Visualizers\Commands" />
+    <Folder Include="Visualizers\TextVisualizer" />
+    <Folder Include="Visualizers\Utils" />
+    <Folder Include="Visualizers\GridVisualizer" />
+    <Folder Include="Visualizers\PresentationBindings" />
+    <Page Include="Visualizers\Graph\ObjectGraphWindow.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="PostBuildEvent.proj" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)Visualizers\Graph\Graphviz\*.*" "$(TargetDir)" /Y</PostBuildEvent>
+  </PropertyGroup>
+</Project>
