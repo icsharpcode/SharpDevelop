@@ -207,10 +207,8 @@ namespace Debugger.Tests {
 			Value myClass = process.SelectedStackFrame.GetLocalVariableValue("myClass");
 			
 			List<Expression> expressions = new List<Expression>();
-			foreach(MemberInfo memberInfo in myClass.Type.GetMembers(Debugger.MetaData.DebugType.BindingFlagsAll)) {
-				if (memberInfo.Name == typeof(object).Name) continue;
-				if (memberInfo.MemberType == MemberTypes.Field || memberInfo.MemberType == MemberTypes.Property)
-					expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((IDebugMemberInfo)memberInfo));
+			foreach(MemberInfo memberInfo in myClass.Type.GetFieldsAndNonIndexedProperties(DebugType.BindingFlagsAll)) {
+				expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((IDebugMemberInfo)memberInfo));
 			}
 			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("StaticMethod")));
 			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)((DebugType)myClass.Type.BaseType).GetMethod("Foo", new string[] { "i" }), new PrimitiveExpression(1)));
@@ -230,7 +228,8 @@ namespace Debugger.Tests {
 				myClass[(long)1]
 				myClass[1.0]
 				myClass['abc']
-				myClass.Convert(1,2)
+				myClass.Convert(1, 2)
+				myClass.Convert('abc', 2)
 			";
 			
 			input2 = input2.Replace("'", "\"");
@@ -310,8 +309,10 @@ namespace Debugger.Tests {
     <Eval> hi[1] = 'i' </Eval>
     <Eval> "abcd"[2] = 'c' </Eval>
     <Eval> </Eval>
-    <Eval> list.Add(42); list.Add(52);</Eval>
-    <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o', '*', '4'} </Eval>
+    <Eval> list.Add(42); list.Add(52); = Error evaluating "list.Add(42);
+list.Add(52);
+": Incorrect parameter type for 'item'. Excpeted System.Char, seen System.Int32 </Eval>
+    <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o'} </Eval>
     <Eval> </Eval>
     <Eval> i = 10 = 10 </Eval>
     <Eval> -i = -10 </Eval>
@@ -331,7 +332,6 @@ namespace Debugger.Tests {
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).name = "derived name" </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.StaticField = "derived static field" </Eval>
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Name = "derived name" </Eval>
-    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).SetterOnlyProperty = Error evaluating "((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).SetterOnlyProperty": Property does not have a get method </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.StaticProperty = "static property" </Eval>
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass).name = "base name" </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.BaseClass.StaticField = "base static field" </Eval>
@@ -351,7 +351,8 @@ namespace Debugger.Tests {
     <Eval> myClass[(long)1] = "base indexer - long" </Eval>
     <Eval> myClass[1.0] = "derived indexer - double" </Eval>
     <Eval> myClass["abc"] = "derived indexer - string" </Eval>
-    <Eval> myClass.Convert(1,2) = Error evaluating "myClass.Convert(1, 2)": Incorrect parameter types </Eval>
+    <Eval> myClass.Convert(1, 2) = Error evaluating "myClass.Convert(1, 2)": Incorrect parameter type for 's'. Excpeted System.String, seen System.Int32 </Eval>
+    <Eval> myClass.Convert("abc", 2) = "converted to abc and 2" </Eval>
     <Eval> </Eval>
     <ProcessExited />
   </Test>

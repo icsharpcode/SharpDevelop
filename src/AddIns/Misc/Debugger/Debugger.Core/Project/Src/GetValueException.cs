@@ -46,6 +46,11 @@ namespace Debugger
 			this.error = error;
 		}
 		
+		public GetValueException(string errorFmt, params object[] args):base(string.Format(errorFmt, args))
+		{
+			this.error = string.Format(errorFmt, args);
+		}
+		
 		public GetValueException(string error):base(error)
 		{
 			this.error = error;

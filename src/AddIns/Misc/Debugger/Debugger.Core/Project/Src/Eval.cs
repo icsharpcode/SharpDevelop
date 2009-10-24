@@ -222,7 +222,11 @@ namespace Debugger
 			if (args.Length != method.ParameterCount) {
 				throw new GetValueException("Invalid parameter count");
 			}
-			if (thisValue != null) {
+			if (!method.IsStatic) {
+				if (thisValue == null)
+					throw new GetValueException("'this' is null");
+				if (thisValue.IsNull)
+					throw new GetValueException("Null reference");
 				// if (!(thisValue.IsObject)) // eg Can evaluate on array
 				if (!method.DeclaringType.IsInstanceOfType(thisValue)) {
 					throw new GetValueException(
@@ -233,14 +237,24 @@ namespace Debugger
 				corArgs.Add(thisValue.CorValue);
 			}
 			for(int i = 0; i < args.Length; i++) {
+				Value arg = args[i];
+				DebugType paramType = (DebugType)method.GetParameters()[i].ParameterType;
+				if (!arg.Type.CanImplicitelyConvertTo(paramType))
+					throw new GetValueException("Inncorrect parameter type");
+				// Implicitely convert to correct primitve type
+				if (paramType.IsPrimitive && args[i].Type != paramType) {
+					object oldPrimVal = arg.PrimitiveValue;
+					object newPrimVal = Convert.ChangeType(oldPrimVal, paramType.PrimitiveType);
+					arg = CreateValue(method.AppDomain, newPrimVal);
+				}
 				// It is importatnt to pass the parameted in the correct form (boxed/unboxed)
-				if (method.GetParameters()[i].ParameterType.IsValueType) {
-					corArgs.Add(args[i].CorGenericValue);
+				if (paramType.IsValueType) {
+					corArgs.Add(arg.CorGenericValue);
 				} else {
 					if (args[i].Type.IsValueType) {
-						corArgs.Add(args[i].Box().CorValue);
+						corArgs.Add(arg.Box().CorValue);
 					} else {
-						corArgs.Add(args[i].CorValue);
+						corArgs.Add(arg.CorValue);
 					}
 				}
 			}
@@ -263,7 +277,8 @@ namespace Debugger
 			} else if (value is string) {
 	    		return Eval.NewString(appDomain, (string)value);
 			} else {
-	    		// TODO: Check if it is primitive type
+	    		if (!value.GetType().IsPrimitive)
+	    			throw new DebuggerException("Value must be primitve type.  Seen " + value.GetType());
 				Value val = Eval.NewObjectNoConstructor(DebugType.CreateFromType(appDomain.Mscorlib, value.GetType()));
 				val.PrimitiveValue = value;
 				return val;

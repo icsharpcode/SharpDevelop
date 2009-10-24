@@ -337,6 +337,19 @@ namespace Debugger.MetaData
 		{
 			if (candidates.Length == 0)
 				return null;
+			if (candidates.Length == 1) {
+				if (argumentTypes == null)
+					return candidates[0];
+				ParameterInfo[] pars = ((IOverloadable)candidates[0]).GetParameters();
+				if (pars.Length != argumentTypes.Length)
+					throw new GetValueException("Incorrect parameter count");
+				for(int i = 0; i < pars.Length; i++) {
+					ParameterInfo par = pars[i];
+					if (!((DebugType)argumentTypes[i]).CanImplicitelyConvertTo(par.ParameterType))
+						throw new GetValueException("Incorrect parameter type for '{0}'. Excpeted {1}, seen {2}", par.Name, par.ParameterType.FullName, argumentTypes[i]);
+				}
+				return candidates[0];
+			}
 			
 			List<MemberInfo> applicable = new List<MemberInfo>();
 			foreach(MemberInfo candidate in candidates) {
@@ -347,11 +360,7 @@ namespace Debugger.MetaData
 					return candidate;
 			}
 			if (applicable.Count == 0) {
-				if (candidates.Length == 1) {
-					throw new GetValueException("Incorrect parameter types");
-				} else {
-					throw new GetValueException("No applicable overload found");
-				}
+				throw new GetValueException("No applicable overload found");
 			} else if (applicable.Count == 1) {
 				return applicable[0];
 			} else {
@@ -387,7 +396,7 @@ namespace Debugger.MetaData
 			for(int i = 0; i < parameters.Length; i++) {
 				if (argumentTypes[i] != parameters[i].ParameterType) {
 					isExactMatch = false;
-					if (!CanImplicitelyConvert(argumentTypes[i], parameters[i].ParameterType))
+					if (!((DebugType)argumentTypes[i]).CanImplicitelyConvertTo(parameters[i].ParameterType))
 						return false;
 				}
 			}
@@ -407,12 +416,12 @@ namespace Debugger.MetaData
 		static string Char    = typeof(char).FullName;
 		static string Decimal = typeof(decimal).FullName;
 		
-		bool CanImplicitelyConvert(Type fromType, Type toType)
+		public bool CanImplicitelyConvertTo(Type toType)
 		{
-			if (fromType == toType)
+			if (this == toType)
 				return true;
-			if (fromType.IsPrimitive && toType.IsPrimitive) {
-				string f = fromType.FullName;
+			if (this.IsPrimitive && toType.IsPrimitive) {
+				string f = this.FullName;
 				string t = toType.FullName;
 				if (f == SByte && (t == Short || t == Int || t == Long || t == Float || t == Double || t == Decimal))
 					return true;
@@ -434,7 +443,7 @@ namespace Debugger.MetaData
 					return true;
 				return false;
 			} else {
-				return toType.IsAssignableFrom(fromType);
+				return toType.IsAssignableFrom(this);
 			}
 		}
 		
@@ -1199,6 +1208,7 @@ namespace Debugger.MetaData
 				case "System.UInt64":  return typeof(System.UInt64);
 				case "System.Single":  return typeof(System.Single);
 				case "System.Double":  return typeof(System.Double);
+				// TODO: Remove, not a primitve type
 				case "System.String":  return typeof(System.String);
 				default: return null;
 			}
