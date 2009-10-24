@@ -153,38 +153,20 @@ namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
 		string expressionsInput = @"
-				b
-				i
-				*i
-				*iPtr
-				pi
-				pi - 3
-				b + i
-				i + b
-				b + pi
-				pi + b
-				hi + pi
-				pi + hi
-				pi + '' '' + hi
+				b; i; *i; *iPtr; pi
+				pi - 3; pi + b; i + b; (uint)2 - 3; ((uint)2 - 3).GetType() ; (ulong)2 - 3 ; ((ulong)2 - 3).GetType(); (b + b).GetType()
+				1 << 4; 7 << -1; 1 << (uint)2; 1.0 & 2.0; System.Int32.MaxValue + 1; (uint)2 - (uint)3; 1 / 0
+				hi + hi;  hi + ''#'';  hi + pi;  hi + null
+				hi + ''#'' == ''hi#''; hi == (string)null; hi == null; hi == 1; null == null
 				
-				arg
-				instanceField
-				staticField
+				arg; instanceField; staticField
 				
-				(5 + 6) % (1 + 2)
-				3 % 2 == 1
-				15 & 255
-				15 && 255
-				b + 3 == i
-				b + 4 == i
-				true == true
-				true == false
+				(5 + 6) % (1 + 2); 3 % 2 == 1
+				15 & 255; 15 && 255
+				b + 3 == i; b + 4 == i
+				true == true; true == false
 				
-				array
-				arrays
-				array[1]
-				array[i]
-				array[i - 1]
+				array; arrays; array[1]; array[i]; array[i - 1]
 				new char[3]
 				new char[b] {'a'}
 				new char[3] {'a', 'b', 'c'}
@@ -193,27 +175,13 @@ namespace Debugger.Tests {
 				new char[5] {'a', 'b', 'c'}
 				new char[1,2]
 				new char[pi]
-				list
-				list[1]
-				list[i]
-				hi[1]
-				''abcd''[2]
+				list; list[1]; list[i]; hi[1]; ''abcd''[2]
 				
-				list.Add((char)42); list.Add((char)52);
-				list
-				list = new System.Collections.Generic.List<char>(array2);
-				list
+				list.Add((char)42); list.Add((char)52); list
+				list = new System.Collections.Generic.List<char>(array2); list
 				
-				i = 10
-				-i
-				++i
-				i++
-				i
-				i += 1
-				i
-				~i
-				flag
-				!flag
+				i = 10; -i; ++i; i++; i; i += 1; i; ~i
+				flag; !flag
 			";
 		
 		[NUnit.Framework.Test]
@@ -221,11 +189,7 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			expressionsInput = expressionsInput.Replace("''", "\"");
-			
-			foreach(string line in expressionsInput.Split('\n')) {
-				Eval(line.Trim());
-			}
+			EvalAll(expressionsInput);
 			
 			// Test member hiding / overloading
 			
@@ -257,10 +221,7 @@ namespace Debugger.Tests {
 				myClass.Convert(''abc'', 2)
 			";
 			
-			input2 = input2.Replace("''", "\"");
-			foreach(string line in input2.Split('\n')) {
-				Eval(line.Trim());
-			}
+			EvalAll(input2);
 			
 			// Test type round tripping
 			
@@ -284,6 +245,14 @@ namespace Debugger.Tests {
 			ObjectDump("TypesEqual", locType == valType);
 			
 			EndTest();
+		}
+		
+		void EvalAll(string exprs)
+		{
+			exprs = exprs.Replace("''", "\"");
+			foreach(string line in exprs.Split('\n', ';')) {
+				Eval(line.Trim());
+			}
 		}
 		
 		void Eval(string expr)
@@ -326,13 +295,29 @@ namespace Debugger.Tests {
     <Eval> *iPtr = 4 </Eval>
     <Eval> pi = 3.14 </Eval>
     <Eval> pi - 3 = 0.1400001 </Eval>
-    <Eval> b + i = 5 </Eval>
-    <Eval> i + b = 5 </Eval>
-    <Eval> b + pi = 4.14 </Eval>
     <Eval> pi + b = 4.14 </Eval>
+    <Eval> i + b = 5 </Eval>
+    <Eval> (uint)2 - 3 = -1 </Eval>
+    <Eval> ((uint)2 - 3).GetType() = System.Int64 </Eval>
+    <Eval> (ulong)2 - 3 = -1 </Eval>
+    <Eval> ((ulong)2 - 3).GetType() = System.Single </Eval>
+    <Eval> (b + b).GetType() = System.Int32 </Eval>
+    <Eval> 1 &lt;&lt; 4 = 16 </Eval>
+    <Eval> 7 &lt;&lt; -1 = -2147483648 </Eval>
+    <Eval> 1 &lt;&lt; (uint)2 = Can not use the binary operator ShiftLeft for types System.Int32 and System.UInt32 </Eval>
+    <Eval> 1.0 &amp; 2.0 = Can not use the binary operator BitwiseAnd for types System.Double and System.Double </Eval>
+    <Eval> System.Int32.MaxValue + 1 = -2147483648 </Eval>
+    <Eval> (uint)2 - (uint)3 = 4294967295 </Eval>
+    <Eval> 1 / 0 = Attempted to divide by zero. </Eval>
+    <Eval> hi + hi = "hihi" </Eval>
+    <Eval> hi + "#" = "hi#" </Eval>
     <Eval> hi + pi = "hi3.14" </Eval>
-    <Eval> pi + hi = "3.14hi" </Eval>
-    <Eval> pi + " " + hi = "3.14 hi" </Eval>
+    <Eval> hi + null = "hi" </Eval>
+    <Eval> hi + "#" == "hi#" = True </Eval>
+    <Eval> hi == (string)null = False </Eval>
+    <Eval> hi == null = False </Eval>
+    <Eval> hi == 1 = Can not use the binary operator Equality for types System.String and System.Int32 </Eval>
+    <Eval> null == null = True </Eval>
     <Eval> </Eval>
     <Eval> arg = "function argument" </Eval>
     <Eval> instanceField = "instance field value" </Eval>
@@ -366,9 +351,10 @@ namespace Debugger.Tests {
     <Eval> hi[1] = 'i' </Eval>
     <Eval> "abcd"[2] = 'c' </Eval>
     <Eval> </Eval>
-    <Eval> list.Add((char)42); list.Add((char)52);</Eval>
+    <Eval> list.Add((char)42)</Eval>
+    <Eval> list.Add((char)52)</Eval>
     <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o', '*', '4'} </Eval>
-    <Eval> list = new System.Collections.Generic.List&lt;char&gt;(array2);</Eval>
+    <Eval> list = new System.Collections.Generic.List&lt;char&gt;(array2) = List`1 {'w', 'o', 'r', 'l', 'd'} </Eval>
     <Eval> list = List`1 {'w', 'o', 'r', 'l', 'd'} </Eval>
     <Eval> </Eval>
     <Eval> i = 10 = 10 </Eval>

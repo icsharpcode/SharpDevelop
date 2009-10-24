@@ -368,7 +368,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 				val = CreateValue(newVal);
 			}
-			if (!castTo.IsAssignableFrom(val.Value.Type))
+			if (!castTo.IsAssignableFrom(val.Value.Type) && !val.Value.IsNull)
 				throw new GetValueException("Can not cast {0} to {1}", val.Value.Type.FullName, castTo.FullName);
 			return new TypedValue(val.Value, castTo);
 		}
@@ -638,6 +638,10 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			
+			long? l = result as long?;
+			if (l != null && int.MinValue <= l && l <= int.MaxValue)
+				result = (int)l;
+			
 			if (result == null)
 				throw new GetValueException("Unsuppored unary expression " + op);
 			
@@ -665,7 +669,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					if (left.Value.IsNull || right.Value.IsNull) {
 						return CreateValue(left.Value.IsNull && right.Value.IsNull);
 					} else {
-						return CreateValue(left.PrimitiveValue == right.PrimitiveValue);
+						return CreateValue((string)left.PrimitiveValue == (string)right.PrimitiveValue);
 					}
 				}
 				if (!left.Type.IsValueType && !right.Type.IsValueType) {
@@ -699,7 +703,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			//	ulong operator <<(ulong x, int count);
 			
 			if (op == BinaryOperatorType.ShiftLeft || op == BinaryOperatorType.ShiftRight) {
-				foreach(Type argType in new Type[] {typeof(int), typeof(uint), typeof(long), typeof(ulong)}) {
+				Type[] overloads = { typeof(int), typeof(uint), typeof(long), typeof(ulong)};
+				foreach(Type argType in overloads) {
 					if (left.Type.CanPromoteTo(argType) && right.Type.CanPromoteTo(typeof(int))) {
 						object a = Convert.ChangeType(left.Value.PrimitiveValue, argType);
 						object b = Convert.ChangeType(right.Value.PrimitiveValue, typeof(int));
@@ -724,20 +729,21 @@ namespace ICSharpCode.NRefactory.Visitors
 			//	==, !=
 			//	bool operator &(bool x, bool y);
 			
-			Type[] overloads = { typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(bool) };
-			
-			foreach(Type argType in overloads) {
-				if (left.Type.CanPromoteTo(argType) && right.Type.CanPromoteTo(argType)) {
-					object a = Convert.ChangeType(left.Value.PrimitiveValue, argType);
-					object b = Convert.ChangeType(right.Value.PrimitiveValue, argType);
-					object res;
-					try {
-						res = PerformBinaryOperation(a, b, op, argType);
-					} catch (OverflowException) {
-						throw new EvaluateException(binaryOperatorExpression, "Overflow");
+			if (op != BinaryOperatorType.ShiftLeft && op != BinaryOperatorType.ShiftRight) {
+				Type[] overloads = { typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(bool) };
+				foreach(Type argType in overloads) {
+					if (left.Type.CanPromoteTo(argType) && right.Type.CanPromoteTo(argType)) {
+						object a = Convert.ChangeType(left.Value.PrimitiveValue, argType);
+						object b = Convert.ChangeType(right.Value.PrimitiveValue, argType);
+						object res;
+						try {
+							res = PerformBinaryOperation(a, b, op, argType);
+						} catch (ArithmeticException e) {
+							throw new EvaluateException(binaryOperatorExpression, e.Message);
+						}
+						if (res != null)
+							return CreateValue(res);
 					}
-					if (res != null)
-						return CreateValue(res);
 				}
 			}
 			
@@ -754,13 +760,9 @@ namespace ICSharpCode.NRefactory.Visitors
 				string a = (string)left;
 				string b = (string)right;
 				switch (op) {
-					case BinaryOperatorType.Equality:            return a == b;
-					case BinaryOperatorType.InEquality:          return a != b;
-					case BinaryOperatorType.Add:                 return a + b;
-					case BinaryOperatorType.NullCoalescing:      return a ?? b;
-					
-					case BinaryOperatorType.ReferenceEquality:   return a == b;
-					case BinaryOperatorType.ReferenceInequality: return a != b;
+					case BinaryOperatorType.Equality:   return a == b;
+					case BinaryOperatorType.InEquality: return a != b;
+					case BinaryOperatorType.Add:        return a + b;
 				}
 			}
 			
@@ -768,17 +770,13 @@ namespace ICSharpCode.NRefactory.Visitors
 				bool a = (bool)left;
 				bool b = (bool)right;
 				switch (op) {
+					case BinaryOperatorType.Equality:    return a == b;
+					case BinaryOperatorType.InEquality:  return a != b;
+					case BinaryOperatorType.ExclusiveOr: return a ^ b;
 					case BinaryOperatorType.BitwiseAnd:  return a & b;
 					case BinaryOperatorType.BitwiseOr:   return a | b;
 					case BinaryOperatorType.LogicalAnd:  return a && b;
 					case BinaryOperatorType.LogicalOr:   return a || b;
-					case BinaryOperatorType.ExclusiveOr: return a ^ b;
-					
-					case BinaryOperatorType.Equality:           return a == b;
-					case BinaryOperatorType.InEquality:         return a != b;
-					
-					case BinaryOperatorType.ReferenceEquality:   return a == b;
-					case BinaryOperatorType.ReferenceInequality: return a != b;
 				}
 			}
 			
@@ -799,9 +797,6 @@ namespace ICSharpCode.NRefactory.Visitors
 					case BinaryOperatorType.Divide:        return a / b;
 					case BinaryOperatorType.Modulus:       return a % b;
 					case BinaryOperatorType.Concat:        return a + b;
-					
-					case BinaryOperatorType.ReferenceEquality:   return a == b;
-					case BinaryOperatorType.ReferenceInequality: return a != b;
 				}
 			}
 			
@@ -822,9 +817,6 @@ namespace ICSharpCode.NRefactory.Visitors
 					case BinaryOperatorType.Divide:        return a / b;
 					case BinaryOperatorType.Modulus:       return a % b;
 					case BinaryOperatorType.Concat:        return a + b;
-					
-					case BinaryOperatorType.ReferenceEquality:   return a == b;
-					case BinaryOperatorType.ReferenceInequality: return a != b;
 				}
 			}
 			
@@ -853,9 +845,6 @@ namespace ICSharpCode.NRefactory.Visitors
 					case BinaryOperatorType.Divide:        return a / b;
 					case BinaryOperatorType.Modulus:       return a % b;
 					case BinaryOperatorType.Concat:        return a + b;
-					
-					case BinaryOperatorType.ReferenceEquality:   return a == b;
-					case BinaryOperatorType.ReferenceInequality: return a != b;
 				}
 			}
 			
@@ -884,9 +873,6 @@ namespace ICSharpCode.NRefactory.Visitors
 					case BinaryOperatorType.Divide:        return a / b;
 					case BinaryOperatorType.Modulus:       return a % b;
 					case BinaryOperatorType.Concat:        return a + b;
-					
-					case BinaryOperatorType.ReferenceEquality:   return a == b;
-					case BinaryOperatorType.ReferenceInequality: return a != b;
 				}
 			}
 			
@@ -915,9 +901,6 @@ namespace ICSharpCode.NRefactory.Visitors
 					case BinaryOperatorType.Divide:        return a / b;
 					case BinaryOperatorType.Modulus:       return a % b;
 					case BinaryOperatorType.Concat:        return a + b;
-					
-					case BinaryOperatorType.ReferenceEquality:   return a == b;
-					case BinaryOperatorType.ReferenceInequality: return a != b;
 				}
 			}
 			
@@ -946,9 +929,6 @@ namespace ICSharpCode.NRefactory.Visitors
 					case BinaryOperatorType.Divide:        return a / b;
 					case BinaryOperatorType.Modulus:       return a % b;
 					case BinaryOperatorType.Concat:        return a + b;
-					
-					case BinaryOperatorType.ReferenceEquality:   return a == b;
-					case BinaryOperatorType.ReferenceInequality: return a != b;
 				}
 			}
 			

@@ -200,6 +200,8 @@ namespace Debugger
 			if (this.CorValue is ICorDebugHandleValue) {
 				return this;
 			} else if (this.CorValue is ICorDebugReferenceValue) {
+				if (this.CorReferenceValue.IsNull() > 0)
+					return this; // ("null" expression) TODO
 				ICorDebugValue deRef = this.CorReferenceValue.Dereference();
 				if (deRef is ICorDebugHeapValue2) {
 					return new Value(appDomain, ((ICorDebugHeapValue2)deRef).CreateHandle(CorDebugHandleType.HANDLE_STRONG));
