@@ -5,11 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
+
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
+using ICSharpCode.NRefactory.Ast;
 using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
@@ -24,7 +27,7 @@ namespace Debugger.MetaData
 	/// If two types are identical, the references to DebugType will also be identical 
 	/// Type will be loaded once per each appdomain.
 	/// </remarks>
-	public partial class DebugType: DebuggerObject
+	public partial class DebugType: System.Type
 	{
 		AppDomain appDomain;
 		Process   process;
@@ -47,6 +50,300 @@ namespace Debugger.MetaData
 		// Stores all DebugType instances. FullName is the key
 		static Dictionary<ICorDebugType, DebugType> loadedTypes = new Dictionary<ICorDebugType, DebugType>();
 		
+		public override Type DeclaringType {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override int MetadataToken {
+			get {
+				AssertClassOrValueType();
+				return classProps.Token;
+			}
+		}
+		
+		//		public virtual Module Module { get; }
+		
+		public override string Name {
+			get {
+				return name;
+			}
+		}
+		
+		public override Type ReflectedType {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override object[] GetCustomAttributes(bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override bool IsDefined(Type attributeType, bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		
+		public override Assembly Assembly {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override string AssemblyQualifiedName {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override Type BaseType {
+			get {
+				// corType.Base *sometimes* does not work for object and can cause "Value does not fall within the expected range." exception
+				if (this.FullName == "System.Object") {
+					return null;
+				}
+				// corType.Base does not work for arrays
+				if (this.IsArray) {
+					return DebugType.CreateFromType(this.AppDomain, typeof(System.Array));
+				}
+				// corType.Base does not work for primitive types
+				if (this.IsPrimitive) {
+					return DebugType.CreateFromType(this.AppDomain, typeof(object));
+				}
+				if (this.IsPointer || this.IsVoid) {
+					return null;
+				}
+				ICorDebugType baseType = corType.Base;
+				if (baseType != null) {
+					return CreateFromCorType(this.AppDomain, baseType);
+				} else {
+					return null;
+				}
+			}
+		}
+		
+		//		public virtual bool ContainsGenericParameters { get; }
+		//		public virtual MethodBase DeclaringMethod { get; }
+		
+		public override string FullName {
+			get {
+				return fullName;
+			}
+		}
+		
+		//		public virtual GenericParameterAttributes GenericParameterAttributes { get; }
+		//		public virtual int GenericParameterPosition { get; }
+		
+		public override Guid GUID {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		//		public virtual bool IsGenericParameter { get; }
+		//		public virtual bool IsGenericType { get; }
+		//		public virtual bool IsGenericTypeDefinition { get; }
+		//		internal virtual bool IsSzArray { get; }
+		//		public override MemberTypes MemberType { get; }
+		
+		public override Module Module {
+			get {
+				AssertClassOrValueType();
+				return module;
+			}
+		}
+		
+		public override string Namespace {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		//		public override Type ReflectedType { get; }
+		//		public virtual StructLayoutAttribute StructLayoutAttribute { get; }
+		//		public virtual RuntimeTypeHandle TypeHandle { get; }
+		
+		public override Type UnderlyingSystemType {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		//		public virtual Type[] FindInterfaces(TypeFilter filter, object filterCriteria);
+		//		public virtual MemberInfo[] FindMembers(MemberTypes memberType, BindingFlags bindingAttr, MemberFilter filter, object filterCriteria);
+		
+		public override int GetArrayRank()
+		{
+			if (!IsArray) throw new ArgumentException("Type is not array");
+			
+			return (int)corType.Rank;
+		}
+		
+		protected override TypeAttributes GetAttributeFlagsImpl()
+		{
+			return (TypeAttributes)classProps.Flags;
+		}
+		
+		protected override ConstructorInfo GetConstructorImpl(BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override ConstructorInfo[] GetConstructors(BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		internal virtual string GetDefaultMemberName();
+		//		public virtual MemberInfo[] GetDefaultMembers();
+		
+		public override Type GetElementType()
+		{
+			return this.GenericArguments[0];
+		}
+		
+		public override EventInfo GetEvent(string name, BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		public virtual EventInfo[] GetEvents();
+		
+		public override EventInfo[] GetEvents(BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override FieldInfo GetField(string name, BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override FieldInfo[] GetFields(BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		public virtual Type[] GetGenericArguments();
+		//		public virtual Type[] GetGenericParameterConstraints();
+		//		public virtual Type GetGenericTypeDefinition();
+		
+		public override Type GetInterface(string name, bool ignoreCase)
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		public virtual InterfaceMapping GetInterfaceMap(Type interfaceType);
+		
+		public override Type[] GetInterfaces()
+		{
+			return this.interfaces.ToArray();
+		}
+		
+		//		public virtual MemberInfo[] GetMember(string name, BindingFlags bindingAttr);
+		//		public virtual MemberInfo[] GetMember(string name, MemberTypes type, BindingFlags bindingAttr);
+		
+		public override MemberInfo[] GetMembers(BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		protected override MethodInfo GetMethodImpl(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override MethodInfo[] GetMethods(BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override Type GetNestedType(string name, BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override Type[] GetNestedTypes(BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override PropertyInfo[] GetProperties(BindingFlags bindingAttr)
+		{
+			throw new NotSupportedException();
+		}
+		
+		protected override PropertyInfo GetPropertyImpl(string name, BindingFlags bindingAttr, Binder binder, Type returnType, Type[] types, ParameterModifier[] modifiers)
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		internal virtual Type GetRootElementType();
+		//		internal virtual TypeCode GetTypeCodeInternal();
+		//		internal virtual RuntimeTypeHandle GetTypeHandleInternal();
+		
+		protected override bool HasElementTypeImpl()
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		internal virtual bool HasProxyAttributeImpl();
+		
+		public override object InvokeMember(string name, BindingFlags invokeAttr, Binder binder, object target, object[] args, ParameterModifier[] modifiers, CultureInfo culture, string[] namedParameters)
+		{
+			throw new NotSupportedException();
+		}
+		
+		protected override bool IsArrayImpl()
+		{
+			return this.Kind == DebugTypeKind.Array;
+		}
+		
+		//		public virtual bool IsAssignableFrom(Type c);
+		
+		protected override bool IsByRefImpl()
+		{
+			throw new NotSupportedException();
+		}
+		
+		protected override bool IsCOMObjectImpl()
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		protected virtual bool IsContextfulImpl();
+		//		public virtual bool IsInstanceOfType(object o);
+		//		protected virtual bool IsMarshalByRefImpl();
+		
+		protected override bool IsPointerImpl()
+		{
+			return this.Kind == DebugTypeKind.Pointer;
+		}
+		
+		protected override bool IsPrimitiveImpl()
+		{
+			return this.PrimitiveType != null;
+		}
+		
+		public override bool IsSubclassOf(Type superType)
+		{
+			return base.IsSubclassOf(superType);
+		}
+		
+		protected virtual bool IsValueTypeImpl()
+		{
+			return this.Kind == DebugTypeKind.ValueType;
+		}
+		
 		void AssertClassOrValueType()
 		{
 			if(!IsClass && !IsValueType) {
@@ -67,49 +364,6 @@ namespace Debugger.MetaData
 		
 		internal ICorDebugType CorType {
 			get { return corType; }
-		}
-		
-		/// <summary>
-		/// Gets the module in which the class or value type is defined.
-		/// <para> Only applicable to class or value type! </para>
-		/// </summary>
-		public Module Module {
-			get {
-				AssertClassOrValueType();
-				return module;
-			}
-		}
-		
-		/// <summary>
-		/// Gets the metadata token of the class or value type.
-		/// <para> Only applicable to class or value type! </para>
-		/// </summary>
-		[Debugger.Tests.Ignore]
-		public uint Token {
-			get {
-				AssertClassOrValueType();
-				return classProps.Token;
-			}
-		}
-		
-		/// <summary> Gets the name of the type excluding the namespace </summary>
-		public string Name {
-			get { return name; }
-		}
-		
-		/// <summary> Returns a string describing the type including the namespace
-		/// and generic arguments but excluding the assembly name. </summary>
-		public string FullName { 
-			get { return fullName; } 
-		}
-		
-		/// <summary> Returns the number of dimensions of an array </summary>
-		/// <remarks> Throws <see cref="System.ArgumentException"/> if type is not array </remarks>
-		public int GetArrayRank()
-		{
-			if (!IsArray) throw new ArgumentException("Type is not array");
-			
-			return (int)corType.Rank;
 		}
 		
 		/// <summary> Gets a list of all interfaces that this type implements </summary>
@@ -197,48 +451,6 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether the type is an array </summary>
-		[Tests.Ignore]
-		public bool IsArray {
-			get {
-				return this.Kind == DebugTypeKind.Array;
-			}
-		}
-		
-		/// <summary> Gets a value indicating whether the type is a class </summary>
-		[Tests.Ignore]
-		public bool IsClass {
-			get {
-				return this.Kind == DebugTypeKind.Class;
-			}
-		}
-		
-		/// <summary> Returns true if this type represents interface </summary>
-		[Tests.Ignore]
-		public bool IsInterface {
-			get {
-				return this.Kind == DebugTypeKind.Class && classProps.IsInterface;
-			}
-		}
-		
-		/// <summary> Gets a value indicating whether the type is a value type (that is, a structre in C#).
-		/// Return false, if the type is a primitive type. </summary>
-		[Tests.Ignore]
-		public bool IsValueType {
-			get {
-				return this.Kind == DebugTypeKind.ValueType;
-			}
-		}
-		
-		/// <summary> Gets a value indicating whether the type is a primitive type </summary>
-		/// <remarks> Primitive types are: boolean, char, string and all numeric types </remarks>
-		[Tests.Ignore]
-		public bool IsPrimitive {
-			get {
-				return this.PrimitiveType != null;
-			}
-		}
-		
 		/// <summary> Gets a value indicating whether the type is an integer type </summary>
 		[Tests.Ignore]
 		public bool IsInteger {
@@ -268,51 +480,11 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether the type is an managed or unmanaged pointer </summary>
-		[Tests.Ignore]
-		public bool IsPointer {
-			get {
-				return this.Kind == DebugTypeKind.Pointer;
-			}
-		}
-		
 		/// <summary> Gets a value indicating whether the type is the void type </summary>
 		[Tests.Ignore]
 		public bool IsVoid {
 			get {
 				return this.Kind == DebugTypeKind.Void;
-			}
-		}
-		
-		/// <summary>
-		/// Gets the type from which this type inherits. 
-		/// <para>
-		/// Returns null if the current type is <see cref="System.Object"/>.
-		/// </para>
-		/// </summary>
-		public DebugType BaseType {
-			get {
-				// corType.Base *sometimes* does not work for object and can cause "Value does not fall within the expected range." exception
-				if (this.FullName == "System.Object") {
-					return null;
-				}
-				// corType.Base does not work for arrays
-				if (this.IsArray) {
-					return DebugType.CreateFromType(this.AppDomain, typeof(System.Array));
-				}
-				// corType.Base does not work for primitive types
-				if (this.IsPrimitive) {
-					return DebugType.CreateFromType(this.AppDomain, typeof(object));
-				}
-				if (this.IsPointer || this.IsVoid) {
-					return null;
-				}
-				ICorDebugType baseType = corType.Base;
-				if (baseType != null) {
-					return CreateFromCorType(this.AppDomain, baseType);
-				} else {
-					return null;
-				}
 			}
 		}
 		
@@ -398,10 +570,10 @@ namespace Debugger.MetaData
 			}
 			DebugType type = CreateFromName(appDomain, typeRef.Type, genArgs.ToArray());
 			for(int i = 0; i < typeRef.PointerNestingLevel; i++) {
-				type = CreatePointer(type);
+				type = MakePointerType(type);
 			}
 			for(int i = typeRef.RankSpecifier.Length - 1; i >= 0; i--) {
-				type = CreateArray(type, typeRef.RankSpecifier[i] + 1);
+				type = MakeArrayType(type, typeRef.RankSpecifier[i] + 1);
 			}
 			return type;
 		}
@@ -458,13 +630,13 @@ namespace Debugger.MetaData
 			if (sigType is ARRAY) {
 				ARRAY arraySig = (ARRAY)sigType;
 				DebugType elementType = CreateFromSignature(module, arraySig.Type, declaringType);
-				return CreateArray(elementType, arraySig.Shape.Rank);
+				return MakeArrayType(elementType, arraySig.Shape.Rank);
 			}
 			
 			if (sigType is SZARRAY) {
 				SZARRAY arraySig = (SZARRAY)sigType;
 				DebugType elementType = CreateFromSignature(module, arraySig.Type, declaringType);
-				return CreateSzArray(elementType);
+				return MakeArrayType(elementType);
 			}
 			
 			if (sigType is PTR) {
@@ -475,7 +647,7 @@ namespace Debugger.MetaData
 				} else {
 					elementType = CreateFromSignature(module, ptrSig.PtrType, declaringType);
 				}
-				return CreatePointer(elementType);
+				return MakePointerType(elementType);
 			}
 			
 			if (sigType is FNPTR) {
@@ -485,25 +657,27 @@ namespace Debugger.MetaData
 			throw new NotImplementedException(sigType.ElementType.ToString());
 		}
 		
-		public static DebugType CreateArray(DebugType elementType, int rank)
+		// public virtual Type MakeGenericType(params Type[] typeArguments);
+		
+		public override Type MakeArrayType(int rank)
 		{
 			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.ARRAY, (uint)rank, elementType.CorType);
 			return CreateFromCorType(elementType.AppDomain, res);
 		}
 		
-		public static DebugType CreateSzArray(DebugType elementType)
+		public override Type MakeArrayType()
 		{
 			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.SZARRAY, 1, elementType.CorType);
 			return CreateFromCorType(elementType.AppDomain, res);
 		}
 		
-		public static DebugType CreatePointer(DebugType elementType)
+		public override Type MakePointerType()
 		{
 			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.PTR, 0, elementType.CorType);
 			return CreateFromCorType(elementType.AppDomain, res);
 		}
 		
-		public static DebugType CreateReference(DebugType elementType)
+		public override Type MakeByRefType()
 		{
 			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.BYREF, 0, elementType.CorType);
 			return CreateFromCorType(elementType.AppDomain, res);
@@ -692,33 +866,6 @@ namespace Debugger.MetaData
 				accessors.TryGetValue("set_" + kvp.Key, out setter);
 				members.Add(new PropertyInfo(this, getter, setter));
 			}
-		}
-		
-		/// <summary> Determines whether the current type is sublass of 
-		/// the the given type. That is, it derives from the given type. </summary>
-		/// <remarks> Returns false if the given type is same as the current type </remarks>
-		public bool IsSubclassOf(DebugType superType)
-		{
-			DebugType type = this;
-			while (type != null) {
-				if (type.Equals(superType)) return true;
-				if (superType.IsInterface) {
-					// Does this 'type' implement the interface?
-					foreach(DebugType inter in type.Interfaces) {
-						if (inter == superType) return true;
-					}
-				}
-				type = type.BaseType;
-			}
-			return false;
-		}
-		
-		/// <summary> Determines whether the given object is instance of the
-		/// current type or can be implicitly cast to it </summary>
-		public bool IsInstanceOfType(Value objectInstance)
-		{
-			return objectInstance.Type.Equals(this) ||
-			       objectInstance.Type.IsSubclassOf(this);
 		}
 		
 		/// <summary> Return whether the type has any members stisfing the given flags </summary>

@@ -223,7 +223,6 @@
     <Compile Include="Src\Metadata\DebugParameterInfo.cs" />
     <Compile Include="Src\Metadata\DebugType-Helpers.cs" />
     <Compile Include="Src\Metadata\DebugType.cs" />
-    <Compile Include="Src\Metadata\DebugType2.cs" />
     <Compile Include="Src\Metadata\FieldInfo.cs" />
     <Compile Include="Src\Metadata\MethodInfo.cs" />
     <Compile Include="Src\Metadata\PropertyInfo.cs" />
