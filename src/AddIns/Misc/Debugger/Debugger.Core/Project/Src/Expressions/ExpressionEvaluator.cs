@@ -323,6 +323,30 @@ namespace Debugger
 			return target.GetPropertyValue(pi, indexes.ToArray());
 		}
 		
+		DebugType ResoleType(Expression expr)
+		{
+			string name = GetTypeName(expr);
+			if (name == null)
+				return null;
+			// TODO: Generic arguments
+			return DebugType.CreateFromDottedName(context.AppDomain, name);
+		}
+		
+		string GetTypeName(Expression expr)
+		{
+			if (expr is IdentifierExpression) {
+				return ((IdentifierExpression)expr).Identifier;
+			} else if (expr is MemberReferenceExpression) {
+				return GetTypeName(((MemberReferenceExpression)expr).TargetObject) + "." + ((MemberReferenceExpression)expr).MemberName;
+			} else if (expr is TypeReferenceExpression) {
+				TypeReference typeRef = ((TypeReferenceExpression)expr).TypeReference;
+				string genArity = typeRef.GenericTypes.Count > 0 ? "`" + typeRef.GenericTypes.Count : string.Empty;
+				return typeRef.Type + genArity;
+			} else {
+				return null;
+			}
+		}
+		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			Value target;
@@ -330,8 +354,17 @@ namespace Debugger
 			string methodName;
 			MemberReferenceExpression memberRef = invocationExpression.TargetObject as MemberReferenceExpression;
 			if (memberRef != null) {
-				target = Evaluate(memberRef.TargetObject);
-				targetType = GetDebugType(memberRef.TargetObject) ?? target.Type;
+				try {
+					// Instance
+					target = Evaluate(memberRef.TargetObject);
+					targetType = GetDebugType(memberRef.TargetObject) ?? target.Type;
+				} catch (GetValueException) {
+					// Static
+					target = null;
+					targetType = ResoleType(memberRef.TargetObject);
+					if (targetType == null)
+						throw;
+				}
 				methodName = memberRef.MemberName;
 			} else {
 				IdentifierExpression ident = invocationExpression.TargetObject as IdentifierExpression;
@@ -356,10 +389,10 @@ namespace Debugger
 				foreach(Expression expr in invocationExpression.Arguments) {
 					DebugType argType = GetDebugType(expr);
 					if (argType == null)
-						throw new GetValueException("Multiple methods with name " + methodName + " found.  Use explicit casts for arguments to select method overload.");
+						argType = Evaluate(expr).Type;
 					argTypes.Add(argType);
 				}
-				method = target.Type.GetMethod(methodName, argTypes.ToArray());
+				method = targetType.GetMethod(methodName, argTypes.ToArray());
 				if (method == null)
 					throw new GetValueException("Can not find overload with given types");
 			}
@@ -367,7 +400,7 @@ namespace Debugger
 			foreach(Expression expr in invocationExpression.Arguments) {
 				args.Add(Evaluate(expr));
 			}
-			return target.InvokeMethod((DebugMethodInfo)method, args.ToArray());
+			return Value.InvokeMethod(target, method, args.ToArray());
 		}
 		
 		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
@@ -387,14 +420,25 @@ namespace Debugger
 		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			Value target = Evaluate(memberReferenceExpression.TargetObject);
-			DebugType targetType = GetDebugType(memberReferenceExpression.TargetObject) ?? target.Type;
+			Value target;
+			DebugType targetType;
+			try {
+				// Instance
+				target = Evaluate(memberReferenceExpression.TargetObject);
+				targetType = GetDebugType(memberReferenceExpression.TargetObject) ?? target.Type;
+			} catch (GetValueException) {
+				// Static
+				target = null;
+				targetType = ResoleType(memberReferenceExpression.TargetObject);
+				if (targetType == null)
+					throw;
+			}
 			MemberInfo[] memberInfos = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAllDeclared);
 			if (memberInfos.Length == 0)
 				memberInfos = targetType.GetMember(memberReferenceExpression.MemberName, BindingFlagsAll);
 			if (memberInfos.Length == 0)
 				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
-			Value member = target.GetMemberValue(memberInfos[0]);
+			Value member = Value.GetMemberValue(target, memberInfos[0]);
 			return member;
 		}
 		

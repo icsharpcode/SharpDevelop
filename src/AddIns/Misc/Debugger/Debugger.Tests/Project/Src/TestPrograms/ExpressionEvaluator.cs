@@ -42,8 +42,13 @@ namespace Debugger.Tests.TestPrograms
 			
 			public static string StaticProperty {
 				get {
-					return "static";
+					return "static property";
 				}
+			}
+			
+			public static string StaticMethod()
+			{
+				return "static method";
 			}
 			
 			new public string Foo(int i)
@@ -155,6 +160,7 @@ namespace Debugger.Tests {
 				if (memberInfo.MemberType == MemberTypes.Field || memberInfo.MemberType == MemberTypes.Property)
 					expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((IDebugMemberInfo)memberInfo));
 			}
+			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("StaticMethod")));
 			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)((DebugType)myClass.Type.BaseType).GetMethod("Foo", new string[] { "i" }), new PrimitiveExpression(1)));
 			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("Foo", new string[] { "i" }), new PrimitiveExpression(1)));
 			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("Foo", new string[] { "s" }), new PrimitiveExpression("a")));
@@ -197,7 +203,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator.cs:75,4-75,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator.cs:80,4-80,40</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -245,17 +251,18 @@ namespace Debugger.Tests {
     <Eval> flag = True </Eval>
     <Eval> !flag = False </Eval>
     <Eval> </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)(myClass)).name = "derived name" </Eval>
-    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticField = Error evaluating "Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticField": Identifier "Debugger" not found in this context </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)(myClass)).Name = "derived name" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)(myClass)).SetterOnlyProperty = Error evaluating "((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)(myClass)).SetterOnlyProperty": Property does not have a get method </Eval>
-    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticProperty = Error evaluating "Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticProperty": Identifier "Debugger" not found in this context </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass)(myClass)).name = "base name" </Eval>
-    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass.StaticField = Error evaluating "Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass.StaticField": Identifier "Debugger" not found in this context </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass)(myClass)).Name = "base name" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass)(myClass)).Foo((System.Int32)(1)) = "base Foo - int" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)(myClass)).Foo((System.Int32)(1)) = "derived Foo - int" </Eval>
-    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)(myClass)).Foo((System.String)("a")) = "derived Foo - string" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).name = "derived name" </Eval>
+    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticField = "derived static field" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).Name = "derived name" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).SetterOnlyProperty = Error evaluating "((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).SetterOnlyProperty": Property does not have a get method </Eval>
+    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticProperty = "static property" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass)myClass).name = "base name" </Eval>
+    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass.StaticField = "base static field" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass)myClass).Name = "base name" </Eval>
+    <Eval> Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass.StaticMethod() = "static method" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.BaseClass)myClass).Foo((System.Int32)1) = "base Foo - int" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).Foo((System.Int32)1) = "derived Foo - int" </Eval>
+    <Eval> ((Debugger.Tests.TestPrograms.ExpressionEvaluator.DerivedClass)myClass).Foo((System.String)"a") = "derived Foo - string" </Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>

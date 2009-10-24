@@ -27,7 +27,7 @@ namespace Debugger
 		
 		public static IndexerExpression AppendIndexer(this Expression expression, params int[] indices)
 		{
-			IndexerExpression indexerExpr = new IndexerExpression(new ParenthesizedExpression(expression), new List<Expression>());
+			IndexerExpression indexerExpr = new IndexerExpression(Parenthesize(expression), new List<Expression>());
 			foreach(int index in indices) {
 				indexerExpr.Indexes.Add(
 					new CastExpression(
@@ -51,7 +51,7 @@ namespace Debugger
 				target = new ParenthesizedExpression(
 					new CastExpression(
 						memberInfo.DeclaringType.ToTypeReference(),
-						new ParenthesizedExpression(expresion),
+						Parenthesize(expresion),
 						CastType.Cast
 					)
 				);
@@ -86,6 +86,17 @@ namespace Debugger
 			throw new DebuggerException("Unknown member type " + memberInfo.GetType().FullName);
 		}
 		
+		static Expression Parenthesize(Expression expr)
+		{
+			if (expr is IdentifierExpression ||
+			    expr is MemberReferenceExpression ||
+			    expr is IndexerExpression ||
+			    expr is ParenthesizedExpression ||
+			    expr is PrimitiveExpression)
+				return expr;
+			return new ParenthesizedExpression(expr);
+		}
+		
 		static List<Expression> AddExplicitTypes(MethodInfo method, Expression[] args)
 		{
 			if (args.Length != method.GetParameters().Length)
@@ -95,7 +106,7 @@ namespace Debugger
 				typedArgs.Add(
 					new CastExpression(
 						method.GetParameters()[i].ParameterType.ToTypeReference(),
-						new ParenthesizedExpression(args[i]),
+						Parenthesize(args[i]),
 						CastType.Cast
 					)
 				);
