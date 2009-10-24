@@ -13,6 +13,8 @@ using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
+	public delegate Value ValueGetter(StackFrame context);
+	
 	/// <summary>
 	/// Value class provides functions to examine value in the debuggee.
 	/// It has very life-time.  In general, value dies whenever debugger is

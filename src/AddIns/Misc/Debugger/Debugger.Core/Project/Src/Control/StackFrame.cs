@@ -382,7 +382,7 @@ namespace Debugger
 		/// <returns> Null if not found </returns>
 		public Value GetLocalVariableValue(string name)
 		{
-			foreach(LocalVariableInfo locVar in this.MethodInfo.LocalVariables) {
+			foreach(DebugLocalVariableInfo locVar in this.MethodInfo.LocalVariables) {
 				if (locVar.Name == name) {
 					return locVar.GetValue(this);
 				}
@@ -394,7 +394,7 @@ namespace Debugger
 		public List<Value> GetLocalVariableValues()
 		{
 			List<Value> values = new List<Value>();
-			foreach(LocalVariableInfo locVar in this.MethodInfo.LocalVariables) {
+			foreach(DebugLocalVariableInfo locVar in this.MethodInfo.LocalVariables) {
 				values.Add(locVar.GetValue(this));
 			}
 			return values;
