@@ -6,11 +6,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
-using Debugger.Util;
 using ICSharpCode.Core;
 
 namespace Debugger.AddIn.TreeModel
@@ -146,7 +147,7 @@ namespace Debugger.AddIn.TreeModel
 		}
 		
 		static TimeSpan workTime = TimeSpan.FromMilliseconds(40);
-		static DateTime nextRepaintTime = DateTime.MinValue;
+		static Stopwatch timeSinceLastRepaintEnd;
 		
 		#region SetContentRecursive
 		
@@ -176,14 +177,15 @@ namespace Debugger.AddIn.TreeModel
 			// Process user commands
 			Utils.DoEvents(process);
 			// Repaint
-			if (HighPrecisionTimer.Now > nextRepaintTime) {
+			if (timeSinceLastRepaintEnd == null || timeSinceLastRepaintEnd.Elapsed > workTime) {
 				using(new PrintTime("Repainting Local Variables Pad")) {
 					try {
 						this.Tree.EndUpdate();   // Enable painting
 						Utils.DoEvents(process); // Paint
 					} finally {
 						this.Tree.BeginUpdate(); // Disable painting
-						nextRepaintTime = HighPrecisionTimer.Now + workTime;
+						timeSinceLastRepaintEnd = new Stopwatch();
+						timeSinceLastRepaintEnd.Start();
 					}
 				}
 			}

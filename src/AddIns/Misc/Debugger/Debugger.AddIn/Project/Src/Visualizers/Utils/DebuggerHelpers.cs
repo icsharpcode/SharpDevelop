@@ -4,14 +4,14 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.Interop.CorDebug;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Debugger;
 using Debugger.MetaData;
-using Debugger.Wrappers.CorDebug;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Services;
-using System.Reflection;
 
 namespace Debugger.AddIn.Visualizers.Utils
 {
@@ -40,7 +40,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		public static ulong GetObjectAddress(this Value val)
 		{
 			ICorDebugReferenceValue refVal = val.CorValue.CastTo<ICorDebugReferenceValue>();
-			return refVal.Value;
+			return refVal.GetValue();
 		}
 		
 		/// <summary>

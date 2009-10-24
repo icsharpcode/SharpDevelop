@@ -4,10 +4,10 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger.Interop.CorDebug;
 using System;
 using System.Collections.Generic;
 using Debugger.MetaData;
-using Debugger.Wrappers.CorDebug;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -60,9 +60,9 @@ namespace Debugger.AddIn.TreeModel
 			
 			if (corValue.Is<ICorDebugValue>()) {
 				InfoNode info = new InfoNode("ICorDebugValue", "");
-				info.AddChild("Address", corValue.Address.ToString("X8"));
-				info.AddChild("Type", ((CorElementType)corValue.Type).ToString());
-				info.AddChild("Size", corValue.Size.ToString());
+				info.AddChild("Address", corValue.GetAddress().ToString("X8"));
+				info.AddChild("Type", ((CorElementType)corValue.GetTheType()).ToString());
+				info.AddChild("Size", corValue.GetSize().ToString());
 				items.Add(info);
 			}
 			if (corValue.Is<ICorDebugValue2>()) {
@@ -70,7 +70,7 @@ namespace Debugger.AddIn.TreeModel
 				ICorDebugValue2 corValue2 = corValue.CastTo<ICorDebugValue2>();
 				string fullname;
 				try {
-					fullname = DebugType.CreateFromCorType(appDomain, corValue2.ExactType).FullName;
+					fullname = DebugType.CreateFromCorType(appDomain, corValue2.GetExactType()).FullName;
 				} catch (DebuggerException e) {
 					fullname = e.Message;
 				}
@@ -80,7 +80,7 @@ namespace Debugger.AddIn.TreeModel
 			if (corValue.Is<ICorDebugGenericValue>()) {
 				InfoNode info = new InfoNode("ICorDebugGenericValue", "");
 				try {
-					byte[] bytes = corValue.CastTo<ICorDebugGenericValue>().RawValue;
+					byte[] bytes = corValue.CastTo<ICorDebugGenericValue>().GetRawValue();
 					for(int i = 0; i < bytes.Length; i += 8) {
 						string val = "";
 						for(int j = i; j < bytes.Length && j < i + 8; j++) {
@@ -96,9 +96,9 @@ namespace Debugger.AddIn.TreeModel
 			if (corValue.Is<ICorDebugReferenceValue>()) {
 				InfoNode info = new InfoNode("ICorDebugReferenceValue", "");
 				ICorDebugReferenceValue refValue = corValue.CastTo<ICorDebugReferenceValue>();
-				info.AddChild("IsNull", (refValue.IsNull != 0).ToString());
-				if (refValue.IsNull == 0) {
-					info.AddChild("Value", refValue.Value.ToString("X8"));
+				info.AddChild("IsNull", (refValue.IsNull() != 0).ToString());
+				if (refValue.IsNull() == 0) {
+					info.AddChild("Value", refValue.GetValue().ToString("X8"));
 					if (refValue.Dereference() != null) {
 						info.AddChild("Dereference", "", GetDebugInfo(appDomain, refValue.Dereference()));
 					} else {
@@ -119,8 +119,8 @@ namespace Debugger.AddIn.TreeModel
 			if (corValue.Is<ICorDebugObjectValue>()) {
 				InfoNode info = new InfoNode("ICorDebugObjectValue", "");
 				ICorDebugObjectValue objValue = corValue.CastTo<ICorDebugObjectValue>();
-				info.AddChild("Class", objValue.Class.Token.ToString("X8"));
-				info.AddChild("IsValueClass", (objValue.IsValueClass != 0).ToString());
+				info.AddChild("Class", objValue.GetClass().GetToken().ToString("X8"));
+				info.AddChild("IsValueClass", (objValue.IsValueClass() != 0).ToString());
 				items.Add(info);
 			}
 			if (corValue.Is<ICorDebugObjectValue2>()) {
@@ -130,14 +130,14 @@ namespace Debugger.AddIn.TreeModel
 			if (corValue.Is<ICorDebugBoxValue>()) {
 				InfoNode info = new InfoNode("ICorDebugBoxValue", "");
 				ICorDebugBoxValue boxValue = corValue.CastTo<ICorDebugBoxValue>();
-				info.AddChild("Object", "", GetDebugInfo(appDomain, boxValue.Object.CastTo<ICorDebugValue>()));
+				info.AddChild("Object", "", GetDebugInfo(appDomain, boxValue.GetObject().CastTo<ICorDebugValue>()));
 				items.Add(info);
 			}
 			if (corValue.Is<ICorDebugStringValue>()) {
 				InfoNode info = new InfoNode("ICorDebugStringValue", "");
 				ICorDebugStringValue stringValue = corValue.CastTo<ICorDebugStringValue>();
-				info.AddChild("Length", stringValue.Length.ToString());
-				info.AddChild("String", stringValue.String);
+				info.AddChild("Length", stringValue.GetLength().ToString());
+				info.AddChild("String", stringValue.GetString());
 				items.Add(info);
 			}
 			if (corValue.Is<ICorDebugArrayValue>()) {
@@ -148,7 +148,7 @@ namespace Debugger.AddIn.TreeModel
 			if (corValue.Is<ICorDebugHandleValue>()) {
 				InfoNode info = new InfoNode("ICorDebugHandleValue", "");
 				ICorDebugHandleValue handleValue = corValue.CastTo<ICorDebugHandleValue>();
-				info.AddChild("HandleType", handleValue.HandleType.ToString());
+				info.AddChild("HandleType", handleValue.GetHandleType().ToString());
 				items.Add(info);
 			}
 			

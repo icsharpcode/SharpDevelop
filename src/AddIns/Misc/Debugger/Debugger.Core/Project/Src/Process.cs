@@ -509,9 +509,10 @@ namespace Debugger
 		
 		public void WaitForPause(TimeSpan timeout)
 		{
-			DateTime endTime = Util.HighPrecisionTimer.Now + timeout;
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			watch.Start();
 			while(this.IsRunning && !this.HasExited) {
-				TimeSpan timeLeft = endTime - Util.HighPrecisionTimer.Now;
+				TimeSpan timeLeft = timeout - watch.Elapsed;
 				if (timeLeft <= TimeSpan.FromMilliseconds(10)) break;
 				//this.TraceMessage("Time left: " + timeLeft.TotalMilliseconds);
 				debugger.MTA2STA.WaitForCall(timeLeft);

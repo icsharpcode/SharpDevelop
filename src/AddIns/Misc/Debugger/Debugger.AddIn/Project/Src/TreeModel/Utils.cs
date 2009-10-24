@@ -5,10 +5,11 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
-using Debugger.Util;
-using ICSharpCode.Core;
 using System.Windows.Threading;
+
+using ICSharpCode.Core;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -54,18 +55,18 @@ namespace Debugger.AddIn.TreeModel
 	public class PrintTime: IDisposable
 	{
 		string text;
-		DateTime start;
+		Stopwatch stopwatch = new Stopwatch();
 		
 		public PrintTime(string text)
 		{
 			this.text = text;
-			this.start = HighPrecisionTimer.Now;
+			stopwatch.Start();
 		}
 		
 		public void Dispose()
 		{
-			TimeSpan dur = HighPrecisionTimer.Now - start;
-			LoggingService.InfoFormatted("{0} ({1} ms)", text, dur.TotalMilliseconds);
+			stopwatch.Stop();
+			LoggingService.InfoFormatted("{0} ({1} ms)", text, stopwatch.ElapsedMilliseconds);
 		}
 	}
 }

@@ -37,7 +37,7 @@
 //
 #endregion
 
-using ICSharpCode.NRefactory.Visitors;
+using Debugger.Interop.CorPublish;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -48,11 +48,11 @@ using System.Windows.Forms;
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
-using Debugger.Core.Wrappers.CorPub;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -361,12 +361,13 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool IsManaged(int processId)
 		{
 			if (corPublish == null) {
-				corPublish = new ICorPublish();
+				corPublish = new CorpubPublishClass();
+				Debugger.Interop.TrackedComObjects.Track(corPublish);
 			}
 			
-			ICorPublishProcess process = corPublish.GetProcess(processId);
+			ICorPublishProcess process = corPublish.GetProcess((uint)processId);
 			if (process != null) {
-				return process.IsManaged;
+				return process.IsManaged() != 0;
 			}
 			return false;
 		}

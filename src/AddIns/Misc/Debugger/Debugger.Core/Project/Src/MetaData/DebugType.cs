@@ -966,7 +966,8 @@ namespace Debugger.MetaData
 		DebugType(AppDomain appDomain, ICorDebugType corType)
 		{
 			if (corType == null) throw new ArgumentNullException("corType");
-			DateTime startTime = Util.HighPrecisionTimer.Now;
+			System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+			stopwatch.Start();
 			
 			this.corType = corType;
 			this.corElementType = (CorElementType)corType.GetTheType();
@@ -1027,10 +1028,10 @@ namespace Debugger.MetaData
 			if (module == null)
 				throw new DebuggerException("Unexpected: " + corElementType);
 			
-			TimeSpan totalTime2 = Util.HighPrecisionTimer.Now - startTime;
+			stopwatch.Stop();
 			if (appDomain.Process.Options.Verbose) {
 				string prefix = this.IsInterface ? "interface" : "type";
-				appDomain.Process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, this.FullName, totalTime2.TotalMilliseconds);
+				appDomain.Process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, this.FullName, stopwatch.ElapsedMilliseconds);
 				foreach(DebugType inter in GetInterfaces()) {
 					appDomain.Process.TraceMessage(" - Implements {0}", inter.FullName);
 				}

@@ -155,7 +155,6 @@
     <Compile Include="Src\Tests\IgnoreOnExceptionAttribute.cs" />
     <Compile Include="Src\Thread.cs" />
     <Compile Include="Src\ThreadCollection.cs" />
-    <Compile Include="Src\Util\HighPrecisionTimer.cs" />
     <Compile Include="Src\Value.cs" />
     <None Include="docs\Managed Debugger.chm" />
     <None Include="Src\Stepping.txt" />
@@ -200,7 +199,6 @@
     <Folder Include="Src\NRefactory\Ast" />
     <Folder Include="Src\NRefactory\Visitors" />
     <Folder Include="Src\Tests" />
-    <Folder Include="Src\Util" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
