@@ -202,6 +202,15 @@ namespace ICSharpCode.NRefactory.Visitors
 			return val;
 		}
 		
+		List<TypedValue> EvaluateAll(List<Expression> exprs)
+		{
+			List<TypedValue> vals = new List<TypedValue>(exprs.Count);
+			foreach(Expression expr in exprs) {
+				vals.Add(Evaluate(expr));
+			}
+			return vals;
+		}
+		
 		int EvaluateAsInt(INode expression)
 		{
 			if (expression is PrimitiveExpression) {
@@ -426,10 +435,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				int index = EvaluateAsInt(indexerExpression.Indexes[0]);
 				return CreateValue(((string)target.PrimitiveValue)[index]);
 			} else {
-				List<TypedValue> indexes = new List<TypedValue>();
-				foreach(Expression indexExpr in indexerExpression.Indexes) {
-					indexes.Add(Evaluate(indexExpr));
-				}
+				List<TypedValue> indexes = EvaluateAll(indexerExpression.Indexes);
 				DebugPropertyInfo pi = (DebugPropertyInfo)target.Type.GetProperty("Item", GetTypes(indexes));
 				if (pi == null)
 					throw new GetValueException("The object does not have an indexer property");
@@ -470,10 +476,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					throw new GetValueException("Member reference expected for method invocation");
 				}
 			}
-			List<TypedValue> args = new List<TypedValue>();
-			foreach(Expression expr in invocationExpression.Arguments) {
-				args.Add(Evaluate(expr));
-			}
+			List<TypedValue> args = EvaluateAll(invocationExpression.Arguments);
 			MethodInfo method = targetType.GetMethod(methodName, DebugType.BindingFlagsAllInScope, null, GetTypes(args), null);
 			if (method == null)
 				throw new GetValueException("Method " + methodName + " not found");
@@ -489,14 +492,12 @@ namespace ICSharpCode.NRefactory.Visitors
 				throw new EvaluateException(objectCreateExpression.ObjectInitializer, "Object initializers not supported");
 			
 			DebugType type = objectCreateExpression.CreateType.ResolveType(context.AppDomain);
-			List<TypedValue> ctorArgs = new List<TypedValue>(objectCreateExpression.Parameters.Count);
-			foreach(Expression argExpr in objectCreateExpression.Parameters) {
-				ctorArgs.Add(Evaluate(argExpr));
-			}
-			return new TypedValue(
-				Eval.NewObject((DebugType)type, GetValues(ctorArgs), GetTypes(ctorArgs)),
-				type
-			);
+			List<TypedValue> ctorArgs = EvaluateAll(objectCreateExpression.Parameters);
+			ConstructorInfo ctor = type.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, GetTypes(ctorArgs), null);
+			if (ctor == null)
+				throw new EvaluateException(objectCreateExpression, "Constructor not found");
+			Value val = (Value)ctor.Invoke(GetValues(ctorArgs));
+			return new TypedValue(val, type);
 		}
 		
 		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)

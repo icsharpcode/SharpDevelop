@@ -126,7 +126,13 @@ namespace Debugger.MetaData
 			foreach(object arg in parameters) {
 				args.Add((Value)arg);
 			}
-			return Eval.InvokeMethod(this, (Value)obj, args.ToArray());
+			if (this.IsSpecialName && this.Name == ".ctor") {
+				if (obj != null)
+					throw new GetValueException("'obj' must be null for constructor call");
+				return Eval.NewObject(this, args.ToArray());
+			} else {
+				return Eval.InvokeMethod(this, (Value)obj, args.ToArray());
+			}
 		}
 		
 		/// <inheritdoc/>

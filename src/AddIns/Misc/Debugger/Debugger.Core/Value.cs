@@ -436,10 +436,12 @@ namespace Debugger
 		
 		#endregion
 		
-		public static Value SetFieldValue(Value objectInstance, FieldInfo fieldInfo, Value newValue)
+		public static void SetFieldValue(Value objectInstance, FieldInfo fieldInfo, Value newValue)
 		{
-			// TODO
-			throw new NotImplementedException();
+			Value val = GetFieldValue(objectInstance, fieldInfo);
+			if (!fieldInfo.FieldType.IsAssignableFrom(newValue.Type))
+				throw new GetValueException("Can not assign {0} to {1}", newValue.Type.FullName, fieldInfo.FieldType.FullName);
+			val.SetValue(newValue);
 		}
 		
 		/// <summary> Get the value of given field. </summary>

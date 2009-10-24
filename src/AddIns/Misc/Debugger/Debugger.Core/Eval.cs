@@ -355,10 +355,29 @@ namespace Debugger
 		
 		#region Convenience methods
 		
-		public static Value NewObject(DebugType debugType, Value[] constructorArguments, DebugType[] constructorArgumentsTypes)
+		public static Value NewObject(DebugMethodInfo constructor, Value[] constructorArguments)
 		{
-			return AsyncNewObject(debugType, constructorArguments, constructorArgumentsTypes).WaitForResult();
+			return AsyncNewObject(constructor, constructorArguments).WaitForResult();
 		}
+		
+		#endregion
+		
+		public static Eval AsyncNewObject(DebugMethodInfo constructor, Value[] constructorArguments)
+		{
+			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
+			return new Eval(
+				constructor.AppDomain,
+				"New object: " + constructor.FullName,
+				delegate(Eval eval) {
+					eval.CorEval2.NewParameterizedObject(
+						constructor.CorFunction,
+						(uint)constructor.DeclaringType.GetGenericArguments().Length, ((DebugType)constructor.DeclaringType).GenericArgumentsAsCorDebugType,
+						(uint)constructorArgsCorDebug.Length, constructorArgsCorDebug);
+				}
+			);
+		}
+		
+		#region Convenience methods
 		
 		public static Value NewObjectNoConstructor(DebugType debugType)
 		{
@@ -366,24 +385,6 @@ namespace Debugger
 		}
 		
 		#endregion
-		
-		public static Eval AsyncNewObject(DebugType debugType, Value[] constructorArguments, DebugType[] constructorArgumentsTypes)
-		{
-			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
-			DebugMethodInfo constructor = (DebugMethodInfo)debugType.GetMethod(".ctor", constructorArgumentsTypes);
-			if (constructor == null) {
-				throw new DebuggerException(string.Format("Type {0} has no constructor overload with given argument types.", debugType.FullName));
-			}
-			return new Eval(
-				debugType.AppDomain,
-				"New object: " + debugType.FullName,
-				delegate(Eval eval) {
-					eval.CorEval2.NewParameterizedObject(
-						constructor.CorFunction, (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType,
-						(uint)constructorArgsCorDebug.Length, constructorArgsCorDebug);
-				}
-			);
-		}
 		
 		public static Eval AsyncNewObjectNoConstructor(DebugType debugType)
 		{

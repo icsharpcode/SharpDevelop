@@ -89,14 +89,15 @@ namespace Debugger
 		/// <summary>
 		/// Get the .NET version of a given program - eg. "v1.1.4322"
 		/// </summary>
+		/// <remarks> Returns empty string for unmanaged applications </remarks>
 		public string GetProgramVersion(string exeFilename)
 		{
 			int size;
 			NativeMethods.GetRequestedRuntimeVersion(exeFilename, null, 0, out size);
 			StringBuilder sb = new StringBuilder(size);
 			NativeMethods.GetRequestedRuntimeVersion(exeFilename, sb, sb.Capacity, out size);
-			sb.Length = size; // TODO: What is the last char?  What is the result for unmanaged apps?
-			return sb.ToString();
+			sb.Length = size;
+			return sb.ToString().TrimEnd('\0');
 		}
 		
 		/// <summary>

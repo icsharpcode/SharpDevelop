@@ -246,8 +246,12 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		protected override ConstructorInfo GetConstructorImpl(BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers)
 		{
-			// TODO
-			throw new NotSupportedException();
+			if (bindingAttr == BindingFlags.Default)
+				bindingAttr = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+			MethodInfo ctor = GetMethodImpl(".ctor", bindingAttr, binder, callConvention, types, modifiers);
+			if (ctor == null)
+				return null;
+			return new DebugConstructorInfo((DebugMethodInfo)ctor);
 		}
 		
 		/// <inheritdoc/>
@@ -1091,6 +1095,7 @@ namespace Debugger.MetaData
 			    corElementType == CorElementType.PTR ||
 			    corElementType == CorElementType.BYREF)
 			{
+				// CorDebugClass for arrays "is not loaded" and can not be used
 				this.elementType = CreateFromCorType(appDomain, corType.GetFirstTypeParameter());
 				this.module = appDomain.Mscorlib;
 				this.classProps = new TypeDefProps();
@@ -1103,6 +1108,8 @@ namespace Debugger.MetaData
 				this.ns = this.GetElementType().Namespace;
 				this.name = this.GetElementType().Name + suffix;
 				this.fullName = this.GetElementType().FullName + suffix;
+				if (corElementType == CorElementType.ARRAY || corElementType == CorElementType.SZARRAY)
+					LoadArrayMembers();
 			}
 			
 			if (corElementType == CorElementType.OBJECT ||
@@ -1217,6 +1224,14 @@ namespace Debugger.MetaData
 			}
 			
 			return name.ToString();
+		}
+		
+		void LoadArrayMembers()
+		{
+			// Arrays are special and normal loading does not work for them
+			DebugType iList = DebugType.CreateFromName(this.AppDomain.Mscorlib, typeof(IList<>).FullName, null, new DebugType[] { (DebugType)this.GetElementType() });
+			this.interfaces.Add(iList);
+			this.interfaces.AddRange(iList.interfaces);
 		}
 		
 		void LoadMembers()

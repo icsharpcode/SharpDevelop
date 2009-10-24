@@ -54,6 +54,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetaData\DebugConstructorInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppDomain.cs" />
     <Compile Include="AppDomainCollection.cs" />

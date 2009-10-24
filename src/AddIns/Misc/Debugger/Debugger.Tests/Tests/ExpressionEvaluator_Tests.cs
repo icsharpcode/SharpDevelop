@@ -201,6 +201,8 @@ namespace Debugger.Tests {
 				
 				list.Add((char)42); list.Add((char)52);
 				list
+				list = new System.Collections.Generic.List<char>(array2);
+				list
 				
 				i = 10
 				-i
@@ -366,6 +368,8 @@ namespace Debugger.Tests {
     <Eval> </Eval>
     <Eval> list.Add((char)42); list.Add((char)52);</Eval>
     <Eval> list = List`1 {'H', 'e', 'l', 'l', 'o', '*', '4'} </Eval>
+    <Eval> list = new System.Collections.Generic.List&lt;char&gt;(array2);</Eval>
+    <Eval> list = List`1 {'w', 'o', 'r', 'l', 'd'} </Eval>
     <Eval> </Eval>
     <Eval> i = 10 = 10 </Eval>
     <Eval> -i = -10 </Eval>
