@@ -28,51 +28,42 @@ namespace Debugger.MetaData
 		}
 		
 		public override Type DeclaringType {
-			get {
-				return declaringType;
-			}
+			get { return declaringType; }
 		}
 		
-		/// <summary> The AppDomain in which this member is loaded </summary>
+		/// <summary> The AppDomain in which this member is declared </summary>
+		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
-			get {
-				return declaringType.AppDomain;
-			}
+			get { return declaringType.AppDomain; }
 		}
 		
-		/// <summary> The Process in which this member is loaded </summary>
+		/// <summary> The Process in which this member is declared </summary>
+		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return declaringType.Process;
-			}
+			get { return declaringType.Process; }
 		}
 		
-		/// <summary> The Module in which this member is loaded </summary>
+		/// <summary> The Module in which this member is declared </summary>
+		[Debugger.Tests.Ignore]
 		public Debugger.Module DebugModule {
-			get {
-				return declaringType.DebugModule;
-			}
+			get { return declaringType.DebugModule; }
 		}
 		
 		[Debugger.Tests.Ignore]
 		public override int MetadataToken {
-			get {
-				return (int)fieldProps.Token;
-			}
+			get { return (int)fieldProps.Token; }
 		}
 		
-		//		public virtual Module Module { get; }
+		public override System.Reflection.Module Module {
+			get { throw new NotSupportedException(); }
+		}
 		
 		public override string Name {
-			get {
-				return fieldProps.Name;
-			}
+			get { return fieldProps.Name; }
 		}
 		
 		public override Type ReflectedType {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		public override object[] GetCustomAttributes(bool inherit)
@@ -87,19 +78,15 @@ namespace Debugger.MetaData
 		
 		public override bool IsDefined(Type attributeType, bool inherit)
 		{
-			throw new NotSupportedException();
+			return DebugType.IsDefined(this, inherit, attributeType);
 		}
 		
 		public override FieldAttributes Attributes {
-			get {
-				return (FieldAttributes)fieldProps.Flags;
-			}
+			get { return (FieldAttributes)fieldProps.Flags; }
 		}
 		
 		public override RuntimeFieldHandle FieldHandle {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		public override Type FieldType {
@@ -116,12 +103,17 @@ namespace Debugger.MetaData
 		
 		public override object GetValue(object obj)
 		{
-			throw new NotSupportedException();
+			return Value.GetFieldValue((Value)obj, this);
 		}
 		
 		public override void SetValue(object obj, object value, System.Reflection.BindingFlags invokeAttr, Binder binder, CultureInfo culture)
 		{
-			throw new NotSupportedException();
+			Value.SetFieldValue((Value)obj, this, (Value)value);
+		}
+		
+		public override string ToString()
+		{
+			return this.FieldType + " " + this.Name;
 		}
 	}
 }

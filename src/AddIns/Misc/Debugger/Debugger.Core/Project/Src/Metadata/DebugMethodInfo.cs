@@ -16,6 +16,7 @@ using Debugger.Wrappers.CorSym;
 using Debugger.Wrappers.MetaData;
 using ICSharpCode.NRefactory.Ast;
 using Mono.Cecil.Signatures;
+using System.Text;
 
 namespace Debugger.MetaData
 {
@@ -31,55 +32,64 @@ namespace Debugger.MetaData
 		}
 		
 		public override Type DeclaringType {
-			get {
-				return declaringType;
-			}
+			get { return declaringType; }
 		}
 		
-		/// <summary> The AppDomain in which this member is loaded </summary>
+		/// <summary> The AppDomain in which this member is declared </summary>
+		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
-			get {
-				return declaringType.AppDomain;
-			}
+			get { return declaringType.AppDomain; }
 		}
 		
-		/// <summary> The Process in which this member is loaded </summary>
+		/// <summary> The Process in which this member is declared </summary>
+		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return declaringType.Process;
-			}
+			get { return declaringType.Process; }
 		}
 		
-		/// <summary> The Module in which this member is loaded </summary>
+		/// <summary> The Module in which this member is declared </summary>
+		[Debugger.Tests.Ignore]
 		public Debugger.Module DebugModule {
-			get {
-				return declaringType.DebugModule;
-			}
+			get { return declaringType.DebugModule; }
 		}
 		
+		[Debugger.Tests.Ignore]
 		public override int MetadataToken {
-			get {
-				return (int)methodProps.Token;
-			}
+			get { return (int)methodProps.Token; }
 		}
-		//		public virtual Module Module { get; }
 		
+		public override System.Reflection.Module Module {
+			get { throw new NotSupportedException(); }
+		}
+		
+		/// <summary> Name including the declaring type and parameters </summary>
 		public string FullName {
 			get {
-				return this.DeclaringType.FullName + "." + this.Name;
+				StringBuilder sb = new StringBuilder();
+				sb.Append(this.DeclaringType.FullName);
+				sb.Append(".");
+				sb.Append(this.Name);
+				sb.Append("(");
+				bool first = true;
+				foreach(DebugParameterInfo p in GetParameters()) {
+					if (!first)
+						sb.Append(", ");
+					first = false;
+					sb.Append(p.ParameterType.Name);
+					sb.Append(" ");
+					sb.Append(p.Name);
+				}
+				sb.Append(")");
+				return sb.ToString();
 			}
 		}
 		
 		public override string Name {
-			get {
-				return methodProps.Name;
-			}
+			get { return methodProps.Name; }
 		}
 		
 		public override Type ReflectedType {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		public override object[] GetCustomAttributes(bool inherit)
@@ -94,42 +104,46 @@ namespace Debugger.MetaData
 		
 		public override bool IsDefined(Type attributeType, bool inherit)
 		{
-			throw new NotSupportedException();
+			return DebugType.IsDefined(this, inherit, attributeType);
 		}
 		
 		//		public virtual Type[] GetGenericArguments();
 		//		public virtual MethodBody GetMethodBody();
-		//		internal virtual RuntimeMethodHandle GetMethodHandle();
 		
 		public override MethodImplAttributes GetMethodImplementationFlags()
 		{
 			return (MethodImplAttributes)methodProps.ImplFlags;
 		}
 		
-		//		internal virtual uint GetOneTimeFlags();
-		//		internal virtual uint GetOneTimeSpecificFlags();
-		
 		public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
 		{
-			throw new NotSupportedException();
+			List<Value> args = new List<Value>();
+			foreach(object arg in parameters) {
+				args.Add((Value)arg);
+			}
+			return Eval.InvokeMethod(this, (Value)obj, args.ToArray());
 		}
 		
 		public override MethodAttributes Attributes {
-			get {
-				return (MethodAttributes)methodProps.Flags;
-			}
+			get { return (MethodAttributes)methodProps.Flags; }
 		}
 		
 		//		public virtual CallingConventions CallingConvention { get; }
-		//		public virtual bool ContainsGenericParameters { get; }
-		//		public virtual bool IsGenericMethod { get; }
-		//		public virtual bool IsGenericMethodDefinition { get; }
-		//		internal virtual bool IsOverloaded { get; }
+		
+		public override bool ContainsGenericParameters {
+			get { throw new NotSupportedException(); }
+		}
+		
+		public override bool IsGenericMethod {
+			get { throw new NotSupportedException(); }
+		}
+		
+		public override bool IsGenericMethodDefinition {
+			get { throw new NotSupportedException(); }
+		}
 		
 		public override RuntimeMethodHandle MethodHandle {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		public override MethodInfo GetBaseDefinition()
@@ -139,27 +153,24 @@ namespace Debugger.MetaData
 		
 		//		public override Type[] GetGenericArguments();
 		//		public virtual MethodInfo GetGenericMethodDefinition();
-		//		internal virtual MethodInfo GetParentDefinition();
-		//		internal override Type GetReturnType();
 		//		public virtual MethodInfo MakeGenericMethod(params Type[] typeArguments);
 		//		public override bool ContainsGenericParameters { get; }
-		//		public override bool IsGenericMethod { get; }
-		//		public override bool IsGenericMethodDefinition { get; }
-		//		public virtual ParameterInfo ReturnParameter { get; }
 		
-		public Type GetReturnType()
-		{
-			if (this.MethodDefSig.RetType.Void) return null;
-			if (returnType == null) {
-				returnType = DebugType.CreateFromSignature(this.DebugModule, this.MethodDefSig.RetType.Type, declaringType);
+		public override ParameterInfo ReturnParameter {
+			get {
+				return new DebugParameterInfo(
+					this,
+					string.Empty,
+					this.MethodDefSig.RetType.Void ?
+						null :
+						DebugType.CreateFromSignature(this.DebugModule, this.MethodDefSig.RetType.Type, declaringType),
+					-1
+				);
 			}
-			return returnType;
 		}
 		
 		public override ICustomAttributeProvider ReturnTypeCustomAttributes {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		MethodDefSig methodDefSig;
@@ -174,7 +185,10 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		DebugType returnType;
+		/// <summary> Gets the number of paramters of this method </summary>
+		public int ParameterCount {
+			get { return this.MethodDefSig.ParamCount; }
+		}
 		
 		ParameterInfo[] parameters;
 		
@@ -183,10 +197,17 @@ namespace Debugger.MetaData
 			if (parameters == null) {
 				parameters = new ParameterInfo[this.MethodDefSig.ParamCount];
 				for(int i = 0; i < parameters.Length; i++) {
+					string name;
+					try {
+						// index = 0 is return parameter
+						name = this.DebugModule.MetaData.GetParamPropsForMethodIndex((uint)this.MetadataToken, (uint)i + 1).Name;
+					} catch {
+						name = String.Empty;
+					}
 					parameters[i] =
 						new DebugParameterInfo(
 							this,
-							this.GetParameterName(i),
+							name,
 							DebugType.CreateFromSignature(this.DebugModule, this.MethodDefSig.Parameters[i].Type, declaringType),
 							i
 						);
@@ -194,9 +215,6 @@ namespace Debugger.MetaData
 			}
 			return parameters;
 		}
-		
-		//		internal virtual Type[] GetParameterTypes();
-		//		internal virtual ParameterInfo[] GetParametersNoCopy();
 		
 		internal ICorDebugFunction CorFunction {
 			get {
@@ -241,7 +259,7 @@ namespace Debugger.MetaData
 		/// <summary>
 		/// Backing field that can be used to obtain the same value as by calling this method.
 		/// </summary>
-		internal DebugFieldInfo BackingField {
+		public DebugFieldInfo BackingField {
 			get {
 				if (!getBackingFieldCalled) {
 					backingFieldCache = GetBackingField();
@@ -294,7 +312,7 @@ namespace Debugger.MetaData
 			    code[10] == 0x06 && // ldloc.0
 			    code[11] == 0x2A)   // ret
 			{
-				token = getTokenFromIL(code, 06);
+				token = GetTokenFromIL(code, 06);
 			}
 			
 			// code generated for getter 'public int Prop { get; [set;] }'
@@ -309,7 +327,7 @@ namespace Debugger.MetaData
 			    code[09] == 0x06 && // ldloc.0
 			    code[10] == 0x2A)   // ret
 			{
-				token = getTokenFromIL(code, 05);
+				token = GetTokenFromIL(code, 05);
 			}
 			
 			if (code.Length == 7 &&
@@ -318,7 +336,7 @@ namespace Debugger.MetaData
 			    code[05] == 0x04 && //   <field token>
 			    code[06] == 0x2A)   // ret
 			{
-				token = getTokenFromIL(code, 05);
+				token = GetTokenFromIL(code, 05);
 			}
 			
 			if (token != 0) {
@@ -344,7 +362,7 @@ namespace Debugger.MetaData
 		/// <param name="ilCode">Bytes representing the code.</param>
 		/// <param name="tokenEndIndex">Index of last byte of the token.</param>
 		/// <returns>IL token.</returns>
-		uint getTokenFromIL(byte[] ilCode, uint tokenEndIndex)
+		uint GetTokenFromIL(byte[] ilCode, uint tokenEndIndex)
 		{
 			return  ((uint)ilCode[tokenEndIndex] << 24) +
 					((uint)ilCode[tokenEndIndex - 1] << 16) +
@@ -352,7 +370,7 @@ namespace Debugger.MetaData
 					((uint)ilCode[tokenEndIndex - 3]);
 		}
 		
-		bool? isSingleLineCache;
+		bool? isSingleLine;
 		
 		bool IsSingleLine {
 			get {
@@ -360,7 +378,7 @@ namespace Debugger.MetaData
 				ISymUnmanagedMethod symMethod = this.SymMethod;
 				if (symMethod == null) return false; // No symbols - can not determine
 				
-				if (isSingleLineCache.HasValue) return isSingleLineCache.Value;
+				if (isSingleLine.HasValue) return isSingleLine.Value;
 				
 				List<SequencePoint> seqPoints = new List<SequencePoint>(symMethod.SequencePoints);
 				seqPoints.Sort();
@@ -381,53 +399,36 @@ namespace Debugger.MetaData
 				}
 				
 				// Is single line
-				isSingleLineCache = seqPoints.Count == 0 || seqPoints[0].Line == seqPoints[seqPoints.Count - 1].EndLine;
-				return isSingleLineCache.Value;
+				isSingleLine = seqPoints.Count == 0 || seqPoints[0].Line == seqPoints[seqPoints.Count - 1].EndLine;
+				return isSingleLine.Value;
 			}
 		}
 		
-		bool? hasDebuggerAttributeCache;
+		bool? hasDebuggerAttribute;
 		
 		bool HasDebuggerAttribute {
 			get {
-				if (hasDebuggerAttributeCache.HasValue) return hasDebuggerAttributeCache.Value;
+				if (hasDebuggerAttribute.HasValue) return hasDebuggerAttribute.Value;
 				
-				hasDebuggerAttributeCache =
+				hasDebuggerAttribute =
 					// Look on the method
-					HasAnyAttribute(this.DebugModule.MetaData, methodProps.Token,
-					                typeof(System.Diagnostics.DebuggerStepThroughAttribute),
-					                typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
-					                typeof(System.Diagnostics.DebuggerHiddenAttribute))
+					DebugType.IsDefined(
+						this,
+						false,            
+						typeof(System.Diagnostics.DebuggerStepThroughAttribute),
+						typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
+						typeof(System.Diagnostics.DebuggerHiddenAttribute))
 					||
 					// Look on the type
-					HasAnyAttribute(this.DebugModule.MetaData, (uint)this.DeclaringType.MetadataToken,
-					                typeof(System.Diagnostics.DebuggerStepThroughAttribute),
-					                typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
-					                typeof(System.Diagnostics.DebuggerHiddenAttribute));
-				return hasDebuggerAttributeCache.Value;
+					DebugType.IsDefined(
+						declaringType,
+						false,            
+						typeof(System.Diagnostics.DebuggerStepThroughAttribute),
+						typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
+						typeof(System.Diagnostics.DebuggerHiddenAttribute));
+				
+				return hasDebuggerAttribute.Value;
 			}
-		}
-		
-		internal static bool HasAnyAttribute(MetaDataImport metaData, uint token, params Type[] wantedAttrTypes)
-		{
-			foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(token, 0)) {
-				CorTokenType tkType = (CorTokenType)(ca.Type & 0xFF000000);
-				string attributeName;
-				if (tkType == CorTokenType.MemberRef) {
-					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
-					attributeName = metaData.GetTypeRefProps(constructorMethod.DeclaringType).Name;
-				} else if (tkType == CorTokenType.MethodDef) {
-					MethodProps constructorMethod = metaData.GetMethodProps(ca.Type);
-					attributeName = metaData.GetTypeDefProps(constructorMethod.ClassToken).Name;
-				} else {
-					throw new DebuggerException("Not expected: " + tkType);
-				}
-				foreach(Type wantedAttrType in wantedAttrTypes) {
-					if (attributeName == wantedAttrType.FullName)
-						return true;
-				}
-			}
-			return false;
 		}
 		
 		internal void MarkAsNonUserCode()
@@ -437,28 +438,6 @@ namespace Debugger.MetaData
 			if (this.Process.Options.Verbose) {
 				this.Process.TraceMessage("Funciton {0} marked as non-user code", this.FullName);
 			}
-		}
-		
-		/// <summary>
-		/// Get a method from a managed type, method name and argument count
-		/// </summary>
-		public static DebugMethodInfo GetFromName(AppDomain appDomain, System.Type type, string methodName, int paramCount)
-		{
-			if (type.IsNested) throw new DebuggerException("Not implemented for nested types");
-			if (type.IsGenericType) throw new DebuggerException("Not implemented for generic types");
-			if (type.IsGenericParameter) throw new DebuggerException("Type can not be generic parameter");
-			
-			DebugType debugType = DebugType.CreateFromType(appDomain, type);
-			if (debugType == null) {
-				throw new DebuggerException("Type " + type.FullName + " not found");
-			}
-			
-			foreach(DebugMethodInfo methodInfo in debugType.GetMethods(methodName, DebugType.BindingFlagsAll)) {
-				if (methodInfo.ParameterCount == paramCount) {
-					return methodInfo;
-				}
-			}
-			throw new DebuggerException("Method " + methodName + " not found");
 		}
 		
 		internal ISymUnmanagedMethod SymMethod {
@@ -472,62 +451,14 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets the number of paramters of this method </summary>
-		public int ParameterCount {
-			get {
-				return this.MethodDefSig.ParamCount;
-			}
-		}
+		List<DebugLocalVariableInfo> localVariables;
 		
-		/// <summary> Gets the name of given parameter </summary>
-		/// <param name="index"> Zero-based index </param>
-		public string GetParameterName(int index)
+		public List<DebugLocalVariableInfo> GetLocalVariables()
 		{
-			// index = 0 is return parameter
-			try {
-				return this.DebugModule.MetaData.GetParamPropsForMethodIndex((uint)this.MetadataToken, (uint)index + 1).Name;
-			} catch {
-				return String.Empty;
-			}
-		}
-		
-		/// <summary> Get names of all parameters in order </summary>
-		public string[] ParameterNames {
-			get {
-				List<string> names = new List<string>();
-				for(int i = 0; i < ParameterCount; i++) {
-					names.Add(GetParameterName(i));
-				}
-				return names.ToArray();
-			}
-		}
-		
-		public List<DebugLocalVariableInfo> LocalVariables {
-			get {
-				if (this.SymMethod != null) { // TODO: Is this needed?
-					return GetLocalVariables();
-				} else {
-					return new List<DebugLocalVariableInfo>();
-				}
-			}
-		}
-		
-		public string[] LocalVariableNames {
-			get {
-				List<DebugLocalVariableInfo> vars = this.LocalVariables;
-				List<string> names = new List<string>();
-				for(int i = 0; i < vars.Count; i++) {
-					names.Add(vars[i].Name);
-				}
-				names.Sort();
-				return names.ToArray();
-			}
-		}
-		
-		List<DebugLocalVariableInfo> localVariables; // Cache
-		
-		List<DebugLocalVariableInfo> GetLocalVariables()
-		{
+			// TODO: Is this needed?
+			if (this.SymMethod == null)
+				return new List<DebugLocalVariableInfo>();
+					
 			if (localVariables != null) return localVariables;
 			
 			localVariables = GetLocalVariablesInScope(this.SymMethod.RootScope);
@@ -558,6 +489,7 @@ namespace Debugger.MetaData
 				if (!this.IsStatic) {
 					DebugLocalVariableInfo thisVar = new DebugLocalVariableInfo(
 						"this",
+						-1,
 						declaringType,
 						delegate(StackFrame context) {
 							return context.GetThisValue();
@@ -578,6 +510,7 @@ namespace Debugger.MetaData
 					if (fieldInfo.Name.StartsWith("CS$")) continue; // Ignore
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
 						fieldInfo.Name,
+						-1,
 						(DebugType)fieldInfo.FieldType,
 						delegate(StackFrame context) {
 							return getCaptureClass(context).GetFieldValue(fieldInfoCopy);
@@ -634,6 +567,7 @@ namespace Debugger.MetaData
 				} else {
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
 						symVar.Name,
+						(int)symVar.AddressField1,
 						locVarType,
 						delegate(StackFrame context) {
 							return GetLocalVariableValue(context, symVarCopy);
@@ -658,6 +592,11 @@ namespace Debugger.MetaData
 				throw;
 			}
 			return new Value(context.AppDomain, corVal);
+		}
+		
+		public override string ToString()
+		{
+			return this.FullName;
 		}
 	}
 }

@@ -4,6 +4,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger.MetaData;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
 
@@ -27,8 +28,8 @@ namespace Debugger.AddIn.TreeModel
 		
 		IEnumerable<TreeNode> LazyGetChildNodes()
 		{
-			foreach(string arg in stackFrame.MethodInfo.ParameterNames) {
-				yield return new ExpressionNode(ExpressionNode.GetImageForParameter(), arg, new IdentifierExpression(arg));
+			foreach(DebugParameterInfo par in stackFrame.MethodInfo.GetParameters()) {
+				yield return new ExpressionNode(ExpressionNode.GetImageForParameter(), par.Name, new IdentifierExpression(par.Name));
 			}
 			foreach(string loc in stackFrame.MethodInfo.LocalVariableNames) {
 				yield return new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), loc, new IdentifierExpression(loc));

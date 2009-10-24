@@ -31,39 +31,35 @@ namespace Debugger.MetaData
 		}
 		
 		public override Type DeclaringType {
-			get {
-				return declaringType;
-			}
+			get { return declaringType; }
 		}
 		
-		/// <summary> The AppDomain in which this member is loaded </summary>
+		/// <summary> The AppDomain in which this member is declared </summary>
+		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
-			get {
-				return declaringType.AppDomain;
-			}
+			get { return declaringType.AppDomain; }
 		}
 		
-		/// <summary> The Process in which this member is loaded </summary>
+		/// <summary> The Process in which this member is declared </summary>
+		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return declaringType.Process;
-			}
+			get { return declaringType.Process; }
 		}
 		
-		/// <summary> The Module in which this member is loaded </summary>
+		/// <summary> The Module in which this member is declared </summary>
+		[Debugger.Tests.Ignore]
 		public Debugger.Module DebugModule {
-			get {
-				return declaringType.DebugModule;
-			}
+			get { return declaringType.DebugModule; }
 		}
 		
+		[Debugger.Tests.Ignore]
 		public override int MetadataToken {
-			get {
-				return (getMethod ?? setMethod).MetadataToken;
-			}
+			get { return (getMethod ?? setMethod).MetadataToken; }
 		}
 		
-		//		public virtual Module Module { get; }
+		public override System.Reflection.Module Module {
+			get { throw new NotSupportedException(); }
+		}
 		
 		public override string Name {
 			get {
@@ -72,9 +68,7 @@ namespace Debugger.MetaData
 		}
 		
 		public override Type ReflectedType {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		public override object[] GetCustomAttributes(bool inherit)
@@ -89,31 +83,23 @@ namespace Debugger.MetaData
 		
 		public override bool IsDefined(Type attributeType, bool inherit)
 		{
-			throw new NotSupportedException();
+			return DebugType.IsDefined(this, inherit, attributeType);
 		}
 		
 		public override PropertyAttributes Attributes {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		public override bool CanRead {
-			get {
-				return getMethod != null;
-			}
+			get { return getMethod != null; }
 		}
 		
 		public override bool CanWrite {
-			get {
-				return setMethod != null;
-			}
+			get { return setMethod != null; }
 		}
 		
 		public override Type PropertyType {
-			get {
-				return getMethod.ReturnType;
-			}
+			get { return getMethod.ReturnType; }
 		}
 		
 		public override MethodInfo[] GetAccessors(bool nonPublic)
@@ -130,7 +116,11 @@ namespace Debugger.MetaData
 		
 		public override ParameterInfo[] GetIndexParameters()
 		{
-			throw new NotSupportedException();
+			if (GetGetMethod() != null) {
+				return GetGetMethod().GetParameters();
+			} else {
+				return null;
+			}
 		}
 		
 		//		public virtual Type[] GetOptionalCustomModifiers();
@@ -142,18 +132,22 @@ namespace Debugger.MetaData
 			return setMethod;
 		}
 		
-		//		public virtual object GetValue(object obj, object[] index);
-		
 		public override object GetValue(object obj, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
 		{
-			throw new NotSupportedException();
+			List<Value> args = new List<Value>();
+			foreach(object arg in index) {
+				args.Add((Value)arg);
+			}
+			return Value.GetPropertyValue((Value)obj, this, args.ToArray());
 		}
-		
-		//		public virtual void SetValue(object obj, object value, object[] index);
 		
 		public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
 		{
-			throw new NotSupportedException();
+			List<Value> args = new List<Value>();
+			foreach(object arg in index) {
+				args.Add((Value)arg);
+			}
+			Value.SetPropertyValue((Value)obj, this, args.ToArray(), (Value)value);
 		}
 		
 		public bool IsPublic {
@@ -168,6 +162,11 @@ namespace Debugger.MetaData
 			get {
 				return (getMethod ?? setMethod).IsStatic;
 			}
+		}
+		
+		public override string ToString()
+		{
+			return this.PropertyType + " " + this.Name;
 		}
 	}
 }

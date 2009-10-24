@@ -19,19 +19,33 @@ using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
 {
-	public class DebugLocalVariableInfo
+	public class DebugLocalVariableInfo: System.Reflection.LocalVariableInfo
 	{
 		ValueGetter getter;
+		int localIndex;
+		DebugType localType;
+		
+		public override int LocalIndex {
+			get { return localIndex; }
+		}
+		
+		public override Type LocalType {
+			get { return localType; }
+		}
+		
+		public override bool IsPinned {
+			get { throw new NotSupportedException(); }
+		}
 		
 		public string Name { get; internal set; }
-		public DebugType Type { get; private set; }
 		public bool IsThis { get; internal set; }
 		public bool IsCaptured { get; internal set; }
 		
-		public DebugLocalVariableInfo(string name, DebugType type, ValueGetter getter)
+		public DebugLocalVariableInfo(string name, int localIndex, DebugType localType, ValueGetter getter)
 		{
 			this.Name = name;
-			this.Type = type;
+			this.localIndex = localIndex;
+			this.localType = localType;
 			this.getter = getter;
 		}
 		
@@ -42,7 +56,10 @@ namespace Debugger.MetaData
 		
 		public override string ToString()
 		{
-			return this.Type.ToString() + " " + this.Name;
+			string msg = this.LocalType + " " + this.Name;
+			if (IsCaptured)
+				msg += " (captured)";
+			return msg;
 		}
 	}
 }

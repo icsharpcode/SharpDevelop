@@ -191,16 +191,6 @@ namespace Debugger
 			}
 		}
 		
-		#region Convenience methods
-		
-		/// <summary> Synchronously calls a function and returns its return value </summary>
-		public static Value InvokeMethod(AppDomain appDomain, System.Type type, string name, Value thisValue, Value[] args)
-		{
-			return InvokeMethod(DebugMethodInfo.GetFromName(appDomain, type, name, args.Length), thisValue, args);
-		}
-		
-		#endregion
-		
 		/// <summary> Synchronously calls a function and returns its return value </summary>
 		public static Value InvokeMethod(DebugMethodInfo method, Value thisValue, Value[] args)
 		{

@@ -27,7 +27,7 @@ namespace Debugger.MetaData
 	/// If two types are identical, the references to DebugType will also be identical 
 	/// Type will be loaded once per each appdomain.
 	/// </remarks>
-	public class DebugType: System.Type
+	public class DebugType: System.Type, IDebugMemberInfo
 	{
 		public const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 		public const BindingFlags BindingFlagsAllDeclared = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
@@ -55,34 +55,28 @@ namespace Debugger.MetaData
 		static Dictionary<ICorDebugType, DebugType> loadedTypes = new Dictionary<ICorDebugType, DebugType>();
 		
 		public override Type DeclaringType {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		/// <summary> The AppDomain in which this type is loaded </summary>
 		[Debugger.Tests.Ignore]
 		public AppDomain AppDomain {
-			get {
-				return appDomain;
-			}
+			get { return appDomain; }
 		}
 		
-		/// <summary> The Process in which this member is loaded </summary>
+		/// <summary> The Process in which this type is loaded </summary>
 		[Debugger.Tests.Ignore]
 		public Process Process {
-			get {
-				return process;
-			}
+			get { return process; }
 		}
 		
-		/// <summary> The Module in which this member is loaded </summary>
+		/// <summary> The Module in which this type is loaded </summary>
+		[Debugger.Tests.Ignore]
 		public Debugger.Module DebugModule {
-			get {
-				return module;
-			}
+			get { return module; }
 		}
 		
+		[Debugger.Tests.Ignore]
 		public override int MetadataToken {
 			get {
 				AssertClassOrValueType();
@@ -90,18 +84,16 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		//		public virtual Module Module { get; }
+		public override System.Reflection.Module Module {
+			get { throw new NotSupportedException(); }
+		}
 		
 		public override string Name {
-			get {
-				return name;
-			}
+			get { return name; }
 		}
 		
 		public override Type ReflectedType {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		public override object[] GetCustomAttributes(bool inherit)
@@ -116,20 +108,40 @@ namespace Debugger.MetaData
 		
 		public override bool IsDefined(Type attributeType, bool inherit)
 		{
-			throw new NotSupportedException();
+			return IsDefined(this, inherit, attributeType);
 		}
 		
+		public static bool IsDefined(IDebugMemberInfo member, bool inherit, params Type[] attributeTypes)
+		{
+			// TODO: Support inherit
+			MetaDataImport metaData = member.DebugModule.MetaData;
+			uint token = (uint)member.MetadataToken;
+			foreach(CustomAttributeProps ca in metaData.EnumCustomAttributeProps(token, 0)) {
+				CorTokenType tkType = (CorTokenType)(ca.Type & 0xFF000000);
+				string attributeName;
+				if (tkType == CorTokenType.MemberRef) {
+					MemberRefProps constructorMethod = metaData.GetMemberRefProps(ca.Type);
+					attributeName = metaData.GetTypeRefProps(constructorMethod.DeclaringType).Name;
+				} else if (tkType == CorTokenType.MethodDef) {
+					MethodProps constructorMethod = metaData.GetMethodProps(ca.Type);
+					attributeName = metaData.GetTypeDefProps(constructorMethod.ClassToken).Name;
+				} else {
+					throw new DebuggerException("Not expected: " + tkType);
+				}
+				foreach(Type attributeType in attributeTypes) {
+					if (attributeName == attributeType.FullName)
+						return true;
+				}
+			}
+			return false;
+		}
 		
 		public override Assembly Assembly {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		public override string AssemblyQualifiedName {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
 		public override Type BaseType {
@@ -162,50 +174,38 @@ namespace Debugger.MetaData
 		//		public virtual MethodBase DeclaringMethod { get; }
 		
 		public override string FullName {
-			get {
-				return fullName;
-			}
+			get { return fullName; }
+		}
+		
+		public override Guid GUID {
+			get { throw new NotSupportedException(); }
 		}
 		
 		//		public virtual GenericParameterAttributes GenericParameterAttributes { get; }
 		//		public virtual int GenericParameterPosition { get; }
-		
-		public override Guid GUID {
-			get {
-				throw new NotSupportedException();
-			}
-		}
-		
 		//		public virtual bool IsGenericParameter { get; }
-		//		public virtual bool IsGenericType { get; }
 		//		public virtual bool IsGenericTypeDefinition { get; }
-		//		internal virtual bool IsSzArray { get; }
-		//		public override MemberTypes MemberType { get; }
 		
-		public override System.Reflection.Module Module {
+		public override bool IsGenericType {
 			get {
-				throw new NotSupportedException();
+				return this.GetGenericArguments().Length > 0;
 			}
 		}
 		
+		// TODO
 		public override string Namespace {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		
-		//		public override Type ReflectedType { get; }
 		//		public virtual StructLayoutAttribute StructLayoutAttribute { get; }
-		//		public virtual RuntimeTypeHandle TypeHandle { get; }
+		
+		public override RuntimeTypeHandle TypeHandle {
+			get { throw new NotSupportedException(); }
+		}
 		
 		public override Type UnderlyingSystemType {
-			get {
-				throw new NotSupportedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
-		
-		//		public virtual Type[] FindInterfaces(TypeFilter filter, object filterCriteria);
-		//		public virtual MemberInfo[] FindMembers(MemberTypes memberType, BindingFlags bindingAttr, MemberFilter filter, object filterCriteria);
 		
 		public override int GetArrayRank()
 		{
@@ -221,6 +221,7 @@ namespace Debugger.MetaData
 		
 		protected override ConstructorInfo GetConstructorImpl(BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers)
 		{
+			// TODO
 			throw new NotSupportedException();
 		}
 		
@@ -229,7 +230,6 @@ namespace Debugger.MetaData
 			throw new NotSupportedException();
 		}
 		
-		//		internal virtual string GetDefaultMemberName();
 		//		public virtual MemberInfo[] GetDefaultMembers();
 		
 		public override Type GetElementType()
@@ -362,7 +362,7 @@ namespace Debugger.MetaData
 		
 		public override Type GetInterface(string name, bool ignoreCase)
 		{
-			foreach(DebugType inter in this.Interfaces) {
+			foreach(DebugType inter in this.GetInterfaces()) {
 				if (string.Equals(inter.FullName, fullName, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)) {
 					return inter;
 				}
@@ -399,7 +399,7 @@ namespace Debugger.MetaData
 				if (candidate.ParameterCount == paramNames.Length) {
 					bool match = true;
 					for(int i = 0; i < paramNames.Length; i++) {
-						if (paramNames[i] != candidate.ParameterNames[i])
+						if (paramNames[i] != candidate.GetParameters()[i].Name)
 							match = false;
 					}
 					if (match)
@@ -472,13 +472,9 @@ namespace Debugger.MetaData
 			return GetMember<PropertyInfo>(name, bindingAttr, null);
 		}
 		
-		//		internal virtual Type GetRootElementType();
-		//		internal virtual TypeCode GetTypeCodeInternal();
-		//		internal virtual RuntimeTypeHandle GetTypeHandleInternal();
-		
 		protected override bool HasElementTypeImpl()
 		{
-			throw new NotSupportedException();
+			return this.IsArray || this.IsPointer;
 		}
 		
 		//		internal virtual bool HasProxyAttributeImpl();
@@ -538,11 +534,6 @@ namespace Debugger.MetaData
 		
 		internal ICorDebugType CorType {
 			get { return corType; }
-		}
-		
-		/// <summary> Gets a list of all interfaces that this type implements </summary>
-		public List<DebugType> Interfaces {
-			get { return interfaces; }
 		}
 		
 		/// <summary> Returns what kind of type this is. (eg. value type) </summary>
@@ -964,7 +955,7 @@ namespace Debugger.MetaData
 			if (appDomain.Process.Options.Verbose) {
 				string prefix = this.IsInterface ? "interface" : "type";
 				appDomain.Process.TraceMessage("Loaded {0} {1} ({2} ms)", prefix, this.FullName, totalTime2.TotalMilliseconds);
-				foreach(DebugType inter in this.Interfaces) {
+				foreach(DebugType inter in GetInterfaces()) {
 					appDomain.Process.TraceMessage(" - Implements {0}", inter.FullName);
 				}
 			}
@@ -1081,7 +1072,7 @@ namespace Debugger.MetaData
 		public bool IsCompilerGenerated {
 			get {
 				if (this.IsClass || this.IsValueType) {
-					return DebugMethodInfo.HasAnyAttribute(this.DebugModule.MetaData, (uint)this.MetadataToken, typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute));
+					return IsDefined(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
 				} else {
 					return false;
 				}
@@ -1097,18 +1088,19 @@ namespace Debugger.MetaData
 		public bool IsYieldEnumerator {
 			get {
 				if (this.IsCompilerGenerated) {
-					foreach(DebugType intf in this.Interfaces) {
-						if (intf.FullName == typeof(System.Collections.IEnumerator).FullName)
-							return true;
-					}
+					return GetInterface(typeof(System.Collections.IEnumerator).FullName) != null;
 				}
 				return false;
 			}
 		}
 		
+		bool IDebugMemberInfo.IsStatic {
+			get { return false; }
+		}
+		
 		public override string ToString()
 		{
-			return string.Format("{0}", this.FullName);
+			return this.FullName;
 		}
 	}
 }

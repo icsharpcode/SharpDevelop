@@ -357,7 +357,7 @@ namespace Debugger
 		public Value GetArgumentValue(string name)
 		{
 			for(int i = 0; i < this.ArgumentCount; i++) {
-				if (this.MethodInfo.GetParameterName(i) == name) {
+				if (this.MethodInfo.GetParameters()[i].Name == name) {
 					return GetArgumentValue(i);
 				}
 			}
@@ -382,7 +382,7 @@ namespace Debugger
 		/// <returns> Null if not found </returns>
 		public Value GetLocalVariableValue(string name)
 		{
-			foreach(DebugLocalVariableInfo locVar in this.MethodInfo.LocalVariables) {
+			foreach(DebugLocalVariableInfo locVar in this.MethodInfo.GetLocalVariables()) {
 				if (locVar.Name == name) {
 					return locVar.GetValue(this);
 				}
@@ -394,7 +394,7 @@ namespace Debugger
 		public List<Value> GetLocalVariableValues()
 		{
 			List<Value> values = new List<Value>();
-			foreach(DebugLocalVariableInfo locVar in this.MethodInfo.LocalVariables) {
+			foreach(DebugLocalVariableInfo locVar in this.MethodInfo.GetLocalVariables()) {
 				values.Add(locVar.GetValue(this));
 			}
 			return values;

@@ -215,7 +215,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					string argValue = null;
 					if (showArgumentNames) {
 						try {
-							parameterName = frame.MethodInfo.GetParameterName(i);
+							parameterName = frame.MethodInfo.GetParameters()[i].Name;
 						} catch { }
 						if (parameterName == "") parameterName = null;
 					}

@@ -18,10 +18,10 @@ namespace Debugger.MetaData
 {
 	public class DebugParameterInfo : System.Reflection.ParameterInfo
 	{
-		public MemberInfo member;
-		public string name;
-		public Type parameterType;
-		public int position;
+		MemberInfo member;
+		string name;
+		Type parameterType;
+		int position;
 		
 		public override MemberInfo Member {
 			get { return member; }
@@ -56,5 +56,10 @@ namespace Debugger.MetaData
 		//		public virtual Type[] GetOptionalCustomModifiers();
 		//		public virtual Type[] GetRequiredCustomModifiers();
 		//		public virtual bool IsDefined(Type attributeType, bool inherit);
+		
+		public override string ToString()
+		{
+			return this.ParameterType + " " + this.Name;
+		}
 	}
 }

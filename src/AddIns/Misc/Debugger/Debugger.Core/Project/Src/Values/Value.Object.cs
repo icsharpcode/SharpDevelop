@@ -98,6 +98,12 @@ namespace Debugger
 			);
 		}
 		
+		public static Value SetFieldValue(Value objectInstance, DebugFieldInfo fieldInfo, Value newValue)
+		{
+			// TODO
+			throw new NotImplementedException();
+		}
+		
 		static ICorDebugValue GetFieldCorValue(Value objectInstance, DebugFieldInfo fieldInfo)
 		{
 			CheckObject(objectInstance, fieldInfo);
@@ -211,7 +217,8 @@ namespace Debugger
 			if (this.Type.IsPrimitive) return AsString;
 			if (this.Type.IsPointer) return "0x" + this.PointerAddress.ToString("X");
 			// if (!IsObject) // Can invoke on primitives
-			return Eval.InvokeMethod(this.AppDomain, typeof(object), "ToString", this, new Value[] {}).AsString;
+			DebugMethodInfo methodInfo = (DebugMethodInfo)DebugType.CreateFromType(this.AppDomain, typeof(object)).GetMethod("ToString", new DebugType[] {});
+			return Eval.InvokeMethod(methodInfo, this, new Value[] {}).AsString;
 		}
 		
 		#region Convenience overload methods

@@ -11,7 +11,9 @@ namespace Debugger.MetaData
 	public interface IDebugMemberInfo
 	{
 		Type DeclaringType { get; }
+		Module DebugModule { get; }
 		string Name { get; }
+		int MetadataToken { get; }
 		bool IsStatic { get; }
 		bool IsPublic { get; }
 	}
