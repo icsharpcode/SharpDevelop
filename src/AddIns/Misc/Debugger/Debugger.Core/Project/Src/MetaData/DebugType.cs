@@ -806,30 +806,6 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		public static DebugType CreateFromDottedName(AppDomain appDomain, string dottedName, params DebugType[] genericArguments)
-		{
-			// The most common case
-			DebugType result = CreateFromName(appDomain, dottedName, null, genericArguments);
-			if (result != null)
-				return result;
-			
-			string[] names = dottedName.Split('.');
-			for(int take = names.Length - 1; take > 0; take--) {
-				string enclosingName = string.Join(".", names, 0, take);
-				DebugType enclosingType = CreateFromName(appDomain, enclosingName, null, genericArguments);
-				if (enclosingType != null) {
-					for(int nested = take; nested < names.Length; nested++) {
-						string nestedName = names[nested];
-						enclosingType = CreateFromName(appDomain, nestedName, enclosingType, genericArguments);
-						if (enclosingType == null)
-							return null;
-					}
-					return enclosingType;
-				}
-			}
-			return null;
-		}
-		
 		public static DebugType CreateFromType(Module module, System.Type type)
 		{
 			if (type is DebugType)
@@ -913,26 +889,6 @@ namespace Debugger.MetaData
 			
 			byte[] typeSpecBlob = module.MetaData.GetTypeSpecFromToken(token).GetData();
 			return CreateFromSignature(module, typeSpecBlob, declaringType);
-		}
-		
-		public static DebugType CreateFromTypeReference(AppDomain appDomain, TypeReference typeRef)
-		{
-			List<DebugType> genArgs = new List<DebugType>();
-			foreach(TypeReference argRef in typeRef.GenericTypes) {
-				genArgs.Add(CreateFromTypeReference(appDomain, argRef));
-			}
-			// TODO: A<T>.C<U>
-			string name = typeRef.Type;
-			if (genArgs.Count > 0)
-				name += '`' + genArgs.Count;
-			DebugType type = CreateFromDottedName(appDomain, name, genArgs.ToArray());
-			for(int i = 0; i < typeRef.PointerNestingLevel; i++) {
-				type = (DebugType)type.MakePointerType();
-			}
-			for(int i = typeRef.RankSpecifier.Length - 1; i >= 0; i--) {
-				type = (DebugType)type.MakeArrayType(typeRef.RankSpecifier[i] + 1);
-			}
-			return type;
 		}
 		
 		public static DebugType CreateFromSignature(Module module, byte[] signature, DebugType declaringType)

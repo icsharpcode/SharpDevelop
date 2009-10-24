@@ -16,6 +16,12 @@ using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Visitors
 {
+	public class EvaluateException: GetValueException
+	{
+		public EvaluateException(INode code, string msg):base(code, msg) {}
+		public EvaluateException(INode code, string msgFmt, params object[] msgArgs):base(code, string.Format(msgFmt, msgArgs)) {}
+	}
+	
 	public class ExpressionEvaluator: NotImplementedAstVisitor
 	{
 		const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
@@ -173,36 +179,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			this.context = context;
 		}
 		
-		DebugType ResoleType(Expression expr)
-		{
-			string name = GetTypeName(expr);
-			if (name == null)
-				return null;
-			// TODO: Generic arguments
-			return DebugType.CreateFromDottedName(context.AppDomain, name);
-		}
-		
-		string GetTypeName(Expression expr)
-		{
-			if (expr is IdentifierExpression) {
-				return ((IdentifierExpression)expr).Identifier;
-			} else if (expr is MemberReferenceExpression) {
-				return GetTypeName(((MemberReferenceExpression)expr).TargetObject) + "." + ((MemberReferenceExpression)expr).MemberName;
-			} else if (expr is TypeReferenceExpression) {
-				TypeReference typeRef = ((TypeReferenceExpression)expr).TypeReference;
-				string genArity = typeRef.GenericTypes.Count > 0 ? "`" + typeRef.GenericTypes.Count : string.Empty;
-				return typeRef.Type + genArity;
-			} else {
-				return null;
-			}
-		}
-		
 		public DebugType GetDebugType(INode expr)
 		{
 			if (expr is ParenthesizedExpression) {
 				return GetDebugType(((ParenthesizedExpression)expr).Expression);
 			} else if (expr is CastExpression) {
-				return DebugType.CreateFromTypeReference(context.AppDomain, ((CastExpression)expr).CastTo);
+				return ((CastExpression)expr).CastTo.ResolveType(context.AppDomain);
 			} else {
 				return null;
 			}
@@ -372,7 +354,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				} catch (GetValueException) {
 					// Static
 					target = null;
-					targetType = ResoleType(memberRef.TargetObject);
+					targetType = memberRef.TargetObject.ResolveType(context.AppDomain);
 					if (targetType == null)
 						throw;
 				}
@@ -409,8 +391,11 @@ namespace ICSharpCode.NRefactory.Visitors
 			for (int i = 0; i < constructorParameters.Count; i++) {
 				constructorParameterValues[i] = Evaluate(constructorParameters[i]);
 			}
-			return Eval.NewObject(DebugType.CreateFromTypeReference(context.AppDomain, objectCreateExpression.CreateType), 
-			                      constructorParameterValues, constructorParameterTypes);
+			return Eval.NewObject(
+				objectCreateExpression.CreateType.ResolveType(context.AppDomain),
+				constructorParameterValues,
+				constructorParameterTypes
+			);
 		}
 		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
@@ -424,7 +409,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			} catch (GetValueException) {
 				// Static
 				target = null;
-				targetType = ResoleType(memberReferenceExpression.TargetObject);
+				targetType = memberReferenceExpression.TargetObject.ResolveType(context.AppDomain);
 				if (targetType == null)
 					throw;
 			}
