@@ -578,9 +578,16 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override bool IsAssignableFrom(Type c)
 		{
-			// TODO: Finsih
 			if (this == c) return true;
-			return c.IsSubclassOf(this);
+			if (this.IsInterface) {
+				foreach(Type intf in c.GetInterfaces()) {
+					if (this == intf)
+						return true;
+				}
+				return false;
+			} else {
+				return c.IsSubclassOf(this);
+			}
 		}
 		
 		//		protected virtual bool IsContextfulImpl();
