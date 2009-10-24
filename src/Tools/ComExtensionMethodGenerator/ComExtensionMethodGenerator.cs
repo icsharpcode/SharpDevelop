@@ -39,6 +39,7 @@ namespace ComExtensionMethodGenerator
 					Header = header,
 					Namespace = "Debugger.Interop." + name,
 					TypeName = name + "ExtensionMethods",
+					MethodPrefix = "__",
 				}.Generate();
 			}
 		}
@@ -57,12 +58,15 @@ namespace ComExtensionMethodGenerator
 		public string[] ProcessOutParameterIgnores = new string[] { "System.Int32", "System.UInt32", "System.Int64", "System.UInt64", "System.Boolean", "Guid" };
 		public bool ConvertOutParameterToReturn = true;
 		public string ReturnValueName = "returnValue";
+		public string MethodPrefix = string.Empty;
 		
 		public string Generate()
 		{
 			// Parse the source code
 			IParser parser = ParserFactory.CreateParser(InputFile);
 			parser.Parse();
+			
+			bool hasWarnings = false;
 			
 			// Prepare the output
 			CompilationUnit generated = new CompilationUnit();
@@ -106,8 +110,16 @@ namespace ComExtensionMethodGenerator
 						// Signature
 						extensionMethod.Modifier = Modifiers.Public | Modifiers.Static;
 						extensionMethod.TypeReference = method.TypeReference;
-						extensionMethod.Name = method.Name;
 						extensionMethod.IsExtensionMethod = true;
+						if (string.IsNullOrEmpty(MethodPrefix)) {
+							extensionMethod.Name = method.Name;
+						} else if (method.Name.StartsWith(MethodPrefix)) {
+							extensionMethod.Name = method.Name.Substring(MethodPrefix.Length);
+						} else {
+							extensionMethod.Name = method.Name;
+							Console.WriteLine("Warning: {0}.{1} is missing prefix {2}.", type.Name, method.Name, MethodPrefix);
+							hasWarnings = true;
+						}
 						// Parameters
 						extensionMethod.Parameters.Add(new ParameterDeclarationExpression(new TypeReference(type.Name), ThisParameterName));
 						foreach(ParameterDeclarationExpression param in method.Parameters) {
@@ -215,6 +227,11 @@ namespace ComExtensionMethodGenerator
 			// Save to file
 			if (OutputFile != null) {
 				File.WriteAllText(OutputFile, output);
+			}
+			
+			if (hasWarnings) {
+				Console.WriteLine("Press any key to continue...");
+				Console.ReadKey();
 			}
 			
 			return output;

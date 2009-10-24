@@ -19,14 +19,14 @@ namespace Debugger.Interop.CorDebug
 		
 		public static void CanLaunchOrAttach(this CorDebugClass instance, uint dwProcessId, int win32DebuggingEnabled)
 		{
-			instance.CanLaunchOrAttach(dwProcessId, win32DebuggingEnabled);
+			instance.__CanLaunchOrAttach(dwProcessId, win32DebuggingEnabled);
 		}
 		
 		public static ICorDebugProcess CreateProcess(this CorDebugClass instance, string lpApplicationName, string lpCommandLine, ref _SECURITY_ATTRIBUTES lpProcessAttributes, ref _SECURITY_ATTRIBUTES lpThreadAttributes, int bInheritHandles, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, uint lpStartupInfo,
 		uint lpProcessInformation, CorDebugCreateProcessFlags debuggingFlags)
 		{
 			ICorDebugProcess ppProcess;
-			instance.CreateProcess(lpApplicationName, lpCommandLine, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation,
+			instance.__CreateProcess(lpApplicationName, lpCommandLine, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation,
 			debuggingFlags, out ppProcess);
 			ProcessOutParameter(lpProcessAttributes);
 			ProcessOutParameter(lpThreadAttributes);
@@ -37,7 +37,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcess DebugActiveProcess(this CorDebugClass instance, uint id, int win32Attach)
 		{
 			ICorDebugProcess ppProcess;
-			instance.DebugActiveProcess(id, win32Attach, out ppProcess);
+			instance.__DebugActiveProcess(id, win32Attach, out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -45,7 +45,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcessEnum EnumerateProcesses(this CorDebugClass instance)
 		{
 			ICorDebugProcessEnum ppProcess;
-			instance.EnumerateProcesses(out ppProcess);
+			instance.__EnumerateProcesses(out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -53,41 +53,41 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcess GetProcess(this CorDebugClass instance, uint dwProcessId)
 		{
 			ICorDebugProcess ppProcess;
-			instance.GetProcess(dwProcessId, out ppProcess);
+			instance.__GetProcess(dwProcessId, out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
 		
 		public static void Initialize(this CorDebugClass instance)
 		{
-			instance.Initialize();
+			instance.__Initialize();
 		}
 		
 		public static void SetManagedHandler(this CorDebugClass instance, ICorDebugManagedCallback pCallback)
 		{
-			instance.SetManagedHandler(pCallback);
+			instance.__SetManagedHandler(pCallback);
 		}
 		
 		public static void SetUnmanagedHandler(this CorDebugClass instance, ICorDebugUnmanagedCallback pCallback)
 		{
-			instance.SetUnmanagedHandler(pCallback);
+			instance.__SetUnmanagedHandler(pCallback);
 		}
 		
 		public static void Terminate(this CorDebugClass instance)
 		{
-			instance.Terminate();
+			instance.__Terminate();
 		}
 		
 		public static void CanLaunchOrAttach(this EmbeddedCLRCorDebugClass instance, uint dwProcessId, int win32DebuggingEnabled)
 		{
-			instance.CanLaunchOrAttach(dwProcessId, win32DebuggingEnabled);
+			instance.__CanLaunchOrAttach(dwProcessId, win32DebuggingEnabled);
 		}
 		
 		public static ICorDebugProcess CreateProcess(this EmbeddedCLRCorDebugClass instance, string lpApplicationName, string lpCommandLine, ref _SECURITY_ATTRIBUTES lpProcessAttributes, ref _SECURITY_ATTRIBUTES lpThreadAttributes, int bInheritHandles, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, uint lpStartupInfo,
 		uint lpProcessInformation, CorDebugCreateProcessFlags debuggingFlags)
 		{
 			ICorDebugProcess ppProcess;
-			instance.CreateProcess(lpApplicationName, lpCommandLine, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation,
+			instance.__CreateProcess(lpApplicationName, lpCommandLine, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation,
 			debuggingFlags, out ppProcess);
 			ProcessOutParameter(lpProcessAttributes);
 			ProcessOutParameter(lpThreadAttributes);
@@ -98,7 +98,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcess DebugActiveProcess(this EmbeddedCLRCorDebugClass instance, uint id, int win32Attach)
 		{
 			ICorDebugProcess ppProcess;
-			instance.DebugActiveProcess(id, win32Attach, out ppProcess);
+			instance.__DebugActiveProcess(id, win32Attach, out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -106,7 +106,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcessEnum EnumerateProcesses(this EmbeddedCLRCorDebugClass instance)
 		{
 			ICorDebugProcessEnum ppProcess;
-			instance.EnumerateProcesses(out ppProcess);
+			instance.__EnumerateProcesses(out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -114,56 +114,56 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcess GetProcess(this EmbeddedCLRCorDebugClass instance, uint dwProcessId)
 		{
 			ICorDebugProcess ppProcess;
-			instance.GetProcess(dwProcessId, out ppProcess);
+			instance.__GetProcess(dwProcessId, out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
 		
 		public static void Initialize(this EmbeddedCLRCorDebugClass instance)
 		{
-			instance.Initialize();
+			instance.__Initialize();
 		}
 		
 		public static void SetManagedHandler(this EmbeddedCLRCorDebugClass instance, ICorDebugManagedCallback pCallback)
 		{
-			instance.SetManagedHandler(pCallback);
+			instance.__SetManagedHandler(pCallback);
 		}
 		
 		public static void SetUnmanagedHandler(this EmbeddedCLRCorDebugClass instance, ICorDebugUnmanagedCallback pCallback)
 		{
-			instance.SetUnmanagedHandler(pCallback);
+			instance.__SetUnmanagedHandler(pCallback);
 		}
 		
 		public static void Terminate(this EmbeddedCLRCorDebugClass instance)
 		{
-			instance.Terminate();
+			instance.__Terminate();
 		}
 		
 		public static void Initialize(this ICorDebug instance)
 		{
-			instance.Initialize();
+			instance.__Initialize();
 		}
 		
 		public static void Terminate(this ICorDebug instance)
 		{
-			instance.Terminate();
+			instance.__Terminate();
 		}
 		
 		public static void SetManagedHandler(this ICorDebug instance, ICorDebugManagedCallback pCallback)
 		{
-			instance.SetManagedHandler(pCallback);
+			instance.__SetManagedHandler(pCallback);
 		}
 		
 		public static void SetUnmanagedHandler(this ICorDebug instance, ICorDebugUnmanagedCallback pCallback)
 		{
-			instance.SetUnmanagedHandler(pCallback);
+			instance.__SetUnmanagedHandler(pCallback);
 		}
 		
 		public static ICorDebugProcess CreateProcess(this ICorDebug instance, string lpApplicationName, string lpCommandLine, ref _SECURITY_ATTRIBUTES lpProcessAttributes, ref _SECURITY_ATTRIBUTES lpThreadAttributes, int bInheritHandles, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, uint lpStartupInfo,
 		uint lpProcessInformation, CorDebugCreateProcessFlags debuggingFlags)
 		{
 			ICorDebugProcess ppProcess;
-			instance.CreateProcess(lpApplicationName, lpCommandLine, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation,
+			instance.__CreateProcess(lpApplicationName, lpCommandLine, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation,
 			debuggingFlags, out ppProcess);
 			ProcessOutParameter(lpProcessAttributes);
 			ProcessOutParameter(lpThreadAttributes);
@@ -174,7 +174,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcess DebugActiveProcess(this ICorDebug instance, uint id, int win32Attach)
 		{
 			ICorDebugProcess ppProcess;
-			instance.DebugActiveProcess(id, win32Attach, out ppProcess);
+			instance.__DebugActiveProcess(id, win32Attach, out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -182,7 +182,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcessEnum EnumerateProcesses(this ICorDebug instance)
 		{
 			ICorDebugProcessEnum ppProcess;
-			instance.EnumerateProcesses(out ppProcess);
+			instance.__EnumerateProcesses(out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -190,67 +190,67 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcess GetProcess(this ICorDebug instance, uint dwProcessId)
 		{
 			ICorDebugProcess ppProcess;
-			instance.GetProcess(dwProcessId, out ppProcess);
+			instance.__GetProcess(dwProcessId, out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
 		
 		public static void CanLaunchOrAttach(this ICorDebug instance, uint dwProcessId, int win32DebuggingEnabled)
 		{
-			instance.CanLaunchOrAttach(dwProcessId, win32DebuggingEnabled);
+			instance.__CanLaunchOrAttach(dwProcessId, win32DebuggingEnabled);
 		}
 		
 		public static void Stop(this ICorDebugAppDomain instance, uint dwTimeoutIgnored)
 		{
-			instance.Stop(dwTimeoutIgnored);
+			instance.__Stop(dwTimeoutIgnored);
 		}
 		
 		public static void Continue(this ICorDebugAppDomain instance, int fIsOutOfBand)
 		{
-			instance.Continue(fIsOutOfBand);
+			instance.__Continue(fIsOutOfBand);
 		}
 		
 		public static int IsRunning(this ICorDebugAppDomain instance)
 		{
 			int pbRunning;
-			instance.IsRunning(out pbRunning);
+			instance.__IsRunning(out pbRunning);
 			return pbRunning;
 		}
 		
 		public static int HasQueuedCallbacks(this ICorDebugAppDomain instance, ICorDebugThread pThread)
 		{
 			int pbQueued;
-			instance.HasQueuedCallbacks(pThread, out pbQueued);
+			instance.__HasQueuedCallbacks(pThread, out pbQueued);
 			return pbQueued;
 		}
 		
 		public static ICorDebugThreadEnum EnumerateThreads(this ICorDebugAppDomain instance)
 		{
 			ICorDebugThreadEnum ppThreads;
-			instance.EnumerateThreads(out ppThreads);
+			instance.__EnumerateThreads(out ppThreads);
 			ProcessOutParameter(ppThreads);
 			return ppThreads;
 		}
 		
 		public static void SetAllThreadsDebugState(this ICorDebugAppDomain instance, CorDebugThreadState state, ICorDebugThread pExceptThisThread)
 		{
-			instance.SetAllThreadsDebugState(state, pExceptThisThread);
+			instance.__SetAllThreadsDebugState(state, pExceptThisThread);
 		}
 		
 		public static void Detach(this ICorDebugAppDomain instance)
 		{
-			instance.Detach();
+			instance.__Detach();
 		}
 		
 		public static void Terminate(this ICorDebugAppDomain instance, uint exitCode)
 		{
-			instance.Terminate(exitCode);
+			instance.__Terminate(exitCode);
 		}
 		
 		public static ICorDebugErrorInfoEnum CanCommitChanges(this ICorDebugAppDomain instance, uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
 			ICorDebugErrorInfoEnum pError;
-			instance.CanCommitChanges(cSnapshots, ref pSnapshots, out pError);
+			instance.__CanCommitChanges(cSnapshots, ref pSnapshots, out pError);
 			ProcessOutParameter(pSnapshots);
 			ProcessOutParameter(pError);
 			return pError;
@@ -259,7 +259,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugErrorInfoEnum CommitChanges(this ICorDebugAppDomain instance, uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
 			ICorDebugErrorInfoEnum pError;
-			instance.CommitChanges(cSnapshots, ref pSnapshots, out pError);
+			instance.__CommitChanges(cSnapshots, ref pSnapshots, out pError);
 			ProcessOutParameter(pSnapshots);
 			ProcessOutParameter(pError);
 			return pError;
@@ -268,7 +268,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcess GetProcess(this ICorDebugAppDomain instance)
 		{
 			ICorDebugProcess ppProcess;
-			instance.GetProcess(out ppProcess);
+			instance.__GetProcess(out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -276,7 +276,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugAssemblyEnum EnumerateAssemblies(this ICorDebugAppDomain instance)
 		{
 			ICorDebugAssemblyEnum ppAssemblies;
-			instance.EnumerateAssemblies(out ppAssemblies);
+			instance.__EnumerateAssemblies(out ppAssemblies);
 			ProcessOutParameter(ppAssemblies);
 			return ppAssemblies;
 		}
@@ -284,7 +284,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugModule GetModuleFromMetaDataInterface(this ICorDebugAppDomain instance, object pIMetaData)
 		{
 			ICorDebugModule ppModule;
-			instance.GetModuleFromMetaDataInterface(pIMetaData, out ppModule);
+			instance.__GetModuleFromMetaDataInterface(pIMetaData, out ppModule);
 			ProcessOutParameter(ppModule);
 			return ppModule;
 		}
@@ -292,7 +292,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugBreakpointEnum EnumerateBreakpoints(this ICorDebugAppDomain instance)
 		{
 			ICorDebugBreakpointEnum ppBreakpoints;
-			instance.EnumerateBreakpoints(out ppBreakpoints);
+			instance.__EnumerateBreakpoints(out ppBreakpoints);
 			ProcessOutParameter(ppBreakpoints);
 			return ppBreakpoints;
 		}
@@ -300,7 +300,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugStepperEnum EnumerateSteppers(this ICorDebugAppDomain instance)
 		{
 			ICorDebugStepperEnum ppSteppers;
-			instance.EnumerateSteppers(out ppSteppers);
+			instance.__EnumerateSteppers(out ppSteppers);
 			ProcessOutParameter(ppSteppers);
 			return ppSteppers;
 		}
@@ -308,39 +308,39 @@ namespace Debugger.Interop.CorDebug
 		public static int IsAttached(this ICorDebugAppDomain instance)
 		{
 			int pbAttached;
-			instance.IsAttached(out pbAttached);
+			instance.__IsAttached(out pbAttached);
 			return pbAttached;
 		}
 		
 		public static void GetName(this ICorDebugAppDomain instance, uint cchName, out uint pcchName, IntPtr szName)
 		{
-			instance.GetName(cchName, out pcchName, szName);
+			instance.__GetName(cchName, out pcchName, szName);
 		}
 		
 		public static ICorDebugValue GetObject(this ICorDebugAppDomain instance)
 		{
 			ICorDebugValue ppObject;
-			instance.GetObject(out ppObject);
+			instance.__GetObject(out ppObject);
 			ProcessOutParameter(ppObject);
 			return ppObject;
 		}
 		
 		public static void Attach(this ICorDebugAppDomain instance)
 		{
-			instance.Attach();
+			instance.__Attach();
 		}
 		
 		public static uint GetID(this ICorDebugAppDomain instance)
 		{
 			uint pId;
-			instance.GetID(out pId);
+			instance.__GetID(out pId);
 			return pId;
 		}
 		
 		public static ICorDebugType GetArrayOrPointerType(this ICorDebugAppDomain2 instance, uint elementType, uint nRank, ICorDebugType pTypeArg)
 		{
 			ICorDebugType ppType;
-			instance.GetArrayOrPointerType(elementType, nRank, pTypeArg, out ppType);
+			instance.__GetArrayOrPointerType(elementType, nRank, pTypeArg, out ppType);
 			ProcessOutParameter(ppType);
 			return ppType;
 		}
@@ -348,7 +348,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugType GetFunctionPointerType(this ICorDebugAppDomain2 instance, uint nTypeArgs, ref ICorDebugType ppTypeArgs)
 		{
 			ICorDebugType ppType;
-			instance.GetFunctionPointerType(nTypeArgs, ref ppTypeArgs, out ppType);
+			instance.__GetFunctionPointerType(nTypeArgs, ref ppTypeArgs, out ppType);
 			ProcessOutParameter(ppTypeArgs);
 			ProcessOutParameter(ppType);
 			return ppType;
@@ -356,18 +356,18 @@ namespace Debugger.Interop.CorDebug
 		
 		public static void Skip(this ICorDebugAppDomainEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugAppDomainEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugAppDomainEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -375,42 +375,42 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugAppDomainEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugAppDomainEnum instance, uint celt, IntPtr values)
 		{
 			uint pceltFetched;
-			instance.Next(celt, values, out pceltFetched);
+			instance.__Next(celt, values, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static uint GetType(this ICorDebugArrayValue instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugArrayValue instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugArrayValue instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugArrayValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -418,14 +418,14 @@ namespace Debugger.Interop.CorDebug
 		public static int IsValid(this ICorDebugArrayValue instance)
 		{
 			int pbValid;
-			instance.IsValid(out pbValid);
+			instance.__IsValid(out pbValid);
 			return pbValid;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateRelocBreakpoint(this ICorDebugArrayValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateRelocBreakpoint(out ppBreakpoint);
+			instance.__CreateRelocBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -433,45 +433,45 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetElementType(this ICorDebugArrayValue instance)
 		{
 			uint pType;
-			instance.GetElementType(out pType);
+			instance.__GetElementType(out pType);
 			return pType;
 		}
 		
 		public static uint GetRank(this ICorDebugArrayValue instance)
 		{
 			uint pnRank;
-			instance.GetRank(out pnRank);
+			instance.__GetRank(out pnRank);
 			return pnRank;
 		}
 		
 		public static uint GetCount(this ICorDebugArrayValue instance)
 		{
 			uint pnCount;
-			instance.GetCount(out pnCount);
+			instance.__GetCount(out pnCount);
 			return pnCount;
 		}
 		
 		public static void GetDimensions(this ICorDebugArrayValue instance, uint cdim, IntPtr dims)
 		{
-			instance.GetDimensions(cdim, dims);
+			instance.__GetDimensions(cdim, dims);
 		}
 		
 		public static int HasBaseIndicies(this ICorDebugArrayValue instance)
 		{
 			int pbHasBaseIndicies;
-			instance.HasBaseIndicies(out pbHasBaseIndicies);
+			instance.__HasBaseIndicies(out pbHasBaseIndicies);
 			return pbHasBaseIndicies;
 		}
 		
 		public static void GetBaseIndicies(this ICorDebugArrayValue instance, uint cdim, IntPtr indicies)
 		{
-			instance.GetBaseIndicies(cdim, indicies);
+			instance.__GetBaseIndicies(cdim, indicies);
 		}
 		
 		public static ICorDebugValue GetElement(this ICorDebugArrayValue instance, uint cdim, IntPtr indices)
 		{
 			ICorDebugValue ppValue;
-			instance.GetElement(cdim, indices, out ppValue);
+			instance.__GetElement(cdim, indices, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -479,7 +479,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetElementAtPosition(this ICorDebugArrayValue instance, uint nPosition)
 		{
 			ICorDebugValue ppValue;
-			instance.GetElementAtPosition(nPosition, out ppValue);
+			instance.__GetElementAtPosition(nPosition, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -487,7 +487,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcess GetProcess(this ICorDebugAssembly instance)
 		{
 			ICorDebugProcess ppProcess;
-			instance.GetProcess(out ppProcess);
+			instance.__GetProcess(out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -495,7 +495,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugAppDomain GetAppDomain(this ICorDebugAssembly instance)
 		{
 			ICorDebugAppDomain ppAppDomain;
-			instance.GetAppDomain(out ppAppDomain);
+			instance.__GetAppDomain(out ppAppDomain);
 			ProcessOutParameter(ppAppDomain);
 			return ppAppDomain;
 		}
@@ -503,42 +503,42 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugModuleEnum EnumerateModules(this ICorDebugAssembly instance)
 		{
 			ICorDebugModuleEnum ppModules;
-			instance.EnumerateModules(out ppModules);
+			instance.__EnumerateModules(out ppModules);
 			ProcessOutParameter(ppModules);
 			return ppModules;
 		}
 		
 		public static void GetCodeBase(this ICorDebugAssembly instance, uint cchName, out uint pcchName, IntPtr szName)
 		{
-			instance.GetCodeBase(cchName, out pcchName, szName);
+			instance.__GetCodeBase(cchName, out pcchName, szName);
 		}
 		
 		public static void GetName(this ICorDebugAssembly instance, uint cchName, out uint pcchName, IntPtr szName)
 		{
-			instance.GetName(cchName, out pcchName, szName);
+			instance.__GetName(cchName, out pcchName, szName);
 		}
 		
 		public static int IsFullyTrusted(this ICorDebugAssembly2 instance)
 		{
 			int pbFullyTrusted;
-			instance.IsFullyTrusted(out pbFullyTrusted);
+			instance.__IsFullyTrusted(out pbFullyTrusted);
 			return pbFullyTrusted;
 		}
 		
 		public static void Skip(this ICorDebugAssemblyEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugAssemblyEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugAssemblyEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -546,42 +546,42 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugAssemblyEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugAssemblyEnum instance, uint celt, IntPtr values)
 		{
 			uint pceltFetched;
-			instance.Next(celt, values, out pceltFetched);
+			instance.__Next(celt, values, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static uint GetType(this ICorDebugBoxValue instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugBoxValue instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugBoxValue instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugBoxValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -589,14 +589,14 @@ namespace Debugger.Interop.CorDebug
 		public static int IsValid(this ICorDebugBoxValue instance)
 		{
 			int pbValid;
-			instance.IsValid(out pbValid);
+			instance.__IsValid(out pbValid);
 			return pbValid;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateRelocBreakpoint(this ICorDebugBoxValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateRelocBreakpoint(out ppBreakpoint);
+			instance.__CreateRelocBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -604,37 +604,37 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugObjectValue GetObject(this ICorDebugBoxValue instance)
 		{
 			ICorDebugObjectValue ppObject;
-			instance.GetObject(out ppObject);
+			instance.__GetObject(out ppObject);
 			ProcessOutParameter(ppObject);
 			return ppObject;
 		}
 		
 		public static void Activate(this ICorDebugBreakpoint instance, int bActive)
 		{
-			instance.Activate(bActive);
+			instance.__Activate(bActive);
 		}
 		
 		public static int IsActive(this ICorDebugBreakpoint instance)
 		{
 			int pbActive;
-			instance.IsActive(out pbActive);
+			instance.__IsActive(out pbActive);
 			return pbActive;
 		}
 		
 		public static void Skip(this ICorDebugBreakpointEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugBreakpointEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugBreakpointEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -642,34 +642,34 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugBreakpointEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugBreakpointEnum instance, uint celt, IntPtr breakpoints)
 		{
 			uint pceltFetched;
-			instance.Next(celt, breakpoints, out pceltFetched);
+			instance.__Next(celt, breakpoints, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static ICorDebugThread GetThread(this ICorDebugChain instance)
 		{
 			ICorDebugThread ppThread;
-			instance.GetThread(out ppThread);
+			instance.__GetThread(out ppThread);
 			ProcessOutParameter(ppThread);
 			return ppThread;
 		}
 		
 		public static void GetStackRange(this ICorDebugChain instance, out ulong pStart, out ulong pEnd)
 		{
-			instance.GetStackRange(out pStart, out pEnd);
+			instance.__GetStackRange(out pStart, out pEnd);
 		}
 		
 		public static ICorDebugContext GetContext(this ICorDebugChain instance)
 		{
 			ICorDebugContext ppContext;
-			instance.GetContext(out ppContext);
+			instance.__GetContext(out ppContext);
 			ProcessOutParameter(ppContext);
 			return ppContext;
 		}
@@ -677,7 +677,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugChain GetCaller(this ICorDebugChain instance)
 		{
 			ICorDebugChain ppChain;
-			instance.GetCaller(out ppChain);
+			instance.__GetCaller(out ppChain);
 			ProcessOutParameter(ppChain);
 			return ppChain;
 		}
@@ -685,7 +685,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugChain GetCallee(this ICorDebugChain instance)
 		{
 			ICorDebugChain ppChain;
-			instance.GetCallee(out ppChain);
+			instance.__GetCallee(out ppChain);
 			ProcessOutParameter(ppChain);
 			return ppChain;
 		}
@@ -693,7 +693,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugChain GetPrevious(this ICorDebugChain instance)
 		{
 			ICorDebugChain ppChain;
-			instance.GetPrevious(out ppChain);
+			instance.__GetPrevious(out ppChain);
 			ProcessOutParameter(ppChain);
 			return ppChain;
 		}
@@ -701,7 +701,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugChain GetNext(this ICorDebugChain instance)
 		{
 			ICorDebugChain ppChain;
-			instance.GetNext(out ppChain);
+			instance.__GetNext(out ppChain);
 			ProcessOutParameter(ppChain);
 			return ppChain;
 		}
@@ -709,14 +709,14 @@ namespace Debugger.Interop.CorDebug
 		public static int IsManaged(this ICorDebugChain instance)
 		{
 			int pManaged;
-			instance.IsManaged(out pManaged);
+			instance.__IsManaged(out pManaged);
 			return pManaged;
 		}
 		
 		public static ICorDebugFrameEnum EnumerateFrames(this ICorDebugChain instance)
 		{
 			ICorDebugFrameEnum ppFrames;
-			instance.EnumerateFrames(out ppFrames);
+			instance.__EnumerateFrames(out ppFrames);
 			ProcessOutParameter(ppFrames);
 			return ppFrames;
 		}
@@ -724,7 +724,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFrame GetActiveFrame(this ICorDebugChain instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetActiveFrame(out ppFrame);
+			instance.__GetActiveFrame(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -732,7 +732,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugRegisterSet GetRegisterSet(this ICorDebugChain instance)
 		{
 			ICorDebugRegisterSet ppRegisters;
-			instance.GetRegisterSet(out ppRegisters);
+			instance.__GetRegisterSet(out ppRegisters);
 			ProcessOutParameter(ppRegisters);
 			return ppRegisters;
 		}
@@ -740,25 +740,25 @@ namespace Debugger.Interop.CorDebug
 		public static CorDebugChainReason GetReason(this ICorDebugChain instance)
 		{
 			CorDebugChainReason pReason;
-			instance.GetReason(out pReason);
+			instance.__GetReason(out pReason);
 			ProcessOutParameter(pReason);
 			return pReason;
 		}
 		
 		public static void Skip(this ICorDebugChainEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugChainEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugChainEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -766,14 +766,14 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugChainEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugChainEnum instance, uint celt, ICorDebugChain[] chains)
 		{
 			uint pceltFetched;
-			instance.Next(celt, chains, out pceltFetched);
+			instance.__Next(celt, chains, out pceltFetched);
 			ProcessOutParameter(chains);
 			return pceltFetched;
 		}
@@ -781,7 +781,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugModule GetModule(this ICorDebugClass instance)
 		{
 			ICorDebugModule pModule;
-			instance.GetModule(out pModule);
+			instance.__GetModule(out pModule);
 			ProcessOutParameter(pModule);
 			return pModule;
 		}
@@ -789,14 +789,14 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetToken(this ICorDebugClass instance)
 		{
 			uint pTypeDef;
-			instance.GetToken(out pTypeDef);
+			instance.__GetToken(out pTypeDef);
 			return pTypeDef;
 		}
 		
 		public static ICorDebugValue GetStaticFieldValue(this ICorDebugClass instance, uint fieldDef, ICorDebugFrame pFrame)
 		{
 			ICorDebugValue ppValue;
-			instance.GetStaticFieldValue(fieldDef, pFrame, out ppValue);
+			instance.__GetStaticFieldValue(fieldDef, pFrame, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -804,7 +804,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugType GetParameterizedType(this ICorDebugClass2 instance, uint elementType, uint nTypeArgs, ICorDebugType[] ppTypeArgs)
 		{
 			ICorDebugType ppType;
-			instance.GetParameterizedType(elementType, nTypeArgs, ppTypeArgs, out ppType);
+			instance.__GetParameterizedType(elementType, nTypeArgs, ppTypeArgs, out ppType);
 			ProcessOutParameter(ppTypeArgs);
 			ProcessOutParameter(ppType);
 			return ppType;
@@ -812,20 +812,20 @@ namespace Debugger.Interop.CorDebug
 		
 		public static void SetJMCStatus(this ICorDebugClass2 instance, int bIsJustMyCode)
 		{
-			instance.SetJMCStatus(bIsJustMyCode);
+			instance.__SetJMCStatus(bIsJustMyCode);
 		}
 		
 		public static int IsIL(this ICorDebugCode instance)
 		{
 			int pbIL;
-			instance.IsIL(out pbIL);
+			instance.__IsIL(out pbIL);
 			return pbIL;
 		}
 		
 		public static ICorDebugFunction GetFunction(this ICorDebugCode instance)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetFunction(out ppFunction);
+			instance.__GetFunction(out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -833,21 +833,21 @@ namespace Debugger.Interop.CorDebug
 		public static ulong GetAddress(this ICorDebugCode instance)
 		{
 			ulong pStart;
-			instance.GetAddress(out pStart);
+			instance.__GetAddress(out pStart);
 			return pStart;
 		}
 		
 		public static uint GetSize(this ICorDebugCode instance)
 		{
 			uint pcBytes;
-			instance.GetSize(out pcBytes);
+			instance.__GetSize(out pcBytes);
 			return pcBytes;
 		}
 		
 		public static ICorDebugFunctionBreakpoint CreateBreakpoint(this ICorDebugCode instance, uint offset)
 		{
 			ICorDebugFunctionBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(offset, out ppBreakpoint);
+			instance.__CreateBreakpoint(offset, out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -855,41 +855,41 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCode(this ICorDebugCode instance, uint startOffset, uint endOffset, uint cBufferAlloc, IntPtr buffer)
 		{
 			uint pcBufferSize;
-			instance.GetCode(startOffset, endOffset, cBufferAlloc, buffer, out pcBufferSize);
+			instance.__GetCode(startOffset, endOffset, cBufferAlloc, buffer, out pcBufferSize);
 			return pcBufferSize;
 		}
 		
 		public static uint GetVersionNumber(this ICorDebugCode instance)
 		{
 			uint nVersion;
-			instance.GetVersionNumber(out nVersion);
+			instance.__GetVersionNumber(out nVersion);
 			return nVersion;
 		}
 		
 		public static void GetILToNativeMapping(this ICorDebugCode instance, uint cMap, out uint pcMap, IntPtr map)
 		{
-			instance.GetILToNativeMapping(cMap, out pcMap, map);
+			instance.__GetILToNativeMapping(cMap, out pcMap, map);
 		}
 		
 		public static void GetEnCRemapSequencePoints(this ICorDebugCode instance, uint cMap, out uint pcMap, IntPtr offsets)
 		{
-			instance.GetEnCRemapSequencePoints(cMap, out pcMap, offsets);
+			instance.__GetEnCRemapSequencePoints(cMap, out pcMap, offsets);
 		}
 		
 		public static void Skip(this ICorDebugCodeEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugCodeEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugCodeEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -897,42 +897,42 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugCodeEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugCodeEnum instance, uint celt, IntPtr values)
 		{
 			uint pceltFetched;
-			instance.Next(celt, values, out pceltFetched);
+			instance.__Next(celt, values, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static uint GetType(this ICorDebugContext instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugContext instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugContext instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugContext instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -940,7 +940,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugClass GetClass(this ICorDebugContext instance)
 		{
 			ICorDebugClass ppClass;
-			instance.GetClass(out ppClass);
+			instance.__GetClass(out ppClass);
 			ProcessOutParameter(ppClass);
 			return ppClass;
 		}
@@ -948,7 +948,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetFieldValue(this ICorDebugContext instance, ICorDebugClass pClass, uint fieldDef)
 		{
 			ICorDebugValue ppValue;
-			instance.GetFieldValue(pClass, fieldDef, out ppValue);
+			instance.__GetFieldValue(pClass, fieldDef, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -956,7 +956,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFunction GetVirtualMethod(this ICorDebugContext instance, uint memberRef)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetVirtualMethod(memberRef, out ppFunction);
+			instance.__GetVirtualMethod(memberRef, out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -964,7 +964,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugContext GetContext(this ICorDebugContext instance)
 		{
 			ICorDebugContext ppContext;
-			instance.GetContext(out ppContext);
+			instance.__GetContext(out ppContext);
 			ProcessOutParameter(ppContext);
 			return ppContext;
 		}
@@ -972,74 +972,74 @@ namespace Debugger.Interop.CorDebug
 		public static int IsValueClass(this ICorDebugContext instance)
 		{
 			int pbIsValueClass;
-			instance.IsValueClass(out pbIsValueClass);
+			instance.__IsValueClass(out pbIsValueClass);
 			return pbIsValueClass;
 		}
 		
 		public static object GetManagedCopy(this ICorDebugContext instance)
 		{
 			object ppObject;
-			instance.GetManagedCopy(out ppObject);
+			instance.__GetManagedCopy(out ppObject);
 			ProcessOutParameter(ppObject);
 			return ppObject;
 		}
 		
 		public static void SetFromManagedCopy(this ICorDebugContext instance, object pObject)
 		{
-			instance.SetFromManagedCopy(pObject);
+			instance.__SetFromManagedCopy(pObject);
 		}
 		
 		public static void Stop(this ICorDebugController instance, uint dwTimeoutIgnored)
 		{
-			instance.Stop(dwTimeoutIgnored);
+			instance.__Stop(dwTimeoutIgnored);
 		}
 		
 		public static void Continue(this ICorDebugController instance, int fIsOutOfBand)
 		{
-			instance.Continue(fIsOutOfBand);
+			instance.__Continue(fIsOutOfBand);
 		}
 		
 		public static int IsRunning(this ICorDebugController instance)
 		{
 			int pbRunning;
-			instance.IsRunning(out pbRunning);
+			instance.__IsRunning(out pbRunning);
 			return pbRunning;
 		}
 		
 		public static int HasQueuedCallbacks(this ICorDebugController instance, ICorDebugThread pThread)
 		{
 			int pbQueued;
-			instance.HasQueuedCallbacks(pThread, out pbQueued);
+			instance.__HasQueuedCallbacks(pThread, out pbQueued);
 			return pbQueued;
 		}
 		
 		public static ICorDebugThreadEnum EnumerateThreads(this ICorDebugController instance)
 		{
 			ICorDebugThreadEnum ppThreads;
-			instance.EnumerateThreads(out ppThreads);
+			instance.__EnumerateThreads(out ppThreads);
 			ProcessOutParameter(ppThreads);
 			return ppThreads;
 		}
 		
 		public static void SetAllThreadsDebugState(this ICorDebugController instance, CorDebugThreadState state, ICorDebugThread pExceptThisThread)
 		{
-			instance.SetAllThreadsDebugState(state, pExceptThisThread);
+			instance.__SetAllThreadsDebugState(state, pExceptThisThread);
 		}
 		
 		public static void Detach(this ICorDebugController instance)
 		{
-			instance.Detach();
+			instance.__Detach();
 		}
 		
 		public static void Terminate(this ICorDebugController instance, uint exitCode)
 		{
-			instance.Terminate(exitCode);
+			instance.__Terminate(exitCode);
 		}
 		
 		public static ICorDebugErrorInfoEnum CanCommitChanges(this ICorDebugController instance, uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
 			ICorDebugErrorInfoEnum pError;
-			instance.CanCommitChanges(cSnapshots, ref pSnapshots, out pError);
+			instance.__CanCommitChanges(cSnapshots, ref pSnapshots, out pError);
 			ProcessOutParameter(pSnapshots);
 			ProcessOutParameter(pError);
 			return pError;
@@ -1048,7 +1048,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugErrorInfoEnum CommitChanges(this ICorDebugController instance, uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
 			ICorDebugErrorInfoEnum pError;
-			instance.CommitChanges(cSnapshots, ref pSnapshots, out pError);
+			instance.__CommitChanges(cSnapshots, ref pSnapshots, out pError);
 			ProcessOutParameter(pSnapshots);
 			ProcessOutParameter(pError);
 			return pError;
@@ -1057,61 +1057,61 @@ namespace Debugger.Interop.CorDebug
 		public static Guid CopyMetaData(this ICorDebugEditAndContinueSnapshot instance, IStream pIStream)
 		{
 			Guid pMvid;
-			instance.CopyMetaData(pIStream, out pMvid);
+			instance.__CopyMetaData(pIStream, out pMvid);
 			return pMvid;
 		}
 		
 		public static Guid GetMvid(this ICorDebugEditAndContinueSnapshot instance)
 		{
 			Guid pMvid;
-			instance.GetMvid(out pMvid);
+			instance.__GetMvid(out pMvid);
 			return pMvid;
 		}
 		
 		public static uint GetRoDataRVA(this ICorDebugEditAndContinueSnapshot instance)
 		{
 			uint pRoDataRVA;
-			instance.GetRoDataRVA(out pRoDataRVA);
+			instance.__GetRoDataRVA(out pRoDataRVA);
 			return pRoDataRVA;
 		}
 		
 		public static uint GetRwDataRVA(this ICorDebugEditAndContinueSnapshot instance)
 		{
 			uint pRwDataRVA;
-			instance.GetRwDataRVA(out pRwDataRVA);
+			instance.__GetRwDataRVA(out pRwDataRVA);
 			return pRwDataRVA;
 		}
 		
 		public static void SetPEBytes(this ICorDebugEditAndContinueSnapshot instance, IStream pIStream)
 		{
-			instance.SetPEBytes(pIStream);
+			instance.__SetPEBytes(pIStream);
 		}
 		
 		public static void SetILMap(this ICorDebugEditAndContinueSnapshot instance, uint mdFunction, uint cMapSize, ref _COR_IL_MAP map)
 		{
-			instance.SetILMap(mdFunction, cMapSize, ref map);
+			instance.__SetILMap(mdFunction, cMapSize, ref map);
 			ProcessOutParameter(map);
 		}
 		
 		public static void SetPESymbolBytes(this ICorDebugEditAndContinueSnapshot instance, IStream pIStream)
 		{
-			instance.SetPESymbolBytes(pIStream);
+			instance.__SetPESymbolBytes(pIStream);
 		}
 		
 		public static void Skip(this ICorDebugEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -1119,24 +1119,24 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static void Skip(this ICorDebugErrorInfoEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugErrorInfoEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugErrorInfoEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -1144,60 +1144,60 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugErrorInfoEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugErrorInfoEnum instance, uint celt, IntPtr errors)
 		{
 			uint pceltFetched;
-			instance.Next(celt, errors, out pceltFetched);
+			instance.__Next(celt, errors, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static void CallFunction(this ICorDebugEval instance, ICorDebugFunction pFunction, uint nArgs, ICorDebugValue[] ppArgs)
 		{
-			instance.CallFunction(pFunction, nArgs, ppArgs);
+			instance.__CallFunction(pFunction, nArgs, ppArgs);
 			ProcessOutParameter(ppArgs);
 		}
 		
 		public static void NewObject(this ICorDebugEval instance, ICorDebugFunction pConstructor, uint nArgs, ref ICorDebugValue ppArgs)
 		{
-			instance.NewObject(pConstructor, nArgs, ref ppArgs);
+			instance.__NewObject(pConstructor, nArgs, ref ppArgs);
 			ProcessOutParameter(ppArgs);
 		}
 		
 		public static void NewObjectNoConstructor(this ICorDebugEval instance, ICorDebugClass pClass)
 		{
-			instance.NewObjectNoConstructor(pClass);
+			instance.__NewObjectNoConstructor(pClass);
 		}
 		
 		public static void NewString(this ICorDebugEval instance, string @string)
 		{
-			instance.NewString(@string);
+			instance.__NewString(@string);
 		}
 		
 		public static void NewArray(this ICorDebugEval instance, uint elementType, ICorDebugClass pElementClass, uint rank, ref uint dims, ref uint lowBounds)
 		{
-			instance.NewArray(elementType, pElementClass, rank, ref dims, ref lowBounds);
+			instance.__NewArray(elementType, pElementClass, rank, ref dims, ref lowBounds);
 		}
 		
 		public static int IsActive(this ICorDebugEval instance)
 		{
 			int pbActive;
-			instance.IsActive(out pbActive);
+			instance.__IsActive(out pbActive);
 			return pbActive;
 		}
 		
 		public static void Abort(this ICorDebugEval instance)
 		{
-			instance.Abort();
+			instance.__Abort();
 		}
 		
 		public static ICorDebugValue GetResult(this ICorDebugEval instance)
 		{
 			ICorDebugValue ppResult;
-			instance.GetResult(out ppResult);
+			instance.__GetResult(out ppResult);
 			ProcessOutParameter(ppResult);
 			return ppResult;
 		}
@@ -1205,7 +1205,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugThread GetThread(this ICorDebugEval instance)
 		{
 			ICorDebugThread ppThread;
-			instance.GetThread(out ppThread);
+			instance.__GetThread(out ppThread);
 			ProcessOutParameter(ppThread);
 			return ppThread;
 		}
@@ -1213,14 +1213,14 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue CreateValue(this ICorDebugEval instance, uint elementType, ICorDebugClass pElementClass)
 		{
 			ICorDebugValue ppValue;
-			instance.CreateValue(elementType, pElementClass, out ppValue);
+			instance.__CreateValue(elementType, pElementClass, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
 		
 		public static void CallParameterizedFunction(this ICorDebugEval2 instance, ICorDebugFunction pFunction, uint nTypeArgs, ICorDebugType[] ppTypeArgs, uint nArgs, ICorDebugValue[] ppArgs)
 		{
-			instance.CallParameterizedFunction(pFunction, nTypeArgs, ppTypeArgs, nArgs, ppArgs);
+			instance.__CallParameterizedFunction(pFunction, nTypeArgs, ppTypeArgs, nArgs, ppArgs);
 			ProcessOutParameter(ppTypeArgs);
 			ProcessOutParameter(ppArgs);
 		}
@@ -1228,43 +1228,43 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue CreateValueForType(this ICorDebugEval2 instance, ICorDebugType pType)
 		{
 			ICorDebugValue ppValue;
-			instance.CreateValueForType(pType, out ppValue);
+			instance.__CreateValueForType(pType, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
 		
 		public static void NewParameterizedObject(this ICorDebugEval2 instance, ICorDebugFunction pConstructor, uint nTypeArgs, ICorDebugType[] ppTypeArgs, uint nArgs, ICorDebugValue[] ppArgs)
 		{
-			instance.NewParameterizedObject(pConstructor, nTypeArgs, ppTypeArgs, nArgs, ppArgs);
+			instance.__NewParameterizedObject(pConstructor, nTypeArgs, ppTypeArgs, nArgs, ppArgs);
 			ProcessOutParameter(ppTypeArgs);
 			ProcessOutParameter(ppArgs);
 		}
 		
 		public static void NewParameterizedObjectNoConstructor(this ICorDebugEval2 instance, ICorDebugClass pClass, uint nTypeArgs, ICorDebugType[] ppTypeArgs)
 		{
-			instance.NewParameterizedObjectNoConstructor(pClass, nTypeArgs, ppTypeArgs);
+			instance.__NewParameterizedObjectNoConstructor(pClass, nTypeArgs, ppTypeArgs);
 			ProcessOutParameter(ppTypeArgs);
 		}
 		
 		public static void NewParameterizedArray(this ICorDebugEval2 instance, ICorDebugType pElementType, uint rank, ref uint dims, ref uint lowBounds)
 		{
-			instance.NewParameterizedArray(pElementType, rank, ref dims, ref lowBounds);
+			instance.__NewParameterizedArray(pElementType, rank, ref dims, ref lowBounds);
 		}
 		
 		public static void NewStringWithLength(this ICorDebugEval2 instance, string @string, uint uiLength)
 		{
-			instance.NewStringWithLength(@string, uiLength);
+			instance.__NewStringWithLength(@string, uiLength);
 		}
 		
 		public static void RudeAbort(this ICorDebugEval2 instance)
 		{
-			instance.RudeAbort();
+			instance.__RudeAbort();
 		}
 		
 		public static ICorDebugChain GetChain(this ICorDebugFrame instance)
 		{
 			ICorDebugChain ppChain;
-			instance.GetChain(out ppChain);
+			instance.__GetChain(out ppChain);
 			ProcessOutParameter(ppChain);
 			return ppChain;
 		}
@@ -1272,7 +1272,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugCode GetCode(this ICorDebugFrame instance)
 		{
 			ICorDebugCode ppCode;
-			instance.GetCode(out ppCode);
+			instance.__GetCode(out ppCode);
 			ProcessOutParameter(ppCode);
 			return ppCode;
 		}
@@ -1280,7 +1280,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFunction GetFunction(this ICorDebugFrame instance)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetFunction(out ppFunction);
+			instance.__GetFunction(out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -1288,19 +1288,19 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetFunctionToken(this ICorDebugFrame instance)
 		{
 			uint pToken;
-			instance.GetFunctionToken(out pToken);
+			instance.__GetFunctionToken(out pToken);
 			return pToken;
 		}
 		
 		public static void GetStackRange(this ICorDebugFrame instance, out ulong pStart, out ulong pEnd)
 		{
-			instance.GetStackRange(out pStart, out pEnd);
+			instance.__GetStackRange(out pStart, out pEnd);
 		}
 		
 		public static ICorDebugFrame GetCaller(this ICorDebugFrame instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetCaller(out ppFrame);
+			instance.__GetCaller(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -1308,7 +1308,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFrame GetCallee(this ICorDebugFrame instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetCallee(out ppFrame);
+			instance.__GetCallee(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -1316,25 +1316,25 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugStepper CreateStepper(this ICorDebugFrame instance)
 		{
 			ICorDebugStepper ppStepper;
-			instance.CreateStepper(out ppStepper);
+			instance.__CreateStepper(out ppStepper);
 			ProcessOutParameter(ppStepper);
 			return ppStepper;
 		}
 		
 		public static void Skip(this ICorDebugFrameEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugFrameEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugFrameEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -1342,14 +1342,14 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugFrameEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugFrameEnum instance, uint celt, ICorDebugFrame[] frames)
 		{
 			uint pceltFetched;
-			instance.Next(celt, frames, out pceltFetched);
+			instance.__Next(celt, frames, out pceltFetched);
 			ProcessOutParameter(frames);
 			return pceltFetched;
 		}
@@ -1357,7 +1357,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugModule GetModule(this ICorDebugFunction instance)
 		{
 			ICorDebugModule ppModule;
-			instance.GetModule(out ppModule);
+			instance.__GetModule(out ppModule);
 			ProcessOutParameter(ppModule);
 			return ppModule;
 		}
@@ -1365,7 +1365,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugClass GetClass(this ICorDebugFunction instance)
 		{
 			ICorDebugClass ppClass;
-			instance.GetClass(out ppClass);
+			instance.__GetClass(out ppClass);
 			ProcessOutParameter(ppClass);
 			return ppClass;
 		}
@@ -1373,14 +1373,14 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetToken(this ICorDebugFunction instance)
 		{
 			uint pMethodDef;
-			instance.GetToken(out pMethodDef);
+			instance.__GetToken(out pMethodDef);
 			return pMethodDef;
 		}
 		
 		public static ICorDebugCode GetILCode(this ICorDebugFunction instance)
 		{
 			ICorDebugCode ppCode;
-			instance.GetILCode(out ppCode);
+			instance.__GetILCode(out ppCode);
 			ProcessOutParameter(ppCode);
 			return ppCode;
 		}
@@ -1388,7 +1388,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugCode GetNativeCode(this ICorDebugFunction instance)
 		{
 			ICorDebugCode ppCode;
-			instance.GetNativeCode(out ppCode);
+			instance.__GetNativeCode(out ppCode);
 			ProcessOutParameter(ppCode);
 			return ppCode;
 		}
@@ -1396,7 +1396,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFunctionBreakpoint CreateBreakpoint(this ICorDebugFunction instance)
 		{
 			ICorDebugFunctionBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -1404,33 +1404,33 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetLocalVarSigToken(this ICorDebugFunction instance)
 		{
 			uint pmdSig;
-			instance.GetLocalVarSigToken(out pmdSig);
+			instance.__GetLocalVarSigToken(out pmdSig);
 			return pmdSig;
 		}
 		
 		public static uint GetCurrentVersionNumber(this ICorDebugFunction instance)
 		{
 			uint pnCurrentVersion;
-			instance.GetCurrentVersionNumber(out pnCurrentVersion);
+			instance.__GetCurrentVersionNumber(out pnCurrentVersion);
 			return pnCurrentVersion;
 		}
 		
 		public static void SetJMCStatus(this ICorDebugFunction2 instance, int bIsJustMyCode)
 		{
-			instance.SetJMCStatus(bIsJustMyCode);
+			instance.__SetJMCStatus(bIsJustMyCode);
 		}
 		
 		public static int GetJMCStatus(this ICorDebugFunction2 instance)
 		{
 			int pbIsJustMyCode;
-			instance.GetJMCStatus(out pbIsJustMyCode);
+			instance.__GetJMCStatus(out pbIsJustMyCode);
 			return pbIsJustMyCode;
 		}
 		
 		public static ICorDebugCodeEnum EnumerateNativeCode(this ICorDebugFunction2 instance)
 		{
 			ICorDebugCodeEnum ppCodeEnum;
-			instance.EnumerateNativeCode(out ppCodeEnum);
+			instance.__EnumerateNativeCode(out ppCodeEnum);
 			ProcessOutParameter(ppCodeEnum);
 			return ppCodeEnum;
 		}
@@ -1438,26 +1438,26 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetVersionNumber(this ICorDebugFunction2 instance)
 		{
 			uint pnVersion;
-			instance.GetVersionNumber(out pnVersion);
+			instance.__GetVersionNumber(out pnVersion);
 			return pnVersion;
 		}
 		
 		public static void Activate(this ICorDebugFunctionBreakpoint instance, int bActive)
 		{
-			instance.Activate(bActive);
+			instance.__Activate(bActive);
 		}
 		
 		public static int IsActive(this ICorDebugFunctionBreakpoint instance)
 		{
 			int pbActive;
-			instance.IsActive(out pbActive);
+			instance.__IsActive(out pbActive);
 			return pbActive;
 		}
 		
 		public static ICorDebugFunction GetFunction(this ICorDebugFunctionBreakpoint instance)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetFunction(out ppFunction);
+			instance.__GetFunction(out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -1465,74 +1465,74 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetOffset(this ICorDebugFunctionBreakpoint instance)
 		{
 			uint pnOffset;
-			instance.GetOffset(out pnOffset);
+			instance.__GetOffset(out pnOffset);
 			return pnOffset;
 		}
 		
 		public static uint GetType(this ICorDebugGenericValue instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugGenericValue instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugGenericValue instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugGenericValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
 		
 		public static void GetValue(this ICorDebugGenericValue instance, IntPtr pTo)
 		{
-			instance.GetValue(pTo);
+			instance.__GetValue(pTo);
 		}
 		
 		public static void SetValue(this ICorDebugGenericValue instance, IntPtr pFrom)
 		{
-			instance.SetValue(pFrom);
+			instance.__SetValue(pFrom);
 		}
 		
 		public static uint GetType(this ICorDebugHandleValue instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugHandleValue instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugHandleValue instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugHandleValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -1540,26 +1540,26 @@ namespace Debugger.Interop.CorDebug
 		public static int IsNull(this ICorDebugHandleValue instance)
 		{
 			int pbNull;
-			instance.IsNull(out pbNull);
+			instance.__IsNull(out pbNull);
 			return pbNull;
 		}
 		
 		public static ulong GetValue(this ICorDebugHandleValue instance)
 		{
 			ulong pValue;
-			instance.GetValue(out pValue);
+			instance.__GetValue(out pValue);
 			return pValue;
 		}
 		
 		public static void SetValue(this ICorDebugHandleValue instance, ulong value)
 		{
-			instance.SetValue(value);
+			instance.__SetValue(value);
 		}
 		
 		public static ICorDebugValue Dereference(this ICorDebugHandleValue instance)
 		{
 			ICorDebugValue ppValue;
-			instance.Dereference(out ppValue);
+			instance.__Dereference(out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -1567,7 +1567,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue DereferenceStrong(this ICorDebugHandleValue instance)
 		{
 			ICorDebugValue ppValue;
-			instance.DereferenceStrong(out ppValue);
+			instance.__DereferenceStrong(out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -1575,41 +1575,41 @@ namespace Debugger.Interop.CorDebug
 		public static CorDebugHandleType GetHandleType(this ICorDebugHandleValue instance)
 		{
 			CorDebugHandleType pType;
-			instance.GetHandleType(out pType);
+			instance.__GetHandleType(out pType);
 			ProcessOutParameter(pType);
 			return pType;
 		}
 		
 		public static void Dispose(this ICorDebugHandleValue instance)
 		{
-			instance.Dispose();
+			instance.__Dispose();
 		}
 		
 		public static uint GetType(this ICorDebugHeapValue instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugHeapValue instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugHeapValue instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugHeapValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -1617,14 +1617,14 @@ namespace Debugger.Interop.CorDebug
 		public static int IsValid(this ICorDebugHeapValue instance)
 		{
 			int pbValid;
-			instance.IsValid(out pbValid);
+			instance.__IsValid(out pbValid);
 			return pbValid;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateRelocBreakpoint(this ICorDebugHeapValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateRelocBreakpoint(out ppBreakpoint);
+			instance.__CreateRelocBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -1632,7 +1632,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugHandleValue CreateHandle(this ICorDebugHeapValue2 instance, CorDebugHandleType type)
 		{
 			ICorDebugHandleValue ppHandle;
-			instance.CreateHandle(type, out ppHandle);
+			instance.__CreateHandle(type, out ppHandle);
 			ProcessOutParameter(ppHandle);
 			return ppHandle;
 		}
@@ -1640,7 +1640,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugChain GetChain(this ICorDebugILFrame instance)
 		{
 			ICorDebugChain ppChain;
-			instance.GetChain(out ppChain);
+			instance.__GetChain(out ppChain);
 			ProcessOutParameter(ppChain);
 			return ppChain;
 		}
@@ -1648,7 +1648,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugCode GetCode(this ICorDebugILFrame instance)
 		{
 			ICorDebugCode ppCode;
-			instance.GetCode(out ppCode);
+			instance.__GetCode(out ppCode);
 			ProcessOutParameter(ppCode);
 			return ppCode;
 		}
@@ -1656,7 +1656,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFunction GetFunction(this ICorDebugILFrame instance)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetFunction(out ppFunction);
+			instance.__GetFunction(out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -1664,19 +1664,19 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetFunctionToken(this ICorDebugILFrame instance)
 		{
 			uint pToken;
-			instance.GetFunctionToken(out pToken);
+			instance.__GetFunctionToken(out pToken);
 			return pToken;
 		}
 		
 		public static void GetStackRange(this ICorDebugILFrame instance, out ulong pStart, out ulong pEnd)
 		{
-			instance.GetStackRange(out pStart, out pEnd);
+			instance.__GetStackRange(out pStart, out pEnd);
 		}
 		
 		public static ICorDebugFrame GetCaller(this ICorDebugILFrame instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetCaller(out ppFrame);
+			instance.__GetCaller(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -1684,7 +1684,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFrame GetCallee(this ICorDebugILFrame instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetCallee(out ppFrame);
+			instance.__GetCallee(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -1692,26 +1692,26 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugStepper CreateStepper(this ICorDebugILFrame instance)
 		{
 			ICorDebugStepper ppStepper;
-			instance.CreateStepper(out ppStepper);
+			instance.__CreateStepper(out ppStepper);
 			ProcessOutParameter(ppStepper);
 			return ppStepper;
 		}
 		
 		public static void GetIP(this ICorDebugILFrame instance, out uint pnOffset, out CorDebugMappingResult pMappingResult)
 		{
-			instance.GetIP(out pnOffset, out pMappingResult);
+			instance.__GetIP(out pnOffset, out pMappingResult);
 			ProcessOutParameter(pMappingResult);
 		}
 		
 		public static void SetIP(this ICorDebugILFrame instance, uint nOffset)
 		{
-			instance.SetIP(nOffset);
+			instance.__SetIP(nOffset);
 		}
 		
 		public static ICorDebugValueEnum EnumerateLocalVariables(this ICorDebugILFrame instance)
 		{
 			ICorDebugValueEnum ppValueEnum;
-			instance.EnumerateLocalVariables(out ppValueEnum);
+			instance.__EnumerateLocalVariables(out ppValueEnum);
 			ProcessOutParameter(ppValueEnum);
 			return ppValueEnum;
 		}
@@ -1719,7 +1719,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetLocalVariable(this ICorDebugILFrame instance, uint dwIndex)
 		{
 			ICorDebugValue ppValue;
-			instance.GetLocalVariable(dwIndex, out ppValue);
+			instance.__GetLocalVariable(dwIndex, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -1727,7 +1727,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValueEnum EnumerateArguments(this ICorDebugILFrame instance)
 		{
 			ICorDebugValueEnum ppValueEnum;
-			instance.EnumerateArguments(out ppValueEnum);
+			instance.__EnumerateArguments(out ppValueEnum);
 			ProcessOutParameter(ppValueEnum);
 			return ppValueEnum;
 		}
@@ -1735,7 +1735,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetArgument(this ICorDebugILFrame instance, uint dwIndex)
 		{
 			ICorDebugValue ppValue;
-			instance.GetArgument(dwIndex, out ppValue);
+			instance.__GetArgument(dwIndex, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -1743,32 +1743,32 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetStackDepth(this ICorDebugILFrame instance)
 		{
 			uint pDepth;
-			instance.GetStackDepth(out pDepth);
+			instance.__GetStackDepth(out pDepth);
 			return pDepth;
 		}
 		
 		public static ICorDebugValue GetStackValue(this ICorDebugILFrame instance, uint dwIndex)
 		{
 			ICorDebugValue ppValue;
-			instance.GetStackValue(dwIndex, out ppValue);
+			instance.__GetStackValue(dwIndex, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
 		
 		public static void CanSetIP(this ICorDebugILFrame instance, uint nOffset)
 		{
-			instance.CanSetIP(nOffset);
+			instance.__CanSetIP(nOffset);
 		}
 		
 		public static void RemapFunction(this ICorDebugILFrame2 instance, uint newILOffset)
 		{
-			instance.RemapFunction(newILOffset);
+			instance.__RemapFunction(newILOffset);
 		}
 		
 		public static ICorDebugTypeEnum EnumerateTypeParameters(this ICorDebugILFrame2 instance)
 		{
 			ICorDebugTypeEnum ppTyParEnum;
-			instance.EnumerateTypeParameters(out ppTyParEnum);
+			instance.__EnumerateTypeParameters(out ppTyParEnum);
 			ProcessOutParameter(ppTyParEnum);
 			return ppTyParEnum;
 		}
@@ -1776,7 +1776,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugChain GetChain(this ICorDebugInternalFrame instance)
 		{
 			ICorDebugChain ppChain;
-			instance.GetChain(out ppChain);
+			instance.__GetChain(out ppChain);
 			ProcessOutParameter(ppChain);
 			return ppChain;
 		}
@@ -1784,7 +1784,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugCode GetCode(this ICorDebugInternalFrame instance)
 		{
 			ICorDebugCode ppCode;
-			instance.GetCode(out ppCode);
+			instance.__GetCode(out ppCode);
 			ProcessOutParameter(ppCode);
 			return ppCode;
 		}
@@ -1792,7 +1792,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFunction GetFunction(this ICorDebugInternalFrame instance)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetFunction(out ppFunction);
+			instance.__GetFunction(out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -1800,19 +1800,19 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetFunctionToken(this ICorDebugInternalFrame instance)
 		{
 			uint pToken;
-			instance.GetFunctionToken(out pToken);
+			instance.__GetFunctionToken(out pToken);
 			return pToken;
 		}
 		
 		public static void GetStackRange(this ICorDebugInternalFrame instance, out ulong pStart, out ulong pEnd)
 		{
-			instance.GetStackRange(out pStart, out pEnd);
+			instance.__GetStackRange(out pStart, out pEnd);
 		}
 		
 		public static ICorDebugFrame GetCaller(this ICorDebugInternalFrame instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetCaller(out ppFrame);
+			instance.__GetCaller(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -1820,7 +1820,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFrame GetCallee(this ICorDebugInternalFrame instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetCallee(out ppFrame);
+			instance.__GetCallee(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -1828,7 +1828,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugStepper CreateStepper(this ICorDebugInternalFrame instance)
 		{
 			ICorDebugStepper ppStepper;
-			instance.CreateStepper(out ppStepper);
+			instance.__CreateStepper(out ppStepper);
 			ProcessOutParameter(ppStepper);
 			return ppStepper;
 		}
@@ -1836,36 +1836,36 @@ namespace Debugger.Interop.CorDebug
 		public static CorDebugInternalFrameType GetFrameType(this ICorDebugInternalFrame instance)
 		{
 			CorDebugInternalFrameType pType;
-			instance.GetFrameType(out pType);
+			instance.__GetFrameType(out pType);
 			ProcessOutParameter(pType);
 			return pType;
 		}
 		
 		public static void GetName(this ICorDebugMDA instance, uint cchName, out uint pcchName, IntPtr szName)
 		{
-			instance.GetName(cchName, out pcchName, szName);
+			instance.__GetName(cchName, out pcchName, szName);
 		}
 		
 		public static void GetDescription(this ICorDebugMDA instance, uint cchName, out uint pcchName, IntPtr szName)
 		{
-			instance.GetDescription(cchName, out pcchName, szName);
+			instance.__GetDescription(cchName, out pcchName, szName);
 		}
 		
 		public static void GetXML(this ICorDebugMDA instance, uint cchName, out uint pcchName, IntPtr szName)
 		{
-			instance.GetXML(cchName, out pcchName, szName);
+			instance.__GetXML(cchName, out pcchName, szName);
 		}
 		
 		public static void GetFlags(this ICorDebugMDA instance, ref CorDebugMDAFlags pFlags)
 		{
-			instance.GetFlags(ref pFlags);
+			instance.__GetFlags(ref pFlags);
 			ProcessOutParameter(pFlags);
 		}
 		
 		public static uint GetOSThreadId(this ICorDebugMDA instance)
 		{
 			uint pOsTid;
-			instance.GetOSThreadId(out pOsTid);
+			instance.__GetOSThreadId(out pOsTid);
 			return pOsTid;
 		}
 		
@@ -2042,7 +2042,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugProcess GetProcess(this ICorDebugModule instance)
 		{
 			ICorDebugProcess ppProcess;
-			instance.GetProcess(out ppProcess);
+			instance.__GetProcess(out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -2050,37 +2050,37 @@ namespace Debugger.Interop.CorDebug
 		public static ulong GetBaseAddress(this ICorDebugModule instance)
 		{
 			ulong pAddress;
-			instance.GetBaseAddress(out pAddress);
+			instance.__GetBaseAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugAssembly GetAssembly(this ICorDebugModule instance)
 		{
 			ICorDebugAssembly ppAssembly;
-			instance.GetAssembly(out ppAssembly);
+			instance.__GetAssembly(out ppAssembly);
 			ProcessOutParameter(ppAssembly);
 			return ppAssembly;
 		}
 		
 		public static void GetName(this ICorDebugModule instance, uint cchName, out uint pcchName, IntPtr szName)
 		{
-			instance.GetName(cchName, out pcchName, szName);
+			instance.__GetName(cchName, out pcchName, szName);
 		}
 		
 		public static void EnableJITDebugging(this ICorDebugModule instance, int bTrackJITInfo, int bAllowJitOpts)
 		{
-			instance.EnableJITDebugging(bTrackJITInfo, bAllowJitOpts);
+			instance.__EnableJITDebugging(bTrackJITInfo, bAllowJitOpts);
 		}
 		
 		public static void EnableClassLoadCallbacks(this ICorDebugModule instance, int bClassLoadCallbacks)
 		{
-			instance.EnableClassLoadCallbacks(bClassLoadCallbacks);
+			instance.__EnableClassLoadCallbacks(bClassLoadCallbacks);
 		}
 		
 		public static ICorDebugFunction GetFunctionFromToken(this ICorDebugModule instance, uint methodDef)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetFunctionFromToken(methodDef, out ppFunction);
+			instance.__GetFunctionFromToken(methodDef, out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -2088,7 +2088,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFunction GetFunctionFromRVA(this ICorDebugModule instance, ulong rva)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetFunctionFromRVA(rva, out ppFunction);
+			instance.__GetFunctionFromRVA(rva, out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -2096,7 +2096,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugClass GetClassFromToken(this ICorDebugModule instance, uint typeDef)
 		{
 			ICorDebugClass ppClass;
-			instance.GetClassFromToken(typeDef, out ppClass);
+			instance.__GetClassFromToken(typeDef, out ppClass);
 			ProcessOutParameter(ppClass);
 			return ppClass;
 		}
@@ -2104,7 +2104,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugModuleBreakpoint CreateBreakpoint(this ICorDebugModule instance)
 		{
 			ICorDebugModuleBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -2112,7 +2112,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugEditAndContinueSnapshot GetEditAndContinueSnapshot(this ICorDebugModule instance)
 		{
 			ICorDebugEditAndContinueSnapshot ppEditAndContinueSnapshot;
-			instance.GetEditAndContinueSnapshot(out ppEditAndContinueSnapshot);
+			instance.__GetEditAndContinueSnapshot(out ppEditAndContinueSnapshot);
 			ProcessOutParameter(ppEditAndContinueSnapshot);
 			return ppEditAndContinueSnapshot;
 		}
@@ -2120,7 +2120,7 @@ namespace Debugger.Interop.CorDebug
 		public static object GetMetaDataInterface(this ICorDebugModule instance, ref Guid riid)
 		{
 			object ppObj;
-			instance.GetMetaDataInterface(ref riid, out ppObj);
+			instance.__GetMetaDataInterface(ref riid, out ppObj);
 			ProcessOutParameter(ppObj);
 			return ppObj;
 		}
@@ -2128,21 +2128,21 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetToken(this ICorDebugModule instance)
 		{
 			uint pToken;
-			instance.GetToken(out pToken);
+			instance.__GetToken(out pToken);
 			return pToken;
 		}
 		
 		public static int IsDynamic(this ICorDebugModule instance)
 		{
 			int pDynamic;
-			instance.IsDynamic(out pDynamic);
+			instance.__IsDynamic(out pDynamic);
 			return pDynamic;
 		}
 		
 		public static ICorDebugValue GetGlobalVariableValue(this ICorDebugModule instance, uint fieldDef)
 		{
 			ICorDebugValue ppValue;
-			instance.GetGlobalVariableValue(fieldDef, out ppValue);
+			instance.__GetGlobalVariableValue(fieldDef, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -2150,81 +2150,81 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetSize(this ICorDebugModule instance)
 		{
 			uint pcBytes;
-			instance.GetSize(out pcBytes);
+			instance.__GetSize(out pcBytes);
 			return pcBytes;
 		}
 		
 		public static int IsInMemory(this ICorDebugModule instance)
 		{
 			int pInMemory;
-			instance.IsInMemory(out pInMemory);
+			instance.__IsInMemory(out pInMemory);
 			return pInMemory;
 		}
 		
 		public static void SetJMCStatus(this ICorDebugModule2 instance, int bIsJustMyCode, uint cTokens, ref uint pTokens)
 		{
-			instance.SetJMCStatus(bIsJustMyCode, cTokens, ref pTokens);
+			instance.__SetJMCStatus(bIsJustMyCode, cTokens, ref pTokens);
 		}
 		
 		public static void ApplyChanges(this ICorDebugModule2 instance, uint cbMetadata, byte[] pbMetadata, uint cbIL, byte[] pbIL)
 		{
-			instance.ApplyChanges(cbMetadata, pbMetadata, cbIL, pbIL);
+			instance.__ApplyChanges(cbMetadata, pbMetadata, cbIL, pbIL);
 			ProcessOutParameter(pbMetadata);
 			ProcessOutParameter(pbIL);
 		}
 		
 		public static void SetJITCompilerFlags(this ICorDebugModule2 instance, uint dwFlags)
 		{
-			instance.SetJITCompilerFlags(dwFlags);
+			instance.__SetJITCompilerFlags(dwFlags);
 		}
 		
 		public static uint GetJITCompilerFlags(this ICorDebugModule2 instance)
 		{
 			uint pdwFlags;
-			instance.GetJITCompilerFlags(out pdwFlags);
+			instance.__GetJITCompilerFlags(out pdwFlags);
 			return pdwFlags;
 		}
 		
 		public static void ResolveAssembly(this ICorDebugModule2 instance, uint tkAssemblyRef, ref ICorDebugAssembly ppAssembly)
 		{
-			instance.ResolveAssembly(tkAssemblyRef, ref ppAssembly);
+			instance.__ResolveAssembly(tkAssemblyRef, ref ppAssembly);
 			ProcessOutParameter(ppAssembly);
 		}
 		
 		public static void Activate(this ICorDebugModuleBreakpoint instance, int bActive)
 		{
-			instance.Activate(bActive);
+			instance.__Activate(bActive);
 		}
 		
 		public static int IsActive(this ICorDebugModuleBreakpoint instance)
 		{
 			int pbActive;
-			instance.IsActive(out pbActive);
+			instance.__IsActive(out pbActive);
 			return pbActive;
 		}
 		
 		public static ICorDebugModule GetModule(this ICorDebugModuleBreakpoint instance)
 		{
 			ICorDebugModule ppModule;
-			instance.GetModule(out ppModule);
+			instance.__GetModule(out ppModule);
 			ProcessOutParameter(ppModule);
 			return ppModule;
 		}
 		
 		public static void Skip(this ICorDebugModuleEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugModuleEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugModuleEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -2232,21 +2232,21 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugModuleEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugModuleEnum instance, uint celt, IntPtr modules)
 		{
 			uint pceltFetched;
-			instance.Next(celt, modules, out pceltFetched);
+			instance.__Next(celt, modules, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static ICorDebugChain GetChain(this ICorDebugNativeFrame instance)
 		{
 			ICorDebugChain ppChain;
-			instance.GetChain(out ppChain);
+			instance.__GetChain(out ppChain);
 			ProcessOutParameter(ppChain);
 			return ppChain;
 		}
@@ -2254,7 +2254,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugCode GetCode(this ICorDebugNativeFrame instance)
 		{
 			ICorDebugCode ppCode;
-			instance.GetCode(out ppCode);
+			instance.__GetCode(out ppCode);
 			ProcessOutParameter(ppCode);
 			return ppCode;
 		}
@@ -2262,7 +2262,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFunction GetFunction(this ICorDebugNativeFrame instance)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetFunction(out ppFunction);
+			instance.__GetFunction(out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -2270,19 +2270,19 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetFunctionToken(this ICorDebugNativeFrame instance)
 		{
 			uint pToken;
-			instance.GetFunctionToken(out pToken);
+			instance.__GetFunctionToken(out pToken);
 			return pToken;
 		}
 		
 		public static void GetStackRange(this ICorDebugNativeFrame instance, out ulong pStart, out ulong pEnd)
 		{
-			instance.GetStackRange(out pStart, out pEnd);
+			instance.__GetStackRange(out pStart, out pEnd);
 		}
 		
 		public static ICorDebugFrame GetCaller(this ICorDebugNativeFrame instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetCaller(out ppFrame);
+			instance.__GetCaller(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -2290,7 +2290,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFrame GetCallee(this ICorDebugNativeFrame instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetCallee(out ppFrame);
+			instance.__GetCallee(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -2298,7 +2298,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugStepper CreateStepper(this ICorDebugNativeFrame instance)
 		{
 			ICorDebugStepper ppStepper;
-			instance.CreateStepper(out ppStepper);
+			instance.__CreateStepper(out ppStepper);
 			ProcessOutParameter(ppStepper);
 			return ppStepper;
 		}
@@ -2306,19 +2306,19 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetIP(this ICorDebugNativeFrame instance)
 		{
 			uint pnOffset;
-			instance.GetIP(out pnOffset);
+			instance.__GetIP(out pnOffset);
 			return pnOffset;
 		}
 		
 		public static void SetIP(this ICorDebugNativeFrame instance, uint nOffset)
 		{
-			instance.SetIP(nOffset);
+			instance.__SetIP(nOffset);
 		}
 		
 		public static ICorDebugRegisterSet GetRegisterSet(this ICorDebugNativeFrame instance)
 		{
 			ICorDebugRegisterSet ppRegisters;
-			instance.GetRegisterSet(out ppRegisters);
+			instance.__GetRegisterSet(out ppRegisters);
 			ProcessOutParameter(ppRegisters);
 			return ppRegisters;
 		}
@@ -2326,7 +2326,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetLocalRegisterValue(this ICorDebugNativeFrame instance, CorDebugRegister reg, uint cbSigBlob, uint pvSigBlob)
 		{
 			ICorDebugValue ppValue;
-			instance.GetLocalRegisterValue(reg, cbSigBlob, pvSigBlob, out ppValue);
+			instance.__GetLocalRegisterValue(reg, cbSigBlob, pvSigBlob, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -2334,7 +2334,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetLocalDoubleRegisterValue(this ICorDebugNativeFrame instance, CorDebugRegister highWordReg, CorDebugRegister lowWordReg, uint cbSigBlob, uint pvSigBlob)
 		{
 			ICorDebugValue ppValue;
-			instance.GetLocalDoubleRegisterValue(highWordReg, lowWordReg, cbSigBlob, pvSigBlob, out ppValue);
+			instance.__GetLocalDoubleRegisterValue(highWordReg, lowWordReg, cbSigBlob, pvSigBlob, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -2342,7 +2342,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetLocalMemoryValue(this ICorDebugNativeFrame instance, ulong address, uint cbSigBlob, uint pvSigBlob)
 		{
 			ICorDebugValue ppValue;
-			instance.GetLocalMemoryValue(address, cbSigBlob, pvSigBlob, out ppValue);
+			instance.__GetLocalMemoryValue(address, cbSigBlob, pvSigBlob, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -2350,7 +2350,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetLocalRegisterMemoryValue(this ICorDebugNativeFrame instance, CorDebugRegister highWordReg, ulong lowWordAddress, uint cbSigBlob, uint pvSigBlob)
 		{
 			ICorDebugValue ppValue;
-			instance.GetLocalRegisterMemoryValue(highWordReg, lowWordAddress, cbSigBlob, pvSigBlob, out ppValue);
+			instance.__GetLocalRegisterMemoryValue(highWordReg, lowWordAddress, cbSigBlob, pvSigBlob, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -2358,30 +2358,30 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetLocalMemoryRegisterValue(this ICorDebugNativeFrame instance, ulong highWordAddress, CorDebugRegister lowWordRegister, uint cbSigBlob, uint pvSigBlob)
 		{
 			ICorDebugValue ppValue;
-			instance.GetLocalMemoryRegisterValue(highWordAddress, lowWordRegister, cbSigBlob, pvSigBlob, out ppValue);
+			instance.__GetLocalMemoryRegisterValue(highWordAddress, lowWordRegister, cbSigBlob, pvSigBlob, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
 		
 		public static void CanSetIP(this ICorDebugNativeFrame instance, uint nOffset)
 		{
-			instance.CanSetIP(nOffset);
+			instance.__CanSetIP(nOffset);
 		}
 		
 		public static void Skip(this ICorDebugObjectEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugObjectEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugObjectEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -2389,42 +2389,42 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugObjectEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugObjectEnum instance, uint celt, IntPtr objects)
 		{
 			uint pceltFetched;
-			instance.Next(celt, objects, out pceltFetched);
+			instance.__Next(celt, objects, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static uint GetType(this ICorDebugObjectValue instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugObjectValue instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugObjectValue instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugObjectValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -2432,7 +2432,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugClass GetClass(this ICorDebugObjectValue instance)
 		{
 			ICorDebugClass ppClass;
-			instance.GetClass(out ppClass);
+			instance.__GetClass(out ppClass);
 			ProcessOutParameter(ppClass);
 			return ppClass;
 		}
@@ -2440,7 +2440,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetFieldValue(this ICorDebugObjectValue instance, ICorDebugClass pClass, uint fieldDef)
 		{
 			ICorDebugValue ppValue;
-			instance.GetFieldValue(pClass, fieldDef, out ppValue);
+			instance.__GetFieldValue(pClass, fieldDef, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -2448,7 +2448,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFunction GetVirtualMethod(this ICorDebugObjectValue instance, uint memberRef)
 		{
 			ICorDebugFunction ppFunction;
-			instance.GetVirtualMethod(memberRef, out ppFunction);
+			instance.__GetVirtualMethod(memberRef, out ppFunction);
 			ProcessOutParameter(ppFunction);
 			return ppFunction;
 		}
@@ -2456,7 +2456,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugContext GetContext(this ICorDebugObjectValue instance)
 		{
 			ICorDebugContext ppContext;
-			instance.GetContext(out ppContext);
+			instance.__GetContext(out ppContext);
 			ProcessOutParameter(ppContext);
 			return ppContext;
 		}
@@ -2464,81 +2464,81 @@ namespace Debugger.Interop.CorDebug
 		public static int IsValueClass(this ICorDebugObjectValue instance)
 		{
 			int pbIsValueClass;
-			instance.IsValueClass(out pbIsValueClass);
+			instance.__IsValueClass(out pbIsValueClass);
 			return pbIsValueClass;
 		}
 		
 		public static object GetManagedCopy(this ICorDebugObjectValue instance)
 		{
 			object ppObject;
-			instance.GetManagedCopy(out ppObject);
+			instance.__GetManagedCopy(out ppObject);
 			ProcessOutParameter(ppObject);
 			return ppObject;
 		}
 		
 		public static void SetFromManagedCopy(this ICorDebugObjectValue instance, object pObject)
 		{
-			instance.SetFromManagedCopy(pObject);
+			instance.__SetFromManagedCopy(pObject);
 		}
 		
 		public static void GetVirtualMethodAndType(this ICorDebugObjectValue2 instance, uint memberRef, out ICorDebugFunction ppFunction, out ICorDebugType ppType)
 		{
-			instance.GetVirtualMethodAndType(memberRef, out ppFunction, out ppType);
+			instance.__GetVirtualMethodAndType(memberRef, out ppFunction, out ppType);
 			ProcessOutParameter(ppFunction);
 			ProcessOutParameter(ppType);
 		}
 		
 		public static void Stop(this ICorDebugProcess instance, uint dwTimeoutIgnored)
 		{
-			instance.Stop(dwTimeoutIgnored);
+			instance.__Stop(dwTimeoutIgnored);
 		}
 		
 		public static void Continue(this ICorDebugProcess instance, int fIsOutOfBand)
 		{
-			instance.Continue(fIsOutOfBand);
+			instance.__Continue(fIsOutOfBand);
 		}
 		
 		public static int IsRunning(this ICorDebugProcess instance)
 		{
 			int pbRunning;
-			instance.IsRunning(out pbRunning);
+			instance.__IsRunning(out pbRunning);
 			return pbRunning;
 		}
 		
 		public static int HasQueuedCallbacks(this ICorDebugProcess instance, ICorDebugThread pThread)
 		{
 			int pbQueued;
-			instance.HasQueuedCallbacks(pThread, out pbQueued);
+			instance.__HasQueuedCallbacks(pThread, out pbQueued);
 			return pbQueued;
 		}
 		
 		public static ICorDebugThreadEnum EnumerateThreads(this ICorDebugProcess instance)
 		{
 			ICorDebugThreadEnum ppThreads;
-			instance.EnumerateThreads(out ppThreads);
+			instance.__EnumerateThreads(out ppThreads);
 			ProcessOutParameter(ppThreads);
 			return ppThreads;
 		}
 		
 		public static void SetAllThreadsDebugState(this ICorDebugProcess instance, CorDebugThreadState state, ICorDebugThread pExceptThisThread)
 		{
-			instance.SetAllThreadsDebugState(state, pExceptThisThread);
+			instance.__SetAllThreadsDebugState(state, pExceptThisThread);
 		}
 		
 		public static void Detach(this ICorDebugProcess instance)
 		{
-			instance.Detach();
+			instance.__Detach();
 		}
 		
 		public static void Terminate(this ICorDebugProcess instance, uint exitCode)
 		{
-			instance.Terminate(exitCode);
+			instance.__Terminate(exitCode);
 		}
 		
 		public static ICorDebugErrorInfoEnum CanCommitChanges(this ICorDebugProcess instance, uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
 			ICorDebugErrorInfoEnum pError;
-			instance.CanCommitChanges(cSnapshots, ref pSnapshots, out pError);
+			instance.__CanCommitChanges(cSnapshots, ref pSnapshots, out pError);
 			ProcessOutParameter(pSnapshots);
 			ProcessOutParameter(pError);
 			return pError;
@@ -2547,7 +2547,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugErrorInfoEnum CommitChanges(this ICorDebugProcess instance, uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
 			ICorDebugErrorInfoEnum pError;
-			instance.CommitChanges(cSnapshots, ref pSnapshots, out pError);
+			instance.__CommitChanges(cSnapshots, ref pSnapshots, out pError);
 			ProcessOutParameter(pSnapshots);
 			ProcessOutParameter(pError);
 			return pError;
@@ -2556,21 +2556,21 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetID(this ICorDebugProcess instance)
 		{
 			uint pdwProcessId;
-			instance.GetID(out pdwProcessId);
+			instance.__GetID(out pdwProcessId);
 			return pdwProcessId;
 		}
 		
 		public static uint GetHandle(this ICorDebugProcess instance)
 		{
 			uint phProcessHandle;
-			instance.GetHandle(out phProcessHandle);
+			instance.__GetHandle(out phProcessHandle);
 			return phProcessHandle;
 		}
 		
 		public static ICorDebugThread GetThread(this ICorDebugProcess instance, uint dwThreadId)
 		{
 			ICorDebugThread ppThread;
-			instance.GetThread(dwThreadId, out ppThread);
+			instance.__GetThread(dwThreadId, out ppThread);
 			ProcessOutParameter(ppThread);
 			return ppThread;
 		}
@@ -2578,7 +2578,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugObjectEnum EnumerateObjects(this ICorDebugProcess instance)
 		{
 			ICorDebugObjectEnum ppObjects;
-			instance.EnumerateObjects(out ppObjects);
+			instance.__EnumerateObjects(out ppObjects);
 			ProcessOutParameter(ppObjects);
 			return ppObjects;
 		}
@@ -2586,60 +2586,60 @@ namespace Debugger.Interop.CorDebug
 		public static int IsTransitionStub(this ICorDebugProcess instance, ulong address)
 		{
 			int pbTransitionStub;
-			instance.IsTransitionStub(address, out pbTransitionStub);
+			instance.__IsTransitionStub(address, out pbTransitionStub);
 			return pbTransitionStub;
 		}
 		
 		public static int IsOSSuspended(this ICorDebugProcess instance, uint threadID)
 		{
 			int pbSuspended;
-			instance.IsOSSuspended(threadID, out pbSuspended);
+			instance.__IsOSSuspended(threadID, out pbSuspended);
 			return pbSuspended;
 		}
 		
 		public static void GetThreadContext(this ICorDebugProcess instance, uint threadID, uint contextSize, IntPtr context)
 		{
-			instance.GetThreadContext(threadID, contextSize, context);
+			instance.__GetThreadContext(threadID, contextSize, context);
 		}
 		
 		public static void SetThreadContext(this ICorDebugProcess instance, uint threadID, uint contextSize, IntPtr context)
 		{
-			instance.SetThreadContext(threadID, contextSize, context);
+			instance.__SetThreadContext(threadID, contextSize, context);
 		}
 		
 		public static uint ReadMemory(this ICorDebugProcess instance, ulong address, uint size, IntPtr buffer)
 		{
 			uint read;
-			instance.ReadMemory(address, size, buffer, out read);
+			instance.__ReadMemory(address, size, buffer, out read);
 			return read;
 		}
 		
 		public static uint WriteMemory(this ICorDebugProcess instance, ulong address, uint size, IntPtr buffer)
 		{
 			uint written;
-			instance.WriteMemory(address, size, buffer, out written);
+			instance.__WriteMemory(address, size, buffer, out written);
 			return written;
 		}
 		
 		public static void ClearCurrentException(this ICorDebugProcess instance, uint threadID)
 		{
-			instance.ClearCurrentException(threadID);
+			instance.__ClearCurrentException(threadID);
 		}
 		
 		public static void EnableLogMessages(this ICorDebugProcess instance, int fOnOff)
 		{
-			instance.EnableLogMessages(fOnOff);
+			instance.__EnableLogMessages(fOnOff);
 		}
 		
 		public static void ModifyLogSwitch(this ICorDebugProcess instance, IntPtr pLogSwitchName, int lLevel)
 		{
-			instance.ModifyLogSwitch(pLogSwitchName, lLevel);
+			instance.__ModifyLogSwitch(pLogSwitchName, lLevel);
 		}
 		
 		public static ICorDebugAppDomainEnum EnumerateAppDomains(this ICorDebugProcess instance)
 		{
 			ICorDebugAppDomainEnum ppAppDomains;
-			instance.EnumerateAppDomains(out ppAppDomains);
+			instance.__EnumerateAppDomains(out ppAppDomains);
 			ProcessOutParameter(ppAppDomains);
 			return ppAppDomains;
 		}
@@ -2647,7 +2647,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetObject(this ICorDebugProcess instance)
 		{
 			ICorDebugValue ppObject;
-			instance.GetObject(out ppObject);
+			instance.__GetObject(out ppObject);
 			ProcessOutParameter(ppObject);
 			return ppObject;
 		}
@@ -2655,7 +2655,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugThread ThreadForFiberCookie(this ICorDebugProcess instance, uint fiberCookie)
 		{
 			ICorDebugThread ppThread;
-			instance.ThreadForFiberCookie(fiberCookie, out ppThread);
+			instance.__ThreadForFiberCookie(fiberCookie, out ppThread);
 			ProcessOutParameter(ppThread);
 			return ppThread;
 		}
@@ -2663,14 +2663,14 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetHelperThreadID(this ICorDebugProcess instance)
 		{
 			uint pThreadID;
-			instance.GetHelperThreadID(out pThreadID);
+			instance.__GetHelperThreadID(out pThreadID);
 			return pThreadID;
 		}
 		
 		public static ICorDebugThread2 GetThreadForTaskID(this ICorDebugProcess2 instance, ulong taskid)
 		{
 			ICorDebugThread2 ppThread;
-			instance.GetThreadForTaskID(taskid, out ppThread);
+			instance.__GetThreadForTaskID(taskid, out ppThread);
 			ProcessOutParameter(ppThread);
 			return ppThread;
 		}
@@ -2678,7 +2678,7 @@ namespace Debugger.Interop.CorDebug
 		public static _COR_VERSION GetVersion(this ICorDebugProcess2 instance)
 		{
 			_COR_VERSION version;
-			instance.GetVersion(out version);
+			instance.__GetVersion(out version);
 			ProcessOutParameter(version);
 			return version;
 		}
@@ -2686,49 +2686,49 @@ namespace Debugger.Interop.CorDebug
 		public static uint SetUnmanagedBreakpoint(this ICorDebugProcess2 instance, ulong address, uint bufsize, IntPtr buffer)
 		{
 			uint bufLen;
-			instance.SetUnmanagedBreakpoint(address, bufsize, buffer, out bufLen);
+			instance.__SetUnmanagedBreakpoint(address, bufsize, buffer, out bufLen);
 			return bufLen;
 		}
 		
 		public static void ClearUnmanagedBreakpoint(this ICorDebugProcess2 instance, ulong address)
 		{
-			instance.ClearUnmanagedBreakpoint(address);
+			instance.__ClearUnmanagedBreakpoint(address);
 		}
 		
 		public static void SetDesiredNGENCompilerFlags(this ICorDebugProcess2 instance, uint pdwFlags)
 		{
-			instance.SetDesiredNGENCompilerFlags(pdwFlags);
+			instance.__SetDesiredNGENCompilerFlags(pdwFlags);
 		}
 		
 		public static uint GetDesiredNGENCompilerFlags(this ICorDebugProcess2 instance)
 		{
 			uint pdwFlags;
-			instance.GetDesiredNGENCompilerFlags(out pdwFlags);
+			instance.__GetDesiredNGENCompilerFlags(out pdwFlags);
 			return pdwFlags;
 		}
 		
 		public static ICorDebugReferenceValue GetReferenceValueFromGCHandle(this ICorDebugProcess2 instance, uint handle)
 		{
 			ICorDebugReferenceValue pOutValue;
-			instance.GetReferenceValueFromGCHandle(handle, out pOutValue);
+			instance.__GetReferenceValueFromGCHandle(handle, out pOutValue);
 			ProcessOutParameter(pOutValue);
 			return pOutValue;
 		}
 		
 		public static void Skip(this ICorDebugProcessEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugProcessEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugProcessEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -2736,42 +2736,42 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugProcessEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugProcessEnum instance, uint celt, IntPtr processes)
 		{
 			uint pceltFetched;
-			instance.Next(celt, processes, out pceltFetched);
+			instance.__Next(celt, processes, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static uint GetType(this ICorDebugReferenceValue instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugReferenceValue instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugReferenceValue instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugReferenceValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -2779,26 +2779,26 @@ namespace Debugger.Interop.CorDebug
 		public static int IsNull(this ICorDebugReferenceValue instance)
 		{
 			int pbNull;
-			instance.IsNull(out pbNull);
+			instance.__IsNull(out pbNull);
 			return pbNull;
 		}
 		
 		public static ulong GetValue(this ICorDebugReferenceValue instance)
 		{
 			ulong pValue;
-			instance.GetValue(out pValue);
+			instance.__GetValue(out pValue);
 			return pValue;
 		}
 		
 		public static void SetValue(this ICorDebugReferenceValue instance, ulong value)
 		{
-			instance.SetValue(value);
+			instance.__SetValue(value);
 		}
 		
 		public static ICorDebugValue Dereference(this ICorDebugReferenceValue instance)
 		{
 			ICorDebugValue ppValue;
-			instance.Dereference(out ppValue);
+			instance.__Dereference(out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -2806,7 +2806,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue DereferenceStrong(this ICorDebugReferenceValue instance)
 		{
 			ICorDebugValue ppValue;
-			instance.DereferenceStrong(out ppValue);
+			instance.__DereferenceStrong(out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -2814,91 +2814,91 @@ namespace Debugger.Interop.CorDebug
 		public static ulong GetRegistersAvailable(this ICorDebugRegisterSet instance)
 		{
 			ulong pAvailable;
-			instance.GetRegistersAvailable(out pAvailable);
+			instance.__GetRegistersAvailable(out pAvailable);
 			return pAvailable;
 		}
 		
 		public static void GetRegisters(this ICorDebugRegisterSet instance, ulong mask, uint regCount, IntPtr regBuffer)
 		{
-			instance.GetRegisters(mask, regCount, regBuffer);
+			instance.__GetRegisters(mask, regCount, regBuffer);
 		}
 		
 		public static void SetRegisters(this ICorDebugRegisterSet instance, ulong mask, uint regCount, ref ulong regBuffer)
 		{
-			instance.SetRegisters(mask, regCount, ref regBuffer);
+			instance.__SetRegisters(mask, regCount, ref regBuffer);
 		}
 		
 		public static void GetThreadContext(this ICorDebugRegisterSet instance, uint contextSize, IntPtr context)
 		{
-			instance.GetThreadContext(contextSize, context);
+			instance.__GetThreadContext(contextSize, context);
 		}
 		
 		public static void SetThreadContext(this ICorDebugRegisterSet instance, uint contextSize, IntPtr context)
 		{
-			instance.SetThreadContext(contextSize, context);
+			instance.__SetThreadContext(contextSize, context);
 		}
 		
 		public static int IsActive(this ICorDebugStepper instance)
 		{
 			int pbActive;
-			instance.IsActive(out pbActive);
+			instance.__IsActive(out pbActive);
 			return pbActive;
 		}
 		
 		public static void Deactivate(this ICorDebugStepper instance)
 		{
-			instance.Deactivate();
+			instance.__Deactivate();
 		}
 		
 		public static void SetInterceptMask(this ICorDebugStepper instance, CorDebugIntercept mask)
 		{
-			instance.SetInterceptMask(mask);
+			instance.__SetInterceptMask(mask);
 		}
 		
 		public static void SetUnmappedStopMask(this ICorDebugStepper instance, CorDebugUnmappedStop mask)
 		{
-			instance.SetUnmappedStopMask(mask);
+			instance.__SetUnmappedStopMask(mask);
 		}
 		
 		public static void Step(this ICorDebugStepper instance, int bStepIn)
 		{
-			instance.Step(bStepIn);
+			instance.__Step(bStepIn);
 		}
 		
 		public static void StepRange(this ICorDebugStepper instance, int bStepIn, IntPtr ranges, uint cRangeCount)
 		{
-			instance.StepRange(bStepIn, ranges, cRangeCount);
+			instance.__StepRange(bStepIn, ranges, cRangeCount);
 		}
 		
 		public static void StepOut(this ICorDebugStepper instance)
 		{
-			instance.StepOut();
+			instance.__StepOut();
 		}
 		
 		public static void SetRangeIL(this ICorDebugStepper instance, int bIL)
 		{
-			instance.SetRangeIL(bIL);
+			instance.__SetRangeIL(bIL);
 		}
 		
 		public static void SetJMC(this ICorDebugStepper2 instance, int fIsJMCStepper)
 		{
-			instance.SetJMC(fIsJMCStepper);
+			instance.__SetJMC(fIsJMCStepper);
 		}
 		
 		public static void Skip(this ICorDebugStepperEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugStepperEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugStepperEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -2906,42 +2906,42 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugStepperEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugStepperEnum instance, uint celt, IntPtr steppers)
 		{
 			uint pceltFetched;
-			instance.Next(celt, steppers, out pceltFetched);
+			instance.__Next(celt, steppers, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static uint GetType(this ICorDebugStringValue instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugStringValue instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugStringValue instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugStringValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -2949,14 +2949,14 @@ namespace Debugger.Interop.CorDebug
 		public static int IsValid(this ICorDebugStringValue instance)
 		{
 			int pbValid;
-			instance.IsValid(out pbValid);
+			instance.__IsValid(out pbValid);
 			return pbValid;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateRelocBreakpoint(this ICorDebugStringValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateRelocBreakpoint(out ppBreakpoint);
+			instance.__CreateRelocBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -2964,19 +2964,19 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetLength(this ICorDebugStringValue instance)
 		{
 			uint pcchString;
-			instance.GetLength(out pcchString);
+			instance.__GetLength(out pcchString);
 			return pcchString;
 		}
 		
 		public static void GetString(this ICorDebugStringValue instance, uint cchString, out uint pcchString, IntPtr szString)
 		{
-			instance.GetString(cchString, out pcchString, szString);
+			instance.__GetString(cchString, out pcchString, szString);
 		}
 		
 		public static ICorDebugProcess GetProcess(this ICorDebugThread instance)
 		{
 			ICorDebugProcess ppProcess;
-			instance.GetProcess(out ppProcess);
+			instance.__GetProcess(out ppProcess);
 			ProcessOutParameter(ppProcess);
 			return ppProcess;
 		}
@@ -2984,34 +2984,34 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetID(this ICorDebugThread instance)
 		{
 			uint pdwThreadId;
-			instance.GetID(out pdwThreadId);
+			instance.__GetID(out pdwThreadId);
 			return pdwThreadId;
 		}
 		
 		public static uint GetHandle(this ICorDebugThread instance)
 		{
 			uint phThreadHandle;
-			instance.GetHandle(out phThreadHandle);
+			instance.__GetHandle(out phThreadHandle);
 			return phThreadHandle;
 		}
 		
 		public static ICorDebugAppDomain GetAppDomain(this ICorDebugThread instance)
 		{
 			ICorDebugAppDomain ppAppDomain;
-			instance.GetAppDomain(out ppAppDomain);
+			instance.__GetAppDomain(out ppAppDomain);
 			ProcessOutParameter(ppAppDomain);
 			return ppAppDomain;
 		}
 		
 		public static void SetDebugState(this ICorDebugThread instance, CorDebugThreadState state)
 		{
-			instance.SetDebugState(state);
+			instance.__SetDebugState(state);
 		}
 		
 		public static CorDebugThreadState GetDebugState(this ICorDebugThread instance)
 		{
 			CorDebugThreadState pState;
-			instance.GetDebugState(out pState);
+			instance.__GetDebugState(out pState);
 			ProcessOutParameter(pState);
 			return pState;
 		}
@@ -3019,7 +3019,7 @@ namespace Debugger.Interop.CorDebug
 		public static CorDebugUserState GetUserState(this ICorDebugThread instance)
 		{
 			CorDebugUserState pState;
-			instance.GetUserState(out pState);
+			instance.__GetUserState(out pState);
 			ProcessOutParameter(pState);
 			return pState;
 		}
@@ -3027,20 +3027,20 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetCurrentException(this ICorDebugThread instance)
 		{
 			ICorDebugValue ppExceptionObject;
-			instance.GetCurrentException(out ppExceptionObject);
+			instance.__GetCurrentException(out ppExceptionObject);
 			ProcessOutParameter(ppExceptionObject);
 			return ppExceptionObject;
 		}
 		
 		public static void ClearCurrentException(this ICorDebugThread instance)
 		{
-			instance.ClearCurrentException();
+			instance.__ClearCurrentException();
 		}
 		
 		public static ICorDebugStepper CreateStepper(this ICorDebugThread instance)
 		{
 			ICorDebugStepper ppStepper;
-			instance.CreateStepper(out ppStepper);
+			instance.__CreateStepper(out ppStepper);
 			ProcessOutParameter(ppStepper);
 			return ppStepper;
 		}
@@ -3048,7 +3048,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugChainEnum EnumerateChains(this ICorDebugThread instance)
 		{
 			ICorDebugChainEnum ppChains;
-			instance.EnumerateChains(out ppChains);
+			instance.__EnumerateChains(out ppChains);
 			ProcessOutParameter(ppChains);
 			return ppChains;
 		}
@@ -3056,7 +3056,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugChain GetActiveChain(this ICorDebugThread instance)
 		{
 			ICorDebugChain ppChain;
-			instance.GetActiveChain(out ppChain);
+			instance.__GetActiveChain(out ppChain);
 			ProcessOutParameter(ppChain);
 			return ppChain;
 		}
@@ -3064,7 +3064,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugFrame GetActiveFrame(this ICorDebugThread instance)
 		{
 			ICorDebugFrame ppFrame;
-			instance.GetActiveFrame(out ppFrame);
+			instance.__GetActiveFrame(out ppFrame);
 			ProcessOutParameter(ppFrame);
 			return ppFrame;
 		}
@@ -3072,7 +3072,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugRegisterSet GetRegisterSet(this ICorDebugThread instance)
 		{
 			ICorDebugRegisterSet ppRegisters;
-			instance.GetRegisterSet(out ppRegisters);
+			instance.__GetRegisterSet(out ppRegisters);
 			ProcessOutParameter(ppRegisters);
 			return ppRegisters;
 		}
@@ -3080,7 +3080,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugEval CreateEval(this ICorDebugThread instance)
 		{
 			ICorDebugEval ppEval;
-			instance.CreateEval(out ppEval);
+			instance.__CreateEval(out ppEval);
 			ProcessOutParameter(ppEval);
 			return ppEval;
 		}
@@ -3088,56 +3088,56 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetObject(this ICorDebugThread instance)
 		{
 			ICorDebugValue ppObject;
-			instance.GetObject(out ppObject);
+			instance.__GetObject(out ppObject);
 			ProcessOutParameter(ppObject);
 			return ppObject;
 		}
 		
 		public static void GetActiveFunctions(this ICorDebugThread2 instance, uint cFunctions, out uint pcFunctions, IntPtr pFunctions)
 		{
-			instance.GetActiveFunctions(cFunctions, out pcFunctions, pFunctions);
+			instance.__GetActiveFunctions(cFunctions, out pcFunctions, pFunctions);
 		}
 		
 		public static uint GetConnectionID(this ICorDebugThread2 instance)
 		{
 			uint pdwConnectionId;
-			instance.GetConnectionID(out pdwConnectionId);
+			instance.__GetConnectionID(out pdwConnectionId);
 			return pdwConnectionId;
 		}
 		
 		public static ulong GetTaskID(this ICorDebugThread2 instance)
 		{
 			ulong pTaskId;
-			instance.GetTaskID(out pTaskId);
+			instance.__GetTaskID(out pTaskId);
 			return pTaskId;
 		}
 		
 		public static uint GetVolatileOSThreadID(this ICorDebugThread2 instance)
 		{
 			uint pdwTid;
-			instance.GetVolatileOSThreadID(out pdwTid);
+			instance.__GetVolatileOSThreadID(out pdwTid);
 			return pdwTid;
 		}
 		
 		public static void InterceptCurrentException(this ICorDebugThread2 instance, ICorDebugFrame pFrame)
 		{
-			instance.InterceptCurrentException(pFrame);
+			instance.__InterceptCurrentException(pFrame);
 		}
 		
 		public static void Skip(this ICorDebugThreadEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugThreadEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugThreadEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -3145,28 +3145,28 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugThreadEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugThreadEnum instance, uint celt, IntPtr threads)
 		{
 			uint pceltFetched;
-			instance.Next(celt, threads, out pceltFetched);
+			instance.__Next(celt, threads, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static uint GetType(this ICorDebugType instance)
 		{
 			uint ty;
-			instance.GetType(out ty);
+			instance.__GetType(out ty);
 			return ty;
 		}
 		
 		public static ICorDebugClass GetClass(this ICorDebugType instance)
 		{
 			ICorDebugClass ppClass;
-			instance.GetClass(out ppClass);
+			instance.__GetClass(out ppClass);
 			ProcessOutParameter(ppClass);
 			return ppClass;
 		}
@@ -3174,7 +3174,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugTypeEnum EnumerateTypeParameters(this ICorDebugType instance)
 		{
 			ICorDebugTypeEnum ppTyParEnum;
-			instance.EnumerateTypeParameters(out ppTyParEnum);
+			instance.__EnumerateTypeParameters(out ppTyParEnum);
 			ProcessOutParameter(ppTyParEnum);
 			return ppTyParEnum;
 		}
@@ -3182,7 +3182,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugType GetFirstTypeParameter(this ICorDebugType instance)
 		{
 			ICorDebugType value;
-			instance.GetFirstTypeParameter(out value);
+			instance.__GetFirstTypeParameter(out value);
 			ProcessOutParameter(value);
 			return value;
 		}
@@ -3190,7 +3190,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugType GetBase(this ICorDebugType instance)
 		{
 			ICorDebugType pBase;
-			instance.GetBase(out pBase);
+			instance.__GetBase(out pBase);
 			ProcessOutParameter(pBase);
 			return pBase;
 		}
@@ -3198,7 +3198,7 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugValue GetStaticFieldValue(this ICorDebugType instance, uint fieldDef, ICorDebugFrame pFrame)
 		{
 			ICorDebugValue ppValue;
-			instance.GetStaticFieldValue(fieldDef, pFrame, out ppValue);
+			instance.__GetStaticFieldValue(fieldDef, pFrame, out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
@@ -3206,24 +3206,24 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetRank(this ICorDebugType instance)
 		{
 			uint pnRank;
-			instance.GetRank(out pnRank);
+			instance.__GetRank(out pnRank);
 			return pnRank;
 		}
 		
 		public static void Skip(this ICorDebugTypeEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugTypeEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugTypeEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -3231,48 +3231,48 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugTypeEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugTypeEnum instance, uint celt, ICorDebugType[] values)
 		{
 			uint pceltFetched;
-			instance.Next(celt, values, out pceltFetched);
+			instance.__Next(celt, values, out pceltFetched);
 			ProcessOutParameter(values);
 			return pceltFetched;
 		}
 		
 		public static void DebugEvent(this ICorDebugUnmanagedCallback instance, uint pDebugEvent, int fOutOfBand)
 		{
-			instance.DebugEvent(pDebugEvent, fOutOfBand);
+			instance.__DebugEvent(pDebugEvent, fOutOfBand);
 		}
 		
 		public static uint GetType(this ICorDebugValue instance)
 		{
 			uint pType;
-			instance.GetType(out pType);
+			instance.__GetType(out pType);
 			return pType;
 		}
 		
 		public static uint GetSize(this ICorDebugValue instance)
 		{
 			uint pSize;
-			instance.GetSize(out pSize);
+			instance.__GetSize(out pSize);
 			return pSize;
 		}
 		
 		public static ulong GetAddress(this ICorDebugValue instance)
 		{
 			ulong pAddress;
-			instance.GetAddress(out pAddress);
+			instance.__GetAddress(out pAddress);
 			return pAddress;
 		}
 		
 		public static ICorDebugValueBreakpoint CreateBreakpoint(this ICorDebugValue instance)
 		{
 			ICorDebugValueBreakpoint ppBreakpoint;
-			instance.CreateBreakpoint(out ppBreakpoint);
+			instance.__CreateBreakpoint(out ppBreakpoint);
 			ProcessOutParameter(ppBreakpoint);
 			return ppBreakpoint;
 		}
@@ -3280,45 +3280,45 @@ namespace Debugger.Interop.CorDebug
 		public static ICorDebugType GetExactType(this ICorDebugValue2 instance)
 		{
 			ICorDebugType ppType;
-			instance.GetExactType(out ppType);
+			instance.__GetExactType(out ppType);
 			ProcessOutParameter(ppType);
 			return ppType;
 		}
 		
 		public static void Activate(this ICorDebugValueBreakpoint instance, int bActive)
 		{
-			instance.Activate(bActive);
+			instance.__Activate(bActive);
 		}
 		
 		public static int IsActive(this ICorDebugValueBreakpoint instance)
 		{
 			int pbActive;
-			instance.IsActive(out pbActive);
+			instance.__IsActive(out pbActive);
 			return pbActive;
 		}
 		
 		public static ICorDebugValue GetValue(this ICorDebugValueBreakpoint instance)
 		{
 			ICorDebugValue ppValue;
-			instance.GetValue(out ppValue);
+			instance.__GetValue(out ppValue);
 			ProcessOutParameter(ppValue);
 			return ppValue;
 		}
 		
 		public static void Skip(this ICorDebugValueEnum instance, uint celt)
 		{
-			instance.Skip(celt);
+			instance.__Skip(celt);
 		}
 		
 		public static void Reset(this ICorDebugValueEnum instance)
 		{
-			instance.Reset();
+			instance.__Reset();
 		}
 		
 		public static ICorDebugEnum Clone(this ICorDebugValueEnum instance)
 		{
 			ICorDebugEnum ppEnum;
-			instance.Clone(out ppEnum);
+			instance.__Clone(out ppEnum);
 			ProcessOutParameter(ppEnum);
 			return ppEnum;
 		}
@@ -3326,41 +3326,41 @@ namespace Debugger.Interop.CorDebug
 		public static uint GetCount(this ICorDebugValueEnum instance)
 		{
 			uint pcelt;
-			instance.GetCount(out pcelt);
+			instance.__GetCount(out pcelt);
 			return pcelt;
 		}
 		
 		public static uint Next(this ICorDebugValueEnum instance, uint celt, IntPtr values)
 		{
 			uint pceltFetched;
-			instance.Next(celt, values, out pceltFetched);
+			instance.__Next(celt, values, out pceltFetched);
 			return pceltFetched;
 		}
 		
 		public static void RemoteRead(this ISequentialStream instance, out byte pv, uint cb, out uint pcbRead)
 		{
-			instance.RemoteRead(out pv, cb, out pcbRead);
+			instance.__RemoteRead(out pv, cb, out pcbRead);
 			ProcessOutParameter(pv);
 		}
 		
 		public static uint RemoteWrite(this ISequentialStream instance, ref byte pv, uint cb)
 		{
 			uint pcbWritten;
-			instance.RemoteWrite(ref pv, cb, out pcbWritten);
+			instance.__RemoteWrite(ref pv, cb, out pcbWritten);
 			ProcessOutParameter(pv);
 			return pcbWritten;
 		}
 		
 		public static void RemoteRead(this IStream instance, out byte pv, uint cb, out uint pcbRead)
 		{
-			instance.RemoteRead(out pv, cb, out pcbRead);
+			instance.__RemoteRead(out pv, cb, out pcbRead);
 			ProcessOutParameter(pv);
 		}
 		
 		public static uint RemoteWrite(this IStream instance, ref byte pv, uint cb)
 		{
 			uint pcbWritten;
-			instance.RemoteWrite(ref pv, cb, out pcbWritten);
+			instance.__RemoteWrite(ref pv, cb, out pcbWritten);
 			ProcessOutParameter(pv);
 			return pcbWritten;
 		}
@@ -3368,53 +3368,53 @@ namespace Debugger.Interop.CorDebug
 		public static _ULARGE_INTEGER RemoteSeek(this IStream instance, _LARGE_INTEGER dlibMove, uint dwOrigin)
 		{
 			_ULARGE_INTEGER plibNewPosition;
-			instance.RemoteSeek(dlibMove, dwOrigin, out plibNewPosition);
+			instance.__RemoteSeek(dlibMove, dwOrigin, out plibNewPosition);
 			ProcessOutParameter(plibNewPosition);
 			return plibNewPosition;
 		}
 		
 		public static void SetSize(this IStream instance, _ULARGE_INTEGER libNewSize)
 		{
-			instance.SetSize(libNewSize);
+			instance.__SetSize(libNewSize);
 		}
 		
 		public static void RemoteCopyTo(this IStream instance, IStream pstm, _ULARGE_INTEGER cb, out _ULARGE_INTEGER pcbRead, out _ULARGE_INTEGER pcbWritten)
 		{
-			instance.RemoteCopyTo(pstm, cb, out pcbRead, out pcbWritten);
+			instance.__RemoteCopyTo(pstm, cb, out pcbRead, out pcbWritten);
 			ProcessOutParameter(pcbRead);
 			ProcessOutParameter(pcbWritten);
 		}
 		
 		public static void Commit(this IStream instance, uint grfCommitFlags)
 		{
-			instance.Commit(grfCommitFlags);
+			instance.__Commit(grfCommitFlags);
 		}
 		
 		public static void Revert(this IStream instance)
 		{
-			instance.Revert();
+			instance.__Revert();
 		}
 		
 		public static void LockRegion(this IStream instance, _ULARGE_INTEGER libOffset, _ULARGE_INTEGER cb, uint dwLockType)
 		{
-			instance.LockRegion(libOffset, cb, dwLockType);
+			instance.__LockRegion(libOffset, cb, dwLockType);
 		}
 		
 		public static void UnlockRegion(this IStream instance, _ULARGE_INTEGER libOffset, _ULARGE_INTEGER cb, uint dwLockType)
 		{
-			instance.UnlockRegion(libOffset, cb, dwLockType);
+			instance.__UnlockRegion(libOffset, cb, dwLockType);
 		}
 		
 		public static void Stat(this IStream instance, out tagSTATSTG pstatstg, uint grfStatFlag)
 		{
-			instance.Stat(out pstatstg, grfStatFlag);
+			instance.__Stat(out pstatstg, grfStatFlag);
 			ProcessOutParameter(pstatstg);
 		}
 		
 		public static IStream Clone(this IStream instance)
 		{
 			IStream ppstm;
-			instance.Clone(out ppstm);
+			instance.__Clone(out ppstm);
 			ProcessOutParameter(ppstm);
 			return ppstm;
 		}

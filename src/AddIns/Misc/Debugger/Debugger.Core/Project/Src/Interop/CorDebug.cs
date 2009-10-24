@@ -91,23 +91,23 @@ namespace Debugger.Interop.CorDebug
     {
         // Methods
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void CanLaunchOrAttach([In] uint dwProcessId, [In] int win32DebuggingEnabled);
+        public virtual extern void __CanLaunchOrAttach([In] uint dwProcessId, [In] int win32DebuggingEnabled);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void CreateProcess([In, MarshalAs(UnmanagedType.LPWStr)] string lpApplicationName, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCommandLine, [In] ref _SECURITY_ATTRIBUTES lpProcessAttributes, [In] ref _SECURITY_ATTRIBUTES lpThreadAttributes, [In] int bInheritHandles, [In] uint dwCreationFlags, [In] IntPtr lpEnvironment, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCurrentDirectory, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpStartupInfo, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpProcessInformation, [In] CorDebugCreateProcessFlags debuggingFlags, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        public virtual extern void __CreateProcess([In, MarshalAs(UnmanagedType.LPWStr)] string lpApplicationName, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCommandLine, [In] ref _SECURITY_ATTRIBUTES lpProcessAttributes, [In] ref _SECURITY_ATTRIBUTES lpThreadAttributes, [In] int bInheritHandles, [In] uint dwCreationFlags, [In] IntPtr lpEnvironment, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCurrentDirectory, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpStartupInfo, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpProcessInformation, [In] CorDebugCreateProcessFlags debuggingFlags, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void DebugActiveProcess([In] uint id, [In] int win32Attach, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        public virtual extern void __DebugActiveProcess([In] uint id, [In] int win32Attach, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void EnumerateProcesses([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcessEnum ppProcess);
+        public virtual extern void __EnumerateProcesses([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcessEnum ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void GetProcess([In] uint dwProcessId, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        public virtual extern void __GetProcess([In] uint dwProcessId, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void Initialize();
+        public virtual extern void __Initialize();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void SetManagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugManagedCallback pCallback);
+        public virtual extern void __SetManagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugManagedCallback pCallback);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void SetUnmanagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugUnmanagedCallback pCallback);
+        public virtual extern void __SetUnmanagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugUnmanagedCallback pCallback);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void Terminate();
+        public virtual extern void __Terminate();
     }
 
     public enum CorDebugCreateProcessFlags
@@ -335,710 +335,710 @@ namespace Debugger.Interop.CorDebug
     {
         // Methods
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void CanLaunchOrAttach([In] uint dwProcessId, [In] int win32DebuggingEnabled);
+        public virtual extern void __CanLaunchOrAttach([In] uint dwProcessId, [In] int win32DebuggingEnabled);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void CreateProcess([In, MarshalAs(UnmanagedType.LPWStr)] string lpApplicationName, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCommandLine, [In] ref _SECURITY_ATTRIBUTES lpProcessAttributes, [In] ref _SECURITY_ATTRIBUTES lpThreadAttributes, [In] int bInheritHandles, [In] uint dwCreationFlags, [In] IntPtr lpEnvironment, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCurrentDirectory, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpStartupInfo, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpProcessInformation, [In] CorDebugCreateProcessFlags debuggingFlags, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        public virtual extern void __CreateProcess([In, MarshalAs(UnmanagedType.LPWStr)] string lpApplicationName, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCommandLine, [In] ref _SECURITY_ATTRIBUTES lpProcessAttributes, [In] ref _SECURITY_ATTRIBUTES lpThreadAttributes, [In] int bInheritHandles, [In] uint dwCreationFlags, [In] IntPtr lpEnvironment, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCurrentDirectory, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpStartupInfo, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpProcessInformation, [In] CorDebugCreateProcessFlags debuggingFlags, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void DebugActiveProcess([In] uint id, [In] int win32Attach, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        public virtual extern void __DebugActiveProcess([In] uint id, [In] int win32Attach, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void EnumerateProcesses([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcessEnum ppProcess);
+        public virtual extern void __EnumerateProcesses([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcessEnum ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void GetProcess([In] uint dwProcessId, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        public virtual extern void __GetProcess([In] uint dwProcessId, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void Initialize();
+        public virtual extern void __Initialize();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void SetManagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugManagedCallback pCallback);
+        public virtual extern void __SetManagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugManagedCallback pCallback);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void SetUnmanagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugUnmanagedCallback pCallback);
+        public virtual extern void __SetUnmanagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugUnmanagedCallback pCallback);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern void Terminate();
+        public virtual extern void __Terminate();
     }
 
     [ComImport, Guid("3D6F5F61-7538-11D3-8D5B-00104B35E7EF"), InterfaceType((short) 1)]
     public interface ICorDebug
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Initialize();
+        void __Initialize();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Terminate();
+        void __Terminate();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetManagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugManagedCallback pCallback);
+        void __SetManagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugManagedCallback pCallback);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetUnmanagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugUnmanagedCallback pCallback);
+        void __SetUnmanagedHandler([In, MarshalAs(UnmanagedType.Interface)] ICorDebugUnmanagedCallback pCallback);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateProcess([In, MarshalAs(UnmanagedType.LPWStr)] string lpApplicationName, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCommandLine, [In] ref _SECURITY_ATTRIBUTES lpProcessAttributes, [In] ref _SECURITY_ATTRIBUTES lpThreadAttributes, [In] int bInheritHandles, [In] uint dwCreationFlags, [In] IntPtr lpEnvironment, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCurrentDirectory, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpStartupInfo, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpProcessInformation, [In] CorDebugCreateProcessFlags debuggingFlags, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        void __CreateProcess([In, MarshalAs(UnmanagedType.LPWStr)] string lpApplicationName, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCommandLine, [In] ref _SECURITY_ATTRIBUTES lpProcessAttributes, [In] ref _SECURITY_ATTRIBUTES lpThreadAttributes, [In] int bInheritHandles, [In] uint dwCreationFlags, [In] IntPtr lpEnvironment, [In, MarshalAs(UnmanagedType.LPWStr)] string lpCurrentDirectory, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpStartupInfo, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint lpProcessInformation, [In] CorDebugCreateProcessFlags debuggingFlags, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void DebugActiveProcess([In] uint id, [In] int win32Attach, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        void __DebugActiveProcess([In] uint id, [In] int win32Attach, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateProcesses([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcessEnum ppProcess);
+        void __EnumerateProcesses([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcessEnum ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetProcess([In] uint dwProcessId, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        void __GetProcess([In] uint dwProcessId, [MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CanLaunchOrAttach([In] uint dwProcessId, [In] int win32DebuggingEnabled);
+        void __CanLaunchOrAttach([In] uint dwProcessId, [In] int win32DebuggingEnabled);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("3D6F5F63-7538-11D3-8D5B-00104B35E7EF"), ComConversionLoss]
     public interface ICorDebugAppDomain : ICorDebugController
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Stop([In] uint dwTimeoutIgnored);
+        void __Stop([In] uint dwTimeoutIgnored);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Continue([In] int fIsOutOfBand);
+        void __Continue([In] int fIsOutOfBand);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsRunning(out int pbRunning);
+        void __IsRunning(out int pbRunning);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void HasQueuedCallbacks([In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pThread, out int pbQueued);
+        void __HasQueuedCallbacks([In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pThread, out int pbQueued);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateThreads([MarshalAs(UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
+        void __EnumerateThreads([MarshalAs(UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetAllThreadsDebugState([In] CorDebugThreadState state, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pExceptThisThread);
+        void __SetAllThreadsDebugState([In] CorDebugThreadState state, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pExceptThisThread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Detach();
+        void __Detach();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Terminate([In] uint exitCode);
+        void __Terminate([In] uint exitCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CanCommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+        void __CanCommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+        void __CommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetProcess([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        void __GetProcess([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateAssemblies([MarshalAs(UnmanagedType.Interface)] out ICorDebugAssemblyEnum ppAssemblies);
+        void __EnumerateAssemblies([MarshalAs(UnmanagedType.Interface)] out ICorDebugAssemblyEnum ppAssemblies);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetModuleFromMetaDataInterface([In, MarshalAs(UnmanagedType.IUnknown)] object pIMetaData, [MarshalAs(UnmanagedType.Interface)] out ICorDebugModule ppModule);
+        void __GetModuleFromMetaDataInterface([In, MarshalAs(UnmanagedType.IUnknown)] object pIMetaData, [MarshalAs(UnmanagedType.Interface)] out ICorDebugModule ppModule);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateBreakpoints([MarshalAs(UnmanagedType.Interface)] out ICorDebugBreakpointEnum ppBreakpoints);
+        void __EnumerateBreakpoints([MarshalAs(UnmanagedType.Interface)] out ICorDebugBreakpointEnum ppBreakpoints);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateSteppers([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepperEnum ppSteppers);
+        void __EnumerateSteppers([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepperEnum ppSteppers);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsAttached(out int pbAttached);
+        void __IsAttached(out int pbAttached);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
+        void __GetName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetObject([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppObject);
+        void __GetObject([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppObject);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Attach();
+        void __Attach();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetID(out uint pId);
+        void __GetID(out uint pId);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("096E81D5-ECDA-4202-83F5-C65980A9EF75")]
     public interface ICorDebugAppDomain2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetArrayOrPointerType([In] uint elementType, [In] uint nRank, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugType pTypeArg, [MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
+        void __GetArrayOrPointerType([In] uint elementType, [In] uint nRank, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugType pTypeArg, [MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunctionPointerType([In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugType ppTypeArgs, [MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
+        void __GetFunctionPointerType([In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugType ppTypeArgs, [MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("63CA1B24-4359-4883-BD57-13F815F58744"), ComConversionLoss]
     public interface ICorDebugAppDomainEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr values, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr values, out uint pceltFetched);
     }
 
     [ComImport, Guid("0405B0DF-A660-11D2-BD02-0000F80849BD"), InterfaceType((short) 1), ComConversionLoss]
     public interface ICorDebugArrayValue : ICorDebugHeapValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsValid(out int pbValid);
+        void __IsValid(out int pbValid);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateRelocBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateRelocBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetElementType(out uint pType);
+        void __GetElementType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetRank(out uint pnRank);
+        void __GetRank(out uint pnRank);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pnCount);
+        void __GetCount(out uint pnCount);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetDimensions([In] uint cdim, [Out] IntPtr dims);
+        void __GetDimensions([In] uint cdim, [Out] IntPtr dims);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void HasBaseIndicies(out int pbHasBaseIndicies);
+        void __HasBaseIndicies(out int pbHasBaseIndicies);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetBaseIndicies([In] uint cdim, [Out] IntPtr indicies);
+        void __GetBaseIndicies([In] uint cdim, [Out] IntPtr indicies);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetElement([In] uint cdim, [In] IntPtr indices, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetElement([In] uint cdim, [In] IntPtr indices, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetElementAtPosition([In] uint nPosition, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetElementAtPosition([In] uint nPosition, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
     }
 
     [ComImport, Guid("DF59507C-D47A-459E-BCE2-6427EAC8FD06"), InterfaceType((short) 1), ComConversionLoss]
     public interface ICorDebugAssembly
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetProcess([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        void __GetProcess([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAppDomain([MarshalAs(UnmanagedType.Interface)] out ICorDebugAppDomain ppAppDomain);
+        void __GetAppDomain([MarshalAs(UnmanagedType.Interface)] out ICorDebugAppDomain ppAppDomain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateModules([MarshalAs(UnmanagedType.Interface)] out ICorDebugModuleEnum ppModules);
+        void __EnumerateModules([MarshalAs(UnmanagedType.Interface)] out ICorDebugModuleEnum ppModules);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCodeBase([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
+        void __GetCodeBase([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
+        void __GetName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
     }
 
     [ComImport, Guid("426D1F9E-6DD4-44C8-AEC7-26CDBAF4E398"), InterfaceType((short) 1)]
     public interface ICorDebugAssembly2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsFullyTrusted(out int pbFullyTrusted);
+        void __IsFullyTrusted(out int pbFullyTrusted);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("4A2A1EC9-85EC-4BFB-9F15-A89FDFE0FE83"), ComConversionLoss]
     public interface ICorDebugAssemblyEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr values, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr values, out uint pceltFetched);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCAFC-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugBoxValue : ICorDebugHeapValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsValid(out int pbValid);
+        void __IsValid(out int pbValid);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateRelocBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateRelocBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetObject([MarshalAs(UnmanagedType.Interface)] out ICorDebugObjectValue ppObject);
+        void __GetObject([MarshalAs(UnmanagedType.Interface)] out ICorDebugObjectValue ppObject);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCAE8-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugBreakpoint
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Activate([In] int bActive);
+        void __Activate([In] int bActive);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsActive(out int pbActive);
+        void __IsActive(out int pbActive);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCB03-8A68-11D2-983C-0000F808342D"), ComConversionLoss]
     public interface ICorDebugBreakpointEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr breakpoints, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr breakpoints, out uint pceltFetched);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCAEE-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugChain
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetThread([MarshalAs(UnmanagedType.Interface)] out ICorDebugThread ppThread);
+        void __GetThread([MarshalAs(UnmanagedType.Interface)] out ICorDebugThread ppThread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetStackRange(out ulong pStart, out ulong pEnd);
+        void __GetStackRange(out ulong pStart, out ulong pEnd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetContext([MarshalAs(UnmanagedType.Interface)] out ICorDebugContext ppContext);
+        void __GetContext([MarshalAs(UnmanagedType.Interface)] out ICorDebugContext ppContext);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        void __GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        void __GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetPrevious([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        void __GetPrevious([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetNext([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        void __GetNext([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsManaged(out int pManaged);
+        void __IsManaged(out int pManaged);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateFrames([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrameEnum ppFrames);
+        void __EnumerateFrames([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrameEnum ppFrames);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetActiveFrame([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetActiveFrame([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetRegisterSet([MarshalAs(UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
+        void __GetRegisterSet([MarshalAs(UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetReason(out CorDebugChainReason pReason);
+        void __GetReason(out CorDebugChainReason pReason);
     }
 
     [ComImport, ComConversionLoss, InterfaceType((short) 1), Guid("CC7BCB08-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugChainEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out, MarshalAs(UnmanagedType.LPArray)] ICorDebugChain[] chains, out uint pceltFetched);
+        void __Next([In] uint celt, [Out, MarshalAs(UnmanagedType.LPArray)] ICorDebugChain[] chains, out uint pceltFetched);
     }
 
     [ComImport, Guid("CC7BCAF5-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugClass
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetModule([MarshalAs(UnmanagedType.Interface)] out ICorDebugModule pModule);
+        void __GetModule([MarshalAs(UnmanagedType.Interface)] out ICorDebugModule pModule);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetToken(out uint pTypeDef);
+        void __GetToken(out uint pTypeDef);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetStaticFieldValue([In] uint fieldDef, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugFrame pFrame, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetStaticFieldValue([In] uint fieldDef, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugFrame pFrame, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("B008EA8D-7AB1-43F7-BB20-FBB5A04038AE")]
     public interface ICorDebugClass2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetParameterizedType([In] uint elementType, [In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] ppTypeArgs, [MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
+        void __GetParameterizedType([In] uint elementType, [In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] ppTypeArgs, [MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetJMCStatus([In] int bIsJustMyCode);
+        void __SetJMCStatus([In] int bIsJustMyCode);
     }
 
     [ComImport, ComConversionLoss, Guid("CC7BCAF4-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugCode
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsIL(out int pbIL);
+        void __IsIL(out int pbIL);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pStart);
+        void __GetAddress(out ulong pStart);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pcBytes);
+        void __GetSize(out uint pcBytes);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([In] uint offset, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunctionBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([In] uint offset, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunctionBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCode([In] uint startOffset, [In] uint endOffset, [In] uint cBufferAlloc, [Out] IntPtr buffer, out uint pcBufferSize);
+        void __GetCode([In] uint startOffset, [In] uint endOffset, [In] uint cBufferAlloc, [Out] IntPtr buffer, out uint pcBufferSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetVersionNumber(out uint nVersion);
+        void __GetVersionNumber(out uint nVersion);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetILToNativeMapping([In] uint cMap, out uint pcMap, [Out] IntPtr map);
+        void __GetILToNativeMapping([In] uint cMap, out uint pcMap, [Out] IntPtr map);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetEnCRemapSequencePoints([In] uint cMap, out uint pcMap, [Out] IntPtr offsets);
+        void __GetEnCRemapSequencePoints([In] uint cMap, out uint pcMap, [Out] IntPtr offsets);
     }
 
     [ComImport, Guid("55E96461-9645-45E4-A2FF-0367877ABCDE"), InterfaceType((short) 1), ComConversionLoss]
     public interface ICorDebugCodeEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr values, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr values, out uint pceltFetched);
     }
 
     [ComImport, Guid("CC7BCB00-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugContext : ICorDebugObjectValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetClass([MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
+        void __GetClass([MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFieldValue([In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pClass, [In] uint fieldDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetFieldValue([In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pClass, [In] uint fieldDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetVirtualMethod([In] uint memberRef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetVirtualMethod([In] uint memberRef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetContext([MarshalAs(UnmanagedType.Interface)] out ICorDebugContext ppContext);
+        void __GetContext([MarshalAs(UnmanagedType.Interface)] out ICorDebugContext ppContext);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsValueClass(out int pbIsValueClass);
+        void __IsValueClass(out int pbIsValueClass);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetManagedCopy([MarshalAs(UnmanagedType.IUnknown)] out object ppObject);
+        void __GetManagedCopy([MarshalAs(UnmanagedType.IUnknown)] out object ppObject);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetFromManagedCopy([In, MarshalAs(UnmanagedType.IUnknown)] object pObject);
+        void __SetFromManagedCopy([In, MarshalAs(UnmanagedType.IUnknown)] object pObject);
     }
 
     [ComImport, Guid("3D6F5F62-7538-11D3-8D5B-00104B35E7EF"), InterfaceType((short) 1)]
     public interface ICorDebugController
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Stop([In] uint dwTimeoutIgnored);
+        void __Stop([In] uint dwTimeoutIgnored);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Continue([In] int fIsOutOfBand);
+        void __Continue([In] int fIsOutOfBand);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsRunning(out int pbRunning);
+        void __IsRunning(out int pbRunning);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void HasQueuedCallbacks([In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pThread, out int pbQueued);
+        void __HasQueuedCallbacks([In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pThread, out int pbQueued);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateThreads([MarshalAs(UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
+        void __EnumerateThreads([MarshalAs(UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetAllThreadsDebugState([In] CorDebugThreadState state, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pExceptThisThread);
+        void __SetAllThreadsDebugState([In] CorDebugThreadState state, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pExceptThisThread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Detach();
+        void __Detach();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Terminate([In] uint exitCode);
+        void __Terminate([In] uint exitCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CanCommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+        void __CanCommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+        void __CommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("6DC3FA01-D7CB-11D2-8A95-0080C792E5D8")]
     public interface ICorDebugEditAndContinueSnapshot
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CopyMetaData([In, MarshalAs(UnmanagedType.Interface)] IStream pIStream, out Guid pMvid);
+        void __CopyMetaData([In, MarshalAs(UnmanagedType.Interface)] IStream pIStream, out Guid pMvid);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetMvid(out Guid pMvid);
+        void __GetMvid(out Guid pMvid);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetRoDataRVA(out uint pRoDataRVA);
+        void __GetRoDataRVA(out uint pRoDataRVA);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetRwDataRVA(out uint pRwDataRVA);
+        void __GetRwDataRVA(out uint pRwDataRVA);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetPEBytes([In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
+        void __SetPEBytes([In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetILMap([In] uint mdFunction, [In] uint cMapSize, [In] ref _COR_IL_MAP map);
+        void __SetILMap([In] uint mdFunction, [In] uint cMapSize, [In] ref _COR_IL_MAP map);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetPESymbolBytes([In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
+        void __SetPESymbolBytes([In, MarshalAs(UnmanagedType.Interface)] IStream pIStream);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCB01-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
     }
 
     [ComImport, ComConversionLoss, Guid("F0E18809-72B5-11D2-976F-00A0C9B4D50C"), InterfaceType((short) 1)]
     public interface ICorDebugErrorInfoEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr errors, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr errors, out uint pceltFetched);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCAF6-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugEval
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CallFunction([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFunction pFunction, [In] uint nArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugValue[] ppArgs);
+        void __CallFunction([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFunction pFunction, [In] uint nArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugValue[] ppArgs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void NewObject([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFunction pConstructor, [In] uint nArgs, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugValue ppArgs);
+        void __NewObject([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFunction pConstructor, [In] uint nArgs, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugValue ppArgs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void NewObjectNoConstructor([In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pClass);
+        void __NewObjectNoConstructor([In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pClass);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void NewString([In, MarshalAs(UnmanagedType.LPWStr)] string @string);
+        void __NewString([In, MarshalAs(UnmanagedType.LPWStr)] string @string);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void NewArray([In] uint elementType, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pElementClass, [In] uint rank, [In] ref uint dims, [In] ref uint lowBounds);
+        void __NewArray([In] uint elementType, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pElementClass, [In] uint rank, [In] ref uint dims, [In] ref uint lowBounds);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsActive(out int pbActive);
+        void __IsActive(out int pbActive);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Abort();
+        void __Abort();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetResult([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppResult);
+        void __GetResult([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppResult);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetThread([MarshalAs(UnmanagedType.Interface)] out ICorDebugThread ppThread);
+        void __GetThread([MarshalAs(UnmanagedType.Interface)] out ICorDebugThread ppThread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateValue([In] uint elementType, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pElementClass, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __CreateValue([In] uint elementType, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pElementClass, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
     }
 
     [ComImport, Guid("FB0D9CE7-BE66-4683-9D32-A42A04E2FD91"), InterfaceType((short) 1)]
     public interface ICorDebugEval2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CallParameterizedFunction([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFunction pFunction, [In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] ppTypeArgs, [In] uint nArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugValue[] ppArgs);
+        void __CallParameterizedFunction([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFunction pFunction, [In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] ppTypeArgs, [In] uint nArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugValue[] ppArgs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateValueForType([In, MarshalAs(UnmanagedType.Interface)] ICorDebugType pType, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __CreateValueForType([In, MarshalAs(UnmanagedType.Interface)] ICorDebugType pType, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void NewParameterizedObject([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFunction pConstructor, [In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] ppTypeArgs, [In] uint nArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugValue[] ppArgs);
+        void __NewParameterizedObject([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFunction pConstructor, [In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] ppTypeArgs, [In] uint nArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugValue[] ppArgs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void NewParameterizedObjectNoConstructor([In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pClass, [In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] ppTypeArgs);
+        void __NewParameterizedObjectNoConstructor([In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pClass, [In] uint nTypeArgs, [In, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] ppTypeArgs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void NewParameterizedArray([In, MarshalAs(UnmanagedType.Interface)] ICorDebugType pElementType, [In] uint rank, [In] ref uint dims, [In] ref uint lowBounds);
+        void __NewParameterizedArray([In, MarshalAs(UnmanagedType.Interface)] ICorDebugType pElementType, [In] uint rank, [In] ref uint dims, [In] ref uint lowBounds);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void NewStringWithLength([In, MarshalAs(UnmanagedType.LPWStr)] string @string, [In] uint uiLength);
+        void __NewStringWithLength([In, MarshalAs(UnmanagedType.LPWStr)] string @string, [In] uint uiLength);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void RudeAbort();
+        void __RudeAbort();
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCAEF-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugFrame
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        void __GetChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
+        void __GetCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunctionToken(out uint pToken);
+        void __GetFunctionToken(out uint pToken);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetStackRange(out ulong pStart, out ulong pEnd);
+        void __GetStackRange(out ulong pStart, out ulong pEnd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
+        void __CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
     }
 
     [ComImport, InterfaceType((short) 1), ComConversionLoss, Guid("CC7BCB07-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugFrameEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out, MarshalAs(UnmanagedType.LPArray)] ICorDebugFrame[] frames, out uint pceltFetched);
+        void __Next([In] uint celt, [Out, MarshalAs(UnmanagedType.LPArray)] ICorDebugFrame[] frames, out uint pceltFetched);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCAF3-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugFunction
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetModule([MarshalAs(UnmanagedType.Interface)] out ICorDebugModule ppModule);
+        void __GetModule([MarshalAs(UnmanagedType.Interface)] out ICorDebugModule ppModule);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetClass([MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
+        void __GetClass([MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetToken(out uint pMethodDef);
+        void __GetToken(out uint pMethodDef);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetILCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
+        void __GetILCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetNativeCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
+        void __GetNativeCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunctionBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunctionBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalVarSigToken(out uint pmdSig);
+        void __GetLocalVarSigToken(out uint pmdSig);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCurrentVersionNumber(out uint pnCurrentVersion);
+        void __GetCurrentVersionNumber(out uint pnCurrentVersion);
     }
 
     [ComImport, Guid("EF0C490B-94C3-4E4D-B629-DDC134C532D8"), InterfaceType((short) 1)]
     public interface ICorDebugFunction2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetJMCStatus([In] int bIsJustMyCode);
+        void __SetJMCStatus([In] int bIsJustMyCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetJMCStatus(out int pbIsJustMyCode);
+        void __GetJMCStatus(out int pbIsJustMyCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateNativeCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCodeEnum ppCodeEnum);
+        void __EnumerateNativeCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCodeEnum ppCodeEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetVersionNumber(out uint pnVersion);
+        void __GetVersionNumber(out uint pnVersion);
     }
 
     [ComImport, Guid("CC7BCAE9-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugFunctionBreakpoint : ICorDebugBreakpoint
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Activate([In] int bActive);
+        void __Activate([In] int bActive);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsActive(out int pbActive);
+        void __IsActive(out int pbActive);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetOffset(out uint pnOffset);
+        void __GetOffset(out uint pnOffset);
     }
 
     [ComImport, Guid("CC7BCAF8-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugGenericValue : ICorDebugValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetValue([Out] IntPtr pTo);
+        void __GetValue([Out] IntPtr pTo);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetValue([In] IntPtr pFrom);
+        void __SetValue([In] IntPtr pFrom);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("029596E8-276B-46A1-9821-732E96BBB00B")]
     public interface ICorDebugHandleValue : ICorDebugReferenceValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsNull(out int pbNull);
+        void __IsNull(out int pbNull);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetValue(out ulong pValue);
+        void __GetValue(out ulong pValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetValue([In] ulong value);
+        void __SetValue([In] ulong value);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Dereference([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __Dereference([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void DereferenceStrong([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __DereferenceStrong([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetHandleType(out CorDebugHandleType pType);
+        void __GetHandleType(out CorDebugHandleType pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Dispose();
+        void __Dispose();
     }
 
     [ComImport, Guid("CC7BCAFA-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugHeapValue : ICorDebugValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsValid(out int pbValid);
+        void __IsValid(out int pbValid);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateRelocBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateRelocBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
     }
 
     [ComImport, Guid("E3AC4D6C-9CB7-43E6-96CC-B21540E5083C"), InterfaceType((short) 1)]
     public interface ICorDebugHeapValue2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateHandle([In] CorDebugHandleType type, [MarshalAs(UnmanagedType.Interface)] out ICorDebugHandleValue ppHandle);
+        void __CreateHandle([In] CorDebugHandleType type, [MarshalAs(UnmanagedType.Interface)] out ICorDebugHandleValue ppHandle);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("03E26311-4F76-11D3-88C6-006097945418")]
     public interface ICorDebugILFrame : ICorDebugFrame
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        void __GetChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
+        void __GetCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunctionToken(out uint pToken);
+        void __GetFunctionToken(out uint pToken);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetStackRange(out ulong pStart, out ulong pEnd);
+        void __GetStackRange(out ulong pStart, out ulong pEnd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
+        void __CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetIP(out uint pnOffset, out CorDebugMappingResult pMappingResult);
+        void __GetIP(out uint pnOffset, out CorDebugMappingResult pMappingResult);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetIP([In] uint nOffset);
+        void __SetIP([In] uint nOffset);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateLocalVariables([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueEnum ppValueEnum);
+        void __EnumerateLocalVariables([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueEnum ppValueEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalVariable([In] uint dwIndex, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetLocalVariable([In] uint dwIndex, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateArguments([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueEnum ppValueEnum);
+        void __EnumerateArguments([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueEnum ppValueEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetArgument([In] uint dwIndex, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetArgument([In] uint dwIndex, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetStackDepth(out uint pDepth);
+        void __GetStackDepth(out uint pDepth);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetStackValue([In] uint dwIndex, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetStackValue([In] uint dwIndex, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CanSetIP([In] uint nOffset);
+        void __CanSetIP([In] uint nOffset);
     }
 
     [ComImport, Guid("5D88A994-6C30-479B-890F-BCEF88B129A5"), InterfaceType((short) 1)]
     public interface ICorDebugILFrame2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void RemapFunction([In] uint newILOffset);
+        void __RemapFunction([In] uint newILOffset);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateTypeParameters([MarshalAs(UnmanagedType.Interface)] out ICorDebugTypeEnum ppTyParEnum);
+        void __EnumerateTypeParameters([MarshalAs(UnmanagedType.Interface)] out ICorDebugTypeEnum ppTyParEnum);
     }
 
     [ComImport, Guid("B92CC7F7-9D2D-45C4-BC2B-621FCC9DFBF4"), InterfaceType((short) 1)]
     public interface ICorDebugInternalFrame : ICorDebugFrame
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        void __GetChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
+        void __GetCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunctionToken(out uint pToken);
+        void __GetFunctionToken(out uint pToken);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetStackRange(out ulong pStart, out ulong pEnd);
+        void __GetStackRange(out ulong pStart, out ulong pEnd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
+        void __CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFrameType(out CorDebugInternalFrameType pType);
+        void __GetFrameType(out CorDebugInternalFrameType pType);
     }
 	
     [ComImport, ComConversionLoss, Guid("CC726F2F-1DB7-459B-B0EC-05F01D841B42"), InterfaceType((short) 1)]
     public interface ICorDebugMDA
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
+        void __GetName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetDescription([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
+        void __GetDescription([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetXML([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
+        void __GetXML([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFlags([In] ref CorDebugMDAFlags pFlags);
+        void __GetFlags([In] ref CorDebugMDAFlags pFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetOSThreadId(out uint pOsTid);
+        void __GetOSThreadId(out uint pOsTid);
     }
 
     [ComImport, Guid("3D6F5F60-7538-11D3-8D5B-00104B35E7EF"), InterfaceType((short) 1)]
@@ -1123,553 +1123,553 @@ namespace Debugger.Interop.CorDebug
     public interface ICorDebugModule
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetProcess([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        void __GetProcess([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetBaseAddress(out ulong pAddress);
+        void __GetBaseAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAssembly([MarshalAs(UnmanagedType.Interface)] out ICorDebugAssembly ppAssembly);
+        void __GetAssembly([MarshalAs(UnmanagedType.Interface)] out ICorDebugAssembly ppAssembly);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
+        void __GetName([In] uint cchName, out uint pcchName, [Out] IntPtr szName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnableJITDebugging([In] int bTrackJITInfo, [In] int bAllowJitOpts);
+        void __EnableJITDebugging([In] int bTrackJITInfo, [In] int bAllowJitOpts);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnableClassLoadCallbacks([In] int bClassLoadCallbacks);
+        void __EnableClassLoadCallbacks([In] int bClassLoadCallbacks);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunctionFromToken([In] uint methodDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetFunctionFromToken([In] uint methodDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunctionFromRVA([In] ulong rva, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetFunctionFromRVA([In] ulong rva, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetClassFromToken([In] uint typeDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
+        void __GetClassFromToken([In] uint typeDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugModuleBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugModuleBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetEditAndContinueSnapshot([MarshalAs(UnmanagedType.Interface)] out ICorDebugEditAndContinueSnapshot ppEditAndContinueSnapshot);
+        void __GetEditAndContinueSnapshot([MarshalAs(UnmanagedType.Interface)] out ICorDebugEditAndContinueSnapshot ppEditAndContinueSnapshot);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetMetaDataInterface([In] ref Guid riid, [MarshalAs(UnmanagedType.IUnknown)] out object ppObj);
+        void __GetMetaDataInterface([In] ref Guid riid, [MarshalAs(UnmanagedType.IUnknown)] out object ppObj);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetToken(out uint pToken);
+        void __GetToken(out uint pToken);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsDynamic(out int pDynamic);
+        void __IsDynamic(out int pDynamic);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetGlobalVariableValue([In] uint fieldDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetGlobalVariableValue([In] uint fieldDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pcBytes);
+        void __GetSize(out uint pcBytes);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsInMemory(out int pInMemory);
+        void __IsInMemory(out int pInMemory);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("7FCC5FB5-49C0-41DE-9938-3B88B5B9ADD7")]
     public interface ICorDebugModule2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetJMCStatus([In] int bIsJustMyCode, [In] uint cTokens, [In] ref uint pTokens);
+        void __SetJMCStatus([In] int bIsJustMyCode, [In] uint cTokens, [In] ref uint pTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ApplyChanges([In] uint cbMetadata, [In, MarshalAs(UnmanagedType.LPArray)] byte[] pbMetadata, [In] uint cbIL, [In, MarshalAs(UnmanagedType.LPArray)] byte[] pbIL);
+        void __ApplyChanges([In] uint cbMetadata, [In, MarshalAs(UnmanagedType.LPArray)] byte[] pbMetadata, [In] uint cbIL, [In, MarshalAs(UnmanagedType.LPArray)] byte[] pbIL);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetJITCompilerFlags([In] uint dwFlags);
+        void __SetJITCompilerFlags([In] uint dwFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetJITCompilerFlags(out uint pdwFlags);
+        void __GetJITCompilerFlags(out uint pdwFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ResolveAssembly([In] uint tkAssemblyRef, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugAssembly ppAssembly);
+        void __ResolveAssembly([In] uint tkAssemblyRef, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugAssembly ppAssembly);
     }
 
     [ComImport, Guid("CC7BCAEA-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugModuleBreakpoint : ICorDebugBreakpoint
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Activate([In] int bActive);
+        void __Activate([In] int bActive);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsActive(out int pbActive);
+        void __IsActive(out int pbActive);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetModule([MarshalAs(UnmanagedType.Interface)] out ICorDebugModule ppModule);
+        void __GetModule([MarshalAs(UnmanagedType.Interface)] out ICorDebugModule ppModule);
     }
 
     [ComImport, InterfaceType((short) 1), ComConversionLoss, Guid("CC7BCB09-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugModuleEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr modules, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr modules, out uint pceltFetched);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("03E26314-4F76-11D3-88C6-006097945418")]
     public interface ICorDebugNativeFrame : ICorDebugFrame
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        void __GetChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
+        void __GetCode([MarshalAs(UnmanagedType.Interface)] out ICorDebugCode ppCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetFunction([MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFunctionToken(out uint pToken);
+        void __GetFunctionToken(out uint pToken);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetStackRange(out ulong pStart, out ulong pEnd);
+        void __GetStackRange(out ulong pStart, out ulong pEnd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetCaller([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetCallee([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
+        void __CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetIP(out uint pnOffset);
+        void __GetIP(out uint pnOffset);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetIP([In] uint nOffset);
+        void __SetIP([In] uint nOffset);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetRegisterSet([MarshalAs(UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
+        void __GetRegisterSet([MarshalAs(UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalRegisterValue([In] CorDebugRegister reg, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetLocalRegisterValue([In] CorDebugRegister reg, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalDoubleRegisterValue([In] CorDebugRegister highWordReg, [In] CorDebugRegister lowWordReg, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetLocalDoubleRegisterValue([In] CorDebugRegister highWordReg, [In] CorDebugRegister lowWordReg, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalMemoryValue([In] ulong address, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetLocalMemoryValue([In] ulong address, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalRegisterMemoryValue([In] CorDebugRegister highWordReg, [In] ulong lowWordAddress, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetLocalRegisterMemoryValue([In] CorDebugRegister highWordReg, [In] ulong lowWordAddress, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalMemoryRegisterValue([In] ulong highWordAddress, [In] CorDebugRegister lowWordRegister, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetLocalMemoryRegisterValue([In] ulong highWordAddress, [In] CorDebugRegister lowWordRegister, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CanSetIP([In] uint nOffset);
+        void __CanSetIP([In] uint nOffset);
     }
 
     [ComImport, ComConversionLoss, InterfaceType((short) 1), Guid("CC7BCB02-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugObjectEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr objects, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr objects, out uint pceltFetched);
     }
 
     [ComImport, Guid("18AD3D6E-B7D2-11D2-BD04-0000F80849BD"), InterfaceType((short) 1)]
     public interface ICorDebugObjectValue : ICorDebugValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetClass([MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
+        void __GetClass([MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFieldValue([In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pClass, [In] uint fieldDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetFieldValue([In, MarshalAs(UnmanagedType.Interface)] ICorDebugClass pClass, [In] uint fieldDef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetVirtualMethod([In] uint memberRef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        void __GetVirtualMethod([In] uint memberRef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetContext([MarshalAs(UnmanagedType.Interface)] out ICorDebugContext ppContext);
+        void __GetContext([MarshalAs(UnmanagedType.Interface)] out ICorDebugContext ppContext);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsValueClass(out int pbIsValueClass);
+        void __IsValueClass(out int pbIsValueClass);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetManagedCopy([MarshalAs(UnmanagedType.IUnknown)] out object ppObject);
+        void __GetManagedCopy([MarshalAs(UnmanagedType.IUnknown)] out object ppObject);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetFromManagedCopy([In, MarshalAs(UnmanagedType.IUnknown)] object pObject);
+        void __SetFromManagedCopy([In, MarshalAs(UnmanagedType.IUnknown)] object pObject);
     }
 
     [ComImport, Guid("49E4A320-4A9B-4ECA-B105-229FB7D5009F"), InterfaceType((short) 1)]
     public interface ICorDebugObjectValue2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetVirtualMethodAndType([In] uint memberRef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction, [MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
+        void __GetVirtualMethodAndType([In] uint memberRef, [MarshalAs(UnmanagedType.Interface)] out ICorDebugFunction ppFunction, [MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
     }
 
     [ComImport, InterfaceType((short) 1), ComConversionLoss, Guid("3D6F5F64-7538-11D3-8D5B-00104B35E7EF")]
     public interface ICorDebugProcess : ICorDebugController
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Stop([In] uint dwTimeoutIgnored);
+        void __Stop([In] uint dwTimeoutIgnored);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Continue([In] int fIsOutOfBand);
+        void __Continue([In] int fIsOutOfBand);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsRunning(out int pbRunning);
+        void __IsRunning(out int pbRunning);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void HasQueuedCallbacks([In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pThread, out int pbQueued);
+        void __HasQueuedCallbacks([In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pThread, out int pbQueued);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateThreads([MarshalAs(UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
+        void __EnumerateThreads([MarshalAs(UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetAllThreadsDebugState([In] CorDebugThreadState state, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pExceptThisThread);
+        void __SetAllThreadsDebugState([In] CorDebugThreadState state, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugThread pExceptThisThread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Detach();
+        void __Detach();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Terminate([In] uint exitCode);
+        void __Terminate([In] uint exitCode);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CanCommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+        void __CanCommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+        void __CommitChanges([In] uint cSnapshots, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugEditAndContinueSnapshot pSnapshots, [MarshalAs(UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetID(out uint pdwProcessId);
+        void __GetID(out uint pdwProcessId);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetHandle([ComAliasName("Debugger.Interop.CorDebug.long")] out uint phProcessHandle);
+        void __GetHandle([ComAliasName("Debugger.Interop.CorDebug.long")] out uint phProcessHandle);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetThread([In] uint dwThreadId, [MarshalAs(UnmanagedType.Interface)] out ICorDebugThread ppThread);
+        void __GetThread([In] uint dwThreadId, [MarshalAs(UnmanagedType.Interface)] out ICorDebugThread ppThread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateObjects([MarshalAs(UnmanagedType.Interface)] out ICorDebugObjectEnum ppObjects);
+        void __EnumerateObjects([MarshalAs(UnmanagedType.Interface)] out ICorDebugObjectEnum ppObjects);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsTransitionStub([In] ulong address, out int pbTransitionStub);
+        void __IsTransitionStub([In] ulong address, out int pbTransitionStub);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsOSSuspended([In] uint threadID, out int pbSuspended);
+        void __IsOSSuspended([In] uint threadID, out int pbSuspended);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetThreadContext([In] uint threadID, [In] uint contextSize, [In, Out] IntPtr context);
+        void __GetThreadContext([In] uint threadID, [In] uint contextSize, [In, Out] IntPtr context);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetThreadContext([In] uint threadID, [In] uint contextSize, [In] IntPtr context);
+        void __SetThreadContext([In] uint threadID, [In] uint contextSize, [In] IntPtr context);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ReadMemory([In] ulong address, [In] uint size, [Out] IntPtr buffer, [ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] out uint read);
+        void __ReadMemory([In] ulong address, [In] uint size, [Out] IntPtr buffer, [ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] out uint read);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void WriteMemory([In] ulong address, [In] uint size, [In] IntPtr buffer, [ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] out uint written);
+        void __WriteMemory([In] ulong address, [In] uint size, [In] IntPtr buffer, [ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] out uint written);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ClearCurrentException([In] uint threadID);
+        void __ClearCurrentException([In] uint threadID);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnableLogMessages([In] int fOnOff);
+        void __EnableLogMessages([In] int fOnOff);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ModifyLogSwitch([In] IntPtr pLogSwitchName, [In] int lLevel);
+        void __ModifyLogSwitch([In] IntPtr pLogSwitchName, [In] int lLevel);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateAppDomains([MarshalAs(UnmanagedType.Interface)] out ICorDebugAppDomainEnum ppAppDomains);
+        void __EnumerateAppDomains([MarshalAs(UnmanagedType.Interface)] out ICorDebugAppDomainEnum ppAppDomains);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetObject([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppObject);
+        void __GetObject([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppObject);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ThreadForFiberCookie([In] uint fiberCookie, [MarshalAs(UnmanagedType.Interface)] out ICorDebugThread ppThread);
+        void __ThreadForFiberCookie([In] uint fiberCookie, [MarshalAs(UnmanagedType.Interface)] out ICorDebugThread ppThread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetHelperThreadID(out uint pThreadID);
+        void __GetHelperThreadID(out uint pThreadID);
     }
 
     [ComImport, ComConversionLoss, Guid("AD1B3588-0EF0-4744-A496-AA09A9F80371"), InterfaceType((short) 1)]
     public interface ICorDebugProcess2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetThreadForTaskID([In] ulong taskid, [MarshalAs(UnmanagedType.Interface)] out ICorDebugThread2 ppThread);
+        void __GetThreadForTaskID([In] ulong taskid, [MarshalAs(UnmanagedType.Interface)] out ICorDebugThread2 ppThread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetVersion(out _COR_VERSION version);
+        void __GetVersion(out _COR_VERSION version);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetUnmanagedBreakpoint([In] ulong address, [In] uint bufsize, [Out] IntPtr buffer, out uint bufLen);
+        void __SetUnmanagedBreakpoint([In] ulong address, [In] uint bufsize, [Out] IntPtr buffer, out uint bufLen);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ClearUnmanagedBreakpoint([In] ulong address);
+        void __ClearUnmanagedBreakpoint([In] ulong address);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetDesiredNGENCompilerFlags([In] uint pdwFlags);
+        void __SetDesiredNGENCompilerFlags([In] uint pdwFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetDesiredNGENCompilerFlags(out uint pdwFlags);
+        void __GetDesiredNGENCompilerFlags(out uint pdwFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetReferenceValueFromGCHandle([In, ComAliasName("Debugger.Interop.CorDebug.UINT_PTR")] uint handle, [MarshalAs(UnmanagedType.Interface)] out ICorDebugReferenceValue pOutValue);
+        void __GetReferenceValueFromGCHandle([In, ComAliasName("Debugger.Interop.CorDebug.UINT_PTR")] uint handle, [MarshalAs(UnmanagedType.Interface)] out ICorDebugReferenceValue pOutValue);
     }
 
     [ComImport, Guid("CC7BCB05-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1), ComConversionLoss]
     public interface ICorDebugProcessEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr processes, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr processes, out uint pceltFetched);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCAF9-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugReferenceValue : ICorDebugValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsNull(out int pbNull);
+        void __IsNull(out int pbNull);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetValue(out ulong pValue);
+        void __GetValue(out ulong pValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetValue([In] ulong value);
+        void __SetValue([In] ulong value);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Dereference([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __Dereference([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void DereferenceStrong([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __DereferenceStrong([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
     }
 
     [ComImport, Guid("CC7BCB0B-8A68-11D2-983C-0000F808342D"), ComConversionLoss, InterfaceType((short) 1)]
     public interface ICorDebugRegisterSet
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetRegistersAvailable(out ulong pAvailable);
+        void __GetRegistersAvailable(out ulong pAvailable);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetRegisters([In] ulong mask, [In] uint regCount, [Out] IntPtr regBuffer);
+        void __GetRegisters([In] ulong mask, [In] uint regCount, [Out] IntPtr regBuffer);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetRegisters([In] ulong mask, [In] uint regCount, [In] ref ulong regBuffer);
+        void __SetRegisters([In] ulong mask, [In] uint regCount, [In] ref ulong regBuffer);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetThreadContext([In] uint contextSize, [In, Out] IntPtr context);
+        void __GetThreadContext([In] uint contextSize, [In, Out] IntPtr context);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetThreadContext([In] uint contextSize, [In] IntPtr context);
+        void __SetThreadContext([In] uint contextSize, [In] IntPtr context);
     }
 
     [ComImport, Guid("CC7BCAEC-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugStepper
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsActive(out int pbActive);
+        void __IsActive(out int pbActive);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Deactivate();
+        void __Deactivate();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetInterceptMask([In] CorDebugIntercept mask);
+        void __SetInterceptMask([In] CorDebugIntercept mask);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetUnmappedStopMask([In] CorDebugUnmappedStop mask);
+        void __SetUnmappedStopMask([In] CorDebugUnmappedStop mask);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Step([In] int bStepIn);
+        void __Step([In] int bStepIn);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void StepRange([In] int bStepIn, [In] IntPtr ranges, [In] uint cRangeCount);
+        void __StepRange([In] int bStepIn, [In] IntPtr ranges, [In] uint cRangeCount);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void StepOut();
+        void __StepOut();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetRangeIL([In] int bIL);
+        void __SetRangeIL([In] int bIL);
     }
 
     [ComImport, Guid("C5B6E9C3-E7D1-4A8E-873B-7F047F0706F7"), InterfaceType((short) 1)]
     public interface ICorDebugStepper2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetJMC([In] int fIsJMCStepper);
+        void __SetJMC([In] int fIsJMCStepper);
     }
 
     [ComImport, Guid("CC7BCB04-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1), ComConversionLoss]
     public interface ICorDebugStepperEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr steppers, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr steppers, out uint pceltFetched);
     }
 
     [ComImport, Guid("CC7BCAFD-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1), ComConversionLoss]
     public interface ICorDebugStringValue : ICorDebugHeapValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsValid(out int pbValid);
+        void __IsValid(out int pbValid);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateRelocBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateRelocBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLength(out uint pcchString);
+        void __GetLength(out uint pcchString);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetString([In] uint cchString, out uint pcchString, [Out] IntPtr szString);
+        void __GetString([In] uint cchString, out uint pcchString, [Out] IntPtr szString);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("938C6D66-7FB6-4F69-B389-425B8987329B")]
     public interface ICorDebugThread
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetProcess([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        void __GetProcess([MarshalAs(UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetID(out uint pdwThreadId);
+        void __GetID(out uint pdwThreadId);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetHandle([ComAliasName("Debugger.Interop.CorDebug.long")] out uint phThreadHandle);
+        void __GetHandle([ComAliasName("Debugger.Interop.CorDebug.long")] out uint phThreadHandle);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAppDomain([MarshalAs(UnmanagedType.Interface)] out ICorDebugAppDomain ppAppDomain);
+        void __GetAppDomain([MarshalAs(UnmanagedType.Interface)] out ICorDebugAppDomain ppAppDomain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetDebugState([In] CorDebugThreadState state);
+        void __SetDebugState([In] CorDebugThreadState state);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetDebugState(out CorDebugThreadState pState);
+        void __GetDebugState(out CorDebugThreadState pState);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetUserState(out CorDebugUserState pState);
+        void __GetUserState(out CorDebugUserState pState);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCurrentException([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppExceptionObject);
+        void __GetCurrentException([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppExceptionObject);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ClearCurrentException();
+        void __ClearCurrentException();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
+        void __CreateStepper([MarshalAs(UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateChains([MarshalAs(UnmanagedType.Interface)] out ICorDebugChainEnum ppChains);
+        void __EnumerateChains([MarshalAs(UnmanagedType.Interface)] out ICorDebugChainEnum ppChains);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetActiveChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        void __GetActiveChain([MarshalAs(UnmanagedType.Interface)] out ICorDebugChain ppChain);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetActiveFrame([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        void __GetActiveFrame([MarshalAs(UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetRegisterSet([MarshalAs(UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
+        void __GetRegisterSet([MarshalAs(UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateEval([MarshalAs(UnmanagedType.Interface)] out ICorDebugEval ppEval);
+        void __CreateEval([MarshalAs(UnmanagedType.Interface)] out ICorDebugEval ppEval);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetObject([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppObject);
+        void __GetObject([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppObject);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("2BD956D9-7B07-4BEF-8A98-12AA862417C5"), ComConversionLoss]
     public interface ICorDebugThread2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetActiveFunctions([In] uint cFunctions, out uint pcFunctions, [In, Out] IntPtr pFunctions);
+        void __GetActiveFunctions([In] uint cFunctions, out uint pcFunctions, [In, Out] IntPtr pFunctions);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetConnectionID(out uint pdwConnectionId);
+        void __GetConnectionID(out uint pdwConnectionId);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetTaskID(out ulong pTaskId);
+        void __GetTaskID(out ulong pTaskId);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetVolatileOSThreadID(out uint pdwTid);
+        void __GetVolatileOSThreadID(out uint pdwTid);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void InterceptCurrentException([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFrame pFrame);
+        void __InterceptCurrentException([In, MarshalAs(UnmanagedType.Interface)] ICorDebugFrame pFrame);
     }
 
     [ComImport, InterfaceType((short) 1), ComConversionLoss, Guid("CC7BCB06-8A68-11D2-983C-0000F808342D")]
     public interface ICorDebugThreadEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr threads, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr threads, out uint pceltFetched);
     }
 
     [ComImport, Guid("D613F0BB-ACE1-4C19-BD72-E4C08D5DA7F5"), InterfaceType((short) 1)]
     public interface ICorDebugType
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint ty);
+        void __GetType(out uint ty);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetClass([MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
+        void __GetClass([MarshalAs(UnmanagedType.Interface)] out ICorDebugClass ppClass);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void EnumerateTypeParameters([MarshalAs(UnmanagedType.Interface)] out ICorDebugTypeEnum ppTyParEnum);
+        void __EnumerateTypeParameters([MarshalAs(UnmanagedType.Interface)] out ICorDebugTypeEnum ppTyParEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetFirstTypeParameter([MarshalAs(UnmanagedType.Interface)] out ICorDebugType value);
+        void __GetFirstTypeParameter([MarshalAs(UnmanagedType.Interface)] out ICorDebugType value);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetBase([MarshalAs(UnmanagedType.Interface)] out ICorDebugType pBase);
+        void __GetBase([MarshalAs(UnmanagedType.Interface)] out ICorDebugType pBase);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetStaticFieldValue([In] uint fieldDef, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugFrame pFrame, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetStaticFieldValue([In] uint fieldDef, [In, MarshalAs(UnmanagedType.Interface)] ICorDebugFrame pFrame, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetRank(out uint pnRank);
+        void __GetRank(out uint pnRank);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("10F27499-9DF2-43CE-8333-A321D7C99CB4"), ComConversionLoss]
     public interface ICorDebugTypeEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] values, out uint pceltFetched);
+        void __Next([In] uint celt, [Out, MarshalAs(UnmanagedType.LPArray)] ICorDebugType[] values, out uint pceltFetched);
     }
 
     [ComImport, Guid("5263E909-8CB5-11D3-BD2F-0000F80849BD"), InterfaceType((short) 1)]
     public interface ICorDebugUnmanagedCallback
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void DebugEvent([In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pDebugEvent, [In] int fOutOfBand);
+        void __DebugEvent([In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pDebugEvent, [In] int fOutOfBand);
     }
 
     [ComImport, Guid("CC7BCAF7-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugValue
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetType(out uint pType);
+        void __GetType(out uint pType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetSize(out uint pSize);
+        void __GetSize(out uint pSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetAddress(out ulong pAddress);
+        void __GetAddress(out ulong pAddress);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+        void __CreateBreakpoint([MarshalAs(UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("5E0B54E7-D88A-4626-9420-A691E0A78B49")]
     public interface ICorDebugValue2
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetExactType([MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
+        void __GetExactType([MarshalAs(UnmanagedType.Interface)] out ICorDebugType ppType);
     }
 
     [ComImport, Guid("CC7BCAEB-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugValueBreakpoint : ICorDebugBreakpoint
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Activate([In] int bActive);
+        void __Activate([In] int bActive);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void IsActive(out int pbActive);
+        void __IsActive(out int pbActive);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetValue([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void __GetValue([MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
     }
 
     [ComImport, InterfaceType((short) 1), Guid("CC7BCB0A-8A68-11D2-983C-0000F808342D"), ComConversionLoss]
     public interface ICorDebugValueEnum : ICorDebugEnum
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Skip([In] uint celt);
+        void __Skip([In] uint celt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Reset();
+        void __Reset();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetCount(out uint pcelt);
+        void __GetCount(out uint pcelt);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Next([In] uint celt, [Out] IntPtr values, out uint pceltFetched);
+        void __Next([In] uint celt, [Out] IntPtr values, out uint pceltFetched);
     }
 
     [ComImport, Guid("0C733A30-2A1C-11CE-ADE5-00AA0044773D"), InterfaceType((short) 1)]
     public interface ISequentialStream
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void RemoteRead(out byte pv, [In] uint cb, out uint pcbRead);
+        void __RemoteRead(out byte pv, [In] uint cb, out uint pcbRead);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void RemoteWrite([In] ref byte pv, [In] uint cb, out uint pcbWritten);
+        void __RemoteWrite([In] ref byte pv, [In] uint cb, out uint pcbWritten);
     }
 
     [ComImport, Guid("0000000C-0000-0000-C000-000000000046"), InterfaceType((short) 1)]
     public interface IStream : ISequentialStream
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void RemoteRead(out byte pv, [In] uint cb, out uint pcbRead);
+        void __RemoteRead(out byte pv, [In] uint cb, out uint pcbRead);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void RemoteWrite([In] ref byte pv, [In] uint cb, out uint pcbWritten);
+        void __RemoteWrite([In] ref byte pv, [In] uint cb, out uint pcbWritten);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void RemoteSeek([In] _LARGE_INTEGER dlibMove, [In] uint dwOrigin, out _ULARGE_INTEGER plibNewPosition);
+        void __RemoteSeek([In] _LARGE_INTEGER dlibMove, [In] uint dwOrigin, out _ULARGE_INTEGER plibNewPosition);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void SetSize([In] _ULARGE_INTEGER libNewSize);
+        void __SetSize([In] _ULARGE_INTEGER libNewSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void RemoteCopyTo([In, MarshalAs(UnmanagedType.Interface)] IStream pstm, [In] _ULARGE_INTEGER cb, out _ULARGE_INTEGER pcbRead, out _ULARGE_INTEGER pcbWritten);
+        void __RemoteCopyTo([In, MarshalAs(UnmanagedType.Interface)] IStream pstm, [In] _ULARGE_INTEGER cb, out _ULARGE_INTEGER pcbRead, out _ULARGE_INTEGER pcbWritten);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Commit([In] uint grfCommitFlags);
+        void __Commit([In] uint grfCommitFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Revert();
+        void __Revert();
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void LockRegion([In] _ULARGE_INTEGER libOffset, [In] _ULARGE_INTEGER cb, [In] uint dwLockType);
+        void __LockRegion([In] _ULARGE_INTEGER libOffset, [In] _ULARGE_INTEGER cb, [In] uint dwLockType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void UnlockRegion([In] _ULARGE_INTEGER libOffset, [In] _ULARGE_INTEGER cb, [In] uint dwLockType);
+        void __UnlockRegion([In] _ULARGE_INTEGER libOffset, [In] _ULARGE_INTEGER cb, [In] uint dwLockType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Stat(out tagSTATSTG pstatstg, [In] uint grfStatFlag);
+        void __Stat(out tagSTATSTG pstatstg, [In] uint grfStatFlag);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void Clone([MarshalAs(UnmanagedType.Interface)] out IStream ppstm);
+        void __Clone([MarshalAs(UnmanagedType.Interface)] out IStream ppstm);
     }
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
