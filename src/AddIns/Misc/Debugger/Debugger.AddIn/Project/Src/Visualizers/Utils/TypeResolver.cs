@@ -25,15 +25,13 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <param name="fullNamePrefix">Eg. "System.Collections.Generic.IList"</param>
 		public static DebugType GetGenericInterface(this DebugType type, string fullNamePrefix)
 		{
-			foreach(DebugType inter in type.Interfaces)
-			{
-				if (inter.FullName.StartsWith(fullNamePrefix) && inter.GenericArguments.Count > 0)
-				{
+			foreach(DebugType inter in type.GetInterfaces()) {
+				if (inter.FullName.StartsWith(fullNamePrefix) && inter.GetGenericArguments().Length > 0) {
 					return inter;
 				}
 			}
 			// not found, search BaseType
-			return type.BaseType == null ? null : type.BaseType.GetGenericInterface(fullNamePrefix);
+			return type.BaseType == null ? null : (DebugType)type.BaseType.GetInterface(fullNamePrefix);
 		}
 		
 		/// <summary>
@@ -76,11 +74,9 @@ namespace Debugger.AddIn.Visualizers.Utils
 			itemType = null;
 
 			implementation = type.GetGenericInterface(fullNamePrefix);
-			if (implementation != null)
-			{
-				if (implementation.GenericArguments.Count == 1)
-				{
-					itemType = implementation.GenericArguments[0];
+			if (implementation != null) {
+				if (implementation.GetGenericArguments().Length == 1) {
+					itemType = (DebugType)implementation.GetGenericArguments()[0];
 					return true;
 				}
 			}

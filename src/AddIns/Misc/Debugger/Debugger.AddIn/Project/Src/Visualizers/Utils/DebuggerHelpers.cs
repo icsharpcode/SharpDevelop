@@ -70,7 +70,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <summary>
 		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
 		/// </summary>
-		private static MethodInfo hashCodeMethod;
+		private static DebugMethodInfo hashCodeMethod;
 		
 		/// <summary>
 		/// Invokes RuntimeHelpers.GetHashCode on given value, that is a default hashCode ignoring user overrides.
@@ -79,12 +79,10 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <returns>Hash code of the object in the debugee.</returns>
 		public static int InvokeDefaultGetHashCode(this Value value)
 		{
-			if (DebuggerHelpers.hashCodeMethod == null || DebuggerHelpers.hashCodeMethod.Process.HasExited)
-			{
+			if (hashCodeMethod == null || hashCodeMethod.Process.HasExited) {
 				DebugType typeRuntimeHelpers = DebugType.CreateFromType(value.AppDomain, typeof(System.Runtime.CompilerServices.RuntimeHelpers));
-				DebuggerHelpers.hashCodeMethod = typeRuntimeHelpers.GetMethod("GetHashCode", BindingFlags.Public | BindingFlags.Static);
-				if (DebuggerHelpers.hashCodeMethod == null)
-				{
+				hashCodeMethod = (DebugMethodInfo)typeRuntimeHelpers.GetMethod("GetHashCode", BindingFlags.Public | BindingFlags.Static);
+				if (hashCodeMethod == null) {
 					throw new DebuggerException("Cannot obtain method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode");
 				}
 			}

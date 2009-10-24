@@ -10,6 +10,7 @@ using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Services;
+using System.Reflection;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {

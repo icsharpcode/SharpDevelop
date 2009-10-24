@@ -4,11 +4,13 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.SharpDevelop.Services;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
+
 using Debugger.AddIn.Visualizers.Utils;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
@@ -35,7 +37,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
         /// MemberInfo used for obtaining value of this property
         /// </summary>
-        public Debugger.MetaData.MemberInfo PropInfo { get; set; }
+        public MemberInfo PropInfo { get; set; }
         
 		
 		bool evaluateCalled = false;

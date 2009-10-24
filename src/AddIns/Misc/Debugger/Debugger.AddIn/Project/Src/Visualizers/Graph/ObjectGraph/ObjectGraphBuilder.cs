@@ -13,6 +13,7 @@ using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Services;
+using System.Reflection;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {
@@ -59,10 +60,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Binding flags for getting member expressions.
 		/// </summary>
-		private readonly Debugger.MetaData.BindingFlags memberBindingFlags =
+		private readonly BindingFlags memberBindingFlags =
 			BindingFlags.Public | BindingFlags.Instance;
 		
-		private readonly Debugger.MetaData.BindingFlags nonPublicInstanceMemberFlags =
+		private readonly BindingFlags nonPublicInstanceMemberFlags =
 			BindingFlags.NonPublic | BindingFlags.Instance;
 		
 		/// <summary>
@@ -194,7 +195,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			{
 				var baseClassNode = new BaseClassNode(type.BaseType.FullName, type.BaseType.Name);
 				node.AddChild(baseClassNode);
-				loadNodeObjectContent(baseClassNode, expression, type.BaseType);
+				loadNodeObjectContent(baseClassNode, expression, (DebugType)type.BaseType);
 			}
 			
 			// non-public members
@@ -233,7 +234,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 
 				// ObjectGraphProperty needs an expression
 				// to use expanded / nonexpanded (and to evaluate?)
-				Expression propExpression = expression.AppendMemberReference(memberProp);
+				Expression propExpression = expression.AppendMemberReference((IDebugMemberInfo)memberProp);
 				// Value, IsAtomic are lazy evaluated
 				propertyList.Add(new ObjectGraphProperty
 				                 { Name = memberProp.Name,

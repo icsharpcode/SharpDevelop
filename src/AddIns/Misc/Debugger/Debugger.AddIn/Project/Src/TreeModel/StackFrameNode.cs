@@ -31,8 +31,8 @@ namespace Debugger.AddIn.TreeModel
 			foreach(DebugParameterInfo par in stackFrame.MethodInfo.GetParameters()) {
 				yield return new ExpressionNode(ExpressionNode.GetImageForParameter(), par.Name, new IdentifierExpression(par.Name));
 			}
-			foreach(string loc in stackFrame.MethodInfo.LocalVariableNames) {
-				yield return new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), loc, new IdentifierExpression(loc));
+			foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables()) {
+				yield return new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), locVar.Name, new IdentifierExpression(locVar.Name));
 			}
 			if (stackFrame.Thread.CurrentException != null) {
 				yield return new ExpressionNode(null, "__exception", new IdentifierExpression("__exception"));

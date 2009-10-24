@@ -4,14 +4,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Debugger.AddIn.Visualizers;
-using Debugger.AddIn.Visualizers.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
+using Debugger.AddIn.Visualizers;
+using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
@@ -239,13 +241,13 @@ namespace Debugger.AddIn.TreeModel
 			return DebuggerResourceService.GetImage("Icons.16x16.Field");
 		}
 		
-		public static IImage GetImageForMember(MemberInfo memberInfo)
+		public static IImage GetImageForMember(IDebugMemberInfo memberInfo)
 		{
 			string name = string.Empty;
 			if (memberInfo.IsPublic) {
-			} else if (memberInfo.IsInternal) {
+			} else if (memberInfo.IsAssembly) {
 				name += "Internal";
-			} else if (memberInfo.IsProtected) {
+			} else if (memberInfo.IsFamily) {
 				name += "Protected";
 			} else if (memberInfo.IsPrivate) {
 				name += "Private";

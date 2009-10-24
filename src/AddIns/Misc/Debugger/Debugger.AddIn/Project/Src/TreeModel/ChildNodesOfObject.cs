@@ -6,13 +6,14 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Services;
-using System.Reflection;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -25,7 +26,7 @@ namespace Debugger.AddIn.TreeModel
 			MemberInfo[] nonPublicStatic   = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.NonPublic | BindingFlags.Static   | BindingFlags.DeclaredOnly);
 			MemberInfo[] nonPublicInstance = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 			
-			DebugType baseType = shownType.BaseType;
+			DebugType baseType = (DebugType)shownType.BaseType;
 			if (baseType != null) {
 				yield return new TreeNode(
 					DebuggerResourceService.GetImage("Icons.16x16.Class"),
@@ -42,19 +43,19 @@ namespace Debugger.AddIn.TreeModel
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}"),
 					string.Empty,
 					string.Empty,
-					Utils.LazyGetMembersOfObject(targetObject, shownType, nonPublicInstance)
+					Utils.LazyGetMembersOfObject(targetObject, nonPublicInstance)
 				);
 			}
 			
 			if (publicStatic.Length > 0 || nonPublicStatic.Length > 0) {
-				IEnumerable<TreeNode> childs = Utils.LazyGetMembersOfObject(targetObject, shownType, publicStatic);
+				IEnumerable<TreeNode> childs = Utils.LazyGetMembersOfObject(targetObject, publicStatic);
 				if (nonPublicStatic.Length > 0) {
 					TreeNode nonPublicStaticNode = new TreeNode(
 						null,
 						StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicStaticMembers}"),
 						string.Empty,
 						string.Empty,
-						Utils.LazyGetMembersOfObject(targetObject, shownType, nonPublicStatic)
+						Utils.LazyGetMembersOfObject(targetObject, nonPublicStatic)
 					);
 					childs = Utils.PrependNode(nonPublicStaticNode, childs);
 				}
@@ -67,7 +68,7 @@ namespace Debugger.AddIn.TreeModel
 				);
 			}
 			
-			DebugType iListType = shownType.GetInterface(typeof(IList).FullName);
+			DebugType iListType = (DebugType)shownType.GetInterface(typeof(IList).FullName);
 			if (iListType != null) {
 				yield return new IListNode(targetObject);
 			} else {
@@ -78,7 +79,7 @@ namespace Debugger.AddIn.TreeModel
 				}
 			}
 			
-			foreach(TreeNode node in LazyGetMembersOfObject(targetObject, shownType, publicInstance)) {
+			foreach(TreeNode node in LazyGetMembersOfObject(targetObject, publicInstance)) {
 				yield return node;
 			}
 		}
@@ -87,8 +88,7 @@ namespace Debugger.AddIn.TreeModel
 		{
 			List<TreeNode> nodes = new List<TreeNode>();
 			foreach(MemberInfo memberInfo in members) {
-				members.Add(new ExpressionNode(ExpressionNode.GetImageForMember(memberInfo), memberInfo.Name, expression.AppendMemberReference(memberInfo)));
-				
+				nodes.Add(new ExpressionNode(ExpressionNode.GetImageForMember((IDebugMemberInfo)memberInfo), memberInfo.Name, expression.AppendMemberReference((IDebugMemberInfo)memberInfo)));
 			}
 			nodes.Sort();
 			return nodes;
