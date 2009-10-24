@@ -44,8 +44,8 @@ namespace Debugger.MetaData
 		List<DebugType>    typeArguments = new List<DebugType>();
 		List<DebugType>    interfaces = new List<DebugType>();
 		
-		// Members of the type; empty list if not applicable
-		List<MemberInfo>   members = new List<MemberInfo>();
+		// Members of the type; empty if not applicable
+		Dictionary<string, List<MemberInfo>> members = new Dictionary<string, List<MemberInfo>>();
 		
 		// Stores all DebugType instances. FullName is the key
 		static Dictionary<ICorDebugType, DebugType> loadedTypes = new Dictionary<ICorDebugType, DebugType>();
@@ -236,53 +236,55 @@ namespace Debugger.MetaData
 				throw new ArgumentException("Instance or Static flag must be included", "bindingFlags");
 			
 			List<T> results = new List<T>();
-			foreach(MemberInfo memberInfo in members) {
-				// Filter by type
-				if (!(memberInfo is T)) continue; // Reject item
-				
-				// Filter by name
-				if (name != null) {
-					if (memberInfo.Name != name) continue; // Reject item
+			foreach(List<MemberInfo> memberInfos in members.Values) {
+				foreach(MemberInfo memberInfo in memberInfos) {
+					// Filter by type
+					if (!(memberInfo is T)) continue; // Reject item
+					
+					// Filter by name
+					if (name != null) {
+						if (memberInfo.Name != name) continue; // Reject item
+					}
+					
+					// Filter by access
+					bool memberIsPublic;
+					if (memberInfo is FieldInfo) {
+						memberIsPublic = ((FieldInfo)memberInfo).IsPublic;
+					} else if (memberInfo is DebugPropertyInfo) {
+						memberIsPublic = ((DebugPropertyInfo)memberInfo).IsPublic;
+					} else if (memberInfo is MethodInfo) {
+						memberIsPublic = ((MethodInfo)memberInfo).IsPublic;
+					} else {
+						throw new DebuggerException("Unexpected type: " + memberInfo.GetType());
+					}
+					if (memberIsPublic) {
+						if ((bindingFlags & BindingFlags.Public) == 0) continue; // Reject item
+					} else {
+						if ((bindingFlags & BindingFlags.NonPublic) == 0) continue; // Reject item
+					}
+					
+					// Filter by static / instance
+					bool memberIsStatic;
+					if (memberInfo is FieldInfo) {
+						memberIsStatic = ((FieldInfo)memberInfo).IsStatic;
+					} else if (memberInfo is DebugPropertyInfo) {
+						memberIsStatic = ((DebugPropertyInfo)memberInfo).IsStatic;
+					} else if (memberInfo is MethodInfo) {
+						memberIsStatic = ((MethodInfo)memberInfo).IsStatic;
+					} else {
+						throw new DebuggerException("Unexpected type: " + memberInfo.GetType());
+					}
+					if (memberIsStatic) {
+						if ((bindingFlags & BindingFlags.Static) == 0) continue; // Reject item
+					} else {
+						if ((bindingFlags & BindingFlags.Instance) == 0) continue; // Reject item
+					}
+					
+					// Filter using predicate
+					if (filter != null && !filter((T)memberInfo)) continue; // Reject item
+					
+					results.Add((T)memberInfo);
 				}
-				
-				// Filter by access
-				bool memberIsPublic;
-				if (memberInfo is FieldInfo) {
-					memberIsPublic = ((FieldInfo)memberInfo).IsPublic;
-				} else if (memberInfo is DebugPropertyInfo) {
-					memberIsPublic = ((DebugPropertyInfo)memberInfo).IsPublic;
-				} else if (memberInfo is MethodInfo) {
-					memberIsPublic = ((MethodInfo)memberInfo).IsPublic;
-				} else {
-					throw new DebuggerException("Unexpected type: " + memberInfo.GetType());
-				}
-				if (memberIsPublic) {
-					if ((bindingFlags & BindingFlags.Public) == 0) continue; // Reject item
-				} else {
-					if ((bindingFlags & BindingFlags.NonPublic) == 0) continue; // Reject item
-				}
-				
-				// Filter by static / instance
-				bool memberIsStatic;
-				if (memberInfo is FieldInfo) {
-					memberIsStatic = ((FieldInfo)memberInfo).IsStatic;
-				} else if (memberInfo is DebugPropertyInfo) {
-					memberIsStatic = ((DebugPropertyInfo)memberInfo).IsStatic;
-				} else if (memberInfo is MethodInfo) {
-					memberIsStatic = ((MethodInfo)memberInfo).IsStatic;
-				} else {
-					throw new DebuggerException("Unexpected type: " + memberInfo.GetType());
-				}
-				if (memberIsStatic) {
-					if ((bindingFlags & BindingFlags.Static) == 0) continue; // Reject item
-				} else {
-					if ((bindingFlags & BindingFlags.Instance) == 0) continue; // Reject item
-				}
-				
-				// Filter using predicate
-				if (filter != null && !filter((T)memberInfo)) continue; // Reject item
-				
-				results.Add((T)memberInfo);
 			}
 			
 			// Query supertype
@@ -1053,15 +1055,16 @@ namespace Debugger.MetaData
 			// Load fields
 			foreach(FieldProps field in module.MetaData.EnumFieldProps(this.Token)) {
 				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
-				members.Add(new DebugFieldInfo(this, field));
+				AddMember(new DebugFieldInfo(this, field));
 			};
 			
 			// Load methods
 			foreach(MethodProps m in module.MetaData.EnumMethodProps(this.Token)) {
-				members.Add(new MethodInfo(this, m));
+				AddMember(new MethodInfo(this, m));
 			}
 			
 			// Load properties
+			// TODO: Handle properties properly
 			// TODO: Handle indexers ("get_Item") in other code
 			// Collect data
 			Dictionary<string, MethodInfo> accessors = new Dictionary<string, MethodInfo>();
@@ -1080,14 +1083,15 @@ namespace Debugger.MetaData
 				MethodInfo setter = null;
 				accessors.TryGetValue("get_" + kvp.Key, out getter);
 				accessors.TryGetValue("set_" + kvp.Key, out setter);
-				members.Add(new PropertyInfo(this, getter, setter));
+				AddMember(new PropertyInfo(this, getter, setter));
 			}
 		}
 		
-		/// <summary> Return whether the type has any members stisfing the given flags </summary>
-		public bool HasMembers(BindingFlags bindingFlags)
+		void AddMember(MemberInfo member)
 		{
-			return (GetMembers(bindingFlags).Count > 0);
+			if (!members.ContainsKey(member.Name))
+				members.Add(member.Name, new List<MemberInfo>(1));
+			members[member.Name].Add(member);
 		}
 		
 		public bool IsCompilerGenerated {
