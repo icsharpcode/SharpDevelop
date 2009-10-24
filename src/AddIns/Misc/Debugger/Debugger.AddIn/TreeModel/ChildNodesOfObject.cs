@@ -96,15 +96,28 @@ namespace Debugger.AddIn.TreeModel
 		
 		public static IEnumerable<TreeNode> LazyGetItemsOfIList(Expression targetObject)
 		{
+			// This is needed for expanding IEnumerable<T>
+			targetObject = new CastExpression(
+				new TypeReference(typeof(IList).FullName),
+				targetObject,
+				CastType.Cast
+			);
 			int count = 0;
+			GetValueException error = null;
 			try {
 				count = GetIListCount(targetObject);
-			} catch (GetValueException) {
-				yield break;
+			} catch (GetValueException e) {
+				// Cannot yield a value in the body of a catch clause (CS1631)
+				error = e;
 			}
-			
-			for(int i = 0; i < count; i++) {
-				yield return new ExpressionNode(ExpressionNode.GetImageForArrayIndexer(), "[" + i + "]", targetObject.AppendIndexer(i));
+			if (error != null) {
+				yield return new TreeNode(null, "(error)", error.Message, null, null);
+			} else if (count == 0) {
+				yield return new TreeNode(null, "(empty)", null, null, null);
+			} else {
+				for(int i = 0; i < count; i++) {
+					yield return new ExpressionNode(ExpressionNode.GetImageForArrayIndexer(), "[" + i + "]", targetObject.AppendIndexer(i));
+				}
 			}
 		}
 		
@@ -116,9 +129,8 @@ namespace Debugger.AddIn.TreeModel
 		{
 			Value list = targetObject.Evaluate(WindowsDebugger.CurrentProcess);
 			var iCollectionInterface = list.Type.GetInterface(typeof(ICollection).FullName);
-			if (iCollectionInterface == null) {
+			if (iCollectionInterface == null)
 				throw new GetValueException(targetObject, targetObject.PrettyPrint() + " does not implement System.Collections.ICollection");
-			}
 			PropertyInfo countProperty = iCollectionInterface.GetProperty("Count");
 			// Do not get string representation since it can be printed in hex
 			return (int)list.GetPropertyValue(countProperty).PrimitiveValue;

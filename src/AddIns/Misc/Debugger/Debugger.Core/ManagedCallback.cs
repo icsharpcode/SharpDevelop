@@ -51,6 +51,7 @@ namespace Debugger
 			
 			// After break is pressed we may receive some messages that were already queued
 			if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak) {
+				// TODO: This does not work well if exception if being processed and the user continues it
 				process.TraceMessage("Processing post-break callback");
 				// This compensates for the break call and we are in normal callback handling mode
 				process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] {}, null);

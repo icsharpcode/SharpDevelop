@@ -15,7 +15,8 @@ namespace Debugger.AddIn.TreeModel
 	{
 		public static IEnumerable<TreeNode> LazyGetChildNodesOfArray(Expression expression, ArrayDimensions dimensions)
 		{
-			if (dimensions.TotalElementCount == 0) return new TreeNode[0];
+			if (dimensions.TotalElementCount == 0)
+				return new TreeNode[] { new TreeNode(null, "(empty)", null, null, null) };
 			
 			return new ArrayRangeNode(expression, dimensions, dimensions).ChildNodes;
 		}
