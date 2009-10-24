@@ -30,6 +30,7 @@ namespace Debugger.MetaData
 			this.setMethod = setMethod;
 		}
 		
+		/// <inheritdoc/>
 		public override Type DeclaringType {
 			get { return declaringType; }
 		}
@@ -49,51 +50,62 @@ namespace Debugger.MetaData
 			get { return declaringType.DebugModule; }
 		}
 		
+		/// <inheritdoc/>
 		public override int MetadataToken {
 			get { return 0; }
 		}
 		
+		/// <inheritdoc/>
 		public override System.Reflection.Module Module {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override string Name {
 			get {
 				return (getMethod ?? setMethod).Name.Remove(0,4);
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override Type ReflectedType {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override object[] GetCustomAttributes(bool inherit)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override object[] GetCustomAttributes(Type attributeType, bool inherit)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsDefined(Type attributeType, bool inherit)
 		{
 			return DebugType.IsDefined(this, inherit, attributeType);
 		}
 		
+		/// <inheritdoc/>
 		public override PropertyAttributes Attributes {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override bool CanRead {
 			get { return getMethod != null; }
 		}
 		
+		/// <inheritdoc/>
 		public override bool CanWrite {
 			get { return setMethod != null; }
 		}
 		
+		/// <inheritdoc/>
 		public override Type PropertyType {
 			get {
 				if (getMethod != null) {
@@ -104,6 +116,7 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override MethodInfo[] GetAccessors(bool nonPublic)
 		{
 			throw new NotSupportedException();
@@ -111,11 +124,13 @@ namespace Debugger.MetaData
 		
 		//		public virtual object GetConstantValue();
 		
+		/// <inheritdoc/>
 		public override MethodInfo GetGetMethod(bool nonPublic)
 		{
 			return getMethod;
 		}
 		
+		/// <inheritdoc/>
 		public override ParameterInfo[] GetIndexParameters()
 		{
 			if (GetGetMethod() != null) {
@@ -129,11 +144,13 @@ namespace Debugger.MetaData
 		//		public virtual object GetRawConstantValue();
 		//		public virtual Type[] GetRequiredCustomModifiers();
 		
+		/// <inheritdoc/>
 		public override MethodInfo GetSetMethod(bool nonPublic)
 		{
 			return setMethod;
 		}
 		
+		/// <inheritdoc/>
 		public override object GetValue(object obj, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
 		{
 			List<Value> args = new List<Value>();
@@ -143,6 +160,7 @@ namespace Debugger.MetaData
 			return Value.GetPropertyValue((Value)obj, this, args.ToArray());
 		}
 		
+		/// <inheritdoc/>
 		public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
 		{
 			List<Value> args = new List<Value>();
@@ -166,6 +184,7 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.PropertyType + " " + this.Name;

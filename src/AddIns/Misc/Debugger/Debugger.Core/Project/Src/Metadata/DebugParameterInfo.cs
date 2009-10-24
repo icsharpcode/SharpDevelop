@@ -23,18 +23,22 @@ namespace Debugger.MetaData
 		Type parameterType;
 		int position;
 		
+		/// <inheritdoc/>
 		public override MemberInfo Member {
 			get { return member; }
 		}
 		
+		/// <inheritdoc/>
 		public override string Name {
 			get { return name; }
 		}
 		
+		/// <inheritdoc/>
 		public override Type ParameterType {
 			get { return parameterType; }
 		}
 		
+		/// <inheritdoc/>
 		public override int Position {
 			get { return position; }
 		}
@@ -57,6 +61,7 @@ namespace Debugger.MetaData
 		//		public virtual Type[] GetRequiredCustomModifiers();
 		//		public virtual bool IsDefined(Type attributeType, bool inherit);
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.ParameterType + " " + this.Name;

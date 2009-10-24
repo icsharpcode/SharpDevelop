@@ -55,6 +55,7 @@ namespace Debugger.MetaData
 			get { return corType; }
 		}
 		
+		/// <inheritdoc/>
 		public override Type DeclaringType {
 			get { throw new NotSupportedException(); }
 		}
@@ -74,32 +75,39 @@ namespace Debugger.MetaData
 			get { return module; }
 		}
 		
+		/// <inheritdoc/>
 		public override int MetadataToken {
 			get { return (int)classProps.Token; }
 		}
 		
+		/// <inheritdoc/>
 		public override System.Reflection.Module Module {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override string Name {
 			get { return name; }
 		}
 		
+		/// <inheritdoc/>
 		public override Type ReflectedType {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override object[] GetCustomAttributes(bool inherit)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override object[] GetCustomAttributes(Type attributeType, bool inherit)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsDefined(Type attributeType, bool inherit)
 		{
 			return IsDefined(this, inherit, attributeType);
@@ -130,14 +138,17 @@ namespace Debugger.MetaData
 			return false;
 		}
 		
+		/// <inheritdoc/>
 		public override Assembly Assembly {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override string AssemblyQualifiedName {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override Type BaseType {
 			get {
 				// corType.Base *sometimes* does not work for object and can cause "Value does not fall within the expected range." exception
@@ -167,10 +178,12 @@ namespace Debugger.MetaData
 		//		public virtual bool ContainsGenericParameters { get; }
 		//		public virtual MethodBase DeclaringMethod { get; }
 		
+		/// <inheritdoc/>
 		public override string FullName {
 			get { return fullName; }
 		}
 		
+		/// <inheritdoc/>
 		public override Guid GUID {
 			get { throw new NotSupportedException(); }
 		}
@@ -180,26 +193,31 @@ namespace Debugger.MetaData
 		//		public virtual bool IsGenericParameter { get; }
 		//		public virtual bool IsGenericTypeDefinition { get; }
 		
+		/// <inheritdoc/>
 		public override bool IsGenericType {
 			get {
 				return this.GetGenericArguments().Length > 0;
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override string Namespace {
 			get { return ns; }
 		}
 		
 		//		public virtual StructLayoutAttribute StructLayoutAttribute { get; }
 		
+		/// <inheritdoc/>
 		public override RuntimeTypeHandle TypeHandle {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override Type UnderlyingSystemType {
 			get { return this; }
 		}
 		
+		/// <inheritdoc/>
 		public override int GetArrayRank()
 		{
 			if (!IsArray) throw new ArgumentException("Type is not array");
@@ -207,17 +225,20 @@ namespace Debugger.MetaData
 			return (int)corType.Rank;
 		}
 		
+		/// <inheritdoc/>
 		protected override TypeAttributes GetAttributeFlagsImpl()
 		{
 			return (TypeAttributes)classProps.Flags;
 		}
 		
+		/// <inheritdoc/>
 		protected override ConstructorInfo GetConstructorImpl(BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers)
 		{
 			// TODO
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override ConstructorInfo[] GetConstructors(BindingFlags bindingAttr)
 		{
 			throw new NotSupportedException();
@@ -225,6 +246,7 @@ namespace Debugger.MetaData
 		
 		//		public virtual MemberInfo[] GetDefaultMembers();
 		
+		/// <inheritdoc/>
 		public override Type GetElementType()
 		{
 			return elementType;
@@ -305,6 +327,7 @@ namespace Debugger.MetaData
 			return results.ToArray();
 		}
 		
+		/// <inheritdoc/>
 		public override EventInfo GetEvent(string name, BindingFlags bindingAttr)
 		{
 			throw new NotSupportedException();
@@ -312,21 +335,25 @@ namespace Debugger.MetaData
 		
 		//		public virtual EventInfo[] GetEvents();
 		
+		/// <inheritdoc/>
 		public override EventInfo[] GetEvents(BindingFlags bindingAttr)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override FieldInfo GetField(string name, BindingFlags bindingAttr)
 		{
 			return GetMember<FieldInfo>(name, bindingAttr, null);
 		}
 		
+		/// <inheritdoc/>
 		public override FieldInfo[] GetFields(BindingFlags bindingAttr)
 		{
 			return GetMembers<FieldInfo>(null, bindingAttr, null);
 		}
 		
+		/// <inheritdoc/>
 		public override Type[] GetGenericArguments()
 		{
 			return genericArguments.ToArray();
@@ -345,6 +372,7 @@ namespace Debugger.MetaData
 		//		public virtual Type[] GetGenericParameterConstraints();
 		//		public virtual Type GetGenericTypeDefinition();
 		
+		/// <inheritdoc/>
 		public override Type GetInterface(string name, bool ignoreCase)
 		{
 			foreach(DebugType inter in this.GetInterfaces()) {
@@ -361,16 +389,19 @@ namespace Debugger.MetaData
 		
 		//		public virtual InterfaceMapping GetInterfaceMap(Type interfaceType);
 		
+		/// <inheritdoc/>
 		public override Type[] GetInterfaces()
 		{
 			return this.interfaces.ToArray();
 		}
 		
+		/// <inheritdoc/>
 		public override MemberInfo[] GetMember(string name, MemberTypes type, BindingFlags bindingAttr)
 		{
 			return GetMembers<MemberInfo>(name, bindingAttr, delegate(MemberInfo info) { return (info.MemberType & type) != 0; });
 		}
 		
+		/// <inheritdoc/>
 		public override MemberInfo[] GetMembers(BindingFlags bindingAttr)
 		{
 			return GetMembers<MemberInfo>(null, bindingAttr, null);
@@ -394,6 +425,7 @@ namespace Debugger.MetaData
 			return null;
 		}
 		
+		/// <inheritdoc/>
 		protected override MethodInfo GetMethodImpl(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] paramTypes, ParameterModifier[] modifiers)
 		{
 			// TODO: Finish
@@ -418,16 +450,19 @@ namespace Debugger.MetaData
 			return GetMembers<MethodInfo>(name, bindingAttr, null);
 		}
 		
+		/// <inheritdoc/>
 		public override MethodInfo[] GetMethods(BindingFlags bindingAttr)
 		{
 			return GetMembers<MethodInfo>(null, bindingAttr, null);
 		}
 		
+		/// <inheritdoc/>
 		public override Type GetNestedType(string name, BindingFlags bindingAttr)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override Type[] GetNestedTypes(BindingFlags bindingAttr)
 		{
 			throw new NotSupportedException();
@@ -446,38 +481,45 @@ namespace Debugger.MetaData
 			                              });
 		}
 		
+		/// <inheritdoc/>
 		public override PropertyInfo[] GetProperties(BindingFlags bindingAttr)
 		{
 			return GetMembers<PropertyInfo>(null, bindingAttr, null);
 		}
 		
+		/// <inheritdoc/>
 		protected override PropertyInfo GetPropertyImpl(string name, BindingFlags bindingAttr, Binder binder, Type returnType, Type[] types, ParameterModifier[] modifiers)
 		{
 			// TODO: Finsih
 			return GetMember<PropertyInfo>(name, bindingAttr, null);
 		}
 		
+		/// <inheritdoc/>
 		protected override bool HasElementTypeImpl()
 		{
 			return elementType != null;
 		}
 		
+		/// <inheritdoc/>
 		public override object InvokeMember(string name, BindingFlags invokeAttr, Binder binder, object target, object[] args, ParameterModifier[] modifiers, CultureInfo culture, string[] namedParameters)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		protected override bool IsArrayImpl()
 		{
 			return corElementType == CorElementType.ARRAY ||
 			       corElementType == CorElementType.SZARRAY;
 		}
 		
+		/// <inheritdoc/>
 		protected override bool IsByRefImpl()
 		{
 			return corElementType == CorElementType.BYREF;
 		}
 		
+		/// <inheritdoc/>
 		protected override bool IsPointerImpl()
 		{
 			return corElementType == CorElementType.PTR;
@@ -495,6 +537,7 @@ namespace Debugger.MetaData
 //			}
 //		}
 		
+		/// <inheritdoc/>
 		protected override bool IsValueTypeImpl()
 		{
 			// ValueType and Enum are exceptions and are threated as classes
@@ -503,6 +546,7 @@ namespace Debugger.MetaData
 			       this.IsSubclassOf(this.AppDomain.ValueType);
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsSubclassOf(Type superType)
 		{
 			if (!(superType is DebugType)) {
@@ -511,11 +555,13 @@ namespace Debugger.MetaData
 			return base.IsSubclassOf(superType);
 		}
 		
+		/// <inheritdoc/>
 		protected override bool IsCOMObjectImpl()
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsInstanceOfType(object o)
 		{
 			if (o == null) return false;
@@ -523,6 +569,7 @@ namespace Debugger.MetaData
 			return this.IsAssignableFrom(((Value)o).Type);
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsAssignableFrom(Type c)
 		{
 			// TODO: Finsih
@@ -539,6 +586,7 @@ namespace Debugger.MetaData
 			get { return primitiveType; }
 		}
 		
+		/// <inheritdoc/>
 		protected override bool IsPrimitiveImpl()
 		{
 			return this.PrimitiveType != null;
@@ -757,24 +805,28 @@ namespace Debugger.MetaData
 		
 		// public virtual Type MakeGenericType(params Type[] typeArguments);
 		
+		/// <inheritdoc/>
 		public override Type MakeArrayType(int rank)
 		{
 			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.ARRAY, (uint)rank, this.CorType);
 			return CreateFromCorType(this.AppDomain, res);
 		}
 		
+		/// <inheritdoc/>
 		public override Type MakeArrayType()
 		{
 			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.SZARRAY, 1, this.CorType);
 			return CreateFromCorType(this.AppDomain, res);
 		}
 		
+		/// <inheritdoc/>
 		public override Type MakePointerType()
 		{
 			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.PTR, 0, this.CorType);
 			return CreateFromCorType(this.AppDomain, res);
 		}
 		
+		/// <inheritdoc/>
 		public override Type MakeByRefType()
 		{
 			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.BYREF, 0, this.CorType);
@@ -1031,6 +1083,7 @@ namespace Debugger.MetaData
 			membersByToken[member.MetadataToken] = member;
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.FullName;

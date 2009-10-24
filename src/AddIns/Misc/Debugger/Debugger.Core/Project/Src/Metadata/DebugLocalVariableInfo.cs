@@ -25,14 +25,17 @@ namespace Debugger.MetaData
 		int localIndex;
 		DebugType localType;
 		
+		/// <inheritdoc/>
 		public override int LocalIndex {
 			get { return localIndex; }
 		}
 		
+		/// <inheritdoc/>
 		public override Type LocalType {
 			get { return localType; }
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsPinned {
 			get { throw new NotSupportedException(); }
 		}
@@ -54,6 +57,7 @@ namespace Debugger.MetaData
 			return getter(context);
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			string msg = this.LocalType + " " + this.Name;

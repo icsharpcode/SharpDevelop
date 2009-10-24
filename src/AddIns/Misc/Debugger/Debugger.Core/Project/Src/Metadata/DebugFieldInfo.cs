@@ -27,6 +27,7 @@ namespace Debugger.MetaData
 			this.fieldProps = fieldProps;
 		}
 		
+		/// <inheritdoc/>
 		public override Type DeclaringType {
 			get { return declaringType; }
 		}
@@ -46,45 +47,55 @@ namespace Debugger.MetaData
 			get { return declaringType.DebugModule; }
 		}
 		
+		/// <inheritdoc/>
 		public override int MetadataToken {
 			get { return (int)fieldProps.Token; }
 		}
 		
+		/// <inheritdoc/>
 		public override System.Reflection.Module Module {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override string Name {
 			get { return fieldProps.Name; }
 		}
 		
+		/// <inheritdoc/>
 		public override Type ReflectedType {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override object[] GetCustomAttributes(bool inherit)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override object[] GetCustomAttributes(Type attributeType, bool inherit)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsDefined(Type attributeType, bool inherit)
 		{
 			return DebugType.IsDefined(this, inherit, attributeType);
 		}
 		
+		/// <inheritdoc/>
 		public override FieldAttributes Attributes {
 			get { return (FieldAttributes)fieldProps.Flags; }
 		}
 		
+		/// <inheritdoc/>
 		public override RuntimeFieldHandle FieldHandle {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override Type FieldType {
 			get {
 				SignatureReader sigReader = new SignatureReader(fieldProps.SigBlob.GetData());
@@ -97,16 +108,19 @@ namespace Debugger.MetaData
 		//		public virtual object GetRawConstantValue();
 		//		public virtual Type[] GetRequiredCustomModifiers();
 		
+		/// <inheritdoc/>
 		public override object GetValue(object obj)
 		{
 			return Value.GetFieldValue((Value)obj, this);
 		}
 		
+		/// <inheritdoc/>
 		public override void SetValue(object obj, object value, System.Reflection.BindingFlags invokeAttr, Binder binder, CultureInfo culture)
 		{
 			Value.SetFieldValue((Value)obj, this, (Value)value);
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.FieldType + " " + this.Name;

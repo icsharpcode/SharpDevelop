@@ -31,6 +31,7 @@ namespace Debugger.MetaData
 			this.methodProps = methodProps;
 		}
 		
+		/// <inheritdoc/>
 		public override Type DeclaringType {
 			get { return declaringType; }
 		}
@@ -50,10 +51,12 @@ namespace Debugger.MetaData
 			get { return declaringType.DebugModule; }
 		}
 		
+		/// <inheritdoc/>
 		public override int MetadataToken {
 			get { return (int)methodProps.Token; }
 		}
 		
+		/// <inheritdoc/>
 		public override System.Reflection.Module Module {
 			get { throw new NotSupportedException(); }
 		}
@@ -80,24 +83,29 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override string Name {
 			get { return methodProps.Name; }
 		}
 		
+		/// <inheritdoc/>
 		public override Type ReflectedType {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override object[] GetCustomAttributes(bool inherit)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override object[] GetCustomAttributes(Type attributeType, bool inherit)
 		{
 			throw new NotSupportedException();
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsDefined(Type attributeType, bool inherit)
 		{
 			return DebugType.IsDefined(this, inherit, attributeType);
@@ -106,11 +114,13 @@ namespace Debugger.MetaData
 		//		public virtual Type[] GetGenericArguments();
 		//		public virtual MethodBody GetMethodBody();
 		
+		/// <inheritdoc/>
 		public override MethodImplAttributes GetMethodImplementationFlags()
 		{
 			return (MethodImplAttributes)methodProps.ImplFlags;
 		}
 		
+		/// <inheritdoc/>
 		public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
 		{
 			List<Value> args = new List<Value>();
@@ -120,28 +130,34 @@ namespace Debugger.MetaData
 			return Eval.InvokeMethod(this, (Value)obj, args.ToArray());
 		}
 		
+		/// <inheritdoc/>
 		public override MethodAttributes Attributes {
 			get { return (MethodAttributes)methodProps.Flags; }
 		}
 		
 		//		public virtual CallingConventions CallingConvention { get; }
 		
+		/// <inheritdoc/>
 		public override bool ContainsGenericParameters {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsGenericMethod {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override bool IsGenericMethodDefinition {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override RuntimeMethodHandle MethodHandle {
 			get { throw new NotSupportedException(); }
 		}
 		
+		/// <inheritdoc/>
 		public override MethodInfo GetBaseDefinition()
 		{
 			throw new NotSupportedException();
@@ -152,6 +168,7 @@ namespace Debugger.MetaData
 		//		public virtual MethodInfo MakeGenericMethod(params Type[] typeArguments);
 		//		public override bool ContainsGenericParameters { get; }
 		
+		/// <inheritdoc/>
 		public override Type ReturnType {
 			get {
 				if (this.MethodDefSig.RetType.Void) return null;
@@ -159,6 +176,7 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override ParameterInfo ReturnParameter {
 			get {
 				if (this.MethodDefSig.RetType.Void) return null;
@@ -166,6 +184,7 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override ICustomAttributeProvider ReturnTypeCustomAttributes {
 			get { throw new NotSupportedException(); }
 		}
@@ -189,6 +208,7 @@ namespace Debugger.MetaData
 		
 		ParameterInfo[] parameters;
 		
+		/// <inheritdoc/>
 		public override ParameterInfo[] GetParameters()
 		{
 			if (parameters == null) {
@@ -591,6 +611,7 @@ namespace Debugger.MetaData
 			return new Value(context.AppDomain, corVal);
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			string txt = string.Empty;
