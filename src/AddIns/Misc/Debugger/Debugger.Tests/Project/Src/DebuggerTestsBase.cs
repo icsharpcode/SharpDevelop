@@ -415,7 +415,7 @@ namespace Debugger.Tests
 		
 		string GetResource(string filename)
 		{
-			string resourcePrefix = "Debugger.Tests.Src.TestPrograms.";
+			string resourcePrefix = "Debugger.Tests.Src.Tests.";
 			
 			Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourcePrefix + filename);
 			if (stream == null) throw new System.Exception("Resource " + filename + " not found");
