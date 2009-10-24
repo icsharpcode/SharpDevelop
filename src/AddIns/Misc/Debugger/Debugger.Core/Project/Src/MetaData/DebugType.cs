@@ -937,10 +937,10 @@ namespace Debugger.MetaData
 			}
 			
 			genericArguments = genericArguments ?? new DebugType[] {};
-			if (genericArguments.Length < metaData.GetGenericParamCount(corClass.GetToken())) {
+			if (genericArguments.Length < metaData.EnumGenericParams(corClass.GetToken()).Length) {
 				throw new DebuggerException("Not enough generic arguments");
 			}
-			Array.Resize(ref genericArguments, metaData.GetGenericParamCount(corClass.GetToken()));
+			Array.Resize(ref genericArguments, metaData.EnumGenericParams(corClass.GetToken()).Length);
 			
 			List<ICorDebugType> corGenArgs = new List<ICorDebugType>(genericArguments.Length);
 			foreach(DebugType genAgr in genericArguments) {
@@ -1014,7 +1014,7 @@ namespace Debugger.MetaData
 				this.module = appDomain.Process.Modules[corType.GetClass().GetModule()];
 				this.classProps = module.MetaData.GetTypeDefProps(corType.GetClass().GetToken());
 				// Get the enclosing class
-				if (classProps.IsNested) {
+				if (!this.IsPublic && !this.IsNotPublic) {
 					uint enclosingTk = module.MetaData.GetNestedClassProps((uint)this.MetadataToken).EnclosingClass;
 					this.declaringType = DebugType.CreateFromTypeDefOrRef(this.DebugModule, null, enclosingTk, genericArguments.ToArray());
 				}
@@ -1131,8 +1131,9 @@ namespace Debugger.MetaData
 			
 			// Load fields
 			foreach(FieldProps field in module.MetaData.EnumFieldProps((uint)this.MetadataToken)) {
-				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
-				AddMember(new DebugFieldInfo(this, field));
+				DebugFieldInfo fieldInfo = new DebugFieldInfo(this, field);
+				if (fieldInfo.IsStatic && fieldInfo.IsLiteral) continue; // Skip static literals TODO: Why?
+				AddMember(fieldInfo);
 			};
 			
 			// Load methods

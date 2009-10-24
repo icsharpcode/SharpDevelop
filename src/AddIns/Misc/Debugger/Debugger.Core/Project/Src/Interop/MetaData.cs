@@ -20,7 +20,7 @@ namespace Debugger.Interop.MetaData
         public uint ulOffset;
     }
 	[System.Flags()]
-	enum ClassFieldAttribute: uint
+	public enum ClassFieldAttribute: uint
 	{
 		// member access mask - Use this mask to retrieve accessibility information.
 		fdFieldAccessMask           =   0x0007,
@@ -51,7 +51,7 @@ namespace Debugger.Interop.MetaData
 		fdHasDefault                =   0x8000,     // Field has default.
 		fdHasFieldRVA               =   0x0100,     // Field has RVA.
 	}
-	enum CorCallingConvention: uint
+	public enum CorCallingConvention: uint
 	{
 	    IMAGE_CEE_CS_CALLCONV_DEFAULT   = 0x0,  
 	
@@ -68,7 +68,7 @@ namespace Debugger.Interop.MetaData
 	    IMAGE_CEE_CS_CALLCONV_HASTHIS   = 0x20,  // Top bit indicates a 'this' parameter    
 	    IMAGE_CEE_CS_CALLCONV_EXPLICITTHIS = 0x40,  // This parameter is explicitly in the signature
 	}
-	enum CorMethodAttr: uint
+	public enum CorMethodAttr: uint
 	{
 	    // member access mask - Use this mask to retrieve accessibility information.
 	    mdMemberAccessMask          =   0x0007,
@@ -155,17 +155,17 @@ namespace Debugger.Interop.MetaData
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void FindTypeDefByName([In, MarshalAs(UnmanagedType.LPWStr)] string szTypeDef, uint tkEnclosingClass, out uint ptd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetScopeProps([Out] IntPtr szName, uint cchName, out uint pchName, out Guid pmvid);
+        void GetScopeProps(IntPtr szName, uint cchName, out uint pchName, out Guid pmvid);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetModuleFromScope(out uint pmd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetTypeDefProps(uint td, [Out] IntPtr szTypeDef, uint cchTypeDef, out uint pchTypeDef, out uint pdwTypeDefFlags, out uint ptkExtends);
+        void GetTypeDefProps(uint td, IntPtr szTypeDef, uint cchTypeDef, out uint pchTypeDef, out uint pdwTypeDefFlags, out uint ptkExtends);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetInterfaceImplProps(uint iiImpl, out uint pClass, out uint ptkIface);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetTypeRefProps(uint tr, out uint ptkResolutionScope, [Out] IntPtr szName, uint cchName, out uint pchName);
+        void GetTypeRefProps(uint tr, out uint ptkResolutionScope, IntPtr szName, uint cchName, out uint pchName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ResolveTypeRef(uint tr, ref Guid riid, [MarshalAs(UnmanagedType.IUnknown)] ref object ppIScope, ref uint ptd);
+        void ResolveTypeRef(uint tr, [In] ref Guid riid, [MarshalAs(UnmanagedType.IUnknown)] out object ppIScope, out uint ptd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumMembers(ref IntPtr phEnum, uint cl, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rMembers, uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -195,21 +195,21 @@ namespace Debugger.Interop.MetaData
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void FindMemberRef(uint td, [In, MarshalAs(UnmanagedType.LPWStr)] string szName, [In] IntPtr pvSigBlob, uint cbSigBlob, out uint pmr);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetMethodProps(uint mb, out uint pClass, [Out] IntPtr szMethod, uint cchMethod, out uint pchMethod, out uint pdwAttr, out IntPtr ppvSigBlob, out uint pcbSigBlob, out uint pulCodeRVA, out uint pdwImplFlags);
+        void GetMethodProps(uint mb, out uint pClass, IntPtr szMethod, uint cchMethod, out uint pchMethod, out uint pdwAttr, out IntPtr ppvSigBlob, out uint pcbSigBlob, out uint pulCodeRVA, out uint pdwImplFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetMemberRefProps(uint mr, out uint ptk, [Out] IntPtr szMember, uint cchMember, out uint pchMember, out IntPtr ppvSigBlob, out uint pbSig);
+        void GetMemberRefProps(uint mr, out uint ptk, IntPtr szMember, uint cchMember, out uint pchMember, out IntPtr ppvSigBlob, out uint pbSig);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumProperties(ref IntPtr phEnum, uint td, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rProperties, uint cMax, out uint pcProperties);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumEvents(ref IntPtr phEnum, uint td, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rEvents, uint cMax, out uint pcEvents);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetEventProps(uint ev, out uint pClass, [Out] IntPtr  szEvent, uint cchEvent, out uint pchEvent, out uint pdwEventFlags, out uint ptkEventType, out uint pmdAddOn, out uint pmdRemoveOn, out uint pmdFire, uint[] rmdOtherMethod, uint cMax, out uint pcOtherMethod);
+        void GetEventProps(uint ev, out uint pClass, IntPtr  szEvent, uint cchEvent, out uint pchEvent, out uint pdwEventFlags, out uint ptkEventType, out uint pmdAddOn, out uint pmdRemoveOn, out uint pmdFire, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rmdOtherMethod, uint cMax, out uint pcOtherMethod);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumMethodSemantics(ref IntPtr phEnum, uint mb, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rEventProp, uint cMax, out uint pcEventProp);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetMethodSemantics(uint mb, uint tkEventProp, out uint pdwSemanticsFlags);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetClassLayout(uint td, out uint pdwPackSize, COR_FIELD_OFFSET[] rFieldOffset, uint cMax, out uint pcFieldOffset, out uint pulClassSize);
+        void GetClassLayout(uint td, out uint pdwPackSize, [Out] COR_FIELD_OFFSET[] rFieldOffset, uint cMax, out uint pcFieldOffset, out uint pulClassSize);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetFieldMarshal(uint tk, out IntPtr ppvNativeType, out uint pcbNativeType);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -219,19 +219,19 @@ namespace Debugger.Interop.MetaData
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetSigFromToken(uint mdSig, out IntPtr ppvSig, out uint pcbSig);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetModuleRefProps(uint mur, [Out] IntPtr szName, uint cchName, out uint pchName);
+        void GetModuleRefProps(uint mur, IntPtr szName, uint cchName, out uint pchName);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumModuleRefs(ref IntPtr phEnum, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rModuleRefs, uint cMax, out uint pcModuleRefs);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetTypeSpecFromToken(uint typespec, out IntPtr ppvSig, out uint pcbSig);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetNameFromToken(uint tk, [Out] IntPtr pszUtf8NamePtr);
+        void GetNameFromToken(uint tk, IntPtr pszUtf8NamePtr);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumUnresolvedMethods(ref IntPtr phEnum, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rMethods, uint cMax, out uint pcTokens);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetUserString(uint stk, [Out] IntPtr szString, uint cchString, out uint pchString);
+        void GetUserString(uint stk, IntPtr szString, uint cchString, out uint pchString);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetPinvokeMap(uint tk, out uint pdwMappingFlags, [Out] IntPtr szImportName, uint cchImportName, out uint pchImportName, out uint pmrImportDLL);
+        void GetPinvokeMap(uint tk, out uint pdwMappingFlags, IntPtr szImportName, uint cchImportName, out uint pchImportName, out uint pmrImportDLL);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumSignatures(ref IntPtr phEnum, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rSignatures, uint cMax, out uint pcSignatures);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -239,7 +239,7 @@ namespace Debugger.Interop.MetaData
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumUserStrings(ref IntPtr phEnum, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rStrings, uint cMax, out uint pcStrings);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetParamForMethodIndex(uint md, uint ulParamSeq, [In] ref uint ppd);
+        void GetParamForMethodIndex(uint md, uint ulParamSeq, out uint ppd);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void EnumCustomAttributes(ref IntPtr phEnum, uint tk, uint tkType, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rCustomAttributes, uint cMax, out uint pcCustomAttributes);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -251,9 +251,9 @@ namespace Debugger.Interop.MetaData
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetFieldProps(uint mb, out uint pClass, [In] IntPtr szField, uint cchField, out uint pchField, out uint pdwAttr, out IntPtr ppvSigBlob, out uint pcbSigBlob, out uint pdwCPlusTypeFlag, out IntPtr ppValue, out uint pcchValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetPropertyProps(uint prop, out uint pClass, [Out] IntPtr szProperty, uint cchProperty, out uint pchProperty, out uint pdwPropFlags, out IntPtr ppvSig, out uint pbSig, out uint pdwCPlusTypeFlag, out IntPtr ppDefaultValue, out uint pcchDefaultValue, out uint pmdSetter, out uint pmdGetter, uint[] rmdOtherMethod, uint cMax, out uint pcOtherMethod);
+        void GetPropertyProps(uint prop, out uint pClass, IntPtr szProperty, uint cchProperty, out uint pchProperty, out uint pdwPropFlags, out IntPtr ppvSig, out uint pbSig, out uint pdwCPlusTypeFlag, out IntPtr ppDefaultValue, out uint pcchDefaultValue, out uint pmdSetter, out uint pmdGetter, [Out, MarshalAsAttribute(UnmanagedType.LPArray)] uint[] rmdOtherMethod, uint cMax, out uint pcOtherMethod);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetParamProps(uint tk, out uint pmd, out uint pulSequence, [Out] IntPtr szName, uint cchName, out uint pchName, out uint pdwAttr, out uint pdwCPlusTypeFlag, out IntPtr ppValue, out uint pcchValue);
+        void GetParamProps(uint tk, out uint pmd, out uint pulSequence, IntPtr szName, uint cchName, out uint pchName, out uint pdwAttr, out uint pdwCPlusTypeFlag, out IntPtr ppValue, out uint pcchValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetCustomAttributeByName(uint tkObj, [In, MarshalAs(UnmanagedType.LPWStr)] string szName, out IntPtr ppData, out uint pcbData);
         [PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]

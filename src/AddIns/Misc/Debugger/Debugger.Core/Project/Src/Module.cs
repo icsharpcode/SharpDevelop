@@ -159,7 +159,7 @@ namespace Debugger
 		{
 			List<DebugType> types = new List<DebugType>();
 			foreach(TypeDefProps typeDef in this.MetaData.EnumTypeDefProps()) {
-				if (this.MetaData.GetGenericParamCount(typeDef.Token) == 0) {
+				if (this.MetaData.EnumGenericParams(typeDef.Token).Length == 0) {
 					types.Add(DebugType.CreateFromTypeDefOrRef(this, null, typeDef.Token, null));
 				}
 			}

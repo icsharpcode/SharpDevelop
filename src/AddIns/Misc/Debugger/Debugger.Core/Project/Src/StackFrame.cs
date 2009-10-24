@@ -95,7 +95,7 @@ namespace Debugger
 			this.frameIndex = frameIndex;
 			
 			MetaDataImport metaData = thread.Process.Modules[corFunction.GetClass().GetModule()].MetaData;
-			int methodGenArgs = metaData.GetGenericParamCount(corFunction.GetToken());
+			int methodGenArgs = metaData.EnumGenericParams(corFunction.GetToken()).Length;
 			// Class parameters are first, then the method ones
 			List<ICorDebugType> corGenArgs = ((ICorDebugILFrame2)corILFrame).EnumerateTypeParameters().ToList();
 			// Remove method parametrs at the end

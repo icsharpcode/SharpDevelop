@@ -22,6 +22,10 @@ namespace Debugger.Interop.MetaData
 	/// <remarks>http://msdn.microsoft.com/en-us/library/ms230172.aspx</remarks>
 	public class MetaDataImport: IDisposable
 	{
+		const int DefaultBufferSize = 8;
+		// If buffer is too small, enlarge it
+		const int BufferSizeMultiplier = 4;
+		
 		IMetaDataImport metaData;
 		
 		public MetaDataImport(ICorDebugModule pModule)
@@ -67,7 +71,8 @@ namespace Debugger.Interop.MetaData
 			}
 		}
 		
-		// CloseEnum, CountEnum and ResetEnum are not wrapped
+		// CloseEnum, CountEnum and ResetEnum are not wrapped, use them directly
+		// GetNameFromToken is obsolete
 		
 		public uint[] EnumCustomAttributes(uint token_Scope, uint token_TypeOfAttributes)
 		{
@@ -181,14 +186,13 @@ namespace Debugger.Interop.MetaData
 				uint[] decl = new uint[1];
 				uint fetched;
 				metaData.EnumMethodImpls(ref enumerator, typeDef, body, decl, 1, out fetched);
-				if (fetched == 0) {
-					metaData.CloseEnum(enumerator);
+				if (fetched == 0)
 					break;
-				}
 				ret.MethodBody = body[0];
 				ret.MethodDecl = decl[0];
 				yield return ret;
 			}
+			metaData.CloseEnum(enumerator);
 		}
 		
 		public uint[] EnumMethods(uint typeDef)
@@ -407,13 +411,19 @@ namespace Debugger.Interop.MetaData
 		{
 			ClassLayout ret = new ClassLayout();
 			ret.TypeDef = typeDef;
-			uint unused;
-			metaData.GetClassLayout(
-				ret.TypeDef,
-				out ret.PackSize,
-				null, 0, out unused, // TODO
-				out ret.ClassSize
-			);
+			ret.FieldOffsets = new COR_FIELD_OFFSET[DefaultBufferSize];
+			uint returned;
+			while (true) {
+				metaData.GetClassLayout(
+					ret.TypeDef,
+					out ret.PackSize,
+					ret.FieldOffsets, (uint)ret.FieldOffsets.Length, out returned,
+					out ret.ClassSize
+				);
+				if (returned < ret.FieldOffsets.Length) break;
+				ret.FieldOffsets = new COR_FIELD_OFFSET[ret.FieldOffsets.Length * BufferSizeMultiplier];
+			}
+			Array.Resize(ref ret.FieldOffsets, (int)returned);
 			return ret;
 		}
 		
@@ -452,18 +462,24 @@ namespace Debugger.Interop.MetaData
 			EventProps ret = new EventProps();
 			ret.Event = eventToken;
 			ret.Name = Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
-				uint unused;
-				metaData.GetEventProps(
-					ret.Event,
-					out ret.DeclaringClass,
-					pString, pStringLenght, out stringLenght,
-					out ret.Flags,
-					out ret.EventType,
-					out ret.AddMethod,
-					out ret.RemoveMethod,
-					out ret.FireMethod,
-					null, 0, out unused // TODO
-				);
+				ret.OtherMethods = new uint[DefaultBufferSize];
+				uint returned;
+				while(true) {
+					metaData.GetEventProps(
+						ret.Event,
+						out ret.DeclaringClass,
+						pString, pStringLenght, out stringLenght,
+						out ret.Flags,
+						out ret.EventType,
+						out ret.AddMethod,
+						out ret.RemoveMethod,
+						out ret.FireMethod,
+						ret.OtherMethods, (uint)ret.OtherMethods.Length, out returned
+					);
+					if (returned < ret.OtherMethods.Length) break;
+					ret.OtherMethods = new uint[ret.OtherMethods.Length * BufferSizeMultiplier];
+				}
+				Array.Resize(ref ret.OtherMethods, (int)returned);
 			});
 			return ret;
 		}
@@ -492,12 +508,12 @@ namespace Debugger.Interop.MetaData
 				metaData.GetFieldProps(
 					ret.Token,
 					out ret.DeclaringClass,
-					pString, pStringLenght, out stringLenght, // The string to get
+					pString, pStringLenght, out stringLenght,
 					out ret.Flags,
 					out sigPtr,
 					out sigSize,
 					out ret.CPlusTypeFlag,
-					out constPtr, // TODO: What is this?
+					out constPtr,
 					out constSize
 				);
 			});
@@ -556,7 +572,7 @@ namespace Debugger.Interop.MetaData
 				metaData.GetMemberRefProps(
 					token,
 					out ret.DeclaringType,
-					pString, pStringLenght, out stringLenght, // The string to get
+					pString, pStringLenght, out stringLenght,
 					out sigPtr,
 					out sigSize
 				);
@@ -575,7 +591,7 @@ namespace Debugger.Interop.MetaData
 				metaData.GetMethodProps(
 					ret.Token,
 					out ret.ClassToken,
-					pString, pStringLenght, out stringLenght, // The string to get
+					pString, pStringLenght, out stringLenght,
 					out ret.Flags,
 					out sigPtr,
 					out sigSize,
@@ -614,8 +630,6 @@ namespace Debugger.Interop.MetaData
 			return ret;
 		}
 		
-		// GetNameFromToken is obsolete
-		
 		public uint GetNativeCallConvFromSig(Blob sigBlob)
 		{
 			uint callConv;
@@ -636,8 +650,8 @@ namespace Debugger.Interop.MetaData
 		
 		public uint GetParamForMethodIndex(uint methodToken, uint parameterSequence)
 		{
-			uint paramToken = 0;
-			metaData.GetParamForMethodIndex(methodToken, parameterSequence, ref paramToken);
+			uint paramToken;
+			metaData.GetParamForMethodIndex(methodToken, parameterSequence, out paramToken);
 			return paramToken;
 		}
 		
@@ -657,7 +671,7 @@ namespace Debugger.Interop.MetaData
 					ret.ParamDef,
 					out ret.MethodDef,
 					out ret.Sequence,
-					pString, pStringLenght, out stringLenght, // The string to get
+					pString, pStringLenght, out stringLenght,
 					out ret.Flags,
 					out ret.CPlusTypeFlag,
 					out constPtr,
@@ -708,21 +722,27 @@ namespace Debugger.Interop.MetaData
 			uint defValSize = 0;
 			ret.Propery = prop;
 			ret.Name = Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
-				uint unused;
-				metaData.GetPropertyProps(
-					ret.Propery,
-					out ret.DeclaringClass,
-					pString, pStringLenght, out stringLenght,
-					out ret.Flags,
-					out sigPtr,
-					out sigSize,
-					out ret.CPlusTypeFlag,
-					out defValPtr,
-					out defValSize,
-					out ret.SetterMethod,
-					out ret.GetterMethod,
-					null, 0, out unused // TODO
-				);
+				ret.OtherMethods = new uint[DefaultBufferSize];
+				uint returned;
+				while(true) {
+					metaData.GetPropertyProps(
+						ret.Propery,
+						out ret.DeclaringClass,
+						pString, pStringLenght, out stringLenght,
+						out ret.Flags,
+						out sigPtr,
+						out sigSize,
+						out ret.CPlusTypeFlag,
+						out defValPtr,
+						out defValSize,
+						out ret.SetterMethod,
+						out ret.GetterMethod,
+						ret.OtherMethods, (uint)ret.OtherMethods.Length, out returned
+					);
+					if (returned < ret.OtherMethods.Length) break;
+					ret.OtherMethods = new uint[ret.OtherMethods.Length * BufferSizeMultiplier];
+				}
+				Array.Resize(ref ret.OtherMethods, (int)returned);
 			});
 			ret.SigBlob = new Blob(sigPtr, sigSize);
 			ret.DefaultValue = new Blob(defValPtr, defValSize);
@@ -773,7 +793,7 @@ namespace Debugger.Interop.MetaData
 				Util.GetString(delegate(uint pStringLenght, out uint stringLenght, System.IntPtr pString) {
 					metaData.GetTypeDefProps(
 						ret.Token,
-						pString, pStringLenght, out stringLenght, // The string to get
+						pString, pStringLenght, out stringLenght,
 						out ret.Flags,
 						out ret.SuperClassToken
 					);
@@ -791,7 +811,7 @@ namespace Debugger.Interop.MetaData
 					metaData.GetTypeRefProps(
 						ret.TypeRef,
 						out ret.ResolutionScope,
-						pString, pStringLenght, out stringLenght // The string to get
+						pString, pStringLenght, out stringLenght
 					);
 				});
 			
@@ -829,7 +849,7 @@ namespace Debugger.Interop.MetaData
 		
 		public bool IsValidToken(uint token)
 		{
-			return metaData.IsValidToken(token) != 0; // TODO: Is it correct value?
+			return metaData.IsValidToken(token) != 0;
 		}
 		
 		public ResolvedTypeRef ResolveTypeRef(uint typeRef, Guid riid)
@@ -838,47 +858,20 @@ namespace Debugger.Interop.MetaData
 			metaData.ResolveTypeRef(
 				typeRef,
 				ref riid,
-				ref res.Scope,
-				ref res.TypeDef
+				out res.Scope,
+				out res.TypeDef
 			);
 			return res;
 		}
 		
-		
-		// Custom methods
-		
-		/*
-		
-		public int GetParamCount(uint methodToken)
-		{
-			int count = 0;
-			foreach(uint param in EnumParams(methodToken)) {
-				ParamProps paramProps = GetParamProps(param);
-				// Zero is special parameter representing the return parameter
-				if (paramProps.Sequence != 0) {
-					count++;
-				}
-			}
-			return count;
-		}
-		
-		*/
-		
-		public int GetGenericParamCount(uint typeDef_methodDef)
-		{
-			return EnumGenericParams(typeDef_methodDef).Length;
-		}
-		
 		#region Util
-		
-		const int initialBufferSize = 8;
 		
 		delegate void TokenEnumerator0(ref IntPtr phEnum, uint[] token, uint maxCount, out uint fetched);
 		
 		uint[] EnumerateTokens(TokenEnumerator0 tokenEnumerator)
 		{
 			IntPtr enumerator = IntPtr.Zero;
-			uint[] buffer = new uint[initialBufferSize];
+			uint[] buffer = new uint[DefaultBufferSize];
 			uint fetched;
 			tokenEnumerator(ref enumerator, buffer, (uint)buffer.Length, out fetched);
 			if (fetched < buffer.Length) {
@@ -903,7 +896,7 @@ namespace Debugger.Interop.MetaData
 		uint[] EnumerateTokens<T>(TokenEnumerator1<T> tokenEnumerator, T parameter)
 		{
 			IntPtr enumerator = IntPtr.Zero;
-			uint[] buffer = new uint[initialBufferSize];
+			uint[] buffer = new uint[DefaultBufferSize];
 			uint fetched;
 			tokenEnumerator(ref enumerator, parameter, buffer, (uint)buffer.Length, out fetched);
 			if (fetched < buffer.Length) {
@@ -928,7 +921,7 @@ namespace Debugger.Interop.MetaData
 		uint[] EnumerateTokens<T,R>(TokenEnumerator2<T,R> tokenEnumerator, T parameter1, R parameter2)
 		{
 			IntPtr enumerator = IntPtr.Zero;
-			uint[] buffer = new uint[initialBufferSize];
+			uint[] buffer = new uint[DefaultBufferSize];
 			uint fetched;
 			tokenEnumerator(ref enumerator, parameter1, parameter2, buffer, (uint)buffer.Length, out fetched);
 			if (fetched < buffer.Length) {
@@ -984,7 +977,7 @@ namespace Debugger.Interop.MetaData
 	{
 		public uint TypeDef;
 		public uint PackSize;
-		public COR_FIELD_OFFSET[] FieldOffset;
+		public COR_FIELD_OFFSET[] FieldOffsets;
 		public uint ClassSize;
 	}
 	
@@ -1018,34 +1011,6 @@ namespace Debugger.Interop.MetaData
 		public Blob SigBlob;
 		public uint CPlusTypeFlag;
 		public Blob ConstantValue;
-		
-		private ClassFieldAttribute access {
-			get { return (ClassFieldAttribute)(Flags & (uint)ClassFieldAttribute.fdFieldAccessMask); }
-		}
-		
-		public bool IsPrivate {
-			get { return access == ClassFieldAttribute.fdPrivate; }
-		}
-		
-		public bool IsInternal {
-			get { return access == ClassFieldAttribute.fdAssembly; }
-		}
-		
-		public bool IsProtected {
-			get { return access == ClassFieldAttribute.fdFamily; }
-		}
-		
-		public bool IsPublic {
-			get { return access == ClassFieldAttribute.fdPublic; }
-		}
-		
-		public bool IsStatic {
-			get { return (Flags & (uint)ClassFieldAttribute.fdStatic) != 0; }
-		}
-		
-		public bool IsLiteral {
-			get { return (Flags & (uint)ClassFieldAttribute.fdLiteral) != 0; }
-		}
 	}
 	
 	public class InterfaceImplProps
@@ -1091,34 +1056,6 @@ namespace Debugger.Interop.MetaData
 		public Blob SigBlob;
 		public uint CodeRVA;
 		public uint ImplFlags;
-		
-		private CorMethodAttr access {
-			get { return (CorMethodAttr)(Flags & (uint)CorMethodAttr.mdMemberAccessMask); }
-		}
-		
-		public bool IsPrivate {
-			get { return access == CorMethodAttr.mdPrivate; }
-		}
-		
-		public bool IsInternal {
-			get { return access == CorMethodAttr.mdAssem; }
-		}
-		
-		public bool IsProtected {
-			get { return access == CorMethodAttr.mdFamily; }
-		}
-		
-		public bool IsPublic {
-			get { return access == CorMethodAttr.mdPublic; }
-		}
-		
-		public bool IsStatic {
-			get { return (Flags & (uint)CorMethodAttr.mdStatic) != 0; }
-		}
-		
-		public bool HasSpecialName {
-			get { return (Flags & (uint)CorMethodAttr.mdSpecialName) != 0; }
-		}
 	}
 	
 	public class ModuleRefProps
@@ -1198,16 +1135,6 @@ namespace Debugger.Interop.MetaData
 		public string Name;
 		public uint Flags;
 		public uint SuperClassToken;
-		
-		public bool IsInterface {
-			get { return (Flags & 0x00000020) != 0; }
-		}
-		
-		public bool IsNested {
-			get {
-				return (Flags & 0x00000007) >= 2;
-			}
-		}
 	}
 	
 	public class TypeRefProps
