@@ -283,16 +283,21 @@ namespace Debugger.MetaData
 			if ((bindingFlags & (BindingFlags.Instance | BindingFlags.Static)) == 0)
 				throw new ArgumentException("Instance or Static flag must be included", "bindingFlags");
 			
+			// Filter by name
+			IEnumerable<List<MemberInfo>> searchScope;
+			if (name != null) {
+				if (!membersByName.ContainsKey(name))
+					return new T[] {};
+				searchScope = new List<MemberInfo>[] { membersByName[name] };
+			} else {
+				searchScope = membersByName.Values;
+			}
+			
 			List<T> results = new List<T>();
-			foreach(List<MemberInfo> memberInfos in membersByName.Values) {
+			foreach(List<MemberInfo> memberInfos in searchScope) {
 				foreach(MemberInfo memberInfo in memberInfos) {
 					// Filter by type
 					if (!(memberInfo is T)) continue; // Reject item
-					
-					// Filter by name
-					if (name != null) {
-						if (memberInfo.Name != name) continue; // Reject item
-					}
 					
 					// Filter by access
 					if (((IDebugMemberInfo)memberInfo).IsPublic) {
