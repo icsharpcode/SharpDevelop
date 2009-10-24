@@ -9,10 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Text;
 
 namespace Debugger.MetaData
 {
-	public class DebugPropertyInfo : System.Reflection.PropertyInfo, IDebugMemberInfo
+	public class DebugPropertyInfo : System.Reflection.PropertyInfo, IDebugMemberInfo, IOverloadable
 	{
 		DebugType declaringType;
 		MethodInfo getMethod;
@@ -132,9 +133,14 @@ namespace Debugger.MetaData
 		{
 			if (GetGetMethod() != null) {
 				return GetGetMethod().GetParameters();
-			} else {
-				return null;
 			}
+			if (GetSetMethod() != null) {
+				List<ParameterInfo> pars = new List<ParameterInfo>();
+				pars.AddRange(GetSetMethod().GetParameters());
+				pars.RemoveAt(pars.Count - 1);
+				return pars.ToArray();
+			}
+			return null;
 		}
 		
 		//		public virtual Type[] GetOptionalCustomModifiers();
@@ -190,7 +196,34 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return this.PropertyType + " " + this.Name;
+			StringBuilder sb = new StringBuilder();
+			sb.Append(this.PropertyType);
+			sb.Append(" ");
+			sb.Append(this.Name);
+			if (GetIndexParameters().Length > 0) {
+				sb.Append("[");
+				bool first = true;
+				foreach(DebugParameterInfo p in GetIndexParameters()) {
+					if (!first)
+						sb.Append(", ");
+					first = false;
+					sb.Append(p.ParameterType.Name);
+					sb.Append(" ");
+					sb.Append(p.Name);
+				}
+				sb.Append("]");
+			}
+			return sb.ToString();
+		}
+		
+		ParameterInfo[] IOverloadable.GetParameters()
+		{
+			return GetIndexParameters();
+		}
+		
+		IntPtr IOverloadable.GetSignarture()
+		{
+			return ((IOverloadable)(getMethod ?? setMethod)).GetSignarture();
 		}
 	}
 }

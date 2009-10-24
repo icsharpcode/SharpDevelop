@@ -19,7 +19,7 @@ using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
 {
-	public class DebugMethodInfo: System.Reflection.MethodInfo, IDebugMemberInfo
+	public class DebugMethodInfo: System.Reflection.MethodInfo, IDebugMemberInfo, IOverloadable
 	{
 		DebugType declaringType;
 		MethodProps methodProps;
@@ -623,6 +623,11 @@ namespace Debugger.MetaData
 			}
 			txt += this.FullName;
 			return txt;
+		}
+		
+		IntPtr IOverloadable.GetSignarture()
+		{
+			return methodProps.SigBlob.Adress;
 		}
 	}
 }

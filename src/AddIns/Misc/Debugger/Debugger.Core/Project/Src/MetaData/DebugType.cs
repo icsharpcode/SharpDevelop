@@ -253,7 +253,7 @@ namespace Debugger.MetaData
 			return elementType;
 		}
 		
-		const BindingFlags supportedFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.FlattenHierarchy;
+		const BindingFlags SupportedFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.FlattenHierarchy;
 		
 		/// <summary> Return member with the given token</summary>
 		public MemberInfo GetMember(uint token)
@@ -273,7 +273,7 @@ namespace Debugger.MetaData
 		
 		public T[] GetMembers<T>(string name, BindingFlags bindingFlags, Predicate<T> filter) where T:MemberInfo
 		{
-			BindingFlags unsupported = bindingFlags & ~supportedFlags;
+			BindingFlags unsupported = bindingFlags & ~SupportedFlags;
 			if (unsupported != 0)
 				throw new NotSupportedException("BindingFlags: " + unsupported);
 			
@@ -331,6 +331,111 @@ namespace Debugger.MetaData
 			}
 			
 			return results.ToArray();
+		}
+		
+		MemberInfo SelectOverload(MemberInfo[] candidates, Type[] argumentTypes)
+		{
+			if (candidates.Length == 0)
+				return null;
+			
+			List<MemberInfo> applicable = new List<MemberInfo>();
+			foreach(MemberInfo candidate in candidates) {
+				bool isExactMatch;
+				if (IsApplicable(((IOverloadable)candidate).GetParameters(), argumentTypes, out isExactMatch))
+					applicable.Add(candidate);
+				if (isExactMatch)
+					return candidate;
+			}
+			if (applicable.Count == 0) {
+				if (candidates.Length == 1) {
+					throw new GetValueException("Incorrect parameter types");
+				} else {
+					throw new GetValueException("No applicable overload found");
+				}
+			} else if (applicable.Count == 1) {
+				return applicable[0];
+			} else {
+				// Remove base class definitions
+				IntPtr sig = ((IOverloadable)applicable[0]).GetSignarture();
+				for(int i = 1; i < applicable.Count;) {
+					if (sig == ((IOverloadable)applicable[i]).GetSignarture()) {
+						applicable.RemoveAt(i);
+					} else {
+						i++;
+					}
+				}
+				if (applicable.Count == 1)
+					return applicable[0];
+				StringBuilder overloads = new StringBuilder();
+				foreach(MemberInfo app in applicable) {
+					overloads.Append(Environment.NewLine);
+					overloads.Append("  ");
+					overloads.Append(app.ToString());
+				}
+				throw new GetValueException("More then one applicable overload found:" + overloads.ToString());
+			}
+		}
+		
+		bool IsApplicable(ParameterInfo[] parameters, Type[] argumentTypes, out bool isExactMatch)
+		{
+			isExactMatch = false;
+			if (argumentTypes == null)
+				return true;
+			if (argumentTypes.Length != parameters.Length)
+				return false;
+			isExactMatch = true;
+			for(int i = 0; i < parameters.Length; i++) {
+				if (argumentTypes[i] != parameters[i].ParameterType) {
+					isExactMatch = false;
+					if (!CanImplicitelyConvert(argumentTypes[i], parameters[i].ParameterType))
+						return false;
+				}
+			}
+			return true;
+		}
+		
+		static string Byte    = typeof(byte).FullName;
+		static string Short   = typeof(short).FullName;
+		static string Int     = typeof(int).FullName;
+		static string Long    = typeof(long).FullName;
+		static string SByte   = typeof(sbyte).FullName;
+		static string UShort  = typeof(ushort).FullName;
+		static string UInt    = typeof(uint).FullName;
+		static string ULong   = typeof(ulong).FullName;
+		static string Float   = typeof(float).FullName;
+		static string Double  = typeof(double).FullName;
+		static string Char    = typeof(char).FullName;
+		static string Decimal = typeof(decimal).FullName;
+		
+		bool CanImplicitelyConvert(Type fromType, Type toType)
+		{
+			if (fromType == toType)
+				return true;
+			if (fromType.IsPrimitive && toType.IsPrimitive) {
+				string f = fromType.FullName;
+				string t = toType.FullName;
+				if (f == SByte && (t == Short || t == Int || t == Long || t == Float || t == Double || t == Decimal))
+					return true;
+				if (f == Byte && (t == Short || t == UShort || t == Int || t == UInt || t == Long || t == ULong || t == Float || t == Double || t == Decimal))
+					return true;
+				if (f == Short && (t == Int || t == Long || t == Float || t == Double || t == Decimal))
+					return true;
+				if (f == UShort && (t == Int || t == UInt || t == Long || t == ULong || t == Float || t == Double || t == Decimal))
+					return true;
+				if (f == Int && (t == Long || t == Float || t == Double || t == Decimal))
+					return true;
+				if (f == UInt && (t == Long || t == ULong || t == Float || t == Double || t == Decimal))
+					return true;
+				if ((f == Long || f == ULong) && (t == Float || t == Double || t == Decimal))
+					return true;
+				if (f == Char && (t == UShort || t == Int || t == UInt || t == Long || t == ULong || t == Float || t == Double || t == Decimal))
+					return true;
+				if (f == Float && t == Double)
+					return true;
+				return false;
+			} else {
+				return toType.IsAssignableFrom(fromType);
+			}
 		}
 		
 		/// <inheritdoc/>
@@ -440,21 +545,15 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		protected override MethodInfo GetMethodImpl(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] paramTypes, ParameterModifier[] modifiers)
 		{
-			// TODO: Finish
-			foreach(DebugMethodInfo candidate in GetMethods(name, bindingAttr)) {
-				if (paramTypes == null)
-					return candidate;
-				if (candidate.ParameterCount == paramTypes.Length) {
-					bool match = true;
-					for(int i = 0; i < paramTypes.Length; i++) {
-						if (paramTypes[i] != candidate.GetParameters()[i].ParameterType)
-							match = false;
-					}
-					if (match)
-						return candidate;
-				}
-			}
-			return null;
+			if (binder != null)
+				throw new NotSupportedException("binder");
+			if (callConvention != CallingConventions.Any)
+				throw new NotSupportedException("callConvention");
+			if (modifiers != null)
+				throw new NotSupportedException("modifiers");
+			
+			MethodInfo[] candidates = GetMethods(name, bindingAttr);
+			return (MethodInfo)SelectOverload(candidates, paramTypes);
 		}
 		
 		public MethodInfo[] GetMethods(string name, BindingFlags bindingAttr)
@@ -493,6 +592,11 @@ namespace Debugger.MetaData
 			                              });
 		}
 		
+		public PropertyInfo[] GetProperties(string name, BindingFlags bindingAttr)
+		{
+			return GetMembers<PropertyInfo>(name, bindingAttr, null);
+		}
+		
 		/// <inheritdoc/>
 		public override PropertyInfo[] GetProperties(BindingFlags bindingAttr)
 		{
@@ -500,10 +604,17 @@ namespace Debugger.MetaData
 		}
 		
 		/// <inheritdoc/>
-		protected override PropertyInfo GetPropertyImpl(string name, BindingFlags bindingAttr, Binder binder, Type returnType, Type[] types, ParameterModifier[] modifiers)
+		protected override PropertyInfo GetPropertyImpl(string name, BindingFlags bindingAttr, Binder binder, Type returnType, Type[] paramTypes, ParameterModifier[] modifiers)
 		{
-			// TODO: Finsih
-			return GetMember<PropertyInfo>(name, bindingAttr, null);
+			if (binder != null)
+				throw new NotSupportedException("binder");
+			if (returnType != null)
+				throw new NotSupportedException("returnType");
+			if (modifiers != null)
+				throw new NotSupportedException("modifiers");
+			
+			PropertyInfo[] candidates = GetProperties(name, bindingAttr);
+			return (PropertyInfo)SelectOverload(candidates, paramTypes);
 		}
 		
 		/// <inheritdoc/>

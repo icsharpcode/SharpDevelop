@@ -173,6 +173,41 @@ namespace ICSharpCode.NRefactory.Visitors
 			this.context = context;
 		}
 		
+		DebugType ResoleType(Expression expr)
+		{
+			string name = GetTypeName(expr);
+			if (name == null)
+				return null;
+			// TODO: Generic arguments
+			return DebugType.CreateFromDottedName(context.AppDomain, name);
+		}
+		
+		string GetTypeName(Expression expr)
+		{
+			if (expr is IdentifierExpression) {
+				return ((IdentifierExpression)expr).Identifier;
+			} else if (expr is MemberReferenceExpression) {
+				return GetTypeName(((MemberReferenceExpression)expr).TargetObject) + "." + ((MemberReferenceExpression)expr).MemberName;
+			} else if (expr is TypeReferenceExpression) {
+				TypeReference typeRef = ((TypeReferenceExpression)expr).TypeReference;
+				string genArity = typeRef.GenericTypes.Count > 0 ? "`" + typeRef.GenericTypes.Count : string.Empty;
+				return typeRef.Type + genArity;
+			} else {
+				return null;
+			}
+		}
+		
+		public DebugType GetDebugType(INode expr)
+		{
+			if (expr is ParenthesizedExpression) {
+				return GetDebugType(((ParenthesizedExpression)expr).Expression);
+			} else if (expr is CastExpression) {
+				return DebugType.CreateFromTypeReference(context.AppDomain, ((CastExpression)expr).CastTo);
+			} else {
+				return null;
+			}
+		}
+		
 		public override object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			BinaryOperatorType op;
@@ -243,17 +278,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			return Evaluate(castExpression.Expression);
 		}
 		
-		public DebugType GetDebugType(INode expr)
-		{
-			if (expr is ParenthesizedExpression) {
-				return GetDebugType(((ParenthesizedExpression)expr).Expression);
-			} else if (expr is CastExpression) {
-				return DebugType.CreateFromTypeReference(context.AppDomain, ((CastExpression)expr).CastTo);
-			} else {
-				return null;
-			}
-		}
-		
 		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			string identifier = identifierExpression.Identifier;
@@ -318,33 +342,20 @@ namespace ICSharpCode.NRefactory.Visitors
 				}
 			}
 			
-			DebugPropertyInfo pi = (DebugPropertyInfo)target.Type.GetProperty("Item");
+			Type[] indexerTypes = GetTypes(indexerExpression.Indexes);
+			DebugPropertyInfo pi = (DebugPropertyInfo)target.Type.GetProperty("Item", indexerTypes);
 			if (pi == null) throw new GetValueException("The object does not have an indexer property");
 			return target.GetPropertyValue(pi, indexes.ToArray());
 		}
 		
-		DebugType ResoleType(Expression expr)
+		Type[] GetTypes(List<Expression> args)
 		{
-			string name = GetTypeName(expr);
-			if (name == null)
-				return null;
-			// TODO: Generic arguments
-			return DebugType.CreateFromDottedName(context.AppDomain, name);
-		}
-		
-		string GetTypeName(Expression expr)
-		{
-			if (expr is IdentifierExpression) {
-				return ((IdentifierExpression)expr).Identifier;
-			} else if (expr is MemberReferenceExpression) {
-				return GetTypeName(((MemberReferenceExpression)expr).TargetObject) + "." + ((MemberReferenceExpression)expr).MemberName;
-			} else if (expr is TypeReferenceExpression) {
-				TypeReference typeRef = ((TypeReferenceExpression)expr).TypeReference;
-				string genArity = typeRef.GenericTypes.Count > 0 ? "`" + typeRef.GenericTypes.Count : string.Empty;
-				return typeRef.Type + genArity;
-			} else {
-				return null;
+			List<DebugType> argTypes = new List<DebugType>();
+			foreach(Expression arg in args) {
+				DebugType argType = GetDebugType(arg) ?? Evaluate(arg).Type;
+				argTypes.Add(argType);
 			}
+			return argTypes.ToArray();
 		}
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
@@ -376,26 +387,10 @@ namespace ICSharpCode.NRefactory.Visitors
 					throw new GetValueException("Member reference expected for method invocation");
 				}
 			}
-			MethodInfo method;
-			IList<MemberInfo> methods = targetType.GetMember(methodName, MemberTypes.Method, BindingFlagsAllDeclared);
-			if (methods.Count == 0)
-				methods = targetType.GetMember(methodName, MemberTypes.Method, BindingFlagsAll);
-			if (methods.Count == 0) {
+			Type[] argTypes = GetTypes(invocationExpression.Arguments);
+			MethodInfo method = targetType.GetMethod(methodName, BindingFlagsAll, null, argTypes, null);
+			if (method == null)
 				throw new GetValueException("Method " + methodName + " not found");
-			} else if (methods.Count == 1) {
-				method = (MethodInfo)methods[0];
-			} else {
-				List<DebugType> argTypes = new List<DebugType>();
-				foreach(Expression expr in invocationExpression.Arguments) {
-					DebugType argType = GetDebugType(expr);
-					if (argType == null)
-						argType = Evaluate(expr).Type;
-					argTypes.Add(argType);
-				}
-				method = targetType.GetMethod(methodName, argTypes.ToArray());
-				if (method == null)
-					throw new GetValueException("Can not find overload with given types");
-			}
 			List<Value> args = new List<Value>();
 			foreach(Expression expr in invocationExpression.Arguments) {
 				args.Add(Evaluate(expr));

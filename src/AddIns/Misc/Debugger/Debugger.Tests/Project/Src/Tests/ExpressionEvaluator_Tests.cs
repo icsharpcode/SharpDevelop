@@ -26,6 +26,17 @@ namespace Debugger.Tests
 			{
 				return "base Foo - int";
 			}
+			
+			public string Foo(double d)
+			{
+				return "base Foo - double";
+			}
+			
+			public string this[long i] {
+				get {
+					return "base indexer - long";
+				}
+			}
 		}
 		
 		public class DerivedClass: BaseClass
@@ -55,6 +66,11 @@ namespace Debugger.Tests
 				return "static method";
 			}
 			
+			public string Foo(object o)
+			{
+				return "derived Foo - object";
+			}
+			
 			new public string Foo(int i)
 			{
 				return "derived Foo - int";
@@ -63,6 +79,23 @@ namespace Debugger.Tests
 			public string Foo(string s)
 			{
 				return "derived Foo - string";
+			}
+			
+			public string this[double d] {
+				get {
+					return "derived indexer - double";
+				}
+			}
+			
+			public string this[string s] {
+				get {
+					return "derived indexer - string";
+				}
+			}
+			
+			public string Convert(string s, double d)
+			{
+				return "converted to " + s + " and " + d;
 			}
 		}
 		
@@ -188,6 +221,23 @@ namespace Debugger.Tests {
 				Eval(expr.PrettyPrint());
 			}
 			
+			string input2 = @"
+				myClass.Foo(1.0)
+				myClass.Foo(myClass)
+				myClass.Foo(1)
+				myClass.Foo('abc')
+				myClass[1]
+				myClass[(long)1]
+				myClass[1.0]
+				myClass['abc']
+				myClass.Convert(1,2)
+			";
+			
+			input2 = input2.Replace("'", "\"");
+			foreach(string line in input2.Split('\n')) {
+				Eval(line.Trim());
+			}
+			
 			EndTest();
 		}
 		
@@ -222,7 +272,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:94,4-94,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:127,4-127,40</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -290,6 +340,19 @@ namespace Debugger.Tests {
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass).Foo((System.Int32)1) = "base Foo - int" </Eval>
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Foo((System.Int32)1) = "derived Foo - int" </Eval>
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Foo((System.String)"a") = "derived Foo - string" </Eval>
+    <Eval> </Eval>
+    <Eval> myClass.Foo(1.0) = "base Foo - double" </Eval>
+    <Eval> myClass.Foo(myClass) = "derived Foo - object" </Eval>
+    <Eval> myClass.Foo(1) = "derived Foo - int" </Eval>
+    <Eval> myClass.Foo("abc") = "derived Foo - string" </Eval>
+    <Eval> myClass[1] = Error evaluating "myClass[1]": More then one applicable overload found:
+  System.String Item[Double d]
+  System.String Item[Int64 i] </Eval>
+    <Eval> myClass[(long)1] = "base indexer - long" </Eval>
+    <Eval> myClass[1.0] = "derived indexer - double" </Eval>
+    <Eval> myClass["abc"] = "derived indexer - string" </Eval>
+    <Eval> myClass.Convert(1,2) = Error evaluating "myClass.Convert(1, 2)": Incorrect parameter types </Eval>
+    <Eval> </Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>

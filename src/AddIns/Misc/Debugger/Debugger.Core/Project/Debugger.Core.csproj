@@ -96,6 +96,7 @@
     <Compile Include="Src\MetaData\DebugPropertyInfo.cs" />
     <Compile Include="Src\MetaData\DebugType.cs" />
     <Compile Include="Src\MetaData\IDebugMemberInfo.cs" />
+    <Compile Include="Src\MetaData\IOverloadable.cs" />
     <Compile Include="Src\Module.cs" />
     <Compile Include="Src\ModuleCollection.cs" />
     <Compile Include="Src\Mono.Cecil\Mono.Cecil.Binary\ImageFormatException.cs" />
