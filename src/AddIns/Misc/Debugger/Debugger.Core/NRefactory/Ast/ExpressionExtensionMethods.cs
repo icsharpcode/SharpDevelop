@@ -23,6 +23,51 @@ namespace ICSharpCode.NRefactory.Ast
 			return ExpressionEvaluator.Evaluate(expression, process);
 		}
 		
+		static M SetStaticType<M>(this M expr, DebugType type) where M: INode
+		{
+			expr.UserData = type;
+			return expr;
+		}
+		
+		public static DebugType GetStaticType(this INode expr)
+		{
+			return expr.UserData as DebugType;
+		}
+		
+		public static Expression Parenthesize(this Expression expr)
+		{
+			if (expr is IdentifierExpression ||
+			    expr is MemberReferenceExpression ||
+			    expr is IndexerExpression ||
+			    expr is ParenthesizedExpression ||
+			    expr is PrimitiveExpression)
+				return expr;
+			return new ParenthesizedExpression(expr);
+		}
+		
+		public static Expression CastTo(this Expression expresion, DebugType castTo)
+		{
+			// No need to cast
+			if (expresion.GetStaticType() == castTo)
+				return expresion;
+			if (expresion is PrimitiveExpression) {
+				object val = ((PrimitiveExpression)expresion).Value;
+				if (val != null && val.GetType().FullName == castTo.FullName)
+					return expresion;
+			}
+			return new CastExpression(castTo.GetTypeReference(), expresion.Parenthesize(), CastType.Cast);
+		}
+		
+		public static Expression GetExpression(this DebugLocalVariableInfo locVar)
+		{
+			return new IdentifierExpression(locVar.Name).SetStaticType((DebugType)locVar.LocalType);
+		}
+		
+		public static Expression GetExpression(this DebugParameterInfo par)
+		{
+			return new IdentifierExpression(par.Name).SetStaticType((DebugType)par.ParameterType);
+		}
+		
 		public static UnaryOperatorExpression AppendDereference(this Expression expression)
 		{
 			return new UnaryOperatorExpression(new ParenthesizedExpression(expression), UnaryOperatorType.Dereference);
@@ -32,14 +77,13 @@ namespace ICSharpCode.NRefactory.Ast
 		{
 			IndexerExpression indexerExpr = new IndexerExpression(Parenthesize(expression), new List<Expression>());
 			foreach(int index in indices) {
-				indexerExpr.Indexes.Add(
-					new CastExpression(
-						new TypeReference(typeof(int).FullName),
-						new PrimitiveExpression(index),
-						CastType.Cast
-					)
-				);
+				indexerExpr.Indexes.Add(new PrimitiveExpression(index));
 			}
+			DebugType staticType = expression.GetStaticType();
+			if (staticType != null && staticType.IsArray)
+				indexerExpr.SetStaticType((DebugType)staticType.GetElementType());
+			if (staticType != null && staticType.FullNameWithoutGenericArguments == typeof(List<>).FullName)
+				indexerExpr.SetStaticType((DebugType)staticType.GetGenericArguments()[0]);
 			return indexerExpr;
 		}
 		
@@ -51,26 +95,20 @@ namespace ICSharpCode.NRefactory.Ast
 					memberInfo.DeclaringType.GetTypeReference()
 				);
 			} else {
-				target = new ParenthesizedExpression(
-					new CastExpression(
-						memberInfo.DeclaringType.GetTypeReference(),
-						Parenthesize(expresion),
-						CastType.Cast
-					)
-				);
+				target = expresion.CastTo((DebugType)memberInfo.DeclaringType);
 			}
 			
 			if (memberInfo is DebugFieldInfo) {
 				if (args.Length > 0)
 					throw new DebuggerException("No arguments expected for a field");
-				return new MemberReferenceExpression(target, memberInfo.Name);
+				return new MemberReferenceExpression(target, memberInfo.Name).SetStaticType(memberInfo.MemberType);
 			}
 			
 			if (memberInfo is MethodInfo) {
 				return new InvocationExpression(
 					new MemberReferenceExpression(target, memberInfo.Name),
 					AddExplicitTypes((MethodInfo)memberInfo, args)
-				);
+				).SetStaticType(memberInfo.MemberType);
 			}
 			
 			if (memberInfo is PropertyInfo) {
@@ -81,23 +119,13 @@ namespace ICSharpCode.NRefactory.Ast
 					return new IndexerExpression(
 						target,
 						AddExplicitTypes(propInfo.GetGetMethod() ?? propInfo.GetSetMethod(), args)
-					);
+					).SetStaticType(memberInfo.MemberType);
 				} else {
-					return new MemberReferenceExpression(target, memberInfo.Name);
+					return new MemberReferenceExpression(target, memberInfo.Name).SetStaticType(memberInfo.MemberType);
 				}
 			}
+			
 			throw new DebuggerException("Unknown member type " + memberInfo.GetType().FullName);
-		}
-		
-		static Expression Parenthesize(Expression expr)
-		{
-			if (expr is IdentifierExpression ||
-			    expr is MemberReferenceExpression ||
-			    expr is IndexerExpression ||
-			    expr is ParenthesizedExpression ||
-			    expr is PrimitiveExpression)
-				return expr;
-			return new ParenthesizedExpression(expr);
 		}
 		
 		static List<Expression> AddExplicitTypes(MethodInfo method, Expression[] args)
@@ -106,13 +134,7 @@ namespace ICSharpCode.NRefactory.Ast
 				throw new DebuggerException("Incorrect number of arguments");
 			List<Expression> typedArgs = new List<Expression>(args.Length);
 			for(int i = 0; i < args.Length; i++) {
-				typedArgs.Add(
-					new CastExpression(
-						method.GetParameters()[i].ParameterType.GetTypeReference(),
-						Parenthesize(args[i]),
-						CastType.Cast
-					)
-				);
+				typedArgs.Add(args[i].CastTo((DebugType)method.GetParameters()[i].ParameterType));
 			}
 			return typedArgs;
 		}
@@ -174,9 +196,9 @@ namespace ICSharpCode.NRefactory.Ast
 				InnerClassTypeReference innerRef = new InnerClassTypeReference(outterRef, name, genTypeRefs);
 				innerRef.PointerNestingLevel = pointerNest;
 				innerRef.RankSpecifier = arrayRanks.ToArray();
-				return innerRef;
+				return innerRef.SetStaticType((DebugType)type);
 			} else {
-				return new TypeReference(name, pointerNest, arrayRanks.ToArray(), genTypeRefs);
+				return new TypeReference(name, pointerNest, arrayRanks.ToArray(), genTypeRefs).SetStaticType((DebugType)type);
 			}
 		}
 		
@@ -248,6 +270,11 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		public static DebugType ResolveType(this INode expr, Debugger.AppDomain appDomain)
 		{
+			if (expr is TypeReference && expr.GetStaticType() != null)
+				return expr.GetStaticType();
+			if (expr is TypeReferenceExpression && ((TypeReferenceExpression)expr).TypeReference.GetStaticType() != null)
+				return ((TypeReferenceExpression)expr).TypeReference.GetStaticType();
+			
 			TypeReference typeRef = NormalizeTypeReference(expr);
 			
 			List<TypeReference> genTypeRefs;

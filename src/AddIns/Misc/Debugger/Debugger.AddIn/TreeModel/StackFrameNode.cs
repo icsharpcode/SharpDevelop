@@ -29,10 +29,10 @@ namespace Debugger.AddIn.TreeModel
 		IEnumerable<TreeNode> LazyGetChildNodes()
 		{
 			foreach(DebugParameterInfo par in stackFrame.MethodInfo.GetParameters()) {
-				yield return new ExpressionNode(ExpressionNode.GetImageForParameter(), par.Name, new IdentifierExpression(par.Name));
+				yield return new ExpressionNode(ExpressionNode.GetImageForParameter(), par.Name, par.GetExpression());
 			}
 			foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables()) {
-				yield return new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), locVar.Name, new IdentifierExpression(locVar.Name));
+				yield return new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), locVar.Name, locVar.GetExpression());
 			}
 			if (stackFrame.Thread.CurrentException != null) {
 				yield return new ExpressionNode(null, "__exception", new IdentifierExpression("__exception"));

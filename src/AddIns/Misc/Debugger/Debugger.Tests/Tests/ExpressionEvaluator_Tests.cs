@@ -209,15 +209,16 @@ namespace Debugger.Tests {
 			// Test member hiding / overloading
 			
 			Value myClass = process.SelectedStackFrame.GetLocalVariableValue("myClass").GetPermanentReference();
+			Expression myClassExpr = process.SelectedStackFrame.MethodInfo.GetLocalVariable("myClass").GetExpression();
 			
 			List<Expression> expressions = new List<Expression>();
 			foreach(MemberInfo memberInfo in myClass.Type.GetFieldsAndNonIndexedProperties(DebugType.BindingFlagsAll)) {
-				expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((IDebugMemberInfo)memberInfo));
+				expressions.Add(myClassExpr.AppendMemberReference((IDebugMemberInfo)memberInfo));
 			}
-			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("StaticMethod")));
-			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)((DebugType)myClass.Type.BaseType).GetMethod("Foo", new string[] { "i" }), new PrimitiveExpression(1)));
-			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("Foo", new string[] { "i" }), new PrimitiveExpression(1)));
-			expressions.Add(new IdentifierExpression("myClass").AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("Foo", new string[] { "s" }), new PrimitiveExpression("a")));
+			expressions.Add(myClassExpr.AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("StaticMethod")));
+			expressions.Add(myClassExpr.AppendMemberReference((DebugMethodInfo)((DebugType)myClass.Type.BaseType).GetMethod("Foo", new string[] { "i" }), new PrimitiveExpression(1)));
+			expressions.Add(myClassExpr.AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("Foo", new string[] { "i" }), new PrimitiveExpression(1)));
+			expressions.Add(myClassExpr.AppendMemberReference((DebugMethodInfo)myClass.Type.GetMethod("Foo", new string[] { "s" }), new PrimitiveExpression("a")));
 			
 			foreach(Expression expr in expressions) {
 				Eval(expr.PrettyPrint());
@@ -409,17 +410,17 @@ namespace Debugger.Tests {
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstString = "const string" </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstNull = null </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstEnum = B </Eval>
-    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).name = "derived name" </Eval>
+    <Eval> myClass.name = "derived name" </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.StaticField = "derived static field" </Eval>
-    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Name = "derived name" </Eval>
+    <Eval> myClass.Name = "derived name" </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.StaticProperty = "static property" </Eval>
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass).name = "base name" </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.BaseClass.StaticField = "base static field" </Eval>
     <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass).Name = "base name" </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.StaticMethod() = "static method" </Eval>
-    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass).Foo((System.Int32)1) = "base Foo - int" </Eval>
-    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Foo((System.Int32)1) = "derived Foo - int" </Eval>
-    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass).Foo((System.String)"a") = "derived Foo - string" </Eval>
+    <Eval> ((Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass).Foo(1) = "base Foo - int" </Eval>
+    <Eval> myClass.Foo(1) = "derived Foo - int" </Eval>
+    <Eval> myClass.Foo("a") = "derived Foo - string" </Eval>
     <Eval> </Eval>
     <Eval> myClass.Foo(1.0) = "base Foo - double" </Eval>
     <Eval> myClass.Foo(myClass) = "derived Foo - object" </Eval>
