@@ -312,13 +312,7 @@
     <None Include="Src\Visualizers\Graph\Graphviz\zlib1.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Client.config">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
     <Content Include="Debugger.AddIn.addin">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Server.config">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <ProjectReference Include="..\..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
