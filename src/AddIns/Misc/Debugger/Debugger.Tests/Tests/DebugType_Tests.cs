@@ -63,9 +63,22 @@ namespace Debugger.Tests
 		
 		public unsafe class Members
 		{
+			public int instanceInt;
+			public static int staticInt;
+			
 			public void* voidPtr;
 			public char SetterOnlyProp { set { ; } }
 			public const int IntLiteral = 42;
+			
+			public int InstanceInt {
+				get { return instanceInt; }
+			}
+			
+			public static int StaticInt {
+				get { return staticInt; }
+			}
+			
+			public int AutoProperty { get; set; }
 			
 			public char this[int i] {
 				get { throw new NotImplementedException(); }
@@ -208,8 +221,6 @@ namespace Debugger.Tests {
 			ObjectDump("MyInterfaceImpl-Members", process.SelectedStackFrame.GetLocalVariableValue("myInterfaceImpl").Type.GetMembers());
 			PrintLocalVariables();
 			
-			// TODO: Identity
-			
 			EndTest();
 		}
 	}
@@ -224,7 +235,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType_Tests.cs:138,4-138,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_Tests.cs:151,4-151,40</DebuggingPaused>
     <DefinedTypes
       Capacity="16"
       Count="12">
@@ -312,10 +323,10 @@ namespace Debugger.Tests {
           Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
           BaseType="System.Object"
           FullName="Debugger.Tests.DebugType_Tests+Members"
-          GetFields="{System.Int32 IntLiteral, System.Void* voidPtr}"
-          GetMembers="{System.Int32 IntLiteral, System.Void* voidPtr, void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), System.Char SetterOnlyProp, System.Char Item[Int32 i], System.Char Item[String s], void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-          GetMethods="{void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-          GetProperties="{System.Char SetterOnlyProp, System.Char Item[Int32 i], System.Char Item[String s]}"
+          GetFields="{System.Int32 IntLiteral, System.Int32 instanceInt, System.Int32 staticInt, System.Void* voidPtr}"
+          GetMembers="{System.Int32 IntLiteral, System.Int32 instanceInt, System.Int32 staticInt, System.Void* voidPtr, void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.DebugType_Tests+Members.get_InstanceInt(), static System.Int32 Debugger.Tests.DebugType_Tests+Members.get_StaticInt(), System.Int32 Debugger.Tests.DebugType_Tests+Members.get_AutoProperty(), void Debugger.Tests.DebugType_Tests+Members.set_AutoProperty(Int32 value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), System.Char SetterOnlyProp, System.Int32 InstanceInt, System.Int32 StaticInt, System.Int32 AutoProperty, System.Char Item[Int32 i], System.Char Item[String s], void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          GetMethods="{void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.DebugType_Tests+Members.get_InstanceInt(), static System.Int32 Debugger.Tests.DebugType_Tests+Members.get_StaticInt(), System.Int32 Debugger.Tests.DebugType_Tests+Members.get_AutoProperty(), void Debugger.Tests.DebugType_Tests+Members.set_AutoProperty(Int32 value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+          GetProperties="{System.Char SetterOnlyProp, System.Int32 InstanceInt, System.Int32 StaticInt, System.Int32 AutoProperty, System.Char Item[Int32 i], System.Char Item[String s]}"
           IsClass="True"
           IsNested="True">
           <GetElementType>null</GetElementType>
@@ -349,8 +360,29 @@ namespace Debugger.Tests {
         <DebugFieldInfo
           Attributes="Public"
           DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FieldType="System.Int32"
+          Name="instanceInt" />
+      </Item>
+      <Item>
+        <DebugFieldInfo
+          Attributes="Public, Static"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FieldType="System.Int32"
+          Name="staticInt" />
+      </Item>
+      <Item>
+        <DebugFieldInfo
+          Attributes="Public"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
           FieldType="System.Void*"
           Name="voidPtr" />
+      </Item>
+      <Item>
+        <DebugFieldInfo
+          Attributes="Private"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FieldType="System.Int32"
+          Name="&lt;AutoProperty&gt;k__BackingField" />
       </Item>
       <Item>
         <DebugMethodInfo
@@ -359,6 +391,45 @@ namespace Debugger.Tests {
           FullName="Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value)"
           GetLocalVariables="{Debugger.Tests.DebugType_Tests+Members this}"
           Name="set_SetterOnlyProp" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          BackingField="System.Int32 instanceInt"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FullName="Debugger.Tests.DebugType_Tests+Members.get_InstanceInt()"
+          GetLocalVariables="{Debugger.Tests.DebugType_Tests+Members this}"
+          Name="get_InstanceInt"
+          ReturnType="System.Int32"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, Static, HideBySig, SpecialName"
+          BackingField="System.Int32 staticInt"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FullName="Debugger.Tests.DebugType_Tests+Members.get_StaticInt()"
+          Name="get_StaticInt"
+          ReturnType="System.Int32"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          BackingField="System.Int32 &lt;AutoProperty&gt;k__BackingField"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FullName="Debugger.Tests.DebugType_Tests+Members.get_AutoProperty()"
+          Name="get_AutoProperty"
+          ReturnType="System.Int32"
+          StepOver="True" />
+      </Item>
+      <Item>
+        <DebugMethodInfo
+          Attributes="PrivateScope, Public, HideBySig, SpecialName"
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          FullName="Debugger.Tests.DebugType_Tests+Members.set_AutoProperty(Int32 value)"
+          Name="set_AutoProperty"
+          StepOver="True" />
       </Item>
       <Item>
         <DebugMethodInfo
@@ -399,6 +470,24 @@ namespace Debugger.Tests {
           DeclaringType="Debugger.Tests.DebugType_Tests+Members"
           Name="SetterOnlyProp"
           PropertyType="System.Char" />
+      </Item>
+      <Item>
+        <DebugPropertyInfo
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          Name="InstanceInt"
+          PropertyType="System.Int32" />
+      </Item>
+      <Item>
+        <DebugPropertyInfo
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          Name="StaticInt"
+          PropertyType="System.Int32" />
+      </Item>
+      <Item>
+        <DebugPropertyInfo
+          DeclaringType="Debugger.Tests.DebugType_Tests+Members"
+          Name="AutoProperty"
+          PropertyType="System.Int32" />
       </Item>
       <Item>
         <DebugPropertyInfo
@@ -1464,10 +1553,10 @@ namespace Debugger.Tests {
               Attributes="AutoLayout, AnsiClass, Class, NestedPublic, BeforeFieldInit"
               BaseType="System.Object"
               FullName="Debugger.Tests.DebugType_Tests+Members"
-              GetFields="{System.Int32 IntLiteral, System.Void* voidPtr}"
-              GetMembers="{System.Int32 IntLiteral, System.Void* voidPtr, void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), System.Char SetterOnlyProp, System.Char Item[Int32 i], System.Char Item[String s], void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetMethods="{void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
-              GetProperties="{System.Char SetterOnlyProp, System.Char Item[Int32 i], System.Char Item[String s]}"
+              GetFields="{System.Int32 IntLiteral, System.Int32 instanceInt, System.Int32 staticInt, System.Void* voidPtr}"
+              GetMembers="{System.Int32 IntLiteral, System.Int32 instanceInt, System.Int32 staticInt, System.Void* voidPtr, void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.DebugType_Tests+Members.get_InstanceInt(), static System.Int32 Debugger.Tests.DebugType_Tests+Members.get_StaticInt(), System.Int32 Debugger.Tests.DebugType_Tests+Members.get_AutoProperty(), void Debugger.Tests.DebugType_Tests+Members.set_AutoProperty(Int32 value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), System.Char SetterOnlyProp, System.Int32 InstanceInt, System.Int32 StaticInt, System.Int32 AutoProperty, System.Char Item[Int32 i], System.Char Item[String s], void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetMethods="{void Debugger.Tests.DebugType_Tests+Members.set_SetterOnlyProp(Char value), System.Int32 Debugger.Tests.DebugType_Tests+Members.get_InstanceInt(), static System.Int32 Debugger.Tests.DebugType_Tests+Members.get_StaticInt(), System.Int32 Debugger.Tests.DebugType_Tests+Members.get_AutoProperty(), void Debugger.Tests.DebugType_Tests+Members.set_AutoProperty(Int32 value), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(Int32 i), System.Char Debugger.Tests.DebugType_Tests+Members.get_Item(String s), void Debugger.Tests.DebugType_Tests+Members.set_Item(Int32 i, Char value), void Debugger.Tests.DebugType_Tests+Members..ctor(), void System.Object..ctor(), System.String System.Object.ToString(), System.Boolean System.Object.Equals(Object obj), System.Int32 System.Object.GetHashCode(), System.Type System.Object.GetType()}"
+              GetProperties="{System.Char SetterOnlyProp, System.Int32 InstanceInt, System.Int32 StaticInt, System.Int32 AutoProperty, System.Char Item[Int32 i], System.Char Item[String s]}"
               IsClass="True"
               IsNested="True">
               <GetElementType>null</GetElementType>

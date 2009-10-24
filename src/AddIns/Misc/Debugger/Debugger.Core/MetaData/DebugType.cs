@@ -1261,11 +1261,16 @@ namespace Debugger.MetaData
 			
 			// Load properties
 			foreach(PropertyProps prop in module.MetaData.EnumPropertyProps((uint)this.MetadataToken)) {
-				AddMember(new DebugPropertyInfo(
+				DebugPropertyInfo propInfo = new DebugPropertyInfo(
 					this,
 					prop.GetterMethod != 0x06000000 ? GetMethod(prop.GetterMethod) : null,
 					prop.SetterMethod != 0x06000000 ? GetMethod(prop.SetterMethod) : null
-				));
+				);
+				if (propInfo.GetGetMethod() != null)
+					((DebugMethodInfo)propInfo.GetGetMethod()).IsPropertyAccessor = true;
+				if (propInfo.GetSetMethod() != null)
+					((DebugMethodInfo)propInfo.GetSetMethod()).IsPropertyAccessor = true;
+				AddMember(propInfo);
 			}
 		}
 		

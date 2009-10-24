@@ -61,7 +61,6 @@ namespace Debugger.Interop.CorDebug
 		
 		public static unsafe byte[] GetCode(this ICorDebugCode corCode)
 		{
-			if (corCode.IsIL() == 0) return null;
 			byte[] code = new byte[corCode.GetSize()];
 			fixed(byte* pCode = code)
 				corCode.GetCode(0, (uint)code.Length, (uint)code.Length, new IntPtr(pCode));

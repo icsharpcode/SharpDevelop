@@ -157,9 +157,7 @@ namespace Debugger.Tests {
 				process.SelectedStackFrame.StepInto(); // ShortProperty
 				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
 				
-				// TODO: Does not work for static
-				// process.SelectedStackFrame.StepInto(); // FieldProperty
-				process.SelectedStackFrame.StepOver(); // FieldProperty
+				process.SelectedStackFrame.StepInto(); // FieldProperty
 				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
 				
 				process.SelectedStackFrame.StepInto(); // CatchExcpetion

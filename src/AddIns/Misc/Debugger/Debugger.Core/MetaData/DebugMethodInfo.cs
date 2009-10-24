@@ -267,24 +267,19 @@ namespace Debugger.MetaData
 					if (this.HasDebuggerAttribute) return true;
 				}
 				if (opt.StepOverAllProperties) {
-					if (this.IsProperty)return true;
+					if (this.IsPropertyAccessor) return true;
 				}
 				if (opt.StepOverSingleLineProperties) {
-					if (this.IsProperty && this.IsSingleLine) return true;
+					if (this.IsPropertyAccessor && this.IsSingleLine) return true;
 				}
 				if (opt.StepOverFieldAccessProperties) {
-					if (this.IsProperty && this.BackingField != null) return true;
+					if (this.IsPropertyAccessor && this.BackingField != null) return true;
 				}
 				return false;
 			}
 		}
 		
-		// TODO: More accurate
-		bool IsProperty {
-			get {
-				return this.Name.StartsWith("get_") || this.Name.StartsWith("set_");
-			}
-		}
+		internal bool IsPropertyAccessor { get; set; }
 		
 		DebugFieldInfo backingFieldCache;
 		bool getBackingFieldCalled;
@@ -305,8 +300,6 @@ namespace Debugger.MetaData
 		// Is this method in form 'return this.field;'?
 		DebugFieldInfo GetBackingField()
 		{
-			if (this.IsStatic) return null; // TODO: Make work for static, 
-											// the code size for static is 10/11 opposed to instance 11/12 - the ldarg.0 is missing
 			if (this.ParameterCount != 0) return null;
 			
 			ICorDebugCode corCode;
@@ -317,90 +310,56 @@ namespace Debugger.MetaData
 			}
 			
 			if (corCode == null) return null;
-			if (corCode.GetSize() != 7 && corCode.GetSize() != 12 && corCode.GetSize() != 11) return null;
+			if (corCode.IsIL() == 0) return null;
+			if (corCode.GetSize() > 12) return null;
 			
-			byte[] code = corCode.GetCode();
-			
-			if (code == null) return null;
-			
-			/*
-			string codeTxt = "";
-			foreach(byte b in code) {
-				codeTxt += b.ToString("X2") + " ";
-			}
-			process.TraceMessage("Code of " + Name + ": " + codeTxt);
-			 */
+			List<byte> code = new List<byte>(corCode.GetCode());
 			
 			uint token = 0;
+			
+			bool success =
+				(Read(code, 0x00) || true) &&                     // nop || nothing 
+				(Read(code, 0x02, 0x7B) || Read(code, 0x7E)) &&   // ldarg.0; ldfld || ldsfld
+				ReadToken(code, ref token) &&                     //   <field token>
+				(Read(code, 0x0A, 0x2B, 0x00, 0x06) || true) &&   // stloc.0; br.s; offset+00; ldloc.0 || nothing
+				Read(code, 0x2A);                                 // ret
 		
-			// code generated for 'return this.field'
-			if (code.Length == 12 &&
-			    code[00] == 0x00 && // nop
-			    code[01] == 0x02 && // ldarg.0
-			    code[02] == 0x7B && // ldfld
-			    code[06] == 0x04 && //   <field token>
-			    code[07] == 0x0A && // stloc.0
-			    code[08] == 0x2B && // br.s
-			    code[09] == 0x00 && //   offset+00
-			    code[10] == 0x06 && // ldloc.0
-			    code[11] == 0x2A)   // ret
-			{
-				token = GetTokenFromIL(code, 06);
-			}
+			if (!success) return null;
 			
-			// code generated for getter 'public int Prop { get; [set;] }'
-			// (same as above, just leading nop is missing)
-			if (code.Length == 11 &&
-			    code[00] == 0x02 && // ldarg.0
-			    code[01] == 0x7B && // ldfld
-			    code[05] == 0x04 && //   <field token>
-			    code[06] == 0x0A && // stloc.0
-			    code[07] == 0x2B && // br.s
-			    code[08] == 0x00 && //   offset+00
-			    code[09] == 0x06 && // ldloc.0
-			    code[10] == 0x2A)   // ret
-			{
-				token = GetTokenFromIL(code, 05);
-			}
+			MemberInfo member = declaringType.GetMember(token);
 			
-			if (code.Length == 7 &&
-			    code[00] == 0x02 && // ldarg.0
-			    code[01] == 0x7B && // ldfld
-			    code[05] == 0x04 && //   <field token>
-			    code[06] == 0x2A)   // ret
-			{
-				token = GetTokenFromIL(code, 05);
-			}
+			if (member == null) return null;
+			if (!(member is DebugFieldInfo)) return null;
 			
-			if (token != 0) {
-				// process.TraceMessage("Token: " + token.ToString("x"));
-				
-				MemberInfo member = declaringType.GetMember(token);
-				
-				if (member == null) return null;
-				if (!(member is DebugFieldInfo)) return null;
-				
-				if (this.Process.Options.Verbose) {
-					this.Process.TraceMessage(string.Format("Found backing field for {0}: {1}", this.FullName, member.Name));
-				}
-				return (DebugFieldInfo)member;
+			if (this.Process.Options.Verbose) {
+				this.Process.TraceMessage(string.Format("Found backing field for {0}: {1}", this.FullName, member.Name));
 			}
-			
-			return null;
+			return (DebugFieldInfo)member;
 		}
 		
-		/// <summary>
-		/// Gets token from IL code.
-		/// </summary>
-		/// <param name="ilCode">Bytes representing the code.</param>
-		/// <param name="tokenEndIndex">Index of last byte of the token.</param>
-		/// <returns>IL token.</returns>
-		uint GetTokenFromIL(byte[] ilCode, uint tokenEndIndex)
+		// Read expected sequence of bytes
+		static bool Read(List<byte> code, params byte[] expected)
 		{
-			return  ((uint)ilCode[tokenEndIndex] << 24) +
-					((uint)ilCode[tokenEndIndex - 1] << 16) +
-					((uint)ilCode[tokenEndIndex - 2] << 8) +
-					((uint)ilCode[tokenEndIndex - 3]);
+			if (code.Count < expected.Length)
+				return false;
+			for(int i = 0; i < expected.Length; i++) {
+				if (code[i] != expected[i])
+					return false;
+			}
+			code.RemoveRange(0, expected.Length);
+			return true;
+		}
+		
+		// Read field token
+		static bool ReadToken(List<byte> code, ref uint token)
+		{
+			if (code.Count < 4)
+				return false;
+			if (code[3] != 0x04) // field token
+				return false;
+			token = ((uint)code[0]) + ((uint)code[1] << 8) + ((uint)code[2] << 16) + ((uint)code[3] << 24);
+			code.RemoveRange(0, 4);
+			return true;
 		}
 		
 		bool? isSingleLine;
@@ -497,7 +456,7 @@ namespace Debugger.MetaData
 		
 		public List<DebugLocalVariableInfo> GetLocalVariables()
 		{
-			// TODO: Is this needed?
+			// Generated constructor may not have any symbols
 			if (this.SymMethod == null)
 				return new List<DebugLocalVariableInfo>();
 					
