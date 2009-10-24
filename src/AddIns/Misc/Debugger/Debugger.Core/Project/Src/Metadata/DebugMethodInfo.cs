@@ -36,12 +36,32 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		public override uint MetadataToken {
+		/// <summary> The AppDomain in which this member is loaded </summary>
+		public AppDomain AppDomain {
 			get {
-				return methodProps.Token;
+				return declaringType.AppDomain;
+			}
+		}
+		
+		/// <summary> The Process in which this member is loaded </summary>
+		public Process Process {
+			get {
+				return declaringType.Process;
+			}
+		}
+		
+		public override int MetadataToken {
+			get {
+				return (int)methodProps.Token;
 			}
 		}
 		//		public virtual Module Module { get; }
+		
+		public string FullName {
+			get {
+				return this.DeclaringType.FullName + "." + this.Name;
+			}
+		}
 		
 		public override string Name {
 			get {
@@ -76,7 +96,7 @@ namespace Debugger.MetaData
 		
 		public override MethodImplAttributes GetMethodImplementationFlags()
 		{
-			return methodProps.ImplFlags;
+			return (MethodImplAttributes)methodProps.ImplFlags;
 		}
 		
 		//		internal virtual uint GetOneTimeFlags();
@@ -120,11 +140,11 @@ namespace Debugger.MetaData
 		//		public override bool IsGenericMethodDefinition { get; }
 		//		public virtual ParameterInfo ReturnParameter { get; }
 		
-		public override Type GetReturnType()
+		public Type GetReturnType()
 		{
 			if (this.MethodDefSig.RetType.Void) return null;
 			if (returnType == null) {
-				returnType = DebugType.CreateFromSignature(this.Module, this.MethodDefSig.RetType.Type, this.DeclaringType);
+				returnType = DebugType.CreateFromSignature(this.Module, this.MethodDefSig.RetType.Type, declaringType);
 			}
 			return returnType;
 		}
@@ -157,12 +177,12 @@ namespace Debugger.MetaData
 				parameters = new ParameterInfo[this.MethodDefSig.ParamCount];
 				for(int i = 0; i < parameters.Length; i++) {
 					parameters[i] =
-						new DebugParameterInfo() {
-							Member = this,
-							Name = this.GetParameterName(i),
-							Position = i,
-							ParameterType = DebugType.CreateFromSignature(this.Module, this.MethodDefSig.Parameters[i].Type, this.DeclaringType),
-						};
+						new DebugParameterInfo(
+							this,
+							this.GetParameterName(i),
+							DebugType.CreateFromSignature(this.Module, this.MethodDefSig.Parameters[i].Type, declaringType),
+							i
+						);
 				}
 			}
 			return parameters;
@@ -373,7 +393,7 @@ namespace Debugger.MetaData
 					                typeof(System.Diagnostics.DebuggerHiddenAttribute))
 					||
 					// Look on the type
-					HasAnyAttribute(this.Module.MetaData, this.DeclaringType.Token,
+					HasAnyAttribute(this.Module.MetaData, (uint)this.DeclaringType.MetadataToken,
 					                typeof(System.Diagnostics.DebuggerStepThroughAttribute),
 					                typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
 					                typeof(System.Diagnostics.DebuggerHiddenAttribute));
@@ -504,14 +524,14 @@ namespace Debugger.MetaData
 			if (localVariables != null) return localVariables;
 			
 			localVariables = GetLocalVariablesInScope(this.SymMethod.RootScope);
-			if (this.DeclaringType.IsDisplayClass || this.DeclaringType.IsYieldEnumerator) {
+			if (declaringType.IsDisplayClass || declaringType.IsYieldEnumerator) {
 				// Get display class from self
 				AddCapturedLocalVariables(
 					localVariables,
 					delegate(StackFrame context) {
 						return context.GetThisValue();
 					},
-					this.DeclaringType
+					declaringType
 				);
 				// Get dispaly classes from fields
 				foreach(DebugFieldInfo fieldInfo in this.DeclaringType.GetFields()) {
@@ -522,7 +542,7 @@ namespace Debugger.MetaData
 							delegate(StackFrame context) {
 								return context.GetThisValue().GetFieldValue(fieldInfoCopy);
 							},
-							fieldInfo.FieldType
+							(DebugType)fieldInfo.FieldType
 						);
 					}
 				}
@@ -590,7 +610,7 @@ namespace Debugger.MetaData
 				int start;
 				SignatureReader sigReader = new SignatureReader(symVar.Signature);
 				LocalVarSig.LocalVariable locVarSig = sigReader.ReadLocalVariable(sigReader.Blob, 0, out start);
-				DebugType locVarType = DebugType.CreateFromSignature(this.Module, locVarSig.Type, this.DeclaringType);
+				DebugType locVarType = DebugType.CreateFromSignature(this.Module, locVarSig.Type, declaringType);
 				// Compiler generated?
 				// NB: Display class does not have the compiler-generated flag
 				if ((symVar.Attributes & 1) == 1 || symVar.Name.StartsWith("CS$")) {

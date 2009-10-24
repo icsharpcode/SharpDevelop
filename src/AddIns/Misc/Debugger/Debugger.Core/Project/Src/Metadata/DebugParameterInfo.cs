@@ -18,10 +18,34 @@ namespace Debugger.MetaData
 {
 	public class DebugParameterInfo : System.Reflection.ParameterInfo
 	{
-		public override MemberInfo Member { get; internal set; }
-		public override string Name { get; internal set; }
-		public override Type ParameterType { get; internal set; }
-		public override int Position { get; internal set; }
+		public MemberInfo member;
+		public string name;
+		public Type parameterType;
+		public int position;
+		
+		public override MemberInfo Member {
+			get { return member; }
+		}
+		
+		public override string Name {
+			get { return name; }
+		}
+		
+		public override Type ParameterType {
+			get { return parameterType; }
+		}
+		
+		public override int Position {
+			get { return position; }
+		}
+		
+		public DebugParameterInfo(MemberInfo member, string name, Type parameterType, int position)
+		{
+			this.member = member;
+			this.name = name;
+			this.parameterType = parameterType;
+			this.position = position;
+		}
 			
 		//		public virtual ParameterAttributes Attributes { get; }
 		//		public virtual object DefaultValue { get; }		

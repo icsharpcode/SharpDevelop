@@ -121,6 +121,7 @@ namespace Debugger
 		{
 			appDomain.Process.AssertPaused();
 			
+			// TODO: Select thread in the correct AppDomain
 			Thread targetThread = appDomain.Process.SelectedThread;
 			
 			if (targetThread == null) {
@@ -195,13 +196,13 @@ namespace Debugger
 		/// <summary> Synchronously calls a function and returns its return value </summary>
 		public static Value InvokeMethod(AppDomain appDomain, System.Type type, string name, Value thisValue, Value[] args)
 		{
-			return InvokeMethod(MethodInfo.GetFromName(appDomain, type, name, args.Length), thisValue, args);
+			return InvokeMethod(DebugMethodInfo.GetFromName(appDomain, type, name, args.Length), thisValue, args);
 		}
 		
 		#endregion
 		
 		/// <summary> Synchronously calls a function and returns its return value </summary>
-		public static Value InvokeMethod(MethodInfo method, Value thisValue, Value[] args)
+		public static Value InvokeMethod(DebugMethodInfo method, Value thisValue, Value[] args)
 		{
 			if (method.BackingField != null) {
 				method.Process.TraceMessage("Using backing field for " + method.FullName);
@@ -210,7 +211,7 @@ namespace Debugger
 			return AsyncInvokeMethod(method, thisValue, args).WaitForResult();
 		}
 		
-		public static Eval AsyncInvokeMethod(MethodInfo method, Value thisValue, Value[] args)
+		public static Eval AsyncInvokeMethod(DebugMethodInfo method, Value thisValue, Value[] args)
 		{
 			return new Eval(
 				method.AppDomain,
@@ -222,7 +223,7 @@ namespace Debugger
 		}
 
 	    /// <exception cref="GetValueException"><c>GetValueException</c>.</exception>
-	    static void MethodInvokeStarter(Eval eval, MethodInfo method, Value thisValue, Value[] args)
+	    static void MethodInvokeStarter(Eval eval, DebugMethodInfo method, Value thisValue, Value[] args)
 		{
 			List<ICorDebugValue> corArgs = new List<ICorDebugValue>();
 			args = args ?? new Value[0];
@@ -337,7 +338,7 @@ namespace Debugger
 		public static Eval AsyncNewObject(DebugType debugType, Value[] constructorArguments, DebugType[] constructorArgumentsTypes)
 		{
 			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
-			MethodInfo constructor = debugType.GetMethod(".ctor", constructorArgumentsTypes);
+			DebugMethodInfo constructor = debugType.GetMethod(".ctor", constructorArgumentsTypes);
 			if (constructor == null) {
 				throw new DebuggerException(string.Format("Type {0} has no constructor overload with given argument types.", debugType.FullName));
 			}

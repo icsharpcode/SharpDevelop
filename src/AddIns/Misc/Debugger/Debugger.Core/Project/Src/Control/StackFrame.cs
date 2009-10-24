@@ -32,7 +32,7 @@ namespace Debugger
 		object            corILFramePauseSession;
 		ICorDebugFunction corFunction;
 		
-		MethodInfo methodInfo;
+		DebugMethodInfo methodInfo;
 		uint chainIndex;
 		uint frameIndex;
 		
@@ -48,7 +48,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Get the method which this stack frame is executing </summary>
-		public MethodInfo MethodInfo {
+		public DebugMethodInfo MethodInfo {
 			get { return methodInfo; }
 		}
 		

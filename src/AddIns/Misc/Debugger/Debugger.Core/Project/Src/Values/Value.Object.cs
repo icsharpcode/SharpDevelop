@@ -251,7 +251,7 @@ namespace Debugger
 						return this.GetPropertyValue((PropertyInfo)memberInfo);
 					}
 				}
-				currentType = currentType.BaseType;
+				currentType = (DebugType)currentType.BaseType;
 			}
 			return null;
 		}

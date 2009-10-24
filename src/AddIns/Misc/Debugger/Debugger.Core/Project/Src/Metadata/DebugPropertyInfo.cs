@@ -36,7 +36,21 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		public override uint MetadataToken {
+		/// <summary> The AppDomain in which this member is loaded </summary>
+		public AppDomain AppDomain {
+			get {
+				return declaringType.AppDomain;
+			}
+		}
+		
+		/// <summary> The Process in which this member is loaded </summary>
+		public Process Process {
+			get {
+				return declaringType.Process;
+			}
+		}
+		
+		public override int MetadataToken {
 			get {
 				return (getMethod ?? setMethod).MetadataToken;
 			}

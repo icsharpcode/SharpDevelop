@@ -29,6 +29,9 @@ namespace Debugger.MetaData
 	/// </remarks>
 	public class DebugType: System.Type
 	{
+		const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+		const BindingFlags BindingFlagsAllDeclared = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+		
 		AppDomain appDomain;
 		Process   process;
 		ICorDebugType corType;
@@ -59,7 +62,7 @@ namespace Debugger.MetaData
 		public override int MetadataToken {
 			get {
 				AssertClassOrValueType();
-				return classProps.Token;
+				return (int)classProps.Token;
 			}
 		}
 		
@@ -155,7 +158,7 @@ namespace Debugger.MetaData
 		//		internal virtual bool IsSzArray { get; }
 		//		public override MemberTypes MemberType { get; }
 		
-		public override Module Module {
+		public override System.Reflection.Module Module {
 			get {
 				AssertClassOrValueType();
 				return module;
@@ -215,7 +218,7 @@ namespace Debugger.MetaData
 		
 		public T GetMember<T>(string name, BindingFlags bindingFlags, Predicate<T> filter) where T:MemberInfo
 		{
-			T[] res = GetMembersImpl<T>(name, bindingFlags, filter);
+			T[] res = GetMembers<T>(name, bindingFlags, filter);
 			if (res.Length > 0) {
 				return res[0];
 			} else {
@@ -293,7 +296,7 @@ namespace Debugger.MetaData
 					// Do not include static types
 					bindingFlags = bindingFlags & ~BindingFlags.Static;
 				}
-				List<T> superResults = this.BaseType.QueryMembers<T>(bindingFlags, name, token);
+				List<T> superResults = this.BaseType.GetMembers<T>(name, bindingFlags, filter);
 				results.AddRange(superResults);
 			}
 			
@@ -328,7 +331,16 @@ namespace Debugger.MetaData
 		
 		public override Type GetInterface(string name, bool ignoreCase)
 		{
-			throw new NotSupportedException();
+			foreach(DebugType inter in this.Interfaces) {
+				if (string.Equals(inter.FullName, fullName, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)) {
+					return inter;
+				}
+			}
+			if (BaseType != null) {
+				return BaseType.GetInterface(fullName);
+			} else {
+				return null;
+			}
 		}
 		
 		//		public virtual InterfaceMapping GetInterfaceMap(Type interfaceType);
@@ -375,7 +387,7 @@ namespace Debugger.MetaData
 		protected override MethodInfo GetMethodImpl(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] paramTypes, ParameterModifier[] modifiers)
 		{
 			// TODO: Finish
-			foreach(MethodInfo candidate in GetMembers<MethodInfo>(name, bindingAttr, null))) {
+			foreach(DebugMethodInfo candidate in GetMembers<DebugMethodInfo>(name, bindingAttr, null)) {
 				if (paramTypes == null)
 					return candidate;
 				if (candidate.ParameterCount == paramTypes.Length) {
@@ -482,7 +494,7 @@ namespace Debugger.MetaData
 			return base.IsSubclassOf(superType);
 		}
 		
-		protected virtual bool IsValueTypeImpl()
+		protected override bool IsValueTypeImpl()
 		{
 			return this.Kind == DebugTypeKind.ValueType;
 		}
@@ -512,22 +524,6 @@ namespace Debugger.MetaData
 		/// <summary> Gets a list of all interfaces that this type implements </summary>
 		public List<DebugType> Interfaces {
 			get { return interfaces; }
-		}
-		
-		/// <summary> Return an interface with the given name </summary>
-		/// <returns> Null if not found </returns>
-		public DebugType GetInterface(string fullName)
-		{
-			foreach(DebugType inter in this.Interfaces) {
-				if (inter.FullName == fullName) {
-					return inter;
-				}
-			}
-			if (BaseType != null) {
-				return BaseType.GetInterface(fullName);
-			} else {
-				return null;
-			}
 		}
 		
 		/// <summary> Get an element type for array or pointer. </summary>
@@ -749,7 +745,7 @@ namespace Debugger.MetaData
 				if (module.AppDomain == appDomain) {
 					uint token;
 					try {
-						token = module.MetaData.FindTypeDefPropsByName(typeName, enclosingType == null ? 0 : enclosingType.Token).Token;
+						token = module.MetaData.FindTypeDefPropsByName(typeName, enclosingType == null ? 0 : enclosingType.MetadataToken).Token;
 					} catch {
 						continue;
 					}
@@ -788,10 +784,10 @@ namespace Debugger.MetaData
 			}
 			DebugType type = CreateFromName(appDomain, typeRef.Type, genArgs.ToArray());
 			for(int i = 0; i < typeRef.PointerNestingLevel; i++) {
-				type = MakePointerType(type);
+				type = (DebugType)type.MakePointerType();
 			}
 			for(int i = typeRef.RankSpecifier.Length - 1; i >= 0; i--) {
-				type = MakeArrayType(type, typeRef.RankSpecifier[i] + 1);
+				type = (DebugType)type.MakeArrayType(typeRef.RankSpecifier[i] + 1);
 			}
 			return type;
 		}
@@ -848,13 +844,13 @@ namespace Debugger.MetaData
 			if (sigType is ARRAY) {
 				ARRAY arraySig = (ARRAY)sigType;
 				DebugType elementType = CreateFromSignature(module, arraySig.Type, declaringType);
-				return MakeArrayType(elementType, arraySig.Shape.Rank);
+				return (DebugType)elementType.MakeArrayType(arraySig.Shape.Rank);
 			}
 			
 			if (sigType is SZARRAY) {
 				SZARRAY arraySig = (SZARRAY)sigType;
 				DebugType elementType = CreateFromSignature(module, arraySig.Type, declaringType);
-				return MakeArrayType(elementType);
+				return (DebugType)elementType.MakeArrayType();
 			}
 			
 			if (sigType is PTR) {
@@ -865,7 +861,7 @@ namespace Debugger.MetaData
 				} else {
 					elementType = CreateFromSignature(module, ptrSig.PtrType, declaringType);
 				}
-				return MakePointerType(elementType);
+				return (DebugType)elementType.MakePointerType();
 			}
 			
 			if (sigType is FNPTR) {
@@ -879,26 +875,26 @@ namespace Debugger.MetaData
 		
 		public override Type MakeArrayType(int rank)
 		{
-			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.ARRAY, (uint)rank, elementType.CorType);
-			return CreateFromCorType(elementType.AppDomain, res);
+			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.ARRAY, (uint)rank, this.CorType);
+			return CreateFromCorType(this.AppDomain, res);
 		}
 		
 		public override Type MakeArrayType()
 		{
-			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.SZARRAY, 1, elementType.CorType);
-			return CreateFromCorType(elementType.AppDomain, res);
+			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.SZARRAY, 1, this.CorType);
+			return CreateFromCorType(this.AppDomain, res);
 		}
 		
 		public override Type MakePointerType()
 		{
-			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.PTR, 0, elementType.CorType);
-			return CreateFromCorType(elementType.AppDomain, res);
+			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.PTR, 0, this.CorType);
+			return CreateFromCorType(this.AppDomain, res);
 		}
 		
 		public override Type MakeByRefType()
 		{
-			ICorDebugType res = elementType.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.BYREF, 0, elementType.CorType);
-			return CreateFromCorType(elementType.AppDomain, res);
+			ICorDebugType res = this.AppDomain.CorAppDomain.CastTo<ICorDebugAppDomain2>().GetArrayOrPointerType((uint)CorElementType.BYREF, 0, this.CorType);
+			return CreateFromCorType(this.AppDomain, res);
 		}
 		
 		public static DebugType CreateFromCorClass(AppDomain appDomain, bool? valueType, ICorDebugClass corClass, DebugType[] genericArguments)
@@ -1041,7 +1037,7 @@ namespace Debugger.MetaData
 		void LoadMemberInfo()
 		{
 			// Load interfaces
-			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps(this.Token)) {
+			foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps((uint)this.MetadataToken)) {
 				CorTokenType tkType = (CorTokenType)(implProps.Interface & 0xFF000000);
 				if (tkType == CorTokenType.TypeDef || tkType == CorTokenType.TypeRef) {
 					this.interfaces.Add(DebugType.CreateFromTypeDefOrRef(module, false, implProps.Interface, null));
@@ -1053,14 +1049,14 @@ namespace Debugger.MetaData
 			}
 			
 			// Load fields
-			foreach(FieldProps field in module.MetaData.EnumFieldProps(this.Token)) {
+			foreach(FieldProps field in module.MetaData.EnumFieldProps((uint)this.MetadataToken)) {
 				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
 				AddMember(new DebugFieldInfo(this, field));
 			};
 			
 			// Load methods
-			foreach(MethodProps m in module.MetaData.EnumMethodProps(this.Token)) {
-				AddMember(new MethodInfo(this, m));
+			foreach(MethodProps m in module.MetaData.EnumMethodProps((uint)this.MetadataToken)) {
+				AddMember(new DebugMethodInfo(this, m));
 			}
 			
 			// Load properties
@@ -1069,7 +1065,7 @@ namespace Debugger.MetaData
 			// Collect data
 			Dictionary<string, MethodInfo> accessors = new Dictionary<string, MethodInfo>();
 			Dictionary<string, object> propertyNames = new Dictionary<string, object>();
-			foreach(MethodInfo method in this.GetMethods(BindingFlags.AllInThisType)) {
+			foreach(MethodInfo method in this.GetMethods(BindingFlagsAllDeclared)) {
 				if (method.IsSpecialName && (method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))) {
 					// There can be many get_Items
 					// TODO: This returns only last, return all
@@ -1083,7 +1079,7 @@ namespace Debugger.MetaData
 				MethodInfo setter = null;
 				accessors.TryGetValue("get_" + kvp.Key, out getter);
 				accessors.TryGetValue("set_" + kvp.Key, out setter);
-				AddMember(new PropertyInfo(this, getter, setter));
+				AddMember(new DebugPropertyInfo(this, getter, setter));
 			}
 		}
 		
@@ -1097,7 +1093,7 @@ namespace Debugger.MetaData
 		public bool IsCompilerGenerated {
 			get {
 				if (this.IsClass || this.IsValueType) {
-					return MethodInfo.HasAnyAttribute(this.Module.MetaData, this.Token, typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute));
+					return MethodInfo.HasAnyAttribute(this.Module.MetaData, this.MetadataToken, typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute));
 				} else {
 					return false;
 				}

@@ -405,7 +405,7 @@ namespace Debugger
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			// This is needed so that captured 'this' is supported
-			foreach(LocalVariableInfo locVar in context.MethodInfo.LocalVariables) {
+			foreach(DebugLocalVariableInfo locVar in context.MethodInfo.LocalVariables) {
 				if (locVar.IsThis)
 					return locVar.GetValue(context);
 			}

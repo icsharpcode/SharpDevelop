@@ -29,7 +29,21 @@ namespace Debugger.MetaData
 		
 		public override Type DeclaringType {
 			get {
-				throw new NotSupportedException();
+				return declaringType;
+			}
+		}
+		
+		/// <summary> The AppDomain in which this member is loaded </summary>
+		public AppDomain AppDomain {
+			get {
+				return declaringType.AppDomain;
+			}
+		}
+		
+		/// <summary> The Process in which this member is loaded </summary>
+		public Process Process {
+			get {
+				return declaringType.Process;
 			}
 		}
 		
@@ -85,7 +99,7 @@ namespace Debugger.MetaData
 			get {
 				SignatureReader sigReader = new SignatureReader(fieldProps.SigBlob.GetData());
 				FieldSig fieldSig = sigReader.GetFieldSig(0);
-				return DebugType.CreateFromSignature(this.Module, fieldSig.Type, this.DeclaringType);
+				return DebugType.CreateFromSignature(this.Module, fieldSig.Type, declaringType);
 			}
 		}
 		
