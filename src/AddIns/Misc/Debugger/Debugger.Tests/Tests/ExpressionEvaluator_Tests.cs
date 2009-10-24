@@ -154,17 +154,23 @@ namespace Debugger.Tests {
 	{
 		string expressionsInput = @"
 				b; i; *i; *iPtr; pi
-				pi - 3; pi + b; i + b; (uint)2 - 3; ((uint)2 - 3).GetType() ; (ulong)2 - 3 ; ((ulong)2 - 3).GetType(); (b + b).GetType()
+				pi - 3; pi + b; i + b; (uint)2 - 3; ((uint)2 - 3).GetType() ; (ulong)2 - 3 ; (b + b).GetType()
 				1 << 4; 7 << -1; 1 << (uint)2; 1.0 & 2.0; System.Int32.MaxValue + 1; (uint)2 - (uint)3; 1 / 0
 				hi + hi;  hi + ''#'';  hi + pi;  hi + null
-				hi + ''#'' == ''hi#''; hi == (string)null; hi == null; hi == 1; null == null
-				
-				arg; instanceField; staticField
+				hi + ''#'' == ''hi#''; hi + ''#'' == (object) ''hi#''; hi == (string)null; hi == null; hi == 1; null == null
 				
 				(5 + 6) % (1 + 2); 3 % 2 == 1
-				15 & 255; 15 && 255
+				15 & 255; 15 && 255; (ulong)1 + (long)1 /* invalid */
 				b + 3 == i; b + 4 == i
 				true == true; true == false
+				
+				i = 10; -i; ++i; i++; +i; i += 1; ~i; i = 4
+				-(byte)1; (-(byte)1).GetType(); -(uint)1; (-(uint)1).GetType(); -(ulong)1 /* invalid */
+				-2147483648 /* int.MinValue */; (-2147483648).GetType(); -(-2147483648)
+				-9223372036854775808 /* long.MinValue */; (-9223372036854775808).GetType(); -(-9223372036854775808)
+				-1.0; ~1.0; !1; flag; !flag
+				
+				arg; instanceField; staticField
 				
 				array; arrays; array[1]; array[i]; array[i - 1]
 				new char[3]
@@ -180,8 +186,6 @@ namespace Debugger.Tests {
 				list.Add((char)42); list.Add((char)52); list
 				list = new System.Collections.Generic.List<char>(array2); list
 				
-				i = 10; -i; ++i; i++; i; i += 1; i; ~i
-				flag; !flag
 			";
 		
 		[NUnit.Framework.Test]
@@ -299,38 +303,64 @@ namespace Debugger.Tests {
     <Eval> i + b = 5 </Eval>
     <Eval> (uint)2 - 3 = -1 </Eval>
     <Eval> ((uint)2 - 3).GetType() = System.Int64 </Eval>
-    <Eval> (ulong)2 - 3 = -1 </Eval>
-    <Eval> ((ulong)2 - 3).GetType() = System.Single </Eval>
+    <Eval> (ulong)2 - 3 = Can not use the binary operator Subtract on types System.UInt64 and System.Int32 </Eval>
     <Eval> (b + b).GetType() = System.Int32 </Eval>
     <Eval> 1 &lt;&lt; 4 = 16 </Eval>
     <Eval> 7 &lt;&lt; -1 = -2147483648 </Eval>
-    <Eval> 1 &lt;&lt; (uint)2 = Can not use the binary operator ShiftLeft for types System.Int32 and System.UInt32 </Eval>
-    <Eval> 1.0 &amp; 2.0 = Can not use the binary operator BitwiseAnd for types System.Double and System.Double </Eval>
-    <Eval> System.Int32.MaxValue + 1 = -2147483648 </Eval>
-    <Eval> (uint)2 - (uint)3 = 4294967295 </Eval>
+    <Eval> 1 &lt;&lt; (uint)2 = Can not use the binary operator ShiftLeft on types System.Int32 and System.UInt32 </Eval>
+    <Eval> 1.0 &amp; 2.0 = Can not use the binary operator BitwiseAnd on types System.Double and System.Double </Eval>
+    <Eval> System.Int32.MaxValue + 1 = Arithmetic operation resulted in an overflow. </Eval>
+    <Eval> (uint)2 - (uint)3 = Arithmetic operation resulted in an overflow. </Eval>
     <Eval> 1 / 0 = Attempted to divide by zero. </Eval>
     <Eval> hi + hi = "hihi" </Eval>
     <Eval> hi + "#" = "hi#" </Eval>
     <Eval> hi + pi = "hi3.14" </Eval>
     <Eval> hi + null = "hi" </Eval>
     <Eval> hi + "#" == "hi#" = True </Eval>
+    <Eval> hi + "#" == (object) "hi#" = False </Eval>
     <Eval> hi == (string)null = False </Eval>
     <Eval> hi == null = False </Eval>
-    <Eval> hi == 1 = Can not use the binary operator Equality for types System.String and System.Int32 </Eval>
+    <Eval> hi == 1 = Can not use the binary operator Equality on types System.String and System.Int32 </Eval>
     <Eval> null == null = True </Eval>
-    <Eval> </Eval>
-    <Eval> arg = "function argument" </Eval>
-    <Eval> instanceField = "instance field value" </Eval>
-    <Eval> staticField = "static field value" </Eval>
     <Eval> </Eval>
     <Eval> (5 + 6) % (1 + 2) = 2 </Eval>
     <Eval> 3 % 2 == 1 = True </Eval>
     <Eval> 15 &amp; 255 = 15 </Eval>
-    <Eval> 15 &amp;&amp; 255 = Can not use the binary operator LogicalAnd for types System.Int32 and System.Int32 </Eval>
+    <Eval> 15 &amp;&amp; 255 = Can not use the binary operator LogicalAnd on types System.Int32 and System.Int32 </Eval>
+    <Eval> (ulong)1 + (long)1 /* invalid */ = Can not use the binary operator Add on types System.UInt64 and System.Int64 </Eval>
     <Eval> b + 3 == i = True </Eval>
     <Eval> b + 4 == i = False </Eval>
     <Eval> true == true = True </Eval>
     <Eval> true == false = False </Eval>
+    <Eval> </Eval>
+    <Eval> i = 10 = 10 </Eval>
+    <Eval> -i = -10 </Eval>
+    <Eval> ++i = 11 </Eval>
+    <Eval> i++ = 11 </Eval>
+    <Eval> +i = 12 </Eval>
+    <Eval> i += 1 = 13 </Eval>
+    <Eval> ~i = -14 </Eval>
+    <Eval> i = 4 = 4 </Eval>
+    <Eval> -(byte)1 = -1 </Eval>
+    <Eval> (-(byte)1).GetType() = System.Int32 </Eval>
+    <Eval> -(uint)1 = -1 </Eval>
+    <Eval> (-(uint)1).GetType() = System.Int64 </Eval>
+    <Eval> -(ulong)1 /* invalid */ = Can not use the unary operator Minus on type System.UInt64 </Eval>
+    <Eval> -2147483648 /* int.MinValue */ = -2147483648 </Eval>
+    <Eval> (-2147483648).GetType() = System.Int32 </Eval>
+    <Eval> -(-2147483648) = Arithmetic operation resulted in an overflow. </Eval>
+    <Eval> -9223372036854775808 /* long.MinValue */ = -9223372036854775808 </Eval>
+    <Eval> (-9223372036854775808).GetType() = System.Int64 </Eval>
+    <Eval> -(-9223372036854775808) = Arithmetic operation resulted in an overflow. </Eval>
+    <Eval> -1.0 = -1 </Eval>
+    <Eval> ~1.0 = Can not use the unary operator BitNot on type System.Double </Eval>
+    <Eval> !1 = Can not use the unary operator Not on type System.Int32 </Eval>
+    <Eval> flag = True </Eval>
+    <Eval> !flag = False </Eval>
+    <Eval> </Eval>
+    <Eval> arg = "function argument" </Eval>
+    <Eval> instanceField = "instance field value" </Eval>
+    <Eval> staticField = "static field value" </Eval>
     <Eval> </Eval>
     <Eval> array = Char[] {'H', 'e', 'l', 'l', 'o'} </Eval>
     <Eval> arrays = Char[][] {Char[] {'H', 'e', 'l', 'l', 'o'}, Char[] {'w', 'o', 'r', 'l', 'd'}} </Eval>
@@ -357,16 +387,6 @@ namespace Debugger.Tests {
     <Eval> list = new System.Collections.Generic.List&lt;char&gt;(array2) = List`1 {'w', 'o', 'r', 'l', 'd'} </Eval>
     <Eval> list = List`1 {'w', 'o', 'r', 'l', 'd'} </Eval>
     <Eval> </Eval>
-    <Eval> i = 10 = 10 </Eval>
-    <Eval> -i = -10 </Eval>
-    <Eval> ++i = 11 </Eval>
-    <Eval> i++ = 11 </Eval>
-    <Eval> i = 12 </Eval>
-    <Eval> i += 1 = 13 </Eval>
-    <Eval> i = 13 </Eval>
-    <Eval> ~i = -14 </Eval>
-    <Eval> flag = True </Eval>
-    <Eval> !flag = False </Eval>
     <Eval> </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstInt = 42 </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstString = "const string" </Eval>

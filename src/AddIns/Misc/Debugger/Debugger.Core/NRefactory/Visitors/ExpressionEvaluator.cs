@@ -593,59 +593,135 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (!value.Type.IsPrimitive)
 				throw new GetValueException("Primitive value expected");
 			
-			object val = value.PrimitiveValue;
-			
-			object result = null;
-			
-			// Bool operation
-			if (val is bool) {
-				bool a = Convert.ToBoolean(val);
-				switch (op) {
-					case UnaryOperatorType.Not: result = !a; break;
+			if (op == UnaryOperatorType.Decrement || op == UnaryOperatorType.PostDecrement ||
+			    op == UnaryOperatorType.Increment || op == UnaryOperatorType.PostIncrement)
+			{
+				TypedValue oldValue = value;
+				TypedValue newValue = null;
+				try {
+					if (op == UnaryOperatorType.Decrement || op == UnaryOperatorType.PostDecrement)
+						newValue = (TypedValue)VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Subtract, new PrimitiveExpression(1)), null);
+					if (op == UnaryOperatorType.Increment || op == UnaryOperatorType.PostIncrement)
+						newValue = (TypedValue)VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Add, new PrimitiveExpression(1)), null);
+				} catch (EvaluateException e) {
+					throw new EvaluateException(unaryOperatorExpression, e.Message);
+				}
+				if (op == UnaryOperatorType.PostDecrement || op == UnaryOperatorType.PostIncrement) {
+					return oldValue;
+				} else {
+					// Note: the old unaryOparatorExpression is still cached and still has the old value
+					return newValue;
 				}
 			}
 			
-			// Float operation
-			if (val is double || val is float) {
-				double a = Convert.ToDouble(val);
-				switch (op) {
-					case UnaryOperatorType.Minus: result = -a; break;
-					case UnaryOperatorType.Plus:  result = +a; break;
+			if (op == UnaryOperatorType.Minus) {
+				object val = value.PrimitiveValue;
+				// Special case - it would promote the value to long otherwise
+				if (val is uint && (uint)val == (uint)1 << 31)
+					return CreateValue(int.MinValue);
+				
+				// Special case - it would overflow otherwise
+				if (val is ulong && (ulong)val == (ulong)1 << 63)
+					return CreateValue(long.MinValue);
+			}
+			
+			if (op == UnaryOperatorType.Plus || op == UnaryOperatorType.Minus ||
+			    op == UnaryOperatorType.BitNot || op == UnaryOperatorType.Not)
+			{
+				Type[] overloads;
+				if (op == UnaryOperatorType.Not) {
+					overloads = new Type[] { typeof(bool) };
+				} else if (op == UnaryOperatorType.Minus) {
+					overloads = new Type[] { typeof(int), typeof(long), typeof(ulong), typeof(float), typeof(double) };
+				} else {
+					overloads = new Type[] { typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(double) };
+				}
+				foreach(Type argType in overloads) {
+					if (value.Type.CanPromoteTo(argType)) {
+						object a = Convert.ChangeType(value.PrimitiveValue, argType);
+						object res;
+						try {
+							res = PerformUnaryOperation(a, op, argType);
+						} catch (ArithmeticException e) {
+							// Can happen for smaller int or long
+							throw new EvaluateException(unaryOperatorExpression, e.Message);
+						}
+						if (res != null)
+							return CreateValue(res);
+						break; // Match only one overload
+					}
 				}
 			}
+					
+			throw new EvaluateException(unaryOperatorExpression, "Can not use the unary operator {0} on type {1}", op.ToString(), value.Type.FullName);
+		}
 		
-			// Integer operation
-			if (val is byte || val is sbyte || val is int || val is uint || val is long || val is ulong) {
-				long a = Convert.ToInt64(val);
-				switch (op) {
-					case UnaryOperatorType.Decrement:     result = a - 1; break;
-					case UnaryOperatorType.Increment:     result = a + 1; break;
-					case UnaryOperatorType.PostDecrement: result = a; break;
-					case UnaryOperatorType.PostIncrement: result = a; break;
-					case UnaryOperatorType.Minus:         result = -a; break;
-					case UnaryOperatorType.Plus:          result = a; break;
-					case UnaryOperatorType.BitNot:        result = ~a; break;
+		/// <summary>
+		/// Perform given arithmetic operation.
+		/// The arguments must be already converted to the correct types.
+		/// </summary>
+		object PerformUnaryOperation(object val, UnaryOperatorType op, Type argType)
+		{
+			checked {
+				if (argType == typeof(bool)) {
+					bool a = (bool)val;
+					switch (op) {
+						case UnaryOperatorType.Not:    return !a;
+					}
 				}
-				switch (op) {
-					case UnaryOperatorType.Decrement:
-					case UnaryOperatorType.PostDecrement:
-						VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Subtract, new PrimitiveExpression(1)), null);
-						break;
-					case UnaryOperatorType.Increment:
-					case UnaryOperatorType.PostIncrement:
-						VisitAssignmentExpression(new AssignmentExpression(unaryOperatorExpression.Expression, AssignmentOperatorType.Add, new PrimitiveExpression(1)), null);
-						break;
+				
+				if (argType == typeof(float)) {
+					float a = (float)val;
+					switch (op) {
+						case UnaryOperatorType.Minus:  return -a;
+						case UnaryOperatorType.Plus:   return +a;
+					}
+				}
+				
+				if (argType == typeof(double)) {
+					double a = (double)val;
+					switch (op) {
+						case UnaryOperatorType.Minus:  return -a;
+						case UnaryOperatorType.Plus:   return +a;
+					}
+				}
+			
+				if (argType == typeof(int)) {
+					int a = (int)val;
+					switch (op) {
+						case UnaryOperatorType.Minus:  return -a;
+						case UnaryOperatorType.Plus:   return +a;
+						case UnaryOperatorType.BitNot: return ~a;
+					}
+				}
+				
+				if (argType == typeof(uint)) {
+					uint a = (uint)val;
+					switch (op) {
+						case UnaryOperatorType.Plus:   return +a;
+						case UnaryOperatorType.BitNot: return ~a;
+					}
+				}
+				
+				if (argType == typeof(long)) {
+					long a = (long)val;
+					switch (op) {
+						case UnaryOperatorType.Minus:  return -a;
+						case UnaryOperatorType.Plus:   return +a;
+						case UnaryOperatorType.BitNot: return ~a;
+					}
+				}
+				
+				if (argType == typeof(ulong)) {
+					ulong a = (ulong)val;
+					switch (op) {
+						case UnaryOperatorType.Plus:   return +a;
+						case UnaryOperatorType.BitNot: return ~a;
+					}
 				}
 			}
 			
-			long? l = result as long?;
-			if (l != null && int.MinValue <= l && l <= int.MaxValue)
-				result = (int)l;
-			
-			if (result == null)
-				throw new GetValueException("Unsuppored unary expression " + op);
-			
-			return CreateValue(result);
+			return null;
 		}
 		
 		public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
@@ -706,8 +782,8 @@ namespace ICSharpCode.NRefactory.Visitors
 				Type[] overloads = { typeof(int), typeof(uint), typeof(long), typeof(ulong)};
 				foreach(Type argType in overloads) {
 					if (left.Type.CanPromoteTo(argType) && right.Type.CanPromoteTo(typeof(int))) {
-						object a = Convert.ChangeType(left.Value.PrimitiveValue, argType);
-						object b = Convert.ChangeType(right.Value.PrimitiveValue, typeof(int));
+						object a = Convert.ChangeType(left.PrimitiveValue, argType);
+						object b = Convert.ChangeType(right.PrimitiveValue, typeof(int));
 						// Shift operations never cause overflows
 						object res = PerformBinaryOperation(a, b, op, argType);
 						return CreateValue(res);
@@ -722,6 +798,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			//	uint operator +(uint x, uint y);
 			//	long operator +(long x, long y);
 			//	ulong operator +(ulong x, ulong y);
+			//	void operator +(long x, ulong y);
+			//	void operator +(ulong x, long y);
 			//	float operator +(float x, float y);
 			//	double operator +(double x, double y);
 			//	
@@ -733,8 +811,15 @@ namespace ICSharpCode.NRefactory.Visitors
 				Type[] overloads = { typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(bool) };
 				foreach(Type argType in overloads) {
 					if (left.Type.CanPromoteTo(argType) && right.Type.CanPromoteTo(argType)) {
-						object a = Convert.ChangeType(left.Value.PrimitiveValue, argType);
-						object b = Convert.ChangeType(right.Value.PrimitiveValue, argType);
+						if (argType == typeof(float) || argType == typeof(double)) {
+							// Invalid overloads
+							if (left.Type.CanPromoteTo(typeof(long)) && right.Type.CanPromoteTo(typeof(ulong)))
+								break;
+							if (left.Type.CanPromoteTo(typeof(ulong)) && right.Type.CanPromoteTo(typeof(long)))
+								break;
+						}
+						object a = Convert.ChangeType(left.PrimitiveValue, argType);
+						object b = Convert.ChangeType(right.PrimitiveValue, argType);
 						object res;
 						try {
 							res = PerformBinaryOperation(a, b, op, argType);
@@ -743,11 +828,12 @@ namespace ICSharpCode.NRefactory.Visitors
 						}
 						if (res != null)
 							return CreateValue(res);
+						break; // Match only one overload
 					}
 				}
 			}
 			
-			throw new EvaluateException(binaryOperatorExpression, "Can not use the binary operator {0} for types {1} and {2}", op.ToString(), left.Type.FullName, right.Type.FullName);
+			throw new EvaluateException(binaryOperatorExpression, "Can not use the binary operator {0} on types {1} and {2}", op.ToString(), left.Type.FullName, right.Type.FullName);
 		}
 		
 		/// <summary>
@@ -756,183 +842,185 @@ namespace ICSharpCode.NRefactory.Visitors
 		/// </summary>
 		object PerformBinaryOperation(object left, object right, BinaryOperatorType op, Type argTypes)
 		{
-			if (argTypes == typeof(string)) {
-				string a = (string)left;
-				string b = (string)right;
-				switch (op) {
-					case BinaryOperatorType.Equality:   return a == b;
-					case BinaryOperatorType.InEquality: return a != b;
-					case BinaryOperatorType.Add:        return a + b;
+			checked {
+				if (argTypes == typeof(string)) {
+					string a = (string)left;
+					string b = (string)right;
+					switch (op) {
+						case BinaryOperatorType.Equality:   return a == b;
+						case BinaryOperatorType.InEquality: return a != b;
+						case BinaryOperatorType.Add:        return a + b;
+					}
 				}
-			}
+				
+				if (argTypes == typeof(bool)) {
+					bool a = (bool)left;
+					bool b = (bool)right;
+					switch (op) {
+						case BinaryOperatorType.Equality:    return a == b;
+						case BinaryOperatorType.InEquality:  return a != b;
+						case BinaryOperatorType.ExclusiveOr: return a ^ b;
+						case BinaryOperatorType.BitwiseAnd:  return a & b;
+						case BinaryOperatorType.BitwiseOr:   return a | b;
+						case BinaryOperatorType.LogicalAnd:  return a && b;
+						case BinaryOperatorType.LogicalOr:   return a || b;
+					}
+				}
+				
+				if (argTypes == typeof(float)) {
+					float a = (float)left;
+					float b = (float)right;
+					switch (op) {
+						case BinaryOperatorType.GreaterThan:        return a > b;
+						case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
+						case BinaryOperatorType.Equality:           return a == b;
+						case BinaryOperatorType.InEquality:         return a != b;
+						case BinaryOperatorType.LessThan:           return a < b;
+						case BinaryOperatorType.LessThanOrEqual:    return a <= b;
+						
+						case BinaryOperatorType.Add:           return a + b;
+						case BinaryOperatorType.Subtract:      return a - b;
+						case BinaryOperatorType.Multiply:      return a * b;
+						case BinaryOperatorType.Divide:        return a / b;
+						case BinaryOperatorType.Modulus:       return a % b;
+						case BinaryOperatorType.Concat:        return a + b;
+					}
+				}
+				
+				if (argTypes == typeof(double)) {
+					double a = (double)left;
+					double b = (double)right;
+					switch (op) {
+						case BinaryOperatorType.GreaterThan:        return a > b;
+						case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
+						case BinaryOperatorType.Equality:           return a == b;
+						case BinaryOperatorType.InEquality:         return a != b;
+						case BinaryOperatorType.LessThan:           return a < b;
+						case BinaryOperatorType.LessThanOrEqual:    return a <= b;
+						
+						case BinaryOperatorType.Add:           return a + b;
+						case BinaryOperatorType.Subtract:      return a - b;
+						case BinaryOperatorType.Multiply:      return a * b;
+						case BinaryOperatorType.Divide:        return a / b;
+						case BinaryOperatorType.Modulus:       return a % b;
+						case BinaryOperatorType.Concat:        return a + b;
+					}
+				}
+				
+				if (argTypes == typeof(int)) {
+					switch (op) {
+						case BinaryOperatorType.ShiftLeft:     return (int)left << (int)right;
+						case BinaryOperatorType.ShiftRight:    return (int)left >> (int)right;
+					}
+					int a = (int)left;
+					int b = (int)right;
+					switch (op) {
+						case BinaryOperatorType.BitwiseAnd:  return a & b;
+						case BinaryOperatorType.BitwiseOr:   return a | b;
+						case BinaryOperatorType.ExclusiveOr: return a ^ b;
+						
+						case BinaryOperatorType.GreaterThan:        return a > b;
+						case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
+						case BinaryOperatorType.Equality:           return a == b;
+						case BinaryOperatorType.InEquality:         return a != b;
+						case BinaryOperatorType.LessThan:           return a < b;
+						case BinaryOperatorType.LessThanOrEqual:    return a <= b;
+						
+						case BinaryOperatorType.Add:           return a + b;
+						case BinaryOperatorType.Subtract:      return a - b;
+						case BinaryOperatorType.Multiply:      return a * b;
+						case BinaryOperatorType.Divide:        return a / b;
+						case BinaryOperatorType.Modulus:       return a % b;
+						case BinaryOperatorType.Concat:        return a + b;
+					}
+				}
+				
+				if (argTypes == typeof(uint)) {
+					switch (op) {
+						case BinaryOperatorType.ShiftLeft:     return (uint)left << (int)right;
+						case BinaryOperatorType.ShiftRight:    return (uint)left >> (int)right;
+					}
+					uint a = (uint)left;
+					uint b = (uint)right;
+					switch (op) {
+						case BinaryOperatorType.BitwiseAnd:  return a & b;
+						case BinaryOperatorType.BitwiseOr:   return a | b;
+						case BinaryOperatorType.ExclusiveOr: return a ^ b;
+						
+						case BinaryOperatorType.GreaterThan:        return a > b;
+						case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
+						case BinaryOperatorType.Equality:           return a == b;
+						case BinaryOperatorType.InEquality:         return a != b;
+						case BinaryOperatorType.LessThan:           return a < b;
+						case BinaryOperatorType.LessThanOrEqual:    return a <= b;
+						
+						case BinaryOperatorType.Add:           return a + b;
+						case BinaryOperatorType.Subtract:      return a - b;
+						case BinaryOperatorType.Multiply:      return a * b;
+						case BinaryOperatorType.Divide:        return a / b;
+						case BinaryOperatorType.Modulus:       return a % b;
+						case BinaryOperatorType.Concat:        return a + b;
+					}
+				}
+				
+				if (argTypes == typeof(long)) {
+					switch (op) {
+						case BinaryOperatorType.ShiftLeft:     return (long)left << (int)right;
+						case BinaryOperatorType.ShiftRight:    return (long)left >> (int)right;
+					}
+					long a = (long)left;
+					long b = (long)right;
+					switch (op) {
+						case BinaryOperatorType.BitwiseAnd:  return a & b;
+						case BinaryOperatorType.BitwiseOr:   return a | b;
+						case BinaryOperatorType.ExclusiveOr: return a ^ b;
+						
+						case BinaryOperatorType.GreaterThan:        return a > b;
+						case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
+						case BinaryOperatorType.Equality:           return a == b;
+						case BinaryOperatorType.InEquality:         return a != b;
+						case BinaryOperatorType.LessThan:           return a < b;
+						case BinaryOperatorType.LessThanOrEqual:    return a <= b;
+						
+						case BinaryOperatorType.Add:           return a + b;
+						case BinaryOperatorType.Subtract:      return a - b;
+						case BinaryOperatorType.Multiply:      return a * b;
+						case BinaryOperatorType.Divide:        return a / b;
+						case BinaryOperatorType.Modulus:       return a % b;
+						case BinaryOperatorType.Concat:        return a + b;
+					}
+				}
+				
+				if (argTypes == typeof(ulong)) {
+					switch (op) {
+						case BinaryOperatorType.ShiftLeft:     return (ulong)left << (int)right;
+						case BinaryOperatorType.ShiftRight:    return (ulong)left >> (int)right;
+					}
+					ulong a = (ulong)left;
+					ulong b = (ulong)right;
+					switch (op) {
+						case BinaryOperatorType.BitwiseAnd:  return a & b;
+						case BinaryOperatorType.BitwiseOr:   return a | b;
+						case BinaryOperatorType.ExclusiveOr: return a ^ b;
+						
+						case BinaryOperatorType.GreaterThan:        return a > b;
+						case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
+						case BinaryOperatorType.Equality:           return a == b;
+						case BinaryOperatorType.InEquality:         return a != b;
+						case BinaryOperatorType.LessThan:           return a < b;
+						case BinaryOperatorType.LessThanOrEqual:    return a <= b;
+						
+						case BinaryOperatorType.Add:           return a + b;
+						case BinaryOperatorType.Subtract:      return a - b;
+						case BinaryOperatorType.Multiply:      return a * b;
+						case BinaryOperatorType.Divide:        return a / b;
+						case BinaryOperatorType.Modulus:       return a % b;
+						case BinaryOperatorType.Concat:        return a + b;
+					}
+				}
 			
-			if (argTypes == typeof(bool)) {
-				bool a = (bool)left;
-				bool b = (bool)right;
-				switch (op) {
-					case BinaryOperatorType.Equality:    return a == b;
-					case BinaryOperatorType.InEquality:  return a != b;
-					case BinaryOperatorType.ExclusiveOr: return a ^ b;
-					case BinaryOperatorType.BitwiseAnd:  return a & b;
-					case BinaryOperatorType.BitwiseOr:   return a | b;
-					case BinaryOperatorType.LogicalAnd:  return a && b;
-					case BinaryOperatorType.LogicalOr:   return a || b;
-				}
+				return null;
 			}
-			
-			if (argTypes == typeof(float)) {
-				float a = (float)left;
-				float b = (float)right;
-				switch (op) {
-					case BinaryOperatorType.GreaterThan:        return a > b;
-					case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
-					case BinaryOperatorType.Equality:           return a == b;
-					case BinaryOperatorType.InEquality:         return a != b;
-					case BinaryOperatorType.LessThan:           return a < b;
-					case BinaryOperatorType.LessThanOrEqual:    return a <= b;
-					
-					case BinaryOperatorType.Add:           return a + b;
-					case BinaryOperatorType.Subtract:      return a - b;
-					case BinaryOperatorType.Multiply:      return a * b;
-					case BinaryOperatorType.Divide:        return a / b;
-					case BinaryOperatorType.Modulus:       return a % b;
-					case BinaryOperatorType.Concat:        return a + b;
-				}
-			}
-			
-			if (argTypes == typeof(double)) {
-				double a = (double)left;
-				double b = (double)right;
-				switch (op) {
-					case BinaryOperatorType.GreaterThan:        return a > b;
-					case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
-					case BinaryOperatorType.Equality:           return a == b;
-					case BinaryOperatorType.InEquality:         return a != b;
-					case BinaryOperatorType.LessThan:           return a < b;
-					case BinaryOperatorType.LessThanOrEqual:    return a <= b;
-					
-					case BinaryOperatorType.Add:           return a + b;
-					case BinaryOperatorType.Subtract:      return a - b;
-					case BinaryOperatorType.Multiply:      return a * b;
-					case BinaryOperatorType.Divide:        return a / b;
-					case BinaryOperatorType.Modulus:       return a % b;
-					case BinaryOperatorType.Concat:        return a + b;
-				}
-			}
-			
-			if (argTypes == typeof(int)) {
-				switch (op) {
-					case BinaryOperatorType.ShiftLeft:     return (int)left << (int)right;
-					case BinaryOperatorType.ShiftRight:    return (int)left >> (int)right;
-				}
-				int a = (int)left;
-				int b = (int)right;
-				switch (op) {
-					case BinaryOperatorType.BitwiseAnd:  return a & b;
-					case BinaryOperatorType.BitwiseOr:   return a | b;
-					case BinaryOperatorType.ExclusiveOr: return a ^ b;
-					
-					case BinaryOperatorType.GreaterThan:        return a > b;
-					case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
-					case BinaryOperatorType.Equality:           return a == b;
-					case BinaryOperatorType.InEquality:         return a != b;
-					case BinaryOperatorType.LessThan:           return a < b;
-					case BinaryOperatorType.LessThanOrEqual:    return a <= b;
-					
-					case BinaryOperatorType.Add:           return a + b;
-					case BinaryOperatorType.Subtract:      return a - b;
-					case BinaryOperatorType.Multiply:      return a * b;
-					case BinaryOperatorType.Divide:        return a / b;
-					case BinaryOperatorType.Modulus:       return a % b;
-					case BinaryOperatorType.Concat:        return a + b;
-				}
-			}
-			
-			if (argTypes == typeof(uint)) {
-				switch (op) {
-					case BinaryOperatorType.ShiftLeft:     return (uint)left << (int)right;
-					case BinaryOperatorType.ShiftRight:    return (uint)left >> (int)right;
-				}
-				uint a = (uint)left;
-				uint b = (uint)right;
-				switch (op) {
-					case BinaryOperatorType.BitwiseAnd:  return a & b;
-					case BinaryOperatorType.BitwiseOr:   return a | b;
-					case BinaryOperatorType.ExclusiveOr: return a ^ b;
-					
-					case BinaryOperatorType.GreaterThan:        return a > b;
-					case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
-					case BinaryOperatorType.Equality:           return a == b;
-					case BinaryOperatorType.InEquality:         return a != b;
-					case BinaryOperatorType.LessThan:           return a < b;
-					case BinaryOperatorType.LessThanOrEqual:    return a <= b;
-					
-					case BinaryOperatorType.Add:           return a + b;
-					case BinaryOperatorType.Subtract:      return a - b;
-					case BinaryOperatorType.Multiply:      return a * b;
-					case BinaryOperatorType.Divide:        return a / b;
-					case BinaryOperatorType.Modulus:       return a % b;
-					case BinaryOperatorType.Concat:        return a + b;
-				}
-			}
-			
-			if (argTypes == typeof(long)) {
-				switch (op) {
-					case BinaryOperatorType.ShiftLeft:     return (long)left << (int)right;
-					case BinaryOperatorType.ShiftRight:    return (long)left >> (int)right;
-				}
-				long a = (long)left;
-				long b = (long)right;
-				switch (op) {
-					case BinaryOperatorType.BitwiseAnd:  return a & b;
-					case BinaryOperatorType.BitwiseOr:   return a | b;
-					case BinaryOperatorType.ExclusiveOr: return a ^ b;
-					
-					case BinaryOperatorType.GreaterThan:        return a > b;
-					case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
-					case BinaryOperatorType.Equality:           return a == b;
-					case BinaryOperatorType.InEquality:         return a != b;
-					case BinaryOperatorType.LessThan:           return a < b;
-					case BinaryOperatorType.LessThanOrEqual:    return a <= b;
-					
-					case BinaryOperatorType.Add:           return a + b;
-					case BinaryOperatorType.Subtract:      return a - b;
-					case BinaryOperatorType.Multiply:      return a * b;
-					case BinaryOperatorType.Divide:        return a / b;
-					case BinaryOperatorType.Modulus:       return a % b;
-					case BinaryOperatorType.Concat:        return a + b;
-				}
-			}
-			
-			if (argTypes == typeof(ulong)) {
-				switch (op) {
-					case BinaryOperatorType.ShiftLeft:     return (ulong)left << (int)right;
-					case BinaryOperatorType.ShiftRight:    return (ulong)left >> (int)right;
-				}
-				ulong a = (ulong)left;
-				ulong b = (ulong)right;
-				switch (op) {
-					case BinaryOperatorType.BitwiseAnd:  return a & b;
-					case BinaryOperatorType.BitwiseOr:   return a | b;
-					case BinaryOperatorType.ExclusiveOr: return a ^ b;
-					
-					case BinaryOperatorType.GreaterThan:        return a > b;
-					case BinaryOperatorType.GreaterThanOrEqual: return a >= b;
-					case BinaryOperatorType.Equality:           return a == b;
-					case BinaryOperatorType.InEquality:         return a != b;
-					case BinaryOperatorType.LessThan:           return a < b;
-					case BinaryOperatorType.LessThanOrEqual:    return a <= b;
-					
-					case BinaryOperatorType.Add:           return a + b;
-					case BinaryOperatorType.Subtract:      return a - b;
-					case BinaryOperatorType.Multiply:      return a * b;
-					case BinaryOperatorType.Divide:        return a / b;
-					case BinaryOperatorType.Modulus:       return a % b;
-					case BinaryOperatorType.Concat:        return a + b;
-				}
-			}
-			
-			return null;
 		}
 		
 		#endregion
