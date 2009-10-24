@@ -1086,7 +1086,8 @@ namespace Debugger.MetaData
 		
 		DebugType(AppDomain appDomain, ICorDebugType corType)
 		{
-			if (corType == null) throw new ArgumentNullException("corType");
+			if (corType == null)
+				throw new ArgumentNullException("corType");
 			
 			this.corType = corType;
 			this.corElementType = (CorElementType)corType.GetTheType();
@@ -1124,6 +1125,8 @@ namespace Debugger.MetaData
 				// Get class props
 				this.module = appDomain.Process.Modules[corType.GetClass().GetModule()];
 				this.classProps = module.MetaData.GetTypeDefProps(corType.GetClass().GetToken());
+				if (this.DebugModule.AppDomain != appDomain)
+					throw new DebuggerException("The specified AppDomain was inccorect");
 				// Get the enclosing class
 				if (!this.IsPublic && !this.IsNotPublic) {
 					uint enclosingTk = module.MetaData.GetNestedClassProps((uint)this.MetadataToken).EnclosingClass;

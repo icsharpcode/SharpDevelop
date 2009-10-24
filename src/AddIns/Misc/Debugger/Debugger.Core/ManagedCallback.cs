@@ -420,7 +420,8 @@ namespace Debugger
 			} else {
 				EnterCallback(PausedReason.Other, "ExitThread " + pThread.GetID(), process.CorProcess);
 				
-				// TODO: Investigate
+				// .NET 4.0 - It seems that the API is reporting exits of threads without announcing their creation.
+				// TODO: Remove in next .NET 4.0 beta and investigate
 				process.TraceMessage("ERROR: Thread does not exist " + pThread.GetID());
 			}
 			

@@ -753,7 +753,6 @@ namespace ICSharpCode.NRefactory.Visitors
 					if (left.Value.IsNull || right.Value.IsNull) {
 						return CreateValue(left.Value.IsNull && right.Value.IsNull);
 					} else {
-						// TODO: Make sure this works for byrefs and arrays
 						return CreateValue(left.Value.Address == right.Value.Address);
 					}
 				}

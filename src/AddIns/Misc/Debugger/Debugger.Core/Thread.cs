@@ -303,7 +303,7 @@ namespace Debugger
 						StackFrame stackFrame;
 						try {
 							stackFrame = new StackFrame(this, (ICorDebugILFrame)corFrame, corChainIndex, corFrameIndex);
-						} catch (COMException) { // TODO
+						} catch (COMException) { // TODO: Remove
 							continue;
 						};
 						yield return stackFrame;

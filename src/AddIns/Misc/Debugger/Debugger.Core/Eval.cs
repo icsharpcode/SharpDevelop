@@ -123,8 +123,16 @@ namespace Debugger
 		{
 			appDomain.Process.AssertPaused();
 			
-			// TODO: Select thread in the correct AppDomain
 			Thread targetThread = appDomain.Process.SelectedThread;
+			
+			if (targetThread.CorThread.GetAppDomain().GetID() != appDomain.ID) {
+				foreach(Thread thread in appDomain.Process.Threads) {
+					if (thread.CorThread.GetAppDomain().GetID() == appDomain.ID) {
+						targetThread = thread;
+						break;
+					}
+				}
+			}
 			
 			if (targetThread == null) {
 				throw new GetValueException("Can not evaluate because no thread is selected");
