@@ -48,8 +48,16 @@ namespace ICSharpCode.NRefactory.Visitors
 	
 	public class ExpressionEvaluator: NotImplementedAstVisitor
 	{
-		const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
-		const BindingFlags BindingFlagsAllDeclared = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+		StackFrame context;
+		
+		public StackFrame Context {
+			get { return context; }
+		}
+		
+		ExpressionEvaluator(StackFrame context)
+		{
+			this.context = context;
+		}
 		
 		public static INode Parse(string code, SupportedLanguage language)
 		{
@@ -194,15 +202,45 @@ namespace ICSharpCode.NRefactory.Visitors
 			return val;
 		}
 		
-		StackFrame context;
-		
-		public StackFrame Context {
-			get { return context; }
+		int EvaluateAsInt(INode expression)
+		{
+			if (expression is PrimitiveExpression) {
+				int? i = ((PrimitiveExpression)expression).Value as int?;
+				if (i == null)
+					throw new EvaluateException(expression, "Integer expected");
+				return i.Value;
+			} else {
+				TypedValue typedVal = Evaluate(expression);
+				if (typedVal.Type.CanImplicitelyConvertTo(typeof(int))) {
+					int i = (int)Convert.ChangeType(typedVal.PrimitiveValue, typeof(int));
+					return i;
+				} else {
+					throw new EvaluateException(expression, "Integer expected");
+				}
+			}
 		}
 		
-		ExpressionEvaluator(StackFrame context)
+		TypedValue EvaluateAs(INode expression, DebugType type)
 		{
-			this.context = context;
+			TypedValue val = Evaluate(expression);
+			if (val.Type == type)
+				return val;
+			if (!val.Type.CanImplicitelyConvertTo(type))
+				throw new EvaluateException(expression, "Can not implicitely cast {0} to {1}", val.Type.FullName, type.FullName);
+			if (type.IsPrimitive) {
+				object oldVal = val.PrimitiveValue;
+				object newVal;
+				try {
+					newVal = Convert.ChangeType(oldVal, type.PrimitiveType);
+				} catch (InvalidCastException) {
+					throw new EvaluateException(expression, "Can not cast {0} to {1}", val.GetType().FullName, type.FullName);
+				} catch (OverflowException) {
+					throw new EvaluateException(expression, "Overflow");
+				}
+				return CreateValue(newVal);
+			} else {
+				return new TypedValue(val.Value, type);
+			}
 		}
 		
 		Value[] GetValues(List<TypedValue> typedVals)
@@ -372,40 +410,34 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			TypedValue target = Evaluate(indexerExpression.TargetObject);
 			
-			List<TypedValue> indexes = new List<TypedValue>();
-			foreach(Expression indexExpr in indexerExpression.Indexes) {
-				indexes.Add(Evaluate(indexExpr));
-			}
-			
 			if (target.Type.IsArray) {
 				List<int> intIndexes = new List<int>();
-				foreach(TypedValue index in indexes) {
-					if (!index.Type.IsInteger)
-						throw new GetValueException("Integer expected for indexer");
-					intIndexes.Add((int)index.PrimitiveValue);
+				foreach(Expression indexExpr in indexerExpression.Indexes) {
+					intIndexes.Add(EvaluateAsInt(indexExpr));
 				}
 				return new TypedValue(
 					target.Value.GetArrayElement(intIndexes.ToArray()),
 					(DebugType)target.Type.GetElementType()
 				);
-			}
-			
-			if (target.Type.FullName == typeof(string).FullName) {
-				if (indexes.Count == 1 && indexes[0].Type.IsInteger) {
-					int index = (int)indexes[0].PrimitiveValue;
-					return CreateValue(((string)target.PrimitiveValue)[index]);
-				} else {
-					throw new GetValueException("Expected single integer index");
+			} else if (target.Type.FullName == typeof(string).FullName) {
+				if (indexerExpression.Indexes.Count != 1)
+					throw new GetValueException("Single index expected");
+				
+				int index = EvaluateAsInt(indexerExpression.Indexes[0]);
+				return CreateValue(((string)target.PrimitiveValue)[index]);
+			} else {
+				List<TypedValue> indexes = new List<TypedValue>();
+				foreach(Expression indexExpr in indexerExpression.Indexes) {
+					indexes.Add(Evaluate(indexExpr));
 				}
+				DebugPropertyInfo pi = (DebugPropertyInfo)target.Type.GetProperty("Item", GetTypes(indexes));
+				if (pi == null)
+					throw new GetValueException("The object does not have an indexer property");
+				return new TypedValue(
+					target.Value.GetPropertyValue(pi, GetValues(indexes)),
+					(DebugType)pi.PropertyType
+				);
 			}
-			
-			DebugPropertyInfo pi = (DebugPropertyInfo)target.Type.GetProperty("Item", GetTypes(indexes));
-			if (pi == null)
-				throw new GetValueException("The object does not have an indexer property");
-			return new TypedValue(
-				target.Value.GetPropertyValue(pi, GetValues(indexes)),
-				(DebugType)pi.PropertyType
-			);
 		}
 		
 		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
@@ -453,17 +485,43 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
+			if (!objectCreateExpression.ObjectInitializer.IsNull)
+				throw new EvaluateException(objectCreateExpression.ObjectInitializer, "Object initializers not supported");
+			
+			DebugType type = objectCreateExpression.CreateType.ResolveType(context.AppDomain);
 			List<TypedValue> ctorArgs = new List<TypedValue>(objectCreateExpression.Parameters.Count);
 			foreach(Expression argExpr in objectCreateExpression.Parameters) {
 				ctorArgs.Add(Evaluate(argExpr));
 			}
-			// TODO: Use reflection
-			// TODO: Arrays
-			DebugType type = objectCreateExpression.CreateType.ResolveType(context.AppDomain);
 			return new TypedValue(
 				Eval.NewObject((DebugType)type, GetValues(ctorArgs), GetTypes(ctorArgs)),
 				type
 			);
+		}
+		
+		public override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data)
+		{
+			if (arrayCreateExpression.CreateType.RankSpecifier[0] != 0)
+				throw new EvaluateException(arrayCreateExpression, "Multi-dimensional arrays are not suppored");
+			
+			DebugType type = arrayCreateExpression.CreateType.ResolveType(context.AppDomain);
+			int length = 0;
+			if (arrayCreateExpression.Arguments.Count == 1) {
+				length = EvaluateAsInt(arrayCreateExpression.Arguments[0]);
+			} else if (!arrayCreateExpression.ArrayInitializer.IsNull) {
+				length = arrayCreateExpression.ArrayInitializer.CreateExpressions.Count;
+			}
+			Value array = Eval.NewArray((DebugType)type.GetElementType(), (uint)length, null);
+			if (!arrayCreateExpression.ArrayInitializer.IsNull) {
+				List<Expression> inits = arrayCreateExpression.ArrayInitializer.CreateExpressions;
+				if (inits.Count != length)
+					throw new EvaluateException(arrayCreateExpression, "Incorrect initializer length");
+				for(int i = 0; i < length; i++) {
+					TypedValue init = EvaluateAs(inits[i], (DebugType)type.GetElementType());
+					array.SetArrayElement(new int[] { i }, init.Value);
+				}
+			}
+			return new TypedValue(array, type);
 		}
 		
 		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)

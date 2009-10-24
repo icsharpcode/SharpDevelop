@@ -346,6 +346,12 @@ namespace Debugger
 			return CorArrayValue.GetElement(indices);
 		}
 		
+		public void SetArrayElement(int[] elementIndices, Value newVal)
+		{
+			Value elem = GetArrayElement(elementIndices);
+			elem.SetValue(newVal);
+		}
+		
 		/// <summary> Returns all elements in the array </summary>
 		public Value[] GetArrayElements()
 		{

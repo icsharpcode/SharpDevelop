@@ -439,6 +439,8 @@ namespace Debugger.MetaData
 			if (this.IsPrimitive && toType.IsPrimitive) {
 				string f = this.FullName;
 				string t = toType.FullName;
+				if (f == t)
+					return true;
 				if (f == SByte && (t == Short || t == Int || t == Long || t == Float || t == Double || t == Decimal))
 					return true;
 				if (f == Byte && (t == Short || t == UShort || t == Int || t == UInt || t == Long || t == ULong || t == Float || t == Double || t == Decimal))

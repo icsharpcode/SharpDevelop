@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -1242,9 +1242,9 @@ namespace Debugger.Interop.CorDebug
 			ProcessOutParameter(ppTypeArgs);
 		}
 		
-		public static void NewParameterizedArray(this ICorDebugEval2 instance, ICorDebugType pElementType, uint rank, ref uint dims, ref uint lowBounds)
+		public static void NewParameterizedArray(this ICorDebugEval2 instance, ICorDebugType pElementType, uint rank, uint[] dims, uint[] lowBounds)
 		{
-			instance.__NewParameterizedArray(pElementType, rank, ref dims, ref lowBounds);
+			instance.__NewParameterizedArray(pElementType, rank, dims, lowBounds);
 		}
 		
 		public static void NewStringWithLength(this ICorDebugEval2 instance, string @string, uint uiLength)

@@ -333,6 +333,28 @@ namespace Debugger
 		
 		#region Convenience methods
 		
+		public static Value NewArray(DebugType type, uint length, uint? lowerBound)
+		{
+			return AsyncNewArray(type, length, lowerBound).WaitForResult();
+		}
+		
+		#endregion
+		
+		public static Eval AsyncNewArray(DebugType type, uint length, uint? lowerBound)
+		{
+			lowerBound = lowerBound ?? 0;
+			return new Eval(
+				type.AppDomain,
+				"New array: " + type + "[" + length + "]",
+				delegate(Eval eval) {
+					// Multi-dimensional arrays not supported in .NET 2.0
+					eval.CorEval2.NewParameterizedArray(type.CorType, 1, new uint[] { length }, new uint[] { lowerBound.Value });
+				}
+			);
+		}
+		
+		#region Convenience methods
+		
 		public static Value NewObject(DebugType debugType, Value[] constructorArguments, DebugType[] constructorArgumentsTypes)
 		{
 			return AsyncNewObject(debugType, constructorArguments, constructorArgumentsTypes).WaitForResult();
