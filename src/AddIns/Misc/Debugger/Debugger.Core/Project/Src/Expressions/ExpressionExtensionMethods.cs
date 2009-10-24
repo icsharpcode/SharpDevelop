@@ -56,7 +56,7 @@ namespace Debugger
 				);
 			}
 			
-			if (memberInfo is FieldInfo) {
+			if (memberInfo is DebugFieldInfo) {
 				if (args.Length > 0)
 					throw new DebuggerException("No arguments expected for a field");
 				return new MemberReferenceExpression(target, memberInfo.Name);

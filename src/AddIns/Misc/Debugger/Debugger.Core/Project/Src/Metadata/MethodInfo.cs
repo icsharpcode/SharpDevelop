@@ -155,13 +155,13 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		FieldInfo backingFieldCache;
+		DebugFieldInfo backingFieldCache;
 		bool getBackingFieldCalled;
 		
 		/// <summary>
 		/// Backing field that can be used to obtain the same value as by calling this method.
 		/// </summary>
-		internal FieldInfo BackingField {
+		internal DebugFieldInfo BackingField {
 			get {
 				if (!getBackingFieldCalled) {
 					backingFieldCache = GetBackingField();
@@ -172,7 +172,7 @@ namespace Debugger.MetaData
 		}
 		
 		// Is this method in form 'return this.field;'?
-		FieldInfo GetBackingField()
+		DebugFieldInfo GetBackingField()
 		{
 			if (this.IsStatic) return null; // TODO: Make work for static, 
 											// the code size for static is 10/11 opposed to instance 11/12 - the ldarg.0 is missing
@@ -247,12 +247,12 @@ namespace Debugger.MetaData
 				MemberInfo member = this.DeclaringType.GetMember(token);
 				
 				if (member == null) return null;
-				if (!(member is FieldInfo)) return null;
+				if (!(member is DebugFieldInfo)) return null;
 				
 				if (this.Process.Options.Verbose) {
 					this.Process.TraceMessage(string.Format("Found backing field for {0}: {1}", this.FullName, member.Name));
 				}
-				return (FieldInfo)member;
+				return (DebugFieldInfo)member;
 			}
 			
 			return null;
@@ -463,15 +463,15 @@ namespace Debugger.MetaData
 					this.DeclaringType
 				);
 				// Get dispaly classes from fields
-				foreach(FieldInfo fieldInfo in this.DeclaringType.GetFields()) {
-					FieldInfo fieldInfoCopy = fieldInfo;
+				foreach(DebugFieldInfo fieldInfo in this.DeclaringType.GetFields()) {
+					DebugFieldInfo fieldInfoCopy = fieldInfo;
 					if (fieldInfo.Name.StartsWith("CS$")) {
 						AddCapturedLocalVariables(
 							localVariables,
 							delegate(StackFrame context) {
 								return context.GetThisValue().GetFieldValue(fieldInfoCopy);
 							},
-							fieldInfo.Type
+							fieldInfo.FieldType
 						);
 					}
 				}
@@ -495,12 +495,12 @@ namespace Debugger.MetaData
 		static void AddCapturedLocalVariables(List<LocalVariableInfo> vars, ValueGetter getCaptureClass, DebugType captureClassType)
 		{
 			if (captureClassType.IsDisplayClass || captureClassType.IsYieldEnumerator) {
-				foreach(FieldInfo fieldInfo in captureClassType.GetFields()) {
-					FieldInfo fieldInfoCopy = fieldInfo;
+				foreach(DebugFieldInfo fieldInfo in captureClassType.GetFields()) {
+					DebugFieldInfo fieldInfoCopy = fieldInfo;
 					if (fieldInfo.Name.StartsWith("CS$")) continue; // Ignore
 					LocalVariableInfo locVar = new LocalVariableInfo(
 						fieldInfo.Name,
-						fieldInfo.Type,
+						fieldInfo.FieldType,
 						delegate(StackFrame context) {
 							return getCaptureClass(context).GetFieldValue(fieldInfoCopy);
 						}

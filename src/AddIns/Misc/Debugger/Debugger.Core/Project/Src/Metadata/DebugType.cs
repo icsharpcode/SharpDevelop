@@ -663,7 +663,7 @@ namespace Debugger.MetaData
 			// Load fields
 			foreach(FieldProps field in module.MetaData.EnumFieldProps(this.Token)) {
 				if (field.IsStatic && field.IsLiteral) continue; // Skip static literals TODO: Why?
-				members.Add(new FieldInfo(this, field));
+				members.Add(new DebugFieldInfo(this, field));
 			};
 			
 			// Load methods

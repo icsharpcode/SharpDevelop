@@ -5,65 +5,83 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Mono.Cecil.Signatures;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
+
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
+using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData
 {
-	/// <summary>
-	/// Provides information about a field of some class.
-	/// </summary>
-	public class FieldInfo: MemberInfo
+	public class DebugFieldInfo : System.Reflection.FieldInfo
 	{
+		DebugType declaringType;
 		FieldProps fieldProps;
 		
-		/// <summary> Gets a value indicating whether this field is literal field </summary>
-		public bool IsLiteral {
+		internal DebugFieldInfo(DebugType declaringType, FieldProps fieldProps)
+		{
+			this.declaringType = declaringType;
+			this.fieldProps = fieldProps;
+		}
+		
+		public override Type DeclaringType {
 			get {
-				return fieldProps.IsLiteral;
+				throw new NotSupportedException();
 			}
 		}
 		
-		/// <summary> Gets a value indicating whether this member has the private access modifier</summary>
-		public override bool IsPrivate  {
-			get { return fieldProps.IsPrivate; }
-		}
-		
-		/// <summary> Gets a value indicating whether this member has the internal access modifier</summary>
-		public override bool IsInternal  {
-			get { return fieldProps.IsInternal; }
-		}
-		
-		/// <summary> Gets a value indicating whether this member has the protected access modifier</summary>
-		public override bool IsProtected  {
-			get { return fieldProps.IsProtected; }
-		}
-		
-		/// <summary> Gets a value indicating whether this member has the public access modifier</summary>
-		public override bool IsPublic {
-			get { return fieldProps.IsPublic; }
-		}
-		
-		/// <summary> Gets a value indicating whether this field is static </summary>
-		public override bool IsStatic {
-			get {
-				return fieldProps.IsStatic;
-			}
-		}
-		
-		/// <summary> Gets the metadata token associated with this field </summary>
 		[Debugger.Tests.Ignore]
-		public override uint MetadataToken {
+		public override int MetadataToken {
 			get {
-				return fieldProps.Token;
+				return (int)fieldProps.Token;
 			}
 		}
 		
-		/// <summary> The type of the field</summary>
-		public DebugType Type {
+		//		public virtual Module Module { get; }
+		
+		public override string Name {
+			get {
+				return fieldProps.Name;
+			}
+		}
+		
+		public override Type ReflectedType {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override object[] GetCustomAttributes(bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override bool IsDefined(Type attributeType, bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override FieldAttributes Attributes {
+			get {
+				return (FieldAttributes)fieldProps.Flags;
+			}
+		}
+		
+		public override RuntimeFieldHandle FieldHandle {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override Type FieldType {
 			get {
 				SignatureReader sigReader = new SignatureReader(fieldProps.SigBlob.GetData());
 				FieldSig fieldSig = sigReader.GetFieldSig(0);
@@ -71,16 +89,18 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		/// <summary> Gets the name of this field </summary>
-		public override string Name {
-			get {
-				return fieldProps.Name;
-			}
+		//		public virtual Type[] GetOptionalCustomModifiers();
+		//		public virtual object GetRawConstantValue();
+		//		public virtual Type[] GetRequiredCustomModifiers();
+		
+		public override object GetValue(object obj)
+		{
+			throw new NotSupportedException();
 		}
 		
-		internal FieldInfo(DebugType declaringType, FieldProps fieldProps):base (declaringType)
+		public override void SetValue(object obj, object value, System.Reflection.BindingFlags invokeAttr, Binder binder, CultureInfo culture)
 		{
-			this.fieldProps = fieldProps;
+			throw new NotSupportedException();
 		}
 	}
 }

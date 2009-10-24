@@ -66,9 +66,9 @@ namespace Debugger
 		/// <param name="objectInstance">null if member is static</param>
 		public static Value GetMemberValue(Value objectInstance, MemberInfo memberInfo, params Value[] arguments)
 		{
-			if (memberInfo is FieldInfo) {
+			if (memberInfo is DebugFieldInfo) {
 				if (arguments.Length > 0) throw new GetValueException("Arguments can not be used for a field");
-				return GetFieldValue(objectInstance, (FieldInfo)memberInfo);
+				return GetFieldValue(objectInstance, (DebugFieldInfo)memberInfo);
 			} else if (memberInfo is PropertyInfo) {
 				return GetPropertyValue(objectInstance, (PropertyInfo)memberInfo, arguments);
 			} else if (memberInfo is MethodInfo) {
@@ -80,7 +80,7 @@ namespace Debugger
 		#region Convenience overload methods
 		
 		/// <summary> Get the value of given field. </summary>
-		public Value GetFieldValue(FieldInfo fieldInfo)
+		public Value GetFieldValue(DebugFieldInfo fieldInfo)
 		{
 			return Value.GetFieldValue(this, fieldInfo);
 		}
@@ -89,7 +89,7 @@ namespace Debugger
 		
 		/// <summary> Get the value of given field. </summary>
 		/// <param name="objectInstance">null if field is static</param>
-		public static Value GetFieldValue(Value objectInstance, FieldInfo fieldInfo)
+		public static Value GetFieldValue(Value objectInstance, DebugFieldInfo fieldInfo)
 		{
 			return new Value(
 				fieldInfo.AppDomain,
@@ -97,7 +97,7 @@ namespace Debugger
 			);
 		}
 		
-		static ICorDebugValue GetFieldCorValue(Value objectInstance, FieldInfo fieldInfo)
+		static ICorDebugValue GetFieldCorValue(Value objectInstance, DebugFieldInfo fieldInfo)
 		{
 			CheckObject(objectInstance, fieldInfo);
 			
@@ -243,8 +243,8 @@ namespace Debugger
 			while (currentType != null) {
 				MemberInfo memberInfo = currentType.GetMember(name);
 				if (memberInfo != null) {
-					if (memberInfo is FieldInfo) {
-						return this.GetFieldValue((FieldInfo)memberInfo);
+					if (memberInfo is DebugFieldInfo) {
+						return this.GetFieldValue((DebugFieldInfo)memberInfo);
 					}
 					if (memberInfo is PropertyInfo) {
 						return this.GetPropertyValue((PropertyInfo)memberInfo);
@@ -277,7 +277,7 @@ namespace Debugger
 		
 		IEnumerable<Value> GetObjectMembersEnum(BindingFlags bindingFlags)
 		{
-			foreach(FieldInfo field in this.Type.GetFields(bindingFlags)) {
+			foreach(DebugFieldInfo field in this.Type.GetFields(bindingFlags)) {
 				yield return this.GetFieldValue(field);
 			}
 			foreach(PropertyInfo property in this.Type.GetProperties(bindingFlags)) {

@@ -122,7 +122,7 @@ namespace Debugger.MetaData
 				// Filter by type
 				if ((bindingFlags & BindingFlags.TypeMask) != 0) {
 					bool accept = false;
-					if ((bindingFlags & BindingFlags.Field) != 0 && memberInfo is FieldInfo) accept = true;
+					if ((bindingFlags & BindingFlags.Field) != 0 && memberInfo is DebugFieldInfo) accept = true;
 					if ((bindingFlags & BindingFlags.Property) != 0 && memberInfo is PropertyInfo) accept = true;
 					if ((bindingFlags & BindingFlags.Method) != 0 && memberInfo is MethodInfo) accept = true;
 					if ((bindingFlags & BindingFlags.GetProperty) != 0 &&
@@ -204,33 +204,33 @@ namespace Debugger.MetaData
 		
 		
 		/// <summary> Return all public fields.</summary>
-		public IList<FieldInfo> GetFields()
+		public IList<DebugFieldInfo> GetFields()
 		{
-			return QueryMembers<FieldInfo>(BindingFlags.Public);
+			return QueryMembers<DebugFieldInfo>(BindingFlags.Public);
 		}
 		
 		/// <summary> Return all fields satisfing binding flags.</summary>
-		public IList<FieldInfo> GetFields(BindingFlags bindingFlags)
+		public IList<DebugFieldInfo> GetFields(BindingFlags bindingFlags)
 		{
-			return QueryMembers<FieldInfo>(bindingFlags);
+			return QueryMembers<DebugFieldInfo>(bindingFlags);
 		}
 		
 		/// <summary> Return first field with the given name</summary>
-		public FieldInfo GetField(string name)
+		public DebugFieldInfo GetField(string name)
 		{
-			return QueryMember<FieldInfo>(name);
+			return QueryMember<DebugFieldInfo>(name);
 		}
 		
 		/// <summary> Return fields with the given name</summary>
-		public IList<FieldInfo> GetFields(string name)
+		public IList<DebugFieldInfo> GetFields(string name)
 		{
-			return QueryMembers<FieldInfo>(name);
+			return QueryMembers<DebugFieldInfo>(name);
 		}
 		
 		/// <summary> Return first field with the given token</summary>
-		public FieldInfo GetField(uint token)
+		public DebugFieldInfo GetField(uint token)
 		{
-			return QueryMember<FieldInfo>(token);
+			return QueryMember<DebugFieldInfo>(token);
 		}
 		
 		
