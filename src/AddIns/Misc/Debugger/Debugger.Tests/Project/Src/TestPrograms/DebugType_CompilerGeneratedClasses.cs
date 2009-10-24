@@ -19,6 +19,9 @@ namespace Debugger.Tests.TestPrograms
 			new List<object>(new DebugType_CompilerGeneratedClasses().MyEnum());
 		}
 		
+		string instanceField = "instance field value";
+		static string staticField = "static field value";
+			
 		IEnumerable<object> MyEnum()
 		{
 			int stateFullVar = 101;
@@ -75,6 +78,9 @@ namespace Debugger.Tests {
 			PrintLocalVariables("OutterDelegateLocalVariables");
 			process.Continue();
 			PrintLocalVariables("InnterDelegateLocalVariables");
+			Eval("nestedDelegArg");
+			Eval("instanceField");
+			Eval("staticField");
 			EndTest();
 		}
 	}
@@ -89,7 +95,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType_CompilerGeneratedClasses.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:35,5-35,41</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:38,5-38,41</DebuggingPaused>
     <YieldLocalVariables>
       <Item>
         <LocalVariable
@@ -140,7 +146,7 @@ namespace Debugger.Tests {
           Value="103" />
       </Item>
     </YieldLocalVariables>
-    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:54,6-54,42</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:57,6-57,42</DebuggingPaused>
     <OutterDelegateLocalVariables>
       <Item>
         <LocalVariable
@@ -197,7 +203,7 @@ namespace Debugger.Tests {
           Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </OutterDelegateLocalVariables>
-    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:51,7-51,43</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:54,7-54,43</DebuggingPaused>
     <InnterDelegateLocalVariables>
       <Item>
         <LocalVariable
@@ -248,6 +254,9 @@ namespace Debugger.Tests {
           Value="{Debugger.Tests.TestPrograms.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </InnterDelegateLocalVariables>
+    <Eval> nestedDelegArg = 402 </Eval>
+    <Eval> instanceField = "instance field value" </Eval>
+    <Eval> staticField = "static field value" </Eval>
     <ProcessExited />
   </Test>
 </DebuggerTests>

@@ -61,8 +61,16 @@ namespace Debugger.Tests.TestPrograms
 				return "derived Foo - string";
 			}
 		}
-	
+		
+		string instanceField = "instance field value";
+		static string staticField = "static field value";
+		
 		public static void Main()
+		{
+			new ExpressionEvaluator().Fun("function argument");
+		}
+	
+		public void Fun(string arg)
 		{
 			bool flag = true;
 			byte b = 1;
@@ -108,6 +116,10 @@ namespace Debugger.Tests {
 				hi + pi
 				pi + hi
 				pi + ' ' + hi
+				
+				arg
+				instanceField
+				staticField
 				
 				(5 + 6) % (1 + 2)
 				3 % 2 == 1
@@ -203,7 +215,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator.cs:80,4-80,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator.cs:88,4-88,40</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -216,6 +228,10 @@ namespace Debugger.Tests {
     <Eval> hi + pi = "hi3.14" </Eval>
     <Eval> pi + hi = "3.14hi" </Eval>
     <Eval> pi + " " + hi = "3.14 hi" </Eval>
+    <Eval> </Eval>
+    <Eval> arg = "function argument" </Eval>
+    <Eval> instanceField = "instance field value" </Eval>
+    <Eval> staticField = "static field value" </Eval>
     <Eval> </Eval>
     <Eval> (5 + 6) % (1 + 2) = 2 </Eval>
     <Eval> 3 % 2 == 1 = True </Eval>

@@ -275,16 +275,19 @@ namespace Debugger
 			Value local = context.GetLocalVariableValue(identifier);
 			if (local != null) return local;
 			
-			if (!context.MethodInfo.IsStatic) {
-				Value member = context.GetThisValue().GetMemberValue(identifier);
+			// Instance class members
+			Value thisValue = GetThisValue();
+			if (thisValue != null) {
+				Value member = thisValue.GetMemberValue(identifier);
 				if (member != null) return member;
-			} else {
-				IDebugMemberInfo memberInfo = 
-					(IDebugMemberInfo)context.MethodInfo.DeclaringType.GetField(identifier) ??
-					(IDebugMemberInfo)context.MethodInfo.DeclaringType.GetProperty(identifier);
-				if (memberInfo != null && memberInfo.IsStatic) {
-					return Value.GetMemberValue(null, (MemberInfo)memberInfo, null);
-				}
+			}
+			
+			// Static class members
+			IDebugMemberInfo memberInfo = 
+				(IDebugMemberInfo)context.MethodInfo.DeclaringType.GetField(identifier) ??
+				(IDebugMemberInfo)context.MethodInfo.DeclaringType.GetProperty(identifier);
+			if (memberInfo != null && memberInfo.IsStatic) {
+				return Value.GetMemberValue(null, (MemberInfo)memberInfo, null);
 			}
 			
 			throw new GetValueException("Identifier \"" + identifier + "\" not found in this context");
@@ -452,14 +455,22 @@ namespace Debugger
 			return Eval.CreateValue(context.AppDomain, primitiveExpression.Value);
 		}
 		
-		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
+		Value GetThisValue()
 		{
 			// This is needed so that captured 'this' is supported
 			foreach(DebugLocalVariableInfo locVar in context.MethodInfo.GetLocalVariables()) {
 				if (locVar.IsThis)
 					return locVar.GetValue(context);
 			}
-			throw new GetValueException(context.MethodInfo.FullName + " does not have \"this\"");
+			return null;
+		}
+		
+		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
+		{
+			Value thisValue = GetThisValue();
+			if (thisValue == null)
+				throw new GetValueException(context.MethodInfo.FullName + " does not have \"this\"");
+			return thisValue;
 		}
 		
 		public override object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
