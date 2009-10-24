@@ -12,12 +12,10 @@
 // Replace with:
 // \1\2\n\1{\n\1\tGetProcessCallbackInterface(\4).\3(\4, \5, \6, \7, \8, \9);\n\1}
 
+using Debugger.Interop;
 using System;
 using System.Runtime.InteropServices;
 using Debugger.Interop.CorDebug;
-using CorDebugStepReason = Debugger.Interop.CorDebug.CorDebugStepReason;
-using CorDebugExceptionCallbackType = Debugger.Interop.CorDebug.CorDebugExceptionCallbackType;
-using CorDebugExceptionUnwindCallbackType = Debugger.Interop.CorDebug.CorDebugExceptionUnwindCallbackType;
 
 namespace Debugger.Internal
 {

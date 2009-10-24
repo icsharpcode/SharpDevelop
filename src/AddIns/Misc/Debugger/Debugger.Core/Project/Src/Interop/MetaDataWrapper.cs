@@ -28,25 +28,25 @@ namespace Debugger.Interop.MetaData
 		{
 			Guid guid = new Guid("{ 0x7dac8207, 0xd3ae, 0x4c75, { 0x9b, 0x67, 0x92, 0x80, 0x1a, 0x49, 0x7d, 0x44 } }");
 			metaData = (IMetaDataImport)pModule.GetMetaDataInterface(ref guid);
-			ResourceManager.TrackCOMObject(metaData, typeof(IMetaDataImport));
+			TrackedComObjects.Track(metaData);
 		}
 		
 		public ISymUnmanagedReader GetSymReader(string fullname, string searchPath)
 		{
 			try {
-				// TODO: Track
 				ISymUnmanagedBinder symBinder = new Debugger.Interop.CorSym.CorSymBinder_SxSClass();
+				TrackedComObjects.Track(symBinder);
 				return symBinder.GetReaderForFile(metaData, fullname, searchPath);
 			} catch {
 				return null;
 			}
 		}
 		
-		public ISymUnmanagedReader GetSymReader(Debugger.Interop.CorSym.IStream stream)
+		public ISymUnmanagedReader GetSymReader(IStream stream)
 		{
 			try {
-				// TODO: Track
 				ISymUnmanagedBinder symBinder = new Debugger.Interop.CorSym.CorSymBinder_SxSClass();
+				TrackedComObjects.Track(symBinder);
 				return symBinder.GetReaderFromStream(metaData, stream);
 			} catch {
 				return null;
@@ -60,15 +60,14 @@ namespace Debugger.Interop.MetaData
 		
 		public void Dispose()
 		{
-			if (metaData != null) {
-				ResourceManager.ReleaseCOMObject(metaData, typeof(IMetaDataImport));
+			IMetaDataImport m = this.metaData;
+			if (m != null) {
+				Marshal.ReleaseComObject(m);
 				metaData = null;
 			}
 		}
 		
-		
 		// CloseEnum, CountEnum and ResetEnum are not wrapped
-		
 		
 		public uint[] EnumCustomAttributes(uint token_Scope, uint token_TypeOfAttributes)
 		{

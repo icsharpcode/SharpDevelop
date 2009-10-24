@@ -11,5 +11,9 @@ namespace Debugger.Interop.CorPublish
 {
 	public static partial class CorPublishExtensionMethods
 	{
+		static void ProcessOutParameter(object parameter)
+		{
+			TrackedComObjects.ProcessOutParameter(parameter);
+		}
 	}
 }

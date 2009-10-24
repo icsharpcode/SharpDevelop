@@ -13,10 +13,6 @@ namespace Debugger.Interop.CorSym
 {
 	public static partial class CorSymExtensionMethods
 	{
-		static void ProcessOutParameter(object parameter)
-		{
-		}
-		
 		public static ISymUnmanagedReader GetReaderForFile(this CorSymBinder_SxSClass instance, object importer, IntPtr filename, IntPtr searchPath)
 		{
 			ISymUnmanagedReader returnValue = instance.__GetReaderForFile(importer, filename, searchPath);
@@ -491,88 +487,6 @@ namespace Debugger.Interop.CorSym
 		public static void UsingNamespace(this CorSymWriter_deprecatedClass instance, IntPtr fullName)
 		{
 			instance.__UsingNamespace(fullName);
-		}
-		
-		public static void RemoteRead(this ISequentialStream instance, out byte pv, uint cb, out uint pcbRead)
-		{
-			instance.__RemoteRead(out pv, cb, out pcbRead);
-			ProcessOutParameter(pv);
-		}
-		
-		public static uint RemoteWrite(this ISequentialStream instance, ref byte pv, uint cb)
-		{
-			uint pcbWritten;
-			instance.__RemoteWrite(ref pv, cb, out pcbWritten);
-			ProcessOutParameter(pv);
-			return pcbWritten;
-		}
-		
-		public static void RemoteRead(this IStream instance, out byte pv, uint cb, out uint pcbRead)
-		{
-			instance.__RemoteRead(out pv, cb, out pcbRead);
-			ProcessOutParameter(pv);
-		}
-		
-		public static uint RemoteWrite(this IStream instance, ref byte pv, uint cb)
-		{
-			uint pcbWritten;
-			instance.__RemoteWrite(ref pv, cb, out pcbWritten);
-			ProcessOutParameter(pv);
-			return pcbWritten;
-		}
-		
-		public static _ULARGE_INTEGER RemoteSeek(this IStream instance, _LARGE_INTEGER dlibMove, uint dwOrigin)
-		{
-			_ULARGE_INTEGER plibNewPosition;
-			instance.__RemoteSeek(dlibMove, dwOrigin, out plibNewPosition);
-			ProcessOutParameter(plibNewPosition);
-			return plibNewPosition;
-		}
-		
-		public static void SetSize(this IStream instance, _ULARGE_INTEGER libNewSize)
-		{
-			instance.__SetSize(libNewSize);
-		}
-		
-		public static void RemoteCopyTo(this IStream instance, IStream pstm, _ULARGE_INTEGER cb, out _ULARGE_INTEGER pcbRead, out _ULARGE_INTEGER pcbWritten)
-		{
-			instance.__RemoteCopyTo(pstm, cb, out pcbRead, out pcbWritten);
-			ProcessOutParameter(pcbRead);
-			ProcessOutParameter(pcbWritten);
-		}
-		
-		public static void Commit(this IStream instance, uint grfCommitFlags)
-		{
-			instance.__Commit(grfCommitFlags);
-		}
-		
-		public static void Revert(this IStream instance)
-		{
-			instance.__Revert();
-		}
-		
-		public static void LockRegion(this IStream instance, _ULARGE_INTEGER libOffset, _ULARGE_INTEGER cb, uint dwLockType)
-		{
-			instance.__LockRegion(libOffset, cb, dwLockType);
-		}
-		
-		public static void UnlockRegion(this IStream instance, _ULARGE_INTEGER libOffset, _ULARGE_INTEGER cb, uint dwLockType)
-		{
-			instance.__UnlockRegion(libOffset, cb, dwLockType);
-		}
-		
-		public static void Stat(this IStream instance, out tagSTATSTG pstatstg, uint grfStatFlag)
-		{
-			instance.__Stat(out pstatstg, grfStatFlag);
-			ProcessOutParameter(pstatstg);
-		}
-		
-		public static IStream Clone(this IStream instance)
-		{
-			IStream ppstm;
-			instance.__Clone(out ppstm);
-			ProcessOutParameter(ppstm);
-			return ppstm;
 		}
 		
 		public static ISymUnmanagedReader GetReaderForFile(this ISymUnmanagedBinder instance, object importer, IntPtr filename, IntPtr searchPath)

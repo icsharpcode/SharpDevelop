@@ -115,8 +115,6 @@ namespace Debugger.Tests.TestPrograms
 #if TEST_CODE
 namespace Debugger.Tests {
 	using NUnit.Framework;
-	using Debugger.Wrappers.CorDebug;
-	using Debugger.Wrappers.MetaData;
 	
 	public partial class DebuggerTests
 	{

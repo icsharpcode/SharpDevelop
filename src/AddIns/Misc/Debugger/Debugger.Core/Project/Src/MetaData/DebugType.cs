@@ -15,8 +15,6 @@ using Debugger.Interop.CorDebug;
 using Debugger.Interop.MetaData;
 using ICSharpCode.NRefactory.Ast;
 using Mono.Cecil.Signatures;
-using CorElementType = Debugger.Interop.CorDebug.CorElementType;
-using CorTokenType = Debugger.Interop.MetaData.CorTokenType;
 
 namespace Debugger.MetaData
 {
@@ -951,7 +949,7 @@ namespace Debugger.MetaData
 		public static DebugType CreateFromCorType(AppDomain appDomain, ICorDebugType corType)
 		{
 			// Convert primitive type to class
-			CorElementType corElemType = (CorElementType)(corType.GetType());
+			CorElementType corElemType = (CorElementType)(corType.GetTheType());
 			Type primitiveType = CorElementTypeToManagedType(corElemType);
 			if (primitiveType != null) {
 				corType = CreateFromType(appDomain.Mscorlib, primitiveType).CorType;
@@ -971,7 +969,7 @@ namespace Debugger.MetaData
 			DateTime startTime = Util.HighPrecisionTimer.Now;
 			
 			this.corType = corType;
-			this.corElementType = (CorElementType)corType.GetType();
+			this.corElementType = (CorElementType)corType.GetTheType();
 			
 			// Loading might access the type again
 			loadedTypes[corType] = this;

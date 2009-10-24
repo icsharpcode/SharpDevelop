@@ -14,10 +14,6 @@ namespace Debugger.Interop.CorPublish
 {
 	public static partial class CorPublishExtensionMethods
 	{
-		static void ProcessOutParameter(object parameter)
-		{
-		}
-		
 		public static ICorPublishEnum Clone(this CorpubPublishClass instance)
 		{
 			ICorPublishEnum ppEnum;

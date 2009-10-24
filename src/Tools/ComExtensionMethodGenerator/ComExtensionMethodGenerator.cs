@@ -84,23 +84,23 @@ namespace ComExtensionMethodGenerator
 					new NamespaceDeclaration(Namespace) { Children = extensionMethodsType.ToList<INode>() }
 			);
 			
-			// Add the ProcessOutParameter method
-			if (ProcessOutParameter) {
-				extensionMethodsType.AddChild(
-					new MethodDeclaration() {
-						Modifier = Modifiers.Static,
-						TypeReference = new TypeReference("void", true),
-						Name = ProcessOutParameterMethodName,
-						Parameters =
-							new ParameterDeclarationExpression(
-								new TypeReference("object", true),
-								"parameter"
-							).ToList(),
-						Body = new BlockStatement()
-					}
-				);
-				extensionMethodsType.AddChild(new IdentifierExpression("\t\t\r\n"));
-			}
+//			// Add the ProcessOutParameter method
+//			if (ProcessOutParameter) {
+//				extensionMethodsType.AddChild(
+//					new MethodDeclaration() {
+//						Modifier = Modifiers.Static,
+//						TypeReference = new TypeReference("void", true),
+//						Name = ProcessOutParameterMethodName,
+//						Parameters =
+//							new ParameterDeclarationExpression(
+//								new TypeReference("object", true),
+//								"parameter"
+//							).ToList(),
+//						Body = new BlockStatement()
+//					}
+//				);
+//				extensionMethodsType.AddChild(new IdentifierExpression("\t\t\r\n"));
+//			}
 				
 			// Add the extesion methods
 			foreach(NamespaceDeclaration ns in parser.CompilationUnit.Children.OfType<NamespaceDeclaration>()) {
@@ -120,6 +120,9 @@ namespace ComExtensionMethodGenerator
 							Console.WriteLine("Warning: {0}.{1} is missing prefix {2}.", type.Name, method.Name, MethodPrefix);
 							hasWarnings = true;
 						}
+						// HACK: GetType is used by System.Object
+						if (extensionMethod.Name == "GetType")
+							extensionMethod.Name = "GetTheType";
 						// Parameters
 						extensionMethod.Parameters.Add(new ParameterDeclarationExpression(new TypeReference(type.Name), ThisParameterName));
 						foreach(ParameterDeclarationExpression param in method.Parameters) {

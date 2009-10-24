@@ -74,6 +74,7 @@
     <Compile Include="Src\Internal\ManagedCallbackProxy.cs" />
     <Compile Include="Src\Internal\ManagedCallbackSwitch.cs" />
     <Compile Include="Src\Internal\MTA2STA.cs" />
+    <Compile Include="Src\Interop\Common.cs" />
     <Compile Include="Src\Interop\CorDebug.cs" />
     <Compile Include="Src\Interop\CorDebugExtensionMethods.cs" />
     <Compile Include="Src\Interop\CorDebugExtensionMethods.generated.cs" />
@@ -86,7 +87,7 @@
     <Compile Include="Src\Interop\MetaData.cs" />
     <Compile Include="Src\Interop\MetaDataWrapper.cs" />
     <Compile Include="Src\Interop\NativeMethods.cs" />
-    <Compile Include="Src\Interop\ResourceManager.cs" />
+    <Compile Include="Src\Interop\TrackedComObjects.cs" />
     <Compile Include="Src\Interop\Util.cs" />
     <Compile Include="Src\MetaData\DebugFieldInfo.cs" />
     <Compile Include="Src\MetaData\DebugLocalVariableInfo.cs" />

@@ -31,6 +31,11 @@ namespace Debugger.Interop.CorDebug
 			return obj as T;
 		}
 		
+		static void ProcessOutParameter(object parameter)
+		{
+			TrackedComObjects.ProcessOutParameter(parameter);
+		}
+		
 		// ICorDebugArrayValue
 		
 		public static unsafe uint[] GetDimensions(this ICorDebugArrayValue corArray)
@@ -215,9 +220,7 @@ namespace Debugger.Interop.CorDebug
 		
 		public static bool HasQueuedCallbacks(this ICorDebugProcess corProcess)
 		{
-			int pbQueued;
-			corProcess.HasQueuedCallbacks(null, out pbQueued);
-			return pbQueued != 0;
+			return corProcess.HasQueuedCallbacks(null) != 0;
 		}
 		
 		// ICorDebugStepper

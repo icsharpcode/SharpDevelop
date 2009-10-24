@@ -212,7 +212,8 @@ namespace Debugger.Internal
 			}
 			// Marshal a COM object
 			object comObject = Marshal.GetObjectForIUnknown(param);
-			return Activator.CreateInstance(outputType, comObject);
+			Debugger.Interop.TrackedComObjects.Track(comObject);
+			return comObject;
 		}
 		
 		/// <summary>

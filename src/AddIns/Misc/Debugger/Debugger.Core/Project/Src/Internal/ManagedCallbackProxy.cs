@@ -7,10 +7,8 @@
 
 using System;
 using System.Windows.Forms;
+using Debugger.Interop;
 using Debugger.Interop.CorDebug;
-using CorDebugStepReason = Debugger.Interop.CorDebug.CorDebugStepReason;
-using CorDebugExceptionCallbackType = Debugger.Interop.CorDebug.CorDebugExceptionCallbackType;
-using CorDebugExceptionUnwindCallbackType = Debugger.Interop.CorDebug.CorDebugExceptionUnwindCallbackType;
 
 // Regular expresion:
 // ^{\t*}{(:Ll| )*{:i} *\(((.# {:i}, |\))|())^6\)*}\n\t*\{(.|\n)@\t\}

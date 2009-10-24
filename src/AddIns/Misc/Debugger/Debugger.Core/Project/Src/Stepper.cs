@@ -7,7 +7,6 @@
 
 using System;
 using Debugger.Interop.CorDebug;
-using CorDebugStepReason = Debugger.Interop.CorDebug.CorDebugStepReason;
 
 namespace Debugger
 {

@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;
 using Debugger.MetaData;
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.MetaData;
-using CorElementType = Debugger.Interop.CorDebug.CorElementType;
 
 namespace Debugger
 {
@@ -293,7 +292,7 @@ namespace Debugger
 				throw;
 			}
 			// This can be 'by ref' for value types
-			if (corValue.GetType() == (uint)CorElementType.BYREF) {
+			if (corValue.GetTheType() == (uint)CorElementType.BYREF) {
 				corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
 			}
 			return corValue;
@@ -341,7 +340,7 @@ namespace Debugger
 				throw;
 			}
 			// Method arguments can be passed 'by ref'
-			if (corValue.GetType() == (uint)CorElementType.BYREF) {
+			if (corValue.GetTheType() == (uint)CorElementType.BYREF) {
 				try {
 					corValue = corValue.CastTo<ICorDebugReferenceValue>().Dereference();
 				} catch (COMException e) {

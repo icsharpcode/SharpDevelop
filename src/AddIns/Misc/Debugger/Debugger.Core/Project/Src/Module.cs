@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger.Interop;
 using System;
 using System.Collections.Generic;
-using Debugger.MetaData;
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
 using Debugger.Interop.MetaData;
+using Debugger.MetaData;
 
 namespace Debugger
 {
@@ -198,7 +199,7 @@ namespace Debugger
 			}
 		}
 		
-		public void UpdateSymbolsFromStream(Debugger.Interop.CorDebug.IStream pSymbolStream)
+		public void UpdateSymbolsFromStream(IStream pSymbolStream)
 		{
 			if (symReader != null) {
 				symReader.As<ISymUnmanagedDispose>().Destroy();

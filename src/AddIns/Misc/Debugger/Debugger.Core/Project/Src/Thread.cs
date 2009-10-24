@@ -292,13 +292,17 @@ namespace Debugger
 					yield break;
 				}
 				
+				uint corChainIndex = CorThread.EnumerateChains().GetCount();
 				foreach(ICorDebugChain corChain in CorThread.EnumerateChains().GetEnumerator()) {
+					corChainIndex--;
 					if (corChain.IsManaged() == 0) continue; // Only managed ones
+					uint corFrameIndex = corChain.EnumerateFrames().GetCount();
 					foreach(ICorDebugFrame corFrame in corChain.EnumerateFrames().GetEnumerator()) {
+						corFrameIndex--;
 						if (!corFrame.Is<ICorDebugILFrame>()) continue; // Only IL frames
 						StackFrame stackFrame;
 						try {
-							stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>(), corChain.Index, corFrame.Index);
+							stackFrame = new StackFrame(this, corFrame.CastTo<ICorDebugILFrame>(), corChainIndex, corFrameIndex);
 						} catch (COMException) { // TODO
 							continue;
 						};

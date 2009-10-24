@@ -72,11 +72,6 @@ namespace Debugger
 			} else {
 				mta2sta.CallMethod = CallMethod.DirectCall;
 			}
-			
-			Wrappers.ResourceManager.TraceMessagesEnabled = false;
-			Wrappers.ResourceManager.TraceMessage += delegate (object s, MessageEventArgs e) { 
-				TraceMessage(e.Message);
-			};
 		}
 		
 		/// <summary>
@@ -119,7 +114,8 @@ namespace Debugger
 			}
 			this.debuggeeVersion = debuggeeVersion;
 			
-			corDebug = new ICorDebug(NativeMethods.CreateDebuggingInterfaceFromVersion(3, debuggeeVersion));
+			corDebug = NativeMethods.CreateDebuggingInterfaceFromVersion(3, debuggeeVersion);
+			TrackedComObjects.Track(corDebug);
 			
 			managedCallbackSwitch = new ManagedCallbackSwitch(this);
 			managedCallbackProxy = new ManagedCallbackProxy(this, managedCallbackSwitch);
@@ -143,9 +139,9 @@ namespace Debugger
 			
 			TraceMessage("ICorDebug terminated");
 			
-			Wrappers.ResourceManager.ReleaseAllTrackedCOMObjects();
+			int released = TrackedComObjects.ReleaseAll();
 			
-			TraceMessage("Tracked COM objects released");
+			TraceMessage("Released " + released + " tracked COM objects");
 		}
 		
 		/// <summary>
