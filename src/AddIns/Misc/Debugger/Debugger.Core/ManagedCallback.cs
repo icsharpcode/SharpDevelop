@@ -53,7 +53,7 @@ namespace Debugger
 			if (process.IsPaused && process.PauseSession.PausedReason == PausedReason.ForcedBreak) {
 				process.TraceMessage("Processing post-break callback");
 				// This compensates for the break call and we are in normal callback handling mode
-				process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] {});
+				process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] {}, null);
 				// Start of call back - create new pause session (as usual)
 				process.NotifyPaused(pausedReason);
 				// Make sure we stay pause after the callback is handled
@@ -88,17 +88,17 @@ namespace Debugger
 			
 			if (hasQueuedCallbacks) {
 				// Exception has Exception2 queued after it
-				process.AsyncContinue(DebuggeeStateAction.Keep, null);
+				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
 			} else if (process.Evaluating) {
 				// Ignore events during property evaluation
-				process.AsyncContinue(DebuggeeStateAction.Keep, null);
+				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
 			} else if (pauseOnNextExit) {
 				if (process.Options.Verbose)
 					process.TraceMessage("Callback exit: Paused");
 				pauseOnNextExit = false;
 				Pause();
 			} else {
-				process.AsyncContinue(DebuggeeStateAction.Keep, null);
+				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
 			}
 			
 			isInCallback = false;
@@ -374,7 +374,10 @@ namespace Debugger
 			// and we continue from this callback anyway
 			EnterCallback(PausedReason.Other, "CreateThread " + pThread.GetID(), pAppDomain);
 			
-			process.Threads.Add(new Thread(process, pThread));
+			Thread thread = new Thread(process, pThread);
+			process.Threads.Add(thread);
+			
+			thread.CorThread.SetDebugState(process.NewThreadState);
 			
 			ExitCallback();
 		}

@@ -227,7 +227,7 @@ namespace Debugger
 				// May happen in release code with does not have any symbols
 				return false;
 			}
-			process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { this /* needed */ });
+			process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { this /* needed */ }, null);
 			process.WaitForPause();
 			return true;
 		}

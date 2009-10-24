@@ -145,6 +145,7 @@ namespace Debugger.Tests
 			System.Diagnostics.Debugger.Break();
 			bgWork.Start();
 			System.Threading.Thread.Sleep(100);
+			System.Diagnostics.Debugger.Break();
 		}
 	}
 }
@@ -259,7 +260,7 @@ namespace Debugger.Tests {
 			ObjectDump("TypesEqual", locType == valType);
 			
 			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString);
-			process.SelectedStackFrame.StepOver();
+			process.Continue();
 			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString);
 			
 			EndTest();
@@ -437,19 +438,9 @@ namespace Debugger.Tests {
     <TypeResulution> typeof(Debugger.Tests.ExpressionEvaluator_Tests.A&lt;System.Int32&gt;.B.C&lt;System.Char&gt;[][,]) = Debugger.Tests.ExpressionEvaluator_Tests+A`1+B+C`1[System.Int32,System.Char][,][] (ok)</TypeResulution>
     <TypesIdentitcal>True</TypesIdentitcal>
     <TypesEqual>True</TypesEqual>
-    <WorkerThreadMoved>
-      <Value
-        AsString="True"
-        PrimitiveValue="True"
-        Type="System.Boolean" />
-    </WorkerThreadMoved>
-    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:148,3-148,4</DebuggingPaused>
-    <WorkerThreadMoved>
-      <Value
-        AsString="True"
-        PrimitiveValue="True"
-        Type="System.Boolean" />
-    </WorkerThreadMoved>
+    <WorkerThreadMoved>False</WorkerThreadMoved>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:148,4-148,40</DebuggingPaused>
+    <WorkerThreadMoved>True</WorkerThreadMoved>
     <ProcessExited />
   </Test>
 </DebuggerTests>

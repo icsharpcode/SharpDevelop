@@ -119,9 +119,9 @@ namespace Debugger
 			appDomain.Process.ActiveEvals.Add(this);
 			
 			if (appDomain.Process.Options.SuspendOtherThreads) {
-				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { thread });
+				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { thread }, CorDebugThreadState.THREAD_SUSPEND);
 			} else {
-				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, this.Process.UnsuspendedThreads);
+				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, this.Process.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
 			}
 		}
 

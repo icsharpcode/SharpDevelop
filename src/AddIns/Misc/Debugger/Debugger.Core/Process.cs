@@ -416,10 +416,12 @@ namespace Debugger
 		/// </summary>
 		public void AsyncContinue()
 		{
-			AsyncContinue(DebuggeeStateAction.Clear, this.UnsuspendedThreads);
+			AsyncContinue(DebuggeeStateAction.Clear, this.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
 		}
 		
-		internal void AsyncContinue(DebuggeeStateAction action, Thread[] threadsToRun)
+		internal CorDebugThreadState NewThreadState = CorDebugThreadState.THREAD_RUN;
+		
+		internal void AsyncContinue(DebuggeeStateAction action, Thread[] threadsToRun, CorDebugThreadState? newThreadState)
 		{
 			AssertPaused();
 			
@@ -445,6 +447,10 @@ namespace Debugger
 						throw;
 					}
 				}
+			}
+			
+			if (newThreadState != null) {
+				this.NewThreadState = newThreadState.Value;
 			}
 			
 			NotifyResumed(action);

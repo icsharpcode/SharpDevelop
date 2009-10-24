@@ -219,9 +219,9 @@ namespace Debugger
 		void AsyncContinue()
 		{
 			if (process.Options.SuspendOtherThreads) {
-				process.AsyncContinue(DebuggeeStateAction.Clear, new Thread[] { this.Thread });
+				process.AsyncContinue(DebuggeeStateAction.Clear, new Thread[] { this.Thread }, CorDebugThreadState.THREAD_SUSPEND);
 			} else {
-				process.AsyncContinue(DebuggeeStateAction.Clear, this.Process.UnsuspendedThreads);
+				process.AsyncContinue(DebuggeeStateAction.Clear, this.Process.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
 			}
 		}
 		
