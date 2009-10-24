@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Visitors;
 using System;
 using System.Collections;
 using System.Windows.Controls;
-
 using Debugger;
 using Debugger.AddIn;
 using ICSharpCode.Core;

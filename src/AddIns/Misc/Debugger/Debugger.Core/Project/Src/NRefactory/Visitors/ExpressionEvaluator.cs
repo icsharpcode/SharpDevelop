@@ -4,20 +4,19 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using Debugger;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Text;
-
 using Debugger.MetaData;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 
-namespace Debugger
+namespace ICSharpCode.NRefactory.Visitors
 {
 	public class ExpressionEvaluator: NotImplementedAstVisitor
 	{
@@ -140,7 +139,7 @@ namespace Debugger
 				}
 			}
 			
-			Stopwatch watch = new Stopwatch();
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
 			try {
 				val = (Value)expression.AcceptVisitor(this, null);

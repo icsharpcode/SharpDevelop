@@ -4,16 +4,17 @@
 //     <owner name="Martin Koníèek" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
-using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
-using Debugger;
+using System.Reflection;
+
 using Debugger.AddIn.Visualizers.Common;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Services;
-using System.Reflection;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {

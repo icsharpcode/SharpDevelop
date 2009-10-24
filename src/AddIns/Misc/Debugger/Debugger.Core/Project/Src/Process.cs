@@ -5,10 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.Ast;
+using Debugger.Internal;
 using System;
 using System.Collections.Generic;
 using Debugger.Wrappers.CorDebug;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger
 {

@@ -11,6 +11,7 @@ using System.Text;
 
 using Debugger.AddIn.Visualizers.Utils;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {

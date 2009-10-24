@@ -15,6 +15,8 @@ using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using Exception = System.Exception;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads

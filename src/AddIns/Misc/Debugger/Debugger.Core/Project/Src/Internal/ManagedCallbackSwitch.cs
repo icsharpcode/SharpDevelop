@@ -16,7 +16,7 @@ using System;
 using System.Runtime.InteropServices;
 using Debugger.Wrappers.CorDebug;
 
-namespace Debugger
+namespace Debugger.Internal
 {
 	/// <summary>
 	/// This class forwards the callback the the approprite process

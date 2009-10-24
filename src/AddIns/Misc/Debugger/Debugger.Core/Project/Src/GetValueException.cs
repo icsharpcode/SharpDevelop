@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using System;
 using System.Collections.Generic;

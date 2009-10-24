@@ -4,14 +4,16 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+using ICSharpCode.NRefactory.Visitors;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using Debugger;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
-using System.Reflection;
 
-namespace Debugger
+namespace ICSharpCode.NRefactory.Ast
 {
 	public static class ExpressionExtensionMethods
 	{

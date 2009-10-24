@@ -17,7 +17,7 @@ using System;
 using System.Runtime.InteropServices;
 using Debugger.Wrappers.CorDebug;
 
-namespace Debugger
+namespace Debugger.Internal
 {
 	/// <summary>
 	/// Handles all callbacks of a given process

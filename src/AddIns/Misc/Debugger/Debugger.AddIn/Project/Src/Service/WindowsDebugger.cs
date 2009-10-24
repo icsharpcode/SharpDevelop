@@ -37,7 +37,7 @@
 //
 #endregion
 
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -52,6 +52,7 @@ using Debugger.Core.Wrappers.CorPub;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;

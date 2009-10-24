@@ -7,10 +7,10 @@
 
 #pragma warning disable 1591
 
+using Debugger.Internal;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
 using Debugger.Interop;
 
 namespace Debugger.Wrappers

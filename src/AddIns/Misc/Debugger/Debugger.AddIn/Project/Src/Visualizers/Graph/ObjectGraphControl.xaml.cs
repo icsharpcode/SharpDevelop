@@ -19,6 +19,7 @@ using System.Windows.Media;
 using Debugger.AddIn.Visualizers.Graph.Layout;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.Graph
 {

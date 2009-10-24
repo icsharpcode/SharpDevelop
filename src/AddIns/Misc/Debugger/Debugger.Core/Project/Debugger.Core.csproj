@@ -70,8 +70,6 @@
     <Compile Include="Src\EvalCollection.cs" />
     <Compile Include="Src\Exception.cs" />
     <Compile Include="Src\ExceptionType.cs" />
-    <Compile Include="Src\Expressions\ExpressionEvaluator.cs" />
-    <Compile Include="Src\Expressions\ExpressionExtensionMethods.cs" />
     <Compile Include="Src\GetValueException.cs" />
     <Compile Include="Src\Internal\ManagedCallback.cs" />
     <Compile Include="Src\Internal\ManagedCallbackProxy.cs" />
@@ -256,6 +254,8 @@
     <Compile Include="Src\Mono.Cecil\Mono.Cecil\MethodCallingConvention.cs" />
     <Compile Include="Src\Mono.Cecil\Mono.Cecil\ReflectionException.cs" />
     <Compile Include="Src\NDebugger.cs" />
+    <Compile Include="Src\NRefactory\Ast\ExpressionExtensionMethods.cs" />
+    <Compile Include="Src\NRefactory\Visitors\ExpressionEvaluator.cs" />
     <Compile Include="Src\Options.cs" />
     <Compile Include="Src\PausedReason.cs" />
     <Compile Include="Src\PauseSession.cs" />
@@ -451,7 +451,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Src\Expressions" />
     <Folder Include="Src\Internal" />
     <Folder Include="Src\Interop" />
     <Folder Include="Src\Interop\CorDebug" />
@@ -464,6 +463,9 @@
     <Folder Include="Src\Mono.Cecil\Mono.Cecil.Binary" />
     <Folder Include="Src\Mono.Cecil\Mono.Cecil.Metadata" />
     <Folder Include="Src\Mono.Cecil\Mono.Cecil.Signatures" />
+    <Folder Include="Src\NRefactory" />
+    <Folder Include="Src\NRefactory\Ast" />
+    <Folder Include="Src\NRefactory\Visitors" />
     <Folder Include="Src\Tests" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Wrappers" />

@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Debugger.AddIn.Visualizers.Graph.Layout;
-using Expression = ICSharpCode.NRefactory.Ast.Expression;
+using ICSharpCode.NRefactory.Ast;
 
 
 namespace Debugger.AddIn.Visualizers.Graph

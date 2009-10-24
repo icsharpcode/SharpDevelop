@@ -24,6 +24,7 @@ using Debugger.MetaData;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.NRefactory.Ast;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {

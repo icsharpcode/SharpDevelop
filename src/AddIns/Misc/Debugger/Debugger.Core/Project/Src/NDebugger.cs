@@ -5,14 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using Debugger.Internal;
 using System;
 using System.Text;
 using System.Threading;
-
-using Microsoft.Win32;
-
 using Debugger.Interop;
 using Debugger.Wrappers.CorDebug;
+using Microsoft.Win32;
 
 namespace Debugger
 {
