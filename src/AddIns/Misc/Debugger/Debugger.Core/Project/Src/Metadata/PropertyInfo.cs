@@ -7,89 +7,132 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
+
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.MetaData;
 
 namespace Debugger.MetaData
 {
-	/// <summary>
-	/// Provides information about a property in a class
-	/// </summary>
-	public class PropertyInfo: MemberInfo
+	public class DebugPropertyInfo : System.Reflection.PropertyInfo
 	{
+		DebugType declaringType;
 		MethodInfo getMethod;
 		MethodInfo setMethod;
 		
-		/// <summary> Gets a value indicating whether this member has the private access modifier</summary>
-		public override bool IsPrivate  {
-			get { return (getMethod ?? setMethod).IsPrivate; }
+		internal DebugPropertyInfo(DebugType declaringType, MethodInfo getMethod, MethodInfo setMethod)
+		{
+			if (getMethod == null && setMethod == null) throw new ArgumentNullException("Both getter and setter can not be null.");
+			
+			this.declaringType = declaringType;
+			this.getMethod = getMethod;
+			this.setMethod = setMethod;
 		}
 		
-		/// <summary> Gets a value indicating whether this member has the internal access modifier</summary>
-		public override bool IsInternal  {
-			get { return (getMethod ?? setMethod).IsInternal; }
-		}
-		
-		/// <summary> Gets a value indicating whether this member has the protected access modifier</summary>
-		public override bool IsProtected  {
-			get { return (getMethod ?? setMethod).IsProtected; }
-		}
-		
-		/// <summary> Gets a value indicating whether this member has the public access modifier</summary>
-		public override bool IsPublic {
-			get { return (getMethod ?? setMethod).IsPublic; }
-		}
-		
-		/// <summary> Gets a value indicating whether this property is static </summary>
-		public override bool IsStatic {
+		public override Type DeclaringType {
 			get {
-				return (getMethod ?? setMethod).IsStatic;
+				return declaringType;
 			}
 		}
 		
-		/// <summary> Gets the metadata token associated with getter (or setter)
-		/// of this property </summary>
-		[Debugger.Tests.Ignore]
 		public override uint MetadataToken {
 			get {
 				return (getMethod ?? setMethod).MetadataToken;
 			}
 		}
 		
-		/// <summary> The type of the property</summary>
-		public DebugType Type {
-			get {
-				return getMethod.ReturnType;
-			}
-		}
+		//		public virtual Module Module { get; }
 		
-		/// <summary> Gets the name of this property </summary>
 		public override string Name {
 			get {
 				return (getMethod ?? setMethod).Name.Remove(0,4);
 			}
 		}
 		
-		internal PropertyInfo(DebugType declaringType, MethodInfo getMethod, MethodInfo setMethod): base(declaringType)
+		public override Type ReflectedType {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override object[] GetCustomAttributes(bool inherit)
 		{
-			if (getMethod == null && setMethod == null) throw new ArgumentNullException("Both getter and setter can not be null.");
-			
-			this.getMethod = getMethod;
-			this.setMethod = setMethod;
+			throw new NotSupportedException();
 		}
 		
-		/// <summary> Get the get accessor of the property </summary>
-		public MethodInfo GetMethod {
+		public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override bool IsDefined(Type attributeType, bool inherit)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override PropertyAttributes Attributes {
 			get {
-				return getMethod;
+				throw new NotSupportedException();
 			}
 		}
 		
-		/// <summary> Get the set accessor of the property </summary>
-		public MethodInfo SetMethod {
+		public override bool CanRead {
 			get {
-				return setMethod;
+				return getMethod != null;
 			}
+		}
+		
+		public override bool CanWrite {
+			get {
+				return setMethod != null;
+			}
+		}
+		
+		public override Type PropertyType {
+			get {
+				return getMethod.ReturnType;
+			}
+		}
+		
+		public override MethodInfo[] GetAccessors(bool nonPublic)
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		public virtual object GetConstantValue();
+		
+		public override MethodInfo GetGetMethod(bool nonPublic)
+		{
+			return getMethod;
+		}
+		
+		public override ParameterInfo[] GetIndexParameters()
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		public virtual Type[] GetOptionalCustomModifiers();
+		//		public virtual object GetRawConstantValue();
+		//		public virtual Type[] GetRequiredCustomModifiers();
+		
+		public override MethodInfo GetSetMethod(bool nonPublic)
+		{
+			return setMethod;
+		}
+		
+		//		public virtual object GetValue(object obj, object[] index);
+		
+		public override object GetValue(object obj, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
+		{
+			throw new NotSupportedException();
+		}
+		
+		//		public virtual void SetValue(object obj, object value, object[] index);
+		
+		public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }
