@@ -1472,13 +1472,9 @@
 									</Directory>
 									<Directory Id="DebuggerFolder" Name="Debugger">
 										<Component Guid="3A14B928-3319-429B-8F39-8870431C49CB" Id="DebuggerAddInFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.AddIn.addin" Id="Debugger.AddIn.addin" Name="Debugger.AddIn.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.AddIn.dll" Id="Debugger.AddIn.dll" Name="Debugger.AddIn.dll" />
-											<!--
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.BooInterpreter.addin" Id="Debugger.BooInterpreter.addin" Name="Debugger.BooInterpreter.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.BooInterpreter.dll" Id="Debugger.BooInterpreter.dll" Name="Debugger.BooInterpreter.dll" />
-											-->
-											<File Source="..\..\AddIns\AddIns\Misc\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
+											<File Source="..\..\AddIns\AddIns\Debugger\Debugger.AddIn.addin" Id="Debugger.AddIn.addin" Name="Debugger.AddIn.addin" />
+											<File Source="..\..\AddIns\AddIns\Debugger\Debugger.AddIn.dll" Id="Debugger.AddIn.dll" Name="Debugger.AddIn.dll" />
+											<File Source="..\..\AddIns\AddIns\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="FiletypeRegistererFolder" Name="FiletypeRegisterer">
