@@ -12,7 +12,6 @@ using NIgnore = NUnit.Framework.IgnoreAttribute;
 namespace Debugger.Tests
 {
 	[TestFixture]
-	[NIgnore("Debugger is broken on .NET 4.0 Beta 2")]
 	public partial class DebuggerTests: DebuggerTestsBase
 	{
 		
