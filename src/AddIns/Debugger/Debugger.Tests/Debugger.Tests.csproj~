@@ -1,0 +1,83 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Debugger.Tests</RootNamespace>
+    <AssemblyName>Debugger.Tests</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A4C858C8-51B6-4265-A695-A20FCEBA1D19}</ProjectGuid>
+    <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <NoStdLib>False</NoStdLib>
+    <PlatformTarget>x86</PlatformTarget>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>Full</DebugType>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>219,414</NoWarn>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DefineConstants>DEBUG;TRACE;TEST_CODE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DefineConstants>TRACE;TEST_CODE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DebuggerTests.cs" />
+    <Compile Include="DebuggerTestsBase.cs" />
+    <Compile Include="Tests\AppDomain_Tests.cs" />
+    <Compile Include="Tests\ControlFlow_NoBreak.cs" />
+    <Compile Include="Tests\ExpressionEvaluator_Tests.cs" />
+    <Compile Include="Tests\Breakpoint_Tests.cs" />
+    <Compile Include="Tests\StackFrame_Callstack.cs" />
+    <Compile Include="Tests\DebugType_CompilerGeneratedClasses.cs" />
+    <Compile Include="Tests\ControlFlow_DebuggeeKilled.cs" />
+    <Compile Include="Tests\DebugType_Tests.cs" />
+    <Compile Include="Tests\Exception_Custom.cs" />
+    <Compile Include="Tests\StackFrame_Lifetime.cs" />
+    <Compile Include="Tests\StackFrame_VariablesLifetime.cs" />
+    <Compile Include="Tests\_HelloWorldTest.cs" />
+    <Compile Include="Tests\ControlFlow_MainThreadExit.cs" />
+    <Compile Include="Tests\Process_MemoryReadWrite.cs" />
+    <Compile Include="Tests\Value_Tests.cs" />
+    <Compile Include="Tests\StackFrame_SetIP.cs" />
+    <Compile Include="Tests\Exception_StackOverflow.cs" />
+    <Compile Include="Tests\ControlFlow_Stepping.cs" />
+    <Compile Include="Tests\ControlFlow_TerminatePausedProcess.cs" />
+    <Compile Include="Tests\ControlFlow_TerminateRunningProcess.cs" />
+    <Compile Include="Tests\Thread_Tests.cs" />
+    <EmbeddedResource Include="Tests\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tests" />
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Debugger.Core\Debugger.Core.csproj">
+      <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
+      <Name>Debugger.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

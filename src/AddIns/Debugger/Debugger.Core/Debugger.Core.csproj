@@ -18,7 +18,7 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
+    <OutputPath>..\..\..\..\AddIns\AddIns\Debugger\</OutputPath>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <PublishUrl>http://localhost/Debugger.Core/</PublishUrl>
     <Install>true</Install>
@@ -201,7 +201,7 @@
     <Folder Include="Tests" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
       <Private>False</Private>
