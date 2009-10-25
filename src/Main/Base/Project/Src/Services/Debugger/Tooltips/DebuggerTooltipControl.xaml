@@ -5,9 +5,11 @@
     xmlns:debugging="clr-namespace:ICSharpCode.SharpDevelop.Debugging"
 >
 <UserControl.Resources>
-	
-      <ResourceDictionary Source="VisualizerPicker.xaml" />
-	
+	<ResourceDictionary>
+		<ResourceDictionary.MergedDictionaries>
+			<ResourceDictionary Source="VisualizerPicker.xaml" />
+		</ResourceDictionary.MergedDictionaries>
+		
 	  <!-- TODO move styles to ResourceDictionary -->
       <Style x:Key="ExpandCollapseToggleStyle"
            TargetType="{x:Type ToggleButton}">
@@ -93,8 +95,8 @@
 				</Setter.Value>
 			</Setter>
 		 </Style>
-
-    </UserControl.Resources>
+		</ResourceDictionary>
+	</UserControl.Resources>
         <StackPanel Orientation="Vertical">
         	 <RepeatButton Name="btnUp" Focusable="False" Style="{StaticResource upButtonStyle}" Content="^" Click="BtnUp_Click"></RepeatButton>
             <DataGrid VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" 
