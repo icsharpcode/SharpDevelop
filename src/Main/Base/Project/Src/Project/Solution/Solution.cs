@@ -396,7 +396,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else if (versionNumber == SolutionVersionVS2008) {
 					sw.WriteLine("# Visual Studio 2008");
 				} else if (versionNumber == SolutionVersionVS2010) {
-					sw.WriteLine("# Visual Studio 10");
+					sw.WriteLine("# Visual Studio 2010");
 				}
 				sw.WriteLine("# SharpDevelop " + RevisionClass.FullVersion);
 				sw.Write(projectSection.ToString());

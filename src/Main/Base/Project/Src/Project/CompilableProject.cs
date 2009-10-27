@@ -421,6 +421,26 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		protected virtual void RemoveDotnet35References()
+		{
+			// undo "AddDotnet35References"
+			RemoveReference("System.Core");
+			RemoveReference("System.Data.DataSetExtensions");
+			RemoveReference("System.Xml.Linq");
+		}
+		
+		protected internal virtual void AddDotnet40References()
+		{
+			if (GetItemsOfType(ItemType.Reference).Any(r => r.Include == "WindowsBase")) {
+				AddReferenceIfNotExists("System.Xaml", "4.0");
+			}
+		}
+		
+		protected virtual void RemoveDotnet40References()
+		{
+			RemoveReference("System.Xaml");
+		}
+		
 		void AddReferenceIfNotExists(string name, string requiredTargetFramework)
 		{
 			if (!(GetItemsOfType(ItemType.Reference).Any(r => r.Include == name))) {
@@ -429,6 +449,13 @@ namespace ICSharpCode.SharpDevelop.Project
 					rpi.SetMetadata("RequiredTargetFramework", requiredTargetFramework);
 				ProjectService.AddProjectItem(this, rpi);
 			}
+		}
+		
+		void RemoveReference(string name)
+		{
+			ProjectItem reference = GetItemsOfType(ItemType.Reference).FirstOrDefault(r => r.Include == name);
+			if (reference != null)
+				ProjectService.RemoveProjectItem(this, reference);
 		}
 		
 		protected internal virtual void AddOrRemoveExtensions()
@@ -489,6 +516,13 @@ namespace ICSharpCode.SharpDevelop.Project
 						SetProperty(null, null, "TargetFrameworkVersion", newFramework.Name, PropertyStorageLocations.Base, true);
 						if (oldFramework != null && !oldFramework.IsBasedOn(TargetFramework.Net35) && newFramework.IsBasedOn(TargetFramework.Net35))
 							AddDotnet35References();
+						else if (oldFramework != null && oldFramework.IsBasedOn(TargetFramework.Net35) && !newFramework.IsBasedOn(TargetFramework.Net35))
+							RemoveDotnet35References();
+						
+						if (oldFramework != null && !oldFramework.IsBasedOn(TargetFramework.Net40) && newFramework.IsBasedOn(TargetFramework.Net40))
+							AddDotnet40References();
+						else if (oldFramework != null && oldFramework.IsBasedOn(TargetFramework.Net40) && !newFramework.IsBasedOn(TargetFramework.Net40))
+							RemoveDotnet40References();
 					}
 					/*
 				var winFxImport = MSBuildProject.Imports.Cast<Microsoft.Build.BuildEngine.Import>()
@@ -538,6 +572,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				TargetFramework fx = project.CurrentTargetFramework;
 				if (fx != null && fx.IsBasedOn(TargetFramework.Net35)) {
 					project.AddDotnet35References();
+				}
+				if (fx != null && fx.IsBasedOn(TargetFramework.Net40)) {
+					project.AddDotnet40References();
 				}
 			}
 		}
