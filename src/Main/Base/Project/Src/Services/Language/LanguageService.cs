@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop
 {
 	public static class LanguageService
 	{
-		static string languagePath = FileUtility.Combine(PropertyService.DataDirectory, "resources", "languages");
+		static string languagePath = Path.Combine(PropertyService.DataDirectory, "resources", "languages");
 		
 		static ImageList languageImageList = null;
 		static ArrayList languages         = null;

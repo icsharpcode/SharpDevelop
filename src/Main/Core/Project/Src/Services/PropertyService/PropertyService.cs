@@ -83,7 +83,7 @@ namespace ICSharpCode.Core
 			}
 			
 			if (!LoadPropertiesFromStream(Path.Combine(configDirectory, propertyFileName))) {
-				LoadPropertiesFromStream(FileUtility.Combine(DataDirectory, "options", propertyFileName));
+				LoadPropertiesFromStream(Path.Combine(DataDirectory, "options", propertyFileName));
 			}
 		}
 		

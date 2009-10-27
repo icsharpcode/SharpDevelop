@@ -249,7 +249,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						string fileName = el.GetAttribute("filename");
 						return projectCreateInformation => {
 							string parsedFileName = StringParser.Parse(fileName, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} });
-							string path = FileUtility.Combine(projectCreateInformation.ProjectBasePath, parsedFileName);
+							string path = Path.Combine(projectCreateInformation.ProjectBasePath, parsedFileName);
 							FileService.OpenFile(path);
 						};
 					} else {
@@ -343,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public static void UpdateTemplates()
 		{
 			projectTemplates = new List<ProjectTemplate>();
-			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "project");
+			string dataTemplateDir = Path.Combine(PropertyService.DataDirectory, "templates", "project");
 			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, "*.xpt");
 			foreach (string templateDirectory in AddInTree.BuildItems<string>(TemplatePath, null, false)) {
 				files.AddRange(FileUtility.SearchDirectory(templateDirectory, "*.xpt"));

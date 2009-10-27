@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Internal.ExternalTool
 		static ToolLoader()
 		{
 			if (!LoadToolsFromStream(Path.Combine(PropertyService.ConfigDirectory, TOOLFILE))) {
-				if (!LoadToolsFromStream(FileUtility.Combine(PropertyService.DataDirectory, "options", TOOLFILE))) {
+				if (!LoadToolsFromStream(Path.Combine(PropertyService.DataDirectory, "options", TOOLFILE))) {
 					MessageService.ShowWarning("${res:Internal.ExternalTool.CantLoadToolConfigWarining}");
 				}
 			}

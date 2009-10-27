@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 
 using ICSharpCode.Core;
@@ -78,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		static TextTemplate()
 		{
-			List<string> files = FileUtility.SearchDirectory(FileUtility.Combine(PropertyService.DataDirectory, "options", "textlib"), "*.xml");
+			List<string> files = FileUtility.SearchDirectory(Path.Combine(PropertyService.DataDirectory, "options", "textlib"), "*.xml");
 			foreach (string file in files) {
 				LoadTextTemplate(file);
 			}

@@ -205,7 +205,7 @@ namespace ICSharpCode.Core
 			                                  dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),
 			                                  propertiesName);
 			PropertyService.Load();
-			ResourceService.InitializeService(FileUtility.Combine(PropertyService.DataDirectory, "resources"));
+			ResourceService.InitializeService(Path.Combine(PropertyService.DataDirectory, "resources"));
 			StringParser.RegisterStringTagProvider(new AppNameProvider { appName = applicationName });
 		}
 		

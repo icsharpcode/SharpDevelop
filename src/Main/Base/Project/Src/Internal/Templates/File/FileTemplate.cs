@@ -290,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public static void UpdateTemplates()
 		{
-			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "file");
+			string dataTemplateDir = Path.Combine(PropertyService.DataDirectory, "templates", "file");
 			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, "*.xft");
 			foreach (string templateDirectory in AddInTree.BuildItems<string>(ProjectTemplate.TemplatePath, null, false)) {
 				if (!Directory.Exists(templateDirectory))

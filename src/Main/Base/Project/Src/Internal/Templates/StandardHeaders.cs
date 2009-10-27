@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		{
 			
 			if (!LoadHeaders(Path.Combine(PropertyService.ConfigDirectory, TemplateFileName))) {
-				if (!LoadHeaders(FileUtility.Combine(PropertyService.DataDirectory,  "options", TemplateFileName))) {
+				if (!LoadHeaders(Path.Combine(PropertyService.DataDirectory,  "options", TemplateFileName))) {
 					MessageService.ShowWarning("Can not load standard headers");
 				}
 			}

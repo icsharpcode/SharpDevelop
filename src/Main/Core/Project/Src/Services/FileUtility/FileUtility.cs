@@ -146,6 +146,7 @@ namespace ICSharpCode.Core
 		
 		#endregion
 		
+		[Obsolete("Use System.IO.Path.Combine instead")]
 		public static string Combine(params string[] paths)
 		{
 			if (paths == null || paths.Length == 0) {
