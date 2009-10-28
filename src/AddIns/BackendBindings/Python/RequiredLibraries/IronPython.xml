@@ -115,6 +115,15 @@
             We also sometimes directly check _lineNoUpdated to avoid creating this unless we have nested exceptions.
             </summary>
         </member>
+        <member name="T:IronPython.Compiler.Ast.AstGenerator.DelayedProfiling">
+            <summary>
+            Reducible node so that re-writing for profiling does not occur until
+            after the script code has been completed and is ready to be compiled.
+            
+            Without this extra node profiling would force reduction of the node
+            and we wouldn't have setup our constant access correctly yet.
+            </summary>
+        </member>
         <member name="T:IronPython.Compiler.Ast.AstGenerator.DelayedFunctionCode">
             <summary>
             Provides a place holder for the expression which represents
@@ -2283,12 +2292,12 @@
             bool (true if attribute, false if element index), attribute/index value
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.NewStringFormatter.ParseFieldName(System.String)">
+        <member name="M:IronPython.Runtime.NewStringFormatter.ParseFieldName(System.String,System.Boolean)">
             <summary>
             Parses the field name including attribute access or element indexing.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.NewStringFormatter.ParseFieldAccessors(System.String,System.Int32)">
+        <member name="M:IronPython.Runtime.NewStringFormatter.ParseFieldAccessors(System.String,System.Int32,System.Boolean)">
             <summary>
             Parses the field name including attribute access or element indexing.
             </summary>
@@ -3753,6 +3762,41 @@
             <summary>
             Special marker bucket used during deserialization to not add
             an extra field to the dictionary storage type.
+            </summary>
+        </member>
+        <member name="F:IronPython.Hosting.ErrorCodes.IncompleteStatement">
+            <summary>
+            The error involved an incomplete statement due to an unexpected EOF.
+            </summary>
+        </member>
+        <member name="F:IronPython.Hosting.ErrorCodes.IncompleteToken">
+            <summary>
+            The error involved an incomplete token.
+            </summary>
+        </member>
+        <member name="F:IronPython.Hosting.ErrorCodes.ErrorMask">
+            <summary>
+            The mask for the actual error values 
+            </summary>
+        </member>
+        <member name="F:IronPython.Hosting.ErrorCodes.SyntaxError">
+            <summary>
+            The error was a general syntax error
+            </summary>
+        </member>
+        <member name="F:IronPython.Hosting.ErrorCodes.IndentationError">
+            <summary>
+            The error was an indentation error.
+            </summary>
+        </member>
+        <member name="F:IronPython.Hosting.ErrorCodes.TabError">
+            <summary>
+            The error was a tab error.
+            </summary>
+        </member>
+        <member name="F:IronPython.Hosting.ErrorCodes.NoCaret">
+            <summary>
+            syntax error shouldn't include a caret (no column offset should be included)
             </summary>
         </member>
         <member name="T:IronPython.Runtime.Exceptions.GeneratorExitException">
@@ -5921,6 +5965,14 @@
             usually a standard .NET method name with pascal casing (e.g. Add).
             </summary>
         </member>
+        <member name="P:IronPython.Runtime.Types.OperatorMapping.AlternateExpectedType">
+            <summary>
+            The return type that must match for the alternate operator to be valid.
+            
+            This is available alternate operators don't have special names and therefore
+            could be confused for a normal method which isn't fulfilling the contract.
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.Types.PythonSiteCache">
             <summary>
             Cached CallSites.  User types are cached on the PythonType and System types are cached on the
@@ -6523,6 +6575,12 @@
             Helper for creating a typecast resolver
             </summary>
         </member>
+        <member name="M:IronPython.Runtime.Types.TypeInfo.MakeIndexerResolver(System.Boolean)">
+            <summary>
+            Helper for creating __getitem__/__setitem__ resolvers
+            </summary>
+            <param name="set">false for a getter, true for a setter</param>
+        </member>
         <member name="M:IronPython.Runtime.Types.TypeInfo.IncludeOperatorMethod(System.Type,IronPython.Runtime.Binding.PythonOperationKind)">
             <summary>
             Filters out methods which are present on standard .NET types but shouldn't be there in Python
@@ -6599,6 +6657,16 @@
             Provides a resolution for __long__
             </summary>
         </member>
+        <member name="P:IronPython.Runtime.Types.TypeInfo.GetItemResolver">
+            <summary>
+            Provides a resolution for __getitem__
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.Types.TypeInfo.SetItemResolver">
+            <summary>
+            Provides a resolution for __setitem__
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.Types.TypeInfo.MemberResolver">
             <summary>
             Abstract class used for resolving members.  This provides two methods of member look.  The first is looking
@@ -6642,6 +6710,12 @@
         <member name="T:IronPython.Runtime.Types.TypeInfo.OperatorResolver">
             <summary>
             Resolves methods mapped to __*__ methods automatically from the .NET operator.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.TypeInfo.OperatorResolver.FilterAlternateMethods(IronPython.Runtime.Types.OperatorMapping,Microsoft.Scripting.Actions.MemberGroup)">
+            <summary>
+            Filters alternative methods out that don't match the expected signature and therefore
+            are just sharing a common method name.
             </summary>
         </member>
         <member name="M:IronPython.Runtime.Types.TypeInfo.OperatorResolver.FilterObjectEquality(Microsoft.Scripting.Actions.MemberGroup)">
