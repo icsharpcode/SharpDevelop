@@ -114,7 +114,15 @@ namespace Debugger
 			}
 			this.debuggeeVersion = debuggeeVersion;
 			
-			corDebug = NativeMethods.CreateDebuggingInterfaceFromVersion(4 /* .NET 4 */, debuggeeVersion);
+			int debuggerVersion;
+			// The CLR does not provide 4.0 debugger interface for older versions
+			if (debuggeeVersion.StartsWith("v1") || debuggeeVersion.StartsWith("v2")) {
+				debuggerVersion = 3; // 2.0 CLR
+			} else {
+				debuggerVersion = 4; // 4.0 CLR
+			}
+			
+			corDebug = NativeMethods.CreateDebuggingInterfaceFromVersion(debuggerVersion, debuggeeVersion);
 			TrackedComObjects.Track(corDebug);
 			
 			managedCallbackSwitch = new ManagedCallbackSwitch(this);
