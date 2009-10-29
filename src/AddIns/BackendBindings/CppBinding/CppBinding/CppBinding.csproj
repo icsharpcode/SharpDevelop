@@ -67,6 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CppAmbience.cs" />
+    <Compile Include="CppFormattingStrategy.cs" />
+    <Compile Include="CppLanguageBinding.cs" />
     <Compile Include="CppLanguageProperties.cs" />
     <Compile Include="Project\DependencyRelation.cs" />
     <Compile Include="Project\DirectoriesOptions.cs" />
@@ -100,7 +102,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="CppLanguageBinding.cs" />
+    <Compile Include="CppProjectBinding.cs" />
     <EmbeddedResource Include="Resources\DirectoriesOptions.xfrm" />
     <EmbeddedResource Include="Resources\LinkerOptions.xfrm" />
     <EmbeddedResource Include="Resources\PreprocessorOptions.xfrm" />

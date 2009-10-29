@@ -71,14 +71,21 @@
 	<Path name="/SharpDevelop/Workbench/ProjectBindings">
 		<ProjectBinding id="C++"
 		                 guid="{0E96FCFA-9DAC-4534-AC18-01A90C368873}"
-		                 supportedextensions=".cpp;*.c;*.hpp;*.c"
+		                 supportedextensions=".cpp;.c;.hpp;.h"
 		                 projectfileextension=".vcxproj"
-		                 class="ICSharpCode.CppBinding.CppLanguageBinding" />
+		                 class="ICSharpCode.CppBinding.CppProjectBinding" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
 		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
 		<String id="cl" text = "cl"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding
+	        id="C++"
+	        class="ICSharpCode.CppBinding.CppLanguageBinding"
+	        extensions=".cpp;.c;.hpp;.h" />
 	</Path>
 
 	<!--

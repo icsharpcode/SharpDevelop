@@ -41,12 +41,12 @@ namespace ICSharpCode.CppBinding.Project
 
 		public override string Language
 		{
-			get { return CppLanguageBinding.LanguageName; }
+			get { return CppProjectBinding.LanguageName; }
 		}
 
 		public override LanguageProperties LanguageProperties
 		{
-			get { return CppLanguageBinding.LanguageProperties; }
+			get { return CppProjectBinding.LanguageProperties; }
 		}
 
 		public override string OutputAssemblyFullPath
