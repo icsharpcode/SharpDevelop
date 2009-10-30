@@ -962,7 +962,7 @@ STDMETHODIMP CProfiler::ModuleLoadFinished(ModuleID moduleID, HRESULT /*hrStatus
 	if (!SUCCEEDED(hr))
 		goto CLEANUP;
 		
-	hr = pIMetaDataEmit->DefinePinvokeMap(logger, pmNoMangle | pmCallConvStdcall, L"LogEvent", moduleRef);
+	hr = pIMetaDataEmit->DefinePinvokeMap(logger, pmNoMangle | pmCallConvStdcall | pmCharSetUnicode, L"LogEvent", moduleRef);
 	
 	if (!SUCCEEDED(hr))
 		goto CLEANUP;
