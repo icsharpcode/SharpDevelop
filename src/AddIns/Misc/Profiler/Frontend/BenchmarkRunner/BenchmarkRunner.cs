@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Profiler.Controller.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +12,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+
 using ICSharpCode.Profiler.Controller;
+using ICSharpCode.Profiler.Controller.Data;
 
 namespace BenchmarkRunner
 {
@@ -47,18 +48,20 @@ namespace BenchmarkRunner
 				}
 			}
 			
-			for (int i = 0; i < TestRunCount; i++) {
-				foreach (TestSeries ts in testSeries) {
-					ts.ExecuteRun();
+			if (testSeries.Any()) {
+				for (int i = 0; i < TestRunCount; i++) {
+					foreach (TestSeries ts in testSeries) {
+						ts.ExecuteRun();
+					}
 				}
+				ResultSet[] results = testSeries.Select(ts=>ts.GetResult()).ToArray();
+				
+				Console.WriteLine();
+				Console.WriteLine();
+				Console.WriteLine();
+				
+				DisplayResults(results);
 			}
-			ResultSet[] results = testSeries.Select(ts=>ts.GetResult()).ToArray();
-			
-			Console.WriteLine();
-			Console.WriteLine();
-			Console.WriteLine();
-			
-			DisplayResults(results);
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
@@ -85,7 +88,7 @@ namespace BenchmarkRunner
 				File.Delete(fileName);
 			
 			using (var profiler = new Profiler(
-				startInfo, new ProfilingDataSQLiteWriter(fileName, false, null), new ProfilerOptions()
+				startInfo, new ProfilingDataSQLiteWriter(fileName), new ProfilerOptions()
 			)) {
 				using (ManualResetEvent mre = new ManualResetEvent(false)) {
 					profiler.SessionEnded += delegate {
