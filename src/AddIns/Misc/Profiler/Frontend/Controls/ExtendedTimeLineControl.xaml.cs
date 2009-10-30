@@ -59,9 +59,7 @@ namespace ICSharpCode.Profiler.Controls
 		protected virtual void OnRangeChanged(RangeEventArgs e)
 		{
 			if (RangeChanged != null)
-			{
 				RangeChanged(this, e);
-			}
 		}
 		
 		void Update()
@@ -83,9 +81,10 @@ namespace ICSharpCode.Profiler.Controls
 			this.minLabel.Text = (selectedPerformanceCounter.MinValue ?? (values.Any() ? values.Min() : 0)).ToString("0");
 			
 			this.unitLabel.Text = this.timeLine.Unit = selectedPerformanceCounter.Unit;
+			this.timeLine.Format = selectedPerformanceCounter.Format;
 			
 			for (int i = 0; i < values.Length; i++)
-				segments.Add(new TimeLineSegment() { Value = values[i], TimeOffset = 0, DisplayMarker = markers[i] });
+				segments.Add(new TimeLineSegment() { Value = values[i], TimeOffset = 0, DisplayMarker = markers[i], Events = provider.GetEventDataEntries(i) });
 			
 			this.timeLine.ValuesList.AddRange(segments);
 		}

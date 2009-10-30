@@ -11,7 +11,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<Menu>
+		<ToolBar>
 			<ToggleButton
 				Content="{sd:Localize AddIns.Profiler.ProfilerControlWindow.CollectData}"
 				x:Name="collectData"
@@ -21,6 +21,6 @@
 				Content="{sd:Localize AddIns.Profiler.ProfilerControlWindow.Shutdown}"
 				x:Name="shutdown"
 				Click="ShutdownClick" />
-		</Menu>	
+		</ToolBar>	
 	</Grid>
 </Window>

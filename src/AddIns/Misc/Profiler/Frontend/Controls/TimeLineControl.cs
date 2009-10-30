@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,12 +16,15 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
+using ICSharpCode.Profiler.Controller.Data;
+
 namespace ICSharpCode.Profiler.Controls
 {
 	public class TimeLineSegment {
 		public float Value { get; set; }
 		public bool DisplayMarker { get; set; }
 		public long TimeOffset { get; set; }
+		public EventDataEntry[] Events { get; set; }
 	}
 	
 	public class TimeLineControl : FrameworkElement
@@ -45,6 +48,8 @@ namespace ICSharpCode.Profiler.Controls
 		public float MaxValue { get; set; }
 
 		public string Unit { get; set; }
+		
+		public string Format { get; set; }
 		
 		public int SelectedEndIndex
 		{
@@ -86,12 +91,6 @@ namespace ICSharpCode.Profiler.Controls
 			return new Size(Math.Max(this.pieceWidth * this.valuesList.Count + 1, calculatedSize.Width), calculatedSize.Height + 10);
 		}
 		
-		protected override void OnToolTipOpening(ToolTipEventArgs e)
-		{
-			Console.WriteLine("tooltip");
-			base.OnToolTipOpening(e);
-		}
-		
 		const int offset = 0;
 		const int offsetFromTop = 40;
 		
@@ -117,6 +116,7 @@ namespace ICSharpCode.Profiler.Controls
 				for (int i = 0; i < this.valuesList.Count; i++)
 				{
 					double x = this.pieceWidth / 2.0 + this.pieceWidth * i;
+					// TODO : support MinValues other than 0
 					double y = offsetFromTop + (maxHeight - maxHeight * (this.valuesList[i].Value / this.MaxValue));
 
 					points.Add(new Point(x, y));
@@ -134,24 +134,39 @@ namespace ICSharpCode.Profiler.Controls
 
 			Brush b = new LinearGradientBrush(Colors.Red, Colors.Orange, 90);
 
-			drawingContext.DrawRectangle(Brushes.White, new Pen(Brushes.White, 1), new Rect(new Point(0, offsetFromTop), this.RenderSize));
+			drawingContext.DrawRectangle(Brushes.White, new Pen(Brushes.White, 1), new Rect(new Point(0, 0), this.RenderSize));
 			
 			var p = new Pen(Brushes.DarkRed, 2);
 			
-			drawingContext.DrawGeometry(b, new Pen(b, 3), geometry);
+			drawingContext.DrawGeometry(b, new Pen(b, 1), geometry);
 			
 			for (int i = 0; i < this.valuesList.Count; i++) {
 				if (this.valuesList[i].DisplayMarker)
 					drawingContext.DrawLine(p, new Point(pieceWidth * i, offsetFromTop),
 					                        new Point(pieceWidth * i, this.RenderSize.Height));
+				
+				var events = this.valuesList[i].Events;
+				
+				if (events != null && events.Length > 0) {
+					foreach (EventDataEntry @event in events) {
+						drawingContext.DrawRectangle(
+							Brushes.Red,
+							new Pen(Brushes.Red, 1),
+							new Rect(
+								new Point(@event.DataSetId * pieceWidth, 25),
+								new Point(@event.DataSetId * pieceWidth + pieceWidth, 35)
+							)
+						);
+					}
+				}
 			}
 			
 			drawingContext.DrawRectangle(
 				new SolidColorBrush(Color.FromArgb(64, Colors.Blue.R, Colors.Blue.G, Colors.Blue.B)),
 				new Pen(Brushes.Blue, 1),
 				new Rect(
-					new Point(Math.Min(this.selectedStartIndex, this.selectedEndIndex) * pieceWidth + offset, 0),
-					new Point(Math.Max(this.selectedStartIndex, this.selectedEndIndex) * pieceWidth + offset + pieceWidth, this.RenderSize.Height - offset)
+					new Point(Math.Min(this.selectedStartIndex, this.selectedEndIndex) * pieceWidth + offset, offsetFromTop),
+					new Point(Math.Max(this.selectedStartIndex, this.selectedEndIndex) * pieceWidth + offset + pieceWidth, this.RenderSize.Height)
 				)
 			);
 		}
@@ -191,7 +206,8 @@ namespace ICSharpCode.Profiler.Controls
 		void HandleMovement(MouseEventArgs e)
 		{
 			bool valid;
-			int index = TransformToIndex(e.GetPosition(this), out valid);
+			Point pos = e.GetPosition(this);
+			int index = TransformToIndex(pos, out valid);
 			
 			if (e.LeftButton == MouseButtonState.Pressed) {
 				this.selectedEndIndex = index;
@@ -199,7 +215,12 @@ namespace ICSharpCode.Profiler.Controls
 				this.InvalidateVisual();
 			} else if (tooltip == null && valid) {
 				tooltip = new ToolTip();
-				tooltip.Content = "Value: " + this.valuesList[index].Value.ToString("0.00") + " " + this.Unit;
+				if (pos.Y < 20)
+					tooltip.Content = "Time: ";
+				else if (pos.Y < 40)
+					tooltip.Content = "Event: ";
+				else
+					tooltip.Content = "Value: " + this.valuesList[index].Value.ToString(this.Format) + " " + this.Unit;
 				tooltip	.IsOpen = true;
 			}
 		}
