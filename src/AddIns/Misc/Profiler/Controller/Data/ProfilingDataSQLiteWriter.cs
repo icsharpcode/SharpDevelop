@@ -61,6 +61,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public void Close()
 		{
+			if (isDisposed)
+				return;
+			
 			using (SQLiteCommand cmd = this.connection.CreateCommand()) {
 				// create index at the end (after inserting data), this is faster
 				cmd.CommandText = CallsAndFunctionsIndexDefs;
@@ -165,19 +168,27 @@ namespace ICSharpCode.Profiler.Controller.Data
 				hasChildren INTEGER NOT NULL
 			);
 			
-				CREATE TABLE PerformanceCounter(
-					id INTEGER NOT NULL PRIMARY KEY,
-					name TEXT NOT NULL,
-					minvalue REAL NULL,
-					maxvalue REAL NULL,
-					unit TEXT NOT NULL
-				);
-				
-				CREATE TABLE CounterData(
-					datasetid INTEGER NOT NULL,
-					counterid INTEGER NOT NULL,
-					value REAL NOT NULL
-				);
+			CREATE TABLE PerformanceCounter(
+				id INTEGER NOT NULL PRIMARY KEY,
+				name TEXT NOT NULL,
+				minvalue REAL NULL,
+				maxvalue REAL NULL,
+				format TEXT NOT NULL,
+				unit TEXT NOT NULL
+			);
+			
+			CREATE TABLE CounterData(
+				datasetid INTEGER NOT NULL,
+				counterid INTEGER NOT NULL,
+				value REAL NOT NULL
+			);
+			
+			CREATE TABLE EventData(
+				datasetid INTEGER NOT NULL,
+				eventtype INTEGER NOT NULL,
+				nameid INTEGER NOT NULL,
+				data TEXT NULL
+			);
 ";
 		
 		internal const string CallsAndFunctionsIndexDefs =
@@ -239,19 +250,22 @@ namespace ICSharpCode.Profiler.Controller.Data
 				InsertCalls(cmd, child, thisID, dataParams);
 			}
 			
+			long cpuCycles = node.CpuCyclesSpent;
+			long cpuCyclesSelf = node.CpuCyclesSpentSelf;
+			
 			// we sometimes saw invalid data with the 0x0080000000000000L bit set
-			if (node.CpuCyclesSpent > 0x0007ffffffffffffL || node.CpuCyclesSpent < 0) {
+			if (cpuCycles > 0x0007ffffffffffffL || cpuCycles < 0) {
 				throw new InvalidOperationException("Too large CpuCyclesSpent - there's something wrong in the data");
 			}
 			
-			if (node.NameMapping.Id != 0 && (node.CpuCyclesSpentSelf > node.CpuCyclesSpent || node.CpuCyclesSpentSelf < 0)) {
-				throw new InvalidOperationException("Too large/small CpuCyclesSpentSelf (" + node.CpuCyclesSpentSelf + ") - there's something wrong in the data");
+			if (node.NameMapping.Id != 0 && (cpuCyclesSelf > cpuCycles || cpuCyclesSelf < 0)) {
+				throw new InvalidOperationException("Too large/small CpuCyclesSpentSelf (" + cpuCyclesSelf + ") - there's something wrong in the data");
 			}
 			
 			dataParams.callCount.Value = node.RawCallCount;
 			dataParams.isActiveAtStart.Value = node.IsActiveAtStart;
-			dataParams.cpuCyclesSpent.Value = node.CpuCyclesSpent;
-			dataParams.cpuCyclesSpentSelf.Value = node.CpuCyclesSpentSelf;
+			dataParams.cpuCyclesSpent.Value = cpuCycles;
+			dataParams.cpuCyclesSpentSelf.Value = cpuCyclesSelf;
 
 			dataParams.functionInfoId.Value = thisID;
 			dataParams.nameId.Value = node.NameMapping.Id;
@@ -302,6 +316,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			isDisposed = true;
 		}
 		
+		/// <inheritdoc/>
 		public void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters)
 		{
 			using (SQLiteTransaction trans = this.connection.BeginTransaction()) {
@@ -316,8 +331,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 					SQLiteParameter unitParam = new SQLiteParameter("unit");
 					
 					cmd.CommandText =
-						"INSERT OR IGNORE INTO PerformanceCounter(id, name, minvalue, maxvalue, unit)" +
-						"VALUES(@id,@name,@min,@max,@unit);" +
+						"INSERT OR IGNORE INTO PerformanceCounter(id, name, minvalue, maxvalue, unit)" + // should I split these queries
+						"VALUES(@id,@name,@min,@max,@unit);" + 												 // for better performance?
 						"INSERT INTO CounterData(datasetid, counterid, value)" +
 						"VALUES(@dataset,@id,@value);";
 					
@@ -343,6 +358,39 @@ namespace ICSharpCode.Profiler.Controller.Data
 				}
 				trans.Commit();
 			}
+		}
+		
+		/// <inheritdoc/>
+		public void WriteEventData(IEnumerable<EventDataEntry> events)
+		{
+			using (SQLiteTransaction trans = this.connection.BeginTransaction()) {
+				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+					SQLiteParameter dataSetParam = new SQLiteParameter("datasetid");
+					SQLiteParameter eventTypeParam = new SQLiteParameter("eventtype");
+					SQLiteParameter nameIdParam = new SQLiteParameter("nameid");
+					SQLiteParameter dataParam = new SQLiteParameter("data");
+					
+					cmd.CommandText =
+						"INSERT INTO EventData(datasetid,eventtype,nameid,data) " +
+						"VALUES(@datasetid,@eventtype,@nameid,@data);";
+					
+					cmd.Parameters.AddRange(new SQLiteParameter[] { dataSetParam, eventTypeParam, nameIdParam, dataParam });
+					
+					foreach (EventDataEntry entry in events) {
+						dataSetParam.Value = entry.DataSetId;
+						eventTypeParam.Value = (int)entry.Type;
+						nameIdParam.Value = entry.NameId;
+						dataParam.Value = entry.Data;
+						cmd.ExecuteNonQuery();
+					}
+				}
+				trans.Commit();
+			}
+		}
+		
+		/// <inheritdoc/>
+		public int DataSetCount {
+			get { return this.dataSetCount; }
 		}
 	}
 }

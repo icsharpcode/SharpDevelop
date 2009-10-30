@@ -31,6 +31,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters);
 		
+		void WriteEventData(IEnumerable<EventDataEntry> events);
+		
 		/// <summary>
 		/// Closes and disposes the underlying data structure.
 		/// </summary>
@@ -41,5 +43,10 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// The processor frequency is measured in MHz.
 		/// </summary>
 		int ProcessorFrequency { get; set; }
+		
+		/// <summary>
+		/// Gets the number of datasets that have been written by this IProfilingDataWriter.
+		/// </summary>
+		int DataSetCount { get; }
 	}
 }

@@ -82,6 +82,24 @@ namespace ICSharpCode.Profiler.Controller.Data
 				return (long)(this.data->TimeSpent & CpuCycleMask);
 			}
 		}
+		
+		public override long CpuCyclesSpentSelf {
+			get {
+				dataSet.VerifyAccess();
+				
+				long result = (long)(this.data->TimeSpent & CpuCycleMask);
+				
+				TargetProcessPointer32* childrenPtr = FunctionInfo.GetChildren32(data);
+				for (int i = 0; i <= data->LastChildIndex; i++)
+				{
+					FunctionInfo* child = dataSet.GetFunctionInfo(childrenPtr[i]);
+					if (child != null)
+						result -= (long)(child->TimeSpent & CpuCycleMask);
+				}
+				
+				return result;
+			}
+		}
 
 		public override CallTreeNode Parent {
 			get {

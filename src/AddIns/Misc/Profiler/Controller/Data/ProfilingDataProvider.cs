@@ -80,5 +80,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public abstract PerformanceCounterDescriptor[] GetPerformanceCounters();
 		
 		public abstract float[] GetPerformanceCounterValues(int index);
+		
+		public abstract EventDataEntry[] GetEventDataEntries(int index);
 	}
 }

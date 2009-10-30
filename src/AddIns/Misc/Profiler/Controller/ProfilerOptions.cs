@@ -25,8 +25,8 @@ namespace ICSharpCode.Profiler.Controller
 		public const int DefaultSharedMemorySize = 64 * 1024 * 1024; // 64 mb
 		
 		public static readonly PerformanceCounterDescriptor[] DefaultCounters = new[] {
-			new PerformanceCounterDescriptor("Process", "% Processor Time", "_Total", ".", 0, 0, 100, "%"),
-			new PerformanceCounterDescriptor("Process", "IO Data Bytes/sec", "_Total", ".", 0, null, null, "bytes/sec")
+			new PerformanceCounterDescriptor("Process", "% Processor Time", "_Total", ".", 0, 0, 100, "%", "0.00"),
+			new PerformanceCounterDescriptor("Process", "IO Data Bytes/sec", "_Total", ".", 0, null, null, "bytes/sec", "#,##0")
 		};
 		
 		bool enableDC;

@@ -69,6 +69,10 @@ namespace ICSharpCode.Profiler.Controller.Data
 				this.targetWriter.WriteDataSet(
 					new UnitTestDataSet(new UnitTestRootCallTreeNode(list), dataSet.IsFirst)
 				);
+			} else {
+				this.targetWriter.WriteDataSet(
+					new UnitTestDataSet(new UnitTestRootCallTreeNode(null), dataSet.IsFirst)
+				);
 			}
 		}
 		
@@ -104,6 +108,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters)
 		{
 			this.targetWriter.WritePerformanceCounterData(counters);
+		}
+		
+		public void WriteEventData(IEnumerable<EventDataEntry> events)
+		{
+			this.targetWriter.WriteEventData(events);
+		}
+		
+		public int DataSetCount {
+			get { return this.targetWriter.DataSetCount; }
 		}
 	}
 }

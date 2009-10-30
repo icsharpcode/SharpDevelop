@@ -23,12 +23,13 @@ namespace ICSharpCode.Profiler.Controller.Data
 		public float? MinValue { get; private set; }
 		public float? MaxValue { get; private set; }
 		public string Unit { get; private set; }
+		public string Format { get; private set; }
 		
 		float defaultValue;
 		PerformanceCounter counter;
 		
 		public PerformanceCounterDescriptor(string category, string name, string instance, string computer,
-		                                    float defaultValue, float? minValue, float? maxValue, string unit)
+		                                    float defaultValue, float? minValue, float? maxValue, string unit, string format)
 		{
 			Category = category;
 			Name = name;
@@ -39,10 +40,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 			MinValue = minValue;
 			MaxValue = maxValue;
 			Unit = unit;
+			Format = format;
 		}
 		
-		public PerformanceCounterDescriptor(string name, float? minValue, float? maxValue, string unit)
-			: this(null, name, null, null, 0, minValue, maxValue, unit)
+		public PerformanceCounterDescriptor(string name, float? minValue, float? maxValue, string unit, string format)
+			: this(null, name, null, null, 0, minValue, maxValue, unit, format)
 		{
 		}
 		
@@ -52,8 +54,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 
 			string[] instances = cat.GetInstanceNames();
 			foreach (string instance in instances) {
-				using (PerformanceCounter cnt = new PerformanceCounter("Process", "ID Process", instance, true)) {
-					int val = (int)cnt.RawValue;
+				using (PerformanceCounter procIdCounter = new PerformanceCounter("Process", "ID Process", instance, true)) {
+					int val = (int)procIdCounter.RawValue;
 					if (val == pid)
 						return instance;
 				}
@@ -75,7 +77,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 			try {
 				this.Values.Add(counter.NextValue());
 			} catch (Exception e) {
+				#if DEBUG
 				Console.WriteLine(e.ToString());
+				#endif
 				this.Values.Add(defaultValue);
 			}
 		}
@@ -84,5 +88,21 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			return Name;
 		}
+	}
+	
+	public enum EventType : int
+	{
+		Exception = 0,
+		Console = 1,
+		WindowsForms = 2,
+		WindowsPresentationFoundation = 3
+	}
+	
+	public class EventDataEntry
+	{
+		public int DataSetId { get; set; }
+		public EventType Type { get; set; }
+		public int NameId { get; set; }
+		public string Data { get; set; }
 	}
 }

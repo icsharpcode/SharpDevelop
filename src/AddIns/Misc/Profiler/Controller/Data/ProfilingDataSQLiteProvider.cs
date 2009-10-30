@@ -356,7 +356,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			SQLiteCommand cmd;			
 			using (LockAndCreateCommand(out cmd)) {
-				cmd.CommandText = "SELECT name, minvalue, maxvalue, unit " +
+				cmd.CommandText = "SELECT name, minvalue, maxvalue, unit, format " +
 					"FROM PerformanceCounter " +
 					"ORDER BY id ASC;";
 				
@@ -370,7 +370,8 @@ namespace ICSharpCode.Profiler.Controller.Data
 							reader.GetString(0), 
 							reader.IsDBNull(1) ? null : new Nullable<float>(reader.GetFloat(1)),
 							reader.IsDBNull(2) ? null :  new Nullable<float>(reader.GetFloat(2)),
-							reader.GetString(3)
+							reader.GetString(3),
+							reader.GetString(4)
 						)
 					);
 				}
@@ -394,6 +395,25 @@ namespace ICSharpCode.Profiler.Controller.Data
 				
 				while (reader.Read())
 					list.Add(reader.GetFloat(0));
+				
+				return list.ToArray();
+			}
+		}
+		
+		public override EventDataEntry[] GetEventDataEntries(int index)
+		{
+			SQLiteCommand cmd;			
+			using (LockAndCreateCommand(out cmd)) {
+				cmd.CommandText = "SELECT eventtype, nameid, data " +
+					"FROM EventData " +
+					"WHERE datasetid = " + index;
+				
+				List<EventDataEntry> list = new List<EventDataEntry>();
+				
+				var reader = cmd.ExecuteReader();
+				
+				while (reader.Read())
+					list.Add(new EventDataEntry() { Data = reader.GetString(2), DataSetId = index, NameId = reader.GetInt32(1), Type = (EventType)reader.GetInt32(0) });
 				
 				return list.ToArray();
 			}

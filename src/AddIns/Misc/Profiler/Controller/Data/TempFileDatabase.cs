@@ -43,6 +43,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 			get { return counters.AsReadOnly(); }
 		}
 		
+		List<EventDataEntry> events = new List<EventDataEntry>();
+		
+		public ReadOnlyCollection<EventDataEntry> Events {
+			get { return events.AsReadOnly(); }
+		}
+		
 		struct StreamInfo
 		{
 			public TargetProcessPointer NativeStartPosition { get; set; }
@@ -143,6 +149,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 			{
 				this.database.counters.AddRange(counters);
 			}
+			
+			public void WriteEventData(IEnumerable<EventDataEntry> events)
+			{
+				this.database.events.AddRange(events);
+			}
+			
+			public int DataSetCount {
+				get { return this.database.DataSetCount; }
+			}
 		}
 		#endregion
 		
@@ -229,6 +244,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			writer.ProcessorFrequency = this.processorFrequency;
 			writer.WriteMappings(this.nameMappings.Values);
 			writer.WritePerformanceCounterData(this.counters);
+			writer.WriteEventData(this.events);
 			
 			for (int i = 0; i < this.DataSetCount; i++) {
 				using (UnmanagedProfilingDataSet dataSet = this.LoadDataSet(i))

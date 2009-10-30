@@ -619,7 +619,6 @@ namespace ICSharpCode.Profiler.Controller
 			isRunning = false;
 			
 			this.dataWriter.WritePerformanceCounterData(performanceCounters);
-			
 			this.dataWriter.Close();
 			
 			OnSessionEnded(EventArgs.Empty);
@@ -703,10 +702,22 @@ namespace ICSharpCode.Profiler.Controller
 				string name = parts[3] + ((string.IsNullOrEmpty(parts[4])) ? "" : " - " + parts[4]);
 				
 				lock (this.dataWriter) {
-					this.dataWriter.WriteMappings(new NameMapping[] {new NameMapping(id, null, name, null)});
+					this.dataWriter.WriteMappings(new[] {new NameMapping(id, null, name, null)});
 				}
 
 				return true;
+			} else if (readString.StartsWith("event ", StringComparison.Ordinal)) {
+				string[] parts = readString.Split(' ');
+				// event <typeid> <nameid> <data>
+				if (parts.Length != 4)
+					return false;
+				int type = int.Parse(parts[1], CultureInfo.InvariantCulture);
+				int name = int.Parse(parts[2], CultureInfo.InvariantCulture);
+				string data = parts[3];
+				
+				lock (this.dataWriter) {
+					this.dataWriter.WriteEventData(new[] { new EventDataEntry() { DataSetId = this.dataWriter.DataSetCount, NameId = name, Type = (EventType)type, Data = data } });
+				}
 			} else {
 				if (readString.StartsWith("error-", StringComparison.Ordinal)) {
 					string[] parts = readString.Split('-');

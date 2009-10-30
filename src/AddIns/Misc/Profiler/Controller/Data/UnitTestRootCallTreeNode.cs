@@ -15,14 +15,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 	/// </summary>
 	public class UnitTestRootCallTreeNode : CallTreeNode
 	{
-		List<CallTreeNode> unitTests;
+		List<CallTreeNode> unitTests = null;
 		
 		/// <summary>
 		/// Creates a new UnitTestRootCallTreeNode.
 		/// </summary>
 		public UnitTestRootCallTreeNode(IEnumerable<CallTreeNode> unitTests)
 		{
-			this.unitTests = new List<CallTreeNode>(unitTests);
+			if (unitTests != null)
+				this.unitTests = new List<CallTreeNode>(unitTests);
 		}
 		
 		/// <inheritdoc/>
@@ -42,7 +43,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override bool IsActiveAtStart {
 			get {
-				return this.unitTests.Any(test => test.IsActiveAtStart);
+				return (this.unitTests == null) ? false : this.unitTests.Any(test => test.IsActiveAtStart);
 			}
 		}
 		
@@ -77,14 +78,19 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
-			return this.unitTests.Aggregate(0, (sum, item) => sum ^= item.GetHashCode());
+			return (this.unitTests == null) ? 0 : this.unitTests.Aggregate(0, (sum, item) => sum ^= item.GetHashCode());
 		}
 		
 		/// <inheritdoc/>
 		public override bool Equals(CallTreeNode other)
 		{
 			UnitTestRootCallTreeNode node = other as UnitTestRootCallTreeNode;
-			return node != null && node.unitTests.SequenceEqual(unitTests);
+			
+			if (node != null && unitTests != null) {
+				return node.unitTests.SequenceEqual(unitTests);
+			}
+			
+			return false;
 		}
 		
 		/// <inheritdoc/>
@@ -97,7 +103,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override IQueryable<CallTreeNode> Children {
 			get {
-				return unitTests.AsQueryable();
+				return ((unitTests == null) ? Enumerable.Empty<CallTreeNode>() : unitTests).AsQueryable();
 			}
 		}
 
