@@ -42,3 +42,38 @@ STDAPI rdtsc(ULONGLONG *tsc) {
  *tsc = __rdtsc();
  return S_OK;
 }
+
+extern "C" {
+	void __stdcall DeactivateProfiler()
+	{
+		profiler.LogString(L"DeactivateProfiler called!");
+		profiler.Deactivate();
+	}
+	
+	void __stdcall ActivateProfiler()
+	{
+		profiler.LogString(L"ActivateProfiler called!");
+		profiler.Activate();
+	}
+	
+	void __stdcall LogEvent(int type, int id, WCHAR *controlName, WCHAR *controlText)
+	{
+		WCHAR *format = L"";
+	
+		switch (type) {
+			case 0:
+				format = L"event %d %d --";
+				break;
+			case 1:
+				format = L"event %d %d --";
+				break;
+			case 2:
+				format = L"event %d %d -name:\"%s\"text:\"%s\"-";
+				break;
+			case 3:
+				break;
+		}
+	
+		DebugWriteLine(format, type, id, controlName, controlText);
+	}
+}

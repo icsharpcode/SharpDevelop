@@ -183,6 +183,7 @@
     <ClCompile Include="allocator.cpp" />
     <ClCompile Include="Callback.cpp" />
     <ClCompile Include="CircularBuffer.cpp" />
+    <ClCompile Include="constants.cpp" />
     <ClCompile Include="CorProfilerCallbackImpl.cpp" />
     <ClCompile Include="EventWaitHandle.cpp" />
     <ClCompile Include="FunctionInfo.cpp" />

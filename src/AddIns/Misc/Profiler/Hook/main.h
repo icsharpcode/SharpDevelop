@@ -58,6 +58,10 @@ inline void* _InterlockedCompareExchangePointer(void* volatile *Destination, voi
 {
 	return ((PVOID)(LONG_PTR)_InterlockedCompareExchange((LONG volatile *)Destination, (LONG)(LONG_PTR)ExChange, (LONG)(LONG_PTR)Comparand));
 }
+
+#define HOOK_MODULE_NAME L"Hook32.dll"
+#else
+#define HOOK_MODULE_NAME L"Hook64.dll"
 #endif
 
 #undef InterlockedCompareExchangePointer

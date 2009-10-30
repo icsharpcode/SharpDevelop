@@ -18,6 +18,7 @@
 
 #include "cor.h"
 #include "corprof.h"
+#include "corhdr.h"
 
 class CCorProfilerCallbackImpl : public ICorProfilerCallback2
 {

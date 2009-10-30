@@ -6,6 +6,7 @@
 // </file>
 
 #pragma once
+
 #include "CorProfilerCallbackImpl.h"
 #include <rpc.h>
 #include <rpcndr.h>
@@ -16,6 +17,11 @@
 #include "CircularBuffer.h"
 #include "CriticalSection.h"
 
+// Disable: conditional expression is constant (C4127)
+#pragma warning (disable: 4127)
+#include "corhlpr.h"
+#pragma warning (default: 4127)
+
 #include <map>
 
 typedef IID CLSID;
@@ -24,6 +30,8 @@ typedef IID CLSID;
 MIDL_DEFINE_GUID(CLSID, CLSID_Profiler,0xE7E2C111,0x3471,0x4AC7,0xB2,0x78,0x11,0xF4,0xC2,0x6E,0xDB,0xCF);
 
 class ThreadInfo;
+
+class HandlerInfo;
 
 struct ThreadLocalData;
 
@@ -35,6 +43,9 @@ typedef std::pair<ThreadID, ThreadInfo*> TThreadIDPair;
 
 typedef std::map<DWORD, ThreadInfo*> TUThreadIDMap;
 typedef std::pair<DWORD, ThreadInfo*> TUThreadIDPair;
+
+typedef std::map<ModuleID, HandlerInfo> TMethodTokenMap;
+typedef std::pair<ModuleID, HandlerInfo> TMethodTokenPair;
 
 // CProfiler
 class CProfiler : public CCorProfilerCallbackImpl
@@ -80,15 +91,23 @@ public:
     
     // UNLOAD EVENTS
     STDMETHOD(FunctionUnloadStarted)(FunctionID functionID);
+    
+    // JITTER EVENTS
+    STDMETHOD(JITCompilationStarted)(FunctionID functionID, BOOL fIsSafeToBlock);
+    
+ 	// MODULE EVENTS
+	STDMETHOD(ModuleLoadFinished)(ModuleID moduleID, HRESULT hrStatus);
 
 	CProfiler();
 
 	// mapping functions
 	static UINT_PTR _stdcall FunctionMapper(FunctionID functionId, BOOL *pbHookFunction);
-	UINT_PTR MapFunction(FunctionID functionID);
+	UINT_PTR MapFunction(FunctionID functionID, const WCHAR **name);
 	FunctionInfo *CreateNewRoot();
 	void MovedRootChild(FunctionInfo *newRootChild);
-	void CProfiler::EnterLock(ThreadLocalData *);
+	void EnterLock(ThreadLocalData *);
+	void Deactivate();
+	void Activate();
 
 	// logging function
     void LogString(WCHAR* pszFmtString, ... );
@@ -104,17 +123,25 @@ private:
 	CriticalSection rootElementCriticalSection;
 	CriticalSection mapFunctionCriticalSection;
 	CriticalSection threadMapCriticalSection;
+	CriticalSection methodMapCriticalSection;
 	CEventWaitHandle *accessEventHandle;
 
 	SignatureReader *sigReader;
 	TFunctionIDMap functionIDMap;
 	TThreadIDMap threadIDMap;
 	TUThreadIDMap unmanagedThreadIDMap;
-		
+	TMethodTokenMap methodMap;
+	
+	bool active;
+	
 	// function to set up our event mask
 	HRESULT SetEventMask();
+	void Rewrite(FunctionID functionID, int type, int nameId, WCHAR *name);
+	void ConvertToFat(byte *target, int *size);
+	void FixSEHSections(const COR_ILMETHOD_SECT *sections, int offset);
+	void SetInjectionCode(IMetaDataImport *, byte *buffer, int *size, mdMethodDef activateCall, mdMethodDef loggerCall, mdMethodDef deactivateCall, int type, int nameId, WCHAR *name);
+	bool CreateMethod(IMetaDataEmit *, const WCHAR *, PCCOR_SIGNATURE, mdMethodDef *, mdToken);
 	int InitializeCommunication();
 };
 
-DWORD WINAPI ExecuteHostCommand( LPVOID lpParam );
 void DetachFromThread(ThreadLocalData *data);

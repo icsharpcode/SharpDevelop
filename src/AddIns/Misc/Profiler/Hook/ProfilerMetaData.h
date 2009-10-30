@@ -110,5 +110,9 @@ public:
 	std::wstring Parse(FunctionID);	
 	bool IsNetInternal(FunctionID);
 	SignatureReader(ICorProfilerInfo *);
+
+	std::wstring fullName;
 };
+
+bool IsFrameworkAssembly(IMetaDataAssemblyImport *asmMetaData);
 

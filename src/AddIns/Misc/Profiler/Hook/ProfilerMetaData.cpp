@@ -66,6 +66,15 @@ std::wstring SignatureReader::Parse(FunctionID functionID)
 					this->className << L"+";
 			}
 
+			std::wstring name = className.str();
+			AppendEscapedString(name);
+			this->output << L".";
+			AppendEscapedString(szFunction);
+
+			this->fullName = this->output.str();
+
+			this->output.str(L"");
+
 			if (SUCCEEDED(hr)) {
 				this->data = (unsigned char *)signature;
 				this->dataLength = sigLength;
@@ -158,10 +167,7 @@ bool SignatureReader::ReadMethodDefSig(byte head)
 	
 	this->output << L" ";
 	this->output << '"';
-	std::wstring name = className.str();
-	AppendEscapedString(name);
-	this->output << L".";
-	AppendEscapedString(szFunction);
+	this->output << fullName;
 	this->output << '"';
 	this->output << L" ";
 
@@ -565,20 +571,30 @@ bool SignatureReader::IsNetInternal(FunctionID fid)
 	mdToken funcToken;
 	HRESULT hr = S_OK;
 	IMetaDataAssemblyImport *asmMetaData;
-	const void *publicKey;
-	ULONG pKLength;
 
 	hr = profilerInfo->GetTokenAndMetaDataFromFunction(fid, IID_IMetaDataAssemblyImport, (LPUNKNOWN *) &asmMetaData, &funcToken);
-	if (SUCCEEDED(hr)) {
-		mdAssembly assembly;
-		hr = asmMetaData->GetAssemblyFromScope(&assembly);
-		if (SUCCEEDED(hr)) {
-			WCHAR assemblyName[NAME_BUFFER_SIZE];
-			ULONG assemblyNameLength;
+	
+	if (SUCCEEDED(hr) && asmMetaData != nullptr)
+		return IsFrameworkAssembly(asmMetaData);
+	
+	return false;
+}
 
-			hr = asmMetaData->GetAssemblyProps(assembly, &publicKey, &pKLength, nullptr, assemblyName, NAME_BUFFER_SIZE, &assemblyNameLength, nullptr, nullptr);
-			const byte *b = (const byte *)publicKey;
-			
+bool IsFrameworkAssembly(IMetaDataAssemblyImport *asmMetaData)
+{
+	mdAssembly assembly;
+	const void *publicKey;
+	ULONG pKLength;
+	
+	HRESULT hr = asmMetaData->GetAssemblyFromScope(&assembly);
+	if (SUCCEEDED(hr)) {
+		WCHAR assemblyName[NAME_BUFFER_SIZE];
+		ULONG assemblyNameLength;
+
+		hr = asmMetaData->GetAssemblyProps(assembly, &publicKey, &pKLength, nullptr, assemblyName, NAME_BUFFER_SIZE, &assemblyNameLength, nullptr, nullptr);
+		const byte *b = (const byte *)publicKey;
+		
+		if (SUCCEEDED(hr)) {
 			if (pKLength == sizeof(mscorlibkey) && memcmp(mscorlibkey, b, sizeof(mscorlibkey)) == 0)
 				return true;
 			if (pKLength == sizeof(systemdrawingkey) && memcmp(systemdrawingkey, b, sizeof(systemdrawingkey)) == 0)

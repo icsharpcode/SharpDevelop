@@ -27,11 +27,11 @@ void _declspec(naked) FunctionEnterNaked(FunctionID functionID, UINT_PTR clientD
 		// esp +  0   -> saved edx
 		//     +  4   -> saved ecx
 		//     +  8   -> saved eax
-		//     + 12   -> saved esi
-		//     + 16   -> return address
-		//     + 20   -> functionID      \
-		//     + 24   -> clientData      |- parameters for FunctionEnterNaked
-		//     + 28   -> ...             /
+		//     + 12   -> return address
+		//     + 16   -> functionID      \
+		//     + 20   -> clientData      |- parameters for FunctionEnterNaked
+		//     + 24   -> frameInfo       |
+		//     + 28   -> argumentInfo    /
 		
 		sub esp, FrameSize
 		// eax, ecx and edx are scratch registers in stdcall, so we need to save those
