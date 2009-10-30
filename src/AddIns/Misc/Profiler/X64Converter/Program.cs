@@ -147,7 +147,7 @@ namespace X64Converter
 				this.copyAllMembers = true;
 				typeDeclaration.Name = typeDeclaration.Name.Replace("32", "64");
 			} else {
-				if ((typeDeclaration.Modifier & Modifiers.Partial) != Modifiers.Partial)
+				if (!typeDeclaration.Modifier.HasFlag(Modifiers.Partial))
 					this.RemoveCurrentNode();
 				else
 					typeDeclaration.Attributes.Clear();

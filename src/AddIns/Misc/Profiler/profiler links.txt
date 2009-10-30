@@ -1,0 +1,5 @@
+http://blogs.msdn.com/profiler/archive/2008/07/08/excluding-small-functions-from-instrumentation.aspx
+http://blogs.msdn.com/profiler/archive/2008/07/02/quick-tip-vs2008-compare-reports-quickly.aspx
+http://blogs.msdn.com/profiler/archive/2008/05/17/quick-tip-save-analyzed-for-large-vsp-files.aspx
+http://www.ibm.com/developerworks/library/l-gnuprof.html
+http://www.automatedqa.com/products/aqtime/

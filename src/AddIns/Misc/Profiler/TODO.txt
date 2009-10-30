@@ -8,6 +8,8 @@ NEW FEATURES
 - Implement an exception tracer
 - Implement a memory profiler
 
+- monitor pinvoke calls
+
 API CLEANUP
 [00:34:02] Daniel Grunwald says: wir verfälschen sowieso
 [00:34:27] Daniel Grunwald says: Funktionsaufrufe im Vergleich zu Schleifen -> mit Profiler werden Funktionsaufrufe stark benachteiligt
