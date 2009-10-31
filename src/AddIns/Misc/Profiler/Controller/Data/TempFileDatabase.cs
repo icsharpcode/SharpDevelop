@@ -39,12 +39,18 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		List<PerformanceCounterDescriptor> counters = new List<PerformanceCounterDescriptor>();
 		
+		/// <summary>
+		/// Returns the list of performance counters stored in the database.
+		/// </summary>
 		public ReadOnlyCollection<PerformanceCounterDescriptor> Counters {
 			get { return counters.AsReadOnly(); }
 		}
 		
 		List<EventDataEntry> events = new List<EventDataEntry>();
 		
+		/// <summary>
+		/// Returns the list of events stored in the database.
+		/// </summary>
 		public ReadOnlyCollection<EventDataEntry> Events {
 			get { return events.AsReadOnly(); }
 		}

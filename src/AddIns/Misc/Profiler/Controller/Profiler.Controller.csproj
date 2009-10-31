@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\IProfilingDataComparer.cs" />
+    <Compile Include="Data\EventDataEntry.cs" />
     <Compile Include="Data\IncompatibleDatabaseException.cs" />
     <Compile Include="Data\Linq\AllCalls.cs" />
     <Compile Include="Data\Linq\AllFunctions.cs" />

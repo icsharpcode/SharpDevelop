@@ -77,10 +77,19 @@ namespace ICSharpCode.Profiler.Controller.Data
 			return GetAllCalls(startIndex, endIndex).Where(c => !c.IsThread).MergeByName();
 		}
 		
+		/// <summary>
+		/// Returns the list of performance counters used in all datasets.
+		/// </summary>
 		public abstract PerformanceCounterDescriptor[] GetPerformanceCounters();
 		
+		/// <summary>
+		/// Returns the list of all values collected by a performance counter identified by its index.
+		/// </summary>
 		public abstract float[] GetPerformanceCounterValues(int index);
 		
+		/// <summary>
+		/// Returns the list of all events for a dataset.
+		/// </summary>
 		public abstract EventDataEntry[] GetEventDataEntries(int index);
 	}
 }

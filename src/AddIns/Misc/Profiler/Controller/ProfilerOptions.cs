@@ -24,6 +24,9 @@ namespace ICSharpCode.Profiler.Controller
 		/// </summary>
 		public const int DefaultSharedMemorySize = 64 * 1024 * 1024; // 64 mb
 		
+		/// <summary>
+		/// Defines a list of default performance counters.
+		/// </summary>
 		public static readonly PerformanceCounterDescriptor[] DefaultCounters = new[] {
 			new PerformanceCounterDescriptor("Process", "% Processor Time", "_Total", ".", 0, 0, 100, "%", "0.00"),
 			new PerformanceCounterDescriptor("Process", "IO Data Bytes/sec", "_Total", ".", 0, null, null, "bytes/sec", "#,##0")
@@ -37,6 +40,9 @@ namespace ICSharpCode.Profiler.Controller
 		
 		PerformanceCounterDescriptor[] counters;
 		
+		/// <summary>
+		/// Gets the performance counters selected for monitoring.
+		/// </summary>
 		public PerformanceCounterDescriptor[] Counters {
 			get { return this.counters; }
 		}

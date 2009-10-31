@@ -29,8 +29,14 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		void WriteMappings(IEnumerable<NameMapping> mappings);
 		
+		/// <summary>
+		/// Writes an amount of performance counters and the collected values.
+		/// </summary>
 		void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters);
 		
+		/// <summary>
+		/// Writes an amount of events.
+		/// </summary>
 		void WriteEventData(IEnumerable<EventDataEntry> events);
 		
 		/// <summary>

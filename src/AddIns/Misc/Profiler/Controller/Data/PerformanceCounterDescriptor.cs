@@ -12,22 +12,65 @@ using System.Linq;
 
 namespace ICSharpCode.Profiler.Controller.Data
 {
+	/// <summary>
+	/// Wraps <see cref="System.Diagnostics.PerformanceCounter" /> to support lazy-loading and easy value collection.
+	/// Stores additonal meta data such as min/max allowed value or unit of the values.
+	/// </summary>
 	public class PerformanceCounterDescriptor
 	{
+		/// <summary>
+		/// Gets the category of the performance counter.
+		/// </summary>
 		public string Category { get; private set; }
+		
+		/// <summary>
+		/// Gets the name of the performance counter.
+		/// </summary>
 		public string Name { get; private set; }
+		
+		/// <summary>
+		/// Gets the instance (perfmon process id) of the performance counter.
+		/// </summary>
 		public string Instance { get; private set; }
+		
+		/// <summary>
+		/// Gets the computer the performance counter is executed on.
+		/// </summary>
 		public string Computer { get; private set; }
+		
+		/// <summary>
+		/// Gets a list of values collected by this performance counter.
+		/// </summary>
 		public IList<float> Values { get; private set; }
 		
+		/// <summary>
+		/// Gets the minimum allowed value collected by the performance counter.
+		/// Returns null if there is no lower bound.
+		/// </summary>
 		public float? MinValue { get; private set; }
+		
+		/// <summary>
+		/// Gets the maximum allowed value collected by the performance counter.
+		/// Returns null if there is no upper bound.
+		/// </summary>
 		public float? MaxValue { get; private set; }
+		
+		/// <summary>
+		/// Gets a string representation of the unit of the values collected.
+		/// </summary>
 		public string Unit { get; private set; }
+		
+		/// <summary>
+		/// Gets the format string for display of the collected values.
+		/// </summary>
 		public string Format { get; private set; }
 		
 		float defaultValue;
 		PerformanceCounter counter;
 		
+		/// <summary>
+		/// Creates a new PerformanceCounterDescriptor.
+		/// </summary>
 		public PerformanceCounterDescriptor(string category, string name, string instance, string computer,
 		                                    float defaultValue, float? minValue, float? maxValue, string unit, string format)
 		{
@@ -43,11 +86,18 @@ namespace ICSharpCode.Profiler.Controller.Data
 			Format = format;
 		}
 		
+		/// <summary>
+		/// Creates a new PerformanceCounterDescriptor.
+		/// </summary>
 		public PerformanceCounterDescriptor(string name, float? minValue, float? maxValue, string unit, string format)
 			: this(null, name, null, null, 0, minValue, maxValue, unit, format)
 		{
 		}
 		
+		/// <summary>
+		/// Returns the perfmon process identifier for a process Id.
+		/// If the process is not available (e. g. not running anymore) null is returned.
+		/// </summary>
 		public static string GetProcessInstanceName(int pid)
 		{
 			PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
@@ -64,11 +114,18 @@ namespace ICSharpCode.Profiler.Controller.Data
 			return null;
 		}
 		
+		/// <summary>
+		/// Deletes all collected information.
+		/// </summary>
 		public void Reset()
 		{
 			this.Values.Clear();
 		}
 		
+		/// <summary>
+		/// Collects a new value. The default value is recorded if any error occurs, while attempting to collect a value.
+		/// </summary>
+		/// <param name="instanceName"></param>
 		public void Collect(string instanceName)
 		{
 			if (counter == null && Instance != null)
@@ -84,25 +141,12 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
+		/// <summary>
+		/// Returns the name of the performance counter.
+		/// </summary>
 		public override string ToString()
 		{
 			return Name;
 		}
-	}
-	
-	public enum EventType : int
-	{
-		Exception = 0,
-		Console = 1,
-		WindowsForms = 2,
-		WindowsPresentationFoundation = 3
-	}
-	
-	public class EventDataEntry
-	{
-		public int DataSetId { get; set; }
-		public EventType Type { get; set; }
-		public int NameId { get; set; }
-		public string Data { get; set; }
 	}
 }

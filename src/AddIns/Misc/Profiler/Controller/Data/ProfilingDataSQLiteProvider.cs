@@ -352,6 +352,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			return query.Where(c => c.NameMapping.Id != 0 && !c.IsThread).MergeByName();
 		}
 		
+		/// <inheritdoc/>
 		public override PerformanceCounterDescriptor[] GetPerformanceCounters()
 		{
 			SQLiteCommand cmd;			
@@ -380,6 +381,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override float[] GetPerformanceCounterValues(int index)
 		{
 			SQLiteCommand cmd;			
@@ -400,6 +402,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			}
 		}
 		
+		/// <inheritdoc/>
 		public override EventDataEntry[] GetEventDataEntries(int index)
 		{
 			SQLiteCommand cmd;			

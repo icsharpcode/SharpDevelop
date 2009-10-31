@@ -105,16 +105,19 @@ namespace ICSharpCode.Profiler.Controller.Data
 			this.targetWriter.Close();
 		}
 		
+		/// <inheritdoc/>
 		public void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters)
 		{
 			this.targetWriter.WritePerformanceCounterData(counters);
 		}
 		
+		/// <inheritdoc/>
 		public void WriteEventData(IEnumerable<EventDataEntry> events)
 		{
 			this.targetWriter.WriteEventData(events);
 		}
 		
+		/// <inheritdoc/>
 		public int DataSetCount {
 			get { return this.targetWriter.DataSetCount; }
 		}
