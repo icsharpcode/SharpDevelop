@@ -39,6 +39,7 @@ namespace ICSharpCode.Profiler.Controls
 				
 				this.perfCounterList.ItemsSource = this.provider.GetPerformanceCounters();
 				this.perfCounterList.SelectedIndex = 0;
+				this.timeLine.Provider = provider;
 				
 				Update();
 			}
@@ -84,7 +85,7 @@ namespace ICSharpCode.Profiler.Controls
 			this.timeLine.Format = selectedPerformanceCounter.Format;
 			
 			for (int i = 0; i < values.Length; i++)
-				segments.Add(new TimeLineSegment() { Value = values[i], TimeOffset = 0, DisplayMarker = markers[i], Events = provider.GetEventDataEntries(i) });
+				segments.Add(new TimeLineSegment() { Value = values[i], DisplayMarker = markers[i], Events = provider.GetEventDataEntries(i) });
 			
 			this.timeLine.ValuesList.AddRange(segments);
 		}

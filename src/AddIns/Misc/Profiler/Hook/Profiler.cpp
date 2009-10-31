@@ -711,7 +711,6 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 	    COR_ILMETHOD_TINY *method = (COR_ILMETHOD_TINY *)header;
 
 		if (method->GetCodeSize() + sizeof(activateCall) + sizeof(loggerCall) + sizeof(deactivateCall) + 2 < MAX_CODE_SIZE_TINY) {
-        	LogString(L"is tiny!");
 			// Copy the header elements.
 			memcpy(&codeBuf[0], method, TINY_HEADER_SIZE);
 			
@@ -731,10 +730,9 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 			// 2 upper bits are the tiny header 6 lower bits are length
 			codeBuf[0] = (byte)((newLength - 1) << 2 | 0x2); 
         } else {
-        	LogString(L"is tiny but exceeds!");
 			ConvertToFat((byte *)codeBuf, &newLength);
 		
-		SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId);
+			SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId);
 						
 			// copy old code
 			memcpy(&codeBuf[newLength], &header[TINY_HEADER_SIZE], length - TINY_HEADER_SIZE);
@@ -744,8 +742,6 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 			target->CodeSize = newLength - FAT_HEADER_SIZE;
         }
 	} else if (((COR_ILMETHOD_FAT *)header)->IsFat()) {
-    	LogString(L"is fat!");
-    	
 		COR_ILMETHOD_FAT *method = (COR_ILMETHOD_FAT *)header;
 		COR_ILMETHOD_FAT *target = (COR_ILMETHOD_FAT *)codeBuf;
 		

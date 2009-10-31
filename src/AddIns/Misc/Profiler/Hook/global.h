@@ -14,7 +14,7 @@
 #include "LightweightList.h"
 
 #define CONSOLE_GROUP_LENGTH 2
-#define WINFORMS_GROUP_LENGTH 2
+#define WINFORMS_GROUP_LENGTH 4
 #define WPF_GROUP_LENGTH 1
 
 extern fastAllocator stackAllocator;

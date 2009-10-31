@@ -6,9 +6,11 @@
 // </file>
 
 using System;
-using System.Collections.ObjectModel;
+using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -23,7 +25,6 @@ namespace ICSharpCode.Profiler.Controls
 	public class TimeLineSegment {
 		public float Value { get; set; }
 		public bool DisplayMarker { get; set; }
-		public long TimeOffset { get; set; }
 		public EventDataEntry[] Events { get; set; }
 	}
 	
@@ -50,6 +51,8 @@ namespace ICSharpCode.Profiler.Controls
 		public string Unit { get; set; }
 		
 		public string Format { get; set; }
+		
+		public ProfilingDataProvider Provider { get; set; }
 		
 		public int SelectedEndIndex
 		{
@@ -140,10 +143,22 @@ namespace ICSharpCode.Profiler.Controls
 			
 			drawingContext.DrawGeometry(b, new Pen(b, 1), geometry);
 			
+			DateTime time = new DateTime(1,1,1,0,0,0,0);
+			
 			for (int i = 0; i < this.valuesList.Count; i++) {
 				if (this.valuesList[i].DisplayMarker)
 					drawingContext.DrawLine(p, new Point(pieceWidth * i, offsetFromTop),
 					                        new Point(pieceWidth * i, this.RenderSize.Height));
+				
+				if (i % 3 == 0) {
+					FormattedText textFormat = new FormattedText(
+						time.ToString("mm:ss.fff"),
+						CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+						new Typeface("Segoe UI"), 12, Brushes.Black
+					);
+					
+					drawingContext.DrawText(textFormat, new Point(pieceWidth * i, 0));
+				}
 				
 				var events = this.valuesList[i].Events;
 				
@@ -159,6 +174,8 @@ namespace ICSharpCode.Profiler.Controls
 						);
 					}
 				}
+				
+				time = time.AddMilliseconds(500);
 			}
 			
 			drawingContext.DrawRectangle(
@@ -174,16 +191,17 @@ namespace ICSharpCode.Profiler.Controls
 		protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
 		{
 			bool valid;
-			int index = TransformToIndex(e.GetPosition(this), out valid);
+			Point pos = e.GetPosition(this);
+			int index = TransformToIndex(pos, out valid);
 			
-			if (index < this.selectedStartIndex) {
-				this.selectedEndIndex = this.selectedStartIndex;
-				this.selectedStartIndex = index;
-			} else
-				this.selectedEndIndex = index;
-			
-			Console.WriteLine("start: {0} end: {1} count: {2}", SelectedStartIndex, SelectedEndIndex, valuesList.Count);
-			
+			if (pos.Y >= 40) {
+				if (index < this.selectedStartIndex) {
+					this.selectedEndIndex = this.selectedStartIndex;
+					this.selectedStartIndex = index;
+				} else
+					this.selectedEndIndex = index;
+			}
+						
 			this.InvalidateMeasure();
 			this.InvalidateVisual();
 			this.ReleaseMouseCapture();
@@ -192,10 +210,12 @@ namespace ICSharpCode.Profiler.Controls
 		protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
 		{
 			this.CaptureMouse();
+			Point pos = e.GetPosition(this);
 			bool valid;
-			int index = TransformToIndex(e.GetPosition(this), out valid);
+			int index = TransformToIndex(pos, out valid);
 			
-			this.selectedStartIndex = this.selectedEndIndex = index;
+			if (pos.Y >= 40)
+				this.selectedStartIndex = this.selectedEndIndex = index;
 			
 			this.InvalidateMeasure();
 			this.InvalidateVisual();
@@ -216,13 +236,50 @@ namespace ICSharpCode.Profiler.Controls
 			} else if (tooltip == null && valid) {
 				tooltip = new ToolTip();
 				if (pos.Y < 20)
-					tooltip.Content = "Time: ";
+					tooltip.Content = "Time: " + new DateTime(0).AddMilliseconds(index * 500).ToString("mm:ss.fff");
 				else if (pos.Y < 40)
-					tooltip.Content = "Event: ";
+					tooltip.Content = CreateTooltipForEvents(index);
 				else
 					tooltip.Content = "Value: " + this.valuesList[index].Value.ToString(this.Format) + " " + this.Unit;
-				tooltip	.IsOpen = true;
+				tooltip	.IsOpen = tooltip.Content != null;
 			}
+		}
+		
+		object CreateTooltipForEvents(int index)
+		{
+			EventDataEntry[] events = this.ValuesList[index].Events;
+			
+			TextBlock block = events.Any() ? new TextBlock() : null;
+			
+			foreach (var e in events) {
+				if (block.Inlines.Any())
+					block.Inlines.Add(new LineBreak());
+				
+				NameMapping mapping = Provider.GetMapping(e.NameId);
+				string fullSignature = mapping.ReturnType + " " + mapping.Name + "(" + string.Join(", ", mapping.Parameters) + ")";
+				block.Inlines.Add(new Bold { Inlines = { fullSignature } });
+				
+				
+				switch (e.Type) {
+					case EventType.Console:
+						break;
+					case EventType.WindowsForms:
+						string target = e.Data.Substring(0, e.Data.IndexOf(':'));
+						string text = e.Data.Substring(e.Data.IndexOf(':') + 1);
+						block.Inlines.Add(new LineBreak());
+						block.Inlines.Add(new Bold { Inlines = { "Source: " } });
+						block.Inlines.Add(target);
+						block.Inlines.Add(new LineBreak());
+						block.Inlines.Add(new Bold { Inlines = { "Text: " } });
+						block.Inlines.Add(text);
+						break;
+					case EventType.Exception:
+					case EventType.WindowsPresentationFoundation:
+						break;
+				}
+			}
+			
+			return block;
 		}
 
 		protected override void OnLostMouseCapture(MouseEventArgs e)
