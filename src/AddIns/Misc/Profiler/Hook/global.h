@@ -40,6 +40,7 @@ struct StackEntry {
 struct ThreadLocalData {
 	int threadID;
 	volatile int inLock;
+	volatile bool active;
 	ThreadLocalData *predecessor;
 	ThreadLocalData *follower;
 

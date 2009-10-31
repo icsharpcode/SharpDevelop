@@ -34,7 +34,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <summary>
 		/// Creates a new SQLite profiling data provider and opens a database stored in a file.
 		/// </summary>
-		private ProfilingDataSQLiteProvider(string fileName, bool allowUpgrade)
+		ProfilingDataSQLiteProvider(string fileName, bool allowUpgrade)
 		{
 			this.nameMappingCache = new Dictionary<int, NameMapping>();
 			

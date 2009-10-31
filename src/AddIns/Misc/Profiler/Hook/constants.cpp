@@ -18,5 +18,5 @@ WCHAR *winFormsGroupList[WINFORMS_GROUP_LENGTH] = {
 };
 
 WCHAR *wpfGroupList[WPF_GROUP_LENGTH] = {
-	L"dummy"
+	L"System.Windows.UIElement.OnLeftMouseButtonDown"
 };

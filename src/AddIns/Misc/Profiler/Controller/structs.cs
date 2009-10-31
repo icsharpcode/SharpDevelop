@@ -221,6 +221,7 @@ namespace ICSharpCode.Profiler.Controller
 	{
 		public int ThreadID;
 		public volatile int InLock;
+		public volatile bool Active;
 		public TargetProcessPointer32 Predecessor;
 		public TargetProcessPointer32 Follower;
 		public LightweightStack32 Stack;

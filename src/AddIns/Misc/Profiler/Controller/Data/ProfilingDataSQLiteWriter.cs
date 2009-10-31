@@ -321,39 +321,48 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			using (SQLiteTransaction trans = this.connection.BeginTransaction()) {
 				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+					using (SQLiteCommand cmd2 = this.connection.CreateCommand()) {
 
-					SQLiteParameter idParam = new SQLiteParameter("id");
-					SQLiteParameter nameParam = new SQLiteParameter("name");
-					SQLiteParameter dataSetParam = new SQLiteParameter("dataset");
-					SQLiteParameter valueParam = new SQLiteParameter("value");
-					SQLiteParameter minParam = new SQLiteParameter("min");
-					SQLiteParameter maxParam = new SQLiteParameter("max");
-					SQLiteParameter unitParam = new SQLiteParameter("unit");
-					
-					cmd.CommandText =
-						"INSERT OR IGNORE INTO PerformanceCounter(id, name, minvalue, maxvalue, unit)" + // should I split these queries
-						"VALUES(@id,@name,@min,@max,@unit);" + 												 // for better performance?
-						"INSERT INTO CounterData(datasetid, counterid, value)" +
-						"VALUES(@dataset,@id,@value);";
-					
-					cmd.Parameters.AddRange(new SQLiteParameter[] { idParam, nameParam, dataSetParam, valueParam, minParam, maxParam, unitParam });
-					
-					int id = 0;
-					
-					foreach (PerformanceCounterDescriptor counter in counters) {
-						idParam.Value = id;
-						nameParam.Value = counter.Name;
-						minParam.Value = counter.MinValue;
-						maxParam.Value = counter.MaxValue;
-						unitParam.Value = counter.Unit;
+						SQLiteParameter idParam = new SQLiteParameter("id");
+						SQLiteParameter nameParam = new SQLiteParameter("name");
+						SQLiteParameter dataSetParam = new SQLiteParameter("dataset");
+						SQLiteParameter valueParam = new SQLiteParameter("value");
+						SQLiteParameter minParam = new SQLiteParameter("min");
+						SQLiteParameter maxParam = new SQLiteParameter("max");
+						SQLiteParameter unitParam = new SQLiteParameter("unit");
+						SQLiteParameter formatParam = new SQLiteParameter("format");
 						
-						for (int i = 0; i < counter.Values.Count; i++) {
-							dataSetParam.Value = i;
-							valueParam.Value = counter.Values[i];
-							cmd.ExecuteNonQuery();
+						cmd.Parameters.AddRange(new SQLiteParameter[] { idParam, dataSetParam, valueParam });
+						cmd2.Parameters.AddRange(new SQLiteParameter[] { idParam, nameParam, minParam, maxParam, unitParam, formatParam });
+						
+						cmd2.CommandText =
+							"INSERT INTO PerformanceCounter(id, name, minvalue, maxvalue, unit, format)" +
+							"VALUES(@id,@name,@min,@max,@unit,@format);";
+						
+						cmd.CommandText =
+							"INSERT INTO CounterData(datasetid, counterid, value)" +
+							"VALUES(@dataset,@id,@value);";
+						
+						int id = 0;
+						
+						foreach (PerformanceCounterDescriptor counter in counters) {
+							idParam.Value = id;
+							nameParam.Value = counter.Name;
+							minParam.Value = counter.MinValue;
+							maxParam.Value = counter.MaxValue;
+							unitParam.Value = counter.Unit;
+							formatParam.Value = counter.Format;
+							
+							for (int i = 0; i < counter.Values.Count; i++) {
+								dataSetParam.Value = i;
+								valueParam.Value = counter.Values[i];
+								cmd.ExecuteNonQuery();
+							}
+							
+							cmd2.ExecuteNonQuery();
+							
+							id++;
 						}
-						
-						id++;
 					}
 				}
 				trans.Commit();

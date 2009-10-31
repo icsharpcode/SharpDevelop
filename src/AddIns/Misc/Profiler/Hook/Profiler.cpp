@@ -77,6 +77,9 @@ ASSEMBLER_CALLBACK FunctionEnterGlobal(int functionID)
 		FunctionEnterCreateNewRoot(data, __rdtsc());
 	} else
 		profiler.EnterLock(data);
+		
+	if (!data->active)
+		goto EXIT;
 
 	// this call allows GetOrAddChild to update the value at the top of the stack
 	// if the FunctionInfo is resized
@@ -109,7 +112,7 @@ ASSEMBLER_CALLBACK FunctionEnterGlobal(int functionID)
 		
 		data->stack.push(StackEntry(child, __rdtsc()));
 	}
-
+EXIT:
 	data->inLock = 0;
 }
 
@@ -131,6 +134,9 @@ ASSEMBLER_CALLBACK FunctionLeaveGlobal()
 	ThreadLocalData *data = getThreadLocalData();
 
 	profiler.EnterLock(data);
+	
+	if (!data->active)
+		goto EXIT;
 
 	if (data->stack.empty()) {
 		//DebugWriteLine(L"FunctionLeaveGlobal (but stack was empty)");
@@ -143,7 +149,8 @@ ASSEMBLER_CALLBACK FunctionLeaveGlobal()
 			data->stack.pop();
 		}
 	}
-
+	
+EXIT:
 	data->inLock = 0;
 }
 
@@ -238,7 +245,6 @@ CProfiler::CProfiler()
 	this->pICorProfilerInfo = nullptr;
 	this->pICorProfilerInfo2 = nullptr;
 	this->sigReader = nullptr;
-	this->active = true;
 }
 
 // ----  ICorProfilerCallback IMPLEMENTATION ------------------
@@ -626,12 +632,14 @@ STDMETHODIMP CProfiler::JITCompilationStarted(FunctionID functionID, BOOL /*fIsS
 
 void CProfiler::Activate()
 {
-
+	ThreadLocalData *data = getThreadLocalData();
+	data->active = true;
 }
 
 void CProfiler::Deactivate()
 {
-
+	ThreadLocalData *data = getThreadLocalData();
+	data->active = false;
 }
 
 const ULONG FAT_HEADER_SIZE = 0xC;     /* 12 bytes = WORD + WORD + DWORD + DWORD */

@@ -132,8 +132,6 @@ private:
 	TUThreadIDMap unmanagedThreadIDMap;
 	TMethodTokenMap methodMap;
 	
-	bool active;
-	
 	// function to set up our event mask
 	HRESULT SetEventMask();
 	void Rewrite(FunctionID functionID, int type, int nameId, WCHAR *name);

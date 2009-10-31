@@ -8,6 +8,7 @@
 #include "main.h"
 #include "global.h"
 #include "FunctionInfo.h"
+#include "ProfilerMetaData.h"
 
 //sharedMemoryAllocator mallocator;
 freeListAllocator<FunctionInfoAllocationSize> mallocator;
@@ -43,37 +44,41 @@ STDAPI rdtsc(ULONGLONG *tsc) {
  return S_OK;
 }
 
+	
+std::wstring EscapeString(const WCHAR *input)
+{
+	std::wostringstream output;
+	output.str(L"");
+	
+	for (const WCHAR *ptr = input; *ptr != 0; ptr++) {
+		WCHAR c = *ptr;
+		if (c == '"')
+			output << "\"\"";
+		else
+			output << c;
+	}
+	
+	return output.str();
+}
+
 extern "C" {
 	void __stdcall DeactivateProfiler()
 	{
-		profiler.LogString(L"DeactivateProfiler called!");
 		profiler.Deactivate();
 	}
 	
 	void __stdcall ActivateProfiler()
 	{
-		profiler.LogString(L"ActivateProfiler called!");
 		profiler.Activate();
 	}
 	
 	void __stdcall LogEvent(int type, int id, WCHAR *controlName, WCHAR *controlText)
 	{
-		WCHAR *format = L"";
+		if (controlName == nullptr)
+			controlName = L"";
+		if (controlText == nullptr)
+			controlText = L"";
 	
-		switch (type) {
-			case 0:
-				format = L"event %d %d --";
-				break;
-			case 1:
-				format = L"event %d %d --";
-				break;
-			case 2:
-				format = L"event %d %d -name:\"%s\"text:\"%s\"-";
-				break;
-			case 3:
-				break;
-		}
-	
-		DebugWriteLine(format, type, id, controlName, controlText);
+		profiler.LogString(L"event %d %d \"%s:%s\"", type, id, EscapeString(controlName).c_str(), EscapeString(controlText).c_str());
 	}
 }

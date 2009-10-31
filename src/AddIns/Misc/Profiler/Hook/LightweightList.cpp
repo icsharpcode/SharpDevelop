@@ -23,6 +23,8 @@ ThreadLocalData *LightweightList::add()
 	void *itemMemory = stackAllocator.malloc(sizeof(ThreadLocalData));
 	assert(itemMemory != nullptr);
 	ThreadLocalData *item = new (itemMemory) ThreadLocalData();
+	
+	item->active = true;
 
 	if (this->lastItem == nullptr) {
 		this->lastItem = item;

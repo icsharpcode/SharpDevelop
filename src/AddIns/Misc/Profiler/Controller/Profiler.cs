@@ -707,9 +707,9 @@ namespace ICSharpCode.Profiler.Controller
 
 				return true;
 			} else if (readString.StartsWith("event ", StringComparison.Ordinal)) {
-				string[] parts = readString.Split(' ');
+				IList<string> parts = readString.SplitSeparatedString(' ');
 				// event <typeid> <nameid> <data>
-				if (parts.Length != 4)
+				if (parts.Count != 4)
 					return false;
 				int type = int.Parse(parts[1], CultureInfo.InvariantCulture);
 				int name = int.Parse(parts[2], CultureInfo.InvariantCulture);
@@ -718,6 +718,7 @@ namespace ICSharpCode.Profiler.Controller
 				lock (this.dataWriter) {
 					this.dataWriter.WriteEventData(new[] { new EventDataEntry() { DataSetId = this.dataWriter.DataSetCount, NameId = name, Type = (EventType)type, Data = data } });
 				}
+				return true;
 			} else {
 				if (readString.StartsWith("error-", StringComparison.Ordinal)) {
 					string[] parts = readString.Split('-');
