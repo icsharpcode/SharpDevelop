@@ -610,21 +610,21 @@ STDMETHODIMP CProfiler::ExceptionCatcherLeave()
 STDMETHODIMP CProfiler::JITCompilationStarted(FunctionID functionID, BOOL /*fIsSafeToBlock*/)
 {
 	WCHAR *name;
-	int nameId = MapFunction(functionID, (const WCHAR **)(&name));
+	int nameId = (int)MapFunction(functionID, (const WCHAR **)(&name));
 	
 	for (int i = 0; i < CONSOLE_GROUP_LENGTH; i++) {
 		if (wcsstr(consoleGroupList[i], name) != nullptr)
-			Rewrite(functionID, 0x1, nameId, name);
+			Rewrite(functionID, 0x1, nameId);
 	}
 	
 	for (int i = 0; i < WINFORMS_GROUP_LENGTH; i++) {
 		if (wcsstr(winFormsGroupList[i], name) != nullptr)
-			Rewrite(functionID, 0x2, nameId, name);
+			Rewrite(functionID, 0x2, nameId);
 	}
 	
 	for (int i = 0; i < WPF_GROUP_LENGTH; i++) {
 		if (wcsstr(wpfGroupList[i], name) != nullptr)
-			Rewrite(functionID, 0x3, nameId, name);
+			Rewrite(functionID, 0x3, nameId);
 	}
 
 	return S_OK;
@@ -647,7 +647,7 @@ const ULONG TINY_HEADER_SIZE = 0x1;    /* 1 byte */
 const ULONG MAX_CODE_SIZE_TINY = 0x40; /* 64 bytes */
 const WORD  DEFAULT_MAX_STACK = 0x8;   /* default stack depth in slots */
 
-void CProfiler::Rewrite(FunctionID functionID, int type, int nameId, WCHAR *name)
+void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 {
 	ModuleID moduleID;
 	mdToken token;
@@ -717,7 +717,7 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId, WCHAR *name
 			
 			newLength = TINY_HEADER_SIZE;
 			
-			SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId, name);
+			SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId);
 			
 			// copy old code
 			memcpy(&codeBuf[newLength],
@@ -734,7 +734,7 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId, WCHAR *name
         	LogString(L"is tiny but exceeds!");
 			ConvertToFat((byte *)codeBuf, &newLength);
 		
-		SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId, name);
+		SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId);
 						
 			// copy old code
 			memcpy(&codeBuf[newLength], &header[TINY_HEADER_SIZE], length - TINY_HEADER_SIZE);
@@ -756,7 +756,7 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId, WCHAR *name
 		int diff = newLength;
 		
 		// insert new code
-		SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId, name);
+		SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId);
 
 		diff = newLength - diff;
 		
@@ -783,7 +783,7 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId, WCHAR *name
 
 void CProfiler::SetInjectionCode(IMetaDataImport *metaData, byte *buffer, int *size,
 									mdMethodDef activateCall, mdMethodDef loggerCall, mdMethodDef deactivateCall,
-									int type, int nameId, WCHAR *name)
+									int type, int nameId)
 {
 	HRESULT hr = S_OK;
 

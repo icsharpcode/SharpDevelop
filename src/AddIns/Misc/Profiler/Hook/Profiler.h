@@ -134,10 +134,10 @@ private:
 	
 	// function to set up our event mask
 	HRESULT SetEventMask();
-	void Rewrite(FunctionID functionID, int type, int nameId, WCHAR *name);
+	void Rewrite(FunctionID functionID, int type, int nameId);
 	void ConvertToFat(byte *target, int *size);
 	void FixSEHSections(const COR_ILMETHOD_SECT *sections, int offset);
-	void SetInjectionCode(IMetaDataImport *, byte *buffer, int *size, mdMethodDef activateCall, mdMethodDef loggerCall, mdMethodDef deactivateCall, int type, int nameId, WCHAR *name);
+	void SetInjectionCode(IMetaDataImport *, byte *buffer, int *size, mdMethodDef activateCall, mdMethodDef loggerCall, mdMethodDef deactivateCall, int type, int nameId);
 	bool CreateMethod(IMetaDataEmit *, const WCHAR *, PCCOR_SIGNATURE, mdMethodDef *, mdToken);
 	int InitializeCommunication();
 };
