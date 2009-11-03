@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Documents;
 
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Utils;
 
@@ -27,7 +28,20 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
-			InsertionContext context = new InsertionContext(textArea, textArea.Caret.Offset);
+			
+			ISegment selection = textArea.Selection.SurroundingSegment;
+			int insertionPosition = textArea.Caret.Offset;
+			
+			if (selection != null) // if something is selected
+				insertionPosition = selection.Offset; // use selection start instead of caret position,
+													     // because caret could be at end of selection or anywhere inside.
+													     // Removal of the selected text causes the caret position to be invalid.
+			
+			InsertionContext context = new InsertionContext(textArea, insertionPosition);
+			
+			if (selection != null)
+				textArea.Document.Remove(selection);
+			
 			using (context.Document.RunUpdate()) {
 				Insert(context);
 				context.RaiseInsertionCompleted(EventArgs.Empty);

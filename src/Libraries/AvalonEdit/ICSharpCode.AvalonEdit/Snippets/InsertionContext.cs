@@ -41,6 +41,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				throw new ArgumentNullException("textArea");
 			this.TextArea = textArea;
 			this.Document = textArea.Document;
+			this.SelectedText = textArea.Selection.GetText(textArea.Document);
 			this.InsertionPosition = insertionPosition;
 			this.startPosition = insertionPosition;
 			
@@ -61,6 +62,11 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// Gets the text document.
 		/// </summary>
 		public TextDocument Document { get; private set; }
+		
+		/// <summary>
+		/// Gets the text that was selected before the insertion of the snippet.
+		/// </summary>
+		public string SelectedText { get; private set; }
 		
 		/// <summary>
 		/// Gets the indentation at the insertion position.

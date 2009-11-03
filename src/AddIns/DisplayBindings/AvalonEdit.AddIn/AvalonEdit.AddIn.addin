@@ -73,6 +73,12 @@
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
 			          command = "ICSharpCode.AvalonEdit.AvalonEditCommands.ConvertLeadingSpacesToTabs"/>
+			<MenuItem id = "Separator5" type = "Separator" insertbefore = "Separator4" />
+			<MenuItem id = "SurroundWithSnippet"
+			          insertbefore = "Separator4"
+			          shortcut="Ctrl|J"
+			          label = "Surround with"
+			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.SurroundWithCommand"/>
 		</Condition>
 	</Path>
 	

@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{0162E499-42D0-409B-AA25-EED21F75336B}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -80,6 +81,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Commands\SortSelectionCommand.cs" />
+    <Compile Include="Src\Commands\SurroundWithCommand.cs" />
     <Compile Include="Src\CustomCommands.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />
@@ -97,6 +99,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Snippets\CodeSnippet.cs" />
+    <Compile Include="Src\Snippets\CodeSnippetCompletionWindow.cs" />
     <Compile Include="Src\Snippets\CodeSnippetGroup.cs" />
     <Compile Include="Src\Snippets\SnippetCompletionItem.cs" />
     <Compile Include="Src\Snippets\SnippetManager.cs" />

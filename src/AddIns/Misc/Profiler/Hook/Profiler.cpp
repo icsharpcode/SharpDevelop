@@ -822,15 +822,6 @@ void CProfiler::SetInjectionCode(IMetaDataImport *metaData, byte *buffer, int *s
 				break;
 			}
 			
-			hr = metaData->FindMethod(controlType, L"get_Name", getNameSig, sizeof(getNameSig), &getNameToken);
-			
-			if (!SUCCEEDED(hr) || getNameToken == 0) {
-				DebugWriteLine(L"FindMethod failed");
-				buffer[(*size)++] = 0x14; //ldnull
-				buffer[(*size)++] = 0x14; //ldnull
-				break;
-			}
-			
 			hr = metaData->FindMethod(controlType, L"get_Text", getNameSig, sizeof(getNameSig), &getTextToken);
 			
 			if (!SUCCEEDED(hr) || getTextToken == 0) {

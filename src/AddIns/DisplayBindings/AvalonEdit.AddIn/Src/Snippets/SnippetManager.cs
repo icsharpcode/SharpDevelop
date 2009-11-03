@@ -43,7 +43,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "ifelse",
 						Description = "if-else statement",
-						Text = "if (${condition}) {\n\t${Selection}\n} else {\n\t\n}"
+						Text = "if (${condition}) {\n\t${Selection}\n} else {\n\t${Caret}\n}"
 					},
 					new CodeSnippet {
 						Name = "while",
@@ -80,17 +80,17 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "try",
 						Description = "Try-catch statement",
-						Text = "try {\n\t${Selection}\n} catch (Exception) {\n\t\n\tthrow;\n}"
+						Text = "try {\n\t${Selection}\n} catch (Exception) {\n\t${Caret}\n\tthrow;\n}"
 					},
 					new CodeSnippet {
 						Name = "trycf",
 						Description = "Try-catch-finally statement",
-						Text = "try {\n\t${Selection}\n} catch (Exception) {\n\t\n\tthrow;\n} finally {\n\t\n}"
+						Text = "try {\n\t${Selection}\n} catch (Exception) {\n\t${Caret}\n\tthrow;\n} finally {\n\t\n}"
 					},
 					new CodeSnippet {
 						Name = "tryf",
 						Description = "Try-finally statement",
-						Text = "try {\n\t${Selection}\n} finally {\n\t\n}"
+						Text = "try {\n\t${Selection}\n} finally {\n\t${Caret}\n}"
 					},
 				}
 			}

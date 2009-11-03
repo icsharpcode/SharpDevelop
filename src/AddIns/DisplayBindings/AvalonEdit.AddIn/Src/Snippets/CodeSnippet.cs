@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
@@ -103,6 +104,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			if (pos < snippetText.Length) {
 				snippet.Elements.Add(new SnippetTextElement { Text = snippetText.Substring(pos) });
 			}
+			if (!snippet.Elements.Any(e2 => e2 is SnippetCaretElement)) {
+				int index = snippet.Elements.IndexOf(e => e is SnippetSelectionElement);
+				if (index > -1)
+					snippet.Elements.Insert(index + 1, new SnippetCaretElement());
+			}
 			return snippet;
 		}
 		
@@ -121,6 +127,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				}
 			}
 			if ("Selection".Equals(val, StringComparison.OrdinalIgnoreCase))
+				return new SnippetSelectionElement();
+			if ("Caret".Equals(val, StringComparison.OrdinalIgnoreCase))
 				return new SnippetCaretElement();
 			if (replaceableElements.TryGetValue(val, out srte))
 				return new SnippetBoundElement { TargetElement = srte };

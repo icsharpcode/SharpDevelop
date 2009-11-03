@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -286,6 +287,7 @@
     <Compile Include="Snippets\SnippetElement.cs" />
     <Compile Include="Snippets\InsertionContext.cs" />
     <Compile Include="Snippets\SnippetReplaceableTextElement.cs" />
+    <Compile Include="Snippets\SnippetSelectionElement.cs" />
     <Compile Include="Snippets\SnippetTextElement.cs" />
     <Compile Include="TextEditor.cs" />
     <Compile Include="TextEditorAutomationPeer.cs" />
