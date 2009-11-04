@@ -435,10 +435,14 @@ namespace AvalonDock
             if (ContainerPane != null && Manager != null)// && Manager.ActiveContent != this)
             {
                 ContainerPane.SelectedItem = this;
-                ContainerPane.Focus();
+                FocusContent();
                 if (Manager != null)
                     Manager.ActiveContent = this;
             }
+        }
+        
+        protected virtual void FocusContent()
+        {
         }
 
         bool _isActiveDocument = false;

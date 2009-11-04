@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 using AvalonDock;
 using ICSharpCode.Core;
@@ -33,12 +34,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (dockLayout == null)
 				throw new ArgumentNullException("dockLayout");
 			
+			CustomFocusManager.SetRememberFocusedChild(this, true);
 			this.IsFloatingAllowed = true;
 			this.dockLayout = dockLayout;
 			viewContents = new ViewContentCollection(this);
 			
 			ResourceService.LanguageChanged += OnTabPageTextChanged;
 			OnTitleNameChanged(this, EventArgs.Empty);
+		}
+		
+		protected override void FocusContent()
+		{
+			IInputElement activeChild = CustomFocusManager.GetFocusedChild(this);
+			if (activeChild != null) {
+				LoggingService.Debug("Will move focus to: " + activeChild);
+				Dispatcher.BeginInvoke(DispatcherPriority.Background,
+				                       new Action(delegate { Keyboard.Focus(activeChild); }));
+			}
 		}
 		
 		public bool IsDisposed { get { return false; } }

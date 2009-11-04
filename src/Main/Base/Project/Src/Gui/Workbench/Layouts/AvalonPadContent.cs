@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.descriptor = descriptor;
 			this.layout = layout;
 			
+			CustomFocusManager.SetRememberFocusedChild(this, true);
 			this.Name = descriptor.Class.Replace('.', '_');
 			this.SetValueToExtension(TitleProperty, new StringParseExtension(descriptor.Title));
 			placeholder = new TextBlock { Text = this.Title };
@@ -38,6 +39,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Icon = PresentationResourceService.GetImage(descriptor.Icon);
 			
 			placeholder.IsVisibleChanged += AvalonPadContent_IsVisibleChanged;
+		}
+		
+		protected override void FocusContent()
+		{
+			IInputElement activeChild = CustomFocusManager.GetFocusedChild(this);
+			if (activeChild != null) {
+				LoggingService.Debug("Will move focus to: " + activeChild);
+				Dispatcher.BeginInvoke(DispatcherPriority.Background,
+				                       new Action(delegate { Keyboard.Focus(activeChild); }));
+			}
 		}
 		
 		public void ShowInDefaultPosition()
