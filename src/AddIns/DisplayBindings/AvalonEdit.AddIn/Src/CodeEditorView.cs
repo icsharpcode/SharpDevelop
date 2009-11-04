@@ -36,6 +36,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public ITextEditor Adapter { get; set; }
 		
 		CodeEditorOptions options;
+		BracketHighlightRenderer bracketRenderer;
 		
 		public CodeEditorView()
 		{
@@ -43,14 +44,34 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			options = ICSharpCode.AvalonEdit.AddIn.Options.CodeEditorOptions.Instance;
 			options.BindToTextEditor(this);
 			
+			bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
+			
 			this.MouseHover += TextEditorMouseHover;
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;
 			this.MouseLeave += TextEditorMouseLeave;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
+			this.TextArea.Caret.PositionChanged += TextArea_PositionChanged;
 			
 			var editingKeyBindings = this.TextArea.DefaultInputHandler.Editing.InputBindings.OfType<KeyBinding>();
 			var tabBinding = editingKeyBindings.Single(b => b.Key == Key.Tab && b.Modifiers == ModifierKeys.None);
 			tabBinding.Command = new CustomTabCommand(this, tabBinding.Command);
+		}
+
+		void TextArea_PositionChanged(object sender, EventArgs e)
+		{
+			/*
+			 * Special case: ITextEditor.Language guarantees that it never returns null.
+			 * In this case however it can be null, since this code may be called while the document is loaded.
+			 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
+			 * loading of the document has finished.
+			 * */
+			if (activeAdapter.Language != null) {
+				var bracketSearchResult = activeAdapter.Language.BracketSearcher.SearchBracket(activeAdapter.Document, activeAdapter.Caret.Offset);
+				if (activeAdapter == primaryTextEditorAdapter)
+					this.primaryBracketRenderer.SetHighlight(bracketSearchResult);
+				else
+					this.secondaryBracketRenderer.SetHighlight(bracketSearchResult);
+			}
 		}
 		
 		sealed class CustomTabCommand : ICommand

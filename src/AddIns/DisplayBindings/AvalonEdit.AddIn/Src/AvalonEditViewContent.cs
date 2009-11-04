@@ -117,6 +117,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void CaretChanged(object sender, EventArgs e)
 		{
 			NavigationService.Log(this.BuildNavPoint());
+			StatusBarService.SetCaretPosition(this.Column, this.Line, this.Column);
 		}
 		
 		#region Bookmark Handling

@@ -55,9 +55,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly TextMarkerService textMarkerService;
 		ErrorPainter errorPainter;
 		
-		BracketHighlightRenderer primaryBracketRenderer;
-		BracketHighlightRenderer secondaryBracketRenderer;
-		
 		public CodeEditorView PrimaryTextEditor {
 			get { return primaryTextEditor; }
 		}
@@ -151,8 +148,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
 			activeTextEditor = primaryTextEditor;
-			
-			this.primaryBracketRenderer = new BracketHighlightRenderer(primaryTextEditor.TextArea.TextView);
 			
 			this.Document = primaryTextEditor.Document;
 			primaryTextEditor.SetBinding(TextEditor.DocumentProperty, new Binding("Document") { Source = this });
@@ -270,8 +265,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				SetRow(secondaryTextEditor, 2);
 				this.Children.Add(secondaryTextEditor);
 				
-				this.secondaryBracketRenderer = new BracketHighlightRenderer(secondaryTextEditor.TextArea.TextView);
-				
 				secondaryTextEditorAdapter.FileNameChanged();
 				FetchParseInformation();
 			} else {
@@ -283,7 +276,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				secondaryTextEditorAdapter.Language.Detach();
 				secondaryTextEditorAdapter = null;
 				gridSplitter = null;
-				this.secondaryBracketRenderer = null;
 				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
 				this.ActiveTextEditor = primaryTextEditor;
 			}
@@ -306,24 +298,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				quickClassBrowser.SelectItemAtCaretPosition(this.ActiveTextEditorAdapter.Caret.Position);
 			}
 			
-			var caret = this.ActiveTextEditor.TextArea.Caret;
-			var activeAdapter = this.ActiveTextEditorAdapter;
-			
-			/*
-			 * Special case: ITextEditor.Language guarantees that it never returns null.
-			 * In this case however it can be null, since this code is called while the document is loaded.
-			 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
-			 * loading of the document has finished.
-			 * */
-			if (activeAdapter.Language != null) {
-				var bracketSearchResult = activeAdapter.Language.BracketSearcher.SearchBracket(activeAdapter.Document, activeAdapter.Caret.Offset);
-				if (activeAdapter == primaryTextEditorAdapter)
-					this.primaryBracketRenderer.SetHighlight(bracketSearchResult);
-				else
-					this.secondaryBracketRenderer.SetHighlight(bracketSearchResult);
-			}
-			
-			StatusBarService.SetCaretPosition(caret.Column, caret.Line, caret.Column);
 			CaretPositionChanged.RaiseEvent(this, EventArgs.Empty);
 		}
 		
