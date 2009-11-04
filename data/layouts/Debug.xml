@@ -1,4 +1,4 @@
-<DockingManager>
+<DockingManager version="1.2.1">
     <ResizingPanel ResizeWidth="*" ResizeHeight="*" EffectiveSize="1076,904.08" Orientation="Vertical">
         <ResizingPanel ResizeWidth="*" ResizeHeight="*" EffectiveSize="1257.04,717.08" Orientation="Horizontal">
             <DockablePane ResizeWidth="200" ResizeHeight="*" EffectiveSize="200,717.08" Anchor="Left">

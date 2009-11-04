@@ -204,12 +204,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			Busy = true;
 			try {
-				bool isPlainLayout = LayoutConfiguration.CurrentLayoutName == "Plain";
-				if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
-					LoadLayout(LayoutConfiguration.CurrentLayoutFileName, isPlainLayout);
-				} else if (File.Exists(LayoutConfiguration.CurrentLayoutTemplateFileName)) {
-					LoadLayout(LayoutConfiguration.CurrentLayoutTemplateFileName, isPlainLayout);
-				}
+				TryLoadConfiguration();
 			} catch (Exception ex) {
 				MessageService.ShowException(ex);
 				// ignore errors loading configuration
@@ -218,6 +213,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			foreach (AvalonPadContent p in pads.Values) {
 				p.LoadPadContentIfRequired();
+			}
+		}
+		
+		void TryLoadConfiguration()
+		{
+			bool isPlainLayout = LayoutConfiguration.CurrentLayoutName == "Plain";
+			if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
+				try {
+					LoadLayout(LayoutConfiguration.CurrentLayoutFileName, isPlainLayout);
+					return;
+				} catch (FileFormatException) {
+					// error when version of AvalonDock has changed: ignore and load template instead
+				}
+			}
+			if (File.Exists(LayoutConfiguration.CurrentLayoutTemplateFileName)) {
+				LoadLayout(LayoutConfiguration.CurrentLayoutTemplateFileName, isPlainLayout);
 			}
 		}
 		

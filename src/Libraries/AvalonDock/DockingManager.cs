@@ -2714,6 +2714,8 @@ namespace AvalonDock
                 SaveLayout(stream);
         }
 
+        const string layoutFileVersion = "1.2.1";
+        
         /// <summary>
         /// Send layout configuration to a <see cref="XmlTextWriter"/> object
         /// </summary>
@@ -2725,6 +2727,7 @@ namespace AvalonDock
                 throw new InvalidOperationException("Unable to serialize docking layout while DockingManager control is unloaded");
 
             sw.WriteStartElement("DockingManager");
+            sw.WriteAttributeString("version", layoutFileVersion);
 
             if (Content is ResizingPanel)
                 SaveLayout(sw, Content as ResizingPanel);
@@ -3032,6 +3035,9 @@ namespace AvalonDock
                 Debug.Assert(false, "Layout file hasn't a valid structure!");
                 throw new InvalidOperationException("Layout file had not a valid structure!");
             }
+            
+            if (doc.DocumentElement.GetAttribute("version") != layoutFileVersion)
+                throw new FileFormatException("Unsupported layout file version");
 
             if (doc.DocumentElement.ChildNodes.Count != 3 ||
                 (doc.DocumentElement.ChildNodes[0].Name != "ResizingPanel" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPanePlaceHolder") ||

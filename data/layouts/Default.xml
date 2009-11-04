@@ -1,4 +1,4 @@
-<DockingManager>
+<DockingManager version="1.2.1">
     <ResizingPanel ResizeWidth="*" ResizeHeight="*" EffectiveSize="0,0" Orientation="Horizontal">
         <DockablePane ResizeWidth="200" ResizeHeight="*" EffectiveSize="200,904.08" Anchor="Left">
             <DockableContent Name="ICSharpCode_SharpDevelop_Project_ProjectBrowserPad" AutoHide="false" />
