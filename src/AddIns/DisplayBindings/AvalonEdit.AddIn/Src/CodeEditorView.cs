@@ -65,12 +65,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
 			 * loading of the document has finished.
 			 * */
-			if (activeAdapter.Language != null) {
-				var bracketSearchResult = activeAdapter.Language.BracketSearcher.SearchBracket(activeAdapter.Document, activeAdapter.Caret.Offset);
-				if (activeAdapter == primaryTextEditorAdapter)
-					this.primaryBracketRenderer.SetHighlight(bracketSearchResult);
-				else
-					this.secondaryBracketRenderer.SetHighlight(bracketSearchResult);
+			if (this.Adapter.Language != null) {
+				var bracketSearchResult = this.Adapter.Language.BracketSearcher.SearchBracket(this.Adapter.Document, this.TextArea.Caret.Offset);
+				this.bracketRenderer.SetHighlight(bracketSearchResult);
 			}
 		}
 		

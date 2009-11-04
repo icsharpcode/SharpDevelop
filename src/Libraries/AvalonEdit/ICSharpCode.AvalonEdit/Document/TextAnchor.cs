@@ -16,7 +16,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// </summary>
 	/// <remarks>
 	/// <para>Use the <see cref="Offset"/> property to get the offset from a text anchor.
-	/// Use the <see cref="TextDocument.CreateAnchor"/> to create an anchor from an offset.
+	/// Use the <see cref="TextDocument.CreateAnchor"/> method to create an anchor from an offset.
 	/// </para>
 	/// <para>
 	/// The document will automatically update all text anchors; and because it uses weak references to do so,

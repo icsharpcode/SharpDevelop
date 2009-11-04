@@ -34,7 +34,7 @@ void _declspec(naked) FunctionEnterNaked(FunctionID functionID, UINT_PTR clientD
 		//     + 28   -> argumentInfo    /
 		
 		sub esp, FrameSize
-		// eax, ecx and edx are scratch registers in stdcall, so we need to save those
+		// eax, ecx and edx are scratch registers in fastcall, so we need to save those
 		mov SavedRegister(8), eax
 		mov SavedRegister(4), ecx
 		mov SavedRegister(0), edx

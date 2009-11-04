@@ -55,12 +55,6 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 		#endregion
 		
 		[Test]
-		public void TestCombine()
-		{
-			Assert.AreEqual(Path.Combine("A", Path.Combine("B", Path.Combine("Long", "Longer.txt"))), FileUtility.Combine("A", "B", "Long", "Longer.txt"));
-		}
-		
-		[Test]
 		public void TestIsBaseDirectory()
 		{
 			Assert.IsTrue(FileUtility.IsBaseDirectory(@"C:\a", @"C:\A\b\hello"));
