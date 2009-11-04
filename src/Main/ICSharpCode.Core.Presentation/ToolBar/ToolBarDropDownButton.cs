@@ -31,7 +31,7 @@ namespace ICSharpCode.Core.Presentation
 				var image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
 				image.Height = 16;
 				image.SetResourceReference(StyleProperty, ToolBarService.ImageStyleKey);
-				this.Content = new PixelSnapper(image);
+				this.Content = image;
 			} else {
 				this.Content = codon.Id;
 			}

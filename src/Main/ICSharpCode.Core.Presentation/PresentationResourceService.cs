@@ -61,9 +61,13 @@ namespace ICSharpCode.Core.Presentation
 		/// <exception cref="ResourceNotFoundException">
 		/// Is thrown when the GlobalResource manager can't find a requested resource.
 		/// </exception>
-		public static PixelSnapper GetPixelSnappedImage(string name)
+		[Obsolete("Use layout rounding instead")]
+		public static System.Windows.Controls.Image GetPixelSnappedImage(string name)
 		{
-			return new PixelSnapper(GetImage(name));
+			return new System.Windows.Controls.Image {
+				Source = GetBitmapSource(name),
+				UseLayoutRounding = true
+			};
 		}
 		
 		/// <summary>

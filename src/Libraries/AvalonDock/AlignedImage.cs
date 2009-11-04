@@ -36,6 +36,8 @@ namespace AvalonDock
 {
     public class AlignedImage : Decorator
     {
+    	/*
+    	 * Disabled because we use WPF 4.0 layout rounding instead.
         public AlignedImage()
         {
             this.LayoutUpdated += new EventHandler(OnLayoutUpdated);
@@ -183,6 +185,6 @@ namespace AvalonDock
             double delta = value1 - value2;
             return ((delta < 1.53E-06) && (delta > -1.53E-06));
         }
-
+	*/
     }
 }

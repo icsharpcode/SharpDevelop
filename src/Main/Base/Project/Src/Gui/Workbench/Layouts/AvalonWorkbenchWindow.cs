@@ -416,7 +416,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set {
 				if (icon != value) {
 					icon = value;
-					base.Icon = new PixelSnapper(new Image { Source = value });
+					base.Icon = new Image { Source = value };
 				}
 			}
 		}

@@ -6,6 +6,7 @@
         WindowStartupLocation = "Manual"
         Background = "{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
         AllowDrop = "True"
+        UseLayoutRounding = "True"
 >
 	<DockPanel Name="dockPanel">
 		<Menu Name="mainMenu" DockPanel.Dock="Top"/>

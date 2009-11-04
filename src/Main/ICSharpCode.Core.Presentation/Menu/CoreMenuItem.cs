@@ -36,7 +36,7 @@ namespace ICSharpCode.Core.Presentation
 				try {
 					var image = PresentationResourceService.GetImage(codon.Properties["icon"]);
 					image.Height = 16;
-					this.Icon = new PixelSnapper(image);
+					this.Icon = image;
 				} catch (ResourceNotFoundException) {}
 			}
 			UpdateText();

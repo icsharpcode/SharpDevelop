@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.SetValueToExtension(TitleProperty, new StringParseExtension(descriptor.Title));
 			placeholder = new TextBlock { Text = this.Title };
 			this.Content = placeholder;
-			this.Icon = PresentationResourceService.GetPixelSnappedImage(descriptor.Icon);
+			this.Icon = PresentationResourceService.GetImage(descriptor.Icon);
 			
 			placeholder.IsVisibleChanged += AvalonPadContent_IsVisibleChanged;
 		}

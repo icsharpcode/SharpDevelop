@@ -463,7 +463,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					var item = new System.Windows.Controls.MenuItem();
 					item.Header = ICSharpCode.Core.Presentation.MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
 					if (!string.IsNullOrEmpty(padContent.Icon)) {
-						item.Icon = PresentationResourceService.GetPixelSnappedImage(padContent.Icon);
+						item.Icon = PresentationResourceService.GetImage(padContent.Icon);
 					}
 					item.Command = new BringPadToFrontCommand(padContent);
 					if (!string.IsNullOrEmpty(padContent.Shortcut)) {

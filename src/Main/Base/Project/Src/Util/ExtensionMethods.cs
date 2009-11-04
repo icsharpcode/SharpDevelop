@@ -376,9 +376,10 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Creates a new image for the image source.
 		/// </summary>
+		[ObsoleteAttribute("Use layout rounding instead")]
 		public static UIElement CreatePixelSnappedImage(this IImage image)
 		{
-			return new PixelSnapper(CreateImage(image));
+			return CreateImage(image);
 		}
 		
 		/// <summary>
