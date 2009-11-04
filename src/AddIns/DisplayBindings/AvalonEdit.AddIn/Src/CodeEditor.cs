@@ -48,6 +48,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		readonly CodeEditorView primaryTextEditor;
 		readonly CodeEditorAdapter primaryTextEditorAdapter;
 		CodeEditorView secondaryTextEditor;
+		CodeEditorView activeTextEditor;
 		CodeEditorAdapter secondaryTextEditorAdapter;
 		GridSplitter gridSplitter;
 		readonly IconBarManager iconBarManager;
@@ -62,7 +63,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public CodeEditorView ActiveTextEditor {
-			get { return primaryTextEditor; }
+			get { return activeTextEditor; }
+			private set {
+				if (activeTextEditor != value) {
+					activeTextEditor = value;
+					HandleCaretPositionChange();
+				}
+			}
 		}
 		
 		TextDocument document;
@@ -143,6 +150,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor = CreateTextEditor();
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
+			activeTextEditor = primaryTextEditor;
 			
 			this.primaryBracketRenderer = new BracketHighlightRenderer(primaryTextEditor.TextArea.TextView);
 			
@@ -185,6 +193,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
 			textEditor.TextArea.ContextMenuOpening += TextAreaContextMenuOpening;
 			textEditor.TextArea.TextCopied += textEditor_TextArea_TextCopied;
+			textEditor.GotFocus += textEditor_GotFocus;
 			
 			return textEditor;
 		}
@@ -201,6 +210,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			// detach IconBarMargin from IconBarManager
 			textEditor.TextArea.LeftMargins.OfType<IconBarMargin>().Single().TextView = null;
+		}
+		
+		void textEditor_GotFocus(object sender, RoutedEventArgs e)
+		{
+			Debug.Assert(sender is CodeEditorView);
+			this.ActiveTextEditor = (CodeEditorView)sender;
 		}
 		
 		void TextAreaContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -243,9 +258,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				                               new Binding(TextEditor.DocumentProperty.Name) { Source = primaryTextEditor });
 				secondaryTextEditor.SyntaxHighlighting = primaryTextEditor.SyntaxHighlighting;
 				
-				gridSplitter = new GridSplitter { 
-					Height = 4, 
-					HorizontalAlignment = HorizontalAlignment.Stretch, 
+				gridSplitter = new GridSplitter {
+					Height = 4,
+					HorizontalAlignment = HorizontalAlignment.Stretch,
 					VerticalAlignment = VerticalAlignment.Top
 				};
 				SetRow(gridSplitter, 2);
@@ -270,6 +285,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				gridSplitter = null;
 				this.secondaryBracketRenderer = null;
 				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
+				this.ActiveTextEditor = primaryTextEditor;
 			}
 		}
 		
