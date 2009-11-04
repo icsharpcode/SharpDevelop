@@ -208,7 +208,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 		/// </summary>
 		void DrawFoldLines(DrawingContext drawingContext, Pen[] colors, Pen[] endMarker)
 		{
-			double markerXPos = Math.Round(RenderSize.Width / 2);
+			double markerXPos = PixelSnapHelpers.PixelAlign(RenderSize.Width / 2);
 			double startY = 0;
 			Pen currentPen = colors[0];
 			int tlNumber = 0;

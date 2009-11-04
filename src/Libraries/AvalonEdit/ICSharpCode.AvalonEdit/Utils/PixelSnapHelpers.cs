@@ -12,7 +12,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 {
 	static class PixelSnapHelpers
 	{
-		static double PixelAlign(double val)
+		public static double PixelAlign(double val)
 		{
 			return Math.Round(val + 0.5) - 0.5;
 		}
