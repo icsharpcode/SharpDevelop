@@ -157,8 +157,6 @@ namespace AvalonDock
 
         public void ShowOverlayPaneDockingOptions(Pane pane)
         {
-            if (!IsVisible)
-                return;
 
             HideOverlayPaneDockingOptions(pane);
 
@@ -213,8 +211,6 @@ namespace AvalonDock
 
         public void HideOverlayPaneDockingOptions(Pane surfaceElement)
         {
-            if (!IsVisible)
-                return;
 
             owdPaneBottom.Enabled = false;
             owdPaneTop.Enabled = false;

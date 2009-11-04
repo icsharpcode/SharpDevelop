@@ -61,8 +61,35 @@ namespace AvalonDock
         {
             this.Loaded += new RoutedEventHandler(ManagedContent_Loaded);
             this.Unloaded += new RoutedEventHandler(ManagedContent_Unloaded);
+			this.LayoutUpdated += new EventHandler(ManagedContent_LayoutUpdated);
         }
+ 
+		public void ManagedContent_LayoutUpdated(object sender, EventArgs e)
+		{
+            WindowsFormsHost contentHost = null;
 
+			if (this.Content is UserControl)
+			{
+				UserControl usTemp = this.Content as UserControl;
+                
+                if (usTemp.Content is WindowsFormsHost)
+                    contentHost = usTemp.Content as WindowsFormsHost;
+			}
+			else if (this.Content is WindowsFormsHost)
+			{
+                contentHost = this.Content as WindowsFormsHost;
+			}
+
+            if (contentHost != null)
+            {
+                object childCtrl = contentHost.GetType().GetProperty("Child").GetValue(contentHost, null);
+
+                if (childCtrl != null)
+                {
+                    childCtrl.CallMethod("Refresh", null);
+                }
+            }
+		}
 
         void ManagedContent_Loaded(object sender, RoutedEventArgs e)
         {
@@ -386,12 +413,9 @@ namespace AvalonDock
 
                                     if (childCtrl != null)
                                     {
-                                        Type winFormType = childCtrl.GetType();
-
-                                        bool focused = (bool)winFormType.GetProperty("Focused").GetValue(childCtrl, null);
-                                        if (!focused)
+                                        if (!childCtrl.GetPropertyValue<bool>("Focused"))
                                         {
-                                            winFormType.GetMethod("Focus").Invoke(childCtrl, null);
+                                            childCtrl.CallMethod("Focus", null);
                                         }
                                     }
                                 }

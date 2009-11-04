@@ -191,5 +191,16 @@ namespace AvalonDock
         {
             return PresentationSource.FromVisual(visual) != null;
         }
+
+
+        public static void CallMethod(this object o, string methodName, object[] args)
+        {
+            o.GetType().GetMethod(methodName).Invoke(o, null);            
+        }
+
+        public static T GetPropertyValue<T>(this object o, string propertyName)
+        {
+            return (T)o.GetType().GetProperty(propertyName).GetValue(o, null);
+        }
     }
 }

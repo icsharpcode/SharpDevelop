@@ -155,7 +155,7 @@ namespace AvalonDock
         public readonly int ChildIndex = -1;
         public readonly double Width;
         public readonly double Height;
-
+        public readonly DockableContentState State;
         public readonly AnchorStyle Anchor = AnchorStyle.None;
 
         public DockableContentStateAndPosition(
@@ -163,13 +163,15 @@ namespace AvalonDock
            int childIndex,
            double width,
            double height,
-           AnchorStyle anchor)
+           AnchorStyle anchor,
+			DockableContentState state)
         {
             ContainerPane = containerPane;
             ChildIndex = childIndex;
             Width = Math.Max(width, 100.0);
             Height = Math.Max(height, 100.0);
             Anchor = anchor;
+			State = state;
         }
 
        public DockableContentStateAndPosition(
@@ -179,6 +181,7 @@ namespace AvalonDock
             ChildIndex = ContainerPane.Items.IndexOf(cntToSave);
             Width = Math.Max(ContainerPane.ActualWidth, 100.0);
             Height = Math.Max(ContainerPane.ActualHeight, 100.0);
+            State = cntToSave.State;
 
             DockablePane dockablePane = ContainerPane as DockablePane;
             if (dockablePane != null)
@@ -195,7 +198,7 @@ namespace AvalonDock
     {
         static DockableContent()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(DockableContent), new FrameworkPropertyMetadata(typeof(DockableContent)));
+            //DefaultStyleKeyProperty.OverrideMetadata(typeof(DockableContent), new FrameworkPropertyMetadata(typeof(DockableContent)));
         }
 
         public DockableContent()
@@ -315,6 +318,10 @@ namespace AvalonDock
             set { SetValue(HideOnCloseKey, value); }
         }
         #endregion
+
+
+
+
 
 
         protected override void OnInitialized(EventArgs e)
@@ -530,6 +537,8 @@ namespace AvalonDock
                     "Height", SavedStateAndPosition.Height.ToString());
                 storeWriter.WriteAttributeString(
                     "Anchor", SavedStateAndPosition.Anchor.ToString());
+                storeWriter.WriteAttributeString(
+                    "State", SavedStateAndPosition.State.ToString());
             }
 
         }
@@ -561,9 +570,10 @@ namespace AvalonDock
                     int.Parse(contentElement.GetAttribute("ChildIndex")),
                     double.Parse(contentElement.GetAttribute("Width")),
                     double.Parse(contentElement.GetAttribute("Height")),
-                    (AnchorStyle) Enum.Parse(typeof(AnchorStyle), contentElement.GetAttribute("Anchor"))
+                    (AnchorStyle) Enum.Parse(typeof(AnchorStyle), contentElement.GetAttribute("Anchor")),
+					(DockableContentState) Enum.Parse(typeof(DockableContentState), contentElement.GetAttribute("State"))
                     );
-
+                    //contentElement.HasAttribute("State") ? (DockableContentState)Enum.Parse(typeof(DockableContentState), contentElement.GetAttribute("State") );
             }
         } 
         #endregion
