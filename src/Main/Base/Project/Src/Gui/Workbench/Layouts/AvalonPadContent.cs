@@ -5,13 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.Presentation;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
+
 using AvalonDock;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
