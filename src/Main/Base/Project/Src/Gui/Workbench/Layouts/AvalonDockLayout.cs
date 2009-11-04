@@ -109,6 +109,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				throw new InvalidOperationException("Can attach only once!");
 			this.workbench = (WpfWorkbench)workbench;
 			this.workbench.mainContent.Content = dockingManager;
+			CommandManager.AddCanExecuteHandler(this.workbench, OnCanExecuteRoutedCommand);
+			CommandManager.AddExecutedHandler(this.workbench, OnExecuteRoutedCommand);
 			Busy = true;
 			try {
 				foreach (PadDescriptor pd in workbench.PadContentCollection) {
@@ -124,6 +126,38 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			StoreConfiguration();
 			this.workbench.mainContent.Content = null;
+			CommandManager.RemoveCanExecuteHandler(this.workbench, OnCanExecuteRoutedCommand);
+			CommandManager.RemoveExecutedHandler(this.workbench, OnExecuteRoutedCommand);
+		}
+		
+		// Custom command routing:
+		// if the command isn't handled on the current focus, try to execute it on the focus inside the active workbench window
+		void OnCanExecuteRoutedCommand(object sender, CanExecuteRoutedEventArgs e)
+		{
+			workbench.VerifyAccess();
+			RoutedCommand routedCommand = e.Command as RoutedCommand;
+			AvalonWorkbenchWindow workbenchWindow = ActiveWorkbenchWindow as AvalonWorkbenchWindow;
+			if (!e.Handled && routedCommand != null && workbenchWindow != null) {
+				IInputElement target = CustomFocusManager.GetFocusedChild(workbenchWindow);
+				if (target != null && target != e.OriginalSource) {
+					e.CanExecute = routedCommand.CanExecute(e.Parameter, target);
+					e.Handled = true;
+				}
+			}
+		}
+		
+		void OnExecuteRoutedCommand(object sender, ExecutedRoutedEventArgs e)
+		{
+			workbench.VerifyAccess();
+			RoutedCommand routedCommand = e.Command as RoutedCommand;
+			AvalonWorkbenchWindow workbenchWindow = ActiveWorkbenchWindow as AvalonWorkbenchWindow;
+			if (!e.Handled && routedCommand != null && workbenchWindow != null) {
+				IInputElement target = CustomFocusManager.GetFocusedChild(workbenchWindow);
+				if (target != null && target != e.OriginalSource) {
+					routedCommand.Execute(e.Parameter, target);
+					e.Handled = true;
+				}
+			}
 		}
 		
 		Dictionary<PadDescriptor, AvalonPadContent> pads = new Dictionary<PadDescriptor, AvalonPadContent>();
