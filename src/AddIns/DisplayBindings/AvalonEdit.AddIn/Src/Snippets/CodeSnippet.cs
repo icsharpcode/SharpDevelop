@@ -73,7 +73,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		
 		public ICompletionItem CreateCompletionItem(ITextEditor context)
 		{
-			return new SnippetCompletionItem(context, this);
+			return new SnippetCompletionItem(context, this) { AlwaysInsertSnippet = context.SelectionLength > 0 };
 		}
 		
 		readonly static Regex pattern = new Regex(@"\$\{([^\}]*)\}", RegexOptions.CultureInvariant);
@@ -104,8 +104,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			if (pos < snippetText.Length) {
 				snippet.Elements.Add(new SnippetTextElement { Text = snippetText.Substring(pos) });
 			}
-			if (!snippet.Elements.Any(e2 => e2 is SnippetCaretElement)) {
-				int index = snippet.Elements.IndexOf(e => e is SnippetSelectionElement);
+			if (!snippet.Elements.Any(e => e is SnippetCaretElement)) {
+				int index = snippet.Elements.FindIndex(e2 => e2 is SnippetSelectionElement);
 				if (index > -1)
 					snippet.Elements.Insert(index + 1, new SnippetCaretElement());
 			}

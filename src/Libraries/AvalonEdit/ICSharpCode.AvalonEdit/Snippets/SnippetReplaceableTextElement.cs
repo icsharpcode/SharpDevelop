@@ -71,7 +71,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		
 		void AnchorDeleted(object sender, EventArgs e)
 		{
-			context.Deactivate(EventArgs.Empty);
+			context.Deactivate(new SnippetEventArgs(DeactivateReason.Deleted));
 		}
 		
 		public void OnInsertionCompleted()

@@ -21,6 +21,8 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		public override void Insert(InsertionContext context)
 		{
 			context.InsertText(context.SelectedText);
+			if (string.IsNullOrEmpty(context.SelectedText))
+				SnippetCaretElement.SetCaret(context);
 		}
 	}
 }

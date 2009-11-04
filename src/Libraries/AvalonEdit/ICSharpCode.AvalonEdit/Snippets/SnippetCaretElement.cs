@@ -20,11 +20,16 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// <inheritdoc/>
 		public override void Insert(InsertionContext context)
 		{
+			if (!string.IsNullOrEmpty(context.SelectedText))
+				SetCaret(context);
+		}
+		
+		internal static void SetCaret(InsertionContext context)
+		{
 			TextAnchor pos = context.Document.CreateAnchor(context.InsertionPosition);
 			pos.SurviveDeletion = true;
 			context.Deactivated += (sender, e) => {
-				KeyEventArgs ke = e as KeyEventArgs;
-				if (ke != null && ke.Key == Key.Return) {
+				if (e.Reason == DeactivateReason.ReturnPressed || e.Reason == DeactivateReason.NoActiveElements) {
 					context.TextArea.Caret.Offset = pos.Offset;
 				}
 			};

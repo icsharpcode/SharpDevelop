@@ -188,7 +188,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			currentStatus = Status.Interactive;
 			if (registeredElements.Count == 0) {
 				// deactivate immediately if there are no interactive elements
-				Deactivate(EventArgs.Empty);
+				Deactivate(new SnippetEventArgs(DeactivateReason.NoActiveElements));
 			} else {
 				myInputHandler = new SnippetInputHandler(this);
 				// disable existing snippet input handlers - there can be only 1 active snippet
@@ -211,14 +211,14 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// Calls the <see cref="IActiveElement.Deactivate"/> method on all registered active elements.
 		/// </summary>
 		/// <param name="e">The EventArgs to use</param>
-		public void Deactivate(EventArgs e)
+		public void Deactivate(SnippetEventArgs e)
 		{
 			if (currentStatus == Status.Deactivated || currentStatus == Status.RaisingDeactivated)
 				return;
 			if (currentStatus != Status.Interactive)
 				throw new InvalidOperationException("Cannot call Deactivate() until RaiseInsertionCompleted() has finished.");
 			if (e == null)
-				e = EventArgs.Empty;
+				e = new SnippetEventArgs(DeactivateReason.Unknown);
 			
 			TextDocumentWeakEventManager.UpdateFinished.RemoveListener(Document, this);
 			currentStatus = Status.RaisingDeactivated;
@@ -234,7 +234,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// <summary>
 		/// Occurs when the interactive mode is deactivated.
 		/// </summary>
-		public event EventHandler Deactivated;
+		public event EventHandler<SnippetEventArgs> Deactivated;
 		
 		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
@@ -248,7 +248,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				// Deactivate if snippet is deleted. This is necessary for correctly leaving interactive
 				// mode if Undo is pressed after a snippet insertion.
 				if (wholeSnippetAnchor.Length == 0)
-					Deactivate(e);
+					Deactivate(new SnippetEventArgs(DeactivateReason.Deleted));
 				return true;
 			}
 			return false;

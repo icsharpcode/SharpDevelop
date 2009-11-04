@@ -40,6 +40,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			this.codeSnippet = codeSnippet;
 		}
 		
+		public bool AlwaysInsertSnippet { get; set; }
+		
 		public string Text {
 			get { return codeSnippet.Name; }
 		}
@@ -62,7 +64,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			if (context.Editor != this.textEditor)
 				throw new ArgumentException("wrong editor");
 			using (context.Editor.Document.OpenUndoGroup()) {
-				if (context.CompletionChar == '\t') {
+				if (context.CompletionChar == '\t' || AlwaysInsertSnippet) {
 					context.Editor.Document.Remove(context.StartOffset, context.Length);
 					CreateSnippet().Insert(textArea);
 				} else {

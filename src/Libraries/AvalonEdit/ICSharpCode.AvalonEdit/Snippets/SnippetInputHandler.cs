@@ -36,14 +36,17 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		public override void Detach()
 		{
 			base.Detach();
-			context.Deactivate(EventArgs.Empty);
+			context.Deactivate(new SnippetEventArgs(DeactivateReason.InputHandlerDetached));
 		}
 		
 		public override void OnPreviewKeyDown(KeyEventArgs e)
 		{
 			base.OnPreviewKeyDown(e);
-			if (e.Key == Key.Escape || e.Key == Key.Return) {
-				context.Deactivate(e);
+			if (e.Key == Key.Escape) {
+				context.Deactivate(new SnippetEventArgs(DeactivateReason.EscapePressed));
+				e.Handled = true;
+			} else if (e.Key == Key.Return) {
+				context.Deactivate(new SnippetEventArgs(DeactivateReason.ReturnPressed));
 				e.Handled = true;
 			} else if (e.Key == Key.Tab) {
 				bool backwards = e.KeyboardDevice.Modifiers == ModifierKeys.Shift;

@@ -410,7 +410,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Returns the index of the first element for which constraint returns true.
 		/// If none of the items in the list fits the constraint -1 is returned.
 		/// </summary>
-		public static int IndexOf<T>(this IList<T> list, Func<T, bool> constraint) {
+		public static int FindIndex<T>(this IList<T> list, Func<T, bool> constraint) {
 			for (int i = 0; i < list.Count; i++) {
 				if (constraint(list[i]))
 					return i;

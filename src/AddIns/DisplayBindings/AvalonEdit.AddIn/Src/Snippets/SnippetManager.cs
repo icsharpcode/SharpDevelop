@@ -53,7 +53,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "prop",
 						Description = "Property",
-						Text = "${type} ${toFieldName(name)};\n\npublic ${type=int} ${name=Property} {\n\tget { return ${toFieldName(name)}; }\n\tset { ${toFieldName(name)} = value; }\n}"
+						Text = "${type} ${toFieldName(name)};\n\npublic ${type=int} ${name=Property} {\n\tget { return ${toFieldName(name)}; }\n\tset { ${toFieldName(name)} = value; }\n}${Caret}"
 					},
 					new CodeSnippet {
 						Name = "propdp",
@@ -65,17 +65,22 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 							+ "public ${type=int} ${name=Property} {" + Environment.NewLine
 							+ "\tget { return (${type})GetValue(${name}Property); }" + Environment.NewLine
 							+ "\tset { SetValue(${name}Property, value); }"
-							+ Environment.NewLine + "}"
+							+ Environment.NewLine + "}${Caret}"
+					},
+					new CodeSnippet {
+						Name = "props",
+						Description = "Property",
+						Text = "public ${Type=object} ${Property=Property} { get; set; }${Caret}"
 					},
 					new CodeSnippet {
 						Name = "ctor",
 						Description = "Constructor",
-						Text = "public ${ClassName}()\n{\t\n${Selection}\n}"
+						Text = "public ${ClassName}(${Caret})\n{\t\n${Selection}\n}"
 					},
 					new CodeSnippet {
 						Name = "switch",
 						Description = "Switch statement",
-						Text = "switch (${condition}) {\n\tcase ${firstcase=0}:\n\t\tbreak;\n\tdefault:\n\t\t${Selection}\n\t\tbreak;\n}"
+						Text = "switch (${condition}) {\n\tcase ${firstcase=0}:\n\t\t${Caret}\n\t\tbreak;\n\tdefault:\n\t\t${Selection}\n\t\tbreak;\n}"
 					},
 					new CodeSnippet {
 						Name = "try",
