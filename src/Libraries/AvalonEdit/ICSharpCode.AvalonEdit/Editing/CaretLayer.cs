@@ -79,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				                  caretRectangle.Y - textView.VerticalOffset,
 				                  caretRectangle.Width,
 				                  caretRectangle.Height);
-				drawingContext.DrawRectangle(caretBrush, null, PixelSnapHelpers.ToPixels(r));
+				drawingContext.DrawRectangle(caretBrush, null, PixelSnapHelpers.PixelAlign(r));
 			}
 		}
 	}

@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Folding
 {
@@ -40,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			if (!e.Handled) {
 				if (e.ChangedButton == MouseButton.Left) {
 					IsExpanded = !IsExpanded;
-				e.Handled = true;
+					e.Handled = true;
 				}
 			}
 		}
@@ -50,23 +51,26 @@ namespace ICSharpCode.AvalonEdit.Folding
 		protected override Size MeasureCore(Size availableSize)
 		{
 			double size = MarginSizeFactor * FoldingMargin.SizeFactor * (double)GetValue(TextBlock.FontSizeProperty);
-			size = Math.Round(size);
-			if (Math.Abs((size % 2) - 1) < 0.001) {
-				size -= 1;
-			}
+			size = PixelSnapHelpers.RoundToOdd(size);
 			return new Size(size, size);
 		}
 		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			Pen blackPen = new Pen(Brushes.Black, 1);
-			Rect rect = new Rect(new Point(0.5, 0.5), this.RenderSize);
+			blackPen.StartLineCap = PenLineCap.Square;
+			blackPen.EndLineCap = PenLineCap.Square;
+			Size pixelSize = PixelSnapHelpers.GetPixelSize();
+			Rect rect = new Rect(pixelSize.Width / 2,
+			                     pixelSize.Height / 2,
+			                     this.RenderSize.Width - pixelSize.Width,
+			                     this.RenderSize.Height - pixelSize.Height);
 			drawingContext.DrawRectangle(Brushes.White,
 			                             IsMouseDirectlyOver ? blackPen : new Pen(Brushes.Gray, 1),
 			                             rect);
 			double middleX = rect.Left + rect.Width / 2;
 			double middleY = rect.Top + rect.Height / 2;
-			double space = Math.Round(rect.Width / 8) + 1;
+			double space = PixelSnapHelpers.Round(rect.Width / 8) + pixelSize.Width;
 			drawingContext.DrawLine(blackPen,
 			                        new Point(rect.Left + space, middleY),
 			                        new Point(rect.Right - space, middleY));

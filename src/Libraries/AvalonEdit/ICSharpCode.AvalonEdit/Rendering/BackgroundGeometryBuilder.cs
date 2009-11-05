@@ -44,8 +44,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public void AddSegment(TextView textView, ISegment segment)
 		{
-			foreach (Rect r in GetRectsForSegment(textView, segment))
-				AddRectangle(r.Left, r.Top, r.Right, r.Bottom);
+			foreach (Rect r in GetRectsForSegment(textView, segment)) {
+				Rect roundedRect = PixelSnapHelpers.PixelAlign(r);
+				AddRectangle(roundedRect.Left, roundedRect.Top, roundedRect.Right, roundedRect.Bottom);
+			}
 		}
 		
 		/// <summary>

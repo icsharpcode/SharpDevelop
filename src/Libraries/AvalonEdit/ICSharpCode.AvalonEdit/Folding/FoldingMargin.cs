@@ -37,7 +37,8 @@ namespace ICSharpCode.AvalonEdit.Folding
 			foreach (FoldingMarginMarker m in markers) {
 				m.Measure(availableSize);
 			}
-			return new Size(SizeFactor * (double)GetValue(TextBlock.FontSizeProperty), 0);
+			double width = SizeFactor * (double)GetValue(TextBlock.FontSizeProperty);
+			return new Size(PixelSnapHelpers.RoundToOdd(width), 0);
 		}
 		
 		/// <inheritdoc/>
@@ -49,7 +50,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 				double yPos = m.VisualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineTop) - TextView.VerticalOffset;
 				yPos += (textLine.Height - m.DesiredSize.Height) / 2;
 				double xPos = (finalSize.Width - m.DesiredSize.Width) / 2;
-				m.Arrange(new Rect(new Point(xPos, yPos), m.DesiredSize));
+				m.Arrange(new Rect(PixelSnapHelpers.Round(new Point(xPos, yPos)), m.DesiredSize));
 			}
 			return base.ArrangeOverride(finalSize);
 		}
@@ -84,7 +85,6 @@ namespace ICSharpCode.AvalonEdit.Folding
 					if (fs.StartOffset <= line.LastDocumentLine.Offset + line.LastDocumentLine.Length) {
 						FoldingMarginMarker m = new FoldingMarginMarker {
 							IsExpanded = !fs.IsFolded,
-							SnapsToDevicePixels = true,
 							VisualLine = line,
 							FoldingSection = fs
 						};
@@ -208,6 +208,10 @@ namespace ICSharpCode.AvalonEdit.Folding
 		/// </summary>
 		void DrawFoldLines(DrawingContext drawingContext, Pen[] colors, Pen[] endMarker)
 		{
+			// Because we are using PenLineCap.Flat (the default), for vertical lines,
+			// Y coordinates must be on pixel boundaries, whereas the X coordinate must be in the
+			// middle of a pixel. (and the other way round for horizontal lines)
+			Size pixelSize = PixelSnapHelpers.GetPixelSize();
 			double markerXPos = PixelSnapHelpers.PixelAlign(RenderSize.Width / 2);
 			double startY = 0;
 			Pen currentPen = colors[0];
@@ -216,12 +220,12 @@ namespace ICSharpCode.AvalonEdit.Folding
 				foreach (TextLine tl in vl.TextLines) {
 					if (endMarker[tlNumber] != null) {
 						double visualPos = GetVisualPos(vl, tl);
-						drawingContext.DrawLine(endMarker[tlNumber], new Point(markerXPos, visualPos), new Point(RenderSize.Width, visualPos));
+						drawingContext.DrawLine(endMarker[tlNumber], new Point(markerXPos - pixelSize.Width / 2, visualPos), new Point(RenderSize.Width, visualPos));
 					}
 					if (colors[tlNumber + 1] != currentPen) {
 						double visualPos = GetVisualPos(vl, tl);
 						if (currentPen != null) {
-							drawingContext.DrawLine(currentPen, new Point(markerXPos, startY), new Point(markerXPos, visualPos));
+							drawingContext.DrawLine(currentPen, new Point(markerXPos, startY + pixelSize.Height / 2), new Point(markerXPos, visualPos - pixelSize.Height / 2));
 						}
 						currentPen = colors[tlNumber + 1];
 						startY = visualPos;
@@ -230,14 +234,14 @@ namespace ICSharpCode.AvalonEdit.Folding
 				}
 			}
 			if (currentPen != null) {
-				drawingContext.DrawLine(currentPen, new Point(markerXPos, startY), new Point(markerXPos, RenderSize.Height));
+				drawingContext.DrawLine(currentPen, new Point(markerXPos, startY + pixelSize.Height / 2), new Point(markerXPos, RenderSize.Height));
 			}
 		}
 		
 		double GetVisualPos(VisualLine vl, TextLine tl)
 		{
 			double pos = vl.GetTextLineVisualYPosition(tl, VisualYPosition.LineTop) + tl.Height / 2 - TextView.VerticalOffset;
-			return Math.Round(pos) + 0.5;
+			return PixelSnapHelpers.PixelAlign(pos);
 		}
 		
 		int GetTextLineIndexFromOffset(List<TextLine> textLines, int offset)
