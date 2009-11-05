@@ -56,8 +56,9 @@ namespace ICSharpCode.XmlEditor
 		public void AddRange(XmlCompletionItem[] val)
 		{
 			for (int i = 0; i < val.Length; i++) {
-				if (!Contains(val[i].Text))
+				if (!Contains(val[i].Text)) {
 					this.Add(val[i]);
+				}
 			}
 		}
 		
@@ -70,33 +71,27 @@ namespace ICSharpCode.XmlEditor
 		/// <seealso cref='XmlCompletionDataCollection.Add'/>
 		public void AddRange(XmlCompletionItemCollection val)
 		{
-			for (int i = 0; i < val.Count; i++)
-				if (!Contains(val[i].Text))
+			for (int i = 0; i < val.Count; i++) {
+				if (!Contains(val[i].Text)) {
 					this.Add(val[i]);
+				}
+			}
 		}
 		
 		public bool Contains(string name)
-		{
-			bool contains = false;
-			
+		{			
 			foreach (XmlCompletionItem data in this) {
 				if (data.Text != null) {
 					if (data.Text.Length > 0) {
 						if (data.Text == name) {
-							contains = true;
-							break;
+							return true;
 						}
 					}
 				}
-			}
-			
-			return contains;
+			}		
+			return false;
 		}
 		
-		/// <summary>
-		/// Returns an array of <see cref="ICompletionData"/> items.
-		/// </summary>
-		/// <returns></returns>
 		public ICompletionItem[] ToArray()
 		{
 			XmlCompletionItem[] data = new XmlCompletionItem[Count];

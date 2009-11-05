@@ -66,8 +66,9 @@ namespace ICSharpCode.XmlEditor
 		/// <seealso cref='QualifiedNameCollection.Add'/>
 		public void AddRange(QualifiedName[] val)
 		{
-			for (int i = 0; i < val.Length; i++)
+			for (int i = 0; i < val.Length; i++) {
 				this.Add(val[i]);
+			}
 		}
 		
 		/// <summary>
@@ -79,8 +80,9 @@ namespace ICSharpCode.XmlEditor
 		/// <seealso cref='QualifiedNameCollection.Add'/>
 		public void AddRange(QualifiedNameCollection val)
 		{
-			for (int i = 0; i < val.Count; i++)
+			for (int i = 0; i < val.Count; i++) {
 				this.Add(val[i]);
+			}
 		}
 		
 		/// <summary>

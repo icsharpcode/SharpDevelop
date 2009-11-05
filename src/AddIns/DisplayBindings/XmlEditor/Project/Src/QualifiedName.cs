@@ -41,15 +41,14 @@ namespace ICSharpCode.XmlEditor
 		
 		public static bool operator ==(QualifiedName lhs, QualifiedName rhs)
 		{
-			bool equals = false;
-			
-			if (((object)lhs != null) && ((object)rhs != null)) {
-				equals = lhs.Equals(rhs);
-			} else if (((object)lhs == null) && ((object)rhs == null)) {
-				equals = true;
-			}
-			
-			return equals;
+			object lhsObject = (object)lhs;
+			object rhsObject = (object)rhs;
+			if ((lhsObject != null) && (rhsObject != null)) {
+				return lhs.Equals(rhs);
+			} else if ((lhsObject == null) && (rhsObject == null)) {
+				return true;
+			}		
+			return false;
 		}
 		
 		public static bool operator !=(QualifiedName lhs, QualifiedName rhs)
@@ -63,19 +62,16 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public override bool Equals(object obj) 
 		{
-			bool equals = false;
-			
 			QualifiedName qualifiedName = obj as QualifiedName;
 			if (qualifiedName != null) {
-				equals = xmlQualifiedName.Equals(qualifiedName.xmlQualifiedName);
+				return xmlQualifiedName.Equals(qualifiedName.xmlQualifiedName);
 			} else {
 				XmlQualifiedName name = obj as XmlQualifiedName;
 				if (name != null) {
-					equals = xmlQualifiedName.Equals(name);
+					return xmlQualifiedName.Equals(name);
 				}
 			}
-			
-			return equals;
+			return false;
 		}
 		
 		public override int GetHashCode() 

@@ -19,7 +19,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		int? lineNumber;
 		int linePosition;
-		string value;
+		string nodeValue;
 		string displayValue;
 		XPathNodeType nodeType;
 		
@@ -55,8 +55,8 @@ namespace ICSharpCode.XmlEditor
 					SetAttributeValue(currentNavigator);
 					break;
 				default:
-					value = currentNavigator.LocalName;
-					displayValue = value;
+					nodeValue = currentNavigator.LocalName;
+					displayValue = nodeValue;
 					break;
 			}
 		}
@@ -65,18 +65,14 @@ namespace ICSharpCode.XmlEditor
 		/// Line numbers are zero based.
 		/// </summary>
 		public int LineNumber {
-			get {
-				return lineNumber.GetValueOrDefault(0);
-			}
+			get { return lineNumber.GetValueOrDefault(0); }
 		}
 		
 		/// <summary>
 		/// Line positions are zero based.
 		/// </summary>
 		public int LinePosition {
-			get {
-				return linePosition;
-			}
+			get { return linePosition; }
 		}
 		
 		public bool HasLineInfo()
@@ -88,9 +84,7 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the text value of the node.
 		/// </summary>
 		public string Value {
-			get {
-				return value;
-			}
+			get { return nodeValue; }
 		}
 		
 		/// <summary>
@@ -98,55 +92,51 @@ namespace ICSharpCode.XmlEditor
 		/// an element, for example.
 		/// </summary>
 		public string DisplayValue {
-			get {
-				return displayValue;
-			}
+			get { return displayValue; }
 		}
 		
 		public XPathNodeType NodeType {
-			get {
-				return nodeType;
-			}
+			get { return nodeType; }
 		}
 		
 		void SetElementValue(XPathNavigator navigator)
 		{
-			value = navigator.Name;
+			nodeValue = navigator.Name;
 			if (navigator.IsEmptyElement) {
-				displayValue = string.Concat("<", value, "/>");
+				displayValue = String.Concat("<", nodeValue, "/>");
 			} else {
-				displayValue = string.Concat("<", value, ">");
+				displayValue = String.Concat("<", nodeValue, ">");
 			}
 		}
 		
 		void SetTextValue(XPathNavigator navigator)
 		{
-			value = navigator.Value;
-			displayValue = value;
+			nodeValue = navigator.Value;
+			displayValue = nodeValue;
 		}
 		
 		void SetCommentValue(XPathNavigator navigator)
 		{
-			value = navigator.Value;
+			nodeValue = navigator.Value;
 			displayValue = navigator.OuterXml;
 		}
 		
 		void SetNamespaceValue(XPathNavigator navigator)
 		{
-			value = navigator.OuterXml;
-			displayValue = value;
+			nodeValue = navigator.OuterXml;
+			displayValue = nodeValue;
 		}
 		
 		void SetProcessingInstructionValue(XPathNavigator navigator)
 		{
-			value = navigator.Name;
+			nodeValue = navigator.Name;
 			displayValue = navigator.OuterXml;
 		}
 		
 		void SetAttributeValue(XPathNavigator navigator)
 		{
-			value = navigator.Name;
-			displayValue = string.Concat("@", value);
+			nodeValue = navigator.Name;
+			displayValue = String.Concat("@", nodeValue);
 		}
 		
 		/// <summary>

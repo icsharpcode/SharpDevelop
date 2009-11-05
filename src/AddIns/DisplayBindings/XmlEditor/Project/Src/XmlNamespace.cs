@@ -14,8 +14,8 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class XmlNamespace
 	{
-		string prefix = string.Empty;
-		string uri = string.Empty;
+		string prefix = String.Empty;
+		string uri = String.Empty;
 		
 		const string prefixToStringStart = "Prefix [";
 		const string uriToStringMiddle = "] Uri [";
@@ -27,20 +27,16 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public string Prefix {
-			get {
-				return prefix;
-			}
+			get { return prefix; }
 		}
 		
 		public string Uri {
-			get {
-				return uri;
-			}
+			get { return uri; }
 		}
 		
 		public override string ToString()
 		{
-			return string.Concat(prefixToStringStart, prefix, uriToStringMiddle, uri, "]");
+			return String.Concat(prefixToStringStart, prefix, uriToStringMiddle, uri, "]");
 		}
 		
 		/// <summary>
@@ -60,7 +56,7 @@ namespace ICSharpCode.XmlEditor
 					return new XmlNamespace(prefix, uri);
 				}
 			}
-			return new XmlNamespace(string.Empty, string.Empty);
+			return new XmlNamespace(String.Empty, String.Empty);
 		}
 	}
 }

@@ -19,7 +19,6 @@ namespace XmlEditor.Tests.Editor
 	[TestFixture]
 	public class EmptyXmlSchemasPanelTestFixture
 	{
-		Button removeSchemaButton;
 		MockXmlSchemasPanel panel;
 		RegisteredXmlSchemasEditor schemasEditor;
 		

@@ -69,9 +69,7 @@ namespace ICSharpCode.XmlEditor
 		/// <param name='namespaceUri'>The schema's namespace URI.</param>
 		/// <value>The entry with the specified namespace URI.</value>
 		public XmlSchemaCompletionData this[string namespaceUri] {
-			get {
-				return GetItem(namespaceUri);
-			}
+			get { return GetItem(namespaceUri); }
 		}
 		
 		/// <summary>
@@ -118,17 +116,12 @@ namespace ICSharpCode.XmlEditor
 		
 		XmlSchemaCompletionData GetItem(string namespaceUri)
 		{
-			XmlSchemaCompletionData matchedItem = null;
-			
-			foreach(XmlSchemaCompletionData item in this)
-			{
+			foreach(XmlSchemaCompletionData item in this) {
 				if (item.NamespaceUri == namespaceUri) {
-					matchedItem = item;
-					break;
+					return item;
 				}
-			}
-			
-			return matchedItem;
+			}	
+			return null;
 		}
 	}
 }
