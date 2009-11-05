@@ -129,7 +129,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			CommandManager.RemoveCanExecuteHandler(this.workbench, OnCanExecuteRoutedCommand);
 			CommandManager.RemoveExecutedHandler(this.workbench, OnExecuteRoutedCommand);
 		}
-		
+
+		bool isInNestedCanExecute;
+
 		// Custom command routing:
 		// if the command isn't handled on the current focus, try to execute it on the focus inside the active workbench window
 		void OnCanExecuteRoutedCommand(object sender, CanExecuteRoutedEventArgs e)
@@ -137,24 +139,36 @@ namespace ICSharpCode.SharpDevelop.Gui
 			workbench.VerifyAccess();
 			RoutedCommand routedCommand = e.Command as RoutedCommand;
 			AvalonWorkbenchWindow workbenchWindow = ActiveWorkbenchWindow as AvalonWorkbenchWindow;
-			if (!e.Handled && routedCommand != null && workbenchWindow != null) {
+			if (!e.Handled && routedCommand != null && workbenchWindow != null && !isInNestedCanExecute) {
 				IInputElement target = CustomFocusManager.GetFocusedChild(workbenchWindow);
 				if (target != null && target != e.OriginalSource) {
-					e.CanExecute = routedCommand.CanExecute(e.Parameter, target);
+					isInNestedCanExecute = true;
+					try {
+						e.CanExecute = routedCommand.CanExecute(e.Parameter, target);
+					} finally {
+						isInNestedCanExecute = false;
+					}
 					e.Handled = true;
 				}
 			}
 		}
+
+		bool isInNestedExecute;
 		
 		void OnExecuteRoutedCommand(object sender, ExecutedRoutedEventArgs e)
 		{
 			workbench.VerifyAccess();
 			RoutedCommand routedCommand = e.Command as RoutedCommand;
 			AvalonWorkbenchWindow workbenchWindow = ActiveWorkbenchWindow as AvalonWorkbenchWindow;
-			if (!e.Handled && routedCommand != null && workbenchWindow != null) {
+			if (!e.Handled && routedCommand != null && workbenchWindow != null && !isInNestedExecute) {
 				IInputElement target = CustomFocusManager.GetFocusedChild(workbenchWindow);
 				if (target != null && target != e.OriginalSource) {
-					routedCommand.Execute(e.Parameter, target);
+					isInNestedExecute = true;
+					try {
+						routedCommand.Execute(e.Parameter, target);
+					} finally {
+						isInNestedExecute = false;
+					}
 					e.Handled = true;
 				}
 			}
