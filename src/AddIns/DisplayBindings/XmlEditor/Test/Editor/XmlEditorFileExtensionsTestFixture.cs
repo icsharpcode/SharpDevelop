@@ -16,13 +16,12 @@ namespace XmlEditor.Tests.Editor
 {
 	[TestFixture]
 	public class XmlEditorFileExtensionsTestFixture
-	{
-		AddInTreeNode addinTreeNode;
+	{	
+		DefaultXmlFileExtensions fileExtensions;
 		
 		[SetUp]
 		public void SetUp()
 		{
-			
 			string addinXml = "<AddIn name     = 'Xml Editor'\r\n" +
        								"author      = ''\r\n" +
        								"copyright   = 'prj:///doc/copyright.txt'\r\n" +
@@ -33,21 +32,28 @@ namespace XmlEditor.Tests.Editor
 			using (StringReader reader = new StringReader(addinXml)) {
 				AddIn addin = AddIn.Load(reader);
 				
-				addinTreeNode = new AddInTreeNode();
+				AddInTreeNode addinTreeNode = new AddInTreeNode();
 				addinTreeNode.Codons.Add(new Codon(addin, "CodeCompletionC#", new Properties(), new ICondition[0]));
 
 				Properties properties = new Properties();
 				properties.Set<string>("extensions", " .xml; .xsd ");
 				properties.Set<string>("id", "Xml");
 				addinTreeNode.Codons.Add(new Codon(addin, "CodeCompletionXml", properties, new ICondition[0]));
+				
+				fileExtensions = new DefaultXmlFileExtensions(addinTreeNode);
 			}
 		}
 		
 		[Test]
-		public void ExpectedFileExtensions()
+		public void FirstFileExtensionIsXml()
 		{
-			string[] expectedExtension = new string[] { ".xml", ".xsd" };
-			Assert.AreEqual(expectedExtension, XmlDisplayBinding.GetXmlFileExtensions(addinTreeNode));
+			Assert.AreEqual(".xml", fileExtensions[0]);
+		}
+		
+		[Test]
+		public void SecondFileExtensionIsXsd()
+		{
+			Assert.AreEqual(".xsd", fileExtensions[1]);		
 		}
 	}
 }

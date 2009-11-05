@@ -9,7 +9,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -49,10 +48,11 @@ namespace ICSharpCode.XmlEditor
 		
 		public override string ToString()
 		{
-			string text = "";
+			string text = String.Empty;
 			
-			for (int i = 0; i < this.Count; i++)
+			for (int i = 0; i < this.Count; i++) {
 				text += (i == 0) ? this[i] + "" : " > " + this[i];
+			}
 			     
 			return text;
 		}
@@ -112,7 +112,7 @@ namespace ICSharpCode.XmlEditor
 					QualifiedName name = this[Count - 1];
 					return name.Prefix;
 				}
-				return string.Empty;
+				return String.Empty;
 			}
 		}
 	}

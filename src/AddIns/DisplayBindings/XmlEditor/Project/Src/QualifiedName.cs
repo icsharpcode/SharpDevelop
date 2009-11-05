@@ -22,7 +22,7 @@ namespace ICSharpCode.XmlEditor
 	public class QualifiedName
 	{
 		XmlQualifiedName xmlQualifiedName = XmlQualifiedName.Empty;
-		string prefix = string.Empty;
+		string prefix = String.Empty;
 		
 		public QualifiedName()
 		{
@@ -113,12 +113,12 @@ namespace ICSharpCode.XmlEditor
 		public override string ToString()
 		{			
 			if (xmlQualifiedName.Namespace.Length > 0) {
-				string prefixToString = string.Empty;
-				if (!string.IsNullOrEmpty(prefix)) {
+				string prefixToString = String.Empty;
+				if (!String.IsNullOrEmpty(prefix)) {
 					prefixToString = prefix + ":";
 				}
-				return string.Concat(prefixToString, xmlQualifiedName.Name, " [", xmlQualifiedName.Namespace, "]");
-			} else if (!string.IsNullOrEmpty(prefix)) {
+				return String.Concat(prefixToString, xmlQualifiedName.Name, " [", xmlQualifiedName.Namespace, "]");
+			} else if (!String.IsNullOrEmpty(prefix)) {
 				return prefix + ":" + xmlQualifiedName.Name;
 			}
 			return xmlQualifiedName.Name;

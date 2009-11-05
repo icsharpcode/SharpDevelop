@@ -6,15 +6,11 @@
 // </file>
 
 using System;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
-	public partial class XmlEditorOptionsPanel : OptionPanel
+	public interface IXmlSchemaCompletionDataFactory
 	{
-		public XmlEditorOptionsPanel()
-		{
-			InitializeComponent();
-		}
+		XmlSchemaCompletionData CreateXmlSchemaCompletionData(string baseUri, string fileName);
 	}
 }

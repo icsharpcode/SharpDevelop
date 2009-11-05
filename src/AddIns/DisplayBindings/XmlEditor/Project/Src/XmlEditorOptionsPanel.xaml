@@ -6,14 +6,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel>
         <GroupBox Margin="5" Header="{sd:Localize ICSharpCode.XmlEditor.XmlEditorOptionsPanel.FoldingGroupLabel}">
-            <CheckBox x:Name="chkShowAttributesWhenFolded"
+            <CheckBox x:Name="showAttributesWhenFoldedCheckBox"
         	          Content="{sd:Localize ICSharpCode.XmlEditor.XmlEditorOptionsPanel.ShowAttributesWhenFoldedLabel}"
-                      IsChecked="{sd:OptionBinding addin:XmlEditorAddInOptions.ShowAttributesWhenFolded}" />
+                     IsChecked="{sd:OptionBinding addin:XmlEditorService.ShowAttributesWhenFolded}" />
         </GroupBox>
         <GroupBox Margin="5" Header="{sd:Localize ICSharpCode.XmlEditor.XmlEditorOptionsPanel.XmlCompletionGroupLabel}">
-            <CheckBox x:Name="chkShowSchemaAnnotation" 
+            <CheckBox x:Name="showSchemaAnnotationCheckBox" 
         	          Content="{sd:Localize ICSharpCode.XmlEditor.XmlEditorOptionsPanel.ShowSchemaAnnotationLabel}" 
-                      IsChecked="{sd:OptionBinding addin:XmlEditorAddInOptions.ShowSchemaAnnotation}" />
+                     IsChecked="{sd:OptionBinding addin:XmlEditorService.ShowSchemaAnnotation}" />
         </GroupBox>
     </StackPanel>
 </gui:OptionPanel>

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -13,22 +14,39 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.XmlEditor
 {
-
 	/// <summary>
-	/// Keeps track of all the schemas that the Xml Editor is aware
-	/// of.
+	/// Keeps track of all the schemas that the XML Editor is aware of.
 	/// </summary>
-	public class XmlSchemaManager
+	public class XmlSchemaManager : IXmlSchemaCompletionDataFactory
 	{
 		public const string XmlSchemaNamespace = "http://www.w3.org/2001/XMLSchema";
 		
-		static XmlSchemaCompletionDataCollection schemas;
-		static XmlSchemaManager manager;
+		List<string> readOnlySchemaFolders = new List<string>();
+		string userDefinedSchemaFolder;
+		XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
+		IFileSystem fileSystem;
+		IXmlSchemaCompletionDataFactory factory;
 		
-		public static event EventHandler UserSchemaAdded;
+		public event EventHandler UserSchemaAdded;
+		public event EventHandler UserSchemaRemoved;
+			
+		public XmlSchemaManager(string[] readOnlySchemaFolders, 
+			string userDefinedSchemaFolder, 
+			IFileSystem fileSystem, 
+			IXmlSchemaCompletionDataFactory factory)
+		{
+			this.readOnlySchemaFolders.AddRange(readOnlySchemaFolders);
+			this.userDefinedSchemaFolder = userDefinedSchemaFolder;
+			this.fileSystem = fileSystem;
+			this.factory = factory;
+		}
 		
-		public static event EventHandler UserSchemaRemoved;
-	
+		public XmlSchemaManager(string[] readOnlySchemaFolders, string userDefinedSchemaFolder, IFileSystem fileSystem)
+			: this(readOnlySchemaFolders, userDefinedSchemaFolder, fileSystem, null)
+		{
+			this.factory = this;
+		}
+				
 		/// <summary>
 		/// Determines whether the specified namespace is actually the W3C namespace for
 		/// XSD files.
@@ -38,181 +56,119 @@ namespace ICSharpCode.XmlEditor
 			return schemaNamespace == XmlSchemaNamespace;
 		}
 		
-		/// <summary>
-		/// Gets the schemas that SharpDevelop knows about.
-		/// </summary>
-		public static XmlSchemaCompletionDataCollection SchemaCompletionDataItems {
-			get {
-				if (schemas == null) {
-					schemas = new XmlSchemaCompletionDataCollection();
-					manager = new XmlSchemaManager();
-					ReadSchemas();
-				}
-
-				return schemas;
-			}
+		public XmlSchemaCompletionDataCollection Schemas {
+			get { return schemas; }
 		}
 		
-		/// <summary>
-		/// Gets the schema completion data that is associated with the
-		/// specified file extension.
-		/// </summary>
-		public static XmlSchemaCompletionData GetSchemaCompletionData(string extension)
+		public bool SchemaExists(string namespaceUri)
 		{
-			XmlSchemaCompletionData data = null;
-			
-			XmlSchemaAssociation association = XmlEditorAddInOptions.GetSchemaAssociation(extension);
-			if (association != null) {
-				if (association.NamespaceUri.Length > 0) {
-					data = SchemaCompletionDataItems[association.NamespaceUri];
-				}
-			}
-			return data;
+			return schemas[namespaceUri] != null;
 		}
 		
-		/// <summary>
-		/// Gets the namespace prefix that is associated with the
-		/// specified file extension.
-		/// </summary>
-		public static string GetNamespacePrefix(string extension)
+		public void RemoveUserSchema(string namespaceUri)
 		{
-			string prefix = string.Empty;
-			
-			XmlSchemaAssociation association = XmlEditorAddInOptions.GetSchemaAssociation(extension);
-			if (association != null) {
-				prefix = association.NamespacePrefix;
-			}
-			
-			return prefix;
-		}
-		
-		/// <summary>
-		/// Removes the schema with the specified namespace from the
-		/// user schemas folder and removes the completion data.
-		/// </summary>
-		public static void RemoveUserSchema(string namespaceUri)
-		{
-			XmlSchemaCompletionData schemaData = SchemaCompletionDataItems[namespaceUri];
-			if (schemaData != null) {
-				if (File.Exists(schemaData.FileName)) {
-					File.Delete(schemaData.FileName);
+			XmlSchemaCompletionData schema = schemas[namespaceUri];
+			if (schema != null) {
+				if (fileSystem.FileExists(schema.FileName)) {
+					fileSystem.DeleteFile(schema.FileName);
 				}
-				SchemaCompletionDataItems.Remove(schemaData);
+				schemas.Remove(schema);
+			}
 				OnUserSchemaRemoved();
-			}
 		}
 		
-		/// <summary>
-		/// Adds the schema to the user schemas folder and makes the
-		/// schema available to the xml editor.
-		/// </summary>
-		public static void AddUserSchema(XmlSchemaCompletionData schemaData)
+		void OnUserSchemaRemoved()
 		{
-			if (SchemaCompletionDataItems[schemaData.NamespaceUri] == null) {
-
-				if (!Directory.Exists(UserSchemaFolder)) {
-					Directory.CreateDirectory(UserSchemaFolder);
-				}			
-	
-				string fileName = Path.GetFileName(schemaData.FileName);
-				string destinationFileName = Path.Combine(UserSchemaFolder, fileName);
-				File.Copy(schemaData.FileName, destinationFileName);
-				schemaData.FileName = destinationFileName;
-				SchemaCompletionDataItems.Add(schemaData);
-				OnUserSchemaAdded();
-			} else {
-				LoggingService.Warn("Trying to add a schema that already exists.  Namespace=" + schemaData.NamespaceUri);
+			if (UserSchemaRemoved != null) {
+				UserSchemaRemoved(this, new EventArgs());
 			}
+		}
+				
+		public void AddUserSchema(XmlSchemaCompletionData schema)
+		{
+			if (!fileSystem.DirectoryExists(userDefinedSchemaFolder)) {
+				fileSystem.CreateDirectory(userDefinedSchemaFolder);
+			}
+			
+			string newSchemaDestinationFileName = GetUserDefinedSchemaDestination(schema);
+			fileSystem.CopyFile(schema.FileName, newSchemaDestinationFileName);			
+			
+			schema.FileName = newSchemaDestinationFileName;
+			schemas.Add(schema);
+			
+			OnUserSchemaAdded();
 		}		
-		
-		/// <summary>
-		/// Reads the system and user added schemas.
-		/// </summary>
-		static void ReadSchemas()
+
+		string GetUserDefinedSchemaDestination(XmlSchemaCompletionData schema)
 		{
-			// MSBuild schemas are in framework directory:
-			ReadSchemas(RuntimeEnvironment.GetRuntimeDirectory(), true);
-			ReadSchemas(SchemaFolder, true);
-			ReadSchemas(UserSchemaFolder, false);
+			string fileName = Path.GetFileName(schema.FileName);
+			return Path.Combine(userDefinedSchemaFolder, fileName);
+		}
+				
+		void OnUserSchemaAdded()
+		{
+			if (UserSchemaAdded != null) {
+				UserSchemaAdded(this, new EventArgs());
+			}
 		}
 		
-		/// <summary>
-		/// Reads all .xsd files in the specified folder.
-		/// </summary>
-		static void ReadSchemas(string folder, bool readOnly)
+		public void ReadSchemas()
 		{
-			if (Directory.Exists(folder)) {
-				foreach (string fileName in Directory.GetFiles(folder, "*.xsd")) {
+			foreach (string folder in readOnlySchemaFolders) {
+				ReadSchemas(folder, "*.xsd", true);
+			}
+			ReadSchemas(userDefinedSchemaFolder, "*.*", false);
+		}
+		
+		void ReadSchemas(string directory, string searchPattern, bool readOnly)
+		{
+			if (fileSystem.DirectoryExists(directory)) {
+				foreach (string fileName in fileSystem.GetFilesInDirectory(directory, searchPattern)) {
 					ReadSchema(fileName, readOnly);
 				}
 			}
-		}
-		
+		}		
+				
 		/// <summary>
 		/// Reads an individual schema and adds it to the collection.
 		/// </summary>
 		/// <remarks>
 		/// If the schema namespace exists in the collection it is not added.
 		/// </remarks>
-		static void ReadSchema(string fileName, bool readOnly)
+//		static void ReadSchema(string fileName, bool readOnly)
+//		{
+//			try {
+//				string baseUri = XmlSchemaCompletionData.GetUri(fileName);
+//				XmlSchemaCompletionData data = new XmlSchemaCompletionData(baseUri, fileName);
+//				if (data.NamespaceUri != null) {
+//					if (schemas[data.NamespaceUri] == null) {
+//						data.ReadOnly = readOnly;
+//						schemas.Add(data);
+//					} else {
+//						// Namespace already exists.
+//						LoggingService.Warn("Ignoring duplicate schema namespace " + data.NamespaceUri);
+//					} 
+//				} else {
+//					// Namespace is null.
+//					LoggingService.Warn("Ignoring schema with no namespace " + data.FileName);
+//				}
+//			} catch (Exception ex) {
+//				LoggingService.Warn("Unable to read schema '" + fileName + "'. ", ex);
+//			}
+//		}
+//		
+		void ReadSchema(string fileName, bool readOnly)
 		{
-			try {
-				string baseUri = XmlSchemaCompletionData.GetUri(fileName);
-				XmlSchemaCompletionData data = new XmlSchemaCompletionData(baseUri, fileName);
-				if (data.NamespaceUri != null) {
-					if (schemas[data.NamespaceUri] == null) {
-						data.ReadOnly = readOnly;
-						schemas.Add(data);
-					} else {
-						// Namespace already exists.
-						LoggingService.Warn("Ignoring duplicate schema namespace " + data.NamespaceUri);
-					} 
-				} else {
-					// Namespace is null.
-					LoggingService.Warn("Ignoring schema with no namespace " + data.FileName);
-				}
-			} catch (Exception ex) {
-				LoggingService.Warn("Unable to read schema '" + fileName + "'. ", ex);
-			}
+			string baseUri = XmlSchemaCompletionData.GetUri(fileName);
+			XmlSchemaCompletionData schema = factory.CreateXmlSchemaCompletionData(baseUri, fileName);
+			schema.FileName = fileName;
+			schema.ReadOnly = readOnly;
+			schemas.Add(schema);
 		}
 		
-		/// <summary>
-		/// Gets the folder where the schemas for all users on the
-		/// local machine are stored.
-		/// </summary>
-		static string SchemaFolder {
-			get {
-				return Path.Combine(PropertyService.DataDirectory, "schemas");
-			}
-		}
-		
-		/// <summary>
-		/// Gets the folder where schemas are stored for an individual user.
-		/// </summary>
-		static string UserSchemaFolder {
-			get {
-				return Path.Combine(PropertyService.ConfigDirectory, "schemas");				
-			}
-		}
-		
-		/// <summary>
-		/// Should really pass schema info with the event.
-		/// </summary>
-		static void OnUserSchemaAdded()
+		XmlSchemaCompletionData IXmlSchemaCompletionDataFactory.CreateXmlSchemaCompletionData(string baseUri, string fileName)
 		{
-			if (UserSchemaAdded != null) {
-				UserSchemaAdded(manager, new EventArgs());
-			}
-		}
-		
-		/// <summary>
-		/// Should really pass schema info with the event.
-		/// </summary>
-		static void OnUserSchemaRemoved()
-		{
-			if (UserSchemaRemoved != null) {
-				UserSchemaRemoved(manager, new EventArgs());
-			}
+			return new XmlSchemaCompletionData(baseUri, fileName);
 		}
 	}
 }

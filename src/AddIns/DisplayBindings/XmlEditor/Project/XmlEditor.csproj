@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -7,7 +8,6 @@
     <RootNamespace>ICSharpCode.XmlEditor</RootNamespace>
     <AssemblyName>XmlEditor</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <SourceAnalysisOverrideSettingsFile>C:\Users\Siegfried\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -82,26 +82,34 @@
     </Compile>
     <Compile Include="Src\AssignStylesheetCommand.cs" />
     <Compile Include="Src\CreateSchemaCommand.cs" />
+    <Compile Include="Src\DefaultXmlFileExtensions.cs" />
+    <Compile Include="Src\DefaultXmlSchemaFileAssociations.cs" />
     <Compile Include="Src\EncodedStringWriter.cs" />
+    <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\FormatXmlCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionEditAction.cs" />
     <Compile Include="Src\IAddXmlNodeDialog.cs" />
+    <Compile Include="Src\IFileSystem.cs" />
     <Compile Include="Src\InsertCommentAfterCommand.cs" />
     <Compile Include="Src\InsertCommentBeforeCommand.cs" />
     <Compile Include="Src\InsertElementAfterCommand.cs" />
     <Compile Include="Src\InsertElementBeforeCommand.cs" />
     <Compile Include="Src\InsertTextNodeAfterCommand.cs" />
     <Compile Include="Src\InsertTextNodeBeforeCommand.cs" />
+    <Compile Include="Src\ISelectXmlSchemaWindow.cs" />
+    <Compile Include="Src\IXmlSchemaCompletionDataFactory.cs" />
+    <Compile Include="Src\IXmlSchemasPanel.cs" />
     <Compile Include="Src\IXmlTreeView.cs" />
     <Compile Include="Src\OpenStylesheetCommand.cs" />
     <Compile Include="Src\QualifiedName.cs" />
     <Compile Include="Src\QualifiedNameCollection.cs" />
+    <Compile Include="Src\RegisteredXmlSchemasEditor.cs" />
     <Compile Include="Src\RemoveAttributeCommand.cs" />
     <Compile Include="Src\RemoveXPathHighlightingCommand.cs" />
     <Compile Include="Src\RunXslTransformCommand.cs" />
-    <Compile Include="Src\SelectXmlSchema.xaml.cs">
-      <DependentUpon>SelectXmlSchema.xaml</DependentUpon>
+    <Compile Include="Src\SelectXmlSchemaWindow.xaml.cs">
+      <DependentUpon>SelectXmlSchemaWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\ValidateXmlCommand.cs" />
@@ -115,27 +123,28 @@
     <Compile Include="Src\XmlCompletionItemCollection.cs" />
     <Compile Include="Src\XmlCompletionItemList.cs" />
     <Compile Include="Src\XmlDisplayBinding.cs" />
-    <Compile Include="Src\XmlEditorAddInOptions.cs" />
+    <Compile Include="Src\XmlEditorOptions.cs" />
     <Compile Include="Src\XmlEditorOptionsPanel.xaml.cs">
       <DependentUpon>XmlEditorOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\XmlEditorService.cs" />
     <Compile Include="Src\XmlElementPath.cs" />
     <Compile Include="Src\XmlElementTreeNode.cs" />
     <Compile Include="Src\XmlEncoder.cs" />
     <Compile Include="Src\XmlFormattingStrategy.cs">
     </Compile>
     <Compile Include="Src\StylesheetAssignedCondition.cs" />
-    <Compile Include="Src\XmlFoldingStrategy.cs" />
     <Compile Include="Src\XmlLanguageBinding.cs" />
     <Compile Include="Src\XmlNamespace.cs" />
     <Compile Include="Src\XmlParser.cs" />
-    <Compile Include="Src\XmlSchemaAssociation.cs" />
-    <Compile Include="Src\XmlSchemaAssociationListBoxItem.cs" />
+    <Compile Include="Src\XmlSchemaFileAssociation.cs" />
+    <Compile Include="Src\XmlSchemaFileAssociationListItem.cs" />
     <Compile Include="Src\XmlSchemaCompletionData.cs" />
     <Compile Include="Src\XmlSchemaCompletionDataCollection.cs" />
     <Compile Include="Src\XmlSchemaListBoxItem.cs" />
     <Compile Include="Src\XmlSchemaManager.cs" />
+    <Compile Include="Src\XmlSchemaPicker.cs" />
     <Compile Include="Src\XmlSchemasPanel.xaml.cs">
       <DependentUpon>XmlSchemasPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -160,7 +169,7 @@
     <EmbeddedResource Include="Resources\XmlTextTreeNodeIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\SelectXmlSchema.xaml" />
+    <Page Include="Src\SelectXmlSchemaWindow.xaml" />
     <Page Include="Src\XmlEditorOptionsPanel.xaml" />
     <Page Include="Src\XmlSchemasPanel.xaml" />
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">

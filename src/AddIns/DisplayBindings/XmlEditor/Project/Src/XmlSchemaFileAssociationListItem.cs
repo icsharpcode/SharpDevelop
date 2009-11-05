@@ -9,18 +9,14 @@ using System;
 
 namespace ICSharpCode.XmlEditor
 {
-	/// <summary>
-	/// Represents list box item showing the association between an xml schema 
-	/// and a file extension.
-	/// </summary>
-	public class XmlSchemaAssociationListBoxItem
+	public class XmlSchemaFileAssociationListItem
 	{
 		bool isDirty;
 		string namespaceUri;
 		string extension;
 		string namespacePrefix;
 		
-		public XmlSchemaAssociationListBoxItem(string extension, string namespaceUri, string namespacePrefix)
+		public XmlSchemaFileAssociationListItem(string extension, string namespaceUri, string namespacePrefix)
 		{
 			this.extension = extension;
 			this.namespaceUri = namespaceUri;
@@ -40,9 +36,6 @@ namespace ICSharpCode.XmlEditor
 			set { namespaceUri = value; }
 		}
 		
-		/// <summary>
-		/// Gets or sets the file extension (e.g. '.xml').
-		/// </summary>
 		public string Extension {
 			get { return extension; }
 			set { extension = value; }
@@ -57,10 +50,6 @@ namespace ICSharpCode.XmlEditor
 			set { namespacePrefix = value; }
 		}		
 		
-		/// <summary>
-		/// Returns the file extension so this can be sorted in a list box.
-		/// </summary>
-		/// <returns></returns>
 		public override string ToString()
 		{
 			return extension;

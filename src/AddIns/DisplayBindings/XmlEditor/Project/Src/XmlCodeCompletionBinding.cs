@@ -70,9 +70,9 @@ namespace ICSharpCode.XmlEditor
 		{
 			string extension = Path.GetExtension(fileName);
 			if (PropertyService.DataDirectory != null) {
-				XmlSchemaCompletionDataCollection schemas = XmlSchemaManager.SchemaCompletionDataItems;
-				string defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix(extension);
-				XmlSchemaCompletionData defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData(extension);
+				XmlSchemaCompletionDataCollection schemas = XmlEditorService.XmlSchemaManager.Schemas;
+				string defaultNamespacePrefix = XmlEditorService.XmlEditorOptions.GetNamespacePrefix(extension);
+				XmlSchemaCompletionData defaultSchemaCompletionData = XmlEditorService.XmlEditorOptions.GetSchemaCompletionData(extension);
 				return new XmlCompletionDataProvider(schemas, defaultSchemaCompletionData, defaultNamespacePrefix);
 			}
 

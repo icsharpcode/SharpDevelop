@@ -27,10 +27,10 @@ namespace ICSharpCode.XmlEditor
 	/// </remarks>
 	public class XmlSchemaCompletionData
 	{
-		string namespaceUri = string.Empty;
 		XmlSchema schema;
-		string fileName = string.Empty;
-		bool readOnly = false;
+		string namespaceUri = String.Empty;
+		string fileName = String.Empty;
+		bool readOnly;
 		
 		/// <summary>
 		/// Stores attributes that have been prohibited whilst the code
@@ -48,7 +48,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public XmlSchemaCompletionData(TextReader reader)
 		{
-			ReadSchema(string.Empty, reader);
+			ReadSchema(String.Empty, reader);
 		}
 		
 		/// <summary>
@@ -64,7 +64,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Creates the completion data from the specified schema file.
 		/// </summary>
-		public XmlSchemaCompletionData(string fileName) : this(string.Empty, fileName)
+		public XmlSchemaCompletionData(string fileName) : this(String.Empty, fileName)
 		{
 		}
 		
@@ -83,9 +83,7 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the schema.
 		/// </summary>
 		public XmlSchema Schema {
-			get {
-				return schema;
-			}
+			get { return schema; }
 		}
 		
 		/// <summary>
@@ -93,46 +91,39 @@ namespace ICSharpCode.XmlEditor
 		/// SharpDevelop.
 		/// </summary>
 		public bool ReadOnly {
-			get {
-				return readOnly;
-			}
-			
-			set {
-				readOnly = value;
-			}
+			get { return readOnly; }
+			set { readOnly = value; }
 		}
 		
 		/// <summary>
 		/// Gets or sets the schema's file name.
 		/// </summary>
 		public string FileName {
-			get {
-				return fileName;
-			}
-			set {
-				fileName = value;
-			}
+			get { return fileName; }
+			set { fileName = value; }
 		}
 		
 		/// <summary>
 		/// Gets the namespace URI for the schema.
 		/// </summary>
 		public string NamespaceUri {
-			get {
-				return namespaceUri;
-			}
+			get { return namespaceUri; }
 		}
 
+		public bool HasNamespaceUri {
+			get { return !String.IsNullOrWhiteSpace(namespaceUri); }
+		}
+		
 		/// <summary>
 		/// Converts the filename into a valid Uri.
 		/// </summary>
 		public static string GetUri(string fileName)
 		{
-			string uri = string.Empty;
+			string uri = String.Empty;
 			
 			if (fileName != null) {
 				if (fileName.Length > 0) {
-					uri = string.Concat("file:///", fileName.Replace('\\', '/'));
+					uri = String.Concat("file:///", fileName.Replace('\\', '/'));
 				}
 			}
 			

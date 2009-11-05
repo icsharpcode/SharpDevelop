@@ -19,7 +19,7 @@ namespace ICSharpCode.XmlEditor
 	{
 		XmlSchemaCompletionDataCollection schemaCompletionDataItems;
 		XmlSchemaCompletionData defaultSchemaCompletionData;
-		string defaultNamespacePrefix = string.Empty;
+		string defaultNamespacePrefix = String.Empty;
 		
 		public XmlCompletionDataProvider(XmlSchemaCompletionDataCollection schemaCompletionDataItems, XmlSchemaCompletionData defaultSchemaCompletionData, string defaultNamespacePrefix)
 		{

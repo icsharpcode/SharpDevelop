@@ -22,14 +22,12 @@ namespace ICSharpCode.XmlEditor
 	public class XmlDisplayBinding : ISecondaryDisplayBinding
 	{
 		public bool ReattachWhenParserServiceIsReady {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		public bool CanAttachTo(IViewContent content)
 		{
-			return content.PrimaryFileName != null && IsFileNameHandled(content.PrimaryFileName);
+			return (content.PrimaryFileName != null) && IsFileNameHandled(content.PrimaryFileName);
 		}
 		
 		/// <summary>
@@ -46,60 +44,35 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		static bool IsXmlFileExtension(string extension)
 		{
-			if (string.IsNullOrEmpty(extension))
+			if (String.IsNullOrEmpty(extension)) {
 			    return false;
+			}
 			
-			foreach (string currentExtension in GetXmlFileExtensions()) {
-				if (string.Compare(extension, currentExtension, StringComparison.OrdinalIgnoreCase) == 0) {
+			DefaultXmlFileExtensions fileExtensions = new DefaultXmlFileExtensions();
+			foreach (string currentExtension in fileExtensions) {
+				if (String.Compare(extension, currentExtension, StringComparison.OrdinalIgnoreCase) == 0) {
 					return true;
 				}
 			}
 			return false;
-		}
-		
-		/// <summary>
-		/// Returns the extensions defined in the @extensions property of the first codon in the tree node.
-		/// </summary>
-		public static string[] GetXmlFileExtensions(AddInTreeNode node)
-		{
-			if (node != null) {			
-				foreach (Codon codon in node.Codons) {
-					if (codon.Id == "Xml") {
-						List<string> extensions = new List<string>();
-						foreach (string ext in codon.Properties["extensions"].Split(';')) {
-							extensions.Add(ext.Trim());
-						}
-						return extensions.ToArray();								
-					}
-				}
-			}
-			return new string[0];
-		}
-		
-		/// <summary>
-		/// Gets the known xml file extensions.
-		/// </summary>
-		public static string[] GetXmlFileExtensions()
-		{
-			AddInTreeNode node = AddInTree.GetTreeNode("/AddIns/DefaultTextEditor/CodeCompletion", false);
-			return GetXmlFileExtensions(node);
-		}
+		}		
 		
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			return (new List<IViewContent>() {
-			        	new XmlTreeView(viewContent)
-			        }).ToArray();
+			List<IViewContent> views = new List<IViewContent>();
+			views.Add(new XmlTreeView(viewContent));
+			return views.ToArray();
 		}
 		
 		public static bool XmlViewContentActive {
 			get {
-				if (WorkbenchSingleton.Workbench == null)
+				if (WorkbenchSingleton.Workbench == null) {
 					return false;
+				}
 				ITextEditorProvider view = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-				if (view != null)
+				if (view != null) {
 					return IsFileNameHandled(view.TextEditor.FileName);
-				
+				}
 				return false;
 			}
 		}

@@ -6,15 +6,14 @@
 // </file>
 
 using System;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
-	public partial class XmlEditorOptionsPanel : OptionPanel
+	public interface ISelectXmlSchemaWindow
 	{
-		public XmlEditorOptionsPanel()
-		{
-			InitializeComponent();
-		}
+		void AddSchemaNamespace(string namespaceUri);
+		object SelectedItem { get; }
+		int SelectedIndex { get; set; }
+		int IndexOfItem(object item);
 	}
 }

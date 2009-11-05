@@ -15,8 +15,8 @@
 		<GroupBox Header="{sd:Localize ICSharpCode.XmlEditor.XmlSchemaPanel.SchemasGroupBoxText}">
 			<DockPanel>
 				<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-					<Button Margin="3,0" Name="btnAdd" Content="{sd:StringParse ${res:Global.AddButtonText}...}" Click="BtnAddClick" />
-					<Button Margin="3,0" Name="btnRemove" IsEnabled="False" Content="{sd:Localize Global.RemoveButtonText}" Click="BtnRemoveClick" />
+					<Button Margin="3,0" Name="addSchemaButton" Content="{sd:StringParse ${res:Global.AddButtonText}...}" Click="AddSchemaButtonClick" />
+					<Button Margin="3,0" Name="removeSchemaButton" IsEnabled="False" Content="{sd:Localize Global.RemoveButtonText}" Click="RemoveSchemaButtonClick" />
 				</StackPanel>
 				<ListBox Name="schemaListBox" Height="100" Margin="5" SelectionChanged="SchemaListBoxSelectionChanged" />
 			</DockPanel>
@@ -37,8 +37,8 @@
 				<Label Grid.Column="0" Grid.Row="2" Content="{sd:Localize ICSharpCode.XmlEditor.XmlSchemaPanel.NamespacePrefixLabelText}" />
 				<ComboBox Name="fileExtensionComboBox" Grid.Column="1" Grid.Row="0" Margin="3" SelectionChanged="FileExtensionComboBoxSelectionChanged" />
 				<DockPanel Grid.Column="1" Grid.Row="1">
-					<Button Name="ChangeSchema" DockPanel.Dock="Right" Margin="3" Content="..." Click="BtnChangeSchemaClick" />
-					<TextBox Name="schemaTextBox" Margin="3" />
+					<Button Name="changeSchemaButton" DockPanel.Dock="Right" Margin="3" Content="..." Click="ChangeSchemaButtonClick" />
+					<TextBox Name="schemaNamespaceTextBox" Margin="3" />
 				</DockPanel>
 				<TextBox Name="namespacePrefixTextBox" Grid.Column="1" Grid.Row="2" Margin="3" TextChanged="NamespacePrefixTextBoxTextChanged" />
 			</Grid>

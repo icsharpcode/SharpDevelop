@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -19,7 +20,6 @@
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <SourceAnalysisOverrideSettingsFile>C:\Users\Siegfried\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
@@ -59,6 +59,9 @@
     <Reference Include="System.Windows.Presentation">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
@@ -75,9 +78,32 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Completion\FirstCompletionListItemSelectedTestFixture.cs" />
     <Compile Include="Completion\ProcessKeyTests.cs" />
+    <Compile Include="Editor\AddUserSchemaTestFixture.cs" />
+    <Compile Include="Editor\DefaultSchemaFileAssociationsTestFixture.cs" />
+    <Compile Include="Editor\DefaultXmlEditorOptionsTestFixture.cs" />
+    <Compile Include="Editor\EmptyXmlSchemasPanelTestFixture.cs" />
+    <Compile Include="Editor\ErrorWhenUserAddsSchemaTestFixture.cs" />
+    <Compile Include="Editor\IsEmptySchemaAssociationTests.cs" />
+    <Compile Include="Editor\NoRegisteredSchemasTestFixture.cs" />
+    <Compile Include="Editor\NullDefaultSchemaAssociationAddInTreeNodeTestFixture.cs" />
+    <Compile Include="Editor\NullXmlEditorFileExtensionsAddInTreeNodeTestFixture.cs" />
+    <Compile Include="Editor\RegisteredXmlSchemasEditorTestFixture.cs" />
+    <Compile Include="Editor\SchemaAssociationConvertFromStringTests.cs" />
+    <Compile Include="Editor\SchemaAssociationConvertToStringTests.cs" />
+    <Compile Include="Editor\SchemaAssociationFileExtensionIsCaseInsensitiveTests.cs" />
+    <Compile Include="Editor\SchemaAssociationsAreEqualTests.cs" />
+    <Compile Include="Editor\TwoRegisteredSchemasTestFixture.cs" />
+    <Compile Include="Editor\UserAddsOneSchemaTestFixture.cs" />
+    <Compile Include="Editor\UserCancelsAddSchemaDialogTestFixture.cs" />
+    <Compile Include="Editor\UserCancelsChangeSchemaDialogTestFixture.cs" />
+    <Compile Include="Editor\UserChangesSchemaAssociationTestFixture.cs" />
+    <Compile Include="Editor\UserRemovesOneSchemaTestFixture.cs" />
     <Compile Include="Editor\XmlEditorFileExtensionsTestFixture.cs" />
+    <Compile Include="Editor\XmlSchemaPickerTestFixture.cs" />
+    <Compile Include="Editor\XmlSchemasPanelTestFixture.cs" />
     <Compile Include="Parser\XamlMixedNamespaceTestFixture.cs" />
     <Compile Include="Paths\QualifiedNameToStringTests.cs" />
+    <Compile Include="Schema\SchemaHasNamespaceTests.cs" />
     <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />
     <Compile Include="Schema\ElementWithAttributeSchemaTestFixture.cs" />
     <Compile Include="Schema\NestedElementSchemaTestFixture.cs" />
@@ -125,12 +151,6 @@
     <Compile Include="Tree\XmlCommentTreeNodeTests.cs" />
     <Compile Include="Tree\XmlTreeViewClipboardHandlerTestFixture.cs" />
     <Compile Include="Tree\XmlTreeViewContainerTestFixture.cs" />
-    <Compile Include="Utils\DerivedAddXmlNodeDialog.cs" />
-    <Compile Include="Utils\DerivedXmlTreeView.cs" />
-    <Compile Include="Utils\DerivedXmlTreeViewContainerControl.cs" />
-    <Compile Include="Utils\MockAddXmlNodeDialog.cs" />
-    <Compile Include="Utils\MockXmlViewContent.cs" />
-    <Compile Include="Utils\ResourceManager.cs" />
     <Compile Include="Schema\XhtmlStrictSchemaTestFixture.cs" />
     <Compile Include="Schema\XsdSchemaTestFixture.cs" />
     <Compile Include="Schema\GroupRefCompositorTestFixture.cs" />
@@ -148,10 +168,29 @@
     <Compile Include="Schema.Includes\TwoElementSchemaIncludeTestFixture.cs" />
     <Compile Include="Schema.Uri\GetUriTestFixture.cs" />
     <Compile Include="Schema\AbstractElementTestFixture.cs" />
-    <Compile Include="Utils\SchemaIncludeTestFixtureHelper.cs" />
     <Compile Include="Schema\MissingSchemaElementTestFixture.cs" />
     <Compile Include="Schema\AllElementTestFixture.cs" />
     <Compile Include="Parser\InsideAttributeValueTestFixture.cs" />
+    <Compile Include="Utils\DerivedAddXmlNodeDialog.cs" />
+    <Compile Include="Utils\DerivedXmlTreeView.cs" />
+    <Compile Include="Utils\DerivedXmlTreeViewContainerControl.cs" />
+    <Compile Include="Utils\ExceptionErrorMessage.cs" />
+    <Compile Include="Utils\FormattedErrorMessage.cs" />
+    <Compile Include="Utils\MockAddXmlNodeDialog.cs" />
+    <Compile Include="Utils\MockFileSystem.cs" />
+    <Compile Include="Utils\MockSelectXmlSchemaWindow.cs" />
+    <Compile Include="Utils\MockXmlSchemaCompletionDataFactory.cs" />
+    <Compile Include="Utils\MockXmlSchemasPanel.cs" />
+    <Compile Include="Utils\MockXmlTreeView.cs" />
+    <Compile Include="Utils\MockXmlViewContent.cs" />
+    <Compile Include="Utils\ResourceManager.cs" />
+    <Compile Include="Utils\SchemaIncludeTestFixtureHelper.cs" />
+    <Compile Include="Utils\Tests\ExceptionErrorMessageAreEqualTests.cs" />
+    <Compile Include="Utils\Tests\FormattedErrorMessageAreEqualTests.cs" />
+    <Compile Include="Utils\Tests\MockFileSystemTests.cs" />
+    <Compile Include="Utils\Tests\MockSelectXmlSchemaWindowTests.cs" />
+    <Compile Include="Utils\Tests\MockXmlSchemaCompletionDataFactoryTests.cs" />
+    <Compile Include="Utils\Tests\MockXmlSchemasPanelTests.cs" />
     <Compile Include="XPathQuery\XmlNamespaceTests.cs" />
     <Compile Include="XPathQuery\GetNamespacesFromListViewTestFixture.cs" />
     <Compile Include="XPathQuery\RunXPathQueryTests.cs" />
@@ -179,7 +218,6 @@
     <Compile Include="FindSchemaObject\ElementTypeWithPrefixSelectedTestFixture.cs" />
     <Compile Include="FindSchemaObject\AttributeTypeSelectedTestFixture.cs" />
     <Compile Include="Tree\ViewInvalidXmlDocumentTestFixture.cs" />
-    <Compile Include="Utils\MockXmlTreeView.cs" />
     <Compile Include="Tree\DocumentElementOnlyTestFixture.cs" />
     <Compile Include="Tree\XmlTreeViewTestFixtureBase.cs" />
     <Compile Include="Tree\RootNodeAddedToTreeControlTestFixture.cs" />
@@ -210,7 +248,6 @@
     <Folder Include="Schema\" />
     <Folder Include="Parser\" />
     <Folder Include="Paths\" />
-    <Folder Include="Utils\" />
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>
@@ -234,6 +271,8 @@
       <Name>XmlEditor</Name>
       <Private>True</Private>
     </ProjectReference>
+    <Folder Include="Utils" />
+    <Folder Include="Utils\Tests" />
     <Folder Include="XPathQuery" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>

@@ -548,8 +548,8 @@ namespace ICSharpCode.XmlEditor
 				
 				XmlSchemaCompletionData schemaData = null;
 				try {
-					for (int i = 0; i < XmlSchemaManager.SchemaCompletionDataItems.Count; ++i) {
-						schemaData = XmlSchemaManager.SchemaCompletionDataItems[i];
+					for (int i = 0; i < XmlEditorService.XmlSchemaManager.Schemas.Count; ++i) {
+						schemaData = XmlEditorService.XmlSchemaManager.Schemas[i];
 						settings.Schemas.Add(schemaData.Schema);
 					}
 				} catch (XmlSchemaException ex) {
