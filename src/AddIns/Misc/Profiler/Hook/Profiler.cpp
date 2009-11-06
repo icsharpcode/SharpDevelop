@@ -516,94 +516,10 @@ STDMETHODIMP CProfiler::ExceptionThrown(ObjectID)
     return S_OK;
 }
 
-STDMETHODIMP CProfiler::ExceptionUnwindFunctionEnter(FunctionID)
-{
-	DebugWriteLine(L"ExceptionUnwindFunctionEnter");
-    return S_OK;
-}
-
 STDMETHODIMP CProfiler::ExceptionUnwindFunctionLeave()
 {
 	DebugWriteLine(L"ExceptionUnwindFunctionLeave");
 	FunctionLeaveGlobal();
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionSearchFunctionEnter(FunctionID)
-{
-	DebugWriteLine(L"ExceptionSearchFunctionEnter");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionSearchFunctionLeave()
-{
-	DebugWriteLine(L"ExceptionSearchFunctionLeave");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionSearchFilterEnter(FunctionID)
-{
-	DebugWriteLine(L"ExceptionSearchFilterEnter");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionSearchFilterLeave()
-{
-	DebugWriteLine(L"ExceptionSearchFilterLeave");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionSearchCatcherFound(FunctionID)
-{
-	DebugWriteLine(L"ExceptionSearchCatcherFound");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionCLRCatcherFound()
-{
-	DebugWriteLine(L"ExceptionCLRCatcherFound");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionCLRCatcherExecute()
-{
-	DebugWriteLine(L"ExceptionCLRCatcherExecute");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionOSHandlerEnter(FunctionID)
-{
-	DebugWriteLine(L"ExceptionOSHandlerEnter");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionOSHandlerLeave(FunctionID)
-{
-	DebugWriteLine(L"ExceptionOSHandlerLeave");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionUnwindFinallyEnter(FunctionID)
-{
-	DebugWriteLine(L"ExceptionUnwindFinallyEnter");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionUnwindFinallyLeave()
-{
-	DebugWriteLine(L"ExceptionUnwindFinallyLeave");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionCatcherEnter(FunctionID, ObjectID)
-{
-	DebugWriteLine(L"ExceptionCatcherEnter");
-    return S_OK;
-}
-
-STDMETHODIMP CProfiler::ExceptionCatcherLeave()
-{
-	DebugWriteLine(L"ExceptionCatcherLeave");
     return S_OK;
 }
 
@@ -706,17 +622,30 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 		return;
 	
 	int newLength = 0;
+	
+	unsigned char newCode[64] = { 0 };
+	
+	int injectionLen = SetInjectionCode(metaData, newCode, &newLength, activateCall, loggerCall, deactivateCall, type, nameId);
+	
+	assert(injectionLen == newLength);
+	
+	DebugWriteLine(L"rewrite size %d", injectionLen);
 
 	if (((COR_ILMETHOD_TINY *)header)->IsTiny()) {
 	    COR_ILMETHOD_TINY *method = (COR_ILMETHOD_TINY *)header;
 
-		if (method->GetCodeSize() + sizeof(activateCall) + sizeof(loggerCall) + sizeof(deactivateCall) + 2 < MAX_CODE_SIZE_TINY) {
+		if (method->GetCodeSize() + injectionLen < MAX_CODE_SIZE_TINY) {
+			DebugWriteLine(L"rewrite normal");
 			// Copy the header elements.
 			memcpy(&codeBuf[0], method, TINY_HEADER_SIZE);
-			
 			newLength = TINY_HEADER_SIZE;
 			
-			SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId);
+			// copy new code
+			memcpy(&codeBuf[newLength],
+					&newCode[0],
+					injectionLen);
+					
+			newLength += injectionLen;
 			
 			// copy old code
 			memcpy(&codeBuf[newLength],
@@ -730,9 +659,15 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 			// 2 upper bits are the tiny header 6 lower bits are length
 			codeBuf[0] = (byte)((newLength - 1) << 2 | 0x2); 
         } else {
+        	DebugWriteLine(L"rewrite convert");
 			ConvertToFat((byte *)codeBuf, &newLength);
-		
-			SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId);
+			
+			// copy new code
+			memcpy(&codeBuf[newLength],
+					&newCode[0],
+					injectionLen);
+			
+			newLength += injectionLen;
 						
 			// copy old code
 			memcpy(&codeBuf[newLength], &header[TINY_HEADER_SIZE], length - TINY_HEADER_SIZE);
@@ -742,6 +677,7 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 			target->CodeSize = newLength - FAT_HEADER_SIZE;
         }
 	} else if (((COR_ILMETHOD_FAT *)header)->IsFat()) {
+		DebugWriteLine(L"rewrite fat");
 		COR_ILMETHOD_FAT *method = (COR_ILMETHOD_FAT *)header;
 		COR_ILMETHOD_FAT *target = (COR_ILMETHOD_FAT *)codeBuf;
 		
@@ -749,12 +685,12 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 		newLength = FAT_HEADER_SIZE;
 		memcpy(&codeBuf[0], method, newLength);
 
-		int diff = newLength;
+		// copy new code
+		memcpy(&codeBuf[newLength],
+				&newCode[0],
+				injectionLen);
 		
-		// insert new code
-		SetInjectionCode(metaData, codeBuf, &newLength, activateCall, loggerCall, deactivateCall, type, nameId);
-
-		diff = newLength - diff;
+		newLength += injectionLen;
 		
 		// Copy the remainder of the method body.
 		memcpy(&codeBuf[newLength], &header[FAT_HEADER_SIZE], length - FAT_HEADER_SIZE);
@@ -767,7 +703,7 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 		target->MaxStack = (method->MaxStack > 8) ? method->MaxStack : 8;
 		
 		// Fix SEH sections
-		FixSEHSections(target->GetSect(), diff); 
+		FixSEHSections(target->GetSect(), injectionLen); 
     } else {
     	DebugWriteLine(L"neither fat nor tiny ... invalid header???");
     }
@@ -777,11 +713,13 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
     }
 }
 
-void CProfiler::SetInjectionCode(IMetaDataImport *metaData, byte *buffer, int *size,
+int CProfiler::SetInjectionCode(IMetaDataImport *metaData, byte *buffer, int *size,
 									mdMethodDef activateCall, mdMethodDef loggerCall, mdMethodDef deactivateCall,
 									int type, int nameId)
 {
 	HRESULT hr = S_OK;
+	
+	int start = *size;
 
 	buffer[(*size)++] = 0x28; //call
 	*(mdMethodDef*)(&buffer[*size]) = deactivateCall;
@@ -855,6 +793,8 @@ void CProfiler::SetInjectionCode(IMetaDataImport *metaData, byte *buffer, int *s
 	buffer[(*size)++] = 0x28; //call
 	*(mdMethodDef*)(&buffer[*size]) = activateCall;
 	*size += sizeof(activateCall);
+	
+	return *size - start;
 }
 
 void CProfiler::ConvertToFat(byte *target, int *size)

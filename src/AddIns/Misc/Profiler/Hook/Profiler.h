@@ -72,22 +72,22 @@ public:
     // Exception creation
     STDMETHOD(ExceptionThrown)(ObjectID thrownObjectID);
     // Search phase
-    STDMETHOD(ExceptionSearchFunctionEnter)(FunctionID functionID);
-    STDMETHOD(ExceptionSearchFunctionLeave)();
-    STDMETHOD(ExceptionSearchFilterEnter)(FunctionID functionID);
-    STDMETHOD(ExceptionSearchFilterLeave)();
-    STDMETHOD(ExceptionSearchCatcherFound)(FunctionID functionID);
-    STDMETHOD(ExceptionCLRCatcherFound)();
-    STDMETHOD(ExceptionCLRCatcherExecute)();
-    STDMETHOD(ExceptionOSHandlerEnter)(FunctionID functionID);
-    STDMETHOD(ExceptionOSHandlerLeave)(FunctionID functionID);
+//    STDMETHOD(ExceptionSearchFunctionEnter)(FunctionID functionID);
+//    STDMETHOD(ExceptionSearchFunctionLeave)();
+//    STDMETHOD(ExceptionSearchFilterEnter)(FunctionID functionID);
+//    STDMETHOD(ExceptionSearchFilterLeave)();
+//    STDMETHOD(ExceptionSearchCatcherFound)(FunctionID functionID);
+//    STDMETHOD(ExceptionCLRCatcherFound)();
+//    STDMETHOD(ExceptionCLRCatcherExecute)();
+//    STDMETHOD(ExceptionOSHandlerEnter)(FunctionID functionID);
+//    STDMETHOD(ExceptionOSHandlerLeave)(FunctionID functionID);
     // Unwind phase
-    STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionID);
+//    STDMETHOD(ExceptionUnwindFunctionEnter)(FunctionID functionID);
     STDMETHOD(ExceptionUnwindFunctionLeave)();
-    STDMETHOD(ExceptionUnwindFinallyEnter)(FunctionID functionID);
-    STDMETHOD(ExceptionUnwindFinallyLeave)();
-    STDMETHOD(ExceptionCatcherEnter)(FunctionID functionID, ObjectID objectID);
-    STDMETHOD(ExceptionCatcherLeave)();
+//    STDMETHOD(ExceptionUnwindFinallyEnter)(FunctionID functionID);
+//    STDMETHOD(ExceptionUnwindFinallyLeave)();
+//    STDMETHOD(ExceptionCatcherEnter)(FunctionID functionID, ObjectID objectID);
+//    STDMETHOD(ExceptionCatcherLeave)();
     
     // UNLOAD EVENTS
     STDMETHOD(FunctionUnloadStarted)(FunctionID functionID);
@@ -137,7 +137,7 @@ private:
 	void Rewrite(FunctionID functionID, int type, int nameId);
 	void ConvertToFat(byte *target, int *size);
 	void FixSEHSections(const COR_ILMETHOD_SECT *sections, int offset);
-	void SetInjectionCode(IMetaDataImport *, byte *buffer, int *size, mdMethodDef activateCall, mdMethodDef loggerCall, mdMethodDef deactivateCall, int type, int nameId);
+	int SetInjectionCode(IMetaDataImport *, byte *buffer, int *size, mdMethodDef activateCall, mdMethodDef loggerCall, mdMethodDef deactivateCall, int type, int nameId);
 	bool CreateMethod(IMetaDataEmit *, const WCHAR *, PCCOR_SIGNATURE, mdMethodDef *, mdToken);
 	int InitializeCommunication();
 };
