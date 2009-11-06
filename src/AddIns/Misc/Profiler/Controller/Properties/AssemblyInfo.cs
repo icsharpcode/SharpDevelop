@@ -27,8 +27,6 @@ using System.Security.Permissions;
 // Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
 [assembly: Guid("e0d1f9f9-0872-458d-ae91-7b6f0e073088")]
 
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, Unrestricted=true)]
-
 // Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
 //
 //      Hauptversion

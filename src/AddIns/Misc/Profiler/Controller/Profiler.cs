@@ -50,7 +50,6 @@ namespace ICSharpCode.Profiler.Controller
 		volatile bool stopDC;
 		volatile bool enableDC;
 		volatile bool isFirstDC;
-		volatile int millisecondsStartTime;
 		
 		/// <summary>
 		/// Gets whether the profiler is running inside a 64-bit profilee process or not.

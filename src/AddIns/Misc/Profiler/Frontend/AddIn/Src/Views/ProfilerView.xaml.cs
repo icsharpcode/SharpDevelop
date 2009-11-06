@@ -165,7 +165,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			
 			List<string> queryHistory = new List<string>();
 			for (int i = 2; i < this.mnuQueryHistory.Items.Count; i++)
-				tabs.Add((this.mnuQueryHistory.Items[i] as MenuItem).Header.ToString() ?? string.Empty);
+				queryHistory.Add((this.mnuQueryHistory.Items[i] as MenuItem).Header.ToString() ?? string.Empty);
 			provider.SetProperty("queryHistory", queryHistory.CreateSeparatedString());
 		}
 
@@ -204,6 +204,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			header.Text = title;
 			header.TextTrimming = TextTrimming.CharacterEllipsis;
 			header.TextWrapping = TextWrapping.NoWrap;
+			header.ToolTip = title;
 			tabView.Items.Insert(tabView.Items.Count - 1, newTab);
 			if (switchToNewTab)
 				tabView.SelectedItem = newTab;
@@ -214,6 +215,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		void ViewCurrentQueryChanged(TextBlock header, QueryView view)
 		{
 			header.Text = view.CurrentQuery;
+			header.ToolTip = view.CurrentQuery;
 			int index;
 			while ((index = GetLastMatch(view.CurrentQuery)) != -1)
 				mnuQueryHistory.Items.RemoveAt(index);
