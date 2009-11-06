@@ -33,7 +33,7 @@ namespace XmlEditor.Tests.XPathQuery
 				expectedNamespaces.Add(new XmlNamespace("s", "http://sharpdevelop.com"));
 				
 				foreach (XmlNamespace ns in expectedNamespaces) {
-					queryControl.AddNamespace(ns.Prefix, ns.Uri);
+					queryControl.AddNamespace(ns.Prefix, ns.Name);
 				}
 				
 				namespacesAddedToGrid = new List<XmlNamespace>();
@@ -54,7 +54,7 @@ namespace XmlEditor.Tests.XPathQuery
 				XmlNamespace actualNamespace = namespaces[i];
 
 				Assert.AreEqual(expectedNamespace.Prefix, actualNamespace.Prefix);
-				Assert.AreEqual(expectedNamespace.Uri, actualNamespace.Uri);
+				Assert.AreEqual(expectedNamespace.Name, actualNamespace.Name);
 			}
 		}
 		
@@ -72,7 +72,7 @@ namespace XmlEditor.Tests.XPathQuery
 				XmlNamespace actualNamespace = namespacesAddedToGrid[i];
 
 				Assert.AreEqual(expectedNamespace.Prefix, actualNamespace.Prefix);
-				Assert.AreEqual(expectedNamespace.Uri, actualNamespace.Uri);
+				Assert.AreEqual(expectedNamespace.Name, actualNamespace.Name);
 			}
 		}
 		

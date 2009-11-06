@@ -1,121 +1,139 @@
 // <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
+//	 <copyright see="prj:///doc/copyright.txt"/>
+//	 <license see="prj:///doc/license.txt"/>
+//	 <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//	 <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 
 namespace ICSharpCode.XmlEditor
 {
-	/// <summary>
-	///   A collection that stores <see cref='QualifiedName'/> objects.
-	/// </summary>
 	[Serializable()]
-	public class QualifiedNameCollection : Collection<QualifiedName> {	
-		/// <summary>
-		///   Initializes a new instance of <see cref='QualifiedNameCollection'/>.
-		/// </summary>
+	public class QualifiedNameCollection : Collection<QualifiedName> 
+	{
 		public QualifiedNameCollection()
 		{
 		}
 		
-		/// <summary>
-		///   Initializes a new instance of <see cref='QualifiedNameCollection'/> based on another <see cref='QualifiedNameCollection'/>.
-		/// </summary>
-		/// <param name='val'>
-		///   A <see cref='QualifiedNameCollection'/> from which the contents are copied
-		/// </param>
-		public QualifiedNameCollection(QualifiedNameCollection val)
+		public QualifiedNameCollection(QualifiedNameCollection names)
 		{
-			this.AddRange(val);
+			AddRange(names);
 		}
 		
-		/// <summary>
-		///   Initializes a new instance of <see cref='QualifiedNameCollection'/> containing any array of <see cref='QualifiedName'/> objects.
-		/// </summary>
-		/// <param name='val'>
-		///       A array of <see cref='QualifiedName'/> objects with which to intialize the collection
-		/// </param>
-		public QualifiedNameCollection(QualifiedName[] val)
+		public QualifiedNameCollection(QualifiedName[] names)
 		{
-			this.AddRange(val);
+			AddRange(names);
+		}
+		
+		public bool HasItems {
+			get { return Count > 0; }
 		}
 		
 		public override string ToString()
 		{
-			string text = String.Empty;
-			
-			for (int i = 0; i < this.Count; i++) {
-				text += (i == 0) ? this[i] + "" : " > " + this[i];
+			StringBuilder text = new StringBuilder();
+			for (int i = 0; i < Count; i++) {
+				if (i > 0) {
+					text.Append(" > ");
+				}
+				text.Append(this[i].ToString());
 			}
-			     
-			return text;
+			return text.ToString();
 		}
 		
-		/// <summary>
-		///   Copies the elements of an array to the end of the <see cref='QualifiedNameCollection'/>.
-		/// </summary>
-		/// <param name='val'>
-		///    An array of type <see cref='QualifiedName'/> containing the objects to add to the collection.
-		/// </param>
-		/// <seealso cref='QualifiedNameCollection.Add'/>
-		public void AddRange(QualifiedName[] val)
+		public void AddRange(QualifiedName[] names)
 		{
-			for (int i = 0; i < val.Length; i++) {
-				this.Add(val[i]);
+			for (int i = 0; i < names.Length; i++) {
+				Add(names[i]);
 			}
 		}
 		
-		/// <summary>
-		///   Adds the contents of another <see cref='QualifiedNameCollection'/> to the end of the collection.
-		/// </summary>
-		/// <param name='val'>
-		///    A <see cref='QualifiedNameCollection'/> containing the objects to add to the collection.
-		/// </param>
-		/// <seealso cref='QualifiedNameCollection.Add'/>
-		public void AddRange(QualifiedNameCollection val)
+		public void AddRange(QualifiedNameCollection names)
 		{
-			for (int i = 0; i < val.Count; i++) {
-				this.Add(val[i]);
+			for (int i = 0; i < names.Count; i++) {
+				Add(names[i]);
 			}
 		}
 		
-		/// <summary>
-		/// Removes the last item in this collection.
-		/// </summary>
 		public void RemoveLast()
 		{
-			if (Count > 0) {
+			if (HasItems) {
 				RemoveAt(Count - 1);
 			}
 		}
 		
-		/// <summary>
-		/// Removes the first item in the collection.
-		/// </summary>
 		public void RemoveFirst()
 		{
-			if (Count > 0) {
-				RemoveAt(0);
+			if (HasItems) {
+				RemoveFirst(1);
 			}
 		}
 		
-		/// <summary>
-		/// Gets the namespace prefix of the last item.
-		/// </summary>
-		public string LastPrefix {
-			get {
-				if (Count > 0) {
-					QualifiedName name = this[Count - 1];
-					return name.Prefix;
-				}
-				return String.Empty;
+		public void RemoveFirst(int howMany)
+		{
+			if (howMany > Count) {
+				howMany = Count;
 			}
+			
+			while (howMany > 0) {
+				RemoveAt(0);
+				--howMany;
+			}
+		}
+		
+		public string GetLastPrefix() 
+		{
+			if (HasItems) {
+				QualifiedName name = this[Count - 1];
+				return name.Prefix;
+			}
+			return String.Empty;
+		}
+		
+		public string GetNamespaceForPrefix(string prefix)
+		{
+			foreach (QualifiedName name in this) {
+				if (name.Prefix == prefix) {
+					return name.Namespace;
+				}
+			}
+			return String.Empty;
+		}
+		
+		public QualifiedName GetLast()
+		{
+			if (HasItems) {
+				return this[Count - 1];
+			}
+			return null;			
+		}
+		
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		
+		public override bool Equals(object obj)
+		{
+			QualifiedNameCollection rhs = obj as QualifiedNameCollection;
+			if (rhs != null) {
+				if (Count == rhs.Count) {
+					for (int i = 0; i < Count; ++i) {
+						QualifiedName lhsName = this[i];
+						QualifiedName rhsName = rhs[i];
+						if (!lhsName.Equals(rhsName)) {
+							return false;
+						}
+					}	
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

@@ -26,7 +26,7 @@ namespace XmlEditor.Tests.XPathQuery
 		{
 			XmlNamespace ns = XmlNamespace.FromString("Prefix [f] Uri [http://foo.com]");
 			Assert.AreEqual("f", ns.Prefix);
-			Assert.AreEqual("http://foo.com", ns.Uri);
+			Assert.AreEqual("http://foo.com", ns.Name);
 		}
 		
 		[Test]
@@ -34,7 +34,7 @@ namespace XmlEditor.Tests.XPathQuery
 		{
 			XmlNamespace ns = XmlNamespace.FromString("Prefix [] Uri [http://foo.com]");
 			Assert.AreEqual(String.Empty, ns.Prefix);
-			Assert.AreEqual("http://foo.com", ns.Uri);
+			Assert.AreEqual("http://foo.com", ns.Name);
 		}
 		
 		[Test]
@@ -42,7 +42,7 @@ namespace XmlEditor.Tests.XPathQuery
 		{
 			XmlNamespace ns = XmlNamespace.FromString("Prefix [f] Uri []");
 			Assert.AreEqual("f", ns.Prefix);
-			Assert.AreEqual(String.Empty, ns.Uri);
+			Assert.AreEqual(String.Empty, ns.Name);
 		}
 		
 		[Test]
@@ -50,7 +50,7 @@ namespace XmlEditor.Tests.XPathQuery
 		{
 			XmlNamespace ns = XmlNamespace.FromString(String.Empty);
 			Assert.AreEqual(String.Empty, ns.Prefix);
-			Assert.AreEqual(String.Empty, ns.Uri);
+			Assert.AreEqual(String.Empty, ns.Name);
 		}
 	}
 }

@@ -25,49 +25,6 @@ namespace ICSharpCode.XmlEditor
 	/// </remarks>
 	public sealed class XmlParser
 	{
-		/// <summary>
-		/// Helper class.  Holds the namespace URI and the prefix currently
-		/// in use for this namespace.
-		/// </summary>
-		class NamespaceURI
-		{
-			string namespaceURI = String.Empty;
-			string prefix = String.Empty;
-			
-			public NamespaceURI()
-			{
-			}
-			
-			public NamespaceURI(string namespaceURI, string prefix)
-			{
-				this.namespaceURI = namespaceURI;
-				this.prefix = prefix;
-			}
-			
-			public string Namespace {
-				get { return namespaceURI; }
-				set { namespaceURI = value; }
-			}
-			
-			public string Prefix {
-				get { return prefix; }
-				set {
-					prefix = value;
-					if (prefix == null) {
-						prefix = String.Empty;
-					}
-				}
-			}
-			
-			public override string ToString()
-			{
-				if (!String.IsNullOrEmpty(prefix)) {
-					return prefix + ":" + namespaceURI;
-				}
-				return namespaceURI;
-			}
-		}
-
 		static readonly char[] whitespaceCharacters = new char[] {' ', '\n', '\t', '\r'};
 		
 		XmlParser()
@@ -170,12 +127,10 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the attribute name and any prefix. The namespace
 		/// is not determined.
 		/// </summary>
-		/// <returns><see langword="null"/> if no attribute name can
-		/// be found.</returns>
 		public static QualifiedName GetQualifiedAttributeName(string xml, int index)
 		{
 			string name = GetAttributeName(xml, index);
-			return GetQualifiedName(name);
+			return QualifiedName.FromString(name);
 		}
 		
 		/// <summary>
@@ -201,11 +156,11 @@ namespace ICSharpCode.XmlEditor
 		public static QualifiedName GetQualifiedAttributeNameAtIndex(string xml, int index, bool includeNamespace)
 		{
 			string name = GetAttributeNameAtIndex(xml, index);
-			QualifiedName qualifiedName = GetQualifiedName(name);
-			if (qualifiedName != null && String.IsNullOrEmpty(qualifiedName.Namespace) && includeNamespace) {
+			QualifiedName qualifiedName = QualifiedName.FromString(name);
+			if (!qualifiedName.IsEmpty && !qualifiedName.HasNamespace && includeNamespace) {
 				QualifiedNameCollection namespaces = new QualifiedNameCollection();
 				XmlElementPath path = GetActiveElementStartPathAtIndex(xml, index, namespaces);
-				qualifiedName.Namespace = GetNamespaceForPrefix(namespaces, path.Elements.LastPrefix);
+				qualifiedName.Namespace = namespaces.GetNamespaceForPrefix(path.Elements.GetLastPrefix());
 			}
 			return qualifiedName;
 		}
@@ -517,7 +472,7 @@ namespace ICSharpCode.XmlEditor
 				name = xml.Substring(1);
 			}
 			
-			return GetQualifiedName(name);
+			return QualifiedName.FromString(name);
 		}
 		
 		/// <summary>
@@ -526,22 +481,22 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <param name="xml">This string must start at the
 		/// element we are interested in.</param>
-		static NamespaceURI GetElementNamespace(string xml)
+		static XmlNamespace GetElementNamespace(string xml)
 		{
-			NamespaceURI namespaceURI = new NamespaceURI();
+			XmlNamespace namespaceUri = new XmlNamespace();
 			
 			Match match = Regex.Match(xml, ".*?(xmlns\\s*?|xmlns:.*?)=\\s*?['\\\"](.*?)['\\\"]");
 			if (match.Success) {
-				namespaceURI.Namespace = match.Groups[2].Value;
+				namespaceUri.Name = match.Groups[2].Value;
 				
 				string xmlns = match.Groups[1].Value.Trim();
 				int prefixIndex = xmlns.IndexOf(':');
 				if (prefixIndex > 0) {
-					namespaceURI.Prefix = xmlns.Substring(prefixIndex + 1);
+					namespaceUri.Prefix = xmlns.Substring(prefixIndex + 1);
 				}
 			}
 			
-			return namespaceURI;
+			return namespaceUri;
 		}
 		
 		static string ReverseString(string text)
@@ -579,29 +534,29 @@ namespace ICSharpCode.XmlEditor
 		static XmlElementPath GetActiveElementStartPath(string xml, int index, string elementText, QualifiedNameCollection namespaces)
 		{
 			QualifiedName elementName = GetElementName(elementText);
-			if (elementName == null) {
+			if (elementName.IsEmpty) {
 				return new XmlElementPath();
 			}
 			
-			NamespaceURI elementNamespace = GetElementNamespace(elementText);
+			XmlNamespace elementNamespace = GetElementNamespace(elementText);
 			
 			XmlElementPath path = GetFullParentElementPath(xml.Substring(0, index), namespaces);
 			
 			// Try to get a namespace for the active element's prefix.
-			if (elementName.Prefix.Length > 0 && elementNamespace.Namespace.Length == 0) {
-				elementName.Namespace = GetNamespaceForPrefix(namespaces, elementName.Prefix);
-				elementNamespace.Namespace = elementName.Namespace;
+			if (elementName.HasPrefix && elementNamespace.Name.Length == 0) {
+				elementName.Namespace = namespaces.GetNamespaceForPrefix(elementName.Prefix);
+				elementNamespace.Name = elementName.Namespace;
 				elementNamespace.Prefix = elementName.Prefix;
 			}
 			
-			if (elementNamespace.Namespace.Length == 0) {
+			if (elementNamespace.Name.Length == 0) {
 				if (path.Elements.Count > 0) {
 					QualifiedName parentName = path.Elements[path.Elements.Count - 1];
-					elementNamespace.Namespace = parentName.Namespace;
+					elementNamespace.Name = parentName.Namespace;
 					elementNamespace.Prefix = parentName.Prefix;
 				}
 			}
-			path.Elements.Add(new QualifiedName(elementName.Name, elementNamespace.Namespace, elementNamespace.Prefix));
+			path.Elements.Add(new QualifiedName(elementName.Name, elementNamespace.Name, elementNamespace.Prefix));
 			path.Compact();
 			return path;
 		}
@@ -681,26 +636,6 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Returns a name and its prefix.
-		/// </summary>
-		static QualifiedName GetQualifiedName(string name)
-		{
-			if (name.Length == 0) {
-				return null;
-			}
-			
-			QualifiedName qualifiedName = new QualifiedName();
-			int prefixIndex = name.IndexOf(':');
-			if (prefixIndex > 0) {
-				qualifiedName.Prefix = name.Substring(0, prefixIndex);
-				qualifiedName.Name = name.Substring(prefixIndex + 1);
-			} else {
-				qualifiedName.Name = name;
-			}
-			return qualifiedName;
-		}
-		
-		/// <summary>
 		/// Gets the parent element path based on the index position. This
 		/// method does not compact the path so it will include all elements
 		/// including those in another namespace in the path.
@@ -740,19 +675,6 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			return path;
-		}
-		
-		/// <summary>
-		/// Finds the namespace for the specified prefix.
-		/// </summary>
-		static string GetNamespaceForPrefix(QualifiedNameCollection namespaces, string prefix)
-		{
-			foreach (QualifiedName name in namespaces) {
-				if (name.Prefix == prefix) {
-					return name.Namespace;
-				}
-			}
-			return String.Empty;
 		}
 		
 		/// <summary>

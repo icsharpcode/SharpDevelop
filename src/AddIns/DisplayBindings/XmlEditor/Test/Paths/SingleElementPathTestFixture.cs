@@ -67,7 +67,7 @@ namespace XmlEditor.Tests.Paths
 		[Test]
 		public void PathToString()
 		{
-			string expectedToString = "foo";
+			string expectedToString = "foo [http://foo]";
 			Assert.AreEqual(expectedToString, path.ToString());
 		}
 		
@@ -76,7 +76,7 @@ namespace XmlEditor.Tests.Paths
 		{
 			QualifiedName qualifiedName = new QualifiedName("bar", "http://foo");
 			path.Elements.Add(qualifiedName);
-			Assert.AreEqual("foo > bar", path.ToString());
+			Assert.AreEqual("foo [http://foo] > bar [http://foo]", path.ToString());
 		}
 	}
 }

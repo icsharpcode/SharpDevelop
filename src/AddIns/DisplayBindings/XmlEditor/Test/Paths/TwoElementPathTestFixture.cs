@@ -47,14 +47,14 @@ namespace XmlEditor.Tests.Paths
 		[Test]
 		public void LastPrefix()
 		{
-			Assert.AreEqual("b", path.Elements.LastPrefix, "Incorrect last prefix.");
+			Assert.AreEqual("b", path.Elements.GetLastPrefix(), "Incorrect last prefix.");
 		}
 		
 		[Test]
 		public void LastPrefixAfterLastItemRemoved()
 		{
 			path.Elements.RemoveLast();
-			Assert.AreEqual("f", path.Elements.LastPrefix, "Incorrect last prefix.");
+			Assert.AreEqual("f", path.Elements.GetLastPrefix(), "Incorrect last prefix.");
 		}	
 		
 		[Test]
@@ -97,7 +97,7 @@ namespace XmlEditor.Tests.Paths
 		[Test]
 		public void PathToString()
 		{
-			string expectedToString = "f:foo > b:bar";
+			string expectedToString = "f:foo [http://foo] > b:bar [http://bar]";
 			Assert.AreEqual(expectedToString, path.ToString());
 		}
 	}

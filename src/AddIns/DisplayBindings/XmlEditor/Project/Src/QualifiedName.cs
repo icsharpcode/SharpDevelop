@@ -29,7 +29,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public QualifiedName(string name, string namespaceUri)
-			: this(name, namespaceUri, string.Empty)
+			: this(name, namespaceUri, String.Empty)
 		{
 		}
 		
@@ -79,6 +79,10 @@ namespace ICSharpCode.XmlEditor
 			return xmlQualifiedName.GetHashCode();
 		}
 		
+		public bool IsEmpty {
+			get { return xmlQualifiedName.IsEmpty && String.IsNullOrEmpty(prefix); }
+		}
+		
 		/// <summary>
 		/// Gets the namespace of the qualified name.
 		/// </summary>
@@ -86,6 +90,10 @@ namespace ICSharpCode.XmlEditor
 			get { return xmlQualifiedName.Namespace; }
 			set { xmlQualifiedName = new XmlQualifiedName(xmlQualifiedName.Name, value); }
 		}
+		
+		public bool HasNamespace {
+			get { return xmlQualifiedName.Namespace.Length > 0; }
+		}		
 		
 		/// <summary>
 		/// Gets the name of the element.
@@ -103,21 +111,45 @@ namespace ICSharpCode.XmlEditor
 			set { prefix = value; }
 		}
 		
-		/// <summary>
-		/// Returns a string that represents the QualifiedName.
-		/// </summary>
+		public bool HasPrefix {
+			get { return !String.IsNullOrEmpty(prefix); }
+		}
+		
 		public override string ToString()
-		{			
-			if (xmlQualifiedName.Namespace.Length > 0) {
-				string prefixToString = String.Empty;
-				if (!String.IsNullOrEmpty(prefix)) {
-					prefixToString = prefix + ":";
-				}
-				return String.Concat(prefixToString, xmlQualifiedName.Name, " [", xmlQualifiedName.Namespace, "]");
-			} else if (!String.IsNullOrEmpty(prefix)) {
-				return prefix + ":" + xmlQualifiedName.Name;
+		{
+			string qualifiedName = GetPrefixedName();
+			if (HasNamespace) {
+				return String.Concat(qualifiedName, " [", xmlQualifiedName.Namespace, "]");
 			}
-			return xmlQualifiedName.Name;
+			return qualifiedName;
+		}
+		
+		public string GetPrefixedName()
+		{
+			if (String.IsNullOrEmpty(prefix)) {
+				return xmlQualifiedName.Name;
+			}
+			return prefix + ":" + xmlQualifiedName.Name;
+		}
+		
+		public static QualifiedName FromString(string name)
+		{
+			if (name == null) {
+				return new QualifiedName();
+			}
+			
+			int index = name.IndexOf(':');
+			if (index >= 0) {
+				return CreateFromNameWithPrefix(name, index);
+			}
+			return new QualifiedName(name, String.Empty);
+		}
+		
+		static QualifiedName CreateFromNameWithPrefix(string name, int index)
+		{
+			string prefix = name.Substring(0, index);
+			name = name.Substring(index + 1);
+			return new QualifiedName(name, String.Empty, prefix);
 		}
 	}
 }

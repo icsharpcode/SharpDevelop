@@ -127,7 +127,7 @@ namespace ICSharpCode.XmlEditor
 			// Add namespaces.
 			XmlNamespaceManager namespaceManager = new XmlNamespaceManager(navigator.NameTable);
 			foreach (XmlNamespace xmlNamespace in namespaces) {
-				namespaceManager.AddNamespace(xmlNamespace.Prefix, xmlNamespace.Uri);
+				namespaceManager.AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
 			}
 			
 			// Run the xpath query.

@@ -53,7 +53,7 @@ namespace XmlEditor.Tests.XPathQuery
 				XmlNamespace expectedNamespace = expectedNamespaces[i];
 				XmlNamespace actualNamespace = actualNamespaces[i];
 				Assert.AreEqual(expectedNamespace.Prefix, actualNamespace.Prefix);
-				Assert.AreEqual(expectedNamespace.Uri, actualNamespace.Uri);
+				Assert.AreEqual(expectedNamespace.Name, actualNamespace.Name);
 			}
 		}
 	}

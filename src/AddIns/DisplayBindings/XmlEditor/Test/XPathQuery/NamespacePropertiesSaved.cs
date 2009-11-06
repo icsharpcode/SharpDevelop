@@ -30,7 +30,7 @@ namespace XmlEditor.Tests.XPathQuery
 				expectedNamespaces.Add(new XmlNamespace("s", "http://sharpdevelop.com"));
 				
 				foreach (XmlNamespace xmlNamespace in expectedNamespaces) {
-					queryControl.AddNamespace(xmlNamespace.Prefix, xmlNamespace.Uri);
+					queryControl.AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
 				}
 				// Blank prefix and uris should be ignored.
 				queryControl.AddNamespace(String.Empty, String.Empty);

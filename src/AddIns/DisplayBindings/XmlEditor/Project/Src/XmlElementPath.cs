@@ -39,13 +39,11 @@ namespace ICSharpCode.XmlEditor
 		/// </remarks>
 		public void Compact()
 		{
-			if (elements.Count > 0) {
-				QualifiedName lastName = Elements[Elements.Count - 1];
-				if (lastName != null) {
-					int index = FindNonMatchingParentElement(lastName.Namespace);
-					if (index != -1) {
-						RemoveParentElements(index);
-					}
+			if (elements.HasItems) {
+				QualifiedName lastName = Elements.GetLast();
+				int index = LastIndexNotMatchingNamespace(lastName.Namespace);
+				if (index != -1) {
+					elements.RemoveFirst(index + 1);
 				}
 			}
 		}
@@ -56,22 +54,12 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public override bool Equals(object obj) 
 		{
-			XmlElementPath path = obj as XmlElementPath;
-			
-			if (path == null) return false;
-			if (this == obj) return true;
-			
-			if (elements.Count == path.elements.Count) {
-				
-				for (int i = 0; i < elements.Count; ++i) {
-					if (!elements[i].Equals(path.elements[i])) {
-						return false;
-					}
-				}
-				return true;
+			XmlElementPath rhsPath = obj as XmlElementPath;			
+			if (rhsPath == null) {
+				return false;
 			}
 			
-			return false;
+			return elements.Equals(rhsPath.elements);
 		}
 		
 		public override int GetHashCode() 
@@ -79,71 +67,23 @@ namespace ICSharpCode.XmlEditor
 			return elements.GetHashCode();
 		}
 		
-		/// <summary>
-		/// Gets a string that represents the XmlElementPath.
-		/// </summary>
 		public override string ToString()
 		{
-			if (elements.Count > 0) {
-				StringBuilder toString = new StringBuilder();
-				int lastIndex = elements.Count - 1;
-				for (int i = 0; i < elements.Count; ++i) {
-					string elementToString = GetElementToString(elements[i]);
-					if (i == lastIndex) {
-						toString.Append(elementToString);
-					} else {
-						toString.Append(elementToString);
-						toString.Append(" > ");
-					}
-				}
-				return toString.ToString();
-			}
-			return string.Empty;
+			return elements.ToString();
 		}
-		
-		/// <summary>
-		/// Removes elements up to and including the specified index.
-		/// </summary>
-		void RemoveParentElements(int index)
+				
+		int LastIndexNotMatchingNamespace(string namespaceUri)
 		{
-			while (index >= 0) {
-				--index;
-				elements.RemoveFirst();
-			}
-		}
-		
-		/// <summary>
-		/// Finds the first parent that does belong in the specified
-		/// namespace.
-		/// </summary>
-		int FindNonMatchingParentElement(string namespaceUri)
-		{
-			int index = -1;
-			
 			if (elements.Count > 1) {
-				// Start the check from the the last but one item.
+				// Start the check from the last but one item.
 				for (int i = elements.Count - 2; i >= 0; --i) {
 					QualifiedName name = elements[i];
 					if (name.Namespace != namespaceUri) {
-						index = i;
-						break;
+						return i;
 					}
 				}
 			}
-			return index;
-		}
-		
-		/// <summary>
-		/// Returns the qualified name as a string. If the name has a 
-		/// prefix then it returns "prefix:element" otherwise it returns
-		/// just the element name.
-		/// </summary>
-		static string GetElementToString(QualifiedName name)
-		{
-			if (name.Prefix.Length > 0) {
-				return name.Prefix + ":" + name.Name;
-			}
-			return name.Name;
+			return -1;
 		}
 	}
 }

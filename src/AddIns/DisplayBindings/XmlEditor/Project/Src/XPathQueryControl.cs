@@ -140,7 +140,7 @@ namespace ICSharpCode.XmlEditor
 				string[] namespaces = memento.Get(NamespacesProperty, new string[0]);
 				foreach (string ns in namespaces) {
 					XmlNamespace xmlNamespace = XmlNamespace.FromString(ns);
-					AddNamespace(xmlNamespace.Prefix, xmlNamespace.Uri);
+					AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
 				}
 				
 				// Set namespace data grid column widths.

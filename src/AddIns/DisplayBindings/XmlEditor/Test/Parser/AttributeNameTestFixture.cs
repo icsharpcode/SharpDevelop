@@ -76,34 +76,34 @@ namespace XmlEditor.Tests.Parser
 		public void FailureTest1()
 		{
 			string text = "foo=";
-			Assert.IsNull(XmlParser.GetQualifiedAttributeName(text, text.Length));
+			Assert.IsTrue(XmlParser.GetQualifiedAttributeName(text, text.Length).IsEmpty);
 		}		
 		
 		[Test]
 		public void FailureTest2()
 		{
 			string text = "foo=<";
-			Assert.IsNull(XmlParser.GetQualifiedAttributeName(text, text.Length));
+			Assert.IsTrue(XmlParser.GetQualifiedAttributeName(text, text.Length).IsEmpty);
 		}		
 		
 		[Test]
 		public void FailureTest3()
 		{
 			string text = "a";
-			Assert.IsNull(XmlParser.GetQualifiedAttributeName(text, text.Length));
+			Assert.IsTrue(XmlParser.GetQualifiedAttributeName(text, text.Length).IsEmpty);
 		}	
 		
 		[Test]
 		public void FailureTest4()
 		{
 			string text = " a";
-			Assert.IsNull(XmlParser.GetQualifiedAttributeName(text, text.Length));
+			Assert.IsTrue(XmlParser.GetQualifiedAttributeName(text, text.Length).IsEmpty);
 		}	
 		
 		[Test]
 		public void EmptyString()
 		{
-			Assert.IsNull(XmlParser.GetQualifiedAttributeName(String.Empty, 10));
+			Assert.IsTrue(XmlParser.GetQualifiedAttributeName(String.Empty, 10).IsEmpty);
 		}
 		
 		[Test]
@@ -118,7 +118,7 @@ namespace XmlEditor.Tests.Parser
 		[Test]
 		public void GetQualifiedAttributeNameWithEmptyString()
 		{
-			Assert.IsNull(XmlParser.GetQualifiedAttributeNameAtIndex(String.Empty, 0, true));
+			Assert.IsTrue(XmlParser.GetQualifiedAttributeNameAtIndex(String.Empty, 0, true).IsEmpty);
 		}
 		
 		[Test]
@@ -136,7 +136,7 @@ namespace XmlEditor.Tests.Parser
 		[Test]
 		public void GetQualifiedAttributeNameWithSingleXmlCharacter()
 		{
-			Assert.IsNull(XmlParser.GetQualifiedAttributeNameAtIndex("<", 0, true));
+			Assert.IsTrue(XmlParser.GetQualifiedAttributeNameAtIndex("<", 0, true).IsEmpty);
 		}		
 	}
 }

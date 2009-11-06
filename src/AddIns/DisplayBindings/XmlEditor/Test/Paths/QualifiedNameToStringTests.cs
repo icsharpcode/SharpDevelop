@@ -11,9 +11,6 @@ using NUnit.Framework;
 
 namespace XmlEditor.Tests.Paths
 {
-	/// <summary>
-	/// Tests the QualifiedName.ToString method.
-	/// </summary>
 	[TestFixture]
 	public class QualifiedNameToStringTests
 	{
@@ -39,7 +36,7 @@ namespace XmlEditor.Tests.Paths
 		}
 
 		[Test]
-		public void NameNamespaceAndPrefix()
+		public void NameAndNamespaceAndPrefixS()
 		{
 			QualifiedName name = new QualifiedName("root", "urn:my-uri", "a");
 			Assert.AreEqual("a:root [urn:my-uri]", name.ToString());
@@ -60,11 +57,17 @@ namespace XmlEditor.Tests.Paths
 		}
 		
 		[Test]
+		public void NullPrefixAndNullNamespace()
+		{
+			QualifiedName name = new QualifiedName("root", null, null);
+			Assert.AreEqual("root", name.ToString());
+		}
+		
+		[Test]
 		public void NullPrefixAndNonEmptyNamespace()
 		{
 			QualifiedName name = new QualifiedName("root", "urn:my-uri", null);
 			Assert.AreEqual("root [urn:my-uri]", name.ToString());
 		}
-		
 	}
 }

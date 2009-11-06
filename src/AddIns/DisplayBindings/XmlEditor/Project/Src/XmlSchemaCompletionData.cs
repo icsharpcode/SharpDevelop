@@ -186,7 +186,7 @@ namespace ICSharpCode.XmlEditor
 			
 			// Get completion data.
 			if (element != null) {
-				return GetChildElementCompletionData(element, path.Elements.LastPrefix).ToArray();
+				return GetChildElementCompletionData(element, path.Elements.GetLastPrefix()).ToArray();
 			}
 			
 			return new ICompletionItem[0];
@@ -337,19 +337,19 @@ namespace ICSharpCode.XmlEditor
 		/// form then no prefix is added.</remarks>
 		public QualifiedName CreateQualifiedName(string name)
 		{
-			int index = name.IndexOf(":");
-			if (index >= 0) {
-				string prefix = name.Substring(0, index);
-				name = name.Substring(index + 1);
+			QualifiedName qualifiedName = QualifiedName.FromString(name);
+			if (qualifiedName.HasPrefix) {
 				foreach (XmlQualifiedName xmlQualifiedName in schema.Namespaces.ToArray()) {
-					if (xmlQualifiedName.Name == prefix) {
-						return new QualifiedName(name, xmlQualifiedName.Namespace, prefix);
+					if (xmlQualifiedName.Name == qualifiedName.Prefix) {
+						qualifiedName.Namespace = xmlQualifiedName.Namespace;
+						return qualifiedName;
 					}
 				}
 			}
 			
 			// Default behaviour just return the name with the namespace uri.
-			return new QualifiedName(name, namespaceUri);
+			qualifiedName.Namespace = namespaceUri;
+			return qualifiedName;
 		}
 		
 		/// <summary>
