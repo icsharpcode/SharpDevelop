@@ -467,6 +467,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							// casts from float to int in C# truncate, but VB rounds
 							// we'll have to introduce a call to Math.Truncate
 							castExpression.Expression = ExpressionBuilder.Identifier("Math").Call("Truncate", castExpression.Expression);
+						} else if (sourceType != null && sourceType.FullyQualifiedName == "System.Char") {
+							// casts from char to int are valid in C#, but need to use AscW in VB
+							castExpression.Expression = ExpressionBuilder.Identifier("AscW").Call(castExpression.Expression);
+							if (targetType != null && targetType.FullyQualifiedName == "System.Int32") {
+								// AscW already returns int, so skip the cast
+								ReplaceCurrentNode(castExpression.Expression);
+								return null;
+							}
 						}
 					}
 				}

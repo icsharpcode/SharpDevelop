@@ -469,6 +469,12 @@ End Using");
 		}
 		
 		[Test]
+		public void AddressOf()
+		{
+			TestExpression("AddressOf Abc");
+		}
+		
+		[Test]
 		public void ObjectInitializer()
 		{
 			TestExpression("New StringWriter() With { _\n" +
