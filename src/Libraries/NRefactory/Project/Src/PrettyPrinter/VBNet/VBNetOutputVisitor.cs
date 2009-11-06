@@ -2655,6 +2655,34 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(objectCreateExpression.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			CollectionInitializerExpression initializer = objectCreateExpression.ObjectInitializer;
+			if (!initializer.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.With);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+				outputFormatter.IndentationLevel++;
+				for (int i = 0; i < initializer.CreateExpressions.Count; i++) {
+					Expression expr = initializer.CreateExpressions[i];
+					if (i > 0)
+						outputFormatter.PrintToken(Tokens.Comma);
+					outputFormatter.PrintLineContinuation();
+					outputFormatter.Indent();
+					NamedArgumentExpression nae = expr as NamedArgumentExpression;
+					if (nae != null) {
+						outputFormatter.PrintToken(Tokens.Dot);
+						outputFormatter.PrintIdentifier(nae.Name);
+						outputFormatter.Space();
+						outputFormatter.PrintToken(Tokens.Assign);
+						outputFormatter.Space();
+						TrackedVisit(nae.Expression, data);
+					}
+				}
+				outputFormatter.IndentationLevel--;
+				outputFormatter.PrintLineContinuation();
+				outputFormatter.Indent();
+				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			}
 			return null;
 		}
 		
