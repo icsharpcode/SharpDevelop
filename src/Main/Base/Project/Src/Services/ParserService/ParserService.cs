@@ -445,6 +445,7 @@ namespace ICSharpCode.SharpDevelop
 					this.oldUnits = newUnits;
 					ParseInformation newParseInfo = new ParseInformation(resultUnit);
 					this.parseInfo = newParseInfo;
+					TaskService.UpdateCommentTags(fileName, resultUnit.TagComments);
 					return newParseInfo;
 				}
 			}
