@@ -9,7 +9,7 @@ using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
@@ -25,15 +25,14 @@ namespace PythonBinding.Tests
 	{
 		DerivedPythonCodeCompletionBinding codeCompletionBinding;
 		bool handlesImportKeyword;
-		SharpDevelopTextAreaControl textAreaControl;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			PropertyService.InitializeServiceForUnitTests();
-			textAreaControl = new SharpDevelopTextAreaControl();
 			codeCompletionBinding = new DerivedPythonCodeCompletionBinding();
-			handlesImportKeyword = codeCompletionBinding.HandleKeyword(new TextEditorAdapter(textAreaControl), "from");
+			var editor = new AvalonEditTextEditorAdapter(new ICSharpCode.AvalonEdit.TextEditor());
+			handlesImportKeyword = codeCompletionBinding.HandleKeyword(editor, "from");
 		}
 		
 		[Test]

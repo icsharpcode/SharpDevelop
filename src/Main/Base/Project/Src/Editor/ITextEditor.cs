@@ -121,9 +121,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the list of available code snippets.
 		/// </summary>
 		IEnumerable<ICompletionItem> GetSnippets();
-		
-		[Obsolete("Use the overload taking ICompletionItemList")]
-		void ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch);
 	}
 	
 	public interface ITextEditorOptions

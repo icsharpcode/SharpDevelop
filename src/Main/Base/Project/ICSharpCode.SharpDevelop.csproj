@@ -559,9 +559,6 @@
     <EmbeddedResource Include="Resources\SelectStylePanel.xfrm" />
     <EmbeddedResource Include="Resources\TaskListOptions.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
-    <EmbeddedResource Include="Resources\BehaviorTextEditorPanel.xfrm" />
-    <EmbeddedResource Include="Resources\GeneralTextEditorPanel.xfrm" />
-    <EmbeddedResource Include="Resources\MarkersTextEditorPanel.xfrm" />
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\Commands\MenuCommands.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\IBookmarkMargin.cs" />
@@ -575,7 +572,6 @@
     <Compile Include="Src\TextEditor\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
     <Compile Include="Src\TextEditor\Codons\AddInTreeSyntaxModeProvider.cs" />
-    <Compile Include="Src\TextEditor\Codons\EditActionDoozer.cs" />
     <Compile Include="Src\TextEditor\Codons\SyntaxModeDoozer.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\AbstractClassImplementorCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\AbstractFieldCodeGenerator.cs" />
@@ -591,43 +587,19 @@
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\OverridePropertiesCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\SetterCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\ToStringCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CommentRegionCommand.cs" />
-    <Compile Include="Src\TextEditor\Commands\FormatCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\GenerateCodeCommand.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\TextEditor\Commands\SearchCommands.cs" />
-    <Compile Include="Src\TextEditor\Commands\TextAreaContextmenuCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CommandPromptControl.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionData.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\IndexerInsightDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\InsightWindow\MethodInsightDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\ErrorDrawer.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaControlProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\ParserFoldingStrategy.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextAreaControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextEditorProperties.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\TextEditorDisplayBinding.cs" />
-    <Compile Include="Src\TextEditor\Gui\OptionPanels\BehaviorTextEditorPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\TextEditor\Gui\OptionPanels\GeneralTextEditorPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\TextEditor\Gui\OptionPanels\MarkersTextEditorPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\TextEditor\Actions.cs" />
     <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
     <Compile Include="Src\TextEditor\Gui\TextEditorAdapter.cs" />
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
-    <Compile Include="Src\TextEditor\Commands\NavigationCommands.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs">
@@ -667,7 +639,6 @@
     <Compile Include="Src\Services\ProjectService\ParseableFileContentEnumerator.cs" />
     <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\AbstractCompletionDataProvider.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CachedCompletionDataProvider.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
     <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
     <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs">
@@ -742,8 +713,6 @@
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\IProjectNodeBuilder.cs" />
     <Compile Include="Src\Services\RefactoringService\NamespaceRefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactorMenu.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlightingStrategy.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\AdvancedHighlighter.cs" />
     <Compile Include="Src\Services\NavigationService\DefaultNavigationPoint.cs" />
     <Compile Include="Src\Services\NavigationService\INavigationPoint.cs" />
     <Compile Include="Src\Services\NavigationService\NavigationService.cs" />

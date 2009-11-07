@@ -93,18 +93,6 @@
 		        class = "Grunwald.BooBinding.CodeCompletion.BooParser"/>
 	</Path>
 	
-	<!--
-	depreciated, use LanguageBinding instead
-	
-	<Path name = "/AddIns/DefaultTextEditor/Formatter/Boo">
-		<Class id = "BooFormatter" class = "Grunwald.BooBinding.BooFormattingStrategy"/>
-	</Path>
-	
-	<Path name = "/AddIns/DefaultTextEditor/AdvancedHighlighter/Boo">
-		<Class id = "BooFormatter" class = "Grunwald.BooBinding.CodeCompletion.BooAdvancedHighlighter"/>
-	</Path>
-	-->
-	
 	<Path name="/SharpDevelop/Workbench/LanguageBindings">
 		<LanguageBinding
 			id="Boo"

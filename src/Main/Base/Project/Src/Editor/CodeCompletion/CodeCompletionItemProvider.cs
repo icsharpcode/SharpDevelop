@@ -8,6 +8,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -243,9 +246,99 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 		}
 		
+		static readonly Regex whitespace = new Regex(@"\s+");
+		
+		/// <summary>
+		/// Converts the xml documentation string into a plain text string.
+		/// </summary>
 		public static string ConvertDocumentation(string xmlDocumentation)
 		{
-			return ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(xmlDocumentation);
+			if (string.IsNullOrEmpty(xmlDocumentation))
+				return string.Empty;
+			
+			System.IO.StringReader reader = new System.IO.StringReader("<docroot>" + xmlDocumentation + "</docroot>");
+			XmlTextReader xml   = new XmlTextReader(reader);
+			StringBuilder ret   = new StringBuilder();
+			////Regex whitespace    = new Regex(@"\s+");
+			
+			try {
+				xml.Read();
+				do {
+					if (xml.NodeType == XmlNodeType.Element) {
+						string elname = xml.Name.ToLowerInvariant();
+						switch (elname) {
+							case "filterpriority":
+								xml.Skip();
+								break;
+							case "remarks":
+								ret.Append(Environment.NewLine);
+								ret.Append("Remarks:");
+								ret.Append(Environment.NewLine);
+								break;
+							case "example":
+								ret.Append(Environment.NewLine);
+								ret.Append("Example:");
+								ret.Append(Environment.NewLine);
+								break;
+							case "exception":
+								ret.Append(Environment.NewLine);
+								ret.Append(GetCref(xml["cref"]));
+								ret.Append(": ");
+								break;
+							case "returns":
+								ret.Append(Environment.NewLine);
+								ret.Append("Returns: ");
+								break;
+							case "see":
+								ret.Append(GetCref(xml["cref"]));
+								ret.Append(xml["langword"]);
+								break;
+							case "seealso":
+								ret.Append(Environment.NewLine);
+								ret.Append("See also: ");
+								ret.Append(GetCref(xml["cref"]));
+								break;
+							case "paramref":
+								ret.Append(xml["name"]);
+								break;
+							case "param":
+								ret.Append(Environment.NewLine);
+								ret.Append(whitespace.Replace(xml["name"].Trim()," "));
+								ret.Append(": ");
+								break;
+							case "value":
+								ret.Append(Environment.NewLine);
+								ret.Append("Value: ");
+								ret.Append(Environment.NewLine);
+								break;
+							case "br":
+							case "para":
+								ret.Append(Environment.NewLine);
+								break;
+						}
+					} else if (xml.NodeType == XmlNodeType.Text) {
+						ret.Append(whitespace.Replace(xml.Value, " "));
+					}
+				} while(xml.Read());
+			} catch (Exception ex) {
+				LoggingService.Debug("Invalid XML documentation: " + ex.Message);
+				return xmlDocumentation;
+			}
+			return ret.ToString();
+		}
+		
+		static string GetCref(string cref)
+		{
+			if (cref == null || cref.Trim().Length==0) {
+				return "";
+			}
+			if (cref.Length < 2) {
+				return cref;
+			}
+			if (cref.Substring(1, 1) == ":") {
+				return cref.Substring(2, cref.Length - 2);
+			}
+			return cref;
 		}
 		#endregion
 	}

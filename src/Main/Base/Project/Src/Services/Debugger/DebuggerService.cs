@@ -404,7 +404,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			string documentation = member.Documentation;
 			if (documentation != null && documentation.Length > 0) {
 				text.Append('\n');
-				text.Append(ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(documentation));
+				text.Append(ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionItem.ConvertDocumentation(documentation));
 			}
 			return text.ToString();
 		}

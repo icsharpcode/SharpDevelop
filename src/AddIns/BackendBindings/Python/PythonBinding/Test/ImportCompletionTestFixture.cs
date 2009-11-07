@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -22,18 +23,16 @@ namespace PythonBinding.Tests
 	[TestFixture]
 	public class ImportCompletionTestFixture
 	{
+		ICSharpCode.SharpDevelop.Editor.ITextEditor textEditor;
 		DerivedPythonCodeCompletionBinding codeCompletionBinding;
 		bool handlesImportKeyword;
-		SharpDevelopTextAreaControl textAreaControl;
-		TextEditorAdapter textEditor;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			PropertyService.InitializeServiceForUnitTests();
-			textAreaControl = new SharpDevelopTextAreaControl();
-			textEditor = new TextEditorAdapter(textAreaControl);
 			codeCompletionBinding = new DerivedPythonCodeCompletionBinding();
+			textEditor = new AvalonEditTextEditorAdapter(new ICSharpCode.AvalonEdit.TextEditor());
 			handlesImportKeyword = codeCompletionBinding.HandleKeyword(textEditor, "import");
 		}
 		
@@ -77,7 +76,7 @@ namespace PythonBinding.Tests
 		[Ignore("Broken since ITextEditor introduction")]
 		public void TextAreaControlUsedToDisplayCodeCompletionWindow()
 		{
-			Assert.AreSame(textAreaControl, codeCompletionBinding.TextAreaControlUsedToShowCompletionWindow);
+			Assert.AreSame(textEditor, codeCompletionBinding.TextAreaControlUsedToShowCompletionWindow);
 		}
 		
 		[Test]

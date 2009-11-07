@@ -227,11 +227,6 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			return null;
 		}
 		
-		
-		void ITextEditor.ShowCompletionWindow(ICSharpCode.TextEditor.Gui.CompletionWindow.ICompletionDataProvider provider, char ch)
-		{
-		}
-		
 		public virtual ICompletionListWindow ActiveCompletionWindow {
 			get {
 				return null;

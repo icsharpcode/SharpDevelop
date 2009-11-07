@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				return "override " + GetName(member, ConversionFlags.ShowReturnType
 				                             | ConversionFlags.ShowParameterList
 				                             | ConversionFlags.ShowAccessibility)
-					+ "\n\n" + CodeCompletionData.ConvertDocumentation(member.Documentation);
+					+ "\n\n" + CodeCompletionItem.ConvertDocumentation(member.Documentation);
 			}
 		}
 		

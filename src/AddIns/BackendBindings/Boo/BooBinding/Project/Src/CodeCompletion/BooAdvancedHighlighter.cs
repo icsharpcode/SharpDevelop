@@ -19,6 +19,7 @@ using ICSharpCode.TextEditor.Document;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {
+	/*
 	public class BooAdvancedHighlighter : AsynchronousAdvancedHighlighter
 	{
 		volatile Dictionary<int, List<int>> declarations;
@@ -148,4 +149,5 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 		}
 	}
+	*/
 }

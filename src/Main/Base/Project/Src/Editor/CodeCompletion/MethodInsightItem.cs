@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				if (!descriptionCreated) {
 					string entityDoc = entity.Documentation;
 					if (!string.IsNullOrEmpty(entityDoc)) {
-						description = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entityDoc);
+						description = CodeCompletionItem.ConvertDocumentation(entityDoc);
 					}
 					descriptionCreated = true;
 				}

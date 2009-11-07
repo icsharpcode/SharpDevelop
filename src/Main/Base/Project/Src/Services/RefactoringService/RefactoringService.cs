@@ -158,11 +158,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (progressMonitor != null) {
 					progressMonitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count, true);
 				}
-				#if DEBUG
-				if (System.Windows.Forms.Control.ModifierKeys == DefaultEditor.Gui.Editor.SharpDevelopTextAreaControl.DebugBreakModifiers) {
-					System.Diagnostics.Debugger.Break();
-				}
-				#endif
 				int index = 0;
 				foreach (ProjectItem item in files) {
 					var entry = finder.Create(item);

@@ -41,7 +41,6 @@
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
 			<Doozer name="Parser" class="ICSharpCode.SharpDevelop.ParserDoozer"/>
 			<Doozer name="ProjectContentRegistry" class="ICSharpCode.SharpDevelop.ProjectContentRegistryDoozer"/>
-			<Doozer name="EditAction" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionDoozer"/>
 			<Doozer name="SyntaxMode" class="ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
 			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionBindingDoozer"/>
@@ -1709,10 +1708,6 @@
 	<!-- TEXT EDITOR -->
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id    = "OldText"
-		                insertafter = "Text"
-		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditor} (Old)"
-		                class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding" />
 		<DisplayBinding id    = "ShellExecute"
 		                insertafter = "Text"
 		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.DefaultWindowsApplication}"

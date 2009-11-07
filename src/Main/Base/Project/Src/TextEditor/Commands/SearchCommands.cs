@@ -21,15 +21,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		}
 	}
 	
-	public class GotoMatchingBrace : AbstractEditActionMenuCommand
-	{
-		public override IEditAction EditAction {
-			get {
-				return new ICSharpCode.TextEditor.Actions.GotoMatchingBrace();
-			}
-		}
-	}
-	
 	/*
 	public class RunIncrementalSearch : AbstractMenuCommand
 	{

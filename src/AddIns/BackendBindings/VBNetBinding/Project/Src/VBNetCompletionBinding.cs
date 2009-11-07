@@ -50,6 +50,14 @@ namespace VBNetBinding
 			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
 		}
 		
+		sealed class GlobalCompletionItemProvider : CodeCompletionItemProvider
+		{
+			public override ExpressionResult GetExpression(ITextEditor editor)
+			{
+				return new ExpressionResult("Global", ExpressionContext.Importable);
+			}
+		}
+		
 		public override bool HandleKeyword(ITextEditor editor, string word)
 		{
 			// TODO: Assistance writing Methods/Fields/Properties/Events:
@@ -58,7 +66,7 @@ namespace VBNetBinding
 			switch (word.ToLowerInvariant()) {
 				case "imports":
 					if (IsInComment(editor)) return false;
-					editor.ShowCompletionWindow(new CodeCompletionDataProvider(new ExpressionResult("Global", ExpressionContext.Importable)), ' ');
+					new GlobalCompletionItemProvider().ShowCompletion(editor);
 					return true;
 				case "as":
 					if (IsInComment(editor)) return false;

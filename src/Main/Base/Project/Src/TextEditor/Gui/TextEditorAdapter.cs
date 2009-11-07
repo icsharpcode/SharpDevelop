@@ -24,7 +24,6 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class TextEditorAdapter : ITextEditor
 	{
-		readonly SharpDevelopTextAreaControl sdtac;
 		readonly TextEditorControl editor;
 		
 		public TextEditorAdapter(TextEditorControl editor)
@@ -32,7 +31,6 @@ namespace ICSharpCode.SharpDevelop
 			if (editor == null)
 				throw new ArgumentNullException("editor");
 			this.editor = editor;
-			this.sdtac = editor as SharpDevelopTextAreaControl;
 			this.Document = new TextEditorDocument(editor.Document);
 			this.Caret = new CaretAdapter(this, editor.ActiveTextAreaControl.Caret);
 			this.Options = new OptionsAdapter(editor.TextEditorProperties);
@@ -147,19 +145,6 @@ namespace ICSharpCode.SharpDevelop
 			get { return FileName.Create(editor.FileName); }
 		}
 		
-		public void ShowInsightWindow(ICSharpCode.TextEditor.Gui.InsightWindow.IInsightDataProvider provider)
-		{
-			if (sdtac != null)
-				sdtac.ShowInsightWindow(provider);
-		}
-		
-		public void ShowCompletionWindow(ICompletionDataProvider provider, char ch)
-		{
-			if (sdtac != null) {
-				sdtac.ShowCompletionWindow(provider, ch);
-			}
-		}
-		
 		public ICompletionListWindow ActiveCompletionWindow {
 			get {
 				return null;
@@ -168,31 +153,25 @@ namespace ICSharpCode.SharpDevelop
 		
 		public ICompletionListWindow ShowCompletionWindow(ICompletionItemList items)
 		{
-			if (sdtac != null) {
-				sdtac.ShowCompletionWindow(new CompletionItemListAdapter(items), '.');
-			}
 			return null;
 		}
 		
 		public string GetWordBeforeCaret()
 		{
-			if (sdtac != null)
-				return sdtac.GetWordBeforeCaret();
-			else
-				return "";
+			return "";
 		}
 		
 		public object GetService(Type serviceType)
 		{
 			if (serviceType == typeof(TextArea))
-				return sdtac.ActiveTextAreaControl.TextArea;
+				return editor.ActiveTextAreaControl.TextArea;
 			else
 				return null;
 		}
 		
 		public int SelectionStart {
 			get {
-				var sel = sdtac.ActiveTextAreaControl.SelectionManager;
+				var sel = editor.ActiveTextAreaControl.SelectionManager;
 				if (sel.HasSomethingSelected)
 					return sel.SelectionCollection[0].Offset;
 				else
@@ -202,7 +181,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public int SelectionLength {
 			get {
-				var sel = sdtac.ActiveTextAreaControl.SelectionManager;
+				var sel = editor.ActiveTextAreaControl.SelectionManager;
 				if (sel.HasSomethingSelected)
 					return sel.SelectionCollection[0].Length;
 				else
@@ -212,7 +191,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public string SelectedText {
 			get {
-				var sel = sdtac.ActiveTextAreaControl.SelectionManager;
+				var sel = editor.ActiveTextAreaControl.SelectionManager;
 				return sel.SelectedText;
 			}
 			set {
@@ -226,20 +205,20 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		public event EventHandler SelectionChanged {
-			add    { sdtac.ActiveTextAreaControl.SelectionManager.SelectionChanged += value; }
-			remove { sdtac.ActiveTextAreaControl.SelectionManager.SelectionChanged -= value; }
+			add    { editor.ActiveTextAreaControl.SelectionManager.SelectionChanged += value; }
+			remove { editor.ActiveTextAreaControl.SelectionManager.SelectionChanged -= value; }
 		}
 		
 		public void Select(int selectionStart, int selectionLength)
 		{
-			var doc = sdtac.Document;
-			sdtac.ActiveTextAreaControl.SelectionManager.SetSelection(
+			var doc = editor.Document;
+			editor.ActiveTextAreaControl.SelectionManager.SetSelection(
 				doc.OffsetToPosition(selectionStart), doc.OffsetToPosition(selectionStart + selectionLength));
 		}
 		
 		public void JumpTo(int line, int column)
 		{
-			sdtac.ActiveTextAreaControl.JumpTo(line - 1, column - 1);
+			editor.ActiveTextAreaControl.JumpTo(line - 1, column - 1);
 		}
 		
 		public IInsightWindow ActiveInsightWindow {

@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -75,12 +76,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (WorkbenchSingleton.Workbench.ActiveViewContent != null) {
 				UpdateItems();
-				
-				if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is SharpDevelopTextAreaControl) {
-					SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
-					
-					ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(CaretPositionChanged);
-				}
+				WorkbenchActiveViewContentChanged(null, null);
 			}
 			
 			ProjectService.SolutionLoaded += OnSolutionOpen;
@@ -98,15 +94,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 
 		void WorkbenchActiveViewContentChanged(object sender, EventArgs e)
 		{
-			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
-				return;
 			if (isInitialized)
 				UpdateItems();
 			
-			if (WorkbenchSingleton.Workbench.ActiveViewContent.Control is SharpDevelopTextAreaControl) {
-				SharpDevelopTextAreaControl ctrl = WorkbenchSingleton.Workbench.ActiveViewContent.Control as SharpDevelopTextAreaControl;
-				
-				ctrl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(CaretPositionChanged);
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			
+			if (provider != null) {
+				// ensure we don't attach multiple times to the same editor
+				provider.TextEditor.Caret.PositionChanged -= CaretPositionChanged;
+				provider.TextEditor.Caret.PositionChanged += CaretPositionChanged;
 			}
 		}
 
