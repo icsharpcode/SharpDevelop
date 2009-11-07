@@ -43,12 +43,15 @@ namespace Debugger.AddIn.Service
 			foreach (var name in Enum.GetNames(typeof(SupportedLanguage)))
 				cmbLanguage.Items.Add(name);
 			
-			LoggingService.Debug(ProjectService.CurrentProject.Language);
+			string language = "CSharp";
+			
+			if (ProjectService.CurrentProject != null)
+				language = ProjectService.CurrentProject.Language.Replace("#", "Sharp");
 			
 			this.cmbLanguage.SelectedIndex = 
 				(!string.IsNullOrEmpty(data.ScriptLanguage)) ? 
 				this.cmbLanguage.Items.IndexOf(data.ScriptLanguage) :
-				this.cmbLanguage.Items.IndexOf(ProjectService.CurrentProject.Language.Replace("#", "Sharp"));
+				this.cmbLanguage.Items.IndexOf(language);
 			
 			this.codeEditor.Document.Text = data.Condition;
 			
@@ -57,7 +60,7 @@ namespace Debugger.AddIn.Service
 		
 		void UpdateHighlighting()
 		{
-			codeEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension("." + cmbLanguage.SelectedValue.ToString().Substring(0, 2));
+			codeEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(this.cmbLanguage.SelectedItem.ToString().Replace("Sharp", "#"));
 		}
 		
 		bool CheckSyntax()
