@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 		protected override Size MeasureCore(Size availableSize)
 		{
 			double size = MarginSizeFactor * FoldingMargin.SizeFactor * (double)GetValue(TextBlock.FontSizeProperty);
-			size = PixelSnapHelpers.RoundToOdd(size);
+			size = PixelSnapHelpers.RoundToOdd(size, PixelSnapHelpers.GetPixelSize(this).Width);
 			return new Size(size, size);
 		}
 		
@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			Pen blackPen = new Pen(Brushes.Black, 1);
 			blackPen.StartLineCap = PenLineCap.Square;
 			blackPen.EndLineCap = PenLineCap.Square;
-			Size pixelSize = PixelSnapHelpers.GetPixelSize();
+			Size pixelSize = PixelSnapHelpers.GetPixelSize(this);
 			Rect rect = new Rect(pixelSize.Width / 2,
 			                     pixelSize.Height / 2,
 			                     this.RenderSize.Width - pixelSize.Width,
@@ -70,7 +70,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			                             rect);
 			double middleX = rect.Left + rect.Width / 2;
 			double middleY = rect.Top + rect.Height / 2;
-			double space = PixelSnapHelpers.Round(rect.Width / 8) + pixelSize.Width;
+			double space = PixelSnapHelpers.Round(rect.Width / 8, pixelSize.Width) + pixelSize.Width;
 			drawingContext.DrawLine(blackPen,
 			                        new Point(rect.Left + space, middleY),
 			                        new Point(rect.Right - space, middleY));

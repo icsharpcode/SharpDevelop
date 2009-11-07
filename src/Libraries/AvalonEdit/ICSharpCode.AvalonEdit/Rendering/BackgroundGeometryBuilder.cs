@@ -33,6 +33,16 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		/// <summary>
+		/// Gets/Sets whether to align the geometry to whole pixels.
+		/// </summary>
+		public bool AlignToWholePixels { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets whether to align the geometry to the middle of pixels.
+		/// </summary>
+		public bool AlignToMiddleOfPixels { get; set; }
+		
+		/// <summary>
 		/// Creates a new BackgroundGeometryBuilder instance.
 		/// </summary>
 		public BackgroundGeometryBuilder()
@@ -44,9 +54,23 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public void AddSegment(TextView textView, ISegment segment)
 		{
+			if (textView == null)
+				throw new ArgumentNullException("textView");
+			Size pixelSize = PixelSnapHelpers.GetPixelSize(textView);
 			foreach (Rect r in GetRectsForSegment(textView, segment)) {
-				Rect roundedRect = PixelSnapHelpers.PixelAlign(r);
-				AddRectangle(roundedRect.Left, roundedRect.Top, roundedRect.Right, roundedRect.Bottom);
+				if (AlignToWholePixels) {
+					AddRectangle(PixelSnapHelpers.Round(r.Left, pixelSize.Width),
+					             PixelSnapHelpers.Round(r.Top, pixelSize.Height),
+					             PixelSnapHelpers.Round(r.Right, pixelSize.Width),
+					             PixelSnapHelpers.Round(r.Bottom, pixelSize.Height));
+				} else if (AlignToMiddleOfPixels) {
+					AddRectangle(PixelSnapHelpers.PixelAlign(r.Left, pixelSize.Width),
+					             PixelSnapHelpers.PixelAlign(r.Top, pixelSize.Height),
+					             PixelSnapHelpers.PixelAlign(r.Right, pixelSize.Width),
+					             PixelSnapHelpers.PixelAlign(r.Bottom, pixelSize.Height));
+				} else {
+					AddRectangle(r.Left, r.Top, r.Right, r.Bottom);
+				}
 			}
 		}
 		

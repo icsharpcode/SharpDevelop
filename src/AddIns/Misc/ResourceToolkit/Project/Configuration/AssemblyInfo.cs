@@ -24,7 +24,3 @@ using System.Security.Permissions;
 #endif
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution=true)]
-[assembly: FileIOPermission(SecurityAction.RequestMinimum, AllLocalFiles=FileIOPermissionAccess.AllAccess)]
-[assembly: UIPermission(SecurityAction.RequestMinimum, Clipboard=UIPermissionClipboard.OwnClipboard, Window=UIPermissionWindow.AllWindows)]

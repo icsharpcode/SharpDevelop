@@ -155,6 +155,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			foreach (TextMarker marker in markers.FindOverlappingSegments(viewStart, viewEnd - viewStart)) {
 				if (marker.BackgroundColor != null) {
 					BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder();
+					geoBuilder.AlignToWholePixels = true;
 					geoBuilder.CornerRadius = 3;
 					geoBuilder.AddSegment(textView, marker);
 					Geometry geometry = geoBuilder.CreateGeometry();

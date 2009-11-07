@@ -7,77 +7,83 @@
 
 using System;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
-	static class PixelSnapHelpers
+	/// <summary>
+	/// Contains static helper methods for aligning stuff on a whole number of
+	/// </summary>
+	public static class PixelSnapHelpers
 	{
-		public static Size GetPixelSize()
+		/// <summary>
+		/// Gets the pixel size on the screen containing visual.
+		/// This method does not take transforms on visual into account.
+		/// </summary>
+		public static Size GetPixelSize(Visual visual)
 		{
-			return new Size(1, 1);
+			Matrix matrix = PresentationSource.FromVisual(visual).CompositionTarget.TransformFromDevice;
+			return new Size(matrix.M11, matrix.M22);
 		}
 		
 		/// <summary>
 		/// Aligns val on the next middle of a pixel.
 		/// </summary>
-		public static double PixelAlign(double val)
+		/// <param name="val">The value that should be aligned</param>
+		/// <param name="pixelSize">The size of one pixel</param>
+		public static double PixelAlign(double val, double pixelSize)
 		{
 			// 0 -> 0.5
 			// 0.1 -> 0.5
 			// 0.5 -> 0.5
 			// 0.9 -> 0.5
 			// 1 -> 1.5
-			return Math.Round(val + 0.5) - 0.5;
+			return pixelSize * (Math.Round((val / pixelSize) + 0.5) - 0.5);
 		}
 		
 		/// <summary>
 		/// Aligns the borders of rect on the middles of pixels.
 		/// </summary>
-		public static Rect PixelAlign(Rect rect)
+		public static Rect PixelAlign(Rect rect, Size pixelSize)
 		{
-			rect.X = PixelAlign(rect.X);
-			rect.Y = PixelAlign(rect.Y);
-			rect.Width = Round(rect.Width);
-			rect.Height = Round(rect.Height);
+			rect.X = PixelAlign(rect.X, pixelSize.Width);
+			rect.Y = PixelAlign(rect.Y, pixelSize.Height);
+			rect.Width = Round(rect.Width, pixelSize.Width);
+			rect.Height = Round(rect.Height, pixelSize.Height);
 			return rect;
 		}
 		
-		public static Point Round(Point val)
+		/// <summary>
+		/// Rounds val to whole number of pixels.
+		/// </summary>
+		public static Point Round(Point val, Size pixelSize)
 		{
-			return new Point(Round(val.X), Round(val.Y));
+			return new Point(Round(val.X, pixelSize.Width), Round(val.Y, pixelSize.Height));
 		}
 		
-		public static Rect Round(Rect rect)
+		/// <summary>
+		/// Rounds val to whole number of pixels.
+		/// </summary>
+		public static Rect Round(Rect rect, Size pixelSize)
 		{
-			return new Rect(Round(rect.X), Round(rect.Y), Round(rect.Width), Round(rect.Height));
+			return new Rect(Round(rect.X, pixelSize.Width), Round(rect.Y, pixelSize.Height),
+			                Round(rect.Width, pixelSize.Width), Round(rect.Height, pixelSize.Height));
 		}
 		
 		/// <summary>
 		/// Rounds val to a whole number of pixels.
 		/// </summary>
-		public static double Round(double val)
+		public static double Round(double val, double pixelSize)
 		{
-			return Math.Round(val);
+			return pixelSize * Math.Round(val / pixelSize);
 		}
 		
 		/// <summary>
-		/// Rounds val to an even number of pixels.
+		/// Rounds val to an whole odd number of pixels.
 		/// </summary>
-		public static double RoundToEven(double val)
+		public static double RoundToOdd(double val, double pixelSize)
 		{
-			// 0 -> 0
-			// 1 -> 2
-			// 2 -> 2
-			// 3 -> 4
-			return Math.Round(val / 2) * 2;
-		}
-		
-		/// <summary>
-		/// Rounds val to an odd number of pixels.
-		/// </summary>
-		public static double RoundToOdd(double val)
-		{
-			return RoundToEven(val - 1) + 1;
+			return Round(val - pixelSize, pixelSize * 2) + pixelSize;
 		}
 	}
 }

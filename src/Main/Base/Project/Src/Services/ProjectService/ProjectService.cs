@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Gets/Sets the active project.
+		/// Returns null if no project is active.
 		/// The getter is thread-safe; the setter may only be called on the main thread.
 		/// </summary>
 		public static IProject CurrentProject {

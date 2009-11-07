@@ -13,6 +13,7 @@ using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -85,11 +86,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (!bookmarkDict.ContainsKey(line))
 						bookmarkDict.Add(line, bm);
 				}
+				Size pixelSize = PixelSnapHelpers.GetPixelSize(this);
 				foreach (VisualLine line in textView.VisualLines) {
 					int lineNumber = line.FirstDocumentLine.LineNumber;
 					IBookmark bm;
 					if (bookmarkDict.TryGetValue(lineNumber, out bm)) {
-						Rect rect = new Rect(0, line.VisualTop - textView.VerticalOffset, 16, 16);
+						Rect rect = new Rect(0, PixelSnapHelpers.Round(line.VisualTop - textView.VerticalOffset, pixelSize.Height), 16, 16);
 						drawingContext.DrawImage((bm.Image ?? BookmarkBase.DefaultBookmarkImage).ImageSource, rect);
 					}
 				}

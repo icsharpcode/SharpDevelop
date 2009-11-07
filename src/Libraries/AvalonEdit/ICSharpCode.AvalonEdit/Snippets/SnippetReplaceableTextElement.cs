@@ -193,6 +193,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				ISegment s = element.Segment;
 				if (s != null) {
 					BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder();
+					geoBuilder.AlignToMiddleOfPixels = true;
 					if (Layer == KnownLayer.Background) {
 						geoBuilder.AddSegment(textView, s);
 						drawingContext.DrawGeometry(backgroundBrush, null, geoBuilder.CreateGeometry());
