@@ -82,6 +82,25 @@
 		</Condition>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit">
+		<MenuItem id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu" insertafter="Format">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider" action="Disable">
+				<MenuItem id          = "ToggleFolding"
+				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
+				          shortcut    = "Shift|Control|M"
+				          class       = "ICSharpCode.AvalonEdit.AddIn.Commands.ToggleFolding"/>
+				<MenuItem id          = "ToggleAllFoldings"
+				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings}"
+				          shortcut    = "Shift|Control|L"
+				          class       = "ICSharpCode.AvalonEdit.AddIn.Commands.ToggleAllFoldings"/>
+				<MenuItem id          = "ShowDefinitionsOnly"
+				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions}"
+				          shortcut    = "Shift|Control|P"
+				          class       = "ICSharpCode.AvalonEdit.AddIn.Commands.ShowDefinitionsOnly"/>
+			</Condition>
+		</MenuItem>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
 		<OptionPanel id = "CodeTemplates"
 		             label = "${res:Dialog.Options.CodeTemplatesText}"

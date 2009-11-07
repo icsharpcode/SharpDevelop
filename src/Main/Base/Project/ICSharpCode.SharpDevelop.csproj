@@ -592,7 +592,6 @@
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\SetterCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\ToStringCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CommentRegionCommand.cs" />
-    <Compile Include="Src\TextEditor\Commands\FoldingCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\FormatCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\GenerateCodeCommand.cs">
       <SubType>Form</SubType>

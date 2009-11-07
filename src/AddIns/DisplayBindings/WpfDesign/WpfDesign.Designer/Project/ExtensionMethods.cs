@@ -25,15 +25,6 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 
-		public static object GetDataContext(this RoutedEventArgs e)
-		{
-			var f = e.OriginalSource as FrameworkElement;
-			if (f != null) {
-				return f.DataContext;
-			}
-			return null;
-		}
-		
 		static bool IsVisual(DependencyObject d)
 		{
 			return d is Visual || d is Visual3D;

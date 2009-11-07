@@ -50,6 +50,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				get { return line.Length; }
 			}
 			
+			public int EndOffset {
+				get { return line.Offset + line.Length; }
+			}
+			
 			public int TotalLength {
 				get { return line.TotalLength; }
 			}

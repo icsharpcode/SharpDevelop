@@ -22,8 +22,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public class ParserFoldingStrategy : IDisposable
 	{
 		readonly FoldingManager foldingManager;
+		
 		TextArea textArea;
 		bool isFirstUpdate = true;
+		
+		public FoldingManager FoldingManager {
+			get { return foldingManager; }
+		}
 		
 		public ParserFoldingStrategy(TextArea textArea)
 		{
@@ -55,14 +60,24 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					AddClassMembers(c, newFoldMarkers);
 				}
 				foreach (FoldingRegion foldingRegion in parseInfo.CompilationUnit.FoldingRegions) {
-					NewFolding f = new NewFolding(GetOffset(foldingRegion.Region.BeginLine, foldingRegion.Region.BeginColumn),
-					                              GetOffset(foldingRegion.Region.EndLine, foldingRegion.Region.EndColumn));
+					NewFolding f = new NewFoldingDefinition(GetOffset(foldingRegion.Region.BeginLine, foldingRegion.Region.BeginColumn),
+					                                        GetOffset(foldingRegion.Region.EndLine, foldingRegion.Region.EndColumn));
 					f.DefaultClosed = isFirstUpdate;
 					f.Name = foldingRegion.Name;
 					newFoldMarkers.Add(f);
 				}
 			}
 			return newFoldMarkers.OrderBy(f => f.StartOffset);
+		}
+		
+		public static bool IsDefinition(FoldingSection section)
+		{
+			return section.Tag is NewFoldingDefinition;
+		}
+		
+		sealed class NewFoldingDefinition : NewFolding
+		{
+			public NewFoldingDefinition(int start, int end) : base(start, end) {}
 		}
 		
 		void AddClassMembers(IClass c, List<NewFolding> newFoldMarkers)
@@ -83,8 +98,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			foreach (IMember m in c.AllMembers) {
 				if (m.Region.EndLine < m.BodyRegion.EndLine) {
-					newFoldMarkers.Add(new NewFolding(GetOffset(m.Region.EndLine, m.Region.EndColumn),
-					                                  GetOffset(m.BodyRegion.EndLine, m.BodyRegion.EndColumn)));
+					newFoldMarkers.Add(new NewFoldingDefinition(GetOffset(m.Region.EndLine, m.Region.EndColumn),
+					                                            GetOffset(m.BodyRegion.EndLine, m.BodyRegion.EndColumn)));
 				}
 			}
 		}

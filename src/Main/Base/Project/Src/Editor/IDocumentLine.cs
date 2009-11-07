@@ -25,6 +25,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		int Length { get; }
 		
 		/// <summary>
+		/// Gets the ending offset of the line in the document's text (= Offset + Length).
+		/// </summary>
+		int EndOffset { get; }
+		
+		/// <summary>
 		/// Gets the length of this line, including the line delimiter.
 		/// </summary>
 		int TotalLength { get; }

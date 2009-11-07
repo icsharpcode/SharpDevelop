@@ -18,9 +18,6 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Commands
 {
-	/// <summary>
-	/// Description of SurroundWithCommand
-	/// </summary>
 	public class SurroundWithCommand : AbstractMenuCommand
 	{
 		/// <summary>
@@ -28,7 +25,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		/// </summary>
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			ICodeEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ICodeEditorProvider;
 			
 			if (provider == null)
 				return;

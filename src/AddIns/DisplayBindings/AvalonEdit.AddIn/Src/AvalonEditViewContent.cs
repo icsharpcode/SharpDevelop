@@ -21,8 +21,13 @@ using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
+	public interface ICodeEditorProvider : ITextEditorProvider
+	{
+		CodeEditor CodeEditor { get; }
+	}
+	
 	public class AvalonEditViewContent
-		: AbstractViewContent, IEditable, IMementoCapable, ITextEditorProvider, IPositionable, IParseInformationListener, IToolsHost
+		: AbstractViewContent, IEditable, IMementoCapable, ICodeEditorProvider, IPositionable, IParseInformationListener, IToolsHost
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		

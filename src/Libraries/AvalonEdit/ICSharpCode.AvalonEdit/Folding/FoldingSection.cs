@@ -64,6 +64,11 @@ namespace ICSharpCode.AvalonEdit.Folding
 			}
 		}
 		
+		/// <summary>
+		/// Gets/Sets an additional object associated with this folding section.
+		/// </summary>
+		public object Tag { get; set; }
+		
 		internal FoldingSection(FoldingManager manager, int startOffset, int endOffset)
 		{
 			this.manager = manager;

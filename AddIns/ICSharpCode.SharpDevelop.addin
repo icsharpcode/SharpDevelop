@@ -1848,22 +1848,6 @@
 			<Include id = "Comment" item = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/Comment" />
 			<Include id = "Indent" item = "/SharpDevelop/ViewContent/TextEditor/ContextMenu/Indent" />
 		</MenuItem>
-		<MenuItem id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu">
-			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
-				<MenuItem id          = "ToggleFolding"
-				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
-				          shortcut    = "Shift|Control|M"
-				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToggleFolding"/>
-				<MenuItem id          = "ToggleAllFoldings"
-				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings}"
-				          shortcut    = "Shift|Control|L"
-				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToggleAllFoldings"/>
-				<MenuItem id          = "ShowDefinitionsOnly"
-				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions}"
-				          shortcut    = "Shift|Control|P"
-				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowDefinitionsOnly"/>
-			</Condition>
-		</MenuItem>
 		<MenuItem insertbefore = "SelectAll" id = "Separator3" type = "Separator" />
 	</Path>
 	

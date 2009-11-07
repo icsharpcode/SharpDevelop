@@ -74,6 +74,10 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 				get { return line.Length; }
 			}
 			
+			public int EndOffset {
+				get { return line.EndOffset; }
+			}
+			
 			public int TotalLength {
 				get { return line.TotalLength; }
 			}

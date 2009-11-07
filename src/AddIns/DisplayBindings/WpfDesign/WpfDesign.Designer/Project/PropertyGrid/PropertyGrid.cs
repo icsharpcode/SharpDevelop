@@ -18,7 +18,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 	{
 		public PropertyGrid()
 		{
-			Categories = new ObservableCollection<Category>(new [] { 
+			Categories = new ObservableCollection<Category>(new [] {
 				specialCategory, 
 				popularCategory, 
 				otherCategory
@@ -89,7 +89,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		}
 
 		public string Name {
-		    get {
+			get {
 				if (SingleItem != null) {
 					return SingleItem.Name;
 				}
@@ -115,7 +115,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		bool isNameCorrect = true;
 
 		public bool IsNameCorrect {
-		    get {
+			get {
 				return isNameCorrect;
 			}
 			set {
@@ -125,7 +125,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		}
 
 		public bool IsNameEnabled {
-		    get {
+			get {
 				return SingleItem != null;
 			}
 		}
@@ -137,11 +137,12 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				return selectedItems;
 			}
 			set {
-				Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(delegate {				
-				    selectedItems = value;
-				    Reload();
-				    RaisePropertyChanged("SelectedItems");
-				}));
+				selectedItems = value;
+				RaisePropertyChanged("SelectedItems");
+				Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(
+					delegate {
+						Reload();
+					}));
 			}
 		}
 
@@ -228,12 +229,12 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				} else {
 					var cat = PickCategory(node);
 					cat.Properties.AddSorted(node);
-					node.Category = cat;					
+					node.Category = cat;
 				}
 				nodeFromDescriptor[md] = node;
-			}			
+			}
 			node.IsVisible = true;
-			if (node.Category != null) 
+			if (node.Category != null)
 				node.Category.IsVisible = true;
 		}
 

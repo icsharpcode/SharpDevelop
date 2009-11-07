@@ -218,6 +218,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 					section = this.CreateFolding(newFolding.StartOffset, newFolding.EndOffset);
 					// auto-close #regions only when opening the document
 					section.IsFolded = newFolding.DefaultClosed;
+					section.Tag = newFolding;
 				}
 				section.Title = newFolding.Name;
 			}
