@@ -1,6 +1,0 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1900
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDbTools", "SharpDbTools.csproj", "{93B2D6DF-7588-40C0-8A35-CA0DD7328FC3}"
-EndProject
-Global
-EndGlobal
