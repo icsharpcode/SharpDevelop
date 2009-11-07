@@ -47,6 +47,11 @@ namespace ICSharpCode.AvalonEdit.Utils
 			return new Point(Round(val.X), Round(val.Y));
 		}
 		
+		public static Rect Round(Rect rect)
+		{
+			return new Rect(Round(rect.X), Round(rect.Y), Round(rect.Width), Round(rect.Height));
+		}
+		
 		/// <summary>
 		/// Rounds val to a whole number of pixels.
 		/// </summary>
