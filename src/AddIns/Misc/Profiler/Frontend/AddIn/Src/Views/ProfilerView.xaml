@@ -30,7 +30,7 @@
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical" Grid.Row="1">
-			<controls:ExtendedTimeLineControl x:Name="timeLine2" RangeChanged="TimeLineRangeChanged" />
+			<controls:ExtendedTimeLineControl x:Name="timeLine" RangeChanged="TimeLineRangeChanged" />
 		</StackPanel>
 		<ToolBar Height="27" x:Name="toolBar1" VerticalAlignment="Top">
 			<Menu>

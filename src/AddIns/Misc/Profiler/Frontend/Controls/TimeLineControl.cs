@@ -291,7 +291,7 @@ namespace ICSharpCode.Profiler.Controls
 		int TransformToIndex(Point point, out bool valid)
 		{
 			int value = (int)Math.Floor(point.X / this.pieceWidth);
-			valid = (0 <= value && value <= this.valuesList.Count - 1);
+			valid = (0 >= value && value <= this.valuesList.Count - 1);
 			return Math.Min(Math.Max(0, value), this.valuesList.Count - 1);
 		}
 		

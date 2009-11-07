@@ -615,7 +615,7 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 
 	byte *codeBuf = 0;
 	
-	codeBuf = (byte *)allocator->Alloc(length + 64);
+	codeBuf = (byte *)allocator->Alloc(length + 128);
     allocator->Release(); 
 	
 	if (codeBuf == nullptr)
