@@ -72,11 +72,41 @@
     <Compile Include="RestrictDesiredSize.cs" />
     <Compile Include="SortableGridViewColumn.cs" />
     <Compile Include="CollapsiblePanel.cs" />
+    <Compile Include="CommandsService\BindingInfoBase.cs" />
+    <Compile Include="CommandsService\BindingGroup.cs" />
+    <Compile Include="CommandsService\BindingInfoTemplate.cs" />
+    <Compile Include="CommandsService\Collections\BindingGroupCollection.cs" />
+    <Compile Include="CommandsService\Collections\BindingInfoTemplateDictionary.cs" />
+    <Compile Include="CommandsService\Collections\InputBindingCategoryCollection.cs" />
+    <Compile Include="CommandsService\Collections\RelationshipMap.cs" />
+    <Compile Include="CommandsService\CommandBindingInfo.cs" />
+    <Compile Include="CommandsService\SDCommandManager.cs" />
+    <Compile Include="CommandsService\CommandsService.cs" />
+    <Compile Include="CommandsService\Events\NotifyBindingsChangedEvent.cs" />
+    <Compile Include="CommandsService\Events\NotifyGesturesChangedEvent.cs" />
+    <Compile Include="CommandsService\Events\NotifyUserGestureProfileChangedEvent.cs" />
+    <Compile Include="CommandsService\InputBindingCategory.cs" />
+    <Compile Include="CommandsService\InputBindingInfo.cs" />
+    <Compile Include="CommandsService\Profile\UserGestureProfileManager.cs" />
+    <Compile Include="CommandsService\Profile\UserGestureProfile.cs" />
+    <Compile Include="CommandsService\Utils\IObservableCollection.cs" />
+    <Compile Include="CommandsService\Utils\WeakReferenceEqualirtyComparer.cs" />
+    <Compile Include="CommandsService\Utils\WpfCommandWrapper.cs" />
     <Compile Include="ConditionalSeparator.cs" />
     <Compile Include="DropDownButton.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="GetBitmapExtension.cs" />
+    <Compile Include="Input\GestureCompareMode.cs" />
+    <Compile Include="Input\InputGestureCollectionConverter.cs" />
+    <Compile Include="Input\ObservableInputGestureCollection.cs" />
     <Compile Include="IOptionBindingContainer.cs" />
+    <Compile Include="Input\InputGestureCollectionExtensions.cs" />
+    <Compile Include="Input\InputGestureExtensions.cs" />
+    <Compile Include="Input\MultiKeyBinding.cs" />
+    <Compile Include="Input\MultiKeyGesture.cs" />
+    <Compile Include="Input\MultiKeyGestureConverter.cs" />
+    <Compile Include="Input\PartialKeyGesture.cs" />
+    <Compile Include="Input\PartialKeyGestureConverter.cs" />
     <Compile Include="IStatusUpdate.cs" />
     <Compile Include="LanguageChangeWeakEventManager.cs" />
     <Compile Include="LocalizeExtension.cs" />
@@ -105,9 +135,6 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Menu" />
-    <Folder Include="themes" />
-    <Folder Include="ToolBar" />
     <Page Include="themes\Aero.NormalColor.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>

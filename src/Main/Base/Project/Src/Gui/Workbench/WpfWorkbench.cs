@@ -76,7 +76,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public void Initialize()
-		{
+		{	
+			// Use shortened assembly qualified name to not lose user defined gestures
+			// when sharp develop is updated
+			SDCommandManager.DefaultOwnerTypeName =  SDCommandManager.GetShortAssemblyQualifiedName(GetType());
+			SDCommandManager.RegisterNamedUIType(SDCommandManager.DefaultOwnerTypeName, GetType());
+			
+			CommandsService.RegisterBuiltInRoutedUICommands();
+			CommandsService.RegisterRoutedCommands(typeof(ICSharpCode.AvalonEdit.AvalonEditCommands));
+			
+			// Load all commands and and key bindings from addin tree
+			CommandsService.RegisterInputBindingCategories(this, "/SharpDevelop/CommandManager/InputBindingCategories");
+			CommandsService.RegisterRoutedUICommands(this, "/SharpDevelop/CommandManager/RoutedUICommands");
+			CommandsService.RegisterMenuBindings(this, "/SharpDevelop/CommandManager/MenuLocations");
+			CommandsService.RegisterCommandBindings(this, "/SharpDevelop/CommandManager/CommandBindings");
+			CommandsService.RegisterInputBindings(this, "/SharpDevelop/CommandManager/InputBindings");
+				
+			// Register context and load all commands from addin
+			SDCommandManager.LoadAddinCommands(AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop"));
+
 			foreach (PadDescriptor content in AddInTree.BuildItems<PadDescriptor>(viewContentPath, this, false)) {
 				if (content != null) {
 					ShowPad(content);
@@ -106,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			FileService.FileRenamed += FileService.RecentOpen.FileRenamed;
 			
 			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
-			CommandManager.RequerySuggested += requerySuggestedEventHandler;
+			System.Windows.Input.CommandManager.RequerySuggested += requerySuggestedEventHandler;
 			ResourceService.LanguageChanged += OnLanguageChanged;
 			
 			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");

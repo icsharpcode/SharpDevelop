@@ -50,6 +50,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CommandsService\KeysCollectionConverter.cs" />
     <Compile Include="Menu\IStatusUpdate.cs" />
     <Compile Include="Menu\ISubmenuBuilder.cs" />
     <Compile Include="Menu\Menu.cs" />
@@ -85,6 +86,7 @@
     </ProjectReference>
     <Folder Include="Menu" />
     <Folder Include="MessageService" />
+    <Folder Include="CommandsService" />
     <Folder Include="ToolBar" />
     <Folder Include="Util" />
   </ItemGroup>

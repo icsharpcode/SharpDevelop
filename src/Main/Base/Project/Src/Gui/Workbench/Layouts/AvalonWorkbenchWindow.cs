@@ -118,6 +118,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			oldActiveViewContent = newActiveViewContent;
 			CommandManager.InvalidateRequerySuggested();
+			
+			if (newActiveViewContent != null) {
+				string ownerName = SDCommandManager.GetShortAssemblyQualifiedName(newActiveViewContent.GetType());
+				SDCommandManager.RegisterNamedUIElement(ownerName, (UIElement)Content);
+			}
 		}
 		
 		sealed class ViewContentCollection : Collection<IViewContent>
@@ -294,7 +299,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void OnIsDirtyChanged(object sender, EventArgs e)
 		{
 			UpdateTitle();
-			CommandManager.InvalidateRequerySuggested();
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		void UpdateTitle()
@@ -399,7 +404,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnClosed();
 			Dispose();
-			CommandManager.InvalidateRequerySuggested();
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		void RefreshTabPageTexts()

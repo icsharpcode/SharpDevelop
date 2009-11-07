@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="ICSharpCode.ShortcutsManagement.Dialogs.MultiKeyGestureTextBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Dialogs="clr-namespace:ICSharpCode.ShortcutsManagement.Dialogs"
+    x:Name="_this" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" BorderThickness="{Binding ElementName=_this, Path=TextBoxBorderThickness}" SnapsToDevicePixels="True" BorderBrush="{x:Static SystemColors.ControlDarkBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBox Grid.Column="0" x:Name="shortcutTextBox" PreviewKeyDown="TextBox_PreviewKeyDown" TextChanged="shortcutTextBox_TextChanged" AcceptsTab="True" AcceptsReturn="True" VerticalAlignment="Top" Padding="5" BorderThickness="0" />
+                <Button Grid.Column="1" x:Name="clearTextBox" VerticalAlignment="Center" Margin="5,0" Click="clearTextBox_Click">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Image Source="../../Resources/delete_small.png" Width="16" />
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Notification panel under the textbox -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Visibility="{Binding ElementName=_this, Path=NotificationVisibility}" Height="16" Margin="0">
+            <Image Height="16" Margin="5,0,10,0">
+                <Image.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Value="{x:Static Dialogs:NotificationType.Valid}" Binding="{Binding ElementName=_this, Path=NotificationType}">
+                                <Setter Property="Image.Source" Value="../../Resources/tick_small.png" />
+                            </DataTrigger>
+                            <DataTrigger Value="{x:Static Dialogs:NotificationType.Invalid}" Binding="{Binding ElementName=_this, Path=NotificationType}">
+                                <Setter Property="Image.Source" Value="../../Resources/warning_small.png" />
+                            </DataTrigger>
+                            <DataTrigger Value="{x:Static Dialogs:NotificationType.Added}" Binding="{Binding ElementName=_this, Path=NotificationType}">
+                                <Setter Property="Image.Source" Value="../../Resources/plus_small.png" />
+                            </DataTrigger>
+                            <DataTrigger Value="{x:Static Dialogs:NotificationType.Failed}" Binding="{Binding ElementName=_this, Path=NotificationType}">
+                                <Setter Property="Image.Source" Value="../../Resources/block_small.png"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+            <TextBlock Text="{Binding ElementName=_this, Path=NotificationText}" VerticalAlignment="Center">
+                <TextBlock.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Value="{x:Static Dialogs:NotificationType.Valid}" Binding="{Binding ElementName=_this, Path=NotificationType}">
+                                <Setter Property="TextBlock.Foreground" Value="Green"/>
+                            </DataTrigger>
+                            <DataTrigger Value="{x:Static Dialogs:NotificationType.Invalid}" Binding="{Binding ElementName=_this, Path=NotificationType}">
+                                <Setter Property="TextBlock.Foreground" Value="Red"/>
+                            </DataTrigger>
+                            <DataTrigger Value="{x:Static Dialogs:NotificationType.Added}" Binding="{Binding ElementName=_this, Path=NotificationType}">
+                                <Setter Property="TextBlock.Foreground" Value="Green"/>
+                            </DataTrigger>
+                            <DataTrigger Value="{x:Static Dialogs:NotificationType.Failed}" Binding="{Binding ElementName=_this, Path=NotificationType}">
+                                <Setter Property="TextBlock.Foreground" Value="Red"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <StackPanel.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Value="{x:Static Dialogs:NotificationType.None}" Binding="{Binding ElementName=_this, Path=NotificationType}">
+                            <Setter Property="TextBlock.Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+        </StackPanel>
+    </Grid>
+</UserControl>

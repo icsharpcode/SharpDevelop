@@ -212,7 +212,11 @@ namespace ICSharpCode.Core.Presentation
 					IMenuItemBuilder builder = codon.AddIn.CreateObject(codon.Properties["class"]) as IMenuItemBuilder;
 					if (builder == null)
 						throw new NotSupportedException("Menu item builder " + codon.Properties["class"] + " does not implement IMenuItemBuilder");
-					return new MenuItemBuilderPlaceholder(builder, descriptor.Codon, descriptor.Caller);
+						
+					var placeHolder = new MenuItemBuilderPlaceholder(builder, descriptor.Codon, descriptor.Caller);
+					placeHolder.BuildItems(); // Build items to register key gestures
+					
+					return placeHolder;
 				default:
 					throw new NotSupportedException("unsupported menu item type : " + type);
 			}
@@ -229,13 +233,5 @@ namespace ICSharpCode.Core.Presentation
 		
 		// HACK: find a better way to allow the host app to process link commands
 		public static Func<string, ICommand> LinkCommandCreator { get; set; }
-		
-		/// <summary>
-		/// Creates an KeyGesture for a shortcut.
-		/// </summary>
-		public static KeyGesture ParseShortcut(string text)
-		{
-			return (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString(text.Replace(',', '+').Replace('|', '+'));
-		}
 	}
 }

@@ -32,6 +32,7 @@
 					Source="../Resources/balken_mitte.gif" />
 			</DockPanel>
 			<ItemsControl
+				Focusable="False"
 				Name="startPageItems"
 				Grid.Row="1">
 				<ItemsControl.ItemsPanel>

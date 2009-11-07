@@ -30,7 +30,7 @@
           icon="Icons.16x16.SharpQuery.Refresh"
           category="Tools"
           title="DatabaseExplorer"
-          shortcut="Control|Alt|D"
+          shortcut="Ctrl+Alt+D"
 		   defaultPosition = "Right, Hidden"
           class="ICSharpCode.Data.Addin.Pad.DatabasesTreeViewPad" />
   </Path>

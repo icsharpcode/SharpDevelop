@@ -31,7 +31,7 @@
 		     category = "Tools"
 		     title    = "${res:ICSharpCode.SharpDevelop.Gui.OutlinePad}"
 		     icon     = "PadIcons.BreakPoints"
-		     shortcut = "Control|Alt|I"
+		     shortcut = "Ctrl+Alt+I"
 		     class = "ICSharpCode.WpfDesign.AddIn.OutlineViewPad"/>
 	</Path>
 	-->

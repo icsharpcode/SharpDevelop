@@ -6,11 +6,13 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
 
 using ICSharpCode.Core;
@@ -198,16 +200,58 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class ToolMenuBuilder : IMenuItemBuilder
 	{
+		private static InputBindingCategory externalToolsCategory;
+		
+		static ToolMenuBuilder()
+		{
+			var categoryName = StringParser.Parse("External tools");
+			externalToolsCategory = new InputBindingCategory("/MainMenu/Tools/ExternalTools", categoryName);
+			ICSharpCode.Core.Presentation.SDCommandManager.RegisterInputBindingCategory(externalToolsCategory);
+		}
+		
+		private bool bindingsAssigned = false;
+		
 		public ICollection BuildItems(Codon codon, object owner)
 		{
 			var items = new System.Windows.Controls.MenuItem[ToolLoader.Tool.Count];
 			for (int i = 0; i < ToolLoader.Tool.Count; ++i) {
 				ExternalTool tool = ToolLoader.Tool[i];
-				items[i] = new System.Windows.Controls.MenuItem {
-					Header = tool.ToString()
-				};
-				items[i].Click += delegate { RunTool(tool); };
+				items[i] = new System.Windows.Controls.MenuItem();
+				
+				var routedCommandName = "SDToolsCommands.RunExternalTool_" + tool.ToString();
+				var routedCommandText = MenuService.ConvertLabel(StringParser.Parse(tool.ToString()));
+				
+				if(!bindingsAssigned) {
+					var addIn = AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop");
+					
+					// Dynamicaly create routed UI command to loaded pad and bindings for it
+					SDCommandManager.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+					
+					var commandBindingInfo = new CommandBindingInfo();
+					commandBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
+					commandBindingInfo.RoutedCommandName = routedCommandName;
+					commandBindingInfo.CanExecuteEventHandler = delegate(object sender, CanExecuteRoutedEventArgs e) { e.CanExecute = true; };
+					commandBindingInfo.ExecutedEventHandler = delegate { RunTool(tool); };
+					SDCommandManager.RegisterCommandBindingInfo(commandBindingInfo);
+					
+					var inputBindingInfo = new InputBindingInfo();
+					inputBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
+					inputBindingInfo.RoutedCommandName = routedCommandName;
+					inputBindingInfo.Categories.Add(externalToolsCategory);
+					SDCommandManager.RegisterInputBindingInfo(inputBindingInfo);
+				}		
+				
+				var gesturesTemplate = BindingInfoTemplate.Create(null, SDCommandManager.DefaultOwnerTypeName, routedCommandName);
+				var updatedGestures = SDCommandManager.FindInputGestures(gesturesTemplate, null);
+				var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+				
+				items[i].InputGestureText = updatedGesturesText;					
+				items[i].Command = SDCommandManager.GetRoutedUICommand(routedCommandName);
+				items[i].Header = StringParser.Parse(tool.ToString());
 			}
+								
+			bindingsAssigned = true;
+			
 			return items;
 		}
 		
@@ -455,6 +499,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			get;
 		}
 		
+		public List<string> bindingsAssigned = new List<string>();
+		
 		public ICollection BuildItems(Codon codon, object owner)
 		{
 			ArrayList list = new ArrayList();
@@ -465,14 +511,52 @@ namespace ICSharpCode.SharpDevelop.Commands
 					if (!string.IsNullOrEmpty(padContent.Icon)) {
 						item.Icon = PresentationResourceService.GetImage(padContent.Icon);
 					}
-					item.Command = new BringPadToFrontCommand(padContent);
-					if (!string.IsNullOrEmpty(padContent.Shortcut)) {
-						var kg = Core.Presentation.MenuService.ParseShortcut(padContent.Shortcut);
-						WorkbenchSingleton.MainWindow.InputBindings.Add(
-							new System.Windows.Input.InputBinding(item.Command, kg)
-						);
-						item.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
-					}
+					
+					var routedCommandName = "SDViewCommands.ShowView_" + padContent.Class;
+					var routedCommandText = MenuService.ConvertLabel(StringParser.Parse(padContent.Title));
+					
+					// TODO: fix this hack
+					if(!bindingsAssigned.Contains(routedCommandName)) {
+						var addIn = AddInTree.AddIns.FirstOrDefault(a => a.Name == "SharpDevelop");
+						
+						// Dynamicaly create routed UI command to loaded pad and bindings for it
+						SDCommandManager.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+						SDCommandManager.LoadCommand(routedCommandName, new BringPadToFrontCommand(padContent));
+						
+						var commandBindingInfo = new CommandBindingInfo();
+						commandBindingInfo.CommandTypeName = routedCommandName;
+						commandBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
+						commandBindingInfo.RoutedCommandName = routedCommandName;
+						commandBindingInfo.AddIn = addIn;
+						SDCommandManager.RegisterCommandBindingInfo(commandBindingInfo);
+						
+						var gestures = InputGestureCollectionConverter.Parse(padContent.Shortcut, padContent.Class);
+						
+						var inputBindingInfo = new InputBindingInfo();
+						inputBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
+						inputBindingInfo.RoutedCommandName = routedCommandName;
+						inputBindingInfo.DefaultGestures.AddRange(gestures);
+						
+						var categoryPath = "/MainMenu/View" + (Category == padContent.Category && padContent.Category != "Main" ? "/" + padContent.Category : "");
+						var category = ICSharpCode.Core.Presentation.SDCommandManager.GetInputBindingCategory(categoryPath, false);
+						if(category == null) {
+							category = new InputBindingCategory(categoryPath, padContent.Category);
+							ICSharpCode.Core.Presentation.SDCommandManager.RegisterInputBindingCategory(category);
+						}
+						
+						inputBindingInfo.Categories.Add(category);
+						inputBindingInfo.AddIn = addIn;
+						SDCommandManager.RegisterInputBindingInfo(inputBindingInfo);
+						
+						bindingsAssigned.Add(routedCommandName);
+					}		
+					
+					item.Command = SDCommandManager.GetRoutedUICommand(routedCommandName);
+					
+					var gesturesTemplate = BindingInfoTemplate.Create(null, SDCommandManager.DefaultOwnerTypeName, routedCommandName);
+					var updatedGestures = SDCommandManager.FindInputGestures(gesturesTemplate, null);
+					var updatedGesturesText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
+					item.InputGestureText = updatedGesturesText;
 					
 					list.Add(item);
 				}

@@ -9,6 +9,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -26,7 +27,35 @@ namespace ICSharpCode.Core.Presentation
 			
 			this.codon = codon;
 			this.caller = caller;
-			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
+
+			
+			string routedCommandName = null;
+			string routedCommandText = null;
+			
+			if(codon.Properties.Contains("command")) {
+				routedCommandName = codon.Properties["command"];				
+				routedCommandText = codon.Properties["command"];
+			} else if(codon.Properties.Contains("link") || codon.Properties.Contains("class")) {
+				routedCommandName = string.IsNullOrEmpty(codon.Properties["link"]) ? codon.Properties["class"] : codon.Properties["link"];
+				routedCommandText = "Menu item \"" + codon.Properties["label"] + "\"";
+			}
+
+			var routedCommand = SDCommandManager.GetRoutedUICommand(routedCommandName);
+			if(routedCommand == null) {
+				routedCommand = SDCommandManager.RegisterRoutedUICommand(routedCommandName, routedCommandText);
+			}
+			   
+			this.Command = routedCommand;
+			
+			if(!codon.Properties.Contains("command") && (codon.Properties.Contains("link") || codon.Properties.Contains("class"))) {
+				var commandBindingInfo = new CommandBindingInfo();
+				commandBindingInfo.AddIn = codon.AddIn;
+				commandBindingInfo.OwnerTypeName = SDCommandManager.DefaultOwnerTypeName;
+				commandBindingInfo.CommandInstance = CommandWrapper.GetCommand(codon, caller, createCommand);
+				commandBindingInfo.RoutedCommandName = routedCommandName;
+				commandBindingInfo.IsLazy = true;
+				SDCommandManager.RegisterCommandBindingInfo(commandBindingInfo);
+			}
 			
 			if (codon.Properties.Contains("icon")) {
 				var image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));

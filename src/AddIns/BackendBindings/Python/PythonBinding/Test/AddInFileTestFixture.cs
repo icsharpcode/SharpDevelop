@@ -253,7 +253,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void PythonRunMenuItemShortcut()
 		{
-			Assert.AreEqual("Control|Shift|R", pythonRunMenuItemCodon["shortcut"]);
+			Assert.AreEqual("Ctrl+Shift+R", pythonRunMenuItemCodon["shortcut"]);
 		}
 		
 		[Test]
@@ -712,7 +712,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void PythonRunWithoutDebuggerMenuItemShortcut()
 		{
-			Assert.AreEqual("Control|Shift|W", pythonWithoutDebuggerRunMenuItemCodon["shortcut"]);
+			Assert.AreEqual("Ctrl+Shift+W", pythonWithoutDebuggerRunMenuItemCodon["shortcut"]);
 		}
 		
 		[Test]

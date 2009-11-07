@@ -114,10 +114,10 @@
 			<!-- !!! INSERT DOOZER LIST !!! -->
 			<xs:element ref="Class" />
 			<xs:element ref="CodeCompletionBinding" />
+			<xs:element ref="CommandBinding" />
 			<xs:element ref="CustomProperty" />
 			<xs:element ref="CustomTool" />
 			<xs:element ref="Debugger" />
-			<xs:element ref="DialogPanel" />
 			<xs:element ref="Directory" />
 			<xs:element ref="DisplayBinding" />
 			<xs:element ref="EditAction" />
@@ -125,14 +125,17 @@
 			<xs:element ref="Icon" />
 			<xs:element ref="Include" />
 			<xs:element ref="ProjectBinding" />
+			<xs:element ref="InputBinding" />
 			<xs:element ref="LanguageBinding" />
 			<xs:element ref="MenuItem" />
+			<xs:element ref="OptionPanel" />
 			<xs:element ref="Pad" />
 			<xs:element ref="Parser" />
 			<xs:element ref="ProjectContentRegistry" />
+			<xs:element ref="RoutedUICommand" />
 			<xs:element ref="SchemeExtension" />
-			<xs:element ref="String" />
 			<xs:element ref="SyntaxMode" />
+			<xs:element ref="String" />
 			<xs:element ref="TaskBoundAdditionalLogger" />
 			<xs:element ref="ToolbarItem" />
 		</xs:choice>
@@ -185,10 +188,10 @@
 			<!-- !!! INSERT DOOZER LIST !!! -->
 			<xs:element ref="Class" />
 			<xs:element ref="CodeCompletionBinding" />
+			<xs:element ref="CommandBinding" />
 			<xs:element ref="CustomProperty" />
 			<xs:element ref="CustomTool" />
 			<xs:element ref="Debugger" />
-			<xs:element ref="DialogPanel" />
 			<xs:element ref="Directory" />
 			<xs:element ref="DisplayBinding" />
 			<xs:element ref="EditAction" />
@@ -196,14 +199,17 @@
 			<xs:element ref="Icon" />
 			<xs:element ref="Include" />
 			<xs:element ref="ProjectBinding" />
+			<xs:element ref="InputBinding" />
 			<xs:element ref="LanguageBinding" />
 			<xs:element ref="MenuItem" />
+			<xs:element ref="OptionPanel" />
 			<xs:element ref="Pad" />
 			<xs:element ref="Parser" />
 			<xs:element ref="ProjectContentRegistry" />
+			<xs:element ref="RoutedUICommand" />
 			<xs:element ref="SchemeExtension" />
-			<xs:element ref="String" />
 			<xs:element ref="SyntaxMode" />
+			<xs:element ref="String" />
 			<xs:element ref="TaskBoundAdditionalLogger" />
 			<xs:element ref="ToolbarItem" />
 		</xs:choice>
@@ -306,6 +312,51 @@
 		<xs:annotation>
 			<xs:documentation>
 			Creates code completion bindings that manage code completion for one language.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="CommandBinding">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="command" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Name of routed UI command which triggers this binding
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="class" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Class implementing System.Window.Input.ICommand or 
+			ICSharpCode.Core class. CanExecute and Executed methods
+			are used to handle raised event
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="lazy" use="optional">
+					<xs:annotation>
+						<xs:documentation>
+			Use lazy loading. If addin containing binded command is 
+			not loaded yet load asseblies referenced in add-in
+			</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="1" />
+							<xs:enumeration value="0" />
+							<xs:enumeration value="true" />
+							<xs:enumeration value="false" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="CommandBinding" type="CommandBinding">
+		<xs:annotation>
+			<xs:documentation>
+			Creates descriptor containing information about command binding
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -438,39 +489,6 @@
 		<xs:annotation>
 			<xs:documentation>
 			Creates debuggers.
-			</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:complexType name="DialogPanel">
-		<xs:complexContent>
-			<xs:extension base="AbstractCodon">
-				<xs:choice minOccurs="0" maxOccurs="unbounded">
-					<xs:element ref="ComplexCondition" />
-					<xs:element ref="Condition" />
-					<xs:element ref="DialogPanel" />
-					<xs:element ref="Include" />
-				</xs:choice>
-				<xs:attribute name="class" use="optional" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Name of the IDialogPanel class. Optional if the page has subpages.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="label" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						Caption of the dialog panel.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="DialogPanel" type="DialogPanel">
-		<xs:annotation>
-			<xs:documentation>
-			Creates DefaultDialogPanelDescriptor objects that are used in option dialogs.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -669,7 +687,35 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<xs:complexType name="ProjectBinding">
+
+	<xs:complexType name="InputBinding">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="command" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Name of routed UI command which is triggered by this binding
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="gesture" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Gesture which triggers this binding
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="InputBinding" type="InputBinding">
+		<xs:annotation>
+			<xs:documentation>
+			Creates descriptor containing information about input binding
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="LanguageBinding">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="guid" use="required" type="xs:string">
@@ -796,6 +842,15 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="command" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			A WPF routed command that is executed when item is clicked.
+			Currently, this property is supported only for WPF Menus.
+			Only one of the "class" and "command" attributes can be used on a menu entry.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="link" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
@@ -818,6 +873,39 @@
 		<xs:annotation>
 			<xs:documentation>
 			Creates menu items from a location in the addin tree.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="OptionPanel">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element ref="ComplexCondition" />
+					<xs:element ref="Condition" />
+					<xs:element ref="IOptionPanel" />
+					<xs:element ref="Include" />
+				</xs:choice>
+				<xs:attribute name="class" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Name of the IOptionPanel class. Optional if the page has subpages.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="label" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Caption of the dialog panel.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="OptionPanel" type="OptionPanel">
+		<xs:annotation>
+			<xs:documentation>
+			Creates DefaultOptionPanelDescriptor objects that are used in option dialogs.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -930,21 +1018,48 @@
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:complexType name="RoutedUICommand">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="name" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Routed UI command name
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="text" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			Routed UI command displayed name
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="RoutedUICommand" type="RoutedUICommand">
+		<xs:annotation>
+			<xs:documentation>
+			Creates descriptor containing information about routed UI command
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="SchemeExtension">
 		<xs:complexContent>
 			<xs:extension base="AbstractCodon">
 				<xs:attribute name="scheme" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Specifies the name of the protocol the extension handles. (e.g. 'ms-help' or 'startpage')
+			Specifies the name of the protocol the extension handles. (e.g. 'ms-help' or 'startpage')
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="class" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the ISchemeExtension class (normally deriving from DefaultSchemeExtension).
-						</xs:documentation>
+			Name of the ISchemeExtension class (normally deriving from DefaultSchemeExtension).
+			</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -954,26 +1069,6 @@
 		<xs:annotation>
 			<xs:documentation>
 			Creates browser scheme extensions that can intercept calls on one protocol.
-			</xs:documentation>
-		</xs:annotation>
-	</xs:element>
-	<xs:complexType name="String">
-		<xs:complexContent>
-			<xs:extension base="AbstractCodon">
-				<xs:attribute name="text" use="required" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-						The string to return.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:element name="String" type="String">
-		<xs:annotation>
-			<xs:documentation>
-			Creates a string.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -1009,6 +1104,26 @@
 			<xs:documentation>
 			Creates AddInTreeSyntaxMode objects that wrap a .xshd syntax mode stored as resource in the
 			addin assembly.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="String">
+		<xs:complexContent>
+			<xs:extension base="AbstractCodon">
+				<xs:attribute name="text" use="required" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+			The string to return.
+			</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="String" type="String">
+		<xs:annotation>
+			<xs:documentation>
+			Creates a string.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>

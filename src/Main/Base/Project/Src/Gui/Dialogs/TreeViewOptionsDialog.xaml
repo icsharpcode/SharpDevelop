@@ -38,31 +38,31 @@
 				</TreeView.ItemTemplate>
 			</TreeView>
 			<GridSplitter Width="2" />
-			<ScrollViewer Name="optionPanelScrollViewer"
-			              Grid.Column="1"
-			              HorizontalScrollBarVisibility="Disabled"
-			              VerticalScrollBarVisibility="Auto">
-				<DockPanel>
-					<TextBlock
-						DockPanel.Dock="Top"
-						Name="optionPanelTitle"
-						FontFamily="Tahoma" FontSize="14pt" FontWeight="Bold"
-						Padding="8"
-					>
-						<TextBlock.Background>
-							<LinearGradientBrush StartPoint="0, 0" EndPoint="0, 1">
-								<LinearGradientBrush.GradientStops>
-									<GradientStop Offset="0.0"
-									              Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
-									<GradientStop Offset="1.0"
-									              Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
-								</LinearGradientBrush.GradientStops>
-							</LinearGradientBrush>
-						</TextBlock.Background>
-					</TextBlock>
+			<DockPanel Grid.Column="1">
+				<TextBlock
+					DockPanel.Dock="Top"
+					Name="optionPanelTitle"
+					FontFamily="Tahoma" FontSize="14pt" FontWeight="Bold"
+					Padding="8"
+				>
+					<TextBlock.Background>
+						<LinearGradientBrush StartPoint="0, 0" EndPoint="0, 1">
+							<LinearGradientBrush.GradientStops>
+								<GradientStop Offset="0.0"
+								              Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+								<GradientStop Offset="1.0"
+								              Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+							</LinearGradientBrush.GradientStops>
+						</LinearGradientBrush>
+					</TextBlock.Background>
+				</TextBlock>
+				<ScrollViewer Name="optionPanelScrollViewer"
+				              HorizontalScrollBarVisibility="Disabled"
+				              VerticalScrollBarVisibility="Auto">
+					
 					<ContentPresenter Name="optionPanelContent" />
-				</DockPanel>
-			</ScrollViewer>
+				</ScrollViewer>
+			</DockPanel>
 		</Grid>
 		<Button
 			Content="{core:Localize Global.OKButtonText}"

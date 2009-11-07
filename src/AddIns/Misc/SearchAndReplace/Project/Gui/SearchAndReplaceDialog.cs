@@ -8,8 +8,10 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -87,8 +89,12 @@ namespace SearchAndReplace
 			SetSearchAndReplaceMode();
 			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", false);
 			
-			searchKeyboardShortcut = GetKeyboardShortcut(SearchMenuAddInPath, "Find");
-			replaceKeyboardShortcut = GetKeyboardShortcut(SearchMenuAddInPath, "Replace");
+			// TODO: Check how this realy should work
+			var searchKeys = GetKeyBoardShortcut("SDSearchAndReplace.Find");
+			searchKeyboardShortcut = searchKeys.Length > 0 ? searchKeys[0] : Keys.None;
+			
+			var replaceKeys = GetKeyBoardShortcut("SDSearchAndReplace.Replace");
+			replaceKeyboardShortcut = replaceKeys.Length > 0 ? replaceKeys[0] : Keys.None;
 		}
 		
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -97,7 +103,7 @@ namespace SearchAndReplace
 			Instance = null;
 		}
 		
-		protected override void OnKeyDown(KeyEventArgs e)
+		protected override void OnKeyDown(System.Windows.Forms.KeyEventArgs e)
 		{
 			if (e.KeyData == Keys.Escape) {
 				Close();
@@ -144,17 +150,73 @@ namespace SearchAndReplace
 		/// Gets the keyboard shortcut for the menu item with the given addin tree
 		/// path and given codon id.
 		/// </summary>
-		Keys GetKeyboardShortcut(string path, string id)
+		Keys[] GetKeyboardShortcut(string path, string id)
 		{
 			AddInTreeNode node = AddInTree.GetTreeNode(path);
 			if (node != null) {
 				foreach (Codon codon in node.Codons) {
 					if (codon.Id == id) {
-						return MenuCommand.ParseShortcut(codon.Properties["shortcut"]);
+						return (Keys[])new KeysCollectionConverter().ConvertFromInvariantString(codon.Properties["shortcut"]);
 					}
 				}
 			}
-			return Keys.None;
+			
+			return new Keys[] { Keys.None };
+		}
+		
+		Keys[] GetKeyBoardShortcut(string routedCommandName)
+		{
+			var template = BindingInfoTemplate.Create(null, null, routedCommandName);
+			var gestureCollection = SDCommandManager.FindInputGestures(template, null);
+			var keyCollection = new Keys[gestureCollection.Count];
+			
+			var i = 0;
+			foreach(InputGesture gesture in gestureCollection) {
+				var keyGesture = gesture as KeyGesture;
+				if(!(keyGesture is MultiKeyGesture)) { // I can't imagine presenting these in WinForms
+					keyCollection[i++] = ConvertInputGestureToKeys(keyGesture);
+				}
+			}
+			
+			return keyCollection;
+		}
+		
+		Keys ConvertInputGestureToKeys(KeyGesture gesture)
+		{
+			var formsKey = Keys.None;
+			
+			var key = Key.None;
+			var modifiers = System.Windows.Input.ModifierKeys.None;
+			var partialGesture = gesture as PartialKeyGesture;
+			var multiKeyGesture = gesture as MultiKeyGesture;
+			
+			if(partialGesture != null) {
+				key = partialGesture.Key;
+				modifiers = partialGesture.Modifiers;
+			} else if(!(gesture is MultiKeyGesture)) {
+				key = gesture.Key;
+				modifiers = gesture.Modifiers;
+			}
+			
+			if(key != Key.None || modifiers != System.Windows.Input.ModifierKeys.None) {
+				formsKey |= (Keys)KeyInterop.VirtualKeyFromKey(key);
+				
+				if((modifiers & System.Windows.Input.ModifierKeys.Alt) == System.Windows.Input.ModifierKeys.Alt) {
+					formsKey |= Keys.Alt;
+				}
+				
+				if((modifiers & System.Windows.Input.ModifierKeys.Control) == System.Windows.Input.ModifierKeys.Control) {
+					formsKey |= Keys.Control;
+				}
+				
+				if((modifiers & System.Windows.Input.ModifierKeys.Shift) == System.Windows.Input.ModifierKeys.Shift) {
+					formsKey |= Keys.Shift;
+				}
+				
+				// What about "Windows" key?
+			}
+			
+			return formsKey;
 		}
 	}
 }

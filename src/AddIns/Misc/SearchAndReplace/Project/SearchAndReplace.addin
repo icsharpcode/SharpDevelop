@@ -15,7 +15,7 @@
 		<MenuItem id = "Find"
 		          label = "${res:XML.MainMenu.SearchMenu.Find}"
 		          icon = "Icons.16x16.FindIcon"
-		          shortcut = "Control|F"
+		          shortcut = "Ctrl+F"
 		          class = "SearchAndReplace.Find"/>
 		<MenuItem id = "FindNext"
 		          insertafter = "Find"
@@ -26,14 +26,14 @@
 		<MenuItem id = "FindNextSelected"
 		          insertafter = "FindNext"
 		          label = "${res:XML.MainMenu.SearchMenu.FindNextSelected}"
-		          shortcut = "Control|F3"
+		          shortcut = "Ctrl+F3"
 		          class = "SearchAndReplace.FindNextSelected"/>
 		<MenuItem id = "Replace"
 		          insertbefore = "SearchIncremental"
 		          insertafter = "FindNextSelected"
 		          label = "${res:XML.MainMenu.SearchMenu.Replace}"
 		          icon = "Icons.16x16.ReplaceIcon"
-		          shortcut = "Control|R"
+		          shortcut = "Ctrl+R"
 		          class = "SearchAndReplace.Replace"/>
 	</Path>
 	

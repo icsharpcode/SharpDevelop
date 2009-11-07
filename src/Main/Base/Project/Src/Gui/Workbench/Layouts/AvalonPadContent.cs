@@ -84,6 +84,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (padInstance != null) {
 					this.SetContent(padInstance.Control, padInstance);
 					placeholder = null;
+					
+					var contextName = padInstance.GetType().FullName;
+					SDCommandManager.RegisterNamedUIElement(contextName, (UIElement)Content);
 				}
 			}
 		}

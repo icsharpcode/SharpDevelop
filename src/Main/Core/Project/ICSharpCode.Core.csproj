@@ -60,6 +60,16 @@
     <Compile Include="Src\AddInTree\AddIn\Codon.cs" />
     <Compile Include="Src\AddInTree\AddIn\ComplexCondition.cs" />
     <Compile Include="Src\AddInTree\AddIn\Condition.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\CommandBindingInfoDescriptor.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\CommandBindingInfoDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingCategoryDescriptor.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingInfoDescriptor.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingInfoDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\InputBindingCategoryDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\RoutedUICommandDescriptor.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Command\RoutedUICommandDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuLocationDescriptor.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuLocationDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\ExtensionPath.cs" />
     <Compile Include="Src\AddInTree\AddIn\IConditionEvaluator.cs" />
     <Compile Include="Src\AddInTree\AddIn\ICondition.cs" />
@@ -110,6 +120,7 @@
     <Compile Include="Src\Util\AbstractCommand.cs" />
     <Compile Include="Src\Util\CallbackOnDispose.cs" />
     <Compile Include="Src\Util\DebugTextWriter.cs" />
+    <Compile Include="Src\Util\ExtensionMethods.cs" />
     <Compile Include="Src\Util\ICommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeDoozer.cs" />
@@ -126,6 +137,7 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ITextBoxCommand.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Src\AddInTree\AddIn\DefaultDoozers\Command" />
     <Folder Include="Src\Services\LoggingService" />
     <Folder Include="Src\Services\AnalyticsMonitor" />
     <Folder Include="Src\Services\ResourceService" />

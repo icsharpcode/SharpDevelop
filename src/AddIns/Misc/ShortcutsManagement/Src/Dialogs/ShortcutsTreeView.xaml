@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="ICSharpCode.ShortcutsManagement.Dialogs.ShortcutsTreeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Data="clr-namespace:ICSharpCode.ShortcutsManagement.Data" 
+             xmlns:Dialogs="clr-namespace:ICSharpCode.ShortcutsManagement.Dialogs" 
+             xmlns:Extensions="clr-namespace:ICSharpCode.ShortcutsManagement.Extensions"
+             mc:Ignorable="d" 
+             x:Name="_this"
+             d:DesignHeight="300" d:DesignWidth="300" >
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"  />
+        </Grid.RowDefinitions>
+
+        <!-- Tree view -->
+        <TreeView x:Name="shortcutsTreeView" ItemsSource="{Binding}" ItemContainerStyle="{StaticResource ShortcutsTreeItem}" Grid.Column="0" Grid.Row="0" FocusManager.FocusedElement="{Binding ElementName=searchTextBox}" PreviewKeyDown="shortcutsTreeView_PreviewKeyDown">
+            <TreeView.Resources>
+                <!-- Tree view add-in data template -->
+                <HierarchicalDataTemplate DataType="{x:Type Data:AddIn}" ItemsSource="{Binding Path=Categories}" >
+                    <TextBlock Text="{Binding Path=Name}" Extensions:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" />
+                </HierarchicalDataTemplate>
+
+                <!-- Tree view category data template -->
+                <HierarchicalDataTemplate DataType="{x:Type Data:ShortcutCategory}" >
+                    <HierarchicalDataTemplate.ItemsSource>
+                        <MultiBinding Converter="{StaticResource ShortcutsTreeConverter}">
+                            <Binding Path="SubCategories" />
+                            <Binding Path="Shortcuts" />
+                        </MultiBinding>
+                    </HierarchicalDataTemplate.ItemsSource>
+                    
+                    <TextBlock Text="{Binding Path=Name}" Extensions:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" />
+                </HierarchicalDataTemplate>
+
+                <!-- Tree view shortcut data template -->
+                <HierarchicalDataTemplate DataType="{x:Type Data:Shortcut}" >
+                    <Grid x:Name="shortcutEntry" MouseDown="shortcutEntry_MouseDown" Panel.Background="{Binding Panel.Background, RelativeSource={RelativeSource TemplatedParent}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Text="{Binding Name}" Extensions:TextBlockBehavior.SearchedText="{Binding ElementName=searchTextBox, Path=Text}" Grid.Column="0" />
+                        <TextBlock Text="{Binding Gestures, Converter={StaticResource GesturesListConverter}}" Grid.Column="1" TextAlignment="Right" Padding="20,0,0,0" />
+                        <Button x:Name="removeShortcutButton" Style="{StaticResource RemoveButton}" Visibility="Hidden" Grid.Column="2" Tag="{Binding}" Click="removeShortcutButton_Click" SnapsToDevicePixels="True" />
+                    </Grid>
+                    <HierarchicalDataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=_this, Path=IsRemovableShortcutsEnabled}" Value="True">
+                            <Setter Property="Margin" TargetName="removeShortcutButton" Value="10,0,0,0" />
+                        </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ElementName=_this, Path=IsRemovableShortcutsEnabled}" Value="True" />
+                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" TargetName="removeShortcutButton" Value="Visible" />
+                        </MultiDataTrigger>
+                    </HierarchicalDataTemplate.Triggers>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+
+        <!-- Search box -->
+        <Border x:Name="searchSection" CornerRadius="0,0,8,8" Padding="2" Background="#FFF" BorderBrush="#888" BorderThickness="1,0,1,1" Grid.Column="0" Grid.Row="1" Visibility="{Binding ElementName=_this, Path=IsSearchable, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Collapsed}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0" x:Name="searchTextBox" TextChanged="searchTextBox_TextChanged" BorderThickness="0" PreviewKeyDown="searchTextBox_PreviewKeyDown" />
+                <Dialogs:MultiKeyGestureTextBox Grid.Column="0" x:Name="gestureTextBox" NotificationVisibility="Collapsed" TextBoxBorderThickness="0" Visibility="{Binding ElementName=searchTypeToggleButton, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Hidden}" GestureChanged="gestureTextBox_GestureChanged" PreviewKeyDown="searchTextBox_PreviewKeyDown" />
+
+                <ToggleButton x:Name="searchTypeToggleButton" Grid.Column="1" Style="{StaticResource KeyToggleButton}" ClickMode="Press" Click="searchTypeToggleButton_Click" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -76,7 +76,7 @@
 			<MenuItem id = "Separator5" type = "Separator" insertbefore = "Separator4" />
 			<MenuItem id = "SurroundWithSnippet"
 			          insertbefore = "Separator4"
-			          shortcut="Ctrl|J"
+			          shortcut="Ctrl+J"
 			          label = "Surround with"
 			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.SurroundWithCommand"/>
 		</Condition>

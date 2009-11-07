@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{745869FF-80E9-4589-A366-E775D2103843}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.ShortcutsManagement</RootNamespace>
+    <AssemblyName>ICSharpCode.ShortcutsManagement</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>ShortcutsManagement.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\AddIns\AddIns\Misc\ShortcutsManagement\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\bin\SharpDevelop.exe</StartProgram>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Src\Converters\AdditionConverter.cs" />
+    <Compile Include="Src\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Src\Converters\GesturesCollectionConverter.cs" />
+    <Compile Include="Src\Converters\InputGestureConverter.cs" />
+    <Compile Include="Src\Converters\NotNullOrEmptyConverter.cs" />
+    <Compile Include="Src\Converters\ProfilesComboBoxItemStyleSelector.cs" />
+    <Compile Include="Src\Converters\ProfileToStringConverter.cs" />
+    <Compile Include="Src\Converters\ShortcutCategorySubElementsMergedConverter.cs" />
+    <Compile Include="Src\Converters\TypeNameConverter.cs" />
+    <Compile Include="Src\Data\AddIn.cs" />
+    <Compile Include="Src\Data\IShortcutTreeEntry.cs" />
+    <Compile Include="Src\Data\IShortcutTreeEntryCloner.cs" />
+    <Compile Include="Src\Data\MapTable.cs" />
+    <Compile Include="Src\Data\SeparatorData.cs" />
+    <Compile Include="Src\Data\Shortcut.cs" />
+    <Compile Include="Src\Data\ShortcutCategory.cs" />
+    <Compile Include="Src\Data\ShortcutsFinder.cs" />
+    <Compile Include="Src\Data\UserGestureProfileAction.cs" />
+    <Compile Include="Src\Dialogs\CreateNewProfilePrompt.xaml.cs">
+      <DependentUpon>CreateNewProfilePrompt.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Dialogs\MultiKeyGestureTextBox.xaml.cs">
+      <DependentUpon>MultiKeyGestureTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Dialogs\ShortcutManagementWindow.xaml.cs">
+      <DependentUpon>ShortcutManagementWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml.cs">
+      <DependentUpon>ShortcutsManagementOptionsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Dialogs\ShortcutsTreeView.xaml.cs">
+      <DependentUpon>ShortcutsTreeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Extensions\TextBlockBehavior.cs" />
+    <Compile Include="Src\Extensions\TreeViewExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
+    <Folder Include="Src" />
+    <Folder Include="Src\Converters" />
+    <Folder Include="Src\Data" />
+    <Folder Include="Src\Dialogs" />
+    <Folder Include="Src\Extensions" />
+    <Folder Include="Themes" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\16-square-red-remove.png" />
+    <Resource Include="Resources\add_correction_16x16.gif" />
+    <Resource Include="Resources\block_small.png" />
+    <Resource Include="Resources\delete_small.png" />
+    <Resource Include="Resources\info_big.png" />
+    <Resource Include="Resources\info_mid.png" />
+    <Resource Include="Resources\info_small.png" />
+    <Resource Include="Resources\key_enter.png" />
+    <Resource Include="Resources\key_enter_pressed.png" />
+    <Resource Include="Resources\plus_small.png" />
+    <Resource Include="Resources\search_small.png" />
+    <Resource Include="Resources\tick_small.png" />
+    <Resource Include="Resources\warning_small.png" />
+    <None Include="ShortcutsManagement.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\StringResources.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\Dialogs\CreateNewProfilePrompt.xaml" />
+    <Page Include="Src\Dialogs\MultiKeyGestureTextBox.xaml" />
+    <Page Include="Src\Dialogs\Resources.xaml" />
+    <Page Include="Src\Dialogs\ShortcutManagementWindow.xaml" />
+    <Page Include="Src\Dialogs\ShortcutsManagementOptionsPanel.xaml" />
+    <Page Include="Src\Dialogs\ShortcutsTreeView.xaml" />
+    <Page Include="Themes\Generic.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

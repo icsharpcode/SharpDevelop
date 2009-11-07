@@ -9,10 +9,12 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Text;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -123,19 +125,50 @@ namespace ICSharpCode.Core.Presentation
 	
 	class MenuCommand : CoreMenuItem
 	{
+		private BindingInfoTemplate bindingTemplate;
+		
 		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
 		{
-			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
-			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
-				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
-				if (inputBindingOwner != null) {
-					var shortcutCommand = this.Command;
-					string featureName = GetFeatureName();
-					if (shortcutCommand != null && !string.IsNullOrEmpty(featureName))
-						shortcutCommand = new ShortcutCommandWrapper(shortcutCommand, featureName);
-					inputBindingOwner.InputBindings.Add(new InputBinding(shortcutCommand, kg));
+			string tplRoutedCommandName = null;
+			if(codon.Properties.Contains("command")) {
+				tplRoutedCommandName = codon.Properties["command"];
+			} else if(codon.Properties.Contains("link") || codon.Properties.Contains("class")) {
+				tplRoutedCommandName = string.IsNullOrEmpty(codon.Properties["link"]) ? codon.Properties["class"] : codon.Properties["link"];
+			}
+			
+			string tplOwnerInstance = null;
+			string tplOwnerType = null;
+			if(codon.Properties.Contains("ownerinstance")) {
+				tplOwnerInstance = codon.Properties["ownerinstance"];
+			} else if(codon.Properties.Contains("ownertype")) {
+				tplOwnerType = codon.Properties["ownertype"];
+			}
+			
+			bindingTemplate = BindingInfoTemplate.Create(tplOwnerInstance, tplOwnerType, tplRoutedCommandName);
+
+			var routedCommand = SDCommandManager.GetRoutedUICommand(tplRoutedCommandName);
+			if(routedCommand != null) {
+				this.Command = routedCommand;
+			}
+			
+			var gestures = SDCommandManager.FindInputGestures(bindingTemplate, null);
+			
+			this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(gestures);
+			
+			SDCommandManager.GesturesChanged += MenuCommand_GesturesChanged;
+		}
+		
+		private void MenuCommand_GesturesChanged(object sender, NotifyGesturesChangedEventArgs e) 
+		{
+			foreach(var desc in e.ModificationDescriptions) {
+				var temp = desc.InputBindingIdentifier;
+				if((bindingTemplate.OwnerInstanceName == null || bindingTemplate.OwnerInstanceName == temp.OwnerInstanceName)
+					&& (bindingTemplate.OwnerTypeName == null || bindingTemplate.OwnerTypeName == temp.OwnerTypeName)
+					&& (bindingTemplate.RoutedCommandName == null || bindingTemplate.RoutedCommandName == temp.RoutedCommandName)) {
+
+					var updatedGestures = SDCommandManager.FindInputGestures(bindingTemplate, null);
+					this.InputGestureText = (string)new InputGestureCollectionConverter().ConvertToInvariantString(updatedGestures);
 				}
-				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			}
 		}
 		
