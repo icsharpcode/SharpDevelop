@@ -403,6 +403,7 @@ namespace ICSharpCode.SharpDevelop
 			} else {
 				r.Click += delegate { item.PerformClick(); };
 			}
+			r.IsChecked = item.Checked;
 			return r;
 		}
 		

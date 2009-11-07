@@ -41,8 +41,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 		
 		public BreakpointAction Action {
-			get { return action; }
-			set { this.action = value; }
+			get {
+				return action;
+			}
+			set {
+				if (action != value) {
+					action = value;
+					Redraw();
+				}
+			}
 		}
 		
 		public virtual bool IsHealthy {
@@ -86,17 +93,19 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 		
 		public static readonly IImage BreakpointImage = new ResourceServiceImage("Bookmarks.Breakpoint");
+		public static readonly IImage BreakpointConditionalImage = new ResourceServiceImage("Bookmarks.BreakpointConditional");
 		public static readonly IImage DisabledBreakpointImage = new ResourceServiceImage("Bookmarks.DisabledBreakpoint");
 		public static readonly IImage UnhealthyBreakpointImage = new ResourceServiceImage("Bookmarks.UnhealthyBreakpoint");
+		public static readonly IImage UnhealthyBreakpointConditionalImage = new ResourceServiceImage("Bookmarks.UnhealthyBreakpointConditional");
 		
 		public override IImage Image {
 			get {
 				if (!this.IsEnabled)
 					return DisabledBreakpointImage;
 				else if (this.IsHealthy)
-					return BreakpointImage;
+					return this.Action == BreakpointAction.Break ? BreakpointImage : BreakpointConditionalImage;
 				else
-					return UnhealthyBreakpointImage;
+					return this.Action == BreakpointAction.Break ? UnhealthyBreakpointImage : UnhealthyBreakpointConditionalImage;
 			}
 		}
 		

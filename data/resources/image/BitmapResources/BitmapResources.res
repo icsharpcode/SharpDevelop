@@ -333,8 +333,10 @@ Bookmarks.DeleteAllMarks                          = Bookmarks\DeleteAllMarks.png
 Bookmarks.EnableDisableAll                        = Bookmarks\EnableDisableAll.png
 Bookmarks.EnableDisableMark                       = Bookmarks\EnableDisableMark.png
 Bookmarks.Breakpoint                              = Bookmarks\Breakpoint.png
+Bookmarks.BreakpointConditional                   = Bookmarks\BreakpointConditional.png
 Bookmarks.DisabledBreakpoint                      = Bookmarks\DisabledBreakpoint.png
 Bookmarks.UnhealthyBreakpoint                     = Bookmarks\UnhealthyBreakpoint.png
+Bookmarks.UnhealthyBreakpointConditional          = Bookmarks\UnhealthyBreakpointConditional.png
 Bookmarks.CurrentLine                             = Bookmarks\CurrentLine.png
 
 #backend icons
