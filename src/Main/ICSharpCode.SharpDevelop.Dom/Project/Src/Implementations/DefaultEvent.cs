@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override EntityType Type {
+		public override EntityType EntityType {
 			get {
 				return EntityType.Event;
 			}

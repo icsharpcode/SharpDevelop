@@ -154,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set;
 		}
 		
-		EntityType Type {
+		EntityType EntityType {
 			get;
 		}
 		

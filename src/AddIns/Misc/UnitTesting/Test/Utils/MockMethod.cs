@@ -319,5 +319,9 @@ namespace UnitTesting.Tests.Utils
 				return declaringType.ProjectContent;
 			}
 		}
+		
+		public EntityType EntityType {
+			get { return EntityType.Method; }
+		}
 	}
 }

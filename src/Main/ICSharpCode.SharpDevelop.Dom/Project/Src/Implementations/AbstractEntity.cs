@@ -352,7 +352,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return CompareTo((IEntity)value);
 		}
 		
-		public abstract EntityType Type {
+		public abstract EntityType EntityType {
 			get;
 		}
 	}

@@ -289,5 +289,9 @@ namespace PythonBinding.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public EntityType EntityType {
+			get { return EntityType.Method; }
+		}
 	}
 }

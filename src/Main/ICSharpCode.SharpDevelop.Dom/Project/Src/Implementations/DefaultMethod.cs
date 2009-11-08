@@ -223,7 +223,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return CompareTo((IMethod)value);
 		}
 		
-		public override EntityType Type {
+		public override EntityType EntityType {
 			get {
 				return EntityType.Method;
 			}

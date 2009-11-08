@@ -27,5 +27,11 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public override EntityType EntityType {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

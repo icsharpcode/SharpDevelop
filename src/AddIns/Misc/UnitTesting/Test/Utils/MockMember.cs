@@ -266,5 +266,11 @@ namespace UnitTesting.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public EntityType EntityType {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

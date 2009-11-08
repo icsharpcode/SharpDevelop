@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			return CompareTo((IProperty)value);
 		}
 		
-		public override EntityType Type {
+		public override EntityType EntityType {
 			get {
 				return EntityType.Property;
 			}

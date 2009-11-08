@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return false; }
 		}
 		
-		public override EntityType Type {
+		public override EntityType EntityType {
 			get {
 				return EntityType.Field;
 			}

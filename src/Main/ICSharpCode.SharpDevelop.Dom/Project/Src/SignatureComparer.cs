@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public bool Equals(IMember x, IMember y)
 		{	
-			if (x.Type != y.Type)
+			if (x.EntityType != y.EntityType)
 				return false;
 			
 			if (x.Name != y.Name)

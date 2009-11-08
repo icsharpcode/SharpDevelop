@@ -292,5 +292,9 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public EntityType EntityType {
+			get { return EntityType.Property; }
+		}
 	}
 }
