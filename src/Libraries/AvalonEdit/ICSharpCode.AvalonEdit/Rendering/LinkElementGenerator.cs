@@ -89,7 +89,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			Match m = GetMatch(offset);
 			if (m.Success && m.Index == 0) {
 				VisualLineLinkText linkText = new VisualLineLinkText(CurrentContext.VisualLine, m.Length);
-				linkText.NavigateUri = GetUriFromMatch(m);
+				Uri uri = GetUriFromMatch(m);
+				if (uri == null)
+					return null;
+				linkText.NavigateUri = uri;
 				linkText.RequireControlModifierForClick = this.RequireControlModifierForClick;
 				return linkText;
 			} else {
@@ -98,14 +101,17 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		/// <summary>
-		/// Fetches the URI from the regex match.
+		/// Fetches the URI from the regex match. Returns null if the URI format is invalid.
 		/// </summary>
 		protected virtual Uri GetUriFromMatch(Match match)
 		{
 			string targetUrl = match.Value;
 			if (targetUrl.StartsWith("www.", StringComparison.Ordinal))
 				targetUrl = "http://" + targetUrl;
-			return new Uri(targetUrl);
+			if (Uri.IsWellFormedUriString(targetUrl, UriKind.Absolute))
+				return new Uri(targetUrl);
+			
+			return null;
 		}
 	}
 	
