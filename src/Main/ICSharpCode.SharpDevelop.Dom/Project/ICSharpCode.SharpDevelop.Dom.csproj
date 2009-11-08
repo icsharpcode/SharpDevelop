@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.SharpDevelop.Dom</RootNamespace>
@@ -119,6 +120,7 @@
     <Compile Include="Src\NRefactoryResolver\ResolveVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\TypeVisitor.cs" />
     <Compile Include="Src\NRefactoryResolver\VBNetToCSharpConvertVisitor.cs" />
+    <Compile Include="Src\ParameterListComparer.cs" />
     <Compile Include="Src\ProjectContent\DomAssemblyName.cs" />
     <Compile Include="Src\ReadOnlyDictionary.cs" />
     <Compile Include="Src\Refactoring\CodeGeneratorOptions.cs" />
@@ -140,6 +142,7 @@
     <Compile Include="Src\FoldingRegion.cs" />
     <Compile Include="Src\IComment.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionTypeNameSyntaxError.cs" />
+    <Compile Include="Src\SignatureComparer.cs" />
     <Compile Include="Src\XmlDoc.cs" />
     <Compile Include="Src\Tag.cs" />
     <Compile Include="Src\ResolveResult.cs" />

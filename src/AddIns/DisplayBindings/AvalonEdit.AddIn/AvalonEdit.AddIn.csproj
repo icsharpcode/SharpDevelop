@@ -75,7 +75,9 @@
     <Compile Include="Src\BracketHighlightRenderer.cs" />
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
-    <Compile Include="Src\CodeEditorView.cs" />
+    <Compile Include="Src\CodeEditorView.cs">
+      <DependentUpon>AvalonEditViewContent.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Commands\FoldingCommands.cs" />
     <Compile Include="Src\Commands\SortOptionsDialog.xaml.cs">
       <DependentUpon>SortOptionsDialog.xaml</DependentUpon>
@@ -84,6 +86,7 @@
     <Compile Include="Src\Commands\SortSelectionCommand.cs" />
     <Compile Include="Src\Commands\SurroundWithCommand.cs" />
     <Compile Include="Src\CustomCommands.cs" />
+    <Compile Include="Src\DialogElementGenerator.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />
     <Compile Include="Src\Options\BehaviorOptions.xaml.cs">

@@ -65,6 +65,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return false; }
 		}
 		
+		public override EntityType Type {
+			get {
+				return EntityType.Field;
+			}
+		}
+		
 		public class LocalVariableField : DefaultField
 		{
 			public override bool IsLocalVariable {

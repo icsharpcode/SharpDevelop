@@ -75,7 +75,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "ctor",
 						Description = "Constructor",
-						Text = "public ${ClassName}(${Caret})\n{\t\n${Selection}\n}"
+						Text = "public ${ClassName}(${Caret})\n{\n\t${Selection}\n}"
 					},
 					new CodeSnippet {
 						Name = "switch",

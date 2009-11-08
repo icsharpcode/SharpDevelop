@@ -111,5 +111,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				raiseMethod = value;
 			}
 		}
+		
+		public override EntityType Type {
+			get {
+				return EntityType.Event;
+			}
+		}
 	}
 }

@@ -165,5 +165,11 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		int IComparable.CompareTo(object value) {
 			return CompareTo((IProperty)value);
 		}
+		
+		public override EntityType Type {
+			get {
+				return EntityType.Property;
+			}
+		}
 	}
 }

@@ -656,5 +656,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					.Concat(events);
 			}
 		}
+		
+		public override EntityType Type {
+			get {
+				return EntityType.Class;
+			}
+		}
 	}
 }

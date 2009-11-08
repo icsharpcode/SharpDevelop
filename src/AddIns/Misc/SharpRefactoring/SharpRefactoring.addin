@@ -15,9 +15,20 @@
 		<MenuItem id="parameterCheckRefactorings" type="Builder" class="SharpRefactoring.ParameterCheckRefactoringMenuBuilder"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
+		<MenuItem id="classCodeGenerators"
+				   type="Builder"
+				   class="SharpRefactoring.ClassCodeGeneratorMenuBuilder"
+				   insertafter="MenuBuilder" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Refactor">
 		<MenuItem id = "ExtractMethod"
 		          label = "${res:AddIns.SharpRefactoring.ExtractMethod}"
 		          class = "SharpRefactoring.ExtractMethodCommand"/>
+		
+		<MenuItem id = "OverrideToStringMethod"
+		          label = "${res:AddIns.SharpRefactoring.OverrideToStringMethod}"
+		          class = "SharpRefactoring.OverrideToStringMethodCommand"/>
 	</Path>
 </AddIn>

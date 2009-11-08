@@ -154,6 +154,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set;
 		}
 		
+		EntityType Type {
+			get;
+		}
+		
 		bool IsAccessible(IClass callingClass, bool isAccessThoughReferenceOfCurrentClass);
+	}
+	
+	public enum EntityType {
+		Class,
+		Field,
+		Property,
+		Method,
+		Event
 	}
 }

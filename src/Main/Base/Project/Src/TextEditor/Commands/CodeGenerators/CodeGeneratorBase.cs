@@ -77,6 +77,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			return CodeGenerator.ConvertType(type, classFinderContext);
 		}
 		
+		public virtual void GenerateCode(IDocument document)
+		{
+			List<AbstractNode> nodes = new List<AbstractNode>();
+			GenerateCode(nodes, this.Content);
+			codeGen.InsertCodeInClass(selectedClass, new RefactoringDocumentAdapter(document), selectedClass.Region.EndLine - 1, nodes.ToArray());
+			ParserService.ParseCurrentViewContent();
+		}
+		
 		public virtual void GenerateCode(TextArea textArea, IList items)
 		{
 			List<AbstractNode> nodes = new List<AbstractNode>();

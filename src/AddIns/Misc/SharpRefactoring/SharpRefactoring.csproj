@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectGuid>{3CA90546-3B4C-4663-9445-C4E9371750A7}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -52,6 +53,9 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -65,6 +69,7 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\ClassCodeGeneratorMenuBuilder.cs" />
     <Compile Include="Src\CSharpMethodExtractor.cs" />
     <Compile Include="Src\ExtractMethodCommand.cs" />
     <Compile Include="Src\Forms\ExtractMethodForm.cs">
@@ -73,7 +78,9 @@
     <Compile Include="Src\Forms\ExtractMethodForm.Designer.cs">
       <DependentUpon>ExtractMethodForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\InlineRefactorDialog.cs" />
     <Compile Include="Src\MethodExtractorBase.cs" />
+    <Compile Include="Src\OverrideToStringMethodCommand.cs" />
     <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
     <Compile Include="Src\Visitors\FindJumpInstructionsVisitor.cs" />
     <Compile Include="Src\Visitors\FindMemberVisitor.cs" />
@@ -115,5 +122,8 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\Gui" />
   </ItemGroup>
 </Project>

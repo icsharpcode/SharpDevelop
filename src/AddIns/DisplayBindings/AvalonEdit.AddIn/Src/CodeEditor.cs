@@ -180,6 +180,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.LineTransformers.Add(textMarkerService);
 			textView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			
+			textView.Services.AddService(typeof(IEditorUIService), new AvalonEditEditorUIService(textView));
+			
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			textEditor.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
