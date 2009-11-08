@@ -95,6 +95,3 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		#endregion
 	}
 }
-
-
-

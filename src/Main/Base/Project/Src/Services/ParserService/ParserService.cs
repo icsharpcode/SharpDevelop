@@ -532,6 +532,8 @@ namespace ICSharpCode.SharpDevelop
 		/// The returned ParseInformation might be stale (re-parse is not forced).</returns>
 		public static ParseInformation GetParseInformation(string fileName)
 		{
+			if (string.IsNullOrEmpty(fileName))
+				return null;
 			return GetFileEntry(fileName, true).GetParseInformation(null);
 		}
 		
@@ -542,6 +544,8 @@ namespace ICSharpCode.SharpDevelop
 		/// <returns>Returns the ParseInformation for the specified file, or null if the file has not been parsed already.</returns>
 		public static ParseInformation GetExistingParseInformation(string fileName)
 		{
+			if (string.IsNullOrEmpty(fileName))
+				return null;
 			FileEntry entry = GetFileEntry(fileName, false);
 			if (entry != null)
 				return entry.GetExistingParseInformation(null);
@@ -557,6 +561,8 @@ namespace ICSharpCode.SharpDevelop
 		/// <returns>Returns the ParseInformation for the specified file, or null if the file has not been parsed for that project content.</returns>
 		public static ParseInformation GetExistingParseInformation(IProjectContent content, string fileName)
 		{
+			if (string.IsNullOrEmpty(fileName))
+				return null;
 			FileEntry entry = GetFileEntry(fileName, false);
 			if (entry != null)
 				return entry.GetExistingParseInformation(content);

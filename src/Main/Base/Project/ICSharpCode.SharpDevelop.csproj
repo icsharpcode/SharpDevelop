@@ -285,7 +285,6 @@
     <Resource Include="Src\Services\Debugger\Tooltips\magnifier.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <None Include="Src\Services\ParserService\OldParserService.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDoozer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenEvaluator.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingDoozer.cs" />

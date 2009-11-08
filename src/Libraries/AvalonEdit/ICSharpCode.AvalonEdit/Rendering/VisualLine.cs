@@ -117,8 +117,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					elements.Add(new VisualLineText(this, textPieceLength));
 					offset = textPieceEndOffset;
 				}
-				// if no elements constructed / only zero-length elements constructed:
-				// prevent endless loop by asking the generators again for the same location
+				// If no elements constructed / only zero-length elements constructed:
+				// do not asking the generators again for the same location (would cause endless loop)
 				askInterestOffset = 1;
 				foreach (VisualLineElementGenerator g in generators) {
 					if (g.cachedInterest == offset) {

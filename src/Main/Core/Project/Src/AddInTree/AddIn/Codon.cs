@@ -41,25 +41,13 @@ namespace ICSharpCode.Core
 		
 		public string InsertAfter {
 			get {
-				if (!properties.Contains("insertafter")) {
-					return "";
-				}
 				return properties["insertafter"];
-			}
-			set {
-				properties["insertafter"] = value;
 			}
 		}
 		
 		public string InsertBefore {
 			get {
-				if (!properties.Contains("insertbefore")) {
-					return "";
-				}
 				return properties["insertbefore"];
-			}
-			set {
-				properties["insertbefore"] = value;
 			}
 		}
 		

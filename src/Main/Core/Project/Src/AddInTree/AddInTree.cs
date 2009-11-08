@@ -225,9 +225,7 @@ namespace ICSharpCode.Core
 		static void AddExtensionPath(ExtensionPath path)
 		{
 			AddInTreeNode treePath = CreatePath(rootNode, path.Name);
-			foreach (Codon codon in path.Codons) {
-				treePath.Codons.Add(codon);
-			}
+			treePath.AddCodons(path.Codons);
 		}
 		
 		/// <summary>

@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ICSharpCode.Core
 {
@@ -16,9 +17,10 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public sealed class AddInTreeNode
 	{
+		readonly object lockObj = new object();
 		Dictionary<string, AddInTreeNode> childNodes = new Dictionary<string, AddInTreeNode>();
-		List<Codon> codons = new List<Codon>();
-		bool isSorted = false;
+		ReadOnlyCollection<Codon> codons;
+		List<ICollection<Codon>> codonInput;
 		
 		/// <summary>
 		/// A dictionary containing the child paths.
@@ -29,12 +31,36 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public void AddCodons(ICollection<Codon> newCodons)
+		{
+			if (newCodons == null)
+				throw new ArgumentNullException("newCodons");
+			lock (lockObj) {
+				if (codonInput == null) {
+					codonInput = new List<ICollection<Codon>>();
+					if (codons != null)
+						codonInput.Add(codons);
+				}
+				codonInput.Add(newCodons);
+			}
+		}
+		
 		/// <summary>
 		/// A list of child <see cref="Codon"/>s.
 		/// </summary>
-		public List<Codon> Codons {
+		public ReadOnlyCollection<Codon> Codons {
 			get {
-				return codons;
+				lock (lockObj) {
+					if (codons == null) {
+						if (codonInput == null) {
+							codons = new ReadOnlyCollection<Codon>(new Codon[0]);
+						} else {
+							codons = TopologicalSort.Sort(codonInput).AsReadOnly();
+							codonInput = null;
+						}
+					}
+					return codons;
+				}
 			}
 		}
 		
@@ -58,91 +84,13 @@ namespace ICSharpCode.Core
 //		}
 		
 		/// <summary>
-		/// Supports sorting codons using InsertBefore/InsertAfter
-		/// </summary>
-		sealed class TopologicalSort
-		{
-			List<Codon> codons;
-			bool[] visited;
-			List<Codon> sortedCodons;
-			Dictionary<string, int> indexOfName;
-			
-			public TopologicalSort(List<Codon> codons)
-			{
-				this.codons = codons;
-				visited = new bool[codons.Count];
-				sortedCodons = new List<Codon>(codons.Count);
-				indexOfName = new Dictionary<string, int>(codons.Count);
-				// initialize visited to false and fill the indexOfName dictionary
-				for (int i = 0; i < codons.Count; ++i) {
-					visited[i] = false;
-					indexOfName[codons[i].Id] = i;
-				}
-			}
-			
-			void InsertEdges()
-			{
-				// add the InsertBefore to the corresponding InsertAfter
-				for (int i = 0; i < codons.Count; ++i) {
-					string before = codons[i].InsertBefore;
-					if (before != null && before != "") {
-						if (indexOfName.ContainsKey(before)) {
-							string after = codons[indexOfName[before]].InsertAfter;
-							if (after == null || after == "") {
-								codons[indexOfName[before]].InsertAfter = codons[i].Id;
-							} else {
-								codons[indexOfName[before]].InsertAfter = after + ',' + codons[i].Id;
-							}
-						} else {
-							LoggingService.WarnFormatted("Codon ({0}) specified in the insertbefore of the {1} codon does not exist!", before, codons[i]);
-						}
-					}
-				}
-			}
-			
-			public List<Codon> Execute()
-			{
-				InsertEdges();
-				
-				// Visit all codons
-				for (int i = 0; i < codons.Count; ++i) {
-					Visit(i);
-				}
-				return sortedCodons;
-			}
-			
-			void Visit(int codonIndex)
-			{
-				if (visited[codonIndex]) {
-					return;
-				}
-				string[] after = codons[codonIndex].InsertAfter.Split(new char[] {','});
-				foreach (string s in after) {
-					if (s == null || s.Length == 0) {
-						continue;
-					}
-					if (indexOfName.ContainsKey(s)) {
-						Visit(indexOfName[s]);
-					} else {
-						LoggingService.WarnFormatted("Codon ({0}) specified in the insertafter of the {1} codon does not exist!", codons[codonIndex].InsertAfter, codons[codonIndex]);
-					}
-				}
-				sortedCodons.Add(codons[codonIndex]);
-				visited[codonIndex] = true;
-			}
-		}
-		
-		/// <summary>
 		/// Builds the child items in this path. Ensures that all items have the type T.
 		/// </summary>
 		/// <param name="caller">The owner used to create the objects.</param>
 		public List<T> BuildChildItems<T>(object caller)
 		{
+			var codons = this.Codons;
 			List<T> items = new List<T>(codons.Count);
-			if (!isSorted) {
-				codons = (new TopologicalSort(codons)).Execute();
-				isSorted = true;
-			}
 			foreach (Codon codon in codons) {
 				ArrayList subItems = null;
 				if (childNodes.ContainsKey(codon.Id)) {
@@ -171,11 +119,8 @@ namespace ICSharpCode.Core
 		/// <param name="caller">The owner used to create the objects.</param>
 		public ArrayList BuildChildItems(object caller)
 		{
+			var codons = this.Codons;
 			ArrayList items = new ArrayList(codons.Count);
-			if (!isSorted) {
-				codons = (new TopologicalSort(codons)).Execute();
-				isSorted = true;
-			}
 			foreach (Codon codon in codons) {
 				ArrayList subItems = null;
 				if (childNodes.ContainsKey(codon.Id)) {
@@ -207,7 +152,7 @@ namespace ICSharpCode.Core
 		/// </exception>
 		public object BuildChildItem(string childItemID, object caller, ArrayList subItems)
 		{
-			foreach (Codon codon in codons) {
+			foreach (Codon codon in this.Codons) {
 				if (codon.Id == childItemID) {
 					return codon.BuildItem(caller, subItems);
 				}

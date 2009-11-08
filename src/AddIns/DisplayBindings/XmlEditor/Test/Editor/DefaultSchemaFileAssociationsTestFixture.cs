@@ -34,16 +34,20 @@ namespace XmlEditor.Tests.Editor
 				
 				AddInTreeNode addinTreeNode = new AddInTreeNode();
 
-				Properties properties = new Properties();
-				properties.Set<string>("id", ".xml");
-				properties.Set<string>("namespaceUri", "http://example.com");
-				addinTreeNode.Codons.Add(new Codon(addin, "SchemaAssociation", properties, new ICondition[0]));
+				Properties properties1 = new Properties();
+				properties1.Set<string>("id", ".xml");
+				properties1.Set<string>("namespaceUri", "http://example.com");
 				
-				properties = new Properties();
-				properties.Set<string>("id", ".xsl");
-				properties.Set<string>("namespaceUri", "http://example.com/xsl");
-				properties.Set<string>("namespacePrefix", "xs");
-				addinTreeNode.Codons.Add(new Codon(addin, "SchemaAssociation", properties, new ICondition[0]));
+				Properties properties2 = new Properties();
+				properties2.Set<string>("id", ".xsl");
+				properties2.Set<string>("namespaceUri", "http://example.com/xsl");
+				properties2.Set<string>("namespacePrefix", "xs");
+				
+				addinTreeNode.AddCodons(
+					new Codon[] {
+						new Codon(addin, "SchemaAssociation", properties1, new ICondition[0]),
+						new Codon(addin, "SchemaAssociation", properties2, new ICondition[0])
+					});
 				
 				schemaAssociations = new DefaultXmlSchemaFileAssociations(addinTreeNode);
 			}

@@ -42,10 +42,6 @@
 		<MenuItem id = "StringResources" insertbefore = "Refactoring" type = "Builder" class = "Hornung.ResourceToolkit.Commands.TextEditorContextMenuBuilder" />
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/XmlEditor/ContextMenu">
-		<Include id = "StringResources" item = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu/StringResources" insertbefore = "Cut" />
-	</Path>
-	
 	<!-- Tools menu -->
 	
 	<Path name="/Workspace/Tools">

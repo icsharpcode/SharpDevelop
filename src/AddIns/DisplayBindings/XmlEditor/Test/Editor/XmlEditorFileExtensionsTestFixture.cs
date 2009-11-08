@@ -33,12 +33,16 @@ namespace XmlEditor.Tests.Editor
 				AddIn addin = AddIn.Load(reader);
 				
 				AddInTreeNode addinTreeNode = new AddInTreeNode();
-				addinTreeNode.Codons.Add(new Codon(addin, "CodeCompletionC#", new Properties(), new ICondition[0]));
 
 				Properties properties = new Properties();
 				properties.Set<string>("extensions", " .xml; .xsd ");
 				properties.Set<string>("id", "Xml");
-				addinTreeNode.Codons.Add(new Codon(addin, "CodeCompletionXml", properties, new ICondition[0]));
+				
+				addinTreeNode.AddCodons(
+					new Codon[] {
+						new Codon(addin, "CodeCompletionC#", new Properties(), new ICondition[0]),
+						new Codon(addin, "CodeCompletionXml", properties, new ICondition[0])
+					});
 				
 				fileExtensions = new DefaultXmlFileExtensions(addinTreeNode);
 			}
