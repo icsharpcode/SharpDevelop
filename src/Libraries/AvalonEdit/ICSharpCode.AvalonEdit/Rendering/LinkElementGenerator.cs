@@ -88,10 +88,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			Match m = GetMatch(offset);
 			if (m.Success && m.Index == 0) {
-				VisualLineLinkText linkText = new VisualLineLinkText(CurrentContext.VisualLine, m.Length);
 				Uri uri = GetUriFromMatch(m);
 				if (uri == null)
 					return null;
+				VisualLineLinkText linkText = new VisualLineLinkText(CurrentContext.VisualLine, m.Length);
 				linkText.NavigateUri = uri;
 				linkText.RequireControlModifierForClick = this.RequireControlModifierForClick;
 				return linkText;
