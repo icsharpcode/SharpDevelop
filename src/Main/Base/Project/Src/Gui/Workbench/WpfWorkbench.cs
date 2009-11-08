@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Workbench implementation using WPF and AvalonDock.
 	/// </summary>
-	sealed partial class WpfWorkbench : Window, IWorkbench
+	sealed partial class WpfWorkbench : Window, IWorkbench, System.Windows.Forms.IWin32Window
 	{
 		const string mainMenuPath    = "/SharpDevelop/Workbench/MainMenu";
 		const string viewContentPath = "/SharpDevelop/Workbench/Pads";
@@ -53,9 +53,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public System.Windows.Forms.IWin32Window MainWin32Window { get; private set; }
+		public System.Windows.Forms.IWin32Window MainWin32Window { get { return this; } }
 		public ISynchronizeInvoke SynchronizingObject { get; private set; }
 		public Window MainWindow { get { return this; } }
+		
+		IntPtr System.Windows.Forms.IWin32Window.Handle {
+			get {
+				var wnd = System.Windows.PresentationSource.FromVisual(this) as System.Windows.Interop.IWin32Window;
+				if (wnd != null)
+					return wnd.Handle;
+				else
+					return IntPtr.Zero;
+			}
+		}
 		
 		List<PadDescriptor> padDescriptorCollection = new List<PadDescriptor>();
 		
@@ -70,7 +80,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override void OnSourceInitialized(EventArgs e)
 		{
-			this.MainWin32Window = this.GetWin32Window();
 			base.OnSourceInitialized(e);
 			HwndSource.FromHwnd(this.MainWin32Window.Handle).AddHook(SingleInstanceHelper.WndProc);
 		}

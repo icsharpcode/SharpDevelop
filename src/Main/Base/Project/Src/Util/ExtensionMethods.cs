@@ -135,32 +135,6 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Gets the IWin32Window associated with a WPF window.
-		/// </summary>
-		public static WinForms.IWin32Window GetWin32Window(this System.Windows.Window window)
-		{
-			var wnd = System.Windows.PresentationSource.FromVisual(window) as System.Windows.Interop.IWin32Window;
-			if (wnd != null)
-				return new Win32WindowAdapter(wnd);
-			else
-				return null;
-		}
-		
-		sealed class Win32WindowAdapter : WinForms.IWin32Window
-		{
-			readonly System.Windows.Interop.IWin32Window window;
-			
-			public Win32WindowAdapter(System.Windows.Interop.IWin32Window window)
-			{
-				this.window = window;
-			}
-			
-			public IntPtr Handle {
-				get { return window.Handle; }
-			}
-		}
-		
-		/// <summary>
 		/// Sets the Content property of the specified ControlControl to the specified content.
 		/// If the content is a Windows-Forms control, it is wrapped in a WindowsFormsHost.
 		/// If the content control already contains a WindowsFormsHost with that content,

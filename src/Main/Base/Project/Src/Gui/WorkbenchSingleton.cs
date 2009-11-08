@@ -86,6 +86,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			var messageService = (WinFormsMessageService)Core.Services.ServiceManager.Instance.MessageService;
 			messageService.DialogOwner = workbench.MainWin32Window;
+			Debug.Assert(messageService.DialogOwner != null);
 			messageService.DialogSynchronizeInvoke = workbench.SynchronizingObject;
 			
 			workbench.Initialize();
