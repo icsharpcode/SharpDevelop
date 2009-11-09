@@ -7,9 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.PInvokeAddIn
 {
@@ -18,63 +16,19 @@ namespace ICSharpCode.PInvokeAddIn
 	/// </summary>
 	public class PInvokeCodeGenerator
 	{
-		public PInvokeCodeGenerator()
-		{
-		}
-		
 		/// <summary>
 		/// Inserts the PInvoke signature at the current cursor position.
 		/// </summary>
 		/// <param name="textArea">The text editor.</param>
 		/// <param name="signature">A PInvoke signature string.</param>
-		public void Generate(TextArea textArea, string signature)
+		public void Generate(ITextEditor editor, string signature)
 		{
-			IndentStyle oldIndentStyle = textArea.TextEditorProperties.IndentStyle;
-			bool oldEnableEndConstructs = PropertyService.Get("VBBinding.TextEditor.EnableEndConstructs", true);
-
-			try {
-
-				textArea.BeginUpdate();
-				textArea.Document.UndoStack.StartUndoGroup();
-				textArea.TextEditorProperties.IndentStyle = IndentStyle.Smart;
-				PropertyService.Set("VBBinding.TextEditor.EnableEndConstructs", false);
-
-				string[] lines = signature.Replace("\r\n", "\n").Split('\n');
-				
-				for (int i = 0; i < lines.Length; ++i) {
-					
-					textArea.InsertString(lines[i]);
-					
-					// Insert new line if not the last line.
-					if ( i < (lines.Length - 1))
-					{
-						Return(textArea);
-					}
-				}
-				
-			} finally {
-				textArea.Document.UndoStack.EndUndoGroup();
-				textArea.TextEditorProperties.IndentStyle = oldIndentStyle;
-				PropertyService.Set("VBBinding.TextEditor.EnableEndConstructs", oldEnableEndConstructs);
-				textArea.EndUpdate();
-				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-				textArea.Document.CommitUpdate();	
+			using (editor.Document.OpenUndoGroup()) {
+				int startLine = editor.Document.GetLineForOffset(editor.SelectionStart).LineNumber;
+				editor.SelectedText = DocumentUtilitites.NormalizeNewLines(signature, editor.Document, startLine);
+				int endLine = editor.Document.GetLineForOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
+				editor.Language.FormattingStrategy.IndentLines(editor, startLine, endLine);
 			}
 		}
-		
-		void Return(TextArea textArea)
-		{
-			IndentLine(textArea);
-			new Return().Execute(textArea);
-		}
-		
-		void IndentLine(TextArea textArea)
-		{
-			int delta = textArea.Document.FormattingStrategy.IndentLine(textArea, textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset));
-			if (delta != 0) {
-				LineSegment caretLine = textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
-				textArea.Caret.Position = textArea.Document.OffsetToPosition(Math.Min(textArea.Caret.Offset + delta, caretLine.Offset + caretLine.Length));
-			}
-		}		
 	}
 }

@@ -20,4 +20,3 @@ using System.Security.Permissions;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, Unrestricted=true)]

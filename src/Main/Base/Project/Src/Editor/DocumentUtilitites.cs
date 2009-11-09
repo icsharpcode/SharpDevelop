@@ -151,6 +151,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return document.GetText(line.Offset + line.Length, line.DelimiterLength);
 		}
 		
+		public static string NormalizeNewLines(string input, string newLine)
+		{
+			return input.Replace("\r\n", "\n").Replace('\r', '\n').Replace("\n", newLine);
+		}
+		
+		public static string NormalizeNewLines(string input, IDocument document, int lineNumber)
+		{
+			return NormalizeNewLines(input, GetLineTerminator(document, lineNumber));
+		}
+		
 		#region ITextSource implementation
 		public static ICSharpCode.AvalonEdit.Document.ITextSource GetTextSource(ITextBuffer textBuffer)
 		{

@@ -14,9 +14,9 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.PInvokeAddIn.WebServices;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
-using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.PInvokeAddIn
 {
@@ -145,9 +145,9 @@ namespace ICSharpCode.PInvokeAddIn
 			string signature = GetSelectedPInvokeSignature(language);
 			
 			if (signature.Length > 0) {
-				TextEditorControl textEditor = GetTextEditorControl();
+				ITextEditor textEditor = GetTextEditor();
 				if (textEditor != null) {
-					generator.Generate(textEditor.ActiveTextAreaControl.TextArea, signature);
+					generator.Generate(textEditor, signature);
 				}
 			} else {
 				MessageService.ShowError(String.Format(StringParser.Parse("${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.NoSignatureFoundForLanguage}"), language));
@@ -247,9 +247,9 @@ namespace ICSharpCode.PInvokeAddIn
 
 		string GetSourceFileLanguage()
 		{
-			TextEditorControl textEditor = GetTextEditorControl();
+			ITextEditor textEditor = GetTextEditor();
 			if (textEditor != null) {
-				string fileExtension = Path.GetExtension(textEditor.ActiveTextAreaControl.TextArea.MotherTextEditorControl.FileName);
+				string fileExtension = Path.GetExtension(textEditor.FileName);
 				if (fileExtension.Equals(".vb", StringComparison.OrdinalIgnoreCase)) {
 					return "VB";
 				}
@@ -286,11 +286,11 @@ namespace ICSharpCode.PInvokeAddIn
 			}
 		}
 		
-		static TextEditorControl GetTextEditorControl()
+		static ITextEditor GetTextEditor()
 		{
-			ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			if (provider != null)
-				return provider.TextEditorControl;
+				return provider.TextEditor;
 			else
 				return null;
 		}
