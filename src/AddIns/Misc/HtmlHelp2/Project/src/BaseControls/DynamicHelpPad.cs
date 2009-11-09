@@ -1,3 +1,6 @@
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Editor;
+
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
@@ -23,7 +26,6 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop.Dom;
 	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.Project;
-	using ICSharpCode.TextEditor;
 	using MSHelpServices;
 
 	public class ShowDynamicHelpMenuCommand : AbstractMenuCommand
@@ -39,7 +41,7 @@ namespace HtmlHelp2
 	{
 		HtmlHelp2DynamicHelpBrowserControl dynamicHelpBrowser;
 		private List<string> dynamicHelpTerms       = new List<string>();
-		private TextLocation lastPoint              = TextLocation.Empty;
+		private Location lastPoint                  = Location.Empty;
 		private string debugPreElement              = String.Empty;
 		private bool enableDebugInfo                = HtmlHelp2Environment.Config.DynamicHelpDebugInfos;
 
@@ -201,26 +203,25 @@ namespace HtmlHelp2
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 			if (window == null) return null;
-			ITextEditorControlProvider provider = window.ActiveViewContent as ITextEditorControlProvider;
+			ITextEditorProvider provider = window.ActiveViewContent as ITextEditorProvider;
 			if (provider == null) return null;
-			TextEditorControl ctl = provider.TextEditorControl;
-
+			ITextEditor editor = provider.TextEditor;
+			
 			// e might be null when this is a manually triggered update
-			string fileName = (e == null) ? ctl.FileName : e.FileName;
-			if (ctl.FileName != fileName) return null;
+			FileName fileName = (e == null) ? editor.FileName : e.FileName;
+			if (editor.FileName != fileName) return null;
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null) return null;
-			Caret caret = ctl.ActiveTextAreaControl.Caret;
-			string content = (e == null) ? ctl.Text : e.Content.Text;
-			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
+			string content = (e == null) ? editor.Document.Text : e.Content.Text;
+			ExpressionResult expr = expressionFinder.FindFullExpression(content, editor.Caret.Offset);
 			if (expr.Expression == null) return null;
 
 			// save the current position
-			if(this.lastPoint != null && this.lastPoint == caret.Position) return null;
-			this.lastPoint = caret.Position;
+			if(this.lastPoint != null && this.lastPoint == editor.Caret.Position) return null;
+			this.lastPoint = editor.Caret.Position;
 			this.AddToStringCollection(string.Format(CultureInfo.InvariantCulture, "!{0}", expr.Expression));
 
-			return ParserService.Resolve(expr, caret.Line + 1, caret.Column + 1, fileName, content);
+			return ParserService.Resolve(expr, editor.Caret.Line, editor.Caret.Column, fileName, content);
 		}
 		#endregion
 
