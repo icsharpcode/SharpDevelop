@@ -19,7 +19,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using MSBuild = Microsoft.Build.Evaluation;
-using StringPair = ICSharpCode.SharpDevelop.Pair<string, string>;
+using StringPair = System.Tuple<string, string>;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -56,10 +56,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Use this for properties that could reference other properties, e.g.
 		/// PostBuildEvent references OutputPath.
 		/// </summary>
-		protected readonly Set<string> saveAfterImportsProperties = new Set<string>(
+		protected readonly ISet<string> saveAfterImportsProperties = new SortedSet<string> {
 			"PostBuildEvent",
 			"PreBuildEvent"
-		);
+		};
 		
 		public override void Dispose()
 		{
@@ -744,7 +744,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						foreach (KeyValuePair<StringPair, string> pair in oldValues) {
 							if (pair.Value != null) {
 								MSBuildSetProperty(targetProject, propertyName, pair.Value,
-								                   CreateCondition(pair.Key.First, pair.Key.Second, location),
+								                   CreateCondition(pair.Key.Item1, pair.Key.Item2, location),
 								                   propertyInsertionPosition,
 								                   false);
 							}
@@ -948,7 +948,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				items.Clear();
 				itemsReadOnly = null; // remove readonly variant of item list - will regenerate on next Items call
 				
-				Set<ItemType> availableFileItemTypes = new Set<ItemType>();
+				SortedSet<ItemType> availableFileItemTypes = new SortedSet<ItemType>();
 				availableFileItemTypes.AddRange(ItemType.DefaultFileItems);
 				foreach (var item in c.Project.GetItems("AvailableItemName")) {
 					availableFileItemTypes.Add(new ItemType(item.EvaluatedInclude));
@@ -1257,8 +1257,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		void LoadConfigurationPlatformNamesFromMSBuild()
 		{
-			Set<string> configurationNames = new Set<string>();
-			Set<string> platformNames = new Set<string>();
+			ISet<string> configurationNames = new SortedSet<string>();
+			ISet<string> platformNames = new SortedSet<string>();
 			
 			LoadConfigurationPlatformNamesFromMSBuildInternal(projectFile, configurationNames, platformNames);
 			LoadConfigurationPlatformNamesFromMSBuildInternal(userProjectFile, configurationNames, platformNames);
@@ -1277,7 +1277,7 @@ namespace ICSharpCode.SharpDevelop.Project
 
 		static void LoadConfigurationPlatformNamesFromMSBuildInternal(
 			ProjectRootElement project,
-			Set<string> configurationNames, Set<string> platformNames)
+			ICollection<string> configurationNames, ICollection<string> platformNames)
 		{
 			foreach (var g in project.PropertyGroups) {
 				if (string.IsNullOrEmpty(g.Condition)) {

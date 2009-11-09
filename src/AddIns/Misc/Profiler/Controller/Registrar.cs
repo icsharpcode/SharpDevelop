@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using Microsoft.Win32;
 
 namespace ICSharpCode.Profiler.Controller
 {
@@ -38,16 +39,16 @@ namespace ICSharpCode.Profiler.Controller
 			if (!File.Exists(path))
 				throw new FileNotFoundException("DLL not found!");
 			
-			return Register(is64Bit, guid, libraryId, classId, path);
+			return Register(is64Bit ? RegistryView.Registry64 : RegistryView.Registry32, guid, libraryId, classId, path);
 		}
 
-		static bool Register(bool is64Bit, string guid, string libraryId, string classId, string path)
+		static bool Register(RegistryView view, string guid, string libraryId, string classId, string path)
 		{
 			try {
-				CreateKeys(is64Bit ? ExtendedRegistry.LocalMachine64 : ExtendedRegistry.LocalMachine32, guid, libraryId, classId, path);
+				CreateKeys(RegistryHive.LocalMachine, view, guid, libraryId, classId, path);
 			} catch (UnauthorizedAccessException) {
 				try {
-					CreateKeys(is64Bit ? ExtendedRegistry.CurrentUser64 : ExtendedRegistry.CurrentUser32, guid, libraryId, classId, path);
+					CreateKeys(RegistryHive.CurrentUser, view, guid, libraryId, classId, path);
 				} catch (UnauthorizedAccessException) {
 					return false;
 				}
@@ -55,19 +56,26 @@ namespace ICSharpCode.Profiler.Controller
 			
 			return true;
 		}
-
-		static void CreateKeys(ExtendedRegistry reg, string guid, string libraryId, string classId, string path)
+		
+		static void CreateKeys(RegistryHive hive, RegistryView view, string guid, string libraryId, string classId, string path)
 		{
-			reg.SetValue("Software\\Classes\\CLSID\\" + guid, null, classId + " Class");
-			reg.SetValue("Software\\Classes\\CLSID\\" + guid + "\\InProcServer32", null, path);
-			reg.SetValue("Software\\Classes\\CLSID\\" + guid + "\\ProgId", null, libraryId + "." + classId);
+			using (RegistryKey key = RegistryKey.OpenBaseKey(hive, view)) {
+				using (RegistryKey subKey = key.CreateSubKey("Software\\Classes\\CLSID\\" + guid))
+					subKey.SetValue(null, classId + " Class");
+				using (RegistryKey subKey = key.CreateSubKey("Software\\Classes\\CLSID\\" + guid + "\\InProcServer32"))
+					subKey.SetValue(null, path);
+				using (RegistryKey subKey = key.CreateSubKey("Software\\Classes\\CLSID\\" + guid + "\\ProgId"))
+					subKey.SetValue(null, libraryId + "." + classId);
+			}
 		}
 		
-		static void DeleteKey(ExtendedRegistry reg, string guid)
+		static void DeleteKey(RegistryHive hive, RegistryView view, string guid)
 		{
-			reg.DeleteSubkey("Software\\Classes\\CLSID\\" + guid + "\\ProgId");
-			reg.DeleteSubkey("Software\\Classes\\CLSID\\" + guid + "\\InProcServer32");
-			reg.DeleteSubkey("Software\\Classes\\CLSID\\" + guid);
+			using (RegistryKey key = RegistryKey.OpenBaseKey(hive, view)) {
+				key.DeleteSubKey("Software\\Classes\\CLSID\\" + guid + "\\ProgId", false);
+				key.DeleteSubKey("Software\\Classes\\CLSID\\" + guid + "\\InProcServer32", false);
+				key.DeleteSubKey("Software\\Classes\\CLSID\\" + guid, false);
+			}
 		}
 		
 		/// <summary>
@@ -81,12 +89,13 @@ namespace ICSharpCode.Profiler.Controller
 			if (guid == null)
 				throw new ArgumentNullException("guid");
 			
+			RegistryView view = is64Bit ? RegistryView.Registry64 : RegistryView.Registry32;
 			try {
-				DeleteKey(is64Bit ? ExtendedRegistry.LocalMachine64 : ExtendedRegistry.LocalMachine32, guid);
-				DeleteKey(is64Bit ? ExtendedRegistry.CurrentUser64 : ExtendedRegistry.CurrentUser32, guid);
+				DeleteKey(RegistryHive.LocalMachine, view, guid);
+				DeleteKey(RegistryHive.CurrentUser, view, guid);
 			} catch (UnauthorizedAccessException) {
 				try {
-					DeleteKey(is64Bit ? ExtendedRegistry.CurrentUser64 : ExtendedRegistry.CurrentUser32, guid);
+					DeleteKey(RegistryHive.CurrentUser, view, guid);
 				} catch (UnauthorizedAccessException) {
 					return false;
 				}

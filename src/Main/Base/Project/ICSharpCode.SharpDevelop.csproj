@@ -201,7 +201,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
-    <None Include="Src\Gui\Workbench\Layouts\SimpleWorkbenchLayout.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonDockLayout.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonPadContent.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonWorkbenchWindow.cs" />
@@ -389,13 +388,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
-    <None Include="Src\Gui\Workbench\DefaultWorkbench.cs">
-      <SubType>Form</SubType>
-    </None>
-    <None Include="Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs" />
-    <None Include="Src\Gui\Workbench\Layouts\SdiWorkspaceWindow.cs">
-      <SubType>Form</SubType>
-    </None>
     <Compile Include="Src\Gui\XmlForms\SharpDevelopPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopStringValueFilter.cs" />
     <Compile Include="Src\Services\IconService.cs" />
@@ -662,10 +654,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Services\RefactoringService\RefactoringMenuBuilder.cs" />
-    <EmbeddedResource Include="Resources\FullscreenPanel.xfrm" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\FullscreenPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Services\RefactoringService\LocalVariableRefactoring.cs" />
     <Compile Include="Src\Services\RefactoringService\FindReferencesAndRenameHelper.cs" />
     <Compile Include="Src\Internal\Doozers\DirectoryDoozer.cs" />
@@ -751,10 +739,8 @@
     <Compile Include="Src\Project\IParser.cs" />
     <Compile Include="Src\Project\CompilableProject.cs" />
     <Compile Include="Src\Project\MSBuildInternals.cs" />
-    <Compile Include="Src\Util\Pair.cs" />
     <Compile Include="Src\Util\ScrollUtils.cs" />
     <Compile Include="Src\Util\SDWindowsFormsHost.cs" />
-    <Compile Include="Src\Util\Set.cs" />
     <Compile Include="Src\Util\ReadOnlyCollectionWrapper.cs" />
     <Compile Include="Src\Project\Items\ItemType.cs" />
     <Compile Include="Src\Project\BuildTarget.cs" />

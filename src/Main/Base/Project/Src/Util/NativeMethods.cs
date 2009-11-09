@@ -31,19 +31,6 @@ namespace ICSharpCode.SharpDevelop
 		[DllImport("user32.dll")]
 		public static extern IntPtr SetForegroundWindow(IntPtr hWnd);
 		
-		public static void SetWindowRedraw(IntPtr hWnd, bool allowRedraw)
-		{
-			SendMessage(hWnd, WM_SETREDRAW, allowRedraw ? TRUE : FALSE, IntPtr.Zero);
-		}
-		
-		[DllImport("user32.dll", ExactSpelling=true)]
-		static extern short GetKeyState(int vKey);
-		
-		public static bool IsKeyPressed(Keys key)
-		{
-			return GetKeyState((int)key) < 0;
-		}
-		
 		#region SHFileOperation
 		enum FO_FUNC : uint
 		{

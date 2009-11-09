@@ -88,9 +88,14 @@ namespace ICSharpCode.SharpDevelop
 				list.Add(o);
 		}
 		
-		public static ReadOnlyCollection<T> AsReadOnly<T>(this T[] arr)
+		public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> arr)
 		{
-			return Array.AsReadOnly(arr);
+			return new ReadOnlyCollection<T>(arr);
+		}
+		
+		public static ReadOnlyCollectionWrapper<T> AsReadOnly<T>(this ICollection<T> arr)
+		{
+			return new ReadOnlyCollectionWrapper<T>(arr);
 		}
 		
 		public static string Join(this IEnumerable<string> input, string separator)

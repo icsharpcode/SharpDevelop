@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Xml;
 
@@ -33,9 +34,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		static readonly Set<string> knownAttributes = new Set<string>(
+		static readonly string[] knownAttributes = {
 			"name", "language", "buildAction", "src", "binary"
-		);
+		};
 		
 		public FileDescriptionTemplate(XmlElement xml, string hintPath)
 		{

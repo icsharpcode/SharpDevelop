@@ -57,12 +57,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// A list of project properties that cause reparsing of references when they are changed.
 		/// </summary>
-		protected readonly Set<string> reparseReferencesSensitiveProperties = new Set<string>();
+		protected readonly ISet<string> reparseReferencesSensitiveProperties = new SortedSet<string>();
 		
 		/// <summary>
 		/// A list of project properties that cause reparsing of code when they are changed.
 		/// </summary>
-		protected readonly Set<string> reparseCodeSensitiveProperties = new Set<string>();
+		protected readonly ISet<string> reparseCodeSensitiveProperties = new SortedSet<string>();
 		
 		protected CompilableProject(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation information)
 			: base(information)

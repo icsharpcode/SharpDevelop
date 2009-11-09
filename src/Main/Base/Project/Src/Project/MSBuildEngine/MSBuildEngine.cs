@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static MSBuildEngine()
 		{
-			CompileTaskNames = new Set<string>(
+			CompileTaskNames = new SortedSet<string>(
 				AddInTree.BuildItems<string>(CompileTaskNamesPath, null, false),
 				StringComparer.OrdinalIgnoreCase
 			);

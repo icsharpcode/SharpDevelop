@@ -682,7 +682,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectSection solSec = GetSolutionConfigurationsSection();
 			ProjectSection prjSec = GetProjectConfigurationsSection();
 			bool changed = false;
-			Set<string> configurations = new Set<string>();
+			SortedSet<string> configurations = new SortedSet<string>();
 
 			foreach (IProject project in projects) {
 				string guid = project.IdGuid.ToUpperInvariant();

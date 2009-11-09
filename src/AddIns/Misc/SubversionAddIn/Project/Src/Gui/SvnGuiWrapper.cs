@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Profiler.Controller;
 using System;
 using System.Diagnostics;
 using System.Text;
@@ -22,16 +21,20 @@ namespace ICSharpCode.Svn
 	/// </summary>
 	public static class SvnGuiWrapper
 	{
-		static string GetPathFromRegistry(ExtendedRegistry registry, string valueName)
+		static string GetPathFromRegistry(RegistryHive hive, string valueName)
 		{
-			return registry.GetValue("SOFTWARE\\TortoiseSVN", valueName) as string;
+			RegistryView view = Environment.Is64BitOperatingSystem ? RegistryView.Registry64 : RegistryView.Default;
+			using (RegistryKey baseKey = RegistryKey.OpenBaseKey(hive, view)) {
+				using (RegistryKey key = baseKey.OpenSubKey("SOFTWARE\\TortoiseSVN")) {
+					return key.GetValue(valueName) as string;
+				}
+			}
 		}
 		
 		static string GetPathFromRegistry(string valueName)
 		{
-			bool is64Bit = ExtendedRegistry.Is64BitWindows;
-			return GetPathFromRegistry(is64Bit ? ExtendedRegistry.CurrentUser64 : ExtendedRegistry.CurrentUser32, valueName)
-				?? GetPathFromRegistry(is64Bit ? ExtendedRegistry.LocalMachine64 : ExtendedRegistry.LocalMachine32, valueName);
+			return GetPathFromRegistry(RegistryHive.CurrentUser, valueName)
+				?? GetPathFromRegistry(RegistryHive.LocalMachine, valueName);
 		}
 		
 		static void Proc(string command, string fileName, MethodInvoker callback)

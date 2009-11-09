@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static readonly ItemType COMReference = new ItemType("COMReference");
 		
 		public static readonly ReadOnlyCollectionWrapper<ItemType> ReferenceItemTypes
-			= new ReadOnlyCollectionWrapper<ItemType>(new List<ItemType> { Reference, ProjectReference, COMReference });
+			= new ReadOnlyCollectionWrapper<ItemType>(new ItemType[] { Reference, ProjectReference, COMReference });
 		
 		/// <summary>
 		/// Item type for imported VB namespaces
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets a collection of item types that are used for files.
 		/// </summary>
 		public static readonly ReadOnlyCollectionWrapper<ItemType> DefaultFileItems
-			= new Set<ItemType>(Compile, EmbeddedResource, None, Content).AsReadOnly();
+			= new ReadOnlyCollectionWrapper<ItemType>(new ItemType[] { Compile, EmbeddedResource, None, Content });
 		
 		public static readonly ItemType Resource = new ItemType("Resource");
 		public static readonly ItemType Folder = new ItemType("Folder");

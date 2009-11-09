@@ -82,6 +82,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			lastSearches.Remove(result);
 			lastSearches.Insert(0, result);
 			
+			// limit list of last searches to 15 entries
+			while (lastSearches.Count > 15)
+				lastSearches.RemoveAt(15);
+			
 			contentPlaceholder.SetContent(result.GetControl());
 			
 			toolBar.Items.Clear();

@@ -77,7 +77,7 @@ namespace ICSharpCode.Profiler.Controller
 		
 		public static bool RunsAs64Bit(string exeName)
 		{
-			if (!ExtendedRegistry.Is64BitWindows) {
+			if (!Environment.Is64BitOperatingSystem) {
 				// this Windows installation is a 32-bit windows, so the app can never run as 64-bit.
 				return false;
 			}
