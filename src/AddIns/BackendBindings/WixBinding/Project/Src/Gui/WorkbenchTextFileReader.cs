@@ -29,11 +29,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public TextReader Create(string fileName)
 		{
-			ITextEditorControlProvider textEditorProvider = FileService.GetOpenFile(fileName) as ITextEditorControlProvider;
-			if (textEditorProvider != null) {
-				return new StringReader(textEditorProvider.TextEditorControl.Text);
-			}
-			return new StreamReader(fileName, true);
+			return ParserService.GetParseableFileContent(fileName).CreateReader();
 		}
 	}
 }

@@ -258,7 +258,7 @@ namespace ICSharpCode.XamlBinding
 				if (!descriptionCreated) {
 					string entityDoc = ctor.Documentation;
 					if (!string.IsNullOrEmpty(entityDoc)) {
-						description = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entityDoc);
+						description = CodeCompletionItem.ConvertDocumentation(entityDoc);
 					}
 					descriptionCreated = true;
 				}
@@ -296,7 +296,7 @@ namespace ICSharpCode.XamlBinding
 				if (!descriptionCreated) {
 					string entityDoc = member.Documentation;
 					if (!string.IsNullOrEmpty(entityDoc)) {
-						description = ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.ConvertDocumentation(entityDoc);
+						description = CodeCompletionItem.ConvertDocumentation(entityDoc);
 					}
 					descriptionCreated = true;
 				}

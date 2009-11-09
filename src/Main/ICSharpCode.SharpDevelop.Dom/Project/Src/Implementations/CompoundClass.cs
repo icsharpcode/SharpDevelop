@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.Events.AddRange(part.Events);
 				this.Fields.AddRange(part.Fields);
 				
-				this.AddDefaultConstructorIfRequired |= part.GetAddDefaultConstructorIfRequired();
+				this.AddDefaultConstructorIfRequired |= part.AddDefaultConstructorIfRequired;
 			}
 			this.CompilationUnit.FileName = shortestFileName;
 			if ((modifier & ModifierEnum.VisibilityMask) == ModifierEnum.None) {

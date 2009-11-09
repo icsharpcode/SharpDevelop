@@ -11,6 +11,7 @@ using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
+	[Obsolete]
 	public interface ITextEditorControlProvider : ITextEditorProvider
 	{
 		TextEditorControl TextEditorControl {

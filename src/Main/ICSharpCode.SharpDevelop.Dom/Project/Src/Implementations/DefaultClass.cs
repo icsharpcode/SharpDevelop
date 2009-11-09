@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public class DefaultClass : AbstractEntity, IClass2, IComparable
+	public class DefaultClass : AbstractEntity, IClass, IComparable
 	{
 		ClassType classType;
 		DomRegion region;

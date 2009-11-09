@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			using (var busyLock = busyManager.Enter(this)) {
 				if (busyLock.Success) {
 					l.AddRange(c.Methods);
-					if (c.GetAddDefaultConstructorIfRequired() && !c.IsStatic) {
+					if (c.AddDefaultConstructorIfRequired && !c.IsStatic) {
 						// A constructor is added for classes that do not have a default constructor;
 						// and for all structs.
 						if (c.ClassType == ClassType.Class && !l.Exists(m => m.IsConstructor)) {

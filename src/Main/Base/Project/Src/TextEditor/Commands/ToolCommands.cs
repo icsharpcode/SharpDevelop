@@ -21,6 +21,7 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
+	[Obsolete]
 	public class QuickDocumentation : AbstractMenuCommand
 	{
 		public override void Run()

@@ -7,9 +7,8 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -32,7 +31,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				if (c != null) {
 					IMember m = DefaultProjectContent.GetMemberByReflectionName(c, property.Name);
 					if (m != null)
-						return CodeCompletionData.ConvertDocumentation(m.Documentation);
+						return CodeCompletionItem.ConvertDocumentation(m.Documentation);
 				}
 			}
 			return null;

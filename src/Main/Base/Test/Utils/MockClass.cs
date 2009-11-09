@@ -360,5 +360,11 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		public EntityType EntityType {
 			get { return EntityType.Class; }
 		}
+		
+		public bool AddDefaultConstructorIfRequired {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

@@ -559,17 +559,17 @@
     <EmbeddedResource Include="Resources\SelectStylePanel.xfrm" />
     <EmbeddedResource Include="Resources\TaskListOptions.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
-    <Compile Include="Src\TextEditor\Bookmarks\BookmarkBase.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\Commands\MenuCommands.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\IBookmarkMargin.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\Pad\Nodes\BookmarkFolderNode.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\Pad\Nodes\BookmarkNode.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\Pad\BookmarkPad.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\Pad\BookmarkPadToolbarCommands.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\SDBookmark.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\BookmarkEventHandler.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\BookmarkManager.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\SDMarkerBookmark.cs" />
+    <Compile Include="Src\Bookmarks\BookmarkBase.cs" />
+    <Compile Include="Src\Bookmarks\Commands\MenuCommands.cs" />
+    <Compile Include="Src\Bookmarks\IBookmarkMargin.cs" />
+    <Compile Include="Src\Bookmarks\Pad\Nodes\BookmarkFolderNode.cs" />
+    <Compile Include="Src\Bookmarks\Pad\Nodes\BookmarkNode.cs" />
+    <Compile Include="Src\Bookmarks\Pad\BookmarkPad.cs" />
+    <Compile Include="Src\Bookmarks\Pad\BookmarkPadToolbarCommands.cs" />
+    <Compile Include="Src\Bookmarks\SDBookmark.cs" />
+    <Compile Include="Src\Bookmarks\BookmarkEventHandler.cs" />
+    <Compile Include="Src\Bookmarks\BookmarkManager.cs" />
+    <Compile Include="Src\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
     <Compile Include="Src\TextEditor\Codons\AddInTreeSyntaxModeProvider.cs" />
     <Compile Include="Src\TextEditor\Codons\SyntaxModeDoozer.cs" />
@@ -593,7 +593,6 @@
     <Compile Include="Src\TextEditor\Commands\SearchCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionData.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaControlProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextEditorProperties.cs" />
     <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
@@ -631,8 +630,8 @@
     <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\TextEditor\Bookmarks\BookmarkConverter.cs" />
-    <Compile Include="Src\TextEditor\Bookmarks\ClassMemberBookmark.cs" />
+    <Compile Include="Src\Bookmarks\BookmarkConverter.cs" />
+    <Compile Include="Src\Bookmarks\ClassMemberBookmark.cs" />
     <Compile Include="Src\TextEditor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
