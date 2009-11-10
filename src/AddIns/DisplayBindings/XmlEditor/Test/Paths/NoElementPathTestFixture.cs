@@ -25,8 +25,13 @@ namespace XmlEditor.Tests.Paths
 		[Test]
 		public void HasNoItems()
 		{
-			Assert.AreEqual(0, path.Elements.Count, 
-			                "Should not be any elements.");
+			Assert.AreEqual(0, path.Elements.Count);
+		}
+		
+		[Test]
+		public void PathIsEmpty()
+		{
+			Assert.IsTrue(path.IsEmpty);
 		}
 		
 		[Test]

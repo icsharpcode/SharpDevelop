@@ -28,11 +28,19 @@ namespace ICSharpCode.XmlEditor
 			this.defaultNamespacePrefix = defaultNamespacePrefix;
 		}
 		
-		public ICompletionItemList GenerateCompletionData(string fileContent, char charTyped)
+		public string DefaultNamespacePrefix {
+			get { return defaultNamespacePrefix; }
+		}
+		
+		public XmlSchemaCompletionData DefaultSchemaCompletionData {
+			get { return defaultSchemaCompletionData; }
+		}
+		
+		public XmlCompletionItemList GenerateCompletionData(string fileContent, char charTyped)
 		{
 			string text = String.Concat(fileContent, charTyped);
 			
-			DefaultCompletionItemList list = null;
+			XmlCompletionItemList list = null;
 			
 			switch (charTyped) {
 				case '=':
@@ -77,6 +85,8 @@ namespace ICSharpCode.XmlEditor
 			if (list != null) {
 				list.SortItems();
 				list.SuggestedItem = list.Items.FirstOrDefault();
+			} else {
+				list = new XmlCompletionItemList();
 			}
 			
 			return list;
@@ -125,7 +135,7 @@ namespace ICSharpCode.XmlEditor
 			return schemaCompletionDataItems.GetSchemaFromFileName(fileName);
 		}
 		
-		public DefaultCompletionItemList GetChildElementCompletionData(XmlElementPath path)
+		public XmlCompletionItemList GetChildElementCompletionData(XmlElementPath path)
 		{
 			XmlCompletionItemList list = new XmlCompletionItemList();
 			
@@ -139,7 +149,7 @@ namespace ICSharpCode.XmlEditor
 			return list;
 		}
 		
-		public DefaultCompletionItemList GetAttributeCompletionData(XmlElementPath path)
+		public XmlCompletionItemList GetAttributeCompletionData(XmlElementPath path)
 		{
 			XmlCompletionItemList list = new XmlCompletionItemList();
 			
@@ -153,7 +163,7 @@ namespace ICSharpCode.XmlEditor
 			return list;
 		}
 		
-		public DefaultCompletionItemList GetAttributeValueCompletionData(XmlElementPath path, string name)
+		public XmlCompletionItemList GetAttributeValueCompletionData(XmlElementPath path, string name)
 		{
 			XmlCompletionItemList list = new XmlCompletionItemList();
 			

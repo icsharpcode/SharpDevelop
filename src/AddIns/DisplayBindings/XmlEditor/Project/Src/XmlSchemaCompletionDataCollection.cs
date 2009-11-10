@@ -33,9 +33,9 @@ namespace ICSharpCode.XmlEditor
 		/// <param name='val'>
 		///   A <see cref='XmlSchemaCompletionDataCollection'/> from which the contents are copied
 		/// </param>
-		public XmlSchemaCompletionDataCollection(XmlSchemaCompletionDataCollection val)
+		public XmlSchemaCompletionDataCollection(XmlSchemaCompletionDataCollection schemas)
 		{
-			this.AddRange(val);
+			this.AddRange(schemas);
 		}
 		
 		/// <summary>
@@ -44,12 +44,12 @@ namespace ICSharpCode.XmlEditor
 		/// <param name='val'>
 		///       A array of <see cref='XmlSchemaCompletionData'/> objects with which to intialize the collection
 		/// </param>
-		public XmlSchemaCompletionDataCollection(XmlSchemaCompletionData[] val)
+		public XmlSchemaCompletionDataCollection(XmlSchemaCompletionData[] schemas)
 		{
-			this.AddRange(val);
+			this.AddRange(schemas);
 		}
 		
-		public DefaultCompletionItemList GetNamespaceCompletionData()
+		public XmlCompletionItemList GetNamespaceCompletionData()
 		{
 			XmlCompletionItemList list = new XmlCompletionItemList();
 			
@@ -79,10 +79,10 @@ namespace ICSharpCode.XmlEditor
 		///    An array of type <see cref='XmlSchemaCompletionData'/> containing the objects to add to the collection.
 		/// </param>
 		/// <seealso cref='XmlSchemaCompletionDataCollection.Add'/>
-		public void AddRange(XmlSchemaCompletionData[] val)
+		public void AddRange(XmlSchemaCompletionData[] schema)
 		{
-			for (int i = 0; i < val.Length; i++) {
-				this.Add(val[i]);
+			for (int i = 0; i < schema.Length; i++) {
+				this.Add(schema[i]);
 			}
 		}
 		
@@ -93,10 +93,10 @@ namespace ICSharpCode.XmlEditor
 		///    A <see cref='XmlSchemaCompletionDataCollection'/> containing the objects to add to the collection.
 		/// </param>
 		/// <seealso cref='XmlSchemaCompletionDataCollection.Add'/>
-		public void AddRange(XmlSchemaCompletionDataCollection val)
+		public void AddRange(XmlSchemaCompletionDataCollection schemas)
 		{
-			for (int i = 0; i < val.Count; i++) {
-				this.Add(val[i]);
+			for (int i = 0; i < schemas.Count; i++) {
+				this.Add(schemas[i]);
 			}
 		}
 		

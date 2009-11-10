@@ -30,6 +30,10 @@ namespace ICSharpCode.XmlEditor
 			get { return elements; }
 		}
 		
+		public bool IsEmpty {
+			get { return elements.IsEmpty; }
+		}
+		
 		/// <summary>
 		/// Compacts the path so it only contains the elements that are from 
 		/// the namespace of the last element in the path. 

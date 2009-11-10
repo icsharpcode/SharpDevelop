@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using ICSharpCode.Core;
 using System.Globalization;
 
@@ -39,9 +40,9 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets an association between a schema and a file extension.
 		/// </summary>
-		public XmlSchemaFileAssociation GetSchemaFileAssociation(string extension)
-		{			
-			extension = extension.ToLowerInvariant();
+		public XmlSchemaFileAssociation GetSchemaFileAssociation(string fileName)
+		{
+			string extension = Path.GetExtension(fileName).ToLowerInvariant();
 			string property = properties.Get("ext" + extension, String.Empty);
 			XmlSchemaFileAssociation schemaFileAssociation = XmlSchemaFileAssociation.ConvertFromString(property);
 			if (schemaFileAssociation.IsEmpty) {
@@ -50,15 +51,15 @@ namespace ICSharpCode.XmlEditor
 			return schemaFileAssociation;
 		}
 		
-		public XmlSchemaCompletionData GetSchemaCompletionData(string fileExtension)
+		public XmlSchemaCompletionData GetSchemaCompletionData(string fileName)
 		{
-			XmlSchemaFileAssociation association = GetSchemaFileAssociation(fileExtension);
+			XmlSchemaFileAssociation association = GetSchemaFileAssociation(fileName);
 			return schemas[association.NamespaceUri];
 		}		
 		
-		public string GetNamespacePrefix(string fileExtension)
+		public string GetNamespacePrefix(string fileName)
 		{
-			return GetSchemaFileAssociation(fileExtension).NamespacePrefix;
+			return GetSchemaFileAssociation(fileName).NamespacePrefix;
 		}		
 		
 		public void SetSchemaFileAssociation(XmlSchemaFileAssociation association)
@@ -75,5 +76,12 @@ namespace ICSharpCode.XmlEditor
 			get { return properties.Get(ShowSchemaAnnotationPropertyName, true); }
 			set { properties.Set(ShowSchemaAnnotationPropertyName, value); }
 		}
+		
+		public XmlCompletionDataProvider GetProvider(string fileName)
+		{
+			XmlSchemaFileAssociation schemaFileAssociation = GetSchemaFileAssociation(fileName);
+			XmlSchemaCompletionData defaultSchemaCompletionData = schemas[schemaFileAssociation.NamespaceUri];
+			return new XmlCompletionDataProvider(schemas, defaultSchemaCompletionData, schemaFileAssociation.NamespacePrefix);
+		}		
 	}
 }

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.Core;
@@ -15,39 +16,38 @@ using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 namespace ICSharpCode.XmlEditor
 {
 	public class XmlCodeCompletionBinding : ICodeCompletionBinding
-	{
-		static XmlCodeCompletionBinding instance;
-		
-		public static XmlCodeCompletionBinding Instance {
-			get {
-				if (instance == null) {
-					instance = new XmlCodeCompletionBinding();
-				}
-				return instance;
-			}
-		}
+	{	
+		XmlEditorOptions options;
 		
 		public XmlCodeCompletionBinding()
+			: this(XmlEditorService.XmlEditorOptions)
 		{
 		}
 		
+		public XmlCodeCompletionBinding(XmlEditorOptions options)
+		{
+			this.options = options;
+		}
+		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
-		{			
+		{
 			string text = editor.Document.GetText(0, editor.Caret.Offset);
-			XmlCompletionDataProvider provider = GetProvider(editor.FileName);
-			ICompletionItemList completionItems = provider.GenerateCompletionData(text, ch);
-			ICompletionListWindow completionWindow = editor.ShowCompletionWindow(completionItems);
-			if (completionWindow != null) {
-				XmlCompletionItem item = completionItems.SuggestedItem as XmlCompletionItem;
-				if (item.DataType == XmlCompletionDataType.NamespaceUri) {
-					completionWindow.Width = double.NaN;
+			XmlCompletionDataProvider provider = options.GetProvider(editor.FileName);
+			XmlCompletionItemList completionItems = provider.GenerateCompletionData(text, ch);
+			if (completionItems.Items.Count > 0) {
+				ICompletionListWindow completionWindow = editor.ShowCompletionWindow(completionItems);
+				if (completionWindow != null) {
+					XmlCompletionItem firstListItem = (XmlCompletionItem)completionItems.Items[0];
+					if (firstListItem.DataType == XmlCompletionDataType.NamespaceUri) {
+						completionWindow.Width = double.NaN;
+					}
 				}
 			}
-			
+				
 			if ((ch == '<') || (ch == ' ') || (ch == '=')) {
 				return CodeCompletionKeyPressResult.Completed;
 			}
-			return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
+			return CodeCompletionKeyPressResult.None;
 		}
 		
 		public bool CtrlSpace(ITextEditor editor)
@@ -57,27 +57,15 @@ namespace ICSharpCode.XmlEditor
 			int offset = editor.Caret.Offset;
 			if (XmlParser.IsInsideAttributeValue(text, offset)) {
 				XmlElementPath path = XmlParser.GetActiveElementStartPath(text, offset);
-				if (path.Elements.Count > 0) {
-					XmlCompletionDataProvider provider = GetProvider(editor.FileName);
-					editor.ShowCompletionWindow(provider.GetAttributeValueCompletionData(path, XmlParser.GetAttributeNameAtIndex(text, offset)));
+				XmlCompletionDataProvider provider = options.GetProvider(editor.FileName);
+				string attributeName = XmlParser.GetAttributeNameAtIndex(text, offset);
+				XmlCompletionItemList completionItems = provider.GetAttributeValueCompletionData(path, attributeName);
+				if (completionItems.Items.Count > 0) {
+					editor.ShowCompletionWindow(completionItems);
 					return true;
 				}
 			}
 			return false;
-		}
-		
-		public static XmlCompletionDataProvider GetProvider(string fileName)
-		{
-			string extension = Path.GetExtension(fileName);
-			if (PropertyService.DataDirectory != null) {
-				XmlSchemaCompletionDataCollection schemas = XmlEditorService.XmlSchemaManager.Schemas;
-				string defaultNamespacePrefix = XmlEditorService.XmlEditorOptions.GetNamespacePrefix(extension);
-				XmlSchemaCompletionData defaultSchemaCompletionData = XmlEditorService.XmlEditorOptions.GetSchemaCompletionData(extension);
-				return new XmlCompletionDataProvider(schemas, defaultSchemaCompletionData, defaultNamespacePrefix);
-			}
-
-			// for unit tests
-			return new XmlCompletionDataProvider(new XmlSchemaCompletionDataCollection(), null, String.Empty);
 		}
 	}
 }

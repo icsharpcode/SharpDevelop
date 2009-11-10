@@ -60,7 +60,7 @@ namespace ICSharpCode.XmlEditor
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
 			List<IViewContent> views = new List<IViewContent>();
-			views.Add(new XmlTreeView(viewContent));
+			views.Add(new XmlTreeView(viewContent, XmlEditorService.XmlEditorOptions));
 			return views.ToArray();
 		}
 		

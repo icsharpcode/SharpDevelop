@@ -1,0 +1,58 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.XmlEditor;
+using NUnit.Framework;
+using XmlEditor.Tests.Utils;
+
+namespace XmlEditor.Tests.Completion
+{
+	[TestFixture]
+	public class AttributeCompletionWindowTestFixture
+	{
+		MockTextEditor textEditor;
+		CodeCompletionKeyPressResult keyPressResult;
+		XmlSchemaCompletionDataCollection schemas;
+		
+		[SetUp]
+		public void Init()
+		{
+			schemas = new XmlSchemaCompletionDataCollection();
+			schemas.Add(new XmlSchemaCompletionData(ResourceManager.GetXsdSchema()));
+
+			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
+			options.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".xsd", "http://www.w3.org/2001/XMLSchema", "xs"));
+			
+			textEditor = new MockTextEditor();
+			textEditor.FileName = new FileName(@"c:\projects\test.xsd");
+			textEditor.Document.Text = "<xs:schema></xs:schema>";
+			
+			// Put cursor after the first 'a' in "<xs:schema>"
+			textEditor.Caret.Offset = 10;			
+			
+			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(options);
+			keyPressResult = completionBinding.HandleKeyPress(textEditor, ' ');			
+		}
+		
+		[Test]
+		public void KeyPressResultIsCompletedAfterPressingSpaceBar()
+		{
+			Assert.AreEqual(CodeCompletionKeyPressResult.Completed, keyPressResult);
+		}
+		
+		[Test]
+		public void CompletionListUsedInShowCompletionWindowHasItems()
+		{
+			Assert.IsTrue(textEditor.CompletionItemsDisplayedToArray().Length > 0);
+		}
+	}
+}

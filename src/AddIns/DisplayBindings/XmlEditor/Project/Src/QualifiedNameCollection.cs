@@ -34,6 +34,10 @@ namespace ICSharpCode.XmlEditor
 			get { return Count > 0; }
 		}
 		
+		public bool IsEmpty {
+			get { return !HasItems; }
+		}
+		
 		public override string ToString()
 		{
 			StringBuilder text = new StringBuilder();

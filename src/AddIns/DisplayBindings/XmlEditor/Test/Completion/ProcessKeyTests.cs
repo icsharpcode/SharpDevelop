@@ -14,42 +14,39 @@ using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Completion
 {
-	/// <summary>
-	/// Tests the XmlCompletionDataProvider's ProcessKey method.
-	/// </summary>
 	[TestFixture]
-	public class ProcessKeyTests
+	public class CompletionListProcessKeyTests
 	{
-		ICompletionItemList list;
+		XmlCompletionItemList completionItemList;
 		
 		[SetUp]
 		public void Init()
 		{
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(ResourceManager.GetXhtmlStrictSchema());
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			schemas.Add(schema);
-			list = new XmlCompletionDataProvider(schemas, schema, "").GenerateCompletionData("", '<');
-		}
-		
-		/// <summary>
-		/// A space character should be treated as a normal character.
-		/// </summary>
-		[Test]
-		public void SpaceChar()
-		{
-			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, list.ProcessInput(' '));
+			completionItemList = new XmlCompletionItemList();
 		}
 		
 		[Test]
-		public void TabChar()
+		public void ProcessInputWithSpaceCharReturnsNormalKey()
 		{
-			Assert.AreEqual(CompletionItemListKeyResult.InsertionKey, list.ProcessInput('\t'));
+			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItemList.ProcessInput(' '));
+		}
+		
+		[Test]
+		public void ProcessInputWithTabCharReturnsInsertionKey()
+		{
+			Assert.AreEqual(CompletionItemListKeyResult.InsertionKey, completionItemList.ProcessInput('\t'));
 		}		
 
 		[Test]
-		public void ReturnChar()
+		public void ProcessInputWithColonCharReturnsNormalKey()
 		{
-			Assert.AreEqual(CompletionItemListKeyResult.InsertionKey, list.ProcessInput((char)Keys.Return));
+			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItemList.ProcessInput(':'));
+		}
+		
+		[Test]
+		public void ProcessInputWithDotCharReturnsNormalKey()
+		{
+			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItemList.ProcessInput('.'));
 		}		
 	}
 }

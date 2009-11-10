@@ -25,11 +25,14 @@ namespace ICSharpCode.XmlEditor
 	public class XmlTreeView : AbstractSecondaryViewContent, IClipboardHandler
 	{
 		XmlTreeViewContainerControl treeViewContainer;
+		XmlCodeCompletionBinding xmlCompletionBinding;
+		XmlEditorOptions options;
 		bool ignoreDirtyChange;
 		
-		public XmlTreeView(IViewContent parent)
+		public XmlTreeView(IViewContent parent, XmlEditorOptions options)
 			: base(parent)
 		{
+			this.options = options;
 			this.TabPageText = "${res:ICSharpCode.XmlEditor.XmlTreeView.Title}";
 			this.treeViewContainer = new XmlTreeViewContainerControl();
 			this.treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
@@ -126,15 +129,13 @@ namespace ICSharpCode.XmlEditor
 		#endregion
 		
 		public override object Control {
-			get {
-				return this.treeViewContainer;
-			}
+			get { return this.treeViewContainer; }
 		}
 		
 		protected override void LoadFromPrimary()
 		{
 			IFileDocumentProvider provider = this.PrimaryViewContent as IFileDocumentProvider;
-			treeViewContainer.LoadXml(provider.GetDocumentForFile(this.PrimaryFile).Text, XmlCodeCompletionBinding.GetProvider(Path.GetExtension(this.PrimaryFileName)));
+			treeViewContainer.LoadXml(provider.GetDocumentForFile(this.PrimaryFile).Text, options.GetProvider(this.PrimaryFileName));
 			XmlView view = XmlView.ForFile(this.PrimaryFile);
 			if (view != null) {
 				XmlView.CheckIsWellFormed(view.TextEditor);

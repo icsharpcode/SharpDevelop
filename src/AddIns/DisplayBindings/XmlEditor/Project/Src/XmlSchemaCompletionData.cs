@@ -130,7 +130,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public DefaultCompletionItemList GetElementCompletionData()
+		public XmlCompletionItemList GetElementCompletionData()
 		{
 			return GetElementCompletionData(String.Empty);
 		}
@@ -138,7 +138,7 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
-		public DefaultCompletionItemList GetElementCompletionData(string namespacePrefix)
+		public XmlCompletionItemList GetElementCompletionData(string namespacePrefix)
 		{
 			XmlCompletionItemCollection data = new XmlCompletionItemCollection();
 

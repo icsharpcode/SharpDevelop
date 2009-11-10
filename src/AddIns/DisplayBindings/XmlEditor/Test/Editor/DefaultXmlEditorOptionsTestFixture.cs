@@ -154,6 +154,14 @@ namespace XmlEditor.Tests.Editor
 			properties.Set("ext.abc", ".abc|namespace-uri|prefix");
 			Assert.AreEqual(expectedSchemaAssociation, options.GetSchemaFileAssociation(".ABC"));
 		}
+
+		[Test]
+		public void RegisteredSchemaAssociationMatchedByFullFileNameInsteadOfExtension()
+		{
+			XmlSchemaFileAssociation expectedSchemaAssociation = new XmlSchemaFileAssociation(".abc", "namespace-uri", "prefix");
+			properties.Set("ext.abc", ".abc|namespace-uri|prefix");
+			Assert.AreEqual(expectedSchemaAssociation, options.GetSchemaFileAssociation(@"d:\projects\a.abc"));
+		}
 		
 		[Test]
 		public void DefaultXmlExtensionRevertedToIfNoFileExtensionSavedInXmlEditorOptionsProperties()

@@ -76,14 +76,28 @@ namespace ICSharpCode.XmlEditor
 				case XmlCompletionDataType.XmlAttribute:
 					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 					context.Editor.Caret.Offset--;
-					XmlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
+//					XmlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 					break;
 			}
 		}
 		
 		public override string ToString()
 		{
-			return "[" + this.Text + "]";
+			return "[" + Text + "]";
+		}
+		
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		
+		public override bool Equals(object obj)
+		{
+			XmlCompletionItem item = obj as XmlCompletionItem;
+			if (item != null) {
+				return (dataType == item.dataType) && (Text == item.Text);
+			}
+			return false;
 		}
 	}
 }

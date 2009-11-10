@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.TextEditor;
@@ -19,7 +18,7 @@ namespace XmlEditor.Tests.Completion
 {
 	/// <summary>
 	/// Tests that the first item in the completion list view is selected by
-	/// default. When coding in C# the default is to not selected the
+	/// default. When coding in C# the default is to not select the
 	/// first item in the completion list. With XML there tends to not
 	/// be very many items in the completion list so selecting the first
 	/// one can often make editing quicker.
@@ -30,17 +29,19 @@ namespace XmlEditor.Tests.Completion
 		XmlCompletionDataProvider provider;
 		ICompletionItem selectedCompletionData;
 		ICompletionItemList completionDataItems;
+		XmlSchemaCompletionData defaultSchema;
+		IList<ICompletionItem> completionList;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(ResourceManager.GetXhtmlStrictSchema());
+			defaultSchema = new XmlSchemaCompletionData(ResourceManager.GetXhtmlStrictSchema());
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			schemas.Add(schema);
-			provider = new XmlCompletionDataProvider(schemas, schema, string.Empty);
-			TextEditorControl textEditor = new TextEditorControl();
-			completionDataItems = provider.GenerateCompletionData("", '<');
+			schemas.Add(defaultSchema);
+			provider = new XmlCompletionDataProvider(schemas, defaultSchema, String.Empty);
+			completionDataItems = provider.GenerateCompletionData(String.Empty, '<');
 			selectedCompletionData = completionDataItems.SuggestedItem;
+			completionList = (IList<ICompletionItem>)completionDataItems.Items;
 		}
 		
 		/// <summary>
@@ -48,38 +49,15 @@ namespace XmlEditor.Tests.Completion
 		/// data items from the xml completion data provider.
 		/// </summary>
 		[Test]
-		public void HasGeneratedCompletionDataItems()
+		public void GeneratedCompletionItemsHasMoreThanOneItem()
 		{
-			Assert.IsNotNull(completionDataItems);
-			Assert.IsTrue(completionDataItems.Items.ToArray().Length > 0);
-		}
-		
-		/// <summary>
-		/// Default index should be zero so that the first item in the
-		/// list view is selected.
-		/// </summary>
-		[Test]
-		public void DefaultIndex()
-		{
-			Assert.True(completionDataItems.Items.FirstOrDefault() == selectedCompletionData);
+			Assert.IsTrue(completionList.Count > 1);
 		}
 		
 		[Test]
-		public void SelectedCompletionDataExists()
+		public void SelectedCompletionItemMatchesFirstItemInCompletionList()
 		{
-			Assert.IsNotNull(selectedCompletionData);
-		}
-		
-		/// <summary>
-		/// First item returned from completion list view should correspond
-		/// to the first completion item returned from the xml completion 
-		/// data provider after those items have been sorted.
-		/// </summary>
-		[Test]
-		public void SelectedCompletionDataMatches()
-		{
-			List<ICompletionItem> items = completionDataItems.Items.OrderBy(item => item.Text).ToList();
-			Assert.AreEqual(items[0].Text, selectedCompletionData.Text);
+			Assert.AreSame(completionList[0], selectedCompletionData);
 		}
 	}
 }

@@ -76,7 +76,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public XmlCompletionDataProvider GetProvider()
 		{
-			return XmlCodeCompletionBinding.GetProvider(Path.GetExtension(File.FileName));
+			return XmlEditorService.XmlEditorOptions.GetProvider(File.FileName);
 		}
 				
 		public ITextEditor TextEditor

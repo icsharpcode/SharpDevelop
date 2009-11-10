@@ -37,10 +37,11 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
+			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), new XmlSchemaCompletionDataCollection());
 			MockOpenedFile openedFile = new MockOpenedFile("test.xml");
 			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
 			xmlView = new MockXmlViewContent(openedFile);
-			view = new XmlTreeView(xmlView);
+			view = new XmlTreeView(xmlView, options);
 			treeViewContainer = (XmlTreeViewContainerControl)view.Control;
 			treeView = treeViewContainer.TreeView;
 			clipboardHandler = view as IClipboardHandler;

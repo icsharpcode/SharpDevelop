@@ -55,7 +55,7 @@ namespace XmlEditor.Tests.Paths
 		public void RemoveFirstItemFromEmptyCollectionDoesNotThrowArgumentOutOfRangeException()
 		{
 			qualifiedNameCollection = new QualifiedNameCollection();
-			qualifiedNameCollection.RemoveFirst();
+			Assert.DoesNotThrow(delegate { qualifiedNameCollection.RemoveFirst(); });
 		}
 		
 		[Test]
@@ -76,7 +76,7 @@ namespace XmlEditor.Tests.Paths
 		public void RemoveLastItemFromEmptyCollectionDoesNotThrowArgumentOutOfRangeException()
 		{
 			qualifiedNameCollection = new QualifiedNameCollection();
-			qualifiedNameCollection.RemoveLast();
+			Assert.DoesNotThrow(delegate { qualifiedNameCollection.RemoveLast(); });
 		}
 		
 		[Test]
@@ -140,8 +140,21 @@ namespace XmlEditor.Tests.Paths
 		[Test]
 		public void RemovingMoreItemsThanInCollectionDoesNotThrowArgumentOutOfRangeException()
 		{
-			qualifiedNameCollection.RemoveFirst(5);
+			Assert.DoesNotThrow(delegate { qualifiedNameCollection.RemoveFirst(5); });
 			Assert.AreEqual(0, qualifiedNameCollection.Count);
+		}
+		
+		[Test]
+		public void NewQualifiedNameCollectionIsEmpty()
+		{
+			qualifiedNameCollection = new QualifiedNameCollection();
+			Assert.IsTrue(qualifiedNameCollection.IsEmpty);
+		}
+		
+		[Test]
+		public void QualifiedNameCollectionWithItemsIsNotEmpty()
+		{
+			Assert.IsFalse(qualifiedNameCollection.IsEmpty);
 		}
 	}
 }
