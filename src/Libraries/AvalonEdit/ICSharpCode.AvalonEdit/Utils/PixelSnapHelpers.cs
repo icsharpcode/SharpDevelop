@@ -12,7 +12,7 @@ using System.Windows.Media;
 namespace ICSharpCode.AvalonEdit.Utils
 {
 	/// <summary>
-	/// Contains static helper methods for aligning stuff on a whole number of
+	/// Contains static helper methods for aligning stuff on a whole number of pixels.
 	/// </summary>
 	public static class PixelSnapHelpers
 	{
@@ -22,8 +22,15 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </summary>
 		public static Size GetPixelSize(Visual visual)
 		{
-			Matrix matrix = PresentationSource.FromVisual(visual).CompositionTarget.TransformFromDevice;
-			return new Size(matrix.M11, matrix.M22);
+			if (visual == null)
+				throw new ArgumentNullException("visual");
+			PresentationSource source = PresentationSource.FromVisual(visual);
+			if (source != null) {
+				Matrix matrix = source.CompositionTarget.TransformFromDevice;
+				return new Size(matrix.M11, matrix.M22);
+			} else {
+				return new Size(1, 1);
+			}
 		}
 		
 		/// <summary>
