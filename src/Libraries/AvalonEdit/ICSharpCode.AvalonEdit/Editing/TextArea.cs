@@ -62,8 +62,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new ArgumentNullException("textView");
 			this.textView = textView;
 			this.Options = textView.Options;
-			textView.SetBinding(TextView.DocumentProperty, new Binding(DocumentProperty.Name) { Source = this });
-			textView.SetBinding(TextView.OptionsProperty, new Binding(OptionsProperty.Name) { Source = this });
 			
 			textView.Services.AddService(typeof(TextArea), this);
 			
@@ -200,6 +198,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				TextDocumentWeakEventManager.UpdateStarted.RemoveListener(oldValue, this);
 				TextDocumentWeakEventManager.UpdateFinished.RemoveListener(oldValue, this);
 			}
+			textView.Document = newValue;
 			if (newValue != null) {
 				TextDocumentWeakEventManager.Changing.AddListener(newValue, this);
 				TextDocumentWeakEventManager.Changed.AddListener(newValue, this);
@@ -252,6 +251,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (oldValue != null) {
 				PropertyChangedWeakEventManager.RemoveListener(oldValue, this);
 			}
+			textView.Options = newValue;
 			if (newValue != null) {
 				PropertyChangedWeakEventManager.AddListener(newValue, this);
 			}

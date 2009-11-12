@@ -60,8 +60,6 @@ namespace ICSharpCode.AvalonEdit
 			
 			this.Options = textArea.Options;
 			this.Document = new TextDocument();
-			textArea.SetBinding(TextArea.DocumentProperty, new Binding(DocumentProperty.Name) { Source = this });
-			textArea.SetBinding(TextArea.OptionsProperty, new Binding(OptionsProperty.Name) { Source = this });
 		}
 		#endregion
 		
@@ -124,6 +122,7 @@ namespace ICSharpCode.AvalonEdit
 			if (oldValue != null) {
 				TextDocumentWeakEventManager.TextChanged.RemoveListener(oldValue, this);
 			}
+			textArea.Document = newValue;
 			if (newValue != null) {
 				TextDocumentWeakEventManager.TextChanged.AddListener(newValue, this);
 			}
@@ -172,6 +171,7 @@ namespace ICSharpCode.AvalonEdit
 			if (oldValue != null) {
 				PropertyChangedWeakEventManager.RemoveListener(oldValue, this);
 			}
+			textArea.Options = newValue;
 			if (newValue != null) {
 				PropertyChangedWeakEventManager.AddListener(newValue, this);
 			}
