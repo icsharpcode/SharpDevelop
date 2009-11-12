@@ -90,8 +90,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// base most member => most derived member
 			//Dictionary<IMember, IMember> overrideDict = new Dictionary<IMember, IMember>();
 			
-			HashSet<IMethod> handledMethods = new HashSet<IMethod>(new ParameterListComparer());
-			Dictionary<IMethod, IMethod> overrideMethodDict = new Dictionary<IMethod, IMethod>(new ParameterListComparer());
+			ParameterListComparer parameterListComparer = new ParameterListComparer();
+			HashSet<IMethod> handledMethods = new HashSet<IMethod>(parameterListComparer);
+			Dictionary<IMethod, IMethod> overrideMethodDict = new Dictionary<IMethod, IMethod>(parameterListComparer);
 			IMember nonMethodOverride = null;
 			
 			List<IList<IMember>> allResults = new List<IList<IMember>>();
