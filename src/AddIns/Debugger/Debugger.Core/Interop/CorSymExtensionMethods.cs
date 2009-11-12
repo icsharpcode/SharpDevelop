@@ -126,7 +126,7 @@ namespace Debugger.Interop.CorSym
 			uint count;
 			symScope.GetNamespaces(0, out count, new ISymUnmanagedNamespace[0]);
 			ISymUnmanagedNamespace[] namespaces = new ISymUnmanagedNamespace[count];
-			symScope.GetNamespaces(0, out count, namespaces);
+			symScope.GetNamespaces(count, out count, namespaces);
 			return namespaces;
 		}
 		

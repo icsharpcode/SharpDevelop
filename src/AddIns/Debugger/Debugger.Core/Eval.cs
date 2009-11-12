@@ -170,11 +170,11 @@ namespace Debugger
 				process.WaitForPause(TimeSpan.FromMilliseconds(500));
 				if (!Evaluated) {
 					state = EvalState.EvaluatedTimeOut;
-					process.TraceMessage("Aboring eval: " + Description);
+					process.TraceMessage("Aborting eval: " + Description);
 					this.CorEval.Abort();
 					process.WaitForPause(TimeSpan.FromMilliseconds(500));
 					if (!Evaluated) {
-						process.TraceMessage("Rude aboring eval: " + Description);
+						process.TraceMessage("Rude aborting eval: " + Description);
 						this.CorEval2.RudeAbort();
 						process.WaitForPause(TimeSpan.FromMilliseconds(500));
 						if (!Evaluated) {
