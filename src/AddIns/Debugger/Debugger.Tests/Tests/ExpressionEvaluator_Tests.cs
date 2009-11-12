@@ -208,8 +208,8 @@ namespace Debugger.Tests {
 			
 			// Test member hiding / overloading
 			
-			Value myClass = process.SelectedStackFrame.GetLocalVariableValue("myClass").GetPermanentReference();
-			Expression myClassExpr = process.SelectedStackFrame.MethodInfo.GetLocalVariable("myClass").GetExpression();
+			Value myClass = SelectedStackFrame.GetLocalVariableValue("myClass").GetPermanentReference();
+			Expression myClassExpr = SelectedStackFrame.MethodInfo.GetLocalVariable(SelectedStackFrame.IP, "myClass").GetExpression();
 			
 			List<Expression> expressions = new List<Expression>();
 			foreach(MemberInfo memberInfo in myClass.Type.GetFieldsAndNonIndexedProperties(DebugType.BindingFlagsAll)) {
@@ -254,9 +254,9 @@ namespace Debugger.Tests {
 			
 			// Type equality
 			
-			DebugLocalVariableInfo loc = process.SelectedStackFrame.MethodInfo.GetLocalVariable("list");
+			DebugLocalVariableInfo loc = SelectedStackFrame.MethodInfo.GetLocalVariable(SelectedStackFrame.IP, "list");
 			Type locType = loc.LocalType;
-			Type valType = loc.GetValue(process.SelectedStackFrame).Type;
+			Type valType = loc.GetValue(SelectedStackFrame).Type;
 			ObjectDump("TypesIdentitcal", object.ReferenceEquals(locType, valType));
 			ObjectDump("TypesEqual", locType == valType);
 			

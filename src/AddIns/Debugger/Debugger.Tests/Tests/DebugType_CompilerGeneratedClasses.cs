@@ -73,11 +73,11 @@ namespace Debugger.Tests {
 		public void DebugType_CompilerGeneratedClasses()
 		{
 			StartTest();
-			PrintLocalVariables("YieldLocalVariables");
+			DumpLocalVariables("YieldLocalVariables");
 			process.Continue();
-			PrintLocalVariables("OutterDelegateLocalVariables");
+			DumpLocalVariables("OutterDelegateLocalVariables");
 			process.Continue();
-			PrintLocalVariables("InnterDelegateLocalVariables");
+			DumpLocalVariables("InnterDelegateLocalVariables");
 			Eval("nestedDelegArg");
 			Eval("instanceField");
 			Eval("staticField");

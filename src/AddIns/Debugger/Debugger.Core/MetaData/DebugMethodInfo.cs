@@ -443,30 +443,51 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		public DebugLocalVariableInfo GetLocalVariable(string name)
+		public DebugLocalVariableInfo GetLocalVariable(int offset, string name)
 		{
-			foreach(DebugLocalVariableInfo loc in GetLocalVariables()) {
+			foreach(DebugLocalVariableInfo loc in GetLocalVariables(offset)) {
 				if (loc.Name == name)
 					return loc;
 			}
 			return null;
 		}
 		
+		[Debugger.Tests.Ignore]
+		public DebugLocalVariableInfo GetLocalVariableThis()
+		{
+			foreach(DebugLocalVariableInfo loc in GetLocalVariables()) {
+				if (loc.IsThis)
+					return loc;
+			}
+			return null;
+		}
+		
+		/// <summary> Get local variables valid at the given IL offset </summary>
+		public IEnumerable<DebugLocalVariableInfo> GetLocalVariables(int offset)
+		{
+			foreach (DebugLocalVariableInfo varInfo in GetLocalVariables()) {
+				if (varInfo.StartOffset <= offset && offset < varInfo.EndOffset) {
+					yield return varInfo;
+				}
+			}
+		}
+		
 		List<DebugLocalVariableInfo> localVariables;
 		
 		public List<DebugLocalVariableInfo> GetLocalVariables()
 		{
+			if (localVariables != null) return localVariables;
+			
 			// Generated constructor may not have any symbols
 			if (this.SymMethod == null)
 				return new List<DebugLocalVariableInfo>();
-					
-			if (localVariables != null) return localVariables;
 			
 			localVariables = GetLocalVariablesInScope(this.SymMethod.GetRootScope());
 			if (declaringType.IsDisplayClass || declaringType.IsYieldEnumerator) {
 				// Get display class from self
 				AddCapturedLocalVariables(
 					localVariables,
+					0, int.MaxValue,
 					delegate(StackFrame context) {
 						return context.GetThisValue();
 					},
@@ -478,6 +499,7 @@ namespace Debugger.MetaData
 					if (fieldInfo.Name.StartsWith("CS$")) {
 						AddCapturedLocalVariables(
 							localVariables,
+							0, int.MaxValue,
 							delegate(StackFrame context) {
 								return context.GetThisValue().GetFieldValue(fieldInfoCopy);
 							},
@@ -491,6 +513,7 @@ namespace Debugger.MetaData
 					DebugLocalVariableInfo thisVar = new DebugLocalVariableInfo(
 						"this",
 						-1,
+						0, int.MaxValue,
 						declaringType,
 						delegate(StackFrame context) {
 							return context.GetThisValue();
@@ -503,7 +526,7 @@ namespace Debugger.MetaData
 			return localVariables;
 		}
 		
-		static void AddCapturedLocalVariables(List<DebugLocalVariableInfo> vars, ValueGetter getCaptureClass, DebugType captureClassType)
+		static void AddCapturedLocalVariables(List<DebugLocalVariableInfo> vars, int scopeStartOffset, int scopeEndOffset, ValueGetter getCaptureClass, DebugType captureClassType)
 		{
 			if (captureClassType.IsDisplayClass || captureClassType.IsYieldEnumerator) {
 				foreach(DebugFieldInfo fieldInfo in captureClassType.GetFields()) {
@@ -512,6 +535,8 @@ namespace Debugger.MetaData
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
 						fieldInfo.Name,
 						-1,
+						scopeStartOffset,
+						scopeEndOffset,
 						(DebugType)fieldInfo.FieldType,
 						delegate(StackFrame context) {
 							return getCaptureClass(context).GetFieldValue(fieldInfoCopy);
@@ -559,6 +584,8 @@ namespace Debugger.MetaData
 					if (locVarType.IsDisplayClass) {
 						AddCapturedLocalVariables(
 							vars,
+							(int)symScope.GetStartOffset(),
+							(int)symScope.GetEndOffset(),
 							delegate(StackFrame context) {
 								return GetLocalVariableValue(context, symVarCopy);
 							},
@@ -569,6 +596,9 @@ namespace Debugger.MetaData
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
 						symVar.GetName(),
 						(int)symVar.GetAddressField1(),
+						// symVar also has Get*Offset methods, but the are not implemented
+						(int)symScope.GetStartOffset(),
+						(int)symScope.GetEndOffset(),
 						locVarType,
 						delegate(StackFrame context) {
 							return GetLocalVariableValue(context, symVarCopy);

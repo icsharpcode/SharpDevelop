@@ -140,7 +140,7 @@ namespace Debugger
 				process.TraceMessage(" - ignored");
 			} else if (thread.CurrentStepIn != null &&
 			           thread.CurrentStepIn.StackFrame.Equals(currentStackFrame) &&
-			           thread.CurrentStepIn.IsInStepRanges((int)currentStackFrame.CorInstructionPtr)) {
+			           thread.CurrentStepIn.IsInStepRanges((int)currentStackFrame.IP)) {
 				Stepper.StepIn(currentStackFrame, thread.CurrentStepIn.StepRanges, "finishing step in");
 				process.TraceMessage(" - finishing step in");
 			} else if (currentStackFrame.MethodInfo.StepOver) {

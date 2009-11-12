@@ -133,16 +133,17 @@ namespace Debugger
 			}
 		}
 		
-		internal uint CorInstructionPtr {
+		[Debugger.Tests.Ignore]
+		public int IP {
 			get {
 				uint corInstructionPtr;
 				CorDebugMappingResult mappingResult;
 				CorILFrame.GetIP(out corInstructionPtr, out mappingResult);
-				return corInstructionPtr;
+				return (int)corInstructionPtr;
 			}
 		}
 		
-		SourcecodeSegment GetSegmentForOffet(uint offset)
+		SourcecodeSegment GetSegmentForOffet(int offset)
 		{
 			return SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, corFunction, offset);
 		}
@@ -232,7 +233,7 @@ namespace Debugger
 		/// </summary>
 		public SourcecodeSegment NextStatement {
 			get {
-				return GetSegmentForOffet(CorInstructionPtr);
+				return GetSegmentForOffet(IP);
 			}
 		}
 		
@@ -282,6 +283,8 @@ namespace Debugger
 		/// <summary> 
 		/// Gets the instance of the class asociated with the current frame.
 		/// That is, 'this' in C#.
+		/// Note that for delegates and enumerators this returns the instance of the display class.
+		/// The get the captured this, use GetLocalVariableThis.
 		/// </summary>
 		[Debugger.Tests.Ignore]
 		public Value GetThisValue()
@@ -367,10 +370,20 @@ namespace Debugger
 		/// <returns> Null if not found </returns>
 		public Value GetLocalVariableValue(string name)
 		{
-			DebugLocalVariableInfo loc = this.MethodInfo.GetLocalVariable(name);
+			DebugLocalVariableInfo loc = this.MethodInfo.GetLocalVariable(this.IP, name);
 			if (loc == null)
 				return null;
 			return loc.GetValue(this);
+		}
+		
+		/// <summary> Get instance of 'this'.  It works well with delegates and enumerators. </summary>
+		[Debugger.Tests.Ignore]
+		public Value GetLocalVariableThis()
+		{
+			DebugLocalVariableInfo thisVar = this.MethodInfo.GetLocalVariableThis();
+			if (thisVar != null)
+				return thisVar.GetValue(this);
+			return null;
 		}
 		
 		public override bool Equals(object obj)

@@ -188,16 +188,16 @@ namespace Debugger.Tests {
 			public Value Value { get; set; }
 		}
 		
-		void PrintLocalVariables()
+		void DumpLocalVariables()
 		{
-			PrintLocalVariables("LocalVariables");
+			DumpLocalVariables("LocalVariables");
 		}
 		
-		void PrintLocalVariables(string msg)
+		void DumpLocalVariables(string msg)
 		{
 			ObjectDump(
 				msg,
-				process.SelectedStackFrame.MethodInfo.GetLocalVariables().Select(v => new LocalVariable() { Name = v.Name, Type = v.LocalType, Value = v.GetValue(process.SelectedStackFrame) })
+				SelectedStackFrame.MethodInfo.GetLocalVariables(SelectedStackFrame.IP).Select(v => new LocalVariable() { Name = v.Name, Type = v.LocalType, Value = v.GetValue(process.SelectedStackFrame)})
 			);
 		}
 		
@@ -219,7 +219,7 @@ namespace Debugger.Tests {
 			ObjectDump("Members", process.SelectedStackFrame.GetLocalVariableValue("members").Type.GetMembers(DebugType.BindingFlagsAllDeclared));
 			ObjectDump("Access-Members", process.SelectedStackFrame.GetLocalVariableValue("access").Type.GetMembers());
 			ObjectDump("MyInterfaceImpl-Members", process.SelectedStackFrame.GetLocalVariableValue("myInterfaceImpl").Type.GetMembers());
-			PrintLocalVariables();
+			DumpLocalVariables();
 			
 			EndTest();
 		}

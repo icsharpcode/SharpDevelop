@@ -42,7 +42,7 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			PrintLocalVariables();
+			DumpLocalVariables();
 			
 			Value array = process.SelectedStackFrame.GetLocalVariableValue("array").GetPermanentReference();
 			ObjectDump("array.Length", array.GetMemberValue("Length"));

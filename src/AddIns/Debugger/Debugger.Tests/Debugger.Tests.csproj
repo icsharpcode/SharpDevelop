@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>Debugger.Tests</RootNamespace>
@@ -55,6 +56,7 @@
     <Compile Include="Tests\DebugType_Tests.cs" />
     <Compile Include="Tests\Exception_Custom.cs" />
     <Compile Include="Tests\StackFrame_Lifetime.cs" />
+    <Compile Include="Tests\StackFrame_Tests.cs" />
     <Compile Include="Tests\StackFrame_VariablesLifetime.cs" />
     <Compile Include="Tests\_HelloWorldTest.cs" />
     <Compile Include="Tests\ControlFlow_MainThreadExit.cs" />

@@ -35,6 +35,17 @@ namespace Debugger.Tests
 		protected XmlElement  snapshotNode;
 		protected int         shapshotID;
 		
+		public StackFrame SelectedStackFrame {
+			get {
+				return process.SelectedStackFrame;
+			}
+		}
+		
+		public void Continue()
+		{
+			process.Continue();
+		}
+		
 		[TestFixtureSetUp]
 		public virtual void TestFixtureSetUp()
 		{

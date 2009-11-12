@@ -392,7 +392,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (par != null)
 				return new TypedValue(par.GetValue(context), (DebugType)par.ParameterType);
 			
-			DebugLocalVariableInfo loc = context.MethodInfo.GetLocalVariable(identifier);
+			DebugLocalVariableInfo loc = context.MethodInfo.GetLocalVariable(context.IP, identifier);
 			if (loc != null)
 				return new TypedValue(loc.GetValue(context), (DebugType)loc.LocalType);
 			
@@ -562,10 +562,9 @@ namespace ICSharpCode.NRefactory.Visitors
 		TypedValue GetThisValue()
 		{
 			// This is needed so that captured 'this' is supported
-			foreach(DebugLocalVariableInfo locVar in context.MethodInfo.GetLocalVariables()) {
-				if (locVar.IsThis)
-					return new TypedValue(locVar.GetValue(context), (DebugType)locVar.LocalType);
-			}
+			DebugLocalVariableInfo thisVar = context.MethodInfo.GetLocalVariableThis();
+			if (thisVar != null)
+				return new TypedValue(thisVar.GetValue(context), (DebugType)thisVar.LocalType);
 			return null;
 		}
 		

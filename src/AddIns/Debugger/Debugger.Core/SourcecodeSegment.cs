@@ -232,7 +232,7 @@ namespace Debugger
 		/// 'ILStart &lt;= ILOffset &lt;= ILEnd' and this range includes at least
 		/// the returned area of source code. (May incude some extra compiler generated IL too)
 		/// </summary>
-		internal static SourcecodeSegment Resolve(Module module, ICorDebugFunction corFunction, uint offset)
+		internal static SourcecodeSegment Resolve(Module module, ICorDebugFunction corFunction, int offset)
 		{
 			ISymUnmanagedReader symReader = module.SymReader;
 			if (symReader == null) return null; // No symbols
@@ -253,7 +253,7 @@ namespace Debugger
 			// Get i for which: offsets[i] <= offset < offsets[i + 1]
 			// or fallback to first element if  offset < offsets[0]
 			for (int i = (int)sequencePointCount - 1; i >= 0; i--) { // backwards
-				if (sequencePoints[i].Offset <= offset || i == 0) {
+				if ((int)sequencePoints[i].Offset <= offset || i == 0) {
 					// Set inforamtion about current IL range
 					int codeSize = (int)corFunction.GetILCode().GetSize();
 					
