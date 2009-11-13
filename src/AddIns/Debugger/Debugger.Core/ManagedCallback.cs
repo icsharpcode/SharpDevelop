@@ -490,9 +490,8 @@ namespace Debugger
 			// Watch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			if (process.SelectedThread.CurrentExceptionIsUnhandled || process.PauseOnHandledException) {
-				process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], process.SelectedThread.CorThread.GetCurrentException()));
-				process.SelectedThread.CurrentException.MakeValuePermanent();
+			if ((ExceptionType)exceptionType == ExceptionType.Unhandled || process.PauseOnHandledException) {
+				process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], process.SelectedThread.CorThread.GetCurrentException()).GetPermanentReference());
 				process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
 				process.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
 				process.SelectedThread.CurrentExceptionIsUnhandled = (ExceptionType)exceptionType == ExceptionType.Unhandled;
