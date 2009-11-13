@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -73,7 +74,7 @@ namespace SharpRefactoring.Gui
 		}
 		
 		protected abstract UIElement CreateContentElement();
-		protected abstract void GenerateCode(CodeGenerator generator, IClass currentClass);
+		protected abstract string GenerateCode(CodeGenerator generator, IClass currentClass);
 		
 		void OKButtonClick(object sender, RoutedEventArgs e)
 		{
@@ -86,7 +87,7 @@ namespace SharpRefactoring.Gui
 				CodeGenerator generator = parseInfo.CompilationUnit.Language.CodeGenerator;
 				IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 				
-				GenerateCode(generator, current);
+				editor.Document.Insert(anchor.Offset, GenerateCode(generator, current) ?? "");
 			}
 			
 			Element.Remove();
@@ -98,68 +99,6 @@ namespace SharpRefactoring.Gui
 				throw new InvalidOperationException("no IInlineUIElement set!");
 			
 			Element.Remove();
-		}
-	}
-	
-	public class OverrideToStringMethodDialog : InlineRefactorDialog
-	{
-		ListBox listBox;
-		List<EntityWrapper> fields;
-		ITextAnchor parameterListAnchor;
-		
-		public OverrideToStringMethodDialog(ITextEditor editor, ITextAnchor anchor, ITextAnchor parameterListAnchor, IList<IField> fields)
-			: base(editor, anchor)
-		{
-			this.parameterListAnchor = parameterListAnchor;
-			this.fields = fields.Select(f => new EntityWrapper() { Entity = f }).ToList();
-			this.listBox.ItemsSource = this.fields.Select(i => i.Create());
-		}
-		
-		protected override UIElement CreateContentElement()
-		{
-			listBox = new ListBox() {
-				Margin = new Thickness(3)
-			};
-			
-			return listBox;
-		}
-		
-		protected override void GenerateCode(CodeGenerator generator, IClass currentClass)
-		{
-			var fields = this.fields
-				.Where(f => f.IsChecked)
-				.Select(f2 => CreateAssignment(f2.Entity.Name, f2.Entity.Name))
-				.ToArray();
-			generator.InsertCodeInClass(currentClass, new RefactoringDocumentAdapter(editor.Document), anchor.Line, fields);
-		}
-		
-		Statement CreateAssignment(string memberName, string parameter)
-		{
-			return new ExpressionStatement(
-				new AssignmentExpression(
-					new MemberReferenceExpression(new ThisReferenceExpression(), memberName),
-					AssignmentOperatorType.Assign,
-					new IdentifierExpression(parameter)
-				)
-			);
-		}
-	}
-	
-	class EntityWrapper
-	{
-		public IEntity Entity { get; set; }
-		public bool IsChecked { get; set; }
-		
-		public object Create()
-		{
-			CheckBox box = new CheckBox() {
-				Content = Entity.Name
-			};
-			
-			box.Checked += delegate { this.IsChecked = true; };
-			box.Unchecked += delegate { this.IsChecked = false; };
-			
-			return box;
 		}
 	}
 }

@@ -6,9 +6,6 @@
 // </file>
 
 using System;
-using System.Linq;
-using System.Windows.Forms;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -44,15 +41,14 @@ namespace SharpRefactoring
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
 			anchor.MovementType = AnchorMovementType.AfterInsertion;
 			
-			textEditor.Document.Insert(anchor.Offset, "public override ToString()\n{\n\t");
+			var line = textEditor.Document.GetLineForOffset(textEditor.Caret.Offset);
 			
-			ITextAnchor parameterListAnchor = textEditor.Document.CreateAnchor(anchor.Offset - ")\n{\n\t".Length);
-			parameterListAnchor.SurviveDeletion = true;
-			parameterListAnchor.MovementType = AnchorMovementType.AfterInsertion;
+			string indent = DocumentUtilitites.GetWhitespaceAfter(textEditor.Document, line.Offset);
 			
-			textEditor.Document.Insert(anchor.Offset + 1, "\n\t\n}\n");
+			textEditor.Document.Insert(anchor.Offset, "public override string ToString()\n" + indent + "{\n" + indent + "\t");
+			textEditor.Document.Insert(anchor.Offset + 1, indent + "}\n");
 			
-			InlineRefactorDialog dialog = new OverrideToStringMethodDialog(textEditor, anchor, parameterListAnchor, current.Fields);
+			InlineRefactorDialog dialog = new OverrideToStringMethodDialog(textEditor, anchor, current.Fields);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
 		}

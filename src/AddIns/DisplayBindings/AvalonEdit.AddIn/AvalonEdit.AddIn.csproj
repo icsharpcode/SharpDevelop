@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AvalonEditDisplayBinding.cs" />
+    <Compile Include="Src\AvalonEditEditorUIService.cs" />
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\BracketHighlightRenderer.cs" />
     <Compile Include="Src\CodeEditor.cs" />
@@ -86,7 +87,7 @@
     <Compile Include="Src\Commands\SortSelectionCommand.cs" />
     <Compile Include="Src\Commands\SurroundWithCommand.cs" />
     <Compile Include="Src\CustomCommands.cs" />
-    <Compile Include="Src\DialogElementGenerator.cs" />
+    <Compile Include="Src\InlineUIElementGenerator.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />
     <Compile Include="Src\Options\BehaviorOptions.xaml.cs">

@@ -79,6 +79,8 @@
       <DependentUpon>ExtractMethodForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\InlineRefactorDialog.cs" />
+    <Compile Include="Src\Gui\OverrideToStringMethodDialog.cs" />
+    <Compile Include="Src\Gui\Wrapper.cs" />
     <Compile Include="Src\MethodExtractorBase.cs" />
     <Compile Include="Src\OverrideToStringMethodCommand.cs" />
     <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
