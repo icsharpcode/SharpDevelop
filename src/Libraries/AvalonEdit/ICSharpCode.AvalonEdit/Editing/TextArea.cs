@@ -205,6 +205,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 				TextDocumentWeakEventManager.UpdateStarted.AddListener(newValue, this);
 				TextDocumentWeakEventManager.UpdateFinished.AddListener(newValue, this);
 			}
+			// Reset caret location and selection: this is necessary because the caret/selection might be invalid
+			// in the new document (e.g. if new document is shorter than the old document).
+			caret.Location = new TextLocation(1, 1);
+			this.Selection = Selection.Empty;
 			if (DocumentChanged != null)
 				DocumentChanged(this, EventArgs.Empty);
 			CommandManager.InvalidateRequerySuggested();
