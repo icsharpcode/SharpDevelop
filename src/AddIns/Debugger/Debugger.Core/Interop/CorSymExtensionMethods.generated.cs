@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -97,7 +97,7 @@ namespace Debugger.Interop.CorSym
 			return version;
 		}
 		
-		public static void GetNamespaces(this CorSymReader_SxSClass instance, uint cNameSpaces, out uint pcNameSpaces, IntPtr namespaces)
+		public static void GetNamespaces(this CorSymReader_SxSClass instance, uint cNameSpaces, out uint pcNameSpaces, ISymUnmanagedNamespace[] namespaces)
 		{
 			instance.__GetNamespaces(cNameSpaces, out pcNameSpaces, namespaces);
 		}
@@ -193,7 +193,7 @@ namespace Debugger.Interop.CorSym
 			return version;
 		}
 		
-		public static void GetNamespaces(this CorSymReader_deprecatedClass instance, uint cNameSpaces, out uint pcNameSpaces, IntPtr namespaces)
+		public static void GetNamespaces(this CorSymReader_deprecatedClass instance, uint cNameSpaces, out uint pcNameSpaces, ISymUnmanagedNamespace[] namespaces)
 		{
 			instance.__GetNamespaces(cNameSpaces, out pcNameSpaces, namespaces);
 		}
@@ -700,7 +700,7 @@ namespace Debugger.Interop.CorSym
 			instance.__GetSymAttribute(parent, name, cBuffer, out pcBuffer, buffer);
 		}
 		
-		public static void GetNamespaces(this ISymUnmanagedReader instance, uint cNameSpaces, out uint pcNameSpaces, IntPtr namespaces)
+		public static void GetNamespaces(this ISymUnmanagedReader instance, uint cNameSpaces, out uint pcNameSpaces, ISymUnmanagedNamespace[] namespaces)
 		{
 			instance.__GetNamespaces(cNameSpaces, out pcNameSpaces, namespaces);
 		}

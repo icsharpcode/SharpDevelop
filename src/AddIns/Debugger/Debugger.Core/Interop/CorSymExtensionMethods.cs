@@ -130,6 +130,13 @@ namespace Debugger.Interop.CorSym
 			return namespaces;
 		}
 		
+		// ISymUnmanagedNamespace
+		
+		public static string GetName(this ISymUnmanagedNamespace symNs)
+		{
+			return Util.GetCorSymString(symNs.GetName);
+		}
+		
 		// ISymUnmanagedVariable
 		
 		public static string GetName(this ISymUnmanagedVariable symVar)
@@ -150,6 +157,17 @@ namespace Debugger.Interop.CorSym
 				fixed(byte* pSig = sig)
 					symVar.GetSignature((uint)sig.Length, out acualSize, new IntPtr(pSig));
 			return sig;
+		}
+		
+		// ISymUnmanagedReader
+		
+		public static ISymUnmanagedNamespace[] GetNamespaces(this ISymUnmanagedReader symReader)
+		{
+			uint count;
+			symReader.GetNamespaces(0, out count, new ISymUnmanagedNamespace[0]);
+			ISymUnmanagedNamespace[] namespaces = new ISymUnmanagedNamespace[count];
+			symReader.GetNamespaces(count, out count, namespaces);
+			return namespaces;
 		}
 	}
 	
