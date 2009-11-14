@@ -135,7 +135,7 @@ namespace Debugger
 				foreach(Thread t in appDomain.Process.Threads) {
 					if (t.CorThread.GetAppDomain().GetID() == appDomain.ID &&
 					    !t.Suspended &&
-					    !t.IsMostRecentStackFrameNative &&
+					    !t.IsInNativeCode &&
 					    t.IsAtSafePoint)
 					{
 						thread = t;
@@ -146,7 +146,7 @@ namespace Debugger
 			
 			if (thread == null)
 				throw new GetValueException("Can not evaluate because no thread is selected");
-			if (thread.IsMostRecentStackFrameNative)
+			if (thread.IsInNativeCode)
 				throw new GetValueException("Can not evaluate because native frame is on top of stack");
 			if (!thread.IsAtSafePoint)
 				throw new GetValueException("Can not evaluate because thread is not at a safe point");

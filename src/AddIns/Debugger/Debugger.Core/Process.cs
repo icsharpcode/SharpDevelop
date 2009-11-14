@@ -525,7 +525,15 @@ namespace Debugger
 		{
 			SelectSomeThread();
 			if (this.SelectedThread != null) {
-				this.SelectedThread.SelectedStackFrame = this.SelectedThread.MostRecentStackFrameWithLoadedSymbols;
+				this.SelectedThread.SelectedStackFrame = null;
+				foreach (StackFrame stackFrame in this.SelectedThread.Callstack) {
+					if (stackFrame.HasSymbols) {
+						if (this.Options.StepOverDebuggerAttributes && stackFrame.MethodInfo.IsNonUserCode)
+							continue;
+						this.SelectedThread.SelectedStackFrame = stackFrame;
+						break;
+					}
+				}
 			}
 		}
 		

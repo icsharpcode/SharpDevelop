@@ -196,10 +196,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			item.SubItems.Add(thread.Name);
 			StackFrame location = null;
 			if (thread.Process.IsPaused) {
-				location = thread.MostRecentStackFrameWithLoadedSymbols;
-				if (location == null) {
-					location = thread.MostRecentStackFrame;
-				}
+				location = thread.MostRecentStackFrame;
 			}
 			if (location != null) {
 				item.SubItems.Add(location.MethodInfo.Name);

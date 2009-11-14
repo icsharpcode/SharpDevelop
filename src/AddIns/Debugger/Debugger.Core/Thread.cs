@@ -255,23 +255,24 @@ namespace Debugger
 		
 		/// <summary> Gets the whole callstack of the Thread. </summary>
 		/// <remarks> If the thread is in invalid state returns empty array </remarks>
+		[Debugger.Tests.Ignore]
 		public StackFrame[] GetCallstack()
 		{
-			return new List<StackFrame>(CallstackEnum).ToArray();
+			return new List<StackFrame>(Callstack).ToArray();
 		}
 		
 		/// <summary> Get given number of frames from the callstack </summary>
 		public StackFrame[] GetCallstack(int maxFrames)
 		{
 			List<StackFrame> frames = new List<StackFrame>();
-			foreach(StackFrame frame in CallstackEnum) {
+			foreach(StackFrame frame in Callstack) {
 				frames.Add(frame);
 				if (frames.Count == maxFrames) break;
 			}
 			return frames.ToArray();
 		}
 		
-		IEnumerable<StackFrame> CallstackEnum {
+		public IEnumerable<StackFrame> Callstack {
 			get {
 				process.AssertPaused();
 				
@@ -358,48 +359,20 @@ namespace Debugger
 			}
 		}
 		
-		#region Convenience methods
-		
-		public StackFrame MostRecentStackFrameWithLoadedSymbols {
-			get {
-				foreach (StackFrame stackFrame in CallstackEnum) {
-					if (stackFrame.HasSymbols) {
-						return stackFrame;
-					}
-				}
-				return null;
-			}
-		}
-		
 		/// <summary>
 		/// Returns the most recent stack frame (the one that is currently executing).
 		/// Returns null if callstack is empty.
 		/// </summary>
 		public StackFrame MostRecentStackFrame {
 			get {
-				foreach(StackFrame stackFrame in CallstackEnum) {
+				foreach(StackFrame stackFrame in Callstack) {
 					return stackFrame;
 				}
 				return null;
 			}
 		}
 		
-		/// <summary>
-		/// Returns the first stack frame that was called on thread
-		/// </summary>
-		public StackFrame OldestStackFrame {
-			get {
-				StackFrame first = null;
-				foreach(StackFrame stackFrame in CallstackEnum) {
-					first = stackFrame;
-				}
-				return first;
-			}
-		}
-		
-		#endregion
-		
-		public bool IsMostRecentStackFrameNative {
+		public bool IsInNativeCode {
 			get {
 				process.AssertPaused();
 				if (this.IsInValidState) {

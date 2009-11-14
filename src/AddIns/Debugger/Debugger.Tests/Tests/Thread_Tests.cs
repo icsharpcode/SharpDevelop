@@ -56,13 +56,12 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ThreadStartedEvent>
       <Thread
+        Callstack="{void System.AppDomain.SetupDomain(Boolean allowRedirects, String path, String configFile)}"
         CurrentExceptionType="0"
-        GetCallstack="{void System.AppDomain.SetupDomain(Boolean allowRedirects, String path, String configFile)}"
         IsAtSafePoint="True"
         IsInValidState="True"
         MostRecentStackFrame="void System.AppDomain.SetupDomain(Boolean allowRedirects, String path, String configFile)"
         Name=""
-        OldestStackFrame="void System.AppDomain.SetupDomain(Boolean allowRedirects, String path, String configFile)"
         Priority="Normal"
         RuntimeValue="null" />
     </ThreadStartedEvent>
@@ -70,14 +69,12 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break Thread_Tests.cs:17,4-17,40</DebuggingPaused>
     <Thread>
       <Thread
+        Callstack="{static void Debugger.Tests.Thread_Tests.Main()}"
         CurrentExceptionType="0"
-        GetCallstack="{static void Debugger.Tests.Thread_Tests.Main()}"
         IsAtSafePoint="True"
         IsInValidState="True"
         MostRecentStackFrame="static void Debugger.Tests.Thread_Tests.Main()"
-        MostRecentStackFrameWithLoadedSymbols="static void Debugger.Tests.Thread_Tests.Main()"
         Name=""
-        OldestStackFrame="static void Debugger.Tests.Thread_Tests.Main()"
         Priority="AboveNormal"
         RuntimeValue="{System.Threading.Thread}"
         SelectedStackFrame="static void Debugger.Tests.Thread_Tests.Main()" />
@@ -85,27 +82,24 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break Thread_Tests.cs:19,4-19,40</DebuggingPaused>
     <Thread>
       <Thread
+        Callstack="{static void Debugger.Tests.Thread_Tests.Main()}"
         CurrentExceptionType="0"
-        GetCallstack="{static void Debugger.Tests.Thread_Tests.Main()}"
         IsAtSafePoint="True"
         IsInValidState="True"
         MostRecentStackFrame="static void Debugger.Tests.Thread_Tests.Main()"
-        MostRecentStackFrameWithLoadedSymbols="static void Debugger.Tests.Thread_Tests.Main()"
         Name="ThreadName"
-        OldestStackFrame="static void Debugger.Tests.Thread_Tests.Main()"
         Priority="AboveNormal"
         RuntimeValue="{System.Threading.Thread}"
         SelectedStackFrame="static void Debugger.Tests.Thread_Tests.Main()" />
     </Thread>
     <ThreadStartedEvent>
       <Thread
+        Callstack="{void System.Threading.ReaderWriterLock.Finalize()}"
         CurrentExceptionType="0"
-        GetCallstack="{void System.Threading.ReaderWriterLock.Finalize()}"
         IsAtSafePoint="True"
         IsInValidState="True"
         MostRecentStackFrame="void System.Threading.ReaderWriterLock.Finalize()"
         Name=""
-        OldestStackFrame="void System.Threading.ReaderWriterLock.Finalize()"
         Priority="Normal"
         RuntimeValue="null" />
     </ThreadStartedEvent>

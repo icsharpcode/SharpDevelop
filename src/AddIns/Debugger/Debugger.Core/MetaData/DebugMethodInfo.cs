@@ -264,7 +264,7 @@ namespace Debugger.MetaData
 					if (this.SymMethod == null) return true;
 				}
 				if (opt.StepOverDebuggerAttributes) {
-					if (this.HasDebuggerAttribute) return true;
+					if (this.IsNonUserCode) return true;
 				}
 				if (opt.StepOverAllProperties) {
 					if (this.IsPropertyAccessor) return true;
@@ -396,13 +396,13 @@ namespace Debugger.MetaData
 			}
 		}
 		
-		bool? hasDebuggerAttribute;
+		bool? isNonUserCode;
 		
-		bool HasDebuggerAttribute {
+		public bool IsNonUserCode {
 			get {
-				if (hasDebuggerAttribute.HasValue) return hasDebuggerAttribute.Value;
+				if (isNonUserCode.HasValue) return isNonUserCode.Value;
 				
-				hasDebuggerAttribute =
+				isNonUserCode =
 					// Look on the method
 					DebugType.IsDefined(
 						this,
@@ -419,7 +419,7 @@ namespace Debugger.MetaData
 						typeof(System.Diagnostics.DebuggerNonUserCodeAttribute),
 						typeof(System.Diagnostics.DebuggerHiddenAttribute));
 				
-				return hasDebuggerAttribute.Value;
+				return isNonUserCode.Value;
 			}
 		}
 		
