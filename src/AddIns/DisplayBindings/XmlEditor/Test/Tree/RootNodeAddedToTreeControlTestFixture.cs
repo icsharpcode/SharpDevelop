@@ -29,8 +29,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			using (XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl()) {
 				
-				XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(new XmlSchemaCompletionDataCollection(), null, String.Empty);
-				treeViewContainer.LoadXml("<test/>", completionDataProvider);
+				treeViewContainer.LoadXml("<test/>", new XmlSchemaCompletionCollection(), null);
 				
 				doc = treeViewContainer.Document;
 				XmlTreeViewControl treeView = treeViewContainer.TreeView;

@@ -20,7 +20,7 @@ namespace XmlEditor.Tests.Editor
 		MockXmlSchemasPanel panel;
 		RegisteredXmlSchemasEditor schemasEditor;
 		MockXmlSchemaCompletionDataFactory factory;
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		MockFileSystem fileSystem;
 		
 		[SetUp]
@@ -28,12 +28,12 @@ namespace XmlEditor.Tests.Editor
 		{
 			fileSystem = new MockFileSystem();
 			factory = new MockXmlSchemaCompletionDataFactory();
-			schemaManager = new XmlSchemaManager(new string[0], @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(null), schemas);
+			registeredXmlSchemas = new RegisteredXmlSchemas(new string[0], @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
+			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
+			XmlSchemaFileAssociations associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(null), schemas);
 			panel = new MockXmlSchemasPanel();
 			
-			schemasEditor = new RegisteredXmlSchemasEditor(schemaManager, new string[0], options, panel, factory);
+			schemasEditor = new RegisteredXmlSchemasEditor(registeredXmlSchemas, new string[0], associations, panel, factory);
 			schemasEditor.LoadOptions();
 						
 			panel.OpenFileDialogFileNameToReturn = @"c:\temp\schema.xsd";
@@ -57,38 +57,38 @@ namespace XmlEditor.Tests.Editor
 		}
 
 		[Test]
-		public void SchemaWithEmptyNamespaceNotAddedToSchemaManager()
+		public void SchemaWithEmptyNamespaceNotAddedToRegisteredXmlSchemas()
 		{
 			ErrorMessageDisplayedWhenSchemaHasEmptyNamespace();
 			schemasEditor.SaveOptions();
 			
-			Assert.AreEqual(0, schemaManager.Schemas.Count);
+			Assert.AreEqual(0, registeredXmlSchemas.Schemas.Count);
 		}
 				
 		[Test]
-		public void ErrorMessageDisplayedWhenSchemaAlreadyExistsInSchemaManager()
+		public void ErrorMessageDisplayedWhenSchemaAlreadyExistsInRegisteredXmlSchemas()
 		{
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='http://test'/>";
-			AddSchemaToSchemaManager(xml);
+			AddSchemaToRegisteredXmlSchemas(xml);
 			AddSchema(xml);
 		
 			FormattedErrorMessage expectedErrorMessage = new FormattedErrorMessage("${res:ICSharpCode.XmlEditor.XmlSchemasPanel.NamespaceExists}", "http://test");
 			Assert.AreEqual(expectedErrorMessage, panel.FormattedErrorMessage);
 		}
 		
-		void AddSchemaToSchemaManager(string xml)
+		void AddSchemaToRegisteredXmlSchemas(string xml)
 		{
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(new StringReader(xml));
-			schemaManager.Schemas.Add(schema);
+			XmlSchemaCompletion schema = new XmlSchemaCompletion(new StringReader(xml));
+			registeredXmlSchemas.Schemas.Add(schema);
 		}
 		
 		[Test]
-		public void SchemaThatAlreadyExistsIsNotAddedToSchemaManager()
+		public void SchemaThatAlreadyExistsIsNotAddedToRegisteredXmlSchemas()
 		{
-			ErrorMessageDisplayedWhenSchemaAlreadyExistsInSchemaManager();
+			ErrorMessageDisplayedWhenSchemaAlreadyExistsInRegisteredXmlSchemas();
 			schemasEditor.SaveOptions();
 			
-			Assert.AreEqual(1, schemaManager.Schemas.Count);
+			Assert.AreEqual(1, registeredXmlSchemas.Schemas.Count);
 		}
 		
 		[Test]

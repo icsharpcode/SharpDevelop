@@ -26,7 +26,12 @@ namespace ICSharpCode.XmlEditor
 	public class XmlView
 	{
 		static readonly Dictionary<OpenedFile, XmlView> mapping = new Dictionary<OpenedFile, XmlView>();
+		XmlSchemaCompletionCollection schemas;
 		
+		XmlView()
+		{
+			schemas = XmlEditorService.RegisteredXmlSchemas.Schemas;
+		}
 		/// <summary>
 		/// Retrieves additional data for a XML file.
 		/// </summary>
@@ -73,11 +78,6 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public string StylesheetFileName { get; set; }
-		
-		public XmlCompletionDataProvider GetProvider()
-		{
-			return XmlEditorService.XmlEditorOptions.GetProvider(File.FileName);
-		}
 				
 		public ITextEditor TextEditor
 		{
@@ -164,18 +164,18 @@ namespace ICSharpCode.XmlEditor
 		public void GoToSchemaDefinition()
 		{
 			// Find schema object for selected xml element or attribute.
-			XmlCompletionDataProvider provider = GetProvider();
-			XmlSchemaCompletionData currentSchemaCompletionData = provider.FindSchemaFromFileName(File.FileName);
+			XmlSchemaCompletion currentSchemaCompletion = schemas.GetSchemaFromFileName(File.FileName);
+			
 			ITextEditor editor = TextEditor;
-			
-			if (editor == null)
+			if (editor == null) {
 				return;
+			}
 			
-			XmlSchemaObject schemaObject = GetSchemaObjectSelected(editor.Document.Text, editor.Caret.Offset, provider, currentSchemaCompletionData);
+			XmlSchemaObject schemaObject = GetSchemaObjectSelected(editor.Document.Text, editor.Caret.Offset, schemas, currentSchemaCompletion);
 			
 			// Open schema.
-			if (schemaObject != null && schemaObject.SourceUri != null && schemaObject.SourceUri.Length > 0) {
-				string fileName = schemaObject.SourceUri.Replace("file:///", string.Empty);
+			if ((schemaObject != null) && (schemaObject.SourceUri != null) && (schemaObject.SourceUri.Length > 0)) {
+				string fileName = schemaObject.SourceUri.Replace("file:///", String.Empty);
 				FileService.JumpToFilePosition(fileName, schemaObject.LineNumber, schemaObject.LinePosition);
 			}
 		}
@@ -225,7 +225,7 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>
 		/// The <paramref name="attribute"/> if no schema object was referenced.
 		/// </returns>
-		static XmlSchemaObject GetSchemaObjectReferenced(string xml, int index, XmlCompletionDataProvider provider, XmlSchemaCompletionData currentSchemaCompletionData, XmlSchemaElement element, XmlSchemaAttribute attribute)
+		static XmlSchemaObject GetSchemaObjectReferenced(string xml, int index, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion currentSchemaCompletionData, XmlSchemaElement element, XmlSchemaAttribute attribute)
 		{
 			XmlSchemaObject schemaObject = null;
 			if (IsXmlSchemaNamespace(element)) {
@@ -236,9 +236,9 @@ namespace ICSharpCode.XmlEditor
 				}
 				
 				if (attribute.Name == "ref") {
-					schemaObject = FindSchemaObjectReference(attributeValue, provider, currentSchemaCompletionData, element.Name);
+					schemaObject = FindSchemaObjectReference(attributeValue, schemas, currentSchemaCompletionData, element.Name);
 				} else if (attribute.Name == "type") {
-					schemaObject = FindSchemaObjectType(attributeValue, provider, currentSchemaCompletionData, element.Name);
+					schemaObject = FindSchemaObjectType(attributeValue, schemas, currentSchemaCompletionData, element.Name);
 				}
 			}
 			
@@ -257,22 +257,22 @@ namespace ICSharpCode.XmlEditor
 		/// <param name="elementName">The element to determine what sort of reference it is
 		/// (e.g. group, attribute, element).</param>
 		/// <returns><see langword="null"/> if no match can be found.</returns>
-		static XmlSchemaObject FindSchemaObjectReference(string name, XmlCompletionDataProvider provider, XmlSchemaCompletionData schemaCompletionData, string elementName)
+		static XmlSchemaObject FindSchemaObjectReference(string name, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion schemaCompletion, string elementName)
 		{
-			QualifiedName qualifiedName = schemaCompletionData.CreateQualifiedName(name);
-			XmlSchemaCompletionData qualifiedNameSchema = provider.FindSchema(qualifiedName.Namespace);
+			QualifiedName qualifiedName = schemaCompletion.CreateQualifiedName(name);
+			XmlSchemaCompletion qualifiedNameSchema = schemas[qualifiedName.Namespace];
 			if (qualifiedNameSchema != null) {
-				schemaCompletionData = qualifiedNameSchema;
+				schemaCompletion = qualifiedNameSchema;
 			}
 			switch (elementName) {
 				case "element":
-					return schemaCompletionData.FindElement(qualifiedName);
+					return schemaCompletion.FindRootElement(qualifiedName);
 				case "attribute":
-					return schemaCompletionData.FindAttribute(qualifiedName.Name);
+					return schemaCompletion.FindAttribute(qualifiedName.Name);
 				case "group":
-					return schemaCompletionData.FindGroup(qualifiedName.Name);
+					return schemaCompletion.FindGroup(qualifiedName.Name);
 				case "attributeGroup":
-					return schemaCompletionData.FindAttributeGroup(qualifiedName.Name);
+					return schemaCompletion.FindAttributeGroup(qualifiedName.Name);
 			}
 			return null;
 		}
@@ -286,18 +286,18 @@ namespace ICSharpCode.XmlEditor
 		/// <param name="elementName">The element to determine what sort of type it is
 		/// (e.g. group, attribute, element).</param>
 		/// <returns><see langword="null"/> if no match can be found.</returns>
-		static XmlSchemaObject FindSchemaObjectType(string name, XmlCompletionDataProvider provider, XmlSchemaCompletionData schemaCompletionData, string elementName)
+		static XmlSchemaObject FindSchemaObjectType(string name, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion schemaCompletion, string elementName)
 		{
-			QualifiedName qualifiedName = schemaCompletionData.CreateQualifiedName(name);
-			XmlSchemaCompletionData qualifiedNameSchema = provider.FindSchema(qualifiedName.Namespace);
+			QualifiedName qualifiedName = schemaCompletion.CreateQualifiedName(name);
+			XmlSchemaCompletion qualifiedNameSchema = schemas[qualifiedName.Namespace];
 			if (qualifiedNameSchema != null) {
-				schemaCompletionData = qualifiedNameSchema;
+				schemaCompletion = qualifiedNameSchema;
 			}
 			switch (elementName) {
 				case "element":
-					return schemaCompletionData.FindComplexType(qualifiedName);
+					return schemaCompletion.FindComplexType(qualifiedName);
 				case "attribute":
-					return schemaCompletionData.FindSimpleType(qualifiedName.Name);
+					return schemaCompletion.FindSimpleType(qualifiedName.Name);
 			}
 			return null;
 		}
@@ -309,7 +309,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlQualifiedName qualifiedName = element.QualifiedName;
 			if (qualifiedName != null) {
-				return XmlSchemaManager.IsXmlSchemaNamespace(qualifiedName.Namespace);
+				return RegisteredXmlSchemas.IsXmlSchemaNamespace(qualifiedName.Namespace);
 			}
 			return false;
 		}
@@ -320,10 +320,9 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <param name="text">The complete xml text.</param>
 		/// <param name="index">The current cursor index.</param>
-		/// <param name="provider">The completion data provider</param>
-		public static XmlSchemaObject GetSchemaObjectSelected(string xml, int index, XmlCompletionDataProvider provider)
+		public static XmlSchemaObject GetSchemaObjectSelected(string xml, int index, XmlSchemaCompletionCollection schemas)
 		{
-			return GetSchemaObjectSelected(xml, index, provider, null);
+			return GetSchemaObjectSelected(xml, index, schemas, null);
 		}
 		
 		/// <summary>
@@ -332,28 +331,27 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <param name="text">The complete xml text.</param>
 		/// <param name="index">The current cursor index.</param>
-		/// <param name="provider">The completion data provider</param>
 		/// <param name="currentSchemaCompletionData">This is the schema completion data for the
 		/// schema currently being displayed. This can be null if the document is
 		/// not a schema.</param>
-		public static XmlSchemaObject GetSchemaObjectSelected(string xml, int index, XmlCompletionDataProvider provider, XmlSchemaCompletionData currentSchemaCompletionData)
+		public static XmlSchemaObject GetSchemaObjectSelected(string xml, int index, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion currentSchemaCompletion)
 		{
 			// Find element under cursor.
 			XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(xml, index);
 			string attributeName = XmlParser.GetAttributeNameAtIndex(xml, index);
 			
 			// Find schema definition object.
-			XmlSchemaCompletionData schemaCompletionData = provider.FindSchema(path);
+			XmlSchemaCompletion schemaCompletion = schemas[path.GetRootNamespace()];
 			XmlSchemaObject schemaObject = null;
-			if (schemaCompletionData != null) {
-				XmlSchemaElement element = schemaCompletionData.FindElement(path);
+			if (schemaCompletion != null) {
+				XmlSchemaElement element = schemaCompletion.FindElement(path);
 				schemaObject = element;
 				if (element != null) {
 					if (attributeName.Length > 0) {
-						XmlSchemaAttribute attribute = schemaCompletionData.FindAttribute(element, attributeName);
+						XmlSchemaAttribute attribute = schemaCompletion.FindAttribute(element, attributeName);
 						if (attribute != null) {
-							if (currentSchemaCompletionData != null) {
-								schemaObject = GetSchemaObjectReferenced(xml, index, provider, currentSchemaCompletionData, element, attribute);
+							if (currentSchemaCompletion != null) {
+								schemaObject = GetSchemaObjectReferenced(xml, index, schemas, currentSchemaCompletion, element, attribute);
 							} else {
 								schemaObject = attribute;
 							}
@@ -546,10 +544,10 @@ namespace ICSharpCode.XmlEditor
 				settings.ValidationFlags = XmlSchemaValidationFlags.None;
 				settings.XmlResolver = null;
 				
-				XmlSchemaCompletionData schemaData = null;
+				XmlSchemaCompletion schemaData = null;
 				try {
-					for (int i = 0; i < XmlEditorService.XmlSchemaManager.Schemas.Count; ++i) {
-						schemaData = XmlEditorService.XmlSchemaManager.Schemas[i];
+					for (int i = 0; i < XmlEditorService.RegisteredXmlSchemas.Schemas.Count; ++i) {
+						schemaData = XmlEditorService.RegisteredXmlSchemas.Schemas[i];
 						settings.Schemas.Add(schemaData.Schema);
 					}
 				} catch (XmlSchemaException ex) {

@@ -17,8 +17,8 @@ namespace XmlEditor.Tests.Completion
 		[Test]
 		public void TwoItemsAreEqualIfTextAndXmlCompletionDataTypeAreEqual()
 		{
-			XmlCompletionItem lhs = new XmlCompletionItem("text", "description", XmlCompletionDataType.XmlElement);
-			XmlCompletionItem rhs = new XmlCompletionItem("text", "description", XmlCompletionDataType.XmlElement);
+			XmlCompletionItem lhs = new XmlCompletionItem("text", "description", XmlCompletionItemType.XmlElement);
+			XmlCompletionItem rhs = new XmlCompletionItem("text", "description", XmlCompletionItemType.XmlElement);
 			
 			Assert.IsTrue(lhs.Equals(rhs));
 		}
@@ -26,8 +26,8 @@ namespace XmlEditor.Tests.Completion
 		[Test]
 		public void TwoItemsAreNotEqualIfTextIsDifferent()
 		{
-			XmlCompletionItem lhs = new XmlCompletionItem("text", "description", XmlCompletionDataType.XmlElement);
-			XmlCompletionItem rhs = new XmlCompletionItem("different-text", "description", XmlCompletionDataType.XmlElement);
+			XmlCompletionItem lhs = new XmlCompletionItem("text", "description", XmlCompletionItemType.XmlElement);
+			XmlCompletionItem rhs = new XmlCompletionItem("different-text", "description", XmlCompletionItemType.XmlElement);
 			
 			Assert.IsFalse(lhs.Equals(rhs));
 		}		
@@ -35,8 +35,8 @@ namespace XmlEditor.Tests.Completion
 		[Test]
 		public void TwoItemsAreNotEqualIfXmlCompletionDataTypeIsDifferent()
 		{
-			XmlCompletionItem lhs = new XmlCompletionItem("text", "description", XmlCompletionDataType.XmlElement);
-			XmlCompletionItem rhs = new XmlCompletionItem("text", "description", XmlCompletionDataType.XmlAttribute);
+			XmlCompletionItem lhs = new XmlCompletionItem("text", "description", XmlCompletionItemType.XmlElement);
+			XmlCompletionItem rhs = new XmlCompletionItem("text", "description", XmlCompletionItemType.XmlAttribute);
 			
 			Assert.IsFalse(lhs.Equals(rhs));
 		}	

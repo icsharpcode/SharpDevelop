@@ -15,20 +15,20 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class MissingSchemaElementTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] barElementAttributes;
+		XmlCompletionItemCollection barElementAttributes;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("root", "http://foo"));
 			path.Elements.Add(new QualifiedName("bar", "http://foo"));
-			barElementAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			barElementAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		}
 		
 		[Test]
 		public void BarHasOneAttribute()
 		{
-			Assert.AreEqual(1, barElementAttributes.Length, "Should have 1 attribute.");
+			Assert.AreEqual(1, barElementAttributes.Count, "Should have 1 attribute.");
 		}
 		
 		protected override string GetSchema()

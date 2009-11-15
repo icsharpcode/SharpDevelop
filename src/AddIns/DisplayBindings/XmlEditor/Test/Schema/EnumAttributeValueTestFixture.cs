@@ -18,33 +18,33 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class EnumAttributeValueTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] attributeValues;
+		XmlCompletionItemCollection attributeValues;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
-			attributeValues = SchemaCompletionData.GetAttributeValueCompletionData(path, "id");
+			attributeValues = SchemaCompletion.GetAttributeValueCompletion(path, "id");
 		}
 		
 		[Test]
 		public void IdAttributeHasValueOne()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeValues, "one"),
+			Assert.IsTrue(attributeValues.Contains("one"),
 			              "Missing attribute value 'one'");
 		}
 		
 		[Test]
 		public void IdAttributeHasValueTwo()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeValues, "two"),
+			Assert.IsTrue(attributeValues.Contains("two"),
 			              "Missing attribute value 'two'");
 		}		
 		
 		[Test]
 		public void IdAttributeValueCount()
 		{
-			Assert.AreEqual(2, attributeValues.Length, "Expecting 2 attribute values.");
+			Assert.AreEqual(2, attributeValues.Count, "Expecting 2 attribute values.");
 		}
 		
 		protected override string GetSchema()

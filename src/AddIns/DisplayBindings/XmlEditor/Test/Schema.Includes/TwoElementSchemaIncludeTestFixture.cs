@@ -30,7 +30,7 @@ namespace XmlEditor.Tests.Schema.Includes
 			SchemaIncludeTestFixtureHelper.FixtureTearDown();
 		}
 		
-		protected override XmlSchemaCompletionData CreateSchemaCompletionDataObject()
+		protected override XmlSchemaCompletion CreateSchemaCompletionObject()
 		{	
 			return SchemaIncludeTestFixtureHelper.CreateSchemaCompletionDataObject(GetMainSchema(), GetSchema());
 		}

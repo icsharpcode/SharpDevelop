@@ -17,7 +17,7 @@ namespace XmlEditor.Tests.Editor
 	[TestFixture]
 	public class NoRegisteredSchemasTestFixture
 	{
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		MockFileSystem fileSystem;
 		MockXmlSchemaCompletionDataFactory factory;
 		string[] expectedSearchedFolders;
@@ -33,9 +33,9 @@ namespace XmlEditor.Tests.Editor
 			
 			fileSystem = new MockFileSystem();
 			factory = new MockXmlSchemaCompletionDataFactory();
-			schemaManager = new XmlSchemaManager(readOnlySchemaFolders, @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
+			registeredXmlSchemas = new RegisteredXmlSchemas(readOnlySchemaFolders, @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
 			fileSystem.AddExistingFolders(expectedSearchedFolders);
-			schemaManager.ReadSchemas();
+			registeredXmlSchemas.ReadSchemas();
 		}
 		
 		[Test]
@@ -64,8 +64,8 @@ namespace XmlEditor.Tests.Editor
 		[Test]
 		public void AddingNewUserSchemaDoesNotCreateUserDefinedSchemaDirectory()
 		{
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData();
-			schemaManager.AddUserSchema(schema);
+			XmlSchemaCompletion schema = new XmlSchemaCompletion();
+			registeredXmlSchemas.AddUserSchema(schema);
 			
 			Assert.AreEqual(0, fileSystem.CreatedFolders.Count);
 		}

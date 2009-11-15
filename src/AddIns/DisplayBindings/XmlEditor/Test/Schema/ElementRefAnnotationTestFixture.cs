@@ -19,20 +19,20 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ElementRefAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] fooChildElementCompletionData;
+		XmlCompletionItemCollection fooChildElementCompletion;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			fooChildElementCompletionData = SchemaCompletionData.GetChildElementCompletionData(path);
+			fooChildElementCompletion = SchemaCompletion.GetChildElementCompletion(path);
 		}
 				
 		[Test]
 		public void BarElementDocumentation()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.ContainsDescription(fooChildElementCompletionData, "bar", "Documentation for bar element."),
+			Assert.IsTrue(fooChildElementCompletion.ContainsDescription("bar", "Documentation for bar element."),
 			              "Missing documentation for bar element");
 		}
 		

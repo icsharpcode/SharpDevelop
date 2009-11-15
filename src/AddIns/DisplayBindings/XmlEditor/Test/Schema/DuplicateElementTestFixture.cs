@@ -18,34 +18,34 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class DuplicateElementTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] htmlChildElements;
+		XmlCompletionItemCollection htmlChildElements;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
 		
-			htmlChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			htmlChildElements = SchemaCompletion.GetChildElementCompletion(path);
 		}		
 		
 		[Test]
-		public void HtmlHasTwoChildElements()
+		public void HtmlElementHasTwoChildElements()
 		{
-			Assert.AreEqual(2, htmlChildElements.Length, 
+			Assert.AreEqual(2, htmlChildElements.Count, 
 			                "Should be 2 child elements.");
 		}
 		
 		[Test]
-		public void HtmlChildElementHead()
+		public void HtmlElementHasChildElementCalledHead()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(htmlChildElements, "head"), 
+			Assert.IsTrue(htmlChildElements.Contains("head"), 
 			              "Should have a child element called head.");
 		}
 		
 		[Test]
-		public void HtmlChildElementBody()
+		public void HtmlElementHasChildElementCalledBody()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(htmlChildElements, "body"), 
+			Assert.IsTrue(htmlChildElements.Contains("body"), 
 			              "Should have a child element called body.");
 		}		
 		

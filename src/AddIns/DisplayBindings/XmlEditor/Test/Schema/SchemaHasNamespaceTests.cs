@@ -19,7 +19,7 @@ namespace XmlEditor.Tests.Schema
 		public void SchemaNamespaceReturnsFalseForEmptyNamespaceString()
 		{
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='' />";
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(new StringReader(xml));
+			XmlSchemaCompletion schema = new XmlSchemaCompletion(new StringReader(xml));
 			Assert.IsFalse(schema.HasNamespaceUri);
 		}
 		
@@ -27,7 +27,7 @@ namespace XmlEditor.Tests.Schema
 		public void SchemaNamespaceReturnsTrueForNonEmptyNamespaceString()
 		{
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='a' />";
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(new StringReader(xml));
+			XmlSchemaCompletion schema = new XmlSchemaCompletion(new StringReader(xml));
 			Assert.IsTrue(schema.HasNamespaceUri);
 		}
 
@@ -35,7 +35,7 @@ namespace XmlEditor.Tests.Schema
 		public void SchemaNamespaceReturnsFalseForMissingNamespace()
 		{
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' />";
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(new StringReader(xml));
+			XmlSchemaCompletion schema = new XmlSchemaCompletion(new StringReader(xml));
 			Assert.IsFalse(schema.HasNamespaceUri);
 		}
 		
@@ -43,7 +43,7 @@ namespace XmlEditor.Tests.Schema
 		public void SchemaNamespaceReturnsFalseForWhitespaceNamespaceString()
 		{
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='    ' />";
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(new StringReader(xml));
+			XmlSchemaCompletion schema = new XmlSchemaCompletion(new StringReader(xml));
 			Assert.IsFalse(schema.HasNamespaceUri);
 		}
 	}

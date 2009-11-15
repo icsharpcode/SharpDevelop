@@ -78,5 +78,11 @@ namespace XmlEditor.Tests.Paths
 			path.Elements.Add(qualifiedName);
 			Assert.AreEqual("foo [http://foo] > bar [http://foo]", path.ToString());
 		}
+		
+		[Test]
+		public void GetRootElementNamespace()
+		{
+			Assert.AreEqual("http://foo", path.GetRootNamespace());
+		}
 	}
 }

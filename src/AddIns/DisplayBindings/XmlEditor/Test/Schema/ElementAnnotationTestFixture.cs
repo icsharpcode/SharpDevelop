@@ -20,29 +20,29 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ElementAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] fooChildElementCompletionData;
-		ICompletionItemList rootElementCompletionData;
+		XmlCompletionItemCollection fooChildElementCompletionItems;
+		XmlCompletionItemCollection rootElementCompletionItems;
 		
 		public override void FixtureInit()
 		{
-			rootElementCompletionData = SchemaCompletionData.GetElementCompletionData();
+			rootElementCompletionItems = SchemaCompletion.GetRootElementCompletion();
 			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			fooChildElementCompletionData = SchemaCompletionData.GetChildElementCompletionData(path);
+			fooChildElementCompletionItems = SchemaCompletion.GetChildElementCompletion(path);
 		}
 				
 		[Test]
 		public void RootElementDocumentation()
 		{
-			Assert.AreEqual("Documentation for foo element.", rootElementCompletionData.Items.ToArray()[0].Description);
+			Assert.AreEqual("Documentation for foo element.", rootElementCompletionItems[0].Description);
 		}
 		
 		[Test]
 		public void FooChildElementDocumentation()
 		{
-			Assert.AreEqual("Documentation for bar element.", fooChildElementCompletionData[0].Description);
+			Assert.AreEqual("Documentation for bar element.", fooChildElementCompletionItems[0].Description);
 		}
 		
 		protected override string GetSchema()

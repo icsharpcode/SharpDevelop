@@ -28,9 +28,9 @@ namespace XmlEditor.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			
-			XmlSchemaElement element = SchemaCompletionData.FindElement(path);
-			attribute = SchemaCompletionData.FindAttribute(element, "name");
-			missingAttribute = SchemaCompletionData.FindAttribute(element, "missing");
+			XmlSchemaElement element = SchemaCompletion.FindElement(path);
+			attribute = SchemaCompletion.FindAttribute(element, "name");
+			missingAttribute = SchemaCompletion.FindAttribute(element, "missing");
 		}
 		
 		[Test]

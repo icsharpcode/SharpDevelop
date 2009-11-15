@@ -22,11 +22,10 @@ namespace XmlEditor.Tests.FindSchemaObject
 		
 		public override void FixtureInit()
 		{
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			schemas.Add(SchemaCompletionData);
-			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, SchemaCompletionData, String.Empty);
+			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
+			schemas.Add(SchemaCompletion);
 			string xml = "<note xmlns='http://www.w3schools.com' name=''></note>";
-			schemaAttribute = (XmlSchemaAttribute)XmlView.GetSchemaObjectSelected(xml, xml.IndexOf("name"), provider);
+			schemaAttribute = (XmlSchemaAttribute)XmlView.GetSchemaObjectSelected(xml, xml.IndexOf("name"), schemas);
 		}
 		
 		[Test]

@@ -26,8 +26,8 @@ namespace XmlEditor.Tests.Editor
 		Button removeSchemaButton;
 		TextBox namespacePrefixTextBox;
 		TextBox schemaNamespaceTextBox;
-		XmlEditorOptions options;
-		XmlSchemaManager schemaManager;
+		XmlSchemaFileAssociations associations;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		Properties properties;
 		MockXmlSchemaCompletionDataFactory factory;
 		XmlSchemaListItem schemaListItem;
@@ -37,11 +37,11 @@ namespace XmlEditor.Tests.Editor
 		public void Init()
 		{
 			factory = new MockXmlSchemaCompletionDataFactory();
-			schemaManager = new XmlSchemaManager(new string[0], String.Empty, null, factory);
+			registeredXmlSchemas = new RegisteredXmlSchemas(new string[0], String.Empty, null, factory);
 			properties = new Properties();
-			DefaultXmlSchemaFileAssociations associations = new DefaultXmlSchemaFileAssociations(new AddInTreeNode());
-			options = new XmlEditorOptions(properties, associations, new XmlSchemaCompletionDataCollection());
-			schemasPanel = new XmlSchemasPanel(schemaManager, new string[0], options, factory);
+			DefaultXmlSchemaFileAssociations defaultAssociations = new DefaultXmlSchemaFileAssociations(new AddInTreeNode());
+			associations = new XmlSchemaFileAssociations(properties, defaultAssociations, new XmlSchemaCompletionCollection());
+			schemasPanel = new XmlSchemasPanel(registeredXmlSchemas, new string[0], associations, factory);
 			
 			schemaListBox = schemasPanel.FindName("schemaListBox") as ListBox;
 			fileExtensionComboBox = schemasPanel.FindName("fileExtensionComboBox") as ComboBox;

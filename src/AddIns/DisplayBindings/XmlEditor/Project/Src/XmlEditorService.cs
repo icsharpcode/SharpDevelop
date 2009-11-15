@@ -16,7 +16,9 @@ namespace ICSharpCode.XmlEditor
 	public class XmlEditorService
 	{
 		static XmlEditorOptions options;
-		static XmlSchemaManager schemaManager;
+		static RegisteredXmlSchemas registeredXmlSchemas;
+		static XmlSchemaFileAssociations schemaFileAssociations;
+		static Properties xmlEditorProperties;
 		
 		XmlEditorService()
 		{
@@ -33,8 +35,13 @@ namespace ICSharpCode.XmlEditor
 		
 		static void CreateXmlEditorOptions()
 		{
-			Properties properties = PropertyService.Get(XmlEditorOptions.OptionsProperty, new Properties());
-			options = new XmlEditorOptions(properties, new DefaultXmlSchemaFileAssociations(), XmlSchemaManager.Schemas);
+			CreateXmlEditorProperties();
+			options = new XmlEditorOptions(xmlEditorProperties);
+		}
+		
+		static void CreateXmlEditorProperties()
+		{
+			xmlEditorProperties = PropertyService.Get(XmlEditorOptions.OptionsProperty, new Properties());
 		}
 		
 		public static bool ShowAttributesWhenFolded {
@@ -47,23 +54,40 @@ namespace ICSharpCode.XmlEditor
 			set { XmlEditorOptions.ShowSchemaAnnotation = value; }
 		}
 		
-		public static XmlSchemaManager XmlSchemaManager {
+		public static XmlSchemaFileAssociations XmlSchemaFileAssociations {
 			get {
-				if (schemaManager == null) {
-					CreateXmlSchemaManager();
-					schemaManager.ReadSchemas();
+				if (schemaFileAssociations == null) {
+					CreateXmlSchemaFileAssociations();
 				}
-				return schemaManager;
+				return schemaFileAssociations;
 			}
 		}
 		
-		static void CreateXmlSchemaManager()
+		static void CreateXmlSchemaFileAssociations()
+		{
+			CreateXmlEditorProperties();
+			schemaFileAssociations = new XmlSchemaFileAssociations(xmlEditorProperties, new DefaultXmlSchemaFileAssociations(), RegisteredXmlSchemas.Schemas);
+		}
+		
+		
+		public static RegisteredXmlSchemas RegisteredXmlSchemas {
+			get {
+				if (registeredXmlSchemas == null) {
+					CreateRegisteredXmlSchemas();
+					registeredXmlSchemas.ReadSchemas();
+					LogRegisteredSchemaErrorsAsWarnings();
+				}
+				return registeredXmlSchemas;
+			}
+		}
+		
+		static void CreateRegisteredXmlSchemas()
 		{
 			string[] readOnlySchemaFolders = GetReadOnlySchemaFolders();
 			string userDefinedSchemaFolder = GetUserDefinedSchemaFolder();
 			FileSystem fileSystem = new FileSystem();
 				
-			schemaManager = new XmlSchemaManager(readOnlySchemaFolders, userDefinedSchemaFolder, fileSystem);
+			registeredXmlSchemas = new RegisteredXmlSchemas(readOnlySchemaFolders, userDefinedSchemaFolder, fileSystem);
 		}
 		
 		static string[] GetReadOnlySchemaFolders()
@@ -82,6 +106,17 @@ namespace ICSharpCode.XmlEditor
 		static string GetSharpDevelopSchemaFolder()
 		{
 			return Path.Combine(PropertyService.DataDirectory, "schemas");
+		}
+		
+		static void LogRegisteredSchemaErrorsAsWarnings()
+		{
+			foreach (RegisteredXmlSchemaError error in registeredXmlSchemas.GetSchemaErrors()) {
+				if (error.HasException) {
+					LoggingService.Warn(error.Message, error.Exception);
+				} else {
+					LoggingService.Warn(error.Message);
+				}
+			}
 		}
 	}
 }

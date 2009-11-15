@@ -18,68 +18,68 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ExtensionElementTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] schemaChildElements;
-		ICompletionItem[] annotationChildElements;
-		ICompletionItem[] annotationAttributes;
-		ICompletionItem[] includeAttributes;
-		ICompletionItem[] appInfoAttributes;
-		ICompletionItem[] schemaAttributes;
-		ICompletionItem[] fooAttributes;
+		XmlCompletionItemCollection schemaChildElements;
+		XmlCompletionItemCollection annotationChildElements;
+		XmlCompletionItemCollection annotationAttributes;
+		XmlCompletionItemCollection includeAttributes;
+		XmlCompletionItemCollection appInfoAttributes;
+		XmlCompletionItemCollection schemaAttributes;
+		XmlCompletionItemCollection fooAttributes;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("schema", "http://www.w3.org/2001/XMLSchema"));
 			
-			schemaChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
-			schemaAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			schemaChildElements = SchemaCompletion.GetChildElementCompletion(path);
+			schemaAttributes = SchemaCompletion.GetAttributeCompletion(path);
 			
 			// Get include elements attributes.
 			path.Elements.Add(new QualifiedName("include", "http://www.w3.org/2001/XMLSchema"));
-			includeAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			includeAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		
 			// Get annotation element info.
 			path.Elements.RemoveLast();
 			path.Elements.Add(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
 			
-			annotationChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
-			annotationAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			annotationChildElements = SchemaCompletion.GetChildElementCompletion(path);
+			annotationAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		
 			// Get app info attributes.
 			path.Elements.Add(new QualifiedName("appinfo", "http://www.w3.org/2001/XMLSchema"));
-			appInfoAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			appInfoAttributes = SchemaCompletion.GetAttributeCompletion(path);
 			
 			// Get foo attributes.
 			path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://www.w3.org/2001/XMLSchema"));
-			fooAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			fooAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		}
 		
 		[Test]
 		public void SchemaHasSevenChildElements()
 		{
-			Assert.AreEqual(7, schemaChildElements.Length, 
+			Assert.AreEqual(7, schemaChildElements.Count, 
 			                "Should be 7 child elements.");
 		}
 		
 		[Test]
 		public void SchemaChildElementIsInclude()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(schemaChildElements, "include"), 
+			Assert.IsTrue(schemaChildElements.Contains("include"), 
 			              "Should have a child element called include.");
 		}
 		
 		[Test]
 		public void SchemaChildElementIsImport()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(schemaChildElements, "import"), 
+			Assert.IsTrue(schemaChildElements.Contains("import"), 
 			              "Should have a child element called import.");
 		}		
 		
 		[Test]
 		public void SchemaChildElementIsNotation()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(schemaChildElements, "notation"), 
+			Assert.IsTrue(schemaChildElements.Contains("notation"), 
 			              "Should have a child element called notation.");
 		}		
 		
@@ -89,67 +89,67 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void FooHasClassAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(fooAttributes, "class"), 
+			Assert.IsTrue(fooAttributes.Contains("class"), 
 			              "Should have an attribute called class.");						
 		}
 		
 		[Test]
 		public void AnnotationElementHasOneAttribute()
 		{
-			Assert.AreEqual(1, annotationAttributes.Length, "Should be one attribute.");
+			Assert.AreEqual(1, annotationAttributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
 		public void AnnotationHasIdAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationAttributes, "id"), 
+			Assert.IsTrue(annotationAttributes.Contains("id"), 
 			              "Should have an attribute called id.");			
 		}
 		
 		[Test]
 		public void AnnotationHasTwoChildElements()
 		{
-			Assert.AreEqual(2, annotationChildElements.Length, 
+			Assert.AreEqual(2, annotationChildElements.Count, 
 			                "Should be 2 child elements.");
 		}
 		
 		[Test]
 		public void AnnotationChildElementIsAppInfo()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "appinfo"), 
+			Assert.IsTrue(annotationChildElements.Contains("appinfo"), 
 			              "Should have a child element called appinfo.");
 		}
 		
 		[Test]
 		public void AnnotationChildElementIsDocumentation()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "documentation"), 
+			Assert.IsTrue(annotationChildElements.Contains("documentation"), 
 			              "Should have a child element called documentation.");
 		}		
 		
 		[Test]
 		public void IncludeElementHasOneAttribute()
 		{
-			Assert.AreEqual(1, includeAttributes.Length, "Should be one attribute.");
+			Assert.AreEqual(1, includeAttributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
 		public void IncludeHasSchemaLocationAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(includeAttributes, "schemaLocation"), 
+			Assert.IsTrue(includeAttributes.Contains("schemaLocation"), 
 			              "Should have an attribute called schemaLocation.");			
 		}	
 		
 		[Test]
 		public void AppInfoElementHasOneAttribute()
 		{
-			Assert.AreEqual(1, appInfoAttributes.Length, "Should be one attribute.");
+			Assert.AreEqual(1, appInfoAttributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
 		public void AppInfoHasIdAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(appInfoAttributes, "id"), 
+			Assert.IsTrue(appInfoAttributes.Contains("id"), 
 			              "Should have an attribute called id.");			
 		}		
 		

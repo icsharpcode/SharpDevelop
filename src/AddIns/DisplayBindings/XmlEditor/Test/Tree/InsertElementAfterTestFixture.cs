@@ -107,11 +107,8 @@ namespace XmlEditor.Tests.Tree
 		/// <summary>
 		/// Returns the xhtml strict schema as the default schema.
 		/// </summary>
-		protected override XmlSchemaCompletionData DefaultSchemaCompletionData {
-			get {
-				XmlTextReader reader = ResourceManager.GetXhtmlStrictSchema();
-				return new XmlSchemaCompletionData(reader);
-			}
+		protected override XmlSchemaCompletion DefaultSchemaCompletion {
+			get { return new XmlSchemaCompletion(ResourceManager.ReadXhtmlStrictSchema()); }
 		}
 		
 		protected override string GetXml()

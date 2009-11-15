@@ -11,6 +11,6 @@ namespace ICSharpCode.XmlEditor
 {
 	public interface IXmlSchemaCompletionDataFactory
 	{
-		XmlSchemaCompletionData CreateXmlSchemaCompletionData(string baseUri, string fileName);
+		XmlSchemaCompletion CreateXmlSchemaCompletionData(string baseUri, string fileName);
 	}
 }

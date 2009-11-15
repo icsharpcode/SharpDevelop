@@ -17,30 +17,29 @@ namespace ICSharpCode.XmlEditor
 {
 	public class XmlCodeCompletionBinding : ICodeCompletionBinding
 	{	
-		XmlEditorOptions options;
+		XmlSchemaFileAssociations schemaFileAssociations;
+		XmlSchemaCompletionCollection schemas;
 		
 		public XmlCodeCompletionBinding()
-			: this(XmlEditorService.XmlEditorOptions)
+			: this(XmlEditorService.XmlSchemaFileAssociations)
 		{
 		}
 		
-		public XmlCodeCompletionBinding(XmlEditorOptions options)
+		public XmlCodeCompletionBinding(XmlSchemaFileAssociations schemaFileAssociations)
 		{
-			this.options = options;
+			this.schemaFileAssociations = schemaFileAssociations;
+			this.schemas = schemaFileAssociations.Schemas;
 		}
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
-			string text = editor.Document.GetText(0, editor.Caret.Offset);
-			XmlCompletionDataProvider provider = options.GetProvider(editor.FileName);
-			XmlCompletionItemList completionItems = provider.GenerateCompletionData(text, ch);
-			if (completionItems.Items.Count > 0) {
+			XmlSchemaCompletion defaultSchema = schemaFileAssociations.GetSchemaCompletion(editor.FileName);
+			XmlCompletionItemCollection completionItems = GetCompletionItems(editor, ch, defaultSchema);
+			if (completionItems.HasItems) {
+				completionItems.Sort();
 				ICompletionListWindow completionWindow = editor.ShowCompletionWindow(completionItems);
 				if (completionWindow != null) {
-					XmlCompletionItem firstListItem = (XmlCompletionItem)completionItems.Items[0];
-					if (firstListItem.DataType == XmlCompletionDataType.NamespaceUri) {
-						completionWindow.Width = double.NaN;
-					}
+					SetCompletionWindowWidth(completionWindow, completionItems);
 				}
 			}
 				
@@ -50,20 +49,44 @@ namespace ICSharpCode.XmlEditor
 			return CodeCompletionKeyPressResult.None;
 		}
 		
+		XmlCompletionItemCollection GetCompletionItems(ITextEditor editor, char characterTyped, XmlSchemaCompletion defaultSchema)
+		{
+			string textUpToCursor = GetTextUpToCursor(editor, characterTyped);
+			
+			switch (characterTyped) {
+				case '=':
+					return schemas.GetNamespaceCompletion(textUpToCursor);
+				case '<':
+					return schemas.GetElementCompletion(textUpToCursor, defaultSchema);
+				case ' ':
+					return schemas.GetAttributeCompletion(textUpToCursor, defaultSchema);
+			}			
+			return schemas.GetAttributeValueCompletion(characterTyped, textUpToCursor, defaultSchema);
+		}
+		
+		string GetTextUpToCursor(ITextEditor editor, char characterTyped)
+		{
+			return editor.Document.GetText(0, editor.Caret.Offset) + characterTyped;
+		}
+		
+		void SetCompletionWindowWidth(ICompletionListWindow completionWindow, XmlCompletionItemCollection completionItems)
+		{
+			XmlCompletionItem firstListItem = completionItems[0];
+			if (firstListItem.DataType == XmlCompletionItemType.NamespaceUri) {
+				completionWindow.Width = double.NaN;
+			}
+		}
+		
 		public bool CtrlSpace(ITextEditor editor)
 		{	
-			// Attribute value completion.
 			string text = editor.Document.Text;
 			int offset = editor.Caret.Offset;
-			if (XmlParser.IsInsideAttributeValue(text, offset)) {
-				XmlElementPath path = XmlParser.GetActiveElementStartPath(text, offset);
-				XmlCompletionDataProvider provider = options.GetProvider(editor.FileName);
-				string attributeName = XmlParser.GetAttributeNameAtIndex(text, offset);
-				XmlCompletionItemList completionItems = provider.GetAttributeValueCompletionData(path, attributeName);
-				if (completionItems.Items.Count > 0) {
-					editor.ShowCompletionWindow(completionItems);
-					return true;
-				}
+	
+			XmlSchemaCompletion defaultSchema = schemaFileAssociations.GetSchemaCompletion(editor.FileName);
+			XmlCompletionItemCollection completionItems = schemas.GetAttributeValueCompletion(text, offset, defaultSchema);
+			if (completionItems.HasItems) {
+				editor.ShowCompletionWindow(completionItems);
+				return true;
 			}
 			return false;
 		}

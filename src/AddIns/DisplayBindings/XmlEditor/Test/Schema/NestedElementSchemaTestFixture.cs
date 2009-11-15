@@ -16,26 +16,26 @@ namespace XmlEditor.Tests.Schema
 	public class NestedElementSchemaTestFixture : SchemaTestFixtureBase
 	{
 		XmlElementPath noteElementPath;
-		ICompletionItem[] elementData;
+		XmlCompletionItemCollection elementCompletionItems;
 		
 		public override void FixtureInit()
 		{			
 			noteElementPath = new XmlElementPath();
 			noteElementPath.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 
-			elementData = SchemaCompletionData.GetChildElementCompletionData(noteElementPath); 
+			elementCompletionItems = SchemaCompletion.GetChildElementCompletion(noteElementPath); 
 		}
 		
 		[Test]
 		public void NoteHasOneChildElementCompletionDataItem()
 		{
-			Assert.AreEqual(1, elementData.Length, "Should be one child element completion data item.");
+			Assert.AreEqual(1, elementCompletionItems.Count, "Should be one child element completion data item.");
 		}
 		
 		[Test]
 		public void NoteChildElementCompletionDataText()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(elementData, "text"),
+			Assert.IsTrue(elementCompletionItems.Contains("text"),
 			              "Should be one child element called text.");
 		}		
 

@@ -19,19 +19,19 @@ namespace XmlEditor.Tests.Editor
 		MockXmlSchemasPanel panel;
 		RegisteredXmlSchemasEditor schemasEditor;
 		MockXmlSchemaCompletionDataFactory factory;
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		
 		[SetUp]
 		public void Init()
 		{
 			MockFileSystem fileSystem = new MockFileSystem();
 			factory = new MockXmlSchemaCompletionDataFactory();
-			schemaManager = new XmlSchemaManager(new string[0], @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(null), schemas);
+			registeredXmlSchemas = new RegisteredXmlSchemas(new string[0], @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
+			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
+			XmlSchemaFileAssociations associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(null), schemas);
 			panel = new MockXmlSchemasPanel();
 			
-			schemasEditor = new RegisteredXmlSchemasEditor(schemaManager, new string[0], options, panel, factory);
+			schemasEditor = new RegisteredXmlSchemasEditor(registeredXmlSchemas, new string[0], associations, panel, factory);
 			schemasEditor.LoadOptions();
 						
 			panel.OpenFileDialogFileNameToReturn = @"c:\temp\a.xsd";

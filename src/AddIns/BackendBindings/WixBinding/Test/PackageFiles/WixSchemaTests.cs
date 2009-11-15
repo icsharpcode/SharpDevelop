@@ -16,12 +16,12 @@ namespace WixBinding.Tests.PackageFiles
 	[TestFixture]
 	public class WixSchemaTests
 	{
-		WixSchemaCompletionData schema;
+		WixSchemaCompletion schema;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			schema = new WixSchemaCompletionData();
+			schema = new WixSchemaCompletion();
 		}
 		
 		[Test]

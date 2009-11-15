@@ -28,19 +28,19 @@ namespace XmlEditor.Tests.Schema.Uri
 			string fileName = @"C:\temp\foo.xml";
 			string expectedUri = "file:///C:/temp/foo.xml";
 			
-			Assert.AreEqual(expectedUri, XmlSchemaCompletionData.GetUri(fileName));
+			Assert.AreEqual(expectedUri, XmlSchemaCompletion.GetUri(fileName));
 		}
 		
 		[Test]
 		public void NullFileName()
 		{
-			Assert.AreEqual(String.Empty, XmlSchemaCompletionData.GetUri(null));
+			Assert.AreEqual(String.Empty, XmlSchemaCompletion.GetUri(null));
 		}
 		
 		[Test]
 		public void EmptyString()
 		{
-			Assert.AreEqual(String.Empty, XmlSchemaCompletionData.GetUri(String.Empty));
+			Assert.AreEqual(String.Empty, XmlSchemaCompletion.GetUri(String.Empty));
 		}
 	}
 }

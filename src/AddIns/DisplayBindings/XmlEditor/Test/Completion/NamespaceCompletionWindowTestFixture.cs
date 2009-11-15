@@ -24,7 +24,7 @@ namespace XmlEditor.Tests.Completion
 		{
 			base.InitBase();
 			
-			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(options);
+			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(associations);
 			keyPressResult = completionBinding.HandleKeyPress(textEditor, '=');			
 		}
 		
@@ -44,9 +44,9 @@ namespace XmlEditor.Tests.Completion
 		public void ExpectedCompletionDataItems()
 		{
 			XmlCompletionItemCollection expectedItems = new XmlCompletionItemCollection();
-			expectedItems.Add(new XmlCompletionItem("a", XmlCompletionDataType.NamespaceUri));
-			expectedItems.Add(new XmlCompletionItem("b", XmlCompletionDataType.NamespaceUri));
-			expectedItems.Add(new XmlCompletionItem("c", XmlCompletionDataType.NamespaceUri));
+			expectedItems.Add(new XmlCompletionItem("a", XmlCompletionItemType.NamespaceUri));
+			expectedItems.Add(new XmlCompletionItem("b", XmlCompletionItemType.NamespaceUri));
+			expectedItems.Add(new XmlCompletionItem("c", XmlCompletionItemType.NamespaceUri));
 			
 			Assert.AreEqual(expectedItems.ToArray(), textEditor.CompletionItemsDisplayedToArray());
 		}

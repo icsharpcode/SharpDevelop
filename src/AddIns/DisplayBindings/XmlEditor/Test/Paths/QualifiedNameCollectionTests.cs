@@ -156,5 +156,11 @@ namespace XmlEditor.Tests.Paths
 		{
 			Assert.IsFalse(qualifiedNameCollection.IsEmpty);
 		}
+		
+		[Test]
+		public void QualifiedNameCollectionRootElementNamespaceIsCorrect()
+		{
+			Assert.AreEqual("first-ns", qualifiedNameCollection.GetRootNamespace());
+		}
 	}
 }

@@ -19,39 +19,39 @@ namespace XmlEditor.Tests.Editor
 	{
 		RegisteredXmlSchemasEditor schemasEditor;
 		MockXmlSchemaCompletionDataFactory factory;
-		XmlEditorOptions options;
-		XmlSchemaCompletionDataCollection schemas;
+		XmlSchemaFileAssociations associations;
+		XmlSchemaCompletionCollection schemas;
 		Properties properties;
 		MockXmlSchemasPanel panel;
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		string testSchemaXml;
 		
 		[SetUp]
 		public void Init()
 		{
 			testSchemaXml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='http://test' />";
-			XmlSchemaCompletionData testSchema = new XmlSchemaCompletionData(new StringReader(testSchemaXml));
-			testSchema.ReadOnly = false;
+			XmlSchemaCompletion testSchema = new XmlSchemaCompletion(new StringReader(testSchemaXml));
+			testSchema.IsReadOnly = false;
 
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='http://xml' />";
-			XmlSchemaCompletionData xmlSchema = new XmlSchemaCompletionData(new StringReader(xml));
-			xmlSchema.ReadOnly = false;
+			XmlSchemaCompletion xmlSchema = new XmlSchemaCompletion(new StringReader(xml));
+			xmlSchema.IsReadOnly = false;
 			
-			schemas = new XmlSchemaCompletionDataCollection();
+			schemas = new XmlSchemaCompletionCollection();
 			schemas.Add(testSchema);
 			schemas.Add(xmlSchema);
 			
 			string userDirectory = @"c:\users\user\schemas";
 			factory = new MockXmlSchemaCompletionDataFactory();
 			MockFileSystem fileSystem = new MockFileSystem();
-			schemaManager = new XmlSchemaManager(new string[0], userDirectory, fileSystem, factory);
-			schemaManager.Schemas.AddRange(schemas);
+			registeredXmlSchemas = new RegisteredXmlSchemas(new string[0], userDirectory, fileSystem, factory);
+			registeredXmlSchemas.Schemas.AddRange(schemas);
 			
 			properties = new Properties();
-			options = new XmlEditorOptions(properties, new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
+			associations = new XmlSchemaFileAssociations(properties, new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
 			
 			panel = new MockXmlSchemasPanel();
-			schemasEditor = new RegisteredXmlSchemasEditor(schemaManager, new string[0], options, panel, factory);
+			schemasEditor = new RegisteredXmlSchemasEditor(registeredXmlSchemas, new string[0], associations, panel, factory);
 			schemasEditor.LoadOptions();
 			
 			panel.SelectedXmlSchemaListItemIndex = 0;
@@ -59,17 +59,17 @@ namespace XmlEditor.Tests.Editor
 		}
 
 		[Test]
-		public void TestSchemaRemovedFromSchemaManager()
+		public void TestSchemaRemovedFromRegisteredXmlSchemas()
 		{
 			schemasEditor.SaveOptions();
-			Assert.IsFalse(schemaManager.SchemaExists("http://test"));
+			Assert.IsFalse(registeredXmlSchemas.SchemaExists("http://test"));
 		}
 		
 		[Test]
-		public void XmlSchemaNotRemovedFromSchemaManager()
+		public void XmlSchemaNotRemovedFromRegisteredXmlSchemas()
 		{
 			schemasEditor.SaveOptions();
-			Assert.IsTrue(schemaManager.SchemaExists("http://xml"));
+			Assert.IsTrue(registeredXmlSchemas.SchemaExists("http://xml"));
 		}
 		
 		[Test]
@@ -109,7 +109,7 @@ namespace XmlEditor.Tests.Editor
 			schemasEditor.AddSchemaFromFileSystem();
 			schemasEditor.SaveOptions();
 			
-			Assert.IsTrue(schemaManager.SchemaExists("http://test"));
+			Assert.IsTrue(registeredXmlSchemas.SchemaExists("http://test"));
 		}
 	}
 }

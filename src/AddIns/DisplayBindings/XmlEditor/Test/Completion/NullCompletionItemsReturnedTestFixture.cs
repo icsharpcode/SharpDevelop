@@ -20,22 +20,22 @@ namespace XmlEditor.Tests.Completion
 	public class NullCompletionItemsReturnedTestFixture
 	{
 		MockTextEditor textEditor;
-		XmlSchemaCompletionDataCollection schemas;
+		XmlSchemaCompletionCollection schemas;
 		XmlCodeCompletionBinding completionBinding;
 		
 		[SetUp]
 		public void Init()
 		{
-			schemas = new XmlSchemaCompletionDataCollection();
+			schemas = new XmlSchemaCompletionCollection();
 
-			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
+			XmlSchemaFileAssociations associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
 			
 			textEditor = new MockTextEditor();
 			textEditor.FileName = new FileName(@"c:\projects\test.xsd");
 			textEditor.Document.Text = "";
 			textEditor.Caret.Offset = 0;
 			
-			completionBinding = new XmlCodeCompletionBinding(options);
+			completionBinding = new XmlCodeCompletionBinding(associations);
 		}
 		
 		[Test]

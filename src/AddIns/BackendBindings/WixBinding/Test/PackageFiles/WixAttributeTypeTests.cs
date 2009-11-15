@@ -21,7 +21,7 @@ namespace WixBinding.Tests.PackageFiles
 		WixXmlAttribute componentKeyPathAttribute;
 		WixXmlAttribute fileSourceAttribute;
 		WixXmlAttribute fileSrcAttribute;
-		WixSchemaCompletionData wixSchema = new WixSchemaCompletionData();
+		WixSchemaCompletion wixSchema = new WixSchemaCompletion();
 		WixDocument doc;
 		
 		[SetUp]

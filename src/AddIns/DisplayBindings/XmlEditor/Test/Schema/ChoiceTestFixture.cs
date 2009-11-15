@@ -19,14 +19,14 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ChoiceTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] noteChildElements;
+		XmlCompletionItemCollection noteChildElements;
 		
 		public override void FixtureInit()
 		{			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			
-			noteChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			noteChildElements = SchemaCompletion.GetChildElementCompletion(path);
 		}
 		
 		[Test]
@@ -35,7 +35,7 @@ namespace XmlEditor.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com"));
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length, 
+			Assert.AreEqual(0, SchemaCompletion.GetChildElementCompletion(path).Count, 
 			                "Should be no child elements.");
 		}
 		
@@ -45,28 +45,28 @@ namespace XmlEditor.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			path.Elements.Add(new QualifiedName("text", "http://www.w3schools.com"));
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length, 
+			Assert.AreEqual(0, SchemaCompletion.GetChildElementCompletion(path).Count, 
 			                "Should be no child elements.");
 		}		
 		
 		[Test]
 		public void NoteHasTwoChildElements()
 		{
-			Assert.AreEqual(2, noteChildElements.Length, 
+			Assert.AreEqual(2, noteChildElements.Count, 
 			                "Should be two child elements.");
 		}
 		
 		[Test]
 		public void NoteChildElementIsText()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(noteChildElements, "text"), 
+			Assert.IsTrue(noteChildElements.Contains("text"), 
 			              "Should have a child element called text.");
 		}
 		
 		[Test]
 		public void NoteChildElementIsTitle()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(noteChildElements, "title"), 
+			Assert.IsTrue(noteChildElements.Contains("title"), 
 			              "Should have a child element called title.");
 		}		
 		

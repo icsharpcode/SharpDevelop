@@ -18,7 +18,7 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ChildElementAttributesTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] attributes;
+		XmlCompletionItemCollection attributes;
 		
 		public override void FixtureInit()
 		{
@@ -26,19 +26,19 @@ namespace XmlEditor.Tests.Schema
 			path.Elements.Add(new QualifiedName("project", "http://nant.sf.net//nant-0.84.xsd"));
 			path.Elements.Add(new QualifiedName("attrib", "http://nant.sf.net//nant-0.84.xsd"));
 			
-			attributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			attributes = SchemaCompletion.GetAttributeCompletion(path);
 		}
 
 		[Test]
 		public void AttributeCount()
 		{
-			Assert.AreEqual(10, attributes.Length, "Should be one attribute.");
+			Assert.AreEqual(10, attributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
 		public void FileAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "file"),
+			Assert.IsTrue(attributes.Contains("file"),
 			              "Attribute file does not exist.");
 		}		
 		

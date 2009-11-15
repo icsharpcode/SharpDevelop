@@ -18,20 +18,20 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class SimpleContentWithAttributeSchemaTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] attributeCompletionData;
+		XmlCompletionItemCollection attributeCompletionItems;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
+			attributeCompletionItems = SchemaCompletion.GetAttributeCompletion(path);
 		}
 		
 		[Test]
 		public void BarAttributeExists()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "bar"),
+			Assert.IsTrue(attributeCompletionItems.Contains("bar"),
 			              "Attribute bar does not exist.");
 		}		
 	

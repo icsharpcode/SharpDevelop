@@ -23,7 +23,7 @@ namespace XmlEditor.Tests.Utils
 		{
 		}
 		
-		public XmlSchemaCompletionData CreateXmlSchemaCompletionData(string baseUri, string fileName)
+		public XmlSchemaCompletion CreateXmlSchemaCompletionData(string baseUri, string fileName)
 		{
 			baseUris.Add(fileName, baseUri);
 			
@@ -32,7 +32,7 @@ namespace XmlEditor.Tests.Utils
 			}
 			
 			TextReader reader = CreateTextReader(fileName);
-			return new XmlSchemaCompletionData(reader);
+			return new XmlSchemaCompletion(reader);
 		}
 		
 		public Exception ExceptionToThrowWhenCreateXmlSchemaCalled {

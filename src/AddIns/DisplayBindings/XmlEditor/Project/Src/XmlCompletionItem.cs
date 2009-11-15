@@ -13,7 +13,7 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// The type of text held in this object.
 	/// </summary>
-	public enum XmlCompletionDataType {
+	public enum XmlCompletionItemType {
 		None = 0,
 		XmlElement = 1,
 		XmlAttribute = 2,
@@ -25,27 +25,27 @@ namespace ICSharpCode.XmlEditor
 	/// Holds the text for  namespace, child element or attribute
 	/// autocomplete (intellisense).
 	/// </summary>
-	public class XmlCompletionItem : DefaultCompletionItem
+	public class XmlCompletionItem : DefaultCompletionItem, IComparable<XmlCompletionItem>
 	{
-		XmlCompletionDataType dataType = XmlCompletionDataType.XmlElement;
+		XmlCompletionItemType dataType = XmlCompletionItemType.XmlElement;
 		string description = String.Empty;
 		
 		public XmlCompletionItem(string text)
-			: this(text, String.Empty, XmlCompletionDataType.XmlElement)
+			: this(text, String.Empty, XmlCompletionItemType.XmlElement)
 		{
 		}
 		
 		public XmlCompletionItem(string text, string description)
-			: this(text, description, XmlCompletionDataType.XmlElement)
+			: this(text, description, XmlCompletionItemType.XmlElement)
 		{
 		}
 
-		public XmlCompletionItem(string text, XmlCompletionDataType dataType)
+		public XmlCompletionItem(string text, XmlCompletionItemType dataType)
 			: this(text, String.Empty, dataType)
 		{
 		}
 
-		public XmlCompletionItem(string text, string description, XmlCompletionDataType dataType)
+		public XmlCompletionItem(string text, string description, XmlCompletionItemType dataType)
 			: base(text)
 		{
 			this.description = description;
@@ -60,7 +60,7 @@ namespace ICSharpCode.XmlEditor
 			get { return description; }
 		}
 		
-		public XmlCompletionDataType DataType {
+		public XmlCompletionItemType DataType {
 			get { return dataType; }
 		}
 		
@@ -69,11 +69,11 @@ namespace ICSharpCode.XmlEditor
 			base.Complete(context);
 			
 			switch (dataType) {
-				case XmlCompletionDataType.NamespaceUri:
+				case XmlCompletionItemType.NamespaceUri:
 					context.Editor.Document.Insert(context.StartOffset, "\"");
 					context.Editor.Document.Insert(context.EndOffset + 1, "\"");
 					break;
-				case XmlCompletionDataType.XmlAttribute:
+				case XmlCompletionItemType.XmlAttribute:
 					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 					context.Editor.Caret.Offset--;
 //					XmlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
@@ -98,6 +98,11 @@ namespace ICSharpCode.XmlEditor
 				return (dataType == item.dataType) && (Text == item.Text);
 			}
 			return false;
+		}
+		
+		public int CompareTo(XmlCompletionItem other)
+		{
+			return Text.CompareTo(other.Text);
 		}
 	}
 }

@@ -19,40 +19,37 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class SingleElementSchemaTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] childElementCompletionData;
-		ICompletionItem[] attributeCompletionData;
+		XmlCompletionItemCollection childElementCompletionItems;
+		XmlCompletionItemCollection attributeCompletionItems;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 
-			attributeCompletionData = 
-				SchemaCompletionData.GetAttributeCompletionData(path);
-
-			childElementCompletionData = 
-				SchemaCompletionData.GetChildElementCompletionData(path);
+			attributeCompletionItems = SchemaCompletion.GetAttributeCompletion(path);
+			childElementCompletionItems = SchemaCompletion.GetChildElementCompletion(path);
 		}
 		
 		[Test]
 		public void NamespaceUri()
 		{
 			Assert.AreEqual("http://www.w3schools.com", 
-			                SchemaCompletionData.NamespaceUri,
+			                SchemaCompletion.NamespaceUri,
 			                "Unexpected namespace.");
 		}
 		
 		[Test]
 		public void NoteElementHasNoAttributes()
 		{
-			Assert.AreEqual(0, attributeCompletionData.Length, 
+			Assert.AreEqual(0, attributeCompletionItems.Count, 
 			                "Not expecting any attributes.");
 		}
 		
 		[Test]
 		public void NoteElementHasNoChildElements()
 		{
-			Assert.AreEqual(0, childElementCompletionData.Length, "" +
+			Assert.AreEqual(0, childElementCompletionItems.Count,
 			                "Not expecting any child elements.");
 		}
 		

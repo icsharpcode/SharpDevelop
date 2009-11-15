@@ -20,18 +20,18 @@ namespace XmlEditor.Tests.Completion
 		bool result;
 		MockTextEditor textEditor;
 		XmlCodeCompletionBinding completionBinding;
-		XmlEditorOptions options;
-		XmlSchemaCompletionData xsdSchema;
+		XmlSchemaFileAssociations associations;
+		XmlSchemaCompletion xsdSchema;
 		
 		[SetUp]
 		public void Init()
 		{
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			xsdSchema = new XmlSchemaCompletionData(ResourceManager.GetXsdSchema());
+			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
+			xsdSchema = new XmlSchemaCompletion(ResourceManager.ReadXsdSchema());
 			schemas.Add(xsdSchema);
 
-			options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
-			options.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".xsd", "http://www.w3.org/2001/XMLSchema", "xs"));
+			associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
+			associations.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".xsd", "http://www.w3.org/2001/XMLSchema", "xs"));
 			
 			textEditor = new MockTextEditor();
 			textEditor.FileName = new FileName(@"c:\projects\test.xsd");
@@ -40,7 +40,7 @@ namespace XmlEditor.Tests.Completion
 			// Put cursor inside the double quotes following the elementFormDefault attribute
 			textEditor.Caret.Offset = 31;	
 			
-			completionBinding = new XmlCodeCompletionBinding(options);
+			completionBinding = new XmlCodeCompletionBinding(associations);
 			result = completionBinding.CtrlSpace(textEditor);
 		}
 		
@@ -70,7 +70,7 @@ namespace XmlEditor.Tests.Completion
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("schema", "http://www.w3.org/2001/XMLSchema", "xs"));
-			return xsdSchema.GetAttributeValueCompletionData(path, "elementFormDefault");
+			return xsdSchema.GetAttributeValueCompletion(path, "elementFormDefault").ToArray();
 		}
 		
 		[Test]

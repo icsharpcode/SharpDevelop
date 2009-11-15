@@ -27,7 +27,7 @@ namespace XmlEditor.Tests.Tree
 		XmlTreeViewControl treeView;
 		DerivedXmlTreeViewContainerControl treeViewContainer;
 		RichTextBox textBox;
-		XmlCompletionDataProvider provider;
+		XmlSchemaCompletionCollection schemas;
 		PropertyGrid attributesGrid;
 		SplitContainer splitContainer;	
 		RichTextBox errorMessageTextBox;
@@ -48,12 +48,10 @@ namespace XmlEditor.Tests.Tree
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 			treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
 							
-			XmlTextReader reader = ResourceManager.GetXhtmlStrictSchema();
-			XmlSchemaCompletionData xhtmlSchema = new XmlSchemaCompletionData(reader);
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			provider = new XmlCompletionDataProvider(schemas, xhtmlSchema, String.Empty);
+			XmlSchemaCompletion xhtmlSchema = new XmlSchemaCompletion(ResourceManager.ReadXhtmlStrictSchema());
+			schemas = new XmlSchemaCompletionCollection();
 			
-			treeViewContainer.LoadXml("<html id='a'>text<body></body></html>", provider);
+			treeViewContainer.LoadXml("<html id='a'>text<body></body></html>", schemas, null);
 			doc = treeViewContainer.Document;
 			treeView = treeViewContainer.TreeView;
 			
@@ -132,7 +130,7 @@ namespace XmlEditor.Tests.Tree
 		public void TextBoxClearedAfterLoadXml()
 		{
 			treeViewContainer.ShowTextContent("test");
-			treeViewContainer.LoadXml("<html/>", provider);
+			treeViewContainer.LoadXml("<html/>", schemas, null);
 			
 			Assert.AreEqual(String.Empty, textBox.Text);
 			AttributesGridOnTop();
@@ -154,7 +152,7 @@ namespace XmlEditor.Tests.Tree
 			Assert.IsNotNull(attributesGrid.SelectedObject);
 			
 			// Loading new xml should clear the attributes grid.
-			treeViewContainer.LoadXml("<html/>", provider);
+			treeViewContainer.LoadXml("<html/>", schemas, null);
 			
 			Assert.IsNull(attributesGrid.SelectedObject, 
 				"Should be no SelectedObject in the attributes grid after loading new xml.");

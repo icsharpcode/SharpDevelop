@@ -20,16 +20,15 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class XhtmlStrictSchemaTestFixture
 	{
-		XmlSchemaCompletionData schemaCompletionData;
+		XmlSchemaCompletion schemaCompletion;
 		XmlElementPath h1Path;
-		ICompletionItem[] h1Attributes;
+		XmlCompletionItemCollection h1Attributes;
 		string namespaceURI = "http://www.w3.org/1999/xhtml";
 		
 		[TestFixtureSetUp]
 		public void FixtureInit()
 		{
-			XmlTextReader reader = ResourceManager.GetXhtmlStrictSchema();
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
+			schemaCompletion = new XmlSchemaCompletion(ResourceManager.ReadXhtmlStrictSchema());
 			
 			// Set up h1 element's path.
 			h1Path = new XmlElementPath();
@@ -38,13 +37,13 @@ namespace XmlEditor.Tests.Schema
 			h1Path.Elements.Add(new QualifiedName("h1", namespaceURI));
 			
 			// Get h1 element info.
-			h1Attributes = schemaCompletionData.GetAttributeCompletionData(h1Path);
+			h1Attributes = schemaCompletion.GetAttributeCompletion(h1Path);
 		}
 		
 		[Test]
 		public void H1HasAttributes()
 		{
-			Assert.IsTrue(h1Attributes.Length > 0, "Should have at least one attribute.");
+			Assert.IsTrue(h1Attributes.Count > 0, "Should have at least one attribute.");
 		}
 	}
 }

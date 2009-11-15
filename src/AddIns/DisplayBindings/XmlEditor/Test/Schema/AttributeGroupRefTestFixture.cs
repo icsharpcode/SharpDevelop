@@ -18,46 +18,46 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AttributeGroupRefTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] attributeCompletionData;
+		XmlCompletionItemCollection attributeCompletionItems;
 		
 		public override void FixtureInit()
 		{			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
-			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
+			attributeCompletionItems = SchemaCompletion.GetAttributeCompletion(path);
 		}
 		
 		[Test]
 		public void AttributeCount()
 		{
-			Assert.AreEqual(4, attributeCompletionData.Length, "Should be 4 attributes.");
+			Assert.AreEqual(4, attributeCompletionItems.Count, "Should be 4 attributes.");
 		}
 		
 		[Test]
 		public void NameAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "name"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("name"), 
 			              "Attribute name does not exist.");
 		}		
 		
 		[Test]
 		public void IdAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "id"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("id"), 
 			              "Attribute id does not exist.");
 		}		
 		
 		[Test]
 		public void StyleAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "style"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("style"), 
 			              "Attribute style does not exist.");
 		}	
 		
 		[Test]
 		public void TitleAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "title"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("title"), 
 			              "Attribute title does not exist.");
 		}		
 		

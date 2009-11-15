@@ -25,10 +25,10 @@ namespace XmlEditor.Tests.Editor
 		[SetUp]
 		public void Init()
 		{
-			XmlSchemaManager schemaManager = new XmlSchemaManager(new string[0], String.Empty, null, null);
-			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(null), schemaManager.Schemas);
+			RegisteredXmlSchemas registeredXmlSchemas = new RegisteredXmlSchemas(new string[0], String.Empty, null, null);
+			XmlSchemaFileAssociations associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(null), registeredXmlSchemas.Schemas);
 			panel = new MockXmlSchemasPanel();
-			schemasEditor = new RegisteredXmlSchemasEditor(schemaManager, new string[0], options, panel, null);
+			schemasEditor = new RegisteredXmlSchemasEditor(registeredXmlSchemas, new string[0], associations, panel, null);
 			schemasEditor.LoadOptions();
 		}
 		

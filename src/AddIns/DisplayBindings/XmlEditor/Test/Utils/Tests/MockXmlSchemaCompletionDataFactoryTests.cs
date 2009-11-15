@@ -26,7 +26,7 @@ namespace XmlEditor.Tests.Utils.Tests
 		[Test]
 		public void XmlSchemaCompletionDataObjectCreated()
 		{
-			Assert.IsInstanceOf(typeof(XmlSchemaCompletionData), factory.CreateXmlSchemaCompletionData(String.Empty, String.Empty));
+			Assert.IsInstanceOf(typeof(XmlSchemaCompletion), factory.CreateXmlSchemaCompletionData(String.Empty, String.Empty));
 		}
 		
 		[Test]
@@ -45,7 +45,7 @@ namespace XmlEditor.Tests.Utils.Tests
 			string schemaFileName = @"c:\projects\a.xsd";
 			factory.AddSchemaXml(schemaFileName, xml);
 			
-			XmlSchemaCompletionData schema = factory.CreateXmlSchemaCompletionData(String.Empty, schemaFileName);
+			XmlSchemaCompletion schema = factory.CreateXmlSchemaCompletionData(String.Empty, schemaFileName);
 			Assert.AreEqual("http://test", schema.NamespaceUri);
 		}
 		

@@ -21,7 +21,7 @@ namespace XmlEditor.Tests.Completion
 			
 			schemas.Clear();
 			
-			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(options);
+			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(associations);
 			keyPressResult = completionBinding.HandleKeyPress(textEditor, '=');
 		}
 		

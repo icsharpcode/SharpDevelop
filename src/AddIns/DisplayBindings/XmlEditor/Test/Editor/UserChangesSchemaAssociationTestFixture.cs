@@ -21,7 +21,7 @@ namespace XmlEditor.Tests.Editor
 		MockXmlSchemasPanel panel;
 		RegisteredXmlSchemasEditor schemasEditor;
 		MockXmlSchemaCompletionDataFactory factory;
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		MockFileSystem fileSystem;
 
 		[SetUp]
@@ -29,18 +29,18 @@ namespace XmlEditor.Tests.Editor
 		{
 			fileSystem = new MockFileSystem();
 			factory = new MockXmlSchemaCompletionDataFactory();
-			schemaManager = new XmlSchemaManager(new string[0], @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
+			registeredXmlSchemas = new RegisteredXmlSchemas(new string[0], @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
 		
 			string testSchemaXml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='http://test' />";
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(new StringReader(testSchemaXml));
-			schema.ReadOnly = false;
-			schemaManager.Schemas.Add(schema);
+			XmlSchemaCompletion schema = new XmlSchemaCompletion(new StringReader(testSchemaXml));
+			schema.IsReadOnly = false;
+			registeredXmlSchemas.Schemas.Add(schema);
 				
-			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(null), schemaManager.Schemas);
-			options.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".test", "http://test"));
+			XmlSchemaFileAssociations associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(null), registeredXmlSchemas.Schemas);
+			associations.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".test", "http://test"));
 			panel = new MockXmlSchemasPanel();
 			
-			schemasEditor = new RegisteredXmlSchemasEditor(schemaManager, new string[] { ".test" }, options, panel, factory);
+			schemasEditor = new RegisteredXmlSchemasEditor(registeredXmlSchemas, new string[] { ".test" }, associations, panel, factory);
 			schemasEditor.LoadOptions();
 			
 			string newXmlSchemaFileName = @"c:\projects\new.xsd";

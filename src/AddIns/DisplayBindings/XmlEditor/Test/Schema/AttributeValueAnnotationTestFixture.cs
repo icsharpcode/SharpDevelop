@@ -19,19 +19,19 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AttributeValueAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] barAttributeValuesCompletionData;
+		XmlCompletionItemCollection barAttributeValuesCompletionItems;
 		
 		public override void FixtureInit()
 		{	
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
-			barAttributeValuesCompletionData = SchemaCompletionData.GetAttributeValueCompletionData(path, "bar");
+			barAttributeValuesCompletionItems = SchemaCompletion.GetAttributeValueCompletion(path, "bar");
 		}
 				
 		[Test]
 		public void BarAttributeValueDefaultDocumentation()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.ContainsDescription(barAttributeValuesCompletionData, "default", "Default attribute value info."),
+			Assert.IsTrue(barAttributeValuesCompletionItems.ContainsDescription("default", "Default attribute value info."),
 			                "Description for attribute value 'default' is incorrect.");
 		}
 		

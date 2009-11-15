@@ -22,46 +22,46 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class GroupRefAsCompositorTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] rootChildElements;
-		ICompletionItem[] fooAttributes;
+		XmlCompletionItemCollection rootChildElements;
+		XmlCompletionItemCollection fooAttributes;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("root", "http://foo"));
 			
-			rootChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			rootChildElements = SchemaCompletion.GetChildElementCompletion(path);
 		
 			path.Elements.Add(new QualifiedName("foo", "http://foo"));
 			
-			fooAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			fooAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		}
 				
 		[Test]
 		public void RootHasTwoChildElements()
 		{
-			Assert.AreEqual(2, rootChildElements.Length, 
+			Assert.AreEqual(2, rootChildElements.Count, 
 			                "Should be two child elements.");
 		}
 		
 		[Test]
 		public void RootChildElementIsFoo()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(rootChildElements, "foo"), 
+			Assert.IsTrue(rootChildElements.Contains("foo"), 
 			              "Should have a child element called foo.");
 		}
 		
 		[Test]
 		public void RootChildElementIsBar()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(rootChildElements, "bar"), 
+			Assert.IsTrue(rootChildElements.Contains("bar"), 
 			              "Should have a child element called bar.");
 		}		
 		
 		[Test]
 		public void FooElementHasIdAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(fooAttributes, "id"),
+			Assert.IsTrue(fooAttributes.Contains("id"),
 			              "Should have an attribute called id.");
 		}
 		

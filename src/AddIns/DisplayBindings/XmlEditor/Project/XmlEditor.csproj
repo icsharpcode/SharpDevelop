@@ -104,6 +104,7 @@
     <Compile Include="Src\OpenStylesheetCommand.cs" />
     <Compile Include="Src\QualifiedName.cs" />
     <Compile Include="Src\QualifiedNameCollection.cs" />
+    <Compile Include="Src\RegisteredXmlSchemaError.cs" />
     <Compile Include="Src\RegisteredXmlSchemasEditor.cs" />
     <Compile Include="Src\RemoveAttributeCommand.cs" />
     <Compile Include="Src\RemoveXPathHighlightingCommand.cs" />
@@ -118,10 +119,8 @@
     <Compile Include="Src\XmlCharacterDataTreeNode.cs" />
     <Compile Include="Src\XmlCodeCompletionBinding.cs" />
     <Compile Include="Src\XmlCommentTreeNode.cs" />
-    <Compile Include="Src\XmlCompletionDataProvider.cs" />
     <Compile Include="Src\XmlCompletionItem.cs" />
     <Compile Include="Src\XmlCompletionItemCollection.cs" />
-    <Compile Include="Src\XmlCompletionItemList.cs" />
     <Compile Include="Src\XmlDisplayBinding.cs" />
     <Compile Include="Src\XmlEditorOptions.cs" />
     <Compile Include="Src\XmlEditorOptionsPanel.xaml.cs">
@@ -140,10 +139,11 @@
     <Compile Include="Src\XmlParser.cs" />
     <Compile Include="Src\XmlSchemaFileAssociation.cs" />
     <Compile Include="Src\XmlSchemaFileAssociationListItem.cs" />
-    <Compile Include="Src\XmlSchemaCompletionData.cs" />
-    <Compile Include="Src\XmlSchemaCompletionDataCollection.cs" />
+    <Compile Include="Src\XmlSchemaCompletion.cs" />
+    <Compile Include="Src\XmlSchemaCompletionCollection.cs" />
+    <Compile Include="Src\XmlSchemaFileAssociations.cs" />
     <Compile Include="Src\XmlSchemaListBoxItem.cs" />
-    <Compile Include="Src\XmlSchemaManager.cs" />
+    <Compile Include="Src\RegisteredXmlSchemas.cs" />
     <Compile Include="Src\XmlSchemaPicker.cs" />
     <Compile Include="Src\XmlSchemasPanel.xaml.cs">
       <DependentUpon>XmlSchemasPanel.xaml</DependentUpon>

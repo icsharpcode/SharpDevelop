@@ -18,11 +18,11 @@ using ICSharpCode.XmlEditor;
 namespace ICSharpCode.WixBinding
 {
 	/// <summary>
-	/// Wix schema completion data read from wix.xsd which is an embedded resource.
+	/// Wix schema completion read from wix.xsd which is an embedded resource.
 	/// </summary>
-	public class WixSchemaCompletionData : XmlSchemaCompletionData
+	public class WixSchemaCompletion : XmlSchemaCompletion
 	{
-		public WixSchemaCompletionData() : base(GetWixSchema())
+		public WixSchemaCompletion() : base(GetWixSchema())
 		{
 		}
 		
@@ -35,7 +35,7 @@ namespace ICSharpCode.WixBinding
 		/// </remarks>
 		public string[] GetChildElements(string elementName)
 		{
-			return GetItems(elementName, GetChildElementCompletionData).ToArray();
+			return GetItems(elementName, GetChildElementCompletion).ToArray();
 		}
 		
 		/// <summary>
@@ -47,7 +47,7 @@ namespace ICSharpCode.WixBinding
 		/// </remarks>
 		public string[] GetAttributeNames(string elementName)
 		{
-			List<string> attributes = GetItems(elementName, GetAttributeCompletionData);
+			List<string> attributes = GetItems(elementName, GetAttributeCompletion);
 			
 			// Exclude deprecated attributes.
 			List<string> deprecatedAttributes = FindDeprecatedAttributes(elementName);
@@ -84,7 +84,7 @@ namespace ICSharpCode.WixBinding
 		{
 			XmlElementPath path = GetPath(elementName);
 			List<string> values = new List<string>();
-			foreach (ICompletionItem data in GetAttributeValueCompletionData(path, attributeName)) {
+			foreach (ICompletionItem data in GetAttributeValueCompletion(path, attributeName)) {
 				values.Add(data.Text);
 			}
 			return values.ToArray();
@@ -126,18 +126,18 @@ namespace ICSharpCode.WixBinding
 		/// Delegate that allows us to get a different type of completion data, but use
 		/// the same GetItems method to create a list of strings.
 		/// </summary>
-		delegate ICompletionItem[] GetCompletionData(XmlElementPath path);
+		delegate XmlCompletionItemCollection GetCompletionItems(XmlElementPath path);
 		
 		/// <summary>
 		/// Gets the completion data text for the completion data items that are
 		/// returned for the specified element.
 		/// </summary>
-		List<string> GetItems(string elementName, GetCompletionData getCompletionData)
+		List<string> GetItems(string elementName, GetCompletionItems getCompletionItems)
 		{
 			List<string> items = new List<string>();
 			XmlElementPath path = GetPath(elementName);
-			foreach (ICompletionItem completionData in getCompletionData(path)) {
-				items.Add(completionData.Text);
+			foreach (ICompletionItem completionItem in getCompletionItems(path)) {
+				items.Add(completionItem.Text);
 			}
 			return items;
 		}
@@ -149,12 +149,11 @@ namespace ICSharpCode.WixBinding
 			return path;
 		}
 		                                        
-		static XmlTextReader GetWixSchema()
+		static StreamReader GetWixSchema()
 		{
-			Assembly assembly = Assembly.GetAssembly(typeof(WixSchemaCompletionData));
+			Assembly assembly = Assembly.GetAssembly(typeof(WixSchemaCompletion));
 			string resourceName = "ICSharpCode.WixBinding.Resources.wix.xsd";
-			Stream resourceStream = assembly.GetManifestResourceStream(resourceName);
-			return new XmlTextReader(resourceStream);
+			return new StreamReader(assembly.GetManifestResourceStream(resourceName));
 		}
 		
 		/// <summary>

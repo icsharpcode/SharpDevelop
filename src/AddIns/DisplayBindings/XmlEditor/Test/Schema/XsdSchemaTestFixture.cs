@@ -20,24 +20,24 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class XsdSchemaTestFixture
 	{
-		XmlSchemaCompletionData schemaCompletionData;
+		XmlSchemaCompletion schemaCompletion;
 		XmlElementPath choicePath;
 		XmlElementPath elementPath;
 		XmlElementPath simpleEnumPath;
 		XmlElementPath enumPath;
 		XmlElementPath allElementPath;
 		XmlElementPath allElementAnnotationPath;
-		ICompletionItem[] choiceAttributes;
-		ICompletionItem[] elementAttributes;
-		ICompletionItem[] simpleEnumElements;
-		ICompletionItem[] enumAttributes;
-		ICompletionItem[] elementFormDefaultAttributeValues;
-		ICompletionItem[] blockDefaultAttributeValues;
-		ICompletionItem[] finalDefaultAttributeValues;
-		ICompletionItem[] mixedAttributeValues;
-		ICompletionItem[] maxOccursAttributeValues;
-		ICompletionItem[] allElementChildElements;
-		ICompletionItem[] allElementAnnotationChildElements;
+		XmlCompletionItemCollection choiceAttributes;
+		XmlCompletionItemCollection elementAttributes;
+		XmlCompletionItemCollection simpleEnumElements;
+		XmlCompletionItemCollection enumAttributes;
+		XmlCompletionItemCollection elementFormDefaultAttributeValues;
+		XmlCompletionItemCollection blockDefaultAttributeValues;
+		XmlCompletionItemCollection finalDefaultAttributeValues;
+		XmlCompletionItemCollection mixedAttributeValues;
+		XmlCompletionItemCollection maxOccursAttributeValues;
+		XmlCompletionItemCollection allElementChildElements;
+		XmlCompletionItemCollection allElementAnnotationChildElements;
 		
 		string namespaceURI = "http://www.w3.org/2001/XMLSchema";
 		string prefix = "xs";
@@ -45,8 +45,7 @@ namespace XmlEditor.Tests.Schema
 		[TestFixtureSetUp]
 		public void FixtureInit()
 		{
-			XmlTextReader reader = ResourceManager.GetXsdSchema();
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
+			schemaCompletion = new XmlSchemaCompletion(ResourceManager.ReadXsdSchema());
 			
 			// Set up choice element's path.
 			choicePath = new XmlElementPath();
@@ -54,26 +53,26 @@ namespace XmlEditor.Tests.Schema
 			choicePath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
 			choicePath.Elements.Add(new QualifiedName("complexType", namespaceURI, prefix));
 			
-			mixedAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(choicePath, "mixed");
+			mixedAttributeValues = schemaCompletion.GetAttributeValueCompletion(choicePath, "mixed");
 
 			choicePath.Elements.Add(new QualifiedName("choice", namespaceURI, prefix));
 			
 			// Get choice element info.
-			choiceAttributes = schemaCompletionData.GetAttributeCompletionData(choicePath);
-			maxOccursAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(choicePath, "maxOccurs");
+			choiceAttributes = schemaCompletion.GetAttributeCompletion(choicePath);
+			maxOccursAttributeValues = schemaCompletion.GetAttributeValueCompletion(choicePath, "maxOccurs");
 			
 			// Set up element path.
 			elementPath = new XmlElementPath();
 			elementPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
 			
-			elementFormDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "elementFormDefault");
-			blockDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "blockDefault");
-			finalDefaultAttributeValues = schemaCompletionData.GetAttributeValueCompletionData(elementPath, "finalDefault");
+			elementFormDefaultAttributeValues = schemaCompletion.GetAttributeValueCompletion(elementPath, "elementFormDefault");
+			blockDefaultAttributeValues = schemaCompletion.GetAttributeValueCompletion(elementPath, "blockDefault");
+			finalDefaultAttributeValues = schemaCompletion.GetAttributeValueCompletion(elementPath, "finalDefault");
 			
 			elementPath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
 				
 			// Get element attribute info.
-			elementAttributes = schemaCompletionData.GetAttributeCompletionData(elementPath);
+			elementAttributes = schemaCompletion.GetAttributeCompletion(elementPath);
 
 			// Set up simple enum type path.
 			simpleEnumPath = new XmlElementPath();
@@ -82,7 +81,7 @@ namespace XmlEditor.Tests.Schema
 			simpleEnumPath.Elements.Add(new QualifiedName("restriction", namespaceURI, prefix));
 			
 			// Get child elements.
-			simpleEnumElements = schemaCompletionData.GetChildElementCompletionData(simpleEnumPath);
+			simpleEnumElements = schemaCompletion.GetChildElementCompletion(simpleEnumPath);
 
 			// Set up enum path.
 			enumPath = new XmlElementPath();
@@ -92,7 +91,7 @@ namespace XmlEditor.Tests.Schema
 			enumPath.Elements.Add(new QualifiedName("enumeration", namespaceURI, prefix));
 			
 			// Get attributes.
-			enumAttributes = schemaCompletionData.GetAttributeCompletionData(enumPath);
+			enumAttributes = schemaCompletion.GetAttributeCompletion(enumPath);
 			
 			// Set up xs:all path.
 			allElementPath = new XmlElementPath();
@@ -102,7 +101,7 @@ namespace XmlEditor.Tests.Schema
 			allElementPath.Elements.Add(new QualifiedName("all", namespaceURI, prefix));
 		
 			// Get child elements of the xs:all element.
-			allElementChildElements = schemaCompletionData.GetChildElementCompletionData(allElementPath);
+			allElementChildElements = schemaCompletion.GetChildElementCompletion(allElementPath);
 			
 			// Set up the path to the annotation element that is a child of xs:all.
 			allElementAnnotationPath = new XmlElementPath();
@@ -113,26 +112,26 @@ namespace XmlEditor.Tests.Schema
 			allElementAnnotationPath.Elements.Add(new QualifiedName("annotation", namespaceURI, prefix));
 			
 			// Get the xs:all annotation child element.
-			allElementAnnotationChildElements = schemaCompletionData.GetChildElementCompletionData(allElementAnnotationPath);
+			allElementAnnotationChildElements = schemaCompletion.GetChildElementCompletion(allElementAnnotationPath);
 		}
 		
 		[Test]
 		public void ChoiceHasAttributes()
 		{
-			Assert.IsTrue(choiceAttributes.Length > 0, "Should have at least one attribute.");
+			Assert.IsTrue(choiceAttributes.Count > 0, "Should have at least one attribute.");
 		}
 		
 		[Test]
 		public void ChoiceHasMinOccursAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(choiceAttributes, "minOccurs"),
+			Assert.IsTrue(choiceAttributes.Contains("minOccurs"),
 			              "Attribute minOccurs missing.");
 		}
 		
 		[Test]
 		public void ChoiceHasMaxOccursAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(choiceAttributes, "maxOccurs"),
+			Assert.IsTrue(choiceAttributes.Contains("maxOccurs"),
 			              "Attribute maxOccurs missing.");
 		}
 		
@@ -142,7 +141,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ChoiceDoesNotHaveNameAttribute()
 		{
-			Assert.IsFalse(SchemaTestFixtureBase.Contains(choiceAttributes, "name"),
+			Assert.IsFalse(choiceAttributes.Contains("name"),
 			               "Attribute name should not exist.");
 		}
 		
@@ -152,7 +151,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ChoiceDoesNotHaveRefAttribute()
 		{
-			Assert.IsFalse(SchemaTestFixtureBase.Contains(choiceAttributes, "ref"),
+			Assert.IsFalse(choiceAttributes.Contains("ref"),
 			               "Attribute ref should not exist.");
 		}	
 		
@@ -162,56 +161,56 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ElementNameAttributeAppearsOnce()
 		{
-			int nameAttributeCount = SchemaTestFixtureBase.GetItemCount(elementAttributes, "name");
+			int nameAttributeCount = elementAttributes.GetOccurrences("name");
 			Assert.AreEqual(1, nameAttributeCount, "Should be only one name attribute.");
 		}
 		
 		[Test]
 		public void ElementHasIdAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(elementAttributes, "id"), 
+			Assert.IsTrue(elementAttributes.Contains("id"), 
 			              "id attribute missing.");
 		}		
 		
 		[Test]
 		public void SimpleRestrictionTypeHasEnumChildElement()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(simpleEnumElements, "xs:enumeration"),
+			Assert.IsTrue(simpleEnumElements.Contains("xs:enumeration"),
 			              "enumeration element missing.");			
 		}
 		
 		[Test]
 		public void EnumHasValueAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(enumAttributes, "value"),
+			Assert.IsTrue(enumAttributes.Contains("value"),
 			              "Attribute value missing.");			
 		}
 		
 		[Test]
 		public void ElementFormDefaultAttributeHasValueQualified()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(elementFormDefaultAttributeValues, "qualified"),
+			Assert.IsTrue(elementFormDefaultAttributeValues.Contains("qualified"),
 			              "Attribute value 'qualified' missing.");
 		}
 		
 		[Test]
 		public void BlockDefaultAttributeHasValueAll()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(blockDefaultAttributeValues, "#all"),
+			Assert.IsTrue(blockDefaultAttributeValues.Contains("#all"),
 			              "Attribute value '#all' missing.");
 		}		
 		
 		[Test]
 		public void BlockDefaultAttributeHasValueExtension()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(blockDefaultAttributeValues, "extension"),
+			Assert.IsTrue(blockDefaultAttributeValues.Contains("extension"),
 			              "Attribute value 'extension' missing.");
 		}		
 		
 		[Test]
 		public void FinalDefaultAttributeHasValueList()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(finalDefaultAttributeValues, "list"),
+			Assert.IsTrue(finalDefaultAttributeValues.Contains("list"),
 			              "Attribute value 'list' missing.");
 		}
 		
@@ -221,35 +220,35 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void MixedAttributeHasValueTrue()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(mixedAttributeValues, "true"),
+			Assert.IsTrue(mixedAttributeValues.Contains("true"),
 			              "Attribute value 'true' missing.");
 		}
 		
 		[Test]
 		public void MaxOccursAttributeHasValueUnbounded()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(maxOccursAttributeValues, "unbounded"),
+			Assert.IsTrue(maxOccursAttributeValues.Contains("unbounded"),
 			              "Attribute value 'unbounded' missing.");
 		}	
 				
 		[Test]
 		public void AllElementHasAnnotationChildElement()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(allElementChildElements, "xs:annotation"),
+			Assert.IsTrue(allElementChildElements.Contains("xs:annotation"),
 			              "Should have an annotation child element.");
 		}
 		
 		[Test]
 		public void AllElementHasElementChildElement()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(allElementChildElements, "xs:element"),
+			Assert.IsTrue(allElementChildElements.Contains("xs:element"),
 			              "Should have an child element called 'element'.");
 		}
 		
 		[Test]
 		public void AllElementAnnotationHasDocumentationChildElement()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(allElementAnnotationChildElements, "xs:documentation"),
+			Assert.IsTrue(allElementAnnotationChildElements.Contains("xs:documentation"),
 			              "Should have documentation child element.");
 		}
 	}

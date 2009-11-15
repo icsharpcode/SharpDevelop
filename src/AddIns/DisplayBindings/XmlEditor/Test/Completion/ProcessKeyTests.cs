@@ -17,36 +17,42 @@ namespace XmlEditor.Tests.Completion
 	[TestFixture]
 	public class CompletionListProcessKeyTests
 	{
-		XmlCompletionItemList completionItemList;
+		XmlCompletionItemCollection completionItems;
 		
 		[SetUp]
 		public void Init()
 		{
-			completionItemList = new XmlCompletionItemList();
+			completionItems = new XmlCompletionItemCollection();
 		}
 		
 		[Test]
 		public void ProcessInputWithSpaceCharReturnsNormalKey()
 		{
-			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItemList.ProcessInput(' '));
+			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItems.ProcessInput(' '));
 		}
 		
 		[Test]
 		public void ProcessInputWithTabCharReturnsInsertionKey()
 		{
-			Assert.AreEqual(CompletionItemListKeyResult.InsertionKey, completionItemList.ProcessInput('\t'));
+			Assert.AreEqual(CompletionItemListKeyResult.InsertionKey, completionItems.ProcessInput('\t'));
 		}		
 
 		[Test]
 		public void ProcessInputWithColonCharReturnsNormalKey()
 		{
-			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItemList.ProcessInput(':'));
+			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItems.ProcessInput(':'));
 		}
 		
 		[Test]
 		public void ProcessInputWithDotCharReturnsNormalKey()
 		{
-			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItemList.ProcessInput('.'));
-		}		
+			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItems.ProcessInput('.'));
+		}
+		
+		[Test]
+		public void ProcessInputWithUnderscoreCharReturnsNormalKey()
+		{
+			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItems.ProcessInput('_'));
+		}	
 	}
 }

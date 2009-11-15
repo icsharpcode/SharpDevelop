@@ -17,7 +17,7 @@ namespace WixBinding.Tests.PackageFiles
 	public class MissingAttributesTests
 	{
 		WixDocument doc;
-		WixSchemaCompletionData schema = new WixSchemaCompletionData();
+		WixSchemaCompletion schema = new WixSchemaCompletion();
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()

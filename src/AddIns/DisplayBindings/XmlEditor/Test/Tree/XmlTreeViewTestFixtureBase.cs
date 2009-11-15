@@ -20,8 +20,7 @@ namespace XmlEditor.Tests.Tree
 		public void InitFixture()
 		{
 			mockXmlTreeView = new MockXmlTreeView();
-			XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(SchemaDataItems, DefaultSchemaCompletionData, DefaultNamespacePrefix);
-			editor = new XmlTreeEditor(mockXmlTreeView, completionDataProvider);
+			editor = new XmlTreeEditor(mockXmlTreeView, Schemas, DefaultSchemaCompletion);
 			editor.LoadXml(GetXml());
 		}
 		
@@ -30,25 +29,19 @@ namespace XmlEditor.Tests.Tree
 			return String.Empty;
 		}
 		
-		protected virtual XmlSchemaCompletionDataCollection SchemaDataItems {
-			get {
-				return new XmlSchemaCompletionDataCollection();
-			}
+		protected virtual XmlSchemaCompletionCollection Schemas {
+			get { return new XmlSchemaCompletionCollection(); }
 		}
 	
-		protected virtual XmlSchemaCompletionData DefaultSchemaCompletionData {
-			get {
-				return null;
-			}
+		protected virtual XmlSchemaCompletion DefaultSchemaCompletion {
+			get { return null; }
 		}
 		
 		/// <summary>
 		/// Gets the default element prefix.
 		/// </summary>
 		protected virtual string DefaultNamespacePrefix {
-			get {
-				return String.Empty;
-			}
+			get { return String.Empty; }
 		}
 	}
 }

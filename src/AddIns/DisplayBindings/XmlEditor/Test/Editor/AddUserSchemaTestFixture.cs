@@ -18,9 +18,9 @@ namespace XmlEditor.Tests.Editor
 	[TestFixture]
 	public class AddUserSchemaTestFixture
 	{
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredSchemas;
 		string userDefinedSchemaFolder;
-		XmlSchemaCompletionData schema;
+		XmlSchemaCompletion schema;
 		int userSchemaAddedEventFiredCount;
 		MockFileSystem fileSystem;
 		MockXmlSchemaCompletionDataFactory factory;
@@ -35,17 +35,17 @@ namespace XmlEditor.Tests.Editor
 			userSchemaAddedEventFiredCount = 0;
 			fileSystem = new MockFileSystem();
 			factory = new MockXmlSchemaCompletionDataFactory();
-			schemaManager = new XmlSchemaManager(new string[0], userDefinedSchemaFolder, fileSystem, factory);
-			schemaManager.UserSchemaAdded += UserSchemaAdded;
-			schemaManager.AddUserSchema(schema);
+			registeredSchemas = new RegisteredXmlSchemas(new string[0], userDefinedSchemaFolder, fileSystem, factory);
+			registeredSchemas.UserDefinedSchemaAdded += UserSchemaAdded;
+			registeredSchemas.AddUserSchema(schema);
 		}
 
-		XmlSchemaCompletionData LoadTestSchema()
+		XmlSchemaCompletion LoadTestSchema()
 		{
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='http://test'>\r\n" +
 				"</xs:schema>";
 			
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(new XmlTextReader(new StringReader(xml)));
+			XmlSchemaCompletion schema = new XmlSchemaCompletion(new StringReader(xml));
 			schema.FileName = @"c:\projects\schemas\test.xsd";
 			return schema;
 		}
@@ -53,7 +53,7 @@ namespace XmlEditor.Tests.Editor
 		[Test]
 		public void SchemaAddedToSchemaCollection()
 		{
-			Assert.AreEqual(schema, schemaManager.Schemas[0]);
+			Assert.AreEqual(schema, registeredSchemas.Schemas[0]);
 		}
 		
 		[Test]
@@ -86,7 +86,7 @@ namespace XmlEditor.Tests.Editor
 		[Test]
 		public void AddedSchemaNamespaceExistsInRegisteredSchemas()
 		{
-			Assert.IsTrue(schemaManager.SchemaExists("http://test"));
+			Assert.IsTrue(registeredSchemas.SchemaExists("http://test"));
 		}
 		
 		[Test]

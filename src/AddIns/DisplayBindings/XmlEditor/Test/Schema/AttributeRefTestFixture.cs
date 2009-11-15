@@ -18,44 +18,44 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AttributeRefTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] attributes;
+		XmlCompletionItemCollection attributes;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
-			attributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			attributes = SchemaCompletion.GetAttributeCompletion(path);
 		}
 		
 		[Test]
 		public void HtmlAttributeCount()
 		{
-			Assert.AreEqual(4, attributes.Length, 
+			Assert.AreEqual(4, attributes.Count, 
 			                "Should be 4 attributes.");
 		}
 		
 		[Test]
 		public void HtmlLangAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "lang"), "Attribute lang not found.");
+			Assert.IsTrue(attributes.Contains("lang"), "Attribute lang not found.");
 		}
 		
 		[Test]
 		public void HtmlIdAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "id"), "Attribute id not found.");
+			Assert.IsTrue(attributes.Contains("id"), "Attribute id not found.");
 		}		
 		
 		[Test]
 		public void HtmlDirAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "dir"), "Attribute dir not found.");
+			Assert.IsTrue(attributes.Contains("dir"), "Attribute dir not found.");
 		}			
 		
 		[Test]
 		public void HtmlXmlLangAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "xml:lang"), "Attribute xml:lang not found.");
+			Assert.IsTrue(attributes.Contains("xml:lang"), "Attribute xml:lang not found.");
 		}				
 		
 		protected override string GetSchema()

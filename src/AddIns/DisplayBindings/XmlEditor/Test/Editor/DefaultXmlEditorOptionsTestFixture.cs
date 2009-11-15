@@ -18,19 +18,21 @@ namespace XmlEditor.Tests.Editor
 	[TestFixture]
 	public class DefaultXmlEditorOptionsTestFixture
 	{
-		XmlEditorOptions options;
+		XmlSchemaFileAssociations associations;
 		Properties properties;
 		PropertyChangedEventArgs propertyChangedEventArgs;
 		DefaultXmlSchemaFileAssociations defaultXmlSchemaFileExtensions;
-		XmlSchemaCompletionDataCollection schemas;
+		XmlSchemaCompletionCollection schemas;
+		XmlEditorOptions options;
 		
 		[SetUp]
 		public void Init()
 		{
-			schemas = new XmlSchemaCompletionDataCollection();
+			schemas = new XmlSchemaCompletionCollection();
 			defaultXmlSchemaFileExtensions = CreateDefaultXmlSchemaFileExtensions();
 			properties = new Properties();
-			options = new XmlEditorOptions(properties, defaultXmlSchemaFileExtensions, schemas);
+			associations = new XmlSchemaFileAssociations(properties, defaultXmlSchemaFileExtensions, schemas);
+			options = new XmlEditorOptions(properties);
 		}
 		
 		DefaultXmlSchemaFileAssociations CreateDefaultXmlSchemaFileExtensions()
@@ -128,7 +130,7 @@ namespace XmlEditor.Tests.Editor
 		public void UnknownFileExtensionReturnsEmptySchemaAssociation()
 		{
 			XmlSchemaFileAssociation expectedSchemaAssociation = new XmlSchemaFileAssociation(String.Empty, String.Empty, String.Empty);
-			Assert.AreEqual(expectedSchemaAssociation, options.GetSchemaFileAssociation(".unknown"));
+			Assert.AreEqual(expectedSchemaAssociation, associations.GetSchemaFileAssociation(".unknown"));
 		}
 		
 		[Test]
@@ -136,14 +138,14 @@ namespace XmlEditor.Tests.Editor
 		{
 			XmlSchemaFileAssociation expectedSchemaAssociation = new XmlSchemaFileAssociation(".abc", "namespace-uri", "prefix");
 			properties.Set("ext.abc", ".abc|namespace-uri|prefix");
-			Assert.AreEqual(expectedSchemaAssociation, options.GetSchemaFileAssociation(".abc"));
+			Assert.AreEqual(expectedSchemaAssociation, associations.GetSchemaFileAssociation(".abc"));
 		}
 		
 		[Test]
 		public void RegisteredSchemaAssociationStoredInProperties()
 		{
 			XmlSchemaFileAssociation schemaAssociation = new XmlSchemaFileAssociation(".abc", "namespace-uri", "prefix");
-			options.SetSchemaFileAssociation(schemaAssociation);
+			associations.SetSchemaFileAssociation(schemaAssociation);
 			Assert.AreEqual(".abc|namespace-uri|prefix", properties.Get("ext.abc", String.Empty));
 		}
 		
@@ -152,7 +154,7 @@ namespace XmlEditor.Tests.Editor
 		{
 			XmlSchemaFileAssociation expectedSchemaAssociation = new XmlSchemaFileAssociation(".abc", "namespace-uri", "prefix");
 			properties.Set("ext.abc", ".abc|namespace-uri|prefix");
-			Assert.AreEqual(expectedSchemaAssociation, options.GetSchemaFileAssociation(".ABC"));
+			Assert.AreEqual(expectedSchemaAssociation, associations.GetSchemaFileAssociation(".ABC"));
 		}
 
 		[Test]
@@ -160,42 +162,49 @@ namespace XmlEditor.Tests.Editor
 		{
 			XmlSchemaFileAssociation expectedSchemaAssociation = new XmlSchemaFileAssociation(".abc", "namespace-uri", "prefix");
 			properties.Set("ext.abc", ".abc|namespace-uri|prefix");
-			Assert.AreEqual(expectedSchemaAssociation, options.GetSchemaFileAssociation(@"d:\projects\a.abc"));
+			Assert.AreEqual(expectedSchemaAssociation, associations.GetSchemaFileAssociation(@"d:\projects\a.abc"));
 		}
 		
 		[Test]
 		public void DefaultXmlExtensionRevertedToIfNoFileExtensionSavedInXmlEditorOptionsProperties()
 		{
 			XmlSchemaFileAssociation expectedSchemaAssociation = new XmlSchemaFileAssociation(".xml", "http://example.com", "e");
-			Assert.AreEqual(expectedSchemaAssociation, options.GetSchemaFileAssociation(".xml"));
+			Assert.AreEqual(expectedSchemaAssociation, associations.GetSchemaFileAssociation(".xml"));
 		}
 		
 		[Test]
 		public void GetNamespacePrefixForRegisteredSchemaFileExtension()
 		{
-			Assert.AreEqual("e", options.GetNamespacePrefix(".xml"));
+			Assert.AreEqual("e", associations.GetNamespacePrefix(".xml"));
 		}
 		
 		[Test]
 		public void EmptyNamespacePrefixReturnedForUnknownSchemaFileExtension()
 		{
-			Assert.AreEqual(String.Empty, options.GetNamespacePrefix(".unknown"));
+			Assert.AreEqual(String.Empty, associations.GetNamespacePrefix(".unknown"));
 		}
 		
 		[Test]
 		public void NullSchemaReturnedforUnknownSchemaFileExtension()
 		{
-			Assert.IsNull(options.GetSchemaCompletionData(".unknown"));
+			Assert.IsNull(associations.GetSchemaCompletion(".unknown"));
 		}
 		
 		[Test]
 		public void SchemaReturnedForKnownSchemaFileExtension()
 		{
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='http://example.com' />";
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(new StringReader(xml));
+			XmlSchemaCompletion schema = new XmlSchemaCompletion(new StringReader(xml));
 			schemas.Add(schema);
 			
-			Assert.AreSame(schema, options.GetSchemaCompletionData(".xml"));
+			Assert.AreSame(schema, associations.GetSchemaCompletion(".xml"));
+		}
+		
+		[Test]
+		public void SchemaHasDefaultNamespacePrefix()
+		{
+			SchemaReturnedForKnownSchemaFileExtension();
+			Assert.AreEqual("e", associations.GetSchemaCompletion(".xml").DefaultNamespacePrefix);
 		}
 	}
 }

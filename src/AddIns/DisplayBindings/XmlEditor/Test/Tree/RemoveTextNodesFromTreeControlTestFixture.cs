@@ -27,10 +27,10 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
-			XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(new XmlSchemaCompletionDataCollection(), null, String.Empty);
 			treeViewContainerControl = new XmlTreeViewContainerControl();
 			treeView = treeViewContainerControl.TreeView;
-			treeViewContainerControl.LoadXml("<root><top>text</top><bottom><child>text</child></bottom></root>", completionDataProvider);
+			string xml = "<root><top>text</top><bottom><child>text</child></bottom></root>";
+			treeViewContainerControl.LoadXml(xml, new XmlSchemaCompletionCollection(), null);
 			doc = treeViewContainerControl.Document;
 			
 			ExtTreeNode rootNode = (ExtTreeNode)treeView.Nodes[0];

@@ -139,5 +139,13 @@ namespace ICSharpCode.XmlEditor
 			}
 			return false;
 		}
+		
+		public string GetRootNamespace()
+		{
+			if (HasItems) {
+				return this[0].Namespace;
+			}
+			return String.Empty;
+		}
 	}
 }

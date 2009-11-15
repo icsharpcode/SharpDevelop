@@ -22,33 +22,33 @@ namespace ICSharpCode.XmlEditor
 {
 	public partial class XmlSchemasPanel : UserControl, IOptionPanel, IXmlSchemasPanel
 	{
-		XmlSchemaCompletionDataCollection predefinedSchemas;
+		XmlSchemaCompletionCollection predefinedSchemas;
 		ICollection<string> xmlFileExtensions;
-		XmlEditorOptions xmlEditorOptions;
-		XmlSchemaCompletionDataCollection addedSchemas = new XmlSchemaCompletionDataCollection();
+		XmlSchemaFileAssociations fileAssociations;
+		XmlSchemaCompletionCollection addedSchemas = new XmlSchemaCompletionCollection();
 		StringCollection removedSchemaNamespaces = new StringCollection();
 		RegisteredXmlSchemasEditor editor;
 		
 		public XmlSchemasPanel() 
-			: this(XmlEditorService.XmlSchemaManager,
+			: this(XmlEditorService.RegisteredXmlSchemas,
 				new DefaultXmlFileExtensions(),
-				XmlEditorService.XmlEditorOptions,
-				XmlEditorService.XmlSchemaManager)
+				XmlEditorService.XmlSchemaFileAssociations,
+				XmlEditorService.RegisteredXmlSchemas)
 		{
 		}
 
-		public XmlSchemasPanel(XmlSchemaManager schemaManager, 
+		public XmlSchemasPanel(RegisteredXmlSchemas registeredXmlSchemas, 
 			ICollection<string> xmlFileExtensions, 
-			XmlEditorOptions xmlEditorOptions,
+			XmlSchemaFileAssociations fileAssociations,
 			IXmlSchemaCompletionDataFactory factory)
 		{
-			this.predefinedSchemas = schemaManager.Schemas;
+			this.predefinedSchemas = registeredXmlSchemas.Schemas;
 			this.xmlFileExtensions = xmlFileExtensions;
-			this.xmlEditorOptions = xmlEditorOptions;
+			this.fileAssociations = fileAssociations;
 			
 			InitializeComponent();
 			
-			editor = new RegisteredXmlSchemasEditor(schemaManager, xmlFileExtensions, xmlEditorOptions, this, factory);
+			editor = new RegisteredXmlSchemasEditor(registeredXmlSchemas, xmlFileExtensions, fileAssociations, this, factory);
 		}
 		
 		public object Owner { get; set; }
@@ -123,7 +123,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public bool RemoveSchemaButtonEnabled {
 			get { return removeSchemaButton.IsEnabled; }
-			set {removeSchemaButton.IsEnabled = value; }
+			set { removeSchemaButton.IsEnabled = value; }
 		}
 		
 		public XmlSchemaListItem GetXmlSchemaListItem(int index)

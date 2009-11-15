@@ -20,53 +20,17 @@ namespace ICSharpCode.XmlEditor
 		public static readonly string ShowSchemaAnnotationPropertyName = "ShowSchemaAnnotation";
 		
 		Properties properties;
-		DefaultXmlSchemaFileAssociations defaultSchemaFileAssociations;
-		XmlSchemaCompletionDataCollection schemas;
 		
-		public XmlEditorOptions(Properties properties, 
-			DefaultXmlSchemaFileAssociations defaultSchemaFileAssociations,
-			XmlSchemaCompletionDataCollection schemas)
+		public XmlEditorOptions(Properties properties)
 		{
 			this.properties = properties;
-			this.defaultSchemaFileAssociations = defaultSchemaFileAssociations;
-			this.schemas = schemas;
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged {
 			add    { properties.PropertyChanged += value; }
 			remove { properties.PropertyChanged -= value; }
 		}
-		
-		/// <summary>
-		/// Gets an association between a schema and a file extension.
-		/// </summary>
-		public XmlSchemaFileAssociation GetSchemaFileAssociation(string fileName)
-		{
-			string extension = Path.GetExtension(fileName).ToLowerInvariant();
-			string property = properties.Get("ext" + extension, String.Empty);
-			XmlSchemaFileAssociation schemaFileAssociation = XmlSchemaFileAssociation.ConvertFromString(property);
-			if (schemaFileAssociation.IsEmpty) {
-				return defaultSchemaFileAssociations.Find(extension);
-			}
-			return schemaFileAssociation;
-		}
-		
-		public XmlSchemaCompletionData GetSchemaCompletionData(string fileName)
-		{
-			XmlSchemaFileAssociation association = GetSchemaFileAssociation(fileName);
-			return schemas[association.NamespaceUri];
-		}		
-		
-		public string GetNamespacePrefix(string fileName)
-		{
-			return GetSchemaFileAssociation(fileName).NamespacePrefix;
-		}		
-		
-		public void SetSchemaFileAssociation(XmlSchemaFileAssociation association)
-		{
-			properties.Set("ext" + association.FileExtension, association.ToString());
-		}
-		
+
 		public bool ShowAttributesWhenFolded {
 			get { return properties.Get(ShowAttributesWhenFoldedPropertyName, false); }
 			set {  properties.Set(ShowAttributesWhenFoldedPropertyName, value); }
@@ -75,13 +39,6 @@ namespace ICSharpCode.XmlEditor
 		public bool ShowSchemaAnnotation {
 			get { return properties.Get(ShowSchemaAnnotationPropertyName, true); }
 			set { properties.Set(ShowSchemaAnnotationPropertyName, value); }
-		}
-		
-		public XmlCompletionDataProvider GetProvider(string fileName)
-		{
-			XmlSchemaFileAssociation schemaFileAssociation = GetSchemaFileAssociation(fileName);
-			XmlSchemaCompletionData defaultSchemaCompletionData = schemas[schemaFileAssociation.NamespaceUri];
-			return new XmlCompletionDataProvider(schemas, defaultSchemaCompletionData, schemaFileAssociation.NamespacePrefix);
 		}		
 	}
 }

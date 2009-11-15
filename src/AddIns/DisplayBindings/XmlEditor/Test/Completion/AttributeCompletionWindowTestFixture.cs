@@ -21,16 +21,16 @@ namespace XmlEditor.Tests.Completion
 	{
 		MockTextEditor textEditor;
 		CodeCompletionKeyPressResult keyPressResult;
-		XmlSchemaCompletionDataCollection schemas;
+		XmlSchemaCompletionCollection schemas;
 		
 		[SetUp]
 		public void Init()
 		{
-			schemas = new XmlSchemaCompletionDataCollection();
-			schemas.Add(new XmlSchemaCompletionData(ResourceManager.GetXsdSchema()));
+			schemas = new XmlSchemaCompletionCollection();
+			schemas.Add(new XmlSchemaCompletion(ResourceManager.ReadXsdSchema()));
 
-			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
-			options.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".xsd", "http://www.w3.org/2001/XMLSchema", "xs"));
+			XmlSchemaFileAssociations associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
+			associations.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".xsd", "http://www.w3.org/2001/XMLSchema", "xs"));
 			
 			textEditor = new MockTextEditor();
 			textEditor.FileName = new FileName(@"c:\projects\test.xsd");
@@ -39,7 +39,7 @@ namespace XmlEditor.Tests.Completion
 			// Put cursor after the first 'a' in "<xs:schema>"
 			textEditor.Caret.Offset = 10;			
 			
-			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(options);
+			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(associations);
 			keyPressResult = completionBinding.HandleKeyPress(textEditor, ' ');			
 		}
 		

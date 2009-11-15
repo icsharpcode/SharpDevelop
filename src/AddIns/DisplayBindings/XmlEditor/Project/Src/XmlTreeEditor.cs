@@ -23,14 +23,16 @@ namespace ICSharpCode.XmlEditor
 	{
 		IXmlTreeView view;
 		XmlDocument document;
-		XmlCompletionDataProvider completionDataProvider;
+		XmlSchemaCompletionCollection schemas;
 		XmlNode copiedNode;
 		XmlNode cutNode;
-		
-		public XmlTreeEditor(IXmlTreeView view, XmlCompletionDataProvider completionDataProvider)
+		XmlSchemaCompletion defaultSchema;
+				
+		public XmlTreeEditor(IXmlTreeView view, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion defaultSchema)
 		{
 			this.view = view;
-			this.completionDataProvider = completionDataProvider;
+			this.schemas = schemas;
+			this.defaultSchema = defaultSchema;
 		}
 		
 		/// <summary>
@@ -55,9 +57,7 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the Xml document being edited.
 		/// </summary>
 		public XmlDocument Document {
-			get {
-				return document;
-			}
+			get { return document; }
 		}
 		
 		/// <summary>
@@ -72,14 +72,14 @@ namespace ICSharpCode.XmlEditor
 				view.ClearAttributes();
 				view.ShowTextContent(selectedTextNode.InnerText);
 			} else if (selectedElement != null) {
-				view.TextContent = string.Empty;
+				view.TextContent = String.Empty;
 				view.ShowAttributes(selectedElement.Attributes);
 			} else if (selectedComment != null) {
 				view.ClearAttributes();
 				view.ShowTextContent(selectedComment.InnerText);
 			} else {
 				view.ClearAttributes();
-				view.TextContent = string.Empty;
+				view.TextContent = String.Empty;
 			}
 		}
 		
@@ -102,7 +102,7 @@ namespace ICSharpCode.XmlEditor
 				string[] selectedAttributeNames = view.SelectNewAttributes(attributesNames);
 				if (selectedAttributeNames.Length > 0) {
 					foreach (string attributeName in selectedAttributeNames) {
-						selectedElement.SetAttribute(attributeName, string.Empty);
+						selectedElement.SetAttribute(attributeName, String.Empty);
 					}
 					view.IsDirty = true;
 					view.ShowAttributes(selectedElement.Attributes);
@@ -400,9 +400,7 @@ namespace ICSharpCode.XmlEditor
 		/// Gets whether the delete method is enabled.
 		/// </summary>
 		public bool IsDeleteEnabled {
-			get {
-				return view.SelectedNode != null;
-			}
+			get { return view.SelectedNode != null; }
 		}
 		
 		/// <summary>
@@ -413,13 +411,14 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlElementPath elementPath = GetElementPath(element);
 			List<string> attributes = new List<string>();
-			XmlSchemaCompletionData schemaCompletionData = completionDataProvider.FindSchema(elementPath);
-			if (schemaCompletionData != null) {
-				ICompletionItem[] completionData = schemaCompletionData.GetAttributeCompletionData(elementPath);
-				foreach (ICompletionItem item in completionData) {
+			XmlSchemaCompletion schema = FindSchema(elementPath);
+			if (schema != null) {
+				XmlCompletionItemCollection completionItems = schema.GetAttributeCompletion(elementPath);
+				foreach (XmlCompletionItem item in completionItems) {
 					// Ignore existing attributes.
-					if (!element.HasAttribute(item.Text))
+					if (!element.HasAttribute(item.Text)) {
 						attributes.Add(item.Text);
+					}
 				}
 			}
 			return attributes.ToArray();
@@ -443,6 +442,16 @@ namespace ICSharpCode.XmlEditor
 			return path;
 		}
 		
+		XmlSchemaCompletion FindSchema(XmlElementPath path)
+		{
+			XmlSchemaCompletion schema = schemas[path.GetRootNamespace()];
+			if ((schema == null) && (defaultSchema != null)) {
+				path.SetNamespaceForUnqualifiedNames(defaultSchema.NamespaceUri);
+				return defaultSchema;
+			}
+			return null;
+		}
+		
 		/// <summary>
 		/// Returns a list of elements that can be children of the
 		/// specified element.
@@ -452,10 +461,10 @@ namespace ICSharpCode.XmlEditor
 			XmlElementPath elementPath = GetElementPath(element);
 			
 			List<string> elements = new List<string>();
-			XmlSchemaCompletionData schemaCompletionData = completionDataProvider.FindSchema(elementPath);
-			if (schemaCompletionData != null) {
-				ICompletionItem[] completionData = schemaCompletionData.GetChildElementCompletionData(elementPath);
-				foreach (ICompletionItem elementCompletionData in completionData) {
+			XmlSchemaCompletion schema = FindSchema(elementPath);
+			if (schema != null) {
+				XmlCompletionItemCollection completionItems = schema.GetChildElementCompletion(elementPath);
+				foreach (XmlCompletionItem elementCompletionData in completionItems) {
 					elements.Add(elementCompletionData.Text);
 				}
 			}

@@ -6,74 +6,58 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XmlEditor
 {
-	/// <summary>
-	///   A collection that stores <see cref='XmlCompletionData'/> objects.
-	/// </summary>
 	[Serializable()]
-	public class XmlCompletionItemCollection : Collection<XmlCompletionItem> {
-		
-		/// <summary>
-		///   Initializes a new instance of <see cref='XmlCompletionDataCollection'/>.
-		/// </summary>
+	public class XmlCompletionItemCollection : Collection<XmlCompletionItem>, ICompletionItemList
+	{
+		List<char> normalKeys = new List<char>();
+
 		public XmlCompletionItemCollection()
 		{
+			normalKeys.AddRange(new char[] { ' ', ':', '.', '_' });
 		}
 		
-		/// <summary>
-		///   Initializes a new instance of <see cref='XmlCompletionDataCollection'/> based on another <see cref='XmlCompletionDataCollection'/>.
-		/// </summary>
-		/// <param name='val'>
-		///   A <see cref='XmlCompletionDataCollection'/> from which the contents are copied
-		/// </param>
-		public XmlCompletionItemCollection(XmlCompletionItemCollection val)
+		public XmlCompletionItemCollection(XmlCompletionItemCollection items)
+			: this()
 		{
-			this.AddRange(val);
+			AddRange(items);
 		}
 		
-		/// <summary>
-		///   Initializes a new instance of <see cref='XmlCompletionDataCollection'/> containing any array of <see cref='XmlCompletionData'/> objects.
-		/// </summary>
-		/// <param name='val'>
-		///       A array of <see cref='XmlCompletionData'/> objects with which to intialize the collection
-		/// </param>
-		public XmlCompletionItemCollection(XmlCompletionItem[] val)
+		public XmlCompletionItemCollection(XmlCompletionItem[] items)
+			: this()
 		{
-			this.AddRange(val);
+			AddRange(items);
 		}
 		
-		/// <summary>
-		///   Copies the elements of an array to the end of the <see cref='XmlCompletionDataCollection'/>.
-		/// </summary>
-		/// <param name='val'>
-		///    An array of type <see cref='XmlCompletionData'/> containing the objects to add to the collection.
-		/// </param>
-		/// <seealso cref='XmlCompletionDataCollection.Add'/>
-		public void AddRange(XmlCompletionItem[] val)
+		public bool HasItems {
+			get { return Count > 0; }
+		}
+		
+		public void Sort()
 		{
-			for (int i = 0; i < val.Length; i++) {
-				if (!Contains(val[i].Text)) {
-					this.Add(val[i]);
+			List<XmlCompletionItem> items = base.Items as List<XmlCompletionItem>;
+			items.Sort();
+		}
+		
+		public void AddRange(XmlCompletionItem[] items)
+		{
+			for (int i = 0; i < items.Length; i++) {
+				if (!Contains(items[i].Text)) {
+					Add(items[i]);
 				}
 			}
 		}
 		
-		/// <summary>
-		///   Adds the contents of another <see cref='XmlCompletionDataCollection'/> to the end of the collection.
-		/// </summary>
-		/// <param name='val'>
-		///    A <see cref='XmlCompletionDataCollection'/> containing the objects to add to the collection.
-		/// </param>
-		/// <seealso cref='XmlCompletionDataCollection.Add'/>
-		public void AddRange(XmlCompletionItemCollection val)
+		public void AddRange(XmlCompletionItemCollection item)
 		{
-			for (int i = 0; i < val.Count; i++) {
-				if (!Contains(val[i].Text)) {
-					this.Add(val[i]);
+			for (int i = 0; i < item.Count; i++) {
+				if (!Contains(item[i].Text)) {
+					Add(item[i]);
 				}
 			}
 		}
@@ -92,11 +76,74 @@ namespace ICSharpCode.XmlEditor
 			return false;
 		}
 		
-		public ICompletionItem[] ToArray()
+		/// <summary>
+		/// Gets a count of the number of occurrences of a particular name
+		/// in the completion data.
+		/// </summary>
+		public int GetOccurrences(string name)
+		{
+			int count = 0;
+			
+			foreach (XmlCompletionItem item in this) {
+				if (item.Text == name) {
+					++count;
+				}
+			}
+			
+			return count;
+		}
+		
+		/// <summary>
+		/// Checks whether the completion item specified by name has
+		/// the correct description.
+		/// </summary>
+		public bool ContainsDescription(string name, string description)
+		{
+			foreach (XmlCompletionItem item in this) {
+				if (item.Text == name) {
+					if (item.Description == description) {
+						return true;
+					}
+				}
+			}				
+			return false;
+		}
+		
+		public XmlCompletionItem[] ToArray()
 		{
 			XmlCompletionItem[] data = new XmlCompletionItem[Count];
 			CopyTo(data, 0);
 			return data;
+		}
+		
+		public CompletionItemListKeyResult ProcessInput(char key)
+		{
+			if (char.IsLetterOrDigit(key)) {
+				return CompletionItemListKeyResult.NormalKey;
+			} else if (normalKeys.Contains(key)) {
+				return CompletionItemListKeyResult.NormalKey;
+			}
+			return CompletionItemListKeyResult.InsertionKey;
+		}
+		
+		IEnumerable<ICompletionItem> ICompletionItemList.Items {
+			get { return this; }
+		}
+		
+		public ICompletionItem SuggestedItem {
+			get { 
+				if (HasItems) {
+					return this[0];
+				}
+				return null;
+			}
+		}
+		
+		public int PreselectionLength { get; set; }
+		
+		public void Complete(CompletionContext context, ICompletionItem item)
+		{
+			item.Complete(context);
 		}
 	}
 }

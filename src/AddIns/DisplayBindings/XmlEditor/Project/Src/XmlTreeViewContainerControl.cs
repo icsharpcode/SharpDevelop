@@ -77,18 +77,14 @@ namespace ICSharpCode.XmlEditor
 		/// selected xml element.
 		/// </summary>
 		public PropertyGrid AttributesGrid {
-			get {
-				return attributesGrid;
-			}
+			get { return attributesGrid; }
 		}
 		
 		/// <summary>
 		/// Gets or sets whether the xml document needs saving.
 		/// </summary>
 		public bool IsDirty {
-			get {
-				return dirty;
-			}
+			get { return dirty; }
 			set {
 				bool previousDirty = dirty;
 				dirty = value;
@@ -100,12 +96,8 @@ namespace ICSharpCode.XmlEditor
 		/// Gets or sets the error message to display.
 		/// </summary>
 		public string ErrorMessage {
-			get {
-				return errorMessageTextBox.Text;
-			}
-			set {
-				errorMessageTextBox.Text = value;
-			}
+			get { return errorMessageTextBox.Text; }
+			set { errorMessageTextBox.Text = value; }
 		}
 		
 		/// <summary>
@@ -113,9 +105,7 @@ namespace ICSharpCode.XmlEditor
 		/// error message text box replaces the property grid.
 		/// </summary>
 		public bool IsErrorMessageTextBoxVisible {
-			get {
-				return errorMessageTextBoxVisible;
-			}
+			get { return errorMessageTextBoxVisible; }
 			set {
 				errorMessageTextBoxVisible = value;
 				if (value) {
@@ -134,9 +124,7 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the XmlTreeView in the container.
 		/// </summary>
 		public XmlTreeViewControl TreeView {
-			get {
-				return xmlElementTreeView;
-			}
+			get { return xmlElementTreeView; }
 		}
 		
 		public void ShowXmlIsNotWellFormedMessage(XmlException ex)
@@ -150,36 +138,32 @@ namespace ICSharpCode.XmlEditor
 			ErrorMessage = message;
 			IsErrorMessageTextBoxVisible = true;
 		}
-	
+		
 		/// <summary>
 		/// Displays the specified xml as a tree.
 		/// </summary>
-		public void LoadXml(string xml, XmlCompletionDataProvider provider)
+		public void LoadXml(string xml, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion defaultSchema)
 		{
 			textBox.Clear();
 			IsAttributesGridVisible = true;
 			ClearAttributes();
 			
-			editor = new XmlTreeEditor(this, provider);
+			editor = new XmlTreeEditor(this, schemas, defaultSchema);
 			editor.LoadXml(xml);
 			
 			// Expand document element node.
 			if (xmlElementTreeView.Nodes.Count > 0) {
 				xmlElementTreeView.Nodes[0].Expand();
-			}
-		}
+			}			
+		}	
 		
 		/// <summary>
 		/// Gets or sets the xml document to be shown in this
 		/// container control.
 		/// </summary>
 		public XmlDocument Document {
-			get {
-				return editor.Document;
-			}
-			set {
-				xmlElementTreeView.Document = value;
-			}
+			get { return editor.Document; }
+			set { xmlElementTreeView.Document = value; }
 		}
 		
 		/// <summary>
@@ -214,12 +198,8 @@ namespace ICSharpCode.XmlEditor
 		/// comment node currently on display.
 		/// </summary>
 		public string TextContent {
-			get {
-				return textBox.Text;
-			}
-			set {
-				textBox.Text = value;
-			}
+			get { return textBox.Text; }
+			set { textBox.Text = value; }
 		}
 		
 		/// <summary>
@@ -246,27 +226,21 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the element currently selected.
 		/// </summary>
 		public XmlElement SelectedElement {
-			get {
-				return xmlElementTreeView.SelectedElement;
-			}
+			get { return xmlElementTreeView.SelectedElement; }
 		}
 		
 		/// <summary>
 		/// Gets the text node currently selected.
 		/// </summary>
 		public XmlText SelectedTextNode {
-			get {
-				return xmlElementTreeView.SelectedTextNode;
-			}
+			get { return xmlElementTreeView.SelectedTextNode; }
 		}
 		
 		/// <summary>
 		/// Gets the comment node currently selected.
 		/// </summary>
 		public XmlComment SelectedComment {
-			get {
-				return xmlElementTreeView.SelectedComment;
-			}
+			get { return xmlElementTreeView.SelectedComment; }
 		}
 		
 		/// <summary>
@@ -551,36 +525,28 @@ namespace ICSharpCode.XmlEditor
 		/// Gets whether cutting is enabled.
 		/// </summary>
 		public bool EnableCut {
-			get {
-				return editor.IsCutEnabled;
-			}
+			get { return editor.IsCutEnabled; }
 		}
 		
 		/// <summary>
 		/// Gets whether copying is enabled.
 		/// </summary>
 		public bool EnableCopy {
-			get {
-				return editor.IsCopyEnabled;
-			}
+			get { return editor.IsCopyEnabled; }
 		}
 		
 		/// <summary>
 		/// Gets whether pasting is enabled.
 		/// </summary>
 		public bool EnablePaste {
-			get {
-				return editor.IsPasteEnabled;
-			}
+			get { return editor.IsPasteEnabled; }
 		}
 		
 		/// <summary>
 		/// Gets whether deleting is enabled.
 		/// </summary>
 		public bool EnableDelete {
-			get {
-				return editor.IsDeleteEnabled;
-			}
+			get { return editor.IsDeleteEnabled; }
 		}
 		
 		/// <summary>
@@ -588,9 +554,7 @@ namespace ICSharpCode.XmlEditor
 		/// always returns false.
 		/// </summary>
 		public bool EnableSelectAll {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>

@@ -18,9 +18,9 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AbstractElementTestFixture : SchemaTestFixtureBase
 	{		
-		ICompletionItem[] itemsElementChildren;
-		ICompletionItem[] fileElementAttributes;
-		ICompletionItem[] fileElementChildren;
+		XmlCompletionItemCollection itemsElementChildren;
+		XmlCompletionItemCollection fileElementAttributes;
+		XmlCompletionItemCollection fileElementChildren;
 		
 		public override void FixtureInit()
 		{
@@ -29,43 +29,43 @@ namespace XmlEditor.Tests.Schema
 			path.Elements.Add(new QualifiedName("project", "http://foo"));
 			path.Elements.Add(new QualifiedName("items", "http://foo"));
 			
-			itemsElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+			itemsElementChildren = SchemaCompletion.GetChildElementCompletion(path);
 			
 			path.Elements.Add(new QualifiedName("file", "http://foo"));
 			
-			fileElementAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
-			fileElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+			fileElementAttributes = SchemaCompletion.GetAttributeCompletion(path);
+			fileElementChildren = SchemaCompletion.GetChildElementCompletion(path);
 		}
 		
 		[Test]
 		public void ItemsElementHasTwoChildElements()
 		{
-			Assert.AreEqual(2, itemsElementChildren.Length, 
+			Assert.AreEqual(2, itemsElementChildren.Count, 
 			                "Should be 2 child elements.");
 		}
 		
 		[Test]
 		public void ReferenceElementIsChildOfItemsElement()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(itemsElementChildren, "reference"));
+			Assert.IsTrue(itemsElementChildren.Contains("reference"));
 		}
 		
 		[Test]
 		public void FileElementIsChildOfItemsElement()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(itemsElementChildren, "file"));
+			Assert.IsTrue(itemsElementChildren.Contains("file"));
 		}
 		
 		[Test]
 		public void FileElementHasAttributeNamedType()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(fileElementAttributes, "type"));
+			Assert.IsTrue(fileElementAttributes.Contains("type"));
 		}
 		
 		[Test]
 		public void FileElementHasTwoChildElements()
 		{
-			Assert.AreEqual(2, fileElementChildren.Length, "Should be 2 child elements.");
+			Assert.AreEqual(2, fileElementChildren.Count, "Should be 2 child elements.");
 		}
 		
 		protected override string GetSchema()
@@ -90,13 +90,13 @@ namespace XmlEditor.Tests.Schema
 					"        <xs:sequence minOccurs=\"0\" maxOccurs=\"unbounded\">\r\n" +
 					"            <xs:element ref=\"foo:item\"/>\r\n" +
 					"        </xs:sequence>\r\n" +
-					"        <xs:attribute name=\"name\" type=\"xs:string\" use=\"optional\"/>            \r\n" +
+					"        <xs:attribute name=\"name\" type=\"xs:string\" use=\"optional\"/>\r\n" +
 					"    </xs:complexType>\r\n" +
 					"\r\n" +
 					"    <xs:element name=\"item\" type=\"foo:itemType\" abstract=\"true\"/>\r\n" +
 					"\r\n" +
 					"<xs:complexType name=\"itemType\">\r\n" +
-					"        <xs:attribute name=\"name\" type=\"xs:string\" use=\"optional\"/>                        \r\n" +
+					"        <xs:attribute name=\"name\" type=\"xs:string\" use=\"optional\"/>\r\n" +
 					"    </xs:complexType>\r\n" +
 					"\r\n" +
 					"    <xs:element name=\"reference\" substitutionGroup=\"foo:item\">\r\n" +
@@ -106,7 +106,7 @@ namespace XmlEditor.Tests.Schema
 					"                    <xs:sequence minOccurs=\"0\" maxOccurs=\"unbounded\">\r\n" +
 					"                        <xs:choice>\r\n" +
 					"                            <xs:element name=\"name\"/>\r\n" +
-					"                            <xs:element name=\"location\"/>                             \r\n" +
+					"                            <xs:element name=\"location\"/>\r\n" +
 					"                        </xs:choice>\r\n" +
 					"                    </xs:sequence>\r\n" +
 					"                    <xs:attribute name=\"description\" type=\"xs:string\"/>\r\n" +

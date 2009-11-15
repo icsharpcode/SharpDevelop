@@ -20,15 +20,15 @@ namespace XmlEditor.Tests.Completion
 	{
 		protected MockTextEditor textEditor;
 		protected CodeCompletionKeyPressResult keyPressResult;
-		protected XmlSchemaCompletionDataCollection schemas;
-		protected XmlEditorOptions options;
+		protected XmlSchemaCompletionCollection schemas;
+		protected XmlSchemaFileAssociations associations;
 		
 		protected void InitBase()
 		{
-			schemas = new XmlSchemaCompletionDataCollection();
+			schemas = new XmlSchemaCompletionCollection();
 			AddSchemas();
 
-			options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
+			associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
 			
 			textEditor = new MockTextEditor();
 			textEditor.Document.Text = "<a xmlns></a>";
@@ -41,13 +41,13 @@ namespace XmlEditor.Tests.Completion
 		void AddSchemas()
 		{
 			string xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='c' />";
-			schemas.Add(new XmlSchemaCompletionData(new StringReader(xml)));
+			schemas.Add(new XmlSchemaCompletion(new StringReader(xml)));
 			
 			xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='b' />";
-			schemas.Add(new XmlSchemaCompletionData(new StringReader(xml)));
+			schemas.Add(new XmlSchemaCompletion(new StringReader(xml)));
 			
 			xml = "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='a' />";
-			schemas.Add(new XmlSchemaCompletionData(new StringReader(xml)));			
+			schemas.Add(new XmlSchemaCompletion(new StringReader(xml)));			
 		}		
 	}
 }

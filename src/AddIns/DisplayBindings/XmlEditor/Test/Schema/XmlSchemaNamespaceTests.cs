@@ -20,19 +20,19 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void IsXmlSchemaNamespace()
 		{
-			Assert.IsTrue(XmlSchemaManager.IsXmlSchemaNamespace("http://www.w3.org/2001/XMLSchema"));
+			Assert.IsTrue(RegisteredXmlSchemas.IsXmlSchemaNamespace("http://www.w3.org/2001/XMLSchema"));
 		}
 		
 		[Test]
 		public void IsNotXmlSchemaNamespace()
 		{
-			Assert.IsFalse(XmlSchemaManager.IsXmlSchemaNamespace("http://foo.com"));
+			Assert.IsFalse(RegisteredXmlSchemas.IsXmlSchemaNamespace("http://foo.com"));
 		}
 		
 		[Test]
 		public void EmptyString()
 		{
-			Assert.IsFalse(XmlSchemaManager.IsXmlSchemaNamespace(String.Empty));
+			Assert.IsFalse(RegisteredXmlSchemas.IsXmlSchemaNamespace(String.Empty));
 		}
 	}
 }

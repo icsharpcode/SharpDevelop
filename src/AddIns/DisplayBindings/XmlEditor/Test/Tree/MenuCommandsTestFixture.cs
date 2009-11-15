@@ -35,12 +35,10 @@ namespace XmlEditor.Tests.Tree
 		{
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 							
-			XmlTextReader reader = ResourceManager.GetXhtmlStrictSchema();
-			XmlSchemaCompletionData xhtmlSchema = new XmlSchemaCompletionData(reader);
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, xhtmlSchema, String.Empty);
+			XmlSchemaCompletion xhtmlSchema = new XmlSchemaCompletion(ResourceManager.ReadXhtmlStrictSchema());
+			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
 			
-			treeViewContainer.LoadXml("<html><body></body></html>", provider);
+			treeViewContainer.LoadXml("<html><body></body></html>", schemas, null);
 			doc = treeViewContainer.Document;
 			treeView = treeViewContainer.TreeView;
 			

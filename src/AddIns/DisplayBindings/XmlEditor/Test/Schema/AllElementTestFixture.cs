@@ -19,38 +19,38 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AllElementTestFixture : SchemaTestFixtureBase
 	{		
-		ICompletionItem[] personElementChildren;
-		ICompletionItem[] firstNameAttributes;
-		ICompletionItem[] firstNameElementChildren;
+		XmlCompletionItemCollection personElementChildren;
+		XmlCompletionItemCollection firstNameAttributes;
+		XmlCompletionItemCollection firstNameElementChildren;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("person", "http://foo"));
-			personElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+			personElementChildren = SchemaCompletion.GetChildElementCompletion(path);
 			
 			path.Elements.Add(new QualifiedName("firstname", "http://foo"));
-			firstNameAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
-			firstNameElementChildren = SchemaCompletionData.GetChildElementCompletionData(path);
+			firstNameAttributes = SchemaCompletion.GetAttributeCompletion(path);
+			firstNameElementChildren = SchemaCompletion.GetChildElementCompletion(path);
 		}
 		
 		[Test]
 		public void PersonElementHasTwoChildElements()
 		{
-			Assert.AreEqual(2, personElementChildren.Length, 
+			Assert.AreEqual(2, personElementChildren.Count, 
 			                "Should be 2 child elements.");
 		}
 		
 		[Test]
 		public void FirstNameElementHasAttribute()
 		{
-			Assert.AreEqual(1, firstNameAttributes.Length, "Should have one attribute.");
+			Assert.AreEqual(1, firstNameAttributes.Count, "Should have one attribute.");
 		}
 		
 		[Test]
 		public void FirstNameElementHasChildren()
 		{
-			Assert.AreEqual(2, firstNameElementChildren.Length, 
+			Assert.AreEqual(2, firstNameElementChildren.Count, 
 			                "Should be 2 child elements.");
 		}
 		

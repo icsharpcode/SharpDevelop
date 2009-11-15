@@ -78,10 +78,16 @@ namespace XmlEditor.Tests.Paths
 		}
 		
 		[Test]
-		public void PathToString()
+		public void PathToStringIsEmpty()
 		{
 			string expectedToString = String.Empty;
 			Assert.AreEqual(expectedToString, path.ToString());
+		}
+		
+		[Test]
+		public void RootNamespaceIsEmptyString()
+		{
+			Assert.AreEqual(String.Empty, path.GetRootNamespace());
 		}
 	}
 }

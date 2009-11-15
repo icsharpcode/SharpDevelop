@@ -26,7 +26,7 @@ namespace XmlEditor.Tests.Completion
 			
 			textEditor.ShowCompletionWindowReturnsNull = true;
 			
-			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(options);
+			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(associations);
 			Assert.DoesNotThrow(delegate { keyPressResult = completionBinding.HandleKeyPress(textEditor, '='); });
 		}
 	}

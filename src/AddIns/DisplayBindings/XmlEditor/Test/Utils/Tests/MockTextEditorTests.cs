@@ -30,8 +30,8 @@ namespace XmlEditor.Tests.Utils.Tests
 		[Test]
 		public void CanCheckCompletionWindowFromShowCompletionHasWidthPropertyModified()
 		{
-			XmlCompletionItemList list = new XmlCompletionItemList();
-			list.Items.Add(new XmlCompletionItem("a"));
+			XmlCompletionItemCollection list = new XmlCompletionItemCollection();
+			list.Add(new XmlCompletionItem("a"));
 			ICompletionListWindow window = editor.ShowCompletionWindow(list);
 			window.Width = double.NaN;
 			
@@ -41,8 +41,8 @@ namespace XmlEditor.Tests.Utils.Tests
 		[Test]
 		public void CanGetCompletionItemsUsedAsShowCompletionMethodParameters()
 		{
-			XmlCompletionItemList list = new XmlCompletionItemList();
-			list.Items.Add(new XmlCompletionItem("a"));
+			XmlCompletionItemCollection list = new XmlCompletionItemCollection();
+			list.Add(new XmlCompletionItem("a"));
 			editor.ShowCompletionWindow(list);
 
 			Assert.AreSame(list, editor.CompletionItemsDisplayed);
@@ -55,8 +55,8 @@ namespace XmlEditor.Tests.Utils.Tests
 			List<XmlCompletionItem> expectedArray = new List<XmlCompletionItem>();
 			expectedArray.Add(item);
 			
-			XmlCompletionItemList list = new XmlCompletionItemList();
-			list.Items.Add(item);
+			XmlCompletionItemCollection list = new XmlCompletionItemCollection();
+			list.Add(item);
 			editor.ShowCompletionWindow(list);
 
 			Assert.AreEqual(expectedArray.ToArray(), editor.CompletionItemsDisplayedToArray());
@@ -92,8 +92,8 @@ namespace XmlEditor.Tests.Utils.Tests
 		[Test]
 		public void TextEditorShowCompletionListReturnsNullWhenConfigured()
 		{
-			XmlCompletionItemList list = new XmlCompletionItemList();
-			list.Items.Add(new XmlCompletionItem("a"));
+			XmlCompletionItemCollection list = new XmlCompletionItemCollection();
+			list.Add(new XmlCompletionItem("a"));
 			
 			editor.ShowCompletionWindowReturnsNull = true;
 			

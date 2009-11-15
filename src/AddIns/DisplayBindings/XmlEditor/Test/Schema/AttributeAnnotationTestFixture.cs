@@ -19,18 +19,18 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AttributeAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] fooAttributeCompletionData;
-		ICompletionItem[] barAttributeCompletionData;
+		XmlCompletionItemCollection fooAttributeCompletionData;
+		XmlCompletionItemCollection barAttributeCompletionData;
 		
 		public override void FixtureInit()
 		{			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			fooAttributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
+			fooAttributeCompletionData = SchemaCompletion.GetAttributeCompletion(path);
 
 			path.Elements.Add(new QualifiedName("bar", "http://foo.com"));
-			barAttributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
+			barAttributeCompletionData = SchemaCompletion.GetAttributeCompletion(path);
 		}
 				
 		[Test]

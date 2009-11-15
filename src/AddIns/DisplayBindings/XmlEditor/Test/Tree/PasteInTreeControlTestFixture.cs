@@ -37,10 +37,9 @@ namespace XmlEditor.Tests.Tree
 		[SetUp]
 		public void SetUp()
 		{
-			XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(new XmlSchemaCompletionDataCollection(), null, String.Empty);
 			treeViewContainerControl = new XmlTreeViewContainerControl();
 			treeView = treeViewContainerControl.TreeView;
-			treeViewContainerControl.LoadXml(GetXml(), completionDataProvider);
+			treeViewContainerControl.LoadXml(GetXml(), new XmlSchemaCompletionCollection(), null);
 			doc = treeViewContainerControl.Document;
 			
 			clipboardHandler = treeViewContainerControl as IClipboardHandler;

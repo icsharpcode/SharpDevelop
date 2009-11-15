@@ -21,31 +21,31 @@ namespace XmlEditor.Tests.Editor
 	{
 		RegisteredXmlSchemasEditor schemasEditor;
 		MockXmlSchemaCompletionDataFactory factory;
-		XmlSchemaCompletionData fooSchemaData;
-		XmlSchemaCompletionData barSchemaData;
-		XmlSchemaCompletionData xmlSchemaData;
-		XmlEditorOptions options;
-		XmlSchemaCompletionDataCollection schemas;
+		XmlSchemaCompletion fooSchemaData;
+		XmlSchemaCompletion barSchemaData;
+		XmlSchemaCompletion xmlSchemaData;
+		XmlSchemaFileAssociations associations;
+		XmlSchemaCompletionCollection schemas;
 		Properties properties;
 		MockXmlSchemasPanel panel;
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		
 		[SetUp]
 		public void Init()
 		{
 			LoadBarSchema();
 			LoadFooSchema();
-			fooSchemaData.ReadOnly = true;
+			fooSchemaData.IsReadOnly = true;
 			LoadXmlSchema();
 			
-			schemas = new XmlSchemaCompletionDataCollection();
+			schemas = new XmlSchemaCompletionCollection();
 			schemas.Add(fooSchemaData);
 			schemas.Add(barSchemaData);
 			schemas.Add(xmlSchemaData);
 			
 			factory = new MockXmlSchemaCompletionDataFactory();
-			schemaManager = new XmlSchemaManager(new string[0], String.Empty, new MockFileSystem(), factory);
-			schemaManager.Schemas.AddRange(schemas);
+			registeredXmlSchemas = new RegisteredXmlSchemas(new string[0], String.Empty, new MockFileSystem(), factory);
+			registeredXmlSchemas.Schemas.AddRange(schemas);
 
 			string[] xmlFileExtensions = new string[] { ".foo", ".bar", ".xml" };
 			
@@ -54,11 +54,11 @@ namespace XmlEditor.Tests.Editor
 			defaultSchemaFileAssociations.Add(new XmlSchemaFileAssociation(".bar", "http://bar", "b"));
 			
 			properties = new Properties();
-			options = new XmlEditorOptions(properties, defaultSchemaFileAssociations, new XmlSchemaCompletionDataCollection());
-			options.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".xml", "http://xml"));
+			associations = new XmlSchemaFileAssociations(properties, defaultSchemaFileAssociations, new XmlSchemaCompletionCollection());
+			associations.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".xml", "http://xml"));
 			
 			panel = new MockXmlSchemasPanel();
-			schemasEditor = new RegisteredXmlSchemasEditor(schemaManager, xmlFileExtensions, options, panel, factory);
+			schemasEditor = new RegisteredXmlSchemasEditor(registeredXmlSchemas, xmlFileExtensions, associations, panel, factory);
 			schemasEditor.LoadOptions();	
 		}
 		
@@ -80,9 +80,9 @@ namespace XmlEditor.Tests.Editor
 			xmlSchemaData = LoadSchema(schema);
 		}		
 		
-		XmlSchemaCompletionData LoadSchema(string xml)
+		XmlSchemaCompletion LoadSchema(string xml)
 		{
-			return new XmlSchemaCompletionData(new StringReader(xml));
+			return new XmlSchemaCompletion(new StringReader(xml));
 		}
 		
 		[Test]
@@ -182,7 +182,7 @@ namespace XmlEditor.Tests.Editor
 			schemasEditor.SaveOptions();
 			XmlSchemaFileAssociation expectedSchemaAssociation = new XmlSchemaFileAssociation(".bar", "http://bar", "modified-prefix");
 			
-			Assert.AreEqual(expectedSchemaAssociation, options.GetSchemaFileAssociation(".bar"));
+			Assert.AreEqual(expectedSchemaAssociation, associations.GetSchemaFileAssociation(".bar"));
 		}
 		
 		[Test]

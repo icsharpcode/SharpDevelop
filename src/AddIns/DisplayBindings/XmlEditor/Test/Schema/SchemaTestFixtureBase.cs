@@ -15,7 +15,7 @@ namespace XmlEditor.Tests.Schema
 {
 	public abstract class SchemaTestFixtureBase
 	{		
-		XmlSchemaCompletionData schemaCompletionData;
+		XmlSchemaCompletion schemaCompletion;
 
 		/// <summary>
 		/// Gets the <see cref="XmlSchemaCompletionData"/> object generated
@@ -23,10 +23,8 @@ namespace XmlEditor.Tests.Schema
 		/// </summary>
 		/// <remarks>This object will be null until the <see cref="FixtureInitBase"/>
 		/// has been run.</remarks>
-		public XmlSchemaCompletionData SchemaCompletionData {
-			get {
-				return schemaCompletionData;
-			}
+		public XmlSchemaCompletion SchemaCompletion {
+			get { return schemaCompletion; }
 		}
 		
 		/// <summary>
@@ -38,7 +36,7 @@ namespace XmlEditor.Tests.Schema
 		[TestFixtureSetUp]
 		public void FixtureInitBase()
 		{
-			schemaCompletionData = CreateSchemaCompletionDataObject();
+			schemaCompletion = CreateSchemaCompletionObject();
 			FixtureInit();
 		}
 		
@@ -49,65 +47,10 @@ namespace XmlEditor.Tests.Schema
 		public virtual void FixtureInit()
 		{
 		}
-	
-		/// <summary>
-		/// Checks whether the specified name exists in the completion data.
-		/// </summary>
-		public static bool Contains(ICompletionItem[] items, string name)
-		{
-			bool Contains = false;
-			
-			foreach (ICompletionItem data in items) {
-				if (data.Text == name) {
-					Contains = true;
-					break;
-				}
-			}
-				
-			return Contains;
-		}
-		
-		/// <summary>
-		/// Checks whether the completion data specified by name has
-		/// the correct description.
-		/// </summary>
-		public static bool ContainsDescription(ICompletionItem[] items, string name, string description)
-		{
-			bool Contains = false;
-			
-			foreach (ICompletionItem data in items) {
-				if (data.Text == name) {
-					if (data.Description == description) {
-						Contains = true;
-						break;						
-					}
-				}
-			}
-				
-			return Contains;
-		}		
-		
-		/// <summary>
-		/// Gets a count of the number of occurrences of a particular name
-		/// in the completion data.
-		/// </summary>
-		public static int GetItemCount(ICompletionItem[] items, string name)
-		{
-			int count = 0;
-			
-			foreach (ICompletionItem data in items) {
-				if (data.Text == name) {
-					++count;
-				}
-			}
-			
-			return count;
-		}
 		
 		/// <summary>
 		/// Returns the schema that will be used in this test fixture.
 		/// </summary>
-		/// <returns></returns>
 		protected virtual string GetSchema()
 		{
 			return String.Empty;
@@ -117,10 +60,10 @@ namespace XmlEditor.Tests.Schema
 		/// Creates an <see cref="XmlSchemaCompletionData"/> object that 
 		/// will be used in the test fixture.
 		/// </summary>
-		protected virtual XmlSchemaCompletionData CreateSchemaCompletionDataObject()
+		protected virtual XmlSchemaCompletion CreateSchemaCompletionObject()
 		{
 			StringReader reader = new StringReader(GetSchema());
-			return new XmlSchemaCompletionData(reader);
+			return new XmlSchemaCompletion(reader);
 		}
 	}
 }

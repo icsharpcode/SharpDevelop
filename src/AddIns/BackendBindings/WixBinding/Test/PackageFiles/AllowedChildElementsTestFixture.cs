@@ -38,7 +38,7 @@ namespace WixBinding.Tests.PackageFiles
 			editor.SelectedElementChanged();
 			childElementsAllowedWhenDirectoryElementSelected = view.AllowedChildElements;
 			
-			WixSchemaCompletionData schema = new WixSchemaCompletionData();
+			WixSchemaCompletion schema = new WixSchemaCompletion();
 			expectedDirectoryChildElementNames = schema.GetChildElements(directoryElement.Name);
 		}
 		

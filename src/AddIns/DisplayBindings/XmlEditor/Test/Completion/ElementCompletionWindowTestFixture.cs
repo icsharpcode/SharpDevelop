@@ -21,16 +21,16 @@ namespace XmlEditor.Tests.Completion
 	{
 		MockTextEditor textEditor;
 		CodeCompletionKeyPressResult keyPressResult;
-		XmlSchemaCompletionDataCollection schemas;
+		XmlSchemaCompletionCollection schemas;
 		
 		[SetUp]
 		public void Init()
 		{
-			schemas = new XmlSchemaCompletionDataCollection();
-			schemas.Add(new XmlSchemaCompletionData(ResourceManager.GetXhtmlStrictSchema()));
+			schemas = new XmlSchemaCompletionCollection();
+			schemas.Add(new XmlSchemaCompletion(ResourceManager.ReadXhtmlStrictSchema()));
 
-			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
-			options.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".xml", "http://www.w3.org/1999/xhtml"));
+			XmlSchemaFileAssociations associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
+			associations.SetSchemaFileAssociation(new XmlSchemaFileAssociation(".xml", "http://www.w3.org/1999/xhtml"));
 			
 			textEditor = new MockTextEditor();
 			textEditor.Document.Text = String.Empty;
@@ -38,7 +38,7 @@ namespace XmlEditor.Tests.Completion
 			
 			textEditor.Caret.Offset = 0;
 			
-			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(options);
+			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(associations);
 			keyPressResult = completionBinding.HandleKeyPress(textEditor, '<');			
 		}
 		

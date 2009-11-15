@@ -22,42 +22,41 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class NamespaceCompletionTestFixture
 	{
-		ICompletionItemList namespaceCompletionData;
+		XmlCompletionItemCollection namespaceCompletionItems;
 		string firstNamespace = "http://foo.com/foo.xsd";
 		string secondNamespace = "http://bar.com/bar.xsd";
 		
 		[TestFixtureSetUp]
 		public void FixtureInit()
 		{
-			XmlSchemaCompletionDataCollection items = new XmlSchemaCompletionDataCollection();
+			XmlSchemaCompletionCollection items = new XmlSchemaCompletionCollection();
 			
 			StringReader reader = new StringReader(GetSchema(firstNamespace));
-			XmlSchemaCompletionData schema = new XmlSchemaCompletionData(reader);
+			XmlSchemaCompletion schema = new XmlSchemaCompletion(reader);
 			items.Add(schema);
 			
 			reader = new StringReader(GetSchema(secondNamespace));
-			schema = new XmlSchemaCompletionData(reader);
+			schema = new XmlSchemaCompletion(reader);
 			items.Add(schema);
-			namespaceCompletionData = items.GetNamespaceCompletionData();
+			namespaceCompletionItems = items.GetNamespaceCompletion();
 		}
 		
 		[Test]
-		public void NamespaceCount()
+		public void ShouldHaveTwoNamespaceCompletionItems()
 		{
-			Assert.AreEqual(2, namespaceCompletionData.Items.ToArray().Length,
-			                "Should be 2 namespaces.");
+			Assert.AreEqual(2, namespaceCompletionItems.ToArray().Length);
 		}
 		
 		[Test]
-		public void ContainsFirstNamespace()
+		public void NamespaceCompletionItemsCollectionContainsFirstNamespace()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(namespaceCompletionData.Items.ToArray(), firstNamespace));
+			Assert.IsTrue(namespaceCompletionItems.Contains(firstNamespace));
 		}
 		
 		[Test]
-		public void ContainsSecondNamespace()
+		public void NamespaceCompletionItemsCollectionContainsSecondNamespace()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(namespaceCompletionData.Items.ToArray(), secondNamespace));
+			Assert.IsTrue(namespaceCompletionItems.Contains(secondNamespace));
 		}		
 		
 		string GetSchema(string namespaceURI)

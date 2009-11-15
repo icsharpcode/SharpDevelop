@@ -75,6 +75,23 @@ namespace ICSharpCode.XmlEditor
 		{
 			return elements.ToString();
 		}
+		
+		public string GetRootNamespace() 
+		{
+			return elements.GetRootNamespace();
+		}
+		
+		/// <summary>
+		/// Only updates those names without a namespace.
+		/// </summary>
+		public void SetNamespaceForUnqualifiedNames(string namespaceUri)
+		{
+			foreach (QualifiedName name in elements) {
+				if (!name.HasNamespace) {
+					name.Namespace = namespaceUri;
+				}
+			}
+		}
 				
 		int LastIndexNotMatchingNamespace(string namespaceUri)
 		{

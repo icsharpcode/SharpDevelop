@@ -26,22 +26,16 @@ namespace XmlEditor.Tests.Completion
 	[TestFixture]
 	public class FirstCompletionListItemSelectedTestFixture
 	{
-		XmlCompletionDataProvider provider;
-		ICompletionItem selectedCompletionData;
-		ICompletionItemList completionDataItems;
-		XmlSchemaCompletionData defaultSchema;
-		IList<ICompletionItem> completionList;
+		ICompletionItem selectedCompletionItem;
+		XmlCompletionItemCollection completionItems;
+		XmlSchemaCompletion defaultSchema;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			defaultSchema = new XmlSchemaCompletionData(ResourceManager.GetXhtmlStrictSchema());
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			schemas.Add(defaultSchema);
-			provider = new XmlCompletionDataProvider(schemas, defaultSchema, String.Empty);
-			completionDataItems = provider.GenerateCompletionData(String.Empty, '<');
-			selectedCompletionData = completionDataItems.SuggestedItem;
-			completionList = (IList<ICompletionItem>)completionDataItems.Items;
+			defaultSchema = new XmlSchemaCompletion(ResourceManager.ReadXhtmlStrictSchema());
+			completionItems = new XmlCompletionItemCollection(defaultSchema.GetRootElementCompletion());
+			selectedCompletionItem = completionItems.SuggestedItem;
 		}
 		
 		/// <summary>
@@ -51,13 +45,13 @@ namespace XmlEditor.Tests.Completion
 		[Test]
 		public void GeneratedCompletionItemsHasMoreThanOneItem()
 		{
-			Assert.IsTrue(completionList.Count > 1);
+			Assert.IsTrue(completionItems.Count > 1);
 		}
 		
 		[Test]
 		public void SelectedCompletionItemMatchesFirstItemInCompletionList()
 		{
-			Assert.AreSame(completionList[0], selectedCompletionData);
+			Assert.AreSame(completionItems[0], selectedCompletionItem);
 		}
 	}
 }

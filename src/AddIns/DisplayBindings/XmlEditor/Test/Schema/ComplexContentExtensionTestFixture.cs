@@ -18,16 +18,16 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ComplexContentExtensionTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] bodyChildElements;
-		ICompletionItem[] bodyAttributes;
+		XmlCompletionItemCollection bodyChildElements;
+		XmlCompletionItemCollection bodyAttributes;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("body", "http://www.w3schools.com")); 
 			
-			bodyChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
-			bodyAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			bodyChildElements = SchemaCompletion.GetChildElementCompletion(path);
+			bodyAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		}	
 		
 		[Test]
@@ -37,7 +37,7 @@ namespace XmlEditor.Tests.Schema
 			path.Elements.Add(new QualifiedName("body", "http://www.w3schools.com")); 
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com")); 
 
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length,
+			Assert.AreEqual(0, SchemaCompletion.GetChildElementCompletion(path).Count,
 			                "Should be no child elements.");
 		}
 		
@@ -48,42 +48,42 @@ namespace XmlEditor.Tests.Schema
 			path.Elements.Add(new QualifiedName("body", "http://www.w3schools.com")); 
 			path.Elements.Add(new QualifiedName("text", "http://www.w3schools.com")); 
 
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length,
+			Assert.AreEqual(0, SchemaCompletion.GetChildElementCompletion(path).Count,
 			                "Should be no child elements.");
 		}		
 		
 		[Test]
 		public void BodyHasTwoChildElements()
 		{
-			Assert.AreEqual(2, bodyChildElements.Length, 
+			Assert.AreEqual(2, bodyChildElements.Count, 
 			                "Should be two child elements.");
 		}
 		
 		[Test]
 		public void BodyChildElementIsText()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(bodyChildElements, "text"), 
+			Assert.IsTrue(bodyChildElements.Contains("text"), 
 			              "Should have a child element called text.");
 		}
 		
 		[Test]
 		public void BodyChildElementIsTitle()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(bodyChildElements, "title"), 
+			Assert.IsTrue(bodyChildElements.Contains("title"), 
 			              "Should have a child element called title.");
 		}		
 		
 		[Test]
 		public void BodyAttributeCount()
 		{
-			Assert.AreEqual(1, bodyAttributes.Length, 
+			Assert.AreEqual(1, bodyAttributes.Count, 
 			                "Should be one attribute.");
 		}
 		
 		[Test]
 		public void BodyAttributeName()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(bodyAttributes, "id"), "Attribute id not found.");
+			Assert.IsTrue(bodyAttributes.Contains("id"), "Attribute id not found.");
 		}
 		
 		protected override string GetSchema()

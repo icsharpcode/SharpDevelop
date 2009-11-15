@@ -23,7 +23,7 @@ namespace XmlEditor.Tests.Editor
 		RegisteredXmlSchemasEditor schemasEditor;
 		MockXmlSchemaCompletionDataFactory factory;
 		string newXmlSchemaFileName;
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		MockFileSystem fileSystem;
 		
 		[SetUp]
@@ -31,12 +31,12 @@ namespace XmlEditor.Tests.Editor
 		{
 			fileSystem = new MockFileSystem();
 			factory = new MockXmlSchemaCompletionDataFactory();
-			schemaManager = new XmlSchemaManager(new string[0], @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			XmlEditorOptions options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(null), schemas);
+			registeredXmlSchemas = new RegisteredXmlSchemas(new string[0], @"c:\users\user\sharpdevelop\schemas", fileSystem, factory);
+			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
+			XmlSchemaFileAssociations associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(null), schemas);
 			panel = new MockXmlSchemasPanel();
 			
-			schemasEditor = new RegisteredXmlSchemasEditor(schemaManager, new string[0], options, panel, factory);
+			schemasEditor = new RegisteredXmlSchemasEditor(registeredXmlSchemas, new string[0], associations, panel, factory);
 			schemasEditor.LoadOptions();
 			
 			newXmlSchemaFileName = @"c:\projects\a.xsd";
@@ -88,7 +88,7 @@ namespace XmlEditor.Tests.Editor
 		[Test]
 		public void BaseUriUsedWhenCreatingNewXmlSchemaObject()
 		{
-			string baseUri = XmlSchemaCompletionData.GetUri(newXmlSchemaFileName);
+			string baseUri = XmlSchemaCompletion.GetUri(newXmlSchemaFileName);
 			Assert.AreEqual(baseUri, factory.GetBaseUri(newXmlSchemaFileName));
 		}
 		
@@ -99,10 +99,10 @@ namespace XmlEditor.Tests.Editor
 		}
 		
 		[Test]
-		public void SchemaAddedToSchemaManagerAfterSchemaEditorOptionsSaved()
+		public void SchemaAddedToRegisteredXmlSchemasAfterSchemaEditorOptionsSaved()
 		{
 			schemasEditor.SaveOptions();
-			Assert.IsNotNull(schemaManager.Schemas["http://test"]);
+			Assert.IsNotNull(registeredXmlSchemas.Schemas["http://test"]);
 		}
 		
 		[Test]
@@ -125,13 +125,13 @@ namespace XmlEditor.Tests.Editor
 		}
 		
 		[Test]
-		public void RemoveSchemaAddedAndSaveChangesShouldNotLeaveSchemaInSchemaManager()
+		public void RemoveSchemaAddedAndSaveChangesShouldNotLeaveSchemaInRegisteredXmlSchemas()
 		{
 			panel.SelectedXmlSchemaListItemIndex = 0;
 			schemasEditor.RemoveSelectedSchema();
 			schemasEditor.SaveOptions();
 			
-			Assert.AreEqual(0, schemaManager.Schemas.Count);
+			Assert.AreEqual(0, registeredXmlSchemas.Schemas.Count);
 		}
 		
 		[Test]

@@ -24,7 +24,7 @@ namespace ICSharpCode.WixBinding
 		IWixDocumentWriter documentWriter;
 		IDirectoryReader directoryReader;
 		static WixDocument document;
-		WixSchemaCompletionData wixSchemaCompletionData;
+		WixSchemaCompletion wixSchema = new WixSchemaCompletion();
 		bool usingRootDirectoryRef;
 		ExcludedNames excludedNames = new ExcludedNames();
 		
@@ -94,9 +94,7 @@ namespace ICSharpCode.WixBinding
 		/// Gets the Wix document containing the package files information.
 		/// </summary>
 		public WixDocument Document {
-			get {
-				return document;
-			}
+			get { return document; }
 		}
 		
 		/// <summary>
@@ -119,8 +117,8 @@ namespace ICSharpCode.WixBinding
 			view.AllowedChildElements.Clear();
 			view.Attributes.Clear();
 			if (element != null) {
-				view.Attributes.AddRange(WixSchemaCompletionData.GetAttributes(element));
-				view.AllowedChildElements.AddRange(WixSchemaCompletionData.GetChildElements(element.Name));
+				view.Attributes.AddRange(wixSchema.GetAttributes(element));
+				view.AllowedChildElements.AddRange(wixSchema.GetChildElements(element.Name));
 			} else {
 				view.AllowedChildElements.Add("Directory");
 			}
@@ -210,9 +208,7 @@ namespace ICSharpCode.WixBinding
 		/// adding a directory to the package.
 		/// </summary>
 		public ExcludedNames ExcludedItems {
-			get {
-				return excludedNames;
-			}
+			get { return excludedNames; }
 		}
 		
 		/// <summary>
@@ -337,15 +333,6 @@ namespace ICSharpCode.WixBinding
 					return document.RootDirectoryRef;
 				}
 				return document.RootDirectory;
-			}
-		}
-
-		WixSchemaCompletionData WixSchemaCompletionData {
-			get {
-				if (wixSchemaCompletionData == null) {
-					wixSchemaCompletionData = new WixSchemaCompletionData();
-				}
-				return wixSchemaCompletionData;
 			}
 		}
 		

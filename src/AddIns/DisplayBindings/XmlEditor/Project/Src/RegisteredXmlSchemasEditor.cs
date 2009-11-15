@@ -16,25 +16,25 @@ namespace ICSharpCode.XmlEditor
 {
 	public class RegisteredXmlSchemasEditor
 	{
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		IXmlSchemasPanel schemasPanel;
 		ICollection<string> xmlFileExtensions;
-		XmlEditorOptions xmlEditorOptions;
+		XmlSchemaFileAssociations associations;
 		IXmlSchemaCompletionDataFactory factory;
 		bool ignoreNamespacePrefixTextChanges;
 		bool schemasChanged;
-		XmlSchemaCompletionDataCollection addedSchemas = new XmlSchemaCompletionDataCollection();
+		XmlSchemaCompletionCollection addedSchemas = new XmlSchemaCompletionCollection();
 		List<string> removedSchemaNamespaces = new List<string>();
 		
-		public RegisteredXmlSchemasEditor(XmlSchemaManager schemaManager, 
+		public RegisteredXmlSchemasEditor(RegisteredXmlSchemas registeredXmlSchemas, 
 			ICollection<string> xmlFileExtensions, 
-			XmlEditorOptions xmlEditorOptions,
+			XmlSchemaFileAssociations associations,
 			IXmlSchemasPanel schemasPanel,
 			IXmlSchemaCompletionDataFactory factory)
 		{
-			this.schemaManager = schemaManager;
+			this.registeredXmlSchemas = registeredXmlSchemas;
 			this.xmlFileExtensions = xmlFileExtensions;
-			this.xmlEditorOptions = xmlEditorOptions;
+			this.associations = associations;
 			this.schemasPanel = schemasPanel;
 			this.factory = factory;
 		}
@@ -48,8 +48,8 @@ namespace ICSharpCode.XmlEditor
 		
 		void PopulateSchemaList()
 		{
-			foreach (XmlSchemaCompletionData schema in schemaManager.Schemas) {
-				XmlSchemaListItem item = new XmlSchemaListItem(schema.NamespaceUri, schema.ReadOnly);
+			foreach (XmlSchemaCompletion schema in registeredXmlSchemas.Schemas) {
+				XmlSchemaListItem item = new XmlSchemaListItem(schema.NamespaceUri, schema.IsReadOnly);
 				schemasPanel.AddXmlSchemaListItem(item);
 			}
 			schemasPanel.AddXmlSchemaListSortDescription("NamespaceUri", ListSortDirection.Ascending);
@@ -58,7 +58,7 @@ namespace ICSharpCode.XmlEditor
 		void PopulateXmlSchemaFileAssociationList()
 		{			
 			foreach (string extension in xmlFileExtensions) {
-				XmlSchemaFileAssociation association = xmlEditorOptions.GetSchemaFileAssociation(extension);
+				XmlSchemaFileAssociation association = associations.GetSchemaFileAssociation(extension);
 				XmlSchemaFileAssociationListItem item = new XmlSchemaFileAssociationListItem(extension, association.NamespaceUri, association.NamespacePrefix);
 				schemasPanel.AddXmlSchemaFileAssociationListItem(item);
 			}			
@@ -143,29 +143,29 @@ namespace ICSharpCode.XmlEditor
 				XmlSchemaFileAssociationListItem item = schemasPanel.GetXmlSchemaFileAssociationListItem(i);
 				if (item.IsDirty) {
 					XmlSchemaFileAssociation association = new XmlSchemaFileAssociation(item.Extension, item.NamespaceUri, item.NamespacePrefix);
-					xmlEditorOptions.SetSchemaFileAssociation(association);
+					associations.SetSchemaFileAssociation(association);
 				}
 			}
 		}
 		
 		void SaveSchemaChanges()
 		{
-			RemoveSchemasFromSchemaManager();
-			AddNewSchemasToSchemaManager();
+			RemoveSchemasFromRegisteredSchemas();
+			AddNewSchemasToRegisteredSchemas();
 		}
 
-		void RemoveSchemasFromSchemaManager()
+		void RemoveSchemasFromRegisteredSchemas()
 		{
 			while (removedSchemaNamespaces.Count > 0) {
-				schemaManager.RemoveUserSchema(removedSchemaNamespaces[0]);
+				registeredXmlSchemas.RemoveUserDefinedSchema(removedSchemaNamespaces[0]);
 				removedSchemaNamespaces.RemoveAt(0);
 			}
 		}		
 
-		void AddNewSchemasToSchemaManager()
+		void AddNewSchemasToRegisteredSchemas()
 		{
 			while (addedSchemas.Count > 0) {
-				schemaManager.AddUserSchema(addedSchemas[0]);
+				registeredXmlSchemas.AddUserSchema(addedSchemas[0]);
 				addedSchemas.RemoveAt(0);
 			}
 		}
@@ -176,7 +176,7 @@ namespace ICSharpCode.XmlEditor
 				string schemaFileName = BrowseForSchema();
 				if (!String.IsNullOrEmpty(schemaFileName)) {
 					
-					XmlSchemaCompletionData schema = LoadSchema(schemaFileName);
+					XmlSchemaCompletion schema = LoadSchema(schemaFileName);
 					
 					if (IsSchemaMissingNamespace(schema)) {
 						ShowSchemaMissingNamespaceErrorMessage(schemaFileName);
@@ -208,14 +208,14 @@ namespace ICSharpCode.XmlEditor
 			return null;
 		}
 		
-		bool IsSchemaMissingNamespace(XmlSchemaCompletionData schema)
+		bool IsSchemaMissingNamespace(XmlSchemaCompletion schema)
 		{
 			return !schema.HasNamespaceUri;
 		}
 		
-		XmlSchemaCompletionData LoadSchema(string fileName)
+		XmlSchemaCompletion LoadSchema(string fileName)
 		{
-			string baseUri = XmlSchemaCompletionData.GetUri(fileName);
+			string baseUri = XmlSchemaCompletion.GetUri(fileName);
 			return factory.CreateXmlSchemaCompletionData(baseUri, fileName);
 		}
 
@@ -226,7 +226,7 @@ namespace ICSharpCode.XmlEditor
 		
 		bool SchemaNamespaceExists(string namespaceUri)
 		{
-			if ((!schemaManager.SchemaExists(namespaceUri)) &&
+			if ((!registeredXmlSchemas.SchemaExists(namespaceUri)) &&
 			    (addedSchemas[namespaceUri] == null)){
 				return false;
 			} 
@@ -243,7 +243,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		/// <remarks>The schema file is not copied to the user's schema folder
 		/// until they click the OK button.</remarks>
-		void AddSchema(XmlSchemaCompletionData schema)
+		void AddSchema(XmlSchemaCompletion schema)
 		{
 			XmlSchemaListItem schemaListItem = new XmlSchemaListItem(schema.NamespaceUri, false);
 			int index = schemasPanel.AddXmlSchemaListItem(schemaListItem);
@@ -275,7 +275,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			RemoveSchemaListItem(namespaceUri);
 			
-			XmlSchemaCompletionData addedSchema = addedSchemas[namespaceUri];
+			XmlSchemaCompletion addedSchema = addedSchemas[namespaceUri];
 			if (addedSchema != null) {
 				addedSchemas.Remove(addedSchema);
 			} else {

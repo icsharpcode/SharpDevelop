@@ -15,8 +15,8 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ReferencedElementsTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] shipOrderAttributes;
-		ICompletionItem[] shipToAttributes;
+		XmlCompletionItemCollection shipOrderAttributes;
+		XmlCompletionItemCollection shipToAttributes;
 		XmlElementPath shipToPath;
 		XmlElementPath shipOrderPath;
 		
@@ -28,77 +28,77 @@ namespace XmlEditor.Tests.Schema
 			shipToPath.Elements.Add(shipOrderName);
 			shipToPath.Elements.Add(new QualifiedName("shipto", "http://www.w3schools.com"));
 
-			shipToAttributes = SchemaCompletionData.GetAttributeCompletionData(shipToPath);
+			shipToAttributes = SchemaCompletion.GetAttributeCompletion(shipToPath);
 			
 			// Get shiporder attributes.
 			shipOrderPath = new XmlElementPath();
 			shipOrderPath.Elements.Add(shipOrderName);
 			
-			shipOrderAttributes = SchemaCompletionData.GetAttributeCompletionData(shipOrderPath);
+			shipOrderAttributes = SchemaCompletion.GetAttributeCompletion(shipOrderPath);
 			
 		}
 		
 		[Test]
 		public void OneShipOrderAttribute()
 		{
-			Assert.AreEqual(1, shipOrderAttributes.Length, "Should only have one shiporder attribute.");
+			Assert.AreEqual(1, shipOrderAttributes.Count, "Should only have one shiporder attribute.");
 		}		
 		
 		[Test]
 		public void ShipOrderAttributeName()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(shipOrderAttributes,"id"),
+			Assert.IsTrue(shipOrderAttributes.Contains("id"),
 			                "Incorrect shiporder attribute name.");
 		}
 
 		[Test]
 		public void OneShipToAttribute()
 		{
-			Assert.AreEqual(1, shipToAttributes.Length, "Should only have one shipto attribute.");
+			Assert.AreEqual(1, shipToAttributes.Count, "Should only have one shipto attribute.");
 		}
 		
 		[Test]
 		public void ShipToAttributeName()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(shipToAttributes, "address"),
+			Assert.IsTrue(shipToAttributes.Contains("address"),
 			                "Incorrect shipto attribute name.");
 		}					
 		
 		[Test]
 		public void ShipOrderChildElementsCount()
 		{
-			Assert.AreEqual(1, SchemaCompletionData.GetChildElementCompletionData(shipOrderPath).Length, 
+			Assert.AreEqual(1, SchemaCompletion.GetChildElementCompletion(shipOrderPath).Count, 
 			                "Should be one child element.");
 		}
 		
 		[Test]
 		public void ShipOrderHasShipToChildElement()
 		{
-			ICompletionItem[] data = SchemaCompletionData.GetChildElementCompletionData(shipOrderPath);
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "shipto"), 
+			XmlCompletionItemCollection data = SchemaCompletion.GetChildElementCompletion(shipOrderPath);
+			Assert.IsTrue(data.Contains("shipto"), 
 			                "Incorrect child element name.");
 		}
 		
 		[Test]
 		public void ShipToChildElementsCount()
 		{
-			Assert.AreEqual(2, SchemaCompletionData.GetChildElementCompletionData(shipToPath).Length, 
+			Assert.AreEqual(2, SchemaCompletion.GetChildElementCompletion(shipToPath).Count, 
 			                "Should be 2 child elements.");
 		}		
 		
 		[Test]
 		public void ShipToHasNameChildElement()
 		{
-			ICompletionItem[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "name"), 
+			XmlCompletionItemCollection data = SchemaCompletion.GetChildElementCompletion(shipToPath);
+			Assert.IsTrue(data.Contains("name"), 
 			                "Incorrect child element name.");
 		}		
 		
 		[Test]
 		public void ShipToHasAddressChildElement()
 		{
-			ICompletionItem[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "address"), 
+			XmlCompletionItemCollection data = SchemaCompletion.GetChildElementCompletion(shipToPath);
+			Assert.IsTrue(data.Contains("address"), 
 			                "Incorrect child element name.");
 		}		
 		

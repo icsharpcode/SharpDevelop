@@ -20,14 +20,13 @@ namespace XmlEditor.Tests.Completion
 		bool result;
 		MockTextEditor textEditor;
 		XmlCodeCompletionBinding completionBinding;
-		XmlEditorOptions options;
-		XmlSchemaCompletionData xsdSchema;
+		XmlSchemaFileAssociations associations;
 		
 		[SetUp]
 		public void Init()
 		{
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			options = new XmlEditorOptions(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
+			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
+			associations = new XmlSchemaFileAssociations(new Properties(), new DefaultXmlSchemaFileAssociations(new AddInTreeNode()), schemas);
 			
 			textEditor = new MockTextEditor();
 			textEditor.FileName = new FileName(@"c:\projects\test.xsd");
@@ -36,7 +35,7 @@ namespace XmlEditor.Tests.Completion
 			// Put cursor inside the double quotes following the elementFormDefault attribute
 			textEditor.Caret.Offset = 31;	
 			
-			completionBinding = new XmlCodeCompletionBinding(options);
+			completionBinding = new XmlCodeCompletionBinding(associations);
 			result = completionBinding.CtrlSpace(textEditor);
 		}
 		

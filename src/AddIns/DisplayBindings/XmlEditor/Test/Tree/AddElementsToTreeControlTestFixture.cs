@@ -24,8 +24,7 @@ namespace XmlEditor.Tests.Tree
 		public void SetUpFixture()
 		{
 			using (XmlTreeViewContainerControl treeViewContainer = new XmlTreeViewContainerControl()) {
-				XmlCompletionDataProvider completionDataProvider = new XmlCompletionDataProvider(new XmlSchemaCompletionDataCollection(), null, String.Empty);
-				treeViewContainer.LoadXml("<root/>", completionDataProvider);
+				treeViewContainer.LoadXml("<root/>", new XmlSchemaCompletionCollection(), null);
 				
 				doc = treeViewContainer.Document;
 				XmlTreeViewControl treeView = treeViewContainer.TreeView;

@@ -26,16 +26,15 @@ namespace XmlEditor.Tests.FindSchemaObject
 		
 		public override void FixtureInit()
 		{
-			XmlSchemaCompletionDataCollection schemas = new XmlSchemaCompletionDataCollection();
-			schemas.Add(SchemaCompletionData);
-			XmlSchemaCompletionData xsdSchemaCompletionData = new XmlSchemaCompletionData(ResourceManager.GetXsdSchema());
-			schemas.Add(xsdSchemaCompletionData);
-			XmlCompletionDataProvider provider = new XmlCompletionDataProvider(schemas, xsdSchemaCompletionData, String.Empty);
+			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
+			schemas.Add(SchemaCompletion);
+			XmlSchemaCompletion xsdSchemaCompletion = new XmlSchemaCompletion(ResourceManager.ReadXsdSchema());
+			schemas.Add(xsdSchemaCompletion);
 			
 			string xml = GetSchema();
 			int index = xml.IndexOf("type=\"xs:complexType\"");
 			index = xml.IndexOf("xs:complexType", index);
-			schemaComplexType = (XmlSchemaComplexType)XmlView.GetSchemaObjectSelected(xml, index, provider, SchemaCompletionData);
+			schemaComplexType = (XmlSchemaComplexType)XmlView.GetSchemaObjectSelected(xml, index, schemas, SchemaCompletion);
 		}
 		
 		[Test]

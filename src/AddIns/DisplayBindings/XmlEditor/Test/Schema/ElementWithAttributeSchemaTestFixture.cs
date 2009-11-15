@@ -18,7 +18,7 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ElementWithAttributeSchemaTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] attributeCompletionData;
+		XmlCompletionItemCollection attributeCompletionItems;
 		string attributeName;
 		
 		public override void FixtureInit()
@@ -26,14 +26,14 @@ namespace XmlEditor.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			
-			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
-			attributeName = attributeCompletionData[0].Text;
+			attributeCompletionItems = SchemaCompletion.GetAttributeCompletion(path);
+			attributeName = attributeCompletionItems[0].Text;
 		}
 
 		[Test]
 		public void AttributeCount()
 		{
-			Assert.AreEqual(1, attributeCompletionData.Length, "Should be one attribute.");
+			Assert.AreEqual(1, attributeCompletionItems.Count, "Should be one attribute.");
 		}
 		
 		[Test]
@@ -47,9 +47,9 @@ namespace XmlEditor.Tests.Schema
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foobar", "http://www.w3schools.com"));
-			ICompletionItem[] attributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			XmlCompletionItemCollection attributes = SchemaCompletion.GetAttributeCompletion(path);
 			
-			Assert.AreEqual(0, attributes.Length, "Should not find attributes for unknown element.");
+			Assert.AreEqual(0, attributes.Count, "Should not find attributes for unknown element.");
 		}
 		
 		protected override string GetSchema()

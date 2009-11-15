@@ -15,41 +15,30 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class GetSchemaFromFileNameTestFixture
 	{
-		XmlSchemaCompletionDataCollection schemas;
+		XmlSchemaCompletionCollection schemas;
 		string expectedNamespace;
-		XmlCompletionDataProvider provider;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			schemas = new XmlSchemaCompletionDataCollection();
-			XmlSchemaCompletionData completionData = new XmlSchemaCompletionData(ResourceManager.GetXsdSchema());
+			schemas = new XmlSchemaCompletionCollection();
+			XmlSchemaCompletion completionData = new XmlSchemaCompletion(ResourceManager.ReadXsdSchema());
 			expectedNamespace = completionData.NamespaceUri;
 			completionData.FileName = @"C:\Schemas\MySchema.xsd";
 			schemas.Add(completionData);
-			
-			provider = new XmlCompletionDataProvider(schemas, completionData, String.Empty);
 		}
 		
 		[Test]
 		public void RelativeFileName()
 		{
-			XmlSchemaCompletionData foundSchema = schemas.GetSchemaFromFileName(@"C:\Schemas\..\Schemas\MySchema.xsd");
-			Assert.AreEqual(expectedNamespace, foundSchema.NamespaceUri);
-		}
-		
-		[Test]
-		public void RelativeFileNameFromProvider()
-		{
-			XmlSchemaCompletionData foundSchema = provider.FindSchemaFromFileName(@"C:\Schemas\..\Schemas\MySchema.xsd");
+			XmlSchemaCompletion foundSchema = schemas.GetSchemaFromFileName(@"C:\Schemas\..\Schemas\MySchema.xsd");
 			Assert.AreEqual(expectedNamespace, foundSchema.NamespaceUri);
 		}
 
-		
 		[Test]
 		public void LowerCaseFileName()
 		{
-			XmlSchemaCompletionData foundSchema = schemas.GetSchemaFromFileName(@"C:\schemas\myschema.xsd");
+			XmlSchemaCompletion foundSchema = schemas.GetSchemaFromFileName(@"C:\schemas\myschema.xsd");
 			Assert.AreEqual(expectedNamespace, foundSchema.NamespaceUri);
 		}
 		

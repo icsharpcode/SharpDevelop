@@ -18,67 +18,67 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class NestedAttributeGroupRefTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionItem[] attributeCompletionData;
+		XmlCompletionItemCollection attributeCompletionItems;
 		
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
-			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
+			attributeCompletionItems = SchemaCompletion.GetAttributeCompletion(path);
 		}
 		
 		[Test]
 		public void AttributeCount()
 		{
-			Assert.AreEqual(7, attributeCompletionData.Length, "Should be 7 attributes.");
+			Assert.AreEqual(7, attributeCompletionItems.Count, "Should be 7 attributes.");
 		}
 		
 		[Test]
 		public void NameAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "name"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("name"), 
 			              "Attribute name does not exist.");
 		}		
 		
 		[Test]
 		public void IdAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "id"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("id"), 
 			              "Attribute id does not exist.");
 		}		
 		
 		[Test]
 		public void StyleAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "style"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("style"), 
 			              "Attribute style does not exist.");
 		}	
 		
 		[Test]
 		public void TitleAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "title"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("title"), 
 			              "Attribute title does not exist.");
 		}		
 		
 		[Test]
 		public void BaseIdAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "baseid"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("baseid"), 
 			              "Attribute baseid does not exist.");
 		}		
 		
 		[Test]
 		public void BaseStyleAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "basestyle"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("basestyle"), 
 			              "Attribute basestyle does not exist.");
 		}	
 		
 		[Test]
 		public void BaseTitleAttribute()
 		{
-			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "basetitle"), 
+			Assert.IsTrue(attributeCompletionItems.Contains("basetitle"), 
 			              "Attribute basetitle does not exist.");
 		}			
 		

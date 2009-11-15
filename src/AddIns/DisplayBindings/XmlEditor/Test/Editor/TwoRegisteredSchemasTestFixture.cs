@@ -17,7 +17,7 @@ namespace XmlEditor.Tests.Editor
 	[TestFixture]
 	public class TwoRegisteredSchemasTestFixture
 	{
-		XmlSchemaManager schemaManager;
+		RegisteredXmlSchemas registeredXmlSchemas;
 		MockFileSystem fileSystem;
 		MockXmlSchemaCompletionDataFactory factory;
 		string addinSchemaFileName;
@@ -33,7 +33,7 @@ namespace XmlEditor.Tests.Editor
 			
 			fileSystem = new MockFileSystem();
 			factory = new MockXmlSchemaCompletionDataFactory();
-			schemaManager = new XmlSchemaManager(schemaFolders, userDefinedSchemaFolder, fileSystem, factory);
+			registeredXmlSchemas = new RegisteredXmlSchemas(schemaFolders, userDefinedSchemaFolder, fileSystem, factory);
 			
 			fileSystem.AddExistingFolders(schemaFolders);
 			fileSystem.AddExistingFolder(userDefinedSchemaFolder);
@@ -54,54 +54,54 @@ namespace XmlEditor.Tests.Editor
 			fileSystem.AddExistingFile(addinSchemaFileName, true);
 			fileSystem.AddExistingFile(testSchemaFileName, false);
 			
-			schemaManager.ReadSchemas();
+			registeredXmlSchemas.ReadSchemas();
 			
 			userSchemaRemovedEventFiredCount = 0;
-			schemaManager.UserSchemaRemoved += UserSchemaRemoved;
+			registeredXmlSchemas.UserDefinedSchemaRemoved += UserSchemaRemoved;
 		}
 		
 		[Test]
 		public void TwoSchemasRegistered()
 		{
-			Assert.AreEqual(2, schemaManager.Schemas.Count);
+			Assert.AreEqual(2, registeredXmlSchemas.Schemas.Count);
 		}
 		
 		[Test]
 		public void SharpDevelopSchemaIsReadOnly()
 		{
-			Assert.IsTrue(schemaManager.Schemas["http://addin"].ReadOnly);
+			Assert.IsTrue(registeredXmlSchemas.Schemas["http://addin"].IsReadOnly);
 		}
 		
 		[Test]
 		public void UserDefinedSchemaIsNotReadOnly()
 		{
-			Assert.IsFalse(schemaManager.Schemas["http://test"].ReadOnly);
+			Assert.IsFalse(registeredXmlSchemas.Schemas["http://test"].IsReadOnly);
 		}
 		
 		[Test]
 		public void BaseUriUsedWhenCreatingXmlSchemaCompletionData()
 		{
-			string baseUri = XmlSchemaCompletionData.GetUri(addinSchemaFileName);
+			string baseUri = XmlSchemaCompletion.GetUri(addinSchemaFileName);
 			Assert.AreEqual(baseUri, factory.GetBaseUri(addinSchemaFileName));
 		}
 		
 		[Test]
 		public void RemoveAddInSchemaRemovesSchemaFromSchemaCollection()
 		{
-			schemaManager.RemoveUserSchema("http://addin");
-			Assert.IsFalse(schemaManager.SchemaExists("http://addin"));
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://addin");
+			Assert.IsFalse(registeredXmlSchemas.SchemaExists("http://addin"));
 		}
 		
 		[Test]
 		public void RemoveUnknownSchemaDoesNothing()
 		{
-			schemaManager.RemoveUserSchema("Unknown-schema-namespace");
+			registeredXmlSchemas.RemoveUserDefinedSchema("Unknown-schema-namespace");
 		}
 		
 		[Test]
 		public void RemoveAddInSchemaCausesUserDefinedSchemaFileToBeDeleted()
 		{
-			schemaManager.RemoveUserSchema("http://addin");
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://addin");
 			string[] expectedDeletedFiles = new string[] { addinSchemaFileName };
 
 			Assert.AreEqual(expectedDeletedFiles, fileSystem.DeletedFiles);
@@ -110,7 +110,7 @@ namespace XmlEditor.Tests.Editor
 		[Test]
 		public void RemoveAddInSchemaChecksIfUserDefinedSchemaFileExists()
 		{
-			schemaManager.RemoveUserSchema("http://addin");
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://addin");
 			string[] expectedFiles = new string[] { addinSchemaFileName };
 
 			Assert.AreEqual(expectedFiles, fileSystem.FilesCheckedThatTheyExist);
@@ -119,21 +119,29 @@ namespace XmlEditor.Tests.Editor
 		[Test]
 		public void RemoveTestSchemaDoesNotDeleteNonExistentFile()
 		{
-			schemaManager.RemoveUserSchema("http://test");
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");
 			Assert.AreEqual(0, fileSystem.DeletedFiles.Length);
 		}
 		
 		[Test]
 		public void RemoveTestSchemaRemovesSchemaFromSchemaCollection()
 		{
-			schemaManager.RemoveUserSchema("http://test");
-			Assert.IsFalse(schemaManager.SchemaExists("http://test"));
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");
+			Assert.IsFalse(registeredXmlSchemas.SchemaExists("http://test"));
 		}
 		
 		[Test]
 		public void RemoveTestSchemaFiresUserSchemaRemovedEvent()
 		{
-			schemaManager.RemoveUserSchema("http://test");			
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");			
+			Assert.AreEqual(1, userSchemaRemovedEventFiredCount);
+		}
+		
+		[Test]
+		public void TrytoRemoveTestSchemaTwiceButSchemaRemovedEventShouldOnlyFireOnce()
+		{
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");			
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");			
 			Assert.AreEqual(1, userSchemaRemovedEventFiredCount);
 		}
 		
