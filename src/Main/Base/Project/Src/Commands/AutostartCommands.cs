@@ -17,72 +17,26 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
-	public class StartWorkbenchCommand
+	/// <summary>
+	/// Runs workbench initialization.
+	/// Is called by ICSharpCode.SharpDevelop.Sda and should not be called manually!
+	/// </summary>
+	public class WorkbenchStartup
 	{
 		const string workbenchMemento = "WorkbenchMemento";
+		App app;
 		
-		/*
-		class FormKeyHandler : IMessageFilter
+		public void InitializeWorkbench()
 		{
-			const int keyPressedMessage          = 0x100;
-			
-			void SelectActiveWorkbenchWindow()
-			{
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-					if (!WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.Control.ContainsFocus) {
-						if (Form.ActiveForm == WorkbenchSingleton.MainForm) {
-							WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.Control.Focus();
-						}
-					}
-				}
-			}
-			
-			bool PadHasFocus()
-			{
-				foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
-					if (padContent.HasFocus) {
-						return true;
-						
-					}
-				}
-				return false;
-			}
-			string oldLayout = "Default";
-			public bool PreFilterMessage(ref Message m)
-			{
-				if (m.Msg != keyPressedMessage) {
-					return false;
-				}
-				Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;
-				
-				if (keyPressed == Keys.Escape) {
-					if (PadHasFocus() && !MenuService.IsContextMenuOpen) {
-						SelectActiveWorkbenchWindow();
-						return true;
-					}
-					return false;
-				}
-				
-				if (keyPressed == (Keys.Escape | Keys.Shift)) {
-					if (LayoutConfiguration.CurrentLayoutName == "Plain") {
-						LayoutConfiguration.CurrentLayoutName = oldLayout;
-					} else {
-						WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
-						oldLayout = LayoutConfiguration.CurrentLayoutName;
-						LayoutConfiguration.CurrentLayoutName = "Plain";
-					}
-					SelectActiveWorkbenchWindow();
-					return true;
-				}
-				return false;
-			}
+			app = new App();
+			System.Windows.Forms.Integration.WindowsFormsHost.EnableWindowsFormsInterop();
+			WorkbenchSingleton.InitializeWorkbench(new WpfWorkbench(), new AvalonDockLayout());
 		}
-		*/
 		
 		public void Run(IList<string> fileList)
 		{
 			bool didLoadSolutionOrFile = false;
-		
+			
 			NavigationService.SuspendLogging();
 			
 			foreach (string file in fileList) {
@@ -105,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			// load previous solution
 			if (!didLoadSolutionOrFile && PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
 				if (FileService.RecentOpen.RecentProject.Count > 0) {
-					ProjectService.LoadSolution(FileService.RecentOpen.RecentProject[0].ToString());
+					ProjectService.LoadSolution(FileService.RecentOpen.RecentProject[0]);
 					didLoadSolutionOrFile = true;
 				}
 			}
@@ -122,16 +76,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			NavigationService.ResumeLogging();
 			
-			//WorkbenchSingleton.MainForm.Focus(); // windows.forms focus workaround
-			
 			ParserService.StartParserThread();
 			
 			// finally run the workbench window ...
-			//Application.AddMessageFilter(new FormKeyHandler());
-			//Application.Run(WorkbenchSingleton.MainForm);
-			App application = new App();
-			System.Windows.Forms.Integration.WindowsFormsHost.EnableWindowsFormsInterop();
-			application.Run(WorkbenchSingleton.MainWindow);
+			app.Run(WorkbenchSingleton.MainWindow);
 			
 			// save the workbench memento in the ide properties
 			try {

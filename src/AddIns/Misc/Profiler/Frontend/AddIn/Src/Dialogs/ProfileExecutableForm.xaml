@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
         Title="{sd:Localize AddIns.Profiler.ProfileExecutableForm.Title}" WindowStartupLocation="CenterScreen"
-        WindowStyle="ToolWindow" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+        Style="{x:Static sd:GlobalStyles.DialogWindowStyle}"
+        WindowStyle="ToolWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
 	<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

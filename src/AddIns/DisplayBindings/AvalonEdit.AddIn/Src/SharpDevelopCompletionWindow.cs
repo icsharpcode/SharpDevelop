@@ -73,6 +73,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				throw new ArgumentNullException("editor");
 			if (itemList == null)
 				throw new ArgumentNullException("itemList");
+			this.Style = ICSharpCode.Core.Presentation.GlobalStyles.WindowStyle;
 			this.Editor = editor;
 			this.itemList = itemList;
 			ICompletionItem suggestedItem = itemList.SuggestedItem;

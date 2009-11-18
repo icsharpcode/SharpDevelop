@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
   x:Class="ICSharpCode.UsageDataCollector.CollectedDataView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+  Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
   Title="Collected Data"
   Width="649"
   Height="418">

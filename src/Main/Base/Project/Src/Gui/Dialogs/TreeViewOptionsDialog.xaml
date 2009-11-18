@@ -5,7 +5,7 @@
         Width="552"
         MinHeight="260"
         MinWidth="480"
-        Style="{StaticResource DialogWindow}">
+        Style="{x:Static core:GlobalStyles.DialogWindowStyle}">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition

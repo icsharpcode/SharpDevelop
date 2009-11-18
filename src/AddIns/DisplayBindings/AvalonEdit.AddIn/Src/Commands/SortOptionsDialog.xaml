@@ -6,7 +6,7 @@
   SizeToContent="Height"
   ResizeMode="NoResize"
   WindowStartupLocation="CenterOwner"
-  Style="{StaticResource DialogWindow}">
+  Style="{x:Static core:GlobalStyles.DialogWindowStyle}">
   <StackPanel
     Margin="4">
     <GroupBox

@@ -156,14 +156,14 @@ namespace ICSharpCode.SharpDevelop.Sda
 		{
 			WorkbenchSettings wbSettings = (WorkbenchSettings)settings;
 			
+			WorkbenchStartup wbc = new WorkbenchStartup();
 			LoggingService.Info("Initializing workbench...");
-			WorkbenchSingleton.InitializeWorkbench();
+			wbc.InitializeWorkbench();
 			
 			LoggingService.Info("Starting workbench...");
 			Exception exception = null;
 			// finally start the workbench.
 			try {
-				StartWorkbenchCommand wbc = new StartWorkbenchCommand();
 				callback.BeforeRunWorkbench();
 				if (Debugger.IsAttached) {
 					wbc.Run(wbSettings.InitialFileList);

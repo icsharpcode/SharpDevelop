@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:dv="clr-namespace:Debugger.AddIn.Visualizers.Graph"
     xmlns:controls="clr-namespace:Debugger.AddIn.Visualizers.Controls"
-    Title="Object graph visualizer" Height="400" Width="600">
+    xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+    Title="Object graph visualizer" Height="400" Width="600" Style="{x:Static core:GlobalStyles.WindowStyle}">
     
     <dv:ObjectGraphControl x:Name="objectGraphControl"></dv:ObjectGraphControl>
 </Window>

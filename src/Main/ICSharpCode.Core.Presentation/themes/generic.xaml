@@ -2,6 +2,26 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:ICSharpCode.Core.Presentation"
 >
+	<Style TargetType="{x:Type Window}" x:Key="{x:Static local:GlobalStyles.WindowStyleKey}">
+		<Setter Property="UseLayoutRounding" Value="True" />
+		<Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+	</Style>
+	
+	<Style TargetType="{x:Type Window}" x:Key="{x:Static local:GlobalStyles.DialogWindowStyleKey}">
+		<Setter Property="UseLayoutRounding" Value="True" />
+		<Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+		<Setter Property="ShowInTaskbar" Value="False" />
+	</Style>
+	
+	<Style TargetType="{x:Type Image}" x:Key="{x:Static local:ToolBarService.ImageStyleKey}">
+		<Style.Triggers>
+			<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ButtonBase}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+				<Setter Property="Opacity" Value="0.30" />
+			</DataTrigger>
+		</Style.Triggers>
+	</Style>
+	
 	<!-- Colors for DropDownButton and SplitButton -->
 	<SolidColorBrush x:Key="{ComponentResourceKey {x:Type local:DropDownButton}, ActiveBorder}" Color="#FF0A246A"/>
 	<SolidColorBrush x:Key="{ComponentResourceKey {x:Type local:DropDownButton}, ActiveBackground}" Color="#FFB6BDD2"/>

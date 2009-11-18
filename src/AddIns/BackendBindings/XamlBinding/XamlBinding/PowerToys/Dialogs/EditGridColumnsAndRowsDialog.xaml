@@ -3,7 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
 	Title="Edit grid columns and rows"
-    ShowInTaskbar="False"
+	Style="{x:Static sd:GlobalStyles.DialogWindowStyle}"
 	WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
 	<Window.Resources>
 		<Style x:Key="normal" TargetType="{x:Type Button}">

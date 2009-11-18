@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
 	Title="ICSharpCode.XamlBinding.PowerToys.Dialogs" Height="300" Width="500"
+	Style="{x:Static sd:GlobalStyles.DialogWindowStyle}"
 	WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen">
 	<Window.Resources>
 		<Style TargetType="{x:Type Button}">

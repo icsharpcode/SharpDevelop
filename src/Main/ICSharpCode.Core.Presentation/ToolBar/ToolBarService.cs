@@ -21,7 +21,7 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Style key used for toolbar images.
 		/// </summary>
-		public static readonly object ImageStyleKey = new object();
+		public static readonly ResourceKey ImageStyleKey = new ComponentResourceKey(typeof(ToolBarService), "ImageStyle");
 		
 		public static void UpdateStatus(IEnumerable toolBarItems)
 		{

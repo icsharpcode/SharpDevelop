@@ -57,19 +57,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		/// <summary>
-		/// Runs workbench initialization.
-		/// Is called by ICSharpCode.SharpDevelop.Sda and should not be called manually!
-		/// </summary>
-		public static void InitializeWorkbench()
-		{
-//			if (Environment.OSVersion.Platform == PlatformID.Unix)
-//				InitializeWorkbench(new DefaultWorkbench(), new SimpleWorkbenchLayout());
-//			else
-//				InitializeWorkbench(new DefaultWorkbench(), new SdiWorkbenchLayout());
-			InitializeWorkbench(new WpfWorkbench(), new AvalonDockLayout());
-		}
-		
 		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
 		{
 			WorkbenchSingleton.workbench = workbench;

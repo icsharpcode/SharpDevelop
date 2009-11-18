@@ -4,6 +4,7 @@
     xmlns:local="clr-namespace:ICSharpCode.XamlBinding.PowerToys.Dialogs"
     xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
     Title="Select Source Class" Height="500" Width="700"
+	Style="{x:Static sd:GlobalStyles.DialogWindowStyle}"
 	WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
 	<Window.Resources>
 		<Style TargetType="{x:Type Button}">

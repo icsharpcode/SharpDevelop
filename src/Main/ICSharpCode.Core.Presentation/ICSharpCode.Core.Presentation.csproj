@@ -69,6 +69,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="GlobalStyles.cs" />
     <Compile Include="RestrictDesiredSize.cs" />
     <Compile Include="SortableGridViewColumn.cs" />
     <Compile Include="CollapsiblePanel.cs" />

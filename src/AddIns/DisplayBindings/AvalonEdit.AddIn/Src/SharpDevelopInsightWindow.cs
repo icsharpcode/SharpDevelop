@@ -93,6 +93,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public SharpDevelopInsightWindow(TextArea textArea) : base(textArea)
 		{
 			this.Provider = new SDItemProvider(this);
+			this.Style = ICSharpCode.Core.Presentation.GlobalStyles.WindowStyle;
 		}
 		
 		public IList<IInsightItem> Items {
