@@ -119,6 +119,27 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				DocumentChanged(this, EventArgs.Empty);
 		}
 		
+		/// <summary>
+		/// Recreates the text formatter that is used internally
+		/// by calling <see cref="CreateTextFormatter"/>.
+		/// </summary>
+		protected void RecreateTextFormatter()
+		{
+			if (formatter != null) {
+				formatter.Dispose();
+				formatter = CreateTextFormatter();
+				Redraw();
+			}
+		}
+		
+		/// <summary>
+		/// Creates a new text formatter.
+		/// </summary>
+		protected virtual TextFormatter CreateTextFormatter()
+		{
+			return TextFormatter.Create();
+		}
+		
 		/// <inheritdoc cref="IWeakEventListener.ReceiveWeakEvent"/>
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{

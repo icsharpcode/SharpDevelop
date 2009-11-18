@@ -38,7 +38,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		CodeEditorOptions options;
 		BracketHighlightRenderer bracketRenderer;
 		
-		public CodeEditorView()
+		public CodeEditorView() : base(new Wpf4TextArea())
 		{
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
 			options = ICSharpCode.AvalonEdit.AddIn.Options.CodeEditorOptions.Instance;

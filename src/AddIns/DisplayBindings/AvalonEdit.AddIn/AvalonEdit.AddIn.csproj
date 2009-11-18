@@ -63,6 +63,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Wpf4TextView.cs" />
     <None Include="AvalonEdit.AddIn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -76,9 +77,7 @@
     <Compile Include="Src\BracketHighlightRenderer.cs" />
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
-    <Compile Include="Src\CodeEditorView.cs">
-      <DependentUpon>AvalonEditViewContent.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Src\CodeEditorView.cs" />
     <Compile Include="Src\Commands\FoldingCommands.cs" />
     <Compile Include="Src\Commands\SortOptionsDialog.xaml.cs">
       <DependentUpon>SortOptionsDialog.xaml</DependentUpon>

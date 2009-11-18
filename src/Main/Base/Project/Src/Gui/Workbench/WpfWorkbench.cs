@@ -17,6 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Navigation;
 
 using ICSharpCode.Core;
@@ -652,6 +653,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 				output.WriteLine("ActiveWorkbenchWindow = " + GetElementName(this.ActiveWorkbenchWindow));
 				((AvalonDockLayout)workbenchLayout).WriteState(output);
 				LoggingService.Debug(output.ToString());
+			}
+			if (!e.Handled && e.Key == Key.L && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
+				this.UseLayoutRounding = !this.UseLayoutRounding;
+			}
+			if (!e.Handled && e.Key == Key.F && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
+				if (TextOptions.GetTextFormattingMode(this) == TextFormattingMode.Display)
+					TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
+				else
+					TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
 			}
 		}
 		
