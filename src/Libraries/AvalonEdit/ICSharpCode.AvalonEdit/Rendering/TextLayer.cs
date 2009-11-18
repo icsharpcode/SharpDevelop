@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace ICSharpCode.AvalonEdit.Rendering
@@ -67,13 +68,31 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			inlineObjects.RemoveAll(
 				ior => {
 					if (visualLinesWithOutstandingInlineObjects.Contains(ior.VisualLine)) {
-						ior.VisualLine = null;
-						RemoveVisualChild(ior.Element);
+						RemoveInlineObjectRun(ior);
 						return true;
 					}
 					return false;
 				});
 			visualLinesWithOutstandingInlineObjects.Clear();
+		}
+
+		// Remove InlineObjectRun.Element from TextLayer.
+		// Caller of RemoveInlineObjectRun will remove it from inlineObjects collection.
+		void RemoveInlineObjectRun(InlineObjectRun ior)
+		{
+			if (ior.Element.IsKeyboardFocusWithin) {
+				// When the inline element that has the focus is removed, WPF will reset the
+				// focus to the main window without raising appropriate LostKeyboardFocus events.
+				// To work around this, we manually set focus to the next focusable parent.
+				UIElement element = textView;
+				while (element != null && !element.Focusable) {
+					element = VisualTreeHelper.GetParent(element) as UIElement;
+				}
+				if (element != null)
+					Keyboard.Focus(element);
+			}
+			ior.VisualLine = null;
+			RemoveVisualChild(ior.Element);
 		}
 		
 		/// <summary>
@@ -84,8 +103,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			inlineObjects.RemoveAll(
 				ior => {
 					if (ior.Element == element) {
-						ior.VisualLine = null;
-						RemoveVisualChild(ior.Element);
+						RemoveInlineObjectRun(ior);
 						return true;
 					}
 					return false;

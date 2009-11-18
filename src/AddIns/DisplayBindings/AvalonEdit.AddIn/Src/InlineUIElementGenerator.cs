@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	public class InlineUIElementGenerator : VisualLineElementGenerator, IInlineUIElement
+	sealed class InlineUIElementGenerator : VisualLineElementGenerator, IInlineUIElement
 	{
 		ITextAnchor anchor;
 		UIElement element;
@@ -24,6 +24,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.textView = textView;
 			this.element = element;
 			this.anchor = anchor;
+			anchor.Deleted += delegate { Remove(); };
 		}
 		
 		public override int GetFirstInterestedOffset(int startOffset)
