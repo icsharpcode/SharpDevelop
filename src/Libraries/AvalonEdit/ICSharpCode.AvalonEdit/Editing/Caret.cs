@@ -289,16 +289,48 @@ namespace ICSharpCode.AvalonEdit.Editing
 					}
 				}
 			}
-			// search possible caret position (first try forwards)
-			int newVisualColumn = visualLine.GetNextCaretPosition(position.VisualColumn - 1, LogicalDirection.Forward, CaretPositioningMode.Normal);
-			if (newVisualColumn < 0) {
-				// then try backwards
-				newVisualColumn = visualLine.GetNextCaretPosition(position.VisualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.Normal);
-			}
-			if (newVisualColumn < 0)
-				throw ThrowUtil.NoValidCaretPosition();
-			if (newVisualColumn != position.VisualColumn) {
-				int newOffset = visualLine.GetRelativeOffset(newVisualColumn) + firstDocumentLineOffset;
+			// search possible caret positions
+			int newVisualColumnForwards = visualLine.GetNextCaretPosition(position.VisualColumn - 1, LogicalDirection.Forward, CaretPositioningMode.Normal);
+			// If position.VisualColumn was valid, we're done with validation.
+			if (newVisualColumnForwards != position.VisualColumn) {
+				// also search backwards so that we can pick the better match
+				int newVisualColumnBackwards = visualLine.GetNextCaretPosition(position.VisualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.Normal);
+				
+				if (newVisualColumnForwards < 0 && newVisualColumnBackwards < 0)
+					throw ThrowUtil.NoValidCaretPosition();
+				
+				// determine offsets for new visual column positions
+				int newOffsetForwards;
+				if (newVisualColumnForwards >= 0)
+					newOffsetForwards = visualLine.GetRelativeOffset(newVisualColumnForwards) + firstDocumentLineOffset;
+				else
+					newOffsetForwards = -1;
+				int newOffsetBackwards;
+				if (newVisualColumnBackwards >= 0)
+					newOffsetBackwards = visualLine.GetRelativeOffset(newVisualColumnBackwards) + firstDocumentLineOffset;
+				else
+					newOffsetBackwards = -1;
+				
+				int newVisualColumn, newOffset;
+				// if there's only one valid position, use it
+				if (newVisualColumnForwards < 0) {
+					newVisualColumn = newVisualColumnBackwards;
+					newOffset = newOffsetBackwards;
+				} else if (newVisualColumnBackwards < 0) {
+					newVisualColumn = newVisualColumnForwards;
+					newOffset = newOffsetForwards;
+				} else {
+					// two valid positions: find the better match
+					if (Math.Abs(newOffsetBackwards - caretOffset) < Math.Abs(newOffsetForwards - caretOffset)) {
+						// backwards is better
+						newVisualColumn = newVisualColumnBackwards;
+						newOffset = newOffsetBackwards;
+					} else {
+						// forwards is better
+						newVisualColumn = newVisualColumnForwards;
+						newOffset = newOffsetForwards;
+					}
+				}
 				this.Position = new TextViewPosition(textView.Document.GetLocation(newOffset), newVisualColumn);
 			}
 		}
