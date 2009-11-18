@@ -11,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {
@@ -57,10 +58,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			} else {
 				return null;
 			}
-			FormattedText text = new FormattedText(
+			FormattedText text = TextFormatterFactory.CreateFormattedText(
+				CurrentContext.TextView,
 				newlineText,
-				CurrentContext.GlobalTextRunProperties.CultureInfo,
-				FlowDirection.LeftToRight,
 				CurrentContext.GlobalTextRunProperties.Typeface,
 				CurrentContext.GlobalTextRunProperties.FontRenderingEmSize,
 				Brushes.LightGray

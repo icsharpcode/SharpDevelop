@@ -41,10 +41,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			typeface = this.CreateTypeface();
 			emSize = (double)GetValue(TextBlock.FontSizeProperty);
 			
-			FormattedText text = new FormattedText(
+			FormattedText text = TextFormatterFactory.CreateFormattedText(
+				this,
 				new string('9', maxLineNumberLength),
-				CultureInfo.CurrentCulture,
-				FlowDirection.LeftToRight,
 				typeface,
 				emSize,
 				(Brush)GetValue(Control.ForegroundProperty)
@@ -61,10 +60,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 				var foreground = (Brush)GetValue(Control.ForegroundProperty);
 				foreach (VisualLine line in textView.VisualLines) {
 					int lineNumber = line.FirstDocumentLine.LineNumber;
-					FormattedText text = new FormattedText(
+					FormattedText text = TextFormatterFactory.CreateFormattedText(
+						this,
 						lineNumber.ToString(CultureInfo.CurrentCulture),
-						CultureInfo.CurrentCulture,
-						FlowDirection.LeftToRight,
 						typeface, emSize, foreground
 					);
 					drawingContext.DrawText(text, new Point(renderSize.Width - text.Width,

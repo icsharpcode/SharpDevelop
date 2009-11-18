@@ -6,8 +6,11 @@
 // </file>
 
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
 namespace ICSharpCode.AvalonEdit.Utils
@@ -45,6 +48,43 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			// return dp == TextOptions.TextFormattingModeProperty;
 			return dp == TextFormattingModeProperty && TextFormattingModeProperty != null;
+		}
+		
+		public static FormattedText CreateFormattedText(FrameworkElement element, string text, Typeface typeface, double? emSize, Brush foreground)
+		{
+			if (element == null)
+				throw new ArgumentNullException("element");
+			if (text == null)
+				throw new ArgumentNullException("text");
+			if (typeface == null)
+				typeface = element.CreateTypeface();
+			if (emSize == null)
+				emSize = TextBlock.GetFontSize(element);
+			if (foreground == null)
+				foreground = TextBlock.GetForeground(element);
+			if (TextFormattingModeProperty != null) {
+				object formattingMode = element.GetValue(TextFormattingModeProperty);
+				return (FormattedText)Activator.CreateInstance(
+					typeof(FormattedText),
+					text,
+					CultureInfo.CurrentCulture,
+					FlowDirection.LeftToRight,
+					typeface,
+					emSize,
+					foreground,
+					null,
+					formattingMode
+				);
+			} else {
+				return new FormattedText(
+					text,
+					CultureInfo.CurrentCulture,
+					FlowDirection.LeftToRight,
+					typeface,
+					emSize.Value,
+					foreground
+				);
+			}
 		}
 	}
 }

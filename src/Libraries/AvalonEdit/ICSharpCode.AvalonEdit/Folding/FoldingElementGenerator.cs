@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Folding
 {
@@ -63,10 +64,9 @@ namespace ICSharpCode.AvalonEdit.Folding
 			if (foldedUntil > offset) {
 				if (string.IsNullOrEmpty(title))
 					title = "...";
-				FormattedText text = new FormattedText(
+				FormattedText text = TextFormatterFactory.CreateFormattedText(
+					CurrentContext.TextView,
 					title,
-					CurrentContext.GlobalTextRunProperties.CultureInfo,
-					FlowDirection.LeftToRight,
 					CurrentContext.GlobalTextRunProperties.Typeface,
 					CurrentContext.GlobalTextRunProperties.FontRenderingEmSize,
 					Brushes.Gray

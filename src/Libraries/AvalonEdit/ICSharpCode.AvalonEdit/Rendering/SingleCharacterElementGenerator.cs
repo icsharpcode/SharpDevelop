@@ -92,30 +92,27 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			char c = CurrentContext.Document.GetCharAt(offset);
 			if (ShowSpaces && c == ' ') {
-				FormattedText text = new FormattedText(
+				FormattedText text = TextFormatterFactory.CreateFormattedText(
+					CurrentContext.TextView,
 					"\u00B7",
-					CurrentContext.GlobalTextRunProperties.CultureInfo,
-					FlowDirection.LeftToRight,
 					CurrentContext.GlobalTextRunProperties.Typeface,
 					CurrentContext.GlobalTextRunProperties.FontRenderingEmSize,
 					Brushes.LightGray
 				);
 				return new SpaceTextElement(text);
 			} else if (ShowTabs && c == '\t') {
-				FormattedText text = new FormattedText(
+				FormattedText text = TextFormatterFactory.CreateFormattedText(
+					CurrentContext.TextView,
 					"\u00BB",
-					CurrentContext.GlobalTextRunProperties.CultureInfo,
-					FlowDirection.LeftToRight,
 					CurrentContext.GlobalTextRunProperties.Typeface,
 					CurrentContext.GlobalTextRunProperties.FontRenderingEmSize,
 					Brushes.LightGray
 				);
 				return new TabTextElement(text);
 			} else if (ShowBoxForControlCharacters && char.IsControl(c)) {
-				FormattedText text = new FormattedText(
+				FormattedText text = TextFormatterFactory.CreateFormattedText(
+					CurrentContext.TextView,
 					TextUtilities.GetControlCharacterName(c),
-					CurrentContext.GlobalTextRunProperties.CultureInfo,
-					FlowDirection.LeftToRight,
 					CurrentContext.GlobalTextRunProperties.Typeface,
 					CurrentContext.GlobalTextRunProperties.FontRenderingEmSize * 0.9,
 					Brushes.White
