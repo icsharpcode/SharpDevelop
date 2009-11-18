@@ -47,7 +47,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 					view.SetRange(this.timeLine.SelectedStartIndex, this.timeLine.SelectedEndIndex);
 					view.ContextMenuOpening += delegate(object sender, ContextMenuEventArgs e) {
 						object source = (e.OriginalSource is Shape) ? e.OriginalSource : view;
-						MenuService.CreateContextMenu(source, "/AddIns/Profiler/QueryView/ContextMenu").IsOpen = true;
+						MenuService.ShowContextMenu(view, source, "/AddIns/Profiler/QueryView/ContextMenu");
 					};
 				}
 			}
@@ -197,7 +197,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			view.ShowQueryItems = true;
 			view.ContextMenuOpening += delegate(object sender, ContextMenuEventArgs e) {
 				object source = (e.OriginalSource is Shape) ? e.OriginalSource : view;
-				MenuService.CreateContextMenu(source, "/AddIns/Profiler/QueryView/ContextMenu").IsOpen = true;
+				MenuService.ShowContextMenu(view, source, "/AddIns/Profiler/QueryView/ContextMenu");
 			};
 			view.CurrentQueryChanged += delegate { ViewCurrentQueryChanged(header, view); };
 

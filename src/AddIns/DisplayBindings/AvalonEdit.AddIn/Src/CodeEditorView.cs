@@ -195,6 +195,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						toolTip = new ToolTip();
 						toolTip.Closed += ToolTipClosed;
 					}
+					toolTip.PlacementTarget = this; // required for property inheritance
 					toolTip.Content = args.ContentToShow;
 					toolTip.IsOpen = true;
 					e.Handled = true;
@@ -254,6 +255,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			popup = new Popup();
 			popup.Closed += PopupClosed;
+			popup.PlacementTarget = this; // required for property inheritance
 			popup.Placement = PlacementMode.Absolute;
 			popup.StaysOpen = true;
 			return popup;

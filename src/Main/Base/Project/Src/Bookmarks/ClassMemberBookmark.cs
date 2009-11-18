@@ -6,9 +6,11 @@
 // </file>
 
 using System;
+using System.Windows;
+using System.Windows.Input;
+
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Dom;
-using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -45,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public virtual void MouseDown(MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton == MouseButton.Left) {
-				MenuService.CreateContextMenu(this, ContextMenuPath).IsOpen = true;
+				MenuService.ShowContextMenu(e.Source as UIElement, this, ContextMenuPath);
 				e.Handled = true;
 			}
 		}
@@ -84,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public virtual void MouseDown(MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton == MouseButton.Left) {
-				MenuService.CreateContextMenu(this, ContextMenuPath).IsOpen = true;
+				MenuService.ShowContextMenu(e.Source as UIElement, this, ContextMenuPath);
 				e.Handled = true;
 			}
 		}

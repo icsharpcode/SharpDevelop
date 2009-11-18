@@ -169,7 +169,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(ITextEditor), adapter);
 			textView.Services.AddService(typeof(CodeEditor), this);
 			
-			textEditor.Background = Brushes.White;
 			textEditor.TextArea.TextEntering += TextAreaTextEntering;
 			textEditor.TextArea.TextEntered += TextAreaTextEntered;
 			textEditor.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
@@ -218,7 +217,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void TextAreaContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
 			ITextEditor adapter = GetAdapterFromSender(sender);
-			MenuService.CreateContextMenu(adapter, contextMenuPath).IsOpen = true;
+			MenuService.ShowContextMenu(sender as UIElement, adapter, contextMenuPath);
 		}
 		
 		void TextAreaMouseRightButtonDown(object sender, MouseButtonEventArgs e)

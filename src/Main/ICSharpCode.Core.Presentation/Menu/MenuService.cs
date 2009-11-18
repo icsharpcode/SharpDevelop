@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace ICSharpCode.Core.Presentation
@@ -105,8 +106,16 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static ContextMenu CreateContextMenu(object owner, string addInTreePath)
 		{
+			IList items = CreateUnexpandedMenuItems(null, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
+			return CreateContextMenu(items);
+		}
+		
+		public static ContextMenu ShowContextMenu(UIElement parent, object owner, string addInTreePath)
+		{
 			ContextMenu menu = new ContextMenu();
 			menu.ItemsSource = CreateMenuItems(menu, owner, addInTreePath);
+			menu.PlacementTarget = parent;
+			menu.IsOpen = true;
 			return menu;
 		}
 		
