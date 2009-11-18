@@ -5,20 +5,22 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Linq;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
 	/// <summary>
-	/// This view content is used.
+	/// This view content is used for upgrading or downgrading projects inside a solution.
 	/// </summary>
 	public class UpgradeViewContent : AbstractViewContent
 	{
 		public static void ShowIfRequired(Solution solution)
 		{
-			if (solution.Projects.OfType<IUpgradableProject>().Any(u => u.UpgradeDesired)) {
+			var projects = solution.Projects.OfType<IUpgradableProject>().ToList();
+			if (projects.Count > 0 && projects.All(u => u.UpgradeDesired)) {
 				Core.AnalyticsMonitorService.TrackFeature("UpgradeView opened automatically");
 				WorkbenchSingleton.Workbench.ShowView(new UpgradeViewContent(solution));
 			}
@@ -36,6 +38,18 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			get {
 				return upgradeView;
 			}
+		}
+	}
+	
+	public class ShowUpgradeView : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			UpgradeViewContent uvc = WorkbenchSingleton.Workbench.ViewContentCollection.OfType<UpgradeViewContent>().FirstOrDefault();
+			if (uvc != null)
+				uvc.WorkbenchWindow.SelectWindow();
+			else if (ProjectService.OpenSolution != null)
+				WorkbenchSingleton.Workbench.ShowView(new UpgradeViewContent(ProjectService.OpenSolution));
 		}
 	}
 }

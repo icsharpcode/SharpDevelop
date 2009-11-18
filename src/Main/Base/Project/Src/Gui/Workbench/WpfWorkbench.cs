@@ -365,6 +365,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			WorkbenchSingleton.AssertMainThread();
 			if (content == null)
 				throw new ArgumentNullException("content");
+			if (ViewContentCollection.Contains(content))
+				throw new ArgumentException("ViewContent was already shown");
 			System.Diagnostics.Debug.Assert(WorkbenchLayout != null);
 			
 			LoadViewContentMemento(content);

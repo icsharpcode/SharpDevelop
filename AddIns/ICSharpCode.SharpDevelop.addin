@@ -1613,6 +1613,11 @@
 				          shortcut = "Control|Q"
 				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.QuickDocumentation"/>
 			</Condition>
+			<Condition name = "SolutionOpen" action="Disable">
+				<MenuItem id = "Upgrade"
+				          label = "Project Upgrade"
+				          class = "ICSharpCode.SharpDevelop.Project.Converter.ShowUpgradeView"/>
+			</Condition>
 			
 			<MenuItem id = "LastSeparator" type = "Separator" />
 			
