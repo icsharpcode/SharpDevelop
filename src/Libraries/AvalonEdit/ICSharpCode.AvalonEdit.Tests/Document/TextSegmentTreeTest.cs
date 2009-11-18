@@ -150,8 +150,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			Assert.AreEqual(expectedSegments.Count, tree.Count);
 			foreach (TestTextSegment s in expectedSegments) {
-				Assert.AreEqual(s.ExpectedOffset, s.StartOffset, "startoffset for " + s);
-				Assert.AreEqual(s.ExpectedLength, s.Length, "length for " + s);
+				Assert.AreEqual(s.ExpectedOffset, s.StartOffset /*, "startoffset for " + s*/);
+				Assert.AreEqual(s.ExpectedLength, s.Length /*, "length for " + s*/);
 			}
 		}
 		

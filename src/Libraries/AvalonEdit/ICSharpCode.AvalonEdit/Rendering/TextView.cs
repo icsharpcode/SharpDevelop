@@ -112,7 +112,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (newValue != null) {
 				TextDocumentWeakEventManager.Changing.AddListener(newValue, this);
 				heightTree = new HeightTree(newValue, FontSize + 3);
-				formatter = TextFormatter.Create();
+				formatter = TextFormatterFactory.Create(this);
 			}
 			InvalidateMeasure(DispatcherPriority.Normal);
 			if (DocumentChanged != null)
@@ -121,23 +121,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		/// <summary>
 		/// Recreates the text formatter that is used internally
-		/// by calling <see cref="CreateTextFormatter"/>.
+		/// by calling <see cref="TextFormatterFactory.Create"/>.
 		/// </summary>
-		protected void RecreateTextFormatter()
+		void RecreateTextFormatter()
 		{
 			if (formatter != null) {
 				formatter.Dispose();
-				formatter = CreateTextFormatter();
+				formatter = TextFormatterFactory.Create(this);
 				Redraw();
 			}
-		}
-		
-		/// <summary>
-		/// Creates a new text formatter.
-		/// </summary>
-		protected virtual TextFormatter CreateTextFormatter()
-		{
-			return TextFormatter.Create();
 		}
 		
 		/// <inheritdoc cref="IWeakEventListener.ReceiveWeakEvent"/>
@@ -1542,6 +1534,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
+			if (TextFormatterFactory.PropertyChangeAffectsTextFormatter(e.Property)) {
+				RecreateTextFormatter();
+			}
 			if (e.Property == Control.ForegroundProperty
 			    || e.Property == Control.FontFamilyProperty
 			    || e.Property == Control.FontSizeProperty
