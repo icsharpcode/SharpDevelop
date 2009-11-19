@@ -15,10 +15,7 @@ using SharpRefactoring.Gui;
 
 namespace SharpRefactoring
 {
-	/// <summary>
-	/// Description of OverrideToStringMethodCommand
-	/// </summary>
-	public class OverrideToStringMethodCommand : AbstractRefactoringCommand
+	public class OverrideEqualsGetHashCodeMethodsCommand : AbstractRefactoringCommand
 	{
 		protected override void Run(ITextEditor textEditor, RefactoringProvider provider)
 		{
@@ -45,10 +42,10 @@ namespace SharpRefactoring
 			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(textEditor.Document, line.Offset);
 			
-			textEditor.Document.Insert(anchor.Offset, "public override string ToString()\n" + indent + "{\n" + indent + "\t");
-			textEditor.Document.Insert(anchor.Offset + 1, indent + "}\n");
-			
-//			AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(textEditor, anchor, current.Fields);
+//			textEditor.Document.Insert(anchor.Offset, "#region Equals and GetHashCode implementation\n" + indent);
+//			textEditor.Document.Insert(anchor.Offset + 1, indent + "#endregion\n");
+//			
+//			AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(textEditor, anchor, current);
 //			
 //			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
 		}

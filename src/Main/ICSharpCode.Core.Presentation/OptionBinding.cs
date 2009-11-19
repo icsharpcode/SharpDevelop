@@ -33,7 +33,7 @@ namespace ICSharpCode.Core.Presentation
 	/// </example>
 	public class OptionBinding : MarkupExtension
 	{
-		public string PropertyName { get; set; }
+		public string FullPropertyName { get; set; }
 		
 		static readonly Regex regex = new Regex("^.+\\:.+\\..+$", RegexOptions.Compiled);
 		
@@ -41,6 +41,7 @@ namespace ICSharpCode.Core.Presentation
 		DependencyProperty dp;
 		bool isStatic;
 		Type propertyDeclaringType;
+		string propertyName;
 		
 		MemberInfo propertyInfo;
 		
@@ -49,7 +50,13 @@ namespace ICSharpCode.Core.Presentation
 			if (!regex.IsMatch(propertyName))
 				throw new ArgumentException("parameter must have the following format: namespace:ClassName.FieldOrProperty", "propertyName");
 			
-			this.PropertyName = propertyName;
+			this.FullPropertyName = propertyName;
+		}
+		
+		public OptionBinding(Type container, string propertyName)
+		{
+			this.propertyDeclaringType = container;
+			this.propertyName = propertyName;
 		}
 		
 		public override object ProvideValue(IServiceProvider provider)
@@ -65,21 +72,22 @@ namespace ICSharpCode.Core.Presentation
 			if (target == null || dp == null)
 				return null;
 			
-			string[] name =  PropertyName.Split('.');
-			IXamlTypeResolver typeResolver = provider.GetService(typeof(IXamlTypeResolver)) as IXamlTypeResolver;
-			propertyDeclaringType = typeResolver.Resolve(name[0]);
-			if (propertyDeclaringType == null)
-				throw new ArgumentException("Could not find type " + name[0]);
+			if (FullPropertyName != null) {
+				string[] name =  FullPropertyName.Split('.');
+				IXamlTypeResolver typeResolver = provider.GetService(typeof(IXamlTypeResolver)) as IXamlTypeResolver;
+				propertyDeclaringType = typeResolver.Resolve(name[0]);
+				propertyName = name[1];
+			}
 			
-			this.propertyInfo = propertyDeclaringType.GetProperty(name[1]);
+			this.propertyInfo = propertyDeclaringType.GetProperty(propertyName);
 			if (this.propertyInfo != null) {
 				isStatic = (propertyInfo as PropertyInfo).GetGetMethod().IsStatic;
 			} else {
-				this.propertyInfo = propertyDeclaringType.GetField(name[1]);
+				this.propertyInfo = propertyDeclaringType.GetField(propertyName);
 				if (this.propertyInfo != null) {
 					isStatic = (propertyInfo as FieldInfo).IsStatic;
 				} else {
-					throw new ArgumentException("Could not find property " + name[1]);
+					throw new ArgumentException("Could not find property " + propertyName);
 				}
 			}
 			
@@ -103,7 +111,7 @@ namespace ICSharpCode.Core.Presentation
 
 				return ConvertOnDemand(result, dp.PropertyType);
 			} catch (Exception e) {
-				throw new Exception("Failing to convert " + this.PropertyName + " to " +
+				throw new Exception("Failing to convert " + this.FullPropertyName + " to " +
 				                    dp.OwnerType.Name + "." + dp.Name + " (" + dp.PropertyType + ")", e);
 			}
 		}
@@ -140,13 +148,13 @@ namespace ICSharpCode.Core.Presentation
 			return Convert.ChangeType(result, returnType);
 		}
 		
-		IOptionBindingContainer TryFindContainer(FrameworkElement start)
+		IOptionBindingContainer TryFindContainer(DependencyObject start)
 		{
 			if (start == null)
 				return null;
 			
 			while (start != null && !(start is IOptionBindingContainer))
-				start = start.Parent as FrameworkElement;
+				start = LogicalTreeHelper.GetParent(start);
 			
 			return start as IOptionBindingContainer;
 		}

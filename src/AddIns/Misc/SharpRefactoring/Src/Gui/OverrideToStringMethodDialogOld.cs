@@ -22,12 +22,12 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace SharpRefactoring.Gui
 {
-	public class OverrideToStringMethodDialog : InlineRefactorDialog
+	public class OverrideToStringMethodDialogOld : AbstractInlineRefactorDialog
 	{
 		ListBox listBox;
 		List<Wrapper<IField>> fields;
 		
-		public OverrideToStringMethodDialog(ITextEditor editor, ITextAnchor anchor, IList<IField> fields)
+		public OverrideToStringMethodDialogOld(ITextEditor editor, ITextAnchor anchor, IList<IField> fields)
 			: base(editor, anchor)
 		{
 			this.fields = fields.Select(f => new Wrapper<IField>() { Entity = f }).ToList();

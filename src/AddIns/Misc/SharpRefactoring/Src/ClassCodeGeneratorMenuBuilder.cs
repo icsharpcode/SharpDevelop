@@ -64,7 +64,7 @@ namespace SharpRefactoring
 					EventHandler eh = delegate {
 						var d = FindReferencesAndRenameHelper.GetDocument(c);
 						if (d != null)
-							ImplementAbstractClass(d, c, abstractClass);
+							ImplementAbstractClass(d, c, rtCopy);
 						ParserService.ParseCurrentViewContent();
 					};
 					subItems.Add(new MenuCommand(ambience.Convert(abstractClass), eh));
@@ -83,14 +83,15 @@ namespace SharpRefactoring
 		}
 		
 		#region Code generation
-		void ImplementAbstractClass(IDocument document, IClass target, IClass abstractClass)
+		void ImplementAbstractClass(IDocument document, IClass target, IReturnType abstractClass)
 		{
 			CodeGenerator generator = target.ProjectContent.Language.CodeGenerator;
 			RefactoringDocumentAdapter doc = new RefactoringDocumentAdapter(document);
 			var pos = doc.OffsetToPosition(doc.PositionToOffset(target.BodyRegion.EndLine, target.BodyRegion.EndColumn) - 1);
 			ClassFinder context = new ClassFinder(target, pos.Line, pos.Column);
 			
-			foreach (IMember member in abstractClass.AllMembers.Where(m => m.IsAbstract && !HasMember(m, target))) {
+			foreach (IMember member in MemberLookupHelper.GetAccessibleMembers(abstractClass, target, LanguageProperties.CSharp, true)
+			         .Where(m => m.IsAbstract && !HasMember(m, target))) {
 				generator.InsertCodeAtEnd(target.BodyRegion, doc, generator.GetOverridingMethod(member, context));
 			}
 		}

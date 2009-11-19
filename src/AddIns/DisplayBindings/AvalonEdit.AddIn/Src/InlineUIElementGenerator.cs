@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.textView = textView;
 			this.element = element;
 			this.anchor = anchor;
-			anchor.Deleted += delegate { Remove(); };
+			this.anchor.Deleted += delegate { Remove(); };
 		}
 		
 		public override int GetFirstInterestedOffset(int startOffset)

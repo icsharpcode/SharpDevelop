@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public static class MemberLookupHelper
 	{
 		#region LookupMember / GetAccessibleMembers
-		static List<IMember> GetAllMembers(IReturnType rt)
+		public static List<IMember> GetAllMembers(IReturnType rt)
 		{
 			List<IMember> members = new List<IMember>();
 			if (rt != null) {

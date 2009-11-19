@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -22,14 +23,14 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace SharpRefactoring.Gui
 {
-	public abstract class InlineRefactorDialog : DockPanel
+	public abstract class AbstractInlineRefactorDialog : DockPanel, IOptionBindingContainer
 	{
 		protected ITextAnchor anchor;
 		protected ITextEditor editor;
 		
 		public IInlineUIElement Element { get; set; }
 		
-		public InlineRefactorDialog(ITextEditor editor, ITextAnchor anchor)
+		public AbstractInlineRefactorDialog(ITextEditor editor, ITextAnchor anchor)
 		{
 			this.anchor = anchor;
 			this.editor = editor;
@@ -39,7 +40,7 @@ namespace SharpRefactoring.Gui
 			Initialize();
 		}
 		
-		void Initialize()
+		protected virtual void Initialize()
 		{
 			UIElement content = CreateContentElement();
 			
@@ -90,6 +91,11 @@ namespace SharpRefactoring.Gui
 				editor.Document.Insert(anchor.Offset, GenerateCode(generator, current) ?? "");
 			}
 			
+			if (optionBindings != null) {
+				foreach (OptionBinding binding in optionBindings)
+					binding.Save();
+			}
+			
 			Element.Remove();
 		}
 		
@@ -99,6 +105,16 @@ namespace SharpRefactoring.Gui
 				throw new InvalidOperationException("no IInlineUIElement set!");
 			
 			Element.Remove();
+		}
+		
+		List<OptionBinding> optionBindings;
+		
+		public void AddBinding(OptionBinding binding)
+		{
+			if (optionBindings == null)
+				optionBindings = new List<OptionBinding>();
+			
+			optionBindings.Add(binding);
 		}
 	}
 }
