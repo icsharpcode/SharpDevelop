@@ -658,12 +658,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			if (!e.Handled && e.Key == Key.L && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
 				this.UseLayoutRounding = !this.UseLayoutRounding;
+				StatusBarService.SetMessage("UseLayoutRounding=" + this.UseLayoutRounding);
 			}
 			if (!e.Handled && e.Key == Key.F && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
 				if (TextOptions.GetTextFormattingMode(this) == TextFormattingMode.Display)
 					TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
 				else
 					TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+				StatusBarService.SetMessage("TextFormattingMode=" + TextOptions.GetTextFormattingMode(this));
+			}
+			if (!e.Handled && e.Key == Key.R && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
+				switch (TextOptions.GetTextRenderingMode(this)) {
+					case TextRenderingMode.Auto:
+					case TextRenderingMode.ClearType:
+						TextOptions.SetTextRenderingMode(this, TextRenderingMode.Grayscale);
+						break;
+					case TextRenderingMode.Grayscale:
+						TextOptions.SetTextRenderingMode(this, TextRenderingMode.Aliased);
+						break;
+					default:
+						TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
+						break;
+				}
+				StatusBarService.SetMessage("TextRenderingMode=" + TextOptions.GetTextRenderingMode(this));
 			}
 		}
 		
