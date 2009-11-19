@@ -54,23 +54,19 @@
 		<MenuItem id = "Cut"
 		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
-		          loadclasslazy = "false"
-		          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
+		          command = "Cut"/>
 		<MenuItem id = "Copy"
 		          label = "${res:XML.MainMenu.EditMenu.Copy}"
 		          icon = "Icons.16x16.CopyIcon"
-		          loadclasslazy = "false"
-		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+		          command = "Copy"/>
 		<MenuItem id = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          icon = "Icons.16x16.PasteIcon"
-		          loadclasslazy = "false"
-		          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
+		          command = "Paste"/>
 		<MenuItem id = "Delete"
 		          label = "${res:XML.MainMenu.EditMenu.Delete}"
 		          icon = "Icons.16x16.DeleteIcon"
-		          loadclasslazy = "false"
-		          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
+		          command = "Delete"/>
 		<MenuItem id = "PropertySeparator" type = "Separator"/>
 		<MenuItem id          = "ShowProperties"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
@@ -96,7 +92,7 @@
 		<MenuItem id = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          icon = "Icons.16x16.PasteIcon"
-		          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
+		          command = "Paste"/>
 		<MenuItem id = "PropertySeparator" type = "Separator"/>
 		<MenuItem id          = "ShowProperties"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
@@ -114,19 +110,19 @@
 		<MenuItem id = "Cut"
 		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
-		          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
+		          command = "Cut"/>
 		<MenuItem id = "Copy"
 		          label = "${res:XML.MainMenu.EditMenu.Copy}"
 		          icon = "Icons.16x16.CopyIcon"
-		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+		          command = "Copy"/>
 		<MenuItem id = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          icon = "Icons.16x16.PasteIcon"
-		          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
+		          command = "Paste"/>
 		<MenuItem id = "Delete"
 		          label = "${res:XML.MainMenu.EditMenu.Delete}"
 		          icon = "Icons.16x16.DeleteIcon"
-		          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
+		          command = "Delete"/>
 		<MenuItem id = "PropertySeparator" type = "Separator"/>
 		<MenuItem id          = "ShowProperties"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
@@ -148,7 +144,7 @@
 		<MenuItem id = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          icon = "Icons.16x16.PasteIcon"
-		          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
+		          command = "Paste"/>
 		<MenuItem id = "PasteSeparator" type = "Separator"/>
 		<MenuItem id          = "LineUpIcons"
 		          label       = "${res:XML.MainMenu.FormatMenu.LineUpIcons}"
