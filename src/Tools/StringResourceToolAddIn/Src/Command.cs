@@ -39,9 +39,9 @@ namespace StringResourceToolAddIn
 			
 			string sdSrcPath = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location),
 			                                "../../../..");
+			string resxFile = Path.Combine(sdSrcPath, "../data/Resources/StringResources.resx");
 			
-			using (ResourceReader r = new ResourceReader(Path.Combine(sdSrcPath,
-			                                                          "Main/StartUp/Project/Resources/StringResources.resources"))) {
+			using (ResXResourceReader r = new ResXResourceReader(resxFile)) {
 				IDictionaryEnumerator en = r.GetEnumerator();
 				// Goes through the enumerator, printing out the key and value pairs.
 				while (en.MoveNext()) {
