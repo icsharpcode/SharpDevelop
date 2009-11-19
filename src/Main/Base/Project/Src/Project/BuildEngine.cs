@@ -694,7 +694,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			lock (this) {
 				if (progressMonitor != null) {
 					progressMonitor.TaskName = "${res:MainWindow.CompilerMessages.BuildVerb} "
-						+ projectsCurrentlyBuilding.Select(n => n.project.Name).Join(", ")
+						+ string.Join(", ", projectsCurrentlyBuilding.Select(n => n.project.Name))
 						+ "...";
 				}
 			}

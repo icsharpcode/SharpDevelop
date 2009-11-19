@@ -721,9 +721,6 @@
       <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\SolutionConfigurationEditor.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\IncrementalSearch.cs" />
-    <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
-    <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
     <Compile Include="Src\Gui\Dialogs\SharpDevelopColorDialog.cs" />
     <Compile Include="Src\Util\ExtensionMethods.cs" />
     <Compile Include="Src\Util\DebugTimer.cs" />

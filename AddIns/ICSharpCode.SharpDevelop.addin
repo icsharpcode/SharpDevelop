@@ -1532,14 +1532,6 @@
 		</MenuItem> <!-- end DEBUG menu -->
 		
 		<MenuItem id = "Search" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
-			<MenuItem id = "SearchIncremental"
-			          label = "${res:XML.MainMenu.SearchMenu.IncrementalSearch}"
-			          shortcut = "Control|E"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunIncrementalSearch"/>
-			<MenuItem id = "SearchReverseIncremental"
-			          label = "${res:XML.MainMenu.SearchMenu.ReverseIncrementalSearch}"
-			          shortcut = "Control|Shift|E"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.RunReverseIncrementalSearch"/>
 			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
 			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable"> -->
 			<MenuItem id = "ToggleBookmark"

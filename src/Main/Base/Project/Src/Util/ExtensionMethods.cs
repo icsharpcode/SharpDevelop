@@ -98,17 +98,36 @@ namespace ICSharpCode.SharpDevelop
 			return new ReadOnlyCollectionWrapper<T>(arr);
 		}
 		
-		public static string Join(this IEnumerable<string> input, string separator)
-		{
-			return string.Join(separator, input.ToArray());
-		}
-		
 		public static IEnumerable<WinForms.Control> GetRecursive(this WinForms.Control.ControlCollection collection)
 		{
-			foreach (WinForms.Control ctl in collection) {
-				yield return ctl;
-				foreach (WinForms.Control subCtl in ctl.Controls.GetRecursive()) {
-					yield return subCtl;
+			return collection.Cast<WinForms.Control>().Flatten(c => c.Controls.Cast<WinForms.Control>());
+		}
+		
+		/// <summary>
+		/// Converts a recursive data structure into a flat list.
+		/// </summary>
+		/// <param name="input">The root elements of the recursive data structure.</param>
+		/// <param name="recursion">The function that gets the children of an element.</param>
+		/// <returns>Iterator that enumerates the tree structure in preorder.</returns>
+		public static IEnumerable<T> Flatten<T>(this IEnumerable<T> input, Func<T, IEnumerable<T>> recursion)
+		{
+			Stack<IEnumerator<T>> stack = new Stack<IEnumerator<T>>();
+			try {
+				stack.Push(input.GetEnumerator());
+				while (stack.Count > 0) {
+					while (stack.Peek().MoveNext()) {
+						T element = stack.Peek().Current;
+						yield return element;
+						IEnumerable<T> children = recursion(element);
+						if (children != null) {
+							stack.Push(children.GetEnumerator());
+						}
+					}
+					stack.Pop().Dispose();
+				}
+			} finally {
+				while (stack.Count > 0) {
+					stack.Pop().Dispose();
 				}
 			}
 		}
