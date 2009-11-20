@@ -172,6 +172,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			int endOffset = offset + length;
 			textArea.Caret.Offset = endOffset;
 			textArea.Selection = new SimpleSelection(offset, endOffset);
+			textArea.Caret.BringCaretToView();
 		}
 		
 		/// <summary>
