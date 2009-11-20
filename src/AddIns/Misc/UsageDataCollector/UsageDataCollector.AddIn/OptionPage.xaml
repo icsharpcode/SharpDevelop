@@ -1,4 +1,4 @@
-﻿<gui:OptionPanel x:Class="ICSharpCode.UsageDataCollector.OptionPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<gui:OptionPanel x:Class="ICSharpCode.UsageDataCollector.OptionPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:ICSharpCode.UsageDataCollector">
 	<StackPanel>
 		<TextBlock TextWrapping="Wrap">
 	  	We need your help! To improve SharpDevelop in the future, we would like to know which features are used most.<LineBreak />
@@ -10,7 +10,7 @@
 		Show collected data
 		</Button>
 		<TextBlock HorizontalAlignment="Left">
-			<Hyperlink NavigateUri="http://www.example.com/UsageData">Privacy Statement</Hyperlink>
+			<Hyperlink NavigateUri="{x:Static local:AnalyticsMonitor.PrivacyStatementUrl}">Privacy Statement</Hyperlink>
 		</TextBlock>
 	</StackPanel>
 </gui:OptionPanel>

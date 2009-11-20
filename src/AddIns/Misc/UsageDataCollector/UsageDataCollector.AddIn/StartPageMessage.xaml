@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
-	x:Class="ICSharpCode.UsageDataCollector.StartPageMessage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	x:Class="ICSharpCode.UsageDataCollector.StartPageMessage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:local="clr-namespace:ICSharpCode.UsageDataCollector">
 	<StackPanel>
 		<core:CollapsiblePanel
 			Name="mainPanel">
@@ -43,7 +43,7 @@
 		<TextBlock
 			HorizontalAlignment="Left">
 			<Hyperlink
-				NavigateUri="http://www.example.com/UsageData">Privacy Statement</Hyperlink>
+				NavigateUri="{x:Static local:AnalyticsMonitor.PrivacyStatementUrl}">Privacy Statement</Hyperlink>
 		</TextBlock>
 	</StackPanel>
 </UserControl>
