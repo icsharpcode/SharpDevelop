@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>Grunwald.BooBinding</RootNamespace>
@@ -33,6 +34,9 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Boo.Lang.Extensions">
+      <HintPath>..\..\RequiredLibraries\Boo.Lang.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="Boo.Lang.Interpreter">
       <HintPath>..\..\RequiredLibraries\Boo.Lang.Interpreter.dll</HintPath>
     </Reference>
@@ -67,6 +71,7 @@
     <Compile Include="Src\BooProject.cs" />
     <Compile Include="Src\BooLanguageBinding.cs" />
     <Compile Include="Src\BooAmbience.cs" />
+    <Compile Include="Src\CodeCompletion\BindNamespacesWithoutRemovingErrors.cs" />
     <Compile Include="Src\CodeCompletion\BooParser.cs" />
     <Compile Include="Src\CodeCompletion\ExpressionFinder.cs" />
     <Compile Include="Src\CodeCompletion\ConvertVisitor.cs" />
