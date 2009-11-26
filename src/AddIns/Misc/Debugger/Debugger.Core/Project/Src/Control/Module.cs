@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
 using Debugger.MetaData;
 using Debugger.Wrappers.CorDebug;
 using Debugger.Wrappers.CorSym;
@@ -212,7 +214,16 @@ namespace Debugger
 				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(0, 0, ref unused);
 				return;
 			}
-			corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
+			try {
+				corModule.CastTo<ICorDebugModule2>().SetJMCStatus(1, 0, ref unused);
+			} catch (COMException e) {
+				// Cannot use JMC on this code (likely wrong JIT settings).
+				if ((uint)e.ErrorCode == 0x80131323) {
+					process.TraceMessage("Cannot use JMC on this code.  Release build?");
+					return;
+				}
+				throw;
+			}
 		}
 		
 		public void ApplyChanges(byte[] metadata, byte[] il)
