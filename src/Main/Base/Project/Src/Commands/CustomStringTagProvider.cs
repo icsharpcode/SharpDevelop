@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	public class SharpDevelopStringTagProvider :  IStringTagProvider
 	{
 		readonly static string[] tags = new string[] {
-			"ItemPath", "ItemDir", "ItemFilename", "ItemExt",
+			"ItemPath", "ItemDir", "ItemFilename", "ItemExt", "ItemNameNoExt",
 			"CurLine", "CurCol", "CurText",
 			"TargetPath", "TargetDir", "TargetName", "TargetExt",
 			"CurrentProjectName",
@@ -91,6 +91,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 				case "ITEMEXT":
 					try {
 						return Path.GetExtension(GetCurrentItemPath()) ?? string.Empty;
+					} catch (Exception) {}
+					break;
+				case "ITEMNAMENOEXT":
+					try {
+						return Path.GetFileNameWithoutExtension(GetCurrentItemPath()) ?? string.Empty;
 					} catch (Exception) {}
 					break;
 					
