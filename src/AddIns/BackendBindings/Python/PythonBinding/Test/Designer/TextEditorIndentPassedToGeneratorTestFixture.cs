@@ -32,7 +32,7 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			using (FormsDesignerViewContent viewContent = new FormsDesignerViewContent(null, new MockOpenedFile("Test.py"))) {
+			using (FormsDesignerViewContent viewContent = new FormsDesignerViewContent(new MockViewContent(), new MockOpenedFile("Test.py"))) {
 				viewContent.DesignerCodeFileContent = "class MainForm(Form):\r\n" +
 														" def __init__(self):\r\n" +
 														"  self.InitializeComponent()\r\n" +

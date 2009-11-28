@@ -46,7 +46,7 @@ namespace PythonBinding.Tests.Designer
 		public void SetUpFixture()
 		{
 			generator = new MockDesignerGenerator();
-			view = new FormsDesignerViewContent(null, new MockOpenedFile("Test.py"));
+			view = new FormsDesignerViewContent(new MockViewContent(), new MockOpenedFile("Test.py"));
 			generator.Attach(view);
 			
 			view.DesignerCodeFileContent = GetFormCode();
