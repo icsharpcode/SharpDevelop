@@ -36,7 +36,7 @@ namespace WixBinding.Tests.DialogLoading
 			CreatedComponents.Clear();
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				ComboBox comboBox = (ComboBox)dialog.Controls[0];
 				name = comboBox.Name;

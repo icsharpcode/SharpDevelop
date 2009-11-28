@@ -9,6 +9,7 @@ using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
 using System.Xml;
+using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Document
 {
@@ -27,7 +28,7 @@ namespace WixBinding.Tests.Document
 		{
 			doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			dialog = doc.GetDialog("MissingDialog");
+			dialog = doc.CreateWixDialog("MissingDialog", new MockTextFileReader());
 		}
 		
 		[Test]

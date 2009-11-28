@@ -30,7 +30,7 @@ namespace WixBinding.Tests.PackageFiles
 			doc = new WixDocument();
 			doc.FileName = @"C:\Projects\Setup\Files.wxs";
 			doc.LoadXml(GetWixXml());
-			XmlElement productElement = doc.Product;
+			XmlElement productElement = doc.GetProduct();
 			WixXmlAttributeCollection attributes = wixSchema.GetAttributes(productElement);
 			productIdAttribute = attributes["Id"];
 			productUpgradeCodeAttribute = attributes["UpgradeCode"];

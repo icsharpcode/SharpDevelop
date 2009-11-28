@@ -33,7 +33,7 @@ namespace WixBinding.Tests.DialogLoading
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixDocument doc = new WixDocument(project, this);
 			doc.LoadXml(GetWixXml());
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				PictureBox pictureBox = (PictureBox)dialog.Controls[0];
 				hasImage = (pictureBox.Image != null);

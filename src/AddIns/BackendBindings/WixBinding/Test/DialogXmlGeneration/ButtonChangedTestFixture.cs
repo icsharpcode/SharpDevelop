@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Xml;
 using WixBinding;
+using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.DialogXmlGeneration
 {
@@ -31,7 +32,7 @@ namespace WixBinding.Tests.DialogXmlGeneration
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
 
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog()) {
 				Button nextButton = (Button)dialog.Controls[0];
 				nextButton.Left = 200;

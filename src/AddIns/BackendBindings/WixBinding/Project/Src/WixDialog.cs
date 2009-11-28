@@ -52,8 +52,8 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		/// <param name="dialogElement">The dialog XML element loaded from
 		/// the Wix document</param>
-		public WixDialog(WixDocument document, XmlElement dialogElement) : 
-			this(document, dialogElement, null)
+		public WixDialog(WixDocument document, XmlElement dialogElement) 
+			: this(document, dialogElement, null)
 		{
 		}
 		
@@ -1141,9 +1141,9 @@ namespace ICSharpCode.WixBinding
 		{			
 			if (binaries != null) {
 				string fileName = binaries.GetBinaryFileName(id);
-				return document.GetBitmapFromFileName(fileName);
+				return document.LoadBitmapWithFileName(fileName);
 			} 
-			return document.GetBitmapFromId(id);
+			return document.LoadBitmapWithId(id);
 		}
 		
 		static string XmlEncode(string item)

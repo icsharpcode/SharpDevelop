@@ -6,24 +6,45 @@
 // </file>
 
 using System;
-using System.Drawing;
+using System.IO;
+using System.Text;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.WixBinding
 {
 	/// <summary>
 	/// A utility class that can replace xml in a Wix document currently open
 	/// in the text editor.
-	/// </summary>
+	/// </summary>	
 	public class WixDocumentEditor
 	{
-		TextAreaControl textAreaControl;
+		ITextEditor textEditor;
+		IDocument document;
 		
-		public WixDocumentEditor(TextAreaControl textAreaControl)
+		public WixDocumentEditor(ITextEditor textEditor)
 		{
-			this.textAreaControl = textAreaControl;
+			this.textEditor = textEditor;
+			this.document = textEditor.Document;
+		}
+		
+		
+		/// <summary>
+		/// Tries to replace the element defined by element name and its Id attribute in the
+		/// text editor with the specified xml.
+		/// </summary>
+		/// <param name="id">The Id attribute of the element.</param>
+		/// <param name="elementName">The name of the element.</param>
+		/// <param name="xml">The replacement xml.</param>
+		public DomRegion ReplaceElement(string elementAttributeId, string elementName, string replacementXml)
+		{
+			WixDocumentReader wixReader = new WixDocumentReader(new StringReader(document.Text));
+			DomRegion region = wixReader.GetElementRegion(elementName, elementAttributeId);
+			if (!region.IsEmpty) {
+				Replace(region, replacementXml);
+			}
+			return region;
 		}
 		
 		/// <summary>
@@ -32,92 +53,146 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public void Replace(DomRegion region, string xml)
 		{
-			IDocument document = textAreaControl.Document;
-			ISegment segment = WixDocument.ConvertRegionToSegment(document, region);
-						
-			// Replace the original xml with the new xml and indent it.
-			int originalLineCount = document.TotalNumberOfLines;
-			document.Replace(segment.Offset, segment.Length, xml);
-			int addedLineCount = document.TotalNumberOfLines - originalLineCount;
+			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
-			// Make sure the text inserted is visible.
-			textAreaControl.ScrollTo(region.BeginLine);
+			using (textEditor.Document.OpenUndoGroup()) {
 
-			// Indent the xml.
-			int insertedCharacterCount = IndentLines(textAreaControl.TextArea, region.BeginLine + 1, region.EndLine + addedLineCount, document.FormattingStrategy);
+				// Replace the original xml with the new xml and indent it.
+				int originalLineCount = document.TotalNumberOfLines;
+				int initialIndent = GetIndent(region.BeginLine);
+				document.Replace(segment.Offset, segment.Length, xml);
+				int addedLineCount = document.TotalNumberOfLines - originalLineCount;
+				
+				// Indent the xml.
+				int insertedCharacterCount = IndentAllLinesTheSame(region.BeginLine + 1, region.EndLine + addedLineCount, initialIndent);
+				
+				// Select the text just inserted.
+				int textInsertedLength = insertedCharacterCount + xml.Length;
+				textEditor.Select(segment.Offset, textInsertedLength);
 			
-			// Select the text just inserted.
-			SelectText(textAreaControl.SelectionManager, document, segment.Offset, xml.Length + insertedCharacterCount);
+				// Make sure the text inserted is visible.
+				textEditor.JumpTo(region.BeginLine + 1, 1);
+				
+				textEditor.Caret.Position = document.OffsetToPosition(segment.Offset + textInsertedLength);
+			}
+		}
+		
+		public void InsertIndented(Location location, string xml)
+		{
+			InsertIndented(location.Y, location.X, xml);
 		}
 		
 		/// <summary>
 		/// Inserts and indents the xml at the specified location.
 		/// </summary>
-		public void Insert(int line, int column, string xml)
+		/// <remarks>
+		/// Lines and columns are zero based.
+		/// </remarks>
+		public void InsertIndented(int line, int column, string xml)
 		{
-			IDocument document = textAreaControl.Document;
-			ISegment segment = document.GetLineSegment(line);
-						
-			// Insert the xml and indent it.
-			int originalLineCount = document.TotalNumberOfLines;
-			int offset = segment.Offset + column;
-			document.Insert(offset, xml);
-			int addedLineCount = document.TotalNumberOfLines - originalLineCount;
-			
-			// Make sure the text inserted is visible.
-			textAreaControl.ScrollTo(line);
+			using (textEditor.Document.OpenUndoGroup()) {
 
-			// Indent the xml.
-			int insertedCharacterCount = IndentLines(textAreaControl.TextArea, line, line + addedLineCount, document.FormattingStrategy);
-			
-			// Select the text just inserted.
-			SelectText(textAreaControl.SelectionManager, document, offset, xml.Length + insertedCharacterCount);
+				// Insert the xml and indent it.
+				IDocumentLine documentLine = document.GetLine(line + 1);
+				int initialIndent = GetIndent(line);
+				int offset = documentLine.Offset + column;
+				int originalLineCount = document.TotalNumberOfLines;
+				document.Insert(offset, xml);
+				int addedLineCount = document.TotalNumberOfLines - originalLineCount;
+	
+				// Indent the xml.
+				int insertedCharacterCount = IndentLines(line, line + addedLineCount, initialIndent);
+				
+				// Select the text just inserted.
+				int textInsertedLength = xml.Length + insertedCharacterCount;
+				textEditor.Select(offset, textInsertedLength);
+				
+				// Make sure the text inserted is visible.
+				textEditor.JumpTo(line + 1, 1);
+				
+				textEditor.Caret.Position = document.OffsetToPosition(offset + textInsertedLength);
+			}
 		}
-		
-		/// <summary>
-		/// Selects the specified text range.
-		/// </summary>
-		static void SelectText(SelectionManager selectionManager, IDocument document, int startOffset, int length)
-		{
-			selectionManager.ClearSelection();
-			TextLocation selectionStart = document.OffsetToPosition(startOffset);
-			TextLocation selectionEnd = document.OffsetToPosition(startOffset + length);
-			selectionManager.SetSelection(selectionStart, selectionEnd);
-		}
-						
+								
 		/// <summary>
 		/// Indents the lines and returns the total number of extra characters added.
 		/// </summary>
-		static int IndentLines(TextArea textArea, int begin, int end, IFormattingStrategy formattingStrategy)
+		int IndentLines(int begin, int end, int initialIndent)
 		{
 			int totalInsertedCharacters = 0;
 			
-			textArea.Document.UndoStack.StartUndoGroup();
 			for (int i = begin; i <= end; ++i) {
-				int existingCharacterCount = GetIndent(textArea, i);
-				int insertedCharacterCount = formattingStrategy.IndentLine(textArea, i) - existingCharacterCount;
-				totalInsertedCharacters += insertedCharacterCount;
+				if ((i == end) || (i == begin)) {
+					totalInsertedCharacters += IndentLine(i, initialIndent);
+				} else {
+					totalInsertedCharacters += IndentLine(i, initialIndent + 1);
+				}
 			}
-			textArea.Document.UndoStack.EndUndoGroup();
-			
 			return totalInsertedCharacters;
+		}
+		
+		int IndentAllLinesTheSame(int begin, int end, int indent)
+		{
+			int totalInsertedCharacters = 0;
+			for (int i = begin; i <= end; ++i) {
+				totalInsertedCharacters += IndentLine(i, indent);
+			}
+			return totalInsertedCharacters;			
 		}
 		
 		/// <summary>
 		/// Gets the current indentation for the specified line.
 		/// </summary>
-		static int GetIndent(TextArea textArea, int line)
+		int GetIndent(int line)
 		{			
-			int indentCount = 0;
-			string lineText = TextUtilities.GetLineAsString(textArea.Document, line);			
+			int whitespaceCharacterCount = 0;
+			string lineText = GetLineAsString(line);			
 			foreach (char ch in lineText) {
 				if (Char.IsWhiteSpace(ch)) {
-					indentCount++;
+					whitespaceCharacterCount++;
 				} else {
 					break;
 				}
 			}
-			return indentCount;
+			if (textEditor.Options.ConvertTabsToSpaces) {
+				return (whitespaceCharacterCount / textEditor.Options.IndentationSize);
+			}
+			return whitespaceCharacterCount;
+		}
+		
+		string GetLineAsString(int line)
+		{
+			IDocumentLine documentLine = document.GetLine(line + 1);
+			return documentLine.Text;
+		}
+		
+		int IndentLine(int line, int howManyIndents)
+		{
+			IDocumentLine documentLine = document.GetLine(line + 1);
+			int offset = documentLine.Offset;
+			
+			string indentationString = GetIndentationString(howManyIndents);
+			document.Insert(offset, indentationString);
+			return indentationString.Length;
+		}
+		
+		string GetIndentationString(int howManyIndents)
+		{
+			string singleIndent = GetSingleIndentString();
+			
+			StringBuilder indent = new StringBuilder();
+			for (int i = 0; i < howManyIndents; ++i) {
+				indent.Append(singleIndent);
+			}
+			return indent.ToString();
+		}
+		
+		string GetSingleIndentString()
+		{
+			if (textEditor.Options.ConvertTabsToSpaces) {
+				return new String(' ', textEditor.Options.IndentationSize);
+			}
+			return "\t";
 		}
 	}
 }

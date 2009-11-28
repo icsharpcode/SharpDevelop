@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>WixBinding.Tests</RootNamespace>
@@ -35,8 +36,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Design" />
@@ -46,6 +56,9 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -53,12 +66,33 @@
     <Compile Include="Document\DuplicateBinaryIdTestFixture.cs" />
     <Compile Include="Document\GenerateComponentIdFromDirectoryWithDotsTestFixture.cs" />
     <Compile Include="Document\NewWixFileElementTests.cs" />
+    <Compile Include="Document\WixDocumentLineSegmentEqualsTests.cs" />
+    <Compile Include="Document\WixDocumentSaveTests.cs" />
     <Compile Include="Gui\AddDialogsToSetupDialogListTestFixture.cs" />
     <Compile Include="Gui\DeleteWixExtensionNodeTestFixture.cs" />
+    <Compile Include="Gui\DialogDesignerGetSourceFilesTests.cs" />
+    <Compile Include="Gui\ShowExistingPackageFilesViewTestFixture.cs" />
+    <Compile Include="Gui\ShowSetupFilesTestFixture.cs" />
+    <Compile Include="Gui\WixDocumentEditorInsertTextTestFixture.cs" />
+    <Compile Include="Gui\WixDocumentEditorInsertUsesTextEditorPropertiesTestFixture.cs" />
+    <Compile Include="Gui\WixDocumentEditorReplaceElementTestFixture.cs" />
+    <Compile Include="Gui\WixDocumentEditorReplaceTextTestFixture.cs" />
+    <Compile Include="Gui\WixDocumentWindowIsActiveTests.cs" />
     <Compile Include="Gui\WixFileTreeNodeTestFixture.cs" />
     <Compile Include="Gui\WixProjectWithWixExtensionItemsTestFixture.cs" />
+    <Compile Include="PackageFiles\ActivePackageFilesViewTests.cs" />
+    <Compile Include="PackageFiles\ActiveViewChangedWhenPackageFilesAreModifiedTestFixture.cs" />
+    <Compile Include="PackageFiles\ActiveViewChangedWhenPackageFilesOpenTestFixtureBase.cs" />
+    <Compile Include="PackageFiles\ActiveViewChangedWhenPackageFilesViewOpenTestFixture.cs" />
     <Compile Include="PackageFiles\AddFilesToDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\AddNewRootDirectoryWithFilesTestFixture.cs" />
     <Compile Include="PackageFiles\NoRootDirectoryFoundTestFixture.cs" />
+    <Compile Include="PackageFiles\OpenTextEditorsTestFixture.cs" />
+    <Compile Include="PackageFiles\PackageFilesViewIsActiveTests.cs" />
+    <Compile Include="PackageFiles\PackageFilesViewTestFixture.cs" />
+    <Compile Include="PackageFiles\UpdateRootDirectoryRefWithNewFilesTestFixture.cs" />
+    <Compile Include="PackageFiles\UpdateRootDirectoryWithNewFilesTestFixture.cs" />
+    <Compile Include="PackageFiles\UpdateRootDirectoryWithNewFilesTestFixtureBase.cs" />
     <Compile Include="Project\AddWixExtensionTestFixture.cs" />
     <Compile Include="Project\AddWixLibraryTestFixture.cs" />
     <Compile Include="Gui\AddWixProjectNodeTestFixture.cs" />
@@ -72,6 +106,30 @@
     <Compile Include="Project\GetWixFileProjectItemsTestFixture.cs" />
     <Compile Include="Project\WixBuilderCannotBuildNonWixProjectTestFixture.cs" />
     <Compile Include="Gui\WixProjectWithUnexpandedLibraryItemsTestFixture.cs" />
+    <Compile Include="Utils\DerivedAddElementCommand.cs" />
+    <Compile Include="Utils\MockCaret.cs" />
+    <Compile Include="Utils\MockFormsDesignerView.cs" />
+    <Compile Include="Utils\MockOpenedFile.cs" />
+    <Compile Include="Utils\MockPackageFilesViewFactory.cs" />
+    <Compile Include="Utils\MockTextEditor.cs" />
+    <Compile Include="Utils\MockTextEditorOptions.cs" />
+    <Compile Include="Utils\MockTextFileReader.cs" />
+    <Compile Include="Utils\MockWixDocumentWriter.cs" />
+    <Compile Include="Utils\MockWixPackageFilesControl.cs" />
+    <Compile Include="Utils\MockWorkbench.cs" />
+    <Compile Include="Utils\MockWorkbenchWindow.cs" />
+    <Compile Include="Utils\MockXmlTextWriter.cs" />
+    <Compile Include="Utils\Tests\MockFormsDesignerViewTests.cs" />
+    <Compile Include="Utils\Tests\MockPackageFilesViewFactoryTests.cs" />
+    <Compile Include="Utils\Tests\MockTextEditorTests.cs" />
+    <Compile Include="Utils\Tests\MockTextEditorViewContentTests.cs" />
+    <Compile Include="Utils\Tests\MockViewContentTests.cs" />
+    <Compile Include="Utils\Tests\MockWixPackageFilesControlTests.cs" />
+    <Compile Include="Utils\Tests\MockWorkbenchTests.cs" />
+    <Compile Include="Utils\Tests\MockWorkbenchWindowTests.cs" />
+    <Compile Include="Utils\Tests\MockXmlTextWriterTests.cs" />
+    <Compile Include="Utils\Tests\WixBindingTestsHelperTests.cs" />
+    <Compile Include="Utils\Tests\XmlWriterSettingsComparisonTests.cs" />
     <Compile Include="Utils\WixBindingTestsHelper.cs" />
     <Compile Include="Utils\MockViewContent.cs" />
     <Compile Include="Utils\MockTextEditorViewContent.cs" />
@@ -213,6 +271,7 @@
     <Compile Include="PackageFiles\GenerateComponentIdTests.cs" />
     <Compile Include="DirectoryImport\DuplicateComponentIdTestFixture.cs" />
     <Compile Include="DirectoryImport\ExcludedItemsTestFixture.cs" />
+    <Compile Include="Utils\XmlWriterSettingsComparison.cs" />
     <EmbeddedResource Include="Strings.resx" />
     <Compile Include="PropertyGrid\GuidTypeEditorTestFixture.cs" />
     <Compile Include="Utils\MockServiceProvider.cs" />
@@ -243,6 +302,11 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Utils\Tests" />
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
       <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>
       <Name>XmlEditor</Name>

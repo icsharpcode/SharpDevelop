@@ -32,7 +32,9 @@ namespace WixBinding.Tests.Document
 		{
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			id = WixComponentElement.GenerateIdFromFileName(doc, @"C:\Projects\My.Project\MyApp.exe");
+			WixComponentElement wixComponent = new WixComponentElement(doc);
+			wixComponent.GenerateUniqueIdFromFileName(@"C:\Projects\My.Project\MyApp.exe");
+			id = wixComponent.Id;
 		}
 		
 		[Test]

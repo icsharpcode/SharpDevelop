@@ -33,7 +33,7 @@ namespace WixBinding.Tests.PackageFiles
 		public void Init()
 		{
 			base.InitFixture();
-			componentElement = (XmlElement)editor.Document.RootDirectory.ChildNodes[0].ChildNodes[0].ChildNodes[0];
+			componentElement = (XmlElement)editor.Document.GetRootDirectory().ChildNodes[0].ChildNodes[0].ChildNodes[0];
 			view.SelectedElement = componentElement;
 			editor.SelectedElementChanged();
 			exeFileName = Path.Combine(project.Directory, @"bin\TestApplication.exe");

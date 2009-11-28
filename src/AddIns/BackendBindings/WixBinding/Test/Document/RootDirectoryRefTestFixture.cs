@@ -22,7 +22,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			directoryRef = doc.RootDirectoryRef;
+			directoryRef = doc.GetRootDirectoryRef();
 		}
 		
 		[Test]

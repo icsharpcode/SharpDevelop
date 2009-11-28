@@ -7,6 +7,7 @@
 
 using System;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
 {
@@ -16,16 +17,29 @@ namespace ICSharpCode.WixBinding
 	public class AddElementCommand : ToolStripMenuItem
 	{
 		string name;
+		IWorkbench workbench;
+		ActivePackageFilesView activePackageFilesView;
 		
-		public AddElementCommand(string name) : base(name)
+		public AddElementCommand(string name) 
+			: this(name, WorkbenchSingleton.Workbench)
+		{
+		}
+		
+		public AddElementCommand(string name, IWorkbench workbench)
 		{
 			this.name = name;
+			this.workbench = workbench;
+			activePackageFilesView = new ActivePackageFilesView(workbench);
 		}
 		
 		protected override void OnClick(EventArgs e)
 		{
 			base.OnClick(e);
-			PackageFilesView.ActiveView.AddElement(name);
+			
+			PackageFilesView view = activePackageFilesView.GetActiveView();
+			if (view != null) {
+				view.AddElement(name);
+			}
 		}
 	}
 }

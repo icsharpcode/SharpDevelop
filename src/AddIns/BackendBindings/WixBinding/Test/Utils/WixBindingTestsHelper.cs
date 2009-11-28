@@ -5,12 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.WixBinding;
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Resources;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.WixBinding;
 
 namespace WixBinding.Tests.Utils
 {
@@ -86,6 +89,15 @@ namespace WixBinding.Tests.Utils
 			string folder = Path.GetDirectoryName(codeBase);
 			folder = Path.GetFullPath(Path.Combine(folder, @"..\"));
 			MSBuildEngine.MSBuildProperties["SharpDevelopBinPath"] = folder;
+		}
+		
+		/// <summary>
+		/// Registers embedded strings with SharpDevelop's resource Manager 
+		/// </summary>
+		public static void RegisterResourceStringsWithSharpDevelopResourceManager()
+		{
+			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", typeof(WixBindingTestsHelper).Assembly);
+			ResourceService.RegisterNeutralStrings(rm);
 		}
 	}
 }

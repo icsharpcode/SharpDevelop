@@ -32,7 +32,7 @@ namespace WixBinding.Tests.DialogLoading
 			CreatedComponents.Clear();
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				ListBox listBox = (ListBox)dialog.Controls[0];
 				name = listBox.Name;

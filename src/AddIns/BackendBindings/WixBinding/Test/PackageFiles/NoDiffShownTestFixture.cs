@@ -26,7 +26,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			base.InitFixture();
 			directories = new List<string>();
-			editor.ShowDiff();
+			editor.CalculateDiff();
 			Assert.IsTrue(view.IsNoDifferencesFoundMessageDisplayed);
 			Assert.AreEqual(1, directories.Count);
 			Assert.AreEqual(@"C:\Projects\Test\bin", directories[0]);

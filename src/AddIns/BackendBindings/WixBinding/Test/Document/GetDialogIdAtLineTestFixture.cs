@@ -23,47 +23,49 @@ namespace WixBinding.Tests.Document
 	{
 		StringReader reader;
 		string expectedDialogId = "WelcomeDialog";
+		WixDocumentReader wixReader;
 		
 		[SetUp]
 		public void SetUpFixture()
 		{
 			reader = new StringReader(GetWixXml());
+			wixReader = new WixDocumentReader(reader);
 		}
 		
 		[Test]
 		public void OnDialogStartTagLine()
 		{
-			Assert.AreEqual(expectedDialogId, WixDocument.GetDialogId(reader, 8));
+			Assert.AreEqual(expectedDialogId, wixReader.GetDialogId(8));
 		}
 		
 		[Test]
 		public void StartOfDocument()
 		{
-			Assert.IsNull(WixDocument.GetDialogId(reader, 0));
+			Assert.IsNull(wixReader.GetDialogId(0));
 		}
 		
 		[Test]
 		public void LineBeforeDialogStartTag()
 		{
-			Assert.IsNull(WixDocument.GetDialogId(reader, 7));
+			Assert.IsNull(wixReader.GetDialogId(7));
 		}
 		
 		[Test]
 		public void FirstLineAfterDialogStartTag()
 		{
-			Assert.AreEqual(expectedDialogId, WixDocument.GetDialogId(reader, 9));			
+			Assert.AreEqual(expectedDialogId, wixReader.GetDialogId(9));			
 		}
 		
 		[Test]
 		public void DialogEndTagLine()
 		{
-			Assert.AreEqual(expectedDialogId, WixDocument.GetDialogId(reader, 15));
+			Assert.AreEqual(expectedDialogId, wixReader.GetDialogId(15));
 		}
 		
 		[Test]
 		public void FirstLineAfterDialogEndTag()
 		{
-			Assert.IsNull(WixDocument.GetDialogId(reader, 16));
+			Assert.IsNull(wixReader.GetDialogId(16));
 		}
 		
 		string GetWixXml()

@@ -6,15 +6,24 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
 {
-	public class AddFilesToDirectoryCommand : AbstractMenuCommand
+	public class AddFilesCommand : AbstractActivePackageFilesViewCommand
 	{
-		public override void Run()
+		public AddFilesCommand()
 		{
-			PackageFilesView.ActiveView.AddFiles();
+		}
+		
+		public AddFilesCommand(IWorkbench workbench)
+			: base(workbench)
+		{
+		}
+		
+		protected override void Run(PackageFilesView view)
+		{
+			view.AddFiles();
 		}
 	}
 }

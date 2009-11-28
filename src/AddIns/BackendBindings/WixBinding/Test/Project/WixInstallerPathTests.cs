@@ -25,7 +25,7 @@ namespace WixBinding.Tests.Project
 		{
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			
-			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\Test.msi", project.InstallerFullPath);
+			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\Test.msi", project.GetInstallerFullPath());
 		}
 		
 		[Test]
@@ -34,7 +34,7 @@ namespace WixBinding.Tests.Project
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			project.SetProperty("OutputName", "ChangedName");
 			
-			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\ChangedName.msi", project.InstallerFullPath);
+			Assert.AreEqual(@"C:\Projects\Test\bin\Debug\ChangedName.msi", project.GetInstallerFullPath());
 		}
 	}
 }

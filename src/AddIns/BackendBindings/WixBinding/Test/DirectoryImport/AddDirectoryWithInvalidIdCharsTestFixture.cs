@@ -28,7 +28,7 @@ namespace WixBinding.Tests.DirectoryImport
 		public void AddDirectoryWithHyphen()
 		{
 			string directoryName = "Test-directory";
-			WixDirectoryElement element = document.RootDirectory.AddDirectory(directoryName);
+			WixDirectoryElement element = document.GetRootDirectory().AddDirectory(directoryName);
 			Assert.AreEqual("Test_directory", element.Id);
 		}
 		

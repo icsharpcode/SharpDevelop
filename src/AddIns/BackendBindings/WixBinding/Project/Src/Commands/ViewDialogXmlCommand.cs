@@ -54,7 +54,8 @@ namespace ICSharpCode.WixBinding
 			try {
 				WorkbenchTextFileReader workbenchTextFileReader = new WorkbenchTextFileReader();
 				using (TextReader reader = workbenchTextFileReader.Create(fileName)) {
-					return WixDocument.GetStartElementLocation(reader, "Dialog", id);
+					WixDocumentReader wixReader = new WixDocumentReader(reader);
+					return wixReader.GetStartElementLocation("Dialog", id);
 				}
 			} catch (XmlException ex) {
 				WixBindingService.ShowErrorInErrorList(fileName, ex);

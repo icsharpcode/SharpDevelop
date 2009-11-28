@@ -32,14 +32,14 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			base.InitFixture();
 			editor.AddElement("Directory");
-			directoryElement = (XmlElement)editor.Document.RootDirectory.ChildNodes[0];
+			directoryElement = (XmlElement)editor.Document.GetRootDirectory().ChildNodes[0];
 			firstSelectedElement = view.SelectedElement;
 			editor.AddElement("Directory");
 			childDirectoryElement = (XmlElement)directoryElement.ChildNodes[0];
 			secondSelectedElement = view.SelectedElement;
 			view.SelectedElement = null;
 			editor.AddElement("Directory");
-			secondDirectoryElement = (XmlElement)editor.Document.RootDirectory.ChildNodes[1];
+			secondDirectoryElement = (XmlElement)editor.Document.GetRootDirectory().ChildNodes[1];
 		}
 		
 		[Test]
@@ -91,13 +91,13 @@ namespace WixBinding.Tests.PackageFiles
 		[Test]
 		public void RootDirectoryId()
 		{
-			Assert.AreEqual("TARGETDIR", editor.Document.RootDirectory.GetAttribute("Id"));
+			Assert.AreEqual("TARGETDIR", editor.Document.GetRootDirectory().GetAttribute("Id"));
 		}
 		
 		[Test]
 		public void RootDirectorySourceName()
 		{
-			Assert.AreEqual("SourceDir", editor.Document.RootDirectory.GetAttribute("SourceName"));
+			Assert.AreEqual("SourceDir", editor.Document.GetRootDirectory().GetAttribute("SourceName"));
 		}
 		
 		[Test]

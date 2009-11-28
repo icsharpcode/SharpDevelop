@@ -48,7 +48,7 @@ namespace WixBinding.Tests.DirectoryImport
 			editor.AddDirectory(directory);
 			
 			WixNamespaceManager nsManager = new WixNamespaceManager(editor.Document.NameTable);
-			appDirectoryElement = (WixDirectoryElement)editor.Document.RootDirectory.FirstChild;
+			appDirectoryElement = (WixDirectoryElement)editor.Document.GetRootDirectory().FirstChild;
 			myAppExeFileComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component", nsManager);
 			myAppExeFileElement = (WixFileElement)myAppExeFileComponentElement.LastChild;
 			docsDirectoryElement = (WixDirectoryElement)appDirectoryElement.SelectSingleNode("w:Directory[@Name='docs']", nsManager);

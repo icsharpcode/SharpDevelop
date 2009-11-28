@@ -26,7 +26,7 @@ namespace WixBinding.Tests.Document
 		{
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			directory = doc.RootDirectory;
+			directory = doc.GetRootDirectory();
 		}
 		
 		[Test]

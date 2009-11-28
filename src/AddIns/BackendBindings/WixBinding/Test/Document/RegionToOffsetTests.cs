@@ -6,7 +6,8 @@
 // </file>
 
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using System;
@@ -17,14 +18,20 @@ namespace WixBinding.Tests.Document
 	[TestFixture]
 	public class RegionToOffsetTests
 	{
+		AvalonEditDocumentAdapter document;
+		
+		[SetUp]
+		public void Init()
+		{
+			document = new AvalonEditDocumentAdapter();
+		}
+		
 		[Test]
-		public void SingleLine()
+		public void SingleLineRegionConvertedToSegment()
 		{
 			DomRegion region = new DomRegion(0, 0, 0, 5);
-			DocumentFactory factory = new DocumentFactory();
-			IDocument document = factory.CreateDocument();
-			document.TextContent = "1234567890";
-			ISegment segment = WixDocument.ConvertRegionToSegment(document, region);
+			document.Text = "1234567890";
+			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
 			WixDocumentLineSegment expectedSegment = new WixDocumentLineSegment(0, 6);
 			
@@ -32,13 +39,11 @@ namespace WixBinding.Tests.Document
 		}
 		
 		[Test]
-		public void TwoLines()
+		public void TwoLineRegionConvertedToSegment()
 		{
 			DomRegion region = new DomRegion(0, 1, 1, 0);
-			DocumentFactory factory = new DocumentFactory();
-			IDocument document = factory.CreateDocument();
-			document.TextContent = "1234567890\r\n1234567890";
-			ISegment segment = WixDocument.ConvertRegionToSegment(document, region);
+			document.Text = "1234567890\r\n1234567890";
+			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
 			WixDocumentLineSegment expectedSegment = new WixDocumentLineSegment(1, 12);
 			
@@ -46,13 +51,11 @@ namespace WixBinding.Tests.Document
 		}
 		
 		[Test]
-		public void ThreeLines()
+		public void ThreeLineRegionConvertedToSegment()
 		{
 			DomRegion region = new DomRegion(0, 2, 2, 1);
-			DocumentFactory factory = new DocumentFactory();
-			IDocument document = factory.CreateDocument();
-			document.TextContent = "1234567890\r\n1234567890\r\n1234567890";
-			ISegment segment = WixDocument.ConvertRegionToSegment(document, region);
+			document.Text = "1234567890\r\n1234567890\r\n1234567890";
+			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
 			WixDocumentLineSegment expectedSegment = new WixDocumentLineSegment(2, 24);
 			
@@ -60,13 +63,11 @@ namespace WixBinding.Tests.Document
 		}
 		
 		[Test]
-		public void ThreeLinesWithoutCarriageReturn()
+		public void ThreeLineRegionWithoutCarriageReturnConvertedToSegment()
 		{
 			DomRegion region = new DomRegion(0, 2, 2, 1);
-			DocumentFactory factory = new DocumentFactory();
-			IDocument document = factory.CreateDocument();
-			document.TextContent = "1234567890\n1234567890\n1234567890";
-			ISegment segment = WixDocument.ConvertRegionToSegment(document, region);
+			document.Text = "1234567890\n1234567890\n1234567890";
+			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
 			WixDocumentLineSegment expectedSegment = new WixDocumentLineSegment(2, 22);
 			
@@ -74,13 +75,11 @@ namespace WixBinding.Tests.Document
 		}
 		
 		[Test]
-		public void BeginLineOnSecondLine()
+		public void RegionWithBeginLineOnSecondLineConvertedToSegment()
 		{
 			DomRegion region = new DomRegion(1, 0, 2, 0);
-			DocumentFactory factory = new DocumentFactory();
-			IDocument document = factory.CreateDocument();
-			document.TextContent = "1234567890\r\n1234567890\r\n1234567890";
-			ISegment segment = WixDocument.ConvertRegionToSegment(document, region);
+			document.Text = "1234567890\r\n1234567890\r\n1234567890";
+			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
 			WixDocumentLineSegment expectedSegment = new WixDocumentLineSegment(12, 13);
 			

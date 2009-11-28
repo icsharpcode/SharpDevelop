@@ -28,7 +28,7 @@ namespace WixBinding.Tests.Document
 		public void SetUpFixture()
 		{
 			doc = new WixDocument();
-			prefixBeforeLoad = doc.WixNamespacePrefix;
+			prefixBeforeLoad = doc.GetWixNamespacePrefix();
 			doc.LoadXml(GetWixXml());
 			directory = doc.CreateWixElement("Directory");
 			directory.OwnerDocument.DocumentElement.AppendChild(directory);
@@ -61,7 +61,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void WixNamespacePrefix()
 		{
-			Assert.AreEqual("w", doc.WixNamespacePrefix);
+			Assert.AreEqual("w", doc.GetWixNamespacePrefix());
 		}
 		
 		[Test]

@@ -17,7 +17,7 @@ using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.WixBinding
 {
-	public class WixPackageFilesControl : System.Windows.Forms.UserControl, IWixPackageFilesView
+	public class WixPackageFilesControl : System.Windows.Forms.UserControl, IWixPackageFilesView, IWixPackageFilesControl
 	{
 		bool errorMessageTextBoxVisible;
 		bool diffVisible;
@@ -32,25 +32,19 @@ namespace ICSharpCode.WixBinding
 			InitializeComponent();
 			diffControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/AddIns/WixBinding/WixPackageFilesDiffControl/ContextMenu");
 		}
-		
-		public delegate void DirtyChangedEventHandler(object source, EventArgs e);
-		
+				
 		/// <summary>
 		/// Raised when the files are changed and require saving.
 		/// </summary>
-		public event DirtyChangedEventHandler DirtyChanged;
+		public event EventHandler DirtyChanged;
 				
 		/// <summary>
 		/// Gets or sets the error message that will be displayed instead of the
 		/// property grid.
 		/// </summary>
 		public string ErrorMessage {
-			get {
-				return errorMessageTextBox.Text;
-			}
-			set {
-				errorMessageTextBox.Text = value;
-			}
+			get { return errorMessageTextBox.Text; }
+			set { errorMessageTextBox.Text = value; }
 		}
 		
 		/// <summary>
@@ -58,9 +52,7 @@ namespace ICSharpCode.WixBinding
 		/// error message text box replaces the property grid.
 		/// </summary>
 		public bool IsErrorMessageTextBoxVisible {
-			get {
-				return errorMessageTextBoxVisible;
-			}
+			get { return errorMessageTextBoxVisible; }
 			set {
 				errorMessageTextBoxVisible = value;
 				if (value) {
@@ -75,9 +67,7 @@ namespace ICSharpCode.WixBinding
 		/// Shows or hides the diff panel.
 		/// </summary>
 		public bool IsDiffVisible {
-			get {
-				return diffVisible;
-			}
+			get { return diffVisible; }
 			set {
 				if (diffVisible != value) {
 					diffVisible = value;
@@ -94,9 +84,7 @@ namespace ICSharpCode.WixBinding
 		/// Gets the project that is currently being displayed.
 		/// </summary>
 		public WixProject Project {
-			get {
-				return project;
-			}
+			get { return project; }
 		}
 		
 		/// <summary>
@@ -120,9 +108,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public bool IsDirty {
-			get {
-				return dirty;
-			}
+			get { return dirty; }
 			set {
 				bool oldValue = dirty;
 				dirty = value;
@@ -149,9 +135,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public XmlElement SelectedElement {
-			get {
-				return packageFilesTreeView.SelectedElement;
-			}
+			get { return packageFilesTreeView.SelectedElement; }
 			set {
 				packageFilesTreeView.SelectedElement = value;
 				if (value == null) {
@@ -164,9 +148,7 @@ namespace ICSharpCode.WixBinding
 		/// Gets the attributes for the selected xml element.
 		/// </summary>
 		public WixXmlAttributeCollection Attributes {
-			get {
-				return wixXmlAttributes;
-			}
+			get { return wixXmlAttributes; }
 		}
 		
 		/// <summary>
@@ -179,9 +161,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public StringCollection AllowedChildElements {
-			get {
-				return packageFilesTreeView.AllowedChildElements;
-			}
+			get { return packageFilesTreeView.AllowedChildElements; }
 		}
 		
 		public void ShowNoRootDirectoryFoundMessage()
@@ -297,9 +277,9 @@ namespace ICSharpCode.WixBinding
 		/// Wix document and the files on the file system and displays
 		/// the results.
 		/// </summary>
-		public void ShowDiff()
+		public void CalculateDiff()
 		{
-			editor.ShowDiff();
+			editor.CalculateDiff();
 		}
 					
 		/// <summary>

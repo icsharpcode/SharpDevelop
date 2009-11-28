@@ -193,7 +193,7 @@ namespace ICSharpCode.WixBinding
 			WixDirectoryElement parentElement = (WixDirectoryElement)view.SelectedElement;
 			
 			// Add directory.
-			string directoryName = WixDirectoryElement.GetLastDirectoryName(directory);
+			string directoryName = WixDirectoryElement.GetLastFolderInDirectoryName(directory);
 			WixDirectoryElement directoryElement = AddDirectory(parentElement, directoryName);
 			AddFiles(directoryElement, directory);
 			
@@ -216,14 +216,14 @@ namespace ICSharpCode.WixBinding
 		/// the Wix document and the files on the file system and
 		/// shows the differences.
 		/// </summary>
-		public void ShowDiff()
+		public void CalculateDiff()
 		{
 			WixPackageFilesDiff diff = new WixPackageFilesDiff(directoryReader);
 			diff.ExcludedFileNames.Add(excludedNames);
 			
 			WixDirectoryElementBase directoryElement = view.SelectedElement as WixDirectoryElementBase;
 			if (directoryElement == null) {
-				directoryElement = RootDirectoryElement;
+				directoryElement = GetRootDirectoryElement();
 			}
 			
 			// Directory element selected?
@@ -314,7 +314,7 @@ namespace ICSharpCode.WixBinding
 		WixDirectoryElement AddDirectory(WixDirectoryElementBase parentElement, string name)
 		{
 			if (parentElement == null) {
-				parentElement = RootDirectoryElement;
+				parentElement = GetRootDirectoryElement();
 				if (parentElement == null) {
 					parentElement = document.AddRootDirectory();
 				}
@@ -327,13 +327,12 @@ namespace ICSharpCode.WixBinding
 		/// Takes into account whether the WixDocument is using a 
 		/// DirectoryRef element.
 		/// </summary>
-		WixDirectoryElementBase RootDirectoryElement {
-			get {
-				if (usingRootDirectoryRef) {
-					return document.RootDirectoryRef;
-				}
-				return document.RootDirectory;
+		WixDirectoryElementBase GetRootDirectoryElement()
+		{
+			if (usingRootDirectoryRef) {
+				return document.GetRootDirectoryRef();
 			}
+			return document.GetRootDirectory();
 		}
 		
 		/// <summary>
@@ -359,12 +358,11 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Adds a new component element to the directory element.
 		/// </summary>
-		/// <param name="id">The id attribute the component element will have.</param>
-		WixComponentElement AddComponent(WixDirectoryElement parentElement, string id)
+		WixComponentElement AddComponent(WixDirectoryElement parentDirectory, string fileName)
 		{
-			if (parentElement != null) {
-				WixComponentElement element = parentElement.AddComponent(id);
-				return element;
+			if (parentDirectory != null) {
+				WixComponentElement component = parentDirectory.AddComponent(fileName);
+				return component;
 			}
 			return null;
 		}
@@ -382,15 +380,15 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		FindRootDirectoryResult FindRootDirectory(WixDocument currentDocument)
 		{
-			if (currentDocument.IsProductDocument) {
-				WixDirectoryElement rootDirectory = currentDocument.RootDirectory;
+			if (currentDocument.HasProduct) {
+				WixDirectoryElement rootDirectory = currentDocument.GetRootDirectory();
 				if (rootDirectory != null) {
 					view.AddDirectories(rootDirectory.GetDirectories());
 				}
 				document = currentDocument;
 				return FindRootDirectoryResult.RootDirectoryFound;
 			} else {
-				WixDirectoryRefElement rootDirectoryRef = currentDocument.RootDirectoryRef;
+				WixDirectoryRefElement rootDirectoryRef = currentDocument.GetRootDirectoryRef();
 				if (rootDirectoryRef != null) {
 					view.AddDirectories(rootDirectoryRef.GetDirectories());
 					document = currentDocument;
@@ -421,8 +419,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		WixComponentElement AddFileWithParentComponent(WixDirectoryElement directoryElement, string fileName)
 		{
-			string id = WixComponentElement.GenerateIdFromFileName(document, fileName);
-			WixComponentElement component = AddComponent(directoryElement, id);			
+			WixComponentElement component = AddComponent(directoryElement, fileName);
 			AddFile(component, fileName, true);
 			return component;
 		}
@@ -440,7 +437,7 @@ namespace ICSharpCode.WixBinding
 		void AddDirectoryContents(WixDirectoryElement directoryElement, string directory)
 		{
 			foreach (string subDirectory in DirectoryReader.GetDirectories(directory)) {
-				string subDirectoryName = WixDirectoryElement.GetLastDirectoryName(subDirectory);
+				string subDirectoryName = WixDirectoryElement.GetLastFolderInDirectoryName(subDirectory);
 				if (!excludedNames.IsExcluded(subDirectoryName)) {
 					WixDirectoryElement subDirectoryElement = AddDirectory(directoryElement, subDirectoryName);
 					AddFiles(subDirectoryElement, subDirectory);

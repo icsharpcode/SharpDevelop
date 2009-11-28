@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
 {
@@ -14,11 +14,20 @@ namespace ICSharpCode.WixBinding
 	/// Adds a directory and all its contents to the currently selected directory
 	/// node.
 	/// </summary>
-	public class AddDirectoryCommand : AbstractMenuCommand
+	public class AddDirectoryCommand : AbstractActivePackageFilesViewCommand
 	{
-		public override void Run()
+		public AddDirectoryCommand()
 		{
-			PackageFilesView.ActiveView.AddDirectory();
+		}
+		
+		public AddDirectoryCommand(IWorkbench workbench)
+			: base(workbench)
+		{
+		}
+		
+		protected override void Run(PackageFilesView view)
+		{
+			view.AddDirectory();
 		}
 	}
 }

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -25,42 +26,17 @@ namespace WixBinding.Tests.Utils
 		
 		public MockViewContent()
 		{
-			SetName("dummy.name");
+			SetFileName("dummy.name");
 		}
 		
-		public void SetName(string fileName)
+		public void SetFileName(string fileName)
 		{
 			primaryFile = new MockOpenedFile(fileName, false);
 		}
 		
-		public void SetUntitledName(string fileName)
+		public void SetUntitledFileName(string fileName)
 		{
 			primaryFile = new MockOpenedFile(fileName, true);
-		}
-		
-		class MockOpenedFile : OpenedFile
-		{
-			public MockOpenedFile(string fileName, bool isUntitled)
-			{
-				base.FileName = FileName.Create(fileName);
-				base.IsUntitled = isUntitled;
-			}
-			
-			public override IList<IViewContent> RegisteredViewContents {
-				get {
-					throw new NotImplementedException();
-				}
-			}
-			
-			public override void RegisterView(IViewContent view)
-			{
-			}
-			
-			public override void UnregisterView(IViewContent view)
-			{
-			}
-			
-			public override event EventHandler FileClosed { add {} remove {} }
 		}
 		
 		#pragma warning disable 67
@@ -72,7 +48,7 @@ namespace WixBinding.Tests.Utils
 		
 		public IList<OpenedFile> Files {
 			get {
-				return new OpenedFile[] { primaryFile };
+				throw new NotImplementedException();
 			}
 		}
 		
@@ -94,12 +70,12 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public void Save(OpenedFile file, System.IO.Stream stream)
+		public void Save(OpenedFile file, Stream stream)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public void Load(OpenedFile file, System.IO.Stream stream)
+		public void Load(OpenedFile file, Stream stream)
 		{
 			throw new NotImplementedException();
 		}

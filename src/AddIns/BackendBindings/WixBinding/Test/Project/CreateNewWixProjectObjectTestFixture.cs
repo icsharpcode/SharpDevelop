@@ -146,7 +146,8 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void UnknownProperty()
 		{
-			Assert.IsNull(project.GetValue("UnknownMSBuildProperty"));
+			IWixPropertyValueProvider provider = (IWixPropertyValueProvider)project;
+			Assert.IsNull(provider.GetValue("UnknownMSBuildProperty"));
 		}
 		
 		[Test]
@@ -160,10 +161,11 @@ namespace WixBinding.Tests.Project
 		/// </summary>
 		ProjectPropertyElement GetMSBuildProperty(string name)
 		{
-			foreach (ProjectPropertyGroupElement g in project.MSBuildProjectFile.PropertyGroups) {
-				foreach (ProjectPropertyElement element in g.Properties) {
-					if (element.Name == name)
+			foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
+				foreach (ProjectPropertyElement element in propertyGroup.Properties) {
+					if (element.Name == name) {
 						return element;
+					}
 				}
 			}
 			return null;

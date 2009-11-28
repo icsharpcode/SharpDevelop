@@ -32,7 +32,7 @@ namespace WixBinding.Tests.Gui
 		public void WixFileName()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			view.SetName("Setup.wxs");
+			view.SetFileName("Setup.wxs");
 			Assert.IsTrue(binding.CanAttachTo(view));
 		}
 		
@@ -40,7 +40,7 @@ namespace WixBinding.Tests.Gui
 		public void WixIncludeFileName()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			view.SetName("Setup.wxi");
+			view.SetFileName("Setup.wxi");
 			Assert.IsTrue(binding.CanAttachTo(view));
 		}
 		
@@ -48,7 +48,7 @@ namespace WixBinding.Tests.Gui
 		public void WixFileNameUppercase()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			view.SetName("SETUP.WXS");
+			view.SetFileName("SETUP.WXS");
 			Assert.IsTrue(binding.CanAttachTo(view));
 		}
 		
@@ -56,7 +56,7 @@ namespace WixBinding.Tests.Gui
 		public void NonWixFileName()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			view.SetName("Setup.txt");
+			view.SetFileName("Setup.txt");
 			Assert.IsFalse(binding.CanAttachTo(view));
 		}
 		
@@ -64,7 +64,7 @@ namespace WixBinding.Tests.Gui
 		public void NonTextEditorProviderView()
 		{
 			MockViewContent view = new MockViewContent();
-			view.SetName("Setup.wxs");
+			view.SetFileName("Setup.wxs");
 			Assert.IsFalse(binding.CanAttachTo(view));
 		}
 		
@@ -72,7 +72,7 @@ namespace WixBinding.Tests.Gui
 		public void UntitledWixFileName()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			view.SetUntitledName("Setup.wxs");
+			view.SetUntitledFileName("Setup.wxs");
 			Assert.IsTrue(binding.CanAttachTo(view));
 		}
 		
@@ -80,7 +80,7 @@ namespace WixBinding.Tests.Gui
 		public void UntitledNonWixFileName()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			view.SetUntitledName("Setup.txt");
+			view.SetUntitledFileName("Setup.txt");
 			Assert.IsFalse(binding.CanAttachTo(view));
 		}
 		
@@ -88,7 +88,7 @@ namespace WixBinding.Tests.Gui
 		public void NullUntitledFileName()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			view.SetUntitledName(null);
+			view.SetUntitledFileName(null);
 			Assert.IsFalse(binding.CanAttachTo(view));			
 		}
 		
@@ -96,7 +96,7 @@ namespace WixBinding.Tests.Gui
 		public void NullFileName()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			view.SetName(null);
+			view.SetFileName(null);
 			Assert.IsFalse(binding.CanAttachTo(view));			
 		}
 		

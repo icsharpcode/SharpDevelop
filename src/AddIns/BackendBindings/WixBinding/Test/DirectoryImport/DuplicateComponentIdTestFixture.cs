@@ -43,7 +43,7 @@ namespace WixBinding.Tests.DirectoryImport
 			editor.AddDirectory(directory);
 			
 			nsManager = new WixNamespaceManager(editor.Document.NameTable);
-			appDirectoryElement = (WixDirectoryElement)editor.Document.RootDirectory.SelectSingleNode("w:Directory[@Name='MyApp']", nsManager);
+			appDirectoryElement = (WixDirectoryElement)editor.Document.GetRootDirectory().SelectSingleNode("w:Directory[@Name='MyApp']", nsManager);
 			readmeComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component[w:File/@Name='readme.txt']", nsManager);
 			licenseComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component[w:File/@Name='license.txt']", nsManager);	
 			exeComponentElement = (WixComponentElement)appDirectoryElement.SelectSingleNode("w:Component[w:File/@Name='MyApp.exe']", nsManager);
@@ -76,7 +76,7 @@ namespace WixBinding.Tests.DirectoryImport
 			view.SelectedElement = null;
 			editor.AddDirectory(directory2);
 						
-			WixDirectoryElement directoryElement = (WixDirectoryElement)editor.Document.RootDirectory.SelectSingleNode("w:Directory[@Name='a-app']", nsManager);
+			WixDirectoryElement directoryElement = (WixDirectoryElement)editor.Document.GetRootDirectory().SelectSingleNode("w:Directory[@Name='a-app']", nsManager);
 			WixComponentElement exeComponentElement = (WixComponentElement)directoryElement.SelectSingleNode("w:Component[w:File/@Name='MyApp.exe']", nsManager);
 
 			Assert.AreEqual("A_appMyAppExe", exeComponentElement.Id);

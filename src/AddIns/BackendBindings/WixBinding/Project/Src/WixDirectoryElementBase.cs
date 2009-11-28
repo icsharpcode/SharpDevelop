@@ -17,16 +17,11 @@ namespace ICSharpCode.WixBinding
 	/// Common base class for the WixDirectoryElement and WixDirectoryRefElement
 	/// classes.
 	/// </summary>
-	public abstract class WixDirectoryElementBase : XmlElement
+	public abstract class WixDirectoryElementBase : WixElementBase
 	{
 		public WixDirectoryElementBase(string localName, WixDocument document)
-			: base(document.WixNamespacePrefix, localName, WixNamespaceManager.Namespace, document)
+			: base(localName, document)
 		{
-		}
-		
-		public string Id {
-			get { return GetAttribute("Id"); }
-			set { SetAttribute("Id", value); }
 		}
 		
 		/// <summary>
@@ -38,9 +33,7 @@ namespace ICSharpCode.WixBinding
 			foreach (XmlNode childNode in ChildNodes) {
 				WixDirectoryElement childElement = childNode as WixDirectoryElement;
 				if (childElement != null) {
-					if (WixDirectoryElement.IsDirectoryElement(childElement.LocalName)) {
-						directories.Add(childElement);
-					}
+					directories.Add(childElement);
 				}
 			}
 			return directories.ToArray();
@@ -70,7 +63,8 @@ namespace ICSharpCode.WixBinding
 			WixDirectoryElement directoryElement = new WixDirectoryElement((WixDocument)OwnerDocument);
 			directoryElement.Id = WixFileElement.GenerateId(name);
 			directoryElement.DirectoryName = name;
-			return (WixDirectoryElement)AppendChild(directoryElement);
-		}		
+			AppendChild(directoryElement);
+			return directoryElement;
+		}
 	}
 }

@@ -25,7 +25,7 @@ namespace WixBinding.Tests.DialogXmlGeneration
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
 			CreatedComponents.Clear();
-			WixDialog wixDialog = doc.GetDialog("AcceptLicenseDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("AcceptLicenseDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				XmlElement dialogElement = wixDialog.UpdateDialogElement(dialog);
 			}

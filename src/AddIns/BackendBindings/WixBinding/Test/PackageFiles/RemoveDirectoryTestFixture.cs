@@ -25,7 +25,7 @@ namespace WixBinding.Tests.PackageFiles
 		public void SetUpFixture()
 		{
 			base.InitFixture();
-			XmlElement progFilesDir = (XmlElement)editor.Document.RootDirectory.ChildNodes[0];
+			XmlElement progFilesDir = (XmlElement)editor.Document.GetRootDirectory().ChildNodes[0];
 			installDir = (XmlElement)progFilesDir.ChildNodes[0];
 			view.SelectedElement = installDir;
 			editor.RemoveElement();

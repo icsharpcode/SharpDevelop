@@ -12,12 +12,12 @@ using System.Xml;
 
 namespace ICSharpCode.WixBinding
 {
-	public class WixComponentElement : XmlElement
+	public class WixComponentElement : WixElementBase
 	{
 		public const string ComponentElementName = "Component";
 		
 		public WixComponentElement(WixDocument document) 
-			: base(document.WixNamespacePrefix, ComponentElementName, WixNamespaceManager.Namespace, document)
+			: base(ComponentElementName, document)
 		{
 		}
 		
@@ -26,105 +26,20 @@ namespace ICSharpCode.WixBinding
 			set { SetAttribute("Guid", value); }
 		}
 		
-		public string Id {
-			get { return GetAttribute("Id"); }
-			set { SetAttribute("Id", value); }
-		}
-		
 		public string DiskId {
 			get { return GetAttribute("DiskId"); }
 			set { SetAttribute("DiskId", value); }
 		}
 		
-		/// <summary>
-		/// Checks whether the disk id has already been set for this component.
-		/// </summary>
 		public bool HasDiskId {
 			get { return HasAttribute("DiskId"); }
 		}
 		
-		/// <summary>
-		/// Generates a new guid for this component element.
-		/// </summary>
 		public void GenerateNewGuid()
 		{
 			Guid = System.Guid.NewGuid().ToString().ToUpperInvariant();
 		}
 		
-		/// <summary>
-		/// Creates a new file element with the specified filename.
-		/// </summary>
-		public WixFileElement AddFile(string fileName)
-		{
-			WixFileElement fileElement = new WixFileElement(this, fileName);
-			return (WixFileElement)AppendChild(fileElement);
-		}
-		
-		/// <summary>
-		/// Creates an id from the filename.
-		/// </summary>
-		/// <remarks>
-		/// Takes the filename, removes all periods, and 
-		/// capitalises the first character and first extension character.
-		/// </remarks>
-		/// <param name="document">The Wix document is used to make sure the
-		/// id generated is unique for that document.</param>
-		/// <param name="fileName">The full filename including the directory to
-		/// use when generating the id.</param>
-		public static string GenerateIdFromFileName(WixDocument document, string fileName)
-		{
-			string id = GenerateIdFromFileName(fileName);
-			if (!document.ComponentIdExists(id)) {
-				return id;
-			}
-			
-			// Add the parent folder to the id.
-			string parentDirectory = WixDirectoryElement.GetLastDirectoryName(Path.GetDirectoryName(fileName));
-			parentDirectory = FirstCharacterToUpperInvariant(parentDirectory);
-			parentDirectory = WixFileElement.GenerateId(parentDirectory).Replace(".", String.Empty);
-			id = String.Concat(parentDirectory, id);
-			if (!document.ComponentIdExists(id)) {
-				return id;
-			}
-			
-			// Add a number to the end until we generate a unique id.
-			int count = 0;
-			string baseId = id;
-			do {
-				++count;
-				id = String.Concat(baseId, count);
-			} while (document.ComponentIdExists(id));
-			
-			return id;
-		}
-		
-		/// <summary>
-		/// Creates an id from the filename.
-		/// </summary>
-		/// <remarks>
-		/// Takes the filename, removes all periods, and 
-		/// capitalises the first character and first extension character.
-		/// </remarks>
-		public static string GenerateIdFromFileName(string fileName)
-		{
-			string fileNameNoExtension = Path.GetFileNameWithoutExtension(fileName);
-			string idStart = String.Empty;
-			if (fileNameNoExtension.Length > 0) {
-				idStart = FirstCharacterToUpperInvariant(fileNameNoExtension).Replace(".", String.Empty);
-			}
-			
-			// Remove period from extension and uppercase first extension char.
-			string extension = Path.GetExtension(fileName);
-			string idEnd = String.Empty;
-			if (extension.Length > 1) {
-				idEnd = FirstCharacterToUpperInvariant(extension.Substring(1));
-			}
-			return WixFileElement.GenerateId(String.Concat(idStart, idEnd));
-		}
-		
-		/// <summary>
-		/// Gets any child file elements.
-		/// </summary>
 		public WixFileElement[] GetFiles()
 		{
 			List<WixFileElement> files = new List<WixFileElement>();
@@ -138,11 +53,112 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Upper cases first character of string.
+		/// Creates a new file element with the specified filename.
 		/// </summary>
-		static string FirstCharacterToUpperInvariant(string s)
+		public WixFileElement AddFile(string fileName)
 		{
-			return String.Concat(s.Substring(0, 1).ToUpperInvariant(), s.Substring(1));
+			WixFileElement fileElement = new WixFileElement(this, fileName);
+			AppendChild(fileElement);
+			return fileElement;
+		}
+		
+		/// <remarks>
+		/// Takes the filename, removes all periods, and 
+		/// capitalises the first character and first extension character.
+		/// </remarks>
+		public void GenerateUniqueIdFromFileName(string fileName)
+		{
+			Id = GenerateIdFromFileName(fileName);
+			if (!OwnerWixDocument.ComponentIdExists(Id)) {
+				return;
+			}
+			
+			Id = GenerateIdFromParentDirectoryAndFileName(fileName, Id);
+			if (!OwnerWixDocument.ComponentIdExists(Id)) {
+				return;
+			}
+			
+			Id = GenerateUniqueIdByAppendingNumberToEnd(Id);
+		}
+		
+		/// <summary>
+		/// Creates an id from the filename.
+		/// </summary>
+		/// <remarks>
+		/// Takes the filename, removes all periods, and 
+		/// capitalises the first character and first extension character.
+		/// </remarks>
+		public string GenerateIdFromFileName(string fileName)
+		{
+			string fileNameWithoutExtension = UpperCaseFirstCharacterOfFileNameWithoutExtension(fileName);
+			fileNameWithoutExtension = RemoveDotCharacters(fileNameWithoutExtension);
+			
+			string extension = GetFileExtensionWithoutDotCharacter(fileName);
+			extension = UpperCaseFirstCharacter(extension);
+			
+			string modifiedFileName = String.Concat(fileNameWithoutExtension, extension);
+			return WixFileElement.GenerateId(modifiedFileName);
+		}
+		
+		string UpperCaseFirstCharacterOfFileNameWithoutExtension(string fileName)
+		{
+			string fileNameNoExtension = Path.GetFileNameWithoutExtension(fileName);
+			if (fileNameNoExtension.Length > 0) {
+				return UpperCaseFirstCharacter(fileNameNoExtension);
+			}
+			return String.Empty;
+		}
+		
+		string GetFileExtensionWithoutDotCharacter(string fileName)
+		{
+			string extension = Path.GetExtension(fileName);
+			if (!String.IsNullOrEmpty(extension)) {
+				return extension.Substring(1);
+			}
+			return String.Empty;
+		}
+		
+		string UpperCaseFirstCharacter(string s)
+		{
+			if (!String.IsNullOrEmpty(s)) {
+				string firstCharacter = s.Substring(0, 1);
+				string restOfString = s.Substring(1);
+				return String.Concat(firstCharacter.ToUpperInvariant(), restOfString);
+			}
+			return String.Empty;
+		}
+		
+		string GenerateIdFromParentDirectoryAndFileName(string fileName, string idGeneratedFromFileName)
+		{
+			string id = GenerateIdFromParentDirectory(fileName);
+			return String.Concat(id, idGeneratedFromFileName);
+		}
+		
+		string GenerateIdFromParentDirectory(string fileName)
+		{
+			string fullParentDirectory = Path.GetDirectoryName(fileName);
+			string lastFolder = WixDirectoryElement.GetLastFolderInDirectoryName(fullParentDirectory);
+			string id = UpperCaseFirstCharacter(lastFolder);
+			id = WixFileElement.GenerateId(id);
+			id = RemoveDotCharacters(id);
+			return id;
+		}
+		
+		string RemoveDotCharacters(string text)
+		{
+			return text.Replace(".", String.Empty);
+		}
+		
+		string GenerateUniqueIdByAppendingNumberToEnd(string id)
+		{
+			int count = 0;
+			string baseId = id;
+			do {
+				++count;
+				id = String.Concat(baseId, count);
+			} while (OwnerWixDocument.ComponentIdExists(id));
+			
+			return id;
 		}
 	}
 }

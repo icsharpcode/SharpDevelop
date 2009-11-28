@@ -54,12 +54,11 @@ namespace WixBinding.Tests.Document
 		}
 		
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
-		public void PassingFileLoaderIntoWixDocument()
+		public void CreatingWixDocumentWithNullFileLoaderThrowsArgumentNullException()
 		{
 			IFileLoader fileLoader = null;
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
-			WixDocument doc = new WixDocument(project, fileLoader);
+			Assert.Throws<ArgumentNullException>(delegate { WixDocument doc = new WixDocument(project, fileLoader); });
 		}
 		
 		string GetWixXml()

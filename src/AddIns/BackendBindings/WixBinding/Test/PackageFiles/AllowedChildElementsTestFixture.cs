@@ -32,7 +32,7 @@ namespace WixBinding.Tests.PackageFiles
 			base.InitFixture();
 			childElementAllowedWhenNoItemSelected = new string[view.AllowedChildElements.Count];
 			view.AllowedChildElements.CopyTo(childElementAllowedWhenNoItemSelected, 0);
-			WixDirectoryElement rootDir = editor.Document.RootDirectory;
+			WixDirectoryElement rootDir = editor.Document.GetRootDirectory();
 			XmlElement directoryElement = (XmlElement)rootDir.ChildNodes[0];
 			view.SelectedElement = directoryElement;
 			editor.SelectedElementChanged();

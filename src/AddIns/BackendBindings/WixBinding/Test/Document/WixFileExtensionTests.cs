@@ -12,38 +12,58 @@ using System;
 namespace WixBinding.Tests.Document
 {
 	/// <summary>
-	/// Tests that the WixDocument.IsWixFileName method correctly detects
+	/// Tests that the WixFileName.IsWixFileName method correctly detects
 	/// Wix document file extensions.
 	/// </summary>
 	[TestFixture]
 	public class WixFileExtensionTests
 	{
 		[Test]
-		public void WxsFile()
+		public void IsWixFileNameReturnsTrueIfFileHasWxsFileExtension()
 		{
-			Assert.IsTrue(WixDocument.IsWixFileName("foo.wxs"));
-			Assert.IsTrue(WixDocument.IsWixSourceFileName("foo.wxs"));
+			Assert.IsTrue(WixFileName.IsWixFileName("foo.wxs"));
 		}
 		
 		[Test]
-		public void WxsFileUppercase()
+		public void IsWixSourceFileNameReturnsTrueIfFileHasWxsFileExtension()
 		{
-			Assert.IsTrue(WixDocument.IsWixFileName(@"src\FOO.WXS"));
-			Assert.IsTrue(WixDocument.IsWixSourceFileName(@"src\FOO.WXS"));
+			Assert.IsTrue(WixFileName.IsWixSourceFileName("foo.wxs"));
 		}
 		
 		[Test]
-		public void WxiFile()
+		public void IsWixSFileNameReturnsTrueIfWxsFileExtensionIsUppercase()
 		{
-			Assert.IsTrue(WixDocument.IsWixFileName("foo.wxi"));
-			Assert.IsFalse(WixDocument.IsWixSourceFileName("foo.wxi"));
+			Assert.IsTrue(WixFileName.IsWixFileName(@"src\FOO.WXS"));
 		}
 		
 		[Test]
-		public void NullFileName()
+		public void IsWixSourceFileNameReturnsTrueIfWxsFileExtensionIsUppercase()
 		{
-			Assert.IsFalse(WixDocument.IsWixFileName(null));
-			Assert.IsFalse(WixDocument.IsWixSourceFileName(null));
+			Assert.IsTrue(WixFileName.IsWixSourceFileName(@"src\FOO.WXS"));
+		}
+		
+		[Test]
+		public void IsWixFileNameReturnsTrueIfFileHasWxiFileExtension()
+		{
+			Assert.IsTrue(WixFileName.IsWixFileName("foo.wxi"));
+		}
+		
+		[Test]
+		public void IsWixFileNameReturnsFalseIfFileHasWxiFileExtension()
+		{
+			Assert.IsFalse(WixFileName.IsWixSourceFileName("foo.wxi"));
+		}
+		
+		[Test]
+		public void IsWixFileNameReturnsFalseIfFileNameIsNull()
+		{
+			Assert.IsFalse(WixFileName.IsWixFileName(null));
+		}
+		
+		[Test]
+		public void IsWixSourceFileNameReturnsFalseIfFileNameIsNull()
+		{
+			Assert.IsFalse(WixFileName.IsWixSourceFileName(null));
 		}
 	}
 }

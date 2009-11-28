@@ -33,7 +33,7 @@ namespace WixBinding.Tests.DialogLoading
 			CreatedComponents.Clear();
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				Label line = (Label)dialog.Controls[0];
 				lineName = line.Name;

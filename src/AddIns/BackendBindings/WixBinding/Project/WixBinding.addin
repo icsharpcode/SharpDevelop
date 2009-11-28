@@ -217,7 +217,7 @@
 			class = "ICSharpCode.WixBinding.AddDirectoryCommand"/>
 		<MenuItem id = "AddFilesToDirectory"
 			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddFiles}"
-			class = "ICSharpCode.WixBinding.AddFilesToDirectoryCommand"/>
+			class = "ICSharpCode.WixBinding.AddFilesCommand"/>
 		<MenuItem id = "Diff"
 				label = "Diff"
 				class = "ICSharpCode.WixBinding.ShowDiffCommand"/>
@@ -227,7 +227,7 @@
 	<Path name = "/AddIns/WixBinding/PackageFilesView/ContextMenu/ComponentTreeNode">
 		<MenuItem id = "AddFiles"
 			label = "${res:ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddFiles}"
-			class = "ICSharpCode.WixBinding.AddFilesToComponentCommand"/>
+			class = "ICSharpCode.WixBinding.AddFilesCommand"/>
 		<Include path = "/AddIns/WixBinding/PackageFilesView/ContextMenu/Common"/>
 	</Path>
 

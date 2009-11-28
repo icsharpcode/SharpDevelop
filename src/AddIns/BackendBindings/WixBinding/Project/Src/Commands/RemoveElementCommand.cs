@@ -6,18 +6,27 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
 {
 	/// <summary>
 	/// Remove the selected element from the Wix document.
 	/// </summary>
-	public class RemoveElementCommand : AbstractMenuCommand
+	public class RemoveElementCommand : AbstractActivePackageFilesViewCommand
 	{
-		public override void Run()
+		public RemoveElementCommand()
 		{
-			PackageFilesView.ActiveView.RemoveSelectedElement();
+		}
+		
+		public RemoveElementCommand(IWorkbench workbench)
+			: base(workbench)
+		{
+		}
+		
+		protected override void Run(PackageFilesView view)
+		{
+			view.RemoveSelectedElement();
 		}
 	}
 }

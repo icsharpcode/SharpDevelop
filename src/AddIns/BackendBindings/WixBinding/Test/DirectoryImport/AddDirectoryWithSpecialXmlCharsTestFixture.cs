@@ -28,7 +28,7 @@ namespace WixBinding.Tests.DirectoryImport
 		public void AddDirectoryWithSingleQuoteChar()
 		{
 			string directoryName = "Test'directory";
-			WixDirectoryElement element = document.RootDirectory.AddDirectory(directoryName);
+			WixDirectoryElement element = document.GetRootDirectory().AddDirectory(directoryName);
 			Assert.AreEqual(directoryName, element.DirectoryName);
 		}
 		

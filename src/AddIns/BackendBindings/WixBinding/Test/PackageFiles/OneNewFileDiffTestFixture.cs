@@ -23,7 +23,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			base.InitFixture();
 			editor.ExcludedItems.AddRange(new string[] {"*.pdb"});
-			WixDirectoryElement programFilesDirectory = (WixDirectoryElement)editor.Document.RootDirectory.FirstChild;
+			WixDirectoryElement programFilesDirectory = (WixDirectoryElement)editor.Document.GetRootDirectory().FirstChild;
 			installDirectory = (WixDirectoryElement)programFilesDirectory.FirstChild;
 			binDirectory = (WixDirectoryElement)installDirectory.LastChild;
 		}
@@ -32,7 +32,7 @@ namespace WixBinding.Tests.PackageFiles
 		public void InstallDirectorySelected()
 		{
 			view.SelectedElement = installDirectory;
-			editor.ShowDiff();
+			editor.CalculateDiff();
 			Assert.AreEqual(1, view.DiffResults.Length);
 			Assert.AreEqual(@"C:\Projects\Test\doc\files\newfile.txt", view.DiffResults[0].FileName);
 			Assert.AreEqual(WixPackageFilesDiffResultType.NewFile, view.DiffResults[0].DiffType);
@@ -43,7 +43,7 @@ namespace WixBinding.Tests.PackageFiles
 		public void BinDirectorySelected()
 		{
 			view.SelectedElement = binDirectory;
-			editor.ShowDiff();
+			editor.CalculateDiff();
 			Assert.IsTrue(view.IsNoDifferencesFoundMessageDisplayed);
 		}
 		

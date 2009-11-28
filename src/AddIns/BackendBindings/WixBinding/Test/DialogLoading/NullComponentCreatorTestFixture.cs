@@ -29,7 +29,7 @@ namespace WixBinding.Tests.DialogLoading
 			WixProject project = WixBindingTestsHelper.CreateEmptyWixProject();
 			WixDocument doc = new WixDocument(project);
 			doc.LoadXml(GetWixXml());
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			try {
 				wixDialog.CreateDialog(null);
 				Assert.Fail("Expected an ArgumentException");

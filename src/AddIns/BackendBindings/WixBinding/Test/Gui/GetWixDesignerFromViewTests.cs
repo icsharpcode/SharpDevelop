@@ -22,7 +22,7 @@ namespace WixBinding.Tests.Gui
 		[Test]
 		public void WixDesignerAttached()
 		{
-			MockViewContent view = new MockViewContent();
+			MockTextEditorViewContent view = new MockTextEditorViewContent();
 			using (WixDialogDesigner designerAdded = new WixDialogDesigner(view)) {
 				view.SecondaryViewContents.Add(designerAdded);
 				Assert.IsNotNull(WixDialogDesigner.GetDesigner(view));

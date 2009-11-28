@@ -5,11 +5,14 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.WixBinding;
-using NUnit.Framework;
 using System;
 using System.IO;
+using System.Resources;
 using System.Xml;
+
+using ICSharpCode.WixBinding;
+using NUnit.Framework;
+using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Document
 {
@@ -30,9 +33,11 @@ namespace WixBinding.Tests.Document
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
+			
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			rootDirectory = doc.RootDirectory;
+			rootDirectory = doc.GetRootDirectory();
 			rootChildDirectories = rootDirectory.GetDirectories();
 			programFilesDirectory = rootChildDirectories[0];
 			programFilesChildDirectories = programFilesDirectory.GetDirectories();

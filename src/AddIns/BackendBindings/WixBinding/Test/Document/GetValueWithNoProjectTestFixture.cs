@@ -18,7 +18,8 @@ namespace WixBinding.Tests.Document
 		public void NullReturned()
 		{
 			WixDocument doc = new WixDocument();
-			Assert.IsNull(doc.GetValue("test"));
+			IWixPropertyValueProvider provider = (IWixPropertyValueProvider)doc;
+			Assert.IsNull(provider.GetValue("test"));
 		}
 	}
 }

@@ -26,7 +26,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			base.InitFixture();
 			
-			XmlElement rootDirectoryElement = editor.Document.RootDirectory;
+			XmlElement rootDirectoryElement = editor.Document.GetRootDirectory();
 			XmlElement directoryElement = (XmlElement)rootDirectoryElement.ChildNodes[0];
 			view.SelectedElement = directoryElement;
 			editor.SelectedElementChanged();

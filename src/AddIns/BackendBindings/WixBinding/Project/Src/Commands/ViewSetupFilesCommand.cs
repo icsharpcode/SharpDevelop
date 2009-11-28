@@ -17,12 +17,54 @@ namespace ICSharpCode.WixBinding
 	/// </summary>
 	public class ViewSetupFilesCommand : AbstractMenuCommand
 	{
+		IPackageFilesViewFactory factory;
+		IWorkbench workbench;
+		
+		public ViewSetupFilesCommand()
+			: this(new PackageFilesViewFactory(), WorkbenchSingleton.Workbench)
+		{
+		}
+		
+		public ViewSetupFilesCommand(IPackageFilesViewFactory factory, IWorkbench workbench)
+		{
+			this.factory = factory;
+			this.workbench = workbench;
+		}
+		
 		public override void Run()
 		{
 			WixProject project = ProjectService.CurrentProject as WixProject;
 			if (project != null) {
-				PackageFilesView.Show(project, WorkbenchSingleton.Workbench);
+				Run(project);
 			}
 		}
+		
+		public void Run(WixProject project)
+		{
+			PackageFilesView openView = GetOpenPackageFilesView(project);
+			if (openView != null) {
+				openView.WorkbenchWindow.SelectWindow();
+			} else {
+				OpenNewPackageFilesView(project);
+			}
+		}
+		
+		void OpenNewPackageFilesView(WixProject project)
+		{
+			PackageFilesView view = factory.Create(project, workbench);
+			workbench.ShowView(view);
+			view.ShowFiles();
+		}
+		
+		PackageFilesView GetOpenPackageFilesView(WixProject project)
+		{
+			foreach (IViewContent view in workbench.ViewContentCollection) {
+				PackageFilesView packageFilesView = view as PackageFilesView;
+				if ((packageFilesView != null) && (packageFilesView.IsForProject(project))) {
+					return packageFilesView;
+				}
+			}
+			return null;
+		}		
 	}
 }

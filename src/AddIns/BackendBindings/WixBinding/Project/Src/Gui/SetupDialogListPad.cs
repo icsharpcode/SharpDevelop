@@ -140,7 +140,8 @@ namespace ICSharpCode.WixBinding
 		{
 			WorkbenchTextFileReader workbenchTextFileReader = new WorkbenchTextFileReader();
 			using (TextReader reader = workbenchTextFileReader.Create(fileName)) {
-				setupDialogListView.AddDialogs(fileName, WixDocument.GetDialogIds(reader));
+				WixDocumentReader wixReader = new WixDocumentReader(reader);
+				setupDialogListView.AddDialogs(fileName, wixReader.GetDialogIds());
 			}
 		}
 		

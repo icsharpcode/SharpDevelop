@@ -7,7 +7,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
@@ -19,38 +19,30 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public bool ReattachWhenParserServiceIsReady {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		/// <summary>
 		/// Wix dialog designer can attach to Wix source files (.wxs) and 
 		/// Wix include files (.wxi).
 		/// </summary>
-		public bool CanAttachTo(IViewContent content)
+		public bool CanAttachTo(IViewContent view)
 		{
-			ITextEditorControlProvider textAreaControlProvider = content as ITextEditorControlProvider;
-			if (textAreaControlProvider == null) {
-				return false;
+			if (IsViewTextEditorProvider(view)) {
+				return WixFileName.IsWixFileName(view.PrimaryFileName);
 			}
-			
-			string fileName = GetViewContentFileName(content);
-			if (fileName == null) {
-				return false;
-			}
-				
-			return WixDocument.IsWixFileName(fileName);
+			return false;
 		}
 		
-		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
+		public IViewContent[] CreateSecondaryViewContent(IViewContent view)
 		{
-			return new IViewContent[] {new WixDialogDesigner(viewContent)};
+			return new IViewContent[] {new WixDialogDesigner(view)};
 		}
 		
-		static string GetViewContentFileName(IViewContent viewContent)
+		bool IsViewTextEditorProvider(IViewContent view)
 		{
-			return viewContent.PrimaryFileName;
+			ITextEditorProvider textEditorProvider = view as ITextEditorProvider;
+			return textEditorProvider != null;
 		}
 	}
 }

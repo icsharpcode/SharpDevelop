@@ -28,9 +28,9 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetupFixture()
 		{
-			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
-			ResourceService.RegisterNeutralStrings(rm);
+			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 		}
+		
 		[Test]
 		[ExpectedException(typeof(FormsDesignerLoadException), ExpectedMessage = "Unable to find dialog with an id of 'MissingDialog'.")]
 		public void LoadMissingDialog()
@@ -41,9 +41,7 @@ namespace WixBinding.Tests.Gui
 		}
 		
 		string IWixDialogDesigner.DialogId {
-			get {
-				return "MissingDialog";
-			}
+			get { return "MissingDialog"; }
 		}
 		
 		string IWixDialogDesigner.GetDocumentXml()
@@ -52,15 +50,11 @@ namespace WixBinding.Tests.Gui
 		}
 		
 		public string DocumentFileName {
-			get {
-				return String.Empty;
-			}
+			get { return String.Empty; }
 		}
 		
 		public WixProject Project {
-			get {
-				return WixBindingTestsHelper.CreateEmptyWixProject();
-			}
+			get { return WixBindingTestsHelper.CreateEmptyWixProject(); }
 		}
 		
 		string GetWixXml()

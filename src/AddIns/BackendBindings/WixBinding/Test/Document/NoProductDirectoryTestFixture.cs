@@ -25,7 +25,7 @@ namespace WixBinding.Tests.Document
 		{
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			Assert.IsNull(doc.RootDirectory);
+			Assert.IsNull(doc.GetRootDirectory());
 		}
 		
 		string GetWixXml()

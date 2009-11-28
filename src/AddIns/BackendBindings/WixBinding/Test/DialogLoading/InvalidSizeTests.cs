@@ -28,8 +28,7 @@ namespace WixBinding.Tests.DialogLoading
 		[TestFixtureSetUp]
 		public void SetupFixture()
 		{
-			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
-			ResourceService.RegisterNeutralStrings(rm);
+			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 		}
 		
 		[Test]
@@ -45,7 +44,7 @@ namespace WixBinding.Tests.DialogLoading
 				"\t</Fragment>\r\n" +
 				"</Wix>";
 			doc.LoadXml(xml);
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			try {
 				wixDialog.CreateDialog();
 				Assert.Fail("Expected an exception before this line.");
@@ -69,7 +68,7 @@ namespace WixBinding.Tests.DialogLoading
 				"\t</Fragment>\r\n" +
 				"</Wix>";
 			doc.LoadXml(xml);
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			try {
 				wixDialog.CreateDialog();
 				Assert.Fail("Expected an exception before this line.");
@@ -93,7 +92,7 @@ namespace WixBinding.Tests.DialogLoading
 				"\t</Fragment>\r\n" +
 				"</Wix>";
 			doc.LoadXml(xml);
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			try {
 				wixDialog.CreateDialog();
 				Assert.Fail("Expected an exception before this line.");
@@ -117,7 +116,7 @@ namespace WixBinding.Tests.DialogLoading
 				"\t</Fragment>\r\n" +
 				"</Wix>";
 			doc.LoadXml(xml);
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			try {
 				wixDialog.CreateDialog();
 				Assert.Fail("Expected an exception before this line.");

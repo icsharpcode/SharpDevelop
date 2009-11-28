@@ -14,29 +14,19 @@ using ICSharpCode.TextEditor;
 namespace WixBinding.Tests.Utils
 {
 	/// <summary>
-	/// Mock IViewContent class that implements the ITextEditorControlProvider interface.
+	/// Mock IViewContent class that implements the ITextEditorProvider interface.
 	/// </summary>
-	public class MockTextEditorViewContent : MockViewContent, ITextEditorControlProvider
+	public class MockTextEditorViewContent : MockViewContent, ITextEditorProvider
 	{		
 		public MockTextEditorViewContent()
 		{
 		}
-	
-		#region ITextEditorControlProvider
-
-		public TextEditorControl TextEditorControl {
-			get { throw new NotImplementedException(); }
-		}
 		
-		public ITextEditor TextEditor {
-			get { throw new NotImplementedException(); }
-		}
+		public ITextEditor TextEditor { get; set; }
 		
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return null;
 		}
-				
-		#endregion
 	}
 }

@@ -42,7 +42,7 @@ namespace WixBinding.Tests.PackageFiles
 		[Test]
 		public void ShowDiff()
 		{
-			editor.ShowDiff();
+			editor.CalculateDiff();
 			Assert.IsTrue(view.IsNoDifferencesFoundMessageDisplayed);
 		}
 		

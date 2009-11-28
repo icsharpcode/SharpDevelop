@@ -38,7 +38,7 @@ namespace WixBinding.Tests.Utils
 			return (IComponent)instance;
 		}
 		
-		public Bitmap GetBitmap(string fileName)
+		public Bitmap LoadBitmap(string fileName)
 		{
 			bitmapFileNamesRequested.Add(fileName);
 			return new Bitmap(10, 10);
@@ -48,18 +48,14 @@ namespace WixBinding.Tests.Utils
 		/// Gets a list of the bitmap filenames requested through the GetBitmapFromFileName
 		/// method.</summary>
 		protected List<string> BitmapFileNamesRequested {
-			get {
-				return bitmapFileNamesRequested;
-			}
+			get { return bitmapFileNamesRequested; }
 		}
 		
 		/// <summary>
 		/// Gets a list of the components created via the IComponentCreator.Create 
 		/// method.</summary>
 		protected List<CreatedComponent> CreatedComponents {
-			get {
-				return createdComponents;
-			}
+			get { return createdComponents; }
 		}
 	}
 }

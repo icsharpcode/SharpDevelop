@@ -5,24 +5,25 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.WixBinding;
-using NUnit.Framework;
 using System;
 using System.Xml;
+using ICSharpCode.WixBinding;
+using NUnit.Framework;
+using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.DialogXmlGeneration
 {
 	[TestFixture]
 	public class DialogXmlWritingTestFixture
 	{
-		XmlElement dialogElement;
+		WixDialogElement dialogElement;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			XmlDocument doc = new XmlDocument();
+			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			dialogElement = (XmlElement)doc.SelectSingleNode("//w:Dialog", new WixNamespaceManager(doc.NameTable));
+			dialogElement = (WixDialogElement)doc.SelectSingleNode("//w:Dialog", new WixNamespaceManager(doc.NameTable));
 			dialogElement.SetAttribute("Id", "id");
 			dialogElement.SetAttribute("Title", "title");
 			XmlElement controlElement = doc.CreateElement("Control", WixNamespaceManager.Namespace);
@@ -30,28 +31,43 @@ namespace WixBinding.Tests.DialogXmlGeneration
 		}
 		
 		[Test]
-		public void Tabs()
+		public void WixDocumentGetXmlWithTabs()
 		{
-			string outputXml = WixDocument.GetXml(dialogElement, "\r\n", false, 4);
-			string expectedXml = "<Dialog Id=\"id\" Height=\"270\" Width=\"370\" Title=\"title\">\r\n" +
+			MockTextEditorOptions options = new MockTextEditorOptions();
+			options.ConvertTabsToSpaces = false;
+			options.IndentationSize = 4;
+			
+			WixTextWriter wixWriter = new WixTextWriter(options);
+			
+			string outputXml = dialogElement.GetXml(wixWriter);
+			string expectedXml = 
+				"<Dialog Id=\"id\" Height=\"270\" Width=\"370\" Title=\"title\">\r\n" +
 				"\t<Control />\r\n" +
 				"</Dialog>";
 			Assert.AreEqual(expectedXml, outputXml);
 		}
 		
 		[Test]
-		public void Spaces()
+		public void WixDocumentGetXmlWithSpaces()
 		{
-			string outputXml = WixDocument.GetXml(dialogElement, "\n", true, 4);
-			string expectedXml = "<Dialog Id=\"id\" Height=\"270\" Width=\"370\" Title=\"title\">\n" +
-				"    <Control />\n" +
+			MockTextEditorOptions options = new MockTextEditorOptions();
+			options.ConvertTabsToSpaces = true;
+			options.IndentationSize = 4;
+			
+			WixTextWriter wixWriter = new WixTextWriter(options);
+			
+			string outputXml = dialogElement.GetXml(wixWriter);
+			string expectedXml = 
+				"<Dialog Id=\"id\" Height=\"270\" Width=\"370\" Title=\"title\">\r\n" +
+				"    <Control />\r\n" +
 				"</Dialog>";
 			Assert.AreEqual(expectedXml, outputXml);
 		}
 		
 		string GetWixXml()
 		{
-			return "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
+			return 
+				"<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id='WelcomeDialog' Height='270' Width='370' Title='Welcome Dialog Title'/>\r\n" +

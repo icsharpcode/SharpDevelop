@@ -30,7 +30,7 @@ namespace WixBinding.Tests.PackageFiles
 		{
 			base.InitFixture();
 			editor.AddElement("Directory");
-			directoryElement = (XmlElement)editor.Document.RootDirectoryRef.ChildNodes[0];
+			directoryElement = (XmlElement)editor.Document.GetRootDirectoryRef().ChildNodes[0];
 			firstSelectedElement = view.SelectedElement;
 			editor.AddElement("Directory");
 			childDirectoryElement = (XmlElement)directoryElement.ChildNodes[0];

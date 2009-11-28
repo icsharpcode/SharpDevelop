@@ -18,7 +18,6 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.TextEditor;
@@ -44,30 +43,26 @@ namespace ICSharpCode.WixBinding
 	public class WixDialogDesignerGenerator : IDesignerGenerator, IWixDialogDesignerGenerator
 	{
 		FormsDesignerViewContent view;
-		
-		public WixDialogDesignerGenerator()
-		{
-		}
+		ITextEditor textEditor;
 		
 		public CodeDomProvider CodeDomProvider {
-			get {
-				return new CSharpCodeProvider();
-			}
+			get { return new CSharpCodeProvider(); }
 		}
 		
 		public FormsDesignerViewContent ViewContent {
-			get { return this.view; }
+			get { return view; }
 		}
 		
 		public IEnumerable<OpenedFile> GetSourceFiles(out OpenedFile designerCodeFile)
 		{
-			designerCodeFile = this.view.PrimaryFile;
+			designerCodeFile = view.PrimaryFile;
 			return new [] {designerCodeFile};
 		}
 		
-		public void Attach(FormsDesignerViewContent viewContent)
+		public void Attach(FormsDesignerViewContent view)
 		{
-			this.view = viewContent;
+			this.view = view;
+			textEditor = ((ITextEditorProvider)view.PrimaryViewContent).TextEditor;
 		}
 		
 		public void Detach()
@@ -80,20 +75,32 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		void IWixDialogDesignerGenerator.MergeFormChanges(string dialogId, XmlElement dialogElement)
 		{
-			// Get the text region we are replacing.
-			IDocument document = view.DesignerCodeFileDocument;
-			DomRegion region = WixDocument.GetElementRegion(new StringReader(document.Text), "Dialog", dialogId);
+			DomRegion region = GetTextEditorRegionForDialogElement(dialogId);
 			if (region.IsEmpty) {
-				throw new FormsDesignerLoadException(String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.DialogDesignerGenerator.DialogIdNotFoundMessage}"), dialogId));
+				ThrowDialogElementCouldNotBeFoundError(dialogId);
 			}
-			// Get the replacement dialog xml.
-			TextEditorControl textEditorControl = ((ITextEditorControlProvider)view.PrimaryViewContent).TextEditorControl;
-			var properties = textEditorControl.TextEditorProperties;
-			string replacementXml = WixDocument.GetXml(dialogElement, properties.LineTerminator, properties.ConvertTabsToSpaces, properties.IndentationSize);
-
-			// Replace the xml and select the inserted text.
-			WixDocumentEditor editor = new WixDocumentEditor(textEditorControl.ActiveTextAreaControl);
-			editor.Replace(region, replacementXml);
+			
+			WixTextWriter writer = new WixTextWriter(textEditor.Options);
+			WixDialogElement wixDialogElement = (WixDialogElement)dialogElement;
+			string newDialogXml = wixDialogElement.GetXml(writer);
+			
+			WixDocumentEditor editor = new WixDocumentEditor(textEditor);
+			editor.Replace(region, newDialogXml);
+		}
+		
+		DomRegion GetTextEditorRegionForDialogElement(string dialogId)
+		{
+			IDocument document = view.DesignerCodeFileDocument;
+			StringReader reader = new StringReader(document.Text);
+			WixDocumentReader wixReader = new WixDocumentReader(reader);
+			return wixReader.GetElementRegion("Dialog", dialogId);
+		}
+		
+		void ThrowDialogElementCouldNotBeFoundError(string dialogId)
+		{
+			string messageFormat = StringParser.Parse("${res:ICSharpCode.WixBinding.DialogDesignerGenerator.DialogIdNotFoundMessage}");
+			string message = String.Format(messageFormat, dialogId);
+			throw new FormsDesignerLoadException(message);
 		}
 		
 		public void MergeFormChanges(CodeCompileUnit unit)

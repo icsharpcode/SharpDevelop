@@ -31,7 +31,7 @@ namespace WixBinding.Tests.Diff
 			doc.LoadXml(GetWixXml());
 			WixPackageFilesDiff diff = new WixPackageFilesDiff(this);
 			diff.ExcludedFileNames.Add(".svn");
-			diffResults = diff.Compare(doc.RootDirectory);
+			diffResults = diff.Compare(doc.GetRootDirectory());
 		}
 		
 		[Test]

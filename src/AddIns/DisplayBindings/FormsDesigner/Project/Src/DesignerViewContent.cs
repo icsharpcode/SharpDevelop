@@ -155,7 +155,8 @@ namespace ICSharpCode.FormsDesigner
 		{
 			this.sourceCodeStorage.AddFile(mockFile, Encoding.UTF8);
 			this.sourceCodeStorage.DesignerCodeFile = mockFile;
-		}
+			this.Files.Add(primaryViewContent.PrimaryFile);
+	}
 		
 		bool inMasterLoadOperation;
 		

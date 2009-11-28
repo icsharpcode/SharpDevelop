@@ -5,11 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+using System.Resources;
+
 using ICSharpCode.Core;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
-using System.Resources;
+using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Document
 {
@@ -19,8 +21,7 @@ namespace WixBinding.Tests.Document
 		[TestFixtureSetUp]
 		public void SetupFixture()
 		{
-			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
-			ResourceService.RegisterNeutralStrings(rm);
+			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 		}
 
 		[Test]

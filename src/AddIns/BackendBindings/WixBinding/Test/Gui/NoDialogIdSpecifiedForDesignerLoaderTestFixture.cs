@@ -25,8 +25,7 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetupFixture()
 		{
-			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
-			ResourceService.RegisterNeutralStrings(rm);
+			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 		}
 		
 		[Test]

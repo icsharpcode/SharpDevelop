@@ -28,7 +28,7 @@ namespace WixBinding.Tests.PackageFiles
 		[Test]
 		public void DirStillExists()
 		{
-			Assert.IsNotNull(editor.Document.RootDirectory.ChildNodes[0]);
+			Assert.IsNotNull(editor.Document.GetRootDirectory().ChildNodes[0]);
 		}
 		
 		protected override string GetWixXml()

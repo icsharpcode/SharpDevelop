@@ -27,7 +27,7 @@ namespace WixBinding.Tests.Document
 		{
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			WixDirectoryElement rootDirectory = doc.RootDirectory;
+			WixDirectoryElement rootDirectory = doc.GetRootDirectory();
 			WixDirectoryElement[] rootChildDirectories = rootDirectory.GetDirectories();
 			WixDirectoryElement programFilesDirectory = rootChildDirectories[0];
 			WixDirectoryElement[] programFilesChildDirectories = programFilesDirectory.GetDirectories();

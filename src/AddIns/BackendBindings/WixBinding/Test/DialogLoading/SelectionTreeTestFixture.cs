@@ -32,7 +32,7 @@ namespace WixBinding.Tests.DialogLoading
 			CreatedComponents.Clear();
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				TreeView treeView = (TreeView)dialog.Controls[0];
 				name = treeView.Name;

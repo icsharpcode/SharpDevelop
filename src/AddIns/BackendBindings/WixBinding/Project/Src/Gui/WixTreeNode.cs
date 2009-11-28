@@ -46,18 +46,14 @@ namespace ICSharpCode.WixBinding
 		/// initialized then all the child nodes have been added to this node.
 		/// </summary>
 		public bool IsInitialized {
-			get {
-				return isInitialized;
-			}
+			get { return isInitialized; }
 		}
 		
 		/// <summary>
 		/// Can delete all Wix tree nodes.
 		/// </summary>
 		public override bool EnableDelete {
-			get {
-				return true;
-			}
+			get { return true; }
 		}
 		
 		public override void Delete()
@@ -70,15 +66,11 @@ namespace ICSharpCode.WixBinding
 		/// Gets the XmlElement associated with this tree node.
 		/// </summary>
 		public XmlElement XmlElement {
-			get {
-				return element;
-			}
+			get { return element; }
 		}
 		
 		public WixPackageFilesTreeView WixPackageFilesTreeView {
-			get {
-				return (WixPackageFilesTreeView)TreeView;
-			}
+			get { return (WixPackageFilesTreeView)TreeView; }
 		}
 		
 		/// <summary>

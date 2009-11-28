@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Security.Permissions;
 using System.Windows.Forms;
+using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
@@ -27,7 +28,7 @@ namespace ICSharpCode.WixBinding
 		IWixDialogDesigner designer;
 				
 		public WixDialogDesignerLoader(IWixDialogDesigner designer, IWixDialogDesignerGenerator generator)
-			: this(designer, generator, null)
+			: this(designer, generator, new DefaultFileLoader())
 		{
 		}
 		
@@ -42,51 +43,83 @@ namespace ICSharpCode.WixBinding
 			this.fileLoader = fileLoader;
 			
 			if (designer == null) {
-				throw new ArgumentException("Cannot be null.", "designer");
+				throw new ArgumentNullException("designer");
 			}
 			if (generator == null) {
-				throw new ArgumentException("Cannot be null.", "generator");
+				throw new ArgumentNullException("generator");
 			}
 		}
 		
-		/// <summary>
-		/// Gets the designer used by the loader.
-		/// </summary>
 		public IWixDialogDesigner Designer {
-			get {
-				return designer;
-			}
+			get { return designer; }
 		}
 		
-		/// <summary>
-		/// Gets the designer generator used by the loader.
-		/// </summary>
 		public IWixDialogDesignerGenerator Generator {
-			get {
-				return generator;
-			}
+			get { return generator; }
 		}
 
 		public override void BeginLoad(IDesignerLoaderHost host)
 		{
-			// Check dialog id.
-			if (designer.DialogId == null) {
-				throw new FormsDesignerLoadException(StringParser.Parse("${res:ICSharpCode.WixBinding.WixDialogDesigner.NoDialogSelectedInDocumentMessage}"));
-			}
+			VerifyDesignerHasDialogId();
 			
-			// Get dialog element.
+			GetDialogElement();
+			VerifyDialogElementFound();
+			
+			AddServicesToHost(host);
+			
+			base.BeginLoad(host);
+		}
+		
+		void VerifyDesignerHasDialogId()
+		{
+			if (DesignerHasDialogId) {
+				ThrowNoDialogSelectedInDocumentException();
+			}
+		}
+		
+		bool DesignerHasDialogId {
+			get { return designer.DialogId == null; }
+		}
+		
+		void ThrowNoDialogSelectedInDocumentException()
+		{
+			string message = StringParser.Parse("${res:ICSharpCode.WixBinding.WixDialogDesigner.NoDialogSelectedInDocumentMessage}");
+			throw new FormsDesignerLoadException(message);
+		}
+		
+		void GetDialogElement()
+		{
 			WixDocument document = CreateWixDocument();
 			document.LoadXml(designer.GetDocumentXml());
-			wixDialog = document.GetDialog(designer.DialogId, new WorkbenchTextFileReader());
+			wixDialog = document.CreateWixDialog(designer.DialogId, new WorkbenchTextFileReader());
+		}
+		
+		WixDocument CreateWixDocument()
+		{
+			WixDocument document = new WixDocument(designer.Project, fileLoader);
+			document.FileName = designer.DocumentFileName;
+			return document;
+		}		
+
+		void VerifyDialogElementFound()
+		{
 			if (wixDialog == null) {
-				throw new FormsDesignerLoadException(String.Format(StringParser.Parse("${res:ICSharpCode.WixBinding.DialogDesignerGenerator.DialogIdNotFoundMessage}"), designer.DialogId));
+				ThrowDialogIdNotFoundException(designer.DialogId);
 			}
-			
+		}
+		
+		void ThrowDialogIdNotFoundException(string dialogId)
+		{
+			string messageFormat = StringParser.Parse("${res:ICSharpCode.WixBinding.DialogDesignerGenerator.DialogIdNotFoundMessage}");
+			string message = String.Format(messageFormat, designer.DialogId);
+			throw new FormsDesignerLoadException(message);
+		}
+		
+		void AddServicesToHost(IDesignerLoaderHost host)
+		{
 			host.AddService(typeof(ComponentSerializationService), new CodeDomComponentSerializationService((IServiceProvider)host));
 			host.AddService(typeof(INameCreationService), new XmlDesignerNameCreationService(host));
 			host.AddService(typeof(IDesignerSerializationService), new DesignerSerializationService(host));
-
-			base.BeginLoad(host);
 		}
 		
 		/// <summary>
@@ -103,28 +136,24 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		protected override void PerformFlush(IDesignerSerializationManager serializationManager)
 		{
-			Form dialog = (Form)base.LoaderHost.RootComponent;
-			generator.MergeFormChanges(designer.DialogId, wixDialog.UpdateDialogElement(dialog));
+			XmlElement updatedDialogElement = GenerateNewDialogElementFromDesignedForm();
+			MergeDialogChangesIntoFullWixDocument(updatedDialogElement);
+		}
+		
+		XmlElement GenerateNewDialogElementFromDesignedForm()
+		{
+			Form form = (Form)base.LoaderHost.RootComponent;
+			return wixDialog.UpdateDialogElement(form);
+		}
+		
+		void MergeDialogChangesIntoFullWixDocument(XmlElement updatedDialogElement)
+		{
+			generator.MergeFormChanges(designer.DialogId, updatedDialogElement);
 		}
 		
 		protected override void PerformLoad(IDesignerSerializationManager serializationManager)
 		{
 			wixDialog.CreateDialog(this);
-		}
-		
-		WixDocument CreateWixDocument()
-		{
-			WixDocument document;
-			
-			if (fileLoader != null && designer != null) {
-				document = new WixDocument(designer.Project, fileLoader);
-			} else if (designer != null) {
-				document = new WixDocument(designer.Project);
-			} else {
-				document = new WixDocument();
-			}
-			document.FileName = designer.DocumentFileName;
-			return document;
 		}
 	}
 }

@@ -31,7 +31,7 @@ namespace WixBinding.Tests.DialogLoading
 		{
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				Button nextButton = (Button)dialog.Controls[0];
 				nextButtonText = nextButton.Text;			

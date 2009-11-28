@@ -24,7 +24,7 @@ namespace WixBinding.Tests.Project
 		public void MissingVariableName()
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
-			Assert.AreEqual(String.Empty, p.GetVariable("Missing"));
+			Assert.AreEqual(String.Empty, p.GetPreprocessorVariableValue("Missing"));
 		}
 		
 		[Test]
@@ -32,7 +32,7 @@ namespace WixBinding.Tests.Project
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			p.SetProperty("DefineConstants", "DATADIR=Bitmaps");
-			Assert.AreEqual("Bitmaps", p.GetVariable("DATADIR"));
+			Assert.AreEqual("Bitmaps", p.GetPreprocessorVariableValue("DATADIR"));
 		}
 		
 		[Test]
@@ -40,7 +40,7 @@ namespace WixBinding.Tests.Project
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			p.SetProperty("DefineConstants", "TEST=test;DATADIR=Bitmaps");
-			Assert.AreEqual("Bitmaps", p.GetVariable("DATADIR"));
+			Assert.AreEqual("Bitmaps", p.GetPreprocessorVariableValue("DATADIR"));
 		}
 		
 		[Test]
@@ -48,7 +48,7 @@ namespace WixBinding.Tests.Project
 		{
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			p.SetProperty("DefineConstants", " DATADIR = Bitmaps ");
-			Assert.AreEqual("Bitmaps", p.GetVariable("DATADIR"));
+			Assert.AreEqual("Bitmaps", p.GetPreprocessorVariableValue("DATADIR"));
 		}
 		
 		/// <summary>
@@ -61,7 +61,7 @@ namespace WixBinding.Tests.Project
 			MSBuildEngine.MSBuildProperties.Add("MyAppBinPath", @"C:\Program Files\MyApp\bin");
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			p.SetProperty("DefineConstants", @" DATADIR = $(MyAppBinPath)\Bitmaps ");
-			string variableValue = p.GetVariable("DATADIR");
+			string variableValue = p.GetPreprocessorVariableValue("DATADIR");
 			MSBuildEngine.MSBuildProperties.Remove("MyAppBinPath");
 			Assert.AreEqual(@"C:\Program Files\MyApp\bin\Bitmaps", variableValue);
 		}

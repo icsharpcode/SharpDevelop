@@ -100,7 +100,7 @@ namespace ICSharpCode.WixBinding
 				document.FileName = fileName;
 				foreach (WixBinaryElement element in document.GetBinaries()) {
 					if (!binaries.ContainsKey(element.Id)) {
-						binaries.Add(element.Id, element.FileName);
+						binaries.Add(element.Id, element.GetFileName());
 					}
 				}
 			} catch (FileNotFoundException) {

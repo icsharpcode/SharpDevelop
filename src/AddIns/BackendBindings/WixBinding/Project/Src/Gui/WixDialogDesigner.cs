@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -13,10 +12,10 @@ using System.Xml;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.WixBinding
 {
@@ -88,8 +87,8 @@ namespace ICSharpCode.WixBinding
 				// and text selection operations done by the WiX designer actually
 				// become visible in the text editor.
 				if (!this.SourceCodeStorage.ContainsFile(file)) {
-					TextEditorControl editor = ((ITextEditorControlProvider)this.PrimaryViewContent).TextEditorControl;
-					this.SourceCodeStorage.AddFile(file, new TextEditorDocument(editor.Document), editor.Encoding ?? ParserService.DefaultFileEncoding, true);
+					ITextEditor editor = ((ITextEditorProvider)this.PrimaryViewContent).TextEditor;
+					this.SourceCodeStorage.AddFile(file, editor.Document, ParserService.DefaultFileEncoding, true);
 				}
 				
 				try {
@@ -120,7 +119,7 @@ namespace ICSharpCode.WixBinding
 		
 		public override bool SupportsSwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
 		{
-			return newView == this || newView == this.PrimaryViewContent;
+			return (newView == this) || (newView == this.PrimaryViewContent);
 		}
 		
 		public override void SwitchFromThisWithoutSaveLoad(OpenedFile file, IViewContent newView)
@@ -132,8 +131,8 @@ namespace ICSharpCode.WixBinding
 		
 		public override bool SupportsSwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
 		{
-			return this.DesignerCodeFile != null &&
-				(oldView == this || oldView == this.PrimaryViewContent);
+			return (this.DesignerCodeFile != null) &&
+				((oldView == this) || (oldView == this.PrimaryViewContent));
 		}
 		
 		public override void SwitchToThisWithoutSaveLoad(OpenedFile file, IViewContent oldView)
@@ -149,18 +148,14 @@ namespace ICSharpCode.WixBinding
 		/// Gets the Wix document filename.
 		/// </summary>
 		public string DocumentFileName {
-			get {
-				return this.PrimaryFileName;
-			}
+			get { return this.PrimaryFileName; }
 		}
 		
 		/// <summary>
 		/// Gets the wix project containing the document open in the designer.
 		/// </summary>
 		public WixProject Project {
-			get {
-				return wixProject;
-			}
+			get { return wixProject; }
 		}
 		
 		/// <summary>
@@ -203,9 +198,11 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		string GetDialogIdSelectedInTextEditor()
 		{
-			TextAreaControl textArea = ActiveTextAreaControl;
-			if (textArea != null) {
-				return WixDocument.GetDialogId(new StringReader(textArea.Document.TextContent), textArea.Caret.Line);
+			ITextEditor textEditor = ActiveTextEditor;
+			if (textEditor != null) {
+				StringReader reader = new StringReader(textEditor.Document.Text);
+				WixDocumentReader wixReader = new WixDocumentReader(reader);
+				return wixReader.GetDialogId(textEditor.Caret.Line);
 			}
 			return null;
 		}
@@ -215,10 +212,11 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		string GetFirstDialogIdInTextEditor()
 		{
-			TextAreaControl textArea = ActiveTextAreaControl;
-			if (textArea != null) {
-				StringReader reader = new StringReader(textArea.Document.TextContent);
-				ReadOnlyCollection<string> ids = WixDocument.GetDialogIds(reader);
+			ITextEditor textEditor = ActiveTextEditor;
+			if (textEditor != null) {
+				StringReader reader = new StringReader(textEditor.Document.Text);
+				WixDocumentReader wixReader = new WixDocumentReader(reader);
+				ReadOnlyCollection<string> ids = wixReader.GetDialogIds();
 				if (ids.Count > 0) {
 					return ids[0];
 				}
@@ -229,11 +227,11 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Gets the active text area control.
 		/// </summary>
-		TextAreaControl ActiveTextAreaControl {
+		ITextEditor ActiveTextEditor {
 			get {
-				ITextEditorControlProvider provider = this.PrimaryViewContent as ITextEditorControlProvider;
+				ITextEditorProvider provider = this.PrimaryViewContent as ITextEditorProvider;
 				if (provider != null) {
-					return provider.TextEditorControl.ActiveTextAreaControl;
+					return provider.TextEditor;
 				}
 				return null;
 			}
@@ -274,10 +272,12 @@ namespace ICSharpCode.WixBinding
 		{
 			try {
 				if (dialogId != null) {
-					TextAreaControl textArea = ActiveTextAreaControl;
-					if (textArea != null) {
-						Location location = WixDocument.GetStartElementLocation(new StringReader(textArea.Document.TextContent), "Dialog", dialogId);
-						textArea.JumpTo(location.Y);
+					ITextEditor textEditor = ActiveTextEditor;
+					if (textEditor != null) {
+						StringReader reader = new StringReader(textEditor.Document.Text);
+						WixDocumentReader wixReader = new WixDocumentReader(reader);
+						Location location = wixReader.GetStartElementLocation("Dialog", dialogId);
+						textEditor.JumpTo(location.Y, 1);
 					}
 				}
 			} catch (XmlException) {
@@ -301,9 +301,7 @@ namespace ICSharpCode.WixBinding
 		
 		
 		public override object ToolsContent {
-			get {
-				return SetupDialogControlsToolBox;
-			}
+			get { return SetupDialogControlsToolBox; }
 		}
 	}
 }

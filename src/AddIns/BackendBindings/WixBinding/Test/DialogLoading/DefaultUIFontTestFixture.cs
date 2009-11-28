@@ -31,7 +31,7 @@ namespace WixBinding.Tests.DialogLoading
 		{
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				Button button = (Button)dialog.Controls[0];
 				fontName = button.Font.Name;

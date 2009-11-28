@@ -42,21 +42,15 @@ namespace WixBinding.Tests.Gui
 		}
 		
 		string IWixDialogDesigner.DialogId {
-			get {
-				return "WelcomeDialog";
-			}
+			get { return "WelcomeDialog"; }
 		}
 		
 		string IWixDialogDesigner.DocumentFileName {
-			get {
-				return String.Empty;
-			}
+			get { return String.Empty; }
 		}
 		
 		WixProject IWixDialogDesigner.Project {
-			get {
-				return WixBindingTestsHelper.CreateEmptyWixProject();
-			}
+			get { return WixBindingTestsHelper.CreateEmptyWixProject(); }
 		}
 		
 		string IWixDialogDesigner.GetDocumentXml()

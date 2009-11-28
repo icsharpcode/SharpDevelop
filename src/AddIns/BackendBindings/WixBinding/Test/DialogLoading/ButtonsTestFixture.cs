@@ -38,7 +38,7 @@ namespace WixBinding.Tests.DialogLoading
 			doc.LoadXml(GetWixXml());
 			controlsAddedCount = 0;
 			CreatedComponents.Clear();
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				foreach (Control control in dialog.Controls) {
 					++controlsAddedCount;

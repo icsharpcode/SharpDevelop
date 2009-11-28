@@ -6,18 +6,27 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
 {
 	/// <summary>
 	/// Hides the diff control from the Setup Files window.
 	/// </summary>
-	public class HideDiffCommand : AbstractMenuCommand
+	public class HideDiffCommand : AbstractActivePackageFilesViewCommand
 	{
-		public override void Run()
+		public HideDiffCommand()
 		{
-			PackageFilesView.ActiveView.HideDiff();
+		}
+		
+		public HideDiffCommand(IWorkbench workbench)
+			: base(workbench)
+		{
+		}
+		
+		protected override void Run(PackageFilesView view)
+		{
+			view.HideDiff();
 		}
 	}
 }

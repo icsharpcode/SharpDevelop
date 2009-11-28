@@ -34,8 +34,7 @@ namespace WixBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			ResourceManager rm = new ResourceManager("WixBinding.Tests.Strings", GetType().Assembly);
-			ResourceService.RegisterNeutralStrings(rm);
+			WixBindingTestsHelper.RegisterResourceStringsWithSharpDevelopResourceManager();
 
 			wixProject = WixBindingTestsHelper.CreateEmptyWixProject();
 			parentNode = new TreeNode();

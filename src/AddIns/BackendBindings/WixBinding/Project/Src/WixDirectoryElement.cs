@@ -25,17 +25,9 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Determines whether the specified element name refers to a Directory element.
-		/// </summary>
-		public static bool IsDirectoryElement(string name)
-		{
-			return name == DirectoryElementName;
-		}
-		
-		/// <summary>
 		/// Returns the last directory specified in the path 
 		/// </summary>
-		public static string GetLastDirectoryName(string path)
+		public static string GetLastFolderInDirectoryName(string path)
 		{
 			int index = path.LastIndexOf(Path.DirectorySeparatorChar);
 			return path.Substring(index + 1);
@@ -55,12 +47,13 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Adds a new component element to this directory element.
 		/// </summary>
-		public WixComponentElement AddComponent(string id)
+		public WixComponentElement AddComponent(string fileName)
 		{
 			WixComponentElement componentElement = new WixComponentElement((WixDocument)OwnerDocument);
+			componentElement.GenerateUniqueIdFromFileName(fileName);
 			componentElement.GenerateNewGuid();
-			componentElement.Id = id;
-			return (WixComponentElement)AppendChild(componentElement);			
+			AppendChild(componentElement);
+			return componentElement;
 		}
 		
 		public string SourceName {

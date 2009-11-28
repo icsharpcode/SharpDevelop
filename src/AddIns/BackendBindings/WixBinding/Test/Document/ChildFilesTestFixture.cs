@@ -26,7 +26,7 @@ namespace WixBinding.Tests.Document
 			doc = new WixDocument();
 			doc.FileName = @"C:\Projects\Setup\Setup.wxs";
 			doc.LoadXml(GetWixXml());
-			WixDirectoryElement rootDirectory = doc.RootDirectory;
+			WixDirectoryElement rootDirectory = doc.GetRootDirectory();
 			WixDirectoryElement[] rootChildDirectories = rootDirectory.GetDirectories();
 			WixDirectoryElement programFilesDirectory = rootChildDirectories[0];
 			WixDirectoryElement[] programFilesChildDirectories = programFilesDirectory.GetDirectories();
@@ -48,13 +48,13 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void FirstFileElementFileName()
 		{
-			Assert.AreEqual(@"C:\Projects\doc\license.rtf", files[0].SourceFullPath);
+			Assert.AreEqual(@"C:\Projects\doc\license.rtf", files[0].GetSourceFullPath());
 		}
 		
 		[Test]
 		public void SecondFileElementFileName()
 		{
-			Assert.AreEqual(@"C:\Projects\Setup\bin\myapp.exe", files[1].SourceFullPath);
+			Assert.AreEqual(@"C:\Projects\Setup\bin\myapp.exe", files[1].GetSourceFullPath());
 		}
 		
 		/// <summary>
@@ -65,8 +65,8 @@ namespace WixBinding.Tests.Document
 		public void RelativeFileNameUsed()
 		{
 			doc.FileName = String.Empty;
-			Assert.AreEqual(@"..\doc\license.rtf", files[0].SourceFullPath);
-			Assert.AreEqual(@"bin\myapp.exe", files[1].SourceFullPath);
+			Assert.AreEqual(@"..\doc\license.rtf", files[0].GetSourceFullPath());
+			Assert.AreEqual(@"bin\myapp.exe", files[1].GetSourceFullPath());
 		}
 		
 		[Test]

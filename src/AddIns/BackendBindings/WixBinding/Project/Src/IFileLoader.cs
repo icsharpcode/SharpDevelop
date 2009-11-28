@@ -21,6 +21,6 @@ namespace ICSharpCode.WixBinding
 		/// <returns>
 		/// <see langword="null"/> if the file does not exist.
 		/// </returns>
-		Bitmap GetBitmap(string fileName);
+		Bitmap LoadBitmap(string fileName);
 	}
 }

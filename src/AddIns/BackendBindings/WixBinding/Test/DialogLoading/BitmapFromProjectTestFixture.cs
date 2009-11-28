@@ -49,7 +49,7 @@ namespace WixBinding.Tests.Document
 			doc.FileName = docFileName;
 			doc.LoadXml(GetMainWixXml());
 			
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog", this);
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", this);
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				PictureBox pictureBox = (PictureBox)dialog.Controls[0];
 				hasImage = (pictureBox.Image != null);

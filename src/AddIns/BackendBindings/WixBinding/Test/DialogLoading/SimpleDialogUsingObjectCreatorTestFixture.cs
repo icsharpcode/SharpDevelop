@@ -31,7 +31,7 @@ namespace WixBinding.Tests.DialogLoading
 			WixDocument doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
 			CreatedComponents.Clear();
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form dialog = wixDialog.CreateDialog(this)) {
 				formComponent = CreatedComponents[0];
 				formName = dialog.Name;

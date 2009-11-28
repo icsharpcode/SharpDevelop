@@ -33,7 +33,9 @@ namespace WixBinding.Tests.Document
 				"\t\t</UI>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
+			StringReader reader = new StringReader(xml);
+			WixDocumentReader wixReader = new WixDocumentReader(reader);
+			DomRegion region = wixReader.GetElementRegion("Dialog", "WelcomeDialog");
 			DomRegion expectedRegion = new DomRegion(3, 3, 4, 11);
 			Assert.AreEqual(expectedRegion, region);
 		}
@@ -48,7 +50,8 @@ namespace WixBinding.Tests.Document
 				"\t\t</UI>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
+			WixDocumentReader wixReader = new WixDocumentReader(new StringReader(xml));
+			DomRegion region = wixReader.GetElementRegion("Dialog", "WelcomeDialog");
 			DomRegion expectedRegion = new DomRegion(3, 0, 3, 35);
 			Assert.AreEqual(expectedRegion, region);
 		}
@@ -63,7 +66,8 @@ namespace WixBinding.Tests.Document
 				"\t\t</UI>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
+			WixDocumentReader wixReader = new WixDocumentReader(new StringReader(xml));
+			DomRegion region = wixReader.GetElementRegion("Dialog", "WelcomeDialog");
 			DomRegion expectedRegion = new DomRegion(3, 0, 3, 27);
 			Assert.AreEqual(expectedRegion, region);
 		}
@@ -78,7 +82,8 @@ namespace WixBinding.Tests.Document
 				"\t\t</UI>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
+			WixDocumentReader wixReader = new WixDocumentReader(new StringReader(xml));
+			DomRegion region = wixReader.GetElementRegion("Dialog", "WelcomeDialog");
 			DomRegion expectedRegion = new DomRegion(3, 0, 3, 35);
 			Assert.AreEqual(expectedRegion, region);
 		}
@@ -96,7 +101,8 @@ namespace WixBinding.Tests.Document
 				"\t\t</UI>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			DomRegion region = WixDocument.GetElementRegion(new StringReader(xml), "Dialog", "WelcomeDialog");
+			WixDocumentReader wixReader = new WixDocumentReader(new StringReader(xml));
+			DomRegion region = wixReader.GetElementRegion("Dialog", "WelcomeDialog");
 			DomRegion expectedRegion = new DomRegion(5, 3, 6, 11);
 			Assert.AreEqual(expectedRegion, region);
 		}

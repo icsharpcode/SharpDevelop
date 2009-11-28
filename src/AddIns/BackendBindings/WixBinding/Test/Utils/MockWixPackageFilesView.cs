@@ -60,12 +60,8 @@ namespace WixBinding.Tests.Utils
 		}
 		
 		public WixDirectoryElement RootDirectory {
-			get {
-				return rootDirectory;
-			}
-			set {
-				rootDirectory = value;
-			}
+			get { return rootDirectory; }
+			set { rootDirectory = value; }
 		}
 		
 		public void AddDirectories(WixDirectoryElement[] directories)
@@ -76,9 +72,7 @@ namespace WixBinding.Tests.Utils
 		}
 		
 		public List<XmlElement> DirectoriesAdded {
-			get {
-				return directoriesAdded;
-			}
+			get { return directoriesAdded; }
 		}
 		
 		public XmlElement SelectedElement {
@@ -86,9 +80,7 @@ namespace WixBinding.Tests.Utils
 				selectedItemAccessed = true;
 				return selectedItem;
 			}
-			set {
-				selectedItem = value;
-			}
+			set { selectedItem = value; }
 		}
 		
 		public void RemoveElement(XmlElement element)
@@ -97,24 +89,16 @@ namespace WixBinding.Tests.Utils
 		}
 		
 		public WixXmlAttributeCollection Attributes {
-			get {
-				return attributes;
-			}
+			get { return attributes; }
 		}
 		
 		public bool IsDirty {
-			get {
-				return isDirty;
-			}
-			set {
-				isDirty = value;
-			}
+			get { return isDirty; }
+			set { isDirty = value; }
 		}
 		
 		public StringCollection AllowedChildElements {
-			get {
-				return allowedElements;
-			}
+			get { return allowedElements; }
 		}
 		
 		public void AddElement(XmlElement element)
@@ -142,9 +126,7 @@ namespace WixBinding.Tests.Utils
 		/// view.
 		/// </summary>
 		public bool IsNoSourceFileFoundMessageDisplayed {
-			get {
-				return noSourceFileFoundMessageDisplayed;
-			}
+			get { return noSourceFileFoundMessageDisplayed; }
 		}
 		
 		/// <summary>
@@ -152,69 +134,49 @@ namespace WixBinding.Tests.Utils
 		/// view.
 		/// </summary>
 		public bool IsSourceFilesContainErrorsMessageDisplayed {
-			get {
-				return sourceFilesContainErrorsMessageDisplayed;
-			}
+			get { return sourceFilesContainErrorsMessageDisplayed; }
 		}
 		
 		/// <summary>
 		/// Gets the project name that was passed to ShowNoSourceFileFoundMessage.
 		/// </summary>
 		public string NoSourceFileFoundProjectName {
-			get {
-				return projectName;
-			}
+			get { return projectName; }
 		}
 		
 		/// <summary>
 		/// Returns whether the view's SelectedItem was accessed.
 		/// </summary>
 		public bool SelectedElementAccessed {
-			get {
-				return selectedItemAccessed;
-			}
+			get { return selectedItemAccessed; }
 		}
 		
 		public XmlElement ElementRemoved {
-			get {
-				return elementRemoved;
-			}
+			get { return elementRemoved; }
 		}
 		
 		public XmlElement[] ElementsAdded {
-			get {
-				return elementsAdded.ToArray();
-			}
+			get { return elementsAdded.ToArray(); }
 		}
 		
 		public bool IsAttributesChangedCalled {
-			get {
-				return attributesChangedCalled;
-			}
+			get { return attributesChangedCalled; }
 		}
 		
 		public bool IsClearDirectoriesCalled {
-			get {
-				return clearDirectoriesCalled;
-			}
+			get { return clearDirectoriesCalled; }
 		}
 		
 		public bool IsNoDifferencesFoundMessageDisplayed {
-			get {
-				return noDifferencesFoundMessageDisplayed;
-			}
+			get { return noDifferencesFoundMessageDisplayed; }
 		}
 
 		public bool IsNoRootDirectoryFoundMessageDisplayed {
-			get {
-				return noRootDirectoryFoundMessageDisplayed;
-			}
+			get { return noRootDirectoryFoundMessageDisplayed; }
 		}
 		
 		public WixPackageFilesDiffResult[] DiffResults {
-			get {
-				return diffResults;
-			}
+			get { return diffResults; }
 		}
 	}
 }

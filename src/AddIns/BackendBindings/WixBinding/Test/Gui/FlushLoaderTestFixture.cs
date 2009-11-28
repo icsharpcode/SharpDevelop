@@ -72,9 +72,7 @@ namespace WixBinding.Tests.Gui
 		}
 		
 		string IWixDialogDesigner.DialogId {
-			get {
-				return "WelcomeDialog";
-			}
+			get { return "WelcomeDialog"; }
 		}
 		
 		string IWixDialogDesigner.GetDocumentXml()
@@ -83,20 +81,17 @@ namespace WixBinding.Tests.Gui
 		}
 		
 		public string DocumentFileName {
-			get {
-				return String.Empty;
-			}
+			get { return String.Empty; }
 		}
 		
 		public WixProject Project {
-			get {
-				return WixBindingTestsHelper.CreateEmptyWixProject();
-			}
+			get { return WixBindingTestsHelper.CreateEmptyWixProject(); }
 		}
 		
 		string GetWixXml()
 		{
-			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
+			return 
+				"<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
 				"\t<Fragment>\r\n" +
 				"\t\t<UI>\r\n" +
 				"\t\t\t<Dialog Id=\"WelcomeDialog\" Height=\"100\" Width=\"200\"/>\r\n" +

@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Xml;
 using WixBinding;
+using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.DialogLoading
 {
@@ -34,7 +35,7 @@ namespace WixBinding.Tests.DialogLoading
 		{
 			doc = new WixDocument();
 			doc.LoadXml(GetWixXml());
-			WixDialog wixDialog = doc.GetDialog("WelcomeDialog");
+			WixDialog wixDialog = doc.CreateWixDialog("WelcomeDialog", new MockTextFileReader());
 			using (Form simpleDialog = wixDialog.CreateDialog()) {
 				dialogName = simpleDialog.Name;
 				borderStyle = simpleDialog.FormBorderStyle;
@@ -85,7 +86,7 @@ namespace WixBinding.Tests.DialogLoading
 		[Test]
 		public void DialogIdWithSingleQuote()
 		{
-			Assert.IsNull(doc.GetDialog("Test'Id"));
+			Assert.IsNull(doc.CreateWixDialog("Test'Id", new MockTextFileReader()));
 		}
 				
 		string GetWixXml()

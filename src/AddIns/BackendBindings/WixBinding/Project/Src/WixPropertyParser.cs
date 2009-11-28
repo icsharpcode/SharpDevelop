@@ -11,21 +11,6 @@ using System.Text;
 namespace ICSharpCode.WixBinding
 {
 	/// <summary>
-	/// Interface that allows a class to convert a Wix property name into a value.
-	/// </summary>
-	public interface IWixPropertyValueProvider
-	{
-		/// <summary>
-		/// Gets the property value for the specified name. Wix property names are
-		/// case sensitive.
-		/// </summary>
-		/// <returns>
-		/// The original null if the name cannot be found.
-		/// </returns>
-		string GetValue(string name);
-	}
-	
-	/// <summary>
 	/// Parses a string of Wix property values (e.g. "$(var.DATAPATH)") it also
 	/// handles MSBuild property values (e.g. "$(SharpDevelopBinPath)").
 	/// </summary>
@@ -42,9 +27,6 @@ namespace ICSharpCode.WixBinding
 		{
 		}
 		
-		/// <summary>
-		/// Expands the Wix property values using the IWixPropertyValueProvider
-		/// </summary>
 		public static string Parse(string input, IWixPropertyValueProvider valueProvider)
 		{
 			StringBuilder output = new StringBuilder();

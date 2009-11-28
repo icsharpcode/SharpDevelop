@@ -34,7 +34,7 @@ namespace WixBinding.Tests.DirectoryImport
 		public void SetUpFixture()
 		{
 			base.InitFixture();
-			WixDirectoryElement programFilesFolderElement = (WixDirectoryElement)editor.Document.RootDirectory.FirstChild;
+			WixDirectoryElement programFilesFolderElement = (WixDirectoryElement)editor.Document.GetRootDirectory().FirstChild;
 			view.SelectedElement = programFilesFolderElement;
 			editor.AddDirectory(directory);
 			

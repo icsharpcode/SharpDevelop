@@ -35,7 +35,7 @@ namespace WixBinding.Tests.PackageFiles
 		public void Init()
 		{
 			base.InitFixture();
-			installDirElement = (XmlElement)editor.Document.RootDirectory.ChildNodes[0].ChildNodes[0];
+			installDirElement = (XmlElement)editor.Document.GetRootDirectory().ChildNodes[0].ChildNodes[0];
 			view.SelectedElement = installDirElement;
 			editor.SelectedElementChanged();
 			exeFileName = Path.Combine(project.Directory, @"bin\TestApplication.exe");
@@ -97,14 +97,16 @@ namespace WixBinding.Tests.PackageFiles
 		[Test]
 		public void ExeFileComponentId()
 		{
-			string expectedId = WixComponentElement.GenerateIdFromFileName("TestApplication.exe");
+			WixComponentElement component = new WixComponentElement(new WixDocument());
+			string expectedId = component.GenerateIdFromFileName("TestApplication.exe");
 			Assert.AreEqual(expectedId, exeFileComponentElement.GetAttribute("Id"));
 		}
 
 		[Test]
 		public void ReadmeFileComponentId()
 		{
-			string expectedId = WixComponentElement.GenerateIdFromFileName("readme.rtf");
+			WixComponentElement component = new WixComponentElement(new WixDocument());
+			string expectedId = component.GenerateIdFromFileName("readme.rtf");
 			Assert.AreEqual(expectedId, readmeFileComponentElement.GetAttribute("Id"));
 		}
 

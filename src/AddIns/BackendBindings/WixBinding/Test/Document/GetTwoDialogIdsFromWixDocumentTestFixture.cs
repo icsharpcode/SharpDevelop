@@ -35,15 +35,18 @@ namespace WixBinding.Tests.Document
 		public void SetUpFixture()
 		{
 			StringReader reader = new StringReader(GetWixXml());
-			dialogIds = WixDocument.GetDialogIds(reader);
+			WixDocumentReader wixReader = new WixDocumentReader(reader);
+			dialogIds = wixReader.GetDialogIds();
 			welcomeDialogId = dialogIds[0];
 			progressDialogId = dialogIds[1];
 			
 			reader = new StringReader(GetWixXml());
-			welcomeDialogLocation = WixDocument.GetStartElementLocation(reader, "Dialog", welcomeDialogId);
+			wixReader = new WixDocumentReader(reader);
+			welcomeDialogLocation = wixReader.GetStartElementLocation("Dialog", welcomeDialogId);
 		
 			reader = new StringReader(GetWixXml());
-			missingDialogLocation = WixDocument.GetStartElementLocation(reader, "Dialog", "missingDialogId");
+			wixReader = new WixDocumentReader(reader);
+			missingDialogLocation = wixReader.GetStartElementLocation("Dialog", "missingDialogId");
 		}
 		
 		[Test]

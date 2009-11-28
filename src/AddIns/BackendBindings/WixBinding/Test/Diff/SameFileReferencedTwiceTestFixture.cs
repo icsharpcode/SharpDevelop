@@ -28,7 +28,7 @@ namespace WixBinding.Tests.Diff
 			doc.FileName = @"C:\Projects\Setup\Setup.wxs";
 			doc.LoadXml(GetWixXml());
 			WixPackageFilesDiff diff = new WixPackageFilesDiff(this);
-			diffResults = diff.Compare(doc.RootDirectory);
+			diffResults = diff.Compare(doc.GetRootDirectory());
 		}
 		
 		[Test]

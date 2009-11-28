@@ -6,15 +6,24 @@
 // </file>
 
 using System;
-using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WixBinding
 {
-	public class ShowDiffCommand : AbstractMenuCommand
+	public class ShowDiffCommand : AbstractActivePackageFilesViewCommand
 	{
-		public override void Run()
+		public ShowDiffCommand()
 		{
-			PackageFilesView.ActiveView.ShowDiff();
+		}
+		
+		public ShowDiffCommand(IWorkbench workbench)
+			: base(workbench)
+		{
+		}
+		
+		protected override void Run(PackageFilesView view)
+		{
+			view.CalculateDiff();
 		}
 	}
 }
