@@ -9,6 +9,7 @@ using System;
 using System.Windows.Forms;
 using System.Xml;
 
+using ICSharpCode.Core;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
 using WixBinding.Tests.Utils;
@@ -25,6 +26,7 @@ namespace WixBinding.Tests.PackageFiles
 		WixDocument document;
 		MockXmlTextWriter xmlTextWriter;
 		MockTextEditorOptions textEditorOptions;
+		FileNameEventArgs fileUtilityFileSavedEventArgs;
 		
 		[SetUp]
 		public void Init()
@@ -107,6 +109,29 @@ namespace WixBinding.Tests.PackageFiles
 			packageFilesView.Save();
 			
 			Assert.IsTrue(mockPackageFilesControl.SaveMethodCalled);
+		}
+		
+		[Test]
+		public void PackageFilesViewWriteMethodFiresFileUtilityFileSavedEvent()
+		{
+			try {
+				fileUtilityFileSavedEventArgs = null;
+				FileUtility.FileSaved += FileUtilityFileSaved;
+				
+				string fileName = @"d:\projects\test\setup.wxs";
+				WixDocument document = new WixDocument();
+				document.FileName = fileName;
+				packageFilesView.Write(document);
+				
+				Assert.AreEqual(fileName, fileUtilityFileSavedEventArgs.FileName);
+			} finally {
+				FileUtility.FileSaved -= FileUtilityFileSaved;
+			}
+		}
+		
+		void FileUtilityFileSaved(object sender, FileNameEventArgs e)
+		{
+			fileUtilityFileSavedEventArgs = e;
 		}
 		
 		[Test]
