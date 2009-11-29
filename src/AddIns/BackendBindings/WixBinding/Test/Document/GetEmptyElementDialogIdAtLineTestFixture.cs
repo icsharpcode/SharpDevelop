@@ -21,39 +21,37 @@ namespace WixBinding.Tests.Document
 	[TestFixture]
 	public class GetEmptyElementDialogIdAtLineTestFixture
 	{
-		StringReader reader;
 		string expectedDialogId = "WelcomeDialog";
 		WixDocumentReader wixReader;
 		
 		[SetUp]
 		public void SetUpFixture()
 		{
-			reader = new StringReader(GetWixXml());
-			wixReader = new WixDocumentReader(reader);
+			wixReader = new WixDocumentReader(GetWixXml());
 		}
 		
 		[Test]
 		public void OnDialogStartTagLine()
 		{
-			Assert.AreEqual(expectedDialogId, wixReader.GetDialogId(8));
+			Assert.AreEqual(expectedDialogId, wixReader.GetDialogId(9));
 		}
 		
 		[Test]
 		public void StartOfDocument()
 		{
-			Assert.IsNull(wixReader.GetDialogId(0));
+			Assert.IsNull(wixReader.GetDialogId(1));
 		}
 		
 		[Test]
 		public void LineBeforeDialogStartTag()
 		{
-			Assert.IsNull(wixReader.GetDialogId(7));
+			Assert.IsNull(wixReader.GetDialogId(8));
 		}
 		
 		[Test]
 		public void LineAfterDialogStartTag()
 		{
-			Assert.IsNull(wixReader.GetDialogId(9));			
+			Assert.IsNull(wixReader.GetDialogId(10));			
 		}
 		
 		string GetWixXml()

@@ -91,8 +91,7 @@ namespace ICSharpCode.WixBinding
 		DomRegion GetTextEditorRegionForDialogElement(string dialogId)
 		{
 			IDocument document = view.DesignerCodeFileDocument;
-			StringReader reader = new StringReader(document.Text);
-			WixDocumentReader wixReader = new WixDocumentReader(reader);
+			WixDocumentReader wixReader = new WixDocumentReader(document.Text);
 			return wixReader.GetElementRegion("Dialog", dialogId);
 		}
 		

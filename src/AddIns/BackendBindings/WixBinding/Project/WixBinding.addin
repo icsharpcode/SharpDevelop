@@ -72,7 +72,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/ProjectBindings">
-		<ProjectBinding id                   = "Wix"
+		<ProjectBinding id                    = "Wix"
 		                 guid                 = "{CFEE4113-1246-4D54-95CB-156813CB8593}"
 		                 supportedextensions  = ".wxs"
 		                 projectfileextension = ".wixproj"
@@ -158,11 +158,11 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
-		<Pad id           = "WixSetupDialogListPad"
-		     category     = "Setup"
-		     title        = "${res:ICSharpCode.WixBinding.SetupDialogListPad.Title}"
-		     icon         = "Setup.Icons.16x16.SetupDialogsPad"
-		     class        = "ICSharpCode.WixBinding.SetupDialogListPad"
+		<Pad id              = "WixSetupDialogListPad"
+		     category        = "Setup"
+		     title           = "${res:ICSharpCode.WixBinding.SetupDialogListPad.Title}"
+		     icon            = "Setup.Icons.16x16.SetupDialogsPad"
+		     class           = "ICSharpCode.WixBinding.SetupDialogListPad"
 		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 
@@ -171,7 +171,7 @@
 			<MenuItem id = "OpenDialog"
 				icon  = "Icons.16x16.OpenFileIcon"
 				label = "${res:ProjectComponent.ContextMenu.Open}"
-		    	class = "ICSharpCode.WixBinding.OpenDialogCommand"/>
+				class = "ICSharpCode.WixBinding.OpenDialogCommand"/>
 			<MenuItem id = "ViewCode"
 				label = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
 				icon = "Icons.16x16.FormsDesigner.ViewCode"
@@ -182,7 +182,7 @@
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id = "WixDialogDesigner"
 			type  = "Secondary"
-		 	class = "ICSharpCode.WixBinding.WixDialogDesignerDisplayBinding"
+			class = "ICSharpCode.WixBinding.WixDialogDesignerDisplayBinding"
 			fileNamePattern = "\.(wxs|wxi)$"/>
 	</Path>
 

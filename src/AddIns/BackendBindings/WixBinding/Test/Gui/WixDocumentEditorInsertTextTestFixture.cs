@@ -45,8 +45,8 @@ namespace WixBinding.Tests.Gui
 				"<new-child>\r\n" +
 				"</new-child>\r\n";
 			
-			int line = 2;
-			int column = 1;
+			int line = 3;
+			int column = 2;
 			editor.InsertIndented(line, column, xmlToInsert);
 			
 			document = textEditor.Document;

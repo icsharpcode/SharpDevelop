@@ -29,7 +29,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void SingleLineRegionConvertedToSegment()
 		{
-			DomRegion region = new DomRegion(0, 0, 0, 5);
+			DomRegion region = new DomRegion(1, 1, 1, 6);
 			document.Text = "1234567890";
 			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
@@ -41,7 +41,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void TwoLineRegionConvertedToSegment()
 		{
-			DomRegion region = new DomRegion(0, 1, 1, 0);
+			DomRegion region = new DomRegion(1, 2, 2, 1);
 			document.Text = "1234567890\r\n1234567890";
 			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
@@ -53,7 +53,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void ThreeLineRegionConvertedToSegment()
 		{
-			DomRegion region = new DomRegion(0, 2, 2, 1);
+			DomRegion region = new DomRegion(1, 3, 3, 2);
 			document.Text = "1234567890\r\n1234567890\r\n1234567890";
 			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
@@ -65,7 +65,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void ThreeLineRegionWithoutCarriageReturnConvertedToSegment()
 		{
-			DomRegion region = new DomRegion(0, 2, 2, 1);
+			DomRegion region = new DomRegion(1, 3, 3, 2);
 			document.Text = "1234567890\n1234567890\n1234567890";
 			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
@@ -77,7 +77,7 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void RegionWithBeginLineOnSecondLineConvertedToSegment()
 		{
-			DomRegion region = new DomRegion(1, 0, 2, 0);
+			DomRegion region = new DomRegion(2, 1, 3, 1);
 			document.Text = "1234567890\r\n1234567890\r\n1234567890";
 			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			

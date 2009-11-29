@@ -218,14 +218,8 @@ namespace ICSharpCode.WixBinding
 				return;
 			}
 			
-			// Find the product end element location.
-			XmlElement productElement = document.GetProduct();
-			StringReader reader = new StringReader(textEditor.Document.Text);
-			string productId = productElement.GetAttribute("Id");
-			WixDocumentReader wixReader = new WixDocumentReader(reader);
-			Location location = wixReader.GetEndElementLocation("Product", productId);
+			Location location = FindProductElementEndLocation(textEditor, document);
 			if (!location.IsEmpty) {
-				// Insert the xml with an extra new line at the end.
 				documentEditor.InsertIndented(location, String.Concat(xml, "\r\n"));
 			}
 		}
@@ -237,6 +231,14 @@ namespace ICSharpCode.WixBinding
 			
 			WixDocumentEditor documentEditor = new WixDocumentEditor(textEditor);
 			documentEditor.ReplaceElement(rootDirectoryRef.Id, WixDirectoryRefElement.DirectoryRefElementName, xml);
+		}
+		
+		Location FindProductElementEndLocation(ITextEditor textEditor, WixDocument document)
+		{
+			XmlElement productElement = document.GetProduct();
+			string productId = productElement.GetAttribute("Id");
+			WixDocumentReader wixReader = new WixDocumentReader(textEditor.Document.Text);
+			return wixReader.GetEndElementLocation("Product", productId);
 		}
 	}
 }

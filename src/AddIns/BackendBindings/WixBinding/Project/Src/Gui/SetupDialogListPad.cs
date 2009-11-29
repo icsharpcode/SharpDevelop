@@ -189,7 +189,6 @@ namespace ICSharpCode.WixBinding
 		{
 			try {
 				setupDialogListView.BeginUpdate();
-				// TODO: Intelligent updating.
 				ShowDialogList();
 			} finally {
 				setupDialogListView.EndUpdate();

@@ -34,18 +34,15 @@ namespace WixBinding.Tests.Document
 		[TestFixtureSetUpAttribute]
 		public void SetUpFixture()
 		{
-			StringReader reader = new StringReader(GetWixXml());
-			WixDocumentReader wixReader = new WixDocumentReader(reader);
+			WixDocumentReader wixReader = new WixDocumentReader(GetWixXml());
 			dialogIds = wixReader.GetDialogIds();
 			welcomeDialogId = dialogIds[0];
 			progressDialogId = dialogIds[1];
 			
-			reader = new StringReader(GetWixXml());
-			wixReader = new WixDocumentReader(reader);
+			wixReader = new WixDocumentReader(GetWixXml());
 			welcomeDialogLocation = wixReader.GetStartElementLocation("Dialog", welcomeDialogId);
 		
-			reader = new StringReader(GetWixXml());
-			wixReader = new WixDocumentReader(reader);
+			wixReader = new WixDocumentReader(GetWixXml());
 			missingDialogLocation = wixReader.GetStartElementLocation("Dialog", "missingDialogId");
 		}
 		
@@ -70,13 +67,13 @@ namespace WixBinding.Tests.Document
 		[Test]
 		public void WelcomeDialogElementLine()
 		{
-			Assert.AreEqual(8, welcomeDialogLocation.Y);
+			Assert.AreEqual(9, welcomeDialogLocation.Y);
 		}
 		
 		[Test]
 		public void WelcomeDialogElementColumn()
 		{
-			Assert.AreEqual(3, welcomeDialogLocation.X);
+			Assert.AreEqual(4, welcomeDialogLocation.X);
 		}
 		
 		[Test]

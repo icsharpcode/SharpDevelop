@@ -31,9 +31,9 @@ namespace WixBinding.Tests.Document
 				"\t\t</Directory>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			WixDocumentReader wixReader = new WixDocumentReader(new StringReader(xml));
+			WixDocumentReader wixReader = new WixDocumentReader(xml);
 			DomRegion region = wixReader.GetElementRegion("Directory", "TARGETDIR");
-			DomRegion expectedRegion = new DomRegion(2, 2, 3, 13);
+			DomRegion expectedRegion = new DomRegion(3, 3, 4, 14);
 			Assert.AreEqual(expectedRegion, region);
 		}
 		
@@ -48,9 +48,9 @@ namespace WixBinding.Tests.Document
 				"\t\t</Directory>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			WixDocumentReader wixReader = new WixDocumentReader(new StringReader(xml));
+			WixDocumentReader wixReader = new WixDocumentReader(xml);
 			DomRegion region = wixReader.GetElementRegion("Directory", "TARGETDIR");
-			DomRegion expectedRegion = new DomRegion(2, 2, 5, 13);
+			DomRegion expectedRegion = new DomRegion(3, 3, 6, 14);
 			Assert.AreEqual(expectedRegion, region);
 		}
 		
@@ -64,9 +64,9 @@ namespace WixBinding.Tests.Document
 				"\t\t</Directory>\r\n" +
 				"\t</Fragment>\r\n" +
 				"</Wix>";
-			WixDocumentReader wixReader = new WixDocumentReader(new StringReader(xml));
+			WixDocumentReader wixReader = new WixDocumentReader(xml);
 			DomRegion region = wixReader.GetElementRegion("Directory", "TARGETDIR");
-			DomRegion expectedRegion = new DomRegion(2, 2, 4, 13);
+			DomRegion expectedRegion = new DomRegion(3, 3, 5, 14);
 			Assert.AreEqual(expectedRegion, region);
 		}
 	}

@@ -67,9 +67,9 @@ namespace ICSharpCode.WixBinding
 		
 		static WixDocumentLineSegment ConvertRegionToSingleLineSegment(IDocument document, DomRegion region)
 		{
-			IDocumentLine documentLine = document.GetLine(region.BeginLine + 1);
-			return new WixDocumentLineSegment(documentLine.Offset + region.BeginColumn, 
-					region.EndColumn + 1 - region.BeginColumn);
+			IDocumentLine documentLine = document.GetLine(region.BeginLine);
+			return new WixDocumentLineSegment(documentLine.Offset + region.BeginColumn - 1, 
+					region.EndColumn - region.BeginColumn + 1);
 		}
 		
 		static WixDocumentLineSegment ConvertRegionToMultiLineSegment(IDocument document, DomRegion region)
@@ -77,10 +77,10 @@ namespace ICSharpCode.WixBinding
 			int length = 0;
 			int startOffset = 0;
 			for (int line = region.BeginLine; line <= region.EndLine; ++line) {
-				IDocumentLine currentDocumentLine = document.GetLine(line + 1);
+				IDocumentLine currentDocumentLine = document.GetLine(line);
 				if (line == region.BeginLine) {
 					length += currentDocumentLine.TotalLength - region.BeginColumn;
-					startOffset = currentDocumentLine.Offset + region.BeginColumn;
+					startOffset = currentDocumentLine.Offset + region.BeginColumn - 1;
 				} else if (line < region.EndLine) {
 					length += currentDocumentLine.TotalLength;
 				} else {

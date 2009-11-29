@@ -43,6 +43,11 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
+		public WixDocumentReader(string document)
+			: this(new StringReader(document))
+		{
+		}
+		
 		public WixDocumentReader(TextReader textReader)
 		{
 			reader = new XmlTextReader(textReader);
@@ -127,8 +132,8 @@ namespace ICSharpCode.WixBinding
 		{
 			// Store the column and line position since the call to GetIdFromCurrentNode will
 			// move to the <Dialog> Id attribute.
-			int line = reader.LineNumber - 1;	
-			int column = reader.LinePosition - 2; // Take off 2 to so the '<' is located.
+			int line = reader.LineNumber;	
+			int column = reader.LinePosition - 1; // Take off 1 to so the '<' is located.
 
 			if (idAttributeValue == GetIdAttributeValueFromCurrentNode()) {
 				return new Location(column, line);
@@ -136,9 +141,12 @@ namespace ICSharpCode.WixBinding
 			return Location.Empty;
 		}
 		
+		/// <summary>
+		/// Location line numbers are one based.
+		/// </summary>
 		public Location GetEndElementLocation(string name, string id)
 		{
-			using (reader) {	
+			using (reader) {
 				bool startElementFound = false;
 				object elementName = reader.NameTable.Add(name);
 				while (reader.Read()) {
@@ -154,7 +162,7 @@ namespace ICSharpCode.WixBinding
 								if (IsElementMatch(elementName, reader.LocalName)) {
 									// Take off an extra 2 from the line position so we get the 
 									// correct column for the < tag rather than the element name.
-									return new Location(reader.LinePosition - 3, reader.LineNumber - 1);
+									return new Location(reader.LinePosition - 2, reader.LineNumber);
 								}
 							}
 							break;
@@ -167,15 +175,12 @@ namespace ICSharpCode.WixBinding
 		/// <summary>
 		/// Gets the dialog id at the specified line.
 		/// </summary>
-		/// <param name="index">Line numbers start from zero.</param>
+		/// <param name="index">Line numbers start from one.</param>
 		public string GetDialogId(int line)
 		{
-			// Add one to line since XmlTextReader line numbers start from one.
-			++line;
-			
 			DialogStartElement dialogStartElement = null;
 			
-			using (reader) {			
+			using (reader) {
 				object dialogElementName = reader.NameTable.Add("Dialog");
 				while (reader.Read()) {
 					switch (reader.NodeType) {
@@ -209,6 +214,9 @@ namespace ICSharpCode.WixBinding
 		/// containing the start tag and the end column is the column containing the final
 		/// end tag marker.
 		/// </summary>
+		/// <remarks>
+		/// The lines and columns in the region are one based.
+		/// </remarks>
 		/// <param name="name">The name of the element.</param>
 		/// <param name="id">The id attribute value of the element.</param>
 		public DomRegion GetElementRegion(string name, string id)
@@ -260,11 +268,11 @@ namespace ICSharpCode.WixBinding
 		Location GetEmptyElementEnd()
 		{
 			reader.ReadStartElement();
-			int line = reader.LineNumber - 1;
+			int line = reader.LineNumber;
 			
-			// Take off two as we have moved passed the end tag
+			// Take off one as we have moved passed the end tag
 			// column.
-			int column = reader.LinePosition - 2;
+			int column = reader.LinePosition - 1;
 			return new Location(column, line);
 		}
 		
@@ -276,10 +284,10 @@ namespace ICSharpCode.WixBinding
 		Location GetEndElementEnd()
 		{
 			reader.ReadEndElement();
-			int line = reader.LineNumber - 1;
+			int line = reader.LineNumber;
 			
-			// Take off two as we have moved passed the end tag column.
-			int column = reader.LinePosition - 2;
+			// Take off one as we have moved passed the end tag column.
+			int column = reader.LinePosition - 1;
 			
 			// If ReadEndElement has moved to the start of another element
 			// take off one from the column value otherwise the column

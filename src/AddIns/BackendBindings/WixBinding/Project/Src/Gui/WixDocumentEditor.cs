@@ -29,7 +29,6 @@ namespace ICSharpCode.WixBinding
 			this.document = textEditor.Document;
 		}
 		
-		
 		/// <summary>
 		/// Tries to replace the element defined by element name and its Id attribute in the
 		/// text editor with the specified xml.
@@ -39,7 +38,7 @@ namespace ICSharpCode.WixBinding
 		/// <param name="xml">The replacement xml.</param>
 		public DomRegion ReplaceElement(string elementAttributeId, string elementName, string replacementXml)
 		{
-			WixDocumentReader wixReader = new WixDocumentReader(new StringReader(document.Text));
+			WixDocumentReader wixReader = new WixDocumentReader(document.Text);
 			DomRegion region = wixReader.GetElementRegion(elementName, elementAttributeId);
 			if (!region.IsEmpty) {
 				Replace(region, replacementXml);
@@ -67,7 +66,7 @@ namespace ICSharpCode.WixBinding
 				int insertedCharacterCount = IndentAllLinesTheSame(region.BeginLine + 1, region.EndLine + addedLineCount, initialIndent);
 				
 				// Make sure the text inserted is visible.
-				textEditor.JumpTo(region.BeginLine + 1, 1);
+				textEditor.JumpTo(region.BeginLine, 1);
 				
 				// Select the text just inserted.
 				int textInsertedLength = insertedCharacterCount + xml.Length;
@@ -84,16 +83,16 @@ namespace ICSharpCode.WixBinding
 		/// Inserts and indents the xml at the specified location.
 		/// </summary>
 		/// <remarks>
-		/// Lines and columns are zero based.
+		/// Lines and columns are one based.
 		/// </remarks>
 		public void InsertIndented(int line, int column, string xml)
 		{
 			using (textEditor.Document.OpenUndoGroup()) {
 
 				// Insert the xml and indent it.
-				IDocumentLine documentLine = document.GetLine(line + 1);
+				IDocumentLine documentLine = document.GetLine(line);
 				int initialIndent = GetIndent(line);
-				int offset = documentLine.Offset + column;
+				int offset = documentLine.Offset + column - 1;
 				int originalLineCount = document.TotalNumberOfLines;
 				document.Insert(offset, xml);
 				int addedLineCount = document.TotalNumberOfLines - originalLineCount;
@@ -102,7 +101,7 @@ namespace ICSharpCode.WixBinding
 				int insertedCharacterCount = IndentLines(line, line + addedLineCount, initialIndent);
 				
 				// Make sure the text inserted is visible.
-				textEditor.JumpTo(line + 1, 1);
+				textEditor.JumpTo(line, 1);
 				
 				// Select the text just inserted.
 				int textInsertedLength = xml.Length + insertedCharacterCount;
@@ -158,13 +157,13 @@ namespace ICSharpCode.WixBinding
 		
 		string GetLineAsString(int line)
 		{
-			IDocumentLine documentLine = document.GetLine(line + 1);
+			IDocumentLine documentLine = document.GetLine(line);
 			return documentLine.Text;
 		}
 		
 		int IndentLine(int line, int howManyIndents)
 		{
-			IDocumentLine documentLine = document.GetLine(line + 1);
+			IDocumentLine documentLine = document.GetLine(line);
 			int offset = documentLine.Offset;
 			
 			string indentationString = GetIndentationString(howManyIndents);

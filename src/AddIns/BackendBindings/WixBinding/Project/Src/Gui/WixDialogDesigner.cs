@@ -68,9 +68,9 @@ namespace ICSharpCode.WixBinding
 			JumpToDialogElement(id);
 			if (base.Host != null) {
 				// Reload so the correct dialog is displayed.
-				this.MergeAndUnloadDesigner();
+				MergeAndUnloadDesigner();
 				DialogId = id;
-				this.ReloadDesignerFromMemory();
+				ReloadDesignerFromMemory();
 			} else {
 				// Need to open the designer.
 				DialogId = id;
@@ -148,7 +148,7 @@ namespace ICSharpCode.WixBinding
 		/// Gets the Wix document filename.
 		/// </summary>
 		public string DocumentFileName {
-			get { return this.PrimaryFileName; }
+			get { return PrimaryFileName; }
 		}
 		
 		/// <summary>
@@ -163,19 +163,15 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public string GetDocumentXml()
 		{
-			return this.DesignerCodeFileContent;
+			return DesignerCodeFileContent;
 		}
 		
 		/// <summary>
 		/// Gets or sets the dialog id currently being designed.
 		/// </summary>
 		public string DialogId {
-			get {
-				return dialogId;
-			}
-			set {
-				dialogId = value;
-			}
+			get { return dialogId; }
+			set { dialogId = value; }
 		}
 		
 		/// <summary>
@@ -200,8 +196,7 @@ namespace ICSharpCode.WixBinding
 		{
 			ITextEditor textEditor = ActiveTextEditor;
 			if (textEditor != null) {
-				StringReader reader = new StringReader(textEditor.Document.Text);
-				WixDocumentReader wixReader = new WixDocumentReader(reader);
+				WixDocumentReader wixReader = new WixDocumentReader(textEditor.Document.Text);
 				return wixReader.GetDialogId(textEditor.Caret.Line);
 			}
 			return null;
@@ -214,8 +209,7 @@ namespace ICSharpCode.WixBinding
 		{
 			ITextEditor textEditor = ActiveTextEditor;
 			if (textEditor != null) {
-				StringReader reader = new StringReader(textEditor.Document.Text);
-				WixDocumentReader wixReader = new WixDocumentReader(reader);
+				WixDocumentReader wixReader = new WixDocumentReader(textEditor.Document.Text);
 				ReadOnlyCollection<string> ids = wixReader.GetDialogIds();
 				if (ids.Count > 0) {
 					return ids[0];
@@ -274,8 +268,7 @@ namespace ICSharpCode.WixBinding
 				if (dialogId != null) {
 					ITextEditor textEditor = ActiveTextEditor;
 					if (textEditor != null) {
-						StringReader reader = new StringReader(textEditor.Document.Text);
-						WixDocumentReader wixReader = new WixDocumentReader(reader);
+						WixDocumentReader wixReader = new WixDocumentReader(textEditor.Document.Text);
 						Location location = wixReader.GetStartElementLocation("Dialog", dialogId);
 						textEditor.JumpTo(location.Y, 1);
 					}

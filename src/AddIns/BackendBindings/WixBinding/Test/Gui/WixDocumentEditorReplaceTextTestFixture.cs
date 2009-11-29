@@ -48,12 +48,12 @@ namespace WixBinding.Tests.Gui
 				"<new-child>\r\n" +
 				"</new-child>";
 			
-			int line = 1;
-			int column = 1;
-			int endLine = 2;
+			int line = 2;
+			int column = 2;
+			int endLine = 3;
 			
 			// End column is the column containing the '>' of the </child> element.
-			int endColumn = 8;
+			int endColumn = 9;
 			
 			DomRegion region = new DomRegion(line, column, endLine, endColumn);
 			
