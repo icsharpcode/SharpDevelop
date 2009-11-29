@@ -42,17 +42,21 @@
 			so they never block the user from repairing, patching, or 
 			uninstalling the package after it has been installed. 
 
-			For example the user could do something odd like uninstall .NET 3.5
+			For example the user could do something odd like uninstall .NET 
  			and then run the msi to uninstall SharpDevelop. Without the 
 			"Installed OR" this would not be allowed.
 		-->
 		<!--
-			Check for .NET 3.5 SP1 
-			http://msdn2.microsoft.com/en-us/library/aa480198.aspx#netfx30_topic14
+			Check for .NET 4.0 beta 2 
 		-->
-		<PropertyRef Id="NETFRAMEWORK35_SP_LEVEL" />
-		<Condition Message="This setup requires the .NET Framework 3.5 SP 1 to be installed.">
-			Installed OR NETFRAMEWORK35_SP_LEVEL = "#1"
+		<Property Id="NETFRAMEWORK40FULL" Secure="yes">
+			<RegistrySearch Id="NetFramework40Full" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Install" Type="raw" />
+		</Property>
+		<Property Id="NETFRAMEWORK40FULLVERSION" Secure="yes">
+			<RegistrySearch Id="NetFramework40FullVersion" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Version" Type="raw" />
+		</Property>
+		<Condition Message="This setup requires the .NET 4.0 Full Framework Beta 2 to be installed.">
+			Installed OR (NETFRAMEWORK40FULL AND NETFRAMEWORK40FULLVERSION = "4.0.21006")
 		</Condition>
 		
 		<!--
@@ -579,7 +583,7 @@
 			</Feature>
 		</Feature>
 		
-		<!-- Using WixUI temporarily -->
+		<!-- Using WixUI -->
 		<Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
 		<UIRef Id="WixUI_FeatureTree"/>
 		
