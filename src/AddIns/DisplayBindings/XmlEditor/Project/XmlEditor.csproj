@@ -118,6 +118,7 @@
     <Compile Include="Src\XmlAttributeTypeDescriptor.cs" />
     <Compile Include="Src\XmlCharacterDataTreeNode.cs" />
     <Compile Include="Src\XmlCodeCompletionBinding.cs" />
+    <Compile Include="Src\XmlCommentFold.cs" />
     <Compile Include="Src\XmlCommentTreeNode.cs" />
     <Compile Include="Src\XmlCompletionItem.cs" />
     <Compile Include="Src\XmlCompletionItemCollection.cs" />
@@ -131,6 +132,8 @@
     <Compile Include="Src\XmlElementPath.cs" />
     <Compile Include="Src\XmlElementTreeNode.cs" />
     <Compile Include="Src\XmlEncoder.cs" />
+    <Compile Include="Src\XmlFoldParser.cs" />
+    <Compile Include="Src\XmlElementFold.cs" />
     <Compile Include="Src\XmlFormattingStrategy.cs">
     </Compile>
     <Compile Include="Src\StylesheetAssignedCondition.cs" />

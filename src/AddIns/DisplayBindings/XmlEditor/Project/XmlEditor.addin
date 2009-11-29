@@ -19,6 +19,12 @@
 		<Class id="XmlFormatter" class="ICSharpCode.XmlEditor.XmlFormattingStrategy"/>
 	</Path>
 	
+	<Path name="/Workspace/Parser">
+		<Parser id="XmlFoldParser"
+			supportedextensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco"
+			class="ICSharpCode.XmlEditor.XmlFoldParser"/>
+	</Path>	
+	
 	<Path name="/AddIns/DefaultTextEditor/CodeCompletion">
 		<CodeCompletionBinding
 			id="Xml"

@@ -120,6 +120,19 @@
     <Compile Include="Editor\XmlEditorFileExtensionsTestFixture.cs" />
     <Compile Include="Editor\XmlSchemaPickerTestFixture.cs" />
     <Compile Include="Editor\XmlSchemasPanelTestFixture.cs" />
+    <Compile Include="Folding\AttributeTextInFoldIsXmlEncodedTestFixture.cs" />
+    <Compile Include="Folding\EmptyCommentDoesNotCreateFoldTestFixture.cs" />
+    <Compile Include="Folding\FoldParserParsesInvalidXmlTestFixture.cs" />
+    <Compile Include="Folding\MultiLineCommentFoldTestFixture.cs" />
+    <Compile Include="Folding\QualifiedElementFoldTestFixture.cs" />
+    <Compile Include="Folding\QualifiedElementWithNoDefinedNamespaceFoldTestFixture.cs" />
+    <Compile Include="Folding\ShowElementAttributesForElementWithNoAttributesTestFixture.cs" />
+    <Compile Include="Folding\ShowElementAttributesInFoldTestFixture.cs" />
+    <Compile Include="Folding\SingleEmptyElementFoldTestFixture.cs" />
+    <Compile Include="Folding\SingleLineCommentDoesNotCreateFoldTestFixture.cs" />
+    <Compile Include="Folding\SingleLineElementDoesNotCreateFoldTestFixture.cs" />
+    <Compile Include="Folding\SingleRootElementFoldTestFixture.cs" />
+    <Compile Include="Folding\TwoElementFoldsTestFixture.cs" />
     <Compile Include="Parser\XamlMixedNamespaceTestFixture.cs" />
     <Compile Include="Paths\ChangeElementPathDefaultNamespaceTests.cs" />
     <Compile Include="Paths\QualifiedNameCollectionEqualsTests.cs" />
@@ -206,6 +219,7 @@
     <Compile Include="Utils\MockDocument.cs" />
     <Compile Include="Utils\MockFileSystem.cs" />
     <Compile Include="Utils\MockSelectXmlSchemaWindow.cs" />
+    <Compile Include="Utils\MockTextBuffer.cs" />
     <Compile Include="Utils\MockTextEditor.cs" />
     <Compile Include="Utils\MockXmlSchemaCompletionDataFactory.cs" />
     <Compile Include="Utils\MockXmlSchemasPanel.cs" />
@@ -218,6 +232,7 @@
     <Compile Include="Utils\Tests\MockDocumentTests.cs" />
     <Compile Include="Utils\Tests\MockFileSystemTests.cs" />
     <Compile Include="Utils\Tests\MockSelectXmlSchemaWindowTests.cs" />
+    <Compile Include="Utils\Tests\MockTextBufferTests.cs" />
     <Compile Include="Utils\Tests\MockTextEditorTests.cs" />
     <Compile Include="Utils\Tests\MockXmlSchemaCompletionDataFactoryTests.cs" />
     <Compile Include="Utils\Tests\MockXmlSchemasPanelTests.cs" />
@@ -276,6 +291,7 @@
   <ItemGroup>
     <Folder Include="Completion" />
     <Folder Include="Editor" />
+    <Folder Include="Folding" />
     <Folder Include="Schema\" />
     <Folder Include="Parser\" />
     <Folder Include="Paths\" />
