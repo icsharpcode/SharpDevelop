@@ -116,5 +116,17 @@ namespace WixBinding.Tests.Utils.Tests
 			
 			Assert.AreEqual("abc-replaced-ghi", textEditor.Document.Text);
 		}
+		
+		[Test]
+		public void NoTextSelectedAfterJumpToMethodIsCalled()
+		{
+			int offset = 1;
+			int length = 2;
+			textEditor.Document.Text = "test\r\nsecond line";
+			textEditor.Select(offset, length);
+			textEditor.JumpTo(2, 1);
+			
+			Assert.AreEqual(String.Empty, textEditor.SelectedText);
+		}
 	}
 }

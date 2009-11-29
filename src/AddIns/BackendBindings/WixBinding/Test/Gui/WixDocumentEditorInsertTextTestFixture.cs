@@ -87,15 +87,6 @@ namespace WixBinding.Tests.Gui
 		}
 		
 		[Test]
-		public void CursorAtEndOfSelectedText()
-		{
-			int col = 2;
-			int line = 5;
-			Location expectedLocation = new Location(col, line);
-			Assert.AreEqual(expectedLocation, textEditor.Caret.Position);
-		}
-		
-		[Test]
 		public void InsertCanBeUndoneInOneStep()
 		{
 			textEditor.Undo();

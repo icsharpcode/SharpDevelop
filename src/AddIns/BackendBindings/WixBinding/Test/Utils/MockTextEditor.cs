@@ -140,7 +140,8 @@ namespace WixBinding.Tests.Utils
 		public void JumpTo(int line, int column)
 		{
 			locationJumpedTo = new Location(column, line);
-	}
+			selection = new SimpleSelection(-1, -1);
+		}
 		
 		public Location LocationJumpedTo {
 			get { return locationJumpedTo; }

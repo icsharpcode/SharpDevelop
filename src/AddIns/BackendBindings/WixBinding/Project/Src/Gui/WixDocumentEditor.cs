@@ -56,7 +56,7 @@ namespace ICSharpCode.WixBinding
 			WixDocumentLineSegment segment = WixDocumentLineSegment.ConvertRegionToSegment(document, region);
 			
 			using (textEditor.Document.OpenUndoGroup()) {
-
+				
 				// Replace the original xml with the new xml and indent it.
 				int originalLineCount = document.TotalNumberOfLines;
 				int initialIndent = GetIndent(region.BeginLine);
@@ -66,14 +66,12 @@ namespace ICSharpCode.WixBinding
 				// Indent the xml.
 				int insertedCharacterCount = IndentAllLinesTheSame(region.BeginLine + 1, region.EndLine + addedLineCount, initialIndent);
 				
-				// Select the text just inserted.
-				int textInsertedLength = insertedCharacterCount + xml.Length;
-				textEditor.Select(segment.Offset, textInsertedLength);
-			
 				// Make sure the text inserted is visible.
 				textEditor.JumpTo(region.BeginLine + 1, 1);
 				
-				textEditor.Caret.Position = document.OffsetToPosition(segment.Offset + textInsertedLength);
+				// Select the text just inserted.
+				int textInsertedLength = insertedCharacterCount + xml.Length;
+				textEditor.Select(segment.Offset, textInsertedLength);
 			}
 		}
 		
@@ -103,17 +101,15 @@ namespace ICSharpCode.WixBinding
 				// Indent the xml.
 				int insertedCharacterCount = IndentLines(line, line + addedLineCount, initialIndent);
 				
-				// Select the text just inserted.
-				int textInsertedLength = xml.Length + insertedCharacterCount;
-				textEditor.Select(offset, textInsertedLength);
-				
 				// Make sure the text inserted is visible.
 				textEditor.JumpTo(line + 1, 1);
 				
-				textEditor.Caret.Position = document.OffsetToPosition(offset + textInsertedLength);
+				// Select the text just inserted.
+				int textInsertedLength = xml.Length + insertedCharacterCount;
+				textEditor.Select(offset, textInsertedLength);
 			}
 		}
-								
+		
 		/// <summary>
 		/// Indents the lines and returns the total number of extra characters added.
 		/// </summary>
@@ -137,7 +133,7 @@ namespace ICSharpCode.WixBinding
 			for (int i = begin; i <= end; ++i) {
 				totalInsertedCharacters += IndentLine(i, indent);
 			}
-			return totalInsertedCharacters;			
+			return totalInsertedCharacters;
 		}
 		
 		/// <summary>
