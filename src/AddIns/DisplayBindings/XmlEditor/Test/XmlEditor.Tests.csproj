@@ -124,6 +124,7 @@
     <Compile Include="Folding\EmptyCommentDoesNotCreateFoldTestFixture.cs" />
     <Compile Include="Folding\FoldParserParsesInvalidXmlTestFixture.cs" />
     <Compile Include="Folding\MultiLineCommentFoldTestFixture.cs" />
+    <Compile Include="Folding\OldParseInfoFoldRegionUsedForInvalidXmlTestFixture.cs" />
     <Compile Include="Folding\QualifiedElementFoldTestFixture.cs" />
     <Compile Include="Folding\QualifiedElementWithNoDefinedNamespaceFoldTestFixture.cs" />
     <Compile Include="Folding\ShowElementAttributesForElementWithNoAttributesTestFixture.cs" />
@@ -218,6 +219,7 @@
     <Compile Include="Utils\MockCompletionListWindow.cs" />
     <Compile Include="Utils\MockDocument.cs" />
     <Compile Include="Utils\MockFileSystem.cs" />
+    <Compile Include="Utils\MockParserService.cs" />
     <Compile Include="Utils\MockSelectXmlSchemaWindow.cs" />
     <Compile Include="Utils\MockTextBuffer.cs" />
     <Compile Include="Utils\MockTextEditor.cs" />
@@ -231,6 +233,7 @@
     <Compile Include="Utils\Tests\FormattedErrorMessageAreEqualTests.cs" />
     <Compile Include="Utils\Tests\MockDocumentTests.cs" />
     <Compile Include="Utils\Tests\MockFileSystemTests.cs" />
+    <Compile Include="Utils\Tests\MockParserServiceTests.cs" />
     <Compile Include="Utils\Tests\MockSelectXmlSchemaWindowTests.cs" />
     <Compile Include="Utils\Tests\MockTextBufferTests.cs" />
     <Compile Include="Utils\Tests\MockTextEditorTests.cs" />

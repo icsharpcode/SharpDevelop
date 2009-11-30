@@ -27,6 +27,7 @@ namespace XmlEditor.Tests.Folding
 		DefaultProjectContent projectContent;
 		MockTextBuffer textBuffer;
 		XmlEditorOptions options;
+		MockParserService parserService;
 		
 		[SetUp]
 		public void Init()
@@ -39,6 +40,7 @@ namespace XmlEditor.Tests.Folding
 			textBuffer = new MockTextBuffer(xml);
 			extensions = new DefaultXmlFileExtensions(null);
 			options = new XmlEditorOptions(new Properties());
+			parserService = new MockParserService();
 		}
 
 		void ParseWithShowAttributesSetToTrue()
@@ -49,7 +51,7 @@ namespace XmlEditor.Tests.Folding
 
 		void ParseXml()
 		{
-			parser = new XmlFoldParser(extensions, options);
+			parser = new XmlFoldParser(extensions, options, parserService);
 			unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer);
 		}
 

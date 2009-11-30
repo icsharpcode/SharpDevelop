@@ -19,21 +19,29 @@ namespace ICSharpCode.XmlEditor
 {
 	public class XmlFoldParser : IParser
 	{
-		string[] lexerTags = new string[0];
 		DefaultXmlFileExtensions extensions;
+		XmlEditorOptions options;
+		IParserService parserService;
+
+		string[] lexerTags = new string[0];
 		XmlTextReader reader;
 		List<FoldingRegion> folds;
 		Stack<XmlElementFold> elementFoldStack;
-		XmlEditorOptions options;
+		DefaultCompilationUnit unit;
 		
-		public XmlFoldParser(DefaultXmlFileExtensions extensions, XmlEditorOptions options)
+		public XmlFoldParser(DefaultXmlFileExtensions extensions, 
+			XmlEditorOptions options, 
+			IParserService parserService)
 		{
 			this.extensions = extensions;
 			this.options = options;
+			this.parserService = parserService;
 		}
 		
 		public XmlFoldParser()
-			: this(new DefaultXmlFileExtensions(), XmlEditorService.XmlEditorOptions)
+			: this(new DefaultXmlFileExtensions(), 
+				XmlEditorService.XmlEditorOptions, 
+				new DefaultParserService())
 		{
 		}
 		
@@ -64,15 +72,27 @@ namespace ICSharpCode.XmlEditor
 		public IResolver CreateResolver()
 		{
 			return null;
-		}		
+		}
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
-			DefaultCompilationUnit unit = new DefaultCompilationUnit(projectContent);
-			unit.FileName = fileName;
-			GetFolds(fileContent.CreateReader());
-			unit.FoldingRegions.AddRange(folds);
+			try {
+				CreateCompilationUnit(projectContent, fileName);
+				GetFolds(fileContent.CreateReader());
+				AddFoldsToCompilationUnit(unit, folds);
+			} catch (Exception) {
+				ICompilationUnit existingUnit = FindPreviouslyParsedCompilationUnit(projectContent, fileName);
+				if (existingUnit != null) {
+					return existingUnit;
+				}
+			}
 			return unit;
+		}
+		
+		void CreateCompilationUnit(IProjectContent projectContent, string fileName)
+		{
+			unit = new DefaultCompilationUnit(projectContent);
+			unit.FileName = fileName;
 		}
 		
 		void GetFolds(TextReader textReader)
@@ -80,33 +100,44 @@ namespace ICSharpCode.XmlEditor
 			folds = new List<FoldingRegion>();
 			elementFoldStack = new Stack<XmlElementFold>();
 			
-			try {
-				reader = new XmlTextReader(textReader);
-				reader.Namespaces = false;
-				while (reader.Read()) {
-					switch (reader.NodeType) {
-						case XmlNodeType.Element:
-							AddElementFoldToStackIfNotEmptyElement();
-							break;
+			CreateXmlTextReaderWithNoNamespaceSupport(textReader);
+			
+			while (reader.Read()) {
+				switch (reader.NodeType) {
+					case XmlNodeType.Element:
+						AddElementFoldToStackIfNotEmptyElement();
+						break;
+					
+					case XmlNodeType.EndElement:
+						CreateElementFoldingRegionIfNotSingleLine();
+						break;
 						
-						case XmlNodeType.EndElement:
-							CreateElementFoldingRegionIfNotSingleLine();
-							break;
-							
-						case XmlNodeType.Comment:
-							CreateCommentFoldingRegionIfNotSingleLine();
-							break;
-					}
+					case XmlNodeType.Comment:
+						CreateCommentFoldingRegionIfNotSingleLine();
+						break;
 				}
-			} catch (Exception ex) {
-//				// If the xml is not well formed keep the foldings 
-//				// that already exist in the document.
-//				//return new List<FoldMarker>(document.FoldingManager.FoldMarker);
-//				return new List<FoldingRegion>();
-				Console.WriteLine(ex.ToString());
 			}
-
 			folds.Sort(CompareFoldingRegion);
+		}
+		
+		ICompilationUnit FindPreviouslyParsedCompilationUnit(IProjectContent projectContent, string fileName)
+		{
+			ParseInformation parseInfo = parserService.GetExistingParseInformation(projectContent, fileName);
+			if (parseInfo != null) {
+				return parseInfo.CompilationUnit;
+			}
+			return null;
+		}
+		
+		void CreateXmlTextReaderWithNoNamespaceSupport(TextReader textReader)
+		{
+			reader = new XmlTextReader(textReader);
+			reader.Namespaces = false;
+		}
+
+		void AddFoldsToCompilationUnit(DefaultCompilationUnit unit, List<FoldingRegion> folds)
+		{
+			unit.FoldingRegions.AddRange(folds);
 		}
 		
 		void AddElementFoldToStackIfNotEmptyElement()

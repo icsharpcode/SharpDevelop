@@ -31,14 +31,16 @@ namespace XmlEditor.Tests.Folding
 		{
 			string xml = 
 				"<!-- first line\r\n" +
-				"second line -->";
+				"second line -->\r\n" +
+				"<a />";
 			
 			projectContent = new DefaultProjectContent();
 			MockTextBuffer textBuffer = new MockTextBuffer(xml);
 			
 			extensions = new DefaultXmlFileExtensions(null);
 			XmlEditorOptions options = new XmlEditorOptions(new Properties());
-			parser = new XmlFoldParser(extensions, options);
+			MockParserService parserService = new MockParserService();
+			parser = new XmlFoldParser(extensions, options, parserService);
 			unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer);
 		}
 		

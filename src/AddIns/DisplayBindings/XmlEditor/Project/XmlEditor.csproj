@@ -82,6 +82,7 @@
     </Compile>
     <Compile Include="Src\AssignStylesheetCommand.cs" />
     <Compile Include="Src\CreateSchemaCommand.cs" />
+    <Compile Include="Src\DefaultParserService.cs" />
     <Compile Include="Src\DefaultXmlFileExtensions.cs" />
     <Compile Include="Src\DefaultXmlSchemaFileAssociations.cs" />
     <Compile Include="Src\EncodedStringWriter.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Src\InsertElementBeforeCommand.cs" />
     <Compile Include="Src\InsertTextNodeAfterCommand.cs" />
     <Compile Include="Src\InsertTextNodeBeforeCommand.cs" />
+    <Compile Include="Src\IParserService.cs" />
     <Compile Include="Src\ISelectXmlSchemaWindow.cs" />
     <Compile Include="Src\IXmlSchemaCompletionDataFactory.cs" />
     <Compile Include="Src\IXmlSchemasPanel.cs" />

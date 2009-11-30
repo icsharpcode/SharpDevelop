@@ -24,9 +24,10 @@ namespace XmlEditor.Tests.Folding
 		XmlFoldParser parser;
 		ICompilationUnit unit;
 		DefaultProjectContent projectContent;
+		MockTextBuffer textBuffer;
 		
-		[Test]
-		public void ParseMethodDoesNotThrowExceptionWhenParsingBadXml()
+		[SetUp]
+		public void Init()
 		{
 			string xml = 
 				"<root\r\n" +
@@ -34,13 +35,37 @@ namespace XmlEditor.Tests.Folding
 				"</root>";
 			
 			projectContent = new DefaultProjectContent();
-			MockTextBuffer textBuffer = new MockTextBuffer(xml);
+			textBuffer = new MockTextBuffer(xml);
 			
 			DefaultXmlFileExtensions extensions = new DefaultXmlFileExtensions(null);
 			XmlEditorOptions options = new XmlEditorOptions(new Properties());
-			parser = new XmlFoldParser(extensions, options);
-			
-			Assert.DoesNotThrow(delegate { unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer); });
+			MockParserService parserService = new MockParserService();
+			parser = new XmlFoldParser(extensions, options, parserService);
+		}
+		
+		[Test]
+		public void ParseMethodDoesNotThrowExceptionWhenParsingInvalidXml()
+		{
+			Assert.DoesNotThrow(delegate { ParseXml(); });
+		}
+		
+		void ParseXml()
+		{
+			unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer);
+		}
+		
+		[Test]
+		public void CompilationUnitFileNameSetByXmlParserParseMethod()
+		{
+			ParseXml();
+			Assert.AreEqual(@"d:\projects\a.xml", unit.FileName);
+		}
+		
+		[Test]
+		public void CompilationUnitProjectContentSetByXmlParserParseMethod()
+		{
+			ParseXml();
+			Assert.AreEqual(projectContent, unit.ProjectContent);
 		}
 	}
 }
