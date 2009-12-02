@@ -19,12 +19,19 @@ namespace XmlEditor.Tests.Utils.Tests
 	[TestFixture]
 	public class MockDocumentTests
 	{
+		MockDocument document;
+		
+		[SetUp]
+		public void Init()
+		{
+			document = new MockDocument();
+		}
+		
 		[Test]
 		public void TextEditorDocumentCanGetOffsetAndLengthUsedAsParametersInGetTextMethod()
 		{
 			TextSection expectedSection = new TextSection(0, 5);
 			
-			MockDocument document = new MockDocument();
 			document.Text = "abcdefghi";
 			document.GetText(0, 5);
 			
@@ -58,7 +65,7 @@ namespace XmlEditor.Tests.Utils.Tests
 			TextSection rhs = new TextSection(1, 1);
 			
 			Assert.IsFalse(lhs.Equals(rhs));
-		}		
+		}
 		
 		[Test]
 		public void TextSectionWithDifferentLengthAreNotEqual()
@@ -67,6 +74,6 @@ namespace XmlEditor.Tests.Utils.Tests
 			TextSection rhs = new TextSection(0, 1);
 			
 			Assert.IsFalse(lhs.Equals(rhs));
-		}			
+		}
 	}
 }

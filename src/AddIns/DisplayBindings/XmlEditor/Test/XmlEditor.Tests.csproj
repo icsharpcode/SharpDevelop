@@ -96,10 +96,14 @@
     <Compile Include="Editor\AddUserSchemaTestFixture.cs" />
     <Compile Include="Editor\DefaultSchemaFileAssociationsTestFixture.cs" />
     <Compile Include="Editor\DefaultXmlEditorOptionsTestFixture.cs" />
+    <Compile Include="Editor\ElementEndAddedAfterGreaterThanCharTypedTestFixture.cs" />
     <Compile Include="Editor\EmptyXmlSchemasPanelTestFixture.cs" />
     <Compile Include="Editor\ErrorWhenReadingSchemaTestFixture.cs" />
     <Compile Include="Editor\ErrorWhenUserAddsSchemaTestFixture.cs" />
+    <Compile Include="Editor\IndentChildElementEndTagAfterNewLineTypedTestFixture.cs" />
+    <Compile Include="Editor\IndentLinesTests.cs" />
     <Compile Include="Editor\IsEmptySchemaAssociationTests.cs" />
+    <Compile Include="Editor\NoElementEndAddedAfterGreaterThanCharTypedTests.cs" />
     <Compile Include="Editor\NoRegisteredSchemasTestFixture.cs" />
     <Compile Include="Editor\NullDefaultSchemaAssociationAddInTreeNodeTestFixture.cs" />
     <Compile Include="Editor\NullXmlEditorFileExtensionsAddInTreeNodeTestFixture.cs" />
@@ -111,6 +115,7 @@
     <Compile Include="Editor\SchemaAssociationConvertToStringTests.cs" />
     <Compile Include="Editor\SchemaAssociationFileExtensionIsCaseInsensitiveTests.cs" />
     <Compile Include="Editor\SchemaAssociationsAreEqualTests.cs" />
+    <Compile Include="Editor\SurroundTextWithCommentBlockTestFixture.cs" />
     <Compile Include="Editor\TwoRegisteredSchemasTestFixture.cs" />
     <Compile Include="Editor\UserAddsOneSchemaTestFixture.cs" />
     <Compile Include="Editor\UserCancelsAddSchemaDialogTestFixture.cs" />
@@ -218,11 +223,13 @@
     <Compile Include="Utils\MockCaret.cs" />
     <Compile Include="Utils\MockCompletionListWindow.cs" />
     <Compile Include="Utils\MockDocument.cs" />
+    <Compile Include="Utils\MockDocumentLine.cs" />
     <Compile Include="Utils\MockFileSystem.cs" />
     <Compile Include="Utils\MockParserService.cs" />
     <Compile Include="Utils\MockSelectXmlSchemaWindow.cs" />
     <Compile Include="Utils\MockTextBuffer.cs" />
     <Compile Include="Utils\MockTextEditor.cs" />
+    <Compile Include="Utils\MockTextEditorOptions.cs" />
     <Compile Include="Utils\MockXmlSchemaCompletionDataFactory.cs" />
     <Compile Include="Utils\MockXmlSchemasPanel.cs" />
     <Compile Include="Utils\MockXmlTreeView.cs" />
@@ -231,11 +238,14 @@
     <Compile Include="Utils\SchemaIncludeTestFixtureHelper.cs" />
     <Compile Include="Utils\Tests\ExceptionErrorMessageAreEqualTests.cs" />
     <Compile Include="Utils\Tests\FormattedErrorMessageAreEqualTests.cs" />
+    <Compile Include="Utils\Tests\MockCaretTests.cs" />
+    <Compile Include="Utils\Tests\MockDocumentLineTests.cs" />
     <Compile Include="Utils\Tests\MockDocumentTests.cs" />
     <Compile Include="Utils\Tests\MockFileSystemTests.cs" />
     <Compile Include="Utils\Tests\MockParserServiceTests.cs" />
     <Compile Include="Utils\Tests\MockSelectXmlSchemaWindowTests.cs" />
     <Compile Include="Utils\Tests\MockTextBufferTests.cs" />
+    <Compile Include="Utils\Tests\MockTextEditorOptionsTests.cs" />
     <Compile Include="Utils\Tests\MockTextEditorTests.cs" />
     <Compile Include="Utils\Tests\MockXmlSchemaCompletionDataFactoryTests.cs" />
     <Compile Include="Utils\Tests\MockXmlSchemasPanelTests.cs" />
@@ -298,6 +308,10 @@
     <Folder Include="Schema\" />
     <Folder Include="Parser\" />
     <Folder Include="Paths\" />
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>

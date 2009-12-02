@@ -6,52 +6,52 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace XmlEditor.Tests.Utils
 {
-	public class MockCaret : ITextEditorCaret
+	public class MockDocumentLine : IDocumentLine
 	{
-		int offset = -1;
-		
-		public MockCaret()
+		public MockDocumentLine()
 		{
-			Position = Location.Empty;
-		}
-		
-		public event EventHandler PositionChanged;
-		
-		protected virtual void OnPositionChanged(EventArgs e)
-		{
-			if (PositionChanged != null) {
-				PositionChanged(this, e);
-			}
 		}
 		
 		public int Offset {
-			get { return offset; }
-			set { offset = value; }
-		}
-		
-		public int Line {
 			get {
 				throw new NotImplementedException();
 			}
-			set {
-				throw new NotImplementedException();
-			}
 		}
 		
-		public int Column {
+		public int Length {
 			get {
 				throw new NotImplementedException();
 			}
-			set {
+		}
+		
+		public int EndOffset {
+			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public Location Position { get; set; }
+		public int TotalLength {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public int DelimiterLength {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public int LineNumber { get; set; }
+		
+		public string Text {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

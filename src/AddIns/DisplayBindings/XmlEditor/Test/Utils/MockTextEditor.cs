@@ -21,10 +21,13 @@ namespace XmlEditor.Tests.Utils
 		MockCompletionListWindow completionWindowDisplayed;
 		ICompletionItemList completionItemsDisplayed;
 		MockCaret caret = new MockCaret();
-		MockDocument document = new MockDocument();
+		IDocument document = new MockDocument();
+		ITextEditorOptions options = new MockTextEditorOptions();
 		FileName fileName;
 		bool showCompletionWindowReturnsNull;
 		bool showCompletionWindowMethodCalled;
+		int selectionStart;
+		int selectionLength;
 						
 		public MockTextEditor()
 		{
@@ -58,8 +61,13 @@ namespace XmlEditor.Tests.Utils
 			get { return document; }
 		}
 		
+		public void SetDocument(IDocument document)
+		{
+			this.document = document;
+		}
+		
 		public MockDocument MockDocument {
-			get { return document; }
+			get { return document as MockDocument; }
 		}
 		
 		public ITextEditorCaret Caret {
@@ -67,9 +75,8 @@ namespace XmlEditor.Tests.Utils
 		}
 		
 		public ITextEditorOptions Options {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return options; }
+			set { options = value; }
 		}
 		
 		public ILanguageBinding Language {
@@ -79,21 +86,15 @@ namespace XmlEditor.Tests.Utils
 		}
 		
 		public int SelectionStart {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return selectionStart; }
 		}
 		
 		public int SelectionLength {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return selectionLength; }
 		}
 		
 		public string SelectedText {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return document.GetText(selectionStart, selectionLength); }
 			set {
 				throw new NotImplementedException();
 			}
@@ -118,7 +119,8 @@ namespace XmlEditor.Tests.Utils
 		
 		public void Select(int selectionStart, int selectionLength)
 		{
-			throw new NotImplementedException();
+			this.selectionStart = selectionStart;
+			this.selectionLength = selectionLength;
 		}
 		
 		public void JumpTo(int line, int column)

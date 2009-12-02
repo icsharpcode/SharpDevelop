@@ -14,6 +14,7 @@ using System.Text;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
@@ -112,6 +113,7 @@ namespace ICSharpCode.XmlEditor
 			string currentIndentation = "";
 			Stack<string> tagStack = new Stack<string>();
 			IDocument document = editor.Document;
+			
 			string tab = editor.Options.IndentationString;
 			int nextLine = begin; // in #dev coordinates
 			bool wasEmptyElement = false;
@@ -134,7 +136,7 @@ namespace ICSharpCode.XmlEditor
 							currentIndentation = tagStack.Pop();
 					}
 					
-					while (r.LineNumber > nextLine) { // caution: here we compare 1-based and 0-based line numbers
+					while (r.LineNumber >= nextLine) {
 						if (nextLine > end) break;
 						if (lastType == XmlNodeType.CDATA || lastType == XmlNodeType.Comment) {
 							nextLine++;
@@ -152,7 +154,10 @@ namespace ICSharpCode.XmlEditor
 							newText = currentIndentation + lineText.Trim();
 						
 						if (newText != lineText) {
+							int extraCharsToBeAddedAtStartedOfLine = newText.Length - lineText.Length;
 							document.Replace(line.Offset, line.Length, newText);
+							Location caretPosition = document.OffsetToPosition(line.Offset + extraCharsToBeAddedAtStartedOfLine);
+							editor.Caret.Position = caretPosition;
 						}
 						nextLine++;
 					}
@@ -177,7 +182,7 @@ namespace ICSharpCode.XmlEditor
 						if (r.LineNumber != startLine)
 							attribIndent = currentIndentation; // change to tab-indentation
 						r.MoveToAttribute(r.AttributeCount - 1);
-						while (r.LineNumber > nextLine) {
+						while (r.LineNumber >= nextLine) {
 							if (nextLine > end) break;
 							// set indentation of 'nextLine'
 							IDocumentLine line = document.GetLine(nextLine);
@@ -190,6 +195,5 @@ namespace ICSharpCode.XmlEditor
 				r.Close();
 			}
 		}
-		
 	}
 }

@@ -112,5 +112,60 @@ namespace XmlEditor.Tests.Utils.Tests
 		{
 			Assert.IsFalse(editor.IsShowCompletionWindowMethodCalled);
 		}
+		
+		[Test]
+		public void CanSetAndGetTextEditorOptions()
+		{
+			MockTextEditorOptions options = new MockTextEditorOptions();
+			editor.Options = options;
+			Assert.AreSame(options, editor.Options);
+		}
+		
+		[Test]
+		public void TextEditorHasNonNullTextEditorOptionsWhenCreated()
+		{
+			Assert.IsNotNull(editor.Options);
+		}
+		
+		[Test]
+		public void CanReplaceDocumentObjectUsed()
+		{
+			MockDocument doc = new MockDocument();
+			editor.SetDocument(doc);
+			Assert.AreSame(doc, editor.Document);
+		}
+		
+		[Test]
+		public void CanGetAndSetSelectionStart()
+		{
+			editor.Document.Text = "abc";
+			int selectionStart = 1;
+			int selectionLength = 2;
+			editor.Select(selectionStart, selectionLength);
+			
+			Assert.AreEqual(selectionStart, editor.SelectionStart);
+		}
+		
+		[Test]
+		public void CanGetAndSetSelectionLength()
+		{
+			editor.Document.Text = "abc";
+			int selectionStart = 1;
+			int selectionLength = 2;
+			editor.Select(selectionStart, selectionLength);
+			
+			Assert.AreEqual(selectionLength, editor.SelectionLength);
+		}
+		
+		[Test]
+		public void SelectedTextPropertyReturnsSelectedText()
+		{
+			editor.Document.Text = "abc";
+			int selectionStart = 1;
+			int selectionLength = 2;
+			editor.Select(selectionStart, selectionLength);
+			
+			Assert.AreEqual("bc", editor.SelectedText);
+		}
 	}
 }
