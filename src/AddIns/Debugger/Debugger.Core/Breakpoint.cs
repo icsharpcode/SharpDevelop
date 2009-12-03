@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
 using Debugger.Interop.CorDebug;
 
 namespace Debugger
@@ -111,7 +113,20 @@ namespace Debugger
 		internal void Deactivate()
 		{
 			foreach(ICorDebugFunctionBreakpoint corBreakpoint in corBreakpoints) {
-				corBreakpoint.Activate(0);
+				#if DEBUG
+					// Get repro
+					corBreakpoint.Activate(0);
+				#else
+					try {
+						corBreakpoint.Activate(0);
+					} catch(COMException e) {
+						// Sometimes happens, but we had not repro yet.
+						// 0x80131301: Process was terminated.
+						if ((uint)e.ErrorCode == 0x80131301)
+							continue;
+						throw;
+					}
+				#endif
 			}
 			corBreakpoints.Clear();
 		}
