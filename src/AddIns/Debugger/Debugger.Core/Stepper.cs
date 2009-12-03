@@ -20,9 +20,14 @@ namespace Debugger
 		string name;
 		
 		ICorDebugStepper corStepper;
+		
 		bool ignore;
 		
 		public event EventHandler<StepperEventArgs> StepComplete;
+		
+		public ICorDebugStepper CorStepper {
+			get { return corStepper; }
+		}
 		
 		public Process Process {
 			get { return stackFrame.Process; }
@@ -58,7 +63,7 @@ namespace Debugger
 			
 			this.corStepper = stackFrame.CorILFrame.CreateStepper();
 			this.ignore = false;
-			this.StackFrame.Thread.Steppers.Add(this);
+			this.StackFrame.Process.Steppers.Add(this);
 			
 			if (justMyCode) {
 				corStepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);

@@ -93,6 +93,12 @@ namespace Debugger
 			get { return appDomains; }
 		}
 		
+		List<Stepper> steppers = new List<Stepper>();
+		
+		internal List<Stepper> Steppers {
+			get { return steppers; }
+		}
+		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess)
 		{
 			this.debugger = debugger;
@@ -390,6 +396,13 @@ namespace Debugger
 				corProcess.Stop(uint.MaxValue);
 				NotifyPaused(PausedReason.ForcedBreak);
 			}
+			// This is necessary for detach
+			foreach(Stepper s in this.Steppers) {
+				if (s.CorStepper.IsActive() == 1) {
+					s.CorStepper.Deactivate();
+				}
+			}
+			this.Steppers.Clear();
 			corProcess.Detach();
 			NotifyHasExited();			
 		}
@@ -537,13 +550,23 @@ namespace Debugger
 			}
 		}
 		
+		internal Stepper GetStepper(ICorDebugStepper corStepper)
+		{
+			foreach(Stepper stepper in this.Steppers) {
+				if (stepper.IsCorStepper(corStepper)) {
+					return stepper;
+				}
+			}
+			throw new DebuggerException("Stepper is not in collection");
+		}
+		
 		internal void DisableAllSteppers()
 		{
 			foreach(Thread thread in this.Threads) {
 				thread.CurrentStepIn = null;
-				foreach(Stepper stepper in thread.Steppers) {
-					stepper.Ignore = true;
-				}
+			}
+			foreach(Stepper stepper in this.Steppers) {
+				stepper.Ignore = true;
 			}
 		}
 		

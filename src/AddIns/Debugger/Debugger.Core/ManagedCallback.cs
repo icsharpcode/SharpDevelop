@@ -127,12 +127,12 @@ namespace Debugger
 			EnterCallback(PausedReason.StepComplete, "StepComplete (" + reason.ToString() + ")", pThread);
 			
 			Thread thread = process.Threads[pThread];
-			Stepper stepper = thread.GetStepper(pStepper);
+			Stepper stepper = process.GetStepper(pStepper);
 			
 			StackFrame currentStackFrame = process.SelectedThread.MostRecentStackFrame;
 			process.TraceMessage(" - stopped at {0} because of {1}", currentStackFrame.MethodInfo.FullName, stepper.ToString());
 			
-			thread.Steppers.Remove(stepper);
+			process.Steppers.Remove(stepper);
 			stepper.OnStepComplete(reason);
 			
 			if (stepper.Ignore) {

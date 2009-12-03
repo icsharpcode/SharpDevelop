@@ -25,7 +25,6 @@ namespace Debugger
 		bool hasExited = false;
 		
 		Stepper currentStepIn;
-		List<Stepper> steppers = new List<Stepper>();
 		
 		StackFrame selectedStackFrame;
 		
@@ -230,22 +229,6 @@ namespace Debugger
 			process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { this /* needed */ }, null);
 			process.WaitForPause();
 			return true;
-		}
-		
-		internal Stepper GetStepper(ICorDebugStepper corStepper)
-		{
-			foreach(Stepper stepper in steppers) {
-				if (stepper.IsCorStepper(corStepper)) {
-					return stepper;
-				}
-			}
-			throw new DebuggerException("Stepper is not in collection");
-		}
-		
-		internal List<Stepper> Steppers {
-			get {
-				return steppers;
-			}
 		}
 		
 		public override string ToString()
