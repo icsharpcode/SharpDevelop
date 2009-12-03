@@ -37,17 +37,19 @@
 //
 #endregion
 
-using Debugger.Interop.CorPublish;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
+
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
+using Debugger.Interop.CorPublish;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
@@ -180,10 +182,28 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (DebugStarting != null)
 					DebugStarting(this, EventArgs.Empty);
 				
-				Process process = debugger.Start(processStartInfo.FileName,
-				                                 processStartInfo.WorkingDirectory,
-				                                 processStartInfo.Arguments);
-				SelectProcess(process);
+				try {
+					Process process = debugger.Start(processStartInfo.FileName,
+					                                 processStartInfo.WorkingDirectory,
+					                                 processStartInfo.Arguments);
+					SelectProcess(process);
+				} catch (System.Exception e) {
+					// COMException: The request is not supported. (Exception from HRESULT: 0x80070032)
+					// COMException: The application has failed to start because its side-by-side configuration is incorrect. Please see the application event log for more detail. (Exception from HRESULT: 0x800736B1)
+					// COMException: The requested operation requires elevation. (Exception from HRESULT: 0x800702E4)
+					// COMException: The directory name is invalid. (Exception from HRESULT: 0x8007010B)
+					// BadImageFormatException:  is not a valid Win32 application. (Exception from HRESULT: 0x800700C1)
+					// UnauthorizedAccessException: Отказано в доступе. (Исключение из HRESULT: 0x80070005 (E_ACCESSDENIED))
+					if (e is COMException || e is BadImageFormatException || e is UnauthorizedAccessException) {
+						string msg = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Error.CannotStartProcess}");
+						MessageService.ShowMessage(msg + " " + e.Message);
+						
+						if (DebugStopped != null)
+							DebugStopped(this, EventArgs.Empty);
+					} else {
+						throw;
+					}
+				}
 			}
 		}
 
