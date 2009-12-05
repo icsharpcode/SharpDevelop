@@ -70,7 +70,10 @@ namespace Debugger
 		/// <summary>
 		/// Performs all waiting calls on the current thread
 		/// </summary>
-		public bool PerformCall()
+		/// <remarks>
+		/// Private - user should always drain the queue - otherwise Prcoess.RaisePausedEvents might fail
+		/// </remarks>
+		bool PerformCall()
 		{
 			MethodInvoker nextMethod;
 			lock (pendingCalls) {

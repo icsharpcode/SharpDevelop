@@ -5,13 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-// Regular expresion:
-// ^{\t*}{(:Ll| )*{:i} *\(((.# {:i}, |\))|())^6\)*}\n\t*\{(.|\n)@\}
-// Output: \1 - intention   \2 - declaration \3 - function name  \4-9 parameters
-
-// Replace with:
-// \1\2\n\1{\n\1\tEnterCallback(PausedReason.Other, "\3");\n\1\t\n\1\tExitCallback_Continue();\n\1}
-
 using System;
 using System.Runtime.InteropServices;
 using Debugger.Interop;
@@ -22,6 +15,12 @@ namespace Debugger
 	/// <summary>
 	/// Handles all callbacks of a given process
 	/// </summary>
+	/// <remarks>
+	/// Note that there can be a queued callback after almost any callback.
+	/// In particular:
+	///  - After 'break' there may be more callbacks
+	///  - After EvalComplete there may be more callbacks (eg CreateThread from other thread)
+	/// </remarks>
 	class ManagedCallback
 	{
 		Process process;
@@ -109,13 +108,17 @@ namespace Debugger
 		{
 			if (process.PauseSession.PausedReason == PausedReason.EvalComplete ||
 			    process.PauseSession.PausedReason == PausedReason.ExceptionIntercepted) {
+				// TODO: There might be qued callback after EvalComplete making this unrealiable
 				process.DisableAllSteppers();
 				process.CheckSelectedStackFrames();
 				// Do not set selected stack frame
 				// Do not raise events
 			} else {
 				// Raise the pause event outside the callback
+				// Warning: Make sure that process in not resumed in the meantime
 				process.Debugger.MTA2STA.AsyncCall(process.RaisePausedEvents);
+				
+				// The event might probably get called out of order when the process is running again
 			}
 		}
 		
