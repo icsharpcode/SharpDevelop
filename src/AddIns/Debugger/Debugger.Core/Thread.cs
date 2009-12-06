@@ -218,9 +218,11 @@ namespace Debugger
 				((ICorDebugThread2)this.CorThread).InterceptCurrentException(this.MostRecentStackFrame.CorILFrame);
 			} catch (COMException e) {
 				// 0x80131C02: Cannot intercept this exception
-				if ((uint)e.ErrorCode == 0x80131C02) {
+				if ((uint)e.ErrorCode == 0x80131C02)
 					return false;
-				}
+				// 0x80131C33: Interception of the current exception is not legal
+				if ((uint)e.ErrorCode == 0x80131C33)
+					return false;
 				throw;
 			} catch (ArgumentException) {
 				// May happen in release code with does not have any symbols
