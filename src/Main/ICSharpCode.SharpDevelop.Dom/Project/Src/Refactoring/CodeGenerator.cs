@@ -72,8 +72,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					typeRef = new TypeReference(returnType.FullyQualifiedName, true);
 				else if (context != null && CanUseShortTypeName(returnType, context))
 					typeRef = new TypeReference(returnType.Name);
-				else
-					typeRef = new TypeReference(returnType.FullyQualifiedName);
+				else {
+					string fullName = returnType.FullyQualifiedName;
+					if (string.IsNullOrEmpty(fullName))
+						fullName = returnType.Name;
+					typeRef = new TypeReference(fullName);
+				}
 				foreach (IReturnType typeArgument in typeArguments) {
 					typeRef.GenericTypes.Add(ConvertType(typeArgument, context));
 				}

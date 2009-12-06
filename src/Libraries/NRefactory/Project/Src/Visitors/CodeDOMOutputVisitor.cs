@@ -98,9 +98,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
-			if (string.IsNullOrEmpty(type.Type)) {
-				throw new InvalidOperationException("empty type");
-			}
 			
 			CodeTypeReference t = new CodeTypeReference(GetDotNetNameFromTypeReference(type));
 			InnerClassTypeReference ictr = type as InnerClassTypeReference;

@@ -19,6 +19,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ReturnTypeOptions = ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.TypeVisitor.ReturnTypeOptions;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -213,8 +214,8 @@ namespace ICSharpCode.FormsDesigner
 			}
 			TypeDeclaration typeDecl = o as TypeDeclaration;
 			if (typeDecl != null) {
-				foreach (TypeReference tref in typeDecl.BaseTypes) {
-					FixTypeReference(tref, typeDecl.StartLocation, domCu);
+				for (int i = 0; i < typeDecl.BaseTypes.Count; i++) {
+					typeDecl.BaseTypes[i] = FixTypeReference(typeDecl.BaseTypes[i], typeDecl.StartLocation, domCu, ReturnTypeOptions.BaseTypeReference);
 				}
 				for (int i = 0; i < typeDecl.Children.Count; i++) {
 					object child = typeDecl.Children[i];
@@ -242,28 +243,26 @@ namespace ICSharpCode.FormsDesigner
 			}
 			FieldDeclaration fieldDecl = o as FieldDeclaration;
 			if (fieldDecl != null) {
-				FixTypeReference(fieldDecl.TypeReference, fieldDecl.StartLocation, domCu);
+				fieldDecl.TypeReference = FixTypeReference(fieldDecl.TypeReference, fieldDecl.StartLocation, domCu, ReturnTypeOptions.None);
 				foreach (VariableDeclaration var in fieldDecl.Fields) {
 					if (var != null) {
-						FixTypeReference(var.TypeReference, fieldDecl.StartLocation, domCu);
+						var.TypeReference = FixTypeReference(var.TypeReference, fieldDecl.StartLocation, domCu, ReturnTypeOptions.None);
 					}
 				}
 			}
 		}
 		
-		void FixTypeReference(TypeReference type, Location location, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu)
+		TypeReference FixTypeReference(TypeReference type, Location location, ICompilationUnit domCu, ReturnTypeOptions options)
 		{
-			if (type == null)
-				return;
-			if (type.Type != type.Type)
-				return;
-			foreach (TypeReference tref in type.GenericTypes) {
-				FixTypeReference(tref, location, domCu);
-			}
+			if (type == null || type.IsKeyword)
+				return type;
 			ICSharpCode.SharpDevelop.Dom.IClass curType = domCu.GetInnermostClass(location.Y, location.X);
-			ICSharpCode.SharpDevelop.Dom.IReturnType rt = domCu.ProjectContent.SearchType(new SearchTypeRequest(type.Type, type.GenericTypes.Count, curType, domCu, location.Y, location.X)).Result;
-			if (rt != null) {
-				type.Type = rt.FullyQualifiedName;
+			IReturnType rt = SharpDevelop.Dom.NRefactoryResolver.TypeVisitor.CreateReturnType(
+				type, curType, null, location.Y, location.X, domCu.ProjectContent, options);
+			if (rt != null && rt.GetUnderlyingClass() != null) {
+				return SharpDevelop.Dom.Refactoring.CodeGenerator.ConvertType(rt, null);
+			} else {
+				return type;
 			}
 		}
 		
