@@ -111,8 +111,16 @@ namespace Debugger
 				} else if ((uint)e.ErrorCode == 0x80131C22) {
 					// The operation is illegal because of a stack overflow.
 					throw new GetValueException("Can not evaluate after stack overflow");
+				} else if ((uint)e.ErrorCode == 0x80131313) {
+					// Func eval cannot work. Bad starting point.
+					// Reproduction circumstancess are unknown
+					throw new GetValueException("Func eval cannot work. Bad starting point.");
 				} else {
-					throw;
+					#if DEBUG
+						throw; // Expose for more diagnostics
+					#else
+						throw new GetValueException(e.Message);
+					#endif
 				}
 			}
 			
@@ -228,8 +236,8 @@ namespace Debugger
 			);
 		}
 
-	    /// <exception cref="GetValueException"><c>GetValueException</c>.</exception>
-	    static void MethodInvokeStarter(Eval eval, DebugMethodInfo method, Value thisValue, Value[] args)
+		/// <exception cref="GetValueException"><c>GetValueException</c>.</exception>
+		static void MethodInvokeStarter(Eval eval, DebugMethodInfo method, Value thisValue, Value[] args)
 		{
 			List<ICorDebugValue> corArgs = new List<ICorDebugValue>();
 			args = args ?? new Value[0];
