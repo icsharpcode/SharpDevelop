@@ -26,12 +26,12 @@ namespace XmlEditor.Tests.Schema
 		{
 			XmlElementPath path = new XmlElementPath();
 			
-			path.Elements.Add(new QualifiedName("project", "http://foo"));
-			path.Elements.Add(new QualifiedName("items", "http://foo"));
+			path.AddElement(new QualifiedName("project", "http://foo"));
+			path.AddElement(new QualifiedName("items", "http://foo"));
 			
 			itemsElementChildren = SchemaCompletion.GetChildElementCompletion(path);
 			
-			path.Elements.Add(new QualifiedName("file", "http://foo"));
+			path.AddElement(new QualifiedName("file", "http://foo"));
 			
 			fileElementAttributes = SchemaCompletion.GetAttributeCompletion(path);
 			fileElementChildren = SchemaCompletion.GetChildElementCompletion(path);

@@ -22,7 +22,7 @@ namespace XmlEditor.Tests.Paths
 		{
 			path = new XmlElementPath();
 			qualifiedName = new QualifiedName("foo", "http://foo");
-			path.Elements.Add(qualifiedName);
+			path.AddElement(qualifiedName);
 		}
 		
 		[Test]
@@ -43,7 +43,7 @@ namespace XmlEditor.Tests.Paths
 		public void Equality()
 		{
 			XmlElementPath newPath = new XmlElementPath();
-			newPath.Elements.Add(new QualifiedName("foo", "http://foo"));
+			newPath.AddElement(new QualifiedName("foo", "http://foo"));
 			
 			Assert.IsTrue(newPath.Equals(path), "Should be equal.");
 		}
@@ -52,7 +52,7 @@ namespace XmlEditor.Tests.Paths
 		public void NotEqual()
 		{
 			XmlElementPath newPath = new XmlElementPath();
-			newPath.Elements.Add(new QualifiedName("Foo", "bar"));
+			newPath.AddElement(new QualifiedName("Foo", "bar"));
 			
 			Assert.IsFalse(newPath.Equals(path), "Should not be equal.");
 		}	
@@ -75,7 +75,7 @@ namespace XmlEditor.Tests.Paths
 		public void TwoElementsPathToString()
 		{
 			QualifiedName qualifiedName = new QualifiedName("bar", "http://foo");
-			path.Elements.Add(qualifiedName);
+			path.AddElement(qualifiedName);
 			Assert.AreEqual("foo [http://foo] > bar [http://foo]", path.ToString());
 		}
 		

@@ -20,8 +20,8 @@ namespace XmlEditor.Tests.Schema
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("root", "http://foo"));
-			path.Elements.Add(new QualifiedName("bar", "http://foo"));
+			path.AddElement(new QualifiedName("root", "http://foo"));
+			path.AddElement(new QualifiedName("bar", "http://foo"));
 			barElementAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		}
 		

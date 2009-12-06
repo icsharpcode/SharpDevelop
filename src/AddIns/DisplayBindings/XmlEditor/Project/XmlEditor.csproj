@@ -132,6 +132,7 @@
     </Compile>
     <Compile Include="Src\XmlEditorService.cs" />
     <Compile Include="Src\XmlElementPath.cs" />
+    <Compile Include="Src\XmlElementPathsByNamespace.cs" />
     <Compile Include="Src\XmlElementTreeNode.cs" />
     <Compile Include="Src\XmlEncoder.cs" />
     <Compile Include="Src\XmlFoldParser.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Src\StylesheetAssignedCondition.cs" />
     <Compile Include="Src\XmlLanguageBinding.cs" />
     <Compile Include="Src\XmlNamespace.cs" />
+    <Compile Include="Src\XmlNamespaceCollection.cs" />
     <Compile Include="Src\XmlParser.cs" />
     <Compile Include="Src\XmlSchemaFileAssociation.cs" />
     <Compile Include="Src\XmlSchemaFileAssociationListItem.cs" />

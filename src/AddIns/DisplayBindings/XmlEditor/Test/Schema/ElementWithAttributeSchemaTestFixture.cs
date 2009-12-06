@@ -24,7 +24,7 @@ namespace XmlEditor.Tests.Schema
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
+			path.AddElement(new QualifiedName("note", "http://www.w3schools.com"));
 			
 			attributeCompletionItems = SchemaCompletion.GetAttributeCompletion(path);
 			attributeName = attributeCompletionItems[0].Text;
@@ -46,7 +46,7 @@ namespace XmlEditor.Tests.Schema
 		public void NoAttributesForUnknownElement()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("foobar", "http://www.w3schools.com"));
+			path.AddElement(new QualifiedName("foobar", "http://www.w3schools.com"));
 			XmlCompletionItemCollection attributes = SchemaCompletion.GetAttributeCompletion(path);
 			
 			Assert.AreEqual(0, attributes.Count, "Should not find attributes for unknown element.");

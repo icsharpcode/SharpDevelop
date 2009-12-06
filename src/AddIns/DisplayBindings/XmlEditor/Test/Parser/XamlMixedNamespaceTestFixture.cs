@@ -62,7 +62,17 @@ namespace XmlEditor.Tests.Parser
 		public void DesignSurfacePath()
 		{
 			XmlElementPath expectedPath = new XmlElementPath();
-			expectedPath.Elements.Add(new QualifiedName("DesignSurface", "clr-namespace:ICSharpCode.WpfDesign.Designer;assembly=ICSharpCode.WpfDesign.Designer", "designer"));
+
+			string xamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+			expectedPath.AddElement(new QualifiedName("Window", xamlNamespace));
+			expectedPath.AddElement(new QualifiedName("Grid", xamlNamespace));
+			expectedPath.AddElement(new QualifiedName("TabControl", xamlNamespace));
+			expectedPath.AddElement(new QualifiedName("TabItem", xamlNamespace));
+			
+			QualifiedName designSurfaceElement = new QualifiedName("DesignSurface", 
+				"clr-namespace:ICSharpCode.WpfDesign.Designer;assembly=ICSharpCode.WpfDesign.Designer", 
+				"designer");
+			expectedPath.AddElement(designSurfaceElement);
 			
 			Assert.AreEqual(expectedPath, designSurfacePath);
 		}
@@ -71,7 +81,17 @@ namespace XmlEditor.Tests.Parser
 		public void DesignSurfacePath2()
 		{
 			XmlElementPath expectedPath = new XmlElementPath();
-			expectedPath.Elements.Add(new QualifiedName("DesignSurface", "clr-namespace:ICSharpCode.WpfDesign.Designer;assembly=ICSharpCode.WpfDesign.Designer", "designer"));
+			
+			string xamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+			expectedPath.AddElement(new QualifiedName("Window", xamlNamespace));
+			expectedPath.AddElement(new QualifiedName("Grid", xamlNamespace));
+			expectedPath.AddElement(new QualifiedName("TabControl", xamlNamespace));
+			expectedPath.AddElement(new QualifiedName("TabItem", xamlNamespace));
+			
+			QualifiedName designSurfaceElement = new QualifiedName("DesignSurface", 
+				"clr-namespace:ICSharpCode.WpfDesign.Designer;assembly=ICSharpCode.WpfDesign.Designer", 
+				"designer");
+			expectedPath.AddElement(designSurfaceElement);
 			
 			Assert.AreEqual(expectedPath, designSurfacePath2);
 		}

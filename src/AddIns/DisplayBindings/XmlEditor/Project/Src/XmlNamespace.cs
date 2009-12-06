@@ -78,5 +78,19 @@ namespace ICSharpCode.XmlEditor
 			}
 			return new XmlNamespace();
 		}
+		
+		public override bool Equals(object obj)
+		{
+			XmlNamespace rhs = obj as XmlNamespace;
+			if (rhs != null) {
+				return (Name == rhs.Name) && (Prefix == rhs.Prefix);
+			}
+			return false;
+		}
+		
+		public override int GetHashCode()
+		{
+			return Name.GetHashCode() ^ Prefix.GetHashCode();
+		}
 	}
 }

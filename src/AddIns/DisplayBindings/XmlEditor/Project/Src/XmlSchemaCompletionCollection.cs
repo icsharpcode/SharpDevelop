@@ -7,16 +7,13 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.XmlEditor
 {
 	[Serializable()]
-	public class XmlSchemaCompletionCollection : Collection<XmlSchemaCompletion> 
-	{	
+	public class XmlSchemaCompletionCollection : Collection<XmlSchemaCompletion>
+	{
 		public XmlSchemaCompletionCollection()
 		{
 		}
@@ -103,9 +100,6 @@ namespace ICSharpCode.XmlEditor
 			return null;
 		}
 		
-		/// <summary>
-		/// Finds the schema given the xml element path.
-		/// </summary>
 		public XmlSchemaCompletion FindSchema(XmlElementPath path, XmlSchemaCompletion defaultSchema)
 		{
 			if (path.Elements.HasItems) {
@@ -120,6 +114,11 @@ namespace ICSharpCode.XmlEditor
 			return null;
 		}
 		
+		public XmlCompletionItemCollection GetChildElementCompletion(XmlElementPath path)
+		{
+			return GetChildElementCompletion(path, null);
+		}
+		
 		public XmlCompletionItemCollection GetChildElementCompletion(XmlElementPath path, XmlSchemaCompletion defaultSchema)
 		{
 			XmlSchemaCompletion schema = FindSchema(path, defaultSchema);
@@ -127,6 +126,47 @@ namespace ICSharpCode.XmlEditor
 				return schema.GetChildElementCompletion(path);
 			}			
 			return new XmlCompletionItemCollection();
+		}
+		
+		public XmlCompletionItemCollection GetElementCompletionForAllNamespaces(XmlElementPath path, XmlSchemaCompletion defaultSchema)
+		{
+			XmlElementPathsByNamespace pathsByNamespace = new XmlElementPathsByNamespace(path);
+			return GetElementCompletion(pathsByNamespace, defaultSchema);
+		}
+		
+		public XmlCompletionItemCollection GetElementCompletion(XmlElementPathsByNamespace pathsByNamespace, XmlSchemaCompletion defaultSchema)
+		{
+			XmlCompletionItemCollection items = new XmlCompletionItemCollection();
+			foreach (XmlElementPath path in pathsByNamespace) {
+				items.AddRange(GetChildElementCompletion(path));
+			}
+			
+			XmlNamespaceCollection namespaceWithoutPaths = pathsByNamespace.NamespacesWithoutPaths;
+			if (!IsDefaultSchemaNamespaceDefinedInPathsByNamespace(namespaceWithoutPaths, defaultSchema)) {
+				namespaceWithoutPaths.Add(defaultSchema.Namespace);
+			}
+			items.AddRange(GetRootElementCompletion(namespaceWithoutPaths));
+			return items;
+		}
+		
+		bool IsDefaultSchemaNamespaceDefinedInPathsByNamespace(XmlNamespaceCollection namespaces, XmlSchemaCompletion defaultSchema)
+		{
+			if (defaultSchema != null) {
+				return namespaces.Contains(defaultSchema.Namespace);
+			}
+			return true;
+		}
+		
+		public XmlCompletionItemCollection GetRootElementCompletion(XmlNamespaceCollection namespaces)
+		{
+			XmlCompletionItemCollection items = new XmlCompletionItemCollection();
+			foreach (XmlNamespace ns in namespaces) {
+				XmlSchemaCompletion schema = this[ns.Name];
+				if (schema != null) {
+					items.AddRange(schema.GetRootElementCompletion(ns.Prefix));
+				}
+			}
+			return items;
 		}
 		
 		public XmlCompletionItemCollection GetAttributeCompletion(XmlElementPath path, XmlSchemaCompletion defaultSchema)
@@ -138,30 +178,17 @@ namespace ICSharpCode.XmlEditor
 			return new XmlCompletionItemCollection();
 		}
 		
-		public XmlCompletionItemCollection GetAttributeValueCompletion(XmlElementPath path, string attributeName, XmlSchemaCompletion defaultSchema)
-		{
-			XmlSchemaCompletion schema = FindSchema(path, defaultSchema);
-			if (schema != null) {
-				return schema.GetAttributeValueCompletion(path, attributeName);
-			}
-			return new XmlCompletionItemCollection();
-		}
-		
 		public XmlCompletionItemCollection GetElementCompletion(string textUpToCursor, XmlSchemaCompletion defaultSchema)
 		{
 			XmlElementPath parentPath = XmlParser.GetParentElementPath(textUpToCursor);
-			if (parentPath.Elements.HasItems) {
-				return GetChildElementCompletion(parentPath, defaultSchema);
-			} else if (defaultSchema != null) {
-				return defaultSchema.GetRootElementCompletion();
-			}
-			return new XmlCompletionItemCollection();
+			return GetElementCompletionForAllNamespaces(parentPath, defaultSchema);
 		}
 		
 		public XmlCompletionItemCollection GetAttributeCompletion(string textUpToCursor, XmlSchemaCompletion defaultSchema)
 		{
 			if (!XmlParser.IsInsideAttributeValue(textUpToCursor, textUpToCursor.Length)) {
 				XmlElementPath path = XmlParser.GetActiveElementStartPath(textUpToCursor, textUpToCursor.Length);
+				path.Compact();
 				if (path.Elements.HasItems) {
 					return GetAttributeCompletion(path, defaultSchema);
 				}
@@ -175,9 +202,7 @@ namespace ICSharpCode.XmlEditor
 				string attributeName = XmlParser.GetAttributeName(textUpToCursor, textUpToCursor.Length);
 				if (attributeName.Length > 0) {
 					XmlElementPath elementPath = XmlParser.GetActiveElementStartPath(textUpToCursor, textUpToCursor.Length);
-					if (elementPath.Elements.HasItems) {
-						return GetAttributeValueCompletion(elementPath, attributeName, defaultSchema);
-					}
+					return GetAttributeValueCompletion(elementPath, attributeName, defaultSchema);
 				}
 			}
 			return new XmlCompletionItemCollection();
@@ -189,6 +214,16 @@ namespace ICSharpCode.XmlEditor
 				XmlElementPath path = XmlParser.GetActiveElementStartPath(text, offset);
 				string attributeName = XmlParser.GetAttributeNameAtIndex(text, offset);
 				return GetAttributeValueCompletion(path, attributeName, defaultSchema);
+			}
+			return new XmlCompletionItemCollection();
+		}
+		
+		public XmlCompletionItemCollection GetAttributeValueCompletion(XmlElementPath path, string attributeName, XmlSchemaCompletion defaultSchema)
+		{
+			path.Compact();
+			XmlSchemaCompletion schema = FindSchema(path, defaultSchema);
+			if (schema != null) {
+				return schema.GetAttributeValueCompletion(path, attributeName);
 			}
 			return new XmlCompletionItemCollection();
 		}

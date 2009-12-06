@@ -29,29 +29,29 @@ namespace XmlEditor.Tests.Schema
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("schema", "http://www.w3.org/2001/XMLSchema"));
+			path.AddElement(new QualifiedName("schema", "http://www.w3.org/2001/XMLSchema"));
 			
 			schemaChildElements = SchemaCompletion.GetChildElementCompletion(path);
 			schemaAttributes = SchemaCompletion.GetAttributeCompletion(path);
 			
 			// Get include elements attributes.
-			path.Elements.Add(new QualifiedName("include", "http://www.w3.org/2001/XMLSchema"));
+			path.AddElement(new QualifiedName("include", "http://www.w3.org/2001/XMLSchema"));
 			includeAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		
 			// Get annotation element info.
 			path.Elements.RemoveLast();
-			path.Elements.Add(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
+			path.AddElement(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
 			
 			annotationChildElements = SchemaCompletion.GetChildElementCompletion(path);
 			annotationAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		
 			// Get app info attributes.
-			path.Elements.Add(new QualifiedName("appinfo", "http://www.w3.org/2001/XMLSchema"));
+			path.AddElement(new QualifiedName("appinfo", "http://www.w3.org/2001/XMLSchema"));
 			appInfoAttributes = SchemaCompletion.GetAttributeCompletion(path);
 			
 			// Get foo attributes.
 			path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("foo", "http://www.w3.org/2001/XMLSchema"));
+			path.AddElement(new QualifiedName("foo", "http://www.w3.org/2001/XMLSchema"));
 			fooAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		}
 		

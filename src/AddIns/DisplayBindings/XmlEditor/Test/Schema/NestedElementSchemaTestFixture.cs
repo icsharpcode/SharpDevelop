@@ -21,7 +21,7 @@ namespace XmlEditor.Tests.Schema
 		public override void FixtureInit()
 		{			
 			noteElementPath = new XmlElementPath();
-			noteElementPath.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
+			noteElementPath.AddElement(new QualifiedName("note", "http://www.w3schools.com"));
 
 			elementCompletionItems = SchemaCompletion.GetChildElementCompletion(noteElementPath); 
 		}

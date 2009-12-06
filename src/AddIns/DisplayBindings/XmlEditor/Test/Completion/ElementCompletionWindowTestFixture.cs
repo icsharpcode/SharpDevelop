@@ -39,7 +39,7 @@ namespace XmlEditor.Tests.Completion
 			textEditor.Caret.Offset = 0;
 			
 			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(associations);
-			keyPressResult = completionBinding.HandleKeyPress(textEditor, '<');			
+			keyPressResult = completionBinding.HandleKeyPress(textEditor, '<');
 		}
 		
 		[Test]

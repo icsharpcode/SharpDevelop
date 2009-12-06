@@ -69,5 +69,13 @@ namespace XmlEditor.Tests.Paths
 			QualifiedName name = new QualifiedName("root", "urn:my-uri", null);
 			Assert.AreEqual("root [urn:my-uri]", name.ToString());
 		}
+		
+		[Test]
+		public void CreateQualifiedNameWithXmlNamespaceObject()
+		{
+			XmlNamespace ns = new XmlNamespace("prefix", "namespace");
+			QualifiedName name = new QualifiedName("elementName", ns);
+			Assert.AreEqual("prefix:elementName [namespace]", name.ToString());
+		}
 	}
 }

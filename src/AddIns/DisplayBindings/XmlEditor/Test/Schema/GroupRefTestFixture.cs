@@ -25,12 +25,12 @@ namespace XmlEditor.Tests.Schema
 		{
 			XmlElementPath path = new XmlElementPath();
 			
-			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
-			path.Elements.Add(new QualifiedName("body", "http://foo/xhtml"));
+			path.AddElement(new QualifiedName("html", "http://foo/xhtml"));
+			path.AddElement(new QualifiedName("body", "http://foo/xhtml"));
 			
 			childElements = SchemaCompletion.GetChildElementCompletion(path);
 			
-			path.Elements.Add(new QualifiedName("p", "http://foo/xhtml"));
+			path.AddElement(new QualifiedName("p", "http://foo/xhtml"));
 			paraAttributes = SchemaCompletion.GetAttributeCompletion(path);
 		}
 		

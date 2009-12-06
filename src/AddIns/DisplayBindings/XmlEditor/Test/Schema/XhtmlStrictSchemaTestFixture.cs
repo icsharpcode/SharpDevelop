@@ -32,9 +32,9 @@ namespace XmlEditor.Tests.Schema
 			
 			// Set up h1 element's path.
 			h1Path = new XmlElementPath();
-			h1Path.Elements.Add(new QualifiedName("html", namespaceURI));
-			h1Path.Elements.Add(new QualifiedName("body", namespaceURI));
-			h1Path.Elements.Add(new QualifiedName("h1", namespaceURI));
+			h1Path.AddElement(new QualifiedName("html", namespaceURI));
+			h1Path.AddElement(new QualifiedName("body", namespaceURI));
+			h1Path.AddElement(new QualifiedName("h1", namespaceURI));
 			
 			// Get h1 element info.
 			h1Attributes = schemaCompletion.GetAttributeCompletion(h1Path);

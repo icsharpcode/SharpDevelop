@@ -25,14 +25,14 @@ namespace XmlEditor.Tests.Schema
 			// Get shipto attributes.
 			shipToPath = new XmlElementPath();
 			QualifiedName shipOrderName = new QualifiedName("shiporder", "http://www.w3schools.com");
-			shipToPath.Elements.Add(shipOrderName);
-			shipToPath.Elements.Add(new QualifiedName("shipto", "http://www.w3schools.com"));
+			shipToPath.AddElement(shipOrderName);
+			shipToPath.AddElement(new QualifiedName("shipto", "http://www.w3schools.com"));
 
 			shipToAttributes = SchemaCompletion.GetAttributeCompletion(shipToPath);
 			
 			// Get shiporder attributes.
 			shipOrderPath = new XmlElementPath();
-			shipOrderPath.Elements.Add(shipOrderName);
+			shipOrderPath.AddElement(shipOrderName);
 			
 			shipOrderAttributes = SchemaCompletion.GetAttributeCompletion(shipOrderPath);
 			

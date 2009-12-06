@@ -69,7 +69,7 @@ namespace XmlEditor.Tests.Completion
 		ICompletionItem[] GetXsdSchemaElementFormDefaultAttributeValues()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("schema", "http://www.w3.org/2001/XMLSchema", "xs"));
+			path.AddElement(new QualifiedName("schema", "http://www.w3.org/2001/XMLSchema", "xs"));
 			return xsdSchema.GetAttributeValueCompletion(path, "elementFormDefault").ToArray();
 		}
 		

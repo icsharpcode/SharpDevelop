@@ -28,7 +28,7 @@ namespace XmlEditor.Tests.Schema
 			rootElementCompletionItems = SchemaCompletion.GetRootElementCompletion();
 			
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
+			path.AddElement(new QualifiedName("foo", "http://foo.com"));
 			
 			fooChildElementCompletionItems = SchemaCompletion.GetChildElementCompletion(path);
 		}

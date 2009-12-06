@@ -26,17 +26,17 @@ namespace XmlEditor.Tests.Schema
 		public override void FixtureInit()
 		{			
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("group", "http://www.w3.org/2001/XMLSchema"));
+			path.AddElement(new QualifiedName("group", "http://www.w3.org/2001/XMLSchema"));
 			childElements = SchemaCompletion.GetChildElementCompletion(path);
 			attributes = SchemaCompletion.GetAttributeCompletion(path);
 		
 			// Get annotation child elements.
-			path.Elements.Add(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
+			path.AddElement(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
 			annotationChildElements = SchemaCompletion.GetChildElementCompletion(path);
 			
 			// Get choice child elements.
 			path.Elements.RemoveLast();
-			path.Elements.Add(new QualifiedName("choice", "http://www.w3.org/2001/XMLSchema"));
+			path.AddElement(new QualifiedName("choice", "http://www.w3.org/2001/XMLSchema"));
 			choiceChildElements = SchemaCompletion.GetChildElementCompletion(path);
 		}
 

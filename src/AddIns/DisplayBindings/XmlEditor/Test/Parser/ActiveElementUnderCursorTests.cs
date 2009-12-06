@@ -40,8 +40,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.IndexOf("bar "));
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}		
@@ -53,8 +53,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.IndexOf("bar>"));
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -66,8 +66,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.IndexOf("ar>"));
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -79,8 +79,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.Length - 1);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -92,8 +92,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.IndexOf("='a'"));
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -105,8 +105,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.Length - 1);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -118,8 +118,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.Length);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -131,8 +131,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.Length);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -144,8 +144,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.Length);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -157,8 +157,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, text.IndexOf("Id="));
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -170,7 +170,7 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text, 2);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
@@ -184,8 +184,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text + text2, text.Length);
 
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), "Incorrect active element path.");
 		}
 		
@@ -198,8 +198,8 @@ namespace XmlEditor.Tests.Parser
 			elementPath = XmlParser.GetActiveElementStartPathAtIndex(text + text2, text.Length);
 
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
-			expectedElementPath.Elements.Add(new QualifiedName("bar", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath),  "Incorrect active element path.");
 		}
 	}

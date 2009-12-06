@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace ICSharpCode.XmlEditor
@@ -17,6 +18,7 @@ namespace ICSharpCode.XmlEditor
 	public class XmlElementPath
 	{
 		QualifiedNameCollection elements = new QualifiedNameCollection();
+		XmlNamespaceCollection namespacesInScope = new XmlNamespaceCollection();
 		
 		public XmlElementPath()
 		{
@@ -28,6 +30,11 @@ namespace ICSharpCode.XmlEditor
 		/// <remarks>The order of the elements determines the path.</remarks>
 		public QualifiedNameCollection Elements {
 			get { return elements; }
+		}
+		
+		public void AddElement(QualifiedName elementName)
+		{
+			elements.Add(elementName);
 		}
 		
 		public bool IsEmpty {
@@ -50,6 +57,15 @@ namespace ICSharpCode.XmlEditor
 					elements.RemoveFirst(index + 1);
 				}
 			}
+		}
+		
+		public XmlNamespaceCollection NamespacesInScope {
+			get { return namespacesInScope; }
+		}
+		
+		public string GetNamespaceForPrefix(string prefix)
+		{
+			return namespacesInScope.GetNamespaceForPrefix(prefix);
 		}
 		
 		/// <summary>

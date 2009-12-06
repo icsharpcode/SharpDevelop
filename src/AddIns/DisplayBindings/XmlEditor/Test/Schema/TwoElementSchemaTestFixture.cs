@@ -28,12 +28,12 @@ namespace XmlEditor.Tests.Schema
 			// Note element path.
 			noteElementPath = new XmlElementPath();
 			QualifiedName noteQualifiedName = new QualifiedName("note", "http://www.w3schools.com");
-			noteElementPath.Elements.Add(noteQualifiedName);
+			noteElementPath.AddElement(noteQualifiedName);
 		
 			// Text element path.
 			textElementPath = new XmlElementPath();
-			textElementPath.Elements.Add(noteQualifiedName);
-			textElementPath.Elements.Add(new QualifiedName("text", "http://www.w3schools.com"));
+			textElementPath.AddElement(noteQualifiedName);
+			textElementPath.AddElement(new QualifiedName("text", "http://www.w3schools.com"));
 		}	
 		
 		[Test]

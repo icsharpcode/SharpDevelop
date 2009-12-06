@@ -20,51 +20,52 @@ namespace XmlEditor.Tests.Parser
 		string namespaceURI = "http://foo/foo.xsd";
 
 		[Test]
-		public void SuccessTest1()
+		public void GetParentElementPathForRootElement()
 		{
 			string text = "<foo xmlns='" + namespaceURI + "' ><";
 			elementPath = XmlParser.GetParentElementPath(text);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
 		}
 		
 		[Test]
-		public void SuccessTest2()
+		public void GetParentElementPathForRootElementAfterChildElementEnd()
 		{
 			string text = "<foo xmlns='" + namespaceURI + "' ><bar></bar><";			
 			elementPath = XmlParser.GetParentElementPath(text);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
-		}		
+		}
 		
 		[Test]
-		public void SuccessTest3()
+		public void GetParentElementPathForRootElementAfterEmptyChildElementEnd()
 		{
 			string text = "<foo xmlns='" + namespaceURI + "' ><bar/><";
 			elementPath = XmlParser.GetParentElementPath(text);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
-		}			
+		}
 		
 		[Test]
-		public void SuccessTest4()
+		public void GetParentElementPathForTwoElementsInDifferentNamespaces()
 		{
 			string text = "<bar xmlns='http://test.com'><foo xmlns='" + namespaceURI + "' ><";
 			elementPath = XmlParser.GetParentElementPath(text);
 			
 			expectedElementPath = new XmlElementPath();
-			expectedElementPath.Elements.Add(new QualifiedName("foo", namespaceURI));
+			expectedElementPath.AddElement(new QualifiedName("bar", "http://test.com"));
+			expectedElementPath.AddElement(new QualifiedName("foo", namespaceURI));
 			Assert.IsTrue(elementPath.Equals(expectedElementPath), 
 			              "Incorrect active element path.");
-		}				
+		}
 	}
 }

@@ -26,10 +26,10 @@ namespace XmlEditor.Tests.Schema
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("person", "http://foo"));
+			path.AddElement(new QualifiedName("person", "http://foo"));
 			personElementChildren = SchemaCompletion.GetChildElementCompletion(path);
 			
-			path.Elements.Add(new QualifiedName("firstname", "http://foo"));
+			path.AddElement(new QualifiedName("firstname", "http://foo"));
 			firstNameAttributes = SchemaCompletion.GetAttributeCompletion(path);
 			firstNameElementChildren = SchemaCompletion.GetChildElementCompletion(path);
 		}

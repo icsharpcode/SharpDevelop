@@ -33,6 +33,11 @@ namespace ICSharpCode.XmlEditor
 		{
 		}
 		
+		public QualifiedName(string name, XmlNamespace ns)
+			: this(name, ns.Name, ns.Prefix)
+		{
+		}
+		
 		public QualifiedName(string name, string namespaceUri, string prefix)
 		{
 			xmlQualifiedName = new XmlQualifiedName(name, namespaceUri);

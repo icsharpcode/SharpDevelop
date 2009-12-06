@@ -23,8 +23,8 @@ namespace XmlEditor.Tests.Schema
 		public override void FixtureInit()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("project", "http://nant.sf.net//nant-0.84.xsd"));
-			path.Elements.Add(new QualifiedName("attrib", "http://nant.sf.net//nant-0.84.xsd"));
+			path.AddElement(new QualifiedName("project", "http://nant.sf.net//nant-0.84.xsd"));
+			path.AddElement(new QualifiedName("attrib", "http://nant.sf.net//nant-0.84.xsd"));
 			
 			attributes = SchemaCompletion.GetAttributeCompletion(path);
 		}

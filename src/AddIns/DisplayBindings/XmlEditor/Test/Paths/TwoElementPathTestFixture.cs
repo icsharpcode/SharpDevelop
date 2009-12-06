@@ -5,9 +5,9 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
-using System;
 
 namespace XmlEditor.Tests.Paths
 {
@@ -23,10 +23,10 @@ namespace XmlEditor.Tests.Paths
 		{
 			path = new XmlElementPath();
 			firstQualifiedName = new QualifiedName("foo", "http://foo", "f");
-			path.Elements.Add(firstQualifiedName);
+			path.AddElement(firstQualifiedName);
 			
 			secondQualifiedName = new QualifiedName("bar", "http://bar", "b");
-			path.Elements.Add(secondQualifiedName);
+			path.AddElement(secondQualifiedName);
 		}
 		
 		[Test]
@@ -61,8 +61,8 @@ namespace XmlEditor.Tests.Paths
 		public void Equality()
 		{
 			XmlElementPath newPath = new XmlElementPath();
-			newPath.Elements.Add(new QualifiedName("foo", "http://foo", "f"));
-			newPath.Elements.Add(new QualifiedName("bar", "http://bar", "b"));
+			newPath.AddElement(new QualifiedName("foo", "http://foo", "f"));
+			newPath.AddElement(new QualifiedName("bar", "http://bar", "b"));
 			
 			Assert.IsTrue(newPath.Equals(path), "Should be equal.");
 		}
@@ -71,8 +71,8 @@ namespace XmlEditor.Tests.Paths
 		public void NotEqual()
 		{
 			XmlElementPath newPath = new XmlElementPath();
-			newPath.Elements.Add(new QualifiedName("aaa", "a", "a"));
-			newPath.Elements.Add(new QualifiedName("bbb", "b", "b"));
+			newPath.AddElement(new QualifiedName("aaa", "a", "a"));
+			newPath.AddElement(new QualifiedName("bbb", "b", "b"));
 			
 			Assert.IsFalse(newPath.Equals(path), "Should not be equal.");
 		}
@@ -88,7 +88,7 @@ namespace XmlEditor.Tests.Paths
 		public void CompactPathItem()
 		{
 			XmlElementPath newPath = new XmlElementPath();
-			newPath.Elements.Add(new QualifiedName("bar", "http://bar", "b"));
+			newPath.AddElement(new QualifiedName("bar", "http://bar", "b"));
 			
 			path.Compact();
 			Assert.IsTrue(newPath.Equals(path), "Should be equal.");
@@ -99,6 +99,37 @@ namespace XmlEditor.Tests.Paths
 		{
 			string expectedToString = "f:foo [http://foo] > b:bar [http://bar]";
 			Assert.AreEqual(expectedToString, path.ToString());
+		}
+		
+		[Test]
+		public void ElementPathsByNamespaceFoo()
+		{
+			XmlElementPathsByNamespace paths = new XmlElementPathsByNamespace(path);
+			XmlElementPath fooPath = paths[0];
+			
+			XmlElementPath expectedPath = new XmlElementPath();
+			expectedPath.AddElement(new QualifiedName("foo", "http://foo", "f"));
+			
+			Assert.IsTrue(expectedPath.Equals(fooPath));
+		}
+		
+		[Test]
+		public void TwoElementPathsByNamespace()
+		{
+			XmlElementPathsByNamespace paths = new XmlElementPathsByNamespace(path);
+			Assert.AreEqual(2, paths.Count);
+		}
+		
+		[Test]
+		public void ElementPathsByNamespaceBar()
+		{
+			XmlElementPathsByNamespace paths = new XmlElementPathsByNamespace(path);
+			XmlElementPath barPath = paths[1];
+			
+			XmlElementPath expectedPath = new XmlElementPath();
+			expectedPath.AddElement(new QualifiedName("bar", "http://bar", "b"));
+			
+			Assert.IsTrue(expectedPath.Equals(barPath));
 		}
 	}
 }

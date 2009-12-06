@@ -26,12 +26,12 @@ namespace XmlEditor.Tests.Schema
 		{
 			// Get note child elements.
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
+			path.AddElement(new QualifiedName("note", "http://www.w3schools.com"));
 			
 			noteChildElements = SchemaCompletion.GetChildElementCompletion(path);
 		
 			// Get title child elements.
-			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com"));
+			path.AddElement(new QualifiedName("title", "http://www.w3schools.com"));
 			titleChildElements = SchemaCompletion.GetChildElementCompletion(path);
 		}
 		
@@ -46,8 +46,8 @@ namespace XmlEditor.Tests.Schema
 		public void TextHasNoChildElements()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
-			path.Elements.Add(new QualifiedName("text", "http://www.w3schools.com"));
+			path.AddElement(new QualifiedName("note", "http://www.w3schools.com"));
+			path.AddElement(new QualifiedName("text", "http://www.w3schools.com"));
 			Assert.AreEqual(0, SchemaCompletion.GetChildElementCompletion(path).Count, 
 			                "Should be no child elements.");
 		}		

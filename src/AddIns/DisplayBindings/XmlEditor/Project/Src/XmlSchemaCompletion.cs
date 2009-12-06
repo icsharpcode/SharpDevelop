@@ -28,10 +28,9 @@ namespace ICSharpCode.XmlEditor
 	public class XmlSchemaCompletion
 	{
 		XmlSchema schema;
-		string namespaceUri = String.Empty;
 		string fileName = String.Empty;
 		bool readOnly;
-		string namespacePrefix = String.Empty;
+		XmlNamespace xmlNamespace = new XmlNamespace();
 		
 		/// <summary>
 		/// Stores attributes that have been prohibited whilst the code
@@ -44,8 +43,8 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public string DefaultNamespacePrefix {
-			get { return namespacePrefix; }
-			set { namespacePrefix = value; }
+			get { return xmlNamespace.Prefix; }
+			set { xmlNamespace.Prefix = value; }
 		}
 		
 		/// <summary>
@@ -103,11 +102,15 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the namespace URI for the schema.
 		/// </summary>
 		public string NamespaceUri {
-			get { return namespaceUri; }
+			get { return xmlNamespace.Name; }
 		}
 
 		public bool HasNamespaceUri {
-			get { return !String.IsNullOrWhiteSpace(namespaceUri); }
+			get { return !String.IsNullOrWhiteSpace(NamespaceUri); }
+		}
+		
+		public XmlNamespace Namespace {
+			get { return xmlNamespace; }
 		}
 		
 		/// <summary>
@@ -125,8 +128,13 @@ namespace ICSharpCode.XmlEditor
 		
 		public XmlCompletionItemCollection GetRootElementCompletion()
 		{
+			return GetRootElementCompletion(DefaultNamespacePrefix);
+		}
+		
+		public XmlCompletionItemCollection GetRootElementCompletion(string namespacePrefix)
+		{
 			XmlCompletionItemCollection items = new XmlCompletionItemCollection();
-
+			
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
 				if (element.Name != null) {
 					AddElement(items, element.Name, namespacePrefix, element.Annotation);
@@ -264,7 +272,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public XmlSchemaSimpleType FindSimpleType(string name)
 		{
-			XmlQualifiedName qualifiedName = new XmlQualifiedName(name, namespaceUri);
+			XmlQualifiedName qualifiedName = new XmlQualifiedName(name, xmlNamespace.Name);
 			return FindSimpleType(qualifiedName);
 		}
 		
@@ -320,7 +328,7 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			// Default behaviour just return the name with the namespace uri.
-			qualifiedName.Namespace = namespaceUri;
+			qualifiedName.Namespace = xmlNamespace.Name;
 			return qualifiedName;
 		}
 		
@@ -349,7 +357,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void ReadSchema(XmlReader reader)
 		{
-			try	{
+			try {
 				schema = XmlSchema.Read(reader, new ValidationEventHandler(SchemaValidation));
 				if (schema != null) {
 					XmlSchemaSet schemaSet = new XmlSchemaSet();
@@ -357,7 +365,7 @@ namespace ICSharpCode.XmlEditor
 					schemaSet.Add(schema);
 					schemaSet.Compile();
 					
-					namespaceUri = schema.TargetNamespace;
+					xmlNamespace.Name = schema.TargetNamespace;
 				}
 			} finally {
 				reader.Close();

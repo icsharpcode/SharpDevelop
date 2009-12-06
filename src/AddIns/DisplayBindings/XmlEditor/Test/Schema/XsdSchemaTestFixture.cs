@@ -49,13 +49,13 @@ namespace XmlEditor.Tests.Schema
 			
 			// Set up choice element's path.
 			choicePath = new XmlElementPath();
-			choicePath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
-			choicePath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
-			choicePath.Elements.Add(new QualifiedName("complexType", namespaceURI, prefix));
+			choicePath.AddElement(new QualifiedName("schema", namespaceURI, prefix));
+			choicePath.AddElement(new QualifiedName("element", namespaceURI, prefix));
+			choicePath.AddElement(new QualifiedName("complexType", namespaceURI, prefix));
 			
 			mixedAttributeValues = schemaCompletion.GetAttributeValueCompletion(choicePath, "mixed");
 
-			choicePath.Elements.Add(new QualifiedName("choice", namespaceURI, prefix));
+			choicePath.AddElement(new QualifiedName("choice", namespaceURI, prefix));
 			
 			// Get choice element info.
 			choiceAttributes = schemaCompletion.GetAttributeCompletion(choicePath);
@@ -63,53 +63,53 @@ namespace XmlEditor.Tests.Schema
 			
 			// Set up element path.
 			elementPath = new XmlElementPath();
-			elementPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
+			elementPath.AddElement(new QualifiedName("schema", namespaceURI, prefix));
 			
 			elementFormDefaultAttributeValues = schemaCompletion.GetAttributeValueCompletion(elementPath, "elementFormDefault");
 			blockDefaultAttributeValues = schemaCompletion.GetAttributeValueCompletion(elementPath, "blockDefault");
 			finalDefaultAttributeValues = schemaCompletion.GetAttributeValueCompletion(elementPath, "finalDefault");
 			
-			elementPath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
+			elementPath.AddElement(new QualifiedName("element", namespaceURI, prefix));
 				
 			// Get element attribute info.
 			elementAttributes = schemaCompletion.GetAttributeCompletion(elementPath);
 
 			// Set up simple enum type path.
 			simpleEnumPath = new XmlElementPath();
-			simpleEnumPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
-			simpleEnumPath.Elements.Add(new QualifiedName("simpleType", namespaceURI, prefix));
-			simpleEnumPath.Elements.Add(new QualifiedName("restriction", namespaceURI, prefix));
+			simpleEnumPath.AddElement(new QualifiedName("schema", namespaceURI, prefix));
+			simpleEnumPath.AddElement(new QualifiedName("simpleType", namespaceURI, prefix));
+			simpleEnumPath.AddElement(new QualifiedName("restriction", namespaceURI, prefix));
 			
 			// Get child elements.
 			simpleEnumElements = schemaCompletion.GetChildElementCompletion(simpleEnumPath);
 
 			// Set up enum path.
 			enumPath = new XmlElementPath();
-			enumPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
-			enumPath.Elements.Add(new QualifiedName("simpleType", namespaceURI, prefix));
-			enumPath.Elements.Add(new QualifiedName("restriction", namespaceURI, prefix));
-			enumPath.Elements.Add(new QualifiedName("enumeration", namespaceURI, prefix));
+			enumPath.AddElement(new QualifiedName("schema", namespaceURI, prefix));
+			enumPath.AddElement(new QualifiedName("simpleType", namespaceURI, prefix));
+			enumPath.AddElement(new QualifiedName("restriction", namespaceURI, prefix));
+			enumPath.AddElement(new QualifiedName("enumeration", namespaceURI, prefix));
 			
 			// Get attributes.
 			enumAttributes = schemaCompletion.GetAttributeCompletion(enumPath);
 			
 			// Set up xs:all path.
 			allElementPath = new XmlElementPath();
-			allElementPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
-			allElementPath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
-			allElementPath.Elements.Add(new QualifiedName("complexType", namespaceURI, prefix));
-			allElementPath.Elements.Add(new QualifiedName("all", namespaceURI, prefix));
+			allElementPath.AddElement(new QualifiedName("schema", namespaceURI, prefix));
+			allElementPath.AddElement(new QualifiedName("element", namespaceURI, prefix));
+			allElementPath.AddElement(new QualifiedName("complexType", namespaceURI, prefix));
+			allElementPath.AddElement(new QualifiedName("all", namespaceURI, prefix));
 		
 			// Get child elements of the xs:all element.
 			allElementChildElements = schemaCompletion.GetChildElementCompletion(allElementPath);
 			
 			// Set up the path to the annotation element that is a child of xs:all.
 			allElementAnnotationPath = new XmlElementPath();
-			allElementAnnotationPath.Elements.Add(new QualifiedName("schema", namespaceURI, prefix));
-			allElementAnnotationPath.Elements.Add(new QualifiedName("element", namespaceURI, prefix));
-			allElementAnnotationPath.Elements.Add(new QualifiedName("complexType", namespaceURI, prefix));
-			allElementAnnotationPath.Elements.Add(new QualifiedName("all", namespaceURI, prefix));
-			allElementAnnotationPath.Elements.Add(new QualifiedName("annotation", namespaceURI, prefix));
+			allElementAnnotationPath.AddElement(new QualifiedName("schema", namespaceURI, prefix));
+			allElementAnnotationPath.AddElement(new QualifiedName("element", namespaceURI, prefix));
+			allElementAnnotationPath.AddElement(new QualifiedName("complexType", namespaceURI, prefix));
+			allElementAnnotationPath.AddElement(new QualifiedName("all", namespaceURI, prefix));
+			allElementAnnotationPath.AddElement(new QualifiedName("annotation", namespaceURI, prefix));
 			
 			// Get the xs:all annotation child element.
 			allElementAnnotationChildElements = schemaCompletion.GetChildElementCompletion(allElementAnnotationPath);

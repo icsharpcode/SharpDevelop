@@ -18,13 +18,13 @@ namespace XmlEditor.Tests.Paths
 		public void ChangeNamespaceForTwoElementsWithoutNamespaceModifiesAllItems()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("root", String.Empty));
-			path.Elements.Add(new QualifiedName("child", String.Empty));
+			path.AddElement(new QualifiedName("root", String.Empty));
+			path.AddElement(new QualifiedName("child", String.Empty));
 			path.SetNamespaceForUnqualifiedNames("http://test");
 			
 			XmlElementPath expectedPath = new XmlElementPath();
-			expectedPath.Elements.Add(new QualifiedName("root", "http://test"));
-			expectedPath.Elements.Add(new QualifiedName("child", "http://test"));
+			expectedPath.AddElement(new QualifiedName("root", "http://test"));
+			expectedPath.AddElement(new QualifiedName("child", "http://test"));
 			
 			Assert.IsTrue(expectedPath.Equals(path));
 		}
@@ -33,13 +33,13 @@ namespace XmlEditor.Tests.Paths
 		public void ChangeNamespaceForTwoElementsWhereChildElementHasOwnNamespaceOnlyAffectsRootElement()
 		{
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("root", String.Empty));
-			path.Elements.Add(new QualifiedName("child", "has-namespace-already"));
+			path.AddElement(new QualifiedName("root", String.Empty));
+			path.AddElement(new QualifiedName("child", "has-namespace-already"));
 			path.SetNamespaceForUnqualifiedNames("http://test");
 			
 			XmlElementPath expectedPath = new XmlElementPath();
-			expectedPath.Elements.Add(new QualifiedName("root", "http://test"));
-			expectedPath.Elements.Add(new QualifiedName("child", "has-namespace-already"));
+			expectedPath.AddElement(new QualifiedName("root", "http://test"));
+			expectedPath.AddElement(new QualifiedName("child", "has-namespace-already"));
 			
 			Assert.IsTrue(expectedPath.Equals(path));
 		}		

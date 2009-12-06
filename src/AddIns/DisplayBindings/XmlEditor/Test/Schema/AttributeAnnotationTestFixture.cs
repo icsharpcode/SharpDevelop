@@ -25,11 +25,11 @@ namespace XmlEditor.Tests.Schema
 		public override void FixtureInit()
 		{			
 			XmlElementPath path = new XmlElementPath();
-			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
+			path.AddElement(new QualifiedName("foo", "http://foo.com"));
 			
 			fooAttributeCompletionData = SchemaCompletion.GetAttributeCompletion(path);
 
-			path.Elements.Add(new QualifiedName("bar", "http://foo.com"));
+			path.AddElement(new QualifiedName("bar", "http://foo.com"));
 			barAttributeCompletionData = SchemaCompletion.GetAttributeCompletion(path);
 		}
 				
