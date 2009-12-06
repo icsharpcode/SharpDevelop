@@ -416,12 +416,12 @@ namespace Debugger
 		
 		internal Thread[] UnsuspendedThreads {
 			get {
-				List<Thread> threadsToRun = new List<Thread>(this.Threads.Count);
+				List<Thread> unsuspendedThreads = new List<Thread>(this.Threads.Count);
 				foreach(Thread t in this.Threads) {
 					if (!t.Suspended)
-						threadsToRun.Add(t);
+						unsuspendedThreads.Add(t);
 				}
-				return threadsToRun.ToArray();
+				return unsuspendedThreads.ToArray();
 			}
 		}
 		
@@ -435,17 +435,18 @@ namespace Debugger
 		
 		internal CorDebugThreadState NewThreadState = CorDebugThreadState.THREAD_RUN;
 		
+		/// <param name="threadsToRun"> Null to keep current setting </param>
+		/// <param name="newThreadState"> What happens to created threads.  Null to keep current setting </param>
 		internal void AsyncContinue(DebuggeeStateAction action, Thread[] threadsToRun, CorDebugThreadState? newThreadState)
 		{
 			AssertPaused();
 			
 			if (threadsToRun != null) {
 //				corProcess.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, null);
-//				TODO: There is second unreported thread, stopping it prevents the debugee from exiting
-//				uint count = corProcess.EnumerateThreads().GetCount();
-//				ICorDebugThread[] ts = new ICorDebugThread[count];
+//				Note: There is unreported thread, stopping it prevents the debugee from exiting
+//				      It is not corProcess.GetHelperThreadID
+//				ICorDebugThread[] ts = new ICorDebugThread[corProcess.EnumerateThreads().GetCount()];
 //				corProcess.EnumerateThreads().Next((uint)ts.Length, ts);
-//				uint helper = corProcess.GetHelperThreadID();
 				try {
 					foreach(Thread t in this.Threads) {
 						t.CorThread.SetDebugState(CorDebugThreadState.THREAD_SUSPEND);

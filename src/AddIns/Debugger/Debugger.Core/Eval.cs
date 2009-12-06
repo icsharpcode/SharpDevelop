@@ -91,8 +91,8 @@ namespace Debugger
 			this.process = appDomain.Process;
 			this.description = description;
 			this.state = EvalState.Evaluating;
-			
-			this.corEval = CreateCorEval(appDomain, out this.thread);
+			this.thread = GetEvaluationThread(appDomain);
+			this.corEval = thread.CorThread.CreateEval();
 			
 			try {
 				evalStarter(this);
@@ -132,36 +132,23 @@ namespace Debugger
 				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, this.Process.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
 			}
 		}
-
-	    static ICorDebugEval CreateCorEval(AppDomain appDomain, out Thread thread)
+		
+		static Thread GetEvaluationThread(AppDomain appDomain)
 		{
 			appDomain.Process.AssertPaused();
 			
-			thread = appDomain.Process.SelectedThread;
+			Thread st = appDomain.Process.SelectedThread;
+			if (st != null && !st.Suspended && !st.IsInNativeCode && st.IsAtSafePoint && st.CorThread.GetAppDomain().GetID() == appDomain.ID) {
+				return st;
+			}
 			
-			if (thread.CorThread.GetAppDomain().GetID() != appDomain.ID) {
-				foreach(Thread t in appDomain.Process.Threads) {
-					if (t.CorThread.GetAppDomain().GetID() == appDomain.ID &&
-					    !t.Suspended &&
-					    !t.IsInNativeCode &&
-					    t.IsAtSafePoint)
-					{
-						thread = t;
-						break;
-					}
+			foreach(Thread t in appDomain.Process.Threads) {
+				if (!t.Suspended && !t.IsInNativeCode && t.IsAtSafePoint && t.CorThread.GetAppDomain().GetID() == appDomain.ID) {
+					return t;
 				}
 			}
 			
-			if (thread == null)
-				throw new GetValueException("Can not evaluate because no thread is selected");
-			if (thread.IsInNativeCode)
-				throw new GetValueException("Can not evaluate because native frame is on top of stack");
-			if (!thread.IsAtSafePoint)
-				throw new GetValueException("Can not evaluate because thread is not at a safe point");
-			if (thread.Suspended)
-				throw new GetValueException("Can not evaluate on suspended thread");
-			
-			return thread.CorThread.CreateEval();
+			throw new GetValueException("No suitable thread for evaluation");
 		}
 
 		internal bool IsCorEval(ICorDebugEval corEval)
@@ -293,8 +280,8 @@ namespace Debugger
 	    {
 	    	if (value == null) {
 				ICorDebugClass corClass = appDomain.ObjectType.CorType.GetClass();
-				Thread thread;
-				ICorDebugEval corEval = CreateCorEval(appDomain, out thread);
+				Thread thread = GetEvaluationThread(appDomain);
+				ICorDebugEval corEval = thread.CorThread.CreateEval();
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
 				return new Value(appDomain, corValue);
 			} else if (value is string) {
