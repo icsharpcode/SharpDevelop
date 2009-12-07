@@ -447,19 +447,18 @@ namespace Debugger
 //				      It is not corProcess.GetHelperThreadID
 //				ICorDebugThread[] ts = new ICorDebugThread[corProcess.EnumerateThreads().GetCount()];
 //				corProcess.EnumerateThreads().Next((uint)ts.Length, ts);
-				try {
-					foreach(Thread t in this.Threads) {
-						t.CorThread.SetDebugState(CorDebugThreadState.THREAD_SUSPEND);
-					}
-					foreach(Thread t in threadsToRun) {
-						t.CorThread.SetDebugState(CorDebugThreadState.THREAD_RUN);
-					}
-				} catch (COMException e) {
-					// The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)
-					// It can happen for threads that have not started yet
-					if ((uint)e.ErrorCode == 0x8013132D) {
-					} else {
-						throw;
+				foreach(Thread t in this.Threads) {
+					CorDebugThreadState state = Array.IndexOf(threadsToRun, t) == -1 ? CorDebugThreadState.THREAD_SUSPEND : CorDebugThreadState.THREAD_RUN;
+					try {
+						t.CorThread.SetDebugState(state);
+					} catch (COMException e) {
+						// The state of the thread is invalid. (Exception from HRESULT: 0x8013132D)
+						// It can happen for example when thread has not started yet
+						if ((uint)e.ErrorCode == 0x8013132D) {
+							// TraceMessage("Can not suspend thread - The state of the thread is invalid.  Thread ID = " + t.CorThread.GetID());
+						} else {
+							throw;
+						}
 					}
 				}
 			}
