@@ -133,15 +133,15 @@ namespace XmlEditor.Tests.Editor
 		[Test]
 		public void RemoveTestSchemaFiresUserSchemaRemovedEvent()
 		{
-			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");			
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");
 			Assert.AreEqual(1, userSchemaRemovedEventFiredCount);
 		}
 		
 		[Test]
 		public void TrytoRemoveTestSchemaTwiceButSchemaRemovedEventShouldOnlyFireOnce()
 		{
-			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");			
-			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");			
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");
+			registeredXmlSchemas.RemoveUserDefinedSchema("http://test");
 			Assert.AreEqual(1, userSchemaRemovedEventFiredCount);
 		}
 		

@@ -144,8 +144,8 @@ namespace ICSharpCode.XmlEditor
 				string baseUri = XmlSchemaCompletion.GetUri(fileName);
 				XmlSchemaCompletion schema = factory.CreateXmlSchemaCompletionData(baseUri, fileName);
 				schema.FileName = fileName;
-				schema.IsReadOnly = readOnly;	
-				return schema;				
+				schema.IsReadOnly = readOnly;
+				return schema;
 			} catch (Exception ex) {
 				schemaErrors.Add(new RegisteredXmlSchemaError("Unable to read schema '" + fileName + "'.", ex));
 			}
@@ -160,11 +160,7 @@ namespace ICSharpCode.XmlEditor
 		void AddSchema(XmlSchemaCompletion schema)
 		{
 			if (schema.HasNamespaceUri) {
-				if (!schemas.Contains(schema.NamespaceUri)) {
-					schemas.Add(schema);
-				} else {
-					schemaErrors.Add(new RegisteredXmlSchemaError("Ignoring duplicate schema namespace '" + schema.NamespaceUri + "'. File '" + schema.FileName + "'."));
-				}
+				schemas.Add(schema);
 			} else {
 				schemaErrors.Add(new RegisteredXmlSchemaError("Ignoring schema with no namespace '" + schema.FileName + "'."));
 			}		

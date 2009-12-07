@@ -154,6 +154,7 @@
     <Compile Include="Paths\QualifiedNameToStringTests.cs" />
     <Compile Include="Paths\SingleElementPathByNamespaceTestFixture.cs" />
     <Compile Include="Paths\TwoElementPathsByNamespaceTestFixture.cs" />
+    <Compile Include="Schema.Multiple\DuplicateSchemaNamespaceAddedToCollectionTestFixture.cs" />
     <Compile Include="Schema.Multiple\TwoSchemaChildElementCompletionTestFixture.cs" />
     <Compile Include="Schema\SchemaHasNamespaceTests.cs" />
     <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />
@@ -258,7 +259,9 @@
     <Compile Include="Utils\Tests\MockTextEditorTests.cs" />
     <Compile Include="Utils\Tests\MockXmlSchemaCompletionDataFactoryTests.cs" />
     <Compile Include="Utils\Tests\MockXmlSchemasPanelTests.cs" />
+    <Compile Include="Utils\Tests\XmlSchemaCompletionCollectionFileNamesTests.cs" />
     <Compile Include="Utils\TextSection.cs" />
+    <Compile Include="Utils\XmlSchemaCompletionCollectionFileNames.cs" />
     <Compile Include="XPathQuery\XmlNamespaceTests.cs" />
     <Compile Include="XPathQuery\GetNamespacesFromListViewTestFixture.cs" />
     <Compile Include="XPathQuery\RunXPathQueryTests.cs" />

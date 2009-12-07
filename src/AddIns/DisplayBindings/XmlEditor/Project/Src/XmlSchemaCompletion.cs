@@ -358,7 +358,7 @@ namespace ICSharpCode.XmlEditor
 		void ReadSchema(XmlReader reader)
 		{
 			try {
-				schema = XmlSchema.Read(reader, new ValidationEventHandler(SchemaValidation));
+				schema = XmlSchema.Read(reader, SchemaValidation);
 				if (schema != null) {
 					XmlSchemaSet schemaSet = new XmlSchemaSet();
 					schemaSet.ValidationEventHandler += SchemaValidation;

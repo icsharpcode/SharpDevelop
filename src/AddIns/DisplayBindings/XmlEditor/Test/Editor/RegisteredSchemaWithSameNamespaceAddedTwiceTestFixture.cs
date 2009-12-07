@@ -51,12 +51,9 @@ namespace XmlEditor.Tests.Editor
 		}
 		
 		[Test]
-		public void SchemaNamespaceAlreadyAddedRecordedAsError()
+		public void NoSchemaErrorsRecordedForDuplicateSchemaNamespace()
 		{
-			string message = @"Ignoring duplicate schema namespace 'http://test'. File 'c:\users\user\schemas\test2.xsd'.";
-			RegisteredXmlSchemaError error = new RegisteredXmlSchemaError(message);
-			RegisteredXmlSchemaError[] expectedErrors = new RegisteredXmlSchemaError[] { error };
-			Assert.AreEqual(expectedErrors, registeredXmlSchemas.GetSchemaErrors());
+			Assert.AreEqual(0, registeredXmlSchemas.GetSchemaErrors().Length);
 		}
 	}
 }
