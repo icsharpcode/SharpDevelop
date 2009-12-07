@@ -164,20 +164,21 @@ namespace Debugger
 			try {
 				process.WaitForPause(TimeSpan.FromMilliseconds(500));
 				if (!Evaluated) {
-					state = EvalState.EvaluatedTimeOut;
 					process.TraceMessage("Aborting eval: " + Description);
 					this.CorEval.Abort();
-					process.WaitForPause(TimeSpan.FromMilliseconds(500));
+					process.WaitForPause(TimeSpan.FromMilliseconds(2500));
 					if (!Evaluated) {
 						process.TraceMessage("Rude aborting eval: " + Description);
 						this.CorEval2.RudeAbort();
-						process.WaitForPause(TimeSpan.FromMilliseconds(500));
+						process.WaitForPause(TimeSpan.FromMilliseconds(5000));
 						if (!Evaluated) {
 							throw new DebuggerException("Evaluation can not be stopped");
 						}
 					}
+					// Note that this sets Evaluated to true
+					state = EvalState.EvaluatedTimeOut;
 				}
-				process.WaitForPause();
+				process.AssertPaused();
 				return this.Result;
 			} catch (ProcessExitedException) {
 				throw new GetValueException("Process exited");
