@@ -433,7 +433,10 @@ namespace ICSharpCode.NRefactory.Visitors
 					throw new GetValueException("Single index expected");
 				
 				int index = EvaluateAsInt(indexerExpression.Indexes[0]);
-				return CreateValue(((string)target.PrimitiveValue)[index]);
+				string str = (string)target.PrimitiveValue;
+				if (index < 0 || index >= str.Length)
+					throw new GetValueException("Index was outside the bounds of the array.");
+				return CreateValue(str[index]);
 			} else {
 				List<TypedValue> indexes = EvaluateAll(indexerExpression.Indexes);
 				DebugPropertyInfo pi = (DebugPropertyInfo)target.Type.GetProperty("Item", GetTypes(indexes));
