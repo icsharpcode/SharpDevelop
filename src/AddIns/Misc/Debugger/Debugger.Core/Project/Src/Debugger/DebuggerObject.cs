@@ -12,7 +12,7 @@ namespace Debugger
 	/// <summary>
 	/// A base class for all classes declared by the debugger
 	/// </summary>
-	public class DebuggerObject: MarshalByRefObject
+	public class DebuggerObject
 	{
 		
 	}
