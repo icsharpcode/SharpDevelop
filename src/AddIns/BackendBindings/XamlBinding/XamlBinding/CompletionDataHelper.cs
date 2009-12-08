@@ -875,7 +875,7 @@ namespace ICSharpCode.XamlBinding
 			IReturnType typeName = GetType(context, out isExplicit);
 			IList<ICompletionItem> list = new List<ICompletionItem>();
 			
-			string value = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, context.ValueStartOffset + 1) : "";
+			string value = context.ValueStartOffset > -1 ? context.RawAttributeValue.Substring(0, Math.Min(context.ValueStartOffset + 1, context.RawAttributeValue.Length)) : "";
 			
 			if (value.EndsWithAny(']', ')'))
 				return list;
