@@ -311,6 +311,28 @@ namespace Debugger
 					segment.ilStart       = ilStart;
 					segment.ilEnd         = ilEnd;
 					segment.stepRanges    = stepRanges.ToArray();
+					
+					// VB.NET sometimes produces temporary files which it then deletes
+					// (eg 17d14f5c-a337-4978-8281-53493378c1071.vb)
+					string filename = Path.GetFileName(segment.filename);
+					if (filename.Length == 40 && filename.EndsWith(".vb")) {
+						bool guidName = true;
+						foreach(char c in filename.Substring(0, filename.Length - 3)) {
+							if (('0' <= c && c <= '9') ||
+							    ('a' <= c && c <= 'f') ||
+							    ('A' <= c && c <= 'F') ||
+							    (c == '-'))
+							{
+								guidName = true;
+							} else {
+								guidName = false;
+								break;
+							}
+						}
+						if (guidName)
+							return null;
+					}
+					
 					return segment;
 				}
 			}
