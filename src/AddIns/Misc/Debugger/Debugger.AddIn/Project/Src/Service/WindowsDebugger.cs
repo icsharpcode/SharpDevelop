@@ -593,7 +593,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language.Replace("#", "Sharp"), true);
 				Value val = AstEvaluator.Evaluate(code, supportedLanguage, debuggedProcess.SelectedStackFrame);
 				
-				if (val.PrimitiveValue is bool)
+				if (val != null && val.Type.IsPrimitive && val.PrimitiveValue is bool)
 					return (bool)val.PrimitiveValue;
 				else
 					return false;
