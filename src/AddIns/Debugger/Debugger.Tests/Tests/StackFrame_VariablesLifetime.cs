@@ -122,7 +122,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -131,7 +130,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -140,7 +138,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -156,7 +153,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -165,7 +161,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -174,7 +169,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -183,7 +177,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -193,7 +186,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -202,7 +194,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -211,7 +202,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -220,7 +210,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -236,7 +225,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -245,7 +233,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -254,7 +241,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
@@ -263,7 +249,6 @@ namespace Debugger.Tests {
       <Value
         AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
-        IsNull="{Exception: Value is no longer valid}"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />

@@ -30,6 +30,9 @@ namespace Debugger
 		PauseSession   corValue_pauseSession;
 		DebugType      type;
 		
+		// Permanently stored as convinience so that it survives Continue
+		bool           isNull;
+		
 		/// <summary> The appdomain that owns the value </summary>
 		public AppDomain AppDomain {
 			get { return appDomain; }
@@ -51,8 +54,11 @@ namespace Debugger
 		[Debugger.Tests.Ignore]
 		public ICorDebugReferenceValue CorReferenceValue {
 			get {
+				if (IsNull) throw new GetValueException("Value is null");
+				
 				if (!(this.CorValue is ICorDebugReferenceValue))
 					throw new DebuggerException("Reference value expected");
+				
 				return (ICorDebugReferenceValue)this.CorValue;
 			}
 		}
@@ -78,6 +84,7 @@ namespace Debugger
 		public ICorDebugArrayValue CorArrayValue {
 			get {
 				if (IsNull) throw new GetValueException("Value is null");
+				
 				if (!this.Type.IsArray) throw new DebuggerException("Value is not an array");
 				
 				return (ICorDebugArrayValue)this.CorReferenceValue.Dereference();
@@ -125,10 +132,7 @@ namespace Debugger
 		
 		/// <summary> Returns true if the value is null </summary>
 		public bool IsNull {
-			get {
-				return this.CorValue is ICorDebugReferenceValue &&
-					   ((ICorDebugReferenceValue)this.CorValue).IsNull() != 0;
-			}
+			get { return isNull; }
 		}
 		
 		/// <summary>
@@ -166,6 +170,8 @@ namespace Debugger
 			this.corValue = corValue;
 			this.corValue_pauseSession = this.Process.PauseSession;
 			
+			this.isNull = corValue is ICorDebugReferenceValue && ((ICorDebugReferenceValue)corValue).IsNull() != 0;
+			
 			if (corValue is ICorDebugReferenceValue &&
 			    ((ICorDebugReferenceValue)corValue).GetValue() == 0 &&
 			    ((ICorDebugValue2)corValue).GetExactType() == null)
@@ -200,8 +206,8 @@ namespace Debugger
 			if (this.CorValue is ICorDebugHandleValue) {
 				return this;
 			} else if (this.CorValue is ICorDebugReferenceValue) {
-				if (this.CorReferenceValue.IsNull() > 0)
-					return this; // ("null" expression) TODO: It isn't permanent
+				if (this.IsNull)
+					return this; // ("null" expression) It isn't permanent
 				ICorDebugValue deRef = this.CorReferenceValue.Dereference();
 				if (deRef is ICorDebugHeapValue2) {
 					return new Value(appDomain, ((ICorDebugHeapValue2)deRef).CreateHandle(CorDebugHandleType.HANDLE_STRONG));
@@ -236,7 +242,7 @@ namespace Debugger
 			if (this.CorValue is ICorDebugReferenceValue) {
 				if (!(newCorValue is ICorDebugReferenceValue))
 					newCorValue = newValue.Box().CorValue;
-				this.CorReferenceValue.SetValue(((ICorDebugReferenceValue)newCorValue).GetValue());
+				((ICorDebugReferenceValue)this.CorValue).SetValue(((ICorDebugReferenceValue)newCorValue).GetValue());
 			} else {
 				this.CorGenericValue.SetRawValue(newValue.CorGenericValue.GetRawValue());
 			}
