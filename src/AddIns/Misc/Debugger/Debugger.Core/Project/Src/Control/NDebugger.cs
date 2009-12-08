@@ -157,12 +157,18 @@ namespace Debugger
 			process.Start();
 		}
 		
+		internal object ProcessIsBeingCreatedLock = new object();
+		
 		public Process Start(string filename, string workingDirectory, string arguments)		
 		{
 			InitDebugger(GetProgramVersion(filename));
-			Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
-			AddProcess(process);
-			return process;
+			lock(ProcessIsBeingCreatedLock) {
+				Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
+				// Expose a race conditon
+				System.Threading.Thread.Sleep(0);
+				AddProcess(process);
+				return process;
+			}
 		}
 		
 		public Process Attach(System.Diagnostics.Process existingProcess)		
