@@ -233,9 +233,22 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (DebugStarting != null)
 					DebugStarting(this, EventArgs.Empty);
 				
-				Process process = debugger.Attach(existingProcess);
-				attached = true;
-				SelectProcess(process);
+				try {
+					Process process = debugger.Attach(existingProcess);
+					attached = true;
+					SelectProcess(process);
+				} catch (System.Exception e) {
+					// CORDBG_E_DEBUGGER_ALREADY_ATTACHED
+					if (e is COMException || e is UnauthorizedAccessException) {
+						string msg = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Error.CannotAttachToProcess}");
+						MessageService.ShowMessage(msg + " " + e.Message);
+						
+						if (DebugStopped != null)
+							DebugStopped(this, EventArgs.Empty);
+					} else {
+						throw;
+					}
+				}
 			}
 		}
 
