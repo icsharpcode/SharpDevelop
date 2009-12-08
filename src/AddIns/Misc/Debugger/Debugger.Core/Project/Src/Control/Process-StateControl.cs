@@ -105,6 +105,7 @@ namespace Debugger
 		/// <summary> Sets up the eviroment and raises user events </summary>
 		internal void RaisePausedEvents()
 		{
+			AssertPaused();
 			DisableAllSteppers();
 			CheckSelectedStackFrames();
 			SelectMostRecentStackFrameWithLoadedSymbols();
@@ -335,7 +336,7 @@ namespace Debugger
 				if (timeLeft <= TimeSpan.FromMilliseconds(10)) break;
 				//this.TraceMessage("Time left: " + timeLeft.TotalMilliseconds);
 				debugger.MTA2STA.WaitForCall(timeLeft);
-				debugger.MTA2STA.PerformCall();
+				debugger.MTA2STA.PerformAllCalls();
 			}
 			if (this.HasExited) throw new ProcessExitedException();
 		}
