@@ -197,6 +197,14 @@ namespace Debugger
 				corProcess.Stop(uint.MaxValue);
 				NotifyPaused(PausedReason.ForcedBreak);
 			}
+			// This is necessary for detach
+			foreach(Thread t in this.Threads) {
+				foreach(Stepper s in t.Steppers) {
+					if (s.CorStepper.IsActive == 1) {
+						s.CorStepper.Deactivate();
+					}
+				}
+			}
 			corProcess.Detach();
 			NotifyHasExited();			
 		}

@@ -25,6 +25,10 @@ namespace Debugger
 		
 		public event EventHandler<StepperEventArgs> StepComplete;
 		
+		public ICorDebugStepper CorStepper {
+			get { return corStepper; }
+		}
+		
 		[Debugger.Tests.Ignore]
 		public Process Process {
 			get { return stackFrame.Process; }
