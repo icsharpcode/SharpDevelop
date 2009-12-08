@@ -162,7 +162,6 @@ namespace Debugger
 			try {
 				process.WaitForPause(TimeSpan.FromMilliseconds(500));
 				if (!Evaluated) {
-					state = EvalState.EvaluatedTimeOut;
 					process.TraceMessage("Aboring eval: " + Description);
 					corEval.Abort();
 					process.WaitForPause(TimeSpan.FromMilliseconds(500));
@@ -174,8 +173,10 @@ namespace Debugger
 							throw new DebuggerException("Evaluation can not be stopped");
 						}
 					}
+					// Note that this sets Evaluated to true
+					state = EvalState.EvaluatedTimeOut;
 				}
-				process.WaitForPause();
+				process.AssertPaused();
 				return this.Result;
 			} catch (ProcessExitedException) {
 				throw new GetValueException("Process exited");
