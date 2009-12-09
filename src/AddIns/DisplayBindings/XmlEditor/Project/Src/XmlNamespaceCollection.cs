@@ -32,5 +32,15 @@ namespace ICSharpCode.XmlEditor
 			}
 			return String.Empty;
 		}
+		
+		public string GetPrefix(string namespaceToMatch)
+		{
+			foreach (XmlNamespace ns in this) {
+				if (ns.Name == namespaceToMatch)  {
+					return ns.Prefix;
+				}
+			}
+			return String.Empty;
+		}
 	}
 }

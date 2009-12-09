@@ -158,7 +158,7 @@ namespace ICSharpCode.XmlEditor
 			// Get completion data.
 			if (element != null) {
 				prohibitedAttributes.Clear();
-				return GetAttributeCompletion(element);
+				return GetAttributeCompletion(element, path.NamespacesInScope);
 			}
 			
 			return new XmlCompletionItemCollection();
@@ -593,34 +593,31 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaElement element)
+		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaElement element, XmlNamespaceCollection namespacesInScope)
 		{
 			XmlCompletionItemCollection completionItems = new XmlCompletionItemCollection();
+			
 			XmlSchemaComplexType complexType = GetElementAsComplexType(element);
-			
 			if (complexType != null) {
-				completionItems.AddRange(GetAttributeCompletion(complexType));
+				completionItems.AddRange(GetAttributeCompletion(complexType, namespacesInScope));
 			}
 			
 			return completionItems;
 		}
 		
-		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaComplexContentRestriction restriction)
+		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaComplexContentRestriction restriction, XmlNamespaceCollection namespacesInScope)
 		{
 			XmlCompletionItemCollection completionItems = new XmlCompletionItemCollection();
-			completionItems.AddRange(GetAttributeCompletion(restriction.Attributes));
 			
-			XmlSchemaComplexType baseComplexType = FindNamedType(schema, restriction.BaseTypeName);
-			if (baseComplexType != null) {
-				completionItems.AddRange(GetAttributeCompletion(baseComplexType));
-			}
+			completionItems.AddRange(GetAttributeCompletion(restriction.Attributes, namespacesInScope));
+			completionItems.AddRange(GetBaseComplexTypeAttributeCompletion(restriction.BaseTypeName, namespacesInScope));
 			
 			return completionItems;
 		}
 		
-		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaComplexType complexType)
+		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaComplexType complexType, XmlNamespaceCollection namespacesInScope)
 		{
-			XmlCompletionItemCollection completionItems = GetAttributeCompletion(complexType.Attributes);
+			XmlCompletionItemCollection completionItems = GetAttributeCompletion(complexType.Attributes, namespacesInScope);
 
 			// Add any complex content attributes.
 			XmlSchemaComplexContent complexContent = complexType.ContentModel as XmlSchemaComplexContent;
@@ -628,53 +625,62 @@ namespace ICSharpCode.XmlEditor
 				XmlSchemaComplexContentExtension extension = complexContent.Content as XmlSchemaComplexContentExtension;
 				XmlSchemaComplexContentRestriction restriction = complexContent.Content as XmlSchemaComplexContentRestriction;
 				if (extension != null) {
-					completionItems.AddRange(GetAttributeCompletion(extension));
+					completionItems.AddRange(GetAttributeCompletion(extension, namespacesInScope));
 				} else if (restriction != null) {
-					completionItems.AddRange(GetAttributeCompletion(restriction));
+					completionItems.AddRange(GetAttributeCompletion(restriction, namespacesInScope));
 				}
 			} else {
 				XmlSchemaSimpleContent simpleContent = complexType.ContentModel as XmlSchemaSimpleContent;
 				if (simpleContent != null) {
-					completionItems.AddRange(GetAttributeCompletion(simpleContent));
+					completionItems.AddRange(GetAttributeCompletion(simpleContent, namespacesInScope));
 				}
 			}
 			
 			return completionItems;
 		}
 		
-		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaComplexContentExtension extension)
+		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaComplexContentExtension extension, XmlNamespaceCollection namespacesInScope)
 		{
 			XmlCompletionItemCollection completionItems = new XmlCompletionItemCollection();
 			
-			completionItems.AddRange(GetAttributeCompletion(extension.Attributes));
-			XmlSchemaComplexType baseComplexType = FindNamedType(schema, extension.BaseTypeName);
-			if (baseComplexType != null) {
-				completionItems.AddRange(GetAttributeCompletion(baseComplexType));
-			}
+			completionItems.AddRange(GetAttributeCompletion(extension.Attributes, namespacesInScope));
+			completionItems.AddRange(GetBaseComplexTypeAttributeCompletion(extension.BaseTypeName, namespacesInScope));
 			
 			return completionItems;
 		}
 		
-		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaSimpleContent simpleContent)
+		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaSimpleContent simpleContent, XmlNamespaceCollection namespacesInScope)
 		{
 			XmlCompletionItemCollection completionItems = new XmlCompletionItemCollection();
 			
 			XmlSchemaSimpleContentExtension extension = simpleContent.Content as XmlSchemaSimpleContentExtension;
 			if (extension != null) {
-				completionItems.AddRange(GetAttributeCompletion(extension));
+				completionItems.AddRange(GetAttributeCompletion(extension, namespacesInScope));
 			}
 			
 			return completionItems;
 		}
 		
-		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaSimpleContentExtension extension)
+		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaSimpleContentExtension extension, XmlNamespaceCollection namespacesInScope)
 		{
 			XmlCompletionItemCollection completionItems = new XmlCompletionItemCollection();
-			completionItems.AddRange(GetAttributeCompletion(extension.Attributes));
+			
+			completionItems.AddRange(GetAttributeCompletion(extension.Attributes, namespacesInScope));
+			completionItems.AddRange(GetBaseComplexTypeAttributeCompletion(extension.BaseTypeName, namespacesInScope));
+			
 			return completionItems;
 		}
 		
-		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaObjectCollection attributes)
+		XmlCompletionItemCollection GetBaseComplexTypeAttributeCompletion(XmlQualifiedName baseTypeName, XmlNamespaceCollection namespacesInScope)
+		{
+			XmlSchemaComplexType baseComplexType = FindNamedType(schema, baseTypeName);
+			if (baseComplexType != null) {
+				return GetAttributeCompletion(baseComplexType, namespacesInScope);
+			}
+			return new XmlCompletionItemCollection();
+		}
+		
+		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaObjectCollection attributes, XmlNamespaceCollection namespacesInScope)
 		{
 			XmlCompletionItemCollection completionItems = new XmlCompletionItemCollection();
 			
@@ -683,12 +689,12 @@ namespace ICSharpCode.XmlEditor
 				XmlSchemaAttributeGroupRef attributeGroupRef = schemaObject as XmlSchemaAttributeGroupRef;
 				if (attribute != null) {
 					if (!IsProhibitedAttribute(attribute)) {
-						AddAttribute(completionItems, attribute);
+						AddAttribute(completionItems, attribute, namespacesInScope);
 					} else {
 						prohibitedAttributes.Add(attribute);
 					}
 				} else if (attributeGroupRef != null) {
-					completionItems.AddRange(GetAttributeCompletion(attributeGroupRef));
+					completionItems.AddRange(GetAttributeCompletion(attributeGroupRef, namespacesInScope));
 				}
 			}
 			return completionItems;
@@ -718,12 +724,17 @@ namespace ICSharpCode.XmlEditor
 		/// <remarks>
 		/// Note the special handling of xml:lang attributes.
 		/// </remarks>
-		static void AddAttribute(XmlCompletionItemCollection completionItems, XmlSchemaAttribute attribute)
+		void AddAttribute(XmlCompletionItemCollection completionItems, XmlSchemaAttribute attribute, XmlNamespaceCollection namespacesInScope)
 		{
 			string name = attribute.Name;
 			if (name == null) {
 				if (attribute.RefName.Namespace == "http://www.w3.org/XML/1998/namespace") {
 					name = String.Concat("xml:", attribute.RefName.Name);
+				} else {
+					string prefix = namespacesInScope.GetPrefix(attribute.RefName.Namespace);
+					if (!String.IsNullOrEmpty(prefix)) {
+						name = String.Concat(prefix, ":", attribute.RefName.Name);
+					}
 				}
 			}
 			
@@ -737,11 +748,11 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets attribute completion data from a group ref.
 		/// </summary>
-		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaAttributeGroupRef groupRef)
+		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaAttributeGroupRef groupRef, XmlNamespaceCollection namespacesInScope)
 		{
 			XmlSchemaAttributeGroup attributeGroup = FindAttributeGroup(schema, groupRef.RefName.Name);
 			if (attributeGroup != null) {
-				return GetAttributeCompletion(attributeGroup.Attributes);
+				return GetAttributeCompletion(attributeGroup.Attributes, namespacesInScope);
 			}
 			return new XmlCompletionItemCollection();
 		}

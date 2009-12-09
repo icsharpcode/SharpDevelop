@@ -83,5 +83,23 @@ namespace XmlEditor.Tests.Paths
 			
 			Assert.IsFalse(namespaceCollection.Contains(unknownNamespace));
 		}
+		
+		[Test]
+		public void GetPrefixReturnsNamespaceForKnownNamespaceInCollection()
+		{
+			XmlNamespace ns = new XmlNamespace("prefix", "namespace");
+			namespaceCollection.Add(ns);
+			
+			Assert.AreEqual("prefix", namespaceCollection.GetPrefix("namespace"));
+		}
+		
+		[Test]
+		public void GetPrefixReturnsEmptyStringForUnknownNamespaceInCollection()
+		{
+			XmlNamespace ns = new XmlNamespace("prefix", "namespace");
+			namespaceCollection.Add(ns);
+			
+			Assert.AreEqual(String.Empty, namespaceCollection.GetPrefix("unknown-namespace"));
+		}
 	}
 }

@@ -158,6 +158,7 @@
     <Compile Include="Schema.Multiple\TwoSchemaChildElementCompletionTestFixture.cs" />
     <Compile Include="Schema\ElementAnnotationWithWhitespaceTestFixture.cs" />
     <Compile Include="Schema\SchemaHasNamespaceTests.cs" />
+    <Compile Include="Schema\SimpleContentExtensionBaseTypeWithAttributeTestFixture.cs" />
     <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />
     <Compile Include="Schema\ElementWithAttributeSchemaTestFixture.cs" />
     <Compile Include="Schema\NestedElementSchemaTestFixture.cs" />
