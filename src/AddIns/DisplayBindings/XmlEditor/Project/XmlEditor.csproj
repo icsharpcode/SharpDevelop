@@ -111,6 +111,7 @@
     <Compile Include="Src\RemoveAttributeCommand.cs" />
     <Compile Include="Src\RemoveXPathHighlightingCommand.cs" />
     <Compile Include="Src\RunXslTransformCommand.cs" />
+    <Compile Include="Src\SchemaDocumentation.cs" />
     <Compile Include="Src\SelectXmlSchemaWindow.xaml.cs">
       <DependentUpon>SelectXmlSchemaWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

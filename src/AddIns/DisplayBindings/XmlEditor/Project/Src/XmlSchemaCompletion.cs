@@ -566,6 +566,11 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		static string GetDocumentation(XmlSchemaAnnotation annotation)
+		{
+			return new SchemaDocumentation(annotation).ToString();
+		}
+		
 		/// <summary>
 		/// Adds an element completion data to the collection if it does not
 		/// already exist.
@@ -586,37 +591,6 @@ namespace ICSharpCode.XmlEditor
 					lhs.Add(item);
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Gets the documentation from the annotation element.
-		/// </summary>
-		/// <remarks>
-		/// All documentation elements are added.  All text nodes inside
-		/// the documentation element are added.
-		/// </remarks>
-		static string GetDocumentation(XmlSchemaAnnotation annotation)
-		{
-			if (annotation != null) {
-				StringBuilder documentationBuilder = new StringBuilder();
-				foreach (XmlSchemaObject schemaObject in annotation.Items) {
-					XmlSchemaDocumentation schemaDocumentation = schemaObject as XmlSchemaDocumentation;
-					if (schemaDocumentation != null) {
-						foreach (XmlNode node in schemaDocumentation.Markup) {
-							XmlText textNode = node as XmlText;
-							if (textNode != null) {
-								if (textNode.Data != null) {
-									if (textNode.Data.Length > 0) {
-										documentationBuilder.Append(textNode.Data);
-									}
-								}
-							}
-						}
-					}
-				}
-				return documentationBuilder.ToString();
-			}
-			return String.Empty;
 		}
 		
 		XmlCompletionItemCollection GetAttributeCompletion(XmlSchemaElement element)
