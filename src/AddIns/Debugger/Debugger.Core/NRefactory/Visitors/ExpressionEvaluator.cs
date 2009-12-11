@@ -270,17 +270,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			return types.ToArray();
 		}
 		
-		DebugType GetDebugType(INode expr)
-		{
-			if (expr is ParenthesizedExpression) {
-				return GetDebugType(((ParenthesizedExpression)expr).Expression);
-			} else if (expr is CastExpression) {
-				return ((CastExpression)expr).CastTo.ResolveType(context.AppDomain);
-			} else {
-				return null;
-			}
-		}
-		
 		TypedValue CreateValue(object primitiveValue)
 		{
 			Value val = Eval.CreateValue(context.AppDomain, primitiveValue);
@@ -465,8 +454,6 @@ namespace ICSharpCode.NRefactory.Visitors
 					// Static
 					target = null;
 					targetType = memberRef.TargetObject.ResolveType(context.AppDomain);
-					if (targetType == null)
-						throw;
 				}
 				methodName = memberRef.MemberName;
 			} else {
@@ -540,8 +527,6 @@ namespace ICSharpCode.NRefactory.Visitors
 				// Static
 				target = null;
 				targetType = memberReferenceExpression.TargetObject.ResolveType(context.AppDomain);
-				if (targetType == null)
-					throw;
 			}
 			MemberInfo[] memberInfos = targetType.GetMember(memberReferenceExpression.MemberName, DebugType.BindingFlagsAllInScope);
 			if (memberInfos.Length == 0)

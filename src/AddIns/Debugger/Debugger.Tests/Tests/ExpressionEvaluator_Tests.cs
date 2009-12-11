@@ -134,6 +134,7 @@ namespace Debugger.Tests
 			List<char> list = new List<char>(array);
 			
 			DerivedClass myClass = new DerivedClass();
+			BaseClass myClass2 = myClass;
 			
 			int*[][,] complexType1 = new int*[][,] { new int*[,] { { (int*)0xDA1D } } };
 			A<int>.B.C<char>[][,] complexType2 = new A<int>.B.C<char>[0][,];
@@ -195,6 +196,11 @@ namespace Debugger.Tests {
 				list.Add((char)42); list.Add((char)52); list
 				list = new System.Collections.Generic.List<char>(array2); list
 				
+				(Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass
+				(Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass2
+				(string)i
+				(string)hi
+				(int)hi
 			";
 		
 		[NUnit.Framework.Test]
@@ -307,9 +313,9 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:145,4-145,40</DebuggingPaused>
-    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:146,4-146,19</DebuggingPaused>
-    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:147,4-147,39</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:146,4-146,40</DebuggingPaused>
+    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:147,4-147,19</DebuggingPaused>
+    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:148,4-148,39</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -405,6 +411,11 @@ namespace Debugger.Tests {
     <Eval> list = new System.Collections.Generic.List&lt;char&gt;(array2) = List`1 {'w', 'o', 'r', 'l', 'd'} </Eval>
     <Eval> list = List`1 {'w', 'o', 'r', 'l', 'd'} </Eval>
     <Eval> </Eval>
+    <Eval> (Debugger.Tests.ExpressionEvaluator_Tests.BaseClass)myClass = Debugger.Tests.ExpressionEvaluator_Tests+DerivedClass </Eval>
+    <Eval> (Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass)myClass2 = Debugger.Tests.ExpressionEvaluator_Tests+DerivedClass </Eval>
+    <Eval> (string)i = Can not cast System.Int32 to System.String </Eval>
+    <Eval> (string)hi = "hi" </Eval>
+    <Eval> (int)hi = Can not cast System.String to System.Int32 </Eval>
     <Eval> </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstInt = 42 </Eval>
     <Eval> Debugger.Tests.ExpressionEvaluator_Tests.DerivedClass.ConstString = "const string" </Eval>
@@ -440,7 +451,7 @@ namespace Debugger.Tests {
     <TypesIdentitcal>True</TypesIdentitcal>
     <TypesEqual>True</TypesEqual>
     <WorkerThreadMoved>False</WorkerThreadMoved>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:148,4-148,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:149,4-149,40</DebuggingPaused>
     <WorkerThreadMoved>True</WorkerThreadMoved>
     <ProcessExited />
   </Test>

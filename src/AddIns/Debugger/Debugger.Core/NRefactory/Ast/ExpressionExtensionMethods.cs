@@ -275,6 +275,8 @@ namespace ICSharpCode.NRefactory.Ast
 			if (expr is TypeReferenceExpression && ((TypeReferenceExpression)expr).TypeReference.GetStaticType() != null)
 				return ((TypeReferenceExpression)expr).TypeReference.GetStaticType();
 			
+			appDomain.Process.TraceMessage("Resolving {0}", expr.PrettyPrint());
+			
 			TypeReference typeRef = NormalizeTypeReference(expr);
 			
 			List<TypeReference> genTypeRefs;
@@ -314,14 +316,12 @@ namespace ICSharpCode.NRefactory.Ast
 				Array.Resize(ref outterGenArgs, genArgs.Length - typeRef.GenericTypes.Count);
 				
 				DebugType outter = ResolveTypeInternal(((InnerClassTypeReference)typeRef).BaseType, outterGenArgs, appDomain);
-				if (outter == null)
-					return null;
 				string nestedName = typeRef.GenericTypes.Count == 0 ? typeRef.Type : typeRef.Type + "`" + typeRef.GenericTypes.Count;
 				type = DebugType.CreateFromName(appDomain, nestedName, outter, genArgs);
 			}
 			
 			if (type == null)
-				return null;
+				throw new GetValueException("Can not resolve " + typeRef.PrettyPrint());
 			
 			for(int i = 0; i < typeRef.PointerNestingLevel; i++) {
 				type = (DebugType)type.MakePointerType();
