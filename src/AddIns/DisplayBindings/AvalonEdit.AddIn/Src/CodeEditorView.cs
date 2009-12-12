@@ -111,6 +111,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (!e.Handled && e.Key == Key.Escape && e.KeyboardDevice.Modifiers == ModifierKeys.None) {
+				if (this.SelectionLength > 0) {
+					this.SelectionLength = 0;
+					e.Handled = true;
+				}
+			}
+		}
+		
 		#region Help
 		void OnHelpExecuted(object sender, ExecutedRoutedEventArgs e)
 		{
