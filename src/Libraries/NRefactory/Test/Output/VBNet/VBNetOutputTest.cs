@@ -467,5 +467,20 @@ End Using");
 			TestExpression("347UL");
 			TestExpression("\".\"C");
 		}
+		
+		[Test]
+		public void AddressOf()
+		{
+			TestExpression("AddressOf Abc");
+		}
+		
+		[Test]
+		public void ObjectInitializer()
+		{
+			TestExpression("New StringWriter() With { _\n" +
+			               " .NewLine = Environment.NewLine, _\n" +
+			               " .Encoding = Encoding.UTF8 _\n" +
+			               "}");
+		}
 	}
 }

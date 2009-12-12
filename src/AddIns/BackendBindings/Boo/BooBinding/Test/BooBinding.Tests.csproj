@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExpressionFinderTests.cs" />
     <Compile Include="ResolverTests.cs" />
   </ItemGroup>
   <ItemGroup>

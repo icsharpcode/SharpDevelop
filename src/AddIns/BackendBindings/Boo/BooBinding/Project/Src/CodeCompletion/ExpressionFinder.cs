@@ -14,14 +14,14 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {
-	// TODO: We could need some unit tests for this.
 	public class ExpressionFinder : IExpressionFinder
 	{
-		string fileName;
+		public ExpressionFinder()
+		{
+		}
 		
 		public ExpressionFinder(string fileName)
 		{
-			this.fileName = fileName;
 		}
 		
 		#region RemoveLastPart
@@ -79,6 +79,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 		const string _openingBrackets = "{[(";
 		
 		public ExpressionResult FindExpression(string inText, int offset)
+		{
+			ExpressionResult r = FindExpressionInternal(inText, offset);
+			if (string.IsNullOrEmpty(r.Expression))
+				r.Expression = null;
+			return r;
+		}
+		
+		ExpressionResult FindExpressionInternal(string inText, int offset)
 		{
 			offset--; // earlier all ExpressionFinder calls had an inexplicable "cursor - 1".
 			// The IExpressionFinder API now uses normal cursor offsets, so we need to adjust the offset
@@ -154,7 +162,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		ExpressionResult GetExpression(string inText, int start, int end)
 		{
-			if (start == end) return ExpressionResult.Empty;
+			if (start == end)
+				return new ExpressionResult(string.Empty);
 			StringBuilder b = new StringBuilder();
 			bool wasSpace = true;
 			int i = start;
@@ -234,7 +243,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#region Find Full Expression
 		public ExpressionResult FindFullExpression(string inText, int offset)
 		{
-			ExpressionResult result = FindExpression(inText, offset);
+			ExpressionResult result = FindExpressionInternal(inText, offset);
 			if (result.Expression == null)
 				return result;
 			StringBuilder b = new StringBuilder(result.Expression);
@@ -261,7 +270,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 				} else {
 					if (bracketStack.Count == 0) {
 						b.Append(inText, offset, i - offset);
-						result.Expression = b.ToString();
+						if (b.Length == 0)
+							result.Expression = null;
+						else
+							result.Expression = b.ToString();
 						return result;
 					} else if (c == '\0') {
 						// end of document

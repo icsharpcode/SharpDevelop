@@ -103,6 +103,30 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 			Assert.AreEqual("CInt(-35L)", converter.CSharpToVB("(int)(-35L)", out errors));
 		}
 		
+		[Test]
+		public void ConvertCharToInteger()
+		{
+			Assert.AreEqual("AscW(\"x\"C)", converter.CSharpToVB("(int)'x'", out errors));
+		}
+		
+		[Test]
+		public void ConvertCharToByte()
+		{
+			Assert.AreEqual("CByte(AscW(\"x\"C))", converter.CSharpToVB("(byte)'x'", out errors));
+		}
+		
+		[Test]
+		public void ConvertIntegerToChar()
+		{
+			Assert.AreEqual("ChrW(65)", converter.CSharpToVB("(char)65", out errors));
+		}
+		
+		[Test]
+		public void ConvertByteToChar()
+		{
+			Assert.AreEqual("ChrW(CByte(65))", converter.CSharpToVB("(char)(byte)65", out errors));
+		}
+		
 		string Normalize(string text)
 		{
 			return text.Replace("\t", "  ").Replace("\r", "").Trim();

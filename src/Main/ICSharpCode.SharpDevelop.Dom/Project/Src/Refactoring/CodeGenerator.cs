@@ -43,26 +43,70 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			if (returnType == null)           return TypeReference.Null;
 			if (returnType is NullReturnType) return TypeReference.Null;
 			
-			TypeReference typeRef;
-			if (IsPrimitiveType(returnType))
-				typeRef = new TypeReference(returnType.FullyQualifiedName, true);
-			else if (context != null && CanUseShortTypeName(returnType, context))
-				typeRef = new TypeReference(returnType.Name);
-			else
-				typeRef = new TypeReference(returnType.FullyQualifiedName);
-			while (returnType.IsArrayReturnType) {
+			ArrayReturnType arrayReturnType = returnType.CastToArrayReturnType();
+			if (arrayReturnType != null) {
+				TypeReference typeRef = ConvertType(arrayReturnType.ArrayElementType, context);
 				int[] rank = typeRef.RankSpecifier ?? new int[0];
 				Array.Resize(ref rank, rank.Length + 1);
-				rank[rank.Length - 1] = returnType.CastToArrayReturnType().ArrayDimensions - 1;
+				rank[rank.Length - 1] = arrayReturnType.ArrayDimensions - 1;
 				typeRef.RankSpecifier = rank;
-				returnType = returnType.CastToArrayReturnType().ArrayElementType;
+				return typeRef;
 			}
+			PointerReturnType pointerReturnType = returnType.CastToDecoratingReturnType<PointerReturnType>();
+			if (pointerReturnType != null) {
+				TypeReference typeRef = ConvertType(pointerReturnType.BaseType, context);
+				typeRef.PointerNestingLevel++;
+				return typeRef;
+			}
+			
+			IList<IReturnType> typeArguments = EmptyList<IReturnType>.Instance;
 			if (returnType.IsConstructedReturnType) {
-				foreach (IReturnType typeArgument in returnType.CastToConstructedReturnType().TypeArguments) {
+				typeArguments = returnType.CastToConstructedReturnType().TypeArguments;
+			}
+			IClass c = returnType.GetUnderlyingClass();
+			if (c != null) {
+				return CreateTypeReference(c, typeArguments, context);
+			} else {
+				TypeReference typeRef;
+				if (IsPrimitiveType(returnType))
+					typeRef = new TypeReference(returnType.FullyQualifiedName, true);
+				else if (context != null && CanUseShortTypeName(returnType, context))
+					typeRef = new TypeReference(returnType.Name);
+				else {
+					string fullName = returnType.FullyQualifiedName;
+					if (string.IsNullOrEmpty(fullName))
+						fullName = returnType.Name;
+					typeRef = new TypeReference(fullName);
+				}
+				foreach (IReturnType typeArgument in typeArguments) {
 					typeRef.GenericTypes.Add(ConvertType(typeArgument, context));
 				}
+				return typeRef;
 			}
-			return typeRef;
+		}
+		
+		static TypeReference CreateTypeReference(IClass c, IList<IReturnType> typeArguments, ClassFinder context)
+		{
+			if (c.DeclaringType != null) {
+				TypeReference outerClass = CreateTypeReference(c.DeclaringType, typeArguments, context);
+				List<TypeReference> args = new List<TypeReference>();
+				for (int i = c.DeclaringType.TypeParameters.Count; i < Math.Min(c.TypeParameters.Count, typeArguments.Count); i++) {
+					args.Add(ConvertType(typeArguments[i], context));
+				}
+				return new InnerClassTypeReference(outerClass, c.Name, args);
+			} else {
+				TypeReference typeRef;
+				if (IsPrimitiveType(c.DefaultReturnType))
+					typeRef = new TypeReference(c.FullyQualifiedName, true);
+				else if (context != null && CanUseShortTypeName(c.DefaultReturnType, context))
+					typeRef = new TypeReference(c.Name);
+				else
+					typeRef = new TypeReference(c.FullyQualifiedName);
+				for (int i = 0; i < Math.Min(c.TypeParameters.Count, typeArguments.Count); i++) {
+					typeRef.GenericTypes.Add(ConvertType(typeArguments[i], context));
+				}
+				return typeRef;
+			}
 		}
 		
 		static bool IsPrimitiveType(IReturnType returnType)
@@ -78,9 +122,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		/// </summary>
 		public static bool CanUseShortTypeName(IReturnType returnType, ClassFinder context)
 		{
-			int typeArgumentCount = (returnType.IsConstructedReturnType) ? returnType.CastToConstructedReturnType().TypeArguments.Count : 0;
-			IReturnType typeInTargetContext = context.SearchType(returnType.Name, typeArgumentCount);
-			return typeInTargetContext != null && typeInTargetContext.FullyQualifiedName == returnType.FullyQualifiedName;
+			if (returnType == null || context == null)
+				return false;
+			IReturnType typeInTargetContext = context.SearchType(returnType.Name, returnType.TypeArgumentCount);
+			return typeInTargetContext != null
+				&& typeInTargetContext.FullyQualifiedName == returnType.FullyQualifiedName
+				&& typeInTargetContext.TypeArgumentCount == returnType.TypeArgumentCount;
 		}
 		
 		public static Modifiers ConvertModifier(ModifierEnum modifiers, ClassFinder targetContext)

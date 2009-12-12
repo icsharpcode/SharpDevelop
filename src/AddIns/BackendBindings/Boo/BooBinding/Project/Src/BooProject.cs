@@ -101,9 +101,12 @@ namespace Grunwald.BooBinding
 			pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(systemItem));
 			ReferenceProjectItem booLangItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Builtins).Assembly.Location);
 			pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(booLangItem));
+			ReferenceProjectItem booExtensionsItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Extensions.PropertyAttribute).Assembly.Location);
+			pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(booExtensionsItem));
 			pc.DefaultImports = new DefaultUsing(pc);
 			pc.DefaultImports.Usings.Add("Boo.Lang");
 			pc.DefaultImports.Usings.Add("Boo.Lang.Builtins");
+			pc.DefaultImports.Usings.Add("Boo.Lang.Extensions");
 			return pc;
 		}
 		

@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		List<ISpecial> specials;
 		CompilationUnit compilationUnit;
 		ParseInformation parseInfo;
+		bool wasExpression;
 		
 		#region Parsing
 		INode Parse(SupportedLanguage sourceLanguage, string sourceCode, out string error)
@@ -56,18 +57,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (parser.Errors.Count != 0)
 				return null;
 			
+			wasExpression = parser.SnippetType == SnippetType.Expression;
+			if (wasExpression) {
+				// Special case 'Expression': expressions may be replaced with other statements in the AST by the ConvertVisitor,
+				// but we need to return a 'stable' node so that the correct transformed AST is returned.
+				// Thus, we wrap any expressions into a statement block.
+				result = MakeBlockFromExpression((Expression)result);
+			}
+			
 			// now create a dummy compilation unit around the snippet result
 			switch (parser.SnippetType) {
 				case SnippetType.CompilationUnit:
 					compilationUnit = (CompilationUnit)result;
 					break;
 				case SnippetType.Expression:
-					compilationUnit = MakeCompilationUnitFromTypeMembers(
-						MakeMethodFromBlock(
-							MakeBlockFromExpression(
-								(Expression)result
-							)));
-					break;
 				case SnippetType.Statements:
 					compilationUnit = MakeCompilationUnitFromTypeMembers(
 						MakeMethodFromBlock(
@@ -93,6 +96,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			parseInfo = new ParseInformation(visitor.Cu);
 			
 			return result;
+		}
+		
+		/// <summary>
+		/// Unpacks the expression from a statement block; if it was wrapped earlier.
+		/// </summary>
+		INode UnpackExpression(INode node)
+		{
+			if (wasExpression) {
+				BlockStatement block = node as BlockStatement;
+				if (block != null && block.Children.Count == 1) {
+					ExpressionStatement es = block.Children[0] as ExpressionStatement;
+					if (es != null)
+						return es.Expression;
+				}
+			}
+			return node;
 		}
 		
 		BlockStatement MakeBlockFromExpression(Expression expr)
@@ -146,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				},
 				null);
 			PreprocessingDirective.CSharpToVB(specials);
-			return CreateCode(node, new VBNetOutputVisitor());
+			return CreateCode(UnpackExpression(node), new VBNetOutputVisitor());
 		}
 		
 		public string VBToCSharp(string input, out string errors)
@@ -159,7 +178,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				new VBNetToCSharpConvertVisitor(project, parseInfo),
 				null);
 			PreprocessingDirective.VBToCSharp(specials);
-			return CreateCode(node, new CSharpOutputVisitor());
+			return CreateCode(UnpackExpression(node), new CSharpOutputVisitor());
 		}
 		
 		string CreateCode(INode node, IOutputAstVisitor outputVisitor)

@@ -78,17 +78,32 @@ namespace ICSharpCode.NRefactory.Visitors
 			variables.Clear();
 			parameters.Clear();
 		}
-
+		
+		string GetDotNetNameFromTypeReference(TypeReference type)
+		{
+			string name;
+			InnerClassTypeReference ictr = type as InnerClassTypeReference;
+			if (ictr != null) {
+				name = GetDotNetNameFromTypeReference(ictr.BaseType) + "+" + ictr.Type;
+			} else {
+				name = type.Type;
+			}
+			if (type.GenericTypes.Count != 0)
+				name = name + "`" + type.GenericTypes.Count.ToString();
+			return name;
+		}
+		
 		CodeTypeReference ConvType(TypeReference type)
 		{
 			if (type == null) {
 				throw new ArgumentNullException("type");
 			}
-			if (string.IsNullOrEmpty(type.Type)) {
-				throw new InvalidOperationException("empty type");
-			}
 			
-			CodeTypeReference t = new CodeTypeReference(type.Type);
+			CodeTypeReference t = new CodeTypeReference(GetDotNetNameFromTypeReference(type));
+			InnerClassTypeReference ictr = type as InnerClassTypeReference;
+			if (ictr != null) {
+				type = ictr.CombineToNormalTypeReference();
+			}
 			foreach (TypeReference gt in type.GenericTypes) {
 				t.TypeArguments.Add(ConvType(gt));
 			}

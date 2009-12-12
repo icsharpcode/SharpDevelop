@@ -80,6 +80,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 						return Path.GetExtension(GetCurrentItemPath()) ?? string.Empty;
 					} catch (Exception) {}
 					return string.Empty;
+				case "ITEMNAMENOEXT":
+					try {
+						return Path.GetFileNameWithoutExtension(GetCurrentItemPath()) ?? string.Empty;
+					} catch (Exception) {}
+					return string.Empty;
 					
 				case "CURLINE":
 					{

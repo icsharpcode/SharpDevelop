@@ -425,7 +425,7 @@ namespace ICSharpCode.NRefactory.Ast
 		
 		public override string ToString()
 		{
-			return "[InnerClassTypeReference: (" + baseType.ToString() + ")." + base.ToString() + "]";
+			return baseType.ToString() + "+" + base.ToString();
 		}
 	}
 }

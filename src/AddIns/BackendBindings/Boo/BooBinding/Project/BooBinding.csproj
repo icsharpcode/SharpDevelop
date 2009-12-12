@@ -33,6 +33,9 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Boo.Lang.Extensions">
+      <HintPath>..\..\RequiredLibraries\Boo.Lang.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="Boo.Lang.Interpreter">
       <HintPath>..\..\RequiredLibraries\Boo.Lang.Interpreter.dll</HintPath>
     </Reference>
@@ -68,6 +71,7 @@
     <Compile Include="Src\BooProject.cs" />
     <Compile Include="Src\BooProjectBinding.cs" />
     <Compile Include="Src\BooAmbience.cs" />
+    <Compile Include="Src\CodeCompletion\BindNamespacesWithoutRemovingErrors.cs" />
     <Compile Include="Src\CodeCompletion\BooParser.cs" />
     <Compile Include="Src\CodeCompletion\ExpressionFinder.cs" />
     <Compile Include="Src\CodeCompletion\ConvertVisitor.cs" />

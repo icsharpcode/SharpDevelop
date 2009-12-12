@@ -47,6 +47,9 @@
       <HintPath>..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -54,6 +57,7 @@
     <Compile Include="General\UnitTest.cs" />
     <Compile Include="Lexer\CSharp\PreprocessingTests.cs" />
     <Compile Include="Lexer\VBNet\CustomLexerTests.cs" />
+    <Compile Include="Output\CodeDOM\CodeDOMTypeReferenceTest.cs" />
     <Compile Include="Parser\CheckParentVisitor.cs" />
     <Compile Include="Parser\Expressions\AddressOfExpressionTests.cs" />
     <Compile Include="Parser\Expressions\LambdaExpressionTests.cs" />
