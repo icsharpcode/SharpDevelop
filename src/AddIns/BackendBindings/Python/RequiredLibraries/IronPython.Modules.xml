@@ -193,7 +193,7 @@
             everything from markIndex up when done.
             </summary>
         </member>
-        <member name="M:IronPython.Modules.PythonDateTime.date.CheckType(System.Object)">
+        <member name="M:IronPython.Modules.PythonDateTime.date.CheckType(System.Object,System.Boolean)">
             <summary>
             Used to check the type to see if we can do a comparison.  Returns true if we can
             or false if we should return NotImplemented.  May throw if the type's really wrong.
