@@ -410,9 +410,7 @@
 				<ComponentRef Id="IronPythonXml"/>	
 				<ComponentRef Id="MicrosoftDynamicDll"/>
 				<ComponentRef Id="MicrosoftScriptingDll"/>	
-				<ComponentRef Id="MicrosoftScriptingCoreDll"/>	
 				<ComponentRef Id="MicrosoftScriptingDebuggingDll"/>	
-				<ComponentRef Id="MicrosoftScriptingExtensionAttributeDll"/>	
 				<ComponentRef Id="PythonBuildTasksDll"/>	
 				<ComponentRef Id="PythonBindingAddin"/>	
 				<ComponentRef Id="PythonBindingDll"/>
