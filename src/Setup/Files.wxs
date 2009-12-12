@@ -1242,10 +1242,14 @@
 									</Directory>
 									<Directory Id="PythonBinding" Name="PythonBinding">
 										<Component Guid="AF97A77A-F986-4284-BC0A-9568B1419FC1" Id="IpyExe" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\ipy.exe" Name="ipy.exe" Id="ipy.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ipy.exe" AssemblyManifest="ipy.exe" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\ipy.exe" Name="ipy.exe" Id="ipy.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ipy.exe" AssemblyManifest="ipy.exe">
+												<netfx:NativeImage Id="IpyExeNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+											</File>
 										</Component>
 										<Component Guid="A7C0416F-8B3F-4C64-A25C-8B48AADD957D" Id="IronPythonDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.dll" Id="IronPython.dll" Name="IronPython.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.dll" AssemblyManifest="IronPython.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.dll" Id="IronPython.dll" Name="IronPython.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.dll" AssemblyManifest="IronPython.dll">
+												<netfx:NativeImage Id="IronPythonDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+											</File>
 										</Component>
 										<Component Guid="ADBB3544-DE83-4676-A95E-3BC497ABC94D" Id="PythonBuildTasksDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Python.Build.Tasks.dll" Id="Python.Build.Tasks.dll" Name="Python.Build.Tasks.dll" Assembly=".net" AssemblyApplication="Python.Build.Tasks.dll" AssemblyManifest="Python.Build.Tasks.dll" KeyPath="yes" />
@@ -1283,16 +1287,24 @@
 											</Component>
 										</Directory>
 										<Component Guid="DE04B306-0C6D-434C-A6DC-6F450AAFB108" Id="IronPythonModulesDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.Modules.dll" Name="IronPython.Modules.dll" Id="IronPython.Modules.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.Modules.dll" AssemblyManifest="IronPython.Modules.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.Modules.dll" Name="IronPython.Modules.dll" Id="IronPython.Modules.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.Modules.dll" AssemblyManifest="IronPython.Modules.dll">
+												<netfx:NativeImage Id="IronPythonModulesDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+											</File>
 										</Component>
 										<Component Guid="FF5C354F-51A3-405A-BB6F-0BA1128E2DC6" Id="MicrosoftScriptingCoreDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Core.dll" Name="Microsoft.Scripting.Core.dll" Id="Microsoft.Scripting.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Core.dll" AssemblyManifest="Microsoft.Scripting.Core.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Core.dll" Name="Microsoft.Scripting.Core.dll" Id="Microsoft.Scripting.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Core.dll" AssemblyManifest="Microsoft.Scripting.Core.dll">
+												<netfx:NativeImage Id="MicrosoftScriptingCoreDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+											</File>
 										</Component>
 										<Component Guid="5849E9E1-39E4-45B5-B2F0-B07F8A21085D" Id="MicrosoftScriptingDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.dll" AssemblyManifest="Microsoft.Scripting.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.dll" AssemblyManifest="Microsoft.Scripting.dll">
+												<netfx:NativeImage Id="MicrosoftScriptingDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+											</File>
 										</Component>
 										<Component Guid="2B8CBE37-D71F-435C-9B26-70FF69451A6E" Id="MicrosoftScriptingExtensionAttributeDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.ExtensionAttribute.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.ExtensionAttribute.dll">
+												<netfx:NativeImage Id="MicrosoftScriptingExtensionDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+											</File>
 										</Component>
 										<Directory Id="PythonLib" Name="Lib">
 											<Component Guid="98D4136A-897A-479A-AD50-E89600C5016D" Id="PythonBindingLibRunpyPy" DiskId="1">
@@ -1312,10 +1324,14 @@
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\IronPython.xml" Name="IronPython.xml" Id="IronPython.xml" KeyPath="yes" />
 										</Component>
 										<Component Guid="6E1D93BF-A105-4526-8BA0-13B69EEB1360" Id="MicrosoftDynamicDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Dynamic.dll" Name="Microsoft.Dynamic.dll" Id="Microsoft.Dynamic.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Dynamic.dll" AssemblyManifest="Microsoft.Dynamic.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Dynamic.dll" Name="Microsoft.Dynamic.dll" Id="Microsoft.Dynamic.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Dynamic.dll" AssemblyManifest="Microsoft.Dynamic.dll">
+												<netfx:NativeImage Id="MicrosoftDynamicDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+											</File>
 										</Component>
 										<Component Guid="8A1A4691-E6BD-451F-AA5D-BE9C716D56A0" Id="MicrosoftScriptingDebuggingDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Debugging.dll" Name="Microsoft.Scripting.Debugging.dll" Id="Microsoft.Scripting.Debugging.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Debugging.dll" AssemblyManifest="Microsoft.Scripting.Debugging.dll" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Debugging.dll" Name="Microsoft.Scripting.Debugging.dll" Id="Microsoft.Scripting.Debugging.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Debugging.dll" AssemblyManifest="Microsoft.Scripting.Debugging.dll">
+												<netfx:NativeImage Id="MicrosoftScriptingDebuggingDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+											</File>											
 										</Component>
 									</Directory>
 									<Directory Id="FSharpBinding" Name="FSharpBinding">
