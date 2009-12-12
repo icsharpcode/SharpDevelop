@@ -27,6 +27,9 @@
 			<Reference Include="IronPython">
 				<HintPath>${addinpath:ICSharpCode.PythonBinding}\IronPython.dll</HintPath>
 			</Reference>
+			<Reference Include="IronPython.Modules">
+				<HintPath>${addinpath:ICSharpCode.PythonBinding}\IronPython.Modules.dll</HintPath>
+			</Reference>
 		</ProjectItems>
 		
 		<Files>
