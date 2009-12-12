@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectGuid>{833904AB-3CD4-4071-9B48-5770E44685AA}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,7 +11,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
@@ -39,7 +40,6 @@
   <ItemGroup>
     <Reference Include="IronPython">
       <HintPath>..\..\RequiredLibraries\IronPython.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
@@ -52,9 +52,6 @@
     </Reference>
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Scripting.Core">
-      <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.Core.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>

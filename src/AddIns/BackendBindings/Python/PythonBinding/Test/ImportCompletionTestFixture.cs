@@ -6,9 +6,11 @@
 // </file>
 
 using System;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -73,10 +75,9 @@ namespace PythonBinding.Tests
 		}
 		
 		[Test]
-		[Ignore("Broken since ITextEditor introduction")]
 		public void TextAreaControlUsedToDisplayCodeCompletionWindow()
 		{
-			Assert.AreSame(textEditor, codeCompletionBinding.TextAreaControlUsedToShowCompletionWindow);
+			Assert.AreSame(textEditor, codeCompletionBinding.TextEditorUsedToShowCompletionWindow);
 		}
 		
 		[Test]

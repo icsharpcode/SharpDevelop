@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectGuid>{8D732610-8FC6-43BA-94C9-7126FD7FE361}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -43,17 +44,11 @@
     <Reference Include="IronPython">
       <HintPath>..\..\RequiredLibraries\IronPython.dll</HintPath>
     </Reference>
-    <Reference Include="IronPython.Modules">
-      <HintPath>..\..\RequiredLibraries\IronPython.Modules.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Dynamic">
       <HintPath>..\..\RequiredLibraries\Microsoft.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Scripting.Core">
-      <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

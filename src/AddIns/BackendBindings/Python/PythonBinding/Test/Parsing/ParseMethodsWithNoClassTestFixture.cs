@@ -7,6 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+
+using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -14,19 +19,18 @@ using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using PythonBinding.Tests;
 
-
 namespace PythonBinding.Tests.Parsing
 {
 	/// <summary>
 	/// Support folding when no classes are defined.
 	/// </summary>
 	[TestFixture]
-	[Ignore("Ignored because test depends on folding - reactivate when folding is reimplemented")]
 	public class ParseMethodsWithNoClassTestFixture
 	{
 		ICompilationUnit compilationUnit;
-		FoldMarker fooMethodMarker = null;
-		FoldMarker barMethodMarker = null;
+		TextDocument document;
+		FoldingSection fooMethodFold = null;
+		FoldingSection barMethodFold = null;
 		IClass globalClass;
 		IMethod fooMethod;
 		IMethod barMethod;
@@ -52,19 +56,22 @@ namespace PythonBinding.Tests.Parsing
 				}
 			}
 	
-//			// Get folds.
-//			ParserFoldingStrategy foldingStrategy = new ParserFoldingStrategy();
-//			ParseInformation parseInfo = new ParseInformation(compilationUnit);
-//		
-//			DocumentFactory docFactory = new DocumentFactory();
-//			IDocument doc = docFactory.CreateDocument();
-//			doc.TextContent = python;
-//			List<FoldMarker> markers = foldingStrategy.GenerateFoldMarkers(doc, @"C:\Temp\test.py", parseInfo);
-//		
-//			if (markers.Count > 1) {
-//				fooMethodMarker = markers[0];
-//				barMethodMarker = markers[1];
-//			}
+			// Get folds.
+			TextArea textArea = new TextArea();
+			document = new TextDocument();
+			textArea.Document = document;
+			textArea.Document.Text = python;
+			
+			ParserFoldingStrategy foldingStrategy = new ParserFoldingStrategy(textArea);
+			
+			ParseInformation parseInfo = new ParseInformation(compilationUnit);
+			foldingStrategy.UpdateFoldings(parseInfo);
+			List<FoldingSection> folds = new List<FoldingSection>(foldingStrategy.FoldingManager.AllFoldings);
+			
+			if (folds.Count > 1) {
+				fooMethodFold = folds[0];
+				barMethodFold = folds[1];
+			}
 		}
 		
 		[Test]
@@ -170,33 +177,31 @@ namespace PythonBinding.Tests.Parsing
 		{
 			Assert.AreEqual(1, barMethod.Parameters.Count);
 		}
-				
+		
 		[Test]
-		[Ignore]
-		public void FooMethodFoldMarkerInnerText()
+		public void FooMethodTextInsideFoldIsFooMethodBody()
 		{
-			Assert.AreEqual("\r\n\tpass", fooMethodMarker.InnerText);
+			string textInsideFold = document.GetText(fooMethodFold.StartOffset, fooMethodFold.Length);
+			Assert.AreEqual("\r\n\tpass", textInsideFold);
 		}
 		
 		[Test]
-		[Ignore]
-		public void BarMethodFoldMarkerInnerText()
+		public void BarMethodTextInsideFoldIsBarMethodBody()
 		{
-			Assert.AreEqual("\r\n\tpass", barMethodMarker.InnerText);
+			string textInsideFold = document.GetText(barMethodFold.StartOffset, barMethodFold.Length);
+			Assert.AreEqual("\r\n\tpass", textInsideFold);
 		}
 		
 		[Test]
-		[Ignore]
-		public void FooMethodCollapsedFoldText()
+		public void FooMethodCollapsedFoldTitleIsNull()
 		{
-			Assert.AreEqual("...", fooMethodMarker.FoldText);
+			Assert.IsNull(fooMethodFold.Title);
 		}
 		
 		[Test]
-		[Ignore]
-		public void BarMethodCollapsedFoldText()
+		public void BarMethodCollapsedFoldTitleIsNull()
 		{
-			Assert.AreEqual("...", barMethodMarker.FoldText);
-		}		
+			Assert.IsNull(barMethodFold.Title);
+		}
 	}
 }

@@ -7,6 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+
+using ICSharpCode.AvalonEdit.AddIn;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -17,14 +22,14 @@ using PythonBinding.Tests;
 namespace PythonBinding.Tests.Parsing
 {
 	[TestFixture]
-	[Ignore("Ignored because test depends on folding - reactivate when folding is reimplemented")]
 	public class ParseClassWithMethodTestFixture
 	{
 		ICompilationUnit compilationUnit;
 		IClass c;
 		IMethod method;
-		FoldMarker methodMarker = null;
-		FoldMarker classMarker = null;
+		FoldingSection methodFold = null;
+		FoldingSection classFold = null;
+		TextDocument document;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -42,21 +47,23 @@ namespace PythonBinding.Tests.Parsing
 					method = c.Methods[0];
 				}
 				
-//				// Get folds.
-//				ParserFoldingStrategy foldingStrategy = new ParserFoldingStrategy();
-//				ParseInformation parseInfo = new ParseInformation(compilationUnit);
-//			
-//				DocumentFactory docFactory = new DocumentFactory();
-//				IDocument doc = docFactory.CreateDocument();
-//				doc.TextContent = python;
-//				List<FoldMarker> markers = foldingStrategy.GenerateFoldMarkers(doc, @"C:\Temp\test.py", parseInfo);
-//			
-//				if (markers.Count > 0) {
-//					classMarker = markers[0];
-//				}
-//				if (markers.Count > 1) {
-//					methodMarker = markers[1];
-//				}
+				TextArea textArea = new TextArea();
+				document = new TextDocument();
+				textArea.Document = document;
+				textArea.Document.Text = python;
+				
+				ParserFoldingStrategy foldingStrategy = new ParserFoldingStrategy(textArea);
+				
+				ParseInformation parseInfo = new ParseInformation(compilationUnit);
+				foldingStrategy.UpdateFoldings(parseInfo);
+				List<FoldingSection> folds = new List<FoldingSection>(foldingStrategy.FoldingManager.AllFoldings);
+				
+				if (folds.Count > 0) {
+					classFold = folds[0];
+				}
+				if (folds.Count > 1) {
+					methodFold = folds[1];
+				}
 			}
 		}
 		
@@ -130,17 +137,10 @@ namespace PythonBinding.Tests.Parsing
 		}
 		
 		[Test]
-		[Ignore]
-		public void MethodFoldMarkerStartColumn()
+		public void MethodFoldTextInsideFoldIsMethodBody()
 		{
-			Assert.AreEqual(15, methodMarker.StartColumn);
-		}
-		
-		[Test]
-		[Ignore]
-		public void MethodFoldMarkerInnerText()
-		{
-			Assert.AreEqual("\r\n\t\tpass", methodMarker.InnerText);
+			string textInsideFold = document.GetText(methodFold.StartOffset, methodFold.Length);
+			Assert.AreEqual("\r\n\t\tpass", textInsideFold);
 		}
 		
 		[Test]
@@ -157,16 +157,10 @@ namespace PythonBinding.Tests.Parsing
 		}
 		
 		[Test]
-		[Ignore]
-		public void ClassFoldMarkerStartColumn()
+		public void ClassFoldTextInsideFoldIsClassBody()
 		{
-			Assert.AreEqual(11, classMarker.StartColumn);
-		}
-		
-		[Test]
-		public void ClassFoldMarkerInnerText()
-		{
-			Assert.AreEqual("\r\n\tdef foo(self):\r\n\t\tpass", classMarker.InnerText);
+			string textInsideFold = document.GetText(classFold.StartOffset, classFold.Length);
+			Assert.AreEqual("\r\n\tdef foo(self):\r\n\t\tpass", textInsideFold);
 		}
 	}
 }

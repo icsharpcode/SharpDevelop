@@ -23,7 +23,7 @@ namespace PythonBinding.Tests.Utils
 	{
 		bool ctrlSpaceCompletionDataProviderCreated;
 		bool codeCompletionWindowDisplayed;
-		ICSharpCode.SharpDevelop.Editor.ITextEditor textAreaControlUsedToShowCompletionWindow;
+		ICSharpCode.SharpDevelop.Editor.ITextEditor textEditorUsedToShowCompletionWindow;
 		AbstractCompletionItemProvider completionProviderUsedWhenDisplayingCodeCompletionWindow;
 		CtrlSpaceCompletionItemProvider ctrlSpaceCompletionDataProvider;
 		char completionCharacter = '\0';
@@ -38,9 +38,7 @@ namespace PythonBinding.Tests.Utils
 		/// base class PythonCodeCompletionBinding.
 		/// </summary>
 		public bool IsCtrlSpaceCompletionDataProviderCreated {
-			get {
-				return ctrlSpaceCompletionDataProviderCreated;
-			}
+			get { return ctrlSpaceCompletionDataProviderCreated; }
 		}
 		
 		/// <summary>
@@ -48,21 +46,15 @@ namespace PythonBinding.Tests.Utils
 		/// displayed the code completion window.
 		/// </summary>
 		public bool IsCodeCompletionWindowDisplayed {
-			get {
-				return codeCompletionWindowDisplayed;
-			}
+			get { return codeCompletionWindowDisplayed; }
 		}
 		
-		public ICSharpCode.SharpDevelop.Editor.ITextEditor TextAreaControlUsedToShowCompletionWindow {
-			get {
-				return textAreaControlUsedToShowCompletionWindow;
-			}
+		public ICSharpCode.SharpDevelop.Editor.ITextEditor TextEditorUsedToShowCompletionWindow {
+			get { return textEditorUsedToShowCompletionWindow; }
 		}
 		
 		public AbstractCompletionItemProvider CompletionProviderUsedWhenDisplayingCodeCompletionWindow {
-			get {
-				return completionProviderUsedWhenDisplayingCodeCompletionWindow;
-			}
+			get { return completionProviderUsedWhenDisplayingCodeCompletionWindow; }
 		}
 		
 		/// <summary>
@@ -70,9 +62,7 @@ namespace PythonBinding.Tests.Utils
 		/// CreateCtrlSpaceCompletionDataProvider method.
 		/// </summary>
 		public CtrlSpaceCompletionItemProvider CtrlSpaceCompletionDataProvider {
-			get {
-				return ctrlSpaceCompletionDataProvider;
-			}
+			get { return ctrlSpaceCompletionDataProvider; }
 		}
 		
 		/// <summary>
@@ -80,9 +70,7 @@ namespace PythonBinding.Tests.Utils
 		/// ShowCompletionWindow method.
 		/// </summary>
 		public char CompletionCharacter {
-			get {
-				return completionCharacter;
-			}
+			get { return completionCharacter; }
 		}
 		
 		/// <summary>
@@ -90,9 +78,7 @@ namespace PythonBinding.Tests.Utils
 		/// CtrlSpaceCompletionDataProvider is created.
 		/// </summary>
 		public ExpressionContext ExpressionContext {
-			get {
-				return expressionContext;
-			}
+			get { return expressionContext; }
 		}
 		
 		/// <summary>
@@ -114,7 +100,7 @@ namespace PythonBinding.Tests.Utils
 		/// </summary>
 		protected override void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.Editor.ITextEditor textEditor, AbstractCompletionItemProvider completionDataProvider, char ch)
 		{
-			textAreaControlUsedToShowCompletionWindow = textEditor;
+			textEditorUsedToShowCompletionWindow = textEditor;
 			codeCompletionWindowDisplayed = true;
 			completionCharacter = ch;
 			completionProviderUsedWhenDisplayingCodeCompletionWindow = completionDataProvider;
