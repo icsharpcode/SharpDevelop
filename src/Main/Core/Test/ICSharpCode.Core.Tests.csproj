@@ -49,12 +49,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddInTreeTests\RuntimeLoadAssemblyTests.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TopologicalSortTest.cs" />
     <Compile Include="StringParserTests.cs" />
     <Compile Include="AddInTreeTests\AddInTreeLoadingTests.cs" />
     <Compile Include="AddInTreeTests\ExtPathTests.cs" />
     <Compile Include="InvalidDirectoryNameTests.cs" />
+    <Compile Include="Utils\DerivedRuntime.cs" />
+    <Compile Include="Utils\Tests\DerivedRuntimeTests.cs" />
     <Compile Include="ValidDirectoryNameTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +65,10 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utils" />
+    <Folder Include="Utils\Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

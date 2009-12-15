@@ -5,14 +5,19 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Gui;
 using System;
+using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	public class AvalonEditDisplayBinding : IDisplayBinding
 	{
+		const string path = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes";
+		bool builtAddInHighlighting;
+		
 		public bool CanCreateContentForFile(string fileName)
 		{
 			return true;
@@ -20,7 +25,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
+			BuildAddInHighlighting();
 			return new AvalonEditViewContent(file);
+		}
+		
+		void BuildAddInHighlighting()
+		{
+			if (!builtAddInHighlighting) {
+				builtAddInHighlighting = true;
+				AddInTree.BuildItems<object>(path, this, false);
+			}
 		}
 	}
 }

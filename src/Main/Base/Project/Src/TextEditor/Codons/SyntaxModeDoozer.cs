@@ -12,7 +12,10 @@ using System.Reflection;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.TextEditor.Document;
+using AvalonEdit = ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 {
@@ -60,14 +63,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 	/// </returns>
 	public class SyntaxModeDoozer : IDoozer
 	{
+		AvalonEdit.Highlighting.HighlightingManager highlightingManager;
+		
+		public SyntaxModeDoozer(AvalonEdit.Highlighting.HighlightingManager highlightingManager)
+		{
+			this.highlightingManager = highlightingManager;
+		}
+		
+		public SyntaxModeDoozer()
+			: this(AvalonEdit.Highlighting.HighlightingManager.Instance)
+		{
+		}
+		
 		/// <summary>
 		/// Gets if the doozer handles codon conditions on its own.
 		/// If this property return false, the item is excluded when the condition is not met.
 		/// </summary>
 		public bool HandleConditions {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
 		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
@@ -81,8 +94,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 			foreach (Runtime library in codon.AddIn.Runtimes) {
 				assemblies[i++] = library;
 			}
+			
+			highlightingManager.RegisterHighlighting(highlightingName, extensions, LoadHighlighting(assemblies, resource));
+			
 			return new AddInTreeSyntaxMode(assemblies, resource, highlightingName, extensions);
 		}
 		
+		Func<IHighlightingDefinition> LoadHighlighting(Runtime[] runtimes, string resourceName)
+		{
+			Func<IHighlightingDefinition> func = delegate {
+				AddInHighlightingResource highlightingResource = new AddInHighlightingResource(runtimes);
+				return highlightingResource.LoadHighlighting(resourceName, highlightingManager);
+			};
+			return func;
+		}
 	}
 }

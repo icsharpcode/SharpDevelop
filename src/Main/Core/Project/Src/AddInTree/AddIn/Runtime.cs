@@ -22,6 +22,7 @@ namespace ICSharpCode.Core
 		IList<LazyLoadDoozer> definedDoozers = new List<LazyLoadDoozer>();
 		IList<LazyConditionEvaluator> definedConditionEvaluators = new List<LazyConditionEvaluator>();
 		ICondition[] conditions;
+		IList<AddIn> addIns;
 		bool isActive = true;
 		bool isAssemblyLoaded;
 		
@@ -36,17 +37,21 @@ namespace ICSharpCode.Core
 		}
 		
 		public Runtime(string assembly, string hintPath)
+			: this(assembly, hintPath, AddInTree.AddIns)
+		{
+		}
+		
+		public Runtime(string assembly, string hintPath, IList<AddIn> addIns)
 		{
 			this.assembly = assembly;
 			this.hintPath = hintPath;
+			this.addIns = addIns;
 		}
 		
 		public string Assembly {
-			get {
-				return assembly;
-			}
+			get { return assembly; }
 		}
-
+		
 		/// <summary>
 		/// Force loading the runtime assembly now.
 		/// </summary>
@@ -54,22 +59,22 @@ namespace ICSharpCode.Core
 		{
 			if (!isAssemblyLoaded) {
 				LoggingService.Info("Loading addin " + assembly);
-
+				
 				isAssemblyLoaded = true;
-
+				
 				try {
 					if (assembly[0] == ':') {
-						loadedAssembly = System.Reflection.Assembly.Load(assembly.Substring(1));
+						loadedAssembly = LoadAssembly(assembly.Substring(1));
 					} else if (assembly[0] == '$') {
 						int pos = assembly.IndexOf('/');
 						if (pos < 0)
 							throw new CoreException("Expected '/' in path beginning with '$'!");
 						string referencedAddIn = assembly.Substring(1, pos - 1);
-						foreach (AddIn addIn in AddInTree.AddIns) {
+						foreach (AddIn addIn in addIns) {
 							if (addIn.Enabled && addIn.Manifest.Identities.ContainsKey(referencedAddIn)) {
 								string assemblyFile = Path.Combine(Path.GetDirectoryName(addIn.FileName),
 								                                   assembly.Substring(pos + 1));
-								loadedAssembly = System.Reflection.Assembly.LoadFrom(assemblyFile);
+								loadedAssembly = LoadAssemblyFrom(assemblyFile);
 								break;
 							}
 						}
@@ -77,7 +82,7 @@ namespace ICSharpCode.Core
 							throw new FileNotFoundException("Could not find referenced AddIn " + referencedAddIn);
 						}
 					} else {
-						loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
+						loadedAssembly = LoadAssemblyFrom(Path.Combine(hintPath, assembly));
 					}
 
 					#if DEBUG
@@ -85,9 +90,9 @@ namespace ICSharpCode.Core
 					loadedAssembly.GetExportedTypes();
 					#endif
 				} catch (FileNotFoundException ex) {
-					MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+					ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
 				} catch (FileLoadException ex) {
-					MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+					ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
 				}
 			}
 		}
@@ -203,6 +208,21 @@ namespace ICSharpCode.Core
 			runtime.definedDoozers             = (runtime.definedDoozers as List<LazyLoadDoozer>).AsReadOnly();
 			runtime.definedConditionEvaluators = (runtime.definedConditionEvaluators as List<LazyConditionEvaluator>).AsReadOnly();
 			return runtime;
+		}
+		
+		protected virtual Assembly LoadAssembly(string assemblyString)
+		{
+			return System.Reflection.Assembly.Load(assemblyString);
+		}
+		
+		protected virtual Assembly LoadAssemblyFrom(string assemblyFile)
+		{
+			return System.Reflection.Assembly.LoadFrom(assemblyFile);
+		}
+		
+		protected virtual void ShowError(string message)
+		{
+			MessageService.ShowError(message);
 		}
 	}
 }

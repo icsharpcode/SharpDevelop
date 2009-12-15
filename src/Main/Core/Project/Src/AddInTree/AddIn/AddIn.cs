@@ -98,9 +98,7 @@ namespace ICSharpCode.Core
 		/// Action to be set to AddInAction.CustomError.
 		/// </summary>
 		public string CustomErrorMessage {
-			get {
-				return customErrorMessage;
-			}
+			get { return customErrorMessage; }
 			internal set {
 				if (value != null) {
 					Enabled = false;
@@ -114,78 +112,51 @@ namespace ICSharpCode.Core
 		/// Action to execute when the application is restarted.
 		/// </summary>
 		public AddInAction Action {
-			get {
-				return action;
-			}
-			set {
-				action = value;
-			}
+			get { return action; }
+			set { action = value; }
 		}
 		
 		public List<Runtime> Runtimes {
-			get {
-				return runtimes;
-			}
+			get { return runtimes; }
 		}
 		
 		public Version Version {
-			get {
-				return manifest.PrimaryVersion;
-			}
+			get { return manifest.PrimaryVersion; }
 		}
 		
 		public string FileName {
-			get {
-				return addInFileName;
-			}
+			get { return addInFileName; }
+			set { addInFileName = value; }
 		}
 		
 		public string Name {
-			get {
-				return properties["name"];
-			}
+			get { return properties["name"]; }
 		}
 		
 		public AddInManifest Manifest {
-			get {
-				return manifest;
-			}
+			get { return manifest; }
 		}
 		
 		public Dictionary<string, ExtensionPath> Paths {
-			get {
-				return paths;
-			}
+			get { return paths; }
 		}
 		
 		public Properties Properties {
-			get {
-				return properties;
-			}
+			get { return properties; }
 		}
 		
 		public List<string> BitmapResources {
-			get {
-				return bitmapResources;
-			}
-			set {
-				bitmapResources = value;
-			}
+			get { return bitmapResources; }
+			set { bitmapResources = value; }
 		}
 		
 		public List<string> StringResources {
-			get {
-				return stringResources;
-			}
-			set {
-				stringResources = value;
-			}
+			get { return stringResources; }
+			set { stringResources = value; }
 		}
 		
 		public bool Enabled {
-			get {
-				return enabled;
-			}
+			get { return enabled; }
 			set {
 				enabled = value;
 				this.Action = value ? AddInAction.Enable : AddInAction.Disable;
