@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -13,9 +13,6 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace XmlEditor.Tests.Utils
 {
-	/// <summary>
-	/// Description of MockXmlViewContent.
-	/// </summary>
 	public class MockXmlViewContent : AbstractViewContent, IFileDocumentProvider
 	{
 		OpenedFile file;

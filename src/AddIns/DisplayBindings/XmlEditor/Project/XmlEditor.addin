@@ -97,6 +97,9 @@
 					label="${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}"
 					class="ICSharpCode.XmlEditor.ValidateXmlCommand"
 					shortcut="Control|Shift|V"/>
+				<MenuItem id="GoToDefinition"
+					label="${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
+					class="ICSharpCode.XmlEditor.GoToSchemaDefinitionCommand"/>
 				<MenuItem id="Separator1" type="Separator"/>
 				<ComplexCondition action="Disable">
 					<Not>
@@ -121,6 +124,9 @@
 						shortcut="Control|Shift|T"/>
 				</ComplexCondition>
 				<MenuItem id="Separator2" type="Separator"/>
+				<MenuItem id="HideXPathResults"
+					label="${res:ICSharpCode.XmlEditor.HideXPathResults}"
+					class="ICSharpCode.XmlEditor.RemoveXPathHighlightingCommand"/>
 				<MenuItem id="Format"
 					label="${res:XML.MainMenu.EditMenu.FormatMenu}"
 				 	class="ICSharpCode.XmlEditor.FormatXmlCommand"/>

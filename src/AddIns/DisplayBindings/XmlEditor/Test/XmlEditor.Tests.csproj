@@ -125,6 +125,12 @@
     <Compile Include="Editor\XmlEditorFileExtensionsTestFixture.cs" />
     <Compile Include="Editor\XmlSchemaPickerTestFixture.cs" />
     <Compile Include="Editor\XmlSchemasPanelTestFixture.cs" />
+    <Compile Include="FindSchemaObject\FindSelectedAttributeInTextEditorTestFixture.cs" />
+    <Compile Include="FindSchemaObject\FindSelectedAttributeValueInTextEditorTestFixture.cs" />
+    <Compile Include="FindSchemaObject\FindSelectedElementInTextEditorTestFixture.cs" />
+    <Compile Include="FindSchemaObject\NullSchemaObjectPassedToSchemaObjectLocationTestFixture.cs" />
+    <Compile Include="FindSchemaObject\SchemaObjectLocationFileNameTests.cs" />
+    <Compile Include="FindSchemaObject\SchemaObjectLocationJumpToTests.cs" />
     <Compile Include="Folding\AttributeTextInFoldIsXmlEncodedTestFixture.cs" />
     <Compile Include="Folding\EmptyCommentDoesNotCreateFoldTestFixture.cs" />
     <Compile Include="Folding\FoldParserParsesInvalidXmlTestFixture.cs" />
@@ -226,6 +232,13 @@
     <Compile Include="Schema\MissingSchemaElementTestFixture.cs" />
     <Compile Include="Schema\AllElementTestFixture.cs" />
     <Compile Include="Parser\InsideAttributeValueTestFixture.cs" />
+    <Compile Include="Utils\DerivedXmlSchemaObjectLocation.cs" />
+    <Compile Include="Utils\MockTextEditorProviderViewContent.cs" />
+    <Compile Include="Utils\MockViewContent.cs" />
+    <Compile Include="Utils\MockWorkbench.cs" />
+    <Compile Include="Utils\Tests\DerivedXmlSchemaObjectLocationTests.cs" />
+    <Compile Include="Utils\Tests\XPathNodeMatchComparisonResultTests.cs" />
+    <Compile Include="Utils\XPathNodeMatchComparisonResult.cs" />
     <Compile Include="Utils\DerivedAddXmlNodeDialog.cs" />
     <Compile Include="Utils\DerivedXmlTreeView.cs" />
     <Compile Include="Utils\DerivedXmlTreeViewContainerControl.cs" />
@@ -262,18 +275,23 @@
     <Compile Include="Utils\Tests\MockXmlSchemaCompletionDataFactoryTests.cs" />
     <Compile Include="Utils\Tests\MockXmlSchemasPanelTests.cs" />
     <Compile Include="Utils\Tests\XmlSchemaCompletionCollectionFileNamesTests.cs" />
+    <Compile Include="Utils\Tests\XPathNodeMatchComparisonTests.cs" />
     <Compile Include="Utils\TextSection.cs" />
     <Compile Include="Utils\XmlSchemaCompletionCollectionFileNames.cs" />
-    <Compile Include="XPathQuery\XmlNamespaceTests.cs" />
-    <Compile Include="XPathQuery\GetNamespacesFromListViewTestFixture.cs" />
-    <Compile Include="XPathQuery\RunXPathQueryTests.cs" />
-    <Compile Include="XPathQuery\NamespacePropertiesLoaded.cs" />
-    <Compile Include="XPathQuery\XmlNamespaceToStringTests.cs" />
-    <Compile Include="XPathQuery\NamespacePropertiesSaved.cs" />
-    <Compile Include="XPathQuery\NamespaceGridColumnWidthsLoadedTestFixture.cs" />
-    <Compile Include="XPathQuery\XPathResultsListViewColumnWidthsTestFixture.cs" />
-    <Compile Include="XPathQuery\XPathQueryHistoryTestFixture.cs" />
-    <Compile Include="XPathQuery\XPathNodeTextMarkerTests.cs" />
+    <Compile Include="Utils\XPathNodeMatchComparison.cs" />
+    <Compile Include="XPath\NamespaceXPathQueryTestFixture.cs" />
+    <Compile Include="XPath\RemoveXPathHighlightingCommandTestFixture.cs" />
+    <Compile Include="XPath\SingleXPathQueryElementMarkedTestFixture.cs" />
+    <Compile Include="XPath\XmlNamespaceTests.cs" />
+    <Compile Include="XPath\GetNamespacesFromListViewTestFixture.cs" />
+    <Compile Include="XPath\RunXPathQueryTests.cs" />
+    <Compile Include="XPath\NamespacePropertiesLoaded.cs" />
+    <Compile Include="XPath\XmlNamespaceToStringTests.cs" />
+    <Compile Include="XPath\NamespacePropertiesSaved.cs" />
+    <Compile Include="XPath\NamespaceGridColumnWidthsLoadedTestFixture.cs" />
+    <Compile Include="XPath\XPathResultsListViewColumnWidthsTestFixture.cs" />
+    <Compile Include="XPath\XPathQueryHistoryTestFixture.cs" />
+    <Compile Include="XPath\XPathNodeTextMarkerTests.cs" />
     <Compile Include="Parser\ActiveElementUnderCursorTests.cs" />
     <Compile Include="Parser\AttributeNameUnderCursorTests.cs" />
     <Compile Include="Schema\FindAttributeFromComplexTypeTestFixture.cs" />
@@ -304,7 +322,7 @@
     <Compile Include="Tree\TreeControlViewStateTestFixture.cs" />
     <Compile Include="Tree\AttributeChangedTestFixture.cs" />
     <Compile Include="Tree\TextNodeTextChangedTestFixture.cs" />
-    <Compile Include="XPathQuery\EncodeXPathParameterTests.cs" />
+    <Compile Include="XPath\EncodeXPathParameterTests.cs" />
     <Compile Include="Tree\AddAttributeTestFixture.cs" />
     <Compile Include="Tree\NoMatchingSchemaTestFixture.cs" />
     <Compile Include="Tree\RemoveAttributeTestFixture.cs" />
@@ -356,7 +374,7 @@
     </ProjectReference>
     <Folder Include="Utils" />
     <Folder Include="Utils\Tests" />
-    <Folder Include="XPathQuery" />
+    <Folder Include="XPath" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>

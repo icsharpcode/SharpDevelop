@@ -21,7 +21,6 @@ namespace ICSharpCode.XmlEditor
 		public override void Run()
 		{
 			XmlView xmlView = XmlView.ActiveXmlView;
-			
 			if (xmlView != null) {
 				xmlView.GoToSchemaDefinition();
 			}

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
 
-namespace XmlEditor.Tests.XPathQuery
+namespace XmlEditor.Tests.XPath
 {
 	/// <summary>
 	/// Adds a set of namespaces to the XPathQueryControl and gets them back.
@@ -21,7 +21,7 @@ namespace XmlEditor.Tests.XPathQuery
 	public class GetNamespacesFromListViewTestFixture
 	{
 		List<XmlNamespace> expectedNamespaces;
-		ReadOnlyCollection<XmlNamespace> namespaces;
+		XmlNamespaceCollection namespaces;
 		List<XmlNamespace> namespacesAddedToGrid;
 		
 		[SetUp]

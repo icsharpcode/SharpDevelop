@@ -1,0 +1,209 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Xml;
+using System.Xml.XPath;
+
+using ICSharpCode.XmlEditor;
+using NUnit.Framework;
+using XmlEditor.Tests.Utils;
+
+namespace XmlEditor.Tests.XPath
+{
+	[TestFixture]
+	public class RunXPathQueryTests
+	{		
+		[Test]
+		public void SingleEmptyElementNodeFoundByXPath()
+		{
+			string xml = 
+				"<root>\r\n" +
+				"\t<foo/>\r\n" +
+				"</root>";
+			XPathQuery query = new XPathQuery(xml);
+			XPathNodeMatch[] nodes = query.FindNodes("//foo");
+			XPathNodeMatch node = nodes[0];
+			
+			string nodeValue = "foo";
+			string displayValue = "<foo/>";
+			int lineNumber = 1;
+			int linePosition = 2;
+			XPathNodeType nodeType = XPathNodeType.Element;
+			XPathNodeMatch expectedNode = new XPathNodeMatch(nodeValue, displayValue, lineNumber, linePosition, nodeType);
+			XPathNodeMatchComparison comparison = new XPathNodeMatchComparison();
+			Assert.IsTrue(comparison.AreEqual(expectedNode, node), comparison.GetReasonForNotMatching());
+			Assert.AreEqual(1, nodes.Length);
+		}
+		
+		[Test]
+		public void XPathNodeMatchImplementsIXmlLineInfoInterface()
+		{
+			XPathNodeMatch node = new XPathNodeMatch(String.Empty, String.Empty, 1, 1, XPathNodeType.Text);
+			Assert.IsNotNull(node as IXmlLineInfo);
+		}
+		
+		[Test]
+		public void OneElementNodeWithNamespaceFoundByXPath()
+		{
+			string xml = 
+				"<root xmlns='http://foo.com'>\r\n" +
+				"\t<foo></foo>\r\n" +
+				"</root>";
+			XmlNamespaceCollection namespaces = new XmlNamespaceCollection();
+			namespaces.Add(new XmlNamespace("f", "http://foo.com"));
+			XPathQuery query = new XPathQuery(xml, namespaces);
+			XPathNodeMatch[] nodes = query.FindNodes("//f:foo");
+			XPathNodeMatch node = nodes[0];
+			
+			string nodeValue = "foo";
+			string displayValue = "<foo>";
+			int lineNumber = 1;
+			int linePosition = 2;
+			XPathNodeType nodeType = XPathNodeType.Element;
+			XPathNodeMatch expectedNode = new XPathNodeMatch(nodeValue, displayValue, lineNumber, linePosition, nodeType);
+			XPathNodeMatchComparison comparison = new XPathNodeMatchComparison();
+			Assert.IsTrue(comparison.AreEqual(expectedNode, node), comparison.GetReasonForNotMatching());
+			Assert.AreEqual(1, nodes.Length);
+		}
+		
+		[Test]
+		public void SingleElementWithNamespacePrefixFoundByXPath()
+		{
+			string xml = 
+				"<f:root xmlns:f='http://foo.com'>\r\n" +
+				"\t<f:foo></f:foo>\r\n" +
+				"</f:root>";
+			XmlNamespaceCollection namespaces = new XmlNamespaceCollection();
+			namespaces.Add(new XmlNamespace("fo", "http://foo.com"));
+			XPathQuery query = new XPathQuery(xml, namespaces);
+			XPathNodeMatch[] nodes = query.FindNodes("//fo:foo");
+			XPathNodeMatch node = nodes[0];
+			
+			string nodeValue = "f:foo";
+			string displayValue = "<f:foo>";
+			int lineNumber = 1;
+			int linePosition = 2;
+			XPathNodeType nodeType = XPathNodeType.Element;
+			XPathNodeMatch expectedNode = new XPathNodeMatch(nodeValue, displayValue, lineNumber, linePosition, nodeType);
+			XPathNodeMatchComparison comparison = new XPathNodeMatchComparison();
+			Assert.IsTrue(comparison.AreEqual(expectedNode, node), comparison.GetReasonForNotMatching());
+			Assert.AreEqual(1, nodes.Length);
+		}
+		
+		[Test]
+		public void NoXPathNodeFoundForUnknownElementInXPathQuery()
+		{
+			string xml = 
+				"<root>\r\n" +
+				"\t<foo/>\r\n" +
+				"</root>";
+			XPathQuery query = new XPathQuery(xml);
+			XPathNodeMatch[] nodes = query.FindNodes("//bar");
+			Assert.AreEqual(0, nodes.Length);
+		}
+		
+		[Test]
+		public void TextNodeMatchedWithXPath()
+		{
+			string xml = 
+				"<root>\r\n" +
+				"\t<foo>test</foo>\r\n" +
+				"</root>";
+			XPathQuery query = new XPathQuery(xml);
+			XPathNodeMatch[] nodes = query.FindNodes("//foo/text()");
+			XPathNodeMatch node = nodes[0];
+			
+			string nodeValue = "test";
+			string displayValue = "test";
+			int lineNumber = 1;
+			int linePosition = 6;
+			XPathNodeType nodeType = XPathNodeType.Text;
+			XPathNodeMatch expectedNode = new XPathNodeMatch(nodeValue, displayValue, lineNumber, linePosition, nodeType);
+			XPathNodeMatchComparison comparison = new XPathNodeMatchComparison();
+			Assert.IsTrue(comparison.AreEqual(expectedNode, node), comparison.GetReasonForNotMatching());
+			Assert.AreEqual(1, nodes.Length);
+		}
+		
+		[Test]
+		public void CommentNodeFoundByXPath()
+		{
+			string xml = "<!-- Test --><root/>";
+			XPathQuery query = new XPathQuery(xml);
+			XPathNodeMatch[] nodes = query.FindNodes("//comment()");
+			XPathNodeMatch node = nodes[0];
+			
+			string nodeValue = " Test ";
+			string displayValue = "<!-- Test -->";
+			int lineNumber = 0;
+			int linePosition = 4;
+			XPathNodeType nodeType = XPathNodeType.Comment;
+			XPathNodeMatch expectedNode = new XPathNodeMatch(nodeValue, displayValue, lineNumber, linePosition, nodeType);
+			XPathNodeMatchComparison comparison = new XPathNodeMatchComparison();
+			Assert.IsTrue(comparison.AreEqual(expectedNode, node), comparison.GetReasonForNotMatching());
+		}
+		
+		[Test]
+		public void EmptyCommentNodeFoundByXPath()
+		{
+			string xml = "<!----><root/>";
+			XPathQuery query = new XPathQuery(xml);
+			XPathNodeMatch[] nodes = query.FindNodes("//comment()");
+			XPathNodeMatch node = nodes[0];
+			
+			string nodeValue = String.Empty;
+			string displayValue = "<!---->";
+			int lineNumber = 0;
+			int linePosition = 4;
+			XPathNodeType nodeType = XPathNodeType.Comment;
+			XPathNodeMatch expectedNode = new XPathNodeMatch(nodeValue, displayValue, lineNumber, linePosition, nodeType);
+			XPathNodeMatchComparison comparison = new XPathNodeMatchComparison();
+			Assert.IsTrue(comparison.AreEqual(expectedNode, node), comparison.GetReasonForNotMatching());
+			Assert.AreEqual(1, nodes.Length);
+		}
+		
+		[Test]
+		public void ProcessingInstructionNodeFoundByXPath()
+		{
+			string xml = "<root><?test processinstruction='1.0'?></root>";
+			XPathQuery query = new XPathQuery(xml);
+			XPathNodeMatch[] nodes = query.FindNodes("//processing-instruction()");
+			XPathNodeMatch node = nodes[0];
+			
+			string nodeValue = "test";
+			string displayValue = "<?test processinstruction='1.0'?>";
+			int lineNumber = 0;
+			int linePosition = 8;
+			XPathNodeType nodeType = XPathNodeType.ProcessingInstruction;
+			XPathNodeMatch expectedNode = new XPathNodeMatch(nodeValue, displayValue, lineNumber, linePosition, nodeType);
+			XPathNodeMatchComparison comparison = new XPathNodeMatchComparison();
+			Assert.IsTrue(comparison.AreEqual(expectedNode, node), comparison.GetReasonForNotMatching());
+		}
+		
+		[Test]
+		public void AttributeNodeFoundByXPath()
+		{
+			string xml = "<root>\r\n" +
+				"\t<foo Id='ab'></foo>\r\n" +
+				"</root>";
+			XPathQuery query = new XPathQuery(xml);
+			XPathNodeMatch[] nodes = query.FindNodes("//foo/@Id");
+			XPathNodeMatch node = nodes[0];
+			
+			string nodeValue = "Id";
+			string displayValue = "@Id";
+			int lineNumber = 1;
+			int linePosition = 6;
+			XPathNodeType nodeType = XPathNodeType.Attribute;
+			XPathNodeMatch expectedNode = new XPathNodeMatch(nodeValue, displayValue, lineNumber, linePosition, nodeType);
+			XPathNodeMatchComparison comparison = new XPathNodeMatchComparison();
+			Assert.IsTrue(comparison.AreEqual(expectedNode, node), comparison.GetReasonForNotMatching());
+		}
+	}
+}

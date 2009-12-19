@@ -35,7 +35,8 @@ namespace XmlEditor.Tests.FindSchemaObject
 			
 			int index = xml.IndexOf("ref=\"xs:list");
 			index = xml.IndexOf("xs", index);
-			referencedSchemaElement = (XmlSchemaElement)XmlView.GetSchemaObjectSelected(xml, index, schemas, SchemaCompletion);
+			XmlSchemaDefinition schemaDefinition = new XmlSchemaDefinition(schemas, SchemaCompletion);
+			referencedSchemaElement = (XmlSchemaElement)schemaDefinition.GetSelectedSchemaObject(xml, index);
 		}
 		
 		[Test]

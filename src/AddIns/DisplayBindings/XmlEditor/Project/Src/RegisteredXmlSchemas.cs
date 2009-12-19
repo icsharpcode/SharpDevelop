@@ -19,8 +19,6 @@ namespace ICSharpCode.XmlEditor
 	/// </summary>
 	public class RegisteredXmlSchemas : IXmlSchemaCompletionDataFactory
 	{
-		public const string XmlSchemaNamespace = "http://www.w3.org/2001/XMLSchema";
-		
 		List<string> readOnlySchemaFolders = new List<string>();
 		string userDefinedSchemaFolder;
 		XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
@@ -46,15 +44,6 @@ namespace ICSharpCode.XmlEditor
 			: this(readOnlySchemaFolders, userDefinedSchemaFolder, fileSystem, null)
 		{
 			this.factory = this;
-		}
-				
-		/// <summary>
-		/// Determines whether the specified namespace is actually the W3C namespace for
-		/// XSD files.
-		/// </summary>
-		public static bool IsXmlSchemaNamespace(string schemaNamespace)
-		{
-			return schemaNamespace == XmlSchemaNamespace;
 		}
 		
 		public XmlSchemaCompletionCollection Schemas {

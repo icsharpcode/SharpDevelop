@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Media;
 
@@ -17,28 +16,30 @@ namespace ICSharpCode.XmlEditor
 	/// <summary>
 	/// Creates and removes text marker for an XPath query match.
 	/// </summary>
-	public static class XPathNodeTextMarker
+	public class XPathNodeTextMarker
 	{
 		public static readonly Color MarkerBackColor = Color.FromArgb(255, 159, 255, 162);
 		
-		/// <summary>
-		/// Adds markers for each XPathNodeMatch.
-		/// </summary>
-		public static void AddMarkers(IDocument document, XPathNodeMatch[] nodes)
+		IDocument document;
+		ITextMarkerService markerService;
+		
+		public XPathNodeTextMarker(IDocument document)
+		{
+			this.document = document;
+			markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+		}
+		
+		public void AddMarkers(XPathNodeMatch[] nodes)
 		{
 			foreach (XPathNodeMatch node in nodes) {
-				AddMarker(document, node);
+				AddMarker(node);
 			}
 		}
 		
-		/// <summary>
-		/// Adds a single marker for the XPathNodeMatch.
-		/// </summary>
-		public static void AddMarker(IDocument document, XPathNodeMatch node)
+		public void AddMarker(XPathNodeMatch node)
 		{
 			if (node.HasLineInfo() && node.Value.Length > 0) {
 				int offset = document.PositionToOffset(node.LineNumber + 1, node.LinePosition + 1);
-				ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 				if (markerService != null) {
 					ITextMarker marker = markerService.Create(offset, node.Value.Length);
 					marker.Tag = typeof(XPathNodeTextMarker);
@@ -47,15 +48,17 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		/// <summary>
-		/// Removes all the XPathNodeMarkers from the marker strategy.
-		/// </summary>
-		public static void RemoveMarkers(IDocument document)
+		public void RemoveMarkers()
 		{
 			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			if (markerService != null) {
-				markerService.RemoveAll(marker => (Type)marker.Tag == typeof(XPathNodeTextMarker));
+				markerService.RemoveAll(IsXPathNodeTextMarker);
 			}
+		}
+		
+		bool IsXPathNodeTextMarker(ITextMarker marker)
+		{
+			return (Type)marker.Tag == typeof(XPathNodeTextMarker);
 		}
 	}
 }

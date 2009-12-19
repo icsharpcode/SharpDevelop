@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
 
-namespace XmlEditor.Tests.XPathQuery
+namespace XmlEditor.Tests.XPath
 {
 	[TestFixture]
 	public class NamespacePropertiesSaved

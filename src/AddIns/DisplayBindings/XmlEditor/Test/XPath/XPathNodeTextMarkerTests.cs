@@ -15,65 +15,32 @@ using ICSharpCode.SharpDevelop.Tests.Utils;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 
-namespace XmlEditor.Tests.XPathQuery
+namespace XmlEditor.Tests.XPath
 {
 	[TestFixture]
 	public class XPathNodeTextMarkerTests
 	{
-		[Test]
-		public void OneNodeMarked()
-		{
-			string xml = "<root><foo/></root>";
-			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//root");
-			
-			IDocument doc = MockTextMarkerService.CreateDocumentWithMockService();
-			doc.Text = xml;
-			XPathNodeTextMarker.AddMarkers(doc, nodes);
-			
-			ITextMarkerService service = doc.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
-			
-			List<ITextMarker> markers = new List<ITextMarker>();
-			foreach (ITextMarker marker in service.TextMarkers) {
-				markers.Add(marker);
-			}
-			
-			// Remove markers.
-			XPathNodeTextMarker.RemoveMarkers(doc);
-			List<ITextMarker> markersAfterRemove = new List<ITextMarker>();
-			foreach (ITextMarker markerAfterRemove in service.TextMarkers) {
-				markersAfterRemove.Add(markerAfterRemove);
-			}
-
-			ITextMarker xpathNodeTextMarker = markers[0];
-			Assert.AreEqual(1, markers.Count, "markers.Count");
-			Assert.AreEqual(1, xpathNodeTextMarker.StartOffset, "startoffset");
-			Assert.AreEqual(4, xpathNodeTextMarker.Length, "length");
-			Assert.AreEqual(0, markersAfterRemove.Count, "afterremove.count");
-		}
-		
 		/// <summary>
-		/// Tests that XPathNodeMatch with an empty string value are not marked since
+		/// Tests that XPathNodeMatch with an empty string value is not marked since
 		/// the MarkerStrategy cannot use a TextMarker with a length of 0.
 		/// </summary>
 		[Test]
 		public void EmptyCommentNode()
 		{
 			string xml = "<!----><root/>";
-			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//comment()");
+			XPathQuery query = new XPathQuery(xml);
+			XPathNodeMatch[] nodes = query.FindNodes("//comment()");
 			
 			ServiceContainer container = new ServiceContainer();
 			container.AddService(typeof(MockTextMarkerService), new MockTextMarkerService());
 			
 			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(container);
 			doc.Text = xml;
-			XPathNodeTextMarker.AddMarkers(doc, nodes);
+			XPathNodeTextMarker xpathNodeMarker = new XPathNodeTextMarker(doc);
+			xpathNodeMarker.AddMarkers(nodes);
 			
 			ITextMarkerService service = doc.GetService(typeof(MockTextMarkerService)) as ITextMarkerService;
-			
-			List<ITextMarker> markers = new List<ITextMarker>();
-			foreach (ITextMarker marker in service.TextMarkers) {
-				markers.Add(marker);
-			}
+			List<ITextMarker> markers = new List<ITextMarker>(service.TextMarkers);
 			
 			Assert.AreEqual(0, markers.Count);
 			Assert.AreEqual(1, nodes.Length);
@@ -88,23 +55,23 @@ namespace XmlEditor.Tests.XPathQuery
 		[Test]
 		public void NamespaceQuery()
 		{
-			string xml = "<?xml version='1.0'?>\r\n" +
+			string xml = 
+				"<?xml version='1.0'?>\r\n" +
 				"<Xml1></Xml1>";
-			XPathNodeMatch[] nodes = XmlView.SelectNodes(xml, "//namespace::*");
+			XPathQuery query = new XPathQuery(xml);
+			XPathNodeMatch[] nodes = query.FindNodes("//namespace::*");
 			
 			ServiceContainer container = new ServiceContainer();
 			container.AddService(typeof(MockTextMarkerService), new MockTextMarkerService());
 			
 			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(container);
 			doc.Text = xml;
-			XPathNodeTextMarker.AddMarkers(doc, nodes);
+			XPathNodeTextMarker xpathNodeMarker = new XPathNodeTextMarker(doc);
+			xpathNodeMarker.AddMarkers(nodes);
 			
 			ITextMarkerService service = doc.GetService(typeof(MockTextMarkerService)) as ITextMarkerService;
+			List<ITextMarker> markers = new List<ITextMarker>(service.TextMarkers);
 			
-			List<ITextMarker> markers = new List<ITextMarker>();
-			foreach (ITextMarker marker in service.TextMarkers) {
-				markers.Add(marker);
-			}
 			Assert.AreEqual(0, markers.Count);
 			Assert.AreEqual(1, nodes.Length);
 		}

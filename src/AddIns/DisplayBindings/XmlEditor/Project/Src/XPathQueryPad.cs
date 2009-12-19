@@ -16,32 +16,28 @@ namespace ICSharpCode.XmlEditor
 	{
 		public const string XPathQueryControlProperties = "XPathQueryControl.Options";
 		
-		XPathQueryControl xPathQueryControl;
+		XPathQueryControl xpathQueryControl;
 		bool disposed;
 		static XPathQueryPad instance;
 		
 		public XPathQueryPad()
 		{
-			xPathQueryControl = new XPathQueryControl();
+			xpathQueryControl = new XPathQueryControl();
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 			Properties properties = PropertyService.Get(XPathQueryControlProperties, new Properties());
-			xPathQueryControl.SetMemento(properties);
+			xpathQueryControl.SetMemento(properties);
 			instance = this;
 		}
 		
 		public static XPathQueryPad Instance {
-			get {
-				return instance;
-			}
+			get { return instance; }
 		}
 		
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the pad.
 		/// </summary>
 		public override object Control {
-			get {
-				return xPathQueryControl;
-			}
+			get { return xpathQueryControl; }
 		}
 		
 		public override void Dispose()
@@ -49,20 +45,15 @@ namespace ICSharpCode.XmlEditor
 			if (!disposed) {
 				disposed = true;
 				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
-				Properties properties = xPathQueryControl.CreateMemento();
+				Properties properties = xpathQueryControl.CreateMemento();
 				PropertyService.Set(XPathQueryControlProperties, properties);
-				xPathQueryControl.Dispose();
+				xpathQueryControl.Dispose();
 			}
-		}
-		
-		public static void RemoveXPathHighlighting()
-		{
-			XPathQueryControl.RemoveXPathNodeTextMarkers();
 		}
 		
 		void ActiveViewContentChanged(object source, EventArgs e)
 		{
-			xPathQueryControl.ActiveWindowChanged();
+			xpathQueryControl.ActiveWindowChanged();
 		}
 	}
 }

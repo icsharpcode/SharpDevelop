@@ -13,13 +13,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
 
-namespace XmlEditor.Tests.XPathQuery
+namespace XmlEditor.Tests.XPath
 {
 	[TestFixture]
 	public class NamespacePropertiesLoaded
 	{
 		List<XmlNamespace> expectedNamespaces;
-		ReadOnlyCollection<XmlNamespace> actualNamespaces;
+		XmlNamespaceCollection actualNamespaces;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()

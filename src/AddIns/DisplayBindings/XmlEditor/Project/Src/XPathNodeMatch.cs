@@ -61,6 +61,15 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		public XPathNodeMatch(string nodeValue, string displayValue, int? lineNumber, int linePosition, XPathNodeType nodeType)
+		{
+			this.nodeValue = nodeValue;
+			this.displayValue = displayValue;
+			this.lineNumber = lineNumber;
+			this.linePosition = linePosition;
+			this.nodeType = nodeType;
+		}
+		
 		/// <summary>
 		/// Line numbers are zero based.
 		/// </summary>

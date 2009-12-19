@@ -112,6 +112,7 @@
     <Compile Include="Src\RemoveXPathHighlightingCommand.cs" />
     <Compile Include="Src\RunXslTransformCommand.cs" />
     <Compile Include="Src\SchemaDocumentation.cs" />
+    <Compile Include="Src\SelectedXmlElement.cs" />
     <Compile Include="Src\SelectXmlSchemaWindow.xaml.cs">
       <DependentUpon>SelectXmlSchemaWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -145,6 +146,7 @@
     <Compile Include="Src\XmlNamespace.cs" />
     <Compile Include="Src\XmlNamespaceCollection.cs" />
     <Compile Include="Src\XmlParser.cs" />
+    <Compile Include="Src\XmlSchemaDefinition.cs" />
     <Compile Include="Src\XmlSchemaFileAssociation.cs" />
     <Compile Include="Src\XmlSchemaFileAssociationListItem.cs" />
     <Compile Include="Src\XmlSchemaCompletion.cs" />
@@ -152,6 +154,7 @@
     <Compile Include="Src\XmlSchemaFileAssociations.cs" />
     <Compile Include="Src\XmlSchemaListBoxItem.cs" />
     <Compile Include="Src\RegisteredXmlSchemas.cs" />
+    <Compile Include="Src\XmlSchemaObjectLocation.cs" />
     <Compile Include="Src\XmlSchemaPicker.cs" />
     <Compile Include="Src\XmlSchemasPanel.xaml.cs">
       <DependentUpon>XmlSchemasPanel.xaml</DependentUpon>
@@ -167,6 +170,7 @@
     <Compile Include="Src\XmlView.cs" />
     <Compile Include="Src\XPathNodeMatch.cs" />
     <Compile Include="Src\XPathNodeTextMarker.cs" />
+    <Compile Include="Src\XPathQuery.cs" />
     <Compile Include="Src\XPathQueryControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

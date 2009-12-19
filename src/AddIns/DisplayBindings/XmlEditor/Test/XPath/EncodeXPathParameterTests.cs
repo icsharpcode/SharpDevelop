@@ -9,7 +9,7 @@ using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using System;
 
-namespace XmlEditor.Tests.XPathQuery
+namespace XmlEditor.Tests.XPath
 {
 	/// <summary>
 	/// Tests the XmlEncoder class's Encode method which

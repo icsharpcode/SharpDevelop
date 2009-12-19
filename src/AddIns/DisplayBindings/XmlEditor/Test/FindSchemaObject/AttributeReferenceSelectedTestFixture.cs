@@ -34,7 +34,8 @@ namespace XmlEditor.Tests.FindSchemaObject
 			string xml = GetSchema();			
 			int index = xml.IndexOf("ref=\"dir\"");
 			index = xml.IndexOf("dir", index);
-			schemaAttribute = (XmlSchemaAttribute)XmlView.GetSchemaObjectSelected(xml, index, schemas, SchemaCompletion);
+			XmlSchemaDefinition schemaDefinition = new XmlSchemaDefinition(schemas, SchemaCompletion);
+			schemaAttribute = (XmlSchemaAttribute)schemaDefinition.GetSelectedSchemaObject(xml, index);
 		}
 		
 		[Test]

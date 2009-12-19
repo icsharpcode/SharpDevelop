@@ -33,18 +33,19 @@ namespace XmlEditor.Tests.FindSchemaObject
 			schemas.Add(xsdSchemaCompletionData);
 			
 			string xml = GetSchema();
-			schemaAttribute = (XmlSchemaAttribute)XmlView.GetSchemaObjectSelected(xml, xml.IndexOf("ref=\"name"), schemas, SchemaCompletion);
+			XmlSchemaDefinition schemaDefinition = new XmlSchemaDefinition(schemas, SchemaCompletion);
+			schemaAttribute = (XmlSchemaAttribute)schemaDefinition.GetSelectedSchemaObject(xml, xml.IndexOf("ref=\"name"));
 			
 			int index = xml.IndexOf("ref=\"name");
 			index = xml.IndexOf('n', index);
-			referencedSchemaElement = (XmlSchemaElement)XmlView.GetSchemaObjectSelected(xml, index, schemas, SchemaCompletion);
+			referencedSchemaElement = (XmlSchemaElement)schemaDefinition.GetSelectedSchemaObject(xml, index);
 		}
 		
 		[Test]
 		public void AttributeName()
 		{
 			Assert.AreEqual("ref", schemaAttribute.QualifiedName.Name);
-		}		
+		}
 		
 		[Test]
 		public void ReferencedElementName()

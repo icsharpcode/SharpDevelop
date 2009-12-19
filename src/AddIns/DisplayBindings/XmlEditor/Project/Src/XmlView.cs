@@ -32,6 +32,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			schemas = XmlEditorService.RegisteredXmlSchemas.Schemas;
 		}
+		
 		/// <summary>
 		/// Retrieves additional data for a XML file.
 		/// </summary>
@@ -39,13 +40,14 @@ namespace ICSharpCode.XmlEditor
 		/// <returns>null if the file is not a valid XML file, otherwise a XmlView instance with additional data used by the XML editor.</returns>
 		public static XmlView ForFile(OpenedFile file)
 		{
-			if (file == null)
+			if (file == null) {
 				return null;
-			if (!XmlDisplayBinding.IsFileNameHandled(file.FileName))
+			}
+			if (!XmlDisplayBinding.IsFileNameHandled(file.FileName)) {
 				return null;
+			}
 			
 			XmlView instance;
-			
 			if (!mapping.TryGetValue(file, out instance)) {
 				file.FileClosed += new EventHandler(FileClosedHandler);
 				instance = new XmlView() { File = file };
@@ -112,55 +114,6 @@ namespace ICSharpCode.XmlEditor
 			get { return XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent); }
 		}
 		
-		/// <summary>
-		/// Finds the xml nodes that match the specified xpath.
-		/// </summary>
-		/// <returns>An array of XPathNodeMatch items. These include line number
-		/// and line position information aswell as the node found.</returns>
-		public static XPathNodeMatch[] SelectNodes(string xml, string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
-		{
-			XmlTextReader xmlReader = new XmlTextReader(new StringReader(xml));
-			xmlReader.XmlResolver = null;
-			XPathDocument doc = new XPathDocument(xmlReader);
-			XPathNavigator navigator = doc.CreateNavigator();
-			
-			// Add namespaces.
-			XmlNamespaceManager namespaceManager = new XmlNamespaceManager(navigator.NameTable);
-			foreach (XmlNamespace xmlNamespace in namespaces) {
-				namespaceManager.AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
-			}
-			
-			// Run the xpath query.
-			XPathNodeIterator iterator = navigator.Select(xpath, namespaceManager);
-			
-			List<XPathNodeMatch> nodes = new List<XPathNodeMatch>();
-			while (iterator.MoveNext()) {
-				nodes.Add(new XPathNodeMatch(iterator.Current));
-			}
-			return nodes.ToArray();
-		}
-		
-		/// <summary>
-		/// Finds the xml nodes that match the specified xpath.
-		/// </summary>
-		/// <returns>An array of XPathNodeMatch items. These include line number
-		/// and line position information aswell as the node found.</returns>
-		public static XPathNodeMatch[] SelectNodes(string xml, string xpath)
-		{
-			List<XmlNamespace> list = new List<XmlNamespace>();
-			return SelectNodes(xml, xpath, new ReadOnlyCollection<XmlNamespace>(list));
-		}
-		
-		/// <summary>
-		/// Finds the xml nodes in the current document that match the specified xpath.
-		/// </summary>
-		/// <returns>An array of XPathNodeMatch items. These include line number
-		/// and line position information aswell as the node found.</returns>
-		public XPathNodeMatch[] SelectNodes(string xpath, ReadOnlyCollection<XmlNamespace> namespaces)
-		{
-			return SelectNodes(TextEditor.Document.Text, xpath, namespaces);
-		}
-		
 		public void GoToSchemaDefinition()
 		{
 			// Find schema object for selected xml element or attribute.
@@ -171,13 +124,9 @@ namespace ICSharpCode.XmlEditor
 				return;
 			}
 			
-			XmlSchemaObject schemaObject = GetSchemaObjectSelected(editor.Document.Text, editor.Caret.Offset, schemas, currentSchemaCompletion);
-			
-			// Open schema.
-			if ((schemaObject != null) && (schemaObject.SourceUri != null) && (schemaObject.SourceUri.Length > 0)) {
-				string fileName = schemaObject.SourceUri.Replace("file:///", String.Empty);
-				FileService.JumpToFilePosition(fileName, schemaObject.LineNumber, schemaObject.LinePosition);
-			}
+			XmlSchemaDefinition schemaDefinition = new XmlSchemaDefinition(schemas, currentSchemaCompletion);
+			XmlSchemaObjectLocation schemaObjectLocation = schemaDefinition.GetSelectedSchemaObjectLocation(editor.Document.Text, editor.Caret.Offset);
+			schemaObjectLocation.JumpToFilePosition();
 		}
 		
 		/// <summary>
@@ -213,155 +162,6 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		#region XmlView methods
-		/// <summary>
-		/// If the attribute value found references another item in the schema
-		/// return this instead of the attribute schema object. For example, if the
-		/// user can select the attribute value and the code will work out the schema object pointed to by the ref
-		/// or type attribute:
-		///
-		/// xs:element ref="ref-name"
-		/// xs:attribute type="type-name"
-		/// </summary>
-		/// <returns>
-		/// The <paramref name="attribute"/> if no schema object was referenced.
-		/// </returns>
-		static XmlSchemaObject GetSchemaObjectReferenced(string xml, int index, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion currentSchemaCompletionData, XmlSchemaElement element, XmlSchemaAttribute attribute)
-		{
-			XmlSchemaObject schemaObject = null;
-			if (IsXmlSchemaNamespace(element)) {
-				// Find attribute value.
-				string attributeValue = XmlParser.GetAttributeValueAtIndex(xml, index);
-				if (attributeValue.Length == 0) {
-					return attribute;
-				}
-				
-				if (attribute.Name == "ref") {
-					schemaObject = FindSchemaObjectReference(attributeValue, schemas, currentSchemaCompletionData, element.Name);
-				} else if (attribute.Name == "type") {
-					schemaObject = FindSchemaObjectType(attributeValue, schemas, currentSchemaCompletionData, element.Name);
-				}
-			}
-			
-			if (schemaObject != null) {
-				return schemaObject;
-			}
-			return attribute;
-		}
-		
-		/// <summary>
-		/// Attempts to locate the reference name in the specified schema.
-		/// </summary>
-		/// <param name="name">The reference to look up.</param>
-		/// <param name="schemaCompletionData">The schema completion data to use to
-		/// find the reference.</param>
-		/// <param name="elementName">The element to determine what sort of reference it is
-		/// (e.g. group, attribute, element).</param>
-		/// <returns><see langword="null"/> if no match can be found.</returns>
-		static XmlSchemaObject FindSchemaObjectReference(string name, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion schemaCompletion, string elementName)
-		{
-			QualifiedName qualifiedName = schemaCompletion.CreateQualifiedName(name);
-			XmlSchemaCompletion qualifiedNameSchema = schemas[qualifiedName.Namespace];
-			if (qualifiedNameSchema != null) {
-				schemaCompletion = qualifiedNameSchema;
-			}
-			switch (elementName) {
-				case "element":
-					return schemaCompletion.FindRootElement(qualifiedName);
-				case "attribute":
-					return schemaCompletion.FindAttribute(qualifiedName.Name);
-				case "group":
-					return schemaCompletion.FindGroup(qualifiedName.Name);
-				case "attributeGroup":
-					return schemaCompletion.FindAttributeGroup(qualifiedName.Name);
-			}
-			return null;
-		}
-		
-		/// <summary>
-		/// Attempts to locate the type name in the specified schema.
-		/// </summary>
-		/// <param name="name">The type to look up.</param>
-		/// <param name="schemaCompletionData">The schema completion data to use to
-		/// find the type.</param>
-		/// <param name="elementName">The element to determine what sort of type it is
-		/// (e.g. group, attribute, element).</param>
-		/// <returns><see langword="null"/> if no match can be found.</returns>
-		static XmlSchemaObject FindSchemaObjectType(string name, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion schemaCompletion, string elementName)
-		{
-			QualifiedName qualifiedName = schemaCompletion.CreateQualifiedName(name);
-			XmlSchemaCompletion qualifiedNameSchema = schemas[qualifiedName.Namespace];
-			if (qualifiedNameSchema != null) {
-				schemaCompletion = qualifiedNameSchema;
-			}
-			switch (elementName) {
-				case "element":
-					return schemaCompletion.FindComplexType(qualifiedName);
-				case "attribute":
-					return schemaCompletion.FindSimpleType(qualifiedName.Name);
-			}
-			return null;
-		}
-		
-		/// <summary>
-		/// Checks whether the element belongs to the XSD namespace.
-		/// </summary>
-		static bool IsXmlSchemaNamespace(XmlSchemaElement element)
-		{
-			XmlQualifiedName qualifiedName = element.QualifiedName;
-			if (qualifiedName != null) {
-				return RegisteredXmlSchemas.IsXmlSchemaNamespace(qualifiedName.Namespace);
-			}
-			return false;
-		}
-		
-		/// <summary>
-		/// Gets the XmlSchemaObject that defines the currently selected xml element or
-		/// attribute.
-		/// </summary>
-		/// <param name="text">The complete xml text.</param>
-		/// <param name="index">The current cursor index.</param>
-		public static XmlSchemaObject GetSchemaObjectSelected(string xml, int index, XmlSchemaCompletionCollection schemas)
-		{
-			return GetSchemaObjectSelected(xml, index, schemas, null);
-		}
-		
-		/// <summary>
-		/// Gets the XmlSchemaObject that defines the currently selected xml element or
-		/// attribute.
-		/// </summary>
-		/// <param name="text">The complete xml text.</param>
-		/// <param name="index">The current cursor index.</param>
-		/// <param name="currentSchemaCompletionData">This is the schema completion data for the
-		/// schema currently being displayed. This can be null if the document is
-		/// not a schema.</param>
-		public static XmlSchemaObject GetSchemaObjectSelected(string xml, int index, XmlSchemaCompletionCollection schemas, XmlSchemaCompletion currentSchemaCompletion)
-		{
-			// Find element under cursor.
-			XmlElementPath path = XmlParser.GetActiveElementStartPathAtIndex(xml, index);
-			string attributeName = XmlParser.GetAttributeNameAtIndex(xml, index);
-			
-			// Find schema definition object.
-			XmlSchemaCompletion schemaCompletion = schemas[path.GetRootNamespace()];
-			XmlSchemaObject schemaObject = null;
-			if (schemaCompletion != null) {
-				XmlSchemaElement element = schemaCompletion.FindElement(path);
-				schemaObject = element;
-				if (element != null) {
-					if (attributeName.Length > 0) {
-						XmlSchemaAttribute attribute = schemaCompletion.FindAttribute(element, attributeName);
-						if (attribute != null) {
-							if (currentSchemaCompletion != null) {
-								schemaObject = GetSchemaObjectReferenced(xml, index, schemas, currentSchemaCompletion, element, attribute);
-							} else {
-								schemaObject = attribute;
-							}
-						}
-					}
-					return schemaObject;
-				}
-			}
-			return null;
-		}
 		
 		static void ShowErrorList()
 		{
@@ -790,8 +590,8 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlException innerException = ex.InnerException as XmlException;
 			if (innerException != null) {
-				string fileName = innerException.SourceUri.Replace("file:///", string.Empty);
-				if (!string.IsNullOrEmpty(fileName)) {
+				string fileName = innerException.SourceUri.Replace("file:///", String.Empty);
+				if (!String.IsNullOrEmpty(fileName)) {
 					return fileName;
 				}
 			}

@@ -32,10 +32,11 @@ namespace XmlEditor.Tests.FindSchemaObject
 			XmlSchemaCompletion xsdSchemaCompletionData = new XmlSchemaCompletion(ResourceManager.ReadXsdSchema());
 			schemas.Add(xsdSchemaCompletionData);
 			
-			string xml = GetSchema();			
+			string xml = GetSchema();
 			int index = xml.IndexOf("ref=\"coreattrs\"");
 			index = xml.IndexOf("coreattrs", index);
-			schemaAttributeGroup = (XmlSchemaAttributeGroup)XmlView.GetSchemaObjectSelected(xml, index, schemas, SchemaCompletion);
+			XmlSchemaDefinition schemaDefinition = new XmlSchemaDefinition(schemas, SchemaCompletion);
+			schemaAttributeGroup = (XmlSchemaAttributeGroup)schemaDefinition.GetSelectedSchemaObject(xml, index);
 		}
 		
 		[Test]

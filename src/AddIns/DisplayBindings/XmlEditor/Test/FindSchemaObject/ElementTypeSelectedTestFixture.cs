@@ -34,7 +34,8 @@ namespace XmlEditor.Tests.FindSchemaObject
 			string xml = GetSchema();
 			int index = xml.IndexOf("type=\"text-type\"");
 			index = xml.IndexOf("text-type", index);
-			schemaComplexType = (XmlSchemaComplexType)XmlView.GetSchemaObjectSelected(xml, index, schemas, SchemaCompletion);
+			XmlSchemaDefinition schemaDefinition = new XmlSchemaDefinition(schemas, SchemaCompletion);
+			schemaComplexType = (XmlSchemaComplexType)schemaDefinition.GetSelectedSchemaObject(xml, index);
 		}
 		
 		[Test]

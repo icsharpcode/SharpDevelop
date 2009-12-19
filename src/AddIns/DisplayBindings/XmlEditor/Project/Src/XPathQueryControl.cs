@@ -54,7 +54,7 @@ namespace ICSharpCode.XmlEditor
 			InitializeComponent();
 			InitStrings();
 			InitImageList();
-			xPathComboBox.KeyDown += XPathComboBoxKeyDown;
+			xpathComboBox.KeyDown += XPathComboBoxKeyDown;
 			InitAutoCompleteMode();
 		}
 		
@@ -69,9 +69,9 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the list of namespaces in the namespace list.
 		/// </summary>
-		public ReadOnlyCollection<XmlNamespace> GetNamespaces()
+		public XmlNamespaceCollection GetNamespaces()
 		{
-			List<XmlNamespace> namespaces = new List<XmlNamespace>();
+			XmlNamespaceCollection namespaces = new XmlNamespaceCollection();
 			for (int i = 0; i < namespacesDataGridView.Rows.Count - 1; ++i) {
 				DataGridViewRow row = namespacesDataGridView.Rows[i];
 				string prefix = GetPrefix(row);
@@ -82,25 +82,19 @@ namespace ICSharpCode.XmlEditor
 					namespaces.Add(new XmlNamespace(prefix, uri));
 				}
 			}
-			return new ReadOnlyCollection<XmlNamespace>(namespaces);
+			return namespaces;
 		}
 		
 		public DataGridView NamespacesDataGridView {
-			get {
-				return namespacesDataGridView;
-			}
+			get { return namespacesDataGridView; }
 		}
 		
 		public ListView XPathResultsListView {
-			get {
-				return xPathResultsListView;
-			}
+			get { return xPathResultsListView; }
 		}
 		
 		public ComboBox XPathComboBox {
-			get {
-				return xPathComboBox;
-			}
+			get { return xpathComboBox; }
 		}
 		
 		/// <summary>
@@ -111,53 +105,79 @@ namespace ICSharpCode.XmlEditor
 		{
 			Properties properties = new Properties();
 			
-			// Save namespaces.
-			properties.Set(NamespacesProperty, GetNamespaceStringArray());
-			
-			// Save namespace data grid column widths.
-			properties.Set<int>(PrefixColumnWidthProperty, prefixColumn.Width);
-
-			// Save xpath results list view column widths.
-			properties.Set<int>(MatchColumnWidthProperty, matchColumnHeader.Width);
-			properties.Set<int>(LineColumnWidthProperty, lineColumnHeader.Width);
-
-			// Save xpath query history.
-			properties.Set(XPathComboBoxTextProperty, XPathComboBox.Text);
-			properties.Set(XPathComboBoxItemsProperty, GetXPathHistory());
+			SaveNamespaces(properties);
+			SaveNamespaceDataGridColumnWidths(properties);
+			SaveXPathResultsListViewColumnWidths(properties);
+			SaveXPathQueryHistory(properties);
 			
 			return properties;
+		}
+		
+		void SaveNamespaces(Properties properties)
+		{
+			properties.Set(NamespacesProperty, GetNamespaceStringArray());
+		}
+		
+		void SaveNamespaceDataGridColumnWidths(Properties properties)
+		{
+			properties.Set<int>(PrefixColumnWidthProperty, prefixColumn.Width);
+		}
+		
+		void SaveXPathResultsListViewColumnWidths(Properties properties)
+		{
+			properties.Set<int>(MatchColumnWidthProperty, matchColumnHeader.Width);
+			properties.Set<int>(LineColumnWidthProperty, lineColumnHeader.Width);
+		}
+		
+		void SaveXPathQueryHistory(Properties properties)
+		{
+			properties.Set(XPathComboBoxTextProperty, XPathComboBox.Text);
+			properties.Set(XPathComboBoxItemsProperty, GetXPathHistory());
 		}
 		
 		/// <summary>
 		/// Reloads the state of the control.
 		/// </summary>
-		public void SetMemento(Properties memento)
+		public void SetMemento(Properties properties)
 		{
 			ignoreXPathTextChanges = true;
 			
 			try {
-				// Set namespaces.
-				string[] namespaces = memento.Get(NamespacesProperty, new string[0]);
-				foreach (string ns in namespaces) {
-					XmlNamespace xmlNamespace = XmlNamespace.FromString(ns);
-					AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
-				}
-				
-				// Set namespace data grid column widths.
-				prefixColumn.Width = memento.Get<int>(PrefixColumnWidthProperty, 50);
-				
-				// Set xpath results list view column widths.
-				matchColumnHeader.Width = memento.Get<int>(MatchColumnWidthProperty, 432);
-				lineColumnHeader.Width = memento.Get<int>(LineColumnWidthProperty, 60);
-				
-				// Set xpath query history.
-				XPathComboBox.Text = memento.Get(XPathComboBoxTextProperty, string.Empty);
-				string[] xpaths = memento.Get(XPathComboBoxItemsProperty, new string[0]);
-				foreach (string xpath in xpaths) {
-					xPathComboBox.Items.Add(xpath);
-				}
+				LoadNamespaces(properties);
+				LoadNamespaceDataGridColumnWidths(properties);
+				LoadXPathResultsListViewColumnWidths(properties);
+				LoadXPathQueryHistory(properties);
 			} finally {
 				ignoreXPathTextChanges = false;
+			}
+		}
+		
+		void LoadNamespaces(Properties properties)
+		{
+			string[] namespaces = properties.Get(NamespacesProperty, new string[0]);
+			foreach (string ns in namespaces) {
+				XmlNamespace xmlNamespace = XmlNamespace.FromString(ns);
+				AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
+			}
+		}
+		
+		void LoadNamespaceDataGridColumnWidths(Properties properties)
+		{
+			prefixColumn.Width = properties.Get<int>(PrefixColumnWidthProperty, 50);
+		}
+		
+		void LoadXPathResultsListViewColumnWidths(Properties properties)
+		{
+			matchColumnHeader.Width = properties.Get<int>(MatchColumnWidthProperty, 432);
+			lineColumnHeader.Width = properties.Get<int>(LineColumnWidthProperty, 60);
+		}
+		
+		void LoadXPathQueryHistory(Properties properties)
+		{
+			XPathComboBox.Text = properties.Get(XPathComboBoxTextProperty, string.Empty);
+			string[] xpaths = properties.Get(XPathComboBoxItemsProperty, new string[0]);
+			foreach (string xpath in xpaths) {
+				xpathComboBox.Items.Add(xpath);
 			}
 		}
 		
@@ -167,19 +187,6 @@ namespace ICSharpCode.XmlEditor
 		public void ActiveWindowChanged()
 		{
 			UpdateQueryButtonState();
-		}
-		
-		/// <summary>
-		/// Removes all the XPath Node markers from all the open documents.
-		/// </summary>
-		public static void RemoveXPathNodeTextMarkers()
-		{
-			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				ITextEditorProvider textEditorProvider = view as ITextEditorProvider;
-				if (textEditorProvider != null) {
-					XPathNodeTextMarker.RemoveMarkers(textEditorProvider.TextEditor.Document);
-				}
-			}
 		}
 		
 		/// <summary>
@@ -212,7 +219,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			this.components = new System.ComponentModel.Container();
 			this.xPathLabel = new System.Windows.Forms.Label();
-			this.xPathComboBox = new System.Windows.Forms.ComboBox();
+			this.xpathComboBox = new System.Windows.Forms.ComboBox();
 			this.queryButton = new System.Windows.Forms.Button();
 			this.tabControl = new System.Windows.Forms.TabControl();
 			this.xPathResultsTabPage = new System.Windows.Forms.TabPage();
@@ -241,15 +248,15 @@ namespace ICSharpCode.XmlEditor
 			// 
 			// xPathComboBox
 			// 
-			this.xPathComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			this.xpathComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 			                                                                  | System.Windows.Forms.AnchorStyles.Right)));
-			this.xPathComboBox.FormattingEnabled = true;
-			this.xPathComboBox.Location = new System.Drawing.Point(55, 3);
-			this.xPathComboBox.Name = "xPathComboBox";
-			this.xPathComboBox.Size = new System.Drawing.Size(438, 21);
-			this.xPathComboBox.TabIndex = 1;
-			this.xPathComboBox.TextChanged += new System.EventHandler(this.XPathComboBoxTextChanged);
-			this.xPathComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.XPathComboBoxKeyDown);
+			this.xpathComboBox.FormattingEnabled = true;
+			this.xpathComboBox.Location = new System.Drawing.Point(55, 3);
+			this.xpathComboBox.Name = "xPathComboBox";
+			this.xpathComboBox.Size = new System.Drawing.Size(438, 21);
+			this.xpathComboBox.TabIndex = 1;
+			this.xpathComboBox.TextChanged += new System.EventHandler(this.XPathComboBoxTextChanged);
+			this.xpathComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.XPathComboBoxKeyDown);
 			// 
 			// queryButton
 			// 
@@ -366,7 +373,7 @@ namespace ICSharpCode.XmlEditor
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.queryButton);
-			this.Controls.Add(this.xPathComboBox);
+			this.Controls.Add(this.xpathComboBox);
 			this.Controls.Add(this.xPathLabel);
 			this.Name = "XPathQueryControl";
 			this.Size = new System.Drawing.Size(572, 238);
@@ -387,7 +394,7 @@ namespace ICSharpCode.XmlEditor
 		private System.Windows.Forms.TabPage xPathResultsTabPage;
 		private System.Windows.Forms.TabControl tabControl;
 		private System.Windows.Forms.Button queryButton;
-		private System.Windows.Forms.ComboBox xPathComboBox;
+		private System.Windows.Forms.ComboBox xpathComboBox;
 		private System.Windows.Forms.Label xPathLabel;
 		
 		#endregion
@@ -405,9 +412,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		bool IsXPathQueryEntered {
-			get {
-				return xPathComboBox.Text.Length > 0;
-			}
+			get { return xpathComboBox.Text.Length > 0; }
 		}
 		
 		void QueryButtonClick(object sender, EventArgs e)
@@ -423,18 +428,19 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			try {
-				// TODO : markers are currently not supported in AvalonEdit.
 				fileName = xmlView.File.FileName;
 				
 				// Clear previous XPath results.
 				ClearResults();
-				XPathNodeTextMarker.RemoveMarkers(xmlView.TextEditor.Document);
-
+				XPathNodeTextMarker marker = new XPathNodeTextMarker(xmlView.TextEditor.Document);
+				marker.RemoveMarkers();
+				
 				// Run XPath query.
-				XPathNodeMatch[] nodes = xmlView.SelectNodes(xPathComboBox.Text, GetNamespaces());
+				XPathQuery query = new XPathQuery(xmlView.TextEditor, GetNamespaces());
+				XPathNodeMatch[] nodes = query.FindNodes(xpathComboBox.Text);
 				if (nodes.Length > 0) {
 					AddXPathResults(nodes);
-					XPathNodeTextMarker.AddMarkers(xmlView.TextEditor.Document, nodes);
+					marker.AddMarkers(nodes);
 				} else {
 					AddNoXPathResult();
 				}
@@ -552,7 +558,7 @@ namespace ICSharpCode.XmlEditor
 				} else if (xmlException != null) {
 					MoveCaretToXmlException(moveCaret, xmlException);
 				} else if (xpathException != null && moveCaret == MoveCaret.ByJumping) {
-					xPathComboBox.Focus();
+					xpathComboBox.Focus();
 				}
 			}
 		}
@@ -621,11 +627,10 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Gets the previously used XPath queries from the combo box drop down list.
 		/// </summary>
-		/// <returns></returns>
 		string [] GetXPathHistory()
 		{
 			List<string> xpaths = new List<string>();
-			foreach (string xpath in xPathComboBox.Items) {
+			foreach (string xpath in xpathComboBox.Items) {
 				xpaths.Add(xpath);
 			}
 			return xpaths.ToArray();
@@ -640,7 +645,7 @@ namespace ICSharpCode.XmlEditor
 			if (prefix != null) {
 				return prefix;
 			}
-			return string.Empty;
+			return String.Empty;
 		}
 		
 		/// <summary>
@@ -652,7 +657,7 @@ namespace ICSharpCode.XmlEditor
 			if (ns != null) {
 				return ns;
 			}
-			return string.Empty;
+			return String.Empty;
 		}
 		
 		/// <summary>
@@ -660,11 +665,11 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void AddXPathToHistory()
 		{
-			string newXPath = xPathComboBox.Text;
-			if (!xPathComboBox.Items.Contains(newXPath)) {
-				xPathComboBox.Items.Insert(0, newXPath);
-				if (xPathComboBox.Items.Count > xpathQueryHistoryLimit) {
-					xPathComboBox.Items.RemoveAt(xpathQueryHistoryLimit);
+			string newXPath = xpathComboBox.Text;
+			if (!xpathComboBox.Items.Contains(newXPath)) {
+				xpathComboBox.Items.Insert(0, newXPath);
+				if (xpathComboBox.Items.Count > xpathQueryHistoryLimit) {
+					xpathComboBox.Items.RemoveAt(xpathQueryHistoryLimit);
 				}
 			}
 		}

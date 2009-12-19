@@ -34,7 +34,8 @@ namespace XmlEditor.Tests.FindSchemaObject
 			string xml = GetSchema();			
 			int index = xml.IndexOf("ref=\"block\"");
 			index = xml.IndexOf("block", index);
-			schemaGroup = (XmlSchemaGroup)XmlView.GetSchemaObjectSelected(xml, index, schemas, SchemaCompletion);
+			XmlSchemaDefinition schemaDefinition = new XmlSchemaDefinition(schemas, SchemaCompletion);
+			schemaGroup = (XmlSchemaGroup)schemaDefinition.GetSelectedSchemaObject(xml, index);
 		}
 		
 		[Test]

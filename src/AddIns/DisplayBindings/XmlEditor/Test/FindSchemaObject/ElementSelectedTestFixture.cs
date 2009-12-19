@@ -19,13 +19,19 @@ namespace XmlEditor.Tests.FindSchemaObject
 	public class ElementSelectedTestFixture : SchemaTestFixtureBase
 	{		
 		XmlSchemaElement schemaElement;
+		XmlSchemaObjectLocation location;
 		
 		public override void FixtureInit()
 		{
 			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
 			schemas.Add(SchemaCompletion);
+			
 			string xml = "<note xmlns='http://www.w3schools.com'></note>";
-			schemaElement = (XmlSchemaElement)XmlView.GetSchemaObjectSelected(xml, xml.IndexOf("note xmlns"), schemas);
+			int index = xml.IndexOf("note xmlns");
+			
+			XmlSchemaDefinition schemaDefinition = new XmlSchemaDefinition(schemas, null);
+			schemaElement = (XmlSchemaElement)schemaDefinition.GetSelectedSchemaObject(xml, index);
+			location = schemaDefinition.GetSelectedSchemaObjectLocation(xml, index);
 		}
 		
 		[Test]
@@ -52,6 +58,18 @@ namespace XmlEditor.Tests.FindSchemaObject
 				"<xs:element name=\"note\">\r\n" +
 				"</xs:element>\r\n" +
 				"</xs:schema>";
+		}
+		
+		[Test]
+		public void SchemaObjectLocationLinePositionMatchesSchemaElement()
+		{
+			Assert.AreEqual(schemaElement.LinePosition, location.LinePosition);
+		}
+		
+		[Test]
+		public void SchemaObjectLocationLineNumberMatchesSchemaElement()
+		{
+			Assert.AreEqual(schemaElement.LineNumber, location.LineNumber);
 		}
 	}
 }

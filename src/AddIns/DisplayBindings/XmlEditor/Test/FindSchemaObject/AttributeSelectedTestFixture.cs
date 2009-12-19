@@ -25,7 +25,8 @@ namespace XmlEditor.Tests.FindSchemaObject
 			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
 			schemas.Add(SchemaCompletion);
 			string xml = "<note xmlns='http://www.w3schools.com' name=''></note>";
-			schemaAttribute = (XmlSchemaAttribute)XmlView.GetSchemaObjectSelected(xml, xml.IndexOf("name"), schemas);
+			XmlSchemaDefinition schemaDefinition = new XmlSchemaDefinition(schemas, null);
+			schemaAttribute = (XmlSchemaAttribute)schemaDefinition.GetSelectedSchemaObject(xml, xml.IndexOf("name"));
 		}
 		
 		[Test]
@@ -39,7 +40,7 @@ namespace XmlEditor.Tests.FindSchemaObject
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://www.w3schools.com\" xmlns=\"http://www.w3schools.com\" elementFormDefault=\"qualified\">\r\n" +
 				"    <xs:element name=\"note\">\r\n" +
 				"        <xs:complexType>\r\n" +
-				"\t<xs:attribute name=\"name\"  type=\"xs:string\"/>\r\n" +
+				"            <xs:attribute name=\"name\"  type=\"xs:string\"/>\r\n" +
 				"        </xs:complexType>\r\n" +
 				"    </xs:element>\r\n" +
 				"</xs:schema>";
