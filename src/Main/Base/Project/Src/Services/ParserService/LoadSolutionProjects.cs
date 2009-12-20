@@ -127,6 +127,8 @@ namespace ICSharpCode.SharpDevelop
 			Solution openedSolution = ProjectService.OpenSolution;
 			isThreadRunning = true;
 			
+			WorkbenchSingleton.SafeThreadAsyncCall(ProjectService.ParserServiceCreatedProjectContents);
+			
 			for (int i = 0; i < createdContents.Count; i++) {
 				ParseProjectContent pc = createdContents[i];
 				jobs.AddJob(new JobTask(pc.Initialize1,
