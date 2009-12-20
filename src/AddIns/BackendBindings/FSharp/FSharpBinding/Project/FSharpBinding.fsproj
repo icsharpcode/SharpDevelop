@@ -21,7 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <OtherFlags></OtherFlags>
+    <OtherFlags>
+    </OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -90,10 +91,6 @@
       <Name>System.Runtime.Serialization.Formatters.Soap</Name>
       <AssemblyName>System.Runtime.Serialization.Formatters.Soap.dll</AssemblyName>
     </Reference>
-    <Reference Include="System.Transactions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <Name>System.Transactions</Name>
-      <AssemblyName>System.Transactions.dll</AssemblyName>
-    </Reference>
     <Reference Include="System.DirectoryServices.Protocols, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>System.DirectoryServices.Protocols</Name>
       <AssemblyName>System.DirectoryServices.Protocols.dll</AssemblyName>
@@ -105,10 +102,6 @@
     <Reference Include="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>System.Web.Services</Name>
       <AssemblyName>System.Web.Services.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <Name>System.Data</Name>
-      <AssemblyName>System.Data.dll</AssemblyName>
     </Reference>
     <Reference Include="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>System.Design</Name>
@@ -125,10 +118,6 @@
     <Reference Include="Accessibility, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>Accessibility</Name>
       <AssemblyName>Accessibility.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Data.OracleClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <Name>System.Data.OracleClient</Name>
-      <AssemblyName>System.Data.OracleClient.dll</AssemblyName>
     </Reference>
     <Reference Include="System.ServiceProcess, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>System.ServiceProcess</Name>

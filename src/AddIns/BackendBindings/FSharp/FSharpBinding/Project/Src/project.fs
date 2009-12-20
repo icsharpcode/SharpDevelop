@@ -60,7 +60,7 @@ end
 
 type FSharpProjectNode = class
     inherit ProjectNode
-    new (project : IProject) as x = 
+    new (project : IProject) = 
         { inherit ProjectNode(project) }
     member  x.AddParentFolder((virtualName : string), (relativeDirectoryPath : string), (directoryNodeList :Dictionary<string, DirectoryNode>)) =
         if (relativeDirectoryPath.Length = 0
