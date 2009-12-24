@@ -1129,7 +1129,9 @@ namespace ICSharpCode.PythonBinding
 		public override object TrackedVisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
 			codeBuilder.AppendLineIfPreviousLineIsCode();
-			AppendIndentedLine("class " + typeDeclaration.Name + "(object):");
+			AppendIndented("class " + typeDeclaration.Name);
+			AppendBaseTypes(typeDeclaration.BaseTypes);
+			AppendLine();
 			IncreaseIndent();
 			AppendDocstring(xmlDocComments);
 			if (typeDeclaration.Children.Count > 0) {
@@ -1984,6 +1986,23 @@ namespace ICSharpCode.PythonBinding
 			}
 			Append(")");
 			AppendLine();
+		}
+		
+		void AppendBaseTypes(List<TypeReference> baseTypes)
+		{
+			Append("(");
+			if (baseTypes.Count == 0) {
+				Append("object");
+			} else {
+				for (int i = 0; i < baseTypes.Count; ++i) {
+					TypeReference typeRef = baseTypes[i];
+					if (i > 0) {
+						Append(", ");
+					}
+					Append(GetTypeName(typeRef));
+				}
+			}
+			Append("):");
 		}
 	}
 }

@@ -100,6 +100,7 @@
     <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayConversionTestFixture.cs" />
     <Compile Include="Converter\AssignmentOperatorConversionTestFixture.cs" />
+    <Compile Include="Converter\BaseClassConversionTestFixture.cs" />
     <Compile Include="Converter\BitShiftConversionTestFixture.cs" />
     <Compile Include="Converter\BooleanConversionTestFixture.cs" />
     <Compile Include="Converter\BreakAndContinueConversionTestFixture.cs" />
