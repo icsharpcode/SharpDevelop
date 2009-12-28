@@ -505,3 +505,13 @@ Python.Template.Form                                   = backendicons\Python\Pyt
 Python.Template.ConsoleProject                         = backendicons\Python\Python.Template.ConsoleProject.png
 Python.Template.WinFormsProject                        = backendicons\Python\Python.Template.WinFormsProject.png
 Python.Template.LibraryProject                         = backendicons\Python\Python.Template.LibraryProject.png
+
+#Ruby icons
+Ruby.ProjectBrowser.File                             = backendicons\Ruby\Ruby.ProjectBrowser.File.png
+Ruby.ProjectBrowser.Project                          = backendicons\Ruby\Ruby.ProjectBrowser.Project.png
+Ruby.Template.Class                                  = backendicons\Ruby\Ruby.Template.Class.png
+Ruby.Template.EmptyFile                              = backendicons\Ruby\Ruby.Template.EmptyFile.png
+Ruby.Template.Form                                   = backendicons\Ruby\Ruby.Template.Form.png
+Ruby.Template.ConsoleProject                         = backendicons\Ruby\Ruby.Template.ConsoleProject.png
+Ruby.Template.WinFormsProject                        = backendicons\Ruby\Ruby.Template.WinFormsProject.png
+Ruby.Template.LibraryProject                         = backendicons\Ruby\Ruby.Template.LibraryProject.png

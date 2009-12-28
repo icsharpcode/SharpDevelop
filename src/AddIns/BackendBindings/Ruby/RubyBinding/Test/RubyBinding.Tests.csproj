@@ -1,0 +1,416 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{01DF0475-0CB2-4E81-971B-BADC60CDE3A5}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>RubyBinding.Tests</RootNamespace>
+    <AssemblyName>RubyBinding.Tests</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\matt\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="IronRuby">
+      <HintPath>..\..\IronRuby\bin\IronRuby.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries">
+      <HintPath>..\..\IronRuby\bin\IronRuby.Libraries.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries.Yaml">
+      <HintPath>..\..\IronRuby\bin\IronRuby.Libraries.Yaml.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Core">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Debugging">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Debugging.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddInOptionsTestFixture.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Console\CodeCompletionTests.cs" />
+    <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\DisposedRubyConsoleTestFixture.cs" />
+    <Compile Include="Console\EmptyCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
+    <Compile Include="Console\MockMemberProvider.cs" />
+    <Compile Include="Console\MockTextEditor.cs" />
+    <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\RubyConsoleCodeCompletionTestFixture.cs" />
+    <Compile Include="Console\RubyConsoleCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\RubyConsoleCurrentLineTestFixture.cs" />
+    <Compile Include="Console\RubyConsoleEnterKeyTestFixture.cs" />
+    <Compile Include="Console\RubyConsoleHomeKeyTestFixture.cs" />
+    <Compile Include="Console\RubyConsoleHostTests.cs" />
+    <Compile Include="Console\RubyConsoleReadOnlyRegionsTestFixture.cs" />
+    <Compile Include="Console\RubyConsoleReadTestFixture.cs" />
+    <Compile Include="Console\RubyConsoleUnreadLinesTestFixture.cs" />
+    <Compile Include="Console\RubyConsoleWriteTestFixture.cs" />
+    <Compile Include="Console\RubyOutputStreamTestFixture.cs" />
+    <Compile Include="Console\TextEditorTestFixture.cs" />
+    <Compile Include="Console\TwoRubyConsoleLinesWaitingTestFixture.cs" />
+    <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
+    <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />
+    <Compile Include="Converter\ArrayConversionTestFixture.cs" />
+    <Compile Include="Converter\AssignmentOperatorConversionTestFixture.cs" />
+    <Compile Include="Converter\BaseClassConversionTestFixture.cs" />
+    <Compile Include="Converter\BaseClassReferenceTestFixture.cs" />
+    <Compile Include="Converter\BinaryOperatorConversionTestFixture.cs" />
+    <Compile Include="Converter\BitShiftConversionTestFixture.cs" />
+    <Compile Include="Converter\BooleanConversionTestFixture.cs" />
+    <Compile Include="Converter\BreakAndContinueConversionTestFixture.cs" />
+    <Compile Include="Converter\CallConstructorWithParametersConversionTestFixture.cs" />
+    <Compile Include="Converter\CannotFindMethodForEventHandlerConversionTestFixture.cs" />
+    <Compile Include="Converter\ClassConstructorConversionTestFixture.cs" />
+    <Compile Include="Converter\ClassDestructorConversionTestFixture.cs" />
+    <Compile Include="Converter\ClassFieldReferenceConversionTestFixture.cs" />
+    <Compile Include="Converter\ClassWithNamespaceAndUsingStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\ConvertCSharpToRubyMenuCommandTestFixture.cs" />
+    <Compile Include="Converter\ConvertedSupportedLanguageTests.cs" />
+    <Compile Include="Converter\ConvertEventHandlerForClassWithNamespaceTestFixture.cs" />
+    <Compile Include="Converter\ConvertToRubyProjectCommandTestFixture.cs" />
+    <Compile Include="Converter\ConvertVBNetToRubyMenuCommandTestFixture.cs" />
+    <Compile Include="Converter\CreateConverterWithNullParseInfoTestFixture.cs" />
+    <Compile Include="Converter\CSharpClassWithNamespaceConversionTestFixture.cs" />
+    <Compile Include="Converter\ElseIfStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\EmptyCSharpClassConversionTestFixture.cs" />
+    <Compile Include="Converter\EventHandlerWithObjectCreationTestFixture.cs" />
+    <Compile Include="Converter\FieldDeclarationWithNoInitializerTestFixture.cs" />
+    <Compile Include="Converter\ForeachConversionTestFixture.cs" />
+    <Compile Include="Converter\ForeachConversionWithMethodCallTestFixture.cs" />
+    <Compile Include="Converter\ForLoopConversionTestFixture.cs" />
+    <Compile Include="Converter\GenerateMainMethodCallTestFixture.cs" />
+    <Compile Include="Converter\GenericListConversionTestFixture.cs" />
+    <Compile Include="Converter\IfBlockStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\IfStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\IncrementAndDecrementConversionTests.cs" />
+    <Compile Include="Converter\IntegerClassFieldConversionTestFixture.cs" />
+    <Compile Include="Converter\IntegerClassFieldInitializedInConstructorTestFixture.cs" />
+    <Compile Include="Converter\IntegerClassFieldWithConstructorTestFixture.cs" />
+    <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
+    <Compile Include="Converter\LocalVariableAssignedInConstructorTestFixture.cs" />
+    <Compile Include="Converter\LocalVariableDeclarationInIfStatementTestFixture.cs" />
+    <Compile Include="Converter\LocalVariableNotInitializedTestFixture.cs" />
+    <Compile Include="Converter\MethodCallInConstructorTestFixture.cs" />
+    <Compile Include="Converter\MethodParameterConversionTestFixture.cs" />
+    <Compile Include="Converter\MethodReturnValueConversionTestFixture.cs" />
+    <Compile Include="Converter\MethodWithBodyConversionTestFixture.cs" />
+    <Compile Include="Converter\ModulusOperatorConversionTestFixture.cs" />
+    <Compile Include="Converter\MultiLineCommentConversionTestFixture.cs" />
+    <Compile Include="Converter\NestedClassConversionTestFixture.cs" />
+    <Compile Include="Converter\NestedIfStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\NullConversionTestFixture.cs" />
+    <Compile Include="Converter\NullParseInfoCompilationUnitWhenConvertingEventHandlerTestFixture.cs" />
+    <Compile Include="Converter\ObjectCreationTestFixture.cs" />
+    <Compile Include="Converter\ObjectInitializerConversionTestFixture.cs" />
+    <Compile Include="Converter\ObjectReferenceEqualsConversionTestFixture.cs" />
+    <Compile Include="Converter\PropertyConversionTestFixture.cs" />
+    <Compile Include="Converter\PropertyReferenceConversionTestFixture.cs" />
+    <Compile Include="Converter\PropertyWithGetSetStatementsTestFixture.cs" />
+    <Compile Include="Converter\PropertyWithGetterTestFixture.cs" />
+    <Compile Include="Converter\PropertyWithSetterTestFixture.cs" />
+    <Compile Include="Converter\RemoveHandlerConversionTestFixture.cs" />
+    <Compile Include="Converter\SingleClassMethodConversionTestFixture.cs" />
+    <Compile Include="Converter\SingleLineCommentConversionTestFixture.cs" />
+    <Compile Include="Converter\StaticClassReferenceTestFixture.cs" />
+    <Compile Include="Converter\StaticMethodConversionTestFixture.cs" />
+    <Compile Include="Converter\SwitchStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\TernaryOperatorConversionTestFixture.cs" />
+    <Compile Include="Converter\ThrowExceptionConversionTestFixture.cs" />
+    <Compile Include="Converter\TryCatchFinallyConversionTestFixture.cs" />
+    <Compile Include="Converter\TypeofConversionTestFixture.cs" />
+    <Compile Include="Converter\UnaryOperatorConversionTests.cs" />
+    <Compile Include="Converter\UsingStatementConversionTestFixture.cs" />
+    <Compile Include="Converter\VBClassConversionTestFixture.cs" />
+    <Compile Include="Converter\VBStringConcatTestFixture.cs" />
+    <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
+    <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
+    <Compile Include="DebugRunRubyCommandTestFixture.cs" />
+    <Compile Include="Designer\AppendNullPropertyValueTestFixture.cs" />
+    <Compile Include="Designer\CallBeginInitOnLoadTestFixture.cs" />
+    <Compile Include="Designer\ConvertCustomClassUsingTypeConverterTestFixture.cs" />
+    <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
+    <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
+    <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
+    <Compile Include="Designer\DeserializeComponentAssignmentTestFixture.cs" />
+    <Compile Include="Designer\DeserializeConstructorStringArrayTestFixture.cs" />
+    <Compile Include="Designer\DeserializeDateTimeArrayTestFixture.cs" />
+    <Compile Include="Designer\DeserializeLocalVariableTestFixture.cs" />
+    <Compile Include="Designer\DeserializeMethodParametersTestFixture.cs" />
+    <Compile Include="Designer\DeserializeStringArrayTestFixture.cs" />
+    <Compile Include="Designer\DeserializeToolStripItemArrayTestFixture.cs" />
+    <Compile Include="Designer\EnabledSetUsingPropertyDescriptorTestFixture.cs" />
+    <Compile Include="Designer\EventHandlerAlreadyExistsTestFixture.cs" />
+    <Compile Include="Designer\EventHandlerExistsWithIncorrectParameterCountTestFixture.cs" />
+    <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
+    <Compile Include="Designer\FormBaseClassCreatedOnLoadTestFixture.cs" />
+    <Compile Include="Designer\FormsDesignerDisplayBindingTestFixture.cs" />
+    <Compile Include="Designer\GenerateAcceptButtonTestFixture.cs" />
+    <Compile Include="Designer\GenerateAccessibleRoleFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateAutoScaleModeFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateBackgroundWorkerTestFixture.cs" />
+    <Compile Include="Designer\GenerateButtonFlatAppearanceTestFixture.cs" />
+    <Compile Include="Designer\GenerateComboBoxItemsTestFixture.cs" />
+    <Compile Include="Designer\GenerateContextMenuStripTestFixture.cs" />
+    <Compile Include="Designer\GenerateCursorFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateCustomCollectionItemsTestFixture.cs" />
+    <Compile Include="Designer\GenerateDataSetTestFixture.cs" />
+    <Compile Include="Designer\GeneratedControlOrderingTestFixture.cs" />
+    <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateEventHandlerFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateEventLogTestFixture.cs" />
+    <Compile Include="Designer\GenerateFormColorTestFixture.cs" />
+    <Compile Include="Designer\GenerateFormLocationTestFixture.cs" />
+    <Compile Include="Designer\GenerateFormPaddingTestFixture.cs" />
+    <Compile Include="Designer\GenerateFormResourceTestFixture.cs" />
+    <Compile Include="Designer\GenerateImageListResourceTestFixture.cs" />
+    <Compile Include="Designer\GenerateImeModeFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateInheritedFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateInheritedProtectedPanelFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateInheritedToolTipTestFixture.cs" />
+    <Compile Include="Designer\GenerateListViewGroupsTestFixture.cs" />
+    <Compile Include="Designer\GenerateListViewItemTestFixture.cs" />
+    <Compile Include="Designer\GenerateListViewSubItemsTestFixture.cs" />
+    <Compile Include="Designer\GenerateListViewWithImageListFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateLocalImageResourceTestFixture.cs" />
+    <Compile Include="Designer\GenerateMenuStripFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateMenuStripItemsFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateMinSizeFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateMonthCalendarTestFixture.cs" />
+    <Compile Include="Designer\GenerateNestedPanelFormTestFixture.cs" />
+    <Compile Include="Designer\GeneratePanelFormTestFixture.cs" />
+    <Compile Include="Designer\GeneratePictureBoxBeginInitTestFixture.cs" />
+    <Compile Include="Designer\GenerateRichTextBoxTestFixture.cs" />
+    <Compile Include="Designer\GenerateRightToLeftFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateSimpleFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateTableLayoutPanelTestFixture.cs" />
+    <Compile Include="Designer\GenerateTextBoxFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateTimerTestFixture.cs" />
+    <Compile Include="Designer\GenerateToolTipFormTestFixture.cs" />
+    <Compile Include="Designer\GenerateTreeViewTestFixture.cs" />
+    <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
+    <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\GetResourcesFromDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
+    <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
+    <Compile Include="Designer\InsertEventHandlerWithSpaceIndentTestFixture.cs" />
+    <Compile Include="Designer\InsertNewEventHandlerTestFixture.cs" />
+    <Compile Include="Designer\InsertSecondEventHandlerTestFixture.cs" />
+    <Compile Include="Designer\IsFormDesignableTestFixture.cs" />
+    <Compile Include="Designer\IsFullyQualifiedBaseClassFormDesignableTestFixture.cs" />
+    <Compile Include="Designer\LoadAcceptButtonFormTestFixture.cs" />
+    <Compile Include="Designer\LoadAccessibleRoleTestFixture.cs" />
+    <Compile Include="Designer\LoadAnchorStylesTestFixture.cs" />
+    <Compile Include="Designer\LoadButtonFlatAppearanceTestFixture.cs" />
+    <Compile Include="Designer\LoadColorFromArgbTestFixture.cs" />
+    <Compile Include="Designer\LoadControlEventHandlerTestFixture.cs" />
+    <Compile Include="Designer\LoadCursorTestFixture.cs" />
+    <Compile Include="Designer\LoadEventHandlerTestFixture.cs" />
+    <Compile Include="Designer\LoadFontTestFixture.cs" />
+    <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
+    <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
+    <Compile Include="Designer\LoadFormWithStatementsBeforeFormTestFixture.cs" />
+    <Compile Include="Designer\LoadInheritedProtectedPanelFormTestFixture.cs" />
+    <Compile Include="Designer\LoadInheritedPublicPanelFormTestFixture.cs" />
+    <Compile Include="Designer\LoadInheritedToolTipTestFixture.cs" />
+    <Compile Include="Designer\LoadListViewFormTestFixture.cs" />
+    <Compile Include="Designer\LoadLocalImageResourceTestFixture.cs" />
+    <Compile Include="Designer\LoadLocalVariablePropertyAssignmentTestFixture.cs" />
+    <Compile Include="Designer\LoadMenuStripFormTestFixture.cs" />
+    <Compile Include="Designer\LoadMonthCalendarTestFixture.cs" />
+    <Compile Include="Designer\LoadRichTextBoxWithEmptyTextTestFixture.cs" />
+    <Compile Include="Designer\LoadSimpleFormTestFixture.cs" />
+    <Compile Include="Designer\LoadSimpleUserControlTestFixture.cs" />
+    <Compile Include="Designer\LoadSplitContainerTestFixture.cs" />
+    <Compile Include="Designer\LoadTableLayoutPanelTestFixture.cs" />
+    <Compile Include="Designer\LoadTextBoxOnPanelTestFixture.cs" />
+    <Compile Include="Designer\LoadTextBoxTestFixture.cs" />
+    <Compile Include="Designer\LoadTimerTestFixture.cs" />
+    <Compile Include="Designer\LoadToolTipTestFixture.cs" />
+    <Compile Include="Designer\LoadTreeViewTestFixture.cs" />
+    <Compile Include="Designer\LoadUserControlWithDoublePropertyTestFixture.cs" />
+    <Compile Include="Designer\MergeFormTestFixture.cs" />
+    <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
+    <Compile Include="Designer\NoNewLineAfterInitializeComponentMethodTestFixture.cs" />
+    <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />
+    <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
+    <Compile Include="Designer\ProjectRootNamespacePassedToMergeTestFixture.cs" />
+    <Compile Include="Designer\RemoveMainMenuStripFromFormTestFixture.cs" />
+    <Compile Include="Designer\RubyBaseClassTests.cs" />
+    <Compile Include="Designer\RubyCodeBuilderTests.cs" />
+    <Compile Include="Designer\RubyCodeDeserializerTests.cs" />
+    <Compile Include="Designer\RubyControlFieldExpressionTests.cs" />
+    <Compile Include="Designer\RubyDesignerLoaderProviderTestFixture.cs" />
+    <Compile Include="Designer\RubyDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\RubyDesignerGeneratorTestFixture.cs" />
+    <Compile Include="Designer\RubyPropertyAssignmentToStringTests.cs" />
+    <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
+    <Compile Include="Designer\TextEditorIndentPassedToGeneratorTestFixture.cs" />
+    <Compile Include="Designer\UnknownTypeTestFixture.cs" />
+    <Compile Include="LanguageBindingTestFixture.cs" />
+    <Compile Include="Parsing\ParseClassWithBaseClassTestFixture.cs" />
+    <Compile Include="Parsing\ParseMethodWithOptionalParametersTestFixture.cs" />
+    <Compile Include="Parsing\ParseMethodWithParametersTestFixture.cs" />
+    <Compile Include="Parsing\ParseModuleTestFixture.cs" />
+    <Compile Include="Parsing\ParseClassMethodWithBodyTestFixture.cs" />
+    <Compile Include="Parsing\ParseClassWithNewLineBeforeMethodTestFixture.cs" />
+    <Compile Include="Parsing\ParseClassWithSingleMethodTestFixture.cs" />
+    <Compile Include="Parsing\ParseClassWithCtorTestFixture.cs" />
+    <Compile Include="Parsing\ParseInvalidRubyCodeTestFixture.cs" />
+    <Compile Include="Parsing\ParseMethodsWithNoClassTestFixture.cs" />
+    <Compile Include="Parsing\ParseRequireTestFixture.cs" />
+    <Compile Include="Parsing\ParseSingleClassTestFixture.cs" />
+    <Compile Include="RubyAddInOptionsTestFixture.cs" />
+    <Compile Include="CreateNewRubyProjectTestFixture.cs" />
+    <Compile Include="Parsing\RubyParserTestFixture.cs" />
+    <Compile Include="RubyBindingAddInFile.cs" />
+    <Compile Include="RubyIndentationTests.cs" />
+    <Compile Include="RubyLanguagePropertiesTests.cs" />
+    <Compile Include="RubyOptionsPanelTestFixture.cs" />
+    <Compile Include="RunRubyCommandTestFixture.cs" />
+    <Compile Include="Utils\AddedComponent.cs" />
+    <Compile Include="Utils\AddInHelper.cs" />
+    <Compile Include="Utils\BarItemCollection.cs" />
+    <Compile Include="Utils\ConvertedFile.cs" />
+    <Compile Include="Utils\CreatedComponent.cs" />
+    <Compile Include="Utils\CreatedInstance.cs" />
+    <Compile Include="Utils\CustomUserControl.cs" />
+    <Compile Include="Utils\DerivedAddInOptions.cs" />
+    <Compile Include="Utils\DerivedConvertProjectToRubyProjectCommand.cs" />
+    <Compile Include="Utils\DerivedFormDesignerViewContent.cs" />
+    <Compile Include="Utils\DerivedRubyAddInOptions.cs" />
+    <Compile Include="Utils\DerivedRubyConsoleHost.cs" />
+    <Compile Include="Utils\DerivedRubyDesignerGenerator.cs" />
+    <Compile Include="Utils\DerivedRubyDesignerLoader.cs" />
+    <Compile Include="Utils\DerivedRubyFormsDesignerDisplayBinding.cs" />
+    <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
+    <Compile Include="Utils\DoublePropertyUserControl.cs" />
+    <Compile Include="Utils\FooItemCollection.cs" />
+    <Compile Include="Utils\MockComponentCreator.cs" />
+    <Compile Include="Utils\MockDebugger.cs" />
+    <Compile Include="Utils\MockDesignerGenerator.cs" />
+    <Compile Include="Utils\MockDesignerLoaderHost.cs" />
+    <Compile Include="Utils\MockEditableViewContent.cs" />
+    <Compile Include="Utils\MockEventBindingService.cs" />
+    <Compile Include="Utils\MockEventDescriptor.cs" />
+    <Compile Include="Utils\MockExtenderProviderService.cs" />
+    <Compile Include="Utils\MockMethod.cs" />
+    <Compile Include="Utils\MockOpenedFile.cs" />
+    <Compile Include="Utils\MockProject.cs" />
+    <Compile Include="Utils\MockProjectContent.cs" />
+    <Compile Include="Utils\MockPropertyDescriptor.cs" />
+    <Compile Include="Utils\MockResourceReader.cs" />
+    <Compile Include="Utils\MockResourceService.cs" />
+    <Compile Include="Utils\MockResourceWriter.cs" />
+    <Compile Include="Utils\MockSite.cs" />
+    <Compile Include="Utils\MockTextEditorProperties.cs" />
+    <Compile Include="Utils\MockTextEditorViewContent.cs" />
+    <Compile Include="Utils\MockTypeResolutionService.cs" />
+    <Compile Include="Utils\MockViewContent.cs" />
+    <Compile Include="Utils\MockWorkbench.cs" />
+    <Compile Include="Utils\MockWorkbenchWindow.cs" />
+    <Compile Include="Utils\MSBuildEngineHelper.cs" />
+    <Compile Include="Utils\NullPropertyUserControl.cs" />
+    <Compile Include="Utils\RubyParserHelper.cs" />
+    <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <EmbeddedResource Include="..\Project\RubyBinding.addin">
+      <Link>RubyBinding.addin</Link>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <EmbeddedResource Include="Designer\App.ico" />
+    <EmbeddedResource Include="Strings.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\RubyBinding.csproj">
+      <Project>{C896FFFF-5B6C-4B0E-B6DF-049865F501B4}</Project>
+      <Name>RubyBinding</Name>
+    </ProjectReference>
+    <Folder Include="Converter" />
+    <Folder Include="Console" />
+    <Folder Include="Designer" />
+    <Folder Include="Utils" />
+    <Folder Include="Parsing" />
+  </ItemGroup>
+</Project>

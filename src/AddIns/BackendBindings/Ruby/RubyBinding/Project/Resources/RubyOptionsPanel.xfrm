@@ -1,0 +1,41 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="rubyOptionsPanel" />
+    <ClientSize value="{Width=326, Height=308}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="configurationGroupBox" />
+        <Location value="3, 12" />
+        <Text value="Ruby Configuration" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="320, 229" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.Button>
+            <Name value="browseButton" />
+            <Location value="288, 25" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <UseVisualStyleBackColor value="True" />
+            <Size value="24, 23" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.TextBox>
+            <Name value="rubyFileNameTextBox" />
+            <TabIndex value="1" />
+            <Size value="187, 20" />
+            <Location value="95, 25" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="commandLabel" />
+            <Location value="6, 28" />
+            <Text value="Command:" />
+            <Size value="83, 23" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

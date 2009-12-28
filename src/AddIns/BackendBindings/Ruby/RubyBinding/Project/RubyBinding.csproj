@@ -1,0 +1,185 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{C896FFFF-5B6C-4B0E-B6DF-049865F501B4}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.RubyBinding</RootNamespace>
+    <AssemblyName>RubyBinding</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\matt\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\RubyBinding\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\RubyBinding\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="ir">
+      <HintPath>..\..\IronRuby\bin\ir.exe</HintPath>
+    </Reference>
+    <Reference Include="IronRuby">
+      <HintPath>..\..\IronRuby\bin\IronRuby.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries">
+      <HintPath>..\..\IronRuby\bin\IronRuby.Libraries.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries.Yaml">
+      <HintPath>..\..\IronRuby\bin\IronRuby.Libraries.Yaml.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Core">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Debugging">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Debugging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Helpers">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\AddInOptions.cs" />
+    <Compile Include="Src\CommandLineHistory.cs" />
+    <Compile Include="Src\ConvertProjectToRubyProjectCommand.cs" />
+    <Compile Include="Src\ConvertToRubyMenuCommand.cs" />
+    <Compile Include="Src\IComponentCreator.cs" />
+    <Compile Include="Src\IMemberProvider.cs" />
+    <Compile Include="Src\ITextEditor.cs" />
+    <Compile Include="Src\NRefactoryToRubyConverter.cs" />
+    <Compile Include="Src\RubyAddInOptions.cs" />
+    <Compile Include="Src\RubyAstWalker.cs" />
+    <Compile Include="Src\RubyCodeBuilder.cs" />
+    <Compile Include="Src\RubyCodeDeserializer.cs" />
+    <Compile Include="Src\RubyCodeDomSerializer.cs" />
+    <Compile Include="Src\RubyCompilerSink.cs" />
+    <Compile Include="Src\RubyComponentWalker.cs" />
+    <Compile Include="Src\RubyComponentWalkerException.cs" />
+    <Compile Include="Src\RubyConsole.cs" />
+    <Compile Include="Src\RubyConsoleCompletionDataProvider.cs" />
+    <Compile Include="Src\RubyConsoleHost.cs" />
+    <Compile Include="Src\RubyConsolePad.cs" />
+    <Compile Include="Src\RubyConstructorInfo.cs" />
+    <Compile Include="Src\RubyControlFieldExpression.cs" />
+    <Compile Include="Src\RubyDesignerGenerator.cs" />
+    <Compile Include="Src\RubyDesignerLoader.cs" />
+    <Compile Include="Src\RubyDesignerLoaderProvider.cs" />
+    <Compile Include="Src\RubyFormattingStrategy.cs" />
+    <Compile Include="Src\RubyFormsDesignerDisplayBinding.cs" />
+    <Compile Include="Src\RubyLanguageBinding.cs" />
+    <Compile Include="Src\RubyLanguageProperties.cs" />
+    <Compile Include="Src\RubyOptionsPanel.cs" />
+    <Compile Include="Src\RubyOutputStream.cs" />
+    <Compile Include="Src\RubyParser.cs" />
+    <Compile Include="Src\RubyProject.cs" />
+    <Compile Include="Src\RubyPropertyValueAssignment.cs" />
+    <Compile Include="Src\RunDebugRubyCommand.cs" />
+    <Compile Include="Src\RunRubyCommand.cs" />
+    <Compile Include="Src\TextEditor.cs" />
+    <EmbeddedResource Include="Resources\Ruby.xshd" />
+    <None Include="ir.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
+    <None Include="RubyBinding.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\ConsoleProject.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Empty.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\EmptyClass.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\EmptyForm.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\EmptyUserControl.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\FormsProject.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\LibraryProject.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
+    <Folder Include="Src" />
+    <Folder Include="Templates" />
+    <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

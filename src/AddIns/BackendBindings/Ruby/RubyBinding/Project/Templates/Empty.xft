@@ -1,0 +1,15 @@
+﻿<Template author="Matt Ward" version="1.0">
+	<Config name      = "${res:Templates.File.EmptyFile.Name}"
+		  icon        = "Ruby.Template.EmptyFile"
+		  category    = "Ruby"
+		  defaultname = "Empty${Number}.rb"
+		  language    = "Ruby"/>
+	 
+	<Description>${res:Templates.File.EmptyFile.Description}</Description>
+	
+	<Files>
+		<File name="${FullName}" language="Ruby">
+</File>
+	</Files>
+	<AdditionalOptions/>
+</Template>

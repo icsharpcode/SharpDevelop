@@ -1,0 +1,41 @@
+﻿<?xml version="1.0"?>
+<Template originator="Matt Ward">
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
+		<Category>Ruby</Category>
+		<Icon>Ruby.Template.LibraryProject</Icon>
+		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename="MyClass.rb"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language="Ruby">
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<DebugInfo>True</DebugInfo>
+		</PropertyGroup>
+		
+		<ProjectItems>
+			<Reference Include="mscorlib"/>
+			<Reference Include="System"/>
+			<Reference Include="System.Data"/>
+			<Reference Include="System.Xml"/>
+			<Reference Include="IronRuby">
+				<HintPath>${addinpath:ICSharpCode.RubyBinding}\IronRuby.dll</HintPath>
+			</Reference>
+		</ProjectItems>
+		
+		<Files>
+			<File name="MyClass.rb"><![CDATA[
+class MyClass
+	def initialize
+	end
+end
+]]></File>
+		</Files>
+	</Project>
+</Template>

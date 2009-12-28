@@ -1,0 +1,19 @@
+﻿<Template author="Matt Ward" version="1.0">
+	<Config name      = "${res:Templates.File.EmptyClass.Name}"
+		  icon        = "Ruby.Template.Class"
+		  category    = "Ruby"
+		  defaultname = "Class${Number}.rb"
+		  language    = "Ruby"/>
+	 
+	<Description>${res:Templates.File.EmptyClass.Description}</Description>
+	
+	<Files>
+		<File name="${FullName}" language="Ruby">
+class ${ClassName}
+	def initialize()
+	end
+end
+</File>
+	</Files>
+	<AdditionalOptions/>
+</Template>

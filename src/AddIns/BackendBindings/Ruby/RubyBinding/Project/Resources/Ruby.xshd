@@ -1,0 +1,174 @@
+<SyntaxDefinition name="Ruby" extensions=".rb">
+	
+	<Properties>
+		<Property name="LineComment" value="#"/>
+	</Properties>
+	
+	<Digits name="Digits" color="DarkBlue"/>
+
+	<RuleSets>
+		<RuleSet ignorecase="false">
+			
+			<Delimiters>()[]{}@,:.`=;+-*/%~ &amp;|^&gt;&lt;</Delimiters>
+			
+			<Span name="Char" stopateol="true" color="Magenta" escapecharacter="\">
+				<Begin>'</Begin>
+				<End>'</End>
+			</Span>
+			
+			<Span name="DocComment" color="Green">
+				<Begin>"""</Begin>
+				<End>"""</End>
+			</Span>
+			
+			<Span name="MultiLineComment" color="Green">
+				<Begin>=begin</Begin>
+				<End>=end</End>
+			</Span>
+			
+			<Span name="LineComment" stopateol="true" color="Green">
+				<Begin>#</Begin>
+			</Span>
+			
+			<Span name="String" stopateol="true" color="Blue" escapecharacter="\">
+				<Begin>"</Begin>
+				<End>"</End>
+			</Span>
+			
+			<MarkPrevious bold="true" color="MidnightBlue">(</MarkPrevious>
+
+			<KeyWords name="BuiltInStatements" bold="true" color="MidnightBlue">
+				<Key word="abort"/>
+				<Key word="Array"/>
+				<Key word="at_exit"/>
+				<Key word="autoload"/>
+				<Key word="binding"/>
+				<Key word="callcc"/>
+				<Key word="caller"/>
+				<Key word="chomp"/>
+				<Key word="chop"/>
+				<Key word="eval"/>
+				<Key word="exec"/>
+				<Key word="exit"/>
+				<Key word="fail"/>
+				<Key word="Float"/>
+				<Key word="fork"/>
+				<Key word="format"/>
+				<Key word="gets"/>
+				<Key word="global_variables"/>
+				<Key word="gsub"/>
+				<Key word="Integer"/>
+				<Key word="lambda"/>
+				<Key word="proc"/>
+				<Key word="load"/>
+				<Key word="local_variables"/>
+				<Key word="loop"/>
+				<Key word="open"/>
+				<Key word="p"/>
+				<Key word="print"/>
+				<Key word="print"/>
+				<Key word="printf"/>
+				<Key word="putc"/>
+				<Key word="puts"/>
+				<Key word="rand"/>
+				<Key word="readline"/>
+				<Key word="scan"/>
+				<Key word="select"/>
+				<Key word="set_trace_func"/>
+				<Key word="sleep"/>
+				<Key word="split"/>
+				<Key word="sprintf"/>
+				<Key word="srand"/>
+				<Key word="String"/>
+				<Key word="syscall"/>
+				<Key word="system"/>
+				<Key word="sub"/>
+				<Key word="test"/>
+				<Key word="throw"/>
+				<Key word="trace_var"/>
+				<Key word="trap"/>
+				<Key word="untrace_var"/>
+			</KeyWords>
+			
+			<KeyWords name="ClassStatement" color="Blue" bold="true">
+				<Key word="class"/>
+				<Key word="module"/>
+				<Key word="public"/>
+				<Key word="protected"/>
+				<Key word="private"/>
+			</KeyWords>
+			
+			<KeyWords name="ExceptionHandlingStatements" bold="true" color="Teal">
+				<Key word="begin"/>
+				<Key word="rescue"/>
+				<Key word="ensure"/>
+				<Key word="raise"/>
+				<Key word="catch"/>
+			</KeyWords>
+			
+			<KeyWords name="FunctionDefinition" bold="true" color="Blue">
+				<Key word="def"/>
+				<Key word="end"/>
+				<Key word="undef"/>
+			</KeyWords>
+			
+			<KeyWords name="Imports" bold="true" color="Green">
+				<Key word="import"/>
+				<Key word="alias"/>
+			</KeyWords>
+			
+			<KeyWords name="IterationStatements" bold="true" color="Blue">
+				<Key word="for"/>
+				<Key word="do"/>
+				<Key word="in"/>
+				<Key word="while"/>
+				<Key word="until"/>
+			</KeyWords>
+			
+			<KeyWords name="JumpStatements" color="Navy">
+				<Key word="break"/>
+				<Key word="yield"/>
+				<Key word="redo"/>
+				<Key word="return"/>
+				<Key word="retry"/>
+				<Key word="next"/>
+			</KeyWords>
+		
+			<KeyWords name="OperatorStatements" bold="true" color="DarkCyan">
+				<Key word="and"/>
+				<Key word="not"/>
+				<Key word="or"/>
+			</KeyWords>
+			
+			<KeyWords name="NullStatement" color="Gray">
+				<Key word="nil"/>
+			</KeyWords>			
+		
+			<KeyWords name="SelectionStatements" bold="true" color="Blue">
+				<Key word="elsif"/>
+				<Key word="else"/>
+				<Key word="if"/>
+				<Key word="then"/>
+				<Key word="case"/>
+				<Key word="unless"/>
+			</KeyWords>
+		
+			<KeyWords name="BooleanStatements" color="DarkViolet">
+				<Key word="true"/>
+				<Key word="false"/>
+			</KeyWords>
+			
+			<KeyWords name="DefinedStatement" color="DarkViolet">
+				<Key word="defined"/>
+			</KeyWords>
+			
+			<KeyWords name="ClassSelfStatement" color="DarkViolet">
+				<Key word="self"/>
+			</KeyWords>
+			
+			<KeyWords name="ClassInheritanceStatement" color="DarkViolet">
+				<Key word="super"/>
+			</KeyWords>
+		</RuleSet>
+	</RuleSets>
+</SyntaxDefinition>

@@ -2,7 +2,7 @@
 <!--DockPanel configuration file. Author: Weifen Luo, all rights reserved.-->
 <!--!!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!!-->
 <DockPanel FormatVersion="1.0" DockLeftPortion="0.196180555555556" DockRightPortion="0.171180555555556" DockTopPortion="0.25" DockBottomPortion="0.25" ActiveDocumentPane="10" ActivePane="-1">
-  <Contents Count="33">
+  <Contents Count="34">
     <Content ID="0" PersistString="ICSharpCode.SharpDevelop.Project.ProjectBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="1" PersistString="ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="2" PersistString="ICSharpCode.SharpDevelop.Gui.ErrorListPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
@@ -36,6 +36,7 @@
     <Content ID="30" PersistString="FSharpBinding.FSharpInteractive" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="31" PersistString="ICSharpCode.SharpDevelop.Gui.SdiWorkspaceWindow" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="32" PersistString="ICSharpCode.WpfDesign.AddIn.OutlineViewPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
+    <Content ID="33" PersistString="ICSharpCode.RubyBinding.RubyConsolePad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
   </Contents>
   <Panes Count="11">
     <Pane ID="0" DockState="DockLeft" ActiveContent="0">
@@ -60,7 +61,7 @@
       </Contents>
     </Pane>
     <Pane ID="3" DockState="DockBottom" ActiveContent="4">
-      <Contents Count="17">
+      <Contents Count="18">
         <Content ID="0" RefID="2" />
         <Content ID="1" RefID="4" />
         <Content ID="2" RefID="15" />
@@ -78,6 +79,7 @@
         <Content ID="14" RefID="27" />
         <Content ID="15" RefID="11" />
         <Content ID="16" RefID="30" />
+        <Content ID="17" RefID="33" />
       </Contents>
     </Pane>
     <Pane ID="4" DockState="Float" ActiveContent="-1">
