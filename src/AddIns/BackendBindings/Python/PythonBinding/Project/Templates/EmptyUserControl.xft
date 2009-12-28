@@ -20,7 +20,8 @@ class ${ClassName}(UserControl):
 		self.InitializeComponent()
 	
 	def InitializeComponent(self):
-		pass
+		self.Name = "${ClassName}"
+
 </File>
 	</Files>
 	<AdditionalOptions/>
