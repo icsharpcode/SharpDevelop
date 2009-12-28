@@ -40,11 +40,11 @@ namespace ICSharpCode.AvalonEdit.Xml
 				segments.UpdateOffsets(change);
 				
 				// Remove any items affected by the change
-				AXmlParser.Log("Changed offset {0}", change.Offset);
+				AXmlParser.Log("Changed {0}-{1}", change.Offset, change.Offset + change.InsertionLength);
 				// Removing will cause one of the ends to be set to change.Offset
 				// FindSegmentsContaining includes any segments touching
 				// so that conviniently takes care of the +1 byte
-				var segmentsContainingOffset = segments.FindSegmentsContaining(change.Offset);
+				var segmentsContainingOffset = segments.FindOverlappingSegments(change.Offset, change.InsertionLength);
 				foreach(AXmlObject obj in segmentsContainingOffset.OfType<AXmlObject>().Where(o => o.IsCached)) {
 					InvalidateCache(obj, false);
 				}

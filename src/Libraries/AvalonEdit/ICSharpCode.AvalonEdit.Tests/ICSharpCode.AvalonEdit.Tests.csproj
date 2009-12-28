@@ -19,6 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\bin\UnitTests\</OutputPath>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,7 +39,7 @@
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
@@ -87,6 +88,7 @@
     <Compile Include="Utils\RopeTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
     <Compile Include="XmlParser\ParserTests.cs" />
+    <Compile Include="XmlParser\TextReplacementTests.cs" />
     <None Include="app.config" />
     <None Include="XmlParser\W3C.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
