@@ -103,8 +103,8 @@ namespace ICSharpCode.Core
 					// HACK: SD 3.0 AddIns work with SharpDevelop 3.1
 					// Because some 3.0 AddIns restrict themselves to SD 3.0, we extend the
 					// supported SD range.
-					if (reference.maximumVersion == new Version("3.0")) {
-						reference.maximumVersion = new Version("3.1");
+					if (reference.maximumVersion == new Version("3.0") || reference.maximumVersion == new Version("3.1")) {
+						reference.maximumVersion = new Version(RevisionClass.MainVersion);
 					}
 				}
 			}
