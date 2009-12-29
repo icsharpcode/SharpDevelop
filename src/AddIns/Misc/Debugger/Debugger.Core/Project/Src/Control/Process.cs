@@ -18,6 +18,8 @@ namespace Debugger
 		ICorDebugProcess corProcess;
 		ManagedCallback callbackInterface;
 		
+		string workingDirectory = String.Empty;
+		
 		#region IExpirable
 		
 		bool hasExited = false;
@@ -57,6 +59,10 @@ namespace Debugger
 			get {
 				return debugger.Options;
 			}
+		}
+		
+		public string WorkingDirectory {
+			get { return workingDirectory; }
 		}
 		
 		internal ManagedCallback CallbackInterface {
@@ -111,7 +117,9 @@ namespace Debugger
 							CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
 							);
 			
-			return new Process(debugger, outProcess);
+			Process process = new Process(debugger, outProcess);
+			process.workingDirectory = workingDirectory;
+			return process;
 		}
 		
 		public string DebuggeeVersion {

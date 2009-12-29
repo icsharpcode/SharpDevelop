@@ -150,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			item.SubItems.Clear();
 			item.SubItems.AddRange(
 				new string[] {
-					module.Filename,
+					GetModuleFileNameOrName(module),
 					String.Format("{0:X8}", module.BaseAdress),
 					module.DirectoryName,
 					module.OrderOfLoading.ToString(),
@@ -161,6 +161,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 			);
 			item.SubItems.RemoveAt(0);
+		}
+		
+		string GetModuleFileNameOrName(Module module)
+		{
+			string fileName = module.Filename;
+			if (String.IsNullOrEmpty(fileName)) {
+				return module.CorModule.Name;
+			}
+			return module.Filename;
 		}
 
 		void RemoveModule(Module module)

@@ -91,6 +91,16 @@ namespace Debugger
 				foreach(ISymUnmanagedDocument symDoc in symDocs) {
 					if (symDoc.URL.ToLower() == filename) return symDoc;
 				}
+				if (module.IsDynamic) {
+					foreach(ISymUnmanagedDocument symDoc in symDocs) {
+						string url = symDoc.URL.ToLower();
+						if (!String.IsNullOrEmpty(url) && !Path.IsPathRooted(url)) {
+							string workingDir = Path.GetFullPath(module.Process.WorkingDirectory).ToLower();
+							url = Path.GetFullPath(Path.Combine(workingDir, url));
+						}
+						if (url == filename) return symDoc;
+					}
+				}
 				return null; // Not found
 			}
 			

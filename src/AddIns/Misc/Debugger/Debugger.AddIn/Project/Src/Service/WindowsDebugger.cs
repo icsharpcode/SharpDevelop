@@ -722,9 +722,19 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debuggedProcess != null) {
 				SourcecodeSegment nextStatement = debuggedProcess.NextStatement;
 				if (nextStatement != null) {
-					DebuggerService.JumpToCurrentLine(nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+					string fileName = GetFileName(nextStatement);
+					DebuggerService.JumpToCurrentLine(fileName, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 				}
 			}
+		}
+		
+		string GetFileName(SourcecodeSegment segment)
+		{
+			string fileName = debuggedProcess.NextStatement.Filename;
+			if (!Path.IsPathRooted(fileName)) {
+				fileName = Path.Combine(debuggedProcess.WorkingDirectory, fileName);
+			}
+			return fileName;
 		}
 		
 		StopAttachedProcessDialogResult ShowStopAttachedProcessDialog()
