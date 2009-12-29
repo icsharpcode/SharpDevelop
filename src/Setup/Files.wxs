@@ -1272,6 +1272,70 @@
 											</Component>
 										</Directory>
 									</Directory>-->
+									<Directory Id="RubyBinding" Name="RubyBinding">
+										<Component Guid="7CB6802E-BC09-4796-904C-45EEAD91A5CF" Id="IrExe" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\ir.exe" Name="ir.exe" Id="ir.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ir.exe" AssemblyManifest="ir.exe" />
+										</Component>
+										<Component Guid="2F7C175B-7CCD-46D2-9B4E-A942CA14145B" Id="IrExeConfig" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\ir.exe.config" Name="ir.exe.config" Id="ir.exe.config" KeyPath="yes" />
+										</Component>
+										<Component Guid="1CE0CC65-3534-4357-BFB7-CB9F0C4E1495" Id="IronRubyDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\IronRuby.dll" Name="IronRuby.dll" Id="IronRuby.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronRuby.dll" AssemblyManifest="IronRuby.dll" />
+										</Component>
+										<Component Guid="2B7F1625-2BAA-4A55-B186-75F7ADCF3BA8" Id="IronRubyLibrariesDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\IronRuby.Libraries.dll" Name="IronRuby.Libraries.dll" Id="IronRuby.Libraries.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronRuby.Libraries.dll" AssemblyManifest="IronRuby.Libraries.dll" />
+										</Component>
+										<Component Guid="83A4BB07-15B9-4F75-9BF5-712447B60064" Id="IronRubyLibrariesYamlDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\IronRuby.Libraries.Yaml.dll" Name="IronRuby.Libraries.Yaml.dll" Id="IronRuby.Libraries.Yaml.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronRuby.Libraries.Yaml.dll" AssemblyManifest="IronRuby.Libraries.Yaml.dll" />
+										</Component>
+										<Component Guid="09FCB2E9-FA7E-40B2-8FCF-182C7DF2F5EC" Id="RubyMicrosoftDynamicDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Dynamic.dll" Name="Microsoft.Dynamic.dll" Id="RubyBinding.Microsoft.Dynamic.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Dynamic.dll" AssemblyManifest="RubyBinding.Microsoft.Dynamic.dll" />
+										</Component>
+										<Component Guid="1428A68B-743C-481E-A6DE-2DD3984CC2EB" Id="RubyMicrosoftScriptingCoreDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Core.dll" Name="Microsoft.Scripting.Core.dll" Id="RubyBinding.Microsoft.Scripting.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.Core.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.Core.dll" />
+										</Component>
+										<Component Guid="52F58B6D-98F9-4BDD-9055-67AE84403A62" Id="RubyMicrosoftScriptingDebuggingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Debugging.dll" Name="Microsoft.Scripting.Debugging.dll" Id="RubyBinding.Microsoft.Scripting.Debugging.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.Debugging.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.Debugging.dll" />
+										</Component>
+										<Component Guid="3E1BAAE7-D366-43B4-88CE-8D2ED5731CC6" Id="RubyMicrosoftScriptingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="RubyBinding.Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.dll" />
+										</Component>
+										<Component Guid="5A1F81D4-8F6C-41E0-8FFE-B6BBFB2F3804" Id="RubyMicrosoftScriptingExtensionAttributeDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" />
+										</Component>
+										<Component Guid="C9C304B7-28A1-4E0C-923D-6D3E9F95F8DF" Id="MicrosoftScriptingHelpersDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Helpers.dll" Name="Microsoft.Scripting.Helpers.dll" Id="Microsoft.Scripting.Helpers.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Helpers.dll" AssemblyManifest="Microsoft.Scripting.Helpers.dll" />
+										</Component>
+										<Component Guid="6877EFD9-7005-4BDD-80E6-FB4790436E23" Id="RubyBindingAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\RubyBinding.addin" Name="RubyBinding.addin" Id="RubyBinding.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="C1185288-280B-4006-8592-6F4FAD69498D" Id="RubyBindingDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\RubyBinding.dll" Name="RubyBinding.dll" Id="RubyBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.dll" AssemblyManifest="RubyBinding.dll" />
+										</Component>
+										<Directory Id="RubyTemplates" Name="Templates">
+											<Component Guid="6BF44E09-3910-444C-9A49-C6C811B41CFE" Id="RubyConsoleProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="RubyConsoleProject.xpt" KeyPath="yes" />
+											</Component>
+											<Component Guid="215E4AF7-C1D3-473F-90A2-A621B42BB2CD" Id="RubyEmptyFileTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Templates\Empty.xft" Name="Empty.xft" Id="RubyEmptyFile.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="B0D712C8-DCC0-48C6-B0DC-F8D6B7AF6351" Id="RubyEmptyClassFileTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="Templates.EmptyClass2.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="B11F038D-F71E-409C-AEB9-ED54EBA299F9" Id="RubyEmptyFormFileTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Templates\EmptyForm.xft" Name="EmptyForm.xft" Id="Templates.EmptyForm.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="3F5329F7-72DE-4E44-B36C-F2EF8EED4183" Id="RubyEmptyUserControlFileTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Templates\EmptyUserControl.xft" Name="EmptyUserControl.xft" Id="Templates.EmptyUserControl.xft" KeyPath="yes" />
+											</Component>
+											<Component Guid="6096D8DC-E9AE-41D2-82E3-6284E4878545" Id="RubyFormsProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Templates\FormsProject.xpt" Name="FormsProject.xpt" Id="Templates.FormsProject1.xpt" KeyPath="yes" />
+											</Component>
+											<Component Guid="BDB0208E-B04F-42F5-B3FB-97F77D6C4C7B" Id="RubyLibraryProjectTemplate" DiskId="1">
+												<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Templates\LibraryProject.xpt" Name="LibraryProject.xpt" Id="LibraryProject.xpt" KeyPath="yes" />
+											</Component>
+										</Directory>
+									</Directory>
 									<Directory Id="XamlBinding" Name="XamlBinding">
 										<Component Guid="34D119F8-F7C8-40DD-B354-FA50A3349033" Id="ICSharpCodeXamlBindingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\XamlBinding\ICSharpCode.XamlBinding.dll" Name="ICSharpCode.XamlBinding.dll" Id="ICSharpCode.XamlBinding.dll" KeyPath="yes" />

@@ -20,7 +20,9 @@ class ${ClassName}(Form):
 		self.InitializeComponent()
 	
 	def InitializeComponent(self):
-		pass
+		self.Name = "${ClassName}"
+		self.Text = "${ClassName}"
+
 </File>
 	</Files>
 	<AdditionalOptions/>

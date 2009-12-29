@@ -417,8 +417,29 @@
 				<ComponentRef Id="PythonBindingLibRunpyPy"/>
 				<ComponentRef Id="PythonBindingLibSitePy"/>
 				<ComponentRef Id="PythonBindingLibFuturePy"/>
-				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>				
-
+				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>		
+				
+				<ComponentRef Id="IrExe"/>
+				<ComponentRef Id="IrExeConfig"/>
+				<ComponentRef Id="IronRubyDll"/>
+				<ComponentRef Id="IronRubyLibrariesDll"/>
+				<ComponentRef Id="IronRubyLibrariesYamlDll"/>
+				<ComponentRef Id="MicrosoftScriptingHelpersDll"/>
+				<ComponentRef Id="RubyBindingAddin"/>
+				<ComponentRef Id="RubyBindingDll"/>
+				<ComponentRef Id="RubyMicrosoftDynamicDll"/>
+				<ComponentRef Id="RubyMicrosoftScriptingDll"/>
+				<ComponentRef Id="RubyMicrosoftScriptingCoreDll"/>
+				<ComponentRef Id="RubyMicrosoftScriptingDebuggingDll"/>
+				<ComponentRef Id="RubyMicrosoftScriptingExtensionAttributeDll"/>
+				<ComponentRef Id="RubyEmptyClassFileTemplate"/>
+				<ComponentRef Id="RubyConsoleProjectTemplate"/>
+				<ComponentRef Id="RubyEmptyFormFileTemplate"/>
+				<ComponentRef Id="RubyEmptyFileTemplate"/>
+				<ComponentRef Id="RubyEmptyUserControlFileTemplate"/>
+				<ComponentRef Id="RubyFormsProjectTemplate"/>
+				<ComponentRef Id="RubyLibraryProjectTemplate"/>
+				
 				<!--<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	
 				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	

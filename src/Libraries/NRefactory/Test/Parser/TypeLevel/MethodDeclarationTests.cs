@@ -312,6 +312,35 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		[Ignore("End line for function is off by one.")]
+		public void VBNetFunctionMethodDeclarationTest()
+		{
+			const string program = @"public function MyFunction() as Integer
+				return 1
+			end function";
+			
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
+			Assert.AreEqual(Modifiers.Public, md.Modifier);
+			Assert.AreEqual(2, md.StartLocation.Line, "StartLocation.Y");
+			Assert.AreEqual(2, md.StartLocation.Column, "StartLocation.X");
+			Assert.AreEqual(2, md.EndLocation.Line, "EndLocation.Y");
+		}
+		
+		[Test]
+		public void VBNetSubroutineMethodDeclarationTest()
+		{
+			const string program = @"public Sub MyMethod()
+				OtherMethod()
+			end Sub";
+			
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
+			Assert.AreEqual(Modifiers.Public, md.Modifier);
+			Assert.AreEqual(2, md.StartLocation.Line, "StartLocation.Y");
+			Assert.AreEqual(2, md.StartLocation.Column, "StartLocation.X");
+			Assert.AreEqual(2, md.EndLocation.Line, "EndLocation.Y");
+		}
+		
+		[Test]
 		public void VBNetGenericFunctionMethodDeclarationTest()
 		{
 			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>("function MyMethod(Of T)(a As T) As Double\nEnd Function");

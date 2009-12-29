@@ -1,0 +1,2905 @@
+CHANGELOG
+=========
+
+ironruby-0.9.3 (RC1) 2009-11-20
+-------------------------------
+	Here are all the commits for this release:
+	http://github.com/ironruby/ironruby/commits/v0.9.3
+
+	Up until the first commit after the last release:
+	http://github.com/ironruby/ironruby/commit/81c509da483590e0995f3bd7e5ac27d0d88ab29c
+
+	The following commit messages are for all the commits in GIT which are
+	marked as "sync to tfs" or something to that effect:
+
+	---------------------------------------------------------------------------------------------------
+	Changeset: 1281974
+	User: sborde
+	Checked in by: merllab
+	Date: Friday, November 20, 2009 12:37:18 PM
+
+	Comment:
+		Makes Time mutable. It was mapped to System.DateTime which is immutable. However, Time#utc mutates the instance. So now we define a new type Time with a _dateTime field. The core\shared\gmtime test is not enabled because it expects that modifying ENV['TZ'] at runtime changes the timezone, which is not supported yet in IronRuby (and MRI too)
+		
+		(Shelveset: time;REDMOND\sborde | SNAP CheckinId: 9875)
+
+	Items:
+		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ClrTests.cs
+		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/FileOps.cs
+		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/TimeOps.cs
+		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Zlib/zlib.cs
+		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Attributes.cs
+		add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/bcl/system_datetime/conversion_spec.rb
+		delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/bcl/system_datetime/instantiation_spec.rb;X13092237
+		delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/bcl/system_datetime/mapping_spec.rb;X13092237
+
+	Check-in Notes:
+		Code Reviewer:
+		Performance Reviewer:
+		Security Reviewer:
+
+	---------------------------------------------------------------------------------------------------
+	Changeset: 1281837
+	User: jdeville
+	Checked in by: merllab
+	Date: Friday, November 20, 2009 11:27:25 AM
+
+	Comment:
+		Updates IronRuby to 0.9.3
+		
+		(Shelveset: version0.9.3;REDMOND\jdeville | SNAP CheckinId: 9872)
+
+	Items:
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/Wix/IronRuby.wxs
+
+	Check-in Notes:
+		Code Reviewer:
+		Performance Reviewer:
+		Security Reviewer:
+
+	---------------------------------------------------------------------------------------------------
+	Changeset: 1277176
+	User: sborde
+	Checked in by: merllab
+	Date: Wednesday, November 18, 2009 6:53:13 AM
+
+	Comment:
+		Implements Kernel.srand with no parameters
+		Changes RubyRegex to not clone the input string when being used for String#scan, and to share the cloned string when possible. Without the sharing, you could cause OutOfMemoryException.
+		
+		(Shelveset: regex;REDMOND\sborde | SNAP CheckinId: 9855)
+
+	Items:
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/KernelOps.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/MutableStringOps.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MatchData.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyRegex.cs
+
+	Check-in Notes:
+		Code Reviewer:
+		Performance Reviewer:
+		Security Reviewer:
+
+	---------------------------------------------------------------------------------------------------
+	Changeset: 1265896
+	User: jdeville
+	Date: Wednesday, November 11, 2009 1:05:07 PM
+
+	Comment:
+		Fixing transformation paths for .exe.config. doesnt' affect snap.
+
+	Items:
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/context.rb
+
+	Check-in Notes:
+		Code Reviewer:
+		Performance Reviewer:
+		Security Reviewer:
+
+	---------------------------------------------------------------------------------------------------
+	Changeset: 1264343
+	User: merllab
+	Date: Tuesday, November 10, 2009 6:51:03 PM
+
+	Comment:
+		(tomat) DLR, Python Ruby:
+		
+		Makes all instruction classes internal except for the base Instruction class. Adds InstructionList class that represents incomplete instruction stream and provides Emit* instructions (like ILGenerator). The class is converted to InstructionArray when finished. Both implement a debug view so that it is easy to see what instructions are being emitted/interpreted.
+		
+		Implements cache for LoadObject instruction – instead of allocating a new instruction per object constant we store the constants into an array and have specialized pre-generated instructions to load them. 
+		Adds caching of branch instructions.
+		Adds debug cookies to instruction list in DEBUG builds – each instruction can be associates with one or more debug cookies. LocalAccess instructions use this to store the variable names. The cookies are used in debug view.
+		
+		Groups related instructions into separate files.
+		Implements AddInstuction for all primitive arithmetic types.
+		
+		Adds –X:CompilationThreshold option that sets the number of iterations before we start compiling code. 
+		Obsoletes InterpretedMode, NoAdaptiveCompilation and PerfStats properties on LanguageSetup. The options can still be set via dictionary.
+		
+		Reduces the number of instruction instances that are executed at least once during the run of “mspec ci core” from 1,274,454 to 280,684.
+		
+		
+		(Shelveset: InstructionRefactoring;REDMOND\tomat | SNAP CheckinId: 9786)
+
+	Items:
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/InterpreterTests.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Ast/Instructions/FrameTracking.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyOptionsParser.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyScriptCode.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/MethodDispatcher.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMetaBinder.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Conversions/Converter.Generated.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/CodeGenerator.rb
+
+	Check-in Notes:
+		Code Reviewer:
+		Performance Reviewer:
+		Security Reviewer:
+
+	---------------------------------------------------------------------------------------------------
+	Changeset: 1250989
+	User: merllab
+	Date: Tuesday, November 03, 2009 5:23:47 PM
+
+	Comment:
+		(sborde) Fixes for double formatting on non-English culture
+		
+		(Shelveset: cul;REDMOND\sborde | SNAP CheckinId: 9744)
+
+	Items:
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/BigDecimal/BigDecimal.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/StringFormatter.cs
+		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyOptionsParser.cs
+
+	Check-in Notes:
+		Code Reviewer:
+		Performance Reviewer:
+		Security Reviewer:
+
+
+
+ironruby-0.9.2.0 - 2009-10-29
+-----------------------------
+	Here are all the commits for this release:
+	http://github.com/ironruby/ironruby/commits/v0.9.2
+
+	Up until the first commit after the last release:
+	http://github.com/ironruby/ironruby/commit/03054a5be81928afaacd16b5ef5d4067f7ecc69a
+
+	The following commit messages are for all the commits in GIT which are
+	marked as "sync to tfs" or something to that effect:
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, October 28, 2009 4:24:48 PM
+
+	Comment:
+		(tomat) DLR:
+		
+		Misc fixes to Hosting API:
+		-	Implements BindInvokeMember on ScopeStorage.
+		-	Makes ScriptScope constructor internal. 
+		-	ObjectOperations.GetMember<T> … performs language specific conversion to T, like ConvertTo<T> and GetVariable<T>
+		-	All methods that take IAttributesCollection are obsolete.
+		-	Try(Get/Set)Variable(Handle) on ScriptEngine are obsolete.
+		-	ScriptRuntime.CreateScope should take IDynamicMetaObjectProvider 
+		
+		Ruby
+		-	Kernel#require no longer loads Python files, IronRuby#require should  be used instead.
+		-	Fixes possible race condition in global scope initializer.
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, October 28, 2009 12:47:58 PM
+
+	Comment:
+		(tomat) DLR:
+		The overload resolver should handle a candidate set with no callable method (e.g. have unbound generic parameter). Adds a BindingResult value that indicates such case.
+		
+		Ruby, Python:
+		Disables VSHost process in CLR4 configurations to enable debugging in VS2010. VS2010 doesn’t handle multiple TargetFrameworkVersions per project correctly when launching VSHost process.
+		
+		Ruby:
+		Simplifies ClsTypeEmitter and adds support for overriding default indexers. 
+		
+		Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2907:
+		Previously, generic type definitions were handled as super-classes for their instantiations so that it is possible to add a Ruby method on a generic type definition and call it from any instantiation. This approach breaks when inheriting from a generic type – the inheritance hierarchy is incorrect. It makes more sense to treat generic type definitions as modules – they can’t be instantiated, don’t define any callable methods and we can mix them into their instantiations instead of inheriting from them. 
+		
+		Adds an overload to String.new that takes a byte[] and turns it into a binary string.
+		
+		Implements a debug view from RubyMethod.
+		
+		Fixes:
+		http://vstfdevdiv:8080/WorkItemTracking/WorkItem.aspx?artifactMoniker=730017
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2949
+		
+		Fixes super calls in partial trust.
+		
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, October 27, 2009 2:16:40 PM
+
+	Comment:
+		(jimmysch) Shri:
+				Merge branch 'master' of git://github.com/ironruby/ironruby
+				Fix to irtests.rb for changing Silverlight install folder (it has changed once again to  3.0.40818.0)
+		Ivan:
+				Fixes package task for ironruby
+				Fixes rake build for mono
+				Updated to 0.9.1 tag
+				Scripts to ensure compatibility with mono based distros
+		Jim:
+				tag string scanner spec added in legacy fixing
+				More cleanup of legacy tests.
+				
+				Some specs have been moved to MSPEC, some have been deleted since they are
+				covering duplicate areas as MSPEC.
+				remove extraneous 1 file
+				This makes one large method creating a large hash, but it saves duplication
+				specs for properties and methods on structs and interfaces
+				fixes dev.ps1.
+				
+				set-envvar is added which acts like cmd's set method. If you call it with no
+				arguments, then it lists the contents of the $env provider, if you call it with
+				an arg of x=foo, then it sets $env:x to foo.
+				Specs for nullable parameters and properties
+				Merge branch 'master' of git@github.com:ironruby/ironruby
+				includes a insert-path cmdlet so that we do not rely on files on my computer
+				Specs that regexp matching a multibyte string shouldn't throw an error.
+				Also adds general -K specs.
+		Jimmy:
+				Fix IronRuby tutorial scrolling bug, and clean up TryRuby tutorial a bit
+				Woops, forgot to actually disable the test in Silverlight
+				Get IronRuby tutorial tests running in Silverlight again, and only show the console when running tests.
+				IronRuby tutorial - allow "silverlight" method to be used in chapters as well.
+				Cleanup IronRuby tutorial scripts
+				Clean up Silverlight sample-scripts
+				Cleans up LoadRootVisual and LoadComponent
+				Remove files from Tutorial which should not be checked in
+				DLR.createSilverlightObject should use DLR.settings, so user-defined defaults are used for all controls.
+				
+		Also various other commits from Jim and Jimmy that TFS wouldn't let me add
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Sunday, October 25, 2009 11:26:39 PM
+
+	Comment:
+		(tomat) Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1483.
+	 
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Sunday, October 25, 2009 9:55:54 PM
+
+	Comment:
+		(tomat) Fixes http://vstfdevdiv:8080/WorkItemTracking/WorkItem.aspx?artifactMoniker=797512.
+		
+	-------------------------------------------------------------------------------
+	User: jdeville
+	Date: Thursday, October 22, 2009 4:48:46 PM
+
+	Comment:
+		Installer for IronRuby. After running rake package, if you run build c:\ironruby from this directory, you will get a IronRuby.msi file in the current directory. The installer has optional installation of:
+			* Std Lib
+			* Samples
+			* Silverlight binaries
+			* Addition of installation directory to %PATH%
+			
+			Enjoy
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, October 21, 2009 5:37:29 PM
+
+	Comment:
+		(sborde) Implements Thread.exclusive. Enables a minimal test for Shell which was blocked on Thread.exclusive
+		
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Sunday, October 18, 2009 9:22:55 PM
+
+	Comment:
+		(tomat)   DLR:
+			Fixes ScriptScope’s BindSetMember – it needs to convert the result expression to Object.
+			
+			Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2421 – if a CLR array is passed to params-array parameter it is not treated as a single parameter. Instead the overload resolver “splats“ it by default (implements C# semantics). This is not the right behavior for Ruby. I’ve added ExpandParams virtual method that allows the language to specify for a given MethodCandidate whether its params array/dictionary should always be expanded and thus never use the incoming array as the params array.
+			
+			Interpreter – implements TypeIs instruction (fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2462).
+			
+			Ruby:
+			Moves methods related to libraries from RubyModule to the library initializer.
+			
+			Fixes 
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1849
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2243 
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2171
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1989
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2146
+		
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Sunday, October 18, 2009 8:01:56 PM
+
+	Comment:
+		(tomat) DLR:
+		Fixes ErrorSink to throw SyntaxErrorException only if the severity is FatalError or Error (i.e. not for warnings).
+		
+		Ruby:
+		Fixes bugs:
+		
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2514
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2654
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1878
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1357
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2609
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Thursday, October 15, 2009 12:36:35 AM
+
+	Comment:
+		(sborde) Disables tests failing on Ivan's build machine
+		
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, October 14, 2009 11:47:56 PM
+
+	Comment:
+		(tomat)   Python, DLR:
+			Fixes Dev10 build.
+			Fixes bug http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=772  - new type builder doesn’t handle modops correctly.
+			
+			Ruby:
+			Fixes bugs:
+			
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=616
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2163
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=772
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2753
+		
+		
+	-------------------------------------------------------------------------------
+	User: jdeville
+	Date: Wednesday, October 14, 2009 3:15:51 PM
+
+	Comment:
+		Makes irtests work correctly in modes without -p. It was hanging due to cmd /K
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Monday, October 12, 2009 1:35:22 PM
+
+	Comment:
+		(tomat) Generalizes clr_member to support calls to an explicit implementation of an interface method as well as a base class method hidden by a “new slot” method.
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Monday, October 12, 2009 12:36:39 PM
+
+	Comment:
+		(tomat) Fixes bug in class initializer call - initialize defined via define_method didn't work.
+	 
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, October 09, 2009 5:48:40 PM
+
+	Comment:
+		(tomat) 
+			DLR and Python changes:
+			Adds an explicit Single -> BigInteger conversion (V4 BigInteger has this conversion).
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2191: Can't convert System::Single to BigInteger
+			
+			Ruby:
+			Bugs:
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1651: Can't Assign to CLR fields with #send
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2189: System::Char values are incorrectly converted when used in a method with a System::Single argument
+			
+			Also fixes overload resolution conversion preference in cases:
+			-	Enum/Enum’s underlying int type -> prefer int unless the actual type exactly matches Enum
+			-	System::String/ System::Char -> prefer String.
+			
+			Removes a reference to a non-existent file from Ruby.Build.csproj.
+	 
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, October 09, 2009 1:38:57 PM
+
+	Comment:
+		(tomat) DLR (interpreter):
+		Fixes interpreted stack underflow when interpreting void methods.
+		Finishes implementation of IndexExpression.
+		Implements a workaround for http://vstfdevdiv:8080/WorkItemTracking/WorkItem.aspx?artifactMoniker=796414. Delegate.CreateDelegate blows up if the target MethodInfo is an Array::Get/Set method. These methods are generated at runtime by type loader.
+		
+		DLR (Hosting API):
+		Implements ObjectHandle overloads of (Try)ImplicitConvertTo.
+		
+		Fixes:
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2686
+		
+		Ruby 
+		Disables default protocol for enums which partially fixes:
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2490 
+		
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Thursday, October 08, 2009 10:32:26 AM
+
+	Comment:
+		(tomat) Implements defined?(super) and fixes defined? applied on a method call to respect visibility.
+		
+		Fixes:
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1354
+		
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, October 07, 2009 5:34:23 PM
+
+	Comment:
+		(tomat)   Reimplements RubyRegex so that it works correctly with 1.9-encoded strings, respects KCODE regex options and $KCODE variable.
+			Fixes rindex used with Regex.
+			Fixes how Kernel#inspect displays instance variables – MRI seems to not display them for classes not defined in Ruby except for Object.
+			Fixes bugs in RubyBufferedStream.WriteBytes, MutableString.IndexOf, MutableString.LastIndexOf, 
+			Win32OLE so that it doesn’t report a syntax warning.
+			Fixes  .NET interop specs: Interop\net\method\fixtures\classes.rb
+			
+			Fixes:
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2027
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2190
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1927
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, October 06, 2009 1:51:22 PM
+
+	Comment:
+		(tomat) None
+		
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Monday, October 05, 2009 4:56:57 PM
+
+	Comment:
+		(dinov) None
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Monday, October 05, 2009 12:52:55 PM
+
+	Comment:
+		(tomat) Fixes/implements serialization of arrays, strings, encodings and exceptions.
+		Also includes fixes to istty and Win32API for Unix.
+		
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, September 30, 2009 3:16:17 PM
+
+	Comment:
+		(tomat) Fixes issues with Kernel#`, system and exec. Paths with spaces and shell commands were not handled correctly.
+			Also fixes a bug in mspec/lib/mspec/helpers/ruby_exe.rb – it didn’t handle spaces in RUBY_EXE path correctly.
+			Implements Win32API library – irb depends on it if run on Windows and it “worked” only due to a bug in Kernel#`.
+			Fixes IO#tty? – it only returns true if the console stream is not redirected to a file or a pipe. Adds some specs to test this.
+			Disables Process::UID and Process::Sys specs on Windows.
+		
+
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, September 30, 2009 11:40:13 AM
+
+	Comment:
+		(dinov) 24742 Can't delete default module docstring with 2.6 RC1
+								Module initialization should always assign __doc__
+		24741 New module with 2.6 RC1 has docstring
+								Same as 24742
+		24735 HAPI: PythonEngine does not release ScriptScopes in RC1
+								We need to hold onto a ScopeStorage objects via a WeakReference – not a strong reference as we do today.
+		24720 Unexpected site.py behavior - loaded from current dir
+								DLR shouldn’t force a set of default paths on languages.  IronPython should append current directory only after importing site.
+		24692 Removing a read-only dir should raise an error with errno set to EACCES
+								When .NET throws an IOException we need to use Marshal.GetLastWin32Error() to get the correct error code for re-throwing
+		24690 errno.errorcode dict has keys and values inverted
+								Need to un-invert the values
+		24691 os.path.abspath should handle invalid paths
+								Need to deal with drive separators when handling invalid paths on Windows.
+		24636 Attempt to override __dict__ on a subclass of module (type(sys)) fails in IPy
+								This is all kinds of broken.  We need to lookup in the types MRO for user defined attributes in the custom __getattribute__/__setattr__/__delattr__ methods.  We also need to make sure that we’re not defining __dict__ on a subclass whose base classes already have it defined (added a new test case not involving modules to test_class for this).
+		
+		Also:
+								Adding ImplicitConvertTo to hosting APIs and updating LanguageContext to receive bool? Indicating explicit, implicit, or language defined.
+								Fixing “pecified path” error message to include the S
+								Removing GC.SuppressFinalize call from XRange iterator that isn’t needed
+								Adding fast path for creating ints from bools
+								Fixing stack overflow when accessing __doc__ - given 
+	 
+	-------------------------------------------------------------------------------
+	User: jdeville
+	Date: Monday, September 28, 2009 10:34:44 AM
+
+	Comment:
+		makes rake compile's flags match up with msbuild
+
+	-------------------------------------------------------------------------------
+	User: tomat
+	Date: Monday, September 28, 2009 9:49:23 AM
+
+	Comment:
+		Fix in initializer generator.
+	-------------------------------------------------------------------------------
+
+ironruby-0.9.1.0 - 2009-09-28
+-----------------------------
+	Here are all the commits for this release:
+	http://github.com/ironruby/ironruby/commits/v0.9.1
+
+	Up until the first commit after the last release:
+	http://github.com/ironruby/ironruby/commit/31a2ba0919ac6d95e3bc0213dcb5bd6b5eef42eb
+
+	The following commit messages are for all the commits in GIT which are
+	marked as "sync to tfs" or something to that effect:
+
+	-------------------------------------------------------------------------------
+	User: jdeville
+	Date: Monday, September 28, 2009 10:34:44 AM
+
+	makes rake compile's flags match up with msbuild
+	-------------------------------------------------------------------------------
+	User: tomat
+	Date: Monday, September 28, 2009 9:49:23 AM
+
+	Fix in initializer generator.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, September 25, 2009 7:29:36 PM
+
+	(tomat) Uses System.Numerics.BigInteger as an underlying representation for 
+	  BigInteger on CLR4.
+	Adds a reference to System.Numerics to projects.
+	Replaces Monitor.Enter(obj) with Monitor.Entery(obj, ref lockTaken). Adds 
+	  MonitorUtils to reduce amount if #if def’s.
+	Removes CompilerHelpers.IsAttributeDefined – a workaround for CLR bug #772820 
+	  which is already fixed in Main.
+
+	Fixes IronPython\Test\run.py to correctly handle paths with spaces.
+	Fixes Ruby library initializer generator to use short names for Action delegates.
+	Changes Ruby\Libs\rbconfig.rb to use ROWAN_BIN environment variable if available.
+
+	-------------------------------------------------------------------------------
+	User: jdeville
+	Date: Friday, September 25, 2009 4:18:43 PM
+
+	missed this file in the rake work
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, September 25, 2009 3:18:01 PM
+
+	(jdeville) Shri:
+			Disable a failing ActiveRecord test
+			Adds ActiveRecord tests in 
+			  Merlin/External.LCA_RESTRICTED/Languages/IronRuby/RailsTests-2.3.3/activerecord
+			Merlin/Main/Languages/Ruby/Test/Scripts/ActiveRecordTests.rb has a driver 
+			  file to run the tests. It is not yet enabled in irtests
+			Separated/baselined test failures caused by MRI
+			Add ActiveSupport tests to irtests.rb
+			Merge branch 'master' of http://github.com/ironruby/ironruby
+			Added ActionPack tests to irtest.rb. The tests which test the ActiveRecord 
+			  integration are not enabled.
+			Deleted test-unit gem. This interferes with the test/unit standard library. 
+			  Normally, require will prefer to load the standard library, even with RubyGems
+				loaded. However, ActiveSupport seems to prefer a gem over a standard library.
+			Reapplying fix for assert in OverloadResolver.cs
+			Run Tutorial SL tests on a separate thread
+
+	Tim:
+			Modified the source code of Prime.cs to adhere to standards.
+			And also refactor the path methods and example.
+			Added two files for IronRuby tutorial - Loading assemblies by given path
+			Added loading assembly with a given path tutorial.
+			The custom assembly and source code used in the tutorial.
+
+	Jimmy:
+			Introduction of just text features
+			
+	Jim:
+			Various .netinterop specs for overloads and binding
+
+	Other:
+			Adds a git-to-tfs.ps1 which performs a pull, walks the pull doing the
+			appropriate TF operations to each file, and then stores the commit messages
+			from the pull in a txt file.
+			Also adds a update-version.ps1 file that updates the version number for
+			IronRuby
+			updates alias files
+
+	*  Jim and Jimmy's commit messages were cut short due TFS
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Thursday, September 24, 2009 4:04:44 PM
+
+	Comment:
+	(tomat) Implements constant access caching. We use a single per-runtime constant 
+	  access version (CAV) which increases each time any constant is assigned, module 
+		is included into another module/class or any other operation that can potentially
+		change value returned from any constant read site. Each constant read site holds 
+		on a cache object that holds on the last value that the constant resolved to and 
+		the snapshot of the CAV for which the value is valid. We collapse chained constant
+		accesses (A::B::C…) into a single site if possible. If any constant in the chain
+		is missing (const_missing is invoked) or the result is not cached. To not leak
+		significant amount of memory we need to hold on the constant values via weak 
+		references. Since there are usually much more constant reads than constant writes
+		we create a weak reference on write, store it constant table and reuse it in all
+		read sites. We avoid creating weak references for boxed primitive numeric types
+		and Boolean to make access to these constants faster and to reduce the amount of
+		weak references created. To ensure cross-runtime safety and keep the implementation
+		simple we don’t cache constant chains whose elements are from different runtimes
+		(e.g. A::B::C, where module A is from runtime 1 and module A::B from runtime 2).
+
+	Also implements optimization of defined?(constant) construct. MRI returns a fresh 
+		instance of string “constant” each time defined?(constant) executes with success 
+		and nil if it fails to resolve the constant. In most cases the result of defined? 
+		is used in a Boolean expression thus immediately converted to Boolean. Since we 
+		can statically determine whether a value is being read in a context of a Boolean 
+		expression we don’t need to allocate the string if it is.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, September 23, 2009 1:09:45 PM
+
+	Comment:
+	(tomat) Prevents a possible recursion caused by user code executed when processing
+	  AssemblyResolve event.
+
+	Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2533.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, September 22, 2009 6:56:30 PM
+
+	Comment:
+	(tomat) Fixes Dev10 solutions and properly quotes command lines in alias.txt.
+
+	(Shelveset: SimpleDev10;REDMOND\tomat | SNAP CheckinId: 9462)
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, September 22, 2009 3:20:28 PM
+
+	(tomat) Affects DLR and Ruby.
+
+	Fixes bugs:
+	http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2476
+	http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2045
+	http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2027
+
+	DLR: 
+	Renames Set<T> to HashSet<T> and makes it public (so that we can use it in IronRuby).
+	Implements workaround for a bug in 32bit console.
+	v10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ModuleOps.cs
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Thursday, September 17, 2009 2:43:17 PM
+
+	(dinov) fix dev10 build issues
+
+	(Shelveset: Dev10Build;REDMOND\dinov | SNAP CheckinId: 9442)
+	-------------------------------------------------------------------------------
+	User: jdeville
+	Date: Thursday, September 17, 2009 1:26:02 PM
+
+	Fixing rake compile
+	-------------------------------------------------------------------------------
+	User: tomat
+	Date: Thursday, September 17, 2009 10:43:38 AM
+
+	Fixes Ruby.sln
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Thursday, September 17, 2009 9:49:39 AM
+
+	(dinov) directory shuffle - final
+
+	(Shelveset: DirectoryShuffle_Final2;REDMOND\dinov | SNAP CheckinId: 9437)
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, September 16, 2009 11:28:46 AM
+
+	(dinov) directory shuffle
+
+	(Shelveset: DirectoryShuffle_Phase1_2;REDMOND\dinov | SNAP CheckinId: 9432)
+	-------------------------------------------------------------------------------
+	User: tomat
+	Date: Tuesday, September 15, 2009 2:39:20 PM
+
+	Fixing Ruby.sln.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Monday, September 14, 2009 7:37:37 PM
+
+	(dinov) move hosting APIs
+
+	(Shelveset: MoveHapi12;REDMOND\dinov | SNAP CheckinId: m10224)
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Monday, September 14, 2009 6:17:45 PM
+
+	(tomat) Fixes bugs
+	http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1535:
+		Parallel assignment should call to_ary
+	http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1995:
+		Line number in callstack is sometimes 16707566 (0xFEEFEE)
+
+	and language specs:
+	fails:Calling a method fails with both lambda and block argument
+	fails:The 'case'-construct raises a SyntaxError when 'else' is used when no 'when' is given
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, September 11, 2009 4:39:08 PM
+
+	(tomat) Affects Core DLR, DLR, Debugging, ET tests, Python, Ruby, Simple.
+
+	Moves Func and Action delegates into Microsoft.Scripting.Utils namespace for CLR2 build.
+
+	Non-trivial changes:
+
+	Ruby
+	LibraryDef.cs – initializer generator needs to not use full names of Func and Action in generated code.
+	ClrTests.cs – avoid using full names for Func and Action
+
+	DLR
+	ReflectionUtils – support for custom naming in name formatters (used by Ruby)
+
+	Simple
+	test.sympl, test.bsl – print short name of Func delegate
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, September 11, 2009 12:55:05 PM
+
+	Comment:
+	(tomat) Changes constant publishing and lookup in global DLR scope.
+	Previously Object class didn’t have a constant table. Object constants were stored
+	directly in the global scope. This allowed to publish any value to the host and other
+	languages just by defining a constant on Object. Object constants include all constants
+	defined  by top-level code as well as built-in constants (VERSION, TRUE, FALSE, NIL, 
+	etc.) and modules (Object, String, Time, …). This makes it highly probable that some 
+	of these constants collide with similar constants of other languages hosted in the
+	same script runtime. 
+
+	This shelveset implements a different approach. It adds a constant table to Object class 
+	that contains all constants that MRI defines on Object. 
+
+	To enable interop scenarios, in which e.g. IronPython loads Ruby library and looks up 
+	loaded top-level modules in the global scope, we publish those constants defined on 
+	Object whose value is a Module or Class instance. Built-in modules/classes are not 
+	published by default. The global scope is therefore initially empty (if not populated 
+	by the host or other language) and references to the top-level modules and classes
+	are stored there as Ruby scripts execute. A definition of a module or a class on
+	Object publishes the module/class to the global scope. Also, an assignment expression
+	of a module/class instance to a constant on Object publishes that module/class to the
+	global scope. In both cases the constant reference is stored in both Object constant 
+	table and in the global scope storage.
+
+	To enable the reverse interop scenario, i.e. consuming values published in the global
+	scope by the host or another language, the default implementation of Module#constant_missing
+	doesn’t just throw an exception. Instead, it looks first into a table of loaded CLR 
+	namespaces (for symbols like System, Microsoft, etc.) and then into the global
+	scope. Only if the constant is not found there an exception is thrown. The lookup
+	in the global scope uses reverse name mangling. ...
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, September 04, 2009 6:07:25 PM
+
+	(tomat) Changes namespace where ETs are defined (System.Linq.Expressions) to
+	Microsoft.Scripting.Ast for non-Dev10 build.
+
+	Mostly #if-def like
+	#if CLR4
+		using System.Linq.Expressions;
+	#else
+		using Microsoft.Scripting.Ast;
+	#endif
+	
+	or
+
+	#if MICROSOFT_SCRIPTING_CORE
+		namespace Microsoft.Scripting.Ast {
+	#else
+		namespace System.Linq.Expressions {
+	#endif
+
+	Some files needed special treatment:
+	- ETScenariosCSLinq
+		 Rebuilt with M.S.Ast namespaces. Some tests are using inline LINQ expressions 
+		 (implicit conversion from anonymous method to Expression<T>), which don't work
+		 if Expression<T> is not in System.Linq.Expressions namespace. I've #if-def'd 
+		 these tests out.
+		 Changed references to assemblies to project references in .csproj file so that 
+		 "msbuild ETScenariosCSLinq.csproj" works.
+
+	- DlrCore.rsp and *proj files 
+		 Defines CLR4 constant for Dev10 build where missing.
+
+	- Python version of Sympl, test_cliclass.py 
+		 Fixed imports.
+
+	Deletes Main\Languages\CSharp.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, September 04, 2009 3:35:01 PM
+
+	(dinov) Makes Scope objects backed by IDynamicMetaObjectProvider objects instead of
+	an IAttributesCollection.
+
+	Adds a wrapper object for backwards compatibility w/ existing IAttributesCollections.  
+
+	Scope now implements IDMOP so that you can do gets/sets/deletes against it. 
+	It forwards these calls directly through to the storage object which is backing 
+	it and does an instance restriction on its self.  
+
+	Adds new ScopeStorage class which is the default expando object used for storage
+	of scopes.  Scope storage supports both case sensitive and case insensitive attribute
+	lookups.  This exposes an API which allows consumers to cache results against an 
+	individual scope (again in either a case sensitive or insensitive way).  Languages
+	can hold onto these objects so that they can quickly access the value (just a 
+			field load) in a cached manner.  This is also a publicly exposed API so that
+	languages can create pre-compiled rules against it and don’t need to do code gen
+	for every single member that is accessed.
+
+	IronRuby and IronPython are updated to have direct access to scope objects if
+	their storage is a ScopeStorage object.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, September 04, 2009 12:51:22 PM
+
+	(dinov) Removes SymbolIds from the IronPython ASTs and compiler
+	Improves repeated import performance (cuts time in half for importing something already imported):
+			adds caching at the module level for __name__, __package__, __path__, at
+			  the built-in module level for __import__.
+			Removes thread statics which are used before/after entering importing, moves
+			  this logic into module execution instead
+
+
+	constant string arrays in to-disk code are now created only once (SymbolId arrays
+	were always re-created so this will be a perf improvement for pre-compiled code)
+
+	adds "msir" alias for measuring IronRuby runtimes (similar to msip and mscp 
+	which is already present)
+	-------------------------------------------------------------------------------
+	User: jdeville
+	Date: Wednesday, September 02, 2009 8:47:33 AM
+
+	Fixes irtests to make silverlight builds work on x64
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, September 01, 2009 11:39:16 AM
+
+	(dinov) Fixes issues that block moving the hosting APIs into their own DLL:
+	Savable ScriptCode support moves into a specialized subclass
+	ActionBinder property is removed from LanguageContext
+	CreateDelegate/GetDelegate moves off of LanguageContext into new DynamicDelegateCreator class 
+	Protected internal APIs are made public
+	This actually isn’t a problem for moving the hosting APIs but is actually broken – 
+	  all functionality the user-facing APIs use should be public.
+	Removed some dead code 
+	Removed dependencies on AstUtils preferring to use the normal Expression APIs instead
+	Removed dependency on Unitinialized.Instance
+	Removed string versions of Operation APIs
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, September 01, 2009 10:28:07 AM
+
+	(tomat) Fixes bug in GeneratorRewriter:
+	- array[index] = { yield return expr1; expr2 } wasn’t handled correctly.
+	Fixes bugs in interpreter:
+	-	Void lambda whose last body expression is non-void didn’t pop the last value 
+	  from the stack.
+	-	Loops were not balancing stack correctly.
+
+	Refactors GeneratorRewriter to avoid code duplication and also reduces the number 
+	of local variables needed for spilling. Constant expressions can be evaluated out
+	of order and thus don’t need to be spilled.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Saturday, August 29, 2009 2:14:01 PM
+
+	(dinov) Cleans up the Scope APIs and moves IronPython off of using DLR-based scopes
+	for locals and modules.
+
+	Introduces a new ModuleContext which represents the top-level context for IronPython
+	code.  CodeContext now holds onto a ModuleContext and a PythonDictionary of locals.
+	When it’s the global CodeContext the locals dictionary is the same as the ModuleContext’s
+	dictionary.
+
+	PythonModule is a new IDO which just enables dotting through module properties – it’s
+	basically everything that used to live on ScopeOps + the IDO implementation.  In the
+	future we can probably improve this and start doing cached module lookups.
+
+	The old PythonModule is now renamed PythonScopeExtension.  
+
+	This does not yet move off of IAttributesCollection – I’ll do that as the next step.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Friday, August 28, 2009 5:53:58 PM
+
+	(jdeville) Shri:
+			Added Silverlight build to irtests.bat
+			Made irtests.bat check that "git config core.autocrlf" is true
+			Got Tutotrial sample tests running in the Silverlight version
+			Changes some tutorial content to be Silverlight-friendly
+			Disables some content that does not have an easy Silverlight equivalent.
+			Fix Tutorial sample to do formatting of text on Silverlight
+			Changed debug=false for Tutorial sample
+			Fix to irtests.rb to make the tutorial sample tests work from any directory
+	Jimmy:
+			IronRuby.Rack - Rails compatibility
+			Tutorial improvements
+			Make DynamicEngine.CreateRuntimeSetup() better support other DLR-hosts in Silverlight.
+			Script for rewriting project files so they build in Visual C# Express
+			Fixes for Moonlight (http://monoport.com/39313 and http://monoport.com/39314)
+			Run the newer Silverlight tests with with "run.rb"; uses Watir to drive the browser.
+			Fixes a couple exceptions that the error formatter can raise if the entry-point doesn't 
+			  exist (using the error formatter from a custom host).
+			Updates Silverlight version in the build aliases.
+			Remove redefining constant warning in Tutorial.
+	Kevin:
+			Re-adding my change for win32ole_spec to not be folder name dependant.
+			This spec could fail on systems where the "System32" directory was names "system32"
+			Because include? is case-sensitive.
+			Provides a shell as a placeholder for the eventual implementation of OpenSSL::SSL::SSLContext.
+			  This gives better compatibility for some HTTP client gems like:
+			httparty and rest-client.
+			This should also add some benefit for the standard net/https library
+			There are also some very basic specs included to flesh out what is needed for SSLContext.
+			Cleaned up OpenSSL::SSL specs a bit,
+			and added a couple of specs for net/https
+	There is more, but TFS won't let me add it.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Thursday, August 27, 2009 6:30:43 PM
+
+	(tomat) (FxCopFixes3) Fixes violations of FxCop rules
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Thursday, August 27, 2009 2:19:13 PM
+
+	(tomat) (V4Config6) Adds configurations for Dev10 builds (V4 Debug and V4 Release)
+
+	(Shelveset: V4Config6;REDMOND\tomat | SNAP CheckinId: 9273)
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, August 26, 2009 3:37:55 PM
+
+	(tomat) DLR, IronPython changes:
+		Makes BigInteger to double conversion explicit.
+		Removes unused "Signed" build configs from IronPython.sln 
+		
+		Ruby changes:
+		Fixes Array#pack and String#unpack specs.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, August 25, 2009 7:00:48 PM
+
+	(dinov) Merges the System.Dynamic COM interop implementation back into Microsoft.Scripting.
+	This updates the code that was previously duplicated between the two to now be the same. 
+	There is only one change to the COM support which is to remove the IDynamicMetaObjectProvider
+	implementation from DispCallable.  Instead the COM binder now handles this natively.  This
+	allows languages to know when they are calling out to COM and perform extra conversions
+	for the COM call.  IronPython uses this to translate buffer objects into byte arrays.  
+
+	The previous solution would work so long as there was no one else calling a disp callable. 
+	But once someone else called a disp callable we would generate a rule which would take the
+	normal arguments – not the translated arguments.  This rule would get cached and we’d do a
+	re-bind w/o doing the translation.  The rebind would go directly to DispCallable’s
+	IDynamicMetaObjectProvider and we wouldn’t have a chance to intercept the call.
+
+	The COM generation script is updated to generate all of the code twice – once for
+	System.Dynamic and once for Microsoft.Scripting.
+
+	This moves both IronPython and IronRuby off of Microsoft.Dynamic.  This reduces the
+	number of DLLs that need to be loaded.  Ultimately Microsoft.Dynamic should go away
+	completely but Sympl still depends upon it.  Because Sympl doesn’t depend on the 
+	outer layer in general I choose to leave it alone.
+
+	Microsoft.Dynamic is removed from the IronPython MSI.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, August 25, 2009 1:04:48 PM
+
+	Comment:
+	(jdeville) Fixes rake compile
+
+	(Shelveset: fixrakecompile;REDMOND\jdeville | SNAP CheckinId: 9244)
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, August 25, 2009 1:42:03 AM
+
+	(jdeville) *updates rubyspec installation
+	*Fixes File.open(name, "a") so that it appends instead of overwrites.
+	*makes require 'resolv' work for the specs to allow them to be tagged instead of
+	guarded. This will make it easier to implement the Resolv library down the road.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, August 25, 2009 12:58:47 AM
+
+	(tomat) Fixes bug in instance_eval.
+	Adds checks to Struct.new and attr_accessor that raise NameError if an attribute
+	  name is not a valid attribute name.
+	Implements Kernel#display.
+	Fixes visibility of some methods on Kernel.
+	Implements Kernel#instance_exec and Module#module_exec.
+	Regroups methods in KernelOps.cs and ModuleOps.cs to move related methods closer together.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Monday, August 24, 2009 5:40:46 PM
+
+	(tomat) Fixes nil blocks handling.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Sunday, August 23, 2009 11:17:35 PM
+
+	Comment:
+	(jdeville) Updates Ruby to patchlevel 368
+	Removes Ruby patchlevel 287
+	Updates Rubygems tests to 1.3.5
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Saturday, August 22, 2009 10:19:14 AM
+
+	(tomat) Fixes 2 bugs revealed by running Cucumber:
+	- Blocks with a single parameter created by library enumerators should have a 
+	  HasSingleCompoundParameter flag set so they can accept multiple arguments and
+		unsplat them into a single argument w/o reporting a warning.
+	- A list of dependent modules was pruned incorrectly in RubyModule, which caused 
+	  incorrect cache invalidation.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Thursday, August 20, 2009 3:24:30 PM
+
+	(dinov) More fixes for Dev10 builds:
+	Our *.Build.csproj files have some extra warning suppression for warnings that don’t exist
+	We refer to math resources which Tomas recently removed
+	EngineTest needs some object casts to build w/ C# 4.0 – already fixed in vs_langs01, 
+	  this is pulling the fix into vs_langs01_s
+	Renaming SYSTEM_CORE -> CLR4 missed some spots this was being used in Ruby
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, August 19, 2009 5:09:18 PM
+
+	(jdeville) Shri:
+		Fix for Kernel#enum_for which was affecting Cucumber
+		Adds version checks to RakeTests.rb and RubyGemsTests.rb to catch configuration issues quickly
+		Allow ir.exe -r<somelib> without space after the -r. Similarly for -e
+		File.truncate and File#truncate
+		Improves File::Stat.
+		sysread/syswrite should track read and write buffering separtely
+		Implements IO.pipe
+		Implements Open3#popen3 (which does not work on MRI 1.8, but does work on MRI 1.9). 
+		The "session" gem now gets further along after setting %SESSION_USE_OPEN3%, but it still does not work 
+		Factors out code for printing warning into IoOps.ReportWarning
+		Implements IO#write_nonblock to throw an exception since it is not supported by MRI on Windows.
+		Implements IO#sysread, syswrite and sysseek, which call Flush. Ideally, we would create
+		  new Streams using FileOptions.WriteThrough.
+		Tweaks the "complain" RubySpec helper to include actual stderr
+		Makes irtests.rb use the full path for mspec.bat
+		Changes com_helper.rb to include check for Office 10
+		Adds basic test for "ir.exe -profile"
+		Adds a script tags_stats.rb to measure number of RubySpec tags
+		Fixes a bunch of issues preventing irtests.bat from running cleanly on some machines:
+		Fix for regex bug - http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1895
+		Added a splash screen to the tutorial
+		Merge branch 'master' of http://github.com/ironruby/ironruby
+		BasicSocket#recv should mark the thread as sleeping
+		Adds support for ir.exe -Ifoo;bar. Previously, we were not breaking it up into two paths.
+		The stricter tests in upper_dash_i_spec.rb caught two other issues:
+		Fixed assert in OverloadResolver.cs
+		Adds tests for the tutorial sample to irtests.rb
+		Add test-spec 
+
+	Jimmy
+		SP1 check should show the correct language name.
+
+	Ryan
+		Changed the :LibraryPaths in context.rb to point to redist_libs from Ruby-1.8.6p287
+	Also includes changes from Jirapong that TFS wouldn't let me document.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, August 19, 2009 1:55:26 PM
+
+	(dinov) fix dev10 build
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Thursday, August 13, 2009 12:46:11 PM
+
+	(tomat) Fixes bug
+	http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=643
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, August 12, 2009 11:23:34 PM
+
+	(tomat) Fixes core/io, core/file, and library/stringio spec failuires.
+	Includes Shri’s pipe implementation.
+	File descriptors on RubyContext need to be shared for duplicated IO objects and 
+	  reference counted so that close called for fd closes it only if there is no 
+		other open shared duplicated fd.
+	Factors RubyBufferedStream out of RubyIO. The stream can buffer up to 4 bytes 
+	  and the buffer can be modified (needed for ungetc). Also fixes various 
+		buffering bugs.
+	Merges IOMode and RubyFileMode.
+	Makes implementation of Array#flatten non-recursive, more efficient and reusable (used in Kernel#print).
+
+	Fixes specs: 
+	-	Text files used by specs ought to use Unix end of lines (\n) 
+	-	Some specs were failing in MRI 1.8.6 and/or MRI 1.9 on Windows. Some of them 
+	  were obviously wrong so I’ve fixed them or deleted them. Some might work on Unix
+		so I’ve made them conditional. Could somebody go thru the specs that are conditional
+		on Windows or failing in 1.8.6 or 1.9, test them on Linux/MacOS and file bugs on MRI
+		so that it’s clear if the differences are intentional or not. I’ve filed few bugs
+		already where the behavior is obviously wrong.
+	-	Also many StringIO specs test for a different behavior than corresponding IO/File specs.
+	  Since StringIO is supposed to be used as a mock for IO I would  consider all those 
+		differences bugs. But there are dozens of them so I’m not sure about that.
+	-------------------------------------------------------------------------------
+	User: vsllab1
+	Date: Tuesday, August 11, 2009 4:54:11 PM
+
+	(tomat) Removes MathResources.resx.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Monday, August 10, 2009 6:39:28 PM
+
+	(jdeville) Makes convert-alias.rb convert AliasInternal.txt in addition to Alias.txt.
+	Also adds AliasInternal.ps1 to dev.ps1 (via the merlin module)
+	Also fixes dev.ps1
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, August 05, 2009 7:35:31 PM
+
+	(tomat) Implements default protocols for all primitive numeric types and BigInteger.
+	Implements interop conversions.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, August 05, 2009 2:24:07 PM
+
+	(tomat) Fixes bug:
+	http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=765
+
+	When we throw an exception from a library method we don’t create the instance of the 
+	exception dynamically (calling new method on its class). Some applications define
+	their own new method and use it to map one exception type to a different one by 
+	returning an instance of different exception. One option how to fix this would be
+	to find all places in libraries where an exception is thrown or a .NET method is
+	called that can throw an exception that maps to Ruby exception, flow RubyContext
+	in that code and create the exception object dynamically. This would be error prone
+	and would make the code less readable. Also if a .NET API is called directly we
+	wouldn’t have control over the exceptions that are thrown. 
+
+	Instead we keep the exception construction static and let the exception propagate
+	until the first rescue clause handles it. We then call new on the exception class
+	if it is overridden by user defined method and set the current exception $! to the
+	one returned by new. We also mark this exception as “handled” so that we don’t call 
+	new in the next rescue in the case the exception is rethrown. We also mark “handled” 
+	any exception object that is dynamically constructed by Class#new. Such exceptions 
+	shouldn’t be re-created.
+
+	The shelveset also cleans up some related code.
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Wednesday, August 05, 2009 1:51:00 PM
+
+	(jdeville) Makes the com interop specs skip word and excel specific tests if 
+	  word/excel is not installed
+	-------------------------------------------------------------------------------
+	User: merllab
+	Date: Tuesday, August 04, 2009 5:14:50 PM
+
+	Comment:
+	(tomat) Disables operator mapping for built-ins.
+
+	Fixes bugs:
+	http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1679
+	http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1082
+	-------------------------------------------------------------------------------
+
+ironruby-0.9.0.0 - 2009-07-30
+-----------------------------
+
+	Date: Wednesday, July 29, 2009 4:56:49 PM
+		(sborde) Tweaks IPy tutorial now that the MSI includes the Python standard library.
+		I had changed Ruby’s dev.bat to not set HOME since ir.exe itself now sets it.
+		However, HOME is needed by the rest of dev.bat to copy the .mspecrc file. 
+		So added that code back using the name HOME_FOR_MSPECRC.
+		TypeLibs were not exposing aliased types. There are important enums that are
+		declared as aliases. I noticed this when adding WIN32OLE support in IronRuby.
+		
+	Date: Wednesday, July 29, 2009 3:55:16 PM
+		(tomat) (MiscConversions)
+		
+		DLR:
+		Fixes ReflectionUtils.FormatTypeName so that it formats generic type 
+		definitions as C# does – using empty type names: C<,> instead of C<K,V>.
+		
+		Ruby:
+		1) A Ruby class corresponding to a CLR generic type definition is now a 
+		   super-class of all instantiations of that type. So for example, List<> is
+		   a super-class of List<int>, List<string>, etc. Similarly all
+		   instantiations of a generic interface include the module that corresponds
+		   to their generic interface definition. This allows to add methods to the
+		   generic definition and call them from any instantiation. For example, 
+		
+			include System::Collections::Generic
+		
+			class List
+			  def foo
+			    p self.class
+			  end
+			end
+		
+		List.of(Fixnum).new.foo   # => System::Collections::Generic::List[Fixnum]
+		List.of(String).new.foo   # => System::Collections::Generic::List[String]
+		
+		2) Implements TypeGroup#[] overload taking a Fixnum. This is useful when one 
+		   needs to select a generic type definition out of a group of types. For example, 
+			 given three classes C:
+		
+			public class C {
+			  public virtual int Arity { get { return 0; } }
+			}
+			public class C<T> {
+			  public virtual int Arity { get { return 1; } }
+			}
+			public class C<T,S> {
+			  public virtual int Arity { get { return 2; } }
+			}
+		
+			p C[0]  # => C
+			p C[1]  # => C[T]
+			p C[2]  # => C[T, S]
+		
+		Note that the resulting classes are not generic instantiations – they are still 
+		generic definitions and need to be instantiated.
+		
+		3) Maps [] and []= on CLR arrays to Get/Set methods. This enables to apply Ruby 
+		conversions on array elements assignment.
+		Changes CLR array factories so that they perform conversions of elements like so:
+		
+			class C
+			  def to_str; 'c';  end
+			end
+		
+			System::Array[System::String].new(3, C.new)      # => [‘c’, ‘c’, ‘c’]
+			System::Array[String].new([C.new, C.new])        # => [“c”, “c”, “c”]
+			System::Array[System::Byte].new(3) { |x| x + 1 } # => [1 (Byte), 2 (Byte), 3 (Byte)]
+		
+	Date: Wednesday, July 29, 2009 2:51:30 PM
+		(tomat) Updates ToolsVersion of IronPython and IronRuby projects to 4.0.
+	
+	Date: Monday, July 27, 2009 6:59:09 PM
+		(tomat) Adds IConvertibleMetaObject interfaces to DLR so that binders can query 
+		meta-objects on their convertibility to given types.
+		Implements this interface for MetaPythonFunction.
+		Adds DynamicMetaObject fromArg parameter to OverloadResolver.CanConvertFrom. This 
+		allows to check if the argument is convertible to certain types via 
+		IConvertibleMetaObject interface.
+		
+		Slightly improves overload resolution:
+		
+		Overload resolution first tries to convert arguments to parameter types on 
+		increasing narrowing levels. On each level only the overloads whose parameters 
+		are convertible from the actual arguments are further considered. Pairs of 
+		corresponding parameters are ordered based upon convertibility of their types 
+		to each other. If the parameter types are unordered (one cannot be converted 
+		to the other and vice versa) the resolution goes on and tries to choose the 
+		overload based on other traits of the methods (like generic parameters etc.).
+		When comparing parameters the actual type of the argument is not considered. 
+		Therefore the following method call (in Python) is considered ambiguous. There
+		is no ordering of the types of the first parameters (int and D types), which
+		would prefer one or the other.
+		
+		Adds IConvertibleMetaObject interfaces to DLR so that binders can query
+		meta-objects on their convertibility to given types.
+		Implements this interface for MetaPythonFunction.
+		Adds DynamicMetaObject fromArg parameter to OverloadResolver.CanConvertFrom. 
+		This allows to check if the argument is convertible to certain types via
+		IConvertibleMetaObject interface.
+
+	Date: Monday, July 27, 2009 12:10:11 PM
+		(jdeville) Bug closing:
+		YAML does not properly deserialize Time values
+		overriding unsafe methods
+		Better error message for running ir.exe on pre-.Net 2.0 SP1
+		rand doesn't work collectly
+		Rubygems failures
+		Adding a random object to Time which responds to to_f
+		ArgumentError when calling System.String..ctor(Char[], int, int)
+		Unverifiable code generated by mspec :lang
+		-X:PrivateBinding does not enable referring to classes that have 
+		internal visibility
+		
+		Notes on these:
+		 * To get better error messages on pre-.NET 2.0sp1, I moved the error 
+		   checking code from PythonConsoleHost up to ConsoleHost
+		 * As part of writing name_mangling specs, I created stubs for all of 
+		   the IronRuby module. I'll start filling those specs out going forward.
+		 
+	Date: Monday, July 27, 2009 12:05:25 AM
+		(tomat) Disallows mangling of initialize method.
+	
+	Date: Sunday, July 26, 2009 10:44:47 PM
+		(tomat) Makes to_s override to_string and ToString methods.
+		Fixes bug:
+		- If a CLR class has Initialize method its Ruby subclasses called it when instantiated.
+		
+	commit 74d580cebe5dc74dbf6ce67399159dfc8ce8686b
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Thu Jul 23 14:22:15 2009 -0700
+
+		Fixes HTTP.post_form (http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1353). 
+		Socket#write was not flushing the data, and so a later read could block since the
+		endpoint would not send any response
+
+	Date: Thursday, July 23, 2009 11:07:06 AM
+		(tomat)   Implements basic debug views for classes that implement IRubyObject.
+		
+
+	Date: Thursday, July 23, 2009 10:23:09 AM
+		(tomat) The long term goal is to allow Scopes to be backed by arbitrary objects and 
+		implement GetVariable/SetVariable/… via dynamic GetMember/SetMember/… actions. This
+		will also allow languages to cache lookups to the scopes. 
+		
+		The first step is to move Python specific stuff off the Scope and LanguageContext.
+		
+		Breaking changes in Hosting API:
+		- ScriptScope.GetVariable throws MissingMemberException if a variable is not found 
+		  in the scope instead of a language specific exception (like Python’s UnboundNameException).
+		- ScriptScope.GetVariable doesn’t return variables that are not contained in the scope 
+		  itself. Previously it returned e.g. Python built-ins (like “dir”) if the scope was 
+		  associated with Python.
+		- ScriptScope.RemoveVariable doesn’t throw an exception if the member is not present. 
+		  It returns false.
+		
+	Date: Wednesday, July 22, 2009 10:43:09 AM
+		(tomat) Disallows interop calls to Ruby non-public methods.
+	
+
+	Date: Tuesday, July 21, 2009 9:49:14 AM
+		(dinov) Moves CodeContext up into IronPython.
+		
+		Wherever we had CodeContext before or an Expression for flowing CodeContext it’s
+		been replaced w/ a OverloadResolverFactory instead.
+		There’s lots of now we flow full MetaObjects instead of just flowing Expressions 
+		through in the DLR binding (more cleanup could be done here in the future)
+		Added IPythonMembersList which takes CodeContext, made IMembersList not take it.
+		Removed some dead code related to old-style DLR binders
+		
+		Also fixing 20262 - quoting in MSBuild files
+		codeplexcomment
+		
+	Date: Monday, July 20, 2009 5:32:44 PM
+		(tomat) Replaces IronRuby.Tests.VS by ircoverage.bat that gathers the code coverage data 
+		for IronRuby.Tests.exe.
+		
+	Date: Monday, July 20, 2009 4:53:53 PM
+		(tomat) DLR changes:
+		Makes ReadOnlyDictionary and SynchronizedDistionary public.
+		
+		Ruby changes:
+		
+		Provides API for accessing DLR Scopes created by importing files of other DLR languages. 
+		
+		IronRuby#require(path), load(path)
+		- These have the same semantics as Kernel#require and Kernel#load except for they execute
+		  given script against a new Scope and it. If the target is an assembly they return the
+		  loaded assembly.
+		IronRuby#loaded_scripts 
+		- Returns a dictionary that holds on loaded scripts and their Scopes.
+		IronRuby#loaded_assemblies
+		- Returns an array of assemblies loaded to the current runtime.
+		IronRuby#globals
+		- Returns the current ScriptRuntime.Globals scope.
+		
+		This allows to easily import e.g. IronPython files and work with the modules they define:
+
+		a.py:
+			Foo = 1
+			
+			class Bar(object):
+			  def baz(self):
+			  print Foo
+		
+		b.rb:
+			a = IronRuby.require('a')   # a is an instance of Scope
+			a.foo += 1                  # get and set Python module variable 
+			a.bar.new.baz               # instantiate Python class and call its instance method
+		
+		Also includes “mangling” shelveset.
+
+	commit a24144a45743c5e6d8ec27532c6afceb6607cc62
+	Author: Daniele Alessandri <suppakilla@gmail.com>
+	Date:   Sat Jul 18 18:09:39 2009 +0200
+
+		- Bignum related fixes:
+			o Changed the signature for ClrBigInteger.ToString(self,radix), now 
+			  Bignum#to_s works as expected raising an ArgumentException if base 
+			  is less than 2 or higher than 36.
+			o Fixed Bignum#divmod, Bignum#remainder, Bignum#% and Bignum#modulo 
+			  to work with Float values as argument.
+			o Fixed Bignum#/ and Bignum#div as they behave differently with each
+			  other when Float values are passed as argument.
+
+	commit 7dfb0b3a82c4316380dcc8e18ca1067a2f03065e
+	Author: Daniele Alessandri <suppakilla@gmail.com>
+	Date:   Sat Jul 18 16:26:05 2009 +0200
+
+		- Array related fixes:
+			o Array#== does not call #to_ary on its argument but it calls #to_a (it 
+			  basically performs a conversion of the argument rather than casting it
+			  to a ruby array)
+			o Array#zip calls #to_ary to cast the argument to an Array, therefore it
+			  overrides Enumerable#zip in which the argument is converted by calling #to_a.
+
+	commit 30c16c3a3d079f6fddb0d35d3c76d6bb080ce3f2
+	Author: Daniele Alessandri <suppakilla@gmail.com>
+	Date:   Fri Jul 17 21:29:24 2009 +0200
+
+		- More fixes for String#unpack:
+			o Fixed errors when unpacking data with 'Z' and '@' directives
+			o Implemented 'Q' and 'q' directives
+
+	Date: Friday, July 17, 2009 12:11:49 PM
+		(tomat) Removes IronRuby.Libraries.Scanner - it's not used.
+		Adds ConsoleAny project as a copy of Ruby.Console except for that it
+		produces assembly ir64.exe.
+		Changes Ruby.Console to build with x86 platform flag so that ir.exe
+		starts in a 32bit process on 64bit OS.
+		
+
+	commit 0522ad7bd4109660cff42e57b45e6bfc8759efbc
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Wed Jul 22 15:03:20 2009 -0700
+
+		Move check for task.should_run? up. Otherwise, an empty repl section would 
+		show at the top
+		Make tutorial.bat work in a dev environment
+		Disable a RubyGems test which was failing non-deterministically
+
+	commit e488dec40234a5806ff19da7373beb67c64e7dfc
+	Author: Jim Deville <jdeville@microsoft.com>
+	Date:   Wed Jul 22 11:38:40 2009 -0700
+
+		syncing to head of tfs
+
+	commit 421d9869c60d892b36ba324ce9cb8c89bdc77125
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Tue Jul 21 21:59:43 2009 -0700
+
+		Moves setting of %HOME% from IronRuby.Libraries.dll to ir.exe. This is ruby.exe
+		feature, not necessarily a language feature, and setting of environment variables
+		should be something that the host controls.
+		Moved the ExpandPath logic to RubyUtils, and also made it work with System.String
+	  	instead of MutableString
+
+	commit 0696a772f7f9708a15f18a5966125943cafb2010
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Tue Jul 21 12:42:11 2009 -0700
+
+		Adds support for ENV['HOME'] by setting the HOME environment variable on startup. 
+		I have confirmed that MRI does actually set the process environment variable
+		(and not just some value on a Ruby object)
+		Modifies the algorithm to calculate the value to set for HOME so that it passes 
+		the new tests
+		KernelOps.GetShell had to be modified to be able to span processes even after 
+		doing ENV.clear (like MRI)
+		Removes logic to calculate HOME from dev.bat
+
+	commit bdc0ac4002eb3a46e84a87cb1cc3fd203011cd2f
+	Author: Jim Deville <jdeville@microsoft.com>
+	Date:   Sun Jul 19 00:55:46 2009 -0700
+
+		added back ubygems.rb
+
+	commit 6f32be3294cbd4a814066d08a30b51f4f6ea5c3a
+	Author: Daniele Alessandri <suppakilla@gmail.com>
+	Date:   Thu Jul 16 22:03:02 2009 +0200
+
+		- Implemented 'V' and 'v' directives for String#unpack.
+		- Implemented 'B' and 'b' directives for String#unpack.
+		- Cleared all the failing expectations in core/string related to an unthrown TypeError 
+		  exception when calling in-place methods on frozen strings.
+
+	commit 51563a0a4b54f3c2cddb29b8f989e1fc61e9db3b
+	Author: Jimmy Schementi <jschementi@gmail.com>
+	Date:   Thu Jul 16 13:29:11 2009 -0700
+
+		Default to Segoe UI in Silverlight, so fonts look closer to desktop. Fix 
+		newline/whitespace in SL.
+
+	commit 5b80e2140cd4185a18e1aadaaaf6d7e585699d26
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Thu Jul 16 10:12:58 2009 -0700
+
+		More fixes to win32ole to get the ADO DBI driver working
+		- Convert return values from DBNull to nil, from System::Decimal to String
+		Also, removes support for indexed property syntax like excel.Workbooks[1]. 
+		Instead, like win32ole, you need to use excel.Worksheets(1)
+		Added WIN32OLE#setproperty to set indexed properties like 
+		"worksheet.setproperty('Cells', i, j, value)"
+
+	commit ffef26a418310ace70af782b0fd51d4900344da4
+	Author: Jimmy Schementi <jschementi@gmail.com>
+	Date:   Thu Jul 16 03:23:07 2009 -0700
+
+		first crack at the ironruby tutorial in Silverlight
+		- design/TutorialSL ... needs to be merged with original
+		- scripts for launching sl and wpf versions
+		- refactor wpf_tutorial.rb into gui_tutorial.rb, and then wpf_tutorial.rb 
+		  and sl_tutorial.rb launch in the respective technology
+		- various tweaks to get SL working -- but doesn't have rich text yet
+		- adds erb.rb and stringio.rb to Libs so SL can get them.
+		- Tweak Chiron so it won't copy to test dir if not present
+		- Tweak to RubyEncoding to utf-8 works in SL
+		- Make sure console is loaded after the ScriptEngine
+		- Make BrowserVirtualFilesytem.NormalizePath virtual so children can override it
+
+	commit de4dd18760df2d4f3f41b326449fcf605ab1bde3
+	Author: Jimmy Schementi <jschementi@gmail.com>
+	Date:   Thu Jul 16 01:18:43 2009 -0700
+
+		Build Silverlight.sln aliases (bsd/bsr), get Chiron building, and remove 
+		JS/TestConsoleHost from Silverlight.sln
+
+	Date: Wednesday, July 15, 2009 10:18:44 PM
+		(jdeville) Files related to the git automation and getting rake compile working
+		again.
+
+	Date: Wednesday, July 15, 2009 4:15:48 PM
+		(tomat) Virtual methods that have been detached from the CLR type and redefined
+		on the corresponding Ruby class or its subclass should not directly invoked from
+		a dynamic virtual call since that leads to an infinite recursion. 
+		
+		Example:
+		 class C < ArrayList           
+		   define_method(:Add, instance_method(:Add))          
+		 end
+		 
+		 C.new.Add(1)
+		 
+		C.new.Add dispatches to the virtual ArrayList::Add, which in turn dispatches to 
+		the auto-generated override C$1::Add. If we called the resolved method directly
+		from the dynamic virtual call rule it would invoke the C$1::Add override again
+		leading to a stack overflow. So we need to use a base call instead.
+
+	Date: Wednesday, July 15, 2009 1:59:58 PM
+		(tomat)   DLR:
+		Adds a simple random number generator for BigIntegers.
+		Ruby:
+			Implements Kernel#rand, Kernel#srand. 
+			Improves scope allocation perf.
+
+	Date: Monday, July 13, 2009 5:10:48 PM
+		(tomat) DLR:
+		Implements interpretation of coalescing expression.
+			
+		Ruby:
+			Reuses delegates created for blocks. BlockDispatcher is baked into the lambda
+			as a runtime constant with initially uninitialized target delegate. This
+			delegate is initialized first time the block is defined and then reused
+			next time. This makes nested block loops much faster as it avoids unnecessary
+			calls to DynamicMethod.CreateDelegate.
+		
+			Uses MutableTuple for local variable storage instead of StrongBox<object>[]. 
+			Fixes a bug in state variable allocation for flip-flop operator.
+
+	commit 427cd3038a649103e18abacf78c0a83d467a19ac
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Sat Jul 11 23:26:12 2009 -0700
+
+		Add hosting of IronPython to hosting tutorial
+
+	Date: Friday, July 10, 2009 2:32:46 PM
+		(tomat) DLR:
+		- Renames CollectionUtils.Sort to ToSortedList to avoid collisions with Sort
+		  methods on classes implementing ICollection.
+		- Adds helper that converts delegate Comparion<T> to IComparable.
+		
+		Ruby:
+		
+		Improves implementation of RubyArray. So for example a loop doing Array#shift is
+		not shifting the entire array content left every iteration. 
+		
+		Also adds MsTest.cs stub to IronRuby.Tests so that we can easily get code coverage
+		numbers for unit tests in VS. This depends on
+		Microsoft.VisualStudio.QualityTools.UnitTestFramework assembly that is not
+		available on Mono so our rake build removes this file from build.
+	
+	Date: Friday, July 10, 2009 2:14:49 AM
+		(jomes) Improves the ExpressionVisitor API (720267):
+		
+		- Expression.Accept is protected.
+		
+		- Expression.VisitChildren takes an ExpressionVisitor.
+		
+		- ExpressionVisitor helpers are public:
+			o Visit(ReadOnlyCollection<Expression>)
+			o Visit<T>(ReadOnlyCollection<T>, Func<T, T>)
+			o VisitAndConvert<T>(T, string)
+			o VisitAndConvert<T>(ReadOnlyCollection<T>, string)
+		
+		- All nodes with children have an Update method that replaces the children
+			o Returns the same node if none of the children changed
+			o Most Update methods are tested already by the visitor
+			o Added tests for those that were not: Block, Dynamic, Invocation, MethodCall, Index
+		
+	commit 5fb483dd13b8c0c950627e9624973e4fa60cf784
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Thu Jul 9 22:01:29 2009 -0700
+
+		Converts COM interop tests to using win32ole. Hardly any changes were required! 
+		The only change required is that win32ole requires using parenthesis to access
+		indexed properties, but the tests used square brackets. For now, I have added
+		support to win32ole for square brackets instead of modifying the tests. Also,
+		WIN32OLE_EVENT does not seem to have any way of unsubscribing from an event.
+		adodb_spec has a weird failure only with non-managled names, and so I have left
+		it using Type.GetTypeFromProgID for now
+
+	commit 7e0f79ec26bb9ba0e9f5066552bc85fbba2dabbb
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Thu Jul 9 10:18:15 2009 -0700
+
+		Basic implementation of win32ole, building on top of IronRubyâ€™s COM interop support.
+		Simple samples work reasonably work. Features that work are:
+			* Object instantiation with WIN32OLE.new
+			* Calling methods, accessing properties
+			* Converting Ruby type arguments (ie. String, Array, etc) to 
+			  System.String, System.Array, etc
+			* Enumeration via WIN32OLE#each
+			* Accessing enum values from the type library via WIN32OLE.const_load
+			
+		Events (WIN32OLE_EVENT) are not supported since IronRuby does not support COM events yet.
+		Also, this TODO from win32ole.rb :
+		# TODO - Instead of wrapping the RCWs (runtime-callable-wrapper), we should just
+		# return them directly (and make WIN32OLE an alias for System.__ComObject). We currently
+		# wrap them so that we can cheaply customize the behavior of the resulting object
+		# (for eg, to convert the arguments).
+		# However, all the customizations should be moved into the IronRuby runtime
+		# itself and made to work directly against RCWs. This will allow better cross-language
+		# inteorp of passing RCW arguments, better perf since it will avail of call-site
+		# caching, and object identity.
+
+	Date: Wednesday, July 08, 2009 8:39:37 PM
+		(jomes) Change ComBinder class to internal (723713).
+
+	Date: Monday, July 06, 2009 5:30:52 PM
+		(tomat) Perf improvements of misc String operations:
+		- MutableString no longer tracks its version. It was only used to detect changes made
+		  to the string. The same is possible by checking for “HasChanged” flag which is set 
+		  by every mutating operation. 
+		- Reimplements “tr”, “tr!”, “tr_s”, “tr_s!”. The new implementation is almost 12x faster.
+		- Reimplements “join” to achieve better perf.
+		
+		Improves handling of KCoding – combination of two strings k-coded by a different 
+		encoding doesn’t result to an error but to a binary encoded string. The string
+		loses its encoded appearance and it behaves like raw binary data to .NET programs.
+
+	commit 09059350eb4d3f281a7e54e85ddecfd4932754a3
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Thu Jul 2 12:54:04 2009 -0700
+
+		Implement StringIO#ungetc which is used in ActiveSupport
+		Changes irtests.rb to print total time in minutes. A full run takes 45 mins on my machine,
+		which is faster than before even though we have added Rake tests!
+		Undo my change to paths in RakeTests.rb
+
+	Date: Wednesday, July 01, 2009 4:07:04 PM
+		(tomat) Replaces DLR closures by a Ruby specific implementation. This will allow us
+		to overcome DynamicMethod limitations (ldftn doesn’t work for dynamic methods)
+		and reduce closure creation time. We can also optimize the closures more than
+		DLR does right now.
+
+	commit 226ceebdd8e64fc86042e626b9de1e96b4226029
+	Author: Shri Borde <sborde@microsoft.com>
+	Date:   Fri Jun 26 14:25:04 2009 -0700
+
+		Module#autoload call should be ignored if the constant is defined. Without 
+		this, a class definition was being lost if autoload was called after the 
+		class definition was executed
+		(timeObj == "string") should return nil. It was throwing TypeError because
+		method overload resolution was finding System.DateTime.op_Equality. Throwing
+		a TypeError is ok for .NET types with strongly typed op_Equality, but not
+		for those types that represent Ruby types.
+		Fix typo in multi-line regex in YAML engine causing incorrect parsing of
+		Time yaml strings
+
+ironruby-0.6.0.0 - 2009-07-01
+-----------------------------
+
+	30-6 (sborde)
+		Added Hosting tutorial
+		Conditional execution of a task with :run_unless, typically to ensure
+		prerequite commands are executed
+
+	26-06 (jdeville)
+		Regression tests to close Codeplex bugs:
+			Access is allowed to internal fields 
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1521> 
+			File.expand_path does not support a line number after filename
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=821> 
+			alias_method fails for :do
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1502> 
+			Proc.to_s should include line number where the block was declared
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1509> 
+			WinForms broken
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1501> 
+			$? is not always Process::Status
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1400> 
+			load_assembly(<partial_name>) should work
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1345> 
+			System.Action.new does not work
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1344> 
+			Cannot call CLR constructor of builtin type
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1306> 
+			public(:foo) does not work correctly for mixed-in methods
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1184> 
+			Cannot call new on subtypes of builtin classes whose "new" method has
+			optional arguments
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1085> 
+			visibility of send :define_method
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1060> 
+			Passing a Ruby array to a .NET method that expects an IEnumerable 
+			derivative fails with GetEnumerator call
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=917> 
+			Assert in SetMethodBasesNoLock when calling #== on Ruby class inheriting
+			from CLR class which overrides Equals
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=783> 
+			Wrong behavior when calling redefined methods on object instances
+				from <http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=761> 
+			Can't call the BigIntegerOverload of a method with a DefaultProtocol Attrib	
+	
+	25-06 (tomat)
+	 	Replaces custom block delegates with Func delegates.
+
+	24-06 (tomat)
+		Implements FileTest and fixes race condition in a Rake test.
+
+	23-06 (tomat)
+		Improves implementation of RubyArray.
+	
+	22-06 (jimmysch)
+	 	Fix ironruby_tutorial.rb where "require 'wpf.rb'" wasn't seen as a success
+		on the first attempt. The first execution results in "true" while the next
+		results in "false", and one attempt executed the code twice. The fix is a
+		bit hacky, but will suit unless we can handle detecting "require" better.
+
+	22-06 (tomat)
+		Disables adaptive compilation of Ruby sites in -X:NoAdaptiveCompilation is 
+		set.
+
+	22-06 (jimmysch)
+		IronRuby Tutorial polish:
+			- Starting a tutorial jumps directly to the first task, but shows section
+			  and chapter introductions above it (if they exist).
+			- FrameworkElement#set_or_collapse didn't show the element
+			- select_tree_view_item should only be used if the TreeView was 
+			  constructed with code
+			- "Move to next chapter" button is auto-focused
+			- Always scroll to the bottom on any repl activity
+			- Increase default window size to 640x700
+			- Header now has a bottom shadow instead of a border, to make scrolling
+			  text look cleaner.
+			- Section/Chapter navigation now fills vertical space, and is a 100px wider.
+			- No more tutorial introduction animation; it always shows on the first page.
+
+	20-06 (tomat)
+		Fixes implementation of Kernel#eql?, Kernel#==, Kernel#hash, Array#eql? and
+		Array#hash and improves CLR interop. 
+		Improves performance of Array#- from quadratic algorithm to linear.
+
+		CLR interop:
+		“hash” is mapped to “GetHashCode” and following below rules:
+		1)	A Ruby call to Kernel#hash on a CLR object that overrides GetHashCode 
+		    will call that override.
+		2)	A Ruby call to Kernel#hash on a Ruby subclass of a CLR type will call
+		    the GetHashCode of the CLR type if the Ruby subclass doesn’t implement
+				“hash” method.
+		3)	A Ruby data structure (like Array) that calculates its hash code based
+		    on hash codes of its items dynamically calls “hash” on those items.
+		4)	Any call from C# to GetHashCode on an instance of any Ruby class will
+		    dynamically dispatch to either “hash”, “GetHashCode” or “get_hash_code”
+				whichever is found first in standard method resolution order. If multiple 
+				of these methods are defined in the same class “hash” has highest priority
+				and “get_hash_code” the lowest. This implies that a Ruby method definition
+				with name “hash”, “GetHashCode” or “get_hash_code” in any Ruby class 
+				overrides GetHashCode of the parent CLR class. 
+
+		Similarly is “eql?” mapped to “Equals”.
+
+		Kernel#== is an alias for “eql?” and hence has the same behavior when invoked. 
+		However, 4) doesn’t hold for “==”, i.e. method == defined in a Ruby class does
+		NOT override CLR Equals method. 
+
+		Adds /noadaptive option to unit test driver.
+		Fixes removal of CLR methods.
+
+		Simplifies implementation of IsRemovable on RubyMemberInfo using IsRubyMethod. 
+		IsRubyMethod returns true on all members that were defined by Ruby means, be
+		it explicit method definition (def keyword), alias, alias_method, define_method,
+		public/private/protected, overload, of, etc. CLR members used for definition of
+		a new method (via define_method, alias etc.) are called “detached” (as opposed
+		to “attached” CLR members, which represent the original CLR members). They
+		behave like any Ruby method with respect to method removal.
+
+	19-06 (sborde)
+		Alt-Enter fix for tutorial
+		Add support for multi-line input
+
+	18-06 (tomat)
+		DLR: Fixes bugs and implements new features in interpreter.
+		-	Static field assignment.
+		-	LessThan
+		-	ConvertUnary – should re-box numeric values.
+		-	Force compilation whenever ref/out parameters are encountered.
+		-	Invocation expression with delegate target.
+		-	Unbox – no-op.
+		-	TypeEqual and TypeIs for sealed types.
+
+		Ruby:
+		-	Implements adaptively compiled rules:
+		-	RubyMetaBinder (subclass of all Ruby binders) implements BindDelegate so that:
+		  o It creates AST for the rule calling Bind and wraps the result into a lambda
+		    exactly like call site binder does. 
+			o	If this lambda is interpretable (doesn’t contain loops or other constructs
+				that force compilation) it creates an InterpretedDispatcher that  hooks the
+				lambda’s “Compiled” event so that it gets called back as soon as compiled 
+				delegate is available. Until that happens it dispatches rule invocations
+				to the interpreter. 
+			o	If the lambda is forced-compiled it uses the resulting delegate right away.
+			o	The dispatcher is a generic class generated for Func and Action delegates 
+				with 0..15 generic parameters.
+		-	Also Adds specs for “include?” used on ClrNames. 
+		
+		Adds missing type test to singleton rules.
+
+	17-06 (sborde)
+		Adds WPF content to ironruby_tutorial
+		Improves the testing
+
+	17-06 (dinov)
+		Ruby’s MethodGroupInfo was doing MakeGenericMethod and then returning the
+		generic method.But the types it’s passing in are all generic parameters –
+		so the end result is Ruby produces a method for which 
+		.IsGenericMethodDefinition is false but it contains all of the original
+		generic method parameters.  Now we return the original target so 
+		IsGenericMethodDefinition remains true.  Also updated MissingBlockArgBuilder 
+		so we can know that it doesn’t really prodive any parameters.  Finally the 
+		small set of tests verifying exceptions are throw are updated to expect 
+		successful inference.
+
+	16-06 (sborde)
+		Fix non-deterministic Rake test for "multitask" by adding 
+		  semaphore.synchronize around array access
+		Changed default.mspec so that :core properly excludes the thread tests
+		Abstracts RubyUtils.FileSystemUsesDriveLetters
+		File.expand_path("c:/a..") should return "c:/a"
+		Fix Ruby snippet in DlrInteropTests.cs
+		Change system_spec to redirect output of a child process so that it does not 
+		  clutter the output
+
+	16-06 (jdeville)
+		adds a root directory rake file so rake commands can be run anywhere in the
+		  git repo
+		removed old test tasks. All tests should be run via new tasks that will be 
+		  coming in, or via the mspec command line now
+		rewrite irtest.bat to use Ruby instead of Batch
+		making changes suggested by Ivan to allow compilation on Mono to work again.
+		refactor irtests into a ruby script
+		hook up test tasks, change default to run tests, make git:commit run tests,
+		  namespace compilation, fix IronRuby.Test.exe
+		Most of IronPython now compiles with rake compile. We are only missing 
+		  IronPythonTest.dll, which may be ok
+		Adding more interop tests for delegate creation and invocation. Also adds
+		  IronPython compilation to rake git:commit
+		Make legacy tests work from rake
+		split apps into two component tasks for granularity
+		add test to ensure that basic IronRuby works without ir.exe.config
+		move the no-config tests to mspec under interop\cli, -X tests will go here
+		  eventually
+		code review fixes from Shri
+		more .net interop tests to get rid of test_basic
+		get rid of test_basic.rb
+
+	16-06 (jimmysch)
+		Auto-hide chapter/section navigation
+		Main screen with list of tutorials
+		Use test/spec
+		Totally change around wpf_tutorial.rb -- not perfect yet but it's a start
+		Move general wpf helpers into wpf.rb
+		Fix repl history margin
+		Fix reloading
+
+	16-06 (tomat)
+		Renames Method, UnboundMethod#overloads (plural) to Method, 
+		  UnboundMethod#overload (singular).
+		The old name is still available for now and throws an exception.
+
+		Implements ClrName#==.
+		Groups CLR unit tests into regions.
+
+	13-06 (tomat)
+		Fixes bug in calls to base virtual methods.
+
+	12-06 (tomat)
+		Fixes bug in CLR method lookup failure caching.
+		Implements pre-compilation for rules of methods calls with a block targeting
+		  Ruby methods.
+
+	11-06 (tomat)
+		Fixes bug http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1506: 
+		-X:PrivateBinding does not enable referring to classes that have internal 
+		  visibility 
+	
+	11-06 (tomat)
+		Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1502:
+		alias_method fails for :do.
+
+	11-06 (tomat)
+		Implements CLR member enumeration: methods Module#instance_methods, etc.
+		  now include CLR member names.
+		Adds IronRuby::Clr::Name class, which represents a pair of names of a CLR 
+		  method – the primary name is mangled (Ruby name) the alternative name 
+			is the actual CLR name.
+
+		Reflection methods like Module#instance_methods return instances of ClrName
+	  whenever a CLR member is encountered that could be called by both names.  
+		ClrName has methods to_s, to_sym, to_str, <=>, inspect, dump so that it can 
+		be used wherever a string can be used. The display string for the name uses
+		single quotes so that you can easily distinguish CLR (dual) names from
+		regular names (plain mutable strings).
+
+		>>> System::Byte.instance_methods(false)
+		=> ["-", "%", "&", "*", "**", "/", "-@", "[]", "^", "|", "~", "+", "<", "<<",
+		    "<=", "<=>", "==", ">", ">=", ">>", "abs", "div", "divmod", "modulo", 
+				"quo", "to_f", "to_s", "zero?", "size", 'compare_to', 'equals', 
+				'get_hash_code', 'to_string'
+		, 'get_type_code']
+		>>> l = System::Byte.instance_methods(false).last
+		=> 'get_type_code'
+		>>> l.ruby_name
+		=> "get_type_code"
+		>>> l.clr_name
+		=> "GetTypeCode"
+
+		Now this works with meta-programming as well:
+
+		class System::Decimal
+			instance_methods(false).each do |name|
+				mangled = '__' + name
+				
+				alias_method(mangled, name)
+				private mangled
+				
+				define_method(name) do |*args|
+					puts "method called: #{name}"
+					send mangled, *args
+				end
+			end
+		end
+
+		x, y = System::Decimal.new(1), System::Decimal.new(2)
+		p x + y       # => “method called: +”
+		p x.CompareTo(y)   # => “method called: compare_to”
+
+		The trick here is in new set of define_method overloads strongly typed to 
+		ClrName that define the real method using the ruby_name and alias it using
+		the clr_name. So both CompareTo and compare_to calls are intercepted.
+
+		We might add similar overloads to other methods to improve meta-programming
+		experience for CLR types when needed. 
+
+	10-06 (tomat)
+		Improves the implementation of singleton method dispatch.
+
+		1)	The previous singleton related shelveset made IRubyObject singleton methods
+		    as fast to call as regular methods. Since singletons of Object are frequently
+				used in specs, in fact any top level method calls are dispatched to a Object 
+				singleton, it makes sense to optimize singletons of Object as well. So far
+				we mapped Object to System::Object and Object.new produced an instance of
+				System::Object. Since such instances are pretty useless in .NET – they are
+				essentially empty objects that you can’t do anything with - it is not 
+				necessary to preserve this exact mapping. We still map the Object class
+				to System::Object CLR type, but the underlying CLR type of Object instances
+				is RubyObject. In pure Ruby program the difference is not observable. On 
+				the other hand C# programs will see the instances typed to RubyObject.
+		2)	Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=761: 
+		    Wrong behavior when calling redefined methods on object instances. This 
+				is actually fixed by 1) but the same issue applies on CLR singletons. 
+				Let’s say we have a CLR class C. Once you create a singleton of any of its
+				instance all rules generated for method calls whose receiver is *any*
+				instance of C must check whether the receiver is a singleton object of C 
+				or a regular instance of C. Previously we did this check only for calls to
+				singleton methods. This check is a pretty expensive weak dictionary lookup.
+				One way of optimizing this is to reduce the need of these checks. If we are
+				sure that no singleton method of the given name has been defined on any
+				singleton of C we don’t need to emit this check to the rule. Of course, we
+				need to invalidate such rule as soon as such method is defined. 
+		3)	Fixes potential race conditions in singleton creation.
+
+		These changes improve running time of specs significantly (2x):
+
+	10-06 (tomat)
+		Fixes allocation of structs. A struct can always be allocated by calling new
+		or allocate with no parameters or calling its constructor if available.
+
+	07-06 (tomat)
+		Initial work to improve singletons.
+		•	Improves reflection cache generator – it searches IronRuby.dll for all
+		  types marked by [ReflectionCache] attribute and generates ref-cache entries
+			for all their methods and properties marked with [Emitted] attribute.
+		•	Merges RubyModule.Subclass into RubyModule, i.e. RubyModule now implements
+		  IRubyObject.
+		•	IRubyObjects now hold on their immediate class (not nominal class) and that
+		  reference might change once from a non-singleton to a singleton class.
+			This change allows IRubyObject singletons (including modules and classes when
+			used in static method calls) to have the same rules as non-singleton objects. 
+			The rule no longer needs to hold on such objects.
+		•	Implements module freezing: methods, constants, instance and class variables,
+			mixins cannot be modified on a frozen module. Besides, if an object is frozen
+		  its singleton class is (recursively) frozen as well. 
+		•	Fixes object freezing: instance variables cannot be modified on a frozen object
+		  (we allowed it).
+
+	06-06 (tomat)
+		Fixes Ruby calls to protected generic methods.
+
+	05-06 (tomat)
+		Implements lazy method transformation. Previously a method was transformed to 
+		DLR AST as soon as it was defined (def foo; …; end). We can postpone the
+		transformation until the method is called for the first time. This
+		significantly improves startup time. For example (not NGEN’d):
+
+		require 'benchmark'
+		Benchmark.bm { |x|   x.report {  require 'rubygems'  }  }
+
+			user     system      total        real
+		eager transformation
+			1.622410   0.031200   1.653611 (  1.581316)
+		lazy transformation
+			1.170008   0.031200   1.201208 (  1.099220)
+
+		Although Ruby methods (unlike block) don’t close over variables we still need
+		2 closure variables: the parent lexical runtime scope and the module that the
+		method is declared in (for implementation of super). These were previously 
+		DLR closure variables. They are live constants now. Ruby method 
+		pre-compilation would require additional work, so we don’t support it for now. 
+
+	04-06 (tomat)
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1509&ProjectName=ironruby: 
+		Proc.to_s should include line number where the block was declared
+
+	03-06 (sborde)
+		Reimplemented File.expand_path such that it does not use System.IO.Path. 
+		This allows us to get better compatibility with MRI.
+		The motivating reason was that RSpec does File.expand_path("filename:linenumber"),
+		and the old implementation complained that : is not valid in filenames, whereas
+		MRI allows such input
+		Fixed "[nil].uniq" - Cucumber was running into this.
+		Renamed scripts\ruby19.bat to ruby1.9.bat as "mspec -tr19" seems to have changed.
+
+		Fix non-deterministic Rake test for "multitask" by adding 
+		semaphore.synchronize around array access
+		Changed default.mspec so that :core properly excludes the thread tests
+
+	03-06 (jomes)
+		Make Expression.Type and Expression.NodeType virtual properties, and remove
+		TypeImpl & NodeTypeImpl. This fixes 4 fxcop warnings caused by the *Impl methods,
+		and results in a better API for end users.
+
+	02-06 (tomat)
+		Refactors AstGenerator so that we can use its new instance for each compiled
+		method. This is a preparation for lazy method compilation.
+
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1184: 
+		public(:foo) does not work correctly for mixed-in methods
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1060:
+		visibility of	send :define_method Title is required
+
+		Factors super-forwarders into a separate SuperForwarderInfo <: RubyMemberInfo
+		(it used to be just a flag on member info). The super-forwarder needs to
+		remember the name of the method to forward to since that can change if
+		it’s aliased (see Visibility2C test case).
+
+		Fixes assertion in RubyOverloadResolver - it wasn't expecting DynamicMethod 
+		stubs generated by super calls.
+		Also fixes the super stubs to throw an exception if the super method is abstract.
+
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1345: 
+		load_assembly(<partial_name>) should work
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1501: 
+		WinForms broken
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1344: 
+		System.Action.new does not work
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=917: 
+		Passing a Ruby array to a .NET method that expects an IEnumerable derivative
+		fails with GetEnumerator call
+
+		+ fixes incorrect caching of TypeGroup#new.
+
+		Class#clr_member no longer throws an exception if called on Ruby class – it
+		returns a group of all inherited CLR methods of given name (if there are any).
+		Improves display name of generic types: e.g. Action<int> displays as
+		System::Action[Fixnum].
+
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1470 : Can't call 
+		the BigIntegerOverload of a method with a DefaultProtocol Attribute on the 
+		BigInteger attribute
+
+		+ Bignum.new(1) should call method_missing:
+
+		irb(main):001:0> Bignum.new(1)
+		NoMethodError: undefined method `new' for Bignum:Class
+
+	01-06 (jimmysch)
+		Allow Silverlight binary location to be adjusted based on a msbuild variable. 
+		Merlin builds use the well-known SL path in the source tree by default. A 
+		"SilverlightPath" msbuild variable can be passed to look for the SL binaries
+		there. For IronRuby and IronPython external SL builds either the
+		"SilverlightPath" variable can be set to Silverlight's install location, 
+		or the necessary Silverlight binaries can be copied to 
+		Merlin/Main/Utilities/Silverlight.
+
+		Also scoots around aliases to Silverlight directories.
+
+	01-06 (jdeville)
+		* Added and modified tests to increase code coverage
+		* Rolls in cominteropfix shelveset to make the cominterop generic test 
+		actually run COM interop tests
+		* Moves Rubygems tests to External\Languages\IronRuby\RubyGems-1_3_1-test
+		* Removes Rubygems 1.2 tests
+		* Fixes Rubygems test runner for the above.
+		* makes irtests run the core tests split up, adds cominterop
+		* splits out thread tests into a separate test list
+		* makes ir.cmd use TEST_OPTIONS
+
+	31-5 (tomat)
+		ClrMembers
+
+	29-5 (tomat)
+		Overrides4
+
+	28-5 (jdeville)
+		* Remove temp.rb from IRPowershell, it was only needed to test the script
+		  during development.
+		* Port minsysreq and minsysreq_ps. Next step will be to generalize them to
+		  some different apps.
+
+	26-5 (tomat)
+		Fixes handling of CLR protected and private methods and properties.
+		Enables generic methods in ClsTypeEmitter.
+		Removes RubyCallFlag.TryCall – it’s not used anymore.
+		Fixes calls to Object.Equals instance/static methods.
+
+		Notes on visibility:
+		Ruby visibility is orthogonal to CLR visibility.
+		Ruby visibility is mutable (can be changed using 
+			Kernel#public/private/protected methods), CLR visibility is not.
+		A CLR method group can comprise of methods of different CLR visibility. 
+		  Ruby visibility applies on the group as a whole.
+
+		Ruby-protected members can only be called from a scope whose self immediate
+		class is a descendant of the method owner.
+		CLR-protected members can only be called if the receiver is a descendant of
+		the method owner. 
+
+		Ruby-private members can only be called with an implicit receiver (self).
+		CLR-private members can only be called in PrivateBinding mode
+		(-X:PrivateBinding command line option), the receiver might be explicit or
+		implicit.
+
+		Tests:
+		Since protected methods can only be called on a derived class instance the 
+		specs need to be adjusted accordingly.
+		I’ve fixed generic_spec nad overload_spec and commented out a block in 
+		protected_spec – all the cases there need to be changed to negative cases
+		(all should fail).
+		Removed ROWAN_BIN check in 
+		External.LCA_RESTRICTED\Languages\IronRuby\mspec\default.mspec 
+		so that mspec picks up IR_OPTIONS even if ROWAN_BIN is not set.
+
+	22-05 (jdevillle)
+		(jdeville) Regressions tests for the following CP bugs. 
+		!!!!!Note that closing 1351 means we are upgrading redist-libs and rubygems!!!!:
+		ID	Title	
+		374	irails Foo: undefined method for OpenSLL::Random.random_bytes	
+		459	throw FileNotFoundException => rescue Errno.NoEntryError	
+		466	''.split(//, -1) returns [""] instead of []	
+		572	Error when running Cucumber examples with IronRuby	
+		614	ci_files set needed in mspec config	
+		718	IronRuby ignores RUBYLIB environment variable	
+		727	to_proc not working	
+		814	Allocator underfined for <type> (TypeError)	
+		940	Can't inherit from abstract classes	
+		1028	Missing conversion from Duration to Fixnum (ActiveSupport)?	
+		1351	redist-libs should have rubygems-1.3.1	
+		1352	Test Defects	
+
+		Also:
+		* Categorizes uncategorized specs
+		* includes a TraceListener in default.mspec.
+
+	21-05 (tomat)
+		Improves DLR interop: adds support for GetMember/SetMember with 
+		  method_missing, Binary/Unary ops, indexers.
+		Fixes bugs in DLR interop.
+
+ironruby-0.5.0.0 - 2009-05-19
+-----------------------------
+
+  18-05 (jdeville)
+    From Jirapong:
+    * Fixed OpenSSL::Random.random_bypes and OpenSSL::Random.pseudo_bytes 
+      (via cherry-pick from Jimmy's repro)
+
+    From Shri:
+    * "ir.exe -Ifoo" should work. We were requiring "-I foo".
+      Removed critical tags in io\close that I noticed were working.
+      Miscellaneous new tests in File.basename
+      Our copy of unit\testcase.rb uses SubclassTracker which is defined in
+      "hacks" and so should require "hacks"
+    * Map #== and #hash to System.Object.Equals/GetHashCode
+    * With the memcache-client gem installed, the Rails tests fail to startup
+      as memcache does TCPSocket.new(addr, port, 0) and we were not handling
+      the third argument
+    * "numeric + someOtherObj" should call someOtherObj.method_missing(:coerce)
+      backtraces now include file names for builtin methods in
+      IronRuby.Libraries.dll in a DEBUG builds and with -X:ExceptionDetail
+    * Enables RubyGems tests in irtests.bat
+    * Add mocha gem
+    * Implement File.chown. It is a nop (on Windows)
+    * ObjectSpace.each_byte:
+      It was not throwing an exception for the unsupported cases.
+      Also, the unsupported cases should throw RuntimeError to match 
+      ActiveSupport/JRuby conventions
+      The return value was also incorrect
+    * NameError should call #inspect on self, not #to_s
+    * #instance_method on singleton classes behaves a bit differently - it 
+      puts a contraint of the nominal type.
+    * UnboundMethod#bind was doing an incorrect type check and not dealing with
+      singleton classes. Factored out RubyContext.IsKindOf for this
+    * Add flexmock gem
+    * Changed some uses of MutableString.Empty (like Array#join with empty array) 
+      to create a new empty string as the user could validly mutate it.
+      - Renamed MutableString.Empty to MutableString.FixedEmpty to make it clear 
+      that the instance should be shared in limited scenarios
+    * Fixes to Module#instance_method per Tomas's feedback from previous code review
+    * File.extname(".foo") should return "", not ".foo"
+    * Removes to_proc hack from Libs\hacks.rb
+    * Tutorial sample app
+
+    From Shay:
+    * Fixing a File.print misbehavior when the global separator is not the default.
+
+    From Jimmy:
+    * IronRack - Run Rack applications (Sinatra, Rails, etc) on IIS
+      (cherry picked from commit aba053caa5f5e10c9da360fd4f2d442406f59079)
+    * Load app by APP_ROOT and config.ru
+      (cherry picked from commit 3da7be50ee63e1fe3a437f95f9ab2220784f9141)
+    * Add "RackVersion" to web.config.
+      (cherry picked from commit 087ad7290217e18b41171e24866bf10c54d6ec0c)
+    * Add README
+      (cherry picked from commit 54edd25b3837a36714c67c5c44653b1b07bdb9f5)
+    * Load a version of Rack denoted by RACK_VERSION
+      (cherry picked from commit 85d98e68a6bb375820370cd8b724311e8ed2304e)
+    * Make readme .markdown
+      (cherry picked from commit 9f8c37e4d4935f51460501ec1526b350d6137397)
+    * Spring cleaning (aka merging Justin Rudd's version)
+      (cherry picked from commit 69916ceb04a3f8ecad570fb89549da7ef56d0a6c)
+    * IIS.Handle(request, response) now it pretty close to compliant with the Rack spec.
+      Added an Request/Response class, so most of the munging around in IIS.Handle 
+      will be moved to those in the future.
+      (cherry picked from commit 025dc983062ae5d5c4d008532c94a5be9dcf925b)
+    * Adds irackup and fixes irake (Method#to_proc hack)
+    * Server name and server port
+      (cherry picked from commit d1257882642b06c0c71d05275d1ae5f84739ed23)
+    * Remove repl.rb from project ...
+      (cherry picked from commit dac7df55ce0217a77dc7f1c92c5b37b6dd0e14f7)
+    * rack.uri_scheme
+      (cherry picked from commit aeebcb0ec8247684a62e0a023a94fb3bb23e49b6)
+    * update sintra test
+      (cherry picked from commit 078aaaddd0c5468173ff1880b1c80091bb22dd80)
+    * Make sure the "env" has MutableString keys, and that Rackup() always 
+      return a Rack app
+      (cherry picked from commit fe3517edb7fdecf6d5ecefd2f87d27d484ebc9f6)
+    * Set TOPLEVEL_BINDING if not already set
+    * Better logging
+    * Fix env vars for Sinatra (and completeness)
+    * TCPSocket#read patch for POST requests in WEBrick
+      (cherry picked from commit 77a060722592b26bb6fc91d47ceddf9ed90c775e)
+    * cleanup of ironruby-rack from railsconf
+    * Move to Merlin/Main/Hosts/IronRuby.Rack
+    * Log KCODE
+    * fix KCODE error message
+    * Add ngen install/uninstall scripts
+      (cherry picked from commit e9d15d93082e8ac8d32ce2a51939c32f8c0cfb03)
+    * require 'System.Windows.Forms'
+      (cherry picked from commit 92932a672921a03210c8aefe23ac0a7d6996ed2d)
+
+  18-05 (jdeville)
+    Initial COM interop tests for IronRuby. These are just a port of
+    IronPython's "app" interop tests. This also changes IronRuby to version 0.5
+
+    Ported  IronPython's DiskUse sample to IronRuby
+
+  13-05 (tomat)
+    Adds support from nested types to Ruby – they are exposed as constants on
+    the declaring type. Also implements removal of namespace member and nested
+    type constants.
+
+    Fixes a bug in autoload – the constant being loaded was removed on a
+    wrong module.
+
+    Improves displaying of generic types and type groups: RubyContext.GetClassName
+    returns a name of the class without generic parameters or runtime id.
+    RubyContext.GetClassDisplayName includes both (runtime id only for classes
+    from foreign runtime). The latter is used for displaying errors and for
+    object inspection.
+
+  12-05 (tomat)
+
+    Fixes class instantiation, including bug 
+    http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1085.
+
+    Several cases need to be distinguished in Class#new:
+    1) The class defines or inherits an initializer (“initialize” method) that
+       is not the default Object#initializer.
+       a. The initializer is a Ruby method (written in Ruby).
+          => Use a default constructor to create the instance and invoke the
+             initializer on it. If the class derives from CLR class with no 
+             default constructor an exception is thrown.
+       b. The initializer is defined in a built-in class/module.
+          i.  The class being instantiated is a Ruby class.
+              Use default constructor and invoke the initializer.
+          ii. The class is a CLR class.
+              Use constructor or factory. Do not call the initializer 
+              built-ins must initialize the object completely in 
+              constructors/factories and provide initializers only for a direct
+              call.
+    2) Otherwise.
+       => Use constructor or factory. Do not call the initializer.
+
+    If the first parameter of a CLR constructor is of type RubyClass it is 
+    considered optional and hidden (like RubyContext or RubyScope) and the 
+    binder passes the class object that represents the class being 
+    instantiated.
+
+    Adds support for RubyContext hidden parameter to the constructor generator
+    in RubyTypeBuilder. The first RubyContext or RubyClass parameter is
+    considered a special hidden parameter. The built type needs to store 
+    RubyClass instance to _class field. If the base constructor already has 
+    RubyClass the derived ctor has the same signature. If the base constructor
+    takes RubyContext the derived ctor takes RubyClass in its place and passes
+    its context to the base ctor. If the base ctor doesn’t have RubyClass or 
+    RubyContext parameter RubyClass parameter is injected. We also need to
+    ensure that we don’t create duplicate constructors (e.g. if there is a
+    parameter-less overload, an overload taking RubyContext and an overload 
+    taking RubyClass).
+
+    Fixes Ruby.sln so that System.Dynamic is not built in Silverlight configurations.
+
+  07-05 (tomat)
+
+   Implements IsAscii() on MutableString – the bit is calculated along with 
+   hashcode and invalidated each time a mutable operation is performed.
+   Enables combination of mutable strings with different encodings/KCoding. 
+   If a string is k-coded it should be treated as byte array for all operations 
+   since 1.8 doesn’t tag the strings with encodings. Hence any k-coded strings 
+   can be combined regardless of their actual encodings. 1.9-encoded strings 
+   must have the same encoding or one of them must have all characters in 
+   range 0..127 (IsAscii == true) – MRI 1.9 allows combination of such strings.
+
+   Fixes:
+    - “IronRuby ignores RUBYLIB environment variable”
+      http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=718
+    - Encoding wasn’t flowing correctly in eval (test Encoding4)
+    - Improves performance of String#*.
+    - MutableString.Content.GetCapacity was wrong.
+
+
+  06-05 (tomat)
+    Improves performance for file IO#read method.
+    Previously we were 10x slower than MRI, now we are approx. 1.5-times faster
+
+  05-05 (tomat)
+    Implements Method#to_proc.
+
+    Implements precompilation of simple Ruby method invocations. Adds 
+    pre-generated rules for call sites that are:
+    1) context bound
+    2) without a block, splat or RHS argument
+    3) with self of runtime type RubyObject strongly typed to Object in the 
+       call site
+    4) the method is resolved to an existing Ruby method or an “empty” 
+       library method
+    5) no context class checks are needed due to protected visibility
+    6) the method doesn’t have optional or unsplatted parameters and the number
+       of mandatory parameters matches the call site
+    7) the method has at most 5 parameters
+
+    The rules are generated to MethodDispatcher.Generated.cs by 
+    MethodDispatcher.Generator.rb. The generator finds blocks in C# code that
+    match this pattern:
+
+    #if GENERATOR
+    <ruby code>
+    #else
+    <C# template>
+    #end
+    #region Generated by …
+    <generated code>
+    #endregion
+
+    It creates a new class G < Generator for each such block end module-eval’s
+    <ruby code> in that class. Then it calls G.new.generate. The default
+    implementation takes the <C# template> and replaces each occurrence of
+    /*$MethodName*/ or /*$MethodName{*/ … /*}*/ in the template by a value
+    returned by a call to MethodName on the generator class. The generator
+    replaces the content of “Generated by” region by the resulting code. The
+    <C# template> is optional – the #else block can be omitted.
+
+    There could be multiple templates in a single file. The generator also
+    searches the file for /*$$*/ comments before evaluating them. Text in 
+    between such comment and following semicolon is evaluated as a Ruby global
+    variable definition. 
+
+    The shelveset also moves event sites (method added/removed/undefined, …)
+    to RubyModule and RubyClass so that they don’t become megamorphic.
+    Encapsulates class version into VersionHandle class.
+
+    Changes perf stats output writer to a file 'perfstats.log'.
+
+    Enables remaining Method specs. Fixes a couple of failures due to wrong arity calculation.
+
+  03-05 (tomat)
+    Fixes a bug in interpreter - if an exception was thrown in finally clause 
+    the handler of that exception didn't get executed since the current 
+    instruction index was already beyond "endIndex". We need to set endIndex
+    to _instructions.Length.
+
+    Ruby: Removes old interpreter.
+
+  01-05 (tomat)
+    Fixes bugs in the new interpreter and implements more features to support 
+    IronRuby. 
+
+    Fixes bug http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=572 
+    and other eval issues related to control flow.
+
+  28-04 (tomat)
+    RubyScope fixes and refactoring.
+
+    This change enables top-level hosted code to define instance methods in 
+    DLR scope. It is no longer necessary to define them as singleton methods.
+    Ruby engine executes the hosted code as if it was executed using 
+    instance_eval on a proc. The behavior is the same except for control flow;
+    break or retry on top-level throws an exception as it does in MRI.
+
+    This unit test illustrates the new behavior:
+
+      // When executed without a scope top-level methods are defined on Object
+      // (as in MRI):
+      Engine.Execute("def foo; 1; end");
+      Assert(Context.ObjectClass.GetMethod("foo") != null);
+
+      // When executed against a scope top-level methods are defined on main 
+      // singleton (not on Object) and also stored in the scope:
+      var scope = Engine.CreateScope();
+      Engine.Execute("def bar; 1; end", scope);
+      Assert(Context.ObjectClass.GetMethod("bar") == null);
+      Assert(scope.GetVariable("bar") != null);
+    
+    Fixes bug in top-level scope compilation – variables from the scope were
+    not bound properly:
+    
+      var compiled = Engine.CreateScriptSourceFromString("some_variable").Compile();
+      scope = Engine.CreateScope();
+      scope.SetVariable("some_variable", "foo");
+      Assert(compiled.Execute<string>(scope) == "foo");
+
+  25-04 (jdeville)
+    - Update to v0.4.0.0
+
+  25-04 (jdeville) 
+    From Danielle:
+    * IListOps.Difference now uses Object#hash and Object#eql? to check for
+      object equality, this fixes the failing spec "Array#- acts as if using an
+      intermediate hash to collect values"
+    * Modified IListOps.RecursiveJoin to make it flag the resulting string as
+      tainted if the given array, at least one of its elements or the separator
+      string are tainted.
+    * Changed IListOps.Repetition to return IList instances of the same type of
+      the given self argument (this fixes also "Array#* with an integer returns
+      subclass instance with Array subclasses")
+    * Various changes to IListOps.Join to clear all of the remaining tags for the
+      specs of Array#join. The tags marked as critical in join_tags.txt are not
+      related to pending bugs for Array#join.
+    * Added ArrayOps.ToAry as Array#to_a and Array#to_ary behave differently on 
+      subclasses of arrays.
+    * Cleaning up tags removing expectations that do not fail anymore.
+    * Changed one overload of IListOps.Equals to make it try to call #to_ary on 
+      the object argument of Array#== and use the resulting array as the actual
+      argument for the equality check.
+    * Changed IListOps.SetElement to make it try to invoke #to_ary on its argument
+      for multi-element sets.
+    * Changed IListOps.Reverse to return IList instances of the same type of the
+      given self argument (this change also fixes the following failing spec: 
+      "Array#reverse returns subclass instance on Array subclasses")
+    * Fixed IListOps.ReverseIndex as Array#rindex should not fail if elements are
+      removed from the array during the iteration over its elements.
+    * Slightly modified IListOps.UniqueSelf as suggested upon review.
+
+    From Jimmy:
+    * Allows symbols to be inside a YAML array
+      http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=375
+    * Fixes for File.dirname, makes all dirname specs pass. For Rails to find 
+      log/development.log
+      http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=499
+    * Uses [NotNull] instead of a explicit check.
+    * Makes __FILE__ and $PROGRAM_NAME (and $0) have canonicalized paths when
+      Ruby is hosted from ir.exe. However, __FILE__ is not messed with when including a file via require/load.
+      Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=545
+    * autoload uses '/' to join load-path and autoload-path
+      Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=674
+    * Code Review changes
+    - Moves command_line/fixtures/file* and language/fixtures/file* to fixtures/
+    - Create RubyUtils.CanonicalizePath, to dependency on IronRuby.Builtins.Glob
+      from IronRuby.Hosting
+    * Code review updates:
+      - Don't combine paths with '/' if the base-path already ends with '/' or '\\'
+      - Remove Glob.CanonicalizePath (in favor of RubyUtils.CanonicalizePath)
+
+    From Jim:
+    * remove Glob.CanonicalizePath as requested by Tomas for CR for Jimmy
+    * add ci_files to default.mspec so mspec ci works
+    * add a filtered function to mspec to simplify default.mspec
+    * categorizing uncategorized specs
+    * removing extra spec files
+    * update rubyspec and mspec
+    * add a file with the git sha1 hashes of current mspec and rubyspec
+    * implement File.umask in order to run the specs
+    * Implement Process.waitall (needed by Process specs)
+      Also implement Errno::ECHILD, Process.uid=, Process.wait and Process.wait2
+    * rebuilt ironruby tags
+    * Code review fixes from Tomas
+    * fixing up some missing tags
+
+  23-04 (jdeville)
+    From Daniele:
+    * Array#first(n) and Array#last(n) on a subclass of Array should return an 
+      instance of Array and not an instance of the subclass.
+    * The result of Array#compact must keep the tainted status of the source 
+      array.
+    * A block passed to Array#delete should be executed only if no element 
+      matches the given object
+    * Array#flatten returns subclass instance for Array subclasses
+    * Array#flatten does not call flatten on elements
+    * Array#fetch passes the original index argument object to the block, not 
+      the converted Integer
+    * Removed unused allocateStorage argument from IListOps.First and 
+      IListOps.Last; Removed the manual protocol conversion bits in IListOps.Fetch
+    * Fix IoOps.ToPrintedString to output a double converted to string using an
+      invariant culture (Issue #597 NumericLiterals1 test fails under french culture)
+    * IListOps.ValuesAt adds a null value to the result if the begin value of 
+      the specified range instance(s) is <= the length of the array and the end 
+      value is >= the length of the array.
+    * Array#uniq! raises a TypeError on a frozen array if modification would 
+      take place.
+    * Fixed ArrayOps.ToArray to return a new RubyArray instance with the 
+      elements of self if self is a RubyArray.Subclass.
+    * Array#initialize with (size, object=nil) uses the block value instead
+      of using the default value
+    * Fixed IListOps.Compare to work with recursive arrays.
+
+    From Shri:
+    - Adding the RubyGems 1.2 tests
+    - Included the 1.3.1 tests as well. They can be used when IronRuby moves up
+      to RubyGems 1.3.1 (which is what MRI 1.8.6p287 uses)
+    - Added Scripts\RubyGemsTests.rb to run the RubyGems tests in the IronRuby 
+      dev environment
+    - Added an optional task (use "irtests.bat -all") to irtests.bat to run the
+      RubyGems tests. We can enable it by default once more people can try it
+      out and make sure it works well
+    - irtest.bat now runs in series by default. Use "irtests.bat -par" to tasks
+      run in parallel
+    - Calling exit in at_exit should set the error code. This is required to 
+      detect if RubyGemsTests.rb succeeded or not
+    - Fixes Array#hash to work with recursive arrays
+    - Also updated ArraySpecs.recursive_array to produce a cycle of length 3. 
+      Previously, it was doing "a << a" multiple times, but this does not 
+      increase the length of the cycle above 2. It just increase the number of 
+      cycles. This change required an update to many files.
+    - Also added a new ArraySpecs.recursive_arrays function which should be used
+      when dealing with two arrays (comparisons, merge, etc). I have only used
+      it in equal_value_spec and eql_spec for now...
+    - Also removed entries from critical_tags.txt since recursive hashing and
+      comparison now works.
+    - Changed irtests.bat to not use "mspec -V" (unless you are using "irtests -par")
+      which was causing very verbose output
+    - Changed irtests.bat to only use two "mspec" tasks so that "irtest -par"
+      will spawn fewer processes.
+    - Changed IronRuby.Tests.exe to show dots for each test instead of printing a
+      new line which is very verbose
+    - Changed irtests.bat to continue running tests even if previous test task 
+      failed. It remembers the failed results and prints the summary at the end.
+    - Added ruby19.bat so that "mspec -tr19" runs with Ruby 1.9. It requires
+      you to set RUBY19_EXE to point to your copy of the 1.9 version of ruby.exe
+    
+    From Jirapong:
+    - fix File.new by re-throw exception
+    - format indent style
+    - added RubyErrno.cs to IronRuby.dll, move EEXIST, EINVAL, and ENOENT 
+      to IronRuby.dll
+    - move RubyErrno's exceptions to exceptions.cs
+
+  15-04 (jdeville)
+    Changes from Shri (Include changes from Jira and Daniele):
+    * Implemented Zlib::GzipWriter.open
+    * Added Kernel.abort
+    * Mapped Errno::EACCES to System.UnauthorizedAccessException
+    * File.delete catches IOException and rethrows Errno::EACCES to match MRI
+    * Adds Errno::EXDEV
+    * Updated rbconfig.rb to work with the dev environment. 
+      Change RbConfig[:ruby_install_name] to "ir". Note that it is not "ironruby"
+      because RubyGems uses this to spawn new processes for running setup scripts
+      , and so it needs to match the executable name (ir.exe).
+    * Added Languages\Ruby\Tests\Interop\uncategorized_spec.rb as a place for devs
+      to add CLR tests. Jim can later move them into the right place in CLR interop
+      test suite.
+    * fix missleading FileMode refer to
+      http://rubyforge.org/tracker/index.php?func=detail&aid=25116&group_id=4359&atid=16798
+    * Fixed another bug in String#%
+    * Bugs in File.rename
+    * Ruby should exit when main thread exits, even if other threads are still alive
+    * Mapped Errno::ENOENT to FleNotFoundException, and 
+      ENOTDIR to DirectoryNotFoundException
+    * fix kernel.open with permission parameter
+    * Fixes on top of Jirapong's fix for Kernel.open
+    * Fixes File.expand_path to workaround a problem "igem i rails" was running into.
+    * Fixes File apis to throw correct exception type
+    * Implements Kernel.abort
+    * Adds Errno::ECONNREFUSED
+    * Exception#message should call Exception#to_s
+    * Fixes paths in rbconfig.rb to work in dev environment
+    * Fix the behaviour of Array#[]= with [start, length]
+    * Delete tags for Array[]=
+    
+    Changes by Jim:
+    * refactor method specs to use a shared behavior
+    * namespace mapping and method addition specs
+    * more namespace specs for adding and removing methods and classes
+    * adding specs mixing Namespaces into Ruby classes
+    * added specs for enums
+    * remove dependencies on ClrAssembly
+    * remove ClrAssembly from Ruby.sln. I'm leaving the ClrAssembly in the Git 
+      repo so that I can reference it when doing my specs
+    * enum reflection specs
+    * spec IEnumerable maps to Enumerable
+    * spec IComparable maps to Comparable
+    * idictionary support specs
+    * Ilist specs
+    * class modification specs (method addition and removal
+    * spec comparable maps to icomparable
+    * specs that Int32 is Fixnum and System::DateTime is Time
+    * adding System::DateTime instantiation specs
+    * interface reflection spec
+    * implementing interfaces
+
+  15-04 (tomat)
+    Moves old interpreter to Ruby.
+    Cleans up scope factories (removes out parameters).
+    A couple of other small tweaks.
+
+  13-04 (tomat)
+    Adds support for .NET operators (op_* special methods). These methods 
+    behave like extension methods so some adjustments were needed in 
+    RubyOverloadResolver to handle “self” correctly. 
+
+    Implements bitwise operators on flag enums: each flag enum gets a
+    FlagEnumeration mixin that includes &, |, ^, and ~ methods. The 
+    implementation is the same as Python have so I factored it out to 
+    EnumUtils in DLR.
+
+    Fixes implementation of RubyObject.ToString and Kernel#to_s so that 
+    “to_s” is called from ToString on Ruby objects and ToString is called 
+    from Kernel#to_s for .NET objects. Also implements ToString on built-ins 
+    where it was missing and it makes sense to have it: range and regex. 
+    Although Array and Hash implement to_s as well the result is a plain 
+    concatenation of string representation of their items (entires). 
+    E.g. [“a b”, “c”].to_s == “a bc”. 
+    I don’t think adding RubyArray/Hash.ToString doing the same would be
+    useful for .NET users.
+
+    Moves Protocols from libraries to IronRuby.dll.
+
+    Implements more DLR interop binders and refactors existing ones.
+    Adds support for COM interop to interop binders and Kernel#methods.
+    Fixes a bug in Ruby AST that emitted wrong code for an empty AST.
+
+  08-04 (tomat)
+    Redesigns the default method binder.
+    Implements partially restricted splatting feature in Ruby.
+    Replaces calls to obsolete methods of default method binder with those using meta-objects.
+
+    Fixes http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=18379.
+
+  04-04 (jdeville)
+    Jim: 
+    - closing Rubyforge 15060 
+    - [#24589] $PROGRAM_NAME in 'English' not working now fixed 
+    - making $0 the same object as $PROGRAM_NAME and adding specs for it. Closes
+      [#24589] $PROGRAM_NAME in 'English' not working 
+    - closing Rubyforge [#15061] tracking: create generic interface type 
+    - closing RubyForge [#15651] NoMethodError expected when calling the private
+      method 'initialize' of a ruby class 
+    - added protected method invocation specs. Closes Rubyforge [#19118] 
+      Protected members not available when inheriting from CLR type 
+    - adding regression test for [#19872] IComparableOps.CompareTo throws argument
+      error when type is Decimal 
+    - added reference support to csc.bat 
+    - closing [#17467] Accessing IronRuby method from C# 
+    - closing [#19950] Dir.glob doesn't handle ** 
+    - closing [#20027] Formatting float to string produces incorrectly 
+      "Infinity" 
+    - closing [#20043] creating a generic type when the type is an interface 
+    - closing [#20052] Calculating 3.0/2.0 produces NaN 
+    - closing Rubyforge [#20263] Dir.glob doesn't handle missing folders 
+    - closing [#20410] GetKCodeName 
+    - adding test to ensure that File.stat returns a File::Stat object 
+    - closing Rubyforge [#20640] Calling File.open with an integer (File descriptor
+      overload) causes the File.open site to be unusable 
+    - closing Rubyforge [#20664] Respecting visibility of methods. Also fixes a
+      compilation error due to multiple IInterface definitions 
+    - Closing RubyForge [#20665] Can't use an indexer on a WPF ResourceDictionary 
+    - removing a tag for predefined 
+    - closing Rubyforge [#21943] NullRef exception thrown while comparing a list 
+      containing elements with overriden == 
+    - closing Rubyforge [#21995] kind_of? not working with when extend is used 
+    - recommiting some changes that were reverted by the merge. Methinks someone
+      in TFS changed them. This makes describe work with 2 strings for shared 
+      behaviors, and it makes csc output #line pragmas 
+    - fixing some more errors from the merge 
+    - Adding class instantiation specs for regular classes with overloaded 
+      constructors
+    - adding regression tests for [#22197] calling super throw Argument Error 
+    - adding StringBuilder specs to get rid of test_basic.rb. Also added 
+      equal_clr_string matcher 
+    - refactor specs to use the equal_clr_string matcher 
+    - basic string specs to remove test_basic.rb 
+    - added more string specs to get rid of test_basic. Also adds field specs 
+    - adding some basic event add and remove specs 
+    - added event invocation specs
+
+    Shri:
+    - YAML should allow spaces. eg the trailing \s\t in 
+      YAML.load("!timestamp '2009-03-22 00:00:00\s\t'") is allowed
+    - Changed igem.bat, irake.bat, etc to work in dev environment where ir.exe
+      is not in the path
+    - File.expand_path("~") should throw ArgumentError is HOME is not set
+    - make orig_name, comment, and split close and finish
+    - compile error when pull form irmain, merge in zlib
+    - spec for finish, close, oriname, and trying to DRY orig_name and comment
+    - make orig_name, comment, close, and finish passed spec.
+    - Implements File.chmod
+    - File.readable? should return false if the given filename does not exist
+    - File.delete should be able to delete a read-only file. This is implemented
+      by making the file writable first. This is the only solution I could find.
+    - Added debugger visualizer for RubyObject so that VS will display the result
+      of to_s in the Watch window.
+    - Adds the wrapper script Merlin\Main\Test\Scritps\ir.cmd so that the Legacy
+      tests (Ruby\Scripts\test.bat) can pass without any failures.
+
+  28-03 (sborde)
+    - Adding unit tests for Ruby's IDMOP support. Failing scenarios are tagged
+      with AreEqualBug and AssertExceptionThrownBug
+    - Added Languages\Ruby\Scripts\ir_wrap.cmd as the replacement for
+      Test\Scripts\ir.cmd which does not exist in GIT. Most of the files are 
+      changed because of this.
+
+  27-03 (jdeville)
+    - modify .gitignore to ignore Bin in addition to bin
+    - Adds ClrAssembly to Ruby.sln
+    - add dlr_config to IronRuby object 
+    - csc describe handles shared specs (multiple arguments) and we now emit 
+      #line pragmas instead of comments 
+    - adding some generic tests and fixing tags, also make default.mspec load
+      ir.exe instead of ir.cmd 
+    - adding some constrained generic specs 
+    - added generic error messages specs. Fixed tag location
+    - split pragma warning to make sure I do not disable unintended warnings. 
+      Refactor conflicting methods 
+    - added class param and conflicting type param specs 
+    - adding specs for ruby classes with type constraints
+    - array conversion specs 
+    - array instantiation specs 
+    - redid IronRuby.dlr_config after Tomas' IronRuby changes 
+    - adding a default conversion spec and a little bit of refactoring 
+    - more array tests 
+    - spec for a static method caching bug i found 
+    - spec method overriding maintains .NET supermethod 
+    - refactor to add some metaclass helpers 
+    - class instantiation specs 
+    - some more class instantiation specs 
+    - sealed class instantiation specs 
+    - generic instantiation specs 
+    - make GenericClass have a method so it isn't EmptyGenericClass 
+    - more generic instantiation specs 
+
+  26-03 (tomat) 
+    Implements atomizer for Ruby call site binders: A new class 
+    RubyMetaBinderFactory creates sites and caches them in dictionaries. Sites 
+    are either bound to a runtime (RubyContext) or not. Bound sites don’t emit 
+    context check, unbound need to. Bound sites don’t take RubyContext as the
+    first parameter any more. They can still take RubyScope if needed (such 
+    sites have HasScope flag set). Replaces SiteLocalStorage with 
+    RubyCallSiteStorage that holds on the context so that it is not necessary 
+    to pass RubyContext to the sites stored in the storage. Updates all sites 
+    in libraries accordingly.
+
+    Adds –ER command line option that enables tracing of meta-objects (rules) 
+    created by Ruby.
+
+    Refactors MetaObjectBuilder to use type restrictions rather than expression
+    restrictions.
+
+    Removes RubyClassAttribute.MixinInterfaces – it didn’t work correctly and
+    was almost unused.
+
+    Also improves handling of BOM in 1.8 mode – we previously did exactly what
+    Ruby does, i.e. report a syntax error from which it is not obvious what’s
+    wrong. If –KU is not specified and UTF8 BOM is found at the beginning of 
+    the source code, the tokenizer reports a level 2 warning, skips the BOM 
+    as if it was whitespace and continues reading the file.
+
+  24-03 (tomat)
+    A couple of breaking changes:
+    - Removes ClrString constant. CLR string should be referred to as 
+      System::String. 
+    - Removes IronRuby library. “require ‘IronRuby’” is no longer needed, IronRuby
+      module is now a built-in module.
+
+    Implements integer/float operations for all CLR primitive numeric types (byte,
+    sbyte, short, ushort, uint, long, ulong, float). Those integer types that fit 
+    in 32-bit signed integer (Fixnum) are widened to Fixnum for all operations. The
+    other integer types are widened to BigInteger. Float is converted to double.
+    The operations on these types don’t narrow their results even if the values
+    fit. For example, (System::Byte.new(1) + 1).class == Fixnum, not System::Byte.
+    This might not be optimal for some scenarios. If we find it important we’ll fix
+    this in future.
+
+    The implementation takes the operations from FixnumOps, BignumOps and FloatOps
+    and moves them to new modules IronRuby::Clr::Integer, IronRuby::Clr::BigInteger 
+    and IronRuby::Clr::Float respectively. These are mixed back into the numeric 
+    types. Some methods need to be specialized for each types, so we generated C# 
+    code for them. Ruby 1.9 script ClrInteger.Generator.rb produces
+    ClrInteger.Generated.cs.
+
+    Implements System::Char and System::String methods so that they behave like an
+    immutable UTF-8 encoded string (of size 1 character in the case of 
+    System::Char). Many methods in MutableStringOps can share implementation with 
+    CLR string. There is still a lot of work to be done here, especially to support
+    encodings. So for now, to make CLR strings work like Ruby frozen strings to a
+    large extent, I’ve implemented method-missing dispatch that forwards to a 
+    MutableString. 
+
+
+ironruby-0.3.0.0 - 2009-03-20
+-----------------------------
+
+  - Improves Ruby tokenizer and parser by 30%
+  - Moved source code repository to GIT, unsigned builds
+  - Thread library (Thread#stop, Kernel#sleep, Thread#raise, Thread#critical=)
+  - Fixes interpretation of UnaryExpresion cast with a custom method
+  - Implements generic methods parameters binding and explicit overload selection
+  - Makes operations on class hierarchy thread-safe
+  - Fixes binder error message given when an interface name is displayed.
+  - Adds additional RubySpec tests to language/regexp_specs.rb
+  - Fixes Zlib::Inflate#inflate and File#join (for gem install)
+  - Adds -e support to IronRuby using CommonConsoleOptions.Comand.
+  - Regexp literal support for /o
+  - Fixnum + Bignum should yield a Bignum, not a Float
+  - Implements Ruby protected visibility, fixes other bugs in Module (all specs pass now) and assignment in eval.
+  - Implements loading of assembly dependencies.

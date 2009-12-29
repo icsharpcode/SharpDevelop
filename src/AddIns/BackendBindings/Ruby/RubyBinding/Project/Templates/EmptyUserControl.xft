@@ -1,0 +1,28 @@
+﻿<Template author="Matt Ward" version="1.0">
+	<Config name      = "${res:Templates.File.WindowsUserControl.Name}"
+		  icon        = "Ruby.Template.Form"
+		  category    = "Ruby"
+		  defaultname = "UserControl${Number}.rb"
+		  language    = "Ruby"/>
+	 
+	<Description>${res:Templates.File.WindowsUserControl.Description}</Description>
+	
+	<Files>
+		<File name="${FullName}" language="Ruby">
+require "mscorlib"
+require "System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+require "System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+
+class ${ClassName} &lt; System::Windows::Forms::UserControl
+	def initialize()
+		self.InitializeComponent()
+	end
+		
+	def InitializeComponent()
+		self.Name = "${ClassName}"
+	end
+end
+</File>
+	</Files>
+	<AdditionalOptions/>
+</Template>

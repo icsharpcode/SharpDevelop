@@ -47,7 +47,11 @@ class MainForm(Form):
 		self.InitializeComponent()
 	
 	def InitializeComponent(self):
-		pass
+		# 
+		# MainForm
+		# 
+		self.Name = "MainForm"
+		self.Text = "${ProjectName}"
 
 ]]></File>
 			<File name="Program.py"><![CDATA[import clr
