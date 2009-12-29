@@ -6,7 +6,7 @@
 	
 	<Manifest>
 		<Identity name="SiegfriedPammer.HexEditor" />
-		<Dependency addin="SharpDevelop" version="3.0"/>
+		<Dependency addin="SharpDevelop"/>
 	</Manifest>
 	
 	<Runtime>

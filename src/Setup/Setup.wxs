@@ -8,14 +8,14 @@
 	-->
 
 	<Product Id="*" 
-		Name="SharpDevelop 3.1.1"
+		Name="SharpDevelop 3.2"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
 		UpgradeCode="757486BE-1F27-4BED-9A3B-737906728F1C"
-		Version="3.1.$(var.PRODUCTBUILDVERSION)">
+		Version="3.2.$(var.PRODUCTBUILDVERSION)">
 
-		<Package Description="SharpDevelop 3.1.1.$(var.PRODUCTBUILDVERSION)"
+		<Package Description="SharpDevelop 3.2.0.$(var.PRODUCTBUILDVERSION)"
 			InstallerVersion="300"
 			Compressed="yes"/>
 		
@@ -31,13 +31,13 @@
 			<!-- Checks for older versions -->
 			<UpgradeVersion Minimum="3.1.0"
 				IncludeMinimum="yes"
-				Maximum="3.1.$(var.PRODUCTBUILDVERSION)"
+				Maximum="3.2.$(var.PRODUCTBUILDVERSION)"
 				IncludeMaximum="no" 
 				Property="PREVIOUSVERSIONFOUND"/>
 			<!-- Checks for newer versions -->
 			<UpgradeVersion OnlyDetect="yes"
 				Property="NEWERVERSIONFOUND"
-        		Minimum="3.1.$(var.PRODUCTBUILDVERSION)"
+        		Minimum="3.2.$(var.PRODUCTBUILDVERSION)"
 				IncludeMinimum="no"/>
 		</Upgrade>
 		
@@ -141,7 +141,7 @@
 			each be a feature if the user wants to heavily customise the installation.
 		-->
 		<Feature Id="Complete"
-		         Title="SharpDevelop 3.1.1"
+		         Title="SharpDevelop 3.2"
 		         Description="Installs SharpDevelop and registers file associations"
 		         Level="1"
 		         ConfigurableDirectory="INSTALLDIR"
@@ -376,14 +376,7 @@
 				<ComponentRef Id="RegExToolkitFiles"/>
 				<ComponentRef Id="ResourceToolkitFiles"/>
 				<ComponentRef Id="SearchAndReplaceFiles"/>
-				<!--
-				<ComponentRef Id="SharpQueryDll"/>
-				<ComponentRef Id="SharpQueryInteropMSDASCDll"/>
-				<ComponentRef Id="SharpDevelopReportsCoreDll"/>
-				<ComponentRef Id="SharpDevelopReportsAddInDll"/>
-				<ComponentRef Id="PdfSharpDll"/>
-				<ComponentRef Id="PdfSharpDeResources"/>
-				-->
+
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
 				<ComponentRef Id="UnitTestingAddInFiles"/>
@@ -616,7 +609,7 @@
 		<UIRef Id="WixUI_FeatureTree"/>
 		
 		<!--
-			If a newer version of SharpDevelop 3.1 is installed show an
+			If a newer version of SharpDevelop 3.2 is installed show an
 			error message.
 	
 			This message is not displayed immediately, the FindRelatedProducts 
@@ -631,14 +624,14 @@
 			<!--
 				Display an error message if a newer version found.
 				
-				Since the installer completely removes the existing SharpDevelop 3.1
+				Since the installer completely removes the existing SharpDevelop 3.2
 				downgrades would work without any problems, but for now we 
 				inform the user that a newer version already exists.
  			-->
 			<Custom Action="NoDowngrade" After="FindRelatedProducts">NEWERVERSIONFOUND</Custom>
 			<Custom Action="UpgradeNotPossible" After="FindRelatedProducts">OLDVERSIONFOUND</Custom>
 			<!--
-				Removes the older version of SharpDevelop 3.1, if we are upgrading,
+				Removes the older version of SharpDevelop 3.2, if we are upgrading,
 				before installing the new version.
 
 				Unfortunately the user is not informed of this upgrade. I think
