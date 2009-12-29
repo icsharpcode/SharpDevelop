@@ -105,14 +105,14 @@
 	
 	<!-- Options panel -->
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<DialogPanel id="RubyOptionsPanel"
+		<OptionPanel id="RubyOptionsPanel"
 		             label="Ruby"
 		             class="ICSharpCode.RubyBinding.RubyOptionsPanel"/>
 	</Path>
 	
 	<!-- Project options panels -->
 	<Path path="/SharpDevelop/BackendBindings/ProjectOptions/Ruby">
-		<DialogPanel id="DebugOptions"
+		<OptionPanel id="DebugOptions"
 		             label="${res:Dialog.ProjectOptions.DebugOptions}"
 		             class="ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
 	</Path>
