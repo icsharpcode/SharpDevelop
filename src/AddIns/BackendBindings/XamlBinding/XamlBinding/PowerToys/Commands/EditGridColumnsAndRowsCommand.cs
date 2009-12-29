@@ -17,9 +17,6 @@ using ICSharpCode.XamlBinding.PowerToys.Dialogs;
 
 namespace ICSharpCode.XamlBinding.PowerToys.Commands
 {
-	/// <summary>
-	/// Description of EditGridColumnsAndRowsCommand.
-	/// </summary>
 	public class EditGridColumnsAndRowsCommand : XamlMenuCommand
 	{
 		protected override bool Refactor(ITextEditor editor, XDocument document)
@@ -27,21 +24,21 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 			Location startLoc = editor.Document.OffsetToPosition(editor.SelectionStart);
 			Location endLoc = editor.Document.OffsetToPosition(editor.SelectionStart + editor.SelectionLength);
 			
-			XElement selectedItem = (from item in document.Root.Descendants()
-			                         where item.IsInRange(startLoc, endLoc) select item).FirstOrDefault();
+			XName[] names = CompletionDataHelper.WpfXamlNamespaces.Select(item => XName.Get("Grid", item)).ToArray();
 			
-			if (selectedItem == null || CompletionDataHelper.WpfXamlNamespaces.Select(item => XName.Get("Grid", item)).Any(ns => ns == selectedItem.Name)) {
-				selectedItem = document.Root.Elements().FirstOrDefault();
-				if (selectedItem == null || CompletionDataHelper.WpfXamlNamespaces.Select(item => XName.Get("Grid", item)).Any(ns => ns == selectedItem.Name)) {
-					MessageService.ShowError("Please select a Grid!");
-					return false;
-				}
+			XElement selectedItem = document.Root.Descendants()
+				.FirstOrDefault(item => item.IsInRange(startLoc, endLoc) && names.Any(ns => ns == item.Name))
+				?? document.Root.Elements().FirstOrDefault(i => names.Any(ns => ns == i.Name));
+			
+			if (selectedItem == null) {
+				MessageService.ShowError("Please select a Grid!");
+				return false;
 			}
 			
 			EditGridColumnsAndRowsDialog dialog = new EditGridColumnsAndRowsDialog(selectedItem);
 			dialog.Owner = WorkbenchSingleton.MainWindow;
 			
-			if (dialog.ShowDialog() ?? false) {
+			if (dialog.ShowDialog() == true) {
 				selectedItem.ReplaceWith(dialog.ConstructedTree);
 				return true;
 			}
