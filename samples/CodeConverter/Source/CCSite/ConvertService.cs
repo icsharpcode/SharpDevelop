@@ -14,7 +14,8 @@ using ICSharpCode.CodeConversion;
 [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
 public class ConvertService : System.Web.Services.WebService {
 
-    public ConvertService () {
+    public ConvertService () 
+    {
 
         //Uncomment the following line if using designed components 
         //InitializeComponent(); 
@@ -37,50 +38,10 @@ public class ConvertService : System.Web.Services.WebService {
     public bool ConvertSnippet(string TypeOfConversion, string SourceCode, out string ConvertedCode, out string ErrorMessage)
     {
         ErrorMessage = ConvertedCode = "";
-        string convertedSource = "", errorMessage = "";
-        bool bSuccessfulConversion = false;
-        IConvertCode currentConverter = null;
 
-        switch (TypeOfConversion)
-        {
-            case "cs2boo":
-                currentConverter = new ConvertCSharpToBoo();
-                break;
-            case "vbnet2boo":
-                currentConverter = new ConvertVbNetToBoo();
-                break;
-            case "cs2vbnet":
-                currentConverter = new ConvertCSharpSnippetToVbNet();
-                break;
-            case "vbnet2cs":
-                currentConverter = new ConvertVbNetSnippetToCSharp();
-                break;
-            default:
-                return false;
-        }
-
-        try
-        {
-            bSuccessfulConversion = currentConverter.Convert(SourceCode,
-                        out convertedSource,
-                        out errorMessage);
-        }
-        catch (Exception ex)
-        {
-            bSuccessfulConversion = false;
-            errorMessage = "Exception occured: " + ex.ToString() + "\r\n\r\nError Message:" + errorMessage;
-        }
-
-        if (bSuccessfulConversion)
-        {
-            ConvertedCode = convertedSource;
-        }
-        else
-        {
-            ErrorMessage = errorMessage;
-        }
-
-        return bSuccessfulConversion;
+        bool result = CodeConversionHelpers.ConvertSnippet(TypeOfConversion, SourceCode, out ConvertedCode, out ErrorMessage);
+        
+        return result;
     }
 }
 

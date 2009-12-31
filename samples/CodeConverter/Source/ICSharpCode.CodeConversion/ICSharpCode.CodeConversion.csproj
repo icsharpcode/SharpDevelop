@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BF122CB4-E896-40CA-BF0A-AB44906AB87D}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -51,6 +51,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Dependencies\NRefactoryToBooConverter.dll</HintPath>
     </Reference>
+    <Reference Include="PythonBinding, Version=3.2.0.5362, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\PythonBinding.dll</HintPath>
+    </Reference>
+    <Reference Include="RubyBinding, Version=3.2.0.5362, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\RubyBinding.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -69,7 +77,9 @@
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="IConvertCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PythonHelpers.cs" />
     <Compile Include="ReferencedContentsSingleton.cs" />
+    <Compile Include="RubyHelpers.cs" />
     <Compile Include="SnippetConversion.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

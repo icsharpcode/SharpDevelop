@@ -15,7 +15,7 @@ namespace CCSite
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            VersionLabel.Text = ICSharpCode.CodeConversion.HelperFunctions.GetNRefactoryVersion();
+            VersionLabel.Text = ICSharpCode.CodeConversion.CodeConversionHelpers.GetNRefactoryVersion();
         }
     }
 }
