@@ -329,8 +329,14 @@ namespace ICSharpCode.UnitTesting
 					if (TestMethod.IsTestMethod(method)) {
 						BaseTestMethod baseTestMethod = new BaseTestMethod(declaringType, method);
 						TestMethod testMethod = new TestMethod(c.BaseClass.Name, baseTestMethod);
-						if (!testMethods.Contains(testMethod.Name)) {
-							testMethods.Add(testMethod);
+						if (method.IsVirtual) {
+							if (!testMethods.Contains(method.Name)) {
+								testMethods.Add(testMethod);	
+							}
+						} else {
+							if (!testMethods.Contains(testMethod.Name)) {
+								testMethods.Add(testMethod);
+							}
 						}
 					}
 				}

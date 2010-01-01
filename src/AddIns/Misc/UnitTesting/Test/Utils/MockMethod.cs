@@ -21,6 +21,8 @@ namespace UnitTesting.Tests.Utils
 		string name = String.Empty;
 		IList<IParameter> parameters = new List<IParameter>();
 		IReturnType returnType;
+		bool isVirtual;
+		bool isOverride;
 		
 		public MockMethod() : this(String.Empty)
 		{
@@ -190,10 +192,9 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
-		public bool IsVirtual {
-			get {
-				throw new NotImplementedException();
-			}
+		public bool IsVirtual { 
+			get { return isVirtual; }
+			set { isVirtual = value; }
 		}
 		
 		public bool IsPublic {
@@ -238,10 +239,9 @@ namespace UnitTesting.Tests.Utils
 			}
 		}
 		
-		public bool IsOverride {
-			get {
-				throw new NotImplementedException();
-			}
+		public bool IsOverride { 
+			get { return isOverride; }
+			set { isOverride = value; }
 		}
 		
 		public bool IsOverridable {
