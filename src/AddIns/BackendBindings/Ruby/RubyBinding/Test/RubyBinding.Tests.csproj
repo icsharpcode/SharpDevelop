@@ -312,6 +312,7 @@
     <Compile Include="Parsing\ParseClassWithCtorTestFixture.cs" />
     <Compile Include="Parsing\ParseInvalidRubyCodeTestFixture.cs" />
     <Compile Include="Parsing\ParseMethodsWithNoClassTestFixture.cs" />
+    <Compile Include="Parsing\ParseRequireFollowedByCommentTestFixture.cs" />
     <Compile Include="Parsing\ParseRequireTestFixture.cs" />
     <Compile Include="Parsing\ParseSingleClassTestFixture.cs" />
     <Compile Include="RubyAddInOptionsTestFixture.cs" />
