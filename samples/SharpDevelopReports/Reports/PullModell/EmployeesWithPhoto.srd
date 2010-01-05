@@ -1,0 +1,246 @@
+﻿<ReportModel>
+  <ReportSettings>
+    <ReportSettings>
+      <ReportName>Report1</ReportName>
+      <ReportType>DataReport</ReportType>
+      <UseStandardPrinter>True</UseStandardPrinter>
+      <DefaultMargins>50, 50, 50, 50</DefaultMargins>
+      <GraphicsUnit>Millimeter</GraphicsUnit>
+      <GridSize>8, 8</GridSize>
+      <Padding>5, 5, 5, 5</Padding>
+      <ConnectionString>Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\SharpReportTester\TestReports\Nwind.mdb;Persist Security Info=False</ConnectionString>
+      <CommandText>SELECT Employees.EmployeeID, Employees.FirstName, Employees.Photo from employees</CommandText>
+      <CommandType>Text</CommandType>
+      <DataModel>PullData</DataModel>
+      <NoDataMessage>No Data for this Report</NoDataMessage>
+      <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+    </ReportSettings>
+  </ReportSettings>
+  <SectionCollection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 50</Size>
+      <SectionMargin>50</SectionMargin>
+      <Items />
+      <PageBreakAfter>False</PageBreakAfter>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <Name>ReportHeader</Name>
+      <Location>0, 0</Location>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 90</Size>
+      <SectionMargin>50</SectionMargin>
+      <Items>
+        <BaseTextItem>
+          <Location>50, 0</Location>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>Report1</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <CanGrow>False</CanGrow>
+          <CanShrink>False</CanShrink>
+          <Name>reportTextItem1</Name>
+          <Size>242, 26</Size>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>55, 40</Location>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>EmployeeID</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <CanGrow>False</CanGrow>
+          <CanShrink>False</CanShrink>
+          <Name>reportTextItem2</Name>
+          <Size>111, 25</Size>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>192, 40</Location>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>FirstName</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <CanGrow>False</CanGrow>
+          <CanShrink>False</CanShrink>
+          <Name>reportTextItem3</Name>
+          <Size>164, 25</Size>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>408, 40</Location>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>Photo</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <CanGrow>False</CanGrow>
+          <CanShrink>False</CanShrink>
+          <Name>reportTextItem4</Name>
+          <Size>202, 25</Size>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseLineItem>
+          <Size>637, 12</Size>
+          <Location>56, 75</Location>
+          <Thickness>1</Thickness>
+          <DashStyle>Solid</DashStyle>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Visible>True</Visible>
+          <CanGrow>False</CanGrow>
+          <CanShrink>False</CanShrink>
+          <Name>reportLineControl1</Name>
+          <BackColor>White</BackColor>
+        </BaseLineItem>
+      </Items>
+      <PageBreakAfter>False</PageBreakAfter>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <Name>ReportPageHeader</Name>
+      <Location>0, 0</Location>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 176</Size>
+      <SectionMargin>50</SectionMargin>
+      <Items>
+        <BaseRowItem>
+          <Size>727, 141</Size>
+          <Location>55, 5</Location>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <AlternateBackColor />
+          <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+          <Padding>5, 5, 5, 5</Padding>
+          <Items>
+            <BaseDataItem>
+              <Size>108, 25</Size>
+              <Location>5, 5</Location>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Text>9</Text>
+              <ColumnName>EmployeeID</ColumnName>
+              <DataType>System.Int32</DataType>
+              <BaseTableName>Table</BaseTableName>
+              <FormatString />
+              <StringTrimming>EllipsisCharacter</StringTrimming>
+              <ContentAlignment>MiddleLeft</ContentAlignment>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Visible>True</Visible>
+              <CanGrow>False</CanGrow>
+              <CanShrink>False</CanShrink>
+              <Name>reportDbTextItem1</Name>
+              <BackColor>White</BackColor>
+            </BaseDataItem>
+            <BaseDataItem>
+              <Size>170, 25</Size>
+              <Location>127, 5</Location>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Text>Anne</Text>
+              <ColumnName>FirstName</ColumnName>
+              <DataType>System.String</DataType>
+              <BaseTableName>Table</BaseTableName>
+              <FormatString />
+              <StringTrimming>EllipsisCharacter</StringTrimming>
+              <ContentAlignment>MiddleLeft</ContentAlignment>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Visible>True</Visible>
+              <CanGrow>False</CanGrow>
+              <CanShrink>False</CanShrink>
+              <Name>reportDbTextItem2</Name>
+              <BackColor>White</BackColor>
+            </BaseDataItem>
+            <BaseImageItem>
+              <Size>290, 125</Size>
+              <Location>350, 5</Location>
+              <ImageFileName />
+              <ColumnName>Photo</ColumnName>
+              <BaseTableName>Table</BaseTableName>
+              <ScaleImageToSize>False</ScaleImageToSize>
+              <Thickness>1</Thickness>
+              <DashStyle>Solid</DashStyle>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Visible>True</Visible>
+              <CanGrow>False</CanGrow>
+              <CanShrink>False</CanShrink>
+              <Name>reportImageControl1</Name>
+              <BackColor>White</BackColor>
+            </BaseImageItem>
+          </Items>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <CanGrow>False</CanGrow>
+          <CanShrink>False</CanShrink>
+          <Name>row1</Name>
+          <BackColor>White</BackColor>
+        </BaseRowItem>
+      </Items>
+      <PageBreakAfter>False</PageBreakAfter>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <Name>ReportDetail</Name>
+      <Location>0, 0</Location>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 50</Size>
+      <SectionMargin>50</SectionMargin>
+      <Items>
+        <BasePageNumber>
+          <Size>242, 25</Size>
+          <Location>50, 0</Location>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>Seiten Nummer</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <CanGrow>False</CanGrow>
+          <CanShrink>False</CanShrink>
+          <Name>pageNumber1</Name>
+          <BackColor>White</BackColor>
+        </BasePageNumber>
+      </Items>
+      <PageBreakAfter>False</PageBreakAfter>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <Name>ReportPageFooter</Name>
+      <Location>0, 0</Location>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 50</Size>
+      <SectionMargin>50</SectionMargin>
+      <Items />
+      <PageBreakAfter>False</PageBreakAfter>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <Name>ReportFooter</Name>
+      <Location>0, 0</Location>
+    </BaseSection>
+  </SectionCollection>
+</ReportModel>

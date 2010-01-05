@@ -1,0 +1,173 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Irony</RootNamespace>
+    <AssemblyName>Irony</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SccProjectName>%24/irony/Irony</SccProjectName>
+    <SccLocalPath>.</SccLocalPath>
+    <SccAuxPath>https://tfs05.codeplex.com</SccAuxPath>
+    <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
+    <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\Peter\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>0649</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CompilerServices\StringUtils.cs" />
+    <Compile Include="CompilerServices\Parser\CoreParser_ErrorHandling.cs" />
+    <Compile Include="Diagnostics\ParserTraceEntry.cs" />
+    <Compile Include="Scripting\CodeAnalysis.cs" />
+    <Compile Include="CompilerServices\Grammar\GrammarData.cs" />
+    <Compile Include="CompilerServices\Grammar\LanguageAttribute.cs" />
+    <Compile Include="CompilerServices\LanguageData.cs" />
+    <Compile Include="CompilerServices\Construction\LanguageDataBuilder.cs" />
+    <Compile Include="CompilerServices\Construction\GrammarDataBuilder.cs" />
+    <Compile Include="CompilerServices\Construction\ParserDataBuilder_NonCanonical.cs" />
+    <Compile Include="CompilerServices\Construction\ParserDataBuilder_HelperClasses.cs" />
+    <Compile Include="CompilerServices\Construction\ParserDataBuilder.cs" />
+    <Compile Include="CompilerServices\Construction\ScannerDataBuilder.cs" />
+    <Compile Include="CompilerServices\AstInterfaces.cs" />
+    <Compile Include="CompilerServices\Parser\Parser.cs" />
+    <Compile Include="CompilerServices\Parser\ParserData.cs" />
+    <Compile Include="CompilerServices\Parser\ParserStack.cs" />
+    <Compile Include="CompilerServices\Parser\ParseTree.cs" />
+    <Compile Include="CompilerServices\Parser\ParseTreeNode.cs" />
+    <Compile Include="CompilerServices\Parser\CoreParser.cs" />
+    <Compile Include="CompilerServices\Scanner\SourceLocation.cs" />
+    <Compile Include="Diagnostics\DiagnosticUtils.cs" />
+    <Compile Include="EditorServices\EditorViewAdapter.cs" />
+    <Compile Include="CompilerServices\Scanner\TokenEditorInfo.cs" />
+    <Compile Include="Scripting\Scope.cs" />
+    <Compile Include="CompilerServices\CompilerContext.cs" />
+    <Compile Include="CompilerServices\Grammar\GrammarHint.cs" />
+    <Compile Include="CompilerServices\Scanner\ScannerData.cs" />
+    <Compile Include="CompilerServices\Scanner\SourceStream.cs" />
+    <Compile Include="CompilerServices\Grammar\NonTerminal.cs" />
+    <Compile Include="CompilerServices\Grammar\BnfExpression.cs" />
+    <Compile Include="CompilerServices\Parser\SyntaxError.cs" />
+    <Compile Include="CompilerServices\Terminals\CommentTerminal.cs" />
+    <Compile Include="CompilerServices\Terminals\ConstantTerminal.cs" />
+    <Compile Include="CompilerServices\Terminals\CompoundTerminalBase.cs" />
+    <Compile Include="CompilerServices\Terminals\NewLineTerminal.cs" />
+    <Compile Include="CompilerServices\Terminals\NumberLiteral.cs" />
+    <Compile Include="CompilerServices\Terminals\StringLiteral.cs" />
+    <Compile Include="CompilerServices\Terminals\CustomTerminal.cs" />
+    <Compile Include="CompilerServices\Terminals\IdentifierTerminal.cs" />
+    <Compile Include="CompilerServices\Terminals\SymbolTerminal.cs" />
+    <Compile Include="CompilerServices\Terminals\_Terminal.cs" />
+    <Compile Include="CompilerServices\Scanner\Token.cs" />
+    <Compile Include="CompilerServices\Scanner\Scanner.cs" />
+    <Compile Include="CompilerServices\Terminals\RegExBasedTerminal.cs" />
+    <Compile Include="CompilerServices\EventArgs.cs" />
+    <Compile Include="CompilerServices\Grammar\BnfTerm.cs" />
+    <Compile Include="CompilerServices\Grammar\Grammar.cs" />
+    <Compile Include="CompilerServices\Terminals\TerminalFactory.cs" />
+    <Compile Include="Scripting\Runtime\FunctionBindingInfo.cs" />
+    <Compile Include="Scripting\Runtime\LanguageRuntime_Init.cs" />
+    <Compile Include="Scripting\Runtime\StackTrace.cs" />
+    <Compile Include="Scripting\AST\AnonFunctionNode.cs" />
+    <Compile Include="Scripting\AST\AssigmentNode.cs" />
+    <Compile Include="Scripting\AST\BinExprNode.cs" />
+    <Compile Include="Scripting\AST\CondClauseNode.cs" />
+    <Compile Include="Scripting\AST\CondFormNode.cs" />
+    <Compile Include="Scripting\AST\FunctionCallNode.cs" />
+    <Compile Include="Scripting\AST\IfNode.cs" />
+    <Compile Include="Scripting\AST\StatementListNode.cs" />
+    <Compile Include="Scripting\AST\UnExprNode.cs" />
+    <Compile Include="Scripting\AST\VarRefNode.cs" />
+    <Compile Include="Scripting\AST\_AstNode.cs" />
+    <Compile Include="Scripting\ScriptEngine.cs" />
+    <Compile Include="CompilerServices\TokenFilters\BraceMatchFilter.cs" />
+    <Compile Include="CompilerServices\TokenFilters\CodeOutlineFilter.cs" />
+    <Compile Include="CompilerServices\TokenFilters\TokenFilter.cs" />
+    <Compile Include="CompilerServices\Compiler.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="Microsoft\Complex64.cs" />
+    <Compile Include="Microsoft\MathResources.Designer.cs">
+      <DependentUpon>MathResources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Microsoft\BigInteger.cs" />
+    <Compile Include="Scripting\Runtime\Closure.cs" />
+    <Compile Include="Scripting\Runtime\EvaluationContext.cs" />
+    <Compile Include="Scripting\Runtime\Frame.cs" />
+    <Compile Include="Scripting\Runtime\CallDispatch.cs" />
+    <Compile Include="Scripting\Runtime\RuntimeException.cs" />
+    <Compile Include="Scripting\Runtime\LanguageRuntime.cs" />
+    <Compile Include="EditorServices\EditorAdapter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Microsoft\MathResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MathResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+      <CustomToolNamespace>Microsoft.Scripting.Math</CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripting\Runtime\SlimLock.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

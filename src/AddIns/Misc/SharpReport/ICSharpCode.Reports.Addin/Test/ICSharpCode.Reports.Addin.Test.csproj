@@ -1,0 +1,96 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectGuid>{2B232C7E-CFB6-4B73-A1B8-134A8A2ED4F7}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.Reports.Addin.Test</RootNamespace>
+    <AssemblyName>ICSharpCode.Reports.Addin.Test</AssemblyName>
+    <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\Peter Forstmeier\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Designer\DerivedReportDesignerDisplayBinding.cs" />
+    <Compile Include="Designer\MockDesignerGenerator.cs" />
+    <Compile Include="Designer\MockOpenedFile.cs" />
+    <Compile Include="Designer\MockReportDesignerDisplayBinding.cs" />
+    <Compile Include="Designer\MockViewContend.cs" />
+    <Compile Include="Designer\ReportDesignerDisplayBindingTestFixture.cs" />
+    <Compile Include="Designer\ReportDesignerLoaderTestFixture.cs" />
+    <Compile Include="Dialogs\DummyEditorDialog.cs" />
+    <Compile Include="Dialogs\TextEditorDialogFixture.cs" />
+    <Compile Include="Wizard\GeneratePlainReportFixture_1.cs" />
+    <Compile Include="Wizard\Generators\GenarateListReportFixture.cs" />
+    <Compile Include="Wizard\Generators\GenerateFormsSheetReport.cs" />
+    <Compile Include="Wizard\Generators\GeneratePlainReportFixture_2.cs" />
+    <Compile Include="Wizard\Generators\GenerateTableReportFixture.cs" />
+    <Compile Include="Wizard\Generators\GeneratorFactoryFixture.cs" />
+    <Compile Include="Wizard\Generators\ReportGenerationHelper.cs" />
+    <Compile Include="Wizard\ReportStructureFixture.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj">
+      <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
+      <Name>ICSharpCode.Reports.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.Reports.Addin.csproj">
+      <Project>{35D002D7-C78B-44FB-92AA-104BEB431678}</Project>
+      <Name>ICSharpCode.Reports.Addin</Name>
+    </ProjectReference>
+    <Folder Include="Dialogs" />
+    <Folder Include="Designer" />
+    <Folder Include="Wizard" />
+    <Folder Include="Wizard\Generators" />
+  </ItemGroup>
+</Project>

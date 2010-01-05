@@ -1,0 +1,286 @@
+﻿<ReportModel>
+  <ReportSettings>
+    <ReportSettings>
+      <ReportName>Report1</ReportName>
+      <ReportType>DataReport</ReportType>
+      <UseStandardPrinter>True</UseStandardPrinter>
+      <DefaultMargins>50, 50, 50, 50</DefaultMargins>
+      <GraphicsUnit>Millimeter</GraphicsUnit>
+      <GridSize>8, 8</GridSize>
+      <Padding>5, 5, 5, 5</Padding>
+      <AvailableFieldsCollection />
+      <SortColumnCollection />
+      <GroupColumnsCollection />
+      <ConnectionString>Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\SharpReportTester\TestReports\Nwind.mdb;Persist Security Info=False</ConnectionString>
+      <CommandText>SELECT Employees.EmployeeID, Employees.FirstName, Employees.LastName, Employees.HireDate from Employees</CommandText>
+      <CommandType>Text</CommandType>
+      <DataModel>PullData</DataModel>
+      <NoDataMessage>No Data for this Report</NoDataMessage>
+      <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+    </ReportSettings>
+  </ReportSettings>
+  <SectionCollection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>803, 35</Size>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items />
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportHeader</Name>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>803, 92</Size>
+      <CanGrow>True</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items>
+        <BaseTextItem>
+          <Location>50, 0</Location>
+          <Size>226, 26</Size>
+          <Font>Microsoft Sans Serif, 15pt</Font>
+          <Text>Employees HireDate</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>ReportTextItem</Name>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>55, 40</Location>
+          <Size>176, 25</Size>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>EmployeeID</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>ReportTextItem</Name>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>236, 40</Location>
+          <Size>176, 25</Size>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>FirstName</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>ReportTextItem</Name>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>417, 40</Location>
+          <Size>176, 25</Size>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>LastName</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>ReportTextItem</Name>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>598, 40</Location>
+          <Size>176, 25</Size>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>HireDate</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>ReportTextItem</Name>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>415, 5</Location>
+          <Size>179, 23</Size>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>Date printed  ${date}</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>ReportTextItem</Name>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+      </Items>
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportPageHeader</Name>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>803, 66</Size>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items>
+        <BaseRowItem>
+          <Size>727, 45</Size>
+          <Location>55, 5</Location>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <AlternateBackColor />
+          <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+          <Padding>5, 5, 5, 5</Padding>
+          <Items>
+            <BaseDataItem>
+              <Size>176, 25</Size>
+              <Location>5, 5</Location>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Text>EmployeeID</Text>
+              <ColumnName>EmployeeID</ColumnName>
+              <DataType>System.Int32</DataType>
+              <BaseTableName>Table</BaseTableName>
+              <FormatString />
+              <StringTrimming>EllipsisCharacter</StringTrimming>
+              <ContentAlignment>MiddleLeft</ContentAlignment>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Visible>True</Visible>
+              <Name>reportDbTextItem1</Name>
+              <BackColor>White</BackColor>
+            </BaseDataItem>
+            <BaseDataItem>
+              <Size>176, 25</Size>
+              <Location>186, 5</Location>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Text>FirstName</Text>
+              <ColumnName>FirstName</ColumnName>
+              <DataType>System.String</DataType>
+              <BaseTableName>Table</BaseTableName>
+              <FormatString />
+              <StringTrimming>EllipsisCharacter</StringTrimming>
+              <ContentAlignment>MiddleLeft</ContentAlignment>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Visible>True</Visible>
+              <Name>reportDbTextItem2</Name>
+              <BackColor>White</BackColor>
+            </BaseDataItem>
+            <BaseDataItem>
+              <Size>176, 25</Size>
+              <Location>367, 5</Location>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Text>LastName</Text>
+              <ColumnName>LastName</ColumnName>
+              <DataType>System.String</DataType>
+              <BaseTableName>Table</BaseTableName>
+              <FormatString />
+              <StringTrimming>EllipsisCharacter</StringTrimming>
+              <ContentAlignment>MiddleLeft</ContentAlignment>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Visible>True</Visible>
+              <Name>reportDbTextItem3</Name>
+              <BackColor>White</BackColor>
+            </BaseDataItem>
+            <BaseDataItem>
+              <Size>176, 25</Size>
+              <Location>548, 5</Location>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Text>HireDate</Text>
+              <ColumnName>HireDate</ColumnName>
+              <DataType>System.DateTime</DataType>
+              <BaseTableName>Table</BaseTableName>
+              <FormatString>dd/MMM/yyyy</FormatString>
+              <StringTrimming>EllipsisCharacter</StringTrimming>
+              <ContentAlignment>MiddleLeft</ContentAlignment>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Visible>True</Visible>
+              <Name>reportDbTextItem4</Name>
+              <BackColor>White</BackColor>
+            </BaseDataItem>
+          </Items>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>row1</Name>
+          <BackColor>White</BackColor>
+        </BaseRowItem>
+      </Items>
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportDetail</Name>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>803, 47</Size>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items>
+        <BaseTextItem>
+          <Location>270, 0</Location>
+          <Size>178, 20</Size>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>User: ${user}</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>TopLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>ReportTextItem</Name>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>458, 0</Location>
+          <Size>244, 23</Size>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>Version  of SDR : ${version}</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>ReportTextItem</Name>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+        <BaseTextItem>
+          <Location>52, 6</Location>
+          <Size>134, 20</Size>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>Page : ${page}</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <Name>ReportTextItem</Name>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+      </Items>
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportPageFooter</Name>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>803, 55</Size>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items />
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportFooter</Name>
+    </BaseSection>
+  </SectionCollection>
+</ReportModel>

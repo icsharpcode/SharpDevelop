@@ -1,0 +1,176 @@
+﻿<ReportModel>
+  <ReportSettings>
+    <ReportSettings>
+      <ReportName>Report1</ReportName>
+      <ReportType>DataReport</ReportType>
+      <UseStandardPrinter>True</UseStandardPrinter>
+      <DefaultMargins>50, 50, 50, 50</DefaultMargins>
+      <GraphicsUnit>Millimeter</GraphicsUnit>
+      <GridSize>8, 8</GridSize>
+      <Padding>5, 5, 5, 5</Padding>
+      <AvailableFieldsCollection />
+      <SortColumnCollection />
+      <GroupColumnsCollection />
+      <ConnectionString />
+      <!--System.ArgumentException: Der Wert "0" ist für die Enumeration "CommandType" ungültig.
+   bei System.ComponentModel.EnumConverter.ConvertTo(ITypeDescriptorContext context, CultureInfo culture, Object value, Type destinationType)
+   bei System.ComponentModel.TypeConverter.ConvertToString(ITypeDescriptorContext context, CultureInfo culture, Object value)
+   bei System.ComponentModel.TypeConverter.ConvertToInvariantString(Object value)
+   bei ICSharpCode.Reports.Core.MycroWriter.Save(Object obj, XmlWriter writer) in d:\SharpReport\src\ICSharpCode.Reports.Core\Project\Xml\MycroWriter.cs:Zeile 51.-->
+      <DataModel>PushData</DataModel>
+      <NoDataMessage>No Data for this Report</NoDataMessage>
+      <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+    </ReportSettings>
+  </ReportSettings>
+  <SectionCollection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 35</Size>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items />
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportHeader</Name>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 108</Size>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items>
+        <BaseImageItem>
+          <Size>661, 42</Size>
+          <Location>47, 6</Location>
+          <Name>ReportImageControl</Name>
+          <ImageFileName>D:\SharpReport\samples\Reports\Logos\Bannerbeige2.gif</ImageFileName>
+          <RelativeFileName>..\Logos\Bannerbeige2.gif</RelativeFileName>
+          <ScaleImageToSize>False</ScaleImageToSize>
+          <Visible>True</Visible>
+        </BaseImageItem>
+        <BaseLineItem>
+          <Size>661, 19</Size>
+          <Location>47, 87</Location>
+          <FromPoint>47, 87</FromPoint>
+          <ToPoint>708, 87</ToPoint>
+          <Thickness>1</Thickness>
+          <DashStyle>Solid</DashStyle>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <BackColor>White</BackColor>
+        </BaseLineItem>
+        <BaseTextItem>
+          <Name>reportTextItem1</Name>
+          <Location>46, 63</Location>
+          <Size>109, 20</Size>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <Text>Firstname</Text>
+          <FormatString />
+          <StringTrimming>EllipsisCharacter</StringTrimming>
+          <ContentAlignment>MiddleLeft</ContentAlignment>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <BackColor>White</BackColor>
+        </BaseTextItem>
+      </Items>
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportPageHeader</Name>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 51</Size>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items>
+        <BaseRowItem>
+          <Name>Row</Name>
+          <Size>655, 40</Size>
+          <Location>47, 10</Location>
+          <Font>Microsoft Sans Serif, 10pt</Font>
+          <AlternateBackColor />
+          <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+          <Padding>5, 5, 5, 5</Padding>
+          <Items>
+            <BaseDataItem>
+              <Size>147, 25</Size>
+              <Location>10, 10</Location>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Text>First</Text>
+              <ColumnName>First</ColumnName>
+              <DataType>System.String</DataType>
+              <FormatString />
+              <StringTrimming>EllipsisCharacter</StringTrimming>
+              <ContentAlignment>MiddleLeft</ContentAlignment>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Visible>True</Visible>
+              <Name>unbound1</Name>
+              <BackColor>White</BackColor>
+            </BaseDataItem>
+            <BaseDataItem>
+              <Size>139, 25</Size>
+              <Location>187, 10</Location>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Text>last</Text>
+              <ColumnName>last</ColumnName>
+              <DataType>System.String</DataType>
+              <FormatString />
+              <StringTrimming>EllipsisCharacter</StringTrimming>
+              <ContentAlignment>MiddleLeft</ContentAlignment>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Visible>True</Visible>
+              <Name>unbound2</Name>
+              <BackColor>White</BackColor>
+            </BaseDataItem>
+            <BaseDataItem>
+              <Size>216, 25</Size>
+              <Location>382, 10</Location>
+              <Font>Microsoft Sans Serif, 10pt</Font>
+              <Text>Job</Text>
+              <ColumnName>Job</ColumnName>
+              <DataType>System.String</DataType>
+              <FormatString />
+              <StringTrimming>EllipsisCharacter</StringTrimming>
+              <ContentAlignment>MiddleLeft</ContentAlignment>
+              <DrawBorder>False</DrawBorder>
+              <ForeColor>ControlText</ForeColor>
+              <Visible>True</Visible>
+              <Name>unbound3</Name>
+              <BackColor>White</BackColor>
+            </BaseDataItem>
+          </Items>
+          <DrawBorder>False</DrawBorder>
+          <ForeColor>ControlText</ForeColor>
+          <Visible>True</Visible>
+          <BackColor>White</BackColor>
+        </BaseRowItem>
+      </Items>
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportDetail</Name>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 47</Size>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items />
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportPageFooter</Name>
+    </BaseSection>
+    <BaseSection>
+      <BackColor>Window</BackColor>
+      <Size>786, 55</Size>
+      <CanGrow>False</CanGrow>
+      <CanShrink>False</CanShrink>
+      <SectionMargin>50</SectionMargin>
+      <Items />
+      <PageBreakAfter>False</PageBreakAfter>
+      <Name>ReportFooter</Name>
+    </BaseSection>
+  </SectionCollection>
+</ReportModel>

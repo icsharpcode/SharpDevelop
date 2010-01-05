@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.1.1.5340
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportSamples", "ReportSamples\ReportSamples.csproj", "{9BFECB53-827E-44BF-9DFD-C15F0A6106BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpReportSamples", "SharpReportSamples\SharpReportSamples.csproj", "{BB5D34DA-3561-48B1-894A-46765C2A18C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "..\TestProject1\TestProject.csproj", "{DCB75A8C-ADD7-43E3-BF25-B7DA8D729521}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9BFECB53-827E-44BF-9DFD-C15F0A6106BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BFECB53-827E-44BF-9DFD-C15F0A6106BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BFECB53-827E-44BF-9DFD-C15F0A6106BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BFECB53-827E-44BF-9DFD-C15F0A6106BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB5D34DA-3561-48B1-894A-46765C2A18C1}.Debug|Any CPU.Build.0 = Debug|x86
+		{BB5D34DA-3561-48B1-894A-46765C2A18C1}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{BB5D34DA-3561-48B1-894A-46765C2A18C1}.Release|Any CPU.Build.0 = Release|x86
+		{BB5D34DA-3561-48B1-894A-46765C2A18C1}.Release|Any CPU.ActiveCfg = Release|x86
+		{DCB75A8C-ADD7-43E3-BF25-B7DA8D729521}.Debug|Any CPU.Build.0 = Debug|x86
+		{DCB75A8C-ADD7-43E3-BF25-B7DA8D729521}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{DCB75A8C-ADD7-43E3-BF25-B7DA8D729521}.Release|Any CPU.Build.0 = Release|x86
+		{DCB75A8C-ADD7-43E3-BF25-B7DA8D729521}.Release|Any CPU.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

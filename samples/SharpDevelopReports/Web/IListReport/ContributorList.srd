@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Report>
+    <section name="ICSharpCode.Reports.Core.ReportSettings">
+        <ReportType value="DataReport" />
+        <CommandText value="" />
+        <CommandType value="0" />
+        <DataModel value="PushData" />
+        <NoDataMessage value="No Data for this Report" />
+        <DefaultFont value="Microsoft Sans Serif, 10pt" />
+        <ReportName value="SharpReport1" />
+        <DefaultMargins value="50, 50, 50, 50" />
+        <GridSize value="{Width=8, Height=8}" />
+        <Padding value="{Left=5,Top=5,Right=5,Bottom=5}" />
+    </section>
+    <section name="ReportHeader">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=704, Height=78}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportHeader" />
+        <Location value="{X=0,Y=0}" />
+        <controls />
+    </section>
+    <section name="ReportPageHeader">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=704, Height=63}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportPageHeader" />
+        <Location value="{X=0,Y=0}" />
+        <controls>
+            <control type="ICSharpCode.Reports.Addin.ReportItems.ReportTextItem" basetype="ICSharpCode.Reports.Core.BaseTextItem">
+                <Location value="{X=82,Y=10}" />
+                <Font value="Microsoft Sans Serif, 20pt, style=Bold" />
+                <Text value="Some Members of the SharpDevelop Team" />
+                <FormatString value="" />
+                <StringTrimming value="EllipsisCharacter" />
+                <ContentAlignment value="MiddleCenter" />
+                <DrawBorder value="False" />
+                <ForeColor value="Color [ControlText]" />
+                <Visible value="True" />
+                <CanGrow value="False" />
+                <CanShrink value="False" />
+                <Name value="reportTextItem1" />
+                <Size value="{Width=633, Height=39}" />
+                <BackColor value="Color [Silver]" />
+            </control>
+        </controls>
+    </section>
+    <section name="ReportDetail">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=704, Height=51}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportDetail" />
+        <Location value="{X=0,Y=0}" />
+        <controls>
+            <control type="ICSharpCode.Reports.Addin.ReportItems.ReportRowItem" basetype="ICSharpCode.Reports.Core.RowItem">
+                <Size value="{Width=650, Height=30}" />
+                <Location value="{X=77,Y=3}" />
+                <Font value="Microsoft Sans Serif, 10pt" />
+                <AlternateBackColor value="Color [Empty]" />
+                <ChangeBackColorEveryNRow value="0" />
+                <Padding value="{Left=0,Top=0,Right=0,Bottom=0}" />
+                <Items value="ICSharpCode.Reports.Core.ReportItemCollection" />
+                <DrawBorder value="False" />
+                <ForeColor value="Color [ControlText]" />
+                <Visible value="True" />
+                <CanGrow value="False" />
+                <CanShrink value="False" />
+                <Name value="row1" />
+                <BackColor value="Color [White]" />
+                <controls>
+                    <control type="ICSharpCode.Reports.Addin.ReportItems.ReportDataItem" basetype="ICSharpCode.Reports.Core.BaseDataItem">
+                        <Size value="{Width=176, Height=22}" />
+                        <Location value="{X=5,Y=5}" />
+                        <Font value="Microsoft Sans Serif, 10pt" />
+                        <Text value="First" />
+                        <ColumnName value="First" />
+                        <DataType value="System.String" />
+                        <BaseTableName value="" />
+                        <NullValue value="" />
+                        <FormatString value="" />
+                        <StringTrimming value="EllipsisCharacter" />
+                        <ContentAlignment value="MiddleLeft" />
+                        <DrawBorder value="False" />
+                        <ForeColor value="Color [ControlText]" />
+                        <Visible value="True" />
+                        <CanGrow value="False" />
+                        <CanShrink value="False" />
+                        <Name value="reportDbTextItem1" />
+                        <BackColor value="Color [White]" />
+                    </control>
+                    <control type="ICSharpCode.Reports.Addin.ReportItems.ReportDataItem" basetype="ICSharpCode.Reports.Core.BaseDataItem">
+                        <Size value="{Width=180, Height=20}" />
+                        <Location value="{X=190,Y=5}" />
+                        <Font value="Microsoft Sans Serif, 10pt" />
+                        <Text value="Last" />
+                        <ColumnName value="Last" />
+                        <DataType value="System.String" />
+                        <BaseTableName value="" />
+                        <NullValue value="" />
+                        <FormatString value="" />
+                        <StringTrimming value="EllipsisCharacter" />
+                        <ContentAlignment value="MiddleLeft" />
+                        <DrawBorder value="False" />
+                        <ForeColor value="Color [ControlText]" />
+                        <Visible value="True" />
+                        <CanGrow value="False" />
+                        <CanShrink value="False" />
+                        <Name value="reportDbTextItem2" />
+                        <BackColor value="Color [White]" />
+                    </control>
+                    <control type="ICSharpCode.Reports.Addin.ReportItems.ReportDataItem" basetype="ICSharpCode.Reports.Core.BaseDataItem">
+                        <Size value="{Width=100, Height=20}" />
+                        <Location value="{X=400,Y=5}" />
+                        <Font value="Microsoft Sans Serif, 10pt" />
+                        <Text value="Job" />
+                        <ColumnName value="Job" />
+                        <DataType value="System.String" />
+                        <BaseTableName value="" />
+                        <NullValue value="" />
+                        <FormatString value="" />
+                        <StringTrimming value="EllipsisCharacter" />
+                        <ContentAlignment value="MiddleLeft" />
+                        <DrawBorder value="False" />
+                        <ForeColor value="Color [ControlText]" />
+                        <Visible value="True" />
+                        <CanGrow value="False" />
+                        <CanShrink value="False" />
+                        <Name value="reportDbTextItem3" />
+                        <BackColor value="Color [White]" />
+                    </control>
+                </controls>
+            </control>
+        </controls>
+    </section>
+    <section name="ReportPageFooter">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=704, Height=47}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportPageFooter" />
+        <Location value="{X=0,Y=0}" />
+        <controls />
+    </section>
+    <section name="ReportFooter">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=704, Height=55}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportFooter" />
+        <Location value="{X=0,Y=0}" />
+        <controls />
+    </section>
+</Report>

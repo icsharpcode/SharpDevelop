@@ -1,0 +1,52 @@
+// Simple Expression Language
+// Copyright © Nathan Stults 2009
+<% @TinyPG Namespace="SimpleExpressionEvaluator.Parser" %> 
+
+PLUSMINUS    -> @"(\+|-)";
+MULTDIV      -> @"\*|/|%";
+POWER        -> @"\^";
+BROPEN       -> @"\(";
+BRCLOSE      -> @"\)";
+SBOPEN       -> @"\[";
+SBCLOSE      -> @"\]";
+COMMA        -> @",";
+COLON        -> @"\:";
+TRUE         -> @"[Tt][Rr][Uu][Ee]";
+FALSE        -> @"[Ff][Aa][Ll][Ss][Ee]";
+NULL         -> @"([Nn][Uu][Ll][Ll])|([Nn][Oo][Tt][Hh][Ii][Nn][Gg])";
+IF           -> @"[Ii][Ff]";
+THEN         -> @"[Tt][Hh][Ee][Nn]";
+ELSE         -> @"[Ee][Ll][Ss][Ee]|[Oo][Tt][Hh][Ee][Rr][Ww][Ii][Ss][Ee]";
+METHODNAME   -> @"[a-zA-Z_][a-zA-Z0-9_]*(?=\()";
+ARRAYNAME    -> @"[a-zA-Z_][a-zA-Z0-9_]*(?=\[)";
+IDENTIFIER   -> @"[a-zA-Z_][a-zA-Z0-9_]*";
+INTEGER      -> @"(\+|-)?[0-9]+";
+NUMBER       -> @"(\+|-)?[0-9]*\.[0-9]+";
+STRING       -> @"\""(\""\""|[^\""])*\""";
+COMPARE      -> @"!=~|=~|==|<>|<=|>=|>|<|=|!=";
+EQUALS       -> @"=";
+EOF          -> @"^$";
+DOT          -> @"\.";
+BOOLEAN      -> @"&&|\|\||[Aa][Nn][Dd]|[Oo][Rr]";
+UNARY        -> @"!|-";
+
+
+[Skip] WHITESPACE -> @"\s+";
+[Skip] COMMENT    -> @"/\*\s*.*\*/";
+
+
+Start          -> (BooleanExpr) EOF;
+
+Conditional    -> IF (BROPEN)? BooleanExpr (BRCLOSE)? THEN BooleanExpr (ELSE BooleanExpr)?;
+Identifier     -> IDENTIFIER | Array | Method;
+BooleanExpr    -> CompareExpr (BOOLEAN CompareExpr)*;
+CompareExpr    -> AddExpr (COMPARE AddExpr)*;
+AddExpr        -> MultExpr (PLUSMINUS MultExpr)*;
+MultExpr       -> PowerExpr (MULTDIV PowerExpr)*;
+PowerExpr      -> Atom (POWER Atom)*;
+Params         -> BooleanExpr? (COMMA BooleanExpr)*;
+Method         -> METHODNAME BROPEN Params? BRCLOSE;
+Array          -> ARRAYNAME SBOPEN (BooleanExpr) SBCLOSE;
+QualifiedName  -> Identifier (DOT Identifier)*;
+UnaryExpr      -> UNARY Atom;
+Atom           -> TRUE | FALSE | NULL | INTEGER | NUMBER | STRING | BROPEN BooleanExpr BRCLOSE | QualifiedName | Conditional | UnaryExpr;

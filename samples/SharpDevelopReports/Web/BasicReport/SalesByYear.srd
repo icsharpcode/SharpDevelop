@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Report>
+    <section name="ICSharpCode.Reports.Core.ReportSettings">
+        <AvailableColumns>
+            <column>
+                <ColumnName value="CategoryName" />
+                <DataType value="" />
+            </column>
+            <column>
+                <ColumnName value="ProductName" />
+                <DataType value="" />
+            </column>
+            <column>
+                <ColumnName value="ProductSales" />
+                <DataType value="" />
+            </column>
+        </AvailableColumns>
+        <ReportType value="DataReport" />
+        <ConnectionString value="Provider=SQLNCLI.1;Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Northwind;Data Source=(local)\SQLEXPRESS" />
+        <CommandText value="SELECT [Product Sales for 1997].CategoryName, [Product Sales for 1997].ProductName, [Product Sales for 1997].ProductSales FROM [Product Sales for 1997]" />
+        <CommandType value="Text" />
+        <DataModel value="PullData" />
+        <NoDataMessage value="No Data for this Report" />
+        <DefaultFont value="Microsoft Sans Serif, 10pt" />
+        <ReportName value="SalesByYear" />
+        <DefaultMargins value="50, 50, 50, 50" />
+        <GridSize value="{Width=8, Height=8}" />
+        <Padding value="{Left=5,Top=5,Right=5,Bottom=5}" />
+    </section>
+    <section name="ReportHeader">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=803, Height=40}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportHeader" />
+        <Location value="{X=0,Y=0}" />
+        <controls />
+    </section>
+    <section name="ReportPageHeader">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=803, Height=80}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportPageHeader" />
+        <Location value="{X=0,Y=0}" />
+        <controls>
+            <control type="ICSharpCode.Reports.Addin.ReportItems.ReportTextItem" basetype="ICSharpCode.Reports.Core.BaseTextItem">
+                <Location value="{X=50,Y=0}" />
+                <Font value="Microsoft Sans Serif, 10pt" />
+                <Text value="SalesByYear" />
+                <FormatString value="" />
+                <StringTrimming value="EllipsisCharacter" />
+                <ContentAlignment value="MiddleLeft" />
+                <DrawBorder value="False" />
+                <ForeColor value="Color [ControlText]" />
+                <Visible value="True" />
+                <CanGrow value="False" />
+                <CanShrink value="False" />
+                <Name value="reportTextItem1" />
+                <Size value="{Width=242, Height=26}" />
+                <BackColor value="Color [White]" />
+            </control>
+            <control type="ICSharpCode.Reports.Addin.ReportItems.ReportTextItem" basetype="ICSharpCode.Reports.Core.BaseTextItem">
+                <Location value="{X=55,Y=40}" />
+                <Font value="Microsoft Sans Serif, 10pt" />
+                <Text value="CategoryName" />
+                <FormatString value="" />
+                <StringTrimming value="EllipsisCharacter" />
+                <ContentAlignment value="MiddleLeft" />
+                <DrawBorder value="False" />
+                <ForeColor value="Color [ControlText]" />
+                <Visible value="True" />
+                <CanGrow value="False" />
+                <CanShrink value="False" />
+                <Name value="reportTextItem2" />
+                <Size value="{Width=237, Height=25}" />
+                <BackColor value="Color [White]" />
+            </control>
+            <control type="ICSharpCode.Reports.Addin.ReportItems.ReportTextItem" basetype="ICSharpCode.Reports.Core.BaseTextItem">
+                <Location value="{X=297,Y=40}" />
+                <Font value="Microsoft Sans Serif, 10pt" />
+                <Text value="ProductName" />
+                <FormatString value="" />
+                <StringTrimming value="EllipsisCharacter" />
+                <ContentAlignment value="MiddleLeft" />
+                <DrawBorder value="False" />
+                <ForeColor value="Color [ControlText]" />
+                <Visible value="True" />
+                <CanGrow value="False" />
+                <CanShrink value="False" />
+                <Name value="reportTextItem3" />
+                <Size value="{Width=237, Height=25}" />
+                <BackColor value="Color [White]" />
+            </control>
+            <control type="ICSharpCode.Reports.Addin.ReportItems.ReportTextItem" basetype="ICSharpCode.Reports.Core.BaseTextItem">
+                <Location value="{X=539,Y=40}" />
+                <Font value="Microsoft Sans Serif, 10pt" />
+                <Text value="ProductSales" />
+                <FormatString value="" />
+                <StringTrimming value="EllipsisCharacter" />
+                <ContentAlignment value="MiddleLeft" />
+                <DrawBorder value="False" />
+                <ForeColor value="Color [ControlText]" />
+                <Visible value="True" />
+                <CanGrow value="False" />
+                <CanShrink value="False" />
+                <Name value="reportTextItem4" />
+                <Size value="{Width=237, Height=25}" />
+                <BackColor value="Color [White]" />
+            </control>
+        </controls>
+    </section>
+    <section name="ReportDetail">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=803, Height=40}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportDetail" />
+        <Location value="{X=0,Y=0}" />
+        <controls>
+            <control type="ICSharpCode.Reports.Addin.ReportItems.ReportRowItem" basetype="ICSharpCode.Reports.Core.RowItem">
+                <Size value="{Width=727, Height=35}" />
+                <Location value="{X=55,Y=0}" />
+                <Font value="Microsoft Sans Serif, 10pt" />
+                <AlternateBackColor value="Color [Empty]" />
+                <ChangeBackColorEveryNRow value="0" />
+                <Padding value="{Left=5,Top=5,Right=5,Bottom=5}" />
+                <Items value="ICSharpCode.Reports.Core.ReportItemCollection" />
+                <DrawBorder value="False" />
+                <ForeColor value="Color [ControlText]" />
+                <Visible value="True" />
+                <CanGrow value="False" />
+                <CanShrink value="False" />
+                <Name value="row1" />
+                <BackColor value="Color [White]" />
+                <controls>
+                    <control type="ICSharpCode.Reports.Addin.ReportItems.ReportDataItem" basetype="ICSharpCode.Reports.Core.BaseDataItem">
+                        <Size value="{Width=237, Height=25}" />
+                        <Location value="{X=5,Y=5}" />
+                        <Font value="Microsoft Sans Serif, 10pt" />
+                        <Text value="CategoryName" />
+                        <ColumnName value="CategoryName" />
+                        <DataType value="System.String" />
+                        <BaseTableName value="Table" />
+                        <NullValue value="" />
+                        <FormatString value="" />
+                        <StringTrimming value="EllipsisCharacter" />
+                        <ContentAlignment value="MiddleLeft" />
+                        <DrawBorder value="False" />
+                        <ForeColor value="Color [ControlText]" />
+                        <Visible value="True" />
+                        <CanGrow value="False" />
+                        <CanShrink value="False" />
+                        <Name value="reportDbTextItem1" />
+                        <BackColor value="Color [White]" />
+                    </control>
+                    <control type="ICSharpCode.Reports.Addin.ReportItems.ReportDataItem" basetype="ICSharpCode.Reports.Core.BaseDataItem">
+                        <Size value="{Width=237, Height=25}" />
+                        <Location value="{X=247,Y=5}" />
+                        <Font value="Microsoft Sans Serif, 10pt" />
+                        <Text value="ProductName" />
+                        <ColumnName value="ProductName" />
+                        <DataType value="System.String" />
+                        <BaseTableName value="Table" />
+                        <NullValue value="" />
+                        <FormatString value="" />
+                        <StringTrimming value="EllipsisCharacter" />
+                        <ContentAlignment value="MiddleLeft" />
+                        <DrawBorder value="False" />
+                        <ForeColor value="Color [ControlText]" />
+                        <Visible value="True" />
+                        <CanGrow value="False" />
+                        <CanShrink value="False" />
+                        <Name value="reportDbTextItem2" />
+                        <BackColor value="Color [White]" />
+                    </control>
+                    <control type="ICSharpCode.Reports.Addin.ReportItems.ReportDataItem" basetype="ICSharpCode.Reports.Core.BaseDataItem">
+                        <Size value="{Width=237, Height=25}" />
+                        <Location value="{X=489,Y=5}" />
+                        <Font value="Microsoft Sans Serif, 10pt" />
+                        <Text value="ProductSales" />
+                        <ColumnName value="ProductSales" />
+                        <DataType value="System.Decimal" />
+                        <BaseTableName value="Table" />
+                        <NullValue value="" />
+                        <FormatString value="" />
+                        <StringTrimming value="EllipsisCharacter" />
+                        <ContentAlignment value="MiddleLeft" />
+                        <DrawBorder value="False" />
+                        <ForeColor value="Color [ControlText]" />
+                        <Visible value="True" />
+                        <CanGrow value="False" />
+                        <CanShrink value="False" />
+                        <Name value="reportDbTextItem3" />
+                        <BackColor value="Color [White]" />
+                    </control>
+                </controls>
+            </control>
+        </controls>
+    </section>
+    <section name="ReportPageFooter">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=803, Height=40}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportPageFooter" />
+        <Location value="{X=0,Y=0}" />
+        <controls>
+            <control type="ICSharpCode.Reports.Addin.ReportItems.Functions.PageNumber" basetype="ICSharpCode.Reports.Core.BasePageNumber">
+                <Size value="{Width=242, Height=25}" />
+                <Location value="{X=50,Y=0}" />
+                <Font value="Microsoft Sans Serif, 10pt" />
+                <Text value="Seiten Nummer" />
+                <LocalizedName value="SharpReport.Toolbar.Functions.PageNumber" />
+                <FormatString value="" />
+                <StringTrimming value="EllipsisCharacter" />
+                <ContentAlignment value="MiddleLeft" />
+                <DrawBorder value="False" />
+                <ForeColor value="Color [ControlText]" />
+                <Visible value="True" />
+                <CanGrow value="False" />
+                <CanShrink value="False" />
+                <Name value="pageNumber1" />
+                <BackColor value="Color [White]" />
+            </control>
+        </controls>
+    </section>
+    <section name="ReportFooter">
+        <BackColor value="Color [Window]" />
+        <Size value="{Width=803, Height=40}" />
+        <SectionMargin value="50" />
+        <PageBreakAfter value="False" />
+        <CanGrow value="False" />
+        <CanShrink value="False" />
+        <Name value="ReportFooter" />
+        <Location value="{X=0,Y=0}" />
+        <controls />
+    </section>
+</Report>
