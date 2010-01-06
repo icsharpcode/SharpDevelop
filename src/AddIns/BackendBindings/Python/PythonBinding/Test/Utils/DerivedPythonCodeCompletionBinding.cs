@@ -19,13 +19,12 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class DerivedPythonCodeCompletionBinding : PythonCodeCompletionBinding
 	{
-		bool ctrlSpaceCompletionDataProviderCreated;
+		bool completionDataProviderCreated;
 		bool codeCompletionWindowDisplayed;
 		SharpDevelopTextAreaControl textAreaControlUsedToShowCompletionWindow;
 		ICompletionDataProvider completionProviderUsedWhenDisplayingCodeCompletionWindow;
-		CtrlSpaceCompletionDataProvider ctrlSpaceCompletionDataProvider;
+		ICompletionDataProvider completionDataProvider;
 		char completionCharacter = '\0';
-		ExpressionContext expressionContext;
 		
 		public DerivedPythonCodeCompletionBinding()
 		{
@@ -35,10 +34,8 @@ namespace PythonBinding.Tests.Utils
 		/// Gets whether the data provider was created by the 
 		/// base class PythonCodeCompletionBinding.
 		/// </summary>
-		public bool IsCtrlSpaceCompletionDataProviderCreated {
-			get {
-				return ctrlSpaceCompletionDataProviderCreated;
-			}
+		public bool IsCompletionDataProviderCreated {
+			get { return completionDataProviderCreated; }
 		}
 		
 		/// <summary>
@@ -46,31 +43,23 @@ namespace PythonBinding.Tests.Utils
 		/// displayed the code completion window.
 		/// </summary>
 		public bool IsCodeCompletionWindowDisplayed {
-			get {
-				return codeCompletionWindowDisplayed;
-			}
+			get { return codeCompletionWindowDisplayed; }
 		}
 		
 		public SharpDevelopTextAreaControl TextAreaControlUsedToShowCompletionWindow {
-			get {
-				return textAreaControlUsedToShowCompletionWindow;
-			}
+			get { return textAreaControlUsedToShowCompletionWindow; }
 		}
 		
 		public ICompletionDataProvider CompletionProviderUsedWhenDisplayingCodeCompletionWindow {
-			get {
-				return completionProviderUsedWhenDisplayingCodeCompletionWindow;
-			}
+			get { return completionProviderUsedWhenDisplayingCodeCompletionWindow; }
 		}
 		
 		/// <summary>
-		/// Gets the CtrlSpaceCompletionDataProvider created via the
-		/// CreateCtrlSpaceCompletionDataProvider method.
+		/// Gets the CompletionDataProvider created via the
+		/// CreateCompletionDataProvider method.
 		/// </summary>
-		public CtrlSpaceCompletionDataProvider CtrlSpaceCompletionDataProvider {
-			get {
-				return ctrlSpaceCompletionDataProvider;
-			}
+		public ICompletionDataProvider CompletionDataProvider {
+			get { return completionDataProvider; }
 		}
 		
 		/// <summary>
@@ -78,31 +67,18 @@ namespace PythonBinding.Tests.Utils
 		/// ShowCompletionWindow method.
 		/// </summary>
 		public char CompletionCharacter {
-			get {
-				return completionCharacter;
-			}
-		}
-		
-		/// <summary>
-		/// Gets the expression context used when the
-		/// CtrlSpaceCompletionDataProvider is created.
-		/// </summary>
-		public ExpressionContext ExpressionContext {
-			get {
-				return expressionContext;
-			}
+			get { return completionCharacter; }
 		}
 		
 		/// <summary>
 		/// Overrides the completion data provider creation to make sure
 		/// it is called at the correct time. 
 		/// </summary>
-		protected override CtrlSpaceCompletionDataProvider CreateCtrlSpaceCompletionDataProvider(ExpressionContext expressionContext)
+		protected override ICompletionDataProvider CreateCompletionDataProvider()
 		{
-			ctrlSpaceCompletionDataProviderCreated = true;
-			this.expressionContext = expressionContext;
-			ctrlSpaceCompletionDataProvider = base.CreateCtrlSpaceCompletionDataProvider(expressionContext);
-			return ctrlSpaceCompletionDataProvider;
+			completionDataProviderCreated = true;
+			completionDataProvider = base.CreateCompletionDataProvider();
+			return completionDataProvider;
 		}
 		
 		/// <summary>

@@ -32,7 +32,7 @@ namespace PythonBinding.Tests.Utils
 		string getClassName;
 		List<IClass> classesInProjectContent = new List<IClass>();
 		ArrayList namespaceContents = new ArrayList();
-		string namespaceContentsSearched = String.Empty;
+		string namespaceContentsSearched;
 		string classNameForGetClass;
 		bool namespaceExistsReturnValue;
 		bool namespaceExistsCalled;

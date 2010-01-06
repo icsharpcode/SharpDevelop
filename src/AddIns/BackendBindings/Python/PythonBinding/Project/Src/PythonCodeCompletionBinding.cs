@@ -32,7 +32,7 @@ namespace ICSharpCode.PythonBinding
 				switch (word.ToLowerInvariant()) {
 					case "import":
 					case "from":
-						CtrlSpaceCompletionDataProvider dataProvider = CreateCtrlSpaceCompletionDataProvider(ExpressionContext.Importable);
+						ICompletionDataProvider dataProvider = CreateCompletionDataProvider();
 						ShowCodeCompletionWindow(editor, dataProvider, ' ');
 						return true;
 				}
@@ -40,12 +40,9 @@ namespace ICSharpCode.PythonBinding
 			return false;
 		}
 		
-		/// <summary>
-		/// Creates a CtrlSpaceCompletionDataProvider.
-		/// </summary>
-		protected virtual CtrlSpaceCompletionDataProvider CreateCtrlSpaceCompletionDataProvider(ExpressionContext expressionContext)
+		protected virtual ICompletionDataProvider CreateCompletionDataProvider()
 		{
-			return new CtrlSpaceCompletionDataProvider(expressionContext);
+			return new CodeCompletionDataProvider();
 		}
 		
 		/// <summary>

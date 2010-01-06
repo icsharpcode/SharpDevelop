@@ -15,57 +15,20 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonExpressionFinder : IExpressionFinder
 	{
-		static readonly string ImportStatement = "import";
-
-		public PythonExpressionFinder()
+		class ExpressionRange
 		{
+			public int Start;
+			public int End;
+			
+			public int Length {
+				get { return End - Start + 1; }
+			}
 		}
 		
-		/// <summary>
-		/// Finds an expression before the current offset.
-		/// </summary>
-		/// <remarks>
-		/// The expression is found before the specified offset. The
-		/// offset is just before the current cursor position. For example,
-		/// if the user presses the dot character then the offset
-		/// will be just before the dot. All characters before the offset and
-		/// at the offset  are considered when looking for
-		/// the expression. All characters afterwards are ignored.
-		/// </remarks>
-		public ExpressionResult FindExpression(string text, int offset)
+		ExpressionRange expressionRange = new ExpressionRange();
+		
+		public PythonExpressionFinder()
 		{
-			if (text != null && IsValidOffset(text, offset)) {
-				bool found = false;
-				ExpressionContext expressionContext = ExpressionContext.Default;
-				int currentOffset = offset - 1;
-				while (!found && currentOffset >= 0) {
-					char currentChar = text[currentOffset];
-					switch (currentChar) {
-						case '\n':
-						case '\r':
-						case '\t':
-							found = true;
-							break;
-						case ' ':
-							if (IsImportStatement(text, currentOffset - 1)) {
-								// Make sure entire line is taken.
-								currentOffset = FindLineStartOffset(text, currentOffset);
-								currentOffset--;
-								expressionContext = ExpressionContext.Importable;
-							}
-							found = true;
-							break;
-						default:
-							currentOffset--;
-							break;
-					}
-				}
-				
-				// Create expression result.
-				string expression = Substring(text, currentOffset + 1, offset - 1);
-				return new ExpressionResult(expression, expressionContext);
-			}
-			return new ExpressionResult(null);
 		}
 		
 		/// <summary>
@@ -98,18 +61,39 @@ namespace ICSharpCode.PythonBinding
 			}
 			return String.Empty;
 		}
-		
+
 		/// <summary>
-		/// Gets the substring starting from the specified index and
-		/// finishing at the specified end index. The character at the
-		/// end index is included in the string.
+		/// Finds an expression before the current offset.
 		/// </summary>
-		static string Substring(string text, int startIndex, int endIndex)
+		/// <remarks>
+		/// The expression is found before the specified offset. The
+		/// offset is just before the current cursor position. For example,
+		/// if the user presses the dot character then the offset
+		/// will be just before the dot. All characters before the offset and
+		/// at the offset  are considered when looking for
+		/// the expression. All characters afterwards are ignored.
+		/// </remarks>
+		public ExpressionResult FindExpression(string text, int offset)
 		{
-			int length = endIndex - startIndex + 1;
-			return text.Substring(startIndex, length);			
+			if (!IsValidFindExpressionParameters(text, offset)) {
+				return new ExpressionResult(null);
+			}
+			
+			expressionRange.End = offset - 1;
+			expressionRange.Start = FindExpressionStart(text, expressionRange.End);
+			
+			if (IsImportExpression(text)) {
+				ExtendRangeToStartOfLine(text);
+				return CreatePythonImportExpressionResult(text, expressionRange);
+			}
+			return CreateDefaultExpressionResult(text, expressionRange);
 		}
 		
+		bool IsValidFindExpressionParameters(string text, int offset)
+		{
+			return (text != null) && IsValidOffset(text, offset);
+		}
+
 		/// <summary>
 		/// This checks that the offset passed to the FindExpression method is valid. Usually the offset is
 		/// just after the last character in the text.
@@ -120,77 +104,96 @@ namespace ICSharpCode.PythonBinding
 		/// 2) Be inside the string.
 		/// 3) Be just after the end of the text.
 		/// </summary>
-		static bool IsValidOffset(string text, int offset)
+		bool IsValidOffset(string text, int offset)
 		{
 			return (offset > 0) && (offset <= text.Length);
 		}
 		
-		/// <summary>
-		/// Checks that the preceding text is an import statement.
-		/// The offset points to the last character of the import statement
-		/// (i.e. the 't') if it exists.
-		/// </summary>
-		static bool IsImportStatement(string text, int offset)
+		int FindExpressionStart(string text, int offset)
 		{
-			// Trim any whitespace from the end.
-			while (StringLongerThanImportStatement(offset)) {
-				if (text[offset] == ' ') {
-					--offset;
-				} else {
-					break;
+			while (offset >= 0) {
+				char currentChar = text[offset];
+				switch (currentChar) {
+					case '\n':
+					case '\r':
+					case '\t':
+					case ' ':
+						return offset + 1;
 				}
+				offset--;
+			}
+			return 0;	
+		}
+		
+		bool IsImportExpression(string text)
+		{
+			if (PythonImportExpression.IsImportExpression(text, expressionRange.End)) {
+				return true;
 			}
 			
-			// Look for import statement.
-			if (StringLongerThanImportStatement(offset)) {
-				int i;
-				for (i = ImportStatement.Length - 1; i >= 0; --i) {
-					char currentChar = text[offset];
-					if (currentChar != ImportStatement[i]) {
-						return false;
-					}
-					--offset;
-				}
-				
-				// Complete match?
-				if (i == -1) {
+			if (IsSpaceCharacterBeforeExpression(text, expressionRange)) {
+				if (PythonImportExpression.IsImportExpression(text, expressionRange.Start)) {
 					return true;
 				}
 			}
 			return false;
 		}
 		
-		/// <summary>
-		/// Tests that the string is long enough to contain the
-		/// import statement. This tests that:
-		/// 
-		/// (offset + 1) >= ImportStatement.Length
-		/// 
-		/// The offset points to the last character in the string
-		/// which could be part of the import statement.
-		/// </summary>
-		static bool StringLongerThanImportStatement(int offset)
+		bool IsSpaceCharacterBeforeExpression(string text, ExpressionRange range)
 		{
-			return (offset + 1) >= ImportStatement.Length;
+			int characterBeforeExpressionOffset = range.Start - 1;
+			if (characterBeforeExpressionOffset >= 0) {
+				return text[characterBeforeExpressionOffset] == ' ';
+			}
+			return false;
+		}
+		
+		void ExtendRangeToStartOfLine(string text)
+		{
+			expressionRange.Start = FindLineStart(text, expressionRange.Start);
 		}
 		
 		/// <summary>
 		/// Finds the start of the line in the text starting from the
 		/// offset and working backwards.
 		/// </summary>
-		static int FindLineStartOffset(string text, int offset)
+		int FindLineStart(string text, int offset)
 		{
 			while (offset >= 0) {
 				char currentChar = text[offset];
 				switch (currentChar) {
 					case '\n':
 						return offset + 1;
-					default:
-						--offset;
-						break;
 				}
+				--offset;
 			}
 			return 0;
+		}
+		
+		ExpressionResult CreatePythonImportExpressionResult(string text, ExpressionRange range)
+		{
+			return CreateExpressionResult(text, range, new PythonImportExpressionContext());
+		}
+		
+		ExpressionResult CreateDefaultExpressionResult(string text, ExpressionRange range)
+		{
+			return CreateExpressionResult(text, range, ExpressionContext.Default);
+		}
+		
+		ExpressionResult CreateExpressionResult(string text, ExpressionRange range, ExpressionContext context)
+		{
+			string expression = Substring(text, range);
+			return new ExpressionResult(expression, context);
+		}
+		
+		/// <summary>
+		/// Gets the substring starting from the specified index and
+		/// finishing at the specified end index. The character at the
+		/// end index is included in the string.
+		/// </summary>
+		string Substring(string text, ExpressionRange range)
+		{
+			return text.Substring(range.Start, range.Length);
 		}
 	}
 }

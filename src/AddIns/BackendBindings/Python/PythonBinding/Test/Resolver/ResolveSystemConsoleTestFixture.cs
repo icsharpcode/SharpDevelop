@@ -43,7 +43,6 @@ namespace PythonBinding.Tests.Resolver
 			compilationUnit = CreateCompilationUnit(mockProjectContent);
 			parseInfo.SetCompilationUnit(compilationUnit);
 			
-			
 			string python = GetPythonScript();
 			ExpressionResult expressionResult = new ExpressionResult("System.Console", new DomRegion(3, 2), null, null);
 			resolveResult = resolver.Resolve(expressionResult, parseInfo, python);

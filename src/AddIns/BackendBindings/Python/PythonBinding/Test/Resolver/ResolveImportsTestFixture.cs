@@ -32,70 +32,27 @@ namespace PythonBinding.Tests.Resolver
 			resolver = new PythonResolver();
 			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
-			mockProjectContent.NamespacesToAdd.Add("Test");
+			mockProjectContent.NamespaceContentsToReturn.Add("Test");
 
 			// Set the dirty compilation unit and the valid compilation unit
 			// so we make sure that the most recent compilation unit 
 			// (i.e the dirty compilation unit) is being taken.
 			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(new MockProjectContent()));
-			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true });
+			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(mockProjectContent));
 			
-			results = resolver.CtrlSpace(0, "import".Length, parseInfo, "import", ExpressionContext.Importable);
-		}
-				
-		[Test]
-		public void ProjectContentAddNamespaceContentsCalled()
-		{
-			Assert.IsTrue(mockProjectContent.AddNamespaceContentsCalled);
+			results = resolver.CtrlSpace(0, "import".Length, parseInfo, "import", ExpressionContext.Namespace);
 		}
 		
 		[Test]
 		public void NamespaceName()
 		{
-			Assert.AreEqual(String.Empty, mockProjectContent.NamespaceAddedName);
+			Assert.AreEqual(String.Empty, mockProjectContent.NamespaceContentsSearched);
 		}
-		
-		[Test]
-		public void LookInReferencesIsTrue()
-		{
-			Assert.IsTrue(mockProjectContent.LookInReferences);
-		}
-		
-		[Test]
-		public void ProjectContentLanguagePassedToAddNamespaceContents()
-		{
-			Assert.AreSame(mockProjectContent.Language, mockProjectContent.LanguagePassedToAddNamespaceContents);
-		}
-		
+				
 		[Test]
 		public void TestNamespaceAdded()
 		{
 			Assert.Contains("Test", results);
-		}
-				
-		/// <summary>
-		/// Tests that the resolver handles the parse info being null
-		/// </summary>
-		[Test]
-		public void NullParseInfo()
-		{
-			PythonResolver resolver = new PythonResolver();
-			ArrayList results = resolver.CtrlSpace(0, 0, null, "abc", ExpressionContext.Importable);			
-			Assert.AreEqual(0, results.Count);
-		}
-		
-		/// <summary>
-		/// Tests that the resolver handles the compilation units
-		/// being null.
-		/// </summary>
-		[Test]
-		public void NullCompilationUnit()
-		{
-			PythonResolver resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
-			MockProjectContent mockProjectContent = new MockProjectContent();
-			ArrayList results = resolver.CtrlSpace(0, 0, parseInfo, String.Empty, ExpressionContext.Importable);			
-			Assert.AreEqual(0, results.Count);
 		}
 		
 		[Test]

@@ -20,7 +20,7 @@ namespace PythonBinding.Tests
 	/// importable code completion keyword.
 	/// </summary>
 	[TestFixture]
-	public class FromImportCompletion
+	public class FromImportCompletionTestFixture
 	{
 		DerivedPythonCodeCompletionBinding codeCompletionBinding;
 		bool handlesImportKeyword;
@@ -42,11 +42,5 @@ namespace PythonBinding.Tests
 		{
 			Assert.IsTrue(handlesImportKeyword);
 		}
-		
-		[Test]
-		public void ExpressionContextIsImportable()
-		{
-			Assert.AreEqual(ExpressionContext.Importable, codeCompletionBinding.ExpressionContext);
-		}		
 	}
 }

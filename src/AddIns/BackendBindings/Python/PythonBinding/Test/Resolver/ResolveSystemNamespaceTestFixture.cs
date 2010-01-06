@@ -24,7 +24,7 @@ namespace PythonBinding.Tests.Resolver
 	{
 		PythonResolver resolver;
 		MockProjectContent mockProjectContent;
-		ResolveResult resolveResult;
+		NamespaceResolveResult resolveResult;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -44,19 +44,7 @@ namespace PythonBinding.Tests.Resolver
 							"\tdef __init__(self):\r\n" +
 							"\t\tSystem.\r\n";
 			ExpressionResult expressionResult = new ExpressionResult("System", new DomRegion(3, 2), null, null);
-			resolveResult = resolver.Resolve(expressionResult, parseInfo, python);
-		}
-		
-		[Test]
-		public void ResolveResultExists()
-		{
-			Assert.IsNotNull(resolveResult);
-		}
-		
-		[Test]
-		public void IsNamespaceResolveResult()
-		{
-			Assert.IsInstanceOf(typeof(NamespaceResolveResult), resolveResult);
+			resolveResult = resolver.Resolve(expressionResult, parseInfo, python) as NamespaceResolveResult;
 		}
 		
 		[Test]
@@ -74,8 +62,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void NamespaceResolveResultHasSystemNamespace()
 		{
-			NamespaceResolveResult nsResult = (NamespaceResolveResult)resolveResult;
-			Assert.AreEqual("System", nsResult.Name);
+			Assert.AreEqual("System", resolveResult.Name);
 		}
 	}
 }

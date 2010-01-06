@@ -34,6 +34,14 @@ namespace PythonBinding.Tests.Expressions
 			Assert.AreEqual("import", result.Expression);			
 		}
 		
+		[Test]
+		public void ExpressionContextIsNamespaceForImportExpression()
+		{
+			string text = "import";
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
+			Assert.IsNotNull(result.Context as PythonImportExpressionContext);
+		}
+		
 		/// <summary>
 		/// Currently the expression finder returns the full import expression.
 		/// It should probably just return the namespace.
@@ -44,16 +52,18 @@ namespace PythonBinding.Tests.Expressions
 			string text = "import System";
 			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual("import System", result.Expression);
-			Assert.AreEqual(ExpressionContext.Importable, result.Context);
+			Assert.IsNotNull(result.Context as PythonImportExpressionContext);
 		}
 		
 		[Test]
 		public void MultipleLinesWithImportAndNamespace()
 		{
-			string text = "# Line to ignore\r\nimport System";
+			string text =
+				"# Line to ignore\r\n" +
+				"import System";
 			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual("import System", result.Expression);
-			Assert.AreEqual(ExpressionContext.Importable, result.Context);
+			Assert.IsNotNull(result.Context as PythonImportExpressionContext);
 		}		
 		
 		[Test]
@@ -62,7 +72,7 @@ namespace PythonBinding.Tests.Expressions
 			string text = "import    System";
 			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual(text, result.Expression);
-			Assert.AreEqual(ExpressionContext.Importable, result.Context);
+			Assert.IsNotNull(result.Context as PythonImportExpressionContext);
 		}
 		
 		[Test]
@@ -71,7 +81,7 @@ namespace PythonBinding.Tests.Expressions
 			string text = "from System import Test";
 			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual(text, result.Expression);
-			Assert.AreEqual(ExpressionContext.Importable, result.Context);
+			Assert.IsNotNull(result.Context as PythonImportExpressionContext);
 		}
 		
 		/// <summary>
@@ -83,6 +93,15 @@ namespace PythonBinding.Tests.Expressions
 			string text = "IMPORT Test";
 			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
 			Assert.AreEqual("Test", result.Expression);
+		}
+		
+		[Test]
+		public void FromStatementWithoutAnyImportPart()
+		{
+			string text = "from System";
+			ExpressionResult result = expressionFinder.FindExpression(text, text.Length);
+			Assert.AreEqual(text, result.Expression);
+			Assert.IsNotNull(result.Context as PythonImportExpressionContext);
 		}
 	}
 }

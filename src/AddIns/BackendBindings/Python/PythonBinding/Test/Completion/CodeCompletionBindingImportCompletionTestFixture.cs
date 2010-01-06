@@ -19,7 +19,7 @@ namespace PythonBinding.Tests
 	/// Tests the code completion after an "import" statement.
 	/// </summary>
 	[TestFixture]
-	public class ImportCompletionTestFixture
+	public class CodeCompletionBindingImportCompletionTestFixture
 	{
 		DerivedPythonCodeCompletionBinding codeCompletionBinding;
 		bool handlesImportKeyword;
@@ -61,9 +61,9 @@ namespace PythonBinding.Tests
 		}
 		
 		[Test]
-		public void CtrlSpaceCompletionDataProviderCreated()
+		public void CompletionDataProviderCreated()
 		{
-			Assert.IsTrue(codeCompletionBinding.IsCtrlSpaceCompletionDataProviderCreated);
+			Assert.IsTrue(codeCompletionBinding.IsCompletionDataProviderCreated);
 		}
 		
 		[Test]
@@ -81,19 +81,13 @@ namespace PythonBinding.Tests
 		[Test]
 		public void CompletionProviderUsedWhenDisplayingCodeCompletionWindow()
 		{
-			Assert.AreSame(codeCompletionBinding.CtrlSpaceCompletionDataProvider, codeCompletionBinding.CompletionProviderUsedWhenDisplayingCodeCompletionWindow);
+			Assert.AreSame(codeCompletionBinding.CompletionDataProvider, codeCompletionBinding.CompletionProviderUsedWhenDisplayingCodeCompletionWindow);
 		}
 		
 		[Test]
 		public void CompletionCharacterIsSpace()
 		{
 			Assert.AreEqual(' ', codeCompletionBinding.CompletionCharacter);
-		}
-		
-		[Test]
-		public void ExpressionContextIsImportable()
-		{
-			Assert.AreEqual(ExpressionContext.Importable, codeCompletionBinding.ExpressionContext);
 		}
 	}
 }

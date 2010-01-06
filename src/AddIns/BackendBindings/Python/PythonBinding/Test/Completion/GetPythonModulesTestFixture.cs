@@ -14,7 +14,7 @@ namespace PythonBinding.Tests.Resolver
 {
 	/// <summary>
 	/// Tests the standard Python module names can be determined
-	/// from the IronPython assembly.
+	/// for IronPython.
 	/// </summary>
 	[TestFixture]
 	public class GetPythonModulesTestFixture
@@ -35,9 +35,27 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
+		public void SysModuleInListOfModulesOnlyOnce()
+		{
+			int countOccurrencesOfSysModuleName = 0;
+			foreach (string name in moduleNames) {
+				if (name == "sys") {
+					countOccurrencesOfSysModuleName++;
+				}
+			}
+			Assert.AreEqual(1, countOccurrencesOfSysModuleName);
+		}
+		
+		[Test]
 		public void ContainsBuiltInModule()
 		{
 			Assert.Contains("__builtin__", moduleNames, "Module names: " + WriteArray(moduleNames));
+		}
+		
+		[Test]
+		public void ContainsMathModule()
+		{
+			Assert.Contains("math", moduleNames);
 		}
 		
 		static string WriteArray(string[] items)

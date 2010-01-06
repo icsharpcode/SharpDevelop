@@ -24,7 +24,8 @@ namespace PythonBinding.Tests.Resolver
 	{
 		PythonResolver resolver;
 		MockProjectContent mockProjectContent;
-		NamespaceResolveResult resolveResult;
+		PythonImportModuleResolveResult resolveResult;
+		ExpressionResult expressionResult;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -37,10 +38,11 @@ namespace PythonBinding.Tests.Resolver
 			cu.ErrorsDuringCompile = true;
 			cu.FileName = @"C:\Projects\Test\test.py";
 			parseInfo.SetCompilationUnit(cu);
-					
-			string python = "import System.";
-			ExpressionResult expressionResult = new ExpressionResult("import System", new DomRegion(1, 14), null, null);
-			resolveResult = resolver.Resolve(expressionResult, parseInfo, python) as NamespaceResolveResult;
+			
+			string code = "import System";
+			PythonExpressionFinder finder = new PythonExpressionFinder();
+			expressionResult = finder.FindExpression(code, code.Length);
+			resolveResult = resolver.Resolve(expressionResult, parseInfo, code) as PythonImportModuleResolveResult;
 		}
 		
 		[Test]
@@ -56,9 +58,16 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void NamespaceSearchedFor()
+		public void ExpressionResultContextShowItemReturnsTrueForString()
 		{
-			Assert.AreEqual("System", mockProjectContent.NamespaceSearchedFor);
-		}		
+			Assert.IsTrue(expressionResult.Context.ShowEntry("abc"));
+		}
+		
+		[Test]
+		public void ExpressionResultContextShowItemReturnsFalseForProjectContent()
+		{
+			MockProjectContent projectContent = new MockProjectContent();
+			Assert.IsFalse(expressionResult.Context.ShowEntry(projectContent));
+		}
 	}
 }

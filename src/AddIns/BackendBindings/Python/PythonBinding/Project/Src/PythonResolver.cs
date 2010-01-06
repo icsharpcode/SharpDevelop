@@ -21,7 +21,6 @@ namespace ICSharpCode.PythonBinding
 		IProjectContent projectContent;
 		IClass callingClass;
 		ICompilationUnit compilationUnit;
-		static string[] standardModuleNames;
 		
 		public PythonResolver()
 		{
@@ -30,6 +29,10 @@ namespace ICSharpCode.PythonBinding
 		public ResolveResult Resolve(ExpressionResult expressionResult, ParseInformation parseInfo, string fileContent)
 		{
 			Console.WriteLine("Resolve: " + expressionResult.Expression);
+			
+			if (IsNamespace(expressionResult)) {
+				return ResolveImport(expressionResult);
+			}
 			
 			if (String.IsNullOrEmpty(fileContent)) {
 				return null;
@@ -59,35 +62,50 @@ namespace ICSharpCode.PythonBinding
 			}
 			
 			// Search for a namespace.
-			string namespaceExpression = GetNamespaceExpression(expressionResult.Expression);
-			if (projectContent.NamespaceExists(namespaceExpression)) {
-				return new NamespaceResolveResult(null, null, namespaceExpression);
+			if (projectContent.NamespaceExists(expressionResult.Expression)) {
+				return new NamespaceResolveResult(null, null, expressionResult.Expression);
 			}
 			return null;
 		}
-				
+		
+		bool IsNamespace(ExpressionResult expressionResult)
+		{
+			return expressionResult.Context is PythonImportExpressionContext;
+		}
+		
+		ResolveResult ResolveImport(ExpressionResult expressionResult)
+		{
+			PythonImportExpression importExpression = new PythonImportExpression(expressionResult.Expression);
+			PythonImportExpressionContext context = expressionResult.Context as PythonImportExpressionContext;
+			context.HasFromAndImport = importExpression.HasFromAndImport;
+			
+			return new PythonImportModuleResolveResult(importExpression);
+		}
+		
 		/// <summary>
 		/// Called when Ctrl+Space is entered by the user.
 		/// </summary>
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
-			ArrayList results = new ArrayList();
 			ICompilationUnit compilationUnit = GetCompilationUnit(parseInfo, true);
-			if (compilationUnit != null && compilationUnit.ProjectContent != null) {
-				if (context == ExpressionContext.Importable) {
-					// Add namespace contents for import code completion.
-					compilationUnit.ProjectContent.AddNamespaceContents(results, String.Empty, compilationUnit.ProjectContent.Language, true);
-					
-					// Add built-in module names.
-					results.AddRange(GetStandardPythonModuleNames());
+			if (CompletionUnitHasProjectContent(compilationUnit)) {
+				if (context == ExpressionContext.Namespace) {
+					PythonImportCompletion importCompletion = new PythonImportCompletion(compilationUnit.ProjectContent);
+					return importCompletion.GetCompletionItems();
 				} else {
-					// Add namespace contents.
+					ArrayList results = new ArrayList();
 					CtrlSpaceResolveHelper.AddImportedNamespaceContents(results, compilationUnit, null);
+					return results;
 				}
 			}
-			return results;
+			return new ArrayList();
 		}
-								
+		
+		bool CompletionUnitHasProjectContent(ICompilationUnit compilationUnit)
+		{
+			return (compilationUnit != null) && (compilationUnit.ProjectContent != null);
+		}
+		
 		/// <summary>
 		/// Gets the compilation unit for the specified parse information.
 		/// </summary>
@@ -155,34 +173,6 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Removes the "import " or "from " part of a namespace expression if it exists.
-		/// </summary>
-		static string GetNamespaceExpression(string expression)
-		{
-			string ns = GetNamespaceExpression("import ", expression);
-			if (ns == null) {
-				ns = GetNamespaceExpression("from ", expression);
-			}
-			
-			if (ns != null) {
-				return ns;
-			}
-			return expression;
-		}
-
-		/// <summary>
-		/// Removes the "import " or "from " part of a namespace expression if it exists.
-		/// </summary>
-		static string GetNamespaceExpression(string importString, string expression)
-		{
-			int index = expression.IndexOf(importString, StringComparison.OrdinalIgnoreCase);
-			if (index >= 0) {
-				return expression.Substring(index + importString.Length);
-			}
-			return null;
-		}
-		
-		/// <summary>
 		/// Finds the specified class.
 		/// </summary>
 		IClass GetClass(string name)
@@ -234,18 +224,6 @@ namespace ICSharpCode.PythonBinding
 			ArrayList types = new ArrayList();
 			CtrlSpaceResolveHelper.AddImportedNamespaceContents(types, this.compilationUnit, this.callingClass);
 			return types;
-		}
-		
-		/// <summary>
-		/// Gets the standard python module names and caches the result.
-		/// </summary>
-		static string[] GetStandardPythonModuleNames()
-		{
-			if (standardModuleNames == null) {
-				StandardPythonModules modules = new StandardPythonModules();
-				standardModuleNames = modules.GetNames();
-			}
-			return standardModuleNames;
 		}
 		
 		/// <summary>

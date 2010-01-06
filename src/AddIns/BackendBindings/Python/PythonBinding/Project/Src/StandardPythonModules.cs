@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using IronPython.Modules;
@@ -17,25 +18,47 @@ namespace ICSharpCode.PythonBinding
 	/// Represents the standard library modules that are implemented in
 	/// IronPython.
 	/// </summary>
-	public class StandardPythonModules
+	public class StandardPythonModules : ReadOnlyCollectionBase
 	{
+		List<string> moduleNames = new List<string>();
+		Dictionary<string, Type> moduleTypes = new Dictionary<string, Type>();
+		
 		public StandardPythonModules()
 		{
+			GetStandardPythonModuleNames();
+			InnerList.AddRange(GetNames());
 		}
-				
+		
+		void GetStandardPythonModuleNames()
+		{
+			GetPythonModuleNamesFromAssembly(typeof(Builtin).Assembly);
+			GetPythonModuleNamesFromAssembly(typeof(ModuleOps).Assembly);
+		}
+		
 		/// <summary>
 		/// Gets the names of the standard Python library modules.
 		/// </summary>
 		public string[] GetNames()
 		{
-			List<string> names = new List<string>();
-			names.Add("sys");
-			Assembly assembly = typeof(Builtin).Assembly;
-			foreach (Attribute customAttribute in Attribute.GetCustomAttributes(assembly, typeof(PythonModuleAttribute))) {
-				PythonModuleAttribute pythonModuleAttribute = customAttribute as PythonModuleAttribute;
-				names.Add(pythonModuleAttribute.Name);
+			return moduleNames.ToArray();
+		}
+		
+		void GetPythonModuleNamesFromAssembly(Assembly assembly)
+		{
+			foreach (Attribute attribute in Attribute.GetCustomAttributes(assembly, typeof(PythonModuleAttribute))) {
+				PythonModuleAttribute pythonModuleAttribute = attribute as PythonModuleAttribute;
+				moduleNames.Add(pythonModuleAttribute.Name);
+				moduleTypes.Add(pythonModuleAttribute.Name, pythonModuleAttribute.Type);
 			}
-			return names.ToArray();
+		}
+		
+		public Type GetTypeForModule(string moduleName)
+		{
+			Type type;
+			if (moduleTypes.TryGetValue(moduleName, out type)) {
+				return type;
+			}
+			return null;
 		}
 	}
 }

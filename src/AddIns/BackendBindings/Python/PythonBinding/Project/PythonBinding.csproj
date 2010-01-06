@@ -73,6 +73,9 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
+    <Compile Include="Src\PythonModuleCompletionItems.cs" />
+    <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />
+    <Compile Include="Src\SysModuleCompletionItems.cs" />
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IPadDescriptor.cs" />
@@ -94,13 +97,18 @@
     <Compile Include="Src\PythonDesignerGenerator.cs" />
     <Compile Include="Src\PythonDesignerLoader.cs" />
     <Compile Include="Src\PythonDesignerLoaderProvider.cs" />
+    <Compile Include="Src\PythonExpression.cs" />
     <Compile Include="Src\PythonExpressionFinder.cs" />
     <Compile Include="Src\PythonFormattingStrategy.cs" />
     <Compile Include="Src\PythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Src\PythonComponentWalker.cs" />
     <Compile Include="Src\PythonComponentWalkerException.cs" />
+    <Compile Include="Src\PythonImportCompletion.cs" />
+    <Compile Include="Src\PythonImportExpression.cs" />
+    <Compile Include="Src\PythonImportExpressionContext.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
     <Compile Include="Src\PythonLanguageProperties.cs" />
+    <Compile Include="Src\PythonImportModuleResolveResult.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
     <Compile Include="Src\PythonOutputStream.cs" />
     <Compile Include="Src\PythonOutputWindowPadDescriptor.cs" />
@@ -112,6 +120,7 @@
     <Compile Include="Src\RunPythonCommand.cs" />
     <Compile Include="Src\StandardPythonModules.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
+    <Compile Include="Src\StringTextContentProvider.cs" />
     <Compile Include="Src\TextEditor.cs" />
     <None Include="Lib\runpy.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
