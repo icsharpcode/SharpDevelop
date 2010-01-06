@@ -1,26 +1,217 @@
-﻿<?xml version="1.0" encoding="utf-8"?><ReportModel><ReportSettings><ReportSettings><DataModel>FormSheet</DataModel><UseStandardPrinter>True</UseStandardPrinter><CommandType>Text</CommandType><NoDataMessage>No Data for this Report</NoDataMessage><ReportType>FormSheet</ReportType><Padding>5, 5, 5, 5</Padding><GraphicsUnit>Millimeter</GraphicsUnit><GridSize>8, 8</GridSize><DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont><ReportName>Report1</ReportName><GroupColumnsCollection /><ConnectionString /><AvailableFieldsCollection /><SortColumnCollection /><DefaultMargins>50, 50, 50, 50</DefaultMargins><LandSacpe>False</LandSacpe></ReportSettings></ReportSettings><SectionCollection><BaseSection><CanShrink>False</CanShrink><Location>50, 50</Location><SectionMargin>50</SectionMargin><Name>ReportHeader</Name><Items><BaseImageItem><ImageSource>File</ImageSource><Location>103, 24</Location><Name>ReportImageControl</Name><Size>582, 50</Size><ScaleImageToSize>False</ScaleImageToSize><Name>ReportImageControl</Name><BackColor>Window</BackColor><RelativeFileName>D:\SharpReportTester\TestReports\GoodFiles\Logos\Bannerbeige2.gif</RelativeFileName><ImageFileName>D:\SharpReportTester\TestReports\GoodFiles\Logos\Bannerbeige2.gif</ImageFileName></BaseImageItem></Items><DrawBorder>False</DrawBorder><PageBreakAfter>False</PageBreakAfter><SectionOffset>0</SectionOffset><BackColor>Window</BackColor><CanGrow>False</CanGrow><Size>718, 85</Size></BaseSection><BaseSection><CanShrink>False</CanShrink><Location>50, 150</Location><SectionMargin>50</SectionMargin><Name>ReportPageHeader</Name><Items><BaseTextItem><FrameColor>WindowFrame</FrameColor><Name>reportTextItem1</Name><Location>90, 10</Location><Name>reportTextItem1</Name><ContentAlignment>TopCenter</ContentAlignment><Visible>True</Visible><FormatString /><Size>599, 57</Size><Text>#develop Open Source Project
-Joint Copyright Assignment by Contributor To AlphaSierraPapa</Text><BackColor>White</BackColor><Font>Microsoft Sans Serif, 14pt, style=Bold</Font><DrawBorder>False</DrawBorder><ForeColor>ControlText</ForeColor></BaseTextItem><BaseLineItem><StartLineCap>Flat</StartLineCap><FromPoint>10, 5</FromPoint><Location>92, 82</Location><Name>reportLineControl1</Name><Size>597, 9</Size><Name>reportLineControl1</Name><EndLineCap>Flat</EndLineCap><DashStyle>Solid</DashStyle><BackColor>White</BackColor><DashLineCap>Flat</DashLineCap><ForeColor>ControlText</ForeColor><ToPoint>40, 5</ToPoint><Thickness>1</Thickness></BaseLineItem></Items><DrawBorder>False</DrawBorder><PageBreakAfter>False</PageBreakAfter><SectionOffset>0</SectionOffset><BackColor>Window</BackColor><CanGrow>False</CanGrow><Size>718, 95</Size></BaseSection><BaseSection><CanShrink>False</CanShrink><Location>50, 260</Location><SectionMargin>50</SectionMargin><Name>ReportDetail</Name><Items><BaseTextItem><FrameColor>WindowFrame</FrameColor><Name>reportTextItem1</Name><Location>50, 8</Location><ContentAlignment>TopLeft</ContentAlignment><Visible>True</Visible><FormatString /><Size>622, 135</Size><Name>reportTextItem1</Name><Text>Contact Information:
+<?xml version="1.0" encoding="utf-8"?>
+<ReportModel>
+    <ReportSettings>
+        <ReportSettings>
+            <GridSize>8, 8</GridSize>
+            <PageSize>827, 1169</PageSize>
+            <CommandText />
+            <Landscape>False</Landscape>
+            <GroupColumnsCollection />
+            <RightMargin>50</RightMargin>
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+            <ReportType>FormSheet</ReportType>
+            <UseStandardPrinter>True</UseStandardPrinter>
+            <CommandType>Text</CommandType>
+            <GraphicsUnit>Millimeter</GraphicsUnit>
+            <TopMargin>50</TopMargin>
+            <ConnectionString />
+            <Padding>5, 5, 5, 5</Padding>
+            <LeftMargin>50</LeftMargin>
+            <SortColumnCollection />
+            <DataModel>FormSheet</DataModel>
+            <BottomMargin>50</BottomMargin>
+            <AvailableFieldsCollection />
+            <ReportName>Report1</ReportName>
+            <ParameterCollection />
+        </ReportSettings>
+    </ReportSettings>
+    <SectionCollection>
+        <BaseSection>
+            <Size>718, 85</Size>
+            <Name>ReportHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items>
+                <BaseImageItem>
+                    <ImageSource>File</ImageSource>
+                    <Location>103, 24</Location>
+                    <Name>ReportImageControl</Name>
+                    <Size>582, 50</Size>
+                    <ScaleImageToSize>False</ScaleImageToSize>
+                    <BackColor>Window</BackColor>
+                    <RelativeFileName>D:\SharpReportTester\TestReports\GoodFiles\Logos\Bannerbeige2.gif</RelativeFileName>
+                    <ImageFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
+                </BaseImageItem>
+            </Items>
+            <Location>50, 50</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>718, 95</Size>
+            <Name>ReportPageHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>#develop Open Source Project
+Joint Copyright Assignment by Contributor To AlphaSierraPapa</Text>
+                    <Location>90, 10</Location>
+                    <ContentAlignment>TopCenter</ContentAlignment>
+                    <Visible>False</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 14pt, style=Bold</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>reportTextItem1</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>599, 57</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+                <BaseLineItem>
+                    <StartLineCap>Flat</StartLineCap>
+                    <FromPoint>10, 5</FromPoint>
+                    <Location>92, 82</Location>
+                    <Name>reportLineControl1</Name>
+                    <Size>597, 9</Size>
+                    <EndLineCap>Flat</EndLineCap>
+                    <DashStyle>Solid</DashStyle>
+                    <BackColor>White</BackColor>
+                    <DashLineCap>Flat</DashLineCap>
+                    <ForeColor>ControlText</ForeColor>
+                    <ToPoint>40, 5</ToPoint>
+                    <Thickness>1</Thickness>
+                </BaseLineItem>
+            </Items>
+            <Location>50, 150</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>718, 723</Size>
+            <Name>ReportDetail</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>Contact Information:
 Full Name:_________________________________    (the "Contributor")
 
 Mailing Address_________________________            e-mail          :_________________________
 
 ______________________________________         Telephone   :_________________________
 
-Country:_______________________________           Facsimile     :_________________________</Text><BackColor>White</BackColor><Font>Microsoft Sans Serif, 10pt</Font><DrawBorder>True</DrawBorder><ForeColor>ControlText</ForeColor></BaseTextItem><BaseTextItem><FrameColor>WindowFrame</FrameColor><Name>reportTextItem2</Name><Location>50, 171</Location><ContentAlignment>TopLeft</ContentAlignment><Visible>True</Visible><FormatString /><Size>675, 67</Size><Name>reportTextItem2</Name><Text>1. Contributor owns, and has sufficient rights to contribute, all source code and related material intended
+Country:_______________________________           Facsimile     :_________________________</Text>
+                    <Location>50, 8</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>False</Visible>
+                    <DrawBorder>True</DrawBorder>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>reportTextItem1</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>622, 135</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>1. Contributor owns, and has sufficient rights to contribute, all source code and related material intended
     to be compiled or integrated with the source code for the #develop open source product (the
     "Contribution") which Contributor has ever delivered, and AlphaSierraPapa has accepted, for
-    incorporation into the technology made available under the #develop open source project.</Text><BackColor>White</BackColor><Font>Microsoft Sans Serif, 10pt</Font><DrawBorder>True</DrawBorder><ForeColor>ControlText</ForeColor></BaseTextItem><BaseTextItem><FrameColor>WindowFrame</FrameColor><Name>reportTextItem3</Name><Location>50, 257</Location><ContentAlignment>TopLeft</ContentAlignment><Visible>True</Visible><FormatString /><Size>695, 113</Size><Name>reportTextItem3</Name><Text>2. Contributor hereby assigns to AlphaSierraPapa joint ownership in all worldwide common law and
+    incorporation into the technology made available under the #develop open source project.</Text>
+                    <Location>50, 171</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>False</Visible>
+                    <DrawBorder>True</DrawBorder>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>reportTextItem2</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>675, 67</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>2. Contributor hereby assigns to AlphaSierraPapa joint ownership in all worldwide common law and
    statutory rights associated with the copyrights, copyright application, copyright registration and moral
    rights in the Contribution to the extent allowable under applicable local laws and copyright
    conventions. Contributor agrees that this assignment may be submitted by AlphaSierraPapa to register
   a copyright in the Contribution. Contributor retains the right to use the Contribution for Contributor's
   own purposes. This Joint Copyright Assignment supersedes and replaces all prior copyright
-  assignments made by Contributor to AlphaSierraPapa under the #develop project.</Text><BackColor>White</BackColor><Font>Microsoft Sans Serif, 10pt</Font><DrawBorder>True</DrawBorder><ForeColor>ControlText</ForeColor></BaseTextItem><BaseTextItem><FrameColor>WindowFrame</FrameColor><Name>reportTextItem4</Name><Location>50, 380</Location><ContentAlignment>TopLeft</ContentAlignment><Visible>True</Visible><FormatString /><Size>696, 37</Size><Text>3. Contributor is legally entitled to grant the above assignment and agrees not to provide any
-    Contribution that violates any law or breaches any contract.</Text><Name>reportTextItem4</Name><BackColor>White</BackColor><Font>Microsoft Sans Serif, 10pt</Font><DrawBorder>False</DrawBorder><ForeColor>ControlText</ForeColor></BaseTextItem><BaseTextItem><FrameColor>WindowFrame</FrameColor><Name>reportTextItem5</Name><Name>reportTextItem5</Name><Location>50, 443</Location><ContentAlignment>TopLeft</ContentAlignment><Visible>True</Visible><FormatString /><Size>695, 80</Size><Text>Signed:________________________________________ Date_______________
+  assignments made by Contributor to AlphaSierraPapa under the #develop project.</Text>
+                    <Location>50, 257</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>False</Visible>
+                    <DrawBorder>True</DrawBorder>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>reportTextItem3</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>695, 113</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>3. Contributor is legally entitled to grant the above assignment and agrees not to provide any
+    Contribution that violates any law or breaches any contract.</Text>
+                    <Location>50, 380</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>False</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>reportTextItem4</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>696, 37</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>Signed:________________________________________ Date_______________
 
 Printed Name:__________________________________
 
-Please send a signed copy of this assignment by facsimile to AlphaSierraPapa at:</Text><BackColor>White</BackColor><Font>Microsoft Sans Serif, 10pt</Font><DrawBorder>True</DrawBorder><ForeColor>ControlText</ForeColor></BaseTextItem><BaseTextItem><Name>reportTextItem6</Name><FrameColor>WindowFrame</FrameColor><Name>reportTextItem6</Name><Location>50, 551</Location><ContentAlignment>TopLeft</ContentAlignment><Visible>True</Visible><FormatString /><Size>213, 139</Size><Text>+43-3842-22620
+Please send a signed copy of this assignment by facsimile to AlphaSierraPapa at:</Text>
+                    <Location>50, 443</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>False</Visible>
+                    <DrawBorder>True</DrawBorder>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>reportTextItem5</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>695, 80</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>+43-3842-22620
 
 or mail it to:
 
@@ -28,4 +219,44 @@ AlphaSierraPapa
 Christoph Wille
 Vordernbergerstrasse 27/8
 8700 Leoben
-AUSTRIA</Text><BackColor>White</BackColor><Font>Microsoft Sans Serif, 10pt</Font><DrawBorder>False</DrawBorder><ForeColor>ControlText</ForeColor></BaseTextItem></Items><DrawBorder>False</DrawBorder><PageBreakAfter>False</PageBreakAfter><SectionOffset>0</SectionOffset><BackColor>Window</BackColor><CanGrow>False</CanGrow><Size>718, 723</Size></BaseSection><BaseSection><CanShrink>False</CanShrink><Location>50, 998</Location><SectionMargin>50</SectionMargin><Name>ReportPageFooter</Name><Items /><DrawBorder>False</DrawBorder><PageBreakAfter>False</PageBreakAfter><SectionOffset>0</SectionOffset><BackColor>Window</BackColor><CanGrow>False</CanGrow><Size>718, 50</Size></BaseSection><BaseSection><CanShrink>False</CanShrink><Location>50, 1063</Location><SectionMargin>50</SectionMargin><Name>ReportFooter</Name><Items /><DrawBorder>False</DrawBorder><PageBreakAfter>False</PageBreakAfter><SectionOffset>0</SectionOffset><BackColor>Window</BackColor><CanGrow>False</CanGrow><Size>718, 50</Size></BaseSection></SectionCollection></ReportModel>
+AUSTRIA</Text>
+                    <Location>50, 551</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>False</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>reportTextItem6</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>213, 139</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+            </Items>
+            <Location>50, 260</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>718, 50</Size>
+            <Name>ReportPageFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items />
+            <Location>50, 998</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>718, 50</Size>
+            <Name>ReportFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items />
+            <Location>50, 1063</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+    </SectionCollection>
+</ReportModel>

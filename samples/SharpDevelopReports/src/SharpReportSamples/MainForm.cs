@@ -89,28 +89,34 @@ namespace SharpReportSamples
 		
 		private void RunStandardReport(string reportName)
 		{
-			ReportEngine engine = new ReportEngine();
-			this.previewControl1.SetupAsynchron(reportName,null);
+			ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
+			
+			if ((parameters != null)&& (parameters.SqlParameters.Count > 0)){
+				parameters.SqlParameters[0].ParameterValue = "I'm the Parameter";
+			}
+			
+			this.previewControl1.SetupAsynchron(reportName,parameters);
 		}
 		
-		
+//		FileAccess:	D:\Reporting3.0_branches\SharpDevelop\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dll
+//			hint : ..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dl
 		
 		
 		private void SelectReport ()
-		{
+		{ 
 			TreeNode selectedNode = this.treeView1.SelectedNode;
-			if (selectedNode != null) {
-				if (!String.IsNullOrEmpty(selectedNode.Tag.ToString())) {
-					if (selectedNode.Parent == this.pushNode) {
-						Console.WriteLine("push");
-					} else {
-						RunStandardReport(selectedNode.Tag.ToString());
-						
-					}
-					
+			if ((selectedNode == null)|| (selectedNode.Tag == null)) {
+				return;
+			}
+			if (!String.IsNullOrEmpty(selectedNode.Tag.ToString())) {
+				if (selectedNode.Parent == this.pushNode) {
+					MessageBox.Show("PushModel reports not implemented yet");
+				} else {
+					RunStandardReport(selectedNode.Tag.ToString());
 				}
 			}
 		}
+		
 		
 		
 		void TreeView1MouseDoubleClick(object sender, MouseEventArgs e)

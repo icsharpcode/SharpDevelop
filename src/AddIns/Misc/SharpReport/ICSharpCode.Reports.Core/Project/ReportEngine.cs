@@ -117,11 +117,20 @@ namespace ICSharpCode.Reports.Core {
 		internal static void CheckForParameters (IReportModel model,ReportParameters reportParameters)
 		{
 			if (reportParameters != null) {
-				if (reportParameters.SortColumnCollection != null) {
-					if (reportParameters.SortColumnCollection.Count > 0) {
-						model.ReportSettings.SortColumnCollection.AddRange(reportParameters.SortColumnCollection);
+				
+				if (reportParameters.SortColumnCollection.Count > 0) {
+					model.ReportSettings.SortColumnCollection.AddRange(reportParameters.SortColumnCollection);
+				}
+				
+				if (reportParameters.SqlParameters.Count > 0) {
+					foreach (BasicParameter bp in reportParameters.SqlParameters) {
+						BasicParameter p = model.ReportSettings.ParameterCollection.Find(bp.ParameterName);
+						if (p != null) {
+							p.ParameterValue = bp.ParameterValue;
+						}
 					}
 				}
+				
 			}
 		}
 		
