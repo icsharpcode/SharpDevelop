@@ -2,7 +2,7 @@
 <!--DockPanel configuration file. Author: Weifen Luo, all rights reserved.-->
 <!--!!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!!-->
 <DockPanel FormatVersion="1.0" DockLeftPortion="0.196180555555556" DockRightPortion="0.171180555555556" DockTopPortion="0.25" DockBottomPortion="0.25" ActiveDocumentPane="10" ActivePane="-1">
-  <Contents Count="34">
+  <Contents Count="36">
     <Content ID="0" PersistString="ICSharpCode.SharpDevelop.Project.ProjectBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="1" PersistString="ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="2" PersistString="ICSharpCode.SharpDevelop.Gui.ErrorListPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
@@ -37,6 +37,8 @@
     <Content ID="31" PersistString="ICSharpCode.SharpDevelop.Gui.SdiWorkspaceWindow" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="32" PersistString="ICSharpCode.WpfDesign.AddIn.OutlineViewPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="33" PersistString="ICSharpCode.RubyBinding.RubyConsolePad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
+    <Content ID="34" PersistString="ICSharpCode.Reports.Addin.ReportExplorerPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
+    <Content ID="35" PersistString="SharpQuery.Pads.SharpQueryPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
   </Contents>
   <Panes Count="11">
     <Pane ID="0" DockState="DockLeft" ActiveContent="0">
@@ -108,13 +110,15 @@
       </Contents>
     </Pane>
     <Pane ID="8" DockState="DockRight" ActiveContent="-1">
-      <Contents Count="6">
+      <Contents Count="8">
         <Content ID="0" RefID="5" />
         <Content ID="1" RefID="25" />
         <Content ID="2" RefID="17" />
         <Content ID="3" RefID="18" />
         <Content ID="4" RefID="16" />
         <Content ID="5" RefID="32" />
+        <Content ID="6" RefID="34" />
+        <Content ID="7" RefID="35" />
       </Contents>
     </Pane>
     <Pane ID="9" DockState="Float" ActiveContent="-1">
