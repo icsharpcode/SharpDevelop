@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.SharpDevelop.Widgets</RootNamespace>
@@ -15,6 +15,26 @@
     <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -58,34 +78,70 @@
     <Compile Include="MouseWheelHandler.cs" />
     <Compile Include="Resources\BitmapResources.cs" />
     <Compile Include="TreeGrid\CollectionWithEvents.cs" />
-    <Compile Include="TreeGrid\DynamicList.cs" />
+    <Compile Include="TreeGrid\DynamicList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="TreeGrid\DynamicListColumn.cs" />
     <Compile Include="TreeGrid\DynamicListItem.cs" />
     <Compile Include="TreeGrid\DynamicListRow.cs" />
     <Compile Include="TreeGrid\DynamicTreeRow.cs" />
-    <Compile Include="TreeGrid\ScrollButton.cs" />
-    <Compile Include="TreeGrid\VerticalScrollContainer.cs" />
+    <Compile Include="TreeGrid\ScrollButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TreeGrid\VerticalScrollContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DesignHelper.cs" />
-    <Compile Include="AutoHide\AutoHideContainer.cs" />
-    <Compile Include="AutoHide\AutoHideMenuStripContainer.cs" />
-    <Compile Include="AutoHide\AutoHideStatusStripContainer.cs" />
-    <Compile Include="SideBar\SideBar.cs" />
+    <Compile Include="AutoHide\AutoHideContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AutoHide\AutoHideMenuStripContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AutoHide\AutoHideStatusStripContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SideBar\SideBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="SideBar\SideTab.cs" />
     <Compile Include="SideBar\SideTabItem.cs" />
-    <Compile Include="SpinnerControl.cs" />
+    <Compile Include="SpinnerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="DesignTimeSupport\DropDownEditor.cs" />
-    <Compile Include="DesignTimeSupport\DropDownEditorListBox.cs" />
+    <Compile Include="DesignTimeSupport\DropDownEditorListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="Resources\Icons.16x16.SortAscending.png" />
     <EmbeddedResource Include="Resources\Icons.16x16.SortDescending.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Configuration" />
-    <Folder Include="ListViewSorting" />
-    <Folder Include="Resources" />
-    <Folder Include="TreeGrid" />
-    <Folder Include="AutoHide" />
-    <Folder Include="SideBar" />
-    <Folder Include="DesignTimeSupport" />
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
