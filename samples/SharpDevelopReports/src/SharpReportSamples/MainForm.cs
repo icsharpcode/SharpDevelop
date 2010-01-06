@@ -22,10 +22,10 @@ namespace SharpReportSamples
 	public partial class MainForm : Form
 	{
 		
-			private TreeNode formNode;
-			private TreeNode pullNode;
-			private TreeNode pushNode;
-		
+		private TreeNode formNode;
+		private TreeNode pullNode;
+		private TreeNode pushNode;
+		private TreeNode iListNode;
 		public MainForm()
 		{
 			//
@@ -42,22 +42,23 @@ namespace SharpReportSamples
 			string formSheetDir = @"\FormSheet\JCA.srd";
 			
 			string startupPath = Application.StartupPath;
-			string samplesDir = @"samples\";
+			string samplesDir = @"SharpDevelopReports\";
 			int y = startupPath.IndexOf(samplesDir);
 			string startPath = startupPath.Substring(0,y + samplesDir.Length) + @"SampleReports\";
 			
-
+//D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports
 			
 			string pathToFormSheet = startPath + formSheetDir;
 			
 			this.formNode = this.treeView1.Nodes[0].Nodes[0];
 			this.pullNode =  this.treeView1.Nodes[0].Nodes[1];
 			this.pushNode =  this.treeView1.Nodes[0].Nodes[2];
+			this.iListNode = this.treeView1.Nodes[0].Nodes[3];
 			
 			AddNodesToTree (this.formNode,startPath + @"FormSheet\" );
 			AddNodesToTree (this.pullNode,startPath + @"PullModel\" );
 			AddNodesToTree (this.pushNode,startPath + @"PushModel\" );
-			AddNodesToTree (this.pullNode,startPath + @"IList\" );
+			AddNodesToTree (this.iListNode,startPath + @"IList\" );
 			
 
 		}
@@ -91,7 +92,7 @@ namespace SharpReportSamples
 			ReportEngine engine = new ReportEngine();
 			this.previewControl1.SetupAsynchron(reportName,null);
 		}
-			
+		
 		
 		
 		
@@ -104,19 +105,19 @@ namespace SharpReportSamples
 						Console.WriteLine("push");
 					} else {
 						RunStandardReport(selectedNode.Tag.ToString());
-					
+						
 					}
 					
 				}
 			}
 		}
-			
+		
 		
 		void TreeView1MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			SelectReport();
 		}
 		
-	
+		
 	}
 }

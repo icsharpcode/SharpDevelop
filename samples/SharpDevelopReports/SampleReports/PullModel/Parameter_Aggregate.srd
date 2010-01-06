@@ -40,6 +40,12 @@
                 </AbstractColumn>
             </AvailableFieldsCollection>
             <ReportName>Report1</ReportName>
+            <ParameterCollection>
+                <BasicParameter>
+                    <ParameterName>p1</ParameterName>
+                    <ParameterValue>aaaaa</ParameterValue>
+                </BasicParameter>
+            </ParameterCollection>
         </ReportSettings>
     </ReportSettings>
     <SectionCollection>
@@ -55,17 +61,17 @@
                     <BackColor>White</BackColor>
                     <CanShrink>False</CanShrink>
                     <StringTrimming>EllipsisCharacter</StringTrimming>
-                    <Text>=Report1</Text>
-                    <Location>313, 5</Location>
+                    <Text>='Report with Parameter : ' + p1</Text>
+                    <Location>235, 19</Location>
                     <ContentAlignment>MiddleLeft</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>False</DrawBorder>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <CanGrow>False</CanGrow>
                     <FormatString />
                     <Name>Report1</Name>
                     <FrameColor>WindowFrame</FrameColor>
-                    <Size>100, 20</Size>
+                    <Size>249, 20</Size>
                     <ForeColor>Black</ForeColor>
                 </BaseTextItem>
             </Items>
@@ -85,7 +91,7 @@
                     <FrameColor>WindowFrame</FrameColor>
                     <Name>AbstractItem</Name>
                     <Location>5, 5</Location>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <Size>717, 50</Size>
                     <Padding>0, 0, 0, 0</Padding>
                     <Items>
@@ -96,7 +102,7 @@
                             <Text>Kategorie-Nr</Text>
                             <Location>5, 5</Location>
                             <ContentAlignment>MiddleLeft</ContentAlignment>
-                            <Visible>False</Visible>
+                            <Visible>True</Visible>
                             <DrawBorder>False</DrawBorder>
                             <Font>Microsoft Sans Serif, 10pt</Font>
                             <CanGrow>False</CanGrow>
@@ -113,7 +119,7 @@
                             <Text>Kategoriename</Text>
                             <Location>184, 5</Location>
                             <ContentAlignment>MiddleLeft</ContentAlignment>
-                            <Visible>False</Visible>
+                            <Visible>True</Visible>
                             <DrawBorder>False</DrawBorder>
                             <Font>Microsoft Sans Serif, 10pt</Font>
                             <CanGrow>False</CanGrow>
@@ -130,7 +136,7 @@
                             <Text>Beschreibung</Text>
                             <Location>363, 5</Location>
                             <ContentAlignment>MiddleLeft</ContentAlignment>
-                            <Visible>False</Visible>
+                            <Visible>True</Visible>
                             <DrawBorder>False</DrawBorder>
                             <Font>Microsoft Sans Serif, 10pt</Font>
                             <CanGrow>False</CanGrow>
@@ -147,7 +153,7 @@
                             <Text>Abbildung</Text>
                             <Location>542, 5</Location>
                             <ContentAlignment>MiddleLeft</ContentAlignment>
-                            <Visible>False</Visible>
+                            <Visible>True</Visible>
                             <DrawBorder>False</DrawBorder>
                             <Font>Microsoft Sans Serif, 10pt</Font>
                             <CanGrow>False</CanGrow>
@@ -180,7 +186,7 @@
                     <FrameColor>WindowFrame</FrameColor>
                     <Name>AbstractItem</Name>
                     <Location>5, 5</Location>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <Size>717, 50</Size>
                     <Padding>0, 0, 0, 0</Padding>
                     <Items>
@@ -200,7 +206,7 @@
                             <BackColor>White</BackColor>
                             <FormatString />
                             <Name>Kategorie-Nr</Name>
-                            <Visible>False</Visible>
+                            <Visible>True</Visible>
                             <Size>100, 20</Size>
                             <FrameColor>WindowFrame</FrameColor>
                         </BaseDataItem>
@@ -220,7 +226,7 @@
                             <BackColor>White</BackColor>
                             <FormatString />
                             <Name>Kategoriename</Name>
-                            <Visible>False</Visible>
+                            <Visible>True</Visible>
                             <Size>100, 20</Size>
                             <FrameColor>WindowFrame</FrameColor>
                         </BaseDataItem>
@@ -240,7 +246,7 @@
                             <BackColor>Silver</BackColor>
                             <FormatString />
                             <Name>Beschreibung</Name>
-                            <Visible>False</Visible>
+                            <Visible>True</Visible>
                             <Size>100, 20</Size>
                             <FrameColor>WindowFrame</FrameColor>
                         </BaseDataItem>
@@ -279,7 +285,7 @@
                     <Text>=Globals!PageNumber</Text>
                     <Location>622, 5</Location>
                     <ContentAlignment>MiddleLeft</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>False</DrawBorder>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <CanGrow>False</CanGrow>
@@ -306,9 +312,9 @@
                     <CanShrink>False</CanShrink>
                     <StringTrimming>None</StringTrimming>
                     <Text>='This Report contains : ' + count() + ' DataRows'</Text>
-                    <Location>5, 4</Location>
+                    <Location>15, 3</Location>
                     <ContentAlignment>MiddleCenter</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>False</DrawBorder>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <CanGrow>False</CanGrow>
