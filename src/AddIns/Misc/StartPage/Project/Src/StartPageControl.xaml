@@ -74,7 +74,7 @@
 				Grid.Row="2"
 				Padding="4,0,4,0"
 				TextWrapping="WrapWithOverflow">
-				Copyright ©2000-2009
+				Copyright ©<Run Name="copyrightYearRange"/>
 				<Hyperlink
 					NavigateUri="mailto:webmaster@icsharpcode.net">IC#SharpCode</Hyperlink>
 				<Run Text="  "/>
