@@ -33,6 +33,7 @@
 			</DockPanel>
 			<ItemsControl
 				Name="startPageItems"
+				Focusable="False"
 				Grid.Row="1">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
@@ -62,7 +63,6 @@
 								CornerRadius="0,0,15,15"
 								Padding="15">
 								<ContentPresenter
-									Focusable="False"
 									Content="{Binding Control}" />
 							</Border>
 						</StackPanel>
