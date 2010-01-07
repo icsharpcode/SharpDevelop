@@ -88,6 +88,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public void SetHighlighting(int offset, int length, HighlightingColor color)
 		{
+			if (color == null)
+				throw new ArgumentNullException("color");
 			int startIndex = GetIndexForOffset(offset);
 			int endIndex = GetIndexForOffset(offset + length);
 			for (int i = startIndex; i < endIndex; i++) {

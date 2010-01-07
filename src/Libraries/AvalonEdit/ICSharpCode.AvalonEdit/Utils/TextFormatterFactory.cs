@@ -45,7 +45,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 					"Create",
 					BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static,
 					null, null,
-					new object[] { formattingMode });
+					new object[] { formattingMode },
+					CultureInfo.InvariantCulture);
 			} else {
 				return TextFormatter.Create();
 			}

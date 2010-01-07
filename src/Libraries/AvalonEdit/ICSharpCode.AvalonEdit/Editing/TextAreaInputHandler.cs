@@ -65,7 +65,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <summary>
 		/// Creates a new TextAreaInputHandler.
 		/// </summary>
-		public TextAreaStackedInputHandler(TextArea textArea)
+		protected TextAreaStackedInputHandler(TextArea textArea)
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");

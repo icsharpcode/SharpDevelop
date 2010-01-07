@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -19,7 +19,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	{
 		IUndoableOperation[] undolist;
 		
-		public UndoOperationGroup(Stack<IUndoableOperation> stack, int numops)
+		public UndoOperationGroup(Deque<IUndoableOperation> stack, int numops)
 		{
 			if (stack == null)  {
 				throw new ArgumentNullException("stack");
@@ -31,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 			undolist = new IUndoableOperation[numops];
 			for (int i = 0; i < numops; ++i) {
-				undolist[i] = stack.Pop();
+				undolist[i] = stack.PopBack();
 			}
 		}
 		

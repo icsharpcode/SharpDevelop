@@ -6,8 +6,10 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -17,9 +19,10 @@ namespace ICSharpCode.AvalonEdit.Document
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
 	public sealed class UndoStack : INotifyPropertyChanged
 	{
-		Stack<IUndoableOperation> undostack = new Stack<IUndoableOperation>();
-		Stack<IUndoableOperation> redostack = new Stack<IUndoableOperation>();
+		Deque<IUndoableOperation> undostack = new Deque<IUndoableOperation>();
+		Deque<IUndoableOperation> redostack = new Deque<IUndoableOperation>();
 		
+		int sizeLimit = 1000;
 		bool acceptChanges = true;
 		
 		/// <summary>
@@ -44,6 +47,35 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public bool CanRedo {
 			get { return redostack.Count > 0; }
+		}
+		
+		/// <summary>
+		/// Gets/Sets the limit on the number of items on the undo stack.
+		/// The default value is 1000.
+		/// </summary>
+		/// <remarks>The size limit is enforced only on the number of stored top-level undo groups.
+		/// Elements within undo groups do not count towards the size limit.</remarks>
+		public int SizeLimit {
+			get { return sizeLimit; }
+			set {
+				if (value < 0)
+					ThrowUtil.CheckNotNegative(value, "value");
+				if (sizeLimit != value) {
+					sizeLimit = value;
+					NotifyPropertyChanged("SizeLimit");
+					if (undoGroupDepth == 0)
+						EnforceSizeLimit();
+				}
+			}
+		}
+		
+		void EnforceSizeLimit()
+		{
+			Debug.Assert(undoGroupDepth == 0);
+			while (undostack.Count > sizeLimit)
+				undostack.PopFront();
+			while (redostack.Count > sizeLimit)
+				redostack.PopFront();
 		}
 		
 		int undoGroupDepth;
@@ -121,11 +153,12 @@ namespace ICSharpCode.AvalonEdit.Document
 				if (actionCountInUndoGroup == optionalActionCount) {
 					// only optional actions: don't store them
 					for (int i = 0; i < optionalActionCount; i++) {
-						undostack.Pop();
+						undostack.PopBack();
 					}
 				} else if (actionCountInUndoGroup > 1) {
-					undostack.Push(new UndoOperationGroup(undostack, actionCountInUndoGroup));
+					undostack.PushBack(new UndoOperationGroup(undostack, actionCountInUndoGroup));
 				}
+				EnforceSizeLimit();
 			}
 		}
 		
@@ -149,8 +182,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (undostack.Count > 0) {
 				lastGroupDescriptor = null;
 				acceptChanges = false;
-				IUndoableOperation uedit = undostack.Pop();
-				redostack.Push(uedit);
+				IUndoableOperation uedit = undostack.PopBack();
+				redostack.PushBack(uedit);
 				uedit.Undo();
 				acceptChanges = true;
 				if (undostack.Count == 0)
@@ -169,8 +202,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (redostack.Count > 0) {
 				lastGroupDescriptor = null;
 				acceptChanges = false;
-				IUndoableOperation uedit = redostack.Pop();
-				undostack.Push(uedit);
+				IUndoableOperation uedit = redostack.PopBack();
+				undostack.PushBack(uedit);
 				uedit.Redo();
 				acceptChanges = true;
 				if (redostack.Count == 0)
@@ -209,11 +242,11 @@ namespace ICSharpCode.AvalonEdit.Document
 				throw new ArgumentNullException("operation");
 			}
 			
-			if (acceptChanges) {
+			if (acceptChanges && sizeLimit > 0) {
 				bool wasEmpty = undostack.Count == 0;
 				
 				StartUndoGroup();
-				undostack.Push(operation);
+				undostack.PushBack(operation);
 				actionCountInUndoGroup++;
 				if (isOptional)
 					optionalActionCount++;
