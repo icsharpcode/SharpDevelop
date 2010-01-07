@@ -28,7 +28,7 @@
 					<Begin>'</Begin>
 					<End>'</End>
 				</Span>
-				<Rule foreground="Red">[\d\w_\-]+(?=(\s*=))</Rule>
+				<Rule foreground="Red">[\d\w_\-\.]+(?=(\s*=))</Rule>
 				<Rule foreground="Blue">=</Rule>
 				<Rule foreground="DarkMagenta">/</Rule>
 			</RuleSet>

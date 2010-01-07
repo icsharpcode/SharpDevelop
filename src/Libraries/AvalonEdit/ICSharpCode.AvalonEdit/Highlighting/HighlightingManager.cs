@@ -222,7 +222,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			internal void RegisterHighlighting(string name, string[] extensions, string resourceName)
 			{
 				try {
-					#if false //DEBUG
+					#if DEBUG
 					// don't use lazy-loading in debug builds, show errors immediately
 					Xshd.XshdSyntaxDefinition xshd;
 					using (Stream s = Resources.OpenStream(resourceName)) {
