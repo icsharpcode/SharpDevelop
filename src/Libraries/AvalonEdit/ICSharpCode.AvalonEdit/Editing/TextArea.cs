@@ -825,7 +825,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 				ReplaceSelectionWithText(newLine);
 				if (this.IndentationStrategy != null) {
 					DocumentLine line = this.Document.GetLineByNumber(this.Caret.Line);
-					this.IndentationStrategy.IndentLine(this.Document, line);
+					ISegment[] deletable = GetDeletableSegments(line);
+					if (deletable.Length == 1 && deletable[0].Offset == line.Offset && deletable[0].Length == line.Length) {
+						// use indentation strategy only if the line is not read-only
+						this.IndentationStrategy.IndentLine(this.Document, line);
+					}
 				}
 			}
 		}
