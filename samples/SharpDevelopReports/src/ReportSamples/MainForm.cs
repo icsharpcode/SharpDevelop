@@ -259,17 +259,7 @@ namespace ReportSamples
 		
 		#region standart Contributors
 		
-		void ContributorsListClick(object sender, EventArgs e)
-		{
-			/*
-			ContributorsList conReport = new ContributorsList();
-			conReport.Run();
-			this.engine = conReport.Engine;
-			this.DisplayContributors(conReport.ReportName,
-			                         ReportEngine.LoadReportModel(conReport.ReportName),
-			                         conReport.ContributorCollection);
-			                         */
-		}
+	
 		
 		/*
 		void DisplayContributors (string fileName,ReportModel model,IList list)

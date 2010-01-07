@@ -89,17 +89,74 @@ namespace SharpReportSamples
 		
 		private void RunStandardReport(string reportName)
 		{
-			ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
-			
-			if ((parameters != null)&& (parameters.SqlParameters.Count > 0)){
-				parameters.SqlParameters[0].ParameterValue = "I'm the Parameter";
+			string s = Path.GetFileNameWithoutExtension(reportName);
+			if (s == "ContributorsList" ) {
+				this.RunContributors(reportName);
+			} else {
+				
+				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
+				
+				if ((parameters != null)&& (parameters.SqlParameters.Count > 0)){
+					parameters.SqlParameters[0].ParameterValue = "I'm the Parameter";
+				}
+				
+				this.previewControl1.SetupAsynchron(reportName,parameters);
 			}
-			
-			this.previewControl1.SetupAsynchron(reportName,parameters);
 		}
 		
-//		FileAccess:	D:\Reporting3.0_branches\SharpDevelop\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dll
-//			hint : ..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dl
+		
+		#region Contributors
+		//
+		
+		private void RunContributors (string fileName)
+		{
+			ReportModel model = ReportEngine.LoadReportModel(fileName);
+			ReportEngine engine = new ReportEngine();
+			
+			engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
+			// Both variable declarations  are valid
+			
+			ContributorCollection list = ContributorsReportData.CreateContributorsList();
+			IDataManager dm = DataManager.CreateInstance(list,model.ReportSettings);
+			
+//			List<Contributor> list = ContributorsReportData.CreateContributorsList();
+//			IDataManager dm = DataManager.CreateInstance(list,model.ReportSettings);
+			
+			this.previewControl1.SetupAsynchron(model,dm);
+		}
+		
+			private void PushPrinting (object sender,SectionRenderEventArgs e) {
+
+			switch (e.CurrentSection) {
+				case GlobalEnums.ReportSection.ReportHeader:
+					break;
+
+				case GlobalEnums.ReportSection.ReportPageHeader:
+					break;
+					
+				case GlobalEnums.ReportSection.ReportDetail:
+					BaseRowItem ri = e.Section.Items[0] as BaseRowItem;
+//					if (ri != null) {
+//						BaseDataItem r = (BaseDataItem)ri.Items.Find("unbound1");
+//						if (r != null) {
+//							System.Console.WriteLine("ubound1");
+//				
+//						}
+//					}
+					break;
+					
+				case GlobalEnums.ReportSection.ReportPageFooter:
+					break;
+					
+				case GlobalEnums.ReportSection.ReportFooter:
+					break;
+					
+				default:
+					break;
+			}
+		}	
+		
+		#endregion
 		
 		
 		private void SelectReport ()
@@ -108,6 +165,7 @@ namespace SharpReportSamples
 			if ((selectedNode == null)|| (selectedNode.Tag == null)) {
 				return;
 			}
+			
 			if (!String.IsNullOrEmpty(selectedNode.Tag.ToString())) {
 				if (selectedNode.Parent == this.pushNode) {
 					MessageBox.Show("PushModel reports not implemented yet");

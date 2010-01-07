@@ -175,7 +175,7 @@ namespace ReportSamples
 			this.contributorsListToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
 			this.contributorsListToolStripMenuItem.Text = "Contributor\'s List";
 			this.contributorsListToolStripMenuItem.ToolTipText = "Customized, draw a frame on every second row";
-			this.contributorsListToolStripMenuItem.Click += new System.EventHandler(this.ContributorsListClick);
+//			this.contributorsListToolStripMenuItem.Click += new System.EventHandler(this.ContributorsListClick);
 			// 
 			// customizedToolStripMenuItem
 			// 

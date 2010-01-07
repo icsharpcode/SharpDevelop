@@ -45,11 +45,9 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseSample.cs" />
-    <Compile Include="ContributorsList.cs" />
     <Compile Include="EmployeesHireDate.cs" />
     <Compile Include="EmployeesPushModel.cs" />
     <Compile Include="EventLogger.cs" />
-    <Compile Include="JointCopyright.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
