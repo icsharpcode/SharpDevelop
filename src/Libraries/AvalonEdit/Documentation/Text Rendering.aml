@@ -11,7 +11,7 @@
       class is the heart of AvalonEdit.
       It takes care of getting the document onto the screen.</para>
       <para>To do this in an extensible way, the TextView uses its own kind of model:
-      the <codeEntityReference>VisualLine</codeEntityReference>.
+      the <codeEntityReference>T:ICSharpCode.AvalonEdit.Rendering.VisualLine</codeEntityReference>.
       Visual lines are created only for the visible part of the document.</para>
       <para>
       The rendering process looks like this:
@@ -157,7 +157,7 @@
 			  	The text layer also serves as container for any inline UI elements.
 			  </listItem><listItem>Caret layer: renders a blinking caret</listItem></list>
 			It's also possible to insert new layers into the TextView using the
-			<codeEntityReference qualifyHint="true">M:ICSharpCode.AvalonEdit.Rendering.TextView.InsertLayer</codeEntityReference>
+			<codeEntityReference qualifyHint="true">M:ICSharpCode.AvalonEdit.Rendering.TextView.InsertLayer(System.Windows.UIElement,ICSharpCode.AvalonEdit.Rendering.KnownLayer,ICSharpCode.AvalonEdit.Rendering.LayerInsertionPosition)</codeEntityReference>
 			method.
 			This allows adding custom interactive components to the editor
 			while being in full control of the Z-Order.

@@ -405,8 +405,13 @@ namespace ICSharpCode.AvalonEdit
 				leftMargins.Insert(1, DottedLineMargin.Create());
 			} else {
 				for (int i = 0; i < leftMargins.Count; i++) {
-					if (leftMargins[i] is LineNumberMargin || DottedLineMargin.IsDottedLineMargin(leftMargins[i]))
-						leftMargins.RemoveAt(i--);
+					if (leftMargins[i] is LineNumberMargin) {
+						leftMargins.RemoveAt(i);
+						if (i < leftMargins.Count && DottedLineMargin.IsDottedLineMargin(leftMargins[i])) {
+							leftMargins.RemoveAt(i);
+						}
+						break;
+					}
 				}
 			}
 		}

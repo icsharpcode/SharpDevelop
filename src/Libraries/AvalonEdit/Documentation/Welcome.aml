@@ -14,9 +14,29 @@
 		displayed - so it is much more suitable for a code editor where things like the text color
 		are not controlled by the user, but instead depend on the text (syntax highlighting).
 		</para>
+	   <para>
+	   	AvalonEdit was written for the SharpDevelop IDE. It replaces our old
+	   	Windows Forms-based text editor (ICSharpCode.TextEditor).
+	   </para>
     </introduction>
     
 	<mediaLink><image xlink:href="WelcomeScreenshot" placement="center"/></mediaLink>
+
+	<section>
+	  <title>Usage</title>
+	  <content>
+	  <para>The main class of the editor is <codeEntityReference qualifyHint="true">T:ICSharpCode.AvalonEdit.TextEditor</codeEntityReference>.
+	  You can use it similar to a normal WPF TextBox:</para>
+	  <code language="xml"><![CDATA[
+<avalonEdit:TextEditor
+    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+    Name="textEditor"
+    SyntaxHighlighting="C#"
+    FontFamily="Consolas"
+    FontSize="10pt"/>
+]]></code>
+	  </content>
+	</section>
 
 	<section>
 	  <title>System requirements</title>

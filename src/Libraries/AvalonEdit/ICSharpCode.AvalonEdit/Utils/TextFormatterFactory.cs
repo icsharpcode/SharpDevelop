@@ -15,7 +15,9 @@ using System.Windows.Media.TextFormatting;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
-	// Creates TextFormatter instances that with the correct TextFormattingMode, if running on .NET 4.0.
+	/// <summary>
+	/// Creates TextFormatter instances that with the correct TextFormattingMode, if running on .NET 4.0.
+	/// </summary>
 	static class TextFormatterFactory
 	{
 		readonly static DependencyProperty TextFormattingModeProperty;
@@ -29,8 +31,13 @@ namespace ICSharpCode.AvalonEdit.Utils
 			}
 		}
 		
+		/// <summary>
+		/// Creates a <see cref="TextFormatter"/> using the formatting mode used by the specified owner object.
+		/// </summary>
 		public static TextFormatter Create(DependencyObject owner)
 		{
+			if (owner == null)
+				throw new ArgumentNullException("owner");
 			// return TextFormatter.Create(TextOptions.GetTextFormattingMode(this));
 			if (TextFormattingModeProperty != null) {
 				object formattingMode = owner.GetValue(TextFormattingModeProperty);
@@ -44,12 +51,25 @@ namespace ICSharpCode.AvalonEdit.Utils
 			}
 		}
 		
+		/// <summary>
+		/// Returns whether the specified dependency property affects the text formatter creation.
+		/// Controls should re-create their text formatter for such property changes.
+		/// </summary>
 		public static bool PropertyChangeAffectsTextFormatter(DependencyProperty dp)
 		{
 			// return dp == TextOptions.TextFormattingModeProperty;
 			return dp == TextFormattingModeProperty && TextFormattingModeProperty != null;
 		}
 		
+		/// <summary>
+		/// Creates formatted text.
+		/// </summary>
+		/// <param name="element">The owner element. The text formatter setting are read from this element.</param>
+		/// <param name="text">The text.</param>
+		/// <param name="typeface">The typeface to use. If this parameter is null, the typeface of the <paramref name="element"/> will be used.</param>
+		/// <param name="emSize">The font size. If this parameter is null, the font size of the <paramref name="element"/> will be used.</param>
+		/// <param name="foreground">The foreground color. If this parameter is null, the foreground of the <paramref name="element"/> will be used.</param>
+		/// <returns>A FormattedText object using the specified settings.</returns>
 		public static FormattedText CreateFormattedText(FrameworkElement element, string text, Typeface typeface, double? emSize, Brush foreground)
 		{
 			if (element == null)

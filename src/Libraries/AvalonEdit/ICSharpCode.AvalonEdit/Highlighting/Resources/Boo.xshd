@@ -115,8 +115,8 @@
 				<Key word="else"/>
 				<Key word="elif"/>
 				<Key word="if"/>
-				<Key word="given"/>
-				<Key word="when"/>
+				<Key word="match"/>
+				<Key word="case"/>
 				<Key word="unless"/>
 				<Key word="otherwise"/>
 			</KeyWords>

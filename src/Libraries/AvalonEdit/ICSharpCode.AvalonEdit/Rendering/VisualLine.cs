@@ -63,7 +63,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public double Height { get; private set; }
 		
 		/// <summary>
-		/// Gets the position at which the line is visible.
+		/// Gets the Y position of the line. This is measured in device-independent pixels relative to the start of the document.
 		/// </summary>
 		public double VisualTop { get; internal set; }
 		

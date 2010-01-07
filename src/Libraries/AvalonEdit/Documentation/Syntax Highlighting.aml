@@ -55,8 +55,8 @@
 			they can be nested, allowing highlighting constructs like nested comments or one language
 			embedded in another.</definition>
   <definedTerm>HighlightingRule</definedTerm>
-  <definition>A highlighting rule is regular expression with a color.
-  			It will matches of the regular expression using that color.</definition>
+  <definition>A highlighting rule is a regular expression with a color.
+  			It will highlight matches of the regular expression using that color.</definition>
   <definedTerm>HighlightingColor</definedTerm>
   <definition>A highlighting color isn't just a color: it consists of a foreground
 			color, font weight and font style.</definition>
@@ -119,7 +119,7 @@
 		With most languages, such changes happen only at the start and end of multiline comments.
 		The highlighting engine exploits this property by storing the list of
 		span stacks in a special data structure
-		(<codeEntityReference>T:ICSharpCode.AvalonEdit.Utils.CompressingTreeList{T}</codeEntityReference>).
+		(<codeEntityReference>T:ICSharpCode.AvalonEdit.Utils.CompressingTreeList`1</codeEntityReference>).
 		The memory usage of the highlighting engine is linear to the number of span stack changes;
 		not to the total number of lines.
 		This allows the highlighting engine to store the span stacks for big code
@@ -178,6 +178,53 @@
 </SyntaxDefinition>
 ]]></code>
         </para>
+      </content>
+    </section>
+    <section>
+      <title>ICSharpCode.TextEditor XML highlighting definitions</title>
+      <content>
+        <para>ICSharpCode.TextEditor (the predecessor of AvalonEdit) used
+        a different version of the XSHD file format.
+        AvalonEdit detects the difference between the formats using the XML namespace:
+        The new format uses <codeInline>xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"</codeInline>,
+        the old format does not use any XML namespace.
+        </para><para>
+        AvalonEdit can load .xshd files written in that old format, and even
+        automatically convert them to the new format. However, not all
+        constructs of the old file format are supported by AvalonEdit.
+        </para>
+        <code language="cs"><![CDATA[// convert from old .xshd format to new format
+XshdSyntaxDefinition xshd;
+using (XmlTextReader reader = new XmlTextReader("input.xshd")) {
+    xshd = HighlightingLoader.LoadXshd(reader);
+}
+using (XmlTextWriter writer = new XmlTextWriter("output.xshd", System.Text.Encoding.UTF8)) {
+    writer.Formatting = Formatting.Indented;
+    new SaveXshdVisitor(writer).WriteDefinition(xshd);
+}
+]]></code>
+      </content>
+  	  </section>
+    <section>
+      <title>Programmatically accessing highlighting information</title>
+      <content>
+        <para>As described above, the highlighting engine only stores the "span stack"
+        at the start of each line. This information can be retrieved using the
+        <codeEntityReference>M:ICSharpCode.AvalonEdit.Highlighting.DocumentHighlighter.GetSpanStack(System.Int32)</codeEntityReference>
+        method:
+<code language="cs"><![CDATA[bool isInComment = documentHighlighter.GetSpanStack(1).Any(
+    s => s.SpanColor != null && s.SpanColor.Name == "Comment");
+// returns true if the end of line 1 (=start of line 2) is inside a multiline comment]]></code>
+		Spans can be identified using their color. For this purpose, named colors should be used in the syntax definition.
+        </para>
+        <para>For more detailed results inside lines, the highlighting algorithm
+        must be executed for that line:
+<code language="cs"><![CDATA[int off = document.GetOffset(7, 22);
+HighlightedLine result = documentHighlighter.HighlightLine(document.GetLineByNumber(7));
+bool isInComment = result.Sections.Any(
+    s => s.Offset <= off && s.Offset+s.Length >= off
+         && s.Color.Name == "Comment");]]></code>
+		</para>
       </content>
     </section>
     <relatedTopics>
