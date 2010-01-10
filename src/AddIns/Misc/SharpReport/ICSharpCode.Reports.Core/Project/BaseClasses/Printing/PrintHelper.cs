@@ -117,8 +117,7 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		
+			
 		#region Debug Code
 		
 		///<summary>

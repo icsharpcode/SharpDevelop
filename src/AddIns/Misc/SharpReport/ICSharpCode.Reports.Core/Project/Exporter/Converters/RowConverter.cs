@@ -40,6 +40,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				throw new ArgumentNullException("item");
 			}
 			IContainerItem row = item as IContainerItem;
+			
 			PrintHelper.AdjustParent(parent,row.Items);
 			if (PrintHelper.IsTextOnlyRow(item as BaseRowItem)) {
 				return this.ConvertTextOnlyRow(parent, item);
@@ -62,9 +63,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				//
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
-				
+				base.FireSectionRendering(section);
 				PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
-			
+				
 				mylist.AddRange(this.ConvertTextOnlyRow(parent,item));
 				section.SectionOffset += section.Size.Height + 2 * base.SinglePage.SectionBounds.Gap;
 				Rectangle r = new Rectangle(section.Location.X,section.SectionOffset,

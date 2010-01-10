@@ -27,6 +27,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private readonly object pageLock = new object();
 		private IExportItemsConverter exportItemsConverter;
 		private ILayouter layouter;
+		
 		public event EventHandler<PageCreatedEventArgs> PageCreated;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		
@@ -92,7 +93,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void ConvertSection (BaseSection section,int currentRow)
 		{
-			this.RenderEvent (section ,currentRow);
+			this.FireSectionRenderEvent (section ,currentRow);
 			this.Convert(section);
 		}
 		
@@ -218,18 +219,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Event's
 		
-		protected void RenderEvent (BaseSection section,int currentRow)
+		protected void FireSectionRenderEvent (BaseSection section,int currentRow)
 		{
-			if (this.SectionRendering != null) {
-				
-				SectionRenderEventArgs ea =
-					new SectionRenderEventArgs(section,
-					                           pages.Count,
-					                           currentRow,
-					                           (GlobalEnums.ReportSection)GlobalEnums.ReportSection.Parse(typeof(GlobalEnums.ReportSection),section.Name));
-				
-				this.SectionRendering (this,ea);
-			}
+			SectionRenderEventArgs ea =
+				new SectionRenderEventArgs(section,
+				                           pages.Count,
+				                           currentRow,
+				                           (GlobalEnums.ReportSection)GlobalEnums.ReportSection.Parse(typeof(GlobalEnums.ReportSection),section.Name));
+			
+			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,ea);
 		}
 		
 		

@@ -26,6 +26,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 	public partial class PreviewControl
 	{
 		public event EventHandler <EventArgs> PreviewLayoutChanged;
+		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		
 		private float zoom;
 		
@@ -259,8 +260,10 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e ) {
-			Console.WriteLine ("ReportViewer - SectionRenderEventargs from {0} with {1} items ",e.Section.Name,e.Section.Items.Count);
+			Console.WriteLine ("ReportViewer - SectionRenderEventargs from <{0}> with {1} items ",e.Section.Name,e.Section.Items.Count);
+			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,e);
 		}
+		
 		
 		void ShowCompleted()
 		{

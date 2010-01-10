@@ -20,7 +20,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 	public class BaseConverter:IBaseConverter
 	{
-		public event EventHandler <NewPageEventArgs> PageFull;
 		
 		private BaseReportItem parentItem;
 		private IDataNavigator dataNavigator;
@@ -30,6 +29,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private IExportItemsConverter exportItemsConverter;
 		private ILayouter layouter;
 	
+		public event EventHandler <NewPageEventArgs> PageFull;
+		public event EventHandler<SectionRenderEventArgs> SectionRendering;
+		
 		
 		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,IExportItemsConverter exportItemsConverter,ILayouter layouter)
 		{
@@ -68,7 +70,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 			
+		protected void FireSectionRendering (BaseSection section)
+		{
+			SectionRenderEventArgs srea = new SectionRenderEventArgs(section,
+			                                                         this.SinglePage.PageNumber,
+			                                                         this.dataNavigator.CurrentRow,
+			                                                         (GlobalEnums.ReportSection)GlobalEnums.ReportSection.Parse(typeof(GlobalEnums.ReportSection),section.Name));
+			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,srea);
+		}
 		
+		
+			
 		protected  ExporterCollection ConvertItems (BaseReportItem parent,
 		                                            IContainerItem row,Point offset)
 		                                

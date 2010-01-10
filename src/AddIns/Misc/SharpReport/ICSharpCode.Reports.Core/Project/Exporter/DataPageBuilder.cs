@@ -126,6 +126,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
 				                                                                this.SinglePage,this.ExportItemsConverter,
 				                                                                base.Layouter);
+				baseConverter.SectionRendering += OnSectionRendering;
 				baseConverter.Graphics = base.Graphics;
 				baseConverter.PageFull += new EventHandler<NewPageEventArgs>(OnPageFull);
 				convertedList = baseConverter.Convert(section,item);
@@ -134,6 +135,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 		}
 		
+		void OnSectionRendering (object sender,SectionRenderEventArgs e)
+		{
+			base.FireSectionRenderEvent(e.Section,e.RowNumber);
+		}
+			
+			
 		
 		#endregion
 		

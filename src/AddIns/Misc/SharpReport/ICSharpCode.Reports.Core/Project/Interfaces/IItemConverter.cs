@@ -20,6 +20,7 @@ namespace ICSharpCode.Reports.Core.Interfaces
 	{		
 		ExporterCollection Convert (BaseReportItem parent,BaseReportItem item);	
 		event EventHandler <NewPageEventArgs> PageFull;
+		event EventHandler<SectionRenderEventArgs> SectionRendering;
 		SectionBounds SectionBounds {get;}
 		IDataNavigator DataNavigator {get;}
 		Rectangle ParentRectangle {get;}

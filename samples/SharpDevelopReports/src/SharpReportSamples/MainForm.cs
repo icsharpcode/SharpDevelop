@@ -111,9 +111,7 @@ namespace SharpReportSamples
 		private void RunContributors (string fileName)
 		{
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
-			ReportEngine engine = new ReportEngine();
-			
-			engine.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
+
 			// Both variable declarations  are valid
 			
 			ContributorCollection list = ContributorsReportData.CreateContributorsList();
@@ -122,10 +120,15 @@ namespace SharpReportSamples
 //			List<Contributor> list = ContributorsReportData.CreateContributorsList();
 //			IDataManager dm = DataManager.CreateInstance(list,model.ReportSettings);
 			
+			this.previewControl1.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
 			this.previewControl1.SetupAsynchron(model,dm);
+			
 		}
 		
-			private void PushPrinting (object sender,SectionRenderEventArgs e) {
+		
+		
+		private void PushPrinting (object sender,SectionRenderEventArgs e)
+		{
 
 			switch (e.CurrentSection) {
 				case GlobalEnums.ReportSection.ReportHeader:
@@ -136,15 +139,14 @@ namespace SharpReportSamples
 					
 				case GlobalEnums.ReportSection.ReportDetail:
 					BaseRowItem ri = e.Section.Items[0] as BaseRowItem;
-//					if (ri != null) {
-//						BaseDataItem r = (BaseDataItem)ri.Items.Find("unbound1");
-//						if (r != null) {
-//							System.Console.WriteLine("ubound1");
-//				
-//						}
-//					}
-					break;
+					if (ri != null) {
+						BaseDataItem r = (BaseDataItem)ri.Items.Find("unbound3");
+						if (r != null) {
+							r.DBValue = "xxxxxxx";
+						}
+					}
 					
+					break;
 				case GlobalEnums.ReportSection.ReportPageFooter:
 					break;
 					
