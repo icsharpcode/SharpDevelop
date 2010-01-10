@@ -63,7 +63,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				
 				// this is an additional invariant that forces the tree to combine small leafs to prevent excessive memory usage:
 				Debug.Assert(length > NodeSize);
-				// note that the this invariant ensures that all nodes except for the empty rope's single node have at least length 1
+				// note that this invariant ensures that all nodes except for the empty rope's single node have at least length 1
 				
 				if (isShared)
 					Debug.Assert(left.isShared && right.isShared);

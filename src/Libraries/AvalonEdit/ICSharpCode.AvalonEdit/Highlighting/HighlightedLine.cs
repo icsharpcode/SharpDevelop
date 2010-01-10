@@ -128,7 +128,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				if (newOffset > startOffset) {
 					HtmlClipboard.EscapeHtml(b, document.GetText(textOffset, newOffset - textOffset), options);
 				}
-				textOffset = newOffset;
+				textOffset = Math.Max(textOffset, newOffset);
 				if (e.IsEnd) {
 					b.Append("</span>");
 				} else {

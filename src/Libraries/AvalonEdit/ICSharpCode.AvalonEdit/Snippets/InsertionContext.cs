@@ -93,6 +93,8 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		
 		/// <summary>
 		/// Inserts text at the insertion position and advances the insertion position.
+		/// This method will add the current indentation to every line in <paramref name="text"/> and will
+		/// replace newlines with the expected newline for the document.
 		/// </summary>
 		public void InsertText(string text)
 		{
