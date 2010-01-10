@@ -81,6 +81,7 @@
     <Compile Include="Completion\FromMathLibraryImportCompletionTestFixture.cs" />
     <Compile Include="Completion\FromMathLibraryImportCosMethodCompletionTestFixture.cs" />
     <Compile Include="Completion\FromSysLibraryImportCompletionItemsTestFixture.cs" />
+    <Compile Include="Completion\GetMethodsFromSysLibraryTestFixture.cs" />
     <Compile Include="Completion\GetPythonModulesTestFixture.cs" />
     <Compile Include="Completion\GetTypeForPythonModuleTestFixture.cs" />
     <Compile Include="Completion\ImportCompletionTestFixture.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Completion\MathModuleMembersInPythonContextTestFixture.cs" />
     <Compile Include="Completion\NamespaceContentsAddedToCtrlSpaceTestFixture.cs" />
     <Compile Include="Completion\PythonImportExpressionContextTestFixture.cs" />
+    <Compile Include="Completion\PythonSocketLibraryDocumentationTestFixture.cs" />
     <Compile Include="Completion\SysModuleMembersInPythonContextTestFixture.cs" />
     <Compile Include="Console\BuiltinCodeCompletionTestFixture.cs" />
     <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
@@ -307,6 +309,8 @@
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
     <Compile Include="Designer\TextEditorIndentPassedToGeneratorTestFixture.cs" />
     <Compile Include="Designer\UnknownTypeTestFixture.cs" />
+    <Compile Include="Expressions\FindExpressionOnLineWithSingleSpaceTestFixture.cs" />
+    <Compile Include="Expressions\FindExpressionWithImportOnPreviousLineTestFixture.cs" />
     <Compile Include="Expressions\FindImportExpressionTestFixture.cs" />
     <Compile Include="Expressions\FindSystemConsoleExpressionTestFixture.cs" />
     <Compile Include="Expressions\FromImportNamespaceExpressionTests.cs" />
@@ -344,6 +348,8 @@
     <Compile Include="PythonSyntaxModeTestFixture.cs" />
     <Compile Include="Resolver\ImportModuleResolveResultTests.cs" />
     <Compile Include="Resolver\InvalidResolveInputsTestFixture.cs" />
+    <Compile Include="Resolver\MemberNameTests.cs" />
+    <Compile Include="Resolver\ResolveBuiltInRoundMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveClassInstanceWithNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleWriteLineTestFixture.cs" />
@@ -353,10 +359,14 @@
     <Compile Include="Resolver\ResolveLocalClassInstanceTestFixture.cs" />
     <Compile Include="Resolver\ResolveNullCtrlSpaceCompilationUnitTestFixture.cs" />
     <Compile Include="Resolver\ResolveNullCtrlSpaceParseInfoTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSysModuleExitMethodTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSysModuleTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSysModuleUnknownMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemConsoleOutsideClassTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemConsoleTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemImportTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemNamespaceTestFixture.cs" />
+    <Compile Include="Resolver\ResolveTestFixtureBase.cs" />
     <Compile Include="Resolver\ResolveUnknownNamespaceTestFixture.cs" />
     <Compile Include="RunPythonCommandTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />

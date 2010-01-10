@@ -18,18 +18,18 @@ namespace ICSharpCode.PythonBinding
 	/// Represents the standard library modules that are implemented in
 	/// IronPython.
 	/// </summary>
-	public class StandardPythonModules : ReadOnlyCollectionBase
+	public class PythonStandardModules : ReadOnlyCollectionBase
 	{
 		List<string> moduleNames = new List<string>();
 		Dictionary<string, Type> moduleTypes = new Dictionary<string, Type>();
 		
-		public StandardPythonModules()
+		public PythonStandardModules()
 		{
-			GetStandardPythonModuleNames();
+			GetPythonStandardModuleNames();
 			InnerList.AddRange(GetNames());
 		}
 		
-		void GetStandardPythonModuleNames()
+		void GetPythonStandardModuleNames()
 		{
 			GetPythonModuleNamesFromAssembly(typeof(Builtin).Assembly);
 			GetPythonModuleNamesFromAssembly(typeof(ModuleOps).Assembly);
@@ -52,7 +52,16 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
-		public Type GetTypeForModule(string moduleName)
+		public PythonStandardModuleType GetModuleType(string moduleName)
+		{
+			Type type = GetTypeForModule(moduleName);
+			if (type != null) {
+				return new PythonStandardModuleType(type, moduleName);
+			}
+			return null;
+		}
+		
+		Type GetTypeForModule(string moduleName)
 		{
 			Type type;
 			if (moduleTypes.TryGetValue(moduleName, out type)) {

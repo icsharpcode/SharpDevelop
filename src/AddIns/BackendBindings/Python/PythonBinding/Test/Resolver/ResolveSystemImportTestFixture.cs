@@ -20,29 +20,18 @@ namespace PythonBinding.Tests.Resolver
 	/// a namespace.
 	/// </summary>
 	[TestFixture]
-	public class ResolveSystemImportTestFixture
+	public class ResolveSystemImportTestFixture : ResolveTestFixtureBase
 	{
-		PythonResolver resolver;
-		MockProjectContent mockProjectContent;
-		PythonImportModuleResolveResult resolveResult;
-		ExpressionResult expressionResult;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		protected override ExpressionResult GetExpressionResult()
 		{
-			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
-			mockProjectContent = new MockProjectContent();
-			mockProjectContent.SetNamespaceExistsReturnValue(true);
-			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
-			cu.ErrorsDuringCompile = true;
-			cu.FileName = @"C:\Projects\Test\test.py";
-			parseInfo.SetCompilationUnit(cu);
-			
-			string code = "import System";
+			string code = GetPythonScript();
 			PythonExpressionFinder finder = new PythonExpressionFinder();
-			expressionResult = finder.FindExpression(code, code.Length);
-			resolveResult = resolver.Resolve(expressionResult, parseInfo, code) as PythonImportModuleResolveResult;
+			return finder.FindExpression(code, code.Length);
+		}
+		
+		protected override string GetPythonScript()
+		{
+			return "import System";
 		}
 		
 		[Test]
@@ -54,7 +43,8 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void NamespaceName()
 		{
-			Assert.AreEqual("System", resolveResult.Name);
+			PythonImportModuleResolveResult importResolveResult = (PythonImportModuleResolveResult)resolveResult;
+			Assert.AreEqual("System", importResolveResult.Name);
 		}
 		
 		[Test]

@@ -12,10 +12,10 @@ using ICSharpCode.SharpDevelop.Dom;
 namespace ICSharpCode.PythonBinding
 {
 	public class SysModuleCompletionItems : PythonModuleCompletionItems
-	{		
-		public SysModuleCompletionItems(Type type)
-			: base(type)
-		{		
+	{
+		public SysModuleCompletionItems(PythonStandardModuleType moduleType)
+			: base(moduleType)
+		{
 			AddCompletionItems();
 		}
 		

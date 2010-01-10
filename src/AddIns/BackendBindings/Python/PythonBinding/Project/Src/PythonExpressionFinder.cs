@@ -53,13 +53,8 @@ namespace ICSharpCode.PythonBinding
 		/// </example>
 		public string RemoveLastPart(string expression)
 		{
-			if (!String.IsNullOrEmpty(expression)) {
-				int index = expression.LastIndexOf('.');
-				if (index > 0) {
-					return expression.Substring(0, index);
-				}
-			}
-			return String.Empty;
+			MemberName memberName = new MemberName(expression);
+			return memberName.Type;
 		}
 
 		/// <summary>

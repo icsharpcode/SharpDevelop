@@ -36,35 +36,35 @@ namespace PythonBinding.Tests.Completion
 		[Test]
 		public void CompletionItemsContainsCosMethodFromMathLibrary()
 		{
-			IMethod method = PythonCompletionItemsHelper.FindMethodFromArray("cos", completionItems);
+			IMethod method = PythonCompletionItemsHelper.FindMethodFromCollection("cos", completionItems);
 			Assert.IsNotNull(method);
 		}
 		
 		[Test]
 		public void CompletionItemsContainsPiPropertyFromMathLibrary()
 		{
-			IField field = PythonCompletionItemsHelper.FindFieldFromArray("pi", completionItems);
+			IField field = PythonCompletionItemsHelper.FindFieldFromCollection("pi", completionItems);
 			Assert.IsNotNull(field);
 		}
 		
 		[Test]
 		public void CompletionItemsDoesNotContainNonStaticToStringMethod()
 		{
-			IMethod method = PythonCompletionItemsHelper.FindMethodFromArray("ToString", completionItems);
+			IMethod method = PythonCompletionItemsHelper.FindMethodFromCollection("ToString", completionItems);
 			Assert.IsNull(method);			
 		}
 		
 		[Test]
 		public void CompletionItemsContain__name__()
 		{
-			IField field = PythonCompletionItemsHelper.FindFieldFromArray("__name__", completionItems);
+			IField field = PythonCompletionItemsHelper.FindFieldFromCollection("__name__", completionItems);
 			Assert.IsNotNull(field);	
 		}
 		
 		[Test]
 		public void CompletionItemsContain__package__()
 		{
-			IField field = PythonCompletionItemsHelper.FindFieldFromArray("__package__", completionItems);
+			IField field = PythonCompletionItemsHelper.FindFieldFromCollection("__package__", completionItems);
 			Assert.IsNotNull(field);	
 		}
 	}

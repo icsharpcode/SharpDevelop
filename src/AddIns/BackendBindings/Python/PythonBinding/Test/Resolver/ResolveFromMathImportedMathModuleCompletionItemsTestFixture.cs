@@ -16,32 +16,29 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolveFromMathImportedMathModuleCompletionItemsTestFixture
+	public class ResolveFromMathImportedMathModuleCompletionItemsTestFixture : ResolveTestFixtureBase
 	{
-		ResolveResult resolveResult;
-		ArrayList results;
-		PythonResolver resolver;
-		ExpressionResult result;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		ArrayList GetCompletionResults()
 		{
-			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
-			MockProjectContent projectContent = new MockProjectContent();
-			parseInfo.SetCompilationUnit(new DefaultCompilationUnit(projectContent));
-			
-			string code = "from math import";
-			PythonExpressionFinder finder = new PythonExpressionFinder();
-			result = finder.FindExpression(code, code.Length);
-			resolveResult = resolver.Resolve(result, parseInfo, code);
-			results = resolveResult.GetCompletionData(projectContent);
+			return resolveResult.GetCompletionData(projectContent);
 		}
-				
+		
+		protected override ExpressionResult GetExpressionResult()
+		{
+			string code = GetPythonScript();
+			PythonExpressionFinder finder = new PythonExpressionFinder();
+			return finder.FindExpression(code, code.Length);
+		}
+		
+		protected override string GetPythonScript()
+		{
+			return "from math import";
+		}
+		
 		[Test]
 		public void CompletionResultsContainCosMethodFromMathModule()
 		{
-			IMethod method = PythonCompletionItemsHelper.FindMethodFromArray("cos", results);
+			IMethod method = PythonCompletionItemsHelper.FindMethodFromCollection("cos", GetCompletionResults());
 			Assert.IsNotNull(method);
 		}
 		
@@ -53,7 +50,7 @@ namespace PythonBinding.Tests.Resolver
 			DefaultClass c = new DefaultClass(unit, "MyClass");
 			DefaultMethod method = new DefaultMethod(c, "Test");
 			
-			Assert.IsTrue(result.Context.ShowEntry(method));
+			Assert.IsTrue(expressionResult.Context.ShowEntry(method));
 		}
 	}
 }

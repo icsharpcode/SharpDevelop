@@ -12,12 +12,12 @@ namespace ICSharpCode.PythonBinding
 {
 	public static class PythonModuleCompletionItemsFactory
 	{
-		public static PythonModuleCompletionItems Create(Type type)
+		public static PythonModuleCompletionItems Create(PythonStandardModuleType moduleType)
 		{
-			if (IsSysModule(type)) {
-				return new SysModuleCompletionItems(type);
+			if (IsSysModule(moduleType.Type)) {
+				return new SysModuleCompletionItems(moduleType);
 			}
-			return new PythonModuleCompletionItems(type);
+			return new PythonModuleCompletionItems(moduleType);
 		}
 		
 		static bool IsSysModule(Type type)

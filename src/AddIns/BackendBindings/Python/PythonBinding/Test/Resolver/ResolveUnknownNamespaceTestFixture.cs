@@ -20,31 +20,22 @@ namespace PythonBinding.Tests.Resolver
 	/// an unknown namespace.
 	/// </summary>
 	[TestFixture]
-	public class ResolveUnknownNamespaceTestFixture
+	public class ResolveUnknownNamespaceTestFixture : ResolveTestFixtureBase
 	{
-		PythonResolver resolver;
-		MockProjectContent mockProjectContent;
-		ResolveResult resolveResult;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		protected override ExpressionResult GetExpressionResult()
 		{
-			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
-			mockProjectContent = new MockProjectContent();
-			mockProjectContent.NamespacesToAdd.Add("Test");
-
-			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
-			cu.ErrorsDuringCompile = true;
-			cu.FileName = @"C:\Projects\Test\test.py";
-			parseInfo.SetCompilationUnit(cu);
+			projectContent.NamespacesToAdd.Add("Test");
 			
-			string python = "import System\r\n" +
-							"class Test:\r\n" +
-							"\tdef __init__(self):\r\n" +
-							"\t\tUnknown\r\n";
-			ExpressionResult expressionResult = new ExpressionResult("Unknown", new DomRegion(3, 2), null, null);
-			resolveResult = resolver.Resolve(expressionResult, parseInfo, python);
+			return new ExpressionResult("Unknown", new DomRegion(3, 2), null, null);
+		}
+		
+		protected override string GetPythonScript()
+		{
+			return
+				"import System\r\n" +
+				"class Test:\r\n" +
+				"    def __init__(self):\r\n" +
+				"        Unknown\r\n";
 		}
 		
 		[Test]
@@ -56,7 +47,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void NamespaceExistsCalled()
 		{
-			Assert.IsTrue(mockProjectContent.NamespaceExistsCalled);
+			Assert.IsTrue(projectContent.NamespaceExistsCalled);
 		}	
 	}
 }

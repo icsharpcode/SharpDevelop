@@ -33,7 +33,7 @@ namespace PythonBinding.Tests.Completion
 		[Test]
 		public void GetCompletionItemsDoesNotReturnPythonHiddenMethods()
 		{
-			IMethod method = PythonCompletionItemsHelper.FindMethodFromArray("_getframeImpl", completionItems);
+			IMethod method = PythonCompletionItemsHelper.FindMethodFromCollection("_getframeImpl", completionItems);
 			Assert.IsNull(method);
 		}
 		
@@ -51,7 +51,7 @@ namespace PythonBinding.Tests.Completion
 		
 		IField GetFieldFromCompletionItems(string name)
 		{
-			return PythonCompletionItemsHelper.FindFieldFromArray(name, completionItems);
+			return PythonCompletionItemsHelper.FindFieldFromCollection(name, completionItems);
 		}
 
 		[Test]
@@ -105,7 +105,7 @@ namespace PythonBinding.Tests.Completion
 		[Test]
 		public void GetCompletionItemsReturnsExitMethod()
 		{
-			IMethod method = PythonCompletionItemsHelper.FindMethodFromArray("exit", completionItems);
+			IMethod method = PythonCompletionItemsHelper.FindMethodFromCollection("exit", completionItems);
 			Assert.IsNotNull(method);
 		}
 		

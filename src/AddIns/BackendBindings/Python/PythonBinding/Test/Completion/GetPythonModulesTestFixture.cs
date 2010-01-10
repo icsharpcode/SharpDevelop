@@ -24,7 +24,7 @@ namespace PythonBinding.Tests.Resolver
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			StandardPythonModules modules = new StandardPythonModules();
+			PythonStandardModules modules = new PythonStandardModules();
 			moduleNames = modules.GetNames();
 		}
 		

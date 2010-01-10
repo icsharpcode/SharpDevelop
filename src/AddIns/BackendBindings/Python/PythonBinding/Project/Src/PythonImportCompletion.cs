@@ -17,7 +17,7 @@ namespace ICSharpCode.PythonBinding
 	public class PythonImportCompletion
 	{
 		IProjectContent projectContent;
-		static readonly StandardPythonModules standardPythonModules = new StandardPythonModules();
+		static readonly PythonStandardModules standardPythonModules = new PythonStandardModules();
 
 		public PythonImportCompletion(IProjectContent projectContent)
 		{
@@ -46,14 +46,14 @@ namespace ICSharpCode.PythonBinding
 		
 		public ArrayList GetCompletionItemsFromModule(string module)
 		{
-			Type type = standardPythonModules.GetTypeForModule(module);
+			PythonStandardModuleType type = standardPythonModules.GetModuleType(module);
 			if (type != null) {
 				return GetCompletionItemsFromModule(type);
 			}
 			return projectContent.GetNamespaceContents(module);
 		}
 		
-		ArrayList GetCompletionItemsFromModule(Type type)
+		ArrayList GetCompletionItemsFromModule(PythonStandardModuleType type)
 		{			
 			PythonModuleCompletionItems moduleItems = PythonModuleCompletionItemsFactory.Create(type);
 			ArrayList items = new ArrayList(moduleItems);

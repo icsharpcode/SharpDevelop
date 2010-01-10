@@ -123,7 +123,7 @@ namespace ICSharpCode.PythonBinding
 		
 		static bool ValidIsImportExpressionParameters(string text, int offset)
 		{
-			if (String.IsNullOrEmpty(text) || (offset <= 0)) {
+			if (String.IsNullOrEmpty(text) || (offset <= 0) || (offset >= text.Length)) {
 				return false;
 			}
 			return true;
@@ -142,6 +142,9 @@ namespace ICSharpCode.PythonBinding
 			while (offset > 0) {
 				char ch = text[offset];
 				if (Char.IsWhiteSpace(ch)) {
+					if (IsNewLineOrCarriageReturn(ch)) {
+						return offset;
+					}
 					if (!ignoreWhitespace) {
 						return offset;
 					}
@@ -151,6 +154,11 @@ namespace ICSharpCode.PythonBinding
 				--offset;
 			}
 			return offset;
+		}
+		
+		static bool IsNewLineOrCarriageReturn(char ch)
+		{
+			return (ch == '\r') || (ch == '\n');
 		}
 		
 		static bool IsImportOrFromString(string text)

@@ -73,8 +73,16 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
+    <Compile Include="Src\MemberName.cs" />
+    <Compile Include="Src\PythonClassResolver.cs" />
+    <Compile Include="Src\PythonMethodResolver.cs" />
     <Compile Include="Src\PythonModuleCompletionItems.cs" />
     <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />
+    <Compile Include="Src\PythonNamespaceResolver.cs" />
+    <Compile Include="Src\PythonResolverContext.cs" />
+    <Compile Include="Src\PythonStandardModuleResolver.cs" />
+    <Compile Include="Src\PythonStandardModuleResolveResult.cs" />
+    <Compile Include="Src\PythonStandardModuleType.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
@@ -118,7 +126,7 @@
     <Compile Include="Src\PythonResolver.cs" />
     <Compile Include="Src\RunDebugPythonCommand.cs" />
     <Compile Include="Src\RunPythonCommand.cs" />
-    <Compile Include="Src\StandardPythonModules.cs" />
+    <Compile Include="Src\PythonStandardModules.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\StringTextContentProvider.cs" />
     <Compile Include="Src\TextEditor.cs" />

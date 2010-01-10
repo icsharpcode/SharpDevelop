@@ -35,7 +35,7 @@ namespace PythonBinding.Tests.Completion
 		public void CompletionItemsContainsDateClass()
 		{
 			ArrayList items = resolveResult.GetCompletionData(projectContent);
-			IClass c = PythonCompletionItemsHelper.FindClassFromArray("datetime", items);
+			IClass c = PythonCompletionItemsHelper.FindClassFromCollection("datetime", items);
 			Assert.IsNotNull(c);
 		}
 

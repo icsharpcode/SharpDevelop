@@ -39,7 +39,7 @@ namespace PythonBinding.Tests.Completion
 		public void FromMathLibraryGetCompletionItemsReturnsPiField()
 		{
 			ArrayList items = completion.GetCompletionItemsFromModule("math");
-			IField field = PythonCompletionItemsHelper.FindFieldFromArray("pi", items);
+			IField field = PythonCompletionItemsHelper.FindFieldFromCollection("pi", items);
 			Assert.IsNotNull(field);
 		}
 	}

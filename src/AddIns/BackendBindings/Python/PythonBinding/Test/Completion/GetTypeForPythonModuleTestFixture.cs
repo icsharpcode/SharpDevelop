@@ -15,24 +15,38 @@ namespace PythonBinding.Tests.Completion
 	[TestFixture]
 	public class GetTypeForPythonModuleTestFixture
 	{
-		StandardPythonModules modules;
+		PythonStandardModules modules;
+		PythonStandardModuleType sysModuleType;
 
 		[SetUp]
 		public void Init()
 		{
-			 modules = new StandardPythonModules();
+			 modules = new PythonStandardModules();
+			 sysModuleType = modules.GetModuleType("sys");
 		}
 		
 		[Test]
 		public void GetTypeReturnsNullForUnknownModuleName()
 		{
-			Assert.IsNull(modules.GetTypeForModule("unknown"));
+			Assert.IsNull(modules.GetModuleType("unknown"));
 		}
 		
 		[Test]
 		public void GetTypeReturnsSysModuleTypeForSysModuleName()
 		{
-			Assert.AreEqual(typeof(SysModule), modules.GetTypeForModule("sys"));
+			Assert.AreEqual(typeof(SysModule), modules.GetModuleType("sys").Type);
+		}
+		
+		[Test]
+		public void GetModuleTypeReturnsSysModuleTypeForSysModuleName()
+		{
+			Assert.AreEqual(typeof(SysModule), sysModuleType.Type);
+		}
+		
+		[Test]
+		public void GetModuleTypeReturnsSysModuleNameForSysModuleName()
+		{
+			Assert.AreEqual("sys", sysModuleType.Name);
 		}
 	}
 }
