@@ -45,8 +45,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 
 
-		public iTextSharp.text.Color PdfBackColor {
-			get { return new iTextSharp.text.Color(this.backColor.R, this.backColor.G, this.backColor.B, this.backColor.A); }
+		public iTextSharp.text.BaseColor PdfBackColor {
+			get { return new iTextSharp.text.BaseColor(this.backColor.R, this.backColor.G, this.backColor.B, this.backColor.A); }
 		}
 
 
@@ -56,8 +56,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 
 
-		public iTextSharp.text.Color PdfForeColor {
-			get { return new iTextSharp.text.Color(this.foreColor.R, this.foreColor.G, this.foreColor.B, this.foreColor.A); }
+		public iTextSharp.text.BaseColor PdfForeColor {
+			get { return new iTextSharp.text.BaseColor(this.foreColor.R, this.foreColor.G, this.foreColor.B, this.foreColor.A); }
 		}
 
 

@@ -23,14 +23,14 @@ namespace ICSharpCode.Reports.Core {
 		
 		Color color;
 		Brush brush;
-		iTextSharp.text.Color pdfColor;
+		iTextSharp.text.BaseColor pdfColor;
 		
 		protected AbstractFillPattern(Color color) {
 			this.color = color;
 		}
 		
 		
-		protected AbstractFillPattern(iTextSharp.text.Color pdfColor)
+		protected AbstractFillPattern(iTextSharp.text.BaseColor pdfColor)
 		{
 			this.pdfColor = pdfColor;
 		}
@@ -47,7 +47,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		public iTextSharp.text.Color PdfColor {
+		public iTextSharp.text.BaseColor PdfColor {
 			get { return pdfColor; }
 			set { pdfColor = value; }
 		}
@@ -71,7 +71,7 @@ namespace ICSharpCode.Reports.Core {
 		public SolidFillPattern (Color color) :base(color){
 		}
 		
-		public SolidFillPattern (iTextSharp.text.Color pdfColor):base(pdfColor)
+		public SolidFillPattern (iTextSharp.text.BaseColor pdfColor):base(pdfColor)
 		{
 			
 		}
