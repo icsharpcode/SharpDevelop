@@ -475,7 +475,7 @@ namespace ICSharpCode.StartPage
 			builder.Append(m_strMainColColor);
 			builder.Append("\" class=\"copy\"><img src=\""+ startPageLocation + "/Layout/Common/blind.gif\" width=15 height=1>");
 			builder.Append("<font size=\"-2\">");
-			builder.Append("Copyright &copy;2000-2009 <A HREF=\"mailto:webmaster@icsharpcode.net\" title=\"");
+			builder.Append("Copyright &copy;2000-2010 <A HREF=\"mailto:webmaster@icsharpcode.net\" title=\"");
 			builder.Append(StringParser.Parse("${res:StartPage.ContactUs}"));
 			builder.Append("\">IC#SharpCode</a>. ");
 			builder.Append(ICSharpCode.SharpDevelop.Gui.AboutSharpDevelopTabPage.LicenseSentence);
