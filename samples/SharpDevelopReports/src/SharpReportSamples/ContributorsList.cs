@@ -17,7 +17,21 @@ namespace SharpReportSamples
 	/// </summary>
 	public class ContributorsReportData
 	{
-		
+/*
+		This list is by no means exhaustive:
+
+
+
+
+
+
+
+
+
+
+
+•Siegfried Pammer
+*/
 		public static ContributorCollection CreateContributorsList () {
 			ContributorCollection list = new ContributorCollection();
 			
@@ -29,6 +43,11 @@ namespace SharpReportSamples
 			list.Add(new Contributor("David","Srbecky","Debugger"));
 			list.Add(new Contributor("Peter","Forstmeier","SharpDevelop.Reports"));
 			list.Add(new Contributor("Markus","Palme","Prg."));
+			list.Add(new Contributor("Itai","Bar-Haim","Prg."));
+			list.Add(new Contributor("Russel","Wilkins","Prg."));
+			list.Add(new Contributor("Justin","Dearing","Prg."));
+			list.Add(new Contributor("Christian","Hornung","Prg."));
+			list.Add(new Contributor("Siegfried","Pammer","Prg."));
 			list.Add(new Contributor("Georg","Brandl","Prg."));
 			list.Add(new Contributor("Roman","Taranchenko",""));
 			list.Add(new Contributor("Denis","Erchoff",""));

@@ -52,12 +52,12 @@ namespace SharpReportSamples
 			
 			this.formNode = this.treeView1.Nodes[0].Nodes[0];
 			this.pullNode =  this.treeView1.Nodes[0].Nodes[1];
-			this.pushNode =  this.treeView1.Nodes[0].Nodes[2];
-			this.iListNode = this.treeView1.Nodes[0].Nodes[3];
+//			this.pushNode =  this.treeView1.Nodes[0].Nodes[2];
+			this.iListNode = this.treeView1.Nodes[0].Nodes[2];
 			
 			AddNodesToTree (this.formNode,startPath + @"FormSheet\" );
 			AddNodesToTree (this.pullNode,startPath + @"PullModel\" );
-			AddNodesToTree (this.pushNode,startPath + @"PushModel\" );
+//			AddNodesToTree (this.pushNode,startPath + @"PushModel\" );
 			AddNodesToTree (this.iListNode,startPath + @"IList\" );
 			
 

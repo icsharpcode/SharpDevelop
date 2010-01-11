@@ -113,9 +113,9 @@ namespace ReportSamples
 		
 		void ProviderIndependentClick(object sender, EventArgs e){
 			
-			ProviderIndependent ms = new ProviderIndependent();
-			this.engine = ms.Engine;
-			this.DisplayPullData(ms.ReportName,ms.Parameters);
+//			ProviderIndependent ms = new ProviderIndependent();
+//			this.engine = ms.Engine;
+//			this.DisplayPullData(ms.ReportName,ms.Parameters);
 			
 		}
 		
