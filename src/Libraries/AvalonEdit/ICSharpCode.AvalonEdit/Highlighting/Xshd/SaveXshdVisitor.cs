@@ -117,7 +117,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		
 		object IXshdVisitor.VisitKeywords(XshdKeywords keywords)
 		{
-			writer.WriteStartElement("KeyWords", Namespace);
+			writer.WriteStartElement("Keywords", Namespace);
 			WriteColorReference(keywords.ColorReference);
 			foreach (string word in keywords.Words) {
 				writer.WriteElementString("Word", Namespace, word);

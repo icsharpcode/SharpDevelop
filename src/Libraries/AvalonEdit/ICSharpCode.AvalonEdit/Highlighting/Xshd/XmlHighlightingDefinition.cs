@@ -24,21 +24,23 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		public XmlHighlightingDefinition(XshdSyntaxDefinition xshd, IHighlightingDefinitionReferenceResolver resolver)
 		{
 			this.Name = xshd.Name;
+			// Create HighlightingRuleSet instances
 			var rnev = new RegisterNamedElementsVisitor(this);
 			xshd.AcceptElements(rnev);
-			TranslateElementVisitor translateVisitor = new TranslateElementVisitor(this, rnev.ruleSets, resolver);
+			// Assign MainRuleSet so that references can be resolved
 			foreach (XshdElement element in xshd.Elements) {
-				HighlightingRuleSet rs = element.AcceptVisitor(translateVisitor) as HighlightingRuleSet;
 				XshdRuleSet xrs = element as XshdRuleSet;
-				if (rs != null && xrs != null && xrs.Name == null) {
+				if (xrs != null && xrs.Name == null) {
 					if (MainRuleSet != null)
 						throw Error(element, "Duplicate main RuleSet. There must be only one nameless RuleSet!");
 					else
-						MainRuleSet = rs;
+						MainRuleSet = rnev.ruleSets[xrs];
 				}
 			}
 			if (MainRuleSet == null)
 				throw new HighlightingDefinitionInvalidException("Could not find main RuleSet.");
+			// Translate elements within the rulesets (resolving references and processing imports)
+			xshd.AcceptElements(new TranslateElementVisitor(this, rnev.ruleSets, resolver));
 		}
 		
 		#region RegisterNamedElements
