@@ -1,41 +1,61 @@
 <SyntaxDefinition name="XML" extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.booproj;.build;.xfrm;.targets;.xaml;.xpt;.xft;.map;.wsdl;.disco" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color foreground="Green" name="Comment" />
+	<Color foreground="Blue" name="CData" />
+	<Color foreground="Blue" name="DocType" />
+	<Color foreground="Blue" name="XmlDecl" />
+	<Color foreground="DarkMagenta" name="XmlTag" />
+	<Color foreground="Red" name="AttributeName" />
+	<Color foreground="Blue" name="AttributeValue" />
+	<Color foreground="DarkRed" name="Entity" />
+	<Color foreground="Olive" name="BrokenEntity" />
+	
 	<RuleSet>
-		<Span foreground="Green" multiline="true">
+		<Span color="Comment" multiline="true">
 			<Begin>&lt;!--</Begin>
 			<End>--&gt;</End>
 		</Span>
-		<Span foreground="Blue" multiline="true">
+		<Span color="CData" multiline="true">
 			<Begin>&lt;!\[CDATA\[</Begin>
 			<End>]]&gt;</End>
 		</Span>
-		<Span foreground="Blue" multiline="true">
+		<Span color="DocType" multiline="true">
 			<Begin>&lt;!DOCTYPE</Begin>
 			<End>&gt;</End>
 		</Span>
-		<Span foreground="Blue" multiline="true">
+		<Span color="XmlDecl" multiline="true">
 			<Begin>&lt;\?</Begin>
 			<End>\?&gt;</End>
 		</Span>
-		<Span foreground="DarkMagenta" multiline="true">
+		<Span color="XmlTag" multiline="true">
 			<Begin>&lt;</Begin>
 			<End>&gt;</End>
 			<RuleSet>
-				<Span foreground="Blue" multiline="true">
+				<Span color="AttributeValue" multiline="true" ruleSet="EntitySet">
 					<Begin>"</Begin>
 					<End>"</End>
 				</Span>
-				<Span foreground="Blue" multiline="true">
+				<Span color="AttributeValue" multiline="true" ruleSet="EntitySet">
 					<Begin>'</Begin>
 					<End>'</End>
 				</Span>
-				<Rule foreground="Red">[\d\w_\-\.]+(?=(\s*=))</Rule>
-				<Rule foreground="Blue">=</Rule>
-				<Rule foreground="DarkMagenta">/</Rule>
+				<Rule color="AttributeName">[\d\w_\-\.]+(?=(\s*=))</Rule>
+				<Rule color="AttributeValue">=</Rule>
 			</RuleSet>
 		</Span>
-		<Span foreground="Blue">
-			<Begin>&amp;</Begin>
-			<End>;</End>
-		</Span>
+		<Import ruleSet="EntitySet"/>
+	</RuleSet>
+	
+	<RuleSet name="EntitySet">
+		<Rule color="Entity">
+			&amp;
+			[\w\d\#]+
+			;
+		</Rule>
+
+		<Rule color="BrokenEntity">
+			&amp;
+			[\w\d\#]*
+			#missing ;
+		</Rule>
 	</RuleSet>
 </SyntaxDefinition>

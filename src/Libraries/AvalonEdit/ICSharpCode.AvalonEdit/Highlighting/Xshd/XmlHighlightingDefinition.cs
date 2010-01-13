@@ -24,8 +24,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		public XmlHighlightingDefinition(XshdSyntaxDefinition xshd, IHighlightingDefinitionReferenceResolver resolver)
 		{
 			this.Name = xshd.Name;
-			xshd.AcceptElements(new RegisterNamedElementsVisitor(this));
-			TranslateElementVisitor translateVisitor = new TranslateElementVisitor(this, resolver);
+			var rnev = new RegisterNamedElementsVisitor(this);
+			xshd.AcceptElements(rnev);
+			TranslateElementVisitor translateVisitor = new TranslateElementVisitor(this, rnev.ruleSets, resolver);
 			foreach (XshdElement element in xshd.Elements) {
 				HighlightingRuleSet rs = element.AcceptVisitor(translateVisitor) as HighlightingRuleSet;
 				XshdRuleSet xrs = element as XshdRuleSet;
@@ -44,6 +45,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		sealed class RegisterNamedElementsVisitor : IXshdVisitor
 		{
 			XmlHighlightingDefinition def;
+			internal readonly Dictionary<XshdRuleSet, HighlightingRuleSet> ruleSets
+				= new Dictionary<XshdRuleSet, HighlightingRuleSet>();
 			
 			public RegisterNamedElementsVisitor(XmlHighlightingDefinition def)
 			{
@@ -52,13 +55,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			
 			public object VisitRuleSet(XshdRuleSet ruleSet)
 			{
+				HighlightingRuleSet hrs = new HighlightingRuleSet();
+				ruleSets.Add(ruleSet, hrs);
 				if (ruleSet.Name != null) {
 					if (ruleSet.Name.Length == 0)
 						throw Error(ruleSet, "Name must not be the empty string");
 					if (def.ruleSetDict.ContainsKey(ruleSet.Name))
 						throw Error(ruleSet, "Duplicate rule set name '" + ruleSet.Name + "'.");
 					
-					def.ruleSetDict.Add(ruleSet.Name, new HighlightingRuleSet());
+					def.ruleSetDict.Add(ruleSet.Name, hrs);
 				}
 				ruleSet.AcceptElements(this);
 				return null;
@@ -105,25 +110,34 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		#region TranslateElements
 		sealed class TranslateElementVisitor : IXshdVisitor
 		{
-			XmlHighlightingDefinition def;
-			IHighlightingDefinitionReferenceResolver resolver;
+			readonly XmlHighlightingDefinition def;
+			readonly Dictionary<XshdRuleSet, HighlightingRuleSet> ruleSetDict;
+			readonly Dictionary<HighlightingRuleSet, XshdRuleSet> reverseRuleSetDict;
+			readonly IHighlightingDefinitionReferenceResolver resolver;
+			HashSet<XshdRuleSet> processingStartedRuleSets = new HashSet<XshdRuleSet>();
+			HashSet<XshdRuleSet> processedRuleSets = new HashSet<XshdRuleSet>();
+			bool ignoreCase;
 			
-			public TranslateElementVisitor(XmlHighlightingDefinition def, IHighlightingDefinitionReferenceResolver resolver)
+			public TranslateElementVisitor(XmlHighlightingDefinition def, Dictionary<XshdRuleSet, HighlightingRuleSet> ruleSetDict, IHighlightingDefinitionReferenceResolver resolver)
 			{
 				Debug.Assert(def != null);
+				Debug.Assert(ruleSetDict != null);
 				this.def = def;
+				this.ruleSetDict = ruleSetDict;
 				this.resolver = resolver;
+				reverseRuleSetDict = new Dictionary<HighlightingRuleSet, XshdRuleSet>();
+				foreach (var pair in ruleSetDict) {
+					reverseRuleSetDict.Add(pair.Value, pair.Key);
+				}
 			}
-			
-			bool ignoreCase;
 			
 			public object VisitRuleSet(XshdRuleSet ruleSet)
 			{
-				HighlightingRuleSet rs;
-				if (ruleSet.Name != null)
-					rs = def.ruleSetDict[ruleSet.Name];
-				else
-					rs = new HighlightingRuleSet();
+				HighlightingRuleSet rs = ruleSetDict[ruleSet];
+				if (processedRuleSets.Contains(ruleSet))
+					return rs;
+				if (!processingStartedRuleSets.Add(ruleSet))
+					throw Error(ruleSet, "RuleSet cannot be processed because it contains cyclic <Import>");
 				
 				bool oldIgnoreCase = ignoreCase;
 				if (ruleSet.IgnoreCase != null)
@@ -150,6 +164,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				}
 				
 				ignoreCase = oldIgnoreCase;
+				processedRuleSets.Add(ruleSet);
 				
 				return rs;
 			}
@@ -301,7 +316,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			
 			public object VisitImport(XshdImport import)
 			{
-				return GetRuleSet(import, import.RuleSetReference);
+				HighlightingRuleSet hrs = GetRuleSet(import, import.RuleSetReference);
+				XshdRuleSet inputRuleSet;
+				if (reverseRuleSetDict.TryGetValue(hrs, out inputRuleSet)) {
+					// ensure the ruleset is processed before importing its members
+					if (VisitRuleSet(inputRuleSet) != hrs)
+						Debug.Fail("this shouldn't happen");
+				}
+				return hrs;
 			}
 			
 			public object VisitRule(XshdRule rule)
