@@ -6,7 +6,7 @@
 	<Color foreground="DarkMagenta" name="XmlTag" />
 	<Color foreground="Red" name="AttributeName" />
 	<Color foreground="Blue" name="AttributeValue" />
-	<Color foreground="DarkRed" name="Entity" />
+	<Color foreground="Teal" name="Entity" />
 	<Color foreground="Olive" name="BrokenEntity" />
 	
 	<RuleSet>
