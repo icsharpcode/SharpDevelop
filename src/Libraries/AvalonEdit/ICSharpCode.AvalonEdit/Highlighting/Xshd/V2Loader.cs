@@ -210,6 +210,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		{
 			string ruleSet = reader.GetAttribute("ruleSet");
 			if (ruleSet != null) {
+				// '/' is valid in highlighting definition names, so we need the last occurence
 				int pos = ruleSet.LastIndexOf('/');
 				if (pos >= 0) {
 					return new XshdReference<XshdRuleSet>(ruleSet.Substring(0, pos), ruleSet.Substring(pos + 1));
@@ -226,7 +227,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			if (name != null) {
 				if (name.Length == 0)
 					throw Error(reader, "The empty string is not a valid name.");
-				if (name.Contains("/"))
+				if (name.IndexOf('/') >= 0)
 					throw Error(reader, "Element names must not contain a slash.");
 			}
 		}
@@ -235,8 +236,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		static XshdColor ParseNamedColor(XmlReader reader)
 		{
 			XshdColor color = ParseColorAttributes(reader);
-			if (color.Foreground == null && color.FontWeight == null && color.FontStyle == null)
-				throw Error(reader, "A named color must have at least one element.");
+			// check removed: invisible named colors may be useful now that apps can read highlighting data
+			//if (color.Foreground == null && color.FontWeight == null && color.FontStyle == null)
+			//	throw Error(reader, "A named color must have at least one element.");
 			color.Name = reader.GetAttribute("name");
 			CheckElementName(reader, color.Name);
 			return color;
