@@ -126,12 +126,17 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			
 			public override void OnPreviewKeyDown(KeyEventArgs e)
 			{
+				// prevents crash when typing deadchar while CC window is open
+				if (e.DeadCharProcessedKey != Key.None)
+					return;
 				e.Handled = RaiseEventPair(window, PreviewKeyDownEvent, KeyDownEvent,
 				                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
 			}
 			
 			public override void OnPreviewKeyUp(KeyEventArgs e)
 			{
+				if (e.DeadCharProcessedKey != Key.None)
+					return;
 				e.Handled = RaiseEventPair(window, PreviewKeyUpEvent, KeyUpEvent,
 				                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
 			}
