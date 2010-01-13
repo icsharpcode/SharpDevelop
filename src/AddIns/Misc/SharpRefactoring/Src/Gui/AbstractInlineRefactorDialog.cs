@@ -28,6 +28,8 @@ namespace SharpRefactoring.Gui
 		protected ITextAnchor anchor;
 		protected ITextEditor editor;
 		
+		ClassFinder classFinderContext;
+		
 		public IInlineUIElement Element { get; set; }
 		
 		public AbstractInlineRefactorDialog(ITextEditor editor, ITextAnchor anchor)
@@ -35,71 +37,40 @@ namespace SharpRefactoring.Gui
 			this.anchor = anchor;
 			this.editor = editor;
 			
+			this.classFinderContext = new ClassFinder(ParserService.ParseCurrentViewContent(), editor.Document.Text, editor.Caret.Offset);
+			
 			this.Background = SystemColors.ControlBrush;
-			
-			Initialize();
 		}
 		
-		protected virtual void Initialize()
-		{
-			UIElement content = CreateContentElement();
-			
-			Button okButton = new Button() {
-				Content = StringParser.Parse("${res:Global.OKButtonText}"),
-				Margin = new Thickness(3)
-			};
-			
-			okButton.Click += OKButtonClick;
-			
-			Button cancelButton = new Button() {
-				Content = StringParser.Parse("${res:Global.CancelButtonText}"),
-				Margin = new Thickness(3)
-			};
-			
-			cancelButton.Click += CancelButtonClick;
-			
-			StackPanel buttonsPanel = new StackPanel() {
-				Orientation = Orientation.Horizontal,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
-				Children = {
-					okButton,
-					cancelButton
-				}
-			};
-			
-			buttonsPanel.SetValue(DockPanel.DockProperty, Dock.Bottom);
-			
-			this.Children.Add(buttonsPanel);
-			this.Children.Add(content);
-		}
-		
-		protected abstract UIElement CreateContentElement();
 		protected abstract string GenerateCode(CodeGenerator generator, IClass currentClass);
 		
-		void OKButtonClick(object sender, RoutedEventArgs e)
+		protected void OKButtonClick(object sender, RoutedEventArgs e)
 		{
 			if (Element == null)
 				throw new InvalidOperationException("no IInlineUIElement set!");
 			
 			ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
 			
-			if (parseInfo != null) {
-				CodeGenerator generator = parseInfo.CompilationUnit.Language.CodeGenerator;
-				IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
+			try {
+				if (parseInfo != null) {
+					CodeGenerator generator = parseInfo.CompilationUnit.Language.CodeGenerator;
+					IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
+					
+					editor.Document.Insert(anchor.Offset, GenerateCode(generator, current) ?? "");
+				}
 				
-				editor.Document.Insert(anchor.Offset, GenerateCode(generator, current) ?? "");
+				if (optionBindings != null) {
+					foreach (OptionBinding binding in optionBindings)
+						binding.Save();
+				}
+				
+				Element.Remove();
+			} catch (Exception ex) {
+				MessageService.ShowError(ex.Message);
 			}
-			
-			if (optionBindings != null) {
-				foreach (OptionBinding binding in optionBindings)
-					binding.Save();
-			}
-			
-			Element.Remove();
 		}
 		
-		void CancelButtonClick(object sender, RoutedEventArgs e)
+		protected void CancelButtonClick(object sender, RoutedEventArgs e)
 		{
 			if (Element == null)
 				throw new InvalidOperationException("no IInlineUIElement set!");
@@ -115,6 +86,11 @@ namespace SharpRefactoring.Gui
 				optionBindings = new List<OptionBinding>();
 			
 			optionBindings.Add(binding);
+		}
+		
+		protected TypeReference ConvertType(IReturnType type)
+		{
+			return CodeGenerator.ConvertType(type, classFinderContext);
 		}
 	}
 }

@@ -282,6 +282,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return (tecp == null) ? null : tecp.TextEditor;
 		}
 		
+		public static ITextEditor OpenDefinitionFile(IMember member, bool switchTo)
+		{
+			IViewContent viewContent = null;
+			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
+			if (cu != null) {
+				string fileName = cu.FileName;
+				if (fileName != null) {
+					viewContent = FileService.OpenFile(fileName, switchTo);
+				}
+			}
+			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
+			return (tecp == null) ? null : tecp.TextEditor;
+		}
+		
 		public static ITextEditor JumpBehindDefinition(IMember member)
 		{
 			IViewContent viewContent = null;

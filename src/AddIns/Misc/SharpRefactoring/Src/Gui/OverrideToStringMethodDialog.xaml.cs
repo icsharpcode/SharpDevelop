@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -15,16 +16,50 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
+
 namespace SharpRefactoring.Gui
 {
 	/// <summary>
 	/// Interaction logic for OverrideToStringMethodDialog.xaml
 	/// </summary>
-	public partial class OverrideToStringMethodDialog : UserControl
+	public partial class OverrideToStringMethodDialog : AbstractInlineRefactorDialog
 	{
-		public OverrideToStringMethodDialog()
+		List<Wrapper<IField>> fields;
+		
+		public OverrideToStringMethodDialog(ITextEditor editor, ITextAnchor anchor, IList<IField> fields)
+			: base(editor, anchor)
 		{
 			InitializeComponent();
+			
+			this.fields = fields.Select(f => new Wrapper<IField>() { Entity = f }).ToList();
+			this.listBox.ItemsSource = this.fields.Select(i => i.Create(null));
+		}
+		
+		protected override string GenerateCode(CodeGenerator generator, IClass currentClass)
+		{
+			var fields = this.fields
+				.Where(f => f.IsChecked)
+				.Select(f2 => f2.Entity.Name)
+				.ToArray();
+			
+			if (fields.Any()) {
+				StringBuilder formatString = new StringBuilder("[" + currentClass.Name + " ");
+				
+				for (int i = 0; i < fields.Length; i++) {
+					if (i != 0)
+						formatString.Append(", ");
+					formatString.AppendFormat("{0}={{{1}}}", generator.GetPropertyName(fields[i]), i);
+				}
+				
+				formatString.Append("]");
+				
+				return "return string.Format(\"" + formatString.ToString() + "\", " + string.Join(", ", fields) + ");";
+			}
+			
+			return "return string.Format(\"[" + currentClass.Name + "]\");";
 		}
 	}
 }

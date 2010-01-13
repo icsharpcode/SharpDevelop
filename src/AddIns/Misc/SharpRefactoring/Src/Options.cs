@@ -30,9 +30,19 @@ namespace SharpRefactoring
 			properties = PropertyService.Get("SharpRefactoringOptions", new Properties());
 		}
 		
-		public static bool AddInterface {
-			get { return properties.Get("AddInterface", false); }
-			set { properties.Set("AddInterface", value); }
+		public static bool AddIEquatableInterface {
+			get { return properties.Get("AddIEquatableInterface", false); }
+			set { properties.Set("AddIEquatableInterface", value); }
+		}
+		
+		public static bool SurroundWithRegion {
+			get { return properties.Get("SurroundWithRegion", true); }
+			set { properties.Set("SurroundWithRegion", value); }
+		}
+		
+		public static bool AddOperatorOverrides {
+			get { return properties.Get("AddOperatorOverrides", true); }
+			set { properties.Set("AddOperatorOverrides", value); }
 		}
 	}
 }

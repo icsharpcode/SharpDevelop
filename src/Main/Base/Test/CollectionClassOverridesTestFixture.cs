@@ -98,46 +98,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 			
 			Assert.AreEqual(expectedMethodNames.ToArray(), methodNames.ToArray());
 		}
-		
-		/// <summary>
-		/// Tests that the OverrideMethodsCodeGenerator returns the correct
-		/// methods for the System.Collections.ObjectModel.Collection type.
-		/// </summary>
-		[Test]
-		public void CodeGeneratorMethods()
-		{
-			ProjectContentRegistry registry = new ProjectContentRegistry();
-			IProjectContent mscorlibProjectContent = registry.Mscorlib;
-			IClass collectionClass = mscorlibProjectContent.GetClass("System.Collections.ObjectModel.Collection", 1);
-			
-			DefaultProjectContent projectContent = new DefaultProjectContent();
-			DefaultCompilationUnit unit = new DefaultCompilationUnit(projectContent);
-			DefaultClass c = new DefaultClass(unit, "MyCollection");
-			c.BaseTypes.Add(new DefaultReturnType(collectionClass));
-			
-			MockProject project = new MockProject();
-			ProjectService.CurrentProject = project;
-			
-			OverrideMethodsCodeGenerator codeGenerator = new OverrideMethodsCodeGenerator();
-			codeGenerator.Initialize(c);
-			
-			List<string> methods = new List<string>();
-			foreach (object o in codeGenerator.Content) {
-				methods.Add(o.ToString());
-			}
-			
-			List<string> expectedMethods = new List<string>();
-			expectedMethods.Add("ClearItems");
-			expectedMethods.Add("Equals");
-			expectedMethods.Add("Finalize");
-			expectedMethods.Add("GetHashCode");
-			expectedMethods.Add("InsertItem");
-			expectedMethods.Add("RemoveItem");
-			expectedMethods.Add("SetItem");
-			expectedMethods.Add("ToString");
-			
-			Assert.AreEqual(expectedMethods.ToArray(), methods.ToArray());
-		}
 	}
 }
 

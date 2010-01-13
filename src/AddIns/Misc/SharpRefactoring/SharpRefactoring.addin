@@ -25,13 +25,16 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Refactor">
 		<MenuItem id = "ExtractMethod"
 		          label = "${res:AddIns.SharpRefactoring.ExtractMethod}"
-		          class = "SharpRefactoring.ExtractMethodCommand"/>
-<!--	<MenuItem id = "CodeGenSeparator" type = "Separator"/>
+		          class = "SharpRefactoring.ExtractMethodCommand" />
+		<MenuItem id = "CodeGenSeparator" type = "Separator" />
 		<MenuItem id = "OverrideToStringMethod"
 		          label = "${res:AddIns.SharpRefactoring.OverrideToStringMethod}"
-		          class = "SharpRefactoring.OverrideToStringMethodCommand"/>
+		          class = "SharpRefactoring.OverrideToStringMethodCommand" />
 		<MenuItem id = "OverrideEqualsGetHashCodeMethods"
 		          label = "${res:AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods}"
-		          class = "SharpRefactoring.OverrideEqualsGetHashCodeMethodsCommand"/> -->
+		          class = "SharpRefactoring.OverrideEqualsGetHashCodeMethodsCommand" />
+		<MenuItem id="InsertCtor"
+				   label="${res:AddIns.SharpRefactoring.InsertCtor}"
+		          class = "SharpRefactoring.InsertCtorCommand" />
 	</Path>
 </AddIn>

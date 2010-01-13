@@ -70,9 +70,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 					new UnitTestDataSet(new UnitTestRootCallTreeNode(list), dataSet.IsFirst)
 				);
 			} else {
-				this.targetWriter.WriteDataSet(
-					new UnitTestDataSet(new UnitTestRootCallTreeNode(null), dataSet.IsFirst)
-				);
+				// proposed fix for http://community.sharpdevelop.net/forums/t/10533.aspx
+				// discuss with Daniel
+				this.targetWriter.WriteDataSet(dataSet);
 			}
 		}
 		

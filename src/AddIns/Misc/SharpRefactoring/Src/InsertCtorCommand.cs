@@ -16,9 +16,9 @@ using SharpRefactoring.Gui;
 namespace SharpRefactoring
 {
 	/// <summary>
-	/// Description of OverrideToStringMethodCommand
+	/// Description of InsertCtorCommand
 	/// </summary>
-	public class OverrideToStringMethodCommand : AbstractRefactoringCommand
+	public class InsertCtorCommand : AbstractRefactoringCommand
 	{
 		protected override void Run(ITextEditor textEditor, RefactoringProvider provider)
 		{
@@ -41,14 +41,7 @@ namespace SharpRefactoring
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
 			anchor.MovementType = AnchorMovementType.AfterInsertion;
 			
-			var line = textEditor.Document.GetLineForOffset(textEditor.Caret.Offset);
-			
-			string indent = DocumentUtilitites.GetWhitespaceAfter(textEditor.Document, line.Offset);
-			
-			textEditor.Document.Insert(anchor.Offset, "public override string ToString()\n" + indent + "{\n" + indent + "\t");
-			textEditor.Document.Insert(anchor.Offset + 1, indent + "}\n");
-			
-			AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(textEditor, anchor, current.Fields);
+			AbstractInlineRefactorDialog dialog = new InsertCtorDialog(textEditor, anchor, current);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
 		}

@@ -1596,10 +1596,6 @@
 			</Condition>
 			
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
-				<MenuItem id = "GenerateCodeAction"
-				          label = "${res:XML.MainMenu.ToolMenu.GenerateCode}"
-				          shortcut = "Alt|Insert"
-				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GenerateCodeAction"/>
 				<MenuItem id = "ShowQuickHelp"
 				          label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
 				          shortcut = "Control|Q"
@@ -2050,31 +2046,6 @@
 	<Path name = "/SharpDevelop/Views/ClassBrowser/ClassNodeBuilders">
 		<Class id = "DefaultClassBuilder"
 		       class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.DefaultClassNodeBuilder"/>
-	</Path>
-	
-	<Path name = "/AddIns/DefaultTextEditor/CodeGenerator">
-		<Class id="ConstructorCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConstructorCodeGenerator"/>
-		<Class id="GetterCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GetterCodeGenerator"/>
-		<Class id="SetterCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.SetterCodeGenerator"/>
-		<Class id="GetterAndSetterCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GetterAndSetterCodeGenerator"/>
-		<Class id="OnXXXMethodsCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.OnXXXMethodsCodeGenerator"/>
-		<Class id="OverrideMethodsCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.OverrideMethodsCodeGenerator"/>
-		<Class id="OverridePropertiesCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.OverridePropertiesCodeGenerator"/>
-		<Class id="InterfaceImplementorCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.InterfaceImplementorCodeGenerator"/>
-		<Class id="AbstractClassImplementorCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.AbstractClassImplementorCodeGenerator"/>
-		<Class id="ToStringCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToStringCodeGenerator"/>
-		<Class id="EqualsCodeGenerator"
-		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.EqualsCodeGenerator"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DependentFileExtensions">

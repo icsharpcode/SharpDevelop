@@ -1,7 +1,16 @@
-﻿<UserControl x:Class="SharpRefactoring.Gui.OverrideToStringMethodDialog"
+﻿<local:AbstractInlineRefactorDialog x:Class="SharpRefactoring.Gui.OverrideToStringMethodDialog"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:local="clr-namespace:SharpRefactoring.Gui"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<Grid>
-		
-	</Grid>
-</UserControl>
+	<DockPanel Cursor="Arrow">
+		<TextBlock DockPanel.Dock="Top" Margin="3"
+		           Text="{sd:Localize AddIns.SharpRefactoring.OverrideToStringMethod.Description}"
+		           TextWrapping="Wrap" />	
+		<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
+			<Button Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" />
+			<Button Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
+		</StackPanel>
+		<ListBox Margin="4" x:Name="listBox" />
+	</DockPanel>
+</local:AbstractInlineRefactorDialog>

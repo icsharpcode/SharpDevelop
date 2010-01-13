@@ -566,23 +566,6 @@
     <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
     <Compile Include="Src\TextEditor\Codons\AddInTreeSyntaxModeProvider.cs" />
     <Compile Include="Src\TextEditor\Codons\SyntaxModeDoozer.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\AbstractClassImplementorCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\AbstractFieldCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\AbstractPropertyCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\CodeGeneratorBase.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\ConstructorCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\EqualsCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\GetterAndSetterCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\GetterCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\InterfaceImplementorCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\OnXXXMethodsCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\OverrideMethodsCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\OverridePropertiesCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\SetterCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\ToStringCodeGenerator.cs" />
-    <Compile Include="Src\TextEditor\Commands\GenerateCodeCommand.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\TextEditor\Commands\SearchCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
@@ -673,7 +656,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\WebReferencesFolderNode.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\WebReferenceNode.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebReferenceChanges.cs" />
-    <Compile Include="Src\TextEditor\Commands\CodeGenerators\CodeGenerationForm.cs" />
     <Compile Include="Src\Project\Converter\LanguageConverter.cs" />
     <Compile Include="Src\Gui\Dialogs\TemplateCategoryComparer.cs" />
     <Compile Include="Src\Internal\Templates\TemplateCategorySortOrderFile.cs" />

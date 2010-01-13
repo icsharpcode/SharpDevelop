@@ -79,13 +79,20 @@
       <DependentUpon>ExtractMethodForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\AbstractInlineRefactorDialog.cs" />
-    <Compile Include="Src\Gui\OverrideEqualsGetHashCodeMethodsDialog.cs" />
+    <Compile Include="Src\Gui\InsertCtorDialog.xaml.cs">
+      <DependentUpon>InsertCtorDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\OverrideEqualsGetHashCodeMethodsDialog.xaml.cs">
+      <DependentUpon>OverrideEqualsGetHashCodeMethodsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\OverrideToStringMethodDialog.xaml.cs">
       <DependentUpon>OverrideToStringMethodDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\OverrideToStringMethodDialogOld.cs" />
     <Compile Include="Src\Gui\Wrapper.cs" />
+    <Compile Include="Src\InsertCtorCommand.cs" />
     <Compile Include="Src\MethodExtractorBase.cs" />
     <Compile Include="Src\OverrideEqualsGetHashCodeMethodsCommand.cs" />
     <Compile Include="Src\OverrideToStringMethodCommand.cs" />
@@ -136,6 +143,8 @@
     <Folder Include="Src\Gui" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Gui\InsertCtorDialog.xaml" />
+    <Page Include="Src\Gui\OverrideEqualsGetHashCodeMethodsDialog.xaml" />
     <Page Include="Src\Gui\OverrideToStringMethodDialog.xaml" />
   </ItemGroup>
 </Project>

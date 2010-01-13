@@ -99,43 +99,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 			
 			Assert.AreEqual(expectedPropertyNames.ToArray(), propertyNames.ToArray());
 		}
-		
-		/// <summary>
-		/// Tests that the OverridePropertyCodeGenerator returns the correct
-		/// methods for the System.Exception type.
-		/// </summary>
-		[Test]
-		public void CodeGeneratorProperties()
-		{
-			ProjectContentRegistry registry = new ProjectContentRegistry();
-			IProjectContent mscorlibProjectContent = registry.Mscorlib;
-			IClass exceptionClass = mscorlibProjectContent.GetClass("System.Exception", 0);
-			
-			DefaultProjectContent projectContent = new DefaultProjectContent();
-			DefaultCompilationUnit unit = new DefaultCompilationUnit(projectContent);
-			DefaultClass c = new DefaultClass(unit, "MyException");
-			c.BaseTypes.Add(new DefaultReturnType(exceptionClass));
-			
-			MockProject project = new MockProject();
-			ProjectService.CurrentProject = project;
-			
-			OverridePropertiesCodeGenerator codeGenerator = new OverridePropertiesCodeGenerator();
-			codeGenerator.Initialize(c);
-			
-			List<string> properties = new List<string>();
-			foreach (object o in codeGenerator.Content) {
-				properties.Add(o.ToString());
-			}
-			
-			List<string> expectedProperties = new List<string>();
-			expectedProperties.Add("Data");
-			expectedProperties.Add("HelpLink");
-			expectedProperties.Add("Message");
-			expectedProperties.Add("Source");
-			expectedProperties.Add("StackTrace");
-			
-			Assert.AreEqual(expectedProperties.ToArray(), properties.ToArray());
-		}
 	}
 }
 

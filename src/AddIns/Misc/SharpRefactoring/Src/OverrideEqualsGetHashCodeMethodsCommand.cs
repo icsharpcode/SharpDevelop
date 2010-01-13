@@ -38,16 +38,9 @@ namespace SharpRefactoring
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
 			anchor.MovementType = AnchorMovementType.AfterInsertion;
 			
-			var line = textEditor.Document.GetLineForOffset(textEditor.Caret.Offset);
+			AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(textEditor, anchor, current);
 			
-			string indent = DocumentUtilitites.GetWhitespaceAfter(textEditor.Document, line.Offset);
-			
-//			textEditor.Document.Insert(anchor.Offset, "#region Equals and GetHashCode implementation\n" + indent);
-//			textEditor.Document.Insert(anchor.Offset + 1, indent + "#endregion\n");
-//			
-//			AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(textEditor, anchor, current);
-//			
-//			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
+			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
 		}
 	}
 }

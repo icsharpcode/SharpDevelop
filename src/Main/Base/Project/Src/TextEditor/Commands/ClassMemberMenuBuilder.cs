@@ -5,10 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
@@ -17,10 +17,11 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
+using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
@@ -99,8 +100,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 			}
 			if (member is IProperty) {
-				if (((IProperty)member).CanSet && canGenerateCode) {
+				IProperty property = member as IProperty;
+				if (property.CanSet && canGenerateCode) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateChangedEvent}", CreateChangedEvent);
+					cmd.Tag = member;
+					list.Add(cmd);
+				}
+				if (IsAutomaticProperty(FindReferencesAndRenameHelper.OpenDefinitionFile(property, false), property)) {
+					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.ExpandAutomaticProperty}", ExpandAutomaticProperty);
 					cmd.Tag = member;
 					list.Add(cmd);
 				}
@@ -221,6 +228,72 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
 				                                                                     new string[,] {{ "Name", memberName }}),
 				                                                  RefactoringService.FindReferences(member, monitor));
+			}
+		}
+		
+		bool IsAutomaticProperty(ITextEditor editor, IProperty property)
+		{
+			if (editor == null)
+				return false;
+			
+			bool isAutomatic = false;
+			
+			if (property.CanGet) {
+				int getterStartOffset = editor.Document.PositionToOffset(property.GetterRegion.BeginLine, property.GetterRegion.BeginColumn);
+				int getterEndOffset = editor.Document.PositionToOffset(property.GetterRegion.EndLine, property.GetterRegion.EndColumn);
+				
+				string text = editor.Document.GetText(getterStartOffset, getterEndOffset - getterStartOffset)
+					.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
+				
+				isAutomatic = text == "get;";
+			}
+			
+			if (property.CanSet) {
+				int setterStartOffset = editor.Document.PositionToOffset(property.SetterRegion.BeginLine, property.SetterRegion.BeginColumn);
+				int setterEndOffset = editor.Document.PositionToOffset(property.SetterRegion.EndLine, property.SetterRegion.EndColumn);
+				
+				string text = editor.Document.GetText(setterStartOffset, setterEndOffset - setterStartOffset)
+					.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
+				
+				isAutomatic |= text == "set;";
+			}
+			
+			Console.WriteLine(property.GetterRegion);
+			Console.WriteLine(property.SetterRegion);
+			return isAutomatic;
+		}
+		
+		void ExpandAutomaticProperty(object sender, EventArgs e)
+		{
+			MenuCommand item = (MenuCommand)sender;
+			IProperty member = (IProperty)item.Tag;
+			ITextEditor textEditor = FindReferencesAndRenameHelper.JumpToDefinition(member);
+			
+			if (textEditor != null) {
+				CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
+				IField field = new DefaultField(member.ReturnType, codeGen.GetFieldName(member.Name),
+				                                member.Modifiers & ModifierEnum.Static, DomRegion.Empty, member.DeclaringType);
+				ClassFinder finder = new ClassFinder(member);
+				
+				Ast.PropertyDeclaration p = codeGen.CreateProperty(field, member.CanGet, member.CanSet);
+				
+				p.Modifier = CodeGenerator.ConvertModifier(member.Modifiers, finder);
+				
+				int startOffset = textEditor.Document.PositionToOffset(member.Region.BeginLine, member.Region.BeginColumn);
+				int endOffset = textEditor.Document.PositionToOffset(member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
+				
+				using (textEditor.Document.OpenUndoGroup()) {
+					textEditor.Document.Remove(startOffset, endOffset - startOffset);
+					
+					if (codeGen.Options.EmptyLinesBetweenMembers) {
+						var line = textEditor.Document.GetLine(member.Region.BeginLine);
+						textEditor.Document.Remove(line.Offset, line.TotalLength);
+					}
+					
+					codeGen.InsertCodeInClass(member.DeclaringType, new RefactoringDocumentAdapter(textEditor.Document), member.Region.BeginLine - 1, CodeGenerator.ConvertMember(field, finder), p);
+				}
+				
+				ParserService.ParseCurrentViewContent();
 			}
 		}
 	}
