@@ -40,7 +40,7 @@ namespace ReportSamples
 			this.btnReportViewer.Checked = true;
 			
 			// Localisation of ReportViewer
-			this.previewControl1.Messages = new ReportViewerMessagesProvider();
+//			this.previewControl1.Messages = new ReportViewerMessagesProvider();
 			ShowPath();
 		}
 		

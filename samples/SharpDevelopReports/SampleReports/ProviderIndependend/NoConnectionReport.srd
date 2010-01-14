@@ -61,8 +61,8 @@
                     <BackColor>White</BackColor>
                     <CanShrink>False</CanShrink>
                     <StringTrimming>EllipsisCharacter</StringTrimming>
-                    <Text>'Report1' + p1</Text>
-                    <Location>313, 5</Location>
+                    <Text>='Im a ' + p1 + ' Report'</Text>
+                    <Location>194, 5</Location>
                     <ContentAlignment>MiddleLeft</ContentAlignment>
                     <Visible>True</Visible>
                     <DrawBorder>False</DrawBorder>
@@ -71,7 +71,7 @@
                     <FormatString />
                     <Name>Report1</Name>
                     <FrameColor>WindowFrame</FrameColor>
-                    <Size>100, 20</Size>
+                    <Size>279, 20</Size>
                     <ForeColor>Black</ForeColor>
                 </BaseTextItem>
             </Items>
@@ -193,11 +193,12 @@
                         <BaseDataItem>
                             <DataType>System.Int32</DataType>
                             <Text>Kategorie-Nr</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
                             <Location>10, 10</Location>
                             <BaseTableName>Table</BaseTableName>
-                            <Font>Microsoft Sans Serif, 10pt</Font>
                             <CanGrow>False</CanGrow>
                             <ForeColor>Black</ForeColor>
+                            <StringTrimming>None</StringTrimming>
                             <ColumnName>Kategorie-Nr</ColumnName>
                             <DrawBorder>False</DrawBorder>
                             <CanShrink>False</CanShrink>
@@ -212,11 +213,12 @@
                         <BaseDataItem>
                             <DataType>System.String</DataType>
                             <Text>Kategoriename</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
                             <Location>189, 10</Location>
                             <BaseTableName>Table</BaseTableName>
-                            <Font>Microsoft Sans Serif, 10pt</Font>
                             <CanGrow>False</CanGrow>
                             <ForeColor>Black</ForeColor>
+                            <StringTrimming>None</StringTrimming>
                             <ColumnName>Kategoriename</ColumnName>
                             <DrawBorder>False</DrawBorder>
                             <CanShrink>False</CanShrink>
@@ -231,11 +233,12 @@
                         <BaseDataItem>
                             <DataType>System.String</DataType>
                             <Text>Beschreibung</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
                             <Location>368, 10</Location>
                             <BaseTableName>Table</BaseTableName>
-                            <Font>Microsoft Sans Serif, 10pt</Font>
                             <CanGrow>False</CanGrow>
                             <ForeColor>Black</ForeColor>
+                            <StringTrimming>None</StringTrimming>
                             <ColumnName>Beschreibung</ColumnName>
                             <DrawBorder>False</DrawBorder>
                             <CanShrink>False</CanShrink>

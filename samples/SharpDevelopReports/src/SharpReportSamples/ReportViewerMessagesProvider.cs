@@ -1,19 +1,20 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Peter Forstmeier" email="peter.forstmeier@t-online.de"/>
-//     <version>$Revision$</version>
-// </file>
-
+﻿/*
+ * Erstellt mit SharpDevelop.
+ * Benutzer: Peter Forstmeier
+ * Datum: 14.01.2010
+ * Zeit: 20:08
+ * 
+ * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
+ */
 using System;
-namespace ReportSamples
+
+namespace SharpReportSamples
 {
 	/// <summary>
-	/// This class is used to localise ReportViewer
+	/// Description of ReportViewerMessagesProvider.
 	/// </summary>
-	internal class ReportViewerMessagesProvider:ICSharpCode.Reports.Core.ReportViewer.IReportViewerMessages
+	public class ReportViewerMessagesProvider:ICSharpCode.Reports.Core.ReportViewer.IReportViewerMessages
 	{
-		
 		public ReportViewerMessagesProvider(){
 
 		}
@@ -74,4 +75,3 @@ namespace ReportSamples
 		}
 	}
 }
-

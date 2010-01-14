@@ -38,11 +38,13 @@ namespace SharpReportSamples
 		{
 			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("FormSheet");
 			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("PullModel");
-			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("IList");
-			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Sample Reports", new System.Windows.Forms.TreeNode[] {
+			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("PushModel-IList");
+			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Provider Independend");
+			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Sample Reports", new System.Windows.Forms.TreeNode[] {
 									treeNode1,
 									treeNode2,
-									treeNode3});
+									treeNode3,
+									treeNode4});
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.label1 = new System.Windows.Forms.Label();
@@ -84,11 +86,13 @@ namespace SharpReportSamples
 			treeNode2.Name = "PullModelItem";
 			treeNode2.Text = "PullModel";
 			treeNode3.Name = "iListNode";
-			treeNode3.Text = "IList";
+			treeNode3.Text = "PushModel-IList";
 			treeNode4.Name = "Knoten0";
-			treeNode4.Text = "Sample Reports";
+			treeNode4.Text = "Provider Independend";
+			treeNode5.Name = "Knoten0";
+			treeNode5.Text = "Sample Reports";
 			this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-									treeNode4});
+									treeNode5});
 			this.treeView1.Size = new System.Drawing.Size(132, 444);
 			this.treeView1.TabIndex = 0;
 			this.treeView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TreeView1MouseDoubleClick);
@@ -109,7 +113,7 @@ namespace SharpReportSamples
 									| System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.previewControl1.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-			this.previewControl1.Location = new System.Drawing.Point(13, 9);
+			this.previewControl1.Location = new System.Drawing.Point(68, 10);
 			this.previewControl1.Messages = null;
 			this.previewControl1.Name = "previewControl1";
 			this.previewControl1.Padding = new System.Windows.Forms.Padding(5);

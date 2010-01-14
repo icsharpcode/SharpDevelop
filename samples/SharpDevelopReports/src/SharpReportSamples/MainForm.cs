@@ -24,8 +24,9 @@ namespace SharpReportSamples
 		
 		private TreeNode formNode;
 		private TreeNode pullNode;
-		private TreeNode pushNode;
 		private TreeNode iListNode;
+		private TreeNode providerIndependend;
+		
 		public MainForm()
 		{
 			//
@@ -34,6 +35,7 @@ namespace SharpReportSamples
 			InitializeComponent();
 			InitTree();
 			UpdateStatusbar (Application.StartupPath);
+			this.previewControl1.Messages = new ReportViewerMessagesProvider();
 		}
 		
 		
@@ -52,14 +54,13 @@ namespace SharpReportSamples
 			
 			this.formNode = this.treeView1.Nodes[0].Nodes[0];
 			this.pullNode =  this.treeView1.Nodes[0].Nodes[1];
-//			this.pushNode =  this.treeView1.Nodes[0].Nodes[2];
 			this.iListNode = this.treeView1.Nodes[0].Nodes[2];
+			this.providerIndependend = this.treeView1.Nodes[0].Nodes[3];
 			
 			AddNodesToTree (this.formNode,startPath + @"FormSheet\" );
 			AddNodesToTree (this.pullNode,startPath + @"PullModel\" );
-//			AddNodesToTree (this.pushNode,startPath + @"PushModel\" );
 			AddNodesToTree (this.iListNode,startPath + @"IList\" );
-			
+			AddNodesToTree (this.providerIndependend,startPath + @"ProviderIndependend\" );
 
 		}
 		
@@ -92,7 +93,13 @@ namespace SharpReportSamples
 			string s = Path.GetFileNameWithoutExtension(reportName);
 			if (s == "ContributorsList" ) {
 				this.RunContributors(reportName);
-			} else {
+			} else if (s == "NoConnectionReport") {
+				this.RunProviderIndependend(reportName);
+			}
+			
+			
+			
+			else {
 				
 				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
 				
@@ -104,6 +111,21 @@ namespace SharpReportSamples
 			}
 		}
 		
+		#region ProviderIndependend
+		private void RunProviderIndependend (string reportName)
+		{
+			string conOleDbString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\SharpReport_TestReports\TestReports\Nordwind.mdb;Persist Security Info=False";
+			ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
+			ConnectionObject con = ConnectionObject.CreateInstance(conOleDbString,
+			                                                       System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb") );
+			
+			parameters.ConnectionObject = con;
+			parameters.SqlParameters[0].ParameterValue = "Provider Independend";
+			this.previewControl1.SetupAsynchron(reportName,parameters);
+		}
+			
+			
+		#endregion
 		
 		#region Contributors
 		//
@@ -160,30 +182,58 @@ namespace SharpReportSamples
 		
 		#endregion
 		
+
 		
-		private void SelectReport ()
-		{ 
+		void TreeView1MouseDoubleClick(object sender, MouseEventArgs e)
+		{
 			TreeNode selectedNode = this.treeView1.SelectedNode;
-			if ((selectedNode == null)|| (selectedNode.Tag == null)) {
-				return;
+			if (selectedNode != null) {
+				RunStandardReport(selectedNode.Tag.ToString());
 			}
+		}
+		
+		/*
+		void Button2Click(object sender, EventArgs e)
+		{
+			// get Filename to save *.pdf
+			string saveTo = this.SelectFilename();
 			
-			if (!String.IsNullOrEmpty(selectedNode.Tag.ToString())) {
-				if (selectedNode.Parent == this.pushNode) {
-					MessageBox.Show("PushModel reports not implemented yet");
+			// Create connectionobject
+			parameters =  ReportEngine.LoadParameters(reportName);
+			ConnectionObject con = ConnectionObject.CreateInstance(this.conOleDbString,
+			                                                       System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb") );
+			
+			parameters.ConnectionObject = con;
+			
+			
+			// create a Pagebuilder
+			pageBuilder = ReportEngine.CreatePageBuilder(reportName,parameters);
+			pageBuilder.BuildExportList();
+		
+			using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(pageBuilder,saveTo,true)){
+				pdfRenderer.Start();
+				pdfRenderer.RenderOutput();
+				pdfRenderer.End();
+			}
+		}
+		
+		
+		private string SelectFilename() 
+		{
+			using (SaveFileDialog saveDialog = new SaveFileDialog()){
+
+				saveDialog.FileName = "_pdf";
+				saveDialog.DefaultExt = "PDF";
+				saveDialog.ValidateNames = true;
+				if(saveDialog.ShowDialog() == DialogResult.OK){
+					return saveDialog.FileName;
 				} else {
-					RunStandardReport(selectedNode.Tag.ToString());
+					return String.Empty;
 				}
 			}
 		}
 		
-		
-		
-		void TreeView1MouseDoubleClick(object sender, MouseEventArgs e)
-		{
-			SelectReport();
-		}
-		
+		*/
 		
 	}
 }
