@@ -25,7 +25,7 @@ namespace SharpReportSamples
 		private TreeNode formNode;
 		private TreeNode pullNode;
 		private TreeNode iListNode;
-		private TreeNode providerIndependend;
+		private TreeNode providerIndependent;
 		
 		public MainForm()
 		{
@@ -55,12 +55,12 @@ namespace SharpReportSamples
 			this.formNode = this.treeView1.Nodes[0].Nodes[0];
 			this.pullNode =  this.treeView1.Nodes[0].Nodes[1];
 			this.iListNode = this.treeView1.Nodes[0].Nodes[2];
-			this.providerIndependend = this.treeView1.Nodes[0].Nodes[3];
+			this.providerIndependent = this.treeView1.Nodes[0].Nodes[3];
 			
 			AddNodesToTree (this.formNode,startPath + @"FormSheet\" );
 			AddNodesToTree (this.pullNode,startPath + @"PullModel\" );
 			AddNodesToTree (this.iListNode,startPath + @"IList\" );
-			AddNodesToTree (this.providerIndependend,startPath + @"ProviderIndependend\" );
+			AddNodesToTree (this.providerIndependent,startPath + @"ProviderIndependent\" );
 
 		}
 		
@@ -94,7 +94,7 @@ namespace SharpReportSamples
 			if (s == "ContributorsList" ) {
 				this.RunContributors(reportName);
 			} else if (s == "NoConnectionReport") {
-				this.RunProviderIndependend(reportName);
+				this.RunProviderIndependent(reportName);
 			}
 			
 			
@@ -111,8 +111,8 @@ namespace SharpReportSamples
 			}
 		}
 		
-		#region ProviderIndependend
-		private void RunProviderIndependend (string reportName)
+		#region ProviderIndependent
+		private void RunProviderIndependent (string reportName)
 		{
 			string conOleDbString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\SharpReport_TestReports\TestReports\Nordwind.mdb;Persist Security Info=False";
 			ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
@@ -120,7 +120,7 @@ namespace SharpReportSamples
 			                                                       System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb") );
 			
 			parameters.ConnectionObject = con;
-			parameters.SqlParameters[0].ParameterValue = "Provider Independend";
+			parameters.SqlParameters[0].ParameterValue = "Provider Independent";
 			this.previewControl1.SetupAsynchron(reportName,parameters);
 		}
 			

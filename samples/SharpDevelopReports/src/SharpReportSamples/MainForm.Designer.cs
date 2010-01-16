@@ -39,7 +39,7 @@ namespace SharpReportSamples
 			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("FormSheet");
 			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("PullModel");
 			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("PushModel-IList");
-			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Provider Independend");
+			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Provider Independent");
 			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Sample Reports", new System.Windows.Forms.TreeNode[] {
 									treeNode1,
 									treeNode2,
@@ -72,14 +72,14 @@ namespace SharpReportSamples
 			this.splitContainer1.Panel2.Controls.Add(this.previewControl1);
 			this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(10, 10, 10, 5);
 			this.splitContainer1.Size = new System.Drawing.Size(841, 464);
-			this.splitContainer1.SplitterDistance = 152;
+			this.splitContainer1.SplitterDistance = 168;
 			this.splitContainer1.TabIndex = 0;
 			// 
 			// treeView1
 			// 
 			this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeView1.Location = new System.Drawing.Point(10, 10);
-			this.treeView1.Margin = new System.Windows.Forms.Padding(10);
+			this.treeView1.Margin = new System.Windows.Forms.Padding(5);
 			this.treeView1.Name = "treeView1";
 			treeNode1.Name = "FormSheetItem";
 			treeNode1.Text = "FormSheet";
@@ -88,12 +88,12 @@ namespace SharpReportSamples
 			treeNode3.Name = "iListNode";
 			treeNode3.Text = "PushModel-IList";
 			treeNode4.Name = "Knoten0";
-			treeNode4.Text = "Provider Independend";
+			treeNode4.Text = "Provider Independent";
 			treeNode5.Name = "Knoten0";
 			treeNode5.Text = "Sample Reports";
 			this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
 									treeNode5});
-			this.treeView1.Size = new System.Drawing.Size(132, 444);
+			this.treeView1.Size = new System.Drawing.Size(148, 444);
 			this.treeView1.TabIndex = 0;
 			this.treeView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TreeView1MouseDoubleClick);
 			// 
@@ -103,7 +103,7 @@ namespace SharpReportSamples
 			this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.label1.Location = new System.Drawing.Point(10, 436);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(665, 23);
+			this.label1.Size = new System.Drawing.Size(649, 23);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "label1";
 			// 
@@ -117,7 +117,7 @@ namespace SharpReportSamples
 			this.previewControl1.Messages = null;
 			this.previewControl1.Name = "previewControl1";
 			this.previewControl1.Padding = new System.Windows.Forms.Padding(5);
-			this.previewControl1.Size = new System.Drawing.Size(660, 424);
+			this.previewControl1.Size = new System.Drawing.Size(644, 424);
 			this.previewControl1.TabIndex = 2;
 			// 
 			// menuStrip2
