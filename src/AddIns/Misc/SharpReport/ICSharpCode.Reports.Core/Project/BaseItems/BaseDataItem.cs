@@ -120,17 +120,6 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		
-//		public string DataType 
-//		{
-//			get {
-//				return dataType;
-//			}
-//			set {
-//				dataType = value;
-//			}
-//		}
-		
 		///<summary>
 		/// Mappingname to Datasource
 		/// </summary>

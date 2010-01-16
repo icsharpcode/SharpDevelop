@@ -142,13 +142,13 @@ namespace SharpReportSamples
 //			List<Contributor> list = ContributorsReportData.CreateContributorsList();
 //			IDataManager dm = DataManager.CreateInstance(list,model.ReportSettings);
 			
-			this.previewControl1.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
+//			this.previewControl1.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
 			this.previewControl1.SetupAsynchron(model,dm);
 			
 		}
 		
-		
-		
+		//Try this to react to SectionrenderEvent,
+		/*
 		private void PushPrinting (object sender,SectionRenderEventArgs e)
 		{
 
@@ -179,7 +179,7 @@ namespace SharpReportSamples
 					break;
 			}
 		}	
-		
+		*/
 		#endregion
 		
 

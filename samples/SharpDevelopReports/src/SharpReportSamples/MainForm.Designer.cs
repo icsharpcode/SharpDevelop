@@ -109,15 +109,13 @@ namespace SharpReportSamples
 			// 
 			// previewControl1
 			// 
-			this.previewControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
 			this.previewControl1.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-			this.previewControl1.Location = new System.Drawing.Point(68, 10);
+			this.previewControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.previewControl1.Location = new System.Drawing.Point(10, 10);
 			this.previewControl1.Messages = null;
 			this.previewControl1.Name = "previewControl1";
 			this.previewControl1.Padding = new System.Windows.Forms.Padding(5);
-			this.previewControl1.Size = new System.Drawing.Size(644, 424);
+			this.previewControl1.Size = new System.Drawing.Size(649, 449);
 			this.previewControl1.TabIndex = 2;
 			// 
 			// menuStrip2

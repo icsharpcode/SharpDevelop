@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Addin
 	{
 		ReportDesignerLoader designerLoader;
 		ICSharpCode.Reports.Core.ReportViewer.PreviewControl control;
-//		StandartPreviewManager reportManager;
+
 		
 		public ReportViewerSecondaryView(ReportDesignerLoader designerLoader,IViewContent content):base(content)
 		{

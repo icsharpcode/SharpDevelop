@@ -19,17 +19,6 @@ namespace SharpReportSamples
 	{
 /*
 		This list is by no means exhaustive:
-
-
-
-
-
-
-
-
-
-
-
 •Siegfried Pammer
 */
 		public static ContributorCollection CreateContributorsList () {
@@ -58,6 +47,7 @@ namespace SharpReportSamples
 			return list;
 		}
 	}
+	
 	
 	public class Contributor {
 		string last;

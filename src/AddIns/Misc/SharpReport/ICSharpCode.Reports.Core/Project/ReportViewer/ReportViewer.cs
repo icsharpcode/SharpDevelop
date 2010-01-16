@@ -150,8 +150,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.bgw = new BackgroundWorker();
 			this.bgw.WorkerReportsProgress = true;
 			this.bgw.WorkerSupportsCancellation = true;
-			this.bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker1_RunWorkerCompleted);
-			this.bgw.ProgressChanged +=    new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+			this.bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_RunWorkerCompleted);
+			this.bgw.ProgressChanged +=    new ProgressChangedEventHandler(BackgroundWorker_ProgressChanged);
 		}
 		
 		
@@ -175,8 +175,10 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		#endregion
 		
+		
 		#region WorkerEvents
-		private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		
+		private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			
 			if (e.Error != null) {
@@ -190,13 +192,14 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		}
 
 		
-		private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+		private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
 		{
 			this.ShowSelectedPage();
 		}
 
 		#endregion
 		
+		#region Worker
 		
 		private object RunFormSheet (ReportModel reportModel,BackgroundWorker worker, DoWorkEventArgs e)
 		{
@@ -246,6 +249,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				ILayouter layouter = new Layouter();
 				
 				IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel,data,layouter);
+				//testcode to handle sectionrenderevent
 				reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
 				
 				reportCreator.PageCreated += delegate (Object sender,PageCreatedEventArgs ee) {
@@ -258,12 +262,51 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			return null;
 		}
 		
+		#endregion
+		
+		#region Events from worker
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e ) {
 			Console.WriteLine ("ReportViewer - SectionRenderEventargs from <{0}> with {1} items ",e.Section.Name,e.Section.Items.Count);
 			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,e);
 		}
 		
+		//testcode to handle sectionrenderevent
+		
+		/*
+		private void PushPrinting (object sender,SectionRenderEventArgs e)
+		{
+
+			switch (e.CurrentSection) {
+				case GlobalEnums.ReportSection.ReportHeader:
+					break;
+
+				case GlobalEnums.ReportSection.ReportPageHeader:
+					break;
+					
+				case GlobalEnums.ReportSection.ReportDetail:
+					BaseRowItem ri = e.Section.Items[0] as BaseRowItem;
+					if (ri != null) {
+						BaseDataItem r = (BaseDataItem)ri.Items.Find("Kategoriename");
+						if (r != null) {
+							r.DBValue = "xxxxxxx";
+						}
+					}
+					
+					break;
+				case GlobalEnums.ReportSection.ReportPageFooter:
+					break;
+					
+				case GlobalEnums.ReportSection.ReportFooter:
+					break;
+					
+				default:
+					break;
+			}
+		}	
+	*/
+		
+		#endregion
 		
 		void ShowCompleted()
 		{

@@ -90,10 +90,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 			if (exportLineBuilder != null) {
 
-				this.dataNavigator.Fill(row.Items);
-			
 				ExportContainer lineItem = this.exportItemsConverter.ConvertToContainer(row);
-				
 				BaseReportItem baseReportItem = row as BaseReportItem;
 				
 				this.exportItemsConverter.ParentLocation = baseReportItem.Location;
