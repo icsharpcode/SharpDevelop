@@ -61,5 +61,17 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\SampleReports\EventLogger\Error.png">
+      <Link>Resources\Error.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\SampleReports\EventLogger\Info.png">
+      <Link>Resources\Info.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\SampleReports\EventLogger\Warning.png">
+      <Link>Resources\Warning.png</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
   </ItemGroup>
 </Project>

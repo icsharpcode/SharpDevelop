@@ -91,13 +91,13 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 									this.createPdfMenu});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
 			this.contextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-			this.contextMenuStrip1.Size = new System.Drawing.Size(180, 26);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(148, 26);
 			this.contextMenuStrip1.Text = "Create PdfFile";
 			// 
 			// createPdfMenu
 			// 
 			this.createPdfMenu.Name = "createPdfMenu";
-			this.createPdfMenu.Size = new System.Drawing.Size(179, 22);
+			this.createPdfMenu.Size = new System.Drawing.Size(147, 22);
 			this.createPdfMenu.Text = "Create PdfFile";
 			this.createPdfMenu.Click += new System.EventHandler(this.PdfButtonClick);
 			// 

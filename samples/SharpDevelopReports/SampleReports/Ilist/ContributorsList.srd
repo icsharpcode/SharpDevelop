@@ -87,21 +87,21 @@
                     <Size>661, 42</Size>
                     <ScaleImageToSize>False</ScaleImageToSize>
                     <BackColor>Window</BackColor>
-                    <RelativeFileName>D:\SharpReport\samples\Reports\Logos\Bannerbeige2.gif</RelativeFileName>
+                    <RelativeFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</RelativeFileName>
                     <ImageFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
                 </BaseImageItem>
                 <BaseLineItem>
                     <StartLineCap>Flat</StartLineCap>
-                    <FromPoint>0, 0</FromPoint>
+                    <FromPoint>0, 3</FromPoint>
                     <Location>47, 87</Location>
                     <Name />
-                    <Size>661, 19</Size>
+                    <Size>661, 18</Size>
                     <EndLineCap>Flat</EndLineCap>
                     <DashStyle>Solid</DashStyle>
                     <BackColor>White</BackColor>
                     <DashLineCap>Flat</DashLineCap>
                     <ForeColor>ControlText</ForeColor>
-                    <ToPoint>661, 0</ToPoint>
+                    <ToPoint>614, 3</ToPoint>
                     <Thickness>2</Thickness>
                 </BaseLineItem>
                 <BaseTextItem>
@@ -190,6 +190,7 @@
                             <StringTrimming>EllipsisCharacter</StringTrimming>
                             <ColumnName>Job</ColumnName>
                             <DrawBorder>False</DrawBorder>
+                            <NullValue>--------------</NullValue>
                             <CanShrink>False</CanShrink>
                             <ContentAlignment>MiddleLeft</ContentAlignment>
                             <BackColor>White</BackColor>

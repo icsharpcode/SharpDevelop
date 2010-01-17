@@ -7,7 +7,9 @@
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -36,6 +38,14 @@ namespace SharpReportSamples
 			InitTree();
 			UpdateStatusbar (Application.StartupPath);
 			this.previewControl1.Messages = new ReportViewerMessagesProvider();
+			
+		/*
+			EventLog ev = new EventLog();
+			ev.Log = "System";
+			ev.MachineName = ".";  // Lokale Maschine
+			ArrayList ar = new ArrayList();
+			ar.AddRange(ev.Entries);
+			*/
 		}
 		
 		
@@ -97,8 +107,6 @@ namespace SharpReportSamples
 				this.RunProviderIndependent(reportName);
 			}
 			
-			
-			
 			else {
 				
 				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
@@ -129,7 +137,12 @@ namespace SharpReportSamples
 		
 		#region Contributors
 		//
-		
+		/// <summary>
+		/// Some values in the Datastructure are not set (means they are null), you can handle this values by setting
+		/// the NullValue in the properties of this Item, or, you can use the SectionRenderingEvent as shown
+		/// below 
+		/// </summary>
+		/// <param name="fileName"></param>
 		private void RunContributors (string fileName)
 		{
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
