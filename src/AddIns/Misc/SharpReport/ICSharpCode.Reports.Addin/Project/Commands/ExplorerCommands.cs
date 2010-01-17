@@ -69,7 +69,6 @@ namespace ICSharpCode.Reports.Addin.Commands
 						foreach (BasicParameter bp in e.Collection as ParameterCollection){
 							r.ReportModel.ReportSettings.ParameterCollection.Add (bp);
 						}
-							
 						r.RefreshParameters();
 					}
 				}

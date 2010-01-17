@@ -90,7 +90,7 @@ namespace ICSharpCode.Reports.Core.Test
 			ReportSettings rs = new ReportSettings();
 			Assert.AreEqual(true,rs.UseStandardPrinter,"StandartPrinter should be 'true'");
 			Assert.AreEqual (rs.GraphicsUnit,System.Drawing.GraphicsUnit.Pixel,"GraphicsUnit should be 'millimeter'");
-			Assert.AreEqual (rs.GridSize,GlobalValues.GridSize);
+			
 			Assert.AreEqual (new System.Windows.Forms.Padding(5),rs.Padding);
 		
 			Assert.AreEqual (GlobalEnums.ReportType.FormSheet,rs.ReportType);

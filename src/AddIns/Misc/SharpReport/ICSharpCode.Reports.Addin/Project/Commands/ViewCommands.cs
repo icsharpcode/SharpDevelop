@@ -82,7 +82,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 	
 	
 	public class DataSetFromXsdCommand:AbstractCommand{
-		System.Data.DataSet ds;
+		System.Data.DataSet dataSet;
 		public override void Run()
 		{
 			using (OpenFileDialog openFileDialog = new OpenFileDialog()){
@@ -91,16 +91,16 @@ namespace ICSharpCode.Reports.Addin.Commands
 				openFileDialog.AddExtension    = true;
 				if(openFileDialog.ShowDialog() == DialogResult.OK){
 					if (openFileDialog.FileName.Length > 0) {
-						this.ds = new System.Data.DataSet();
-						this.ds.ReadXml (openFileDialog.FileName);
-						this.ds.Locale = CultureInfo.InvariantCulture;
+						this.dataSet = new System.Data.DataSet();
+						this.dataSet.ReadXml (openFileDialog.FileName);
+						this.dataSet.Locale = CultureInfo.InvariantCulture;
 					}
 				}
 			}
 		}
 		
 		public System.Data.DataSet DataSet {
-			get { return ds; }
+			get { return dataSet; }
 		}
 		
 	}

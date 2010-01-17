@@ -52,7 +52,6 @@ namespace ICSharpCode.Reports.Core{
 		private bool landSacpe;
 		private GraphicsUnit graphicsUnit;
 		
-		private Size gridSize;
 		private Padding padding;
 		private string connectionString;
 		private string commandText;
@@ -111,7 +110,6 @@ namespace ICSharpCode.Reports.Core{
 		{
 			this.useStandardPrinter = true;
 			this.graphicsUnit = GraphicsUnit.Pixel;
-			this.gridSize = GlobalValues.GridSize;
 			this.padding = new Padding(5);
 			this.defaultFont = GlobalValues.DefaultFont;
 			this.availableFields = new AvailableFieldsCollection();
@@ -296,20 +294,6 @@ namespace ICSharpCode.Reports.Core{
 			set {
 				if (graphicsUnit != value) {
 					graphicsUnit = value;
-				}
-			}
-		}
-		
-		
-		[Category("Designer Settings")]
-		public Size GridSize
-		{
-			get {
-				return gridSize;
-			}
-			set {
-				if (this.gridSize != value) {
-					this.gridSize = value;
 				}
 			}
 		}

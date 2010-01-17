@@ -142,18 +142,6 @@ namespace ICSharpCode.Reports.Core {
 		}
 		                                  
 	
-		/// <summary>
-		/// Size of Grids in Sections, used by the Designer
-		/// <see cref="System.Windows.Forms.ControlPaint.DrawGrid >
-		/// </see>		
-		/// /// </summary>
-		
-		public static Size GridSize 
-		{
-			get {
-				return new Size (8,8);
-			}
-		}
 		#endregion
 		
 		

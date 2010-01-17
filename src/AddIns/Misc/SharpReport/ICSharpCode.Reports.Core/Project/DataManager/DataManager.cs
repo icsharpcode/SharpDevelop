@@ -217,7 +217,6 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		private void  DataBind() {
-//			CheckReportColumns();
 			this.dataViewStrategy.Bind();
 			this.dataNavigator = new DataNavigator(this.dataViewStrategy);
 		}

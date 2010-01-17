@@ -14,6 +14,7 @@ namespace ICSharpCode.Reports.Core
 {
 	public class CurrentItem : AbstractColumn
 	{
-		public object Value;
+		
+		public object Value{get;set;}
 	}
 }
