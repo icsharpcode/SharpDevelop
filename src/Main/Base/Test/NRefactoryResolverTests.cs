@@ -302,7 +302,7 @@ interface IInterface2 {
 }
 ";
 			ResolveResult result = Resolve(program, "b.ThisMethodDoesNotExistOnString()", 3);
-			Assert.IsNull(result, "result");
+			Assert.IsInstanceOf(typeof(UnknownMethodResolveResult), result, "result");
 		}
 		
 		[Test]
