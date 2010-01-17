@@ -74,7 +74,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 			SectionBounds sectionBounds  = new SectionBounds (this.reportModel.ReportSettings,firstPage);
 			ExporterPage sp = ExporterPage.CreateInstance(sectionBounds,this.pages.Count + 1);
-			
 			return sp;
 		}
 		

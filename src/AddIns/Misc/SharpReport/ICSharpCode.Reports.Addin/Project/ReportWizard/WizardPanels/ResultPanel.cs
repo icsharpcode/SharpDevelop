@@ -167,8 +167,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 						try {
 							SqlDataAccessStrategy.BuildQueryParameters(command,sqlParamsCollection);
 							adapter.SelectCommand = (DbCommand)command;
+							
 							adapter.Fill (dataSet);
 							return dataSet;
+						} catch (Exception e) {	
+							MessageService.ShowError(e.Message);
 						} finally {
 							if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
 								adapter.SelectCommand.Connection.Close();

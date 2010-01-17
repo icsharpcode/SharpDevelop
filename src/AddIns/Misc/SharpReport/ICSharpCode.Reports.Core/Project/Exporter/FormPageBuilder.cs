@@ -54,9 +54,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.BuildReportHeader();
 			if (base.Pages.Count == 0) {
 				this.ReportModel.ReportHeader.SectionOffset = base.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
-				base.ConvertSection(this.ReportModel.ReportHeader,
-//				                      base.SinglePage.SectionBounds.ReportHeaderRectangle.Top,
-				                      1 );                     
+				base.ConvertSection(this.ReportModel.ReportHeader,1);                 
 			}
 		}
 		

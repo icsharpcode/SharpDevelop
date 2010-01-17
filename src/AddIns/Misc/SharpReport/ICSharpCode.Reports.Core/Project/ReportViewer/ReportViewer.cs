@@ -194,6 +194,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
 		{
+			this.pageNumber = e.ProgressPercentage;
 			this.ShowSelectedPage();
 		}
 
