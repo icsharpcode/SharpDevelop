@@ -1347,6 +1347,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					collectionType = null;
 				if (collectionType != null)
 					return new ElementReturnType(projectContent, collectionType);
+			} else if (expr.Parent is IndexerExpression) {
+				IndexerExpression indexerExpr = expr.Parent as IndexerExpression;
+				MemberResolveResult indexer = ResolveInternal(indexerExpr, ExpressionContext.Default)
+					as MemberResolveResult;
+				
+				if (indexer != null && indexer.ResolvedMember is IProperty) {
+					IProperty p = indexer.ResolvedMember as IProperty;
+					int position = indexerExpr.Indexes.IndexOf(expr);
+					if (position < 0 || position >= p.Parameters.Count)
+						return null;
+					return p.Parameters[position].ReturnType;
+				}
 			}
 			return null;
 		}

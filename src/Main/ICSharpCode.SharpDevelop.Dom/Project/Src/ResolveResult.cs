@@ -9,6 +9,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using ICSharpCode.NRefactory.Ast;
+
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	#region ResolveResult
@@ -937,6 +939,53 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override ResolveResult Clone()
 		{
 			return new UnknownIdentifierResolveResult(this.CallingClass, this.CallingMember, this.Identifier);
+		}
+	}
+	#endregion
+	
+	#region UnknownMethodResolveResult
+	/// <summary>
+	/// Used for calls to unknown methods.
+	/// </summary>
+	public class UnknownMethodResolveResult : ResolveResult
+	{
+		string callName;
+		bool isStaticContext;
+		List<IReturnType> arguments;
+		IReturnType target;
+		
+		public UnknownMethodResolveResult(IClass callingClass, IMember callingMember, IReturnType target, string callName, bool isStaticContext, List<IReturnType> arguments)
+			: base(callingClass, callingMember, null)
+		{
+			this.target = target == null ? callingClass.DefaultReturnType : target;
+			this.callName = callName;
+			this.arguments = arguments;
+			this.isStaticContext = isStaticContext;
+		}
+		
+		public bool IsStaticContext {
+			get { return isStaticContext; }
+		}
+		
+		public string CallName {
+			get { return callName; }
+		}
+		
+		public IReturnType Target {
+			get { return target; }
+		}
+		
+		public List<IReturnType> Arguments {
+			get { return arguments; }
+		}
+		
+		public override bool IsValid {
+			get { return false; }
+		}
+		
+		public override ResolveResult Clone()
+		{
+			return new UnknownMethodResolveResult(this.CallingClass, this.CallingMember, this.target, this.callName, this.isStaticContext, this.arguments);
 		}
 	}
 	#endregion

@@ -298,6 +298,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		}
 		
 		#region Code generation / insertion
+		public virtual void InsertCodeAfter(IClass @class, IRefactoringDocument document, params AbstractNode[] nodes)
+		{
+			InsertCodeAfter(@class.BodyRegion.EndLine, document,
+			                GetIndentation(document, @class.BodyRegion.BeginLine), nodes);
+		}
+		
 		public virtual void InsertCodeAfter(IMember member, IRefactoringDocument document, params AbstractNode[] nodes)
 		{
 			if (member is IMethodOrProperty) {

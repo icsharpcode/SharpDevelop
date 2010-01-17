@@ -324,7 +324,33 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (resolver.Language == SupportedLanguage.VBNet) {
 				return CreateMemberResolveResult(GetVisualBasicIndexer(invocationExpression));
 			}
-			return null;
+
+			return CreateUnknownMethodResolveResult(invocationExpression);
+		}
+
+		UnknownMethodResolveResult CreateUnknownMethodResolveResult(InvocationExpression invocationExpression)
+		{
+			var arguments = invocationExpression.Arguments.Select(a => Resolve(a).ResolvedType).ToList();
+			
+			IReturnType target = resolver.CallingClass.DefaultReturnType;
+			string methodName = "";
+			bool isStatic = false;
+			
+			if (invocationExpression.TargetObject is IdentifierExpression) {
+				IdentifierExpression ie = invocationExpression.TargetObject as IdentifierExpression;
+				methodName = ie.Identifier;
+				isStatic = resolver.CallingMember.Modifiers.HasFlag(ModifierEnum.Static);
+			}
+			
+			if (invocationExpression.TargetObject is MemberReferenceExpression) {
+				MemberReferenceExpression mre = invocationExpression.TargetObject as MemberReferenceExpression;
+				var rr = Resolve(mre.TargetObject);
+				isStatic = rr is TypeResolveResult;
+				target = rr.ResolvedType;
+				methodName = mre.MemberName;
+			}
+			
+			return new UnknownMethodResolveResult(resolver.CallingClass, resolver.CallingMember, target, methodName, isStatic, arguments);
 		}
 		
 		ResolveResult FallbackResolveMethod(InvocationExpression invocation, MethodGroupResolveResult mgrr, IReturnType[] argumentTypes)
@@ -342,8 +368,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
-			// TODO: method still not found, now return invalid ResolveResult describing the expected method
-			return null;
+			return CreateUnknownMethodResolveResult(invocation);
 		}
 		
 		public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
