@@ -119,6 +119,14 @@ namespace ICSharpCode.SharpDevelop
 					return properties.VerticalRulerRow;
 				}
 			}
+			
+			public bool UnderlineErrors {
+				get {
+					return true;
+				}
+			}
+			
+			public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged { add {} remove {} }
 		}
 		
 		static ICSharpCode.NRefactory.Location ToLocation(TextLocation position)

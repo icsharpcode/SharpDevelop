@@ -19,6 +19,7 @@ namespace ICSharpCode.AvalonEdit
 	{
 		#region PropertyChanged handling
 		/// <inheritdoc/>
+		[field: NonSerialized]
 		public event PropertyChangedEventHandler PropertyChanged;
 		
 		/// <summary>
@@ -190,6 +191,7 @@ namespace ICSharpCode.AvalonEdit
 				if (_indentationSize != value) {
 					_indentationSize = value;
 					OnPropertyChanged("IndentationSize");
+					OnPropertyChanged("IndentationString");
 				}
 			}
 		}
@@ -207,6 +209,7 @@ namespace ICSharpCode.AvalonEdit
 				if (_convertTabsToSpaces != value) {
 					_convertTabsToSpaces = value;
 					OnPropertyChanged("ConvertTabsToSpaces");
+					OnPropertyChanged("IndentationString");
 				}
 			}
 		}

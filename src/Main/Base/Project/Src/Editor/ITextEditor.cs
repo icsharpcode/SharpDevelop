@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Input;
 
 using ICSharpCode.Core;
@@ -123,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		IEnumerable<ICompletionItem> GetSnippets();
 	}
 	
-	public interface ITextEditorOptions
+	public interface ITextEditorOptions : INotifyPropertyChanged
 	{
 		/// <summary>
 		/// Gets the text used for one indentation level.
@@ -151,6 +152,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// This property returns a valid value even if the vertical ruler is set to be invisible.
 		/// </summary>
 		int VerticalRulerColumn { get; }
+		
+		/// <summary>
+		/// Gets whether errors should be underlined.
+		/// </summary>
+		bool UnderlineErrors { get; }
 	}
 	
 	public interface ITextEditorCaret

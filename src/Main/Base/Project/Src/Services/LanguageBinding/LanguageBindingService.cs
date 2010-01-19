@@ -22,6 +22,9 @@ namespace ICSharpCode.SharpDevelop
 			bindings = AddInTree.BuildItems<LanguageBindingDescriptor>(languageBindingPath, null, false);
 		}
 		
+		/// <summary>
+		/// Creates the binding for the specified text editor. This method never returns null.
+		/// </summary>
 		public static ILanguageBinding CreateBinding(ITextEditor editor)
 		{
 			return new AggregatedLanguageBinding(FindMatchingBindings(editor));

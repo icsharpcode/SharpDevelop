@@ -28,15 +28,16 @@ namespace ICSharpCode.SharpDevelop
 			if (this.markerService == null)
 				throw new InvalidOperationException("this ITextEditor has no text marker service!");
 			
-			TaskService.Added   += new TaskEventHandler(OnAdded);
-			TaskService.Removed += new TaskEventHandler(OnRemoved);
-			TaskService.Cleared += new EventHandler(OnCleared);
-			DebuggerService.DebugStarted += OnDebugStarted;
-			DebuggerService.DebugStopped += OnDebugStopped;
+			TaskService.Added   += OnAdded;
+			TaskService.Removed += OnRemoved;
+			TaskService.Cleared += OnCleared;
+			DebuggerService.DebugStarted += OnDebugStartedStopped;
+			DebuggerService.DebugStopped += OnDebugStartedStopped;
+			textEditor.Options.PropertyChanged += textEditor_Options_PropertyChanged;
 			
-			UpdateErrors();
+			UpdateEnabled();
 		}
-		
+
 		bool isDisposed;
 		
 		/// <summary>
@@ -48,23 +49,44 @@ namespace ICSharpCode.SharpDevelop
 			if (isDisposed)
 				return;
 			isDisposed = true;
-			TaskService.Added   -= new TaskEventHandler(OnAdded);
-			TaskService.Removed -= new TaskEventHandler(OnRemoved);
-			TaskService.Cleared -= new EventHandler(OnCleared);
-			DebuggerService.DebugStarted -= OnDebugStarted;
-			DebuggerService.DebugStopped -= OnDebugStopped;
+			TaskService.Added   -= OnAdded;
+			TaskService.Removed -= OnRemoved;
+			TaskService.Cleared -= OnCleared;
+			DebuggerService.DebugStarted -= OnDebugStartedStopped;
+			DebuggerService.DebugStopped -= OnDebugStartedStopped;
+			textEditor.Options.PropertyChanged -= textEditor_Options_PropertyChanged;
 			ClearErrors();
 		}
 		
-		void OnDebugStarted(object sender, EventArgs e)
+		bool isEnabled;
+		
+		void OnDebugStartedStopped(object sender, EventArgs e)
 		{
-			ClearErrors();
+			UpdateEnabled();
 		}
 		
-		void OnDebugStopped(object sender, EventArgs e)
+		void textEditor_Options_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			foreach (Task task in TaskService.Tasks) {
-				AddTask(task);
+			if (e.PropertyName == "UnderlineErrors") {
+				UpdateEnabled();
+			}
+		}
+		
+		void UpdateEnabled()
+		{
+			bool newEnabled = textEditor.Options.UnderlineErrors;
+			if (DebuggerService.IsDebuggerLoaded && DebuggerService.CurrentDebugger.IsDebugging)
+				newEnabled = false;
+			
+			if (isEnabled != newEnabled) {
+				isEnabled = newEnabled;
+
+				ClearErrors();
+				if (newEnabled) {
+					foreach (Task task in TaskService.Tasks) {
+						AddTask(task);
+					}
+				}
 			}
 		}
 		
@@ -105,7 +127,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		void AddTask(Task task)
 		{
-			if (DebuggerService.IsDebuggerLoaded && DebuggerService.CurrentDebugger.IsDebugging)
+			if (!isEnabled)
 				return;
 			if (!CheckTask(task))
 				return;
@@ -151,6 +173,8 @@ namespace ICSharpCode.SharpDevelop
 			if (isDisposed)
 				return;
 			ClearErrors();
+			if (!isEnabled)
+				return;
 			foreach (Task task in TaskService.Tasks) {
 				AddTask(task);
 			}

@@ -16,12 +16,10 @@
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox}" />
 				<CheckBox
 					Margin="0,16,0,0"
-					IsChecked="True"
-					IsEnabled="False"
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.UnderlineErrors}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.UnderLineErrorsCheckBox}" />
 				<CheckBox
-					IsChecked="True"
-					IsEnabled="False"
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightBrackets}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox}" />
 			</StackPanel>
 		</GroupBox>

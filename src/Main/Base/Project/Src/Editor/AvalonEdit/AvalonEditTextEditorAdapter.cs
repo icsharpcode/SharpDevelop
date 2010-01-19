@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -71,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		}
 		
 		public ITextEditorCaret Caret { get; private set; }
-		public ITextEditorOptions Options { get; private set; }
+		public virtual ITextEditorOptions Options { get; private set; }
 		
 		public virtual ILanguageBinding Language {
 			get { throw new NotSupportedException(); }
@@ -150,6 +151,17 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 				get {
 					return 120;
 				}
+			}
+			
+			public bool UnderlineErrors {
+				get {
+					return true;
+				}
+			}
+			
+			public event PropertyChangedEventHandler PropertyChanged {
+				add    { avalonEditOptions.PropertyChanged += value; }
+				remove { avalonEditOptions.PropertyChanged -= value; }
 			}
 		}
 		

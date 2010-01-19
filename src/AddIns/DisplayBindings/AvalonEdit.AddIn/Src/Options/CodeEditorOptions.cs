@@ -10,12 +10,13 @@ using System.ComponentModel;
 using System.Windows.Data;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Options
 {
 	[Serializable]
-	public class CodeEditorOptions : TextEditorOptions
+	public class CodeEditorOptions : TextEditorOptions, ITextEditorOptions
 	{
 		public static CodeEditorOptions Instance {
 			get { return PropertyService.Get("CodeEditorOptions", new CodeEditorOptions()); }
@@ -95,6 +96,44 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool underlineErrors = true;
+		
+		[DefaultValue(true)]
+		public bool UnderlineErrors {
+			get { return underlineErrors; }
+			set {
+				if (underlineErrors != value) {
+					underlineErrors = value;
+					OnPropertyChanged("UnderlineErrors");
+				}
+			}
+		}
+		
+		bool highlightBrackets = true;
+		
+		[DefaultValue(true)]
+		public bool HighlightBrackets {
+			get { return highlightBrackets; }
+			set {
+				if (highlightBrackets != value) {
+					highlightBrackets = value;
+					OnPropertyChanged("HighlightBrackets");
+				}
+			}
+		}
+		
+		bool useSmartIndentation;
+		
+		public bool UseSmartIndentation {
+			get { return useSmartIndentation; }
+			set {
+				if (useSmartIndentation != value) {
+					useSmartIndentation = value;
+					OnPropertyChanged("UseSmartIndentation");
+				}
+			}
+		}
+		
 		public void BindToTextEditor(TextEditor editor)
 		{
 			editor.Options = this;
@@ -102,6 +141,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			editor.SetBinding(TextEditor.FontSizeProperty, new Binding("FontSize") { Source = this });
 			editor.SetBinding(TextEditor.ShowLineNumbersProperty, new Binding("ShowLineNumbers") { Source = this });
 			editor.SetBinding(TextEditor.WordWrapProperty, new Binding("WordWrap") { Source = this });
+		}
+		
+		bool ITextEditorOptions.AutoInsertBlockEnd {
+			get { return true; }
+		}
+		
+		int ITextEditorOptions.VerticalRulerColumn {
+			get { return 120; }
 		}
 	}
 }

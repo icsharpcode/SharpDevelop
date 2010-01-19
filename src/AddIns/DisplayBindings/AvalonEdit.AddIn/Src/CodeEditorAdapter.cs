@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Indentation;
 using ICSharpCode.Core;
@@ -48,20 +49,39 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return languageBinding; }
 		}
 		
+		public override ITextEditorOptions Options {
+			get { return CodeEditorOptions.Instance; }
+		}
+		
 		internal void FileNameChanged()
 		{
 			if (languageBinding != null)
 				languageBinding.Detach();
 			
-			languageBinding = LanguageBindingService.CreateBinding(this);
-			if (languageBinding != null) {
-				languageBinding.Attach(this);
-				
-				// update properties set by languageBinding
-				this.TextEditor.TextArea.IndentationStrategy = new IndentationStrategyAdapter(this, languageBinding.FormattingStrategy);
-			} else {
-				this.TextEditor.TextArea.IndentationStrategy = new DefaultIndentationStrategy();
+			languageBinding = LanguageBindingService.CreateBinding(this); // never returns null
+			languageBinding.Attach(this);
+			
+			// update properties set by languageBinding
+			this.TextEditor.TextArea.IndentationStrategy = new OptionControlledIndentationStrategy(this, languageBinding.FormattingStrategy);
+		}
+		
+		sealed class OptionControlledIndentationStrategy : IndentationStrategyAdapter
+		{
+			public OptionControlledIndentationStrategy(ITextEditor editor, IFormattingStrategy formattingStrategy)
+				: base(editor, formattingStrategy)
+			{
 			}
+			
+			public override void IndentLine(ICSharpCode.AvalonEdit.Document.TextDocument document, ICSharpCode.AvalonEdit.Document.DocumentLine line)
+			{
+				if (CodeEditorOptions.Instance.UseSmartIndentation)
+					base.IndentLine(document, line);
+				else
+					new DefaultIndentationStrategy().IndentLine(document, line);
+			}
+			
+			// Do not override IndentLines: it is called only when smart indentation is explicitly requested by the user (Ctrl+I),
+			// so we keep it enabled even when the option is set to false.
 		}
 		
 		public override ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)

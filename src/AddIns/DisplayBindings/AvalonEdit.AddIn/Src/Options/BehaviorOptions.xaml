@@ -17,8 +17,7 @@
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.ConvertTabsToSpaces}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox}" />
 				<CheckBox
-					IsEnabled="False"
-					IsChecked="True"
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.UseSmartIndentation}"
 					Content="(TODO: translate) Use smart indentation" />
 			</StackPanel>
 		</GroupBox>
