@@ -90,21 +90,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <inheritdoc/>
 		public override int GetVisualColumn(int relativeTextOffset)
 		{
-			return VisualColumn + relativeTextOffset - this.RelativeTextOffset;
+			return this.VisualColumn + relativeTextOffset - this.RelativeTextOffset;
 		}
 		
 		/// <inheritdoc/>
 		public override int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
 		{
-			int textOffset = parentVisualLine.FirstDocumentLine.Offset + this.RelativeTextOffset;
-			TextSourceView view = new TextSourceView(
-				parentVisualLine.Document,
-				new SimpleSegment(textOffset, this.DocumentLength));
-			int pos = TextUtilities.GetNextCaretPosition(view, visualColumn - this.VisualColumn, direction, mode);
-			if (pos < 0)
-				return pos;
+			int textOffset = parentVisualLine.StartOffset + this.RelativeTextOffset;
+			int pos = TextUtilities.GetNextCaretPosition(parentVisualLine.Document, textOffset + visualColumn - this.VisualColumn, direction, mode);
+			if (pos < textOffset || pos > textOffset + this.DocumentLength)
+				return -1;
 			else
-				return this.VisualColumn + pos;
+				return this.VisualColumn + pos - textOffset;
 		}
 	}
 }

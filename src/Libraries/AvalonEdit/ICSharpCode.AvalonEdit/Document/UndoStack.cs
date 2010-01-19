@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		Deque<IUndoableOperation> undostack = new Deque<IUndoableOperation>();
 		Deque<IUndoableOperation> redostack = new Deque<IUndoableOperation>();
 		
-		int sizeLimit = 1000;
+		int sizeLimit = int.MaxValue;
 		bool acceptChanges = true;
 		
 		/// <summary>
@@ -51,7 +51,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Gets/Sets the limit on the number of items on the undo stack.
-		/// The default value is 1000.
 		/// </summary>
 		/// <remarks>The size limit is enforced only on the number of stored top-level undo groups.
 		/// Elements within undo groups do not count towards the size limit.</remarks>

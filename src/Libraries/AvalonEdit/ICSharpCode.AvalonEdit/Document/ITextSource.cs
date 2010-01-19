@@ -78,6 +78,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// Implements the ITextSource interface by wrapping another TextSource
 	/// and viewing only a part of the text.
 	/// </summary>
+	[Obsolete("This class will be removed in a future version of AvalonEdit")]
 	public sealed class TextSourceView : ITextSource
 	{
 		readonly ITextSource baseTextSource;

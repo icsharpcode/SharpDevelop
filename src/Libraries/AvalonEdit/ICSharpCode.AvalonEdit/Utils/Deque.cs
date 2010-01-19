@@ -15,6 +15,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// Double-ended queue.
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+	[Serializable]
 	public class Deque<T> : ICollection<T>
 	{
 		T[] arr = Empty<T>.Array;

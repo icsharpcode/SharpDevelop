@@ -243,8 +243,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// in the text source.</returns>
 		/// <remarks>
 		/// This method is NOT equivalent to the actual caret movement when using VisualLine.GetNextCaretPosition.
-		/// In real caret movement, there are additional caret stops at line starts and ends. However, this method
-		/// doesn't know anything about lines: it is often called with a textSource that represents only a single VisualTextElement.
+		/// In real caret movement, there are additional caret stops at line starts and ends. This method
+		/// treats linefeeds as simple whitespace.
 		/// </remarks>
 		public static int GetNextCaretPosition(ITextSource textSource, int offset, LogicalDirection direction, CaretPositioningMode mode)
 		{

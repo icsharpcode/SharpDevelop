@@ -53,6 +53,16 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public ReadOnlyCollection<TextLine> TextLines { get; private set; }
 		
 		/// <summary>
+		/// Gets the start offset of the VisualLine inside the document.
+		/// This is equivalent to <c>FirstDocumentLine.Offset</c>.
+		/// </summary>
+		public int StartOffset { 
+			get {
+				return FirstDocumentLine.Offset;
+			}
+		}
+		
+		/// <summary>
 		/// Length in visual line coordinates.
 		/// </summary>
 		public int VisualLength { get; private set; }
@@ -334,7 +344,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (direction == LogicalDirection.Backward) {
 				// Search Backwards:
 				// If the last element doesn't handle line borders, return the line end as caret stop
-				// (we don't check the mode here: we treat a line end as word start, border, etc.
+				
 				if (visualColumn > this.VisualLength && !elements[elements.Count-1].HandlesLineBorders && HasImplicitStopAtLineEnd(mode)) {
 					return this.VisualLength;
 				}
