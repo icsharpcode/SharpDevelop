@@ -46,5 +46,13 @@ namespace WixBinding.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public bool UnderlineErrors {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged { add { } remove { } }
 	}
 }

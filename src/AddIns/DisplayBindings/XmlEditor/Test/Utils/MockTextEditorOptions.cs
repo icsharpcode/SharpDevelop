@@ -42,5 +42,13 @@ namespace XmlEditor.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged { add { } remove { } }
+		
+		public bool UnderlineErrors {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
