@@ -47,10 +47,9 @@ namespace SearchAndReplace
 				inlineBuilder = new HighlightedInlineBuilder(matchedLine.Text);
 				inlineBuilder.SetFontFamily(0, inlineBuilder.Text.Length, resultLineFamily);
 				
-				DocumentHighlighter highlighter = document.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
-				TextDocument textDocument = document.GetService(typeof(TextDocument)) as TextDocument;
-				if (highlighter != null && textDocument != null) {
-					HighlightedLine highlightedLine = highlighter.HighlightLine(textDocument.GetLineByNumber(lineNumber));
+				IHighlighter highlighter = document.GetService(typeof(IHighlighter)) as IHighlighter;
+				if (highlighter != null) {
+					HighlightedLine highlightedLine = highlighter.HighlightLine(lineNumber);
 					int startOffset = highlightedLine.DocumentLine.Offset;
 					// copy only the foreground color
 					foreach (HighlightedSection section in highlightedLine.Sections) {

@@ -127,7 +127,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new ArgumentNullException("textArea");
 			if (options == null)
 				throw new ArgumentNullException("options");
-			DocumentHighlighter highlighter = textArea.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
+			IHighlighter highlighter = textArea.GetService(typeof(IHighlighter)) as IHighlighter;
 			StringBuilder html = new StringBuilder();
 			bool first = true;
 			foreach (ISegment selectedSegment in this.Segments) {

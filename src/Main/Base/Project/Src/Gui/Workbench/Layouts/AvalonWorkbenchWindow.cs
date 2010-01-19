@@ -46,6 +46,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected override void FocusContent()
 		{
 			IInputElement activeChild = CustomFocusManager.GetFocusedChild(this);
+			if (activeChild == null && ActiveViewContent != null) {
+				activeChild = ActiveViewContent.InitiallyFocusedControl as IInputElement;
+			}
 			if (activeChild != null) {
 				LoggingService.Debug("Will move focus to: " + activeChild);
 				Dispatcher.BeginInvoke(DispatcherPriority.Background,

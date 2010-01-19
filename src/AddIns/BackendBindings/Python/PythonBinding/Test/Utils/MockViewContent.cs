@@ -63,6 +63,12 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
+		public object InitiallyFocusedControl {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public IWorkbenchWindow WorkbenchWindow {
 			get {
 				throw new NotImplementedException();

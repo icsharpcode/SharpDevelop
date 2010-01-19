@@ -62,6 +62,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (highlighter != null && isInTextView) {
 				textView.Services.RemoveService(typeof(DocumentHighlighter));
+				textView.Services.RemoveService(typeof(IHighlighter));
 			}
 			
 			TextDocument document = textView.Document;
@@ -71,7 +72,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				highlighter = null;
 			
 			if (highlighter != null && isInTextView) {
+				// for backward compatiblity, we're registering using both the interface and concrete types
 				textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
+				textView.Services.AddService(typeof(IHighlighter), highlighter);
 			}
 		}
 		
@@ -82,6 +85,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			isInTextView = true;
 			if (highlighter != null) {
 				textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
+				textView.Services.AddService(typeof(IHighlighter), highlighter);
 			}
 		}
 		
@@ -92,6 +96,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			isInTextView = false;
 			if (highlighter != null) {
 				textView.Services.RemoveService(typeof(DocumentHighlighter));
+				textView.Services.RemoveService(typeof(IHighlighter));
 			}
 		}
 		

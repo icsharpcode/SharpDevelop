@@ -62,6 +62,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return codeEditor; }
 		}
 		
+		public override object InitiallyFocusedControl {
+			get { return codeEditor.PrimaryTextEditor.TextArea; }
+		}
+		
 		public override void Save(OpenedFile file, Stream stream)
 		{
 			if (file != PrimaryFile)

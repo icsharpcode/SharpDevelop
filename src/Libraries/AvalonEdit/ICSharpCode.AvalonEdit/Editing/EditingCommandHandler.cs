@@ -325,7 +325,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			// Also copy text in HTML format to clipboard - good for pasting text into Word
 			// or to the SharpDevelop forums.
-			DocumentHighlighter highlighter = textArea.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
+			IHighlighter highlighter = textArea.GetService(typeof(IHighlighter)) as IHighlighter;
 			HtmlClipboard.SetHtml(data, HtmlClipboard.CreateHtmlFragment(textArea.Document, highlighter, wholeLine, new HtmlOptions(textArea.Options)));
 			
 			MemoryStream lineSelected = new MemoryStream(1);

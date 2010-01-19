@@ -185,6 +185,7 @@
     <Compile Include="Highlighting\HighlightingDefinitionTypeConverter.cs" />
     <Compile Include="Highlighting\HighlightingManager.cs" />
     <Compile Include="Highlighting\HtmlClipboard.cs" />
+    <Compile Include="Highlighting\IHighlighter.cs" />
     <Compile Include="Highlighting\IHighlightingDefinition.cs" />
     <Compile Include="Highlighting\HighlightingRule.cs" />
     <Compile Include="Highlighting\Resources\Resources.cs" />

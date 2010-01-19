@@ -48,9 +48,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
+		/// Gets the control which has focus initially.
+		/// </summary>
+		object InitiallyFocusedControl {
+			get;
+		}
+		
+		/// <summary>
 		/// The workbench window in which this view is displayed.
 		/// </summary>
-		IWorkbenchWindow  WorkbenchWindow {
+		IWorkbenchWindow WorkbenchWindow {
 			get;
 			set;
 		}

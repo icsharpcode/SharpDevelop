@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		
 		public IEnumerable<string> GetSpanColorNamesFromLineStart(int lineNumber)
 		{
-			DocumentHighlighter highlighter = textEditor.GetService(typeof(DocumentHighlighter)) as DocumentHighlighter;
+			IHighlighter highlighter = textEditor.GetService(typeof(IHighlighter)) as IHighlighter;
 			if (highlighter != null) {
 				// delayed evaluation doesn't cause a problem here: GetSpanStack is called immediately,
 				// only the where/select portian is evaluated later. But that won't be a problem because the

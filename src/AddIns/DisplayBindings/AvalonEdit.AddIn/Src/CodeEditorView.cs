@@ -14,6 +14,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit.AddIn.Options;
@@ -43,6 +44,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public CodeEditorView()
 		{
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
+			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Print, OnPrint));
+			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.PrintPreview, OnPrintPreview));
+			
 			options = ICSharpCode.AvalonEdit.AddIn.Options.CodeEditorOptions.Instance;
 			options.BindToTextEditor(this);
 			
@@ -364,6 +368,31 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				folding.UpdateFoldings(parseInfo);
 			}
+		}
+		
+		void OnPrint(object sender, ExecutedRoutedEventArgs e)
+		{
+			PrintDialog printDialog = PrintPreviewViewContent.PrintDialog;
+			if (printDialog.ShowDialog() == true) {
+				FlowDocument fd = DocumentPrinter.CreateFlowDocumentForEditor(this);
+				fd.ColumnGap = 0;
+				fd.ColumnWidth = printDialog.PrintableAreaWidth;
+				fd.PageHeight = printDialog.PrintableAreaHeight;
+				fd.PageWidth = printDialog.PrintableAreaWidth;
+				IDocumentPaginatorSource doc = fd;
+				printDialog.PrintDocument(doc.DocumentPaginator, Path.GetFileName(this.Adapter.FileName));
+			}
+		}
+		
+		void OnPrintPreview(object sender, ExecutedRoutedEventArgs e)
+		{
+			PrintDialog printDialog = PrintPreviewViewContent.PrintDialog;
+			FlowDocument fd = DocumentPrinter.CreateFlowDocumentForEditor(this);
+			fd.ColumnGap = 0;
+			fd.ColumnWidth = printDialog.PrintableAreaWidth;
+			fd.PageHeight = printDialog.PrintableAreaHeight;
+			fd.PageWidth = printDialog.PrintableAreaWidth;
+			PrintPreviewViewContent.ShowDocument(fd, Path.GetFileName(this.Adapter.FileName));
 		}
 	}
 }

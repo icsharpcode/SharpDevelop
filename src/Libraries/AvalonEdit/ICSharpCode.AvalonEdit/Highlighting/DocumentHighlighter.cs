@@ -21,7 +21,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// This class can syntax-highlight a document.
 	/// It automatically manages invalidating the highlighting when the document changes.
 	/// </summary>
-	public class DocumentHighlighter : ILineTracker
+	public class DocumentHighlighter : ILineTracker, IHighlighter
 	{
 		/// <summary>
 		/// Stores the span state at the end of each line.
@@ -123,13 +123,20 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			if (!document.Lines.Contains(line))
 				throw new ArgumentException("The specified line does not belong to the document.");
+			return HighlightLine(line.LineNumber);
+		}
+		
+		/// <inheritdoc/>
+		public HighlightedLine HighlightLine(int lineNumber)
+		{
+			ThrowUtil.CheckInRangeInclusive(lineNumber, "lineNumber", 1, document.LineCount);
 			CheckIsHighlighting();
 			isHighlighting = true;
 			try {
-				int targetLineNumber = line.LineNumber;
-				HighlightUpTo(targetLineNumber);
+				HighlightUpTo(lineNumber);
+				DocumentLine line = document.GetLineByNumber(lineNumber);
 				highlightedLine = new HighlightedLine(document, line);
-				HighlightLineAndUpdateTreeList(line, targetLineNumber);
+				HighlightLineAndUpdateTreeList(line, lineNumber);
 				return highlightedLine;
 			} finally {
 				highlightedLine = null;
@@ -137,11 +144,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 		}
 		
-		/// <summary>
-		/// Gets the span stack at the end of the specified line.
-		/// -> GetSpanStack(1) returns the spans at the start of the second line.
-		/// </summary>
-		/// <remarks>GetSpanStack(0) is valid and will always return the empty stack.</remarks>
+		/// <inheritdoc/>
 		public SpanStack GetSpanStack(int lineNumber)
 		{
 			ThrowUtil.CheckInRangeInclusive(lineNumber, "lineNumber", 0, document.LineCount);
