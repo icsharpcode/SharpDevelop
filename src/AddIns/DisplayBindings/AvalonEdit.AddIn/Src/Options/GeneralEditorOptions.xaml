@@ -15,8 +15,7 @@
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.WordWrap}"
 					Content="(TODO: translate) Word-wrap" />
 				<CheckBox 
-					IsEnabled="False"
-					IsChecked="True"
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.EnableFolding}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FoldingCheckBox}" />
 				<CheckBox 
 					IsEnabled="False"

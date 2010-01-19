@@ -122,14 +122,28 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
-		bool useSmartIndentation;
+		bool useSmartIndentation = true;
 		
+		[DefaultValue(true)]
 		public bool UseSmartIndentation {
 			get { return useSmartIndentation; }
 			set {
 				if (useSmartIndentation != value) {
 					useSmartIndentation = value;
 					OnPropertyChanged("UseSmartIndentation");
+				}
+			}
+		}
+		
+		bool enableFolding = true;
+		
+		[DefaultValue(true)]
+		public bool EnableFolding {
+			get { return enableFolding; }
+			set {
+				if (enableFolding != value) {
+					enableFolding = value;
+					OnPropertyChanged("EnableFolding");
 				}
 			}
 		}

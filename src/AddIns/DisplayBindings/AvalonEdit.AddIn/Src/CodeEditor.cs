@@ -499,29 +499,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
-			UpdateFolding(primaryTextEditorAdapter, parseInfo);
-			UpdateFolding(secondaryTextEditorAdapter, parseInfo);
-		}
-		
-		void UpdateFolding(ITextEditor editor, ParseInformation parseInfo)
-		{
-			if (editor != null) {
-				IServiceContainer container = editor.GetService(typeof(IServiceContainer)) as IServiceContainer;
-				ParserFoldingStrategy folding = container.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
-				if (parseInfo == null) {
-					if (folding != null) {
-						folding.Dispose();
-						container.RemoveService(typeof(ParserFoldingStrategy));
-					}
-				} else {
-					if (folding == null) {
-						TextArea textArea = editor.GetService(typeof(TextArea)) as TextArea;
-						folding = new ParserFoldingStrategy(textArea);
-						container.AddService(typeof(ParserFoldingStrategy), folding);
-					}
-					folding.UpdateFoldings(parseInfo);
-				}
-			}
+			primaryTextEditor.UpdateParseInformation(parseInfo);
+			if (secondaryTextEditor != null)
+				secondaryTextEditor.UpdateParseInformation(parseInfo);
 		}
 		
 		public void Dispose()

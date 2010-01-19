@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -63,6 +64,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			base.OnOptionChanged(e);
 			if (e.PropertyName == "HighlightBrackets")
 				TextArea_PositionChanged(null, e);
+			else if (e.PropertyName == "EnableFolding")
+				UpdateParseInformation();
 		}
 		
 		void TextArea_PositionChanged(object sender, EventArgs e)
@@ -334,6 +337,33 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// the adapter sets the caret position and takes care of scrolling
 			this.Adapter.JumpTo(line, column);
 			this.Focus();
+		}
+		
+		void UpdateParseInformation()
+		{
+			UpdateParseInformation(ParserService.GetExistingParseInformation(this.Adapter.FileName));
+		}
+		
+		public void UpdateParseInformation(ParseInformation parseInfo)
+		{
+			if (!CodeEditorOptions.Instance.EnableFolding)
+				parseInfo = null;
+			
+			IServiceContainer container = this.Adapter.GetService(typeof(IServiceContainer)) as IServiceContainer;
+			ParserFoldingStrategy folding = container.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
+			if (parseInfo == null) {
+				if (folding != null) {
+					folding.Dispose();
+					container.RemoveService(typeof(ParserFoldingStrategy));
+				}
+			} else {
+				if (folding == null) {
+					TextArea textArea = this.Adapter.GetService(typeof(TextArea)) as TextArea;
+					folding = new ParserFoldingStrategy(textArea);
+					container.AddService(typeof(ParserFoldingStrategy), folding);
+				}
+				folding.UpdateFoldings(parseInfo);
+			}
 		}
 	}
 }
