@@ -760,6 +760,15 @@ You have to save those files before running the operation.</value>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Update to revision</value>
   </data>
+  <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
+    <value>Edit grid columns and rows</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
+    <value>Extract properties as style</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
+    <value>Group into</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
     <value>Remove margin</value>
   </data>
@@ -1962,6 +1971,12 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
     <value>Description</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupDialog.Text" xml:space="preserve">
+    <value>Please enter the list of file extensions as a semicolon-separated list. (Example: .h;.c;.cpp)</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
+    <value>&amp;Edit extensions</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
     <value>&amp;Description</value>
   </data>
@@ -2466,6 +2481,9 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox" xml:space="preserve">
     <value>C&amp;onvert Tabs to Spaces</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition" xml:space="preserve">
+    <value>Use Ctrl+Click for "Go to Definition"</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox" xml:space="preserve">
     <value>A&amp;uto insert curly braces</value>
   </data>
@@ -2510,6 +2528,9 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TemplateInsertCheckBox" xml:space="preserve">
     <value>&amp;Automatic template insertion</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.UseSmartIndent" xml:space="preserve">
+    <value>Use smart indentation</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName" xml:space="preserve">
     <value>Code Completion</value>
@@ -2563,7 +2584,7 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>Show caret line</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
-    <value>Show &amp;EOL markers</value>
+    <value>Show &amp;end-of-line markers</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Highlight &amp;matching bracket</value>
@@ -7054,6 +7075,12 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
     <value>Can not get .NET Framework version of program. Check that the program is managed assembly.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
+    <value>Can not attach to process.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
+    <value>Can not start process.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.Debugging" xml:space="preserve">
     <value>Can not perform action because some process is debugged.</value>

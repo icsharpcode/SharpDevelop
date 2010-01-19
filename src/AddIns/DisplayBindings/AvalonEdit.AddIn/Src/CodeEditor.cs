@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
+using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -139,6 +140,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public CodeEditor()
 		{
+			CodeEditorOptions.Instance.PropertyChanged += CodeEditorOptions_Instance_PropertyChanged;
 			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
 			
 			textMarkerService = new TextMarkerService(this);
@@ -158,6 +160,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			SetRow(primaryTextEditor, 1);
 			
 			this.Children.Add(primaryTextEditor);
+		}
+		
+		void CodeEditorOptions_Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "EnableQuickClassBrowser")
+				FetchParseInformation();
 		}
 		
 		protected virtual CodeEditorView CreateTextEditor()
@@ -474,12 +482,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void FetchParseInformation()
 		{
-			ParseInformationUpdated(ParserService.GetParseInformation(this.FileName));
+			ParseInformation parseInfo = ParserService.GetExistingParseInformation(this.FileName);
+			if (parseInfo == null) {
+				// if parse info is not yet available, start parsing
+				var future = ParserService.BeginParse(this.FileName, primaryTextEditorAdapter.Document);
+				if (future.Wait(50))
+					parseInfo = future.Result;
+			}
+			ParseInformationUpdated(parseInfo);
 		}
 		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
-			if (parseInfo != null) {
+			if (parseInfo != null && CodeEditorOptions.Instance.EnableQuickClassBrowser) {
 				// don't create quickClassBrowser for files that don't have any classes
 				// (but do keep the quickClassBrowser when the last class is removed from a file)
 				if (quickClassBrowser != null || parseInfo.CompilationUnit.Classes.Count > 0) {
@@ -506,6 +521,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void Dispose()
 		{
+			CodeEditorOptions.Instance.PropertyChanged -= CodeEditorOptions_Instance_PropertyChanged;
 			primaryTextEditorAdapter.Language.Detach();
 			if (secondaryTextEditorAdapter != null)
 				secondaryTextEditorAdapter.Language.Detach();

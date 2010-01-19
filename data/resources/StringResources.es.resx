@@ -757,6 +757,15 @@ Debería recargar la solución.</value>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Actualizar a revisión</value>
   </data>
+  <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
+    <value>Editar columnas y filas de la grilla</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
+    <value>Extraer propiedades como estilos</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
+    <value>Agrupar</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
     <value>Quitar margen</value>
   </data>
@@ -1956,6 +1965,12 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
     <value>Descripción</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupDialog.Text" xml:space="preserve">
+    <value>Por favor, ingrese la lista de extensiones de archivos como una lista separada por puntos y comas. (Ejemplo:.h;.c;.cpp)</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
+    <value>&amp;Editar extensiones</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
     <value>&amp;Descripción</value>
@@ -7046,6 +7061,12 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
     <value>No se pudo obtener la versión de .NET Framework del programa. Verifique que el programa sea un ensamblado.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
+    <value>No se pudo adjuntar al proceso.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
+    <value>No se pudo iniciar al proceso.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.Debugging" xml:space="preserve">
     <value>No se pudo realizar la acción porque un proceso esta siendo depurado.</value>

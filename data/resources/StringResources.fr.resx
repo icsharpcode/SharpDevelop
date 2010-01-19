@@ -756,6 +756,15 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Mettre à jour à la révision</value>
   </data>
+  <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
+    <value>Editer colonnes et lignes de la grille</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
+    <value>Extraire les propriétés comme style</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
+    <value>Grouper avec</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
     <value>Supprimer la marge</value>
   </data>
@@ -1953,6 +1962,12 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
     <value>Description</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupDialog.Text" xml:space="preserve">
+    <value>Veuillez entrer les extensions de fichier séparées par un point virgule: .h;.c par exemple.</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
+    <value>&amp;Editer les extensions</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
     <value>&amp;Description</value>
   </data>
@@ -2554,7 +2569,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Afficher le curseur</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
-    <value>Affich&amp;er Fin de lignes</value>
+    <value>Affich&amp;er les marqueurs de fin de ligne</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Accolades en surbrillance</value>
@@ -7039,6 +7054,12 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
     <value>Impossible d'avoir une version managée de ce programme. Verifiez que cette assembly est bien en mode managée.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
+    <value>Impossible d'attacher au processus.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
+    <value>Impossible de démarrer le processus.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.Debugging" xml:space="preserve">
     <value>Impossible de réaliser l'action car une tâche est déboguée.</value>

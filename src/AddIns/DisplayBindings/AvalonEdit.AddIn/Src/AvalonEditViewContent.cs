@@ -262,6 +262,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			// When parse information is updated quickly in succession, only do a single update
 			// to the latest version.
 			updateParseInfoTo = parseInfo;

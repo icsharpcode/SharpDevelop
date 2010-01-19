@@ -148,6 +148,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool enableQuickClassBrowser = true;
+		
+		[DefaultValue(true)]
+		public bool EnableQuickClassBrowser {
+			get { return enableQuickClassBrowser; }
+			set {
+				if (enableQuickClassBrowser != value) {
+					enableQuickClassBrowser = value;
+					OnPropertyChanged("EnableQuickClassBrowser");
+				}
+			}
+		}
+		
 		public void BindToTextEditor(TextEditor editor)
 		{
 			editor.Options = this;

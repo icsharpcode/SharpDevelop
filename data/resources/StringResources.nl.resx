@@ -755,6 +755,15 @@ Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Opwaarderen naar versie</value>
   </data>
+  <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
+    <value>Matrix kolommen en rijen bewerken</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
+    <value>Eigenschappen onttrekken als stijl</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
+    <value>Groeperen</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
     <value>Verwijder kantlijn</value>
   </data>
@@ -1959,6 +1968,12 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
     <value>Beschrijving</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupDialog.Text" xml:space="preserve">
+    <value>Voer aub de lijst met bestandsextensies in. De puntkomma is het scheidingsteken. (Voorbeeld: .h;.c;.cpp)</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
+    <value>&amp;Extensies bewerken</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
     <value>&amp;Beschrijving</value>
   </data>
@@ -2560,7 +2575,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Toon cursor regel</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
-    <value>Toon &amp;EOL markering</value>
+    <value>&amp;EOL markeringen weergeven</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>&amp;Markeren passend haakje</value>
@@ -3197,7 +3212,7 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
     <value>Stijl lettertype</value>
   </data>
   <data name="Global.FontStyle.CustomColor" xml:space="preserve">
-    <value>Aanpassen</value>
+    <value>Aangepast</value>
   </data>
   <data name="Global.FontStyle.SelectFont" xml:space="preserve">
     <value>Kies lettertype</value>
@@ -7040,6 +7055,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
     <value>Kan .NET Framework versie van het programma niet krijgen. Ga na of het programma een beheerde assembly is.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
+    <value>Kan niet bij proces aanhaken.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
+    <value>Kan proces niet starten.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.Debugging" xml:space="preserve">
     <value>Kan actie niet uitvoeren omdat er foutopsporing voor enig proces loopt.</value>
