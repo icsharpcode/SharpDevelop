@@ -268,6 +268,7 @@
     <Compile Include="Designer\LoadControlEventHandlerTestFixture.cs" />
     <Compile Include="Designer\LoadCursorTestFixture.cs" />
     <Compile Include="Designer\LoadEventHandlerTestFixture.cs" />
+    <Compile Include="Designer\LoadFileSystemWatcherTestFixture.cs" />
     <Compile Include="Designer\LoadFontTestFixture.cs" />
     <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
