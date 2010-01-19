@@ -173,5 +173,38 @@ namespace ICSharpCode.PythonBinding
 		{
 			return name1 == name2;
 		}
+		
+		/// <summary>
+		/// Looks for the module name where the specified identifier is imported from.
+		/// </summary>
+		public string GetModuleForIdentifier(string identifier)
+		{
+			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+				PythonImport pythonImport = u as PythonImport;
+				if (pythonImport != null) {
+					if (pythonImport.HasIdentifier(identifier)) {
+						return pythonImport.Module;
+					}
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Converts a name into the correct identifier name based on any from import as statements.
+		/// </summary>
+		public string UnaliasIdentifier(string name)
+		{
+			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+				PythonImport pythonImport = u as PythonImport;
+				if (pythonImport != null) {
+					string actualIdentifierName = pythonImport.GetIdentifierForAlias(name);
+					if (actualIdentifierName != null) {
+						return actualIdentifierName;
+					}
+				}
+			}
+			return name;
+		}
 	}
 }

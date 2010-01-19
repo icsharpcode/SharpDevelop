@@ -21,19 +21,24 @@ namespace ICSharpCode.PythonBinding
 		
 		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
 		{
-			PythonStandardModuleType type = GetStandardModuleType(resolverContext, expressionResult.Expression);
+			PythonStandardModuleType type = GetStandardModuleTypeIfImported(resolverContext, expressionResult.Expression);
 			if (type != null) {
 				return new PythonStandardModuleResolveResult(type);
 			}
 			return null;
 		}
 		
-		public PythonStandardModuleType GetStandardModuleType(PythonResolverContext resolverContext, string name)
+		public PythonStandardModuleType GetStandardModuleTypeIfImported(PythonResolverContext resolverContext, string moduleName)
 		{
-			if (resolverContext.HasImport(name) || IsBuiltInModule(name)) {
-				return standardPythonModules.GetModuleType(name);
+			if (resolverContext.HasImport(moduleName) || IsBuiltInModule(moduleName)) {
+				return standardPythonModules.GetModuleType(moduleName);
 			}
 			return null;
+		}
+		
+		public PythonStandardModuleType GetStandardModuleType(string moduleName)
+		{
+			return standardPythonModules.GetModuleType(moduleName);
 		}
 		
 		bool IsBuiltInModule(string name)

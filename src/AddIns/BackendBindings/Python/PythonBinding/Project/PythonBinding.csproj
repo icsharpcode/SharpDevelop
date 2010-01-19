@@ -75,6 +75,7 @@
     <Compile Include="Src\CompilingOptionsPanel.cs" />
     <Compile Include="Src\MemberName.cs" />
     <Compile Include="Src\PythonClassResolver.cs" />
+    <Compile Include="Src\PythonImport.cs" />
     <Compile Include="Src\PythonMethodResolver.cs" />
     <Compile Include="Src\PythonModuleCompletionItems.cs" />
     <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />

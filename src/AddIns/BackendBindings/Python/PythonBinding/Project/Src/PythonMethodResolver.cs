@@ -42,10 +42,36 @@ namespace ICSharpCode.PythonBinding
 		
 		MethodGroupResolveResult GetStandardModuleMethodResolveResult(PythonResolverContext resolverContext, MemberName memberName)
 		{
+			MethodGroupResolveResult result = GetStandardModuleMethodResolveResultFromImportedIdentifiers(resolverContext, memberName);
+			if (result != null) {
+				return result;
+			}
+			return GetStandardModuleMethodResolveResultIfFromImports(resolverContext, memberName);
+		}
+		
+		MethodGroupResolveResult GetStandardModuleMethodResolveResultFromImportedIdentifiers(PythonResolverContext resolverContext, MemberName memberName)
+		{
+			if (!memberName.HasName) {
+				string identifier = memberName.Type;
+				string moduleName = resolverContext.GetModuleForIdentifier(identifier);
+				if (moduleName != null) {
+					PythonStandardModuleType type = standardModuleResolver.GetStandardModuleType(moduleName);
+					if (type != null) {
+						identifier = resolverContext.UnaliasIdentifier(identifier);
+						return GetStandardModuleMethodResolveResult(type, identifier);
+					}
+				}
+			}
+			return null;
+		}
+		
+		MethodGroupResolveResult GetStandardModuleMethodResolveResultIfFromImports(PythonResolverContext resolverContext, MemberName memberName)
+		{
 			if (!memberName.HasName) {
 				memberName = CreateBuiltinModuleMemberName(memberName.Type);
 			}
-			PythonStandardModuleType type = standardModuleResolver.GetStandardModuleType(resolverContext, memberName.Type);
+			
+			PythonStandardModuleType type = standardModuleResolver.GetStandardModuleTypeIfImported(resolverContext, memberName.Type);
 			if (type != null) {
 				return GetStandardModuleMethodResolveResult(type, memberName.Name);
 			}
