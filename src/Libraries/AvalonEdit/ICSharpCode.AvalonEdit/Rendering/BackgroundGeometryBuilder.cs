@@ -130,7 +130,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					y -= scrollOffset.Y;
 					left -= scrollOffset.X;
 					right -= scrollOffset.X;
-					yield return new Rect(left, y, right - left, line.Height);
+					// left>right is possible in RTL languages
+					yield return new Rect(Math.Min(left, right), y, Math.Abs(right - left), line.Height);
 				}
 			}
 		}
