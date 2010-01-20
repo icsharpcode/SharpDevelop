@@ -125,13 +125,25 @@ namespace ICSharpCode.AvalonEdit.Rendering
 						break;
 					if (segmentStartVC > visualEndCol)
 						continue;
-					double left = line.GetDistanceFromCharacterHit(new CharacterHit(Math.Max(segmentStartVC, visualStartCol), 0));
-					double right = line.GetDistanceFromCharacterHit(new CharacterHit(Math.Min(segmentEndVC, visualEndCol), 0));
+					int segmentStartVCInLine = Math.Max(segmentStartVC, visualStartCol);
+					int segmentEndVCInLine = Math.Min(segmentEndVC, visualEndCol);
 					y -= scrollOffset.Y;
-					left -= scrollOffset.X;
-					right -= scrollOffset.X;
-					// left>right is possible in RTL languages
-					yield return new Rect(Math.Min(left, right), y, Math.Abs(right - left), line.Height);
+					if (segmentStartVCInLine == segmentEndVCInLine) {
+						// GetTextBounds crashes for length=0, so we'll handle this case with GetDistanceFromCharacterHit
+						// We need to return a rectangle to ensure empty lines are still visible
+						double pos = line.GetDistanceFromCharacterHit(new CharacterHit(segmentStartVCInLine, 0));
+						pos -= scrollOffset.X;
+						yield return new Rect(pos, y, 1, line.Height);
+					} else {
+						foreach (TextBounds b in line.GetTextBounds(segmentStartVCInLine, segmentEndVCInLine - segmentStartVCInLine)) {
+							double left = b.Rectangle.Left;
+							double right = b.Rectangle.Right;
+							left -= scrollOffset.X;
+							right -= scrollOffset.X;
+							// left>right is possible in RTL languages
+							yield return new Rect(Math.Min(left, right), y, Math.Abs(right - left), line.Height);
+						}
+					}
 				}
 			}
 		}
