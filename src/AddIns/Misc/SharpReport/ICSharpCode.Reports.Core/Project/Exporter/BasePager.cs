@@ -111,6 +111,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 					ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(container);
 					this.exportItemsConverter.ParentLocation = exportContainer.StyleDecorator.Location;
 					
+					AdjustBackColor (container);
+					
 					ExporterCollection clist = container.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem) as ExporterCollection;
 					
 					
@@ -135,7 +137,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 		}
 		
-		
+		private void AdjustBackColor (IContainerItem container)
+		{
+			BaseReportItem parent = container as BaseReportItem;
+			foreach (BaseReportItem item in container.Items)
+			{
+				item.BackColor = parent.BackColor;
+			}
+		}
 		#endregion
 		
 		

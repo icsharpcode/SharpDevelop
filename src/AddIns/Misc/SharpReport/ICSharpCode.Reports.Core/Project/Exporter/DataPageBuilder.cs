@@ -52,6 +52,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected override void BuildNewPage ()
 		{
+			Console.WriteLine("BuildNewPage");
 			base.BuildNewPage();
 			
 			if (this.dataNavigator != null) {
@@ -98,7 +99,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
 			base.ConvertSection (base.ReportModel.PageHeader,
 			                     this.dataNavigator.CurrentRow );
-			SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
 		}
 		
 		

@@ -268,7 +268,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		#region Events from worker
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e ) {
-			Console.WriteLine ("ReportViewer - SectionRenderEventargs from <{0}> with {1} items ",e.Section.Name,e.Section.Items.Count);
+//			Console.WriteLine ("ReportViewer - SectionRenderEventargs from <{0}> with {1} items ",e.Section.Name,e.Section.Items.Count);
 			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,e);
 		}
 		

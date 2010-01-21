@@ -40,6 +40,7 @@ namespace ICSharpCode.Reports.Core
 				throw new ArgumentNullException("reportModel");
 			}
 
+			Console.WriteLine("CalculatePageBounds for {0}",this.PageNumber);
 			sectionBounds.MeasureReportHeader(reportModel.ReportHeader);
 
 			//PageHeader
@@ -54,7 +55,10 @@ namespace ICSharpCode.Reports.Core
 
 			this.sectionBounds.MeasureDetailArea();
 			
-			this.sectionBounds.DetailSectionRectangle = new System.Drawing.Rectangle(reportModel.DetailSection.Location,reportModel.DetailSection.Size);
+			this.sectionBounds.DetailSectionRectangle = new System.Drawing.Rectangle(reportModel.DetailSection.Location.X,sectionBounds.DetailStart.Y,
+			                                                                         reportModel.DetailSection.Size.Width,
+			                                                                         reportModel.DetailSection.Size.Height);
+
 		}
 
 		
@@ -100,7 +104,7 @@ namespace ICSharpCode.Reports.Core
 				}
 				return parameterHash;
 			}
-			set { parameterHash = value; }
+			set {this.parameterHash = value;}
 		}
 		
 		

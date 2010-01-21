@@ -57,6 +57,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			BaseSection section = parent as BaseSection;
 			Size containerSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
 			IContainerItem row = section.Items[0] as IContainerItem;
+		
 			do {
 				section.Location = new Point(section.Location.X,section.SectionOffset );
 				base.DataNavigator.Fill(row.Items);
@@ -73,8 +74,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				if (base.IsPageFull(r)) {
 					base.FirePageFull(mylist);
-					section.Location = new Point(section.Location.X,SectionBounds.DetailStart.Y );
-					section.SectionOffset = SectionBounds.DetailStart.Y;
+					section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
 					mylist.Clear();
 				}
 				section.Items[0].Size = containerSize;
