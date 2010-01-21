@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
@@ -286,7 +287,7 @@ namespace ICSharpCode.UsageDataCollector
 		{
 			if (exception == null)
 				throw new ArgumentNullException("exception");
-			string exceptionType = exception.GetType().FullName;
+			string exceptionType = GetTypeName(exception);
 			string stacktrace = exception.StackTrace;
 			while (exception.InnerException != null) {
 				exception = exception.InnerException;
@@ -294,9 +295,19 @@ namespace ICSharpCode.UsageDataCollector
 				stacktrace = exception.StackTrace + Environment.NewLine
 					+ "-- continuing with outer exception (" + exceptionType + ") --" + Environment.NewLine
 					+ stacktrace;
-				exceptionType = exception.GetType().FullName;
+				exceptionType = GetTypeName(exception);
 			}
 			AddException(exceptionType, stacktrace);
+		}
+		
+		static string GetTypeName(Exception exception)
+		{
+			string type = exception.GetType().FullName;
+			ExternalException ee = exception as ExternalException;
+			if (ee != null)
+				return type + " (ErrorCode " + ee.ErrorCode.ToString("x8") + ")";
+			else
+				return type;
 		}
 		
 		/// <summary>
