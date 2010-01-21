@@ -26,7 +26,10 @@ namespace ICSharpCode.Svn
 			RegistryView view = Environment.Is64BitOperatingSystem ? RegistryView.Registry64 : RegistryView.Default;
 			using (RegistryKey baseKey = RegistryKey.OpenBaseKey(hive, view)) {
 				using (RegistryKey key = baseKey.OpenSubKey("SOFTWARE\\TortoiseSVN")) {
-					return key.GetValue(valueName) as string;
+					if (key != null)
+						return key.GetValue(valueName) as string;
+					else
+						return null;
 				}
 			}
 		}
