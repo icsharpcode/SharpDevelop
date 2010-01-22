@@ -27,6 +27,5 @@ namespace ICSharpCode.Reports.Core.Interfaces
 		IDataNavigator DataNavigator {set;}
 		IExpressionEvaluatorFacade ExpressionEvaluatorFacade {set;}
 		void RenderTable (BaseReportItem parent, SectionBounds sectionBounds, ReportPageEventArgs rpea,ILayouter layouter); 
-		ISinglePage SinglePage {set;}
 	}
 }

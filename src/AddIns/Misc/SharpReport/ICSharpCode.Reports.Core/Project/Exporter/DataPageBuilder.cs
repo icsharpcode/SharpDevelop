@@ -52,9 +52,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected override void BuildNewPage ()
 		{
-			Console.WriteLine("BuildNewPage");
 			base.BuildNewPage();
-			
 			if (this.dataNavigator != null) {
 				this.SinglePage.StartRow = this.dataNavigator.CurrentRow +1;
 			}

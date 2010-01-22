@@ -32,9 +32,9 @@ namespace ICSharpCode.Reports.Core {
 		private int  sectionOffset;
 		private Font font;
 		
-		[Obsolete]
+		[Obsolete ("will be deleted")]
 		public event EventHandler<BeforePrintEventArgs> ItemPrinting;
-		[Obsolete]
+		[Obsolete("will be deleted")]
 		public event EventHandler<AfterPrintEventArgs> ItemPrinted;
 		private RectangleShape backgroundShape = new RectangleShape();
 		

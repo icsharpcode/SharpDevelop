@@ -39,9 +39,7 @@ namespace ICSharpCode.Reports.Core
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;
 			
 			if (canGrowShrinkCollection.Count() > 0 ) {
-				FindLowestElement (container.Items);
 				int extend = containerItem.Size.Height - canGrowShrinkCollection.First().Size.Height;
-//				Rectangle surroundingRec = this.FindSurroundingRectangle_2(graphics,container.Items);
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
 				
 				if (surroundingRec.Height > desiredContainerRectangle.Height) {
@@ -51,6 +49,7 @@ namespace ICSharpCode.Reports.Core
 					                                          surroundingRec.Size.Height + extend);
 				}
 			}
+			
 			return desiredContainerRectangle;
 		}
 		
@@ -64,7 +63,7 @@ namespace ICSharpCode.Reports.Core
 				throw new ArgumentNullException("section");
 			}
 			section.Items.SortByLocation();
-			FindLowestElement (section.Items);
+		
 			IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in section.Items where bt.CanGrow == true select bt;
 			
 			Rectangle desiredSectionRectangle = new Rectangle(section.Location.X,
@@ -85,11 +84,7 @@ namespace ICSharpCode.Reports.Core
 			return desiredSectionRectangle;
 		}
 		
-		private BaseReportItem FindLowestElement (ReportItemCollection items)
-		{
-			
-			return null;
-		}
+	
 		
 		private Rectangle FindSurroundingRectangle_2 (Graphics graphics,IEnumerable<BaseReportItem> canGrowShrinkCollection)
 		{

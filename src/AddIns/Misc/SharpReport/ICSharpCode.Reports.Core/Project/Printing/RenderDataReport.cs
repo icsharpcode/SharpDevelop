@@ -157,7 +157,7 @@ namespace ICSharpCode.Reports.Core {
 				tableContainer.DataNavigator = nav;
 				tableContainer.Parent = base.CurrentSection;
 				tableContainer.ExpressionEvaluatorFacade = base.ExpressionFassade;
-				tableContainer.SinglePage = base.SinglePage;
+//				tableContainer.SinglePage = base.SinglePage;
 				
 				tableContainer.RenderTable(base.CurrentSection,this.SectionBounds,rpea,this.Layout);
 				this.ReportDocument.DetailsDone = true;

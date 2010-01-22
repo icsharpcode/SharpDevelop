@@ -81,19 +81,13 @@ namespace ICSharpCode.Reports.Core
 		                                   IContainerItem container,
 		                                   ReportPageEventArgs rpea)
 		{
-			if (container == null) {
-				return new Point(section.Location.Y, section.Size.Height);
-				
-			}
 			Point drawPoint	= Point.Empty;
-			
-			//Always set section.size to it's original value
-			
-			section.Size = this.SectionBounds.DetailSectionRectangle.Size;
-			
-			PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,container);
-			
 			if (section.Visible){
+				
+				//Always set section.size to it's original value
+				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
+				
+				PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,section);
 				section.Render (rpea);
 				foreach (BaseReportItem item in section.Items) {
 					if (item.Parent == null) {
@@ -111,6 +105,7 @@ namespace ICSharpCode.Reports.Core
 				}
 				return drawPoint;
 			}
+			
 			return drawPoint;
 		}
 		

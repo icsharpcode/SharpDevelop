@@ -55,7 +55,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			ExporterCollection mylist = new ExporterCollection();
 			BaseSection section = parent as BaseSection;
-			Size containerSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
+
 			IContainerItem row = section.Items[0] as IContainerItem;
 		
 			do {
@@ -65,7 +65,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 				//
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				base.FireSectionRendering(section);
-				PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
+				
+				PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,section);
 				
 				mylist.AddRange(this.ConvertTextOnlyRow(parent,item));
 				section.SectionOffset += section.Size.Height + 2 * base.SinglePage.SectionBounds.Gap;
@@ -77,7 +78,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 					section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
 					mylist.Clear();
 				}
-				section.Items[0].Size = containerSize;
 			}
 			
 			while (base.DataNavigator.MoveNext());

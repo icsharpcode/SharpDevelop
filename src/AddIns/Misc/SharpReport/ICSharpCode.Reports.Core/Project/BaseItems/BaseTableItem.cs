@@ -22,7 +22,7 @@ namespace ICSharpCode.Reports.Core {
 		private SectionBounds sectionBounds;
 		private IDataNavigator dataNavigator;
 		private IExpressionEvaluatorFacade expressionEvaluatorFacade;
-		private ISinglePage singlePage;
+//		private ISinglePage singlePage;
 		private ILayouter layouter;
 		
 		
@@ -84,7 +84,7 @@ namespace ICSharpCode.Reports.Core {
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
-//			
+//
 			Point saveLocation = this.Location;
 			Point currentPosition = new Point(this.SectionBounds.DetailStart.X,rpea.LocationAfterDraw.Y);
 
@@ -129,8 +129,8 @@ namespace ICSharpCode.Reports.Core {
 			rpea.LocationAfterDraw = new Point(rpea.LocationAfterDraw.X,rpea.LocationAfterDraw.Y + 20);
 			base.NotifyAfterPrint (rpea.LocationAfterDraw);
 		}
-			
-			
+		
+		
 		private Point PrintRow (ReportPageEventArgs rpea,BaseRowItem row,Point drawAt, int leftX)
 		{
 			int extend = row.Size.Height - row.Items[0].Size.Height;
@@ -162,48 +162,44 @@ namespace ICSharpCode.Reports.Core {
 		public SectionBounds SectionBounds{
 			get {return this.sectionBounds;}
 		}
+		
+		
+		#region Interface implementation of 'ITableContainer'
+		
+		public void RenderTable (BaseReportItem parent,SectionBounds sectionBounds,ReportPageEventArgs rpea,ILayouter layouter)
+		{
 			
-			
-			#region Interface implementation of 'ITableContainer'
-			
-			public void RenderTable (BaseReportItem parent,SectionBounds sectionBounds,ReportPageEventArgs rpea,ILayouter layouter)
-			{
-				
-				this.sectionBounds = sectionBounds;
-				this.Parent = parent;
-				this.layouter = layouter;
-				this.Render (rpea);
-			}
-			
-			
-			public ReportItemCollection Items {
-				get {
-					if (this.items == null) {
-						this.items = new ReportItemCollection();
-					}
-					return items;
-				}
-			}
-
-			
-			public IDataNavigator DataNavigator {
-				set { dataNavigator = value;
-					if (this.dataNavigator.CurrentRow < 0 ) {
-						this.dataNavigator.MoveNext();
-					}
-				}
-			}
-			
-			
-			public IExpressionEvaluatorFacade ExpressionEvaluatorFacade {
-				set { this.expressionEvaluatorFacade = value; }
-			}
-			
-			
-			public ISinglePage SinglePage {
-				set { singlePage = value; }
-			}
-			
-			#endregion
+			this.sectionBounds = sectionBounds;
+			this.Parent = parent;
+			this.layouter = layouter;
+			this.Render (rpea);
 		}
+		
+		
+		public ReportItemCollection Items {
+			get {
+				if (this.items == null) {
+					this.items = new ReportItemCollection();
+				}
+				return items;
+			}
+		}
+
+		
+		public IDataNavigator DataNavigator {
+			set { dataNavigator = value;
+				if (this.dataNavigator.CurrentRow < 0 ) {
+					this.dataNavigator.MoveNext();
+				}
+			}
+		}
+		
+		
+		public IExpressionEvaluatorFacade ExpressionEvaluatorFacade {
+			set { this.expressionEvaluatorFacade = value; }
+		}
+		
+
+		#endregion
 	}
+}

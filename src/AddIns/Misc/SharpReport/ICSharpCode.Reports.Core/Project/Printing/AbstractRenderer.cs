@@ -189,12 +189,14 @@ namespace ICSharpCode.Reports.Core
 		
 		public static void PageBreak(ReportPageEventArgs pea) 
 		{
+			System.Console.WriteLine("PageBreak");
 			if (pea == null) {
 				throw new ArgumentNullException("pea");
 			}
 			pea.PrintPageEventArgs.HasMorePages = true;
 			pea.ForceNewPage = true;
 		}
+		
 		
 		
 		public static bool IsPageFull (Rectangle rectangle,SectionBounds bounds)

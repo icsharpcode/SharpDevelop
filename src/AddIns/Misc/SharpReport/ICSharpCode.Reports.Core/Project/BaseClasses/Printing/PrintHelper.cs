@@ -23,10 +23,24 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		#region Layout
+		public static void SetLayoutForRow (Graphics graphics, ILayouter layouter,BaseSection section)
+		{
+			IContainerItem row = section.Items[0] as IContainerItem;
+			Size containerSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
+			BaseReportItem item = row as BaseReportItem;
+			int extend = item.Size.Height - row.Items[0].Size.Height;
+			Rectangle textRect = layouter.Layout(graphics,row);
+			if (textRect.Height >= item.Size.Height) {
+				item.Size = new Size(item.Size.Width,textRect.Height + extend );
+			}
+			section.Items[0].Size = containerSize;
+		}
+		
 		
 		public static void SetLayoutForRow (Graphics graphics, ILayouter layouter,IContainerItem row)
 		{
 			BaseReportItem item = row as BaseReportItem;
+			Size containerSize = new Size (item.Size.Width,item.Size.Height);
 			int extend = item.Size.Height - row.Items[0].Size.Height;
 			Rectangle textRect = layouter.Layout(graphics,row);
 			if (textRect.Height >= item.Size.Height) {

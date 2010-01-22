@@ -40,7 +40,6 @@ namespace ICSharpCode.Reports.Core
 				throw new ArgumentNullException("reportModel");
 			}
 
-			Console.WriteLine("CalculatePageBounds for {0}",this.PageNumber);
 			sectionBounds.MeasureReportHeader(reportModel.ReportHeader);
 
 			//PageHeader

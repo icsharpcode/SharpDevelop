@@ -56,7 +56,6 @@ namespace ICSharpCode.Reports.Core {
 			ConnectionObject conObj = null;
 			if (reportParameters != null) {
 				if (reportParameters.ConnectionObject != null) {
-					UpdateSqlParameters (settings,reportParameters.SqlParameters);
 					conObj = reportParameters.ConnectionObject;
 				}
 			}
@@ -66,22 +65,6 @@ namespace ICSharpCode.Reports.Core {
 			}
 			return conObj;
 		}
-		
-		
-		private static void UpdateSqlParameters (ReportSettings settings,
-		                                         ParameterCollection parameters) 
-		{
-			/*
-			if (parameters != null) {
-				System.Collections.Generic.List<SqlParameter> sql = new System.Collections.Generic.List<SqlParameter>();
-				foreach (SqlParameter sourcePar in parameters) {
-					SqlParameter destinationPar = settings.ParameterCollection.Find(sourcePar.ParameterName);
-					destinationPar.ParameterValue = sourcePar.ParameterValue;
-				}
-			}
-			*/
-		}
-	
 	
 		#endregion
 		
@@ -508,7 +491,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="reportModel"></param>
 		/// <returns></returns>
 		
-		public IReportCreator CreatePageBuilder (IReportModel reportModel) 
+		public static IReportCreator CreatePageBuilder (IReportModel reportModel) 
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -527,7 +510,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="dataSet"></param>
 		/// <param name="reportParameter"></param>
 		/// <returns></returns>
-		public IReportCreator CreatePageBuilder (IReportModel reportModel,
+		public static IReportCreator CreatePageBuilder (IReportModel reportModel,
 		                                         DataSet dataSet,
 		                                         ReportParameters reportParameter)
 		{
@@ -550,7 +533,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="reportParameters"></param>
 		/// <returns></returns>
 		
-		public IReportCreator CreatePageBuilder (IReportModel reportModel,
+		public static  IReportCreator CreatePageBuilder (IReportModel reportModel,
 		                                         DataTable dataTable,
 		                                         ReportParameters reportParameters)
 		{
@@ -579,7 +562,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="list"></param>
 		/// <param name="reportParameters"></param>
 		/// <returns></returns>
-		public IReportCreator CreatePageBuilder (IReportModel reportModel,
+		public static  IReportCreator CreatePageBuilder (IReportModel reportModel,
 		                                         IList list,
 		                                         ReportParameters reportParameters)
 		{
