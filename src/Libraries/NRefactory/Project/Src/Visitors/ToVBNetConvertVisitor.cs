@@ -29,6 +29,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   Parenthesis around Cast expressions remove - these are syntax errors in VB.NET
 		//   Decrease array creation size - VB specifies upper bound instead of array length
 		//   Automatic properties are converted to explicit implementation
+		//   base[index] - VB requires MyBase.Item
 		
 		List<INode> nodesToMoveToCompilationUnit = new List<INode>();
 		
@@ -377,6 +378,14 @@ namespace ICSharpCode.NRefactory.Visitors
 			Expression defaultValue = ExpressionBuilder.CreateDefaultValueForType(defaultValueExpression.TypeReference);
 			if (!(defaultValue is DefaultValueExpression))
 				ReplaceCurrentNode(defaultValue);
+			return null;
+		}
+		
+		public override object VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression, object data)
+		{
+			base.VisitBaseReferenceExpression(baseReferenceExpression, data);
+			if (baseReferenceExpression.Parent is IndexerExpression)
+				ReplaceCurrentNode(new MemberReferenceExpression(baseReferenceExpression, "Item"));
 			return null;
 		}
 	}

@@ -582,5 +582,17 @@ Private m_Name As String");
 			TestStatement(@"object x = default(int);",
 			              @"Dim x As Object = 0");
 		}
+		
+		[Test]
+		public void BaseIndexerAccess()
+		{
+			TestStatement("object a = base[0];", "Dim a As Object = MyBase.Item(0)");
+		}
+		
+		[Test]
+		public void TestMemberHiding()
+		{
+			TestMember("public new void Remove() {}", "Public Shadows Sub Remove()\nEnd Sub");
+		}
 	}
 }

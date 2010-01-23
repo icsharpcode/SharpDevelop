@@ -112,11 +112,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			IMethod currentMethod = resolver.CallingMember as IMethod;
 			CreateInterfaceImplementations(currentMethod, methodDeclaration, methodDeclaration.InterfaceImplementations);
+			// Make "Main" public
 			if (currentMethod != null && currentMethod.Name == "Main") {
 				if (currentMethod.DeclaringType.FullyQualifiedName == StartupObjectToMakePublic) {
 					if (currentMethod.IsStatic && currentMethod.IsPrivate) {
 						methodDeclaration.Modifier &= ~Modifiers.Private;
 						methodDeclaration.Modifier |= Modifiers.Internal;
+					}
+				}
+			}
+			if (resolver.CallingClass != null && resolver.CallingClass.BaseType != null) {
+				// methods with the same name as a method in a base class must have 'Overloads'
+				if ((methodDeclaration.Modifier & (Modifiers.Override | Modifiers.New)) == Modifiers.None) {
+					if (resolver.CallingClass.BaseType.GetMethods()
+					    .Any(m => string.Equals(m.Name, methodDeclaration.Name, StringComparison.OrdinalIgnoreCase))) {
+						methodDeclaration.Modifier |= Modifiers.Overloads;
 					}
 				}
 			}

@@ -751,5 +751,18 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "End Class");
 		}
 		#endregion
+		
+		[Test]
+		public void OverloadMembersInBaseClass()
+		{
+			TestProgramCS2VB("class Test : System.Collections.Generic.List<int> {" +
+			                 "   public void RemoveAt(string strangeIndex) {}" +
+			                 "}",
+			                "Class Test\n" +
+			                "  Inherits System.Collections.Generic.List(Of Integer)\n" +
+			                "  Public Overloads Sub RemoveAt(strangeIndex As String)\n" +
+			                "  End Sub\n" +
+			                "End Class");
+		}
 	}
 }

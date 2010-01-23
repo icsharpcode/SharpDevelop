@@ -2831,9 +2831,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(forTypeDecl ? Tokens.MustInherit : Tokens.MustOverride);
 				outputFormatter.Space();
 			}
-			if ((modifier & Modifiers.Override) == Modifiers.Override) {
+			if ((modifier & Modifiers.Overloads) == Modifiers.Overloads) {
 				outputFormatter.PrintToken(Tokens.Overloads);
 				outputFormatter.Space();
+			}
+			if ((modifier & Modifiers.Override) == Modifiers.Override) {
 				outputFormatter.PrintToken(Tokens.Overrides);
 				outputFormatter.Space();
 			}
