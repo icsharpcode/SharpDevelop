@@ -309,7 +309,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 					Directory.CreateDirectory(configPath);
 					string fileName = Path.Combine(configPath, current.FileName);
 					LoggingService.Info("Saving layout file: " + fileName);
-					dockingManager.SaveLayout(fileName);
+					try {
+						dockingManager.SaveLayout(fileName);
+					} catch (IOException ex) {
+						// ignore IO errors (maybe switching layout in two SharpDevelop instances at once?)
+						LoggingService.Warn(ex);
+					}
 				}
 			} catch (Exception e) {
 				MessageService.ShowException(e);
