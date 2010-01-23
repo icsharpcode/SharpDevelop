@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shell;
 
 using ICSharpCode.WpfDesign.Extensions;
 
@@ -88,13 +89,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			get { return (ResizeMode)GetValue(Window.ResizeModeProperty); }
 			set { SetValue(Window.ResizeModeProperty, value); }
 		}
-
-		public static readonly DependencyProperty ShowActivatedProperty =
-			DependencyProperty.Register("ShowActivated", typeof(bool), typeof(WindowClone));
-
+		
+		/// <summary>
+		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
 		public bool ShowActivated {
-			get { return (bool)GetValue(ShowActivatedProperty); }
-			set { SetValue(ShowActivatedProperty, value); }
+			get { return (bool)GetValue(Window.ShowActivatedProperty); }
+			set { SetValue(Window.ShowActivatedProperty, value); }
 		}
 		
 		/// <summary>
@@ -111,6 +112,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public SizeToContent SizeToContent {
 			get { return (SizeToContent)GetValue(Window.SizeToContentProperty); }
 			set { SetValue(Window.SizeToContentProperty, value); }
+		}
+		
+		/// <summary>
+		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
+		/// </summary>
+		public TaskbarItemInfo TaskbarItemInfo {
+			get { return (TaskbarItemInfo)GetValue(Window.TaskbarItemInfoProperty); }
+			set { SetValue(Window.TaskbarItemInfoProperty, value); }
 		}
 		
 		/// <summary>

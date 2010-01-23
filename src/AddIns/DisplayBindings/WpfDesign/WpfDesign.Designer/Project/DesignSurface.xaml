@@ -7,7 +7,8 @@
              Background="#888">
 	<Controls:ZoomControl x:Name="uxZoom">
 		<Default:DesignPanel x:Name="_designPanel">
-			<Border x:Name="_sceneContainer" />
+			<!-- Reset some inherited properties to the WPF defaults to avoid values from SharpDevelop applying to designed forms. -->
+			<Border x:Name="_sceneContainer" AllowDrop="False" UseLayoutRounding="False" TextOptions.TextFormattingMode="Ideal" />
 		</Default:DesignPanel>
 	</Controls:ZoomControl>
 </UserControl>
