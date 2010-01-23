@@ -497,5 +497,11 @@ End Using");
 			            "Option Infer On\n" +
 			            "Option Compare Text");
 		}
+		
+		[Test]
+		public void UntypedForeach()
+		{
+			TestStatement("For Each x In myGuidArray\nNext");
+		}
 	}
 }

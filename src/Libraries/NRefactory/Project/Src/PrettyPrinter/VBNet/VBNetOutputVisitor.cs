@@ -1739,10 +1739,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			// loop control variable
 			outputFormatter.PrintIdentifier(foreachStatement.VariableName);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			TrackedVisit(foreachStatement.TypeReference, data);
+			if (!foreachStatement.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				TrackedVisit(foreachStatement.TypeReference, data);
+			}
 			
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.In);
