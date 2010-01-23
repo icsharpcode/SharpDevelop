@@ -6,16 +6,16 @@
 			Name="mainPanel">
 			<StackPanel>
 				<TextBlock
-					TextWrapping="Wrap">
-					We need your help! To improve SharpDevelop in the future, we would like to know which features are used most.<LineBreak />
-				SharpDevelop can collect this information and upload it automatically.
-				</TextBlock>
+					TextWrapping="Wrap"
+					Text="{core:Localize AddIns.UsageDataCollector.Introduction}"/>
 				<RadioButton
 					Name="acceptRadio"
-					Checked="Radio_Checked">I would like to participate - collect and upload usage data</RadioButton>
+					Checked="Radio_Checked"
+					Content="{core:Localize AddIns.UsageDataCollector.AcceptRadioButton}"/>
 				<RadioButton
 					Name="declineRadio"
-					Checked="Radio_Checked">I do not want to participate</RadioButton>
+					Checked="Radio_Checked"
+					Content="{core:Localize AddIns.UsageDataCollector.DeclineRadioButton}"/>
 				<Button
 					Name="saveButton"
 					IsEnabled="False"
@@ -23,27 +23,26 @@
 					Margin="16 4"
 					Width="75"
 					Height="23"
-					Click="SaveButton_Click">Save</Button>
+					Click="SaveButton_Click"
+					Content="{core:Localize Dialog.Options.IDEOptions.LoadSaveOptions.SaveLabel}"/>
 			</StackPanel>
 		</core:CollapsiblePanel>
 		<core:CollapsiblePanel
 			Name="acceptedMessage"
 			IsCollapsed="True">
-			<TextBlock>
-			Thank you for participating! You can still opt-out later using the SharpDevelop options.
-			</TextBlock>
+			<TextBlock TextWrapping="Wrap" Text="{core:Localize AddIns.UsageDataCollector.AcceptConfirmation}"/>
 		</core:CollapsiblePanel>
 		<core:CollapsiblePanel
 			Name="declinedMessage"
 			IsCollapsed="True">
-			<TextBlock>
-			You can still opt-in later using the SharpDevelop options.
-			</TextBlock>
+			<TextBlock TextWrapping="Wrap" Text="{core:Localize AddIns.UsageDataCollector.DeclineConfirmation}"/>
 		</core:CollapsiblePanel>
 		<TextBlock
 			HorizontalAlignment="Left">
 			<Hyperlink
-				NavigateUri="{x:Static local:AnalyticsMonitor.PrivacyStatementUrl}">Privacy Statement</Hyperlink>
+				NavigateUri="{x:Static local:AnalyticsMonitor.PrivacyStatementUrl}">
+				<Run Text="{core:Localize AddIns.UsageDataCollector.PrivacyStatement}"/>
+			</Hyperlink>
 		</TextBlock>
 	</StackPanel>
 </UserControl>

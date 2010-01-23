@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.UsageDataCollector
 {
@@ -26,7 +27,7 @@ namespace ICSharpCode.UsageDataCollector
 		{
 			InitializeComponent();
 			
-			this.Header = "Usage Data Collection";
+			this.SetValueToExtension(HeaderProperty, new LocalizeExtension("AddIns.UsageDataCollector.Title"));
 		}
 		
 		void Radio_Checked(object sender, RoutedEventArgs e)

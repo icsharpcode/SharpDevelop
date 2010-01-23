@@ -1,16 +1,20 @@
 ﻿<gui:OptionPanel x:Class="ICSharpCode.UsageDataCollector.OptionPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:ICSharpCode.UsageDataCollector">
 	<StackPanel>
-		<TextBlock TextWrapping="Wrap">
-	  	We need your help! To improve SharpDevelop in the future, we would like to know which features are used most.<LineBreak />
-	  	SharpDevelop can collect this information and upload it automatically.
-	  	</TextBlock>
-		<RadioButton Name="acceptRadio">I would like to participate - collect and upload usage data</RadioButton>
-		<RadioButton Name="declineRadio">I do not want to participate</RadioButton>
-		<Button Name="showCollectedDataButton" Click="ShowCollectedDataButton_Click" Margin="4" HorizontalAlignment="Left">
-		Show collected data
-		</Button>
+		<TextBlock
+			TextWrapping="Wrap"
+			Text="{core:Localize AddIns.UsageDataCollector.Introduction}"/>
+		<RadioButton
+			Name="acceptRadio"
+			Content="{core:Localize AddIns.UsageDataCollector.AcceptRadioButton}"/>
+		<RadioButton
+			Name="declineRadio"
+			Content="{core:Localize AddIns.UsageDataCollector.DeclineRadioButton}"/>
+		<Button Name="showCollectedDataButton" Click="ShowCollectedDataButton_Click" Margin="4" HorizontalAlignment="Left" Content="{core:Localize AddIns.UsageDataCollector.ShowCollectedData}"/>
 		<TextBlock HorizontalAlignment="Left">
-			<Hyperlink NavigateUri="{x:Static local:AnalyticsMonitor.PrivacyStatementUrl}">Privacy Statement</Hyperlink>
+			<Hyperlink
+				NavigateUri="{x:Static local:AnalyticsMonitor.PrivacyStatementUrl}">
+				<Run Text="{core:Localize AddIns.UsageDataCollector.PrivacyStatement}"/>
+			</Hyperlink>
 		</TextBlock>
 	</StackPanel>
 </gui:OptionPanel>

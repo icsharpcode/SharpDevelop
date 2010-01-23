@@ -80,10 +80,13 @@ namespace StringResourceToolAddIn
 			// ensure caret is at start of selection / deselect text
 			textEditor.Select(textEditor.SelectionStart, 0);
 			// replace the selected text with the new text:
+			string newText;
+			if (Path.GetExtension(textEditor.FileName) == ".xaml")
+				newText = "{core:Localize " + resourceName + "}";
+			else
+				newText = "$" + "{res:" + resourceName + "}";
 			// Replace() takes the arguments: start offset to replace, length of the text to remove, new text
-			textEditor.Document.Replace(textEditor.Caret.Offset,
-			                            oldText.Length,
-			                            "$" + "{res:" + resourceName + "}");
+			textEditor.Document.Replace(textEditor.Caret.Offset, oldText.Length, newText);
 		}
 	}
 }

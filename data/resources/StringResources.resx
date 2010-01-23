@@ -760,6 +760,31 @@ You have to save those files before running the operation.</value>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Update to revision</value>
   </data>
+  <data name="AddIns.UsageDataCollector.AcceptConfirmation" xml:space="preserve">
+    <value>Thank you for participating! You can still opt-out later using the SharpDevelop options.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptRadioButton" xml:space="preserve">
+    <value>I would like to participate - collect and upload usage data</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineConfirmation" xml:space="preserve">
+    <value>You can still opt-in later using the SharpDevelop options.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineRadioButton" xml:space="preserve">
+    <value>I do not want to participate</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Introduction" xml:space="preserve">
+    <value>We need your help! To improve SharpDevelop in the future, we would like to know which features are used most.
+SharpDevelop can collect this information and upload it automatically.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.PrivacyStatement" xml:space="preserve">
+    <value>Privacy Statement</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.ShowCollectedData" xml:space="preserve">
+    <value>Show collected data</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
+    <value>Usage Data Collection</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Edit grid columns and rows</value>
   </data>

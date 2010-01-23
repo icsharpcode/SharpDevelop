@@ -2478,6 +2478,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox" xml:space="preserve">
     <value>&amp;Zet tabs om in spaties</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition" xml:space="preserve">
+    <value>Met Ctrl+Klik naar de definitie springen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox" xml:space="preserve">
     <value>A&amp;utomatisch haakjes invoegen</value>
   </data>
@@ -2522,6 +2525,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TemplateInsertCheckBox" xml:space="preserve">
     <value>&amp;Automatisch sjabloon invoegen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.UseSmartIndent" xml:space="preserve">
+    <value>Slim inspringen gebruiken</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName" xml:space="preserve">
     <value>Code Completeren</value>

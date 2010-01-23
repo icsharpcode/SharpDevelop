@@ -1,6 +1,5 @@
 ﻿<AddIn name        = "Usage Data Collector"
        author      = "Daniel Grunwald"
-       url         = ""
        description = "Collects usage data and sends it to the SharpDevelop team"
        addInManagerHidden = "preinstalled">
 	
@@ -29,7 +28,7 @@
 	
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/UIOptions">
 		<OptionPanel id = "UsageDataCollector"
-		             label = "Usage Data Collector"
+		             label = "${res:AddIns.UsageDataCollector.Title}"
 		             class = "ICSharpCode.UsageDataCollector.OptionPage" />
 	</Path>
 </AddIn>
