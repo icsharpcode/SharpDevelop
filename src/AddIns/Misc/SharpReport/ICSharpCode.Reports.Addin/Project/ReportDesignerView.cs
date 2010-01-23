@@ -699,6 +699,8 @@ namespace ICSharpCode.Reports.Addin
 			base.Load(file, stream);
 			this.LoadDesigner(stream);
 			this.SetupSecondaryView();
+			ReportModel m = loader.CreateRenderableModel();
+			m.ReportSettings.FileName = file.FileName;
 		}
 		
 		
@@ -709,8 +711,9 @@ namespace ICSharpCode.Reports.Addin
 			if (hasUnmergedChanges) {
 				this.MergeFormChanges();
 			}
-
+			ReportModel m = loader.CreateRenderableModel();
 			using(StreamWriter writer = new StreamWriter(stream)) {
+				Console.WriteLine (this.ReportFileContent);
 				writer.Write(this.ReportFileContent);
 			}
 		}

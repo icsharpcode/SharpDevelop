@@ -189,7 +189,6 @@ namespace ICSharpCode.Reports.Core
 		
 		public static void PageBreak(ReportPageEventArgs pea) 
 		{
-			System.Console.WriteLine("PageBreak");
 			if (pea == null) {
 				throw new ArgumentNullException("pea");
 			}

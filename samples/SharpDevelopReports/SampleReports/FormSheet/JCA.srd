@@ -2,28 +2,28 @@
 <ReportModel>
     <ReportSettings>
         <ReportSettings>
-            <GridSize>8, 8</GridSize>
-            <PageSize>827, 1169</PageSize>
-            <CommandText />
-            <Landscape>False</Landscape>
-            <GroupColumnsCollection />
-            <RightMargin>50</RightMargin>
-            <NoDataMessage>No Data for this Report</NoDataMessage>
             <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
-            <ReportType>FormSheet</ReportType>
-            <UseStandardPrinter>True</UseStandardPrinter>
-            <CommandType>Text</CommandType>
-            <GraphicsUnit>Millimeter</GraphicsUnit>
-            <TopMargin>50</TopMargin>
-            <ConnectionString />
-            <Padding>5, 5, 5, 5</Padding>
-            <LeftMargin>50</LeftMargin>
-            <SortColumnCollection />
             <DataModel>FormSheet</DataModel>
-            <BottomMargin>50</BottomMargin>
+            <FileName>Report1.srd</FileName>
+            <RightMargin>50</RightMargin>
+            <UseStandardPrinter>True</UseStandardPrinter>
+            <SortColumnCollection />
             <AvailableFieldsCollection />
-            <ReportName>Report1</ReportName>
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <LeftMargin>50</LeftMargin>
+            <PageSize>827, 1169</PageSize>
+            <Padding>5, 5, 5, 5</Padding>
+            <BottomMargin>50</BottomMargin>
+            <CommandType>Text</CommandType>
             <ParameterCollection />
+            <Landscape>False</Landscape>
+            <ReportName>Report1</ReportName>
+            <TopMargin>50</TopMargin>
+            <GroupColumnsCollection />
+            <GraphicsUnit>Millimeter</GraphicsUnit>
+            <CommandText />
+            <ReportType>FormSheet</ReportType>
+            <ConnectionString />
         </ReportSettings>
     </ReportSettings>
     <SectionCollection>
@@ -42,7 +42,7 @@
                     <Size>582, 50</Size>
                     <ScaleImageToSize>False</ScaleImageToSize>
                     <BackColor>Window</BackColor>
-                    <RelativeFileName>D:\SharpReportTester\TestReports\GoodFiles\Logos\Bannerbeige2.gif</RelativeFileName>
+                    <RelativeFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</RelativeFileName>
                     <ImageFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
                 </BaseImageItem>
             </Items>
@@ -63,16 +63,16 @@
                     <StringTrimming>None</StringTrimming>
                     <Text>#develop Open Source Project
 Joint Copyright Assignment by Contributor To AlphaSierraPapa</Text>
-                    <Location>90, 10</Location>
+                    <Location>92, 10</Location>
                     <ContentAlignment>TopCenter</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>False</DrawBorder>
                     <Font>Microsoft Sans Serif, 14pt, style=Bold</Font>
                     <CanGrow>False</CanGrow>
                     <FormatString />
                     <Name>reportTextItem1</Name>
                     <FrameColor>WindowFrame</FrameColor>
-                    <Size>599, 57</Size>
+                    <Size>597, 57</Size>
                     <ForeColor>ControlText</ForeColor>
                 </BaseTextItem>
                 <BaseLineItem>
@@ -115,7 +115,7 @@ ______________________________________         Telephone   :____________________
 Country:_______________________________           Facsimile     :_________________________</Text>
                     <Location>50, 8</Location>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>True</DrawBorder>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <CanGrow>False</CanGrow>
@@ -135,7 +135,7 @@ Country:_______________________________           Facsimile     :_______________
     incorporation into the technology made available under the #develop open source project.</Text>
                     <Location>50, 171</Location>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>True</DrawBorder>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <CanGrow>False</CanGrow>
@@ -158,7 +158,7 @@ Country:_______________________________           Facsimile     :_______________
   assignments made by Contributor to AlphaSierraPapa under the #develop project.</Text>
                     <Location>50, 257</Location>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>True</DrawBorder>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <CanGrow>False</CanGrow>
@@ -176,7 +176,7 @@ Country:_______________________________           Facsimile     :_______________
     Contribution that violates any law or breaches any contract.</Text>
                     <Location>50, 380</Location>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>False</DrawBorder>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <CanGrow>False</CanGrow>
@@ -197,7 +197,7 @@ Printed Name:__________________________________
 Please send a signed copy of this assignment by facsimile to AlphaSierraPapa at:</Text>
                     <Location>50, 443</Location>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>True</DrawBorder>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <CanGrow>False</CanGrow>
@@ -222,7 +222,7 @@ Vordernbergerstrasse 27/8
 AUSTRIA</Text>
                     <Location>50, 551</Location>
                     <ContentAlignment>TopLeft</ContentAlignment>
-                    <Visible>False</Visible>
+                    <Visible>True</Visible>
                     <DrawBorder>False</DrawBorder>
                     <Font>Microsoft Sans Serif, 10pt</Font>
                     <CanGrow>False</CanGrow>

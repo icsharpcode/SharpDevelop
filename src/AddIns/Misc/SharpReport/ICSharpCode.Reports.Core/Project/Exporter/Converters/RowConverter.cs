@@ -66,9 +66,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				base.FireSectionRendering(section);
 				
-				PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,section);
+				Size containerSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
 				
+				PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
 				mylist.AddRange(this.ConvertTextOnlyRow(parent,item));
+				section.Items[0].Size = containerSize;
+				
 				section.SectionOffset += section.Size.Height + 2 * base.SinglePage.SectionBounds.Gap;
 				Rectangle r = new Rectangle(section.Location.X,section.SectionOffset,
 				                            section.Size.Width,section.Size.Height);

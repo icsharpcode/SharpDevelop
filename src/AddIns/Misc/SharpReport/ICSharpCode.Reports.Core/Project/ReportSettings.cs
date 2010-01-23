@@ -179,7 +179,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		[Category("Base Settings")]
 		[DefaultValueAttribute ("")]
-		[XmlIgnoreAttribute]
+//		[XmlIgnoreAttribute]
 		public string FileName 
 		{
 			get {

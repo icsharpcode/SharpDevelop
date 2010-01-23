@@ -85,10 +85,14 @@ namespace ICSharpCode.Reports.Core
 			if (section.Visible){
 				
 				//Always set section.size to it's original value
-				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				
-				PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,section);
+				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
+				Size containerSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
+				IContainerItem row =(IContainerItem) section.Items[0];
+				PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
 				section.Render (rpea);
+				
+				
 				foreach (BaseReportItem item in section.Items) {
 					if (item.Parent == null) {
 						item.Parent = section;
@@ -100,9 +104,11 @@ namespace ICSharpCode.Reports.Core
 					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
 					
 				}
+				section.Items[0].Size = containerSize;
 				if ((section.CanGrow == false)&& (section.CanShrink == false)) {
 					return new Point(section.Location.X,section.Size.Height);
 				}
+				section.Items[0].Size = containerSize;
 				return drawPoint;
 			}
 			

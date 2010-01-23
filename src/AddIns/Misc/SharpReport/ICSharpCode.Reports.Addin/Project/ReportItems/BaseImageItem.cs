@@ -25,7 +25,6 @@ namespace ICSharpCode.Reports.Addin
 	/// Description of BaseImageItem.
 	/// </summary>
 	[Designer(typeof(ICSharpCode.Reports.Addin.ImageDesigner))]
-	
 	public class BaseImageItem:AbstractItem
 	{
 		private string imageFileName;
@@ -183,20 +182,23 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-//		[Category("Image")]
-		[Browsable(false)]
+		[Category("Image")]
+//		[Browsable(false)]
 		public string RelativeFileName {
 			get { return relativeFileName; }
 			set { relativeFileName = value; }
 		}
 		
 		
-		[XmlIgnoreAttribute]
+//		[XmlIgnoreAttribute]
 		[Category("Image")]
 		[Browsable(false)]
 		public string AbsoluteFileName
 		{
 			get {
+				string p1 = Path.GetDirectoryName(this.reportFileName);
+				string p2 = Path.GetFullPath(relativeFileName);
+				string s = FileUtility.GetRelativePath(p1,p2);
 				if (!string.IsNullOrEmpty(relativeFileName)) {
 					string testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
 					if (File.Exists(testFileName)){
