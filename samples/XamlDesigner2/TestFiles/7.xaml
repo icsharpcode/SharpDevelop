@@ -1,7 +1,0 @@
-﻿<NavigationWindow xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
-                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  Width="200"
-                  Title="Hello"
-                  ResizeMode="CanResizeWithGrip"
-                  ShowsNavigationUI="True">
-</NavigationWindow>
