@@ -304,7 +304,7 @@ namespace ICSharpCode.UsageDataCollector
 		{
 			string type = exception.GetType().FullName;
 			if (exception is ExternalException || exception is System.IO.IOException)
-				return type + " (" + Marshal.GetHRForException(ee).ToString("x8") + ")";
+				return type + " (" + Marshal.GetHRForException(exception).ToString("x8") + ")";
 			else
 				return type;
 		}
