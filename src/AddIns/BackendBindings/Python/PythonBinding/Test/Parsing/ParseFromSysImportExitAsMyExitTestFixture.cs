@@ -32,19 +32,19 @@ namespace PythonBinding.Tests.Parsing
 		[Test]
 		public void UsingAsPythonImportHasMyExitIdentifier()
 		{
-			Assert.IsTrue(import.HasIdentifier("myexit"));
+			Assert.IsTrue(import.IsImportedName("myexit"));
 		}
 		
 		[Test]
 		public void UsingAsPythonImportDoesNotHaveExitIdentifier()
 		{
-			Assert.IsFalse(import.HasIdentifier("exit"));
+			Assert.IsFalse(import.IsImportedName("exit"));
 		}
 		
 		[Test]
 		public void PythonImportGetIdentifierFromAliasReturnsExitForMyExit()
 		{
-			Assert.AreEqual("exit", import.GetIdentifierForAlias("myexit"));
+			Assert.AreEqual("exit", import.GetOriginalNameForAlias("myexit"));
 		}
 	}
 }

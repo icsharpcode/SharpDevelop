@@ -21,15 +21,15 @@ namespace ICSharpCode.PythonBinding
 			this.fromImport = fromImport;
 		}
 		
-		public bool HasIdentifier(string name)
+		public bool IsImportedName(string name)
 		{
 			if (String.IsNullOrEmpty(name)) {
 				return false;
 			}
 			
 			for (int i = 0; i < fromImport.Names.Count; ++i) {
-				string identifier = GetImportedAsNameIfExists(i);
-				if (identifier == name) {
+				string importedName = GetImportedAsNameIfExists(i);
+				if (importedName == name) {
 					return true;
 				}
 			}
@@ -38,9 +38,11 @@ namespace ICSharpCode.PythonBinding
 		
 		string GetImportedAsNameIfExists(int index)
 		{
-			string identifier = fromImport.AsNames[index];
-			if (identifier != null) {
-				return identifier;
+			if (fromImport.AsNames != null) {
+				string importedAsName = fromImport.AsNames[index];
+				if (importedAsName != null) {
+					return importedAsName;
+				}
 			}
 			return fromImport.Names[index];
 		}
@@ -49,13 +51,23 @@ namespace ICSharpCode.PythonBinding
 			get { return fromImport.Root.MakeString(); }
 		}
 		
-		public string GetIdentifierForAlias(string alias)
+		public string GetOriginalNameForAlias(string alias)
 		{
+			if (fromImport.AsNames == null) {
+				return null;
+			}
+			
 			int index = fromImport.AsNames.IndexOf(alias);
 			if (index >= 0) {
 				return fromImport.Names[index];
 			}
 			return null;
+		}
+		
+		public bool ImportsEverything {
+			get {
+				return fromImport.Names[0] == "*";
+			}
 		}
 	}
 }

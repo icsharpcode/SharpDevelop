@@ -32,13 +32,13 @@ namespace PythonBinding.Tests.Parsing
 		[Test]
 		public void UsingAsPythonImportHasExitIdentifier()
 		{
-			Assert.IsTrue(import.HasIdentifier("exit"));
+			Assert.IsTrue(import.IsImportedName("exit"));
 		}
 		
 		[Test]
 		public void UsingAsPythonImportDoesNotHaveUnknownIdentifier()
 		{
-			Assert.IsFalse(import.HasIdentifier("unknown"));
+			Assert.IsFalse(import.IsImportedName("unknown"));
 		}
 		
 		[Test]

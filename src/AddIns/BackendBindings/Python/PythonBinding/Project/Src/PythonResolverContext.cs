@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PythonBinding
@@ -177,12 +178,12 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Looks for the module name where the specified identifier is imported from.
 		/// </summary>
-		public string GetModuleForIdentifier(string identifier)
+		public string GetModuleForImportedName(string name)
 		{
 			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
 				PythonImport pythonImport = u as PythonImport;
 				if (pythonImport != null) {
-					if (pythonImport.HasIdentifier(identifier)) {
+					if (pythonImport.IsImportedName(name)) {
 						return pythonImport.Module;
 					}
 				}
@@ -193,18 +194,32 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Converts a name into the correct identifier name based on any from import as statements.
 		/// </summary>
-		public string UnaliasIdentifier(string name)
+		public string UnaliasImportedName(string name)
 		{
 			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
 				PythonImport pythonImport = u as PythonImport;
 				if (pythonImport != null) {
-					string actualIdentifierName = pythonImport.GetIdentifierForAlias(name);
-					if (actualIdentifierName != null) {
-						return actualIdentifierName;
+					string actualName = pythonImport.GetOriginalNameForAlias(name);
+					if (actualName != null) {
+						return actualName;
 					}
 				}
 			}
 			return name;
+		}
+		
+		public string[] GetModulesThatImportEverything()
+		{
+			List<string> modules = new List<string>();
+			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+				PythonImport pythonImport = u as PythonImport;
+				if (pythonImport != null) {
+					if (pythonImport.ImportsEverything) {
+						modules.Add(pythonImport.Module);
+					}
+				}
+			}
+			return modules.ToArray();
 		}
 	}
 }

@@ -14,7 +14,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolverContextGetModuleForIdentifierImportedAsDifferentNameTestFixture
+	public class ResolverContextGetModuleForNameImportedAsDifferentNameTestFixture
 	{
 		PythonResolverContext resolverContext;
 		ParseInformation parseInfo;
@@ -30,27 +30,27 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void ResolverContextGetModuleForIdentifierReturnsSysForMyExitIdentifier()
+		public void ResolverContextGetModuleForNameReturnsSysForMyExitName()
 		{
-			Assert.AreEqual("sys", resolverContext.GetModuleForIdentifier("myexit"));
+			Assert.AreEqual("sys", resolverContext.GetModuleForImportedName("myexit"));
 		}
 		
 		[Test]
-		public void ResolverContextGetModuleForIdentifierReturnsNullForExitIdentifier()
+		public void ResolverContextGetModuleForImportedNameReturnsNullForExitImportedName()
 		{
-			Assert.IsNull(resolverContext.GetModuleForIdentifier("exit"));
+			Assert.IsNull(resolverContext.GetModuleForImportedName("exit"));
 		}
 		
 		[Test]
-		public void ResolverContextUnaliasIdentiferReturnsMyExitForExitIdentifier()
+		public void ResolverContextUnaliasIdentiferReturnsMyExitForExitImportedName()
 		{
-			Assert.AreEqual("exit", resolverContext.UnaliasIdentifier("myexit"));
+			Assert.AreEqual("exit", resolverContext.UnaliasImportedName("myexit"));
 		}
 		
 		[Test]
-		public void ResolverContextUnaliasIdentifierReturnsOriginalNameWhenNoAliasIsFound()
+		public void ResolverContextUnaliasImportedNameReturnsOriginalNameWhenNoAliasIsFound()
 		{
-			Assert.AreEqual("unknown", resolverContext.UnaliasIdentifier("unknown"));
+			Assert.AreEqual("unknown", resolverContext.UnaliasImportedName("unknown"));
 		}
 	}
 }

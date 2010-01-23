@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace PythonBinding.Tests.Parsing
 {
 	[TestFixture]
-	public class ParseFromSysImportWithoutIdentifierTestFixture
+	public class ParseFromSysImportWithoutImportedNameTestFixture
 	{
 		ICompilationUnit compilationUnit;
 		PythonImport import;
@@ -32,13 +32,13 @@ namespace PythonBinding.Tests.Parsing
 		[Test]
 		public void UsingAsPythonImportDoesNotHaveEmptyStringIdentifier()
 		{
-			Assert.IsFalse(import.HasIdentifier(String.Empty));
+			Assert.IsFalse(import.IsImportedName(String.Empty));
 		}
 		
 		[Test]
 		public void UsingAsPythonImportDoesNotHaveNullIdentifier()
 		{
-			Assert.IsFalse(import.HasIdentifier(null));
+			Assert.IsFalse(import.IsImportedName(null));
 		}
 		
 		[Test]

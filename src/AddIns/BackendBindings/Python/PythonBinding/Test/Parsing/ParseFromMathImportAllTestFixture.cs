@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace PythonBinding.Tests.Parsing
 {
 	[TestFixture]
-	public class ParseFromMathImportCosAndTanExitTestFixture
+	public class ParseFromMathImportAllTestFixture
 	{
 		ICompilationUnit compilationUnit;
 		PythonImport import;
@@ -21,7 +21,7 @@ namespace PythonBinding.Tests.Parsing
 		[SetUp]
 		public void Init()
 		{
-			string python = "from math import cos, tan";
+			string python = "from math import *";
 			
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			PythonParser parser = new PythonParser();
@@ -30,27 +30,23 @@ namespace PythonBinding.Tests.Parsing
 		}
 		
 		[Test]
-		public void UsingAsPythonImportHasCosIdentifier()
-		{
-			Assert.IsTrue(import.HasIdentifier("cos"));
-		}
-		
-		[Test]
-		public void UsingAsPythonImportContainsMathModuleName()
+		public void PythonImportContainsMathModuleName()
 		{
 			Assert.AreEqual("math", import.Module);
 		}
-
+		
 		[Test]
-		public void UsingAsPythonImportHasTanIdentifier()
+		public void PythonImportImportsEverythingReturnsTrue()
 		{
-			Assert.IsTrue(import.HasIdentifier("tan"));
+			Assert.IsTrue(import.ImportsEverything);
 		}
-
+		
 		[Test]
-		public void UsingAsPythonImportDoesNotHaveACosIdentifier()
+		public void PythonImportGetIdentifierForAliasDoesNotThrowNullReferenceException()
 		{
-			Assert.IsFalse(import.HasIdentifier("acos"));
+			string identifier = String.Empty;
+			Assert.DoesNotThrow(delegate { identifier = import.GetOriginalNameForAlias("unknown"); });
+			Assert.IsNull(identifier);
 		}
 	}
 }

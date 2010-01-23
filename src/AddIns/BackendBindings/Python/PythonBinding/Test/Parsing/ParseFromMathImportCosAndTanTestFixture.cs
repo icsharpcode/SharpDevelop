@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace PythonBinding.Tests.Parsing
 {
 	[TestFixture]
-	public class ParseFromSysImportMissingImportTestFixture
+	public class ParseFromMathImportCosAndTanTestFixture
 	{
 		ICompilationUnit compilationUnit;
 		PythonImport import;
@@ -21,7 +21,7 @@ namespace PythonBinding.Tests.Parsing
 		[SetUp]
 		public void Init()
 		{
-			string python = "from sys";
+			string python = "from math import cos, tan";
 			
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			PythonParser parser = new PythonParser();
@@ -30,21 +30,33 @@ namespace PythonBinding.Tests.Parsing
 		}
 		
 		[Test]
-		public void UsingAsPythonImportDoesNotHaveEmptyStringIdentifier()
+		public void UsingAsPythonImportHasCosIdentifier()
 		{
-			Assert.IsFalse(import.IsImportedName(String.Empty));
+			Assert.IsTrue(import.IsImportedName("cos"));
 		}
 		
 		[Test]
-		public void UsingAsPythonImportDoesNotHaveNullIdentifier()
+		public void UsingAsPythonImportContainsMathModuleName()
 		{
-			Assert.IsFalse(import.IsImportedName(null));
+			Assert.AreEqual("math", import.Module);
 		}
 		
 		[Test]
-		public void UsingAsPythonImportContainsSysModuleName()
+		public void UsingAsPythonImportHasTanIdentifier()
 		{
-			Assert.AreEqual("sys", import.Module);
+			Assert.IsTrue(import.IsImportedName("tan"));
+		}
+		
+		[Test]
+		public void UsingAsPythonImportDoesNotHaveACosIdentifier()
+		{
+			Assert.IsFalse(import.IsImportedName("acos"));
+		}
+		
+		[Test]
+		public void PythonImportImportsEverythingReturnsFalse()
+		{
+			Assert.IsFalse(import.ImportsEverything);
 		}
 	}
 }

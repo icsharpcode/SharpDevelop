@@ -12,7 +12,6 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonStandardModuleResolver
 	{
-		public const string PythonBuiltInModuleName = "__builtin__";
 		PythonStandardModules standardPythonModules = new PythonStandardModules();
 		
 		public PythonStandardModuleResolver()
@@ -30,7 +29,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public PythonStandardModuleType GetStandardModuleTypeIfImported(PythonResolverContext resolverContext, string moduleName)
 		{
-			if (resolverContext.HasImport(moduleName) || IsBuiltInModule(moduleName)) {
+			if (resolverContext.HasImport(moduleName) || PythonBuiltInModuleMemberName.IsBuiltInModule(moduleName)) {
 				return standardPythonModules.GetModuleType(moduleName);
 			}
 			return null;
@@ -39,11 +38,6 @@ namespace ICSharpCode.PythonBinding
 		public PythonStandardModuleType GetStandardModuleType(string moduleName)
 		{
 			return standardPythonModules.GetModuleType(moduleName);
-		}
-		
-		bool IsBuiltInModule(string name)
-		{
-			return name == PythonBuiltInModuleName;
 		}
 	}
 }

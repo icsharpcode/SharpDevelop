@@ -14,7 +14,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolverContextGetModuleForIdentifierTestFixture
+	public class ResolverContextGetModuleForImportedNameTestFixture
 	{
 		PythonResolverContext resolverContext;
 		ParseInformation parseInfo;
@@ -31,21 +31,21 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void ResolverContextGetModuleForIdentifierReturnsSysForExitIdentifier()
+		public void ResolverContextGetModuleForImportedNameReturnsSysForExitImportedName()
 		{
-			Assert.AreEqual("sys", resolverContext.GetModuleForIdentifier("exit"));
+			Assert.AreEqual("sys", resolverContext.GetModuleForImportedName("exit"));
 		}
 		
 		[Test]
-		public void ResolverContextGetModuleForIdentifierReturnsNullForUnknownIdentifier()
+		public void ResolverContextGetModuleForImportedNameReturnsNullForUnknownImportedName()
 		{
-			Assert.IsNull(resolverContext.GetModuleForIdentifier("unknown"));
+			Assert.IsNull(resolverContext.GetModuleForImportedName("unknown"));
 		}
 		
 		[Test]
-		public void ResolverContextGetImportedIdentifierNameReturnsExitForExitIdentifier()
+		public void ResolverContextGetImportedImportedNameNameReturnsExitForExitImportedName()
 		{
-			Assert.AreEqual("exit", resolverContext.UnaliasIdentifier("exit"));
+			Assert.AreEqual("exit", resolverContext.UnaliasImportedName("exit"));
 		}
 	}
 }
