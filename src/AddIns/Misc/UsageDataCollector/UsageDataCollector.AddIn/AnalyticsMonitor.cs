@@ -6,11 +6,14 @@
 // </file>
 
 using System;
+using System.Linq;
+using System.Globalization;
 using System.IO;
+using System.Threading;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop;
-using System.Threading;
 
 namespace ICSharpCode.UsageDataCollector
 {
@@ -83,6 +86,15 @@ namespace ICSharpCode.UsageDataCollector
 						session.OnException = MessageService.ShowException;
 						session.AddEnvironmentData("appVersion", RevisionClass.FullVersion);
 						session.AddEnvironmentData("language", ResourceService.Language);
+						session.AddEnvironmentData("culture", CultureInfo.CurrentCulture.Name);
+						string PROCESSOR_ARCHITECTURE = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
+						if (string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {
+							PROCESSOR_ARCHITECTURE = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
+						}
+						if (!string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {
+							session.AddEnvironmentData("architecture", PROCESSOR_ARCHITECTURE);
+						}
+						session.AddEnvironmentData("userAddInCount", AddInTree.AddIns.Where(a => !a.IsPreinstalled).Count().ToString());
 						sessionOpened = true;
 					} catch (IncompatibleDatabaseException ex) {
 						if (ex.ActualVersion < ex.ExpectedVersion) {

@@ -108,7 +108,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		#endregion
 		
 		#region Text
-		void VerifyRange(int offset, int length)
+		void ThrowIfRangeInvalid(int offset, int length)
 		{
 			if (offset < 0 || offset > rope.Length) {
 				throw new ArgumentOutOfRangeException("offset", offset, "0 <= offset <= " + rope.Length.ToString(CultureInfo.InvariantCulture));
@@ -544,7 +544,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				try {
 					// The range verification must wait until after the BeginUpdate() call because the document
 					// might be modified inside the UpdateStarted event.
-					VerifyRange(offset, length);
+					ThrowIfRangeInvalid(offset, length);
 					
 					DoReplace(offset, length, text, offsetChangeMap);
 				} finally {

@@ -45,11 +45,9 @@ namespace ICSharpCode.Core
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			foreach (AddIn addIn in AddIns) {
 				// Skip preinstalled AddIns (show only third party AddIns)
-				if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addIn.FileName)) {
-					string hidden = addIn.Properties["addInManagerHidden"];
-					if (string.Equals(hidden, "true", StringComparison.OrdinalIgnoreCase) || string.Equals(hidden, "preinstalled", StringComparison.OrdinalIgnoreCase))
-						continue;
-				}
+				if (addIn.IsPreinstalled)
+					continue;
+				
 				if (sb.Length > 0) sb.Append(", ");
 				sb.Append("[");
 				sb.Append(addIn.Name);

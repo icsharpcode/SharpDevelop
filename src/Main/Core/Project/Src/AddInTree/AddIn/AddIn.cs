@@ -276,5 +276,20 @@ namespace ICSharpCode.Core
 				throw new AddInLoadException("Can't load " + fileName, e);
 			}
 		}
+		
+		/// <summary>
+		/// Gets whether the AddIn is a preinstalled component of the host application.
+		/// </summary>
+		public bool IsPreinstalled {
+			get {
+				if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, this.FileName)) {
+					string hidden = this.Properties["addInManagerHidden"];
+					return string.Equals(hidden, "true", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(hidden, "preinstalled", StringComparison.OrdinalIgnoreCase);
+				} else {
+					return false;
+				}
+			}
+		}
 	}
 }
