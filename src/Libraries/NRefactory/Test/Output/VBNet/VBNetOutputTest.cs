@@ -482,5 +482,20 @@ End Using");
 			               " .Encoding = Encoding.UTF8 _\n" +
 			               "}");
 		}
+		
+		[Test]
+		public void EventDefinition()
+		{
+			TestTypeMember("Public Event MyEvent(ByVal sender As Object)");
+		}
+		
+		[Test]
+		public void Options()
+		{
+			TestProgram("Option Strict On\n" +
+			            "Option Explicit On\n" +
+			            "Option Infer On\n" +
+			            "Option Compare Text");
+		}
 	}
 }

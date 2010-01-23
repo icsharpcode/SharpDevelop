@@ -459,18 +459,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			switch (optionDeclaration.OptionType) {
 				case OptionType.Strict:
 					outputFormatter.PrintToken(Tokens.Strict);
-					if (!optionDeclaration.OptionValue) {
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.Off);
-					}
+					outputFormatter.Space();
+					outputFormatter.PrintToken(optionDeclaration.OptionValue ? Tokens.On : Tokens.Off);
 					break;
 				case OptionType.Explicit:
 					outputFormatter.PrintToken(Tokens.Explicit);
 					outputFormatter.Space();
-					if (!optionDeclaration.OptionValue) {
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.Off);
-					}
+					outputFormatter.PrintToken(optionDeclaration.OptionValue ? Tokens.On : Tokens.Off);
+					break;
+				case OptionType.Infer:
+					outputFormatter.PrintToken(Tokens.Infer);
+					outputFormatter.Space();
+					outputFormatter.PrintToken(optionDeclaration.OptionValue ? Tokens.On : Tokens.Off);
 					break;
 				case OptionType.CompareBinary:
 					outputFormatter.PrintToken(Tokens.Compare);
@@ -658,11 +658,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				this.AppendCommaSeparatedList(eventDeclaration.Parameters);
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			VisitReturnTypeAttributes(eventDeclaration.Attributes, data);
-			TrackedVisit(eventDeclaration.TypeReference, data);
+			if (!eventDeclaration.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				VisitReturnTypeAttributes(eventDeclaration.Attributes, data);
+				TrackedVisit(eventDeclaration.TypeReference, data);
+			}
 			
 			PrintInterfaceImplementations(eventDeclaration.InterfaceImplementations);
 			
