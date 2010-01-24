@@ -339,6 +339,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		protected void ReevaluateIfNecessary()
+		{
+			using (var c = OpenCurrentConfiguration()) {
+				c.Project.ReevaluateIfNecessary();
+			}
+		}
+		
 		MSBuild.Project currentlyOpenProject;
 		
 		void UnloadCurrentlyOpenProject()

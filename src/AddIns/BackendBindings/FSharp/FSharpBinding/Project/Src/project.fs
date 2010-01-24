@@ -31,17 +31,15 @@ open ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 type FSharpProject = class
     inherit CompilableProject
-    new (engineProvider : IMSBuildEngineProvider, fileName : string, projectName : string ) as x = 
-        { inherit CompilableProject(engineProvider) } then 
-        base.Name <- projectName
-        x.LoadProject(fileName)
+    new (info : ProjectLoadInformation) as x = 
+        { inherit CompilableProject(info ) }
     new (info : ProjectCreateInformation) as x = 
-        { inherit CompilableProject(info.Solution) } then
-        x.Create(info)
+        { inherit CompilableProject(info) } then
         try
-            base.AddImport(@"$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets", null)
+            base.AddImport(@"$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets", null)
+            base.ReevaluateIfNecessary() // provoke exception if import is invalid
         with
-            | :? Microsoft.Build.BuildEngine.InvalidProjectFileException as ex ->
+            | :? Microsoft.Build.Exceptions.InvalidProjectFileException as ex ->
                 raise (ProjectLoadException("Please ensure that the F# compiler is installed on your computer.\n\n" + ex.Message, ex))
     override x.GetDefaultItemType(fileName : string) = 
         if String.Equals(".fs", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase) then

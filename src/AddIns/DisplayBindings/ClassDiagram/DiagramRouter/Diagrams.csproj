@@ -55,7 +55,4 @@
     <Folder Include="Drawables" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
-  <PropertyGroup>
-    <PreBuildEvent>..\..\..\..\..\..\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
-  </PropertyGroup>
 </Project>

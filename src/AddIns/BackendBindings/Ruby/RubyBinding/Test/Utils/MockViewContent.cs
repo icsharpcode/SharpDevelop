@@ -219,5 +219,11 @@ namespace RubyBinding.Tests.Utils
 				IsDirtyChanged(this, e);
 			}
 		}		
+		
+		public object InitiallyFocusedControl {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

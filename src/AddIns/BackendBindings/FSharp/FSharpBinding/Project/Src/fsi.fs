@@ -21,7 +21,7 @@ open ICSharpCode.SharpDevelop.Internal.Templates
 open ICSharpCode.SharpDevelop.Project
 open ICSharpCode.Core
 open ICSharpCode.SharpDevelop.Gui
-open ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
+open ICSharpCode.SharpDevelop.Editor
 
 module TheControl =
     let outputQueue = new Queue<string>()
@@ -130,18 +130,15 @@ type SentToFSharpInteractive = class
             let window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow
             if window <> null then
                 match window.ActiveViewContent :> obj with
-                | :? ITextEditorControlProvider as textArea ->
-                    let textArea = textArea.TextEditorControl.ActiveTextAreaControl.TextArea
+                | :? ITextEditorProvider as textEditorProvider ->
+                    let textEditor = textEditorProvider.TextEditor
                     let pad = WorkbenchSingleton.Workbench.GetPad(typeof<FSharpInteractive>)
                     pad.BringPadToFront()
-                    if textArea.SelectionManager.HasSomethingSelected then
-                        for selection in textArea.SelectionManager.SelectionCollection do
-                            TheControl.fsiProcess.StandardInput.WriteLine(selection.SelectedText)
+                    if textEditor.SelectionLength > 0 then
+                        TheControl.fsiProcess.StandardInput.WriteLine(textEditor.SelectedText)
                     else
-                        let line = textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset)
-                        let lineSegment = textArea.Document.GetLineSegment(line)
-                        let lineText = textArea.Document.GetText(lineSegment.Offset, lineSegment.TotalLength)
-                        TheControl.fsiProcess.StandardInput.WriteLine(lineText)
+                        let line = textEditor.Document.GetLine(textEditor.Caret.Line)
+                        TheControl.fsiProcess.StandardInput.WriteLine(line.Text)
                     TheControl.fsiProcess.StandardInput.WriteLine(";;")
                 | _ -> ()
 end

@@ -109,24 +109,15 @@
 		<Condition name = "ProjectActive" activeproject="F#">
 			<MenuItem id = "SendToFSharpInteractive"
 				  label = "Send To F# Interactive"
-				  shortcut = "Alt|Return"
 				  class= "FSharpBinding.SentToFSharpInteractive"/>
 		</Condition>
 	</Path>
 	
-	<Path path = "/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id                   = "F#"
-		                 guid                 = "{982E8BC1-ACD7-4dbf-96AB-B2CE67D6A008}"
+	<Path path = "/SharpDevelop/Workbench/ProjectBindings">
+		<ProjectBinding  id                   = "F#"
+		                 guid                 = "{F2A71F9B-5D33-465A-A702-920D77279786}"
 		                 supportedextensions  = ".fs"
 		                 projectfileextension = ".fsproj"
-		                 class                = "FSharpBinding.FSharpLanguageBinding" />
-	</Path>
-
-	<!-- 
-		Register path to SharpDevelop.Build.FSharp.targets for the MSBuild engine.
-		SharpDevelop.Build.FSharp.targets is in the F# AddIn directory 
-	-->
-	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalProperties">
-		<String id = "FSharpBuildTasksPath" text = "${AddInPath:ICSharpCode.FSharpBinding}"/>
+		                 class                = "FSharpBinding.FSharpProjectBinding" />
 	</Path>
 </AddIn>

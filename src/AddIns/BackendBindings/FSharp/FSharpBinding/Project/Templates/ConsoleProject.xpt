@@ -19,9 +19,10 @@
 	<!-- Template Content -->
 	<Project language = "F#">
 		<Files>
-			<File name="file.fs"><![CDATA[#light 
+			<File name="file.fs"><![CDATA[#light
 module MyNamespace.MyModule
-printfn "Hello world" ]]></File>
+printfn "Hello world"
+]]></File>
 		</Files>
 	</Project>
 </Template>

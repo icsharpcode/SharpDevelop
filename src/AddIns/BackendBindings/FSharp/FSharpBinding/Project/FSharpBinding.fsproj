@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,29 +9,27 @@
     <OutputType>Library</OutputType>
     <RootNamespace>FSharpBinding</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Name>FShapBinding</Name>
+    <Name>FSharpBinding</Name>
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\FSharpBinding</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\FSharpBinding</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <OtherFlags>
-    </OtherFlags>
+    <OtherFlags></OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\FSharpBinding</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <OtherFlags>--standalone</OtherFlags>
+    <OtherFlags>--staticlink:FSharp.Core</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Src\project.fs" />
@@ -54,15 +52,10 @@
       <HintPath>..\..\..\..\..\Libraries\log4net\log4net.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Build.Engine, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Microsoft.Build.Engine</Name>
-      <AssemblyName>Microsoft.Build.Engine.dll</AssemblyName>
-    </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\..\..\Libraries\Mono.Cecil\Mono.Cecil.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="PresentationCFFRasterizer" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -72,114 +65,20 @@
     <Reference Include="PresentationUI">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="ReachFramework">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+	<Reference Include="Microsoft.Build">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Configuration</Name>
-      <AssemblyName>System.configuration.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Printing">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Security</Name>
-      <AssemblyName>System.Security.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Web</Name>
-      <AssemblyName>System.Web.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.EnterpriseServices, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.EnterpriseServices</Name>
-      <AssemblyName>System.EnterpriseServices.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Runtime.Remoting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <Name>System.Runtime.Remoting</Name>
-      <AssemblyName>System.Runtime.Remoting.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.DirectoryServices, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.DirectoryServices</Name>
-      <AssemblyName>System.DirectoryServices.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization.Formatters.Soap, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Runtime.Serialization.Formatters.Soap</Name>
-      <AssemblyName>System.Runtime.Serialization.Formatters.Soap.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.DirectoryServices.Protocols, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.DirectoryServices.Protocols</Name>
-      <AssemblyName>System.DirectoryServices.Protocols.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Web.RegularExpressions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Web.RegularExpressions</Name>
-      <AssemblyName>System.Web.RegularExpressions.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Web.Services</Name>
-      <AssemblyName>System.Web.Services.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Design</Name>
-      <AssemblyName>System.Design.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Drawing.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Drawing.Design</Name>
-      <AssemblyName>System.Drawing.Design.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Deployment</Name>
-      <AssemblyName>System.Deployment.dll</AssemblyName>
-    </Reference>
-    <Reference Include="Accessibility, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Accessibility</Name>
-      <AssemblyName>Accessibility.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.ServiceProcess, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.ServiceProcess</Name>
-      <AssemblyName>System.ServiceProcess.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Configuration.Install, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Configuration.Install</Name>
-      <AssemblyName>System.Configuration.Install.dll</AssemblyName>
-    </Reference>
-    <Reference Include="Microsoft.VisualC, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>Microsoft.VisualC</Name>
-      <AssemblyName>Microsoft.VisualC.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Name>System.Drawing</Name>
-      <AssemblyName>System.Drawing.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <Name>System.Windows.Forms</Name>
-      <AssemblyName>System.Windows.Forms.dll</AssemblyName>
-    </Reference>
-    <Reference Include="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <Name>System.Xml</Name>
-      <AssemblyName>System.XML.dll</AssemblyName>
-    </Reference>
-    <Reference Include="UIAutomationProvider">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="UIAutomationTypes">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
+	<Reference Include="System.Configuration" />
+	<Reference Include="System.Xml" />
+	<Reference Include="System.Drawing" />
+	<Reference Include="System.Windows.Forms" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WindowsFormsIntegration" />
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Name>ICSharpCode.Core.WinForms</Name>
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Name>ICSharpCode.TextEditor</Name>
-      <Project>{2d18be89-d210-49eb-a9dd-2246fbb3df6d}</Project>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
@@ -202,41 +101,20 @@
       <Project>{924ee450-603d-49c1-a8e5-4afaa31ce6f3}</Project>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
-      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Project>{8035765f-d51f-4a0c-a746-2fd100e19419}</Project>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Libraries\AvalonDock\AvalonDock.csproj">
-      <Project>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</Project>
-      <Name>AvalonDock</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
-      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
-      <Name>ICSharpCode.AvalonEdit</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.BuildWorker\ICSharpCode.SharpDevelop.BuildWorker.csproj">
-      <Project>{C3CBC8E3-81D8-4C5B-9941-DCCD12D50B1F}</Project>
-      <Name>ICSharpCode.SharpDevelop.BuildWorker</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
-  <Target Name="Clean" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
+  <Target Name="Clean" Condition="!Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets')">
     <!-- F# not found? no need to clean anything -->
   </Target>
-  <Target Name="Build" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
+  <Target Name="Build" Condition="!Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets')">
     <Warning Text="Microsoft.FSharp.Targets not found, skipping F# binding" />
   </Target>
-  <Target Name="Rebuild" Condition="!Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')">
+  <Target Name="Rebuild" Condition="!Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets')">
     <Warning Text="Microsoft.FSharp.Targets not found, skipping F# binding" />
   </Target>
-  <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets')" />
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets')" />
 </Project>
