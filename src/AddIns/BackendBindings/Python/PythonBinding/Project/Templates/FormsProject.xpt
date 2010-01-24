@@ -21,7 +21,6 @@
 		</PropertyGroup>
 		
 		<ProjectItems>
-			<Reference Include="mscorlib"/>
 			<Reference Include="System"/>
 			<Reference Include="System.Data"/>
 			<Reference Include="System.Drawing"/>
@@ -29,6 +28,9 @@
 			<Reference Include="System.Xml"/>
 			<Reference Include="IronPython">
 				<HintPath>${addinpath:ICSharpCode.PythonBinding}\IronPython.dll</HintPath>
+			</Reference>
+			<Reference Include="IronPython.Modules">
+				<HintPath>${addinpath:ICSharpCode.PythonBinding}\IronPython.Modules.dll</HintPath>
 			</Reference>
 		</ProjectItems>
 		
