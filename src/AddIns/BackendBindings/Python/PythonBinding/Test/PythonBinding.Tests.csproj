@@ -319,6 +319,7 @@
     <Compile Include="Expressions\ImportNamespaceExpressionTests.cs" />
     <Compile Include="Expressions\IsImportExpressionTestFixture.cs" />
     <Compile Include="Expressions\ParseFromImportWithIdentifierTestFixture.cs" />
+    <Compile Include="Expressions\ParseFromImportWithoutImportedNameTestFixture.cs" />
     <Compile Include="Expressions\ParseImportExpressionOnlyTestFixture.cs" />
     <Compile Include="Expressions\ParseImportSystemConsoleExpressionTestFixture.cs" />
     <Compile Include="Expressions\ParseImportSystemExpressionTestFixture.cs" />

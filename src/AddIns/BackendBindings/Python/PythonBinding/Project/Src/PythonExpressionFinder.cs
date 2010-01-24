@@ -145,6 +145,9 @@ namespace ICSharpCode.PythonBinding
 		
 		void ExtendRangeToStartOfLine(string text)
 		{
+			if (expressionRange.Start > expressionRange.End) {
+				expressionRange.Start = expressionRange.End;
+			}
 			expressionRange.Start = FindLineStart(text, expressionRange.Start);
 		}
 		
