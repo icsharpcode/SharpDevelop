@@ -440,10 +440,10 @@
 				<ComponentRef Id="RubyFormsProjectTemplate"/>
 				<ComponentRef Id="RubyLibraryProjectTemplate"/>
 				
-				<!--<ComponentRef Id="FSharpBindingDll"/>
+				<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	
 				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
-				<ComponentRef Id="FSharpEmptyClassTemplate"/>-->
+				<ComponentRef Id="FSharpEmptyClassTemplate"/>
 				
 				<ComponentRef Id="ReflectorAddInDll"/>
 			

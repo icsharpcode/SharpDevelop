@@ -1256,7 +1256,7 @@
 											</File>											
 										</Component>
 									</Directory>
-									<!--<Directory Id="FSharpBinding" Name="FSharpBinding">
+									<Directory Id="FSharpBinding" Name="FSharpBinding">
 										<Component Guid="6B4F28AF-133C-4FEB-98DB-67A5405AEB12" Id="FSharpBindingAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\FSharpBinding.addin" Name="FSharpBinding.addin" Id="FSharpBinding.addin" KeyPath="yes" />
 										</Component>
@@ -1265,13 +1265,13 @@
 										</Component>
 										<Directory Id="FSharpBindingTemplates" Name="Templates">
 											<Component Guid="37A7695A-BA60-45A6-9BDB-FAE663D7A4C0" Id="FSharpConsoleProjectTemplate" DiskId="1">
-												<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="Templates.ConsoleProject1.xpt" KeyPath="yes" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="FSharp.Templates.ConsoleProject.xpt" KeyPath="yes" />
 											</Component>
 											<Component Guid="33142421-A648-4415-8C22-0F73479E0840" Id="FSharpEmptyClassTemplate" DiskId="1">
-												<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="Templates.EmptyClass1.xft" KeyPath="yes" />
+												<File Source="..\..\AddIns\AddIns\BackendBindings\FSharpBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="FSharp.Templates.EmptyClass.xft" KeyPath="yes" />
 											</Component>
 										</Directory>
-									</Directory>-->
+									</Directory>
 									<Directory Id="RubyBinding" Name="RubyBinding">
 										<Component Guid="7CB6802E-BC09-4796-904C-45EEAD91A5CF" Id="IrExe" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\ir.exe" Name="ir.exe" Id="ir.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ir.exe" AssemblyManifest="ir.exe" />
