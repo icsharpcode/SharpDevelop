@@ -6,6 +6,7 @@
 // </file>
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
 // attributes.
@@ -18,3 +19,4 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: InternalsVisibleTo("SharpRefactoring.Tests")]

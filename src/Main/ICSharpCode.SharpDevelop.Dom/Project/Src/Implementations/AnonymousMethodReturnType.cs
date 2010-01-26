@@ -48,6 +48,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public IReturnType ToDefaultDelegate()
+		{
+			IReturnType type = new GetClassReturnType(cu.ProjectContent, "System.Func", 0);
+			List<IReturnType> parameters = new List<IReturnType>();
+			
+			if (this.HasParameterList)
+				parameters = MethodParameters.Select(p => p.ReturnType ?? new GetClassReturnType(cu.ProjectContent, "System.Object", 0)).ToList();
+			
+			if (this.MethodReturnType != null && this.MethodReturnType.FullyQualifiedName == "System.Void")
+				type = new GetClassReturnType(cu.ProjectContent, "System.Action", 0);
+			else {
+				var rt = this.MethodReturnType;
+				if (rt == null)
+					rt = new GetClassReturnType(cu.ProjectContent, "System.Object", 0);
+				parameters.Add(rt);
+			}
+			
+			return new ConstructedReturnType(type, parameters);
+		}
+		
 		/// <summary>
 		/// Return type of the anonymous method. Can be null if inferred from context.
 		/// </summary>

@@ -175,10 +175,6 @@
     <Compile Include="Src\Gui\Dialogs\GotoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\IntroduceMethodDialog.xaml.cs">
-      <DependentUpon>IntroduceMethodDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\NewProjectDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\NewProjectDialog.Designer.cs">
       <DependentUpon>NewProjectDialog.cs</DependentUpon>
@@ -811,7 +807,6 @@
     <Page Include="Src\Gui\Dialogs\GotoDialog.xaml">
       <DependentUpon>GotoDialog.cs</DependentUpon>
     </Page>
-    <Page Include="Src\Gui\Dialogs\IntroduceMethodDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
     <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />

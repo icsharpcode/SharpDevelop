@@ -17,31 +17,26 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace SharpRefactoring.Gui
 {
 	/// <summary>
 	/// Interaction logic for IntroduceMethodDialog.xaml
 	/// </summary>
 	public partial class IntroduceMethodDialog : Window
 	{
-		public IClass CallingClass { get; private set; }
+		public object Result { get; private set; }
+		public bool IsNew { get; private set; }
 		
-		ITextEditor editor;
-		MethodDeclaration method;
-		
-		public IntroduceMethodDialog(IClass callingClass, MethodDeclaration method, ITextEditor editor)
+		public IntroduceMethodDialog(IClass callingClass)
 		{
 			InitializeComponent();
-			
-			CallingClass = callingClass;
-			this.editor = editor;
-			this.method = method;
-			
+
 			var classes = GetAllStaticClasses(callingClass.ProjectContent.Project as IProject);
 			
 			if (!classes.Any())
@@ -65,27 +60,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OKButtonClick(object sender, RoutedEventArgs e)
 		{
-			CodeGenerator gen = CallingClass.ProjectContent.Language.CodeGenerator;
+			IsNew = rbNew.IsChecked == true;
 			
-			if (rbExisting.IsChecked == true) {
-				IClass c = (IClass)classList.SelectedItem;
-				gen.InsertCodeAtEnd(c.BodyRegion, new RefactoringDocumentAdapter(editor.Document), method);
-			}
-			if (rbNew.IsChecked == true) {
-				TypeDeclaration type = new TypeDeclaration(Modifiers.Static, null);
-				
-				type.Name = newClassName.Text;
-				
-				type.AddChild(method);
-				
-				gen.InsertCodeAfter(CallingClass, new RefactoringDocumentAdapter(editor.Document), type);
-			}
+			if (rbExisting.IsChecked == true)
+				Result = classList.SelectedItem;
+			
+			if (IsNew)
+				Result = newClassName.Text;
+
+			DialogResult = true;
 			Close();
 		}
 		
 		void CancelButtonClick(object sender, RoutedEventArgs e)
 		{
 			// do nothing
+			DialogResult = false;
 			Close();
 		}
 	}

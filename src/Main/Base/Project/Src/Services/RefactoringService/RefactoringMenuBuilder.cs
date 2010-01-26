@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
@@ -35,6 +36,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public ExpressionResult ExpressionResult;
 		public ResolveResult ResolveResult;
 		public bool IsDefinition;
+	}
+	
+	public interface IRefactoringMenuItemFactory
+	{
+		MenuItem Create(RefactoringMenuContext context);
 	}
 	
 	/// <summary>
@@ -94,6 +100,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
+			
 			// Include menu for member that has been clicked on
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textEditor.FileName);
 			ExpressionResult expressionResult;
@@ -108,6 +115,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				ExpressionResult = expressionResult
 			};
 			item = null;
+			
 			if (rr is MethodGroupResolveResult) {
 				item = MakeItem(definitions, ((MethodGroupResolveResult)rr).GetMethodIfSingleOverload());
 			} else if (rr is MemberResolveResult) {
@@ -133,12 +141,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			} else if (rr is UnknownConstructorCallResolveResult) {
 				item = MakeItemForResolveError((UnknownConstructorCallResolveResult)rr, expressionResult.Context, textEditor);
 				insertIndex = 0;	// Insert menu item at the topmost position.
-			} else if (rr is UnknownMethodResolveResult) {
-				item = MakeItemForResolveError((UnknownMethodResolveResult)rr, expressionResult.Context, textEditor);
-				insertIndex = 0;	// Insert menu item at the topmost position.
 			}
 			if (item != null) {
 				resultItems.Insert(insertIndex, item);
+			}
+			
+			List<IRefactoringMenuItemFactory> refactorings = AddInTree.BuildItems<IRefactoringMenuItemFactory>("/SharpDevelop/ViewContent/TextEditor/ContextMenu/Refactorings", null, false);
+			
+			foreach (IRefactoringMenuItemFactory r in refactorings) {
+				MenuItem refactoringItem = r.Create(context);
+				if (refactoringItem != null)
+					resultItems.Insert(0, refactoringItem);
 			}
 			
 			// Include menu for current class and method
@@ -178,181 +191,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		MenuItem MakeItemForResolveError(UnknownConstructorCallResolveResult rr, ExpressionContext context, ITextEditor textArea)
 		{
 			return MakeItemForUnknownClass(rr.CallingClass, rr.TypeName, textArea);
-		}
-		
-		MenuItem MakeItemForResolveError(UnknownMethodResolveResult rr, ExpressionContext context, ITextEditor editor)
-		{
-			// TODO : make easy testable (hide dialog in test mode)
-			// TODO : add unit tests
-			
-			if (rr.Target == null)
-				return null;
-			
-			MenuItem item = new MenuItem() {
-				Header = "Introduce method " + rr.CallName + " in " + rr.Target.FullyQualifiedName,
-				Icon = ClassBrowserIconService.GotoArrow.CreateImage()
-			};
-			
-			IClass targetClass = rr.Target.GetUnderlyingClass();
-			
-			CodeGenerator gen = targetClass.ProjectContent.Language.CodeGenerator;
-			IAmbience ambience = targetClass.ProjectContent.Language.GetAmbience();
-			
-			ClassFinder finder = new ClassFinder(rr.CallingMember);
-			
-			ModifierEnum modifiers = ModifierEnum.None;
-			
-			if (rr.CallingClass == targetClass) {
-				if (rr.CallingMember != null)
-					modifiers |= (rr.CallingMember.Modifiers & ModifierEnum.Static);
-			} else {
-				modifiers |= ModifierEnum.Public;
-				if (rr.IsStaticContext)
-					modifiers |= ModifierEnum.Static;
-			}
-			
-			NRefactoryResolver resolver = new NRefactoryResolver(rr.CallingClass.ProjectContent.Language);
-			resolver.Initialize(ParserService.GetParseInformation(editor.FileName), editor.Caret.Line, editor.Caret.Column);
-			
-			Ast.INode node = resolver.ParseCurrentMember(editor.Document.Text);
-			resolver.RunLookupTableVisitor(node);
-			
-			InvocationExpressionLookupVisitor visitor = new InvocationExpressionLookupVisitor(editor);
-			node.AcceptVisitor(visitor, null);
-			
-			if (visitor.Expression == null)
-				return null;
-			
-			IReturnType type = resolver.GetExpectedTypeFromContext(visitor.Expression);
-			Ast.TypeReference typeRef = CodeGenerator.ConvertType(type, finder);
-			
-			if (typeRef.IsNull) {
-				if (visitor.Expression.Parent is Ast.ExpressionStatement)
-					typeRef = new Ast.TypeReference("void", true);
-				else
-					typeRef = new Ast.TypeReference("object", true);
-			}
-
-			item.Click += delegate {
-				Ast.MethodDeclaration method = new Ast.MethodDeclaration {
-					Name = rr.CallName,
-					Modifier = CodeGenerator.ConvertModifier(modifiers, finder),
-					TypeReference = typeRef,
-					Parameters = CreateParameters(rr, finder, visitor.Expression).ToList(),
-					Body = CodeGenerator.CreateNotImplementedBlock()
-				};
-				
-				if (targetClass.BodyRegion.IsEmpty) {
-					method.Parameters.Insert(0, new Ast.ParameterDeclarationExpression(CodeGenerator.ConvertType(rr.Target, finder), "thisInstance"));
-					method.IsExtensionMethod = true;
-					method.Modifier |= Ast.Modifiers.Static;
-					// TODO : combine code from IntroduceMethodDialog to remove code duplication
-					IntroduceMethodDialog dialog = new IntroduceMethodDialog(rr.CallingClass, method, editor);
-					dialog.Owner = WorkbenchSingleton.MainWindow;
-					dialog.ShowDialog();
-					return;
-				}
-				gen.InsertCodeAtEnd(targetClass.BodyRegion, new RefactoringDocumentAdapter(editor.Document), method);
-				ParserService.ParseCurrentViewContent();
-				// does not work yet, wrong method selected -> new method not yet present
-				// TODO : need to retrieve updated IClass instance
-				//IMethod newMember = targetClass.Methods.Last();
-				//IDocumentLine line = editor.Document.GetLine(newMember.BodyRegion.BeginLine + 1);
-				//int indentLength = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset).Length;
-				//editor.Select(line.Offset + indentLength, "new NotImplementedException();".Length);
-			};
-			
-			return item;
-		}
-		
-		IEnumerable<Ast.ParameterDeclarationExpression> CreateParameters(UnknownMethodResolveResult rr, ClassFinder context, Ast.InvocationExpression invocation)
-		{
-			List<string> usedNames = new List<string>();
-			
-			for (int i = 0; i < rr.Arguments.Count; i++) {
-				IReturnType type = rr.Arguments[i];
-				var typeRef = CodeGenerator.ConvertType(type, context);
-				typeRef = typeRef.IsNull ? new Ast.TypeReference("object", true) : typeRef;
-				
-				Ast.Expression ex = invocation.Arguments[i];
-				string paramName = IsNumericType(type) ? "num" + i : type.Name + i.ToString();
-				
-				if (ex is Ast.IdentifierExpression) {
-					paramName = (ex as Ast.IdentifierExpression).Identifier;
-				}
-				
-				if (ex is Ast.MemberReferenceExpression) {
-					paramName = (ex as Ast.MemberReferenceExpression).MemberName;
-				}
-				
-				Ast.ParameterModifiers mod = Ast.ParameterModifiers.None;
-				
-				if (ex is Ast.DirectionExpression) {
-					var dex = ex as Ast.DirectionExpression;
-					
-					if (dex.Expression is Ast.IdentifierExpression) {
-						paramName = (dex.Expression as Ast.IdentifierExpression).Identifier;
-					}
-					
-					if (dex.Expression is Ast.MemberReferenceExpression) {
-						paramName = (dex.Expression as Ast.MemberReferenceExpression).MemberName;
-					}
-					
-					mod = dex.FieldDirection == Ast.FieldDirection.Out ? Ast.ParameterModifiers.Out : (dex.FieldDirection == Ast.FieldDirection.Ref ? Ast.ParameterModifiers.Ref : Ast.ParameterModifiers.None);
-				}
-				
-				paramName = rr.CallingClass.ProjectContent.Language.CodeGenerator.GetParameterName(paramName);
-				
-				if (usedNames.Contains(paramName))
-					paramName += i.ToString();
-				
-				usedNames.Add(paramName);
-				
-				yield return new Ast.ParameterDeclarationExpression(typeRef, paramName) {
-					ParamModifier = mod
-				};
-			}
-		}
-		
-		bool IsNumericType(IReturnType type)
-		{
-			return type.FullyQualifiedName == "System.Int32" ||
-				type.FullyQualifiedName == "System.Int16" ||
-				type.FullyQualifiedName == "System.Int64" ||
-				type.FullyQualifiedName == "System.Single" ||
-				type.FullyQualifiedName == "System.Double" ||
-				type.FullyQualifiedName == "System.UInt16" ||
-				type.FullyQualifiedName == "System.UInt32" ||
-				type.FullyQualifiedName == "System.UInt64";
-		}
-		
-		class InvocationExpressionLookupVisitor : AbstractAstVisitor
-		{
-			ITextEditor editor;
-			Ast.InvocationExpression expression;
-			
-			public Ast.InvocationExpression Expression {
-				get { return expression; }
-			}
-			
-			public InvocationExpressionLookupVisitor(ITextEditor editor)
-			{
-				this.editor = editor;
-				this.expression = null;
-			}
-			
-			public override object VisitInvocationExpression(Ast.InvocationExpression invocationExpression, object data)
-			{
-				int startOffset = editor.Document.PositionToOffset(invocationExpression.TargetObject.StartLocation.Line, invocationExpression.TargetObject.StartLocation.Column);
-				int endOffset = editor.Document.PositionToOffset(invocationExpression.EndLocation.Line, invocationExpression.EndLocation.Column);
-				
-				int offset = editor.Caret.Offset;
-				
-				if (offset >= startOffset && offset <= endOffset)
-					expression = invocationExpression;
-				
-				return base.VisitInvocationExpression(invocationExpression, data);
-			}
 		}
 		
 		MenuItem MakeItemForUnknownClass(IClass callingClass, string unknownClassName, ITextEditor textArea)

@@ -330,8 +330,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 
 		UnknownMethodResolveResult CreateUnknownMethodResolveResult(InvocationExpression invocationExpression)
 		{
-			var arguments = invocationExpression.Arguments.Select(a => Resolve(a).ResolvedType).ToList();
+			if (resolver.CallingClass == null)
+				return null;
 			
+			var arguments = invocationExpression.Arguments.Select(a => Resolve(a).ResolvedType).ToList();
+
 			IReturnType target = resolver.CallingClass.DefaultReturnType;
 			string methodName = "";
 			bool isStatic = false;

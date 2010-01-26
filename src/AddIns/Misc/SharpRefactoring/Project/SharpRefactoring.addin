@@ -17,9 +17,18 @@
 	
 	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
 		<MenuItem id="classCodeGenerators"
-				   type="Builder"
-				   class="SharpRefactoring.ClassCodeGeneratorMenuBuilder"
-				   insertafter="MenuBuilder" />
+		          type="Builder"
+		          class="SharpRefactoring.ClassCodeGeneratorMenuBuilder"
+		          insertafter="MenuBuilder" />
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/TextEditor/ContextMenu/Refactorings">
+		<Condition name="ActiveContentExtension" activeextension=".cs" action="Exclude">
+			<Class id="IntroduceMethod"
+			       class="SharpRefactoring.IntroduceMethod" />
+			<Class id="ResolveExtensionMethod"
+			       class="SharpRefactoring.ResolveExtensionMethod" />
+		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Refactor">
@@ -34,7 +43,7 @@
 		          label = "${res:AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods}"
 		          class = "SharpRefactoring.OverrideEqualsGetHashCodeMethodsCommand" />
 		<MenuItem id="InsertCtor"
-				   label="${res:AddIns.SharpRefactoring.InsertCtor}"
+		          label="${res:AddIns.SharpRefactoring.InsertCtor}"
 		          class = "SharpRefactoring.InsertCtorCommand" />
 	</Path>
 </AddIn>
