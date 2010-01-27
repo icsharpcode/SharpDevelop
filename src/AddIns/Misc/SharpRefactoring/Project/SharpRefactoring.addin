@@ -28,6 +28,8 @@
 			       class="SharpRefactoring.IntroduceMethod" />
 			<Class id="ResolveExtensionMethod"
 			       class="SharpRefactoring.ResolveExtensionMethod" />
+			<Class id="ResolveAttribute"
+					class="SharpRefactoring.ResolveAttribute" />
 		</Condition>
 	</Path>
 	

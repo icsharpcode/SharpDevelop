@@ -103,6 +103,7 @@
     <Compile Include="Src\OverrideToStringMethodCommand.cs" />
     <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
     <Compile Include="Src\Options.cs" />
+    <Compile Include="Src\ResolveAttribute.cs" />
     <Compile Include="Src\ResolveExtensionMethod.cs" />
     <Compile Include="Src\Visitors\FindJumpInstructionsVisitor.cs" />
     <Compile Include="Src\Visitors\FindMemberVisitor.cs" />

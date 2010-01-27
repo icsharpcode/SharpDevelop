@@ -957,7 +957,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public UnknownMethodResolveResult(IClass callingClass, IMember callingMember, IReturnType target, string callName, bool isStaticContext, List<IReturnType> arguments)
 			: base(callingClass, callingMember, null)
 		{
-			this.target = target == null ? callingClass.DefaultReturnType : target;
+			this.target = target == null ? (callingClass == null ? null : callingClass.DefaultReturnType) : target;
 			this.callName = callName;
 			this.arguments = arguments;
 			this.isStaticContext = isStaticContext;

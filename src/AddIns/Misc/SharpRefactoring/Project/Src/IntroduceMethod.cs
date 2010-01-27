@@ -30,6 +30,8 @@ namespace SharpRefactoring
 	{
 		public MenuItem Create(RefactoringMenuContext context)
 		{
+			if (context.ExpressionResult.Context == ExpressionContext.Attribute)
+				return null;
 			if (!(context.ResolveResult is UnknownMethodResolveResult))
 				return null;
 			
@@ -99,10 +101,21 @@ namespace SharpRefactoring
 			
 			ModifierEnum modifiers = ModifierEnum.None;
 			
+			bool isExtension = targetClass.BodyRegion.IsEmpty;
+			
 			if (rr.CallingClass == targetClass) {
 				if (rr.CallingMember != null)
 					modifiers |= (rr.CallingMember.Modifiers & ModifierEnum.Static);
 			} else {
+				if (isExtension) {
+					if (isNew)
+						targetClass = rr.CallingClass;
+					else
+						targetClass = result as IClass;
+				}
+				// exclude in Unit Test mode
+				if (WorkbenchSingleton.Workbench != null)
+					editor = (FileService.OpenFile(targetClass.CompilationUnit.FileName) as ITextEditorProvider).TextEditor;
 				modifiers |= ModifierEnum.Public;
 				if (rr.IsStaticContext)
 					modifiers |= ModifierEnum.Static;
@@ -130,21 +143,17 @@ namespace SharpRefactoring
 			
 			RefactoringDocumentAdapter documentWrapper = new RefactoringDocumentAdapter(editor.Document);
 			
-			if (targetClass.BodyRegion.IsEmpty) {
+			if (isExtension) {
 				method.Parameters.Insert(0, new Ast.ParameterDeclarationExpression(CodeGenerator.ConvertType(rr.Target, finder), "thisInstance"));
 				method.IsExtensionMethod = true;
 				method.Modifier |= Ast.Modifiers.Static;
 				
 				if (isNew) {
-					targetClass = rr.CallingClass;
 					Ast.TypeDeclaration newType = new Ast.TypeDeclaration(Ast.Modifiers.Static, null);
 					newType.Name = result as string;
 					newType.AddChild(method);
 					gen.InsertCodeAfter(targetClass, documentWrapper, newType);
 				} else {
-					targetClass = result as IClass;
-					editor = (FileService.OpenFile(targetClass.CompilationUnit.FileName) as ITextEditorProvider).TextEditor;
-					documentWrapper = new RefactoringDocumentAdapter(editor.Document);
 					gen.InsertCodeAtEnd(targetClass.BodyRegion, documentWrapper, method);
 				}
 			} else {

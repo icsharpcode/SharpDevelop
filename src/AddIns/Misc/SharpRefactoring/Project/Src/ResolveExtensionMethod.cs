@@ -23,6 +23,8 @@ namespace SharpRefactoring
 	{
 		public MenuItem Create(RefactoringMenuContext context)
 		{
+			if (context.ExpressionResult.Context == ExpressionContext.Attribute)
+				return null;
 			if (!(context.ResolveResult is UnknownMethodResolveResult))
 				return null;
 			

@@ -385,6 +385,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						return new NamespaceResolveResult(callingClass, callingMember, ns);
 					}
 				}
+				return new UnknownIdentifierResolveResult(callingClass, callingMember, attributeName);
 			} else if (expr is InvocationExpression) {
 				InvocationExpression ie = (InvocationExpression)expr;
 				attributeName = GetAttributeName(ie.TargetObject);
@@ -393,8 +394,47 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					ResolveVisitor resolveVisitor = new ResolveVisitor(this);
 					return resolveVisitor.ResolveConstructorOverload(c, ie.Arguments);
 				}
+				return CreateUnknownMethodResolveResult(expr as InvocationExpression);
 			}
 			return null;
+		}
+		
+		internal UnknownMethodResolveResult CreateUnknownMethodResolveResult(InvocationExpression invocationExpression)
+		{
+			List<IReturnType> arguments = new List<IReturnType>();
+			ResolveVisitor resolveVisitor = new ResolveVisitor(this);
+			
+			foreach (Expression ex in invocationExpression.Arguments) {
+				ResolveResult rr = resolveVisitor.Resolve(ex);
+				if (rr != null)
+					arguments.Add(rr.ResolvedType ?? UnknownReturnType.Instance);
+				else
+					arguments.Add(UnknownReturnType.Instance);
+			}
+
+			IReturnType target = null;
+			
+			if (callingClass != null)
+				target = callingClass.DefaultReturnType;
+			
+			string methodName = "";
+			bool isStatic = false;
+			
+			if (invocationExpression.TargetObject is IdentifierExpression) {
+				IdentifierExpression ie = invocationExpression.TargetObject as IdentifierExpression;
+				methodName = ie.Identifier;
+				isStatic = callingMember != null && callingMember.Modifiers.HasFlag(ModifierEnum.Static);
+			}
+			
+			if (invocationExpression.TargetObject is MemberReferenceExpression) {
+				MemberReferenceExpression mre = invocationExpression.TargetObject as MemberReferenceExpression;
+				var rr = resolveVisitor.Resolve(mre.TargetObject);
+				isStatic = rr is TypeResolveResult;
+				target = rr.ResolvedType;
+				methodName = mre.MemberName;
+			}
+			
+			return new UnknownMethodResolveResult(callingClass, callingMember, target, methodName, isStatic, arguments);
 		}
 		
 		public ResolveResult ResolveInternal(Expression expr, ExpressionContext context)

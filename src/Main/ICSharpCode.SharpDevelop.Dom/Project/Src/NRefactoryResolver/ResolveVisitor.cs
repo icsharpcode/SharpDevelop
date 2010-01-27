@@ -325,35 +325,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return CreateMemberResolveResult(GetVisualBasicIndexer(invocationExpression));
 			}
 
-			return CreateUnknownMethodResolveResult(invocationExpression);
-		}
-
-		UnknownMethodResolveResult CreateUnknownMethodResolveResult(InvocationExpression invocationExpression)
-		{
-			if (resolver.CallingClass == null)
-				return null;
-			
-			var arguments = invocationExpression.Arguments.Select(a => Resolve(a).ResolvedType).ToList();
-
-			IReturnType target = resolver.CallingClass.DefaultReturnType;
-			string methodName = "";
-			bool isStatic = false;
-			
-			if (invocationExpression.TargetObject is IdentifierExpression) {
-				IdentifierExpression ie = invocationExpression.TargetObject as IdentifierExpression;
-				methodName = ie.Identifier;
-				isStatic = resolver.CallingMember.Modifiers.HasFlag(ModifierEnum.Static);
-			}
-			
-			if (invocationExpression.TargetObject is MemberReferenceExpression) {
-				MemberReferenceExpression mre = invocationExpression.TargetObject as MemberReferenceExpression;
-				var rr = Resolve(mre.TargetObject);
-				isStatic = rr is TypeResolveResult;
-				target = rr.ResolvedType;
-				methodName = mre.MemberName;
-			}
-			
-			return new UnknownMethodResolveResult(resolver.CallingClass, resolver.CallingMember, target, methodName, isStatic, arguments);
+			return resolver.CreateUnknownMethodResolveResult(invocationExpression);
 		}
 		
 		ResolveResult FallbackResolveMethod(InvocationExpression invocation, MethodGroupResolveResult mgrr, IReturnType[] argumentTypes)
@@ -371,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
-			return CreateUnknownMethodResolveResult(invocation);
+			return resolver.CreateUnknownMethodResolveResult(invocation);
 		}
 		
 		public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
