@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   Decrease array creation size - VB specifies upper bound instead of array length
 		//   Automatic properties are converted to explicit implementation
 		//   base[index] - VB requires MyBase.Item
+		//   var i = 0; -> Dim i = 0 (remove typereference for 'var')
 		
 		List<INode> nodesToMoveToCompilationUnit = new List<INode>();
 		
@@ -387,6 +388,13 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (baseReferenceExpression.Parent is IndexerExpression)
 				ReplaceCurrentNode(new MemberReferenceExpression(baseReferenceExpression, "Item"));
 			return null;
+		}
+		
+		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
+		{
+			if (localVariableDeclaration.TypeReference.Type == "var")
+				localVariableDeclaration.TypeReference = TypeReference.Null;;
+			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
 	}
 }

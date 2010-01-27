@@ -594,5 +594,38 @@ Private m_Name As String");
 		{
 			TestMember("public new void Remove() {}", "Public Shadows Sub Remove()\nEnd Sub");
 		}
+		
+		[Test]
+		public void TestImplicitlyTypedVariable()
+		{
+			TestStatement("var i = 0;", "Dim i = 0");
+		}
+		
+		[Test]
+		public void TestAnonymousType()
+		{
+			// TODO test is strictly incorrect, the converter should add "Key"
+			TestStatement("var x = new { i = 0, abc, abc.Test };",
+			              "Dim x = New With { _\n" +
+			              "  .i = 0, _\n" +
+			              "  abc, _\n" +
+			              "  abc.Test _\n" +
+			              "}");
+		}
+		
+		[Test]
+		[Ignore]
+		public void CollectionAndObjectInitializer()
+		{
+			TestStatement("List<X> l = new List<X> { new X { A = 1 }, new X { A = 2 } };",
+			              "Dim l As New List(Of X)() From { _\n" +
+			              "  New X() With { _\n" +
+			              "    .A = 1 _\n" +
+			              "  }, _\n" +
+			              "  New X() With { _\n" +
+			              "    .A = 2 _\n" +
+			              "  } _\n" +
+			              "}");
+		}
 	}
 }

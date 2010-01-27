@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -2664,11 +2665,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.New);
-			outputFormatter.Space();
-			TrackedVisit(objectCreateExpression.CreateType, data);
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(objectCreateExpression.Parameters);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			if (!objectCreateExpression.IsAnonymousType) {
+				outputFormatter.Space();
+				TrackedVisit(objectCreateExpression.CreateType, data);
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				AppendCommaSeparatedList(objectCreateExpression.Parameters);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
 			CollectionInitializerExpression initializer = objectCreateExpression.ObjectInitializer;
 			if (!initializer.IsNull) {
 				outputFormatter.Space();
@@ -2682,6 +2685,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Comma);
 					outputFormatter.PrintLineContinuation();
 					outputFormatter.Indent();
+					//outputFormatter.PrintText("Key "); TODO "Key" cannot be represented in AST
 					NamedArgumentExpression nae = expr as NamedArgumentExpression;
 					if (nae != null) {
 						outputFormatter.PrintToken(Tokens.Dot);
@@ -2690,6 +2694,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Assign);
 						outputFormatter.Space();
 						TrackedVisit(nae.Expression, data);
+					} else {
+						TrackedVisit(expr, data);
 					}
 				}
 				outputFormatter.IndentationLevel--;
