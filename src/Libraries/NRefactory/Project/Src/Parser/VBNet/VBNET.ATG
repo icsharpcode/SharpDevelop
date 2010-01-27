@@ -2951,7 +2951,7 @@ EmbeddedStatement<out Statement statement>
 			.)
 		}
 		[
-			"Else" EndOfStmt
+			"Else" [EndOfStmt]
 			Block<out embeddedStatement>
 			(.
 				ifStatement.FalseStatement.Add(embeddedStatement);
