@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -293,6 +294,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return Tokens.Interface;
 				case ClassType.Struct:
 					return Tokens.Structure;
+				case ClassType.Module:
+					return Tokens.Module;
 				default:
 					return Tokens.Class;
 			}
@@ -459,18 +462,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			switch (optionDeclaration.OptionType) {
 				case OptionType.Strict:
 					outputFormatter.PrintToken(Tokens.Strict);
-					if (!optionDeclaration.OptionValue) {
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.Off);
-					}
+					outputFormatter.Space();
+					outputFormatter.PrintToken(optionDeclaration.OptionValue ? Tokens.On : Tokens.Off);
 					break;
 				case OptionType.Explicit:
 					outputFormatter.PrintToken(Tokens.Explicit);
 					outputFormatter.Space();
-					if (!optionDeclaration.OptionValue) {
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.Off);
-					}
+					outputFormatter.PrintToken(optionDeclaration.OptionValue ? Tokens.On : Tokens.Off);
+					break;
+				case OptionType.Infer:
+					outputFormatter.PrintToken(Tokens.Infer);
+					outputFormatter.Space();
+					outputFormatter.PrintToken(optionDeclaration.OptionValue ? Tokens.On : Tokens.Off);
 					break;
 				case OptionType.CompareBinary:
 					outputFormatter.PrintToken(Tokens.Compare);
@@ -658,11 +661,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				this.AppendCommaSeparatedList(eventDeclaration.Parameters);
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			VisitReturnTypeAttributes(eventDeclaration.Attributes, data);
-			TrackedVisit(eventDeclaration.TypeReference, data);
+			if (!eventDeclaration.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				VisitReturnTypeAttributes(eventDeclaration.Attributes, data);
+				TrackedVisit(eventDeclaration.TypeReference, data);
+			}
 			
 			PrintInterfaceImplementations(eventDeclaration.InterfaceImplementations);
 			
@@ -811,11 +816,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			printAttributeSectionInline = false;
 			OutputModifier(parameterDeclarationExpression.ParamModifier, parameterDeclarationExpression.StartLocation);
 			outputFormatter.PrintIdentifier(parameterDeclarationExpression.ParameterName);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
-			TrackedVisit(parameterDeclarationExpression.TypeReference, data);
+			if (!parameterDeclarationExpression.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
+				TrackedVisit(parameterDeclarationExpression.TypeReference, data);
+			}
+			if (!parameterDeclarationExpression.DefaultValue.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Assign);
+				outputFormatter.Space();
+				TrackedVisit(parameterDeclarationExpression.DefaultValue, data);
+			}
 			return null;
 		}
 		
@@ -1737,10 +1750,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			// loop control variable
 			outputFormatter.PrintIdentifier(foreachStatement.VariableName);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			TrackedVisit(foreachStatement.TypeReference, data);
+			if (!foreachStatement.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				TrackedVisit(foreachStatement.TypeReference, data);
+			}
 			
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.In);
@@ -2650,11 +2665,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.New);
-			outputFormatter.Space();
-			TrackedVisit(objectCreateExpression.CreateType, data);
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(objectCreateExpression.Parameters);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			if (!objectCreateExpression.IsAnonymousType) {
+				outputFormatter.Space();
+				TrackedVisit(objectCreateExpression.CreateType, data);
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				AppendCommaSeparatedList(objectCreateExpression.Parameters);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
 			CollectionInitializerExpression initializer = objectCreateExpression.ObjectInitializer;
 			if (!initializer.IsNull) {
 				outputFormatter.Space();
@@ -2668,6 +2685,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Comma);
 					outputFormatter.PrintLineContinuation();
 					outputFormatter.Indent();
+					//outputFormatter.PrintText("Key "); TODO "Key" cannot be represented in AST
 					NamedArgumentExpression nae = expr as NamedArgumentExpression;
 					if (nae != null) {
 						outputFormatter.PrintToken(Tokens.Dot);
@@ -2676,6 +2694,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Assign);
 						outputFormatter.Space();
 						TrackedVisit(nae.Expression, data);
+					} else {
+						TrackedVisit(expr, data);
 					}
 				}
 				outputFormatter.IndentationLevel--;
@@ -2724,7 +2744,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			TrackedVisit(memberReferenceExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.Dot);
-			outputFormatter.PrintIdentifier(memberReferenceExpression.MemberName);
+			if (string.Equals(memberReferenceExpression.MemberName, "New", StringComparison.OrdinalIgnoreCase)
+			    && (memberReferenceExpression.TargetObject is BaseReferenceExpression || memberReferenceExpression.TargetObject is ThisReferenceExpression || memberReferenceExpression.TargetObject is ClassReferenceExpression))
+			{
+				outputFormatter.PrintToken(Tokens.New);
+			} else {
+				outputFormatter.PrintIdentifier(memberReferenceExpression.MemberName);
+			}
 			PrintTypeArguments(memberReferenceExpression.TypeArguments);
 			return null;
 		}
@@ -2758,34 +2784,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void OutputModifier(ParameterModifiers modifier, Location position)
 		{
-			switch (modifier) {
-				case ParameterModifiers.None:
-				case ParameterModifiers.In:
-					if (prettyPrintOptions.OutputByValModifier) {
-						outputFormatter.PrintToken(Tokens.ByVal);
-						outputFormatter.Space();
-					}
-					break;
-				case ParameterModifiers.Out:
-					//Error("Out parameter converted to ByRef", position);
-					outputFormatter.PrintToken(Tokens.ByRef);
-					outputFormatter.Space();
-					break;
-				case ParameterModifiers.Params:
-					outputFormatter.PrintToken(Tokens.ParamArray);
-					outputFormatter.Space();
-					break;
-				case ParameterModifiers.Ref:
-					outputFormatter.PrintToken(Tokens.ByRef);
-					outputFormatter.Space();
-					break;
-				case ParameterModifiers.Optional:
-					outputFormatter.PrintToken(Tokens.Optional);
-					outputFormatter.Space();
-					break;
-				default:
-					Error(String.Format("Unsupported modifier : {0}", modifier), position);
-					break;
+			if ((modifier & ParameterModifiers.Optional) == ParameterModifiers.Optional) {
+				outputFormatter.PrintToken(Tokens.Optional);
+				outputFormatter.Space();
+			}
+			if ((modifier & ParameterModifiers.Ref) == ParameterModifiers.Ref) {
+				outputFormatter.PrintToken(Tokens.ByRef);
+				outputFormatter.Space();
+			}
+			if ((modifier & ParameterModifiers.Params) == ParameterModifiers.Params) {
+				outputFormatter.PrintToken(Tokens.ParamArray);
+				outputFormatter.Space();
+			}
+			if (prettyPrintOptions.OutputByValModifier &&
+			    (modifier & (ParameterModifiers.Params | ParameterModifiers.Ref)) == ParameterModifiers.None)
+			{
+				outputFormatter.PrintToken(Tokens.ByVal);
+				outputFormatter.Space();
 			}
 		}
 		
@@ -2827,9 +2842,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(forTypeDecl ? Tokens.MustInherit : Tokens.MustOverride);
 				outputFormatter.Space();
 			}
-			if ((modifier & Modifiers.Override) == Modifiers.Override) {
+			if ((modifier & Modifiers.Overloads) == Modifiers.Overloads) {
 				outputFormatter.PrintToken(Tokens.Overloads);
 				outputFormatter.Space();
+			}
+			if ((modifier & Modifiers.Override) == Modifiers.Override) {
 				outputFormatter.PrintToken(Tokens.Overrides);
 				outputFormatter.Space();
 			}

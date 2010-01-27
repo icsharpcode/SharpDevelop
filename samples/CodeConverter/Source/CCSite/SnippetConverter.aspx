@@ -7,11 +7,15 @@
     
     <p class="page_title">Step 1: Choose source language and destination language for conversion</p>
     <p>
-        <asp:RadioButtonList ID="languageChoice" runat="server" RepeatColumns="2">
+        <asp:RadioButtonList ID="languageChoice" runat="server" RepeatColumns="4">
             <asp:ListItem Selected="True" Value="cs2vbnet">C# to VB.NET</asp:ListItem>
             <asp:ListItem Value="vbnet2cs">VB.NET to C#</asp:ListItem>
             <asp:ListItem Value="cs2boo">C# to Boo</asp:ListItem>
             <asp:ListItem Value="vbnet2boo">VB.NET to Boo</asp:ListItem>
+            <asp:ListItem Value="cs2python">C# to Python</asp:ListItem>
+            <asp:ListItem Value="vbnet2python">VB.NET to Python</asp:ListItem>
+            <asp:ListItem Value="cs2ruby">C# to Ruby</asp:ListItem>
+            <asp:ListItem Value="vbnet2ruby">VB.NET to Ruby</asp:ListItem>
         </asp:RadioButtonList>
     <br />
     </p>

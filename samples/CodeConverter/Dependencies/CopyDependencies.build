@@ -1,0 +1,24 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<ItemGroup>
+		<GenericDeps Include="..\..\..\bin\ICSharpCode.NRefactory.dll"/>
+		<GenericDeps Include="..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll"/>
+		<GenericDeps Include="..\..\..\bin\ICSharpCode.TextEditor.dll"/>
+		<GenericDeps Include="..\..\..\bin\log4net.dll"/>
+
+		<BooDeps Include="..\..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll"/>
+		<BooDeps Include="..\..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll"/>
+		<BooDeps Include="..\..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll"/>
+
+		<PyDeps Include="..\..\..\AddIns\AddIns\BackendBindings\PythonBinding\PythonBinding.dll"/>
+
+		<IrDeps Include="..\..\..\AddIns\AddIns\BackendBindings\RubyBinding\RubyBinding.dll"/>
+	</ItemGroup>
+
+	
+	<Target Name="Build">
+		<Copy SourceFiles="@(BooDeps)" DestinationFolder=".\" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(GenericDeps)" DestinationFolder=".\" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(PyDeps)" DestinationFolder=".\" SkipUnchangedFiles="true"/>
+		<Copy SourceFiles="@(IrDeps)" DestinationFolder=".\" SkipUnchangedFiles="true"/>
+	</Target>
+</Project>

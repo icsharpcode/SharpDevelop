@@ -576,15 +576,6 @@ namespace VBNetBinding
 				if (currentToken.Kind == Tokens.EOL)
 					isDelegate = isDeclare = isMustOverride = false;
 				
-				if (IsSpecialCase(currentToken, prevToken)) {
-					ApplyToRange(editor, indentation, oldLine, currentToken.Location.Line, begin, end);
-					Unindent(indentation);
-					ApplyToRange(editor, indentation, currentToken.Location.Line, currentToken.Location.Line, begin, end);
-					Indent(editor, indentation);
-					
-					oldLine = currentToken.Location.Line + 1;
-				}
-				
 				if (IsBlockEnd(currentToken, prevToken)) {
 					ApplyToRange(editor, indentation, oldLine, currentToken.Location.Line, begin, end);
 					
@@ -720,7 +711,7 @@ namespace VBNetBinding
 					return true;
 			}
 			
-			return false;
+			return IsSpecialCase(current, prev);
 		}
 		
 		bool IsBlockEnd(Token current, Token prev)
@@ -742,7 +733,7 @@ namespace VBNetBinding
 					return false;
 			}
 			
-			return false;
+			return IsSpecialCase(current, prev);
 		}
 		
 		bool IsSpecialCase(Token current, Token prev)

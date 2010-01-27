@@ -26,7 +26,7 @@
 		
 		<!-- The copyright label -->
 		<System.Windows.Forms.Label>
-			<Text    value = "(c) 2000-2009 by icsharpcode.net"/>
+			<Text    value = "(c) 2000-2010 by icsharpcode.net"/>
 			<Width   value = "400"/>
 			<Height  value = "20"/>
 			<Location value = "{X=8, Y=234}"/>

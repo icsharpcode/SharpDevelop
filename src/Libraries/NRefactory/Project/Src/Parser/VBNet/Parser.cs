@@ -6313,7 +6313,9 @@ out block);
 				}
 				if (la.kind == 98) {
 					lexer.NextToken();
-					EndOfStmt();
+					if (la.kind == 1 || la.kind == 11) {
+						EndOfStmt();
+					}
 					Block(
 #line  2955 "VBNET.ATG" 
 out embeddedStatement);

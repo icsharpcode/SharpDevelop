@@ -9,10 +9,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Input;
+using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Windows.Input;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -274,11 +275,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			AbstractProject.filesToOpenAfterSolutionLoad.Clear();
 			try {
 				string file = GetPreferenceFileName(openSolution.FileName);
+				Properties properties;
 				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
-					(openSolution.Preferences as IMementoCapable).SetMemento(Properties.Load(file));
+					properties = Properties.Load(file);
 				} else {
-					(openSolution.Preferences as IMementoCapable).SetMemento(new Properties());
+					properties = new Properties();
 				}
+				(openSolution.Preferences as IMementoCapable).SetMemento(properties);
 			} catch (Exception ex) {
 				MessageService.ShowException(ex);
 			}

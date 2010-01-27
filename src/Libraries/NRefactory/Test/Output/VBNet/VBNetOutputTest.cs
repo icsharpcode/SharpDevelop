@@ -475,12 +475,62 @@ End Using");
 		}
 		
 		[Test]
+		public void ChainedConstructorCall()
+		{
+			TestExpression("MyBase.New()");
+			TestExpression("Me.New()");
+			TestExpression("MyClass.New()");
+		}
+		
+		[Test]
+		public void NewMethodCall()
+		{
+			TestExpression("something.[New]()");
+		}
+		
+		[Test]
 		public void ObjectInitializer()
 		{
 			TestExpression("New StringWriter() With { _\n" +
 			               " .NewLine = Environment.NewLine, _\n" +
 			               " .Encoding = Encoding.UTF8 _\n" +
 			               "}");
+		}
+		
+		[Test]
+		public void EventDefinition()
+		{
+			TestTypeMember("Public Event MyEvent(ByVal sender As Object)");
+		}
+		
+		[Test]
+		public void Options()
+		{
+			TestProgram("Option Strict On\n" +
+			            "Option Explicit On\n" +
+			            "Option Infer On\n" +
+			            "Option Compare Text");
+		}
+		
+		[Test]
+		public void UntypedForeach()
+		{
+			TestStatement("For Each x In myGuidArray\nNext");
+		}
+		
+		[Test]
+		public void MethodDefinitionWithOptionalParameter()
+		{
+			TestTypeMember("Sub M(Optional ByVal msg As String = Nothing, Optional ByRef output As String = Nothing)\nEnd Sub");
+		}
+		
+		[Test]
+		public void Module()
+		{
+			TestProgram("Module Test\n" +
+			            " Sub M()\n" +
+			            " End Sub\n" +
+			            "End Module");
 		}
 	}
 }

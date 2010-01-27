@@ -1694,6 +1694,32 @@
 											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\UsageDataCollector.xml" Name="UsageDataCollector.xml" Id="UsageDataCollector.xml" />
 										</Component>
 									</Directory>
+									<!--<Directory Id="SharpDevelopReports" Name="SharpDevelopReports">
+										<Component Guid="F5963875-6D36-4789-8129-7224EA7434E0" Id="SharpDevelopReportsEmptyReportFileTemplate" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\EmptyReport.xft" Name="EmptyReport.xft" Id="SharpDevelopReportsEmptyReport.xft" KeyPath="yes" />
+										</Component>
+										<Component Guid="428E9B37-E8B7-4A23-99A8-0212AB51B201" Id="ICSharpCodeReportDesignerAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.ReportDesigner.addin" Name="ICSharpCode.ReportDesigner.addin" Id="ICSharpCode.ReportDesigner.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="8C6177C2-455B-407C-9628-C286AF042100" Id="ICSharpCodeReportsAddinDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Addin.dll" Name="ICSharpCode.Reports.Addin.dll" Id="ICSharpCode.Reports.Addin.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Addin.dll" AssemblyManifest="ICSharpCode.Reports.Addin.dll" />
+										</Component>
+										<Component Guid="3F3BA5B0-7C06-4DEA-9D61-9AA3FB70CA3C" Id="ICSharpCodeReportsCoreDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dll" Name="ICSharpCode.Reports.Core.dll" Id="ICSharpCode.Reports.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Core.dll" AssemblyManifest="ICSharpCode.Reports.Core.dll" />
+										</Component>
+										<Component Guid="1A9CDE4B-0A0D-4B1F-9947-365FC93A1956" Id="InteropAdodbDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\Interop.ADODB.dll" Name="Interop.ADODB.dll" Id="Interop.ADODB.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.ADODB.dll" AssemblyManifest="Interop.ADODB.dll" />
+										</Component>
+										<Component Guid="6C7B83C6-F3CB-4CDE-99FF-84986FB8539B" Id="InteropMsdascDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\Interop.MSDASC.dll" Name="Interop.MSDASC.dll" Id="Interop.MSDASC.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.MSDASC.dll" AssemblyManifest="Interop.MSDASC.dll" />
+										</Component>
+										<Component Guid="6A8AA4D2-6CC6-4A03-9705-91FC39818A29" Id="IronyDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\Irony.dll" Name="Irony.dll" Id="Irony.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="CF7C7E01-B229-4E72-92CA-66B9935DE79A" Id="ITextSharpDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
+										</Component>
+									</Directory>-->
 								</Directory>
 							</Directory>
 						</Directory>

@@ -134,6 +134,181 @@ End Class";
 			RunFormatTest(code, expected);
 		}
 		
+		[Test]
+		[Ignore("Test started failing after merge to SD 4.0")]
+		public void ElseIfMultiLineContinuationTest()
+		{
+			string expected = @"Public Class Test
+	Private Sub Tester()
+		If True Then
+			'CODE HERE
+		Else If False And _
+			False Then
+			'CODE HERE1
+		End If
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+If True Then
+'CODE HERE
+Else If False And _
+False Then
+'CODE HERE1
+End If
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void SelectCaseTest()
+		{
+						string expected = @"Public Class Test
+	Private Sub Tester()
+		Select Case a
+			Case 0
+				DoSomething()
+				' TEST CASE 0
+			Case 1
+				'TEST CASE 1
+			Case 2
+				'TEST CASE 2
+			Case Else
+				DoElse()
+		End Select
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+Select Case a
+Case 0
+DoSomething()
+' TEST CASE 0
+Case 1
+'TEST CASE 1
+Case 2
+'TEST CASE 2
+Case Else
+DoElse()
+End Select
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void SelectCaseTest2()
+		{
+						string expected = @"Public Class Test
+	Private Sub Tester()
+		Select Case a
+			Case 0
+				DoSomething()
+			Case 1
+			Case 2
+			Case Else
+				DoElse()
+		End Select
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+Select Case a
+Case 0
+DoSomething()
+Case 1
+Case 2
+Case Else
+DoElse()
+End Select
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void WithTest()
+		{
+						string expected = @"Public Class Test
+	Private Sub Tester()
+		With a
+			If True Then
+				' Test
+			ElseIf False Then
+				' Test3
+			Else
+				' Test2
+			End If
+		End With
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+With a
+If True Then
+' Test
+ElseIf False Then
+' Test3
+Else
+' Test2
+End If
+End With
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void WithTest2()
+		{
+						string expected = @"Public Class Test
+	Private Sub Tester()
+		With a
+			If True Then
+				' Test
+			ElseIf False Then
+				' Test3
+			Else
+				Try
+					DoSomething()
+				Catch ex As Exception
+					'Handle
+				End Try
+			End If
+		End With
+	End Sub
+End Class";
+			
+			string code = @"Public Class Test
+Private Sub Tester()
+With a
+If True Then
+' Test
+ElseIf False Then
+' Test3
+Else
+Try
+DoSomething()
+Catch ex As Exception
+'Handle
+End Try
+End If
+End With
+End Sub
+End Class";
+			
+			RunFormatTest(code, expected);
+		}
+		
 		void RunFormatTest(string code, string expectedCode)
 		{
 			AvalonEditTextEditorAdapter editor = new AvalonEditTextEditorAdapter(new TextEditor());

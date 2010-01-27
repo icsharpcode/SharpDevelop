@@ -463,5 +463,20 @@ class Test {
 			rr = Resolve<MemberResolveResult>(program, "z2", 3);
 			Assert.AreEqual(0, rr.ResolvedType.GetUnderlyingClass().TypeParameters.Count);
 		}
+		
+		[Test]
+		public void SimpleInnerClassInStruct()
+		{
+			string program = @"struct A {
+	void Test() {
+		
+	}
+	class B { }
+}
+";
+			ResolveResult result = Resolve(program, "B", 3);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("A.B", result.ResolvedType.FullyQualifiedName);
+		}
 	}
 }

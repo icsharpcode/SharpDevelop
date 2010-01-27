@@ -45,7 +45,7 @@ namespace ICSharpCode.RubyBinding
 		protected override void Walk(MethodCall node)
 		{
 			if (node.MethodName == "require") {
-				if (!node.Arguments.IsEmpty) {
+				if (HasArguments(node)) {
 					string requireString = GetRequireString(node.Arguments.Expressions);
 					if (requireString != null) {
 						AddUsing(requireString);
@@ -53,6 +53,11 @@ namespace ICSharpCode.RubyBinding
 				}
 			}
 			base.Walk(node);
+		}
+		
+		bool HasArguments(MethodCall node)
+		{
+			return (node.Arguments != null) && (!node.Arguments.IsEmpty);
 		}
 		
 		string GetRequireString(Expression[] expressions)

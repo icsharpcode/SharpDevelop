@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReportModel>
+    <ReportSettings>
+        <ReportSettings>
+            <GridSize>8, 8</GridSize>
+            <PageSize>827, 1169</PageSize>
+            <CommandText>SELECT * FROM Kategorien</CommandText>
+            <Landscape>False</Landscape>
+            <GroupColumnsCollection />
+            <RightMargin>50</RightMargin>
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+            <ReportType>DataReport</ReportType>
+            <UseStandardPrinter>True</UseStandardPrinter>
+            <CommandType>Text</CommandType>
+            <GraphicsUnit>Millimeter</GraphicsUnit>
+            <TopMargin>50</TopMargin>
+            <ConnectionString>Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\SharpReport_TestReports\TestReports\Nordwind.mdb;Persist Security Info=False</ConnectionString>
+            <Padding>5, 5, 5, 5</Padding>
+            <LeftMargin>50</LeftMargin>
+            <SortColumnCollection />
+            <DataModel>PullData</DataModel>
+            <BottomMargin>50</BottomMargin>
+            <AvailableFieldsCollection>
+                <AbstractColumn>
+                    <ColumnName>Kategorie-Nr</ColumnName>
+                    <DataTypeName>System.Int32</DataTypeName>
+                </AbstractColumn>
+                <AbstractColumn>
+                    <ColumnName>Kategoriename</ColumnName>
+                    <DataTypeName>System.String</DataTypeName>
+                </AbstractColumn>
+                <AbstractColumn>
+                    <ColumnName>Beschreibung</ColumnName>
+                    <DataTypeName>System.String</DataTypeName>
+                </AbstractColumn>
+                <AbstractColumn>
+                    <ColumnName>Abbildung</ColumnName>
+                    <DataTypeName>System.Byte[]</DataTypeName>
+                </AbstractColumn>
+            </AvailableFieldsCollection>
+            <ReportName>Report1</ReportName>
+            <ParameterCollection>
+                <BasicParameter>
+                    <ParameterName>p1</ParameterName>
+                    <ParameterValue>aaaaa</ParameterValue>
+                </BasicParameter>
+            </ParameterCollection>
+        </ReportSettings>
+    </ReportSettings>
+    <SectionCollection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>EllipsisCharacter</StringTrimming>
+                    <Text>='Report with Parameter : ' + p1</Text>
+                    <Location>235, 19</Location>
+                    <ContentAlignment>MiddleLeft</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>Report1</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>249, 20</Size>
+                    <ForeColor>Black</ForeColor>
+                </BaseTextItem>
+            </Items>
+            <Location>50, 50</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportPageHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items>
+                <BaseRowItem>
+                    <AlternateBackColor />
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Name>AbstractItem</Name>
+                    <Location>5, 5</Location>
+                    <Visible>True</Visible>
+                    <Size>717, 50</Size>
+                    <Padding>0, 0, 0, 0</Padding>
+                    <Items>
+                        <BaseTextItem>
+                            <BackColor>White</BackColor>
+                            <CanShrink>False</CanShrink>
+                            <StringTrimming>EllipsisCharacter</StringTrimming>
+                            <Text>Kategorie-Nr</Text>
+                            <Location>5, 5</Location>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <Visible>True</Visible>
+                            <DrawBorder>False</DrawBorder>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <CanGrow>False</CanGrow>
+                            <FormatString />
+                            <Name>Kategorie-Nr1</Name>
+                            <FrameColor>WindowFrame</FrameColor>
+                            <Size>100, 20</Size>
+                            <ForeColor>Black</ForeColor>
+                        </BaseTextItem>
+                        <BaseTextItem>
+                            <BackColor>White</BackColor>
+                            <CanShrink>False</CanShrink>
+                            <StringTrimming>EllipsisCharacter</StringTrimming>
+                            <Text>Kategoriename</Text>
+                            <Location>184, 5</Location>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <Visible>True</Visible>
+                            <DrawBorder>False</DrawBorder>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <CanGrow>False</CanGrow>
+                            <FormatString />
+                            <Name>Kategoriename2</Name>
+                            <FrameColor>WindowFrame</FrameColor>
+                            <Size>100, 20</Size>
+                            <ForeColor>Black</ForeColor>
+                        </BaseTextItem>
+                        <BaseTextItem>
+                            <BackColor>White</BackColor>
+                            <CanShrink>False</CanShrink>
+                            <StringTrimming>EllipsisCharacter</StringTrimming>
+                            <Text>Beschreibung</Text>
+                            <Location>363, 5</Location>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <Visible>True</Visible>
+                            <DrawBorder>False</DrawBorder>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <CanGrow>False</CanGrow>
+                            <FormatString />
+                            <Name>Beschreibung3</Name>
+                            <FrameColor>WindowFrame</FrameColor>
+                            <Size>100, 20</Size>
+                            <ForeColor>Black</ForeColor>
+                        </BaseTextItem>
+                        <BaseTextItem>
+                            <BackColor>White</BackColor>
+                            <CanShrink>False</CanShrink>
+                            <StringTrimming>EllipsisCharacter</StringTrimming>
+                            <Text>Abbildung</Text>
+                            <Location>542, 5</Location>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <Visible>True</Visible>
+                            <DrawBorder>False</DrawBorder>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <CanGrow>False</CanGrow>
+                            <FormatString />
+                            <Name>Abbildung4</Name>
+                            <FrameColor>WindowFrame</FrameColor>
+                            <Size>100, 20</Size>
+                            <ForeColor>Black</ForeColor>
+                        </BaseTextItem>
+                    </Items>
+                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+                    <BackColor>White</BackColor>
+                    <DrawBorder>False</DrawBorder>
+                    <ForeColor>Black</ForeColor>
+                </BaseRowItem>
+            </Items>
+            <Location>50, 125</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportDetail</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items>
+                <BaseRowItem>
+                    <AlternateBackColor />
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Name>AbstractItem</Name>
+                    <Location>5, 5</Location>
+                    <Visible>True</Visible>
+                    <Size>717, 50</Size>
+                    <Padding>0, 0, 0, 0</Padding>
+                    <Items>
+                        <BaseDataItem>
+                            <DataType>System.Int32</DataType>
+                            <Text>Kategorie-Nr</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <Location>10, 10</Location>
+                            <BaseTableName>Table</BaseTableName>
+                            <CanGrow>False</CanGrow>
+                            <ForeColor>Black</ForeColor>
+                            <StringTrimming>None</StringTrimming>
+                            <ColumnName>Kategorie-Nr</ColumnName>
+                            <DrawBorder>False</DrawBorder>
+                            <CanShrink>False</CanShrink>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <BackColor>White</BackColor>
+                            <FormatString />
+                            <Name>Kategorie-Nr</Name>
+                            <Visible>True</Visible>
+                            <Size>100, 20</Size>
+                            <FrameColor>WindowFrame</FrameColor>
+                        </BaseDataItem>
+                        <BaseDataItem>
+                            <DataType>System.String</DataType>
+                            <Text>Kategoriename</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <Location>189, 10</Location>
+                            <BaseTableName>Table</BaseTableName>
+                            <CanGrow>False</CanGrow>
+                            <ForeColor>Black</ForeColor>
+                            <StringTrimming>None</StringTrimming>
+                            <ColumnName>Kategoriename</ColumnName>
+                            <DrawBorder>False</DrawBorder>
+                            <CanShrink>False</CanShrink>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <BackColor>White</BackColor>
+                            <FormatString />
+                            <Name>Kategoriename</Name>
+                            <Visible>True</Visible>
+                            <Size>100, 20</Size>
+                            <FrameColor>WindowFrame</FrameColor>
+                        </BaseDataItem>
+                        <BaseDataItem>
+                            <DataType>System.String</DataType>
+                            <Text>Beschreibung</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <Location>368, 10</Location>
+                            <BaseTableName>Table</BaseTableName>
+                            <CanGrow>False</CanGrow>
+                            <ForeColor>Black</ForeColor>
+                            <StringTrimming>None</StringTrimming>
+                            <ColumnName>Beschreibung</ColumnName>
+                            <DrawBorder>False</DrawBorder>
+                            <CanShrink>False</CanShrink>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <BackColor>Silver</BackColor>
+                            <FormatString />
+                            <Name>Beschreibung</Name>
+                            <Visible>True</Visible>
+                            <Size>100, 20</Size>
+                            <FrameColor>WindowFrame</FrameColor>
+                        </BaseDataItem>
+                        <BaseImageItem>
+                            <ImageSource>Database</ImageSource>
+                            <Location>547, 10</Location>
+                            <Name>Abbildung</Name>
+                            <BaseTableName>Table</BaseTableName>
+                            <Size>100, 20</Size>
+                            <ScaleImageToSize>False</ScaleImageToSize>
+                            <BackColor>White</BackColor>
+                            <ColumnName>Abbildung</ColumnName>
+                        </BaseImageItem>
+                    </Items>
+                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+                    <BackColor>White</BackColor>
+                    <DrawBorder>False</DrawBorder>
+                    <ForeColor>Black</ForeColor>
+                </BaseRowItem>
+            </Items>
+            <Location>50, 200</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportPageFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>EllipsisCharacter</StringTrimming>
+                    <Text>=Globals!PageNumber</Text>
+                    <Location>622, 5</Location>
+                    <ContentAlignment>MiddleLeft</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>PageNumber1</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>100, 20</Size>
+                    <ForeColor>Black</ForeColor>
+                </BaseTextItem>
+            </Items>
+            <Location>50, 275</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items>
+                <BaseTextItem>
+                    <BackColor>Gainsboro</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>='This Report contains : ' + count() + ' DataRows'</Text>
+                    <Location>15, 3</Location>
+                    <ContentAlignment>MiddleCenter</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>AbstractItem</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>620, 20</Size>
+                    <ForeColor>Black</ForeColor>
+                </BaseTextItem>
+            </Items>
+            <Location>50, 350</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+    </SectionCollection>
+</ReportModel>

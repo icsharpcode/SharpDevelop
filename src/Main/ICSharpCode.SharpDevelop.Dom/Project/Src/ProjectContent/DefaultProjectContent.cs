@@ -823,7 +823,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					// Try inner classes (in full inheritance tree)
 					// Don't use loop with cur = cur.BaseType because of inheritance cycles
 					foreach (IClass baseClass in outerClass.ClassInheritanceTree) {
-						if (baseClass.ClassType == ClassType.Class) {
+						if (baseClass.ClassType == ClassType.Class || baseClass.ClassType == ClassType.Struct || baseClass.ClassType == ClassType.Module) {
 							foreach (IClass innerClass in baseClass.InnerClasses) {
 								if (language.NameComparer.Equals(innerClass.Name, name)) {
 									result = new SearchTypeResult(innerClass);

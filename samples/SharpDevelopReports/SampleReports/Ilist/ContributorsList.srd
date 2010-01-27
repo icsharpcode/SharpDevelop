@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReportModel>
+    <ReportSettings>
+        <ReportSettings>
+            <GridSize>8, 8</GridSize>
+            <PageSize>827, 1169</PageSize>
+            <CommandText />
+            <Landscape>False</Landscape>
+            <GroupColumnsCollection />
+            <RightMargin>50</RightMargin>
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+            <ReportType>DataReport</ReportType>
+            <UseStandardPrinter>True</UseStandardPrinter>
+            <CommandType>Text</CommandType>
+            <GraphicsUnit>Millimeter</GraphicsUnit>
+            <TopMargin>50</TopMargin>
+            <ConnectionString />
+            <Padding>5, 5, 5, 5</Padding>
+            <LeftMargin>50</LeftMargin>
+            <SortColumnCollection />
+            <DataModel>PushData</DataModel>
+            <BottomMargin>50</BottomMargin>
+            <AvailableFieldsCollection />
+            <ReportName>Report1</ReportName>
+            <ParameterCollection />
+        </ReportSettings>
+    </ReportSettings>
+    <SectionCollection>
+        <BaseSection>
+            <Size>786, 35</Size>
+            <Name>ReportHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items />
+            <Location>50, 50</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>786, 108</Size>
+            <Name>ReportPageHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>Job</Text>
+                    <Location>429, 63</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 12pt, style=Bold</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>Job</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>100, 20</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>Lastname</Text>
+                    <Location>234, 63</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 12pt, style=Bold</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>Lastname</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>100, 20</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+                <BaseImageItem>
+                    <ImageSource>File</ImageSource>
+                    <Location>47, 6</Location>
+                    <Name>ReportImageControl</Name>
+                    <Size>661, 42</Size>
+                    <ScaleImageToSize>False</ScaleImageToSize>
+                    <BackColor>Window</BackColor>
+                    <RelativeFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</RelativeFileName>
+                    <ImageFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
+                </BaseImageItem>
+                <BaseLineItem>
+                    <StartLineCap>Flat</StartLineCap>
+                    <FromPoint>0, 3</FromPoint>
+                    <Location>47, 87</Location>
+                    <Name />
+                    <Size>661, 18</Size>
+                    <EndLineCap>Flat</EndLineCap>
+                    <DashStyle>Solid</DashStyle>
+                    <BackColor>White</BackColor>
+                    <DashLineCap>Flat</DashLineCap>
+                    <ForeColor>ControlText</ForeColor>
+                    <ToPoint>614, 3</ToPoint>
+                    <Thickness>2</Thickness>
+                </BaseLineItem>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>EllipsisCharacter</StringTrimming>
+                    <Text>Firstname</Text>
+                    <Location>46, 63</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 12pt, style=Bold</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>reportTextItem1</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>109, 20</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+            </Items>
+            <Location>50, 100</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>750, 51</Size>
+            <Name>ReportDetail</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items>
+                <BaseRowItem>
+                    <AlternateBackColor />
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Name>Row</Name>
+                    <Location>3, 10</Location>
+                    <Visible>True</Visible>
+                    <Size>699, 40</Size>
+                    <Padding>5, 5, 5, 5</Padding>
+                    <Items>
+                        <BaseDataItem>
+                            <DataType>System.String</DataType>
+                            <Text>First</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <Location>43, 12</Location>
+                            <CanGrow>False</CanGrow>
+                            <ForeColor>ControlText</ForeColor>
+                            <StringTrimming>EllipsisCharacter</StringTrimming>
+                            <ColumnName>First</ColumnName>
+                            <DrawBorder>False</DrawBorder>
+                            <CanShrink>False</CanShrink>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <BackColor>White</BackColor>
+                            <FormatString />
+                            <Name>unbound1</Name>
+                            <Visible>True</Visible>
+                            <Size>147, 25</Size>
+                            <FrameColor>WindowFrame</FrameColor>
+                        </BaseDataItem>
+                        <BaseDataItem>
+                            <DataType>System.String</DataType>
+                            <Text>last</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <Location>231, 12</Location>
+                            <CanGrow>False</CanGrow>
+                            <ForeColor>ControlText</ForeColor>
+                            <StringTrimming>EllipsisCharacter</StringTrimming>
+                            <ColumnName>last</ColumnName>
+                            <DrawBorder>False</DrawBorder>
+                            <CanShrink>False</CanShrink>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <BackColor>White</BackColor>
+                            <FormatString />
+                            <Name>unbound2</Name>
+                            <Visible>True</Visible>
+                            <Size>139, 25</Size>
+                            <FrameColor>WindowFrame</FrameColor>
+                        </BaseDataItem>
+                        <BaseDataItem>
+                            <DataType>System.String</DataType>
+                            <Text>Job</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <Location>426, 10</Location>
+                            <CanGrow>False</CanGrow>
+                            <ForeColor>ControlText</ForeColor>
+                            <StringTrimming>EllipsisCharacter</StringTrimming>
+                            <ColumnName>Job</ColumnName>
+                            <DrawBorder>False</DrawBorder>
+                            <NullValue>--------------</NullValue>
+                            <CanShrink>False</CanShrink>
+                            <ContentAlignment>MiddleLeft</ContentAlignment>
+                            <BackColor>White</BackColor>
+                            <FormatString />
+                            <Name>unbound3</Name>
+                            <Visible>True</Visible>
+                            <Size>216, 25</Size>
+                            <FrameColor>WindowFrame</FrameColor>
+                        </BaseDataItem>
+                    </Items>
+                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+                    <BackColor>White</BackColor>
+                    <DrawBorder>False</DrawBorder>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseRowItem>
+            </Items>
+            <Location>50, 223</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>750, 49</Size>
+            <Name>ReportPageFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>=Globals!ReportFolder</Text>
+                    <Location>45, 24</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 8.25pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>=Globals!ReportFolder</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>483, 20</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+                <BaseLineItem>
+                    <StartLineCap>Flat</StartLineCap>
+                    <FromPoint>0, 0</FromPoint>
+                    <Location>45, 3</Location>
+                    <Name>object_177a5444_b8e0_4202_87d2_05cdc7cd1194</Name>
+                    <Size>663, 15</Size>
+                    <EndLineCap>Flat</EndLineCap>
+                    <DashStyle>Solid</DashStyle>
+                    <BackColor>White</BackColor>
+                    <DashLineCap>Flat</DashLineCap>
+                    <ForeColor>ControlText</ForeColor>
+                    <ToPoint>656, 0</ToPoint>
+                    <Thickness>2</Thickness>
+                </BaseLineItem>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>='Page ' + Globals!PageNumber</Text>
+                    <Location>602, 24</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 8.25pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>='Page ' + Globals!PageNumber</Name>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>100, 20</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+            </Items>
+            <Location>50, 289</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>750, 55</Size>
+            <Name>ReportFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>50</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>Window</BackColor>
+            <Items />
+            <Location>50, 353</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+    </SectionCollection>
+</ReportModel>

@@ -366,14 +366,7 @@
 				<ComponentRef Id="RegExToolkitFiles"/>
 				<ComponentRef Id="ResourceToolkitFiles"/>
 				<ComponentRef Id="SearchAndReplaceFiles"/>
-				<!--
-				<ComponentRef Id="SharpQueryDll"/>
-				<ComponentRef Id="SharpQueryInteropMSDASCDll"/>
-				<ComponentRef Id="SharpDevelopReportsCoreDll"/>
-				<ComponentRef Id="SharpDevelopReportsAddInDll"/>
-				<ComponentRef Id="PdfSharpDll"/>
-				<ComponentRef Id="PdfSharpDeResources"/>
-				-->
+
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
 				<ComponentRef Id="UnitTestingAddInFiles"/>
@@ -490,6 +483,15 @@
 				<ComponentRef Id="UDCSystemDataSQLiteDll"/>
 				<ComponentRef Id="UsageDataCollectorAddin"/>
 				<ComponentRef Id="UsageDataCollectorDll"/>
+				
+				<!--<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
+				<ComponentRef Id="ICSharpCodeReportDesignerAddin"/>
+				<ComponentRef Id="ICSharpCodeReportsAddinDll"/>
+				<ComponentRef Id="ICSharpCodeReportsCoreDll"/>
+				<ComponentRef Id="InteropMsdascDll"/>
+				<ComponentRef Id="InteropAdodbDll"/>
+				<ComponentRef Id="IronyDll"/>
+				<ComponentRef Id="ITextSharpDll"/>-->
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
