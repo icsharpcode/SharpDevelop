@@ -293,6 +293,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return Tokens.Interface;
 				case ClassType.Struct:
 					return Tokens.Structure;
+				case ClassType.Module:
+					return Tokens.Module;
 				default:
 					return Tokens.Class;
 			}
@@ -813,11 +815,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			printAttributeSectionInline = false;
 			OutputModifier(parameterDeclarationExpression.ParamModifier, parameterDeclarationExpression.StartLocation);
 			outputFormatter.PrintIdentifier(parameterDeclarationExpression.ParameterName);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
-			TrackedVisit(parameterDeclarationExpression.TypeReference, data);
+			if (!parameterDeclarationExpression.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				VisitReturnTypeAttributes(parameterDeclarationExpression.Attributes, data);
+				TrackedVisit(parameterDeclarationExpression.TypeReference, data);
+			}
+			if (!parameterDeclarationExpression.DefaultValue.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Assign);
+				outputFormatter.Space();
+				TrackedVisit(parameterDeclarationExpression.DefaultValue, data);
+			}
 			return null;
 		}
 		
@@ -2728,7 +2738,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			TrackedVisit(memberReferenceExpression.TargetObject, data);
 			outputFormatter.PrintToken(Tokens.Dot);
-			outputFormatter.PrintIdentifier(memberReferenceExpression.MemberName);
+			if (string.Equals(memberReferenceExpression.MemberName, "New", StringComparison.OrdinalIgnoreCase)
+			    && (memberReferenceExpression.TargetObject is BaseReferenceExpression || memberReferenceExpression.TargetObject is ThisReferenceExpression || memberReferenceExpression.TargetObject is ClassReferenceExpression))
+			{
+				outputFormatter.PrintToken(Tokens.New);
+			} else {
+				outputFormatter.PrintIdentifier(memberReferenceExpression.MemberName);
+			}
 			PrintTypeArguments(memberReferenceExpression.TypeArguments);
 			return null;
 		}
@@ -2762,34 +2778,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void OutputModifier(ParameterModifiers modifier, Location position)
 		{
-			switch (modifier) {
-				case ParameterModifiers.None:
-				case ParameterModifiers.In:
-					if (prettyPrintOptions.OutputByValModifier) {
-						outputFormatter.PrintToken(Tokens.ByVal);
-						outputFormatter.Space();
-					}
-					break;
-				case ParameterModifiers.Out:
-					//Error("Out parameter converted to ByRef", position);
-					outputFormatter.PrintToken(Tokens.ByRef);
-					outputFormatter.Space();
-					break;
-				case ParameterModifiers.Params:
-					outputFormatter.PrintToken(Tokens.ParamArray);
-					outputFormatter.Space();
-					break;
-				case ParameterModifiers.Ref:
-					outputFormatter.PrintToken(Tokens.ByRef);
-					outputFormatter.Space();
-					break;
-				case ParameterModifiers.Optional:
-					outputFormatter.PrintToken(Tokens.Optional);
-					outputFormatter.Space();
-					break;
-				default:
-					Error(String.Format("Unsupported modifier : {0}", modifier), position);
-					break;
+			if ((modifier & ParameterModifiers.Optional) == ParameterModifiers.Optional) {
+				outputFormatter.PrintToken(Tokens.Optional);
+				outputFormatter.Space();
+			}
+			if ((modifier & ParameterModifiers.Ref) == ParameterModifiers.Ref) {
+				outputFormatter.PrintToken(Tokens.ByRef);
+				outputFormatter.Space();
+			}
+			if ((modifier & ParameterModifiers.Params) == ParameterModifiers.Params) {
+				outputFormatter.PrintToken(Tokens.ParamArray);
+				outputFormatter.Space();
+			}
+			if (prettyPrintOptions.OutputByValModifier &&
+			    (modifier & (ParameterModifiers.Params | ParameterModifiers.Ref)) == ParameterModifiers.None)
+			{
+				outputFormatter.PrintToken(Tokens.ByVal);
+				outputFormatter.Space();
 			}
 		}
 		

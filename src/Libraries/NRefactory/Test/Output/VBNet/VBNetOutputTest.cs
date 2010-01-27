@@ -475,6 +475,20 @@ End Using");
 		}
 		
 		[Test]
+		public void ChainedConstructorCall()
+		{
+			TestExpression("MyBase.New()");
+			TestExpression("Me.New()");
+			TestExpression("MyClass.New()");
+		}
+		
+		[Test]
+		public void NewMethodCall()
+		{
+			TestExpression("something.[New]()");
+		}
+		
+		[Test]
 		public void ObjectInitializer()
 		{
 			TestExpression("New StringWriter() With { _\n" +
@@ -502,6 +516,21 @@ End Using");
 		public void UntypedForeach()
 		{
 			TestStatement("For Each x In myGuidArray\nNext");
+		}
+		
+		[Test]
+		public void MethodDefinitionWithOptionalParameter()
+		{
+			TestTypeMember("Sub M(Optional ByVal msg As String = Nothing, Optional ByRef output As String = Nothing)\nEnd Sub");
+		}
+		
+		[Test]
+		public void Module()
+		{
+			TestProgram("Module Test\n" +
+			            " Sub M()\n" +
+			            " End Sub\n" +
+			            "End Module");
 		}
 	}
 }
