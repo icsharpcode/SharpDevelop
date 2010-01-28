@@ -15,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// This class stacks the last x operations from the undostack and makes
 	/// one undo/redo operation from it.
 	/// </summary>
-	sealed class UndoOperationGroup : IUndoableOperation
+	sealed class UndoOperationGroup : IUndoableOperationWithContext
 	{
 		IUndoableOperation[] undolist;
 		
@@ -42,10 +42,24 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
+		public void Undo(UndoStack stack)
+		{
+			for (int i = 0; i < undolist.Length; ++i) {
+				stack.RunUndo(undolist[i]);
+			}
+		}
+		
 		public void Redo()
 		{
 			for (int i = undolist.Length - 1; i >= 0; --i) {
 				undolist[i].Redo();
+			}
+		}
+		
+		public void Redo(UndoStack stack)
+		{
+			for (int i = undolist.Length - 1; i >= 0; --i) {
+				stack.RunRedo(undolist[i]);
 			}
 		}
 	}

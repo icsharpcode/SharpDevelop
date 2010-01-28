@@ -19,18 +19,32 @@ namespace ICSharpCode.AvalonEdit.Document
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
 	public sealed class UndoStack : INotifyPropertyChanged
 	{
+		/// undo stack is listening for changes
+		internal const int StateListen = 0;
+		/// undo stack is reverting/repeating a set of changes
+		internal const int StatePlayback = 1;
+		// undo stack is reverting/repeating a set of changes and modifies the document to do this
+		internal const int StatePlaybackModifyDocument = 2;
+		/// state is used for checking that noone but the UndoStack performs changes
+		/// during Undo events
+		internal int state = StateListen;
+		
 		Deque<IUndoableOperation> undostack = new Deque<IUndoableOperation>();
 		Deque<IUndoableOperation> redostack = new Deque<IUndoableOperation>();
-		
 		int sizeLimit = int.MaxValue;
-		bool acceptChanges = true;
+		
+		int undoGroupDepth;
+		int actionCountInUndoGroup;
+		int optionalActionCount;
+		object lastGroupDescriptor;
+		bool allowContinue;
 		
 		/// <summary>
 		/// Gets if the undo stack currently accepts changes.
 		/// Is false while an undo action is running.
 		/// </summary>
 		public bool AcceptChanges {
-			get { return acceptChanges; }
+			get { return state == StateListen; }
 		}
 		
 		/// <summary>
@@ -77,11 +91,6 @@ namespace ICSharpCode.AvalonEdit.Document
 				redostack.PopFront();
 		}
 		
-		int undoGroupDepth;
-		int actionCountInUndoGroup;
-		int optionalActionCount;
-		object lastGroupDescriptor;
-		
 		/// <summary>
 		/// If an undo group is open, gets the group descriptor of the current top-level
 		/// undo group.
@@ -122,7 +131,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
-		/// Starts grouping changes, continuing with the previously closed undo group.
+		/// Starts grouping changes, continuing with the previously closed undo group if possible.
 		/// Maintains a counter so that nested calls are possible.
 		/// If the call to StartContinuedUndoGroup is a nested call, it behaves exactly
 		/// as <see cref="StartUndoGroup()"/>, only top-level calls can continue existing undo groups.
@@ -132,7 +141,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public void StartContinuedUndoGroup(object groupDescriptor)
 		{
 			if (undoGroupDepth == 0) {
-				actionCountInUndoGroup = undostack.Count > 0 ? 1 : 0;
+				actionCountInUndoGroup = (allowContinue && undostack.Count > 0) ? 1 : 0;
 				optionalActionCount = 0;
 				lastGroupDescriptor = groupDescriptor;
 			}
@@ -155,20 +164,25 @@ namespace ICSharpCode.AvalonEdit.Document
 						undostack.PopBack();
 					}
 				} else if (actionCountInUndoGroup > 1) {
+					// combine all actions within the group into a single grouped action
 					undostack.PushBack(new UndoOperationGroup(undostack, actionCountInUndoGroup));
 				}
 				EnforceSizeLimit();
+				allowContinue = true;
 			}
 		}
 		
 		/// <summary>
 		/// Throws an InvalidOperationException if an undo group is current open.
 		/// </summary>
-		void VerifyNoUndoGroupOpen()
+		void ThrowIfUndoGroupOpen()
 		{
 			if (undoGroupDepth != 0) {
 				undoGroupDepth = 0;
 				throw new InvalidOperationException("No undo group should be open at this point");
+			}
+			if (state != StateListen) {
+				throw new InvalidOperationException("This method cannot be called while an undo operation is being performed");
 			}
 		}
 		
@@ -177,14 +191,19 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public void Undo()
 		{
-			VerifyNoUndoGroupOpen();
+			ThrowIfUndoGroupOpen();
 			if (undostack.Count > 0) {
-				lastGroupDescriptor = null;
-				acceptChanges = false;
+				// disallow continuing undo groups after undo operation
+				lastGroupDescriptor = null; allowContinue = false;
+				// fetch operation to undo and move it to redo stack
 				IUndoableOperation uedit = undostack.PopBack();
 				redostack.PushBack(uedit);
-				uedit.Undo();
-				acceptChanges = true;
+				state = StatePlayback;
+				try {
+					RunUndo(uedit);
+				} finally {
+					state = StateListen;
+				}
 				if (undostack.Count == 0)
 					NotifyPropertyChanged("CanUndo");
 				if (redostack.Count == 1)
@@ -192,24 +211,45 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
+		internal void RunUndo(IUndoableOperation op)
+		{
+			IUndoableOperationWithContext opWithCtx = op as IUndoableOperationWithContext;
+			if (opWithCtx != null)
+				opWithCtx.Undo(this);
+			else
+				op.Undo();
+		}
+		
 		/// <summary>
 		/// Call this method to redo the last undone operation
 		/// </summary>
 		public void Redo()
 		{
-			VerifyNoUndoGroupOpen();
+			ThrowIfUndoGroupOpen();
 			if (redostack.Count > 0) {
-				lastGroupDescriptor = null;
-				acceptChanges = false;
+				lastGroupDescriptor = null; allowContinue = false;
 				IUndoableOperation uedit = redostack.PopBack();
 				undostack.PushBack(uedit);
-				uedit.Redo();
-				acceptChanges = true;
+				state = StatePlayback;
+				try {
+					RunRedo(uedit);
+				} finally {
+					state = StateListen;
+				}
 				if (redostack.Count == 0)
 					NotifyPropertyChanged("CanRedo");
 				if (undostack.Count == 1)
 					NotifyPropertyChanged("CanUndo");
 			}
+		}
+		
+		internal void RunRedo(IUndoableOperation op)
+		{
+			IUndoableOperationWithContext opWithCtx = op as IUndoableOperationWithContext;
+			if (opWithCtx != null)
+				opWithCtx.Redo(this);
+			else
+				op.Redo();
 		}
 		
 		/// <summary>
@@ -241,7 +281,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				throw new ArgumentNullException("operation");
 			}
 			
-			if (acceptChanges && sizeLimit > 0) {
+			if (state == StateListen && sizeLimit > 0) {
 				bool wasEmpty = undostack.Count == 0;
 				
 				StartUndoGroup();
@@ -272,15 +312,16 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public void ClearAll()
 		{
-			VerifyNoUndoGroupOpen();
+			ThrowIfUndoGroupOpen();
+			actionCountInUndoGroup = 0;
+			optionalActionCount = 0;
 			if (undostack.Count != 0) {
 				lastGroupDescriptor = null;
+				allowContinue = false;
 				undostack.Clear();
 				NotifyPropertyChanged("CanUndo");
 			}
 			ClearRedoStack();
-			actionCountInUndoGroup = 0;
-			optionalActionCount = 0;
 		}
 		
 		internal void AttachToDocument(TextDocument document)
@@ -302,6 +343,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		void document_Changing(object sender, DocumentChangeEventArgs e)
 		{
+			if (state == StatePlayback)
+				throw new InvalidOperationException("Document changes during undo/redo operations are not allowed.");
 			TextDocument document = (TextDocument)sender;
 			Push(new DocumentChangeOperation(document, e));
 		}

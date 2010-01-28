@@ -25,4 +25,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		void Redo();
 	}
+	
+	interface IUndoableOperationWithContext : IUndoableOperation
+	{
+		void Undo(UndoStack stack);
+		void Redo(UndoStack stack);
+	}
 }
