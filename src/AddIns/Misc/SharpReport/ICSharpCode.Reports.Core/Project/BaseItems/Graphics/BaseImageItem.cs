@@ -34,7 +34,7 @@ namespace ICSharpCode.Reports.Core {
 		private string columnName;
 		private string baseTableName;
 		private string reportFileName;
-		private string relativeFileName;
+		private string relativeFileName = "aa";
 		
 		public BaseImageItem():base() {
 		}
@@ -75,6 +75,7 @@ namespace ICSharpCode.Reports.Core {
 			try {
 				Image im;
 				string absFileName = this.AbsoluteFileName;
+				System.Diagnostics.Trace.WriteLine(String.Format("<CORE.LoadImage > {0}",absFileName));
 				if (!String.IsNullOrEmpty(absFileName) && File.Exists(absFileName)) {
 					im = Image.FromFile (this.AbsoluteFileName);
 				} else {
@@ -182,6 +183,7 @@ namespace ICSharpCode.Reports.Core {
 			set {
 				imageFileName = value;
 				this.imageSource = GlobalEnums.ImageSource.File;
+				System.Diagnostics.Trace.WriteLine(String.Format("<CORE.BaseImage> ImageFilename {0}",Path.GetFullPath(this.imageFileName)));
 			}
 		}
 		
@@ -192,10 +194,12 @@ namespace ICSharpCode.Reports.Core {
 			get {
 				if (!string.IsNullOrEmpty(relativeFileName)) {
 					string testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
+						System.Diagnostics.Trace.WriteLine(String.Format("<CORE.BaseImage> AbsoluteFilename {0}",Path.GetFullPath(testFileName)));
 					if (File.Exists(testFileName)){
 						return testFileName;
 					}
 				}
+			
 				return this.ImageFileName;
 			}
 		}
@@ -214,6 +218,8 @@ namespace ICSharpCode.Reports.Core {
 			get { return reportFileName; }
 			set { 
 				reportFileName = value; 
+				System.Diagnostics.Trace.WriteLine("");
+				System.Diagnostics.Trace.WriteLine(String.Format("<CORE.BaseImage> ReportFilename {0}",Path.GetFullPath(this.reportFileName)));
 			}
 		}
 		

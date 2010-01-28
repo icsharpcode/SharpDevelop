@@ -16,6 +16,7 @@ using System.Drawing;
 namespace ICSharpCode.Reports.Core.Test
 {
 	[TestFixture]
+	[Ignore]
 	public class ReportSettingsFixture
 	{
 		const string reportName = "ReportName";	

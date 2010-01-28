@@ -52,7 +52,8 @@ namespace ICSharpCode.Reports.Core
 			if (model == null) {
 				throw new ArgumentNullException("model");
 			}
-			
+			System.Diagnostics.Trace.WriteLine("");
+			System.Diagnostics.Trace.WriteLine (String.Format("FilePathConverter:AdjustReportName {0}",model.ReportSettings.FileName));
 			foreach (BaseSection section in model.SectionCollection) {
 				foreach (BaseReportItem item in section.Items) {
 					BaseImageItem baseImageItem = item as BaseImageItem;
@@ -60,7 +61,6 @@ namespace ICSharpCode.Reports.Core
 						baseImageItem.ReportFileName = model.ReportSettings.FileName;
 					}
 				}
-				
 			}
 		}
 	}

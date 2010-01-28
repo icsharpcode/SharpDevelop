@@ -27,13 +27,15 @@ namespace ICSharpCode.Reports.Addin
 	/// Description of the view content
 	/// </summary>
 	public class ReportDesignerView : AbstractViewContent, IHasPropertyContainer,
-									  IClipboardHandler,IUndoHandler, IToolsHost,IPrintable
+	IClipboardHandler,IUndoHandler, IToolsHost,IPrintable
 	{
 		
 		private bool IsFormsDesignerVisible;
 		private bool tabOrderMode;
 		private bool hasUnmergedChanges;
 		private bool unloading;
+		
+		string reportFileContent;
 		
 		private Panel panel = new Panel();
 		
@@ -55,7 +57,7 @@ namespace ICSharpCode.Reports.Addin
 		/// Creates a new ReportDesignerView object
 		/// </summary>
 		
-		public ReportDesignerView(OpenedFile openedFile, IDesignerGenerator generator):base (openedFile)		                         		                          
+		public ReportDesignerView(OpenedFile openedFile, IDesignerGenerator generator):base (openedFile)
 		{
 			if (openedFile == null) {
 				throw new ArgumentNullException("opendFile");
@@ -91,7 +93,7 @@ namespace ICSharpCode.Reports.Addin
 			reportViewer = new ReportViewerSecondaryView(loader,this);
 			SecondaryViewContents.Add(reportViewer);
 		}
-			
+		
 		#endregion
 		
 		
@@ -113,7 +115,7 @@ namespace ICSharpCode.Reports.Addin
 			designSurface.Loading += this.DesignerLoading;
 			designSurface.Loaded += this.DesignerLoaded;
 			designSurface.Flushed += this.DesignerFlushed;
-			designSurface.Unloading += this.DesingerUnloading;	
+			designSurface.Unloading += this.DesingerUnloading;
 			
 			AmbientProperties ambientProperties = new AmbientProperties();
 			defaultServiceContainer.AddService(typeof(AmbientProperties), ambientProperties);
@@ -135,12 +137,12 @@ namespace ICSharpCode.Reports.Addin
 			dos.Options.Properties.Find( "UseSnapLines", true ).SetValue( dos, true );
 			defaultServiceContainer.AddService( typeof( DesignerOptionService ), dos );
 			this.loader = new ReportDesignerLoader(generator,stream);
-			this.designSurface.BeginLoad(this.loader);	
+			this.designSurface.BeginLoad(this.loader);
 			if (!designSurface.IsLoaded) {
 				throw new FormsDesignerLoadException(FormatLoadErrors(designSurface));
 			}
 			defaultServiceContainer.AddService(typeof(System.ComponentModel.Design.Serialization.INameCreationService),
-			                new NameCreationService());
+			                                   new NameCreationService());
 			
 			ISelectionService selectionService = (ISelectionService)this.designSurface.GetService(typeof(ISelectionService));
 			selectionService.SelectionChanged  += SelectionChangedHandler;
@@ -255,15 +257,16 @@ namespace ICSharpCode.Reports.Addin
 		{
 			System.Diagnostics.Trace.WriteLine("View:MergeFormChanges()");
 			this.designSurface.Flush();
+			generator.MergeFormChanges(null);
 			LoggingService.Info("Finished merging form changes");
 			hasUnmergedChanges = false;
 		}
 		
 		
-		string reportFileContent;
+		
 		
 		public string ReportFileContent {
-			get { 
+			get {
 				if (this.IsDirty) {
 					this.MergeFormChanges();
 				}
@@ -428,7 +431,7 @@ namespace ICSharpCode.Reports.Addin
 			}
 			this.addedTypeDescriptionProviders.Clear();
 		}
-		*/
+		 */
 		#endregion
 		
 		#region HasPropertyContainer implementation
@@ -467,7 +470,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		#endregion
-	
+		
 		#region IUnDohandler
 		
 		#endregion
@@ -699,21 +702,19 @@ namespace ICSharpCode.Reports.Addin
 			base.Load(file, stream);
 			this.LoadDesigner(stream);
 			this.SetupSecondaryView();
-			ReportModel m = loader.CreateRenderableModel();
-			m.ReportSettings.FileName = file.FileName;
+			System.Diagnostics.Trace.WriteLine("");
+			System.Diagnostics.Trace.WriteLine(String.Format("DesignerView Load {0}",file.FileName));
 		}
 		
 		
 		public override void Save(ICSharpCode.SharpDevelop.OpenedFile file,Stream stream)
 		{
-			
 			LoggingService.Debug("ReportDesigner: Save " + file.FileName);
 			if (hasUnmergedChanges) {
 				this.MergeFormChanges();
 			}
-			ReportModel m = loader.CreateRenderableModel();
+			Console.WriteLine(this.ReportFileContent);
 			using(StreamWriter writer = new StreamWriter(stream)) {
-				Console.WriteLine (this.ReportFileContent);
 				writer.Write(this.ReportFileContent);
 			}
 		}

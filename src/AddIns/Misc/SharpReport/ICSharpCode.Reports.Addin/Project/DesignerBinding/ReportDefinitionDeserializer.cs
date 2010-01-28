@@ -65,7 +65,7 @@ namespace ICSharpCode.Reports.Addin
 				try {
 					object o = this.Load(sectionNode as XmlElement,null);
 					BaseSection section = o as BaseSection;
-					 Absolut2RelativePath(section,this.reportSettings.FileName);
+					Absolut2RelativePath(section,this.reportSettings.FileName);
 					host.Container.Add(section);
 				} catch (Exception e) {
 					MessageService.ShowError(e);
@@ -83,11 +83,24 @@ namespace ICSharpCode.Reports.Addin
 					baseImageItem.ReportFileName = fileName;
 					
 					if (Path.IsPathRooted(baseImageItem.ImageFileName)) {
+
+
+				string p2  = Path.GetFullPath(fileName);
+////				string p3 = Path.GetFullPath(relativeFileName);
+			string p3 = Path.GetFullPath(baseImageItem.RelativeFileName);
+				string s = ICSharpCode.Reports.Core.FileUtility.GetRelativePath(p2,p3);						
+						
+						
 						string d = ICSharpCode.Reports.Core.FileUtility.GetRelativePath(
 							Path.GetDirectoryName(fileName),
 							Path.GetDirectoryName(baseImageItem.ImageFileName));
+string g = d + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
 
-						baseImageItem.RelativeFileName = d + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
+//						baseImageItem.RelativeFileName = d + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
+						baseImageItem.RelativeFileName = s;
+						if (File.Exists(s)){
+							Console.WriteLine("found");
+					}
 					}
 				}
 			}

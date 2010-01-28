@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
@@ -106,7 +107,7 @@ namespace ICSharpCode.Reports.Core{
 		}
 		
 		
-		void BaseValues() 
+		void BaseValues()
 		{
 			this.useStandardPrinter = true;
 			this.graphicsUnit = GraphicsUnit.Pixel;
@@ -125,7 +126,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		private static string BuildFilename (string file)
 		{
-			if (file.EndsWith (GlobalValues.ReportExtension,StringComparison.OrdinalIgnoreCase)) {                
+			if (file.EndsWith (GlobalValues.ReportExtension,StringComparison.OrdinalIgnoreCase)) {
 				return file;
 			} else {
 				if (file.IndexOf('.') > 0) {
@@ -137,17 +138,17 @@ namespace ICSharpCode.Reports.Core{
 			}
 		}
 		
-	
+		
 		#region Properties
 		
-		protected static string DefaultReportName 
+		protected static string DefaultReportName
 		{
 			get {
 				return defaultReportName;
 			}
 		}
 		
-		protected static string DefaultFileName 
+		protected static string DefaultFileName
 		{
 			get {
 				return GlobalValues.PlainFileName;
@@ -180,20 +181,19 @@ namespace ICSharpCode.Reports.Core{
 		[Category("Base Settings")]
 		[DefaultValueAttribute ("")]
 //		[XmlIgnoreAttribute]
-		public string FileName 
+		public string FileName
 		{
 			get {
 				if (String.IsNullOrEmpty(fileName)) {
 					fileName = GlobalValues.PlainFileName;
 				}
-				return fileName;
+				return Path.GetFullPath(fileName);
 			}
 			set {
+				System.Diagnostics.Trace.WriteLine("");
+				System.Diagnostics.Trace.WriteLine(String.Format("<Core.ReportSettings> Filename {0}",Path.GetFullPath(value)));
 				if (fileName != value) {
 					fileName = value;
-					if (String.IsNullOrEmpty(fileName)) {
-						fileName = GlobalValues.PlainFileName;
-					}
 					if (FileNameChanged != null ){
 						FileNameChanged (this,EventArgs.Empty);
 					}
@@ -215,11 +215,11 @@ namespace ICSharpCode.Reports.Core{
 		
 		#endregion
 		
-		#region OutputSettings 
+		#region OutputSettings
 		
 		[Category("Output Settings")]
 		[DefaultValueAttribute (true)]
-		public bool UseStandardPrinter 
+		public bool UseStandardPrinter
 		{
 			get {
 				return useStandardPrinter;
@@ -300,7 +300,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		
 		[Category("Designer Settings")]
-		public Padding Padding 
+		public Padding Padding
 		{
 			get {
 				return padding;
@@ -350,9 +350,9 @@ namespace ICSharpCode.Reports.Core{
 		#endregion
 		
 		#region ReportParameters
-	
+		
 		[Category("Parameters")]
-		[EditorAttribute ( typeof(ExtendedCollectionEditor), 
+		[EditorAttribute ( typeof(ExtendedCollectionEditor),
 		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public ParameterCollection ParameterCollection
 		{
@@ -370,7 +370,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		[Category("Data")]
 		[DefaultValueAttribute ("")]
-		[EditorAttribute (typeof(UISettingsEditor), 
+		[EditorAttribute (typeof(UISettingsEditor),
 		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public string ConnectionString {
 			get {
@@ -389,7 +389,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		[Category("Data")]
 		[DefaultValueAttribute ("")]
-		[EditorAttribute ( typeof(UISettingsEditor), 
+		[EditorAttribute ( typeof(UISettingsEditor),
 		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public string CommandText {
 			get {

@@ -78,7 +78,6 @@ namespace ICSharpCode.Reports.Addin
 		{
 			ReportDefinitionDeserializer rl = new ReportDefinitionDeserializer(this.host,stream);
 			this.reportModel = rl.LoadObjectFromFileDefinition();
-//			FilePathConverter.Absolut2RelativePath(this.reportModel);
 		}
 		
 		
