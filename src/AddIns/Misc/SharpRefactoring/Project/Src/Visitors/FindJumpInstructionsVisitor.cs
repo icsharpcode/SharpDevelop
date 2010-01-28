@@ -1,39 +1,53 @@
-/*
- * Created by SharpDevelop.
- * User: HP
- * Date: 01.05.2008
- * Time: 20:37
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using Dom = ICSharpCode.SharpDevelop.Dom;
 
 namespace SharpRefactoring.Visitors
 {
-	/// <summary>
-	/// Description of FindJumpInstructionVisitor.
-	/// </summary>
+	public enum ErrorKind {
+		ContainsBreak,
+		ContainsContinue,
+		ContainsGoto,
+		None
+	}
+	
 	public class FindJumpInstructionsVisitor : AbstractAstVisitor
 	{
 		MethodDeclaration method;
+		
 		List<LabelStatement> labels;
 		List<CaseLabel> cases;
-		bool isOk = true;
 		
-		public bool IsOk {
-			get { return isOk; }
-		}
+		List<GotoStatement> gotos;
+		List<GotoCaseStatement> gotoCases;
+		
+		List<BreakStatement> breaks;
+		List<ContinueStatement> continues;
 		
 		public FindJumpInstructionsVisitor(MethodDeclaration method)
 		{
 			this.method = method;
+			
 			this.labels = new List<LabelStatement>();
 			this.cases = new List<CaseLabel>();
+			this.gotoCases = new List<GotoCaseStatement>();
+			this.gotos = new List<GotoStatement>();
+			this.breaks = new List<BreakStatement>();
+			this.continues = new List<ContinueStatement>();
 		}
 		
 		public override object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data)
@@ -63,19 +77,15 @@ namespace SharpRefactoring.Visitors
 		
 		public override object VisitBreakStatement(BreakStatement breakStatement, object data)
 		{
-			if (!(data is bool)) {
-				this.isOk = false;
-				MessageService.ShowError("Selection contains a 'break' statement without the enclosing loop.");
-			}
+			if (!(data is bool))
+				this.breaks.Add(breakStatement);
 			return base.VisitBreakStatement(breakStatement, data);
 		}
 		
 		public override object VisitContinueStatement(ContinueStatement continueStatement, object data)
 		{
-			if (!(data is bool)) {
-				this.isOk = false;
-				MessageService.ShowError("Selection contains a 'continue' statement without the enclosing loop.");
-			}
+			if (!(data is bool))
+				this.continues.Add(continueStatement);
 			return base.VisitContinueStatement(continueStatement, data);
 		}
 		
@@ -93,30 +103,54 @@ namespace SharpRefactoring.Visitors
 		
 		public override object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
 		{
-			this.isOk = false;
-			foreach (CaseLabel label in this.cases) {
-				if (label.Label.ToString() == gotoCaseStatement.Expression.ToString())
-					this.isOk = true;
-			}
-			if (!this.isOk) {
-				MessageService.ShowError("Case section '" + ((PrimitiveExpression)gotoCaseStatement.Expression).StringValue + "' not found inside the selected range!");
-			}
-
+			gotoCases.Add(gotoCaseStatement);
 			return base.VisitGotoCaseStatement(gotoCaseStatement, data);
 		}
 		
 		public override object VisitGotoStatement(GotoStatement gotoStatement, object data)
 		{
-			this.isOk = false;
-			foreach (LabelStatement label in this.labels) {
-				if (label.Label == gotoStatement.Label)
-					this.isOk = true;
-			}
-			if (!this.isOk) {
-				MessageService.ShowError("Label '" + gotoStatement.Label + "' not found inside the selected range!");
+			gotos.Add(gotoStatement);
+			return base.VisitGotoStatement(gotoStatement, data);
+		}
+		
+		public ErrorKind DoCheck()
+		{
+			if (this.breaks.Any())
+				return ErrorKind.ContainsBreak;
+			
+			if (this.continues.Any())
+				return ErrorKind.ContainsContinue;
+			
+			if (this.gotos.Any()) {
+				foreach (GotoStatement stmt in this.gotos) {
+					if (!this.labels.Any(label => label.Label == stmt.Label))
+						return ErrorKind.ContainsGoto;
+				}
 			}
 			
-			return base.VisitGotoStatement(gotoStatement, data);
+			if (this.gotoCases.Any()) {
+				foreach (GotoCaseStatement stmt in this.gotoCases) {
+					if (!this.cases.Any(@case => CompareCase(@case, stmt)))
+						return ErrorKind.ContainsGoto;
+				}
+			}
+			
+			return ErrorKind.None;
+		}
+		
+		bool CompareCase(CaseLabel label, GotoCaseStatement stmt)
+		{
+			if (label.IsDefault && stmt.IsDefaultCase)
+				return true;
+			
+			if (stmt.Expression is PrimitiveExpression && label.Label is PrimitiveExpression) {
+				PrimitiveExpression e1 = stmt.Expression as PrimitiveExpression;
+				PrimitiveExpression e2 = label.Label as PrimitiveExpression;
+
+				return object.Equals(e1.Value, e2.Value);
+			}
+			
+			return false;
 		}
 	}
 }

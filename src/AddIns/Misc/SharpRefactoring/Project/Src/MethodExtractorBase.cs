@@ -134,13 +134,12 @@ namespace SharpRefactoring
 			}
 		}
 		
-		protected static bool CheckForJumpInstructions(MethodDeclaration method)
+		protected ErrorKind CheckForJumpInstructions(MethodDeclaration method)
 		{
 			FindJumpInstructionsVisitor fjiv = new FindJumpInstructionsVisitor(method);
 			
 			method.AcceptVisitor(fjiv, null);
-			
-			return fjiv.IsOk;
+			return fjiv.DoCheck();
 		}
 		
 		protected bool IsInCurrentSelection(Location location)

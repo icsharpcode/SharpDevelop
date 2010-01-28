@@ -69,7 +69,7 @@ namespace SharpRefactoring
 			// Initialise new method
 			newMethod.Body = GetBlock(this.textEditor.SelectedText);
 			newMethod.Body.StartLocation = new Location(0,0);
-						
+			
 			this.parentNode = GetParentMember(start, end);
 			
 			if (parentNode == null) {
@@ -77,8 +77,21 @@ namespace SharpRefactoring
 				return false;
 			}
 			
-			if (!CheckForJumpInstructions(newMethod))
+			ErrorKind kind = CheckForJumpInstructions(newMethod);
+			if (kind != ErrorKind.None) {
+				switch (kind) {
+					case ErrorKind.ContainsBreak:
+						MessageService.ShowError("${res:AddIns.SharpRefactoring.ExtractMethod.ContainsBreakError}");
+						break;
+					case ErrorKind.ContainsContinue:
+						MessageService.ShowError("${res:AddIns.SharpRefactoring.ExtractMethod.ContainsContinueError}");
+						break;
+					case ErrorKind.ContainsGoto:
+						MessageService.ShowError("${res:AddIns.SharpRefactoring.ExtractMethod.ContainsGotoError}");
+						break;
+				}
 				return false;
+			}
 			
 			newMethod.Modifier = parentNode.Modifier;
 			

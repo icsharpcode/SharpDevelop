@@ -1,9 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: HP
- * Date: 28.04.2008
- * Time: 22:18
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
+//     <version>$Revision$</version>
+// </file>
 
 using ICSharpCode.NRefactory;
 using System;

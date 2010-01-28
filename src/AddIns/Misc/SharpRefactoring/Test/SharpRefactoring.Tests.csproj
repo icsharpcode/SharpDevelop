@@ -78,6 +78,10 @@
       <Name>NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Test\NRefactoryTests.csproj">
+      <Project>{870115DD-960A-4406-A6B9-600BCDC36A03}</Project>
+      <Name>NRefactoryTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
