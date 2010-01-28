@@ -392,20 +392,6 @@
     <EmbeddedResource Include="Highlighting\Resources\XmlDoc.xshd" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Snippets" />
-    <Folder Include="Document" />
-    <Folder Include="Folding" />
-    <Folder Include="Highlighting" />
-    <Folder Include="Highlighting\Xshd" />
-    <Folder Include="Highlighting\Resources" />
-    <Folder Include="CodeCompletion" />
-    <Folder Include="Indentation" />
-    <Folder Include="Editing" />
-    <Folder Include="Indentation\CSharp" />
-    <Folder Include="Rendering" />
-    <Folder Include="Utils" />
-    <Folder Include="themes" />
-    <Folder Include="Xml" />
     <Page Include="CodeCompletion\CompletionList.xaml" />
     <Page Include="CodeCompletion\InsightWindow.xaml" />
     <Page Include="TextEditor.xaml" />
