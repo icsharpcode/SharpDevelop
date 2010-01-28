@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -106,8 +108,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					cmd.Tag = member;
 					list.Add(cmd);
 				}
-				if (IsAutomaticProperty(FindReferencesAndRenameHelper.OpenDefinitionFile(property, false), property)) {
+				ITextEditor editor = FindReferencesAndRenameHelper.OpenDefinitionFile(property, false);
+				string field = null;
+				Ast.PropertyDeclaration astProp = null;
+				if (IsAutomaticProperty(editor, property)) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.ExpandAutomaticProperty}", ExpandAutomaticProperty);
+					cmd.Tag = member;
+					list.Add(cmd);
+				} else if (IsSimpleProperty(editor, property, out astProp, out field)) {
+					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.ConvertToAutomaticProperty}",
+					                      delegate {
+					                      	IField fieldDef = property.DeclaringType.Fields.FirstOrDefault(f => f.Name == field);
+					                      	if (fieldDef == null)
+					                      		return;
+					                      	ConvertToAutomaticProperty(editor, property, fieldDef, astProp);
+					                      }
+					                     );
 					cmd.Tag = member;
 					list.Add(cmd);
 				}
@@ -279,6 +295,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				
 				p.Modifier = CodeGenerator.ConvertModifier(member.Modifiers, finder);
 				
+				if (member.CanGet)
+					p.GetRegion.Modifier = CodeGenerator.ConvertModifier(member.GetterModifiers, finder);
+				
+				if (member.CanSet)
+					p.SetRegion.Modifier = CodeGenerator.ConvertModifier(member.SetterModifiers, finder);
+				
 				int startOffset = textEditor.Document.PositionToOffset(member.Region.BeginLine, member.Region.BeginColumn);
 				int endOffset = textEditor.Document.PositionToOffset(member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
 				
@@ -294,6 +316,143 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 				
 				ParserService.ParseCurrentViewContent();
+			}
+		}
+		
+		bool IsSimpleProperty(ITextEditor editor, IProperty property, out Ast.PropertyDeclaration astProoperty, out string fieldName)
+		{
+			astProoperty = null;
+			fieldName = null;
+			
+			if (editor == null)
+				return false;
+			
+			string ext = Path.GetExtension(editor.FileName);
+			string code = GetMemberText(property, editor);
+			
+			Ast.PropertyDeclaration p = ParseMember(ext, code);
+			
+			if (p == null)
+				return false;
+			
+			bool getResult = true;
+			bool setResult = true;
+			
+			string identifier = null;
+			
+			if (p.HasGetRegion) {
+				getResult = false;
+				var ret = p.GetRegion.Block.Children.SingleOrDefault() as Ast.ReturnStatement;
+				
+				if (ret != null) {
+					getResult = ret.Expression is Ast.IdentifierExpression;
+					identifier = getResult ? (ret.Expression as Ast.IdentifierExpression).Identifier : null;
+				}
+			}
+			
+			if (p.HasSetRegion) {
+				setResult = false;
+				var ret = p.SetRegion.Block.Children.SingleOrDefault() as Ast.ExpressionStatement;
+				
+				if (ret != null && ret.Expression is Ast.AssignmentExpression) {
+					var assign = ret.Expression as Ast.AssignmentExpression;
+					
+					setResult = assign.Op == Ast.AssignmentOperatorType.Assign &&
+						IsValidMemberAssignment(assign.Left, ref identifier) &&
+						(assign.Right is Ast.IdentifierExpression && (assign.Right as Ast.IdentifierExpression).Identifier == "value");
+				}
+			}
+			
+			astProoperty = p;
+			fieldName = identifier;
+			
+			return getResult && setResult;
+		}
+
+		Ast.PropertyDeclaration ParseMember(string ext, string code)
+		{
+			IParser parser = null;
+			
+			try {
+				if (ext.Equals(".cs", StringComparison.OrdinalIgnoreCase))
+					parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(code));
+				if (ext.Equals(".vb", StringComparison.OrdinalIgnoreCase))
+					parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(code));
+				
+				if (parser == null)
+					return null;
+				
+				var nodes = parser.ParseTypeMembers();
+				
+				if (parser.Errors.Count > 0)
+					return null;
+				
+				return nodes.FirstOrDefault() as Ast.PropertyDeclaration;
+			} finally {
+				if (parser != null)
+					parser.Dispose();
+			}
+		}
+		
+		string GetMemberText(IMember member, ITextEditor editor)
+		{
+			int startOffset = editor.Document.PositionToOffset(member.Region.BeginLine, member.Region.BeginColumn);
+			int endOffset = editor.Document.PositionToOffset(member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
+			
+			return editor.Document.GetText(startOffset, endOffset - startOffset);
+		}
+		
+		bool IsValidMemberAssignment(Ast.Expression left, ref string identifier)
+		{
+			if (left is Ast.MemberReferenceExpression) {
+				var e = left as Ast.MemberReferenceExpression;
+				if (identifier == null) {
+					identifier = e.MemberName;
+					return e.TargetObject is Ast.ThisReferenceExpression;
+				} else
+					return e.TargetObject is Ast.ThisReferenceExpression && e.MemberName == identifier;
+			}
+			if (identifier == null) {
+				if (left is Ast.IdentifierExpression) {
+					identifier = (left as Ast.IdentifierExpression).Identifier;
+					return true;
+				}
+				return false;
+			} else
+				return (left is Ast.IdentifierExpression) && (left as Ast.IdentifierExpression).Identifier == identifier;
+		}
+		
+		void ConvertToAutomaticProperty(ITextEditor editor, IProperty property, IField fieldDef, Ast.PropertyDeclaration astProp)
+		{
+			CodeGenerator codeGen = property.DeclaringType.ProjectContent.Language.CodeGenerator;
+			
+			int fieldStartOffset = editor.Document.PositionToOffset(fieldDef.Region.BeginLine, fieldDef.Region.BeginColumn);
+			int fieldEndOffset = editor.Document.PositionToOffset(fieldDef.Region.EndLine, fieldDef.Region.EndColumn);
+			
+			int startOffset = editor.Document.PositionToOffset(property.Region.BeginLine, property.Region.BeginColumn);
+			int endOffset = editor.Document.PositionToOffset(property.BodyRegion.EndLine, property.BodyRegion.EndColumn);
+			
+			ITextAnchor startAnchor = editor.Document.CreateAnchor(startOffset);
+			ITextAnchor endAnchor = editor.Document.CreateAnchor(endOffset);
+			
+			if (astProp.HasGetRegion)
+				astProp.GetRegion.Block = null;
+			
+			if (!astProp.HasSetRegion) {
+				astProp.SetRegion = new Ast.PropertySetRegion(null, null);
+				astProp.SetRegion.Modifier = CodeGenerator.ConvertModifier(fieldDef.Modifiers, new ClassFinder(fieldDef))
+					& (Ast.Modifiers.Private | Ast.Modifiers.Internal | Ast.Modifiers.Protected | Ast.Modifiers.Public);
+			}
+			
+			if (astProp.HasSetRegion)
+				astProp.SetRegion.Block = null;
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.ConvertToAutomaticProperty}")) {
+				var refs = RefactoringService.FindReferences(fieldDef, monitor);
+				using (editor.Document.OpenUndoGroup()) {
+					FindReferencesAndRenameHelper.RenameReferences(refs, property.Name);
+					editor.Document.Remove(fieldStartOffset, fieldEndOffset - fieldStartOffset);
+					editor.Document.Replace(startAnchor.Offset, endAnchor.Offset - startAnchor.Offset, codeGen.GenerateCode(astProp, ""));
+				}
 			}
 		}
 	}
