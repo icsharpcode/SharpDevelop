@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Documents;
@@ -306,7 +307,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		static void CopySelectedText(TextArea textArea)
 		{
-			Clipboard.SetDataObject(textArea.Selection.CreateDataObject(textArea), true);
+			var data = textArea.Selection.CreateDataObject(textArea);
+			
+			try {
+				Clipboard.SetDataObject(data, true);
+			} catch (ExternalException) {
+				// Apparently this exception sometimes happens randomly.
+				// The MS controls just ignore it, so we'll do the same.
+				return;
+			}
 			
 			string text = textArea.Selection.GetText(textArea.Document);
 			text = NewLineFinder.NormalizeNewLines(text, Environment.NewLine);
@@ -332,8 +341,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 			lineSelected.WriteByte(1);
 			data.SetData(LineSelectedType, lineSelected, false);
 			
-			Clipboard.SetDataObject(data, true);
-			
+			try {
+				Clipboard.SetDataObject(data, true);
+			} catch (ExternalException) {
+				// Apparently this exception sometimes happens randomly.
+				// The MS controls just ignore it, so we'll do the same.
+				return;
+			}
 			textArea.OnTextCopied(new TextEventArgs(text));
 		}
 		
