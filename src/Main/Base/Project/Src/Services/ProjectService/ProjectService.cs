@@ -253,7 +253,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				openSolution = Solution.Load(fileName);
 				if (openSolution == null)
 					return;
+			} catch (IOException ex) {
+				LoggingService.Warn(ex);
+				MessageService.ShowError(ex.Message);
+				return;
 			} catch (UnauthorizedAccessException ex) {
+				LoggingService.Warn(ex);
 				MessageService.ShowError(ex.Message);
 				return;
 			}
