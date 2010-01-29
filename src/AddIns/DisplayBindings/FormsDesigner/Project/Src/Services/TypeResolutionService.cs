@@ -417,9 +417,15 @@ namespace ICSharpCode.FormsDesigner.Services
 				if (type == null) {
 					lock (designerAssemblies) {
 						foreach (Assembly asm in DesignerAssemblies) {
-							Type t = asm.GetType(name, false);
-							if (t != null) {
-								return t;
+							try {
+								Type t = asm.GetType(name, false);
+								if (t != null) {
+									return t;
+								}
+							} catch (FileNotFoundException) {
+							} catch (FileLoadException) {
+							} catch (BadImageFormatException) {
+								// ignore assembly load errors
 							}
 						}
 					}
