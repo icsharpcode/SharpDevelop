@@ -94,19 +94,6 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 		
-		/// <summary>
-		/// Changes all instances of a property in the <paramref name="project"/> by applying a method to its value.
-		/// </summary>
-		protected void FixProperty(MSBuildBasedProject project, string propertyName, Converter<string, string> method)
-		{
-			lock (project.SyncRoot) {
-				throw new NotImplementedException();
-				/*foreach (MSBuild.BuildProperty p in project.GetAllProperties(propertyName)) {
-					p.Value = method(p.Value);
-				}*/
-			}
-		}
-		
 		protected virtual void FixExtensionOfExtraProperties(FileProjectItem item, string sourceExtension, string targetExtension)
 		{
 			List<KeyValuePair<string, string>> replacements = new List<KeyValuePair<string, string>>();

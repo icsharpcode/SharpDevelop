@@ -60,9 +60,9 @@ namespace VBNetBinding
 		{
 			VBNetProject vbProject = (VBNetProject)targetProject;
 			base.CopyProperties(sourceProject, targetProject);
-			FixProperty(vbProject, "DefineConstants", v => v.Replace(';', ','));
-			FixProperty(vbProject, "ProjectTypeGuids",
-			            v => v.Replace(ProjectTypeGuids.CSharp, ProjectTypeGuids.VBNet, StringComparison.OrdinalIgnoreCase));
+			vbProject.ChangeProperty("DefineConstants", v => v.Replace(';', ','));
+			vbProject.ChangeProperty("ProjectTypeGuids",
+			                         v => v.Replace(ProjectTypeGuids.CSharp, ProjectTypeGuids.VBNet, StringComparison.OrdinalIgnoreCase));
 			
 			// determine the StartupObject
 			startupObject = vbProject.GetEvaluatedProperty("StartupObject");

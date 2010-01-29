@@ -31,6 +31,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public readonly static object SolutionProjectCollectionLock = new object();
 		
+		// TODO: I think MSBuild actually uses OrdinalIgnoreCase. SharpDevelop 3.x just used string.operator ==, so I'm keeping
+		// that setting until all code is ported to use PropertyNameComparer and we've verified what MSBuild is actually using.
+		public readonly static StringComparer PropertyNameComparer = StringComparer.Ordinal;
+		
 		internal static void UnloadProject(MSBuild.Evaluation.ProjectCollection projectCollection, MSBuild.Evaluation.Project project)
 		{
 			lock (SolutionProjectCollectionLock) {

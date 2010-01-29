@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public ProjectRootElement MSBuildProjectFile {
 			get {
-				if (projectFile ==  null)
+				if (projectFile == null)
 					throw new ObjectDisposedException("MSBuildBasedProject");
 				return projectFile;
 			}
@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public ProjectRootElement MSBuildUserProjectFile {
 			get {
-				if (projectFile ==  null)
+				if (projectFile == null)
 					throw new ObjectDisposedException("MSBuildBasedProject");
 				return userProjectFile;
 			}
@@ -97,8 +97,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override int MinimumSolutionVersion {
 			get {
 				lock (SyncRoot) {
-					if (string.IsNullOrEmpty(projectFile.ToolsVersion) || projectFile.ToolsVersion == "2.0")
-					{
+					if (string.IsNullOrEmpty(projectFile.ToolsVersion) || projectFile.ToolsVersion == "2.0") {
 						return Solution.SolutionVersionVS2005;
 					} else if (projectFile.ToolsVersion == "3.0" || projectFile.ToolsVersion == "3.5") {
 						return Solution.SolutionVersionVS2008;
@@ -519,7 +518,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		static ProjectPropertyElement GetAnyUnevaluatedProperty(ProjectRootElement project, string configuration, string platform, string propertyName)
 		{
 			foreach (var g in project.PropertyGroups) {
-				var property = g.Properties.FirstOrDefault(p => p.Name == propertyName);
+				var property = g.Properties.FirstOrDefault(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name, propertyName));
 				if (property == null)
 					continue;
 				string gConfiguration, gPlatform;
@@ -535,33 +534,32 @@ namespace ICSharpCode.SharpDevelop.Project
 			return null;
 		}
 		
-		/*
 		/// <summary>
 		/// Get all instances of the specified property.
 		/// 
-		/// Warning: you need to lock(project.SyncRoot) around calls to GetAllProperties
-		/// until you no longer need to access the BuildProperty objects!
+		/// Warning: you need to lock(project.SyncRoot) around calls to GetAllUnevaluatedProperties
+		/// until you no longer need to access the ProjectPropertyElement objects!
 		/// </summary>
-		public IList<MSBuild.BuildProperty> GetAllProperties(string propertyName)
+		IEnumerable<ProjectPropertyElement> GetAllUnevaluatedProperties()
 		{
-			List<MSBuild.BuildProperty> l = new List<MSBuild.BuildProperty>();
-			foreach (MSBuild.BuildPropertyGroup g in project.PropertyGroups) {
-				if (g.IsImported) continue;
-				MSBuild.BuildProperty property = MSBuildInternals.GetProperty(g, propertyName);
-				if (property != null) {
-					l.Add(property);
-				}
-			}
-			foreach (MSBuild.BuildPropertyGroup g in userProject.PropertyGroups) {
-				if (g.IsImported) continue;
-				MSBuild.BuildProperty property = MSBuildInternals.GetProperty(g, propertyName);
-				if (property != null) {
-					l.Add(property);
-				}
-			}
-			return l;
+			return projectFile.Properties.Concat(userProjectFile.Properties);
 		}
-		 */
+		
+		/// <summary>
+		/// Changes all instances of a property in the <paramref name="project"/> by applying a method to its unevaluated value.
+		/// 
+		/// The method will be called within a <code>lock (project.SyncRoot)</code> block.
+		/// </summary>
+		public void ChangeProperty(string propertyName, Func<string, string> method)
+		{
+			lock (this.SyncRoot) {
+				foreach (ProjectPropertyElement p in GetAllUnevaluatedProperties()) {
+					if (MSBuildInternals.PropertyNameComparer.Equals(p.Name, propertyName)) {
+						p.Value = method(p.Value);
+					}
+				}
+			}
+		}
 		#endregion
 		
 		#region SetProperty
@@ -581,12 +579,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		PropertyStorageLocations FindExistingPropertyInAllConfigurations(string propertyName)
 		{
 			foreach (var g in projectFile.PropertyGroups) {
-				if (g.Properties.Any(p => p.Name == propertyName)) {
+				if (g.Properties.Any(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name == propertyName))) {
 					return MSBuildInternals.GetLocationFromCondition(g.Condition);
 				}
 			}
 			foreach (var g in userProjectFile.PropertyGroups) {
-				if (g.Properties.Any(p => p.Name == propertyName)) {
+				if (g.Properties.Any(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name == propertyName))) {
 					return MSBuildInternals.GetLocationFromCondition(g.Condition)
 						| PropertyStorageLocations.UserFile;
 				}
@@ -824,7 +822,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (var propertyGroup in targetProject.PropertyGroups) {
 				if (propertyGroup.Condition == groupCondition) {
 					foreach (var property in propertyGroup.Properties.ToList()) {
-						if (property.Name == propertyName) {
+						if (MSBuildInternals.PropertyNameComparer.Equals(property.Name, propertyName)) {
 							property.Value = newValue;
 							return;
 						}
@@ -857,7 +855,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (var propertyGroup in project.PropertyGroups.ToList()) {
 				bool propertyRemoved = false;
 				foreach (var property in propertyGroup.Properties.ToList()) {
-					if (property.Name == propertyName) {
+					if (MSBuildInternals.PropertyNameComparer.Equals(property.Name, propertyName)) {
 						propertyGroup.RemoveChild(property);
 						propertyRemoved = true;
 					}
@@ -1288,11 +1286,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			foreach (var g in project.PropertyGroups) {
 				if (string.IsNullOrEmpty(g.Condition)) {
-					var prop = g.Properties.FirstOrDefault(p => p.Name == "Configuration");
+					var prop = g.Properties.FirstOrDefault(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name, "Configuration"));
 					if (prop != null && !string.IsNullOrEmpty(prop.Value)) {
 						configurationNames.Add(prop.Value);
 					}
-					prop = g.Properties.FirstOrDefault(p => p.Name == "Platform");
+					prop = g.Properties.FirstOrDefault(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name, "Platform"));
 					if (prop != null && !string.IsNullOrEmpty(prop.Value)) {
 						platformNames.Add(prop.Value);
 					}
