@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonClassResolver
+	public class PythonClassResolver : IPythonResolver
 	{
 		public PythonClassResolver()
 		{

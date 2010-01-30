@@ -42,7 +42,7 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void ResolverContextUnaliasIdentiferReturnsMyExitForExitImportedName()
+		public void ResolverContextUnaliasImportedNameReturnsMyExitForExitImportedName()
 		{
 			Assert.AreEqual("exit", resolverContext.UnaliasImportedName("myexit"));
 		}

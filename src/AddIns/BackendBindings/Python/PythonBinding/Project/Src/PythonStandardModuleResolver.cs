@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonStandardModuleResolver
+	public class PythonStandardModuleResolver : IPythonResolver
 	{
 		PythonStandardModules standardPythonModules = new PythonStandardModules();
 		
@@ -30,7 +30,8 @@ namespace ICSharpCode.PythonBinding
 		public PythonStandardModuleType GetStandardModuleTypeIfImported(PythonResolverContext resolverContext, string moduleName)
 		{
 			if (resolverContext.HasImport(moduleName) || PythonBuiltInModuleMemberName.IsBuiltInModule(moduleName)) {
-				return standardPythonModules.GetModuleType(moduleName);
+				string actualModuleName = resolverContext.UnaliasImportedModuleName(moduleName);
+				return standardPythonModules.GetModuleType(actualModuleName);
 			}
 			return null;
 		}

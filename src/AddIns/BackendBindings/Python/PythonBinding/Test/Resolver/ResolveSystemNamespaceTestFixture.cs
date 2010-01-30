@@ -32,17 +32,19 @@ namespace PythonBinding.Tests.Resolver
 			resolver = new PythonResolver();
 			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
-			mockProjectContent.SetNamespaceExistsReturnValue(true);
+			mockProjectContent.AddExistingNamespaceContents("System", new ArrayList());
 			
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
 			cu.ErrorsDuringCompile = true;
 			cu.FileName = @"C:\Projects\Test\test.py";
 			parseInfo.SetCompilationUnit(cu);
 			
-			string python = "import System\r\n" +
-							"class Test:\r\n" +
-							"\tdef __init__(self):\r\n" +
-							"\t\tSystem.\r\n";
+			string python =
+				"import System\r\n" +
+				"class Test:\r\n" +
+				"    def __init__(self):\r\n" +
+				"        System.\r\n";
+			
 			ExpressionResult expressionResult = new ExpressionResult("System", new DomRegion(3, 2), null, null);
 			resolveResult = resolver.Resolve(expressionResult, parseInfo, python) as NamespaceResolveResult;
 		}
@@ -56,7 +58,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void NamespaceSearchedFor()
 		{
-			Assert.AreEqual("System", mockProjectContent.NamespaceSearchedFor);
+			Assert.AreEqual("System", mockProjectContent.NamespacePassedToNamespaceExistsMethod);
 		}
 				
 		[Test]

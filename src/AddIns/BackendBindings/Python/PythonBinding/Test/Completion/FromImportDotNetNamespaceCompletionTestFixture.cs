@@ -30,7 +30,9 @@ namespace PythonBinding.Tests.Completion
 			
 			DefaultCompilationUnit unit = new DefaultCompilationUnit(projectContent);
 			c = new DefaultClass(unit, "Class");
-			projectContent.NamespaceContentsToReturn.Add(c);
+			ArrayList namespaceItems = new ArrayList();
+			namespaceItems.Add(c);
+			projectContent.AddExistingNamespaceContents("System", namespaceItems);
 		}
 
 		[Test]
@@ -47,8 +49,7 @@ namespace PythonBinding.Tests.Completion
 		public void SystemNamespaceSearchedForWhenGetCompletionItemsMethodCalled()
 		{
 			completion.GetCompletionItemsFromModule("System");
-			Assert.AreEqual("System", projectContent.NamespaceContentsSearched);
+			Assert.AreEqual("System", projectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
-		
 	}
 }

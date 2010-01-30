@@ -343,6 +343,7 @@
     <Compile Include="Parsing\ParseFromSysImportMissingImportTestFixture.cs" />
     <Compile Include="Parsing\ParseFromSysImportWithoutImportedNameTestFixture.cs" />
     <Compile Include="Parsing\ParseImportMultipleModulesTestFixture.cs" />
+    <Compile Include="Parsing\ParseImportSysTestFixture.cs" />
     <Compile Include="Parsing\ParseImportTestFixture.cs" />
     <Compile Include="Parsing\ParseInvalidPythonCodeTestFixture.cs" />
     <Compile Include="Parsing\ParseMethodsWithNoClassTestFixture.cs" />
@@ -377,12 +378,15 @@
     <Compile Include="Resolver\ResolverContextGetModuleForNameImportedAsDifferentNameTestFixture.cs" />
     <Compile Include="Resolver\ResolverContextGetModuleForImportedNameTests.cs" />
     <Compile Include="Resolver\ResolverContextHasImportTests.cs" />
+    <Compile Include="Resolver\ResolverContextUnaliasImportedModuleNameTestFixture.cs" />
     <Compile Include="Resolver\ResolveSysModuleExitMethodTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSysModuleImportedAsMySysTestFixture.cs" />
     <Compile Include="Resolver\ResolveSysModuleTestFixture.cs">
     </Compile>
     <Compile Include="Resolver\ResolveSysModuleUnknownMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemConsoleOutsideClassTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemConsoleTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemImportedAsMySystemTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemImportTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveTanMethodFromMathImportAllTestFixture.cs" />
@@ -447,12 +451,10 @@
     <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\PythonCompletionItemsHelper.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
-    <Compile Include="Utils\PythonResolverHelper.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
     <Compile Include="Utils\Tests\MockProjectContentTests.cs" />
     <Compile Include="Utils\Tests\PythonCompletionItemsHelperTests.cs" />
     <Compile Include="Utils\Tests\PythonParserHelperTests.cs" />
-    <Compile Include="Utils\Tests\PythonResolverHelperTests.cs" />
     <EmbeddedResource Include="Designer\App.ico" />
     <EmbeddedResource Include="Strings.resx" />
     <None Include="TODO.txt" />

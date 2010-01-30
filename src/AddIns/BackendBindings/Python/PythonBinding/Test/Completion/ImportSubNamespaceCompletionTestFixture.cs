@@ -25,7 +25,9 @@ namespace PythonBinding.Tests.Completion
 		{
 			ParseInformation parseInfo = new ParseInformation();
 			projectContent = new MockProjectContent();
-			projectContent.NamespaceContentsToReturn.Add("ICSharpCode.PythonBinding.Test");
+			ArrayList namespaceItems = new ArrayList();
+			namespaceItems.Add("ICSharpCode.PythonBinding.Test");
+			projectContent.AddExistingNamespaceContents("ICSharpCode", namespaceItems);
 			
 			PythonImportCompletion completion = new PythonImportCompletion(projectContent);
 			completionItems = completion.GetCompletionItems("ICSharpCode");
@@ -38,11 +40,11 @@ namespace PythonBinding.Tests.Completion
 			expectedItems.Add("ICSharpCode.PythonBinding.Test");
 			Assert.AreEqual(expectedItems, completionItems);
 		}
-				
+		
 		[Test]
 		public void NamespacePassedToProjectContentGetNamespaceContentsIsSubNamespaceName()
 		{
-			Assert.AreEqual("ICSharpCode", projectContent.NamespaceContentsSearched);
+			Assert.AreEqual("ICSharpCode", projectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
 	}
 }

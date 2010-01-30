@@ -27,37 +27,6 @@ namespace PythonBinding.Tests.Utils.Tests
 		}
 		
 		[Test]
-		public void AddNamespaceContentsCalledIsFalseByDefault()
-		{
-			Assert.IsFalse(projectContent.AddNamespaceContentsCalled);
-		}
-		
-		[Test]
-		public void LookInReferencesIsFalseByDefault()
-		{
-			Assert.IsFalse(projectContent.LookInReferences);
-		}
-		
-		[Test]
-		public void LanguagePassedToAddNamespaceContentsIsNullByDefault()
-		{
-			Assert.IsNull(projectContent.LanguagePassedToAddNamespaceContents);
-		}
-		
-		[Test]
-		public void NamespaceParameterPassedToAddNamespaceContentsIsNullByDefault()
-		{
-			Assert.IsNull(projectContent.NamespaceAddedName);
-		}
-		
-		[Test]
-		public void AddNamespaceContentsCalledIsTrueAfterMethodCalled()
-		{
-			projectContent.AddNamespaceContents(items, String.Empty, PythonLanguageProperties.Default, false);
-			Assert.IsTrue(projectContent.AddNamespaceContentsCalled);
-		}
-		
-		[Test]
 		public void AddNamespaceContentsAddsNamespaces()
 		{
 			projectContent.NamespacesToAdd.Add("test");
@@ -81,51 +50,97 @@ namespace PythonBinding.Tests.Utils.Tests
 			
 			Assert.AreEqual(expectedItems, items);
 		}
-		
-		[Test]
-		public void LookInReferencesSavedAfterAddNamespaceContentsMethodCalled()
-		{
-			projectContent.AddNamespaceContents(items, String.Empty, PythonLanguageProperties.Default, true);
-			Assert.IsTrue(projectContent.LookInReferences);
-		}
 
-		[Test]
-		public void LanguagePropertiesParameterSavedAfterAddNamespaceContentsMethodCalled()
-		{
-			projectContent.AddNamespaceContents(items, String.Empty, PythonLanguageProperties.Default, true);
-			Assert.AreEqual(PythonLanguageProperties.Default, projectContent.LanguagePassedToAddNamespaceContents);
-		}
-		
-		[Test]
-		public void NamespaceParameterIsSavedAfterAddNamespaceContentsMethodCalled()
-		{
-			projectContent.AddNamespaceContents(items, "abc", PythonLanguageProperties.Default, false);
-			Assert.AreEqual("abc", projectContent.NamespaceAddedName);
-		}
-		
 		[Test]
 		public void NamespaceContentsSearchedIsNullByDefault()
 		{
-			Assert.IsNull(projectContent.NamespaceContentsSearched);
+			Assert.IsNull(projectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
 		
 		[Test]
 		public void NamespacePassedToGetNamespaceMethodIsSaved()
 		{
 			projectContent.GetNamespaceContents("abc");
-			Assert.AreEqual("abc", projectContent.NamespaceContentsSearched);
+			Assert.AreEqual("abc", projectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
 		
 		[Test]
 		public void GetNamespaceContentsReturnsExpectedItems()
 		{
-			projectContent.NamespaceContentsToReturn.Add("test");
+			ArrayList namespaceItems = new ArrayList();
+			namespaceItems.Add("test");
+			projectContent.AddExistingNamespaceContents(String.Empty, namespaceItems);
 			items = projectContent.GetNamespaceContents(String.Empty);
 			
 			ArrayList expectedItems = new ArrayList();
 			expectedItems.Add("test");
 			
 			Assert.AreEqual(expectedItems, items);
+		}
+		
+		[Test]
+		public void NamespaceExistsReturnsTrueForAddedExistingNamespace()
+		{
+			ArrayList items = new ArrayList();
+			projectContent.AddExistingNamespaceContents("System", items);
+
+			Assert.IsTrue(projectContent.NamespaceExists("System"));
+		}
+		
+		[Test]
+		public void NamespaceExistsReturnsFalseForUnknownNamespace()
+		{
+			ArrayList items = new ArrayList();
+			projectContent.AddExistingNamespaceContents("System", items);
+			
+			Assert.IsFalse(projectContent.NamespaceExists("Unknown"));
+		}
+		
+		[Test]
+		public void GetNamespaceContentsReturnsItemsForAddedExistingNamespace()
+		{
+			ArrayList items = new ArrayList();
+			items.Add("test");
+			
+			projectContent.AddExistingNamespaceContents("Math", new ArrayList());
+			projectContent.AddExistingNamespaceContents("System", items);
+			
+			ArrayList expectedItems = new ArrayList();
+			expectedItems.Add("test");
+			
+			Assert.AreEqual(expectedItems, projectContent.GetNamespaceContents("System"));
+		}
+		
+		[Test]
+		public void GetNamespaceContentsReturnsEmptyArrayListForUnknownNamespace()
+		{
+			ArrayList items = new ArrayList();
+			items.Add("test");
+			projectContent.AddExistingNamespaceContents("System", items);
+			
+			ArrayList expectedItems = new ArrayList();
+			
+			Assert.AreEqual(expectedItems, projectContent.GetNamespaceContents("Unknown"));
+		}
+		
+		[Test]
+		public void NamespaceUsedWhenCallingNamespaceExistsIsSaved()
+		{
+			projectContent.NamespaceExists("System");
+			Assert.AreEqual("System", projectContent.NamespacePassedToNamespaceExistsMethod);
+		}
+		
+		[Test]
+		public void NamespaceExistsCalledIsFalseInitially()
+		{
+			Assert.IsFalse(projectContent.NamespaceExistsCalled);
+		}
+		
+		[Test]
+		public void NamespaceExistsCalledReturnsTrueAfterMethodCall()
+		{
+			projectContent.NamespaceExists("System");
+			Assert.IsTrue(projectContent.NamespaceExistsCalled);
 		}
 	}
 }

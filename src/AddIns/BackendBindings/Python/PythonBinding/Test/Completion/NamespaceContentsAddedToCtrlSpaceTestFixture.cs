@@ -36,7 +36,9 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.NamespacesToAdd.Add("Test");
 			myTestClass = new MockClass(mockProjectContent, "MyTestClass");
-			mockProjectContent.NamespaceContentsToReturn.Add(myTestClass);
+			ArrayList namespaceItems = new ArrayList();
+			namespaceItems.Add(myTestClass);
+			mockProjectContent.AddExistingNamespaceContents("MyNamespace", namespaceItems);
 
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };
 			parseInfo.SetCompilationUnit(cu);
@@ -58,7 +60,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void NamespaceSearchedForContents()
 		{
-			Assert.AreEqual("MyNamespace", mockProjectContent.NamespaceContentsSearched);
+			Assert.AreEqual("MyNamespace", mockProjectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
 		
 		[Test]

@@ -13,38 +13,26 @@ using NUnit.Framework;
 namespace PythonBinding.Tests.Parsing
 {
 	[TestFixture]
-	public class ParseFromSysImportExitAsMyExitTestFixture
+	public class ParseImportSysTestFixture
 	{
 		ICompilationUnit compilationUnit;
-		PythonFromImport import;
+		PythonImport import;
 		
 		[SetUp]
 		public void Init()
 		{
-			string python = "from sys import exit as myexit";
+			string python = "import sys";
 			
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			PythonParser parser = new PythonParser();
 			compilationUnit = parser.Parse(projectContent, @"C:\test.py", python);
-			import = compilationUnit.UsingScope.Usings[0] as PythonFromImport;
+			import = compilationUnit.UsingScope.Usings[0] as PythonImport;
 		}
 		
 		[Test]
-		public void UsingAsPythonImportHasMyExitIdentifier()
+		public void PythonImportHasExitIdentifier()
 		{
-			Assert.IsTrue(import.IsImportedName("myexit"));
-		}
-		
-		[Test]
-		public void UsingAsPythonImportDoesNotHaveExitIdentifier()
-		{
-			Assert.IsFalse(import.IsImportedName("exit"));
-		}
-		
-		[Test]
-		public void PythonImportGetIdentifierFromAliasReturnsExitForMyExit()
-		{
-			Assert.AreEqual("exit", import.GetOriginalNameForAlias("myexit"));
+			Assert.AreEqual("sys", import.Module);
 		}
 	}
 }

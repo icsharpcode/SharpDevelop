@@ -14,7 +14,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolverContextGetModuleForImportedNameTestFixture
+	public class ResolverContextUnaliasImportedModuleNameTestFixture
 	{
 		PythonResolverContext resolverContext;
 		ParseInformation parseInfo;
@@ -23,29 +23,23 @@ namespace PythonBinding.Tests.Resolver
 		public void Init()
 		{
 			string python =
-				"import math\r\n" +
-				"from sys import exit";
+				"import math as m\r\n" +
+				"import sys as s";
 			
 			parseInfo = PythonParserHelper.CreateParseInfo(python);
 			resolverContext = new PythonResolverContext(parseInfo);
 		}
 		
 		[Test]
-		public void ResolverContextGetModuleForImportedNameReturnsSysForExitImportedName()
+		public void ResolverContextUnaliasImportedModuleReturnsSysForImportedAsName()
 		{
-			Assert.AreEqual("sys", resolverContext.GetModuleForImportedName("exit"));
+			Assert.AreEqual("sys", resolverContext.UnaliasImportedModuleName("s"));
 		}
 		
 		[Test]
-		public void ResolverContextGetModuleForImportedNameReturnsNullForUnknownImportedName()
+		public void ResolverContextUnaliasImportedModuleReturnsMathForImportedAsName()
 		{
-			Assert.IsNull(resolverContext.GetModuleForImportedName("unknown"));
-		}
-		
-		[Test]
-		public void ResolverContextUnaliasImportedNameReturnsExitForExitImportedName()
-		{
-			Assert.AreEqual("exit", resolverContext.UnaliasImportedName("exit"));
+			Assert.AreEqual("math", resolverContext.UnaliasImportedModuleName("m"));
 		}
 	}
 }

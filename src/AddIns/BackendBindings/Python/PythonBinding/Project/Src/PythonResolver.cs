@@ -13,17 +13,26 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonResolver : IResolver
+	public class PythonResolver : IResolver, IPythonResolver
 	{
 		PythonResolverContext resolverContext;
+		PythonImportResolver importResolver = new PythonImportResolver();
 		PythonNamespaceResolver namespaceResolver = new PythonNamespaceResolver();
 		PythonClassResolver classResolver = new PythonClassResolver();
 		PythonStandardModuleResolver standardModuleResolver = new PythonStandardModuleResolver();
 		PythonMethodResolver methodResolver;
 		
+		List<IPythonResolver> resolvers = new List<IPythonResolver>();
+		
 		public PythonResolver()
 		{
-			 methodResolver = new PythonMethodResolver(classResolver, standardModuleResolver);
+			methodResolver = new PythonMethodResolver(classResolver, standardModuleResolver);
+			
+			resolvers.Add(importResolver);
+			resolvers.Add(classResolver);
+			resolvers.Add(standardModuleResolver);
+			resolvers.Add(methodResolver);
+			resolvers.Add(namespaceResolver);
 		}
 		
 		public ResolveResult Resolve(ExpressionResult expressionResult, ParseInformation parseInfo, string fileContent)
@@ -37,36 +46,24 @@ namespace ICSharpCode.PythonBinding
 				return null;
 			}
 			
-			ResolveResult resolveResult = namespaceResolver.Resolve(expressionResult);
-			if (resolveResult != null) {
-				return resolveResult;
+			return Resolve(resolverContext, expressionResult);
+		}
+		
+		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		{
+			foreach (IPythonResolver resolver in resolvers) {
+				ResolveResult resolveResult = resolver.Resolve(resolverContext, expressionResult);
+				if (resolveResult != null) {
+					return resolveResult;
+				}
 			}
 			
-			resolveResult = classResolver.Resolve(resolverContext, expressionResult);
-			if (resolveResult != null) {
-				return resolveResult;
-			}
+//			// Search for a local variable.
+//			LocalResolveResult localResolveResult = GetLocalVariable(expressionResult.Expression, parseInfo.BestCompilationUnit.FileName, fileContent);
+//			if (localResolveResult != null) {
+//				return localResolveResult;
+//			}
 			
-			resolveResult = standardModuleResolver.Resolve(resolverContext, expressionResult);
-			if (resolveResult != null) {
-				return resolveResult;
-			}
-			
-			resolveResult = methodResolver.Resolve(resolverContext, expressionResult);
-			if (resolveResult != null) {
-				return resolveResult;
-			}
-			
-			// Search for a local variable.
-			LocalResolveResult localResolveResult = GetLocalVariable(expressionResult.Expression, parseInfo.BestCompilationUnit.FileName, fileContent);
-			if (localResolveResult != null) {
-				return localResolveResult;
-			}
-			
-			// Search for a namespace.
-			if (resolverContext.NamespaceExists(expressionResult.Expression)) {
-				return new NamespaceResolveResult(null, null, expressionResult.Expression);
-			}
 			return null;
 		}
 		

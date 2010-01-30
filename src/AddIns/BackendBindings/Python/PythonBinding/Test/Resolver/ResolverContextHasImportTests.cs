@@ -19,8 +19,8 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void HasImportReturnsFalseForImportThatDoesNotExistInCompilationUnit()
 		{
-			string[] usings = new string[] { "abc" };
-			ParseInformation parseInfo = PythonResolverHelper.CreateParseInfoWithUsings(usings);
+			string code = "import abc";
+			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
 			
 			PythonResolverContext resolverContext = new PythonResolverContext(parseInfo);
 			Assert.IsFalse(resolverContext.HasImport("Unknown"));
@@ -29,8 +29,8 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void HasImportReturnsTrueForImportThatDoesExistInCompilationUnit()
 		{
-			string[] usings = new string[] { "abc" };
-			ParseInformation parseInfo = PythonResolverHelper.CreateParseInfoWithUsings(usings);
+			string code = "import abc";
+			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
 			
 			PythonResolverContext resolverContext = new PythonResolverContext(parseInfo);
 			Assert.IsTrue(resolverContext.HasImport("abc"));
@@ -39,11 +39,31 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void HasImportReturnsTrueForImportThatDoesExistInCompilationUnitWithSingleUsingWithMultipleNamespaces()
 		{
-			string[] usings = new string[] { "abc", "def" };
-			ParseInformation parseInfo = PythonResolverHelper.CreateParseInfoWithUsings(usings);
+			string code = "import abc, ghi";
+			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
 			
 			PythonResolverContext resolverContext = new PythonResolverContext(parseInfo);
-			Assert.IsTrue(resolverContext.HasImport("def"));
+			Assert.IsTrue(resolverContext.HasImport("ghi"));
+		}
+		
+		[Test]
+		public void HasImportReturnsFalseForFromImport()
+		{
+			string code = "from import sys";
+			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
+			
+			PythonResolverContext resolverContext = new PythonResolverContext(parseInfo);
+			Assert.IsFalse(resolverContext.HasImport("sys"));
+		}
+		
+		[Test]
+		public void HasImportReturnsTrueForImportedAsName()
+		{
+			string code = "import sys as something";
+			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
+			
+			PythonResolverContext resolverContext = new PythonResolverContext(parseInfo);
+			Assert.IsTrue(resolverContext.HasImport("something"));
 		}
 	}
 }

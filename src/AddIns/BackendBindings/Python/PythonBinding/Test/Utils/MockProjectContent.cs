@@ -17,12 +17,7 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class MockProjectContent : IProjectContent
 	{
-		bool addNamespaceContentsCalled;
-		string namespaceAddedName;
-		string namespaceSearchedFor;
-		bool lookInReferences;
-		LanguageProperties languagePassedToAddNamespaceContents;
-		LanguageProperties language = new LanguageProperties(StringComparer.InvariantCulture);
+		string namespacePassedToNamespaceExistsMethod;
 		List<string> namespacesToAdd = new List<string>();
 		SearchTypeResult searchTypeResult;
 		bool searchTypeCalled;
@@ -31,43 +26,17 @@ namespace PythonBinding.Tests.Utils
 		bool getClassCalled;
 		string getClassName;
 		List<IClass> classesInProjectContent = new List<IClass>();
-		ArrayList namespaceContents = new ArrayList();
-		string namespaceContentsSearched;
+		string namespacePassedToGetNamespaceContentsMethod;
 		string classNameForGetClass;
-		bool namespaceExistsReturnValue;
 		bool namespaceExistsCalled;
 		object project;
+		Dictionary<string, ArrayList> namespaceContents = new Dictionary<string, ArrayList>();
+		LanguageProperties language = LanguageProperties.CSharp;
 		
 		public MockProjectContent()
 		{
 		}
-
-		/// <summary>
-		/// Gets whether the AddNamespaceContents method was called.
-		/// </summary>
-		public bool AddNamespaceContentsCalled {
-			get { return addNamespaceContentsCalled; }
-		}
-		
-		/// <summary>
-		/// Gets the namespace passed to the AddNamespaceContents method.
-		/// </summary>
-		public string NamespaceAddedName {
-			get { return namespaceAddedName; }
-		}
-		
-		/// <summary>
-		/// Gets the LookInReferences flag that was passed to the 
-		/// AddNamespaceContents method.
-		/// </summary>
-		public bool LookInReferences {
-			get { return lookInReferences; }
-		}
-		
-		public LanguageProperties LanguagePassedToAddNamespaceContents {
-			get { return languagePassedToAddNamespaceContents; }
-		}
-		
+			
 		/// <summary>
 		/// Gets the namespaces that will be added when the
 		/// AddNamespaceContents method is called.
@@ -83,13 +52,8 @@ namespace PythonBinding.Tests.Utils
 			get { return namespaceExistsCalled; }
 		}
 		
-		/// <summary>
-		/// Gets the namespace passed to the SearchNamespace method and 
-		/// searched for.
-		/// </summary>
-		public string NamespaceSearchedFor {
-			get { return namespaceSearchedFor; }
-			set { namespaceSearchedFor = value; }
+		public string NamespacePassedToNamespaceExistsMethod {
+			get { return namespacePassedToNamespaceExistsMethod; }
 		}
 		
 		/// <summary>
@@ -148,25 +112,17 @@ namespace PythonBinding.Tests.Utils
 			get { return getClassName; }
 		}
 		
-		/// <summary>
-		/// Gets the namespace contents to return from the
-		/// GetNamespaceContents method.
-		/// </summary>
-		public ArrayList NamespaceContentsToReturn {
-			get { return namespaceContents; }
-		}
-		
-		/// <summary>
-		/// Returns the namespace that was passed to the
-		/// GetNamespaceContents method.
-		/// </summary>
-		public string NamespaceContentsSearched {
-			get { return namespaceContentsSearched; }
+		public string NamespacePassedToGetNamespaceContentsMethod {
+			get { return namespacePassedToGetNamespaceContentsMethod; }
 		}
 		
 		#region IProjectContent
 		public event EventHandler ReferencedContentsChanged;
-				
+		
+		public LanguageProperties Language {
+			get { return language; }
+		}
+		
 		public XmlDoc XmlDoc {
 			get {
 				return null;
@@ -195,10 +151,6 @@ namespace PythonBinding.Tests.Utils
 			get {
 				throw new NotImplementedException();
 			}
-		}
-		
-		public LanguageProperties Language {
-			get { return language; }
 		}
 		
 		public IUsing DefaultImports {
@@ -253,22 +205,28 @@ namespace PythonBinding.Tests.Utils
 			return classToReturnFromGetClass;
 		}
 				
-		public void SetNamespaceExistsReturnValue(bool returnValue)
+		public void AddExistingNamespaceContents(string namespaceName, ArrayList items)
 		{
-			namespaceExistsReturnValue = returnValue;
+			namespaceContents.Add(namespaceName, items);
 		}
 		
 		public bool NamespaceExists(string name)
 		{
 			namespaceExistsCalled = true;
-			namespaceSearchedFor = name;
-			return namespaceExistsReturnValue;
+			namespacePassedToNamespaceExistsMethod = name;
+			
+			return namespaceContents.ContainsKey(name);
 		}
 		
 		public ArrayList GetNamespaceContents(string nameSpace)
 		{
-			namespaceContentsSearched = nameSpace;
-			return namespaceContents;
+			namespacePassedToGetNamespaceContentsMethod = nameSpace;
+			
+			ArrayList items;
+			if (namespaceContents.TryGetValue(nameSpace, out items)) {
+				return items;
+			}
+			return new ArrayList();
 		}
 		
 		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, GetClassOptions options)
@@ -283,11 +241,6 @@ namespace PythonBinding.Tests.Utils
 		
 		public void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences)
 		{
-			addNamespaceContentsCalled = true;
-			namespaceAddedName = subNameSpace;
-			this.lookInReferences = lookInReferences;
-			languagePassedToAddNamespaceContents = language;
-			
 			// Add the namespaces to the list.
 			foreach (string ns in namespacesToAdd) {
 				list.Add(ns);

@@ -116,17 +116,14 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override bool Walk(ImportStatement node)
 		{
-			DefaultUsing newUsing = new DefaultUsing(compilationUnit.ProjectContent);
-			foreach (DottedName name in node.Names) {
-				newUsing.Usings.Add(name.MakeString());
-			}
-			compilationUnit.UsingScope.Usings.Add(newUsing);
+			PythonImport import = new PythonImport(compilationUnit.ProjectContent, node);
+			compilationUnit.UsingScope.Usings.Add(import);
 			return false;
 		}
 		
 		public override bool Walk(FromImportStatement node)
 		{
-			PythonImport import = new PythonImport(compilationUnit.ProjectContent, node);
+			PythonFromImport import = new PythonFromImport(compilationUnit.ProjectContent, node);
 			compilationUnit.UsingScope.Usings.Add(import);
 			return false;
 		}

@@ -13,61 +13,43 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonImport : DefaultUsing
 	{
-		FromImportStatement fromImport;
+		ImportStatement importStatement;
 		
-		public PythonImport(IProjectContent projectContent, FromImportStatement fromImport)
+		public PythonImport(IProjectContent projectContent, ImportStatement importStatement)
 			: base(projectContent)
 		{
-			this.fromImport = fromImport;
+			this.importStatement = importStatement;
+			AddUsings();
 		}
 		
-		public bool IsImportedName(string name)
+		void AddUsings()
 		{
-			if (String.IsNullOrEmpty(name)) {
-				return false;
+			for (int i = 0; i < importStatement.Names.Count; ++i) {
+				string name = GetImportedAsNameIfExists(i);
+				Usings.Add(name);
 			}
-			
-			for (int i = 0; i < fromImport.Names.Count; ++i) {
-				string importedName = GetImportedAsNameIfExists(i);
-				if (importedName == name) {
-					return true;
-				}
-			}
-			return false;
 		}
 		
 		string GetImportedAsNameIfExists(int index)
 		{
-			if (fromImport.AsNames != null) {
-				string importedAsName = fromImport.AsNames[index];
-				if (importedAsName != null) {
-					return importedAsName;
-				}
+			string name = importStatement.AsNames[index];
+			if (name != null) {
+				return name;
 			}
-			return fromImport.Names[index];
+			return importStatement.Names[index].MakeString();
 		}
 		
 		public string Module {
-			get { return fromImport.Root.MakeString(); }
+			get { return importStatement.Names[0].MakeString(); }
 		}
 		
 		public string GetOriginalNameForAlias(string alias)
 		{
-			if (fromImport.AsNames == null) {
-				return null;
-			}
-			
-			int index = fromImport.AsNames.IndexOf(alias);
+			int index = importStatement.AsNames.IndexOf(alias);
 			if (index >= 0) {
-				return fromImport.Names[index];
+				return importStatement.Names[index].MakeString();
 			}
 			return null;
-		}
-		
-		public bool ImportsEverything {
-			get {
-				return fromImport.Names[0] == "*";
-			}
 		}
 	}
 }

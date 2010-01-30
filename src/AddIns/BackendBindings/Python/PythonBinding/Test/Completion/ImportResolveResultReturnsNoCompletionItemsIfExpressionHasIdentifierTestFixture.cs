@@ -31,7 +31,9 @@ namespace PythonBinding.Tests.Completion
 			projectContent = new MockProjectContent();
 			DefaultCompilationUnit unit = new DefaultCompilationUnit(projectContent);
 			DefaultClass c = new DefaultClass(unit, "Test");
-			projectContent.NamespaceContentsToReturn.Add(c);
+			ArrayList namespaceItems = new ArrayList();
+			namespaceItems.Add(c);
+			projectContent.AddExistingNamespaceContents("System", namespaceItems);
 		}
 		
 		[Test]

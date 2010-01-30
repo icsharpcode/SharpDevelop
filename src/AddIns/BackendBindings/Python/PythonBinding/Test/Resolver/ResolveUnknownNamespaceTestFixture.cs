@@ -24,7 +24,7 @@ namespace PythonBinding.Tests.Resolver
 	{
 		protected override ExpressionResult GetExpressionResult()
 		{
-			projectContent.NamespacesToAdd.Add("Test");
+			projectContent.AddExistingNamespaceContents("System", new ArrayList());
 			
 			return new ExpressionResult("Unknown", new DomRegion(3, 2), null, null);
 		}

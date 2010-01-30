@@ -10,27 +10,19 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonNamespaceResolver
+	public class PythonNamespaceResolver : IPythonResolver
 	{
 		public PythonNamespaceResolver()
 		{
 		}
 		
-		public ResolveResult Resolve(ExpressionResult expressionResult)
+		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
 		{
-			if (IsNamespace(expressionResult)) {
-				PythonImportExpression importExpression = new PythonImportExpression(expressionResult.Expression);
-				PythonImportExpressionContext context = expressionResult.Context as PythonImportExpressionContext;
-				context.HasFromAndImport = importExpression.HasFromAndImport;
-				
-				return new PythonImportModuleResolveResult(importExpression);
+			string actualNamespace = resolverContext.UnaliasImportedModuleName(expressionResult.Expression);
+			if (resolverContext.NamespaceExists(actualNamespace)) {
+				return new NamespaceResolveResult(null, null, actualNamespace);
 			}
 			return null;
-		}
-		
-		bool IsNamespace(ExpressionResult expressionResult)
-		{
-			return expressionResult.Context is PythonImportExpressionContext;
 		}
 	}
 }

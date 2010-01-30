@@ -32,7 +32,9 @@ namespace PythonBinding.Tests.Resolver
 			resolver = new PythonResolver();
 			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
-			mockProjectContent.NamespaceContentsToReturn.Add("Test");
+			ArrayList namespaceItems = new ArrayList();
+			namespaceItems.Add("Test");
+			mockProjectContent.AddExistingNamespaceContents(String.Empty, namespaceItems);
 
 			// Set the dirty compilation unit and the valid compilation unit
 			// so we make sure that the most recent compilation unit 
@@ -46,7 +48,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void NamespaceName()
 		{
-			Assert.AreEqual(String.Empty, mockProjectContent.NamespaceContentsSearched);
+			Assert.AreEqual(String.Empty, mockProjectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
 				
 		[Test]

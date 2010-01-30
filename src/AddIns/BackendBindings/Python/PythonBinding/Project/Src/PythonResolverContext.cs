@@ -181,10 +181,10 @@ namespace ICSharpCode.PythonBinding
 		public string GetModuleForImportedName(string name)
 		{
 			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
-				PythonImport pythonImport = u as PythonImport;
-				if (pythonImport != null) {
-					if (pythonImport.IsImportedName(name)) {
-						return pythonImport.Module;
+				PythonFromImport pythonFromImport = u as PythonFromImport;
+				if (pythonFromImport != null) {
+					if (pythonFromImport.IsImportedName(name)) {
+						return pythonFromImport.Module;
 					}
 				}
 			}
@@ -195,6 +195,23 @@ namespace ICSharpCode.PythonBinding
 		/// Converts a name into the correct identifier name based on any from import as statements.
 		/// </summary>
 		public string UnaliasImportedName(string name)
+		{
+			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+				PythonFromImport pythonFromImport = u as PythonFromImport;
+				if (pythonFromImport != null) {
+					string actualName = pythonFromImport.GetOriginalNameForAlias(name);
+					if (actualName != null) {
+						return actualName;
+					}
+				}
+			}
+			return name;
+		}
+		
+		/// <summary>
+		/// Converts the module name to its original unaliased value if it exists.
+		/// </summary>
+		public string UnaliasImportedModuleName(string  name)
 		{
 			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
 				PythonImport pythonImport = u as PythonImport;
@@ -212,10 +229,10 @@ namespace ICSharpCode.PythonBinding
 		{
 			List<string> modules = new List<string>();
 			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
-				PythonImport pythonImport = u as PythonImport;
-				if (pythonImport != null) {
-					if (pythonImport.ImportsEverything) {
-						modules.Add(pythonImport.Module);
+				PythonFromImport pythonFromImport = u as PythonFromImport;
+				if (pythonFromImport != null) {
+					if (pythonFromImport.ImportsEverything) {
+						modules.Add(pythonFromImport.Module);
 					}
 				}
 			}

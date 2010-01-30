@@ -25,7 +25,9 @@ namespace PythonBinding.Tests.Completion
 		{
 			ParseInformation parseInfo = new ParseInformation();
 			projectContent = new MockProjectContent();
-			projectContent.NamespaceContentsToReturn.Add("Test");
+			ArrayList namespaceItems = new ArrayList();
+			namespaceItems.Add("Test");
+			projectContent.AddExistingNamespaceContents(String.Empty, namespaceItems);
 			
 			PythonImportCompletion completion = new PythonImportCompletion(projectContent);
 			completionItems = completion.GetCompletionItems();
@@ -46,7 +48,7 @@ namespace PythonBinding.Tests.Completion
 		[Test]
 		public void NamespacePassedToProjectContentGetNamespaceContentsIsEmptyString()
 		{
-			Assert.AreEqual(String.Empty, projectContent.NamespaceContentsSearched);
+			Assert.AreEqual(String.Empty, projectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
 	}
 }

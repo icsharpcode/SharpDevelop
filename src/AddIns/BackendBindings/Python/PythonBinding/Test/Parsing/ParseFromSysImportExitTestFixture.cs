@@ -16,7 +16,7 @@ namespace PythonBinding.Tests.Parsing
 	public class ParseFromSysImportExitTestFixture
 	{
 		ICompilationUnit compilationUnit;
-		PythonImport import;
+		PythonFromImport import;
 		
 		[SetUp]
 		public void Init()
@@ -26,7 +26,7 @@ namespace PythonBinding.Tests.Parsing
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			PythonParser parser = new PythonParser();
 			compilationUnit = parser.Parse(projectContent, @"C:\test.py", python);
-			import = compilationUnit.UsingScope.Usings[0] as PythonImport;
+			import = compilationUnit.UsingScope.Usings[0] as PythonFromImport;
 		}
 		
 		[Test]
