@@ -319,9 +319,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		bool IsSimpleProperty(ITextEditor editor, IProperty property, out Ast.PropertyDeclaration astProoperty, out string fieldName)
+		bool IsSimpleProperty(ITextEditor editor, IProperty property, out Ast.PropertyDeclaration astProperty, out string fieldName)
 		{
-			astProoperty = null;
+			astProperty = null;
 			fieldName = null;
 			
 			if (editor == null)
@@ -342,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			if (p.HasGetRegion) {
 				getResult = false;
-				var ret = p.GetRegion.Block.Children.SingleOrDefault() as Ast.ReturnStatement;
+				var ret = p.GetRegion.Block.Children.FirstOrDefault() as Ast.ReturnStatement;
 				
 				if (ret != null) {
 					getResult = ret.Expression is Ast.IdentifierExpression;
@@ -352,9 +352,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			if (p.HasSetRegion) {
 				setResult = false;
-				var ret = p.SetRegion.Block.Children.SingleOrDefault() as Ast.ExpressionStatement;
+				var ret = p.SetRegion.Block.Children.FirstOrDefault() as Ast.ExpressionStatement;
 				
-				if (ret != null && ret.Expression is Ast.AssignmentExpression) {
+				if (ret != null && p.SetRegion.Block.Children.Count == 1 && ret.Expression is Ast.AssignmentExpression) {
 					var assign = ret.Expression as Ast.AssignmentExpression;
 					
 					setResult = assign.Op == Ast.AssignmentOperatorType.Assign &&
@@ -363,7 +363,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 			}
 			
-			astProoperty = p;
+			astProperty = p;
 			fieldName = identifier;
 			
 			return getResult && setResult;
