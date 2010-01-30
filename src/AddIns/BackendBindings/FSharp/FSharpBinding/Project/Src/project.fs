@@ -31,9 +31,9 @@ open ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 type FSharpProject = class
     inherit CompilableProject
-    new (info : ProjectLoadInformation) as x = 
+    new (info : ProjectLoadInformation) =
         { inherit CompilableProject(info ) }
-    new (info : ProjectCreateInformation) as x = 
+    new (info : ProjectCreateInformation) =
         { inherit CompilableProject(info) } then
         try
             base.AddImport(@"$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets", null)
