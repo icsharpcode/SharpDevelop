@@ -75,15 +75,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		#region Asyncron use of PageBuilder
 		
-		private void SetupViewer (ReportModel reportModel)
-		{
-			this.pages = new PagesCollection();
-			this.reportSettings = reportModel.ReportSettings;
-			this.cancelButton.Enabled = true;
-			this.AdjustDrawArea();
-		}
-		
-		
 		public void SetupAsynchron (string fileName,ReportParameters parameters)
 		{
 			if (String.IsNullOrEmpty(fileName)) {
@@ -116,6 +107,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.bgw.RunWorkerAsync(reportModel);
 		}
 		
+		#region PushModel - IList
 		
 		public void SetupAsynchron (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
 		{
@@ -128,7 +120,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			SetupAsynchron (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
 		}
 		
-		
 		public void SetupAsynchron (ReportModel reportModel,IDataManager dataManager)
 		{
 			if (reportModel == null) {
@@ -137,11 +128,24 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			if (dataManager == null) {
 				throw new ArgumentNullException("dataManager");
 			}
-			this.dataManager = dataManager;
+			
 			this.SetupViewer(reportModel);
 			SetupWorker();
+			
+			this.dataManager = dataManager;
 			this.bgw.DoWork += new DoWorkEventHandler(PushPullWorker);
 			this.bgw.RunWorkerAsync(reportModel);
+		}
+		
+		#endregion
+		
+		
+		private void SetupViewer (ReportModel reportModel)
+		{
+			this.pages = new PagesCollection();
+			this.reportSettings = reportModel.ReportSettings;
+			this.cancelButton.Enabled = true;
+			this.AdjustDrawArea();
 		}
 		
 		
@@ -159,11 +163,9 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void FormSheetWorker(object sender,DoWorkEventArgs e)
 		{
-			// Get the BackgroundWorker that raised this event.
 			BackgroundWorker worker = sender as BackgroundWorker;
 			e.Result = RunFormSheet((ReportModel)e.Argument,worker,e);
 		}
-		
 		
 		
 		private void PushPullWorker(object sender,DoWorkEventArgs e)
@@ -172,7 +174,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			e.Result = RunDataReport((ReportModel)e.Argument,this.dataManager,worker,e);
 		}
 		
-		
 		#endregion
 		
 		
@@ -180,7 +181,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			
 			if (e.Error != null) {
 				throw new ReportException("error in background worker", e.Error);
 			}
@@ -234,7 +234,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			{
 				RunDataReport(reportModel,data,worker,e);
 			}
-			
 			return null;
 		}
 		
@@ -316,14 +315,12 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				updateControl = ShowCompleted;
 				Invoke (updateControl);
 			}
-
 			this.SetPages();
 			this.CheckEnable();
 			this.cancelButton.Enabled = false;
 			this.printButton.Enabled = true;
 			this.pdfButton.Enabled = true;
 		}
-		
 		
 		#endregion
 		
@@ -371,8 +368,11 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				}
 			}
 			
-			EventHelper.Raise<EventArgs>(this.PreviewLayoutChanged,this,e);
+			this.Invalidate(true);
+			this.Update();
+			
 			this.AdjustDrawArea();
+			EventHelper.Raise<EventArgs>(this.PreviewLayoutChanged,this,e);
 		}
 		
 		
@@ -448,11 +448,13 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private Bitmap CreateBitmap (ExporterPage page)
 		{
-			System.Diagnostics.Trace.WriteLine("CreateBitmap");
 			Bitmap bm = new Bitmap(this.drawingPanel.ClientSize.Width,this.drawingPanel.ClientSize.Height,System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+			
 			using (Graphics gr = Graphics.FromImage(bm)) {
 
 				// Reset Transform to org. Value
+				gr.Clear(System.Drawing.Color.White);
+				this.Invalidate();
 				gr.ScaleTransform(1F,1F);
 				gr.Clear(this.drawingPanel.BackColor);
 				gr.ScaleTransform(this.zoom,this.zoom);

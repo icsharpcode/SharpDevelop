@@ -97,7 +97,7 @@ namespace SharpReportSamples
 			
 		}
 		
-		
+	
 		private void RunStandardReport(string reportName)
 		{
 			string s = Path.GetFileNameWithoutExtension(reportName);
@@ -106,7 +106,6 @@ namespace SharpReportSamples
 			} else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
 			}
-			
 			else {
 				
 				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
@@ -114,10 +113,14 @@ namespace SharpReportSamples
 				if ((parameters != null)&& (parameters.SqlParameters.Count > 0)){
 					parameters.SqlParameters[0].ParameterValue = "I'm the Parameter";
 				}
-				
+				this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+				{
+					this.RunStandardReport(reportName);
+				};
 				this.previewControl1.SetupAsynchron(reportName,parameters);
 			}
 		}
+		
 		
 		#region ProviderIndependent
 		private void RunProviderIndependent (string reportName)
@@ -129,6 +132,10 @@ namespace SharpReportSamples
 			
 			parameters.ConnectionObject = con;
 			parameters.SqlParameters[0].ParameterValue = "Provider Independent";
+			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+				{
+					this.RunProviderIndependent(reportName);
+				};
 			this.previewControl1.SetupAsynchron(reportName,parameters);
 		}
 			

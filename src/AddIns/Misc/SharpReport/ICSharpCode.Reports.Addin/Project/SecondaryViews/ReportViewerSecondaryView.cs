@@ -73,7 +73,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		
 		protected override void SaveToPrimary()
 		{
 //			throw new NotImplementedException();
