@@ -190,5 +190,14 @@ namespace XmlEditor.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public bool FullScreen {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

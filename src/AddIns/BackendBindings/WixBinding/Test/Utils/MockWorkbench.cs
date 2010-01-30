@@ -186,6 +186,15 @@ namespace WixBinding.Tests.Utils
 			if (ViewClosed != null) {
 				ViewClosed(this, e);
 			}
-		}		
+		}
+		
+		public bool FullScreen {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
