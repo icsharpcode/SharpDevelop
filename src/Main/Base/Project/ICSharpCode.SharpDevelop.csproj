@@ -202,6 +202,7 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
+    <Compile Include="Src\Gui\Workbench\FullScreenEnabledWindow.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonDockLayout.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonPadContent.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonWorkbenchWindow.cs" />

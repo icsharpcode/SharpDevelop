@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Workbench implementation using WPF and AvalonDock.
 	/// </summary>
-	sealed partial class WpfWorkbench : Window, IWorkbench, System.Windows.Forms.IWin32Window
+	sealed partial class WpfWorkbench : FullScreenEnabledWindow, IWorkbench, System.Windows.Forms.IWin32Window
 	{
 		const string mainMenuPath    = "/SharpDevelop/Workbench/MainMenu";
 		const string viewContentPath = "/SharpDevelop/Workbench/Pads";

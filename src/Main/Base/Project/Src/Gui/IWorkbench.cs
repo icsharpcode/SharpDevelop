@@ -36,6 +36,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Window MainWindow { get; }
 		
 		/// <summary>
+		/// Gets/Sets whether the window is displayed in full-screen mode.
+		/// </summary>
+		bool FullScreen { get; set; }
+		
+		/// <summary>
 		/// The title shown in the title bar.
 		/// </summary>
 		string Title {
