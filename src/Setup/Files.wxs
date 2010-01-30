@@ -24,7 +24,8 @@
 										regardless of whether they exist on the target
 										machine.
 									-->
-									<netfx:NativeImage Id="SharpDevelopNGenImage" Priority="0" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+									<!-- Using priority 1 because 0 slows down setup and might have a bug that causes it to work like priority 3 (http://www.mail-archive.com/wix-users@lists.sourceforge.net/msg34312.html). -->
+									<netfx:NativeImage Id="SharpDevelopNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
 								</File>
 							</Component>
 							<Component Id="BooProjectFileAssociation" Guid="8FD60FEE-9220-4409-B98E-273AAC4A03E0" DiskId="1">
