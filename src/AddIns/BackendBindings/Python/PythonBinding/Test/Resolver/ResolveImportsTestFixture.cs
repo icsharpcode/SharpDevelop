@@ -31,52 +31,25 @@ namespace PythonBinding.Tests.Resolver
 		{
 			resolver = new PythonResolver();
 			mockProjectContent = new MockProjectContent();
-			mockProjectContent.NamespacesToAdd.Add("Test");
+			List<ICompletionEntry> namespaceItems = new List<ICompletionEntry>();
+			namespaceItems.Add(new NamespaceEntry("Test"));
+			mockProjectContent.AddExistingNamespaceContents(String.Empty, namespaceItems);
 
 			ParseInformation parseInfo = new ParseInformation(new DefaultCompilationUnit(mockProjectContent));
 			
-			results = resolver.CtrlSpace(0, "import".Length, parseInfo, "import", ExpressionContext.Importable);
-		}
-				
-		[Test]
-		public void ProjectContentAddNamespaceContentsCalled()
-		{
-			Assert.IsTrue(mockProjectContent.AddNamespaceContentsCalled);
+			results = resolver.CtrlSpace(0, "import".Length, parseInfo, "import", ExpressionContext.Namespace);
 		}
 		
 		[Test]
 		public void NamespaceName()
 		{
-			Assert.AreEqual(String.Empty, mockProjectContent.NamespaceAddedName);
+			Assert.AreEqual(String.Empty, mockProjectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
-		
-		[Test]
-		public void LookInReferencesIsTrue()
-		{
-			Assert.IsTrue(mockProjectContent.LookInReferences);
-		}
-		
-		[Test]
-		public void ProjectContentLanguagePassedToAddNamespaceContents()
-		{
-			Assert.AreSame(mockProjectContent.Language, mockProjectContent.LanguagePassedToAddNamespaceContents);
-		}
-		
+				
 		[Test]
 		public void TestNamespaceAdded()
 		{
 			Assert.Contains(new NamespaceEntry("Test"), results);
-		}
-				
-		/// <summary>
-		/// Tests that the resolver handles the parse info being null
-		/// </summary>
-		[Test]
-		public void NullParseInfo()
-		{
-			PythonResolver resolver = new PythonResolver();
-			List<ICompletionEntry> results = resolver.CtrlSpace(0, 0, null, "abc", ExpressionContext.Importable);			
-			Assert.AreEqual(0, results.Count);
 		}
 		
 		[Test]

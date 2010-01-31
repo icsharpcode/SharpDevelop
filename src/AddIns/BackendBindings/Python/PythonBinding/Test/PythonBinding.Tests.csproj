@@ -57,14 +57,14 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="PresentationCore">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="PresentationFramework">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
@@ -75,7 +75,7 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +84,26 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AddInFileTestFixture.cs" />
     <Compile Include="CompilingOptionsPanelTestFixture.cs" />
+    <Compile Include="Completion\CodeCompletionBindingFromImportCompletionTestFixture.cs" />
+    <Compile Include="Completion\CodeCompletionBindingImportCompletionTestFixture.cs" />
+    <Compile Include="Completion\FromDateTimeImportCompletionTestFixture.cs" />
+    <Compile Include="Completion\FromImportDotNetNamespaceCompletionTestFixture.cs" />
+    <Compile Include="Completion\FromImportPythonModuleCompletionTestFixture.cs" />
+    <Compile Include="Completion\FromMathLibraryImportCompletionTestFixture.cs" />
+    <Compile Include="Completion\FromMathLibraryImportCosMethodCompletionTestFixture.cs" />
+    <Compile Include="Completion\FromSysLibraryImportCompletionItemsTestFixture.cs" />
+    <Compile Include="Completion\GetMethodsFromSysLibraryTestFixture.cs" />
+    <Compile Include="Completion\GetPythonModulesTestFixture.cs" />
+    <Compile Include="Completion\GetTypeForPythonModuleTestFixture.cs" />
+    <Compile Include="Completion\ImportCompletionTestFixture.cs" />
+    <Compile Include="Completion\ImportEmptyNamespaceCompletionTestFixture.cs" />
+    <Compile Include="Completion\ImportResolveResultReturnsNoCompletionItemsIfExpressionHasIdentifierTestFixture.cs" />
+    <Compile Include="Completion\ImportSubNamespaceCompletionTestFixture.cs" />
+    <Compile Include="Completion\MathModuleMembersInPythonContextTestFixture.cs" />
+    <Compile Include="Completion\NamespaceContentsAddedToCtrlSpaceTestFixture.cs" />
+    <Compile Include="Completion\PythonImportExpressionContextTestFixture.cs" />
+    <Compile Include="Completion\PythonSocketLibraryDocumentationTestFixture.cs" />
+    <Compile Include="Completion\SysModuleMembersInPythonContextTestFixture.cs" />
     <Compile Include="Console\BuiltinCodeCompletionTestFixture.cs" />
     <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
     <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
@@ -259,6 +279,7 @@
     <Compile Include="Designer\LoadControlEventHandlerTestFixture.cs" />
     <Compile Include="Designer\LoadCursorTestFixture.cs" />
     <Compile Include="Designer\LoadEventHandlerTestFixture.cs" />
+    <Compile Include="Designer\LoadFileSystemWatcherTestFixture.cs" />
     <Compile Include="Designer\LoadFontTestFixture.cs" />
     <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
@@ -300,13 +321,25 @@
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
     <Compile Include="Designer\TextEditorIndentPassedToGeneratorTestFixture.cs" />
     <Compile Include="Designer\UnknownTypeTestFixture.cs" />
+    <Compile Include="Expressions\FindExpressionOnLineWithSingleSpaceTestFixture.cs" />
+    <Compile Include="Expressions\FindExpressionWithImportOnPreviousLineTestFixture.cs" />
     <Compile Include="Expressions\FindImportExpressionTestFixture.cs" />
     <Compile Include="Expressions\FindSystemConsoleExpressionTestFixture.cs" />
+    <Compile Include="Expressions\FromImportNamespaceExpressionTests.cs" />
+    <Compile Include="Expressions\FromSystemImportTestFixture.cs" />
+    <Compile Include="Expressions\ImportNamespaceExpressionTests.cs" />
+    <Compile Include="Expressions\IsImportExpressionTestFixture.cs" />
+    <Compile Include="Expressions\ParseFromImportWithIdentifierTestFixture.cs" />
+    <Compile Include="Expressions\ParseFromImportWithoutImportedNameTestFixture.cs" />
+    <Compile Include="Expressions\ParseImportExpressionOnlyTestFixture.cs" />
+    <Compile Include="Expressions\ParseImportSystemConsoleExpressionTestFixture.cs" />
+    <Compile Include="Expressions\ParseImportSystemExpressionTestFixture.cs" />
+    <Compile Include="Expressions\ParsePartialFromImportStatementTestFixture.cs" />
+    <Compile Include="Expressions\ParsePartialFromImportStatementWithTokenizerTestFixture.cs" />
+    <Compile Include="Expressions\ParseSimpleImportExpressionTestFixture.cs" />
     <Compile Include="Expressions\RemoveLastPartTests.cs" />
+    <Compile Include="Expressions\StringTextContentProviderTests.cs" />
     <Compile Include="FormsDesignerDisplayBindingTestFixture.cs" />
-    <Compile Include="FromImportCompletion.cs">
-    </Compile>
-    <Compile Include="ImportCompletionTestFixture.cs" />
     <Compile Include="ProjectBindingTestFixture.cs" />
     <Compile Include="Parsing\ClassWithBaseClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidCastInPythonParserTestFixture.cs" />
@@ -314,6 +347,14 @@
     <Compile Include="Parsing\MissingLastParameterFromMethodTestFixture.cs" />
     <Compile Include="Parsing\ParseClassWithCtorTestFixture.cs" />
     <Compile Include="Parsing\ParseClassWithMethodTestFixture.cs" />
+    <Compile Include="Parsing\ParseFromMathImportAllTestFixture.cs" />
+    <Compile Include="Parsing\ParseFromMathImportCosAndTanTestFixture.cs" />
+    <Compile Include="Parsing\ParseFromSysImportExitAsMyExitTestFixture.cs" />
+    <Compile Include="Parsing\ParseFromSysImportExitTestFixture.cs" />
+    <Compile Include="Parsing\ParseFromSysImportMissingImportTestFixture.cs" />
+    <Compile Include="Parsing\ParseFromSysImportWithoutImportedNameTestFixture.cs" />
+    <Compile Include="Parsing\ParseImportMultipleModulesTestFixture.cs" />
+    <Compile Include="Parsing\ParseImportSysTestFixture.cs" />
     <Compile Include="Parsing\ParseImportTestFixture.cs" />
     <Compile Include="Parsing\ParseInvalidPythonCodeTestFixture.cs" />
     <Compile Include="Parsing\ParseMethodsWithNoClassTestFixture.cs" />
@@ -326,19 +367,41 @@
     <Compile Include="PythonOptionsPanelTestFixture.cs" />
     <Compile Include="CreateNewPythonProjectTestFixture.cs" />
     <Compile Include="PythonSyntaxModeTestFixture.cs" />
-    <Compile Include="Resolver\GetPythonModulesTestFixture.cs" />
+    <Compile Include="Resolver\ImportModuleResolveResultTests.cs" />
     <Compile Include="Resolver\InvalidResolveInputsTestFixture.cs" />
-    <Compile Include="Resolver\NamespaceContentsAddedToCtrlSpaceTestFixture.cs" />
+    <Compile Include="Resolver\MemberNameTests.cs" />
+    <Compile Include="Resolver\ResolveBuiltInRoundMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveClassInstanceWithNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleWriteLineTestFixture.cs" />
+    <Compile Include="Resolver\ResolveExitMethodFromSysImportExitAsMyExitTestFixture.cs" />
+    <Compile Include="Resolver\ResolveExitMethodFromSysImportExitTestFixture.cs" />
     <Compile Include="Resolver\ResolveFromImportTestFixture.cs" />
+    <Compile Include="Resolver\ResolveFromMathImportedMathModuleCompletionItemsTestFixture.cs" />
     <Compile Include="Resolver\ResolveImportsTestFixture.cs" />
     <Compile Include="Resolver\ResolveLocalClassInstanceTestFixture.cs" />
+    <Compile Include="Resolver\ResolveMethodFromUnknownImportAllTestFixture.cs" />
+    <Compile Include="Resolver\ResolveMethodWhenFromImportIsUnknownTestFixture.cs" />
+    <Compile Include="Resolver\ResolveMethodWhenImportIsUnknownTestFixture.cs" />
+    <Compile Include="Resolver\ResolveNullCtrlSpaceParseInfoTestFixture.cs" />
+    <Compile Include="Resolver\ResolverContextGetModulesThatImportEverythingTests.cs" />
+    <Compile Include="Resolver\ResolverContextGetModuleForNameImportedAsDifferentNameTestFixture.cs" />
+    <Compile Include="Resolver\ResolverContextGetModuleForImportedNameTests.cs" />
+    <Compile Include="Resolver\ResolverContextHasImportTests.cs" />
+    <Compile Include="Resolver\ResolverContextUnaliasImportedModuleNameTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSysModuleExitMethodTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSysModuleImportedAsMySysTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSysModuleTestFixture.cs">
+    </Compile>
+    <Compile Include="Resolver\ResolveSysModuleUnknownMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemConsoleOutsideClassTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemConsoleTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemImportedAsMySystemTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemImportTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemNamespaceTestFixture.cs" />
+    <Compile Include="Resolver\ResolveTanMethodFromMathImportAllTestFixture.cs" />
+    <Compile Include="Resolver\ResolveTanMethodFromMathImportCosAndTanTestFixture.cs" />
+    <Compile Include="Resolver\ResolveTestFixtureBase.cs" />
     <Compile Include="Resolver\ResolveUnknownNamespaceTestFixture.cs" />
     <Compile Include="RunPythonCommandTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />
@@ -396,8 +459,12 @@
     <None Include="app.config" />
     <Compile Include="Parsing\AddInvalidSourceSpanToErrorSinkTestFixture.cs" />
     <Compile Include="Utils\NullPropertyUserControl.cs" />
+    <Compile Include="Utils\PythonCompletionItemsHelper.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <Compile Include="Utils\Tests\MockProjectContentTests.cs" />
+    <Compile Include="Utils\Tests\PythonCompletionItemsHelperTests.cs" />
+    <Compile Include="Utils\Tests\PythonParserHelperTests.cs" />
     <EmbeddedResource Include="Designer\App.ico" />
     <EmbeddedResource Include="Strings.resx" />
     <None Include="TODO.txt" />
@@ -447,8 +514,10 @@
     <Folder Include="Designer" />
     <Folder Include="Converter" />
     <Folder Include="Console" />
+    <Folder Include="Completion" />
     <Folder Include="Parsing" />
     <Folder Include="Resolver" />
     <Folder Include="Utils" />
+    <Folder Include="Utils\Tests" />
   </ItemGroup>
 </Project>

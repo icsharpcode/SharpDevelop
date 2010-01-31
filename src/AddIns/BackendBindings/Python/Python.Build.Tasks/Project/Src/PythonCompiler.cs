@@ -133,7 +133,7 @@ namespace ICSharpCode.Python.Build.Tasks
 		/// Generates an executable from the already compiled dll.
 		/// </summary>
 		void GenerateExecutable(string outputAssemblyDll)
-		{			
+		{
 			string outputAssemblyFileNameWithoutExtension = Path.GetFileNameWithoutExtension(outputAssembly);
 			AssemblyName assemblyName = new AssemblyName(outputAssemblyFileNameWithoutExtension); 
 			AssemblyBuilder assemblyBuilder = PythonOps.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
@@ -141,21 +141,8 @@ namespace ICSharpCode.Python.Build.Tasks
 			TypeBuilder typeBuilder = moduleBuilder.DefineType("PythonMain", TypeAttributes.Public);
 			MethodBuilder mainMethod = typeBuilder.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static, typeof(int), new Type[0]);
 			
-			// Mark main method as STA.
-			mainMethod.SetCustomAttribute(typeof(STAThreadAttribute).GetConstructor(Type.EmptyTypes), new byte[0]);
-
-			ILGenerator generator = mainMethod.GetILGenerator();
-			generator.Emit(OpCodes.Ldstr, Path.GetFileName(outputAssemblyDll));
-			generator.EmitCall(OpCodes.Call, typeof(Path).GetMethod("GetFullPath", new Type[] {typeof(String)}, new ParameterModifier[0]), null);
-			generator.EmitCall(OpCodes.Call, typeof(Assembly).GetMethod("LoadFile", new Type[] {typeof(String)}, new ParameterModifier[0]), null);
-			
-			generator.Emit(OpCodes.Ldstr, Path.GetFileNameWithoutExtension(mainFile));
-
-			// Add referenced assemblies.
-			AddReferences(generator);
-
-			generator.EmitCall(OpCodes.Call, typeof(PythonOps).GetMethod("InitializeModule"), new Type[0]);
-			generator.Emit(OpCodes.Ret);
+			MarkMainMethodAsSTA(mainMethod);
+			GenerateMainMethodBody(mainMethod, outputAssemblyDll);
 			
 			// Add resources.
 			AddResources(moduleBuilder);
@@ -164,6 +151,42 @@ namespace ICSharpCode.Python.Build.Tasks
 			typeBuilder.CreateType();
 			assemblyBuilder.SetEntryPoint(mainMethod, targetKind);
 			assemblyBuilder.Save(assemblyName.Name + ".exe", executableKind, machine);
+		}
+		
+		void MarkMainMethodAsSTA(MethodBuilder mainMethod)
+		{
+			mainMethod.SetCustomAttribute(typeof(STAThreadAttribute).GetConstructor(Type.EmptyTypes), new byte[0]);
+		}
+		
+		void GenerateMainMethodBody(MethodBuilder mainMethod, string outputAssemblyDll)
+		{
+			ILGenerator generator = mainMethod.GetILGenerator();
+			LocalBuilder exeAssemblyLocalVariable = generator.DeclareLocal(typeof(Assembly));
+			LocalBuilder directoryLocalVariable = generator.DeclareLocal(typeof(string));
+			LocalBuilder fileNameLocalVariable = generator.DeclareLocal(typeof(string));
+			
+			generator.EmitCall(OpCodes.Call, typeof(Assembly).GetMethod("GetExecutingAssembly", new Type[0], new ParameterModifier[0]), null);
+			generator.Emit(OpCodes.Stloc_0);
+			
+			generator.Emit(OpCodes.Ldloc_0);
+			generator.EmitCall(OpCodes.Callvirt, typeof(Assembly).GetMethod("get_Location"), null);
+			generator.EmitCall(OpCodes.Call, typeof(Path).GetMethod("GetDirectoryName", new Type[] {typeof(String)}, new ParameterModifier[0]), null);
+			generator.Emit(OpCodes.Stloc_1);
+			
+			generator.Emit(OpCodes.Ldloc_1);
+			generator.Emit(OpCodes.Ldstr, Path.GetFileName(outputAssemblyDll));
+			generator.EmitCall(OpCodes.Call, typeof(Path).GetMethod("Combine", new Type[] {typeof(String), typeof(String)}, new ParameterModifier[0]), null);
+			generator.Emit(OpCodes.Stloc_2);
+			
+			generator.Emit(OpCodes.Ldloc_2);
+			generator.EmitCall(OpCodes.Call, typeof(Assembly).GetMethod("LoadFile", new Type[] {typeof(String)}, new ParameterModifier[0]), null);			
+			generator.Emit(OpCodes.Ldstr, Path.GetFileNameWithoutExtension(mainFile));
+
+			// Add referenced assemblies.
+			AddReferences(generator);
+
+			generator.EmitCall(OpCodes.Call, typeof(PythonOps).GetMethod("InitializeModule"), new Type[0]);
+			generator.Emit(OpCodes.Ret);
 		}
 		
 		/// <summary>

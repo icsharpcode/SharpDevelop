@@ -34,7 +34,7 @@ namespace ICSharpCode.PythonBinding
 				switch (word.ToLowerInvariant()) {
 					case "import":
 					case "from":
-						CtrlSpaceCompletionItemProvider dataProvider = CreateCtrlSpaceCompletionDataProvider(ExpressionContext.Importable);
+						AbstractCompletionItemProvider dataProvider = CreateCompletionDataProvider();
 						ShowCodeCompletionWindow(editor, dataProvider, ' ');
 						return true;
 				}
@@ -42,18 +42,9 @@ namespace ICSharpCode.PythonBinding
 			return false;
 		}
 		
-		public override bool CtrlSpace(ICSharpCode.SharpDevelop.Editor.ITextEditor editor)
+		protected virtual AbstractCompletionItemProvider CreateCompletionDataProvider()
 		{
-			CreateCtrlSpaceCompletionDataProvider(null).ShowCompletion(editor);
-			return true;
-		}
-		
-		/// <summary>
-		/// Creates a CtrlSpaceCompletionItemProvider.
-		/// </summary>
-		protected virtual CtrlSpaceCompletionItemProvider CreateCtrlSpaceCompletionDataProvider(ExpressionContext expressionContext)
-		{
-			return new PythonCtrlSpaceCompletionItemProvider(expressionContext);
+			return new CodeCompletionItemProvider();
 		}
 		
 		/// <summary>
@@ -62,24 +53,6 @@ namespace ICSharpCode.PythonBinding
 		protected virtual void ShowCodeCompletionWindow(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, AbstractCompletionItemProvider completionItemProvider, char ch)
 		{
 			completionItemProvider.ShowCompletion(editor);
-		}
-		
-		class PythonCtrlSpaceCompletionItemProvider : CtrlSpaceCompletionItemProvider
-		{
-			public PythonCtrlSpaceCompletionItemProvider(ExpressionContext context)
-				: base(context)
-			{
-			}
-			
-			protected override List<ICompletionEntry> CtrlSpace(ICSharpCode.SharpDevelop.Editor.ITextEditor editor, ExpressionContext context)
-			{
-				return new PythonResolver().CtrlSpace(
-					editor.Caret.Line,
-					editor.Caret.Column,
-					ParserService.GetParseInformation(editor.FileName),
-					editor.Document.Text,
-					context);
-			}
 		}
 	}
 }

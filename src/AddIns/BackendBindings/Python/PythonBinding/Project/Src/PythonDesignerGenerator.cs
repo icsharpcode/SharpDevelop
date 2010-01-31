@@ -13,11 +13,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Drawing;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;

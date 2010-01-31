@@ -275,9 +275,13 @@ namespace ICSharpCode.PythonBinding
 			if (property != null) {
 				string name = nameExpression.Name;
 				if (property.PropertyType != typeof(bool)) {
-					object instance = componentCreator.GetInstance(name);
-					if (instance != null) {
-						return SetPropertyValue(component, memberName, instance);
+					if ("self" == name) {
+						return SetPropertyValue(component, memberName, componentCreator.RootComponent);
+					} else {
+						object instance = componentCreator.GetInstance(name);
+						if (instance != null) {
+							return SetPropertyValue(component, memberName, instance);
+						}
 					}
 				}
 				return SetPropertyValue(component, memberName, name);

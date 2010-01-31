@@ -24,23 +24,23 @@ namespace PythonBinding.Tests.Resolver
 	{
 		PythonResolver resolver;
 		MockProjectContent mockProjectContent;
-		NamespaceResolveResult resolveResult;
+		PythonImportModuleResolveResult resolveResult;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-
+			
 			mockProjectContent = new MockProjectContent();
-			mockProjectContent.SetNamespaceExistsReturnValue(true);
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
 			cu.ErrorsDuringCompile = true;
 			cu.FileName = @"C:\Projects\Test\test.py";
 			ParseInformation parseInfo = new ParseInformation(cu);
 					
-			string python = "from System.";
-			ExpressionResult expressionResult = new ExpressionResult("from System", new DomRegion(1, 14), null, null);
-			resolveResult = resolver.Resolve(expressionResult, parseInfo, python) as NamespaceResolveResult;
+			string python = "from System";
+			PythonExpressionFinder finder = new PythonExpressionFinder();
+			ExpressionResult expressionResult = finder.FindExpression(python, python.Length);
+			resolveResult = resolver.Resolve(expressionResult, parseInfo, python) as PythonImportModuleResolveResult;
 		}
 		
 		[Test]
@@ -53,12 +53,6 @@ namespace PythonBinding.Tests.Resolver
 		public void NamespaceName()
 		{
 			Assert.AreEqual("System", resolveResult.Name);
-		}
-		
-		[Test]
-		public void NamespaceSearchedFor()
-		{
-			Assert.AreEqual("System", mockProjectContent.NamespaceSearchedFor);
 		}
 	}
 }

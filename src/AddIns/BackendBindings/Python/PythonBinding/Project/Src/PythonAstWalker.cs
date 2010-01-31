@@ -25,7 +25,7 @@ namespace ICSharpCode.PythonBinding
 		DefaultCompilationUnit compilationUnit;
 		DefaultClass currentClass;
 		DefaultClass globalClass;
-		string ns;
+		string currentNamespace;
 		
 		/// <summary>
 		/// All classes in a file take the namespace of the filename. 
@@ -34,7 +34,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			compilationUnit = new DefaultCompilationUnit(projectContent);
 			compilationUnit.FileName = fileName;
-			ns = Path.GetFileNameWithoutExtension(fileName);
+			currentNamespace = Path.GetFileNameWithoutExtension(fileName);
 		}
 		
 		/// <summary>
@@ -116,13 +116,15 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public override bool Walk(ImportStatement node)
 		{
-			Console.WriteLine("Walk.Import");
-			DefaultUsing newUsing = new DefaultUsing(compilationUnit.ProjectContent);
-			foreach (DottedName name in node.Names) {
-				Console.WriteLine("Name: " + name.MakeString());
-				newUsing.Usings.Add(name.MakeString());
-			}
-			compilationUnit.UsingScope.Usings.Add(newUsing);
+			PythonImport import = new PythonImport(compilationUnit.ProjectContent, node);
+			compilationUnit.UsingScope.Usings.Add(import);
+			return false;
+		}
+				
+		public override bool Walk(FromImportStatement node)
+		{
+			PythonFromImport import = new PythonFromImport(compilationUnit.ProjectContent, node);
+			compilationUnit.UsingScope.Usings.Add(import);
 			return false;
 		}
 				
@@ -138,7 +140,7 @@ namespace ICSharpCode.PythonBinding
 		/// method or class definition up to the colon.</param>
 		DomRegion GetBodyRegion(Statement body, SourceLocation header)
 		{
-			// Add one so the region starts from just after the colon.
+			int columnAfterColonCharacter = header.Column + 1;
 			return new DomRegion(header.Line, header.Column + 1, body.End.Line, body.End.Column);			
 		}
 		
@@ -213,7 +215,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		string GetFullyQualifiedClassName(ClassDefinition classDef)
 		{
-			return String.Concat(ns, ".", classDef.Name);
+			return String.Concat(currentNamespace, ".", classDef.Name);
 		}
 		
 		/// <summary>
@@ -222,7 +224,7 @@ namespace ICSharpCode.PythonBinding
 		void CreateGlobalClass()
 		{
 			if (globalClass == null) {
-				globalClass = new DefaultClass(compilationUnit, ns);
+				globalClass = new DefaultClass(compilationUnit, currentNamespace);
 				compilationUnit.Classes.Add(globalClass);
 			}
 		}

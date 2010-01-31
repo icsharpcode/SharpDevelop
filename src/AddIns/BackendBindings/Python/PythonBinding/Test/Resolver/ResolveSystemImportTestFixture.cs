@@ -20,26 +20,18 @@ namespace PythonBinding.Tests.Resolver
 	/// a namespace.
 	/// </summary>
 	[TestFixture]
-	public class ResolveSystemImportTestFixture
+	public class ResolveSystemImportTestFixture : ResolveTestFixtureBase
 	{
-		PythonResolver resolver;
-		MockProjectContent mockProjectContent;
-		NamespaceResolveResult resolveResult;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		protected override ExpressionResult GetExpressionResult()
 		{
-			resolver = new PythonResolver();
-			mockProjectContent = new MockProjectContent();
-			mockProjectContent.SetNamespaceExistsReturnValue(true);
-			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
-			cu.ErrorsDuringCompile = true;
-			cu.FileName = @"C:\Projects\Test\test.py";
-			ParseInformation parseInfo = new ParseInformation(cu);
-					
-			string python = "import System.";
-			ExpressionResult expressionResult = new ExpressionResult("import System", new DomRegion(1, 14), null, null);
-			resolveResult = resolver.Resolve(expressionResult, parseInfo, python) as NamespaceResolveResult;
+			string code = GetPythonScript();
+			PythonExpressionFinder finder = new PythonExpressionFinder();
+			return finder.FindExpression(code, code.Length);
+		}
+		
+		protected override string GetPythonScript()
+		{
+			return "import System";
 		}
 		
 		[Test]
@@ -51,13 +43,21 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void NamespaceName()
 		{
-			Assert.AreEqual("System", resolveResult.Name);
+			PythonImportModuleResolveResult importResolveResult = (PythonImportModuleResolveResult)resolveResult;
+			Assert.AreEqual("System", importResolveResult.Name);
 		}
 		
 		[Test]
-		public void NamespaceSearchedFor()
+		public void ExpressionResultContextShowItemReturnsTrueForNamespaceEntry()
 		{
-			Assert.AreEqual("System", mockProjectContent.NamespaceSearchedFor);
-		}		
+			NamespaceEntry entry = new NamespaceEntry("abc");
+			Assert.IsTrue(expressionResult.Context.ShowEntry(entry));
+		}
+		
+		[Test]
+		public void ExpressionResultContextShowItemReturnsFalseForNull()
+		{
+			Assert.IsFalse(expressionResult.Context.ShowEntry(null));
+		}
 	}
 }

@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -24,38 +24,28 @@ namespace PythonBinding.Tests.Resolver
 	{
 		PythonResolver resolver;
 		MockProjectContent mockProjectContent;
-		ResolveResult resolveResult;
+		NamespaceResolveResult resolveResult;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
 			mockProjectContent = new MockProjectContent();
-			mockProjectContent.SetNamespaceExistsReturnValue(true);
+			mockProjectContent.AddExistingNamespaceContents("System", new List<ICompletionEntry>());
 			
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
 			cu.ErrorsDuringCompile = true;
 			cu.FileName = @"C:\Projects\Test\test.py";
 			ParseInformation parseInfo = new ParseInformation(cu);
 			
-			string python = "import System\r\n" +
-							"class Test:\r\n" +
-							"\tdef __init__(self):\r\n" +
-							"\t\tSystem.\r\n";
+			string python =
+				"import System\r\n" +
+				"class Test:\r\n" +
+				"    def __init__(self):\r\n" +
+				"        System.\r\n";
+			
 			ExpressionResult expressionResult = new ExpressionResult("System", new DomRegion(3, 2), null, null);
-			resolveResult = resolver.Resolve(expressionResult, parseInfo, python);
-		}
-		
-		[Test]
-		public void ResolveResultExists()
-		{
-			Assert.IsNotNull(resolveResult);
-		}
-		
-		[Test]
-		public void IsNamespaceResolveResult()
-		{
-			Assert.IsInstanceOf(typeof(NamespaceResolveResult), resolveResult);
+			resolveResult = resolver.Resolve(expressionResult, parseInfo, python) as NamespaceResolveResult;
 		}
 		
 		[Test]
@@ -67,14 +57,13 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void NamespaceSearchedFor()
 		{
-			Assert.AreEqual("System", mockProjectContent.NamespaceSearchedFor);
+			Assert.AreEqual("System", mockProjectContent.NamespacePassedToNamespaceExistsMethod);
 		}
 				
 		[Test]
 		public void NamespaceResolveResultHasSystemNamespace()
 		{
-			NamespaceResolveResult nsResult = (NamespaceResolveResult)resolveResult;
-			Assert.AreEqual("System", nsResult.Name);
+			Assert.AreEqual("System", resolveResult.Name);
 		}
 	}
 }

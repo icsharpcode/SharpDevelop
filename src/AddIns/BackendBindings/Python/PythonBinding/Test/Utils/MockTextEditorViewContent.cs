@@ -11,6 +11,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace PythonBinding.Tests.Utils
 {

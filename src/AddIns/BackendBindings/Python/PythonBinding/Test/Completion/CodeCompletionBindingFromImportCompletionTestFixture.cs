@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
@@ -21,18 +20,21 @@ namespace PythonBinding.Tests
 	/// importable code completion keyword.
 	/// </summary>
 	[TestFixture]
-	public class FromImportCompletion
+	public class FromImportCompletionTestFixture
 	{
 		DerivedPythonCodeCompletionBinding codeCompletionBinding;
 		bool handlesImportKeyword;
+		AvalonEditTextEditorAdapter textEditor;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			PropertyService.InitializeServiceForUnitTests();
+			if (!PropertyService.Initialized) {
+				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
+			}
+			textEditor = new AvalonEditTextEditorAdapter(new ICSharpCode.AvalonEdit.TextEditor());
 			codeCompletionBinding = new DerivedPythonCodeCompletionBinding();
-			var editor = new AvalonEditTextEditorAdapter(new ICSharpCode.AvalonEdit.TextEditor());
-			handlesImportKeyword = codeCompletionBinding.HandleKeyword(editor, "from");
+			handlesImportKeyword = codeCompletionBinding.HandleKeyword(textEditor, "from");
 		}
 		
 		[Test]
@@ -40,11 +42,5 @@ namespace PythonBinding.Tests
 		{
 			Assert.IsTrue(handlesImportKeyword);
 		}
-		
-		[Test]
-		public void ExpressionContextIsImportable()
-		{
-			Assert.AreEqual(ExpressionContext.Importable, codeCompletionBinding.ExpressionContext);
-		}		
 	}
 }

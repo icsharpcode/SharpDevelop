@@ -35,17 +35,20 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.NamespacesToAdd.Add("Test");
 			myTestClass = new MockClass(mockProjectContent, "MyTestClass");
-			mockProjectContent.NamespaceContentsToReturn.Add(myTestClass);
-
+			List<ICompletionEntry> namespaceItems = new List<ICompletionEntry>();
+			namespaceItems.Add(myTestClass);
+			mockProjectContent.AddExistingNamespaceContents("MyNamespace", namespaceItems);
+			
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };
 			
 			// Add usings.
 			DefaultUsing newUsing = new DefaultUsing(cu.ProjectContent);
 			newUsing.Usings.Add("MyNamespace");
-			cu.UsingScope.Usings.Add(newUsing);
-			
+			DefaultUsingScope usingScope = new DefaultUsingScope();
+			usingScope.Usings.Add(newUsing);
+			cu.UsingScope = usingScope;
 			ParseInformation parseInfo = new ParseInformation(cu);
-
+			
 			results = resolver.CtrlSpace(0, "".Length, parseInfo, "", ExpressionContext.Default);
 		}
 
@@ -58,7 +61,7 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void NamespaceSearchedForContents()
 		{
-			Assert.AreEqual("MyNamespace", mockProjectContent.NamespaceContentsSearched);
+			Assert.AreEqual("MyNamespace", mockProjectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
 		
 		[Test]

@@ -6,14 +6,10 @@
 // </file>
 
 using System;
-using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -23,18 +19,20 @@ namespace PythonBinding.Tests
 	/// Tests the code completion after an "import" statement.
 	/// </summary>
 	[TestFixture]
-	public class ImportCompletionTestFixture
+	public class CodeCompletionBindingImportCompletionTestFixture
 	{
-		ICSharpCode.SharpDevelop.Editor.ITextEditor textEditor;
 		DerivedPythonCodeCompletionBinding codeCompletionBinding;
 		bool handlesImportKeyword;
+		AvalonEditTextEditorAdapter textEditor;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			PropertyService.InitializeServiceForUnitTests();
-			codeCompletionBinding = new DerivedPythonCodeCompletionBinding();
+			if (!PropertyService.Initialized) {
+				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
+			}
 			textEditor = new AvalonEditTextEditorAdapter(new ICSharpCode.AvalonEdit.TextEditor());
+			codeCompletionBinding = new DerivedPythonCodeCompletionBinding();
 			handlesImportKeyword = codeCompletionBinding.HandleKeyword(textEditor, "import");
 		}
 		
@@ -63,9 +61,9 @@ namespace PythonBinding.Tests
 		}
 		
 		[Test]
-		public void CtrlSpaceCompletionDataProviderCreated()
+		public void CompletionDataProviderCreated()
 		{
-			Assert.IsTrue(codeCompletionBinding.IsCtrlSpaceCompletionDataProviderCreated);
+			Assert.IsTrue(codeCompletionBinding.IsCompletionDataProviderCreated);
 		}
 		
 		[Test]
@@ -83,19 +81,13 @@ namespace PythonBinding.Tests
 		[Test]
 		public void CompletionProviderUsedWhenDisplayingCodeCompletionWindow()
 		{
-			Assert.AreSame(codeCompletionBinding.CtrlSpaceCompletionDataProvider, codeCompletionBinding.CompletionProviderUsedWhenDisplayingCodeCompletionWindow);
+			Assert.AreSame(codeCompletionBinding.CompletionDataProvider, codeCompletionBinding.CompletionProviderUsedWhenDisplayingCodeCompletionWindow);
 		}
 		
 		[Test]
 		public void CompletionCharacterIsSpace()
 		{
 			Assert.AreEqual(' ', codeCompletionBinding.CompletionCharacter);
-		}
-		
-		[Test]
-		public void ExpressionContextIsImportable()
-		{
-			Assert.AreEqual(ExpressionContext.Importable, codeCompletionBinding.ExpressionContext);
 		}
 	}
 }

@@ -21,13 +21,12 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class DerivedPythonCodeCompletionBinding : PythonCodeCompletionBinding
 	{
-		bool ctrlSpaceCompletionDataProviderCreated;
+		bool completionDataProviderCreated;
 		bool codeCompletionWindowDisplayed;
 		ICSharpCode.SharpDevelop.Editor.ITextEditor textEditorUsedToShowCompletionWindow;
 		AbstractCompletionItemProvider completionProviderUsedWhenDisplayingCodeCompletionWindow;
-		CtrlSpaceCompletionItemProvider ctrlSpaceCompletionDataProvider;
+		AbstractCompletionItemProvider completionDataProvider;
 		char completionCharacter = '\0';
-		ExpressionContext expressionContext;
 		
 		public DerivedPythonCodeCompletionBinding()
 		{
@@ -37,8 +36,8 @@ namespace PythonBinding.Tests.Utils
 		/// Gets whether the data provider was created by the 
 		/// base class PythonCodeCompletionBinding.
 		/// </summary>
-		public bool IsCtrlSpaceCompletionDataProviderCreated {
-			get { return ctrlSpaceCompletionDataProviderCreated; }
+		public bool IsCompletionDataProviderCreated {
+			get { return completionDataProviderCreated; }
 		}
 		
 		/// <summary>
@@ -58,11 +57,11 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		/// <summary>
-		/// Gets the CtrlSpaceCompletionDataProvider created via the
-		/// CreateCtrlSpaceCompletionDataProvider method.
+		/// Gets the CompletionDataProvider created via the
+		/// CreateCompletionDataProvider method.
 		/// </summary>
-		public CtrlSpaceCompletionItemProvider CtrlSpaceCompletionDataProvider {
-			get { return ctrlSpaceCompletionDataProvider; }
+		public AbstractCompletionItemProvider CompletionDataProvider {
+			get { return completionDataProvider; }
 		}
 		
 		/// <summary>
@@ -74,23 +73,14 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		/// <summary>
-		/// Gets the expression context used when the
-		/// CtrlSpaceCompletionDataProvider is created.
-		/// </summary>
-		public ExpressionContext ExpressionContext {
-			get { return expressionContext; }
-		}
-		
-		/// <summary>
 		/// Overrides the completion data provider creation to make sure
 		/// it is called at the correct time. 
 		/// </summary>
-		protected override CtrlSpaceCompletionItemProvider CreateCtrlSpaceCompletionDataProvider(ExpressionContext expressionContext)
+		protected override AbstractCompletionItemProvider CreateCompletionDataProvider()
 		{
-			ctrlSpaceCompletionDataProviderCreated = true;
-			this.expressionContext = expressionContext;
-			ctrlSpaceCompletionDataProvider = base.CreateCtrlSpaceCompletionDataProvider(expressionContext);
-			return ctrlSpaceCompletionDataProvider;
+			completionDataProviderCreated = true;
+			completionDataProvider = base.CreateCompletionDataProvider();
+			return completionDataProvider;
 		}
 		
 		/// <summary>

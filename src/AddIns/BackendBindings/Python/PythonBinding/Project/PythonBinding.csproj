@@ -44,6 +44,9 @@
     <Reference Include="IronPython">
       <HintPath>..\..\RequiredLibraries\IronPython.dll</HintPath>
     </Reference>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\..\RequiredLibraries\IronPython.Modules.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Dynamic">
       <HintPath>..\..\RequiredLibraries\Microsoft.Dynamic.dll</HintPath>
     </Reference>
@@ -71,6 +74,26 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
+    <Compile Include="Src\IPythonResolver.cs" />
+    <Compile Include="Src\MemberName.cs" />
+    <Compile Include="Src\PythonBuiltInModuleMemberName.cs" />
+    <Compile Include="Src\PythonClassResolver.cs" />
+    <Compile Include="Src\PythonDotNetMethodResolver.cs" />
+    <Compile Include="Src\PythonFromImport.cs" />
+    <Compile Include="Src\PythonImport.cs" />
+    <Compile Include="Src\PythonMethodGroupResolveResult.cs" />
+    <Compile Include="Src\PythonMethodResolver.cs" />
+    <Compile Include="Src\PythonModuleCompletionItems.cs" />
+    <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />
+    <Compile Include="Src\PythonImportResolver.cs" />
+    <Compile Include="Src\PythonNamespaceResolver.cs" />
+    <Compile Include="Src\PythonResolverContext.cs" />
+    <Compile Include="Src\PythonStandardModuleMethodResolver.cs" />
+    <Compile Include="Src\PythonStandardModuleMethodResolveResult.cs" />
+    <Compile Include="Src\PythonStandardModuleResolver.cs" />
+    <Compile Include="Src\PythonStandardModuleResolveResult.cs" />
+    <Compile Include="Src\PythonStandardModuleType.cs" />
+    <Compile Include="Src\SysModuleCompletionItems.cs" />
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IPadDescriptor.cs" />
@@ -92,13 +115,18 @@
     <Compile Include="Src\PythonDesignerGenerator.cs" />
     <Compile Include="Src\PythonDesignerLoader.cs" />
     <Compile Include="Src\PythonDesignerLoaderProvider.cs" />
+    <Compile Include="Src\PythonExpression.cs" />
     <Compile Include="Src\PythonExpressionFinder.cs" />
     <Compile Include="Src\PythonFormattingStrategy.cs" />
     <Compile Include="Src\PythonFormsDesignerDisplayBinding.cs" />
+    <Compile Include="Src\PythonProjectBinding.cs" />
     <Compile Include="Src\PythonComponentWalker.cs" />
     <Compile Include="Src\PythonComponentWalkerException.cs" />
-    <Compile Include="Src\PythonProjectBinding.cs" />
+    <Compile Include="Src\PythonImportCompletion.cs" />
+    <Compile Include="Src\PythonImportExpression.cs" />
+    <Compile Include="Src\PythonImportExpressionContext.cs" />
     <Compile Include="Src\PythonLanguageProperties.cs" />
+    <Compile Include="Src\PythonImportModuleResolveResult.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
     <Compile Include="Src\PythonOutputStream.cs" />
     <Compile Include="Src\PythonOutputWindowPadDescriptor.cs" />
@@ -108,8 +136,9 @@
     <Compile Include="Src\PythonResolver.cs" />
     <Compile Include="Src\RunDebugPythonCommand.cs" />
     <Compile Include="Src\RunPythonCommand.cs" />
-    <Compile Include="Src\StandardPythonModules.cs" />
+    <Compile Include="Src\PythonStandardModules.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
+    <Compile Include="Src\StringTextContentProvider.cs" />
     <Compile Include="Src\TextEditor.cs" />
     <None Include="Lib\runpy.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

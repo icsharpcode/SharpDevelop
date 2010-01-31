@@ -20,33 +20,23 @@ namespace PythonBinding.Tests.Resolver
 	/// resolved.
 	/// </summary>
 	[TestFixture]
-	public class ResolveConsoleWriteLineTestFixture
+	public class ResolveConsoleWriteLineTestFixture : ResolveTestFixtureBase
 	{
-		PythonResolver resolver;
-		MockProjectContent mockProjectContent;
-		ResolveResult resolveResult;
-		ICompilationUnit compilationUnit;
 		MockClass systemConsoleClass;
-		MethodGroupResolveResult methodResolveResult;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		protected override ExpressionResult GetExpressionResult()
 		{
-			resolver = new PythonResolver();
-			mockProjectContent = new MockProjectContent();
-			
-			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
-			mockProjectContent.ClassToReturnFromGetClass = systemConsoleClass;
-			mockProjectContent.ClassNameForGetClass = "Console";
-			
-			compilationUnit = new DefaultCompilationUnit(mockProjectContent);
-			ParseInformation parseInfo = new ParseInformation(compilationUnit);
-			
-			string python = "import System\r\n" +
-							"Console.WriteLine\r\n";
-			ExpressionResult expressionResult = new ExpressionResult("Console.WriteLine", new DomRegion(2, 2), null, null);
-			resolveResult = resolver.Resolve(expressionResult, parseInfo, python);
-			methodResolveResult = resolveResult as MethodGroupResolveResult;
+			systemConsoleClass = new MockClass(projectContent, "System.Console");
+			projectContent.ClassToReturnFromGetClass = systemConsoleClass;
+			projectContent.ClassNameForGetClass = "Console";
+			return new ExpressionResult("Console.WriteLine", new DomRegion(2, 2), null, null);
+		}
+		
+		protected override string GetPythonScript()
+		{
+			return 
+				"import System\r\n" +
+				"Console.WriteLine\r\n";
 		}
 		
 		[Test]
@@ -61,12 +51,13 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void GetClassName()
 		{
-			Assert.AreEqual("Console", mockProjectContent.GetClassName);
+			Assert.AreEqual("Console", projectContent.GetClassName);
 		}
 				
 		[Test]
 		public void MethodNameResolveIsWriteLine()
 		{
+			MethodGroupResolveResult methodResolveResult = (MethodGroupResolveResult)resolveResult;
 			Assert.AreEqual("WriteLine", methodResolveResult.Name);
 		}
 	}
