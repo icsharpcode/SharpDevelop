@@ -124,10 +124,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				window.Close();
 			}
 			
+			const Key KeyDeadCharProcessed = (Key)0xac; // Key.DeadCharProcessed; // new in .NET 4
+			
 			public override void OnPreviewKeyDown(KeyEventArgs e)
 			{
 				// prevents crash when typing deadchar while CC window is open
-				if (e.DeadCharProcessedKey != Key.None)
+				if (e.Key == KeyDeadCharProcessed)
 					return;
 				e.Handled = RaiseEventPair(window, PreviewKeyDownEvent, KeyDownEvent,
 				                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
@@ -135,7 +137,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			
 			public override void OnPreviewKeyUp(KeyEventArgs e)
 			{
-				if (e.DeadCharProcessedKey != Key.None)
+				if (e.Key == KeyDeadCharProcessed)
 					return;
 				e.Handled = RaiseEventPair(window, PreviewKeyUpEvent, KeyUpEvent,
 				                           new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key));
