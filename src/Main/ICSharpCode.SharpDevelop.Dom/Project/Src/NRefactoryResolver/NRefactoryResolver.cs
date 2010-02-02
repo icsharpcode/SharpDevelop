@@ -430,7 +430,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				MemberReferenceExpression mre = invocationExpression.TargetObject as MemberReferenceExpression;
 				var rr = resolveVisitor.Resolve(mre.TargetObject);
 				isStatic = rr is TypeResolveResult;
-				target = rr.ResolvedType;
+				if (rr != null)
+					target = rr.ResolvedType;
 				methodName = mre.MemberName;
 			}
 			

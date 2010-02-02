@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using ICSharpCode.NRefactory.Ast;
@@ -137,6 +138,8 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					return ((Modifiers)modifiers) & ~Modifiers.Static;
 				}
 			}
+			if (modifiers.HasFlag(ModifierEnum.Static))
+				modifiers &= ~(ModifierEnum.Abstract | ModifierEnum.Sealed);
 			return (Modifiers)modifiers;
 		}
 		
@@ -176,7 +179,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		{
 			AttributeSection sec = new AttributeSection();
 			foreach (IAttribute att in attributes) {
-				sec.Attributes.Add(new ICSharpCode.NRefactory.Ast.Attribute(ConvertType(att.AttributeType, targetContext).Type, null, null));
+				sec.Attributes.Add(new ICSharpCode.NRefactory.Ast.Attribute(
+					ConvertType(att.AttributeType, targetContext).Type,
+					att.PositionalArguments.Select(o => (Expression)new PrimitiveExpression(o)).ToList(),
+					att.NamedArguments.Select(p => new NamedArgumentExpression(p.Key, new PrimitiveExpression(p.Value))).ToList()
+				));
 			}
 			List<AttributeSection> resultList = new List<AttributeSection>(1);
 			if (sec.Attributes.Count > 0)
@@ -204,13 +211,21 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			return b;
 		}
 		
-		public static ParametrizedNode ConvertMember(IMethod m, ClassFinder targetContext)
+		public static AttributedNode ConvertMember(IMethod m, ClassFinder targetContext)
 		{
 			if (m.IsConstructor) {
 				return new ConstructorDeclaration(m.Name,
 				                                  ConvertModifier(m.Modifiers, targetContext),
 				                                  ConvertParameters(m.Parameters, targetContext),
-				                                  ConvertAttributes(m.Attributes, targetContext));
+				                                  ConvertAttributes(m.Attributes, targetContext)) {
+					Body = CreateNotImplementedBlock()
+				};
+			} else if (m.Name == "#dtor") { // TODO : maybe add IsDestructor property?
+				return new DestructorDeclaration(m.Name,
+				                                 ConvertModifier(m.Modifiers, targetContext),
+				                                 ConvertAttributes(m.Attributes, targetContext)) {
+					Body = CreateNotImplementedBlock()
+				};
 			} else {
 				return new MethodDeclaration {
 					Name = m.Name,
@@ -219,9 +234,18 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					Parameters = ConvertParameters(m.Parameters, targetContext),
 					Attributes = ConvertAttributes(m.Attributes, targetContext),
 					Templates = ConvertTemplates(m.TypeParameters, targetContext),
-					Body = CreateNotImplementedBlock()
+					Body = (m.Modifiers.HasFlag(ModifierEnum.Abstract) || m.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(),
+					IsExtensionMethod = m.IsExtensionMethod,
+					InterfaceImplementations = ConvertInterfaceImplementations(m.InterfaceImplementations, targetContext)
 				};
 			}
+		}
+		
+		public static List<InterfaceImplementation> ConvertInterfaceImplementations(IEnumerable<ExplicitInterfaceImplementation> items, ClassFinder targetContext)
+		{
+			return items
+				.Select(i => new InterfaceImplementation(ConvertType(i.InterfaceReference, targetContext), i.MemberName))
+				.ToList();
 		}
 		
 		public static AttributedNode ConvertMember(IMember m, ClassFinder targetContext)
@@ -249,8 +273,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				                            ConvertModifier(p.Modifiers, targetContext),
 				                            ConvertAttributes(p.Attributes, targetContext));
 				md.Parameters = ConvertParameters(p.Parameters, targetContext);
-				if (p.CanGet) md.GetRegion = new PropertyGetRegion(CreateNotImplementedBlock(), null);
-				if (p.CanSet) md.SetRegion = new PropertySetRegion(CreateNotImplementedBlock(), null);
+				if (p.CanGet) md.GetRegion = new PropertyGetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
+				if (p.CanSet) md.SetRegion = new PropertySetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
+				md.InterfaceImplementations = ConvertInterfaceImplementations(p.InterfaceImplementations, targetContext);
 				return md;
 			} else {
 				PropertyDeclaration md;
@@ -259,12 +284,13 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				                             p.Name,
 				                             ConvertParameters(p.Parameters, targetContext));
 				md.TypeReference = ConvertType(p.ReturnType, targetContext);
+				md.InterfaceImplementations = ConvertInterfaceImplementations(p.InterfaceImplementations, targetContext);
 				if (p.CanGet) {
-					md.GetRegion = new PropertyGetRegion(CreateNotImplementedBlock(), null);
+					md.GetRegion = new PropertyGetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
 					md.GetRegion.Modifier = ConvertModifier(p.GetterModifiers, null);
 				}
 				if (p.CanSet) {
-					md.SetRegion = new PropertySetRegion(CreateNotImplementedBlock(), null);
+					md.SetRegion = new PropertySetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
 					md.SetRegion.Modifier = ConvertModifier(p.SetterModifiers, null);
 				}
 				return md;
@@ -274,9 +300,22 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		public static FieldDeclaration ConvertMember(IField f, ClassFinder targetContext)
 		{
 			TypeReference type = ConvertType(f.ReturnType, targetContext);
+			
 			FieldDeclaration fd = new FieldDeclaration(ConvertAttributes(f.Attributes, targetContext),
 			                                           type, ConvertModifier(f.Modifiers, targetContext));
-			fd.Fields.Add(new VariableDeclaration(f.Name, null, type));
+			
+			VariableDeclaration vd = new VariableDeclaration(f.Name, null, type);
+			fd.Fields.Add(vd);
+
+			
+			if (f.IsConst && f.DeclaringType.ClassType != ClassType.Enum)
+				vd.Initializer = ExpressionBuilder.CreateDefaultValueForType(type);
+			else if (f.Modifiers.HasFlag(ModifierEnum.Fixed)) {
+				if (f.ReturnType.IsArrayReturnType)
+					fd.TypeReference = ConvertType(f.ReturnType.CastToArrayReturnType().ArrayElementType, targetContext);
+				vd.FixedArrayInitialization = new PrimitiveExpression(1);
+			}
+			
 			return fd;
 		}
 		
@@ -287,7 +326,59 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				Name = e.Name,
 				Modifier = ConvertModifier(e.Modifiers, targetContext),
 				Attributes = ConvertAttributes(e.Attributes, targetContext),
+				InterfaceImplementations = ConvertInterfaceImplementations(e.InterfaceImplementations, targetContext)
+
 			};
+		}
+		
+		public static AttributedNode ConvertClass(IClass c, ClassFinder targetContext)
+		{
+			if (c.ClassType == Dom.ClassType.Delegate) {
+				IMethod invoke = c.Methods.First(m => m.Name == "Invoke");
+				
+				var d = new DelegateDeclaration(ConvertModifier(c.Modifiers, targetContext), ConvertAttributes(c.Attributes, targetContext)) {
+					Name = c.Name,
+					Parameters = ConvertParameters(invoke.Parameters, targetContext),
+					ReturnType = ConvertType(invoke.ReturnType, targetContext),
+					Templates = ConvertTemplates(c.TypeParameters, targetContext)
+				};
+				
+				return d;
+			} else {
+				var t = new TypeDeclaration(ConvertModifier(c.Modifiers, targetContext), ConvertAttributes(c.Attributes, targetContext)) {
+					Type = (NRefactory.Ast.ClassType)c.ClassType,
+					BaseTypes = c.BaseTypes.Select(type => ConvertType(type, targetContext)).ToList(),
+					Templates = ConvertTemplates(c.TypeParameters, targetContext),
+					Name = c.Name
+				};
+				
+				AttributedNode[] members = c.AllMembers.Select(m => ConvertMember(m, targetContext)).ToArray();
+				
+				if (c.ClassType == ClassType.Interface) {
+					foreach (MethodDeclaration node in members.OfType<MethodDeclaration>()) {
+						node.Modifier &= ~(Modifiers.Public | Modifiers.Private | Modifiers.Protected | Modifiers.Internal);
+						node.Body = null;
+					}
+					foreach (PropertyDeclaration node in members.OfType<PropertyDeclaration>()) {
+						node.Modifier &= ~(Modifiers.Public | Modifiers.Private | Modifiers.Protected | Modifiers.Internal);
+						node.GetRegion.Block = null;
+						node.SetRegion.Block = null;
+					}
+					foreach (IndexerDeclaration node in members.OfType<IndexerDeclaration>()) {
+						node.Modifier &= ~(Modifiers.Public | Modifiers.Private | Modifiers.Protected | Modifiers.Internal);
+						node.GetRegion.Block = null;
+						node.SetRegion.Block = null;
+					}
+					foreach (EventDeclaration node in members.OfType<EventDeclaration>()) {
+						node.Modifier &= ~(Modifiers.Public | Modifiers.Private | Modifiers.Protected | Modifiers.Internal);
+					}
+				}
+				
+				t.Children.AddRange(members);
+				t.Children.AddRange(c.InnerClasses.Select(c2 => ConvertClass(c2, null)));
+				
+				return t;
+			}
 		}
 		#endregion
 		

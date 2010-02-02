@@ -29,5 +29,10 @@ namespace CSharpBinding
 		public override IBracketSearcher BracketSearcher {
 			get { return new CSharpBracketSearcher(); }
 		}
+		
+		public override void Attach(ITextEditor editor)
+		{
+			//CSharpBackgroundCompiler.Init();
+		}
 	}
 }

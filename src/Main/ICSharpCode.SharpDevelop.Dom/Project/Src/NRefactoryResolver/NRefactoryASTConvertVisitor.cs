@@ -573,6 +573,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else {
 				method.HandlesClauses = EmptyList<string>.Instance;
 			}
+
+			AddInterfaceImplementations(method, methodDeclaration);
 			
 			currentClass.Methods.Add(method);
 			return null;
@@ -612,6 +614,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					method.Parameters.Add(CreateParameter(par, method));
 				}
 			}
+			AddInterfaceImplementations(method, operatorDeclaration);
 			c.Methods.Add(method);
 			return null;
 		}
@@ -630,6 +633,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					constructor.Parameters.Add(CreateParameter(par));
 				}
 			}
+			
+			if (constructor.Modifiers.HasFlag(ModifierEnum.Static))
+				constructor.Modifiers = ConvertModifier(constructorDeclaration.Modifier, ModifierEnum.None);
+
 			c.Methods.Add(constructor);
 			return null;
 		}
@@ -707,6 +714,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			property.Documentation = GetDocumentation(region.BeginLine, propertyDeclaration.Attributes);
 			ConvertAttributes(propertyDeclaration, property);
+			AddInterfaceImplementations(property, propertyDeclaration);
 			c.Properties.Add(property);
 			return null;
 		}
@@ -782,6 +790,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			DefaultEvent e = new DefaultEvent(eventDeclaration.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, c);
 			ConvertAttributes(eventDeclaration, e);
+			AddInterfaceImplementations(e, eventDeclaration);
 			c.Events.Add(e);
 			
 			e.Documentation = GetDocumentation(region.BeginLine, eventDeclaration.Attributes);
@@ -800,6 +809,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				};
 			}
 			return null;
+		}
+
+		void AddInterfaceImplementations(AbstractMember member, AST.MemberNode memberNode)
+		{
+			member.InterfaceImplementations.AddRange(
+				memberNode.InterfaceImplementations
+				.Select(x => new ExplicitInterfaceImplementation(CreateReturnType(x.InterfaceType), x.MemberName))
+			);
+			if (!IsVisualBasic && member.InterfaceImplementations.Any()) {
+				member.Modifiers = ConvertModifier(memberNode.Modifier, ModifierEnum.None);
+			}
 		}
 		
 		IReturnType CreateReturnType(AST.TypeReference reference, IMethod method, TypeVisitor.ReturnTypeOptions options)

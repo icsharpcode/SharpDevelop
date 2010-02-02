@@ -345,7 +345,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(namespaceDeclaration.Name);
 			
-			outputFormatter.BeginBrace (this.prettyPrintOptions.NamespaceBraceStyle, this.prettyPrintOptions.IndentNamespaceBody);
+			outputFormatter.BeginBrace(this.prettyPrintOptions.NamespaceBraceStyle, this.prettyPrintOptions.IndentNamespaceBody);
 			
 			namespaceDeclaration.AcceptChildren(this, data);
 			
@@ -358,7 +358,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void OutputEnumMembers(TypeDeclaration typeDeclaration, object data)
 		{
 			for (int i = 0; i < typeDeclaration.Children.Count; i++) {
-				FieldDeclaration fieldDeclaration = (FieldDeclaration)typeDeclaration.Children[i];
+				FieldDeclaration fieldDeclaration = typeDeclaration.Children[i] as FieldDeclaration;
+				if (fieldDeclaration == null) {
+					// not a field?
+					TrackVisit(typeDeclaration.Children[i], data);
+					continue;
+				}
 				BeginVisit(fieldDeclaration);
 				VariableDeclaration f = (VariableDeclaration)fieldDeclaration.Fields[0];
 				VisitAttributes(fieldDeclaration.Attributes, data);
@@ -1466,33 +1471,33 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (statement is BlockStatement) {
 				BlockStatement block = (BlockStatement)statement;
 				switch (forcement) {
-				case BraceForcement.RemoveBraces:
-					if (block.Children.Count == 1) {
-						++outputFormatter.IndentationLevel;
-						outputFormatter.NewLine();
-						outputFormatter.Indent ();
-						TrackVisit(block.Children[0], null);
-						--outputFormatter.IndentationLevel;
-					} else  {
-						goto default;
-					}
-					break;
-				case BraceForcement.RemoveBracesForSingleLine:
-					goto case BraceForcement.RemoveBraces;
-				default:
-					OutputBlock((BlockStatement)statement, prettyPrintOptions.StatementBraceStyle, emitEndingNewLine);
-					break;
+					case BraceForcement.RemoveBraces:
+						if (block.Children.Count == 1) {
+							++outputFormatter.IndentationLevel;
+							outputFormatter.NewLine();
+							outputFormatter.Indent ();
+							TrackVisit(block.Children[0], null);
+							--outputFormatter.IndentationLevel;
+						} else  {
+							goto default;
+						}
+						break;
+					case BraceForcement.RemoveBracesForSingleLine:
+						goto case BraceForcement.RemoveBraces;
+					default:
+						OutputBlock((BlockStatement)statement, prettyPrintOptions.StatementBraceStyle, emitEndingNewLine);
+						break;
 				}
 			} else {
 				switch (forcement) {
-				case BraceForcement.AddBraces:
-					BlockStatement blockStatement = new BlockStatement ();
-					blockStatement.AddChild (statement);
-					OutputBlock(blockStatement, braceStyle, true);
-					break;
-				default:
-					WriteEmbeddedStatement (statement, emitEndingNewLine);
-					break;
+					case BraceForcement.AddBraces:
+						BlockStatement blockStatement = new BlockStatement ();
+						blockStatement.AddChild (statement);
+						OutputBlock(blockStatement, braceStyle, true);
+						break;
+					default:
+						WriteEmbeddedStatement (statement, emitEndingNewLine);
+						break;
 				}
 			}
 		}
