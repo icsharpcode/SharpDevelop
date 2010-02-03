@@ -748,9 +748,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		#region Override member
 		public virtual AttributedNode GetOverridingMethod(IMember baseMember, ClassFinder targetContext)
 		{
-			AttributedNode node = ConvertMember(baseMember, targetContext);
-			node.Modifier &= ~(Modifiers.Virtual | Modifiers.Abstract);
-			node.Modifier |= Modifiers.Override;
+			AbstractMember newMember = (AbstractMember)baseMember.Clone();
+			newMember.Modifiers &= ~(ModifierEnum.Virtual | ModifierEnum.Abstract);
+			newMember.Modifiers |= ModifierEnum.Override;
+			// set modifiers be before calling convert so that a body is generated
+			AttributedNode node = ConvertMember(newMember, targetContext);
 			node.Attributes.Clear(); // don't copy over attributes
 			
 			if (!baseMember.IsAbstract) {

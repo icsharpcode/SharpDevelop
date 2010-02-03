@@ -87,6 +87,10 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		{
 			DefaultProperty p = new DefaultProperty(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
 			p.parameters = DefaultParameter.Clone(this.Parameters);
+			p.getterModifiers = this.getterModifiers;
+			p.setterModifiers = this.setterModifiers;
+			p.getterRegion = this.getterRegion;
+			p.setterRegion = this.setterRegion;
 			p.CopyDocumentationFrom(this);
 			p.accessFlags = this.accessFlags;
 			foreach (ExplicitInterfaceImplementation eii in InterfaceImplementations) {

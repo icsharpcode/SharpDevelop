@@ -56,9 +56,6 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
-    <Compile Include="EventHandlerCompletionItemProvider.cs">
-      <DependentUpon>CSharpBinding.addin</DependentUpon>
-    </Compile>
     <Compile Include="Src\CSharpAdvancedHighlighter.cs" />
     <Compile Include="Src\CSharpBackgroundCompiler.cs" />
     <Compile Include="Src\CSharpBracketSearcher.cs" />
