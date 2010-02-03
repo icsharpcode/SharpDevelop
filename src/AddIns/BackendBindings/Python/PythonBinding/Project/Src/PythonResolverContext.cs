@@ -54,7 +54,7 @@ namespace ICSharpCode.PythonBinding
 			get { return callingClass; }
 		}
 		
-		public bool NamespaceExists(string name)
+		public bool NamespaceExistsInProjectReferences(string name)
 		{
 			return projectContent.NamespaceExists(name);
 		}
@@ -158,7 +158,7 @@ namespace ICSharpCode.PythonBinding
 		/// <param name="name">The unqualified class name.</param>
 		public IClass GetImportedClass(string name)
 		{
-			foreach (Object obj in GetImportedTypes()) {
+			foreach (object obj in GetImportedTypes()) {
 				IClass c = obj as IClass;
 				if ((c != null) && IsSameClassName(name, c.Name)) {
 					return c;

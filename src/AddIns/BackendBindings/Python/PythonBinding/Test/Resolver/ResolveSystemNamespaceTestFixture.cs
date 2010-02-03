@@ -30,14 +30,8 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			ParseInformation parseInfo = new ParseInformation();
 			mockProjectContent = new MockProjectContent();
 			mockProjectContent.AddExistingNamespaceContents("System", new ArrayList());
-			
-			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
-			cu.ErrorsDuringCompile = true;
-			cu.FileName = @"C:\Projects\Test\test.py";
-			parseInfo.SetCompilationUnit(cu);
 			
 			string python =
 				"import System\r\n" +
@@ -45,7 +39,13 @@ namespace PythonBinding.Tests.Resolver
 				"    def __init__(self):\r\n" +
 				"        System.\r\n";
 			
-			ExpressionResult expressionResult = new ExpressionResult("System", new DomRegion(3, 2), null, null);
+			PythonParser parser = new PythonParser();
+			string fileName = @"C:\Projects\Test\test.py";
+			DefaultCompilationUnit cu = parser.Parse(mockProjectContent, fileName, python) as DefaultCompilationUnit;
+			cu.ErrorsDuringCompile = true;
+			ParseInformation parseInfo = new ParseInformation(cu);
+			
+			ExpressionResult expressionResult = new ExpressionResult("System", new DomRegion(4, 2), null, null);
 			resolveResult = resolver.Resolve(expressionResult, parseInfo, python) as NamespaceResolveResult;
 		}
 		

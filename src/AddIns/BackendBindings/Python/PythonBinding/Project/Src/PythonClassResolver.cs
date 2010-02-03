@@ -36,12 +36,49 @@ namespace ICSharpCode.PythonBinding
 				return matchedClass;
 			}
 			
-			return context.GetImportedClass(name);
+			matchedClass = GetClassFromImportedNames(context, name);
+			if (matchedClass != null) {
+				return matchedClass;
+			}
+			
+			matchedClass = GetClassFromNamespaceThatImportsEverything(context, name);
+			if (matchedClass != null) {
+				return matchedClass;
+			}
+			return null;
 		}
 		
 		TypeResolveResult CreateTypeResolveResult(IClass c)
 		{
 			return new TypeResolveResult(null, null, c);
+		}
+		
+		IClass GetClassFromImportedNames(PythonResolverContext context, string name)
+		{
+			string moduleName = context.GetModuleForImportedName(name);
+			if (moduleName != null) {
+				name = context.UnaliasImportedName(name);
+				string fullyQualifiedName = GetQualifiedClassName(moduleName, name);
+				return context.GetClass(fullyQualifiedName);
+			}
+			return null;
+		}
+		
+		string GetQualifiedClassName(string namespacePrefix, string className)
+		{
+			return namespacePrefix + "." + className;
+		}
+		
+		IClass GetClassFromNamespaceThatImportsEverything(PythonResolverContext context, string name)
+		{
+			foreach (string moduleName in context.GetModulesThatImportEverything()) {
+				string fullyQualifiedName = GetQualifiedClassName(moduleName, name);
+				IClass matchedClass = context.GetClass(fullyQualifiedName);
+				if (matchedClass != null) {
+					return matchedClass;
+				}
+			}
+			return null;
 		}
 	}
 }

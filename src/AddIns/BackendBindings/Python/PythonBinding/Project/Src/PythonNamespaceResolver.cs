@@ -18,9 +18,18 @@ namespace ICSharpCode.PythonBinding
 		
 		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
 		{
+			if (!resolverContext.HasImport(expressionResult.Expression)) {
+				return null;
+			}
+			
 			string actualNamespace = resolverContext.UnaliasImportedModuleName(expressionResult.Expression);
-			if (resolverContext.NamespaceExists(actualNamespace)) {
-				return new NamespaceResolveResult(null, null, actualNamespace);
+			return CreateNamespaceResolveResultIfNamespaceExists(resolverContext, actualNamespace);
+		}
+		
+		ResolveResult CreateNamespaceResolveResultIfNamespaceExists(PythonResolverContext resolverContext, string namespaceName)
+		{
+			if (resolverContext.NamespaceExistsInProjectReferences(namespaceName)) {
+				return new NamespaceResolveResult(null, null, namespaceName);
 			}
 			return null;
 		}

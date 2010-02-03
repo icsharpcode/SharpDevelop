@@ -361,12 +361,12 @@
     <Compile Include="Resolver\MemberNameTests.cs" />
     <Compile Include="Resolver\ResolveBuiltInRoundMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveClassInstanceWithNamespaceTestFixture.cs" />
-    <Compile Include="Resolver\ResolveConsoleTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleWriteLineTestFixture.cs" />
     <Compile Include="Resolver\ResolveExitMethodFromSysImportExitAsMyExitTestFixture.cs" />
     <Compile Include="Resolver\ResolveExitMethodFromSysImportExitTestFixture.cs" />
     <Compile Include="Resolver\ResolveFromImportTestFixture.cs" />
     <Compile Include="Resolver\ResolveFromMathImportedMathModuleCompletionItemsTestFixture.cs" />
+    <Compile Include="Resolver\ResolveConsoleFromSystemImportEverythingFixture.cs" />
     <Compile Include="Resolver\ResolveImportsTestFixture.cs" />
     <Compile Include="Resolver\ResolveLocalClassInstanceTestFixture.cs" />
     <Compile Include="Resolver\ResolveMethodFromUnknownImportAllTestFixture.cs" />
@@ -389,9 +389,12 @@
     <Compile Include="Resolver\ResolveSystemImportedAsMySystemTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemImportTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemNamespaceTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemNamespaceWithMissingImportTestFixture.cs" />
     <Compile Include="Resolver\ResolveTanMethodFromMathImportAllTestFixture.cs" />
     <Compile Include="Resolver\ResolveTanMethodFromMathImportCosAndTanTestFixture.cs" />
     <Compile Include="Resolver\ResolveTestFixtureBase.cs" />
+    <Compile Include="Resolver\ResolveTextBoxFromSystemWindowsFormsImportedAsMyTextBoxTestFixture.cs" />
+    <Compile Include="Resolver\ResolveTextBoxFromSystemWindowsFormsImportTextBoxTestFixture.cs" />
     <Compile Include="Resolver\ResolveUnknownNamespaceTestFixture.cs" />
     <Compile Include="RunPythonCommandTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />

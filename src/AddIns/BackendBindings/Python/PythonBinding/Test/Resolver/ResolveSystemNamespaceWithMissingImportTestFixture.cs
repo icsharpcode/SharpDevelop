@@ -10,38 +10,38 @@ using System.Collections;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
-using PythonBinding.Tests;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Resolver
 {
-	/// <summary>
-	/// Tests the PythonResolver does not return a namespace resolve result for
-	/// an unknown namespace.
-	/// </summary>
 	[TestFixture]
-	public class ResolveUnknownNamespaceTestFixture : ResolveTestFixtureBase
+	public class ResolveSystemNamespaceWithMissingImportTestFixture : ResolveTestFixtureBase
 	{
 		protected override ExpressionResult GetExpressionResult()
 		{
-			projectContent.AddExistingNamespaceContents("System", new ArrayList());
-			
-			return new ExpressionResult("Unknown", new DomRegion(3, 2), null, null);
+			MockClass systemConsoleClass = new MockClass(projectContent, "System.Console");
+			ArrayList items = new ArrayList();
+			items.Add(systemConsoleClass);
+			projectContent.AddExistingNamespaceContents("System", items);
+
+			return new ExpressionResult("System", ExpressionContext.Default);
 		}
 		
 		protected override string GetPythonScript()
 		{
-			return
-				"import System\r\n" +
-				"class Test:\r\n" +
-				"    def __init__(self):\r\n" +
-				"        Unknown\r\n";
+			return "System\r\n";
 		}
 		
 		[Test]
-		public void ResolveResultDoesNotExist()
+		public void ResolveResultIsNullSinceSystemNamespaceIsNotImported()
 		{
 			Assert.IsNull(resolveResult);
+		}
+		
+		[Test]
+		public void ProjectContentNamespaceExistsReturnsTrueForSystemNamespace()
+		{
+			Assert.IsTrue(projectContent.NamespaceExists("System"));
 		}
 	}
 }
