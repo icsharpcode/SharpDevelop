@@ -66,7 +66,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 		public override void Run()
 		{
 			base.Run();
-			base.ReportViewer.SetupAsynchron (base.Model,(ReportParameters)null);
+			base.ReportViewer.RunReport (base.Model,(ReportParameters)null);
 		}
 	}
 	
@@ -82,7 +82,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 		{
 			base.Run();
 			ICSharpCode.SharpDevelop.StatusBarService.SetMessage("Connect...");
-			base.ReportViewer.SetupAsynchron(base.Model,(ReportParameters)null);
+			base.ReportViewer.RunReport(base.Model,(ReportParameters)null);
 		}
 	}
 	
@@ -100,7 +100,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 			cmd.Run();
 			System.Data.DataSet ds = cmd.DataSet;
 			ICSharpCode.SharpDevelop.StatusBarService.SetMessage("Connect...");
-			base.ReportViewer.SetupAsynchron(base.Model,ds.Tables[0],null);
+			base.ReportViewer.RunReport(base.Model,ds.Tables[0],null);
 		}
 		
 	}

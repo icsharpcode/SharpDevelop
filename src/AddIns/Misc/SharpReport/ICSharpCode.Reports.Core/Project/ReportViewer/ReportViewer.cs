@@ -43,9 +43,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		#region Constructor
 		
-		private System.ComponentModel.BackgroundWorker bgw;
-		
-		
 		public PreviewControl(){
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
@@ -72,10 +69,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		#endregion
 
-		
-		#region Asyncron use of PageBuilder
-		
-		public void SetupAsynchron (string fileName,ReportParameters parameters)
+		public void RunReport (string fileName,ReportParameters parameters)
 		{
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
@@ -84,32 +78,61 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.SetupAsynchron(m,parameters);
 		}
 		
-		/// <summary>
-		/// For internal use only
-		/// </summary>
-		/// <param name="reportModel"></param>
+		[Obsolete("Use RunReport (string fileName,ReportParameters parameters)" )]
+		public void SetupAsynchron (string fileName,ReportParameters parameters)
+		{
+			
+			
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
+			}
+			ReportModel m = ReportEngine.LoadReportModel(fileName);
+//			this.SetupAsynchron(m,parameters);
+			RunReport(m,parameters);
+		}
+		
+		
+		public void RunReport (ReportModel reportModel,ReportParameters parameters)
+		{
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
+			System.Console.WriteLine("RunReport");
+			this.SetupViewer(reportModel);
+			
+			if (reportModel.DataModel == GlobalEnums.PushPullModel.FormSheet) {
+				RunFormSheet(reportModel);
+			} else {
+				ReportEngine.CheckForParameters(reportModel,parameters);
+				this.dataManager = DataManagerFactory.CreateDataManager(reportModel,parameters);
+				RunDataReport (reportModel,dataManager);
+			}
+		}
+		
+		[Obsolete("Use RunReport (reportModel,parameters)")]
 		public void SetupAsynchron (ReportModel reportModel,ReportParameters parameters)
 		{
 			
+			RunReport (reportModel,parameters);
+			/*
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
 			
 			this.SetupViewer(reportModel);
-			this.SetupWorker();
+			
 			if (reportModel.DataModel == GlobalEnums.PushPullModel.FormSheet) {
-				this.bgw.DoWork += new DoWorkEventHandler(FormSheetWorker);
+				RunFormSheet(reportModel);
 			} else {
 				ReportEngine.CheckForParameters(reportModel,parameters);
 				this.dataManager = DataManagerFactory.CreateDataManager(reportModel,parameters);
-				this.bgw.DoWork += new DoWorkEventHandler(PushPullWorker);
+				RunDataReport (reportModel,dataManager);
 			}
-			this.bgw.RunWorkerAsync(reportModel);
-		}
+			*/
+		}	
 		
-		#region PushModel - IList
 		
-		public void SetupAsynchron (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
+			public void RunReport (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -117,10 +140,27 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			if (dataTable == null) {
 				throw new ArgumentNullException("dataTable");
 			}
-			SetupAsynchron (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
+			RunReport (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
 		}
 		
-		public void SetupAsynchron (ReportModel reportModel,IDataManager dataManager)
+			
+			[Obsolete("Use RunReport(reportModel,dataTable,parameters)")]
+		public void SetupAsynchron (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
+		{
+			RunReport(reportModel,dataTable,parameters);
+			/*
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
+			if (dataTable == null) {
+				throw new ArgumentNullException("dataTable");
+			}
+			SetupAsynchron (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
+			*/
+		}
+		
+		
+		public void RunReport (ReportModel reportModel,IDataManager dataManager)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -130,141 +170,68 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 			
 			this.SetupViewer(reportModel);
-			SetupWorker();
-			
 			this.dataManager = dataManager;
-			this.bgw.DoWork += new DoWorkEventHandler(PushPullWorker);
-			this.bgw.RunWorkerAsync(reportModel);
+			RunDataReport(reportModel,dataManager);
+		}
+		
+		
+		[Obsolete("Use RunReport(reportModel,dataManager)")]
+		public void SetupAsynchron (ReportModel reportModel,IDataManager dataManager)
+		{
+			RunReport(reportModel,dataManager);
+			/*
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
+			if (dataManager == null) {
+				throw new ArgumentNullException("dataManager");
+			}
+			
+			this.SetupViewer(reportModel);
+			this.dataManager = dataManager;
+			RunDataReport(reportModel,dataManager);
+			*/
+		}
+		
+		#region Rendering
+		
+		private void RunFormSheet (ReportModel reportModel)
+		{
+			
+			Layouter layouter = new Layouter();
+			IReportCreator reportCreator = FormPageBuilder.CreateInstance(reportModel,layouter);
+			reportCreator.PageCreated += OnPageCreated;
+			reportCreator.BuildExportList();
+			ShowCompleted ();
+		}
+		
+		
+		private void RunDataReport (ReportModel reportModel,IDataManager data)
+		{
+			ILayouter layouter = new Layouter();
+			IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel,data,layouter);
+			reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
+			reportCreator.PageCreated += OnPageCreated;
+			reportCreator.BuildExportList();
+			ShowCompleted();
 		}
 		
 		#endregion
 		
-		
-		private void SetupViewer (ReportModel reportModel)
-		{
-			this.pages = new PagesCollection();
-			this.reportSettings = reportModel.ReportSettings;
-			this.cancelButton.Enabled = true;
-			this.AdjustDrawArea();
-		}
-		
-		
-		private void SetupWorker ()
-		{
-			this.bgw = new BackgroundWorker();
-			this.bgw.WorkerReportsProgress = true;
-			this.bgw.WorkerSupportsCancellation = true;
-			this.bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_RunWorkerCompleted);
-			this.bgw.ProgressChanged +=    new ProgressChangedEventHandler(BackgroundWorker_ProgressChanged);
-		}
-		
-		
-		#region Worker
-		
-		private void FormSheetWorker(object sender,DoWorkEventArgs e)
-		{
-			BackgroundWorker worker = sender as BackgroundWorker;
-			e.Result = RunFormSheet((ReportModel)e.Argument,worker,e);
-		}
-		
-		
-		private void PushPullWorker(object sender,DoWorkEventArgs e)
-		{
-			BackgroundWorker worker = sender as BackgroundWorker;
-			e.Result = RunDataReport((ReportModel)e.Argument,this.dataManager,worker,e);
-		}
-		
-		#endregion
-		
-		
-		#region WorkerEvents
-		
-		private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-		{
-			if (e.Error != null) {
-				throw new ReportException("error in background worker", e.Error);
-			}
-			if (this.Pages.Count > 0) {
-				this.pageNumber = 0;
-				this.ShowSelectedPage();
-			}
-			this.ShowCompleted();
-		}
-
-		
-		private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-		{
-			this.pageNumber = e.ProgressPercentage;
-			this.ShowSelectedPage();
-		}
-
-		#endregion
-		
-		#region Worker
-		
-		private object RunFormSheet (ReportModel reportModel,BackgroundWorker worker, DoWorkEventArgs e)
-		{
-			if (worker.CancellationPending)
-			{
-				e.Cancel = true;
-			}
-			else
-			{
-				Layouter layouter = new Layouter();
-				IReportCreator inst = FormPageBuilder.CreateInstance(reportModel,layouter);
-				inst.PageCreated += delegate (Object sender,PageCreatedEventArgs ee) {
-					worker.ReportProgress(inst.Pages.Count);
-					this.Pages.Add(ee.SinglePage);
-				};
-				
-				inst.BuildExportList();
-				return inst.Pages.Count;
-			}
-			return null;
-		}
-		
-		
-		private object RunPushData (ReportModel reportModel,IDataManager data,BackgroundWorker worker,DoWorkEventArgs e)
-		{
-			if (worker.CancellationPending)
-			{
-				e.Cancel = true;
-			}
-			else
-			{
-				RunDataReport(reportModel,data,worker,e);
-			}
-			return null;
-		}
-		
-		
-		private object RunDataReport (ReportModel reportModel,IDataManager data,BackgroundWorker worker,DoWorkEventArgs e)
-		{
-			if (worker.CancellationPending)
-			{
-				e.Cancel = true;
-			}
-			else
-			{
-				ILayouter layouter = new Layouter();
-				
-				IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel,data,layouter);
-				//testcode to handle sectionrenderevent
-				reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
-				
-				reportCreator.PageCreated += delegate (Object sender,PageCreatedEventArgs ee) {
-					worker.ReportProgress(reportCreator.Pages.Count);
-					this.Pages.Add(ee.SinglePage);
-				};
-				reportCreator.BuildExportList();
-				return reportCreator.Pages.Count;
-			}
-			return null;
-		}
-		
-		#endregion
-		
+	
 		#region Events from worker
+		
+		
+		private void OnPageCreated (object sender, PageCreatedEventArgs e)
+		{
+			System.Console.WriteLine("OnPageCreatd {0}",this.Pages.Count);
+			this.Pages.Add(e.SinglePage);
+			if (this.Pages.Count == 1) {
+				ShowSelectedPage();
+				this.pageNumber = 0;
+			}
+			
+		}
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e ) {
 //			Console.WriteLine ("ReportViewer - SectionRenderEventargs from <{0}> with {1} items ",e.Section.Name,e.Section.Items.Count);
@@ -308,22 +275,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		#endregion
 		
-		void ShowCompleted()
-		{
-			if (this.InvokeRequired) {
-				invokeDelegate updateControl = delegate(){};
-				updateControl = ShowCompleted;
-				Invoke (updateControl);
-			}
-			this.SetPages();
-			this.CheckEnable();
-			this.cancelButton.Enabled = false;
-			this.printButton.Enabled = true;
-			this.pdfButton.Enabled = true;
-		}
-		
-		#endregion
-		
 		
 		private void AdjustDrawArea()
 		{
@@ -338,6 +289,33 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 		}
 		
+		#region setup
+		
+		private void SetupViewer (ReportModel reportModel)
+		{
+			this.pages = new PagesCollection();
+			this.reportSettings = reportModel.ReportSettings;
+			this.cancelButton.Enabled = true;
+			this.AdjustDrawArea();
+		}
+		
+		
+		private void ShowCompleted()
+		{
+			if (this.InvokeRequired) {
+				invokeDelegate updateControl = delegate(){};
+				updateControl = ShowCompleted;
+				Invoke (updateControl);
+			}
+			this.SetPages();
+			this.CheckEnable();
+			this.cancelButton.Enabled = false;
+			this.printButton.Enabled = true;
+			this.pdfButton.Enabled = true;
+			this.UpdateToolStrip();
+		}
+		
+		#endregion
 		
 		#region ToolStrip
 		
@@ -370,7 +348,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			
 			this.Invalidate(true);
 			this.Update();
-			
 			this.AdjustDrawArea();
 			EventHelper.Raise<EventArgs>(this.PreviewLayoutChanged,this,e);
 		}
@@ -435,6 +412,27 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		#region Drawing
 		
+		private void ShowSelectedPage ()
+		{
+			if (this.InvokeRequired) {
+				invokeDelegate updateControl = delegate(){};
+				updateControl = ShowSelectedPage;
+				Invoke (updateControl);
+			}
+			if (this.pageNumber < this.pages.Count) {
+				ExporterPage sp = pages[this.pageNumber];
+				
+				if (this.bitmap != null) {
+					this.bitmap.Dispose();
+				}
+				this.bitmap = this.CreateBitmap(sp);
+				this.Invalidate(true);
+				this.Update();
+			}
+			this.UpdateToolStrip();
+		}
+		
+		
 		private void DrawingPanelPaint(object sender, PaintEventArgs e)
 		{
 			e.Graphics.Clear(this.drawingPanel.BackColor);
@@ -443,18 +441,16 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 		}
 		
-		#endregion
-		
 		
 		private Bitmap CreateBitmap (ExporterPage page)
 		{
 			Bitmap bm = new Bitmap(this.drawingPanel.ClientSize.Width,this.drawingPanel.ClientSize.Height,System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-			
+		
 			using (Graphics gr = Graphics.FromImage(bm)) {
 
 				// Reset Transform to org. Value
-				gr.Clear(System.Drawing.Color.White);
-				this.Invalidate();
+				gr.Clear(this.drawingPanel.BackColor);
+			//	this.Invalidate();
 				gr.ScaleTransform(1F,1F);
 				gr.Clear(this.drawingPanel.BackColor);
 				gr.ScaleTransform(this.zoom,this.zoom);
@@ -470,28 +466,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			return bm;
 		}
 		
+		#endregion
 		
-		private void ShowSelectedPage ()
-		{
-			if (this.InvokeRequired) {
-				invokeDelegate updateControl = delegate(){};
-				updateControl = ShowSelectedPage;
-				Invoke (updateControl);
-			}
-
-			if (this.pageNumber < this.pages.Count) {
-				ExporterPage sp = pages[this.pageNumber];
-				
-				if (this.bitmap != null) {
-					this.bitmap.Dispose();
-				}
-				this.bitmap = this.CreateBitmap(sp);
-				this.Invalidate(true);
-				this.Update();
-			}
-			this.UpdateToolStrip();
-		}
-
 		
 		#region PageNavigation
 		
@@ -560,7 +536,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void StopButtonClick(object sender, System.EventArgs e)
 		{
-			this.bgw.CancelAsync();
+//			this.bgw.CancelAsync();
 			this.cancelButton.Enabled = false;
 		}
 		
@@ -606,7 +582,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		#endregion
 		
-		
 		private void SetPages ()
 		{
 			this.pageNumber = 0;
@@ -632,5 +607,198 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				Localize();
 			}
 		}
+		
+		#region Asyncron use of PageBuilder
+		/*
+		public void SetupAsynchron (string fileName,ReportParameters parameters)
+		{
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
+			}
+			ReportModel m = ReportEngine.LoadReportModel(fileName);
+			this.SetupAsynchron(m,parameters);
+		}
+		*/
+		/// <summary>
+		/// For internal use only
+		/// </summary>
+		/// <param name="reportModel"></param>
+		/*
+		public void SetupAsynchron (ReportModel reportModel,ReportParameters parameters)
+		{
+			
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
+			
+			this.SetupViewer(reportModel);
+			this.SetupWorker();
+			if (reportModel.DataModel == GlobalEnums.PushPullModel.FormSheet) {
+				this.bgw.DoWork += new DoWorkEventHandler(FormSheetWorker);
+			} else {
+				ReportEngine.CheckForParameters(reportModel,parameters);
+				this.dataManager = DataManagerFactory.CreateDataManager(reportModel,parameters);
+				this.bgw.DoWork += new DoWorkEventHandler(PushPullWorker);
+			}
+			this.bgw.RunWorkerAsync(reportModel);
+		}
+		*/
+		#region PushModel - IList
+		
+		/*
+		public void SetupAsynchron (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
+		{
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
+			if (dataTable == null) {
+				throw new ArgumentNullException("dataTable");
+			}
+			SetupAsynchron (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
+		}
+		
+		public void SetupAsynchron (ReportModel reportModel,IDataManager dataManager)
+		{
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
+			if (dataManager == null) {
+				throw new ArgumentNullException("dataManager");
+			}
+			
+			this.SetupViewer(reportModel);
+			SetupWorker();
+			
+			this.dataManager = dataManager;
+			this.bgw.DoWork += new DoWorkEventHandler(PushPullWorker);
+			this.bgw.RunWorkerAsync(reportModel);
+		}
+		*/
+		#endregion
+		
+		/*
+		private void SetupWorker ()
+		{
+			this.bgw = new BackgroundWorker();
+			this.bgw.WorkerReportsProgress = true;
+			this.bgw.WorkerSupportsCancellation = true;
+			this.bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_RunWorkerCompleted);
+			this.bgw.ProgressChanged +=    new ProgressChangedEventHandler(BackgroundWorker_ProgressChanged);
+		}
+		*/
+		
+		#region Worker
+		
+		/*
+		private void FormSheetWorker(object sender,DoWorkEventArgs e)
+		{
+			BackgroundWorker worker = sender as BackgroundWorker;
+			e.Result = RunFormSheet((ReportModel)e.Argument,worker,e);
+		}
+		*/
+		/*
+		
+		private void PushPullWorker(object sender,DoWorkEventArgs e)
+		{
+			BackgroundWorker worker = sender as BackgroundWorker;
+			e.Result = RunDataReport((ReportModel)e.Argument,this.dataManager,worker,e);
+		}
+		*/
+		#endregion
+		
+		
+		#region WorkerEvents
+		/*
+		private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			System.Console.WriteLine("BackgroundWorker_RunWorkerCompleted");
+			
+			if (e.Error != null) {
+				throw new ReportException("error in background worker", e.Error);
+			}
+			if (this.Pages.Count > 0) {
+				this.pageNumber = 0;
+				this.ShowSelectedPage();
+			}
+			this.ShowCompleted();
+		}
+*/
+/*
+		
+		private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+		{
+			this.pageNumber = e.ProgressPercentage;
+			this.ShowSelectedPage();
+		}
+*/
+		#endregion
+		
+		#region Worker
+		/*
+		private object RunFormSheet (ReportModel reportModel,BackgroundWorker worker, DoWorkEventArgs e)
+		{
+			if (worker.CancellationPending)
+			{
+				e.Cancel = true;
+			}
+			else
+			{
+				Layouter layouter = new Layouter();
+				IReportCreator inst = FormPageBuilder.CreateInstance(reportModel,layouter);
+				inst.PageCreated += delegate (Object sender,PageCreatedEventArgs ee) {
+					worker.ReportProgress(inst.Pages.Count);
+					this.Pages.Add(ee.SinglePage);
+				};
+				
+				inst.BuildExportList();
+				return inst.Pages.Count;
+			}
+			return null;
+		}
+		
+		
+		private object RunPushData (ReportModel reportModel,IDataManager data,BackgroundWorker worker,DoWorkEventArgs e)
+		{
+			if (worker.CancellationPending)
+			{
+				e.Cancel = true;
+			}
+			else
+			{
+				RunDataReport(reportModel,data,worker,e);
+			}
+			return null;
+		}
+		*/
+		/*
+		
+		private object RunDataReport (ReportModel reportModel,IDataManager data,BackgroundWorker worker,DoWorkEventArgs e)
+		{
+			if (worker.CancellationPending)
+			{
+				e.Cancel = true;
+			}
+			else
+			{
+				ILayouter layouter = new Layouter();
+				
+				IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel,data,layouter);
+				//testcode to handle sectionrenderevent
+				reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
+				
+				reportCreator.PageCreated += delegate (Object sender,PageCreatedEventArgs ee) {
+					worker.ReportProgress(reportCreator.Pages.Count);
+					this.Pages.Add(ee.SinglePage);
+				};
+				reportCreator.BuildExportList();
+				return reportCreator.Pages.Count;
+			}
+			return null;
+		}
+		*/
+		#endregion
+		
+		#endregion
+		
 	}
 }
