@@ -94,7 +94,6 @@ namespace SharpReportSamples
 		private void UpdateStatusbar (string text)
 		{
 			this.label1.Text = text;
-			
 		}
 		
 		
@@ -115,8 +114,6 @@ namespace SharpReportSamples
 				}
 				this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
 				{
-					System.Console.WriteLine("---------");
-					System.Console.WriteLine("from event");
 					this.RunStandardReport(reportName);
 				};
 				this.previewControl1.RunReport(reportName,parameters);
@@ -166,14 +163,11 @@ namespace SharpReportSamples
 			
 			
 			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
-				{
-					System.Console.WriteLine("---------");
-					System.Console.WriteLine("from event");
-					this.RunContributors(fileName);
-				};
+			{
+				this.RunContributors(fileName);
+			};
 			
 			this.previewControl1.RunReport(model,dataManager);
-			
 		}
 		
 		//Try this to react to SectionrenderEvent,
@@ -261,8 +255,6 @@ namespace SharpReportSamples
 				}
 			}
 		}
-		
 		 */
-		
 	}
 }

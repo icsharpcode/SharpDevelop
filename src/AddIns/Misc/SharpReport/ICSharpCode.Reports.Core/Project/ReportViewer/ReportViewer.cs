@@ -74,8 +74,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
-			ReportModel m = ReportEngine.LoadReportModel(fileName);
-			this.SetupAsynchron(m,parameters);
+			ReportModel model = ReportEngine.LoadReportModel(fileName);
+			this.RunReport(model,parameters);
 		}
 		
 		[Obsolete("Use RunReport (string fileName,ReportParameters parameters)" )]
@@ -313,6 +313,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.printButton.Enabled = true;
 			this.pdfButton.Enabled = true;
 			this.UpdateToolStrip();
+			ShowSelectedPage();
 		}
 		
 		#endregion
