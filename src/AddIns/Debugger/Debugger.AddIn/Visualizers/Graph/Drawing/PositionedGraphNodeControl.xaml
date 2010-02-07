@@ -7,21 +7,9 @@
 	<UserControl.Resources>
 		<ResourceDictionary>
           <ResourceDictionary.MergedDictionaries>
-            <ResourceDictionary Source="PlusToggleButton.xaml" />
+            <ResourceDictionary Source="NodeControlResources.xaml" />
           </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-		<local:TooltipVisibilityConverter x:Key="toolVisConverter"></local:TooltipVisibilityConverter>
-		<DataTemplate x:Key="valueColumnTemplate">
-            <TextBlock Text="{Binding Text}">
-                <TextBlock.ToolTip>
-                    <ToolTip 
-                            DataContext="{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}" 
-                            Visibility="{Binding Converter={StaticResource toolVisConverter}, ConverterParameter=2}">
-                        <TextBlock Text="{Binding Text}"></TextBlock>
-                    </ToolTip>
-                </TextBlock.ToolTip>
-            </TextBlock>
-        </DataTemplate>
+       </ResourceDictionary>
 	</UserControl.Resources>
 	
     <aero:SystemDropShadowChrome>

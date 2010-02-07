@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 using System;
+using System.ComponentModel;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -49,9 +50,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			get
 			{
-				// show expand button when appropriate
+				// show expand button for non-null non-atomic objects
 				return (!this.positionedProperty.IsAtomic && !this.positionedProperty.IsNull);
-				//return true;
 			}
 		}
 		
@@ -63,7 +63,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			PropertyNode sourcePropertyNode = source as PropertyNode;
 			
 			this.Name = sourcePropertyNode.Property.Name;
-			this.Text = sourcePropertyNode.Property.Value;		// evaluated in Evaluate()
+			// Important to set Text here, as we might be just building new view over existing (evaluated) model.
+			// Evaluated also in Evaluate() if needed.
+			this.Text = sourcePropertyNode.Property.Value;		
 			this.IsNested = false;
 			this.IsExpanded = false;			// always false, property content nodes are never expanded
 			this.positionedProperty = new PositionedNodeProperty(

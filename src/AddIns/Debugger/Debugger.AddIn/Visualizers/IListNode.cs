@@ -29,6 +29,6 @@ namespace Debugger.AddIn.TreeModel
 		
 		public override bool HasChildNodes {
 			get { return this.count > 0; }
-	}
+		}
 	}
 }

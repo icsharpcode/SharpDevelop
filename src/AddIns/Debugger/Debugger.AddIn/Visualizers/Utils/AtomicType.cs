@@ -23,7 +23,8 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <returns>True if expression's type is atomic, False otherwise.</returns>
 		public static bool IsAtomic(this DebugType type)
 		{
-			return !(type.IsClass || type.IsValueType /* = struct in C# */);
+			// class is complex, String has IsClass == true but we want to treat it like atomic
+			return !type.IsClass || type.FullName == "System.String";
 		}
 		
 		/// <summary>
