@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -20,16 +21,9 @@ namespace ICSharpCode.SharpDevelop
 	{
 		static string languagePath = Path.Combine(PropertyService.DataDirectory, "resources", "languages");
 		
-		static ImageList languageImageList = null;
-		static ArrayList languages         = null;
+		static List<Language> languages = null;
 		
-		public static ImageList LanguageImageList {
-			get {
-				return languageImageList;
-			}
-		}
-		
-		public static ArrayList Languages {
+		public static List<Language> Languages {
 			get {
 				return languages;
 			}
@@ -37,10 +31,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static LanguageService()
 		{
-			languageImageList = new ImageList();
-			languageImageList.ColorDepth = ColorDepth.Depth32Bit;
-			languages         = new ArrayList();
-			LanguageImageList.ImageSize = new Size(46, 38);
+			languages = new List<Language>();
 			
 			XmlDocument doc = new XmlDocument();
 			doc.Load(Path.Combine(languagePath, "LanguageDefinition.xml"));
@@ -50,13 +41,13 @@ namespace ICSharpCode.SharpDevelop
 			foreach (XmlNode node in nodes) {
 				XmlElement el = node as XmlElement;
 				if (el != null) {
-					languages.Add(new Language(el.Attributes["name"].InnerText,
-					                           el.Attributes["code"].InnerText,
-					                           LanguageImageList.Images.Count));
-					LanguageImageList.Images.Add(new Bitmap(Path.Combine(languagePath, el.Attributes["icon"].InnerText)));
+					languages.Add(new Language(
+						el.Attributes["name"].InnerText,
+						el.Attributes["code"].InnerText,
+						Path.Combine(languagePath, el.Attributes["icon"].InnerText)
+					));
 				}
 			}
 		}
-		
 	}
 }

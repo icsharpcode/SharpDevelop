@@ -26,7 +26,18 @@ namespace ICSharpCode.Core.Presentation
 			this.UpdateOnLanguageChange = true;
 		}
 		
+		public LocalizeExtension()
+		{
+			this.UsesAccessors = true;
+			this.UpdateOnLanguageChange = true;
+		}
+		
 		string key;
+		
+		public string Key {
+			get { return key; }
+			set { key = value; }
+		}
 		
 		/// <summary>
 		/// Set whether the text uses accessors.

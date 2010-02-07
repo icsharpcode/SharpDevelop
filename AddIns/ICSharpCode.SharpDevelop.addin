@@ -1032,7 +1032,7 @@
 		             label = "${res:Dialog.Options.TreeViewOptions.SharpDevelopOptionsText}">
 			<OptionPanel id    = "SelectCulture"
 			             label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.IDEOptionPanel"/>
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectCulturePanel"/>
 			<OptionPanel id    = "SelectStyle"
 			             label = "${res:Dialog.Options.IDEOptions.SelectVisualStyle.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>

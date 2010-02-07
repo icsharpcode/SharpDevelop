@@ -33,7 +33,17 @@ namespace ICSharpCode.Core.Presentation
 	/// </example>
 	public class OptionBinding : MarkupExtension
 	{
-		public string FullPropertyName { get; set; }
+		string fullPropertyName;
+		
+		public string FullPropertyName {
+			get { return fullPropertyName; }
+			set {
+				if (!regex.IsMatch(value))
+					throw new ArgumentException("parameter must have the following format: namespace:ClassName.FieldOrProperty", "propertyName");
+
+				fullPropertyName = value;
+			}
+		}
 		
 		static readonly Regex regex = new Regex("^.+\\:.+\\..+$", RegexOptions.Compiled);
 		

@@ -69,7 +69,11 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DragListener.cs" />
     <Compile Include="GlobalStyles.cs" />
+    <Compile Include="NumericUpDown.cs">
+      <DependentUpon>NumericUpDown.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RestrictDesiredSize.cs" />
     <Compile Include="SortableGridViewColumn.cs" />
     <Compile Include="CollapsiblePanel.cs" />
@@ -109,6 +113,10 @@
     <Folder Include="Menu" />
     <Folder Include="themes" />
     <Folder Include="ToolBar" />
+    <Page Include="NumericUpDown.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="themes\Aero.NormalColor.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>
