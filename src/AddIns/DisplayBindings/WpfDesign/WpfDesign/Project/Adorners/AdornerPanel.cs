@@ -197,5 +197,29 @@ namespace ICSharpCode.WpfDesign.Adorners
 		{
 			return leftHandSide.i != rightHandSide.i;
 		}
+		
+		/// <summary/>
+		public static bool operator <(AdornerOrder leftHandSide, AdornerOrder rightHandSide)
+		{
+			return leftHandSide.i < rightHandSide.i;
+		}
+		
+		/// <summary/>
+		public static bool operator <=(AdornerOrder leftHandSide, AdornerOrder rightHandSide)
+		{
+			return leftHandSide.i <= rightHandSide.i;
+		}
+		
+		/// <summary/>
+		public static bool operator >(AdornerOrder leftHandSide, AdornerOrder rightHandSide)
+		{
+			return leftHandSide.i > rightHandSide.i;
+		}
+		
+		/// <summary/>
+		public static bool operator >=(AdornerOrder leftHandSide, AdornerOrder rightHandSide)
+		{
+			return leftHandSide.i >= rightHandSide.i;
+		}
 	}
 }

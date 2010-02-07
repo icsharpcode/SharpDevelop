@@ -28,6 +28,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			DependencyProperty.Register("Value", typeof(object), typeof(EnumBar),
 			new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
 		public object Value {
 			get { return (object)GetValue(ValueProperty); }
 			set { SetValue(ValueProperty, value); }

@@ -20,7 +20,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	public class CreateComponentTool : ITool
 	{
 		readonly Type componentType;
-        MoveLogic moveLogic;
+		MoveLogic moveLogic;
 		ChangeGroup changeGroup;
 		Point createPoint;
 		
@@ -49,22 +49,22 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			designPanel.MouseDown += OnMouseDown;
 			//designPanel.DragEnter += designPanel_DragOver;
-            designPanel.DragOver += designPanel_DragOver;
-            designPanel.Drop += designPanel_Drop;
-            designPanel.DragLeave += designPanel_DragLeave;
+			designPanel.DragOver += designPanel_DragOver;
+			designPanel.Drop += designPanel_Drop;
+			designPanel.DragLeave += designPanel_DragLeave;
 		}
 		
 		public void Deactivate(IDesignPanel designPanel)
 		{
 			designPanel.MouseDown -= OnMouseDown;
 			//designPanel.DragEnter -= designPanel_DragOver;
-            designPanel.DragOver -= designPanel_DragOver;
-            designPanel.Drop -= designPanel_Drop;
-            designPanel.DragLeave -= designPanel_DragLeave;
+			designPanel.DragOver -= designPanel_DragOver;
+			designPanel.Drop -= designPanel_Drop;
+			designPanel.DragLeave -= designPanel_DragLeave;
 		}
 
-        void designPanel_DragOver(object sender, DragEventArgs e)
-        {
+		void designPanel_DragOver(object sender, DragEventArgs e)
+		{
 			try {
 				IDesignPanel designPanel = (IDesignPanel)sender;
 				e.Effects = DragDropEffects.Copy;
@@ -89,18 +89,18 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					}
 				} else if ((moveLogic.ClickedOn.View as FrameworkElement).IsLoaded) {
 					if (moveLogic.Operation == null) {
-					    moveLogic.Start(createPoint);
+						moveLogic.Start(createPoint);
 					} else {
-					    moveLogic.Move(p);
+						moveLogic.Move(p);
 					}
 				}
 			} catch (Exception x) {
-				DragDropExceptionHandler.HandleException(x);
+				DragDropExceptionHandler.RaiseUnhandledException(x);
 			}
-        }
+		}
 
-        void designPanel_Drop(object sender, DragEventArgs e)
-        {
+		void designPanel_Drop(object sender, DragEventArgs e)
+		{
 			try {
 				if (moveLogic != null) {
 					moveLogic.Stop();
@@ -112,12 +112,12 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					changeGroup.Commit();
 				}
 			} catch (Exception x) {
-				DragDropExceptionHandler.HandleException(x);
+				DragDropExceptionHandler.RaiseUnhandledException(x);
 			}
-        }
+		}
 
-        void designPanel_DragLeave(object sender, DragEventArgs e)
-        {
+		void designPanel_DragLeave(object sender, DragEventArgs e)
+		{
 			try {
 				if (moveLogic != null) {
 					moveLogic.Cancel();
@@ -128,9 +128,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 
 				}
 			} catch (Exception x) {
-				DragDropExceptionHandler.HandleException(x);
+				DragDropExceptionHandler.RaiseUnhandledException(x);
 			}
-        }
+		}
 		
 		/// <summary>
 		/// Is called to create the item used by the CreateComponentTool.
@@ -211,9 +211,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		protected override void OnDragStarted(MouseEventArgs e)
 		{
 			operation = PlacementOperation.TryStartInsertNewComponents(container,
-				new DesignItem[] { createdItem },
-				new Rect[] { GetStartToEndRect(e).Round() },
-				PlacementType.Resize);
+			                                                           new DesignItem[] { createdItem },
+			                                                           new Rect[] { GetStartToEndRect(e).Round() },
+			                                                           PlacementType.Resize);
 			if (operation != null) {
 				services.Selection.SetSelectedComponents(new DesignItem[] { createdItem });
 			}

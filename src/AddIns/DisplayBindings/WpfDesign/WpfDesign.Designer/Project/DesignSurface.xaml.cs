@@ -43,6 +43,15 @@ namespace ICSharpCode.WpfDesign.Designer
 			this.AddCommandHandler(ApplicationCommands.Delete, Delete, CanDelete);
 			this.AddCommandHandler(ApplicationCommands.Paste, Paste, CanPaste);
 			this.AddCommandHandler(ApplicationCommands.SelectAll, SelectAll, CanSelectAll);
+			
+			#if DEBUG || CODE_ANALYSIS
+			if (_designPanel == null) {
+				Environment.FailFast("designpanel should be initialized earlier");
+				// Fake call to DesignPanel constructor because FxCop doesn't look inside XAML files
+				// and we'd get tons of warnings about uncalled private code.
+				_designPanel = new DesignPanel();
+			}
+			#endif
 		}
 
 		protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)

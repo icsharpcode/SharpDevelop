@@ -11,6 +11,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 {
 	public class IntFromEnumConverter : IValueConverter
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly IntFromEnumConverter Instance = new IntFromEnumConverter();
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -26,6 +27,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 
 	public class HiddenWhenFalse : IValueConverter
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly HiddenWhenFalse Instance = new HiddenWhenFalse();
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -41,6 +43,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 
 	public class CollapsedWhenFalse : IValueConverter
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly CollapsedWhenFalse Instance = new CollapsedWhenFalse();
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -56,6 +59,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 
 	public class LevelConverter : IValueConverter
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly LevelConverter Instance = new LevelConverter();
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -71,6 +75,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 
 	public class CollapsedWhenZero : IValueConverter
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly CollapsedWhenZero Instance = new CollapsedWhenZero();
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -89,6 +94,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 
 	public class FalseWhenNull : IValueConverter
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly FalseWhenNull Instance = new FalseWhenNull();
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -104,6 +110,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 
 	public class BoldWhenTrue : IValueConverter
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly BoldWhenTrue Instance = new BoldWhenTrue();
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -120,6 +127,7 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 	// Boxed int throw exception without converter (wpf bug?)
 	public class DummyConverter : IValueConverter
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly DummyConverter Instance = new DummyConverter();
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

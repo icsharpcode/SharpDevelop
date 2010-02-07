@@ -151,7 +151,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets a WPF object representing a graphical description of the property.
 		/// </summary>
-		object GetDescription(DesignItemProperty property);
+		object GetDescription(DesignItemProperty designProperty);
 	}
 	#endregion
 	

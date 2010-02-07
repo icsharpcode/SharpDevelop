@@ -19,9 +19,9 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		string methodName;
 
-		public override object ProvideValue(IServiceProvider sp)
+		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
-			var t = (IProvideValueTarget)sp.GetService(typeof(IProvideValueTarget));
+			var t = (IProvideValueTarget)serviceProvider.GetService(typeof(IProvideValueTarget));
 			return new CallCommand(t.TargetObject as FrameworkElement, methodName);
 		}
 	}

@@ -131,6 +131,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			}
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
+		                                                 Justification = "We rethrow the original exception, not the follow-up error.")]
 		public void Redo()
 		{
 			AssertState(TransactionState.Undone);
@@ -157,6 +159,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			}
 		}
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
+		                                                 Justification = "We avoid throwing exceptions here because a disposed transaction" +
+		                                                 " indicates another exception happened earlier.")]
 		protected override void Dispose()
 		{
 			if (_state == TransactionState.Open) {

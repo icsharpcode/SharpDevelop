@@ -181,16 +181,16 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Adds a bevahior extension object to this design item.
 		/// </summary>
-		public void AddBehavior(Type bevahiorInterface, object behaviorImplementation)
+		public void AddBehavior(Type behaviorInterface, object behaviorImplementation)
 		{
-			if (bevahiorInterface == null)
-				throw new ArgumentNullException("bevahiorInterface");
+			if (behaviorInterface == null)
+				throw new ArgumentNullException("behaviorInterface");
 			if (behaviorImplementation == null)
 				throw new ArgumentNullException("behaviorImplementation");
-			if (!bevahiorInterface.IsInstanceOfType(behaviorImplementation))
+			if (!behaviorInterface.IsInstanceOfType(behaviorImplementation))
 				throw new ArgumentException("behaviorImplementation must implement bevahiorInterface", "behaviorImplementation");
 			
-			_behaviorObjects.Add(bevahiorInterface, behaviorImplementation);
+			_behaviorObjects.Add(behaviorInterface, behaviorImplementation);
 		}
 		
 		/// <summary>

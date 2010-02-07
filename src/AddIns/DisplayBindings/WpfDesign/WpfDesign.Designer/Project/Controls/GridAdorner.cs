@@ -170,7 +170,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			}
 		}
 		
-		void SplitLength(GridLength oldLength, double insertionPosition, double oldActualValue,
+		static void SplitLength(GridLength oldLength, double insertionPosition, double oldActualValue,
 		                 out GridLength newLength1, out GridLength newLength2)
 		{
 			if (oldLength.IsAuto) {

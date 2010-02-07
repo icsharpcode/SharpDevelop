@@ -13,9 +13,9 @@ namespace ICSharpCode.WpfDesign.Designer
 {
 	public static class ExtensionMethods
 	{
-		public static double Coerce(this double d, double min, double max)
+		public static double Coerce(this double value, double min, double max)
 		{
-			return Math.Max(Math.Min(d, max), min);
+			return Math.Max(Math.Min(value, max), min);
 		}
 
 		public static void AddRange<T>(this ICollection<T> col, IEnumerable<T> items)
@@ -31,15 +31,15 @@ namespace ICSharpCode.WpfDesign.Designer
 		}
 		
 		/// <summary>
-		/// Gets all ancestors in the visual tree (including d itself).
-		/// Returns an empty list if d is null or not a visual.
+		/// Gets all ancestors in the visual tree (including <paramref name="visual"/> itself).
+		/// Returns an empty list if <paramref name="visual"/> is null or not a visual.
 		/// </summary>
-		public static IEnumerable<DependencyObject> GetVisualAncestors(this DependencyObject d)
+		public static IEnumerable<DependencyObject> GetVisualAncestors(this DependencyObject visual)
 		{
-			if (IsVisual(d)) {
-				while (d != null) {
-					yield return d;
-					d = VisualTreeHelper.GetParent(d);
+			if (IsVisual(visual)) {
+				while (visual != null) {
+					yield return visual;
+					visual = VisualTreeHelper.GetParent(visual);
 				}
 			}
 		}

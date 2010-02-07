@@ -9,20 +9,20 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 	/// <summary>
 	/// Extends ObservableCollection{T} with an AddSorted method to insert items in a sorted collection.
 	/// </summary>
-	public class SortedObservableCollection<T, K> : ObservableCollection<T>
+	public class SortedObservableCollection<T, TKey> : ObservableCollection<T>
 	{
 		/// <summary>
 		/// Creates a new SortedObservableCollection instance.
 		/// </summary>
 		/// <param name="keySelector">The function to select the sorting key.</param>
-		public SortedObservableCollection(Func<T, K> keySelector)
+		public SortedObservableCollection(Func<T, TKey> keySelector)
 		{
 			this.keySelector = keySelector;
-			this.comparer = Comparer<K>.Default;
+			this.comparer = Comparer<TKey>.Default;
 		}
 
-		Func<T, K> keySelector;
-		IComparer<K> comparer;
+		Func<T, TKey> keySelector;
+		IComparer<TKey> comparer;
 
 		/// <summary>
 		/// Adds an item to a sorted collection.

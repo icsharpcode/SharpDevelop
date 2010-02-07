@@ -149,12 +149,13 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 				return "(" + ValueItem.ComponentType.Name + ")";
 			}
 			set {
-				// TODO: Doesn't work for some reason
-				try {
-					Value = FirstProperty.TypeConverter.ConvertFromInvariantString(value);
-				} catch {
-					OnValueOnInstanceChanged();
-				}
+				// make sure we only catch specific exceptions
+				// and/or show the error message to the user
+				//try {
+				Value = FirstProperty.TypeConverter.ConvertFromInvariantString(value);
+				//} catch {
+				//	OnValueOnInstanceChanged();
+				//}
 			}
 		}
 

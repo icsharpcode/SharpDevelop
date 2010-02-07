@@ -40,6 +40,7 @@ namespace ICSharpCode.WpfDesign
 		protected abstract void Dispose();
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly")]
 		void IDisposable.Dispose()
 		{
 			Dispose();

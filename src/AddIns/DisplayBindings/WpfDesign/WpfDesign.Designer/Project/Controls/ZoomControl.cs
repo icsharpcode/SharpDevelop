@@ -39,9 +39,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 
 		static Cursor PanToolCursor;
 		static Cursor PanToolCursorMouseDown;
-		public static double ZoomFactor = 1.1;
-		public static double Minimum = 0.1;
-		public static double Maximum = 10;
+		public const double ZoomFactor = 1.1;
+		public const double Minimum = 0.1;
+		public const double Maximum = 10;
 
 		double startHorizontalOffset;
 		double startVericalOffset;

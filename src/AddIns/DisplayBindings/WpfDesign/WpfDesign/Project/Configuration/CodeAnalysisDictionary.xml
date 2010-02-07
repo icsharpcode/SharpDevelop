@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<Dictionary>
+	<Words>
+		<Recognized>
+			<!-- add words specific to your application here -->
+			<Word>lhs</Word>
+			<Word>rhs</Word>
+		</Recognized>
+		<Unrecognized>
+			<!-- Disable Lineup as a single word - LineUp is the spelling used in WPF -->
+			<Word>Lineup</Word>
+		</Unrecognized>
+		<Deprecated>
+			<!-- Use this section to deprecate terms -->
+			<Term PreferredAlternate="Best">Bestest</Term>
+		</Deprecated>
+	</Words>
+	<Acronyms>
+		<CasingExceptions>
+			<!-- Use this section to tell FxCop the correct casing of acronyms. -->
+			<Acronym>WiX</Acronym>
+		</CasingExceptions>
+	</Acronyms>
+</Dictionary>

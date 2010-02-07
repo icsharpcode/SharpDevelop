@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.WpfDesign.XamlDom;
+using System.Runtime.CompilerServices;
 using System.Windows.Markup;
+
+using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
@@ -21,7 +23,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			int IEqualityComparer<object>.GetHashCode(object obj)
 			{
-				return obj.GetHashCode();
+				return RuntimeHelpers.GetHashCode(obj);
 			}
 			
 			bool IEqualityComparer<object>.Equals(object x, object y)

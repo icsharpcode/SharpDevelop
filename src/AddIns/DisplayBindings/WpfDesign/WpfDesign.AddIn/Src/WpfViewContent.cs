@@ -5,24 +5,26 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.WpfDesign.Designer.OutlineView;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xml;
+
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.PropertyGrid;
-using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -37,6 +39,13 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
+		}
+		
+		static WpfViewContent()
+		{
+			DragDropExceptionHandler.UnhandledException += delegate(object sender, ThreadExceptionEventArgs e) { 
+				ICSharpCode.Core.MessageService.ShowException(e.Exception);
+			};
 		}
 		
 		DesignSurface designer;
@@ -56,7 +65,6 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			if (designer == null) {
 				// initialize designer on first load
-				DragDropExceptionHandler.HandleException = ICSharpCode.Core.MessageService.ShowException;
 				designer = new DesignSurface();
 				this.UserContent = designer;
 				InitPropertyEditor();

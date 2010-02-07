@@ -41,6 +41,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// The type of the placement being done.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
 		public PlacementType Type {
 			get { return type; }
 		}

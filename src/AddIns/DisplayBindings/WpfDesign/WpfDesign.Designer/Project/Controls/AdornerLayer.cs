@@ -97,7 +97,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		int _totalAdornerCount;
 		#endif
 		
-		
 		internal AdornerLayer(UIElement designPanel)
 		{
 			this._designPanel = designPanel;
@@ -193,7 +192,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			int i = 0;
 			for (i = 0; i < children.Count; i++) {
 				AdornerPanel p = (AdornerPanel)children[i];
-				if (p.Order.CompareTo(adornerPanel.Order) > 0) {
+				if (p.Order > adornerPanel.Order) {
 					break;
 				}
 			}

@@ -12,6 +12,8 @@ namespace ICSharpCode.WpfDesign.Extensions
 	/// <summary>
 	/// Combines two extension servers using a logical OR.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 	public sealed class LogicalOrExtensionServer<A, B> : DefaultExtensionServer
 		where A : ExtensionServer
 		where B : ExtensionServer
@@ -44,6 +46,8 @@ namespace ICSharpCode.WpfDesign.Extensions
 	/// <summary>
 	/// Combines two extension servers using a logical AND.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
 	public sealed class LogicalAndExtensionServer<A, B> : DefaultExtensionServer
 		where A : ExtensionServer
 		where B : ExtensionServer

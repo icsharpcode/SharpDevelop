@@ -48,6 +48,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
 		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), TypeConverter(typeof(DialogResultConverter))]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
 		public bool? DialogResult {
 			get {
 				return null;
@@ -176,41 +177,49 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
 		public event EventHandler Activated { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
 		public event EventHandler Closed { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
 		public event EventHandler Closing { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
 		public event EventHandler ContentRendered { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
 		public event EventHandler Deactivated { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
 		public event EventHandler LocationChanged { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
 		public event EventHandler SourceInitialized { add {} remove {} }
 		
 		/// <summary>
 		/// This event is never raised. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
 		public event EventHandler StateChanged { add {} remove {} }
 	}
 	
