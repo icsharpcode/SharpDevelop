@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
@@ -196,6 +197,22 @@ namespace PythonBinding.Tests.Utils.Tests
 			projectContent.ClassNameForGetClass = "test";
 			
 			Assert.AreEqual(c, projectContent.GetClass("test", 0));
+		}
+		
+		[Test]
+		public void NamespaceNamesHasNoItemsByDefault()
+		{
+			Assert.AreEqual(0, projectContent.ReferencedContents.Count);
+		}
+		
+		[Test]
+		public void NamespaceNamesContainingsNamespaceAddedToExistingNamespaces()
+		{
+			projectContent.AddExistingNamespaceContents("System", new ArrayList());
+			List<string> expectedNames = new List<string>();
+			expectedNames.Add("System");
+			
+			Assert.AreEqual(expectedNames, projectContent.NamespaceNames);
 		}
 	}
 }

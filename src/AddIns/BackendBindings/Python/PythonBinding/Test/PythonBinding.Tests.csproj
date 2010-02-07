@@ -364,6 +364,8 @@
     <Compile Include="Resolver\ResolveConsoleWriteLineTestFixture.cs" />
     <Compile Include="Resolver\ResolveExitMethodFromSysImportExitAsMyExitTestFixture.cs" />
     <Compile Include="Resolver\ResolveExitMethodFromSysImportExitTestFixture.cs" />
+    <Compile Include="Resolver\ResolveFooTextBoxFromSystemWindowsFormsImportedAsFooTestFixture.cs" />
+    <Compile Include="Resolver\ResolveFooWindowsWithImportSystemAsFooTestFixture.cs" />
     <Compile Include="Resolver\ResolveFromImportTestFixture.cs" />
     <Compile Include="Resolver\ResolveFromMathImportedMathModuleCompletionItemsTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleFromSystemImportEverythingFixture.cs" />
@@ -374,10 +376,12 @@
     <Compile Include="Resolver\ResolveMethodWhenImportIsUnknownTestFixture.cs" />
     <Compile Include="Resolver\ResolveNullCtrlSpaceCompilationUnitTestFixture.cs" />
     <Compile Include="Resolver\ResolveNullCtrlSpaceParseInfoTestFixture.cs" />
+    <Compile Include="Resolver\ResolverContextDottedImportedNameMatchTests.cs" />
     <Compile Include="Resolver\ResolverContextGetModulesThatImportEverythingTests.cs" />
     <Compile Include="Resolver\ResolverContextGetModuleForNameImportedAsDifferentNameTestFixture.cs" />
     <Compile Include="Resolver\ResolverContextGetModuleForImportedNameTests.cs" />
     <Compile Include="Resolver\ResolverContextHasImportTests.cs" />
+    <Compile Include="Resolver\ResolverContextPartialNamespaceExistsTests.cs" />
     <Compile Include="Resolver\ResolverContextUnaliasImportedModuleNameTestFixture.cs" />
     <Compile Include="Resolver\ResolveSysModuleExitMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveSysModuleImportedAsMySysTestFixture.cs" />
@@ -390,6 +394,9 @@
     <Compile Include="Resolver\ResolveSystemImportTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveSystemNamespaceWithMissingImportTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemWindowsFormsWithImportSystemTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemWindowsWithImportSystemTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSystemWithImportSystemWindowsTestFixture.cs" />
     <Compile Include="Resolver\ResolveTanMethodFromMathImportAllTestFixture.cs" />
     <Compile Include="Resolver\ResolveTanMethodFromMathImportCosAndTanTestFixture.cs" />
     <Compile Include="Resolver\ResolveTestFixtureBase.cs" />
