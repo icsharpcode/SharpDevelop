@@ -770,12 +770,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		protected override void OnTextInput(TextCompositionEventArgs e)
 		{
+			//Debug.WriteLine("TextInput: Text='" + e.Text + "' SystemText='" + e.SystemText + "' ControlText='" + e.ControlText + "'");
 			base.OnTextInput(e);
 			if (!e.Handled && this.Document != null) {
-				if (e.Text == "\x1b") {
+				if (string.IsNullOrEmpty(e.Text) || e.Text == "\x1b") {
 					// ASCII 0x1b = ESC.
 					// WPF produces a TextInput event with that old ASCII control char
 					// when Escape is pressed. We'll just ignore it.
+					
+					// Similarly, some shortcuts like Alt+Space produce an empty TextInput event.
+					// We have to ignore those (not handle them) to keep the shortcut working.
 					return;
 				}
 				PerformTextInput(e);
