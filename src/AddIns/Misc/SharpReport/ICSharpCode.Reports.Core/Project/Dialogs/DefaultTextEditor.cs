@@ -17,9 +17,9 @@ namespace ICSharpCode.Reports.Core
 	/// <summary>
 	/// Description of UISettingsEditor.
 	/// </summary>
-	public class UISettingsEditor:UITypeEditor
+	public class DefaultTextEditor:UITypeEditor
 	{
-		public 	UISettingsEditor () {
+		public 	DefaultTextEditor () {
 		}
 		
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)

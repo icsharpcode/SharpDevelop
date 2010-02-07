@@ -75,7 +75,7 @@ namespace ICSharpCode.Reports.Core{
 		private int rightMargin;
 		private Size pageSize;
 		
-		public event EventHandler FileNameChanged;
+//		public event EventHandler FileNameChanged;
 		
 		public ReportSettings():this(new Size(1169,827),"","")
 		{
@@ -179,8 +179,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		
 		[Category("Base Settings")]
-		[DefaultValueAttribute ("")]
-//		[XmlIgnoreAttribute]
+		[XmlIgnoreAttribute]
 		public string FileName
 		{
 			get {
@@ -190,16 +189,10 @@ namespace ICSharpCode.Reports.Core{
 				return Path.GetFullPath(fileName);
 			}
 			set {
-				System.Diagnostics.Trace.WriteLine("");
-				System.Diagnostics.Trace.WriteLine(String.Format("<Core.ReportSettings> Filename {0}",Path.GetFullPath(value)));
-				if (fileName != value) {
 					fileName = value;
-					if (FileNameChanged != null ){
-						FileNameChanged (this,EventArgs.Empty);
-					}
-				}
 			}
 		}
+		
 		
 		[Browsable(true), Category("Base Settings")]
 		public GlobalEnums.ReportType ReportType {
@@ -215,23 +208,6 @@ namespace ICSharpCode.Reports.Core{
 		
 		#endregion
 		
-		#region OutputSettings
-		
-		[Category("Output Settings")]
-		[DefaultValueAttribute (true)]
-		public bool UseStandardPrinter
-		{
-			get {
-				return useStandardPrinter;
-			}
-			set {
-				if (useStandardPrinter != value) {
-					useStandardPrinter = value;
-				}
-			}
-		}
-
-		#endregion
 		
 		#region Page Settings
 		
@@ -370,7 +346,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		[Category("Data")]
 		[DefaultValueAttribute ("")]
-		[EditorAttribute (typeof(UISettingsEditor),
+		[EditorAttribute (typeof(DefaultTextEditor),
 		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public string ConnectionString {
 			get {
@@ -389,7 +365,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		[Category("Data")]
 		[DefaultValueAttribute ("")]
-		[EditorAttribute ( typeof(UISettingsEditor),
+		[EditorAttribute ( typeof(DefaultTextEditor),
 		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public string CommandText {
 			get {
@@ -432,6 +408,8 @@ namespace ICSharpCode.Reports.Core{
 		}
 		
 		[Category("Data")]
+		[EditorAttribute ( typeof(DefaultTextEditor),
+		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public string NoDataMessage {
 			get {
 				return noDataMessage;
@@ -454,6 +432,21 @@ namespace ICSharpCode.Reports.Core{
 			set {
 				if (defaultFont != value) {
 					defaultFont = value;
+				}
+			}
+		}
+		
+		
+		[Category("Output Settings")]
+		[DefaultValueAttribute (true)]
+		public bool UseStandardPrinter
+		{
+			get {
+				return useStandardPrinter;
+			}
+			set {
+				if (useStandardPrinter != value) {
+					useStandardPrinter = value;
 				}
 			}
 		}

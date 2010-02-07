@@ -20,6 +20,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using System.Linq;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -702,18 +703,26 @@ namespace ICSharpCode.Reports.Addin
 			base.Load(file, stream);
 			this.LoadDesigner(stream);
 			this.SetupSecondaryView();
-			System.Diagnostics.Trace.WriteLine("");
-			System.Diagnostics.Trace.WriteLine(String.Format("DesignerView Load {0}",file.FileName));
+			
+			//Always set Filename, otherwise rel path didn#t work
+			ComponentCollection c = Host.Container.Components;
+			foreach (IComponent component in c) {
+				if (component is ReportSettings) {
+					var r = component as ReportSettings;
+					r.FileName = file.FileName;
+				}
+			}
 		}
 		
 		
 		public override void Save(ICSharpCode.SharpDevelop.OpenedFile file,Stream stream)
 		{
 			LoggingService.Debug("ReportDesigner: Save " + file.FileName);
+			
 			if (hasUnmergedChanges) {
 				this.MergeFormChanges();
 			}
-			Console.WriteLine(this.ReportFileContent);
+		
 			using(StreamWriter writer = new StreamWriter(stream)) {
 				writer.Write(this.ReportFileContent);
 			}

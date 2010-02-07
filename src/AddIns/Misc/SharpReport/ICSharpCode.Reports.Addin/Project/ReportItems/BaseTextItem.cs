@@ -68,7 +68,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		
-		[EditorAttribute(typeof(UISettingsEditor), 
+		[EditorAttribute(typeof(DefaultTextEditor), 
 		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public override string Text {
 			get { return base.Text; }

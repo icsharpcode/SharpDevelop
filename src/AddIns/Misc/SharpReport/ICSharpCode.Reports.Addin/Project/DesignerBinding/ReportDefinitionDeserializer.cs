@@ -83,24 +83,42 @@ namespace ICSharpCode.Reports.Addin
 					baseImageItem.ReportFileName = fileName;
 					
 					if (Path.IsPathRooted(baseImageItem.ImageFileName)) {
-
-
-				string p2  = Path.GetFullPath(fileName);
-////				string p3 = Path.GetFullPath(relativeFileName);
-			string p3 = Path.GetFullPath(baseImageItem.RelativeFileName);
-				string s = ICSharpCode.Reports.Core.FileUtility.GetRelativePath(p2,p3);						
-						
-						
 						string d = ICSharpCode.Reports.Core.FileUtility.GetRelativePath(
 							Path.GetDirectoryName(fileName),
 							Path.GetDirectoryName(baseImageItem.ImageFileName));
-string g = d + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
 
-//						baseImageItem.RelativeFileName = d + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
-						baseImageItem.RelativeFileName = s;
-						if (File.Exists(s)){
-							Console.WriteLine("found");
+						baseImageItem.RelativeFileName = d + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
 					}
+				}
+			}
+		}
+		
+		private static void old_Absolut2RelativePath (BaseSection section, string fileName)
+		{
+			System.Diagnostics.Trace.WriteLine("Absolut2RelativePath");
+			foreach (Control item in section.Controls) {
+				BaseImageItem baseImageItem = item as BaseImageItem;
+				if (baseImageItem != null) {
+					baseImageItem.ReportFileName = fileName;
+					
+					if (Path.IsPathRooted(baseImageItem.ImageFileName)) {
+						
+						string relPath = ICSharpCode.Reports.Core.FileUtility.GetRelativePath(
+							Path.GetDirectoryName(fileName),
+							Path.GetDirectoryName(baseImageItem.ImageFileName));
+						
+						System.Diagnostics.Trace.WriteLine(String.Format("relativ image {0}",relPath));
+						
+						string relFile = relPath + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
+						System.Diagnostics.Trace.WriteLine(String.Format("ggg image {0}",relFile));
+
+						baseImageItem.RelativeFileName = relPath + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
+						
+						string ddd = ICSharpCode.Reports.Core.FileUtility.GetAbsolutePath(Path.GetDirectoryName(fileName),relFile);
+						System.Diagnostics.Trace.WriteLine(String.Format("baseImageItem.RelativeFileName {0}",relFile));
+						if (File.Exists(ddd)){
+							Console.WriteLine("found");
+						}
 					}
 				}
 			}
