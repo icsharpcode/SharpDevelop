@@ -122,18 +122,6 @@ namespace ICSharpCode.Reports.Core.Test
 			Assert.AreEqual(GlobalValues.PlainFileName,rs.FileName);
 		}
 		
-		[Test]
-		public void FileNameChangedEvent()
-		{
-			bool fired = false;
-			
-			ReportSettings rs = new ReportSettings();
-			rs.FileNameChanged += delegate { fired = true; };
-			rs.FileName = "aaaa";
-			Assert.IsTrue(fired);
-		}
-			
-		
 		
 		[TestFixtureSetUp]
 		public void Init()
