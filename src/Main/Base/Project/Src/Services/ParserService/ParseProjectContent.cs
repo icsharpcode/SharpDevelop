@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop
 			return string.Format("[{0}: {1}]", GetType().Name, project.Name);
 		}
 		
-		internal void Initialize1(CancellationToken token)
+		internal void Initialize1(IProgressMonitor progressMonitor)
 		{
 			ICollection<ProjectItem> items = project.Items;
 			ProjectService.ProjectItemAdded   += OnProjectItemAdded;
@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop
 			project.ResolveAssemblyReferences();
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
-				token.ThrowIfCancellationRequested();
+				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 				if (ItemType.ReferenceItemTypes.Contains(item.ItemType)) {
 					ReferenceProjectItem reference = item as ReferenceProjectItem;
 					if (reference != null) {
@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop
 			OnReferencedContentsChanged(EventArgs.Empty);
 		}
 		
-		internal void ReInitialize1(CancellationToken token)
+		internal void ReInitialize1(IProgressMonitor progressMonitor)
 		{
 			lock (ReferencedContents) {
 				ReferencedContents.Clear();
@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop
 			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
 			initializing = true;
 			try {
-				Initialize1(token);
+				Initialize1(progressMonitor);
 			} finally {
 				initializing = false;
 			}
@@ -236,14 +236,14 @@ namespace ICSharpCode.SharpDevelop
 			return project.Items.Count;
 		}
 		
-		internal void ReInitialize2(CancellationToken token)
+		internal void ReInitialize2(IProgressMonitor progressMonitor)
 		{
 			if (initializing) return;
 			initializing = true;
-			Initialize2(token);
+			Initialize2(progressMonitor);
 		}
 		
-		internal void Initialize2(CancellationToken token)
+		internal void Initialize2(IProgressMonitor progressMonitor)
 		{
 			if (!initializing) return;
 			//int progressStart = progressMonitor.WorkDone;
@@ -262,7 +262,7 @@ namespace ICSharpCode.SharpDevelop
 				
 				ParseableFileContentFinder finder = new ParseableFileContentFinder();
 				var fileContents =
-					from p in project.Items.AsParallel().WithCancellation(token)
+					from p in project.Items.AsParallel().WithCancellation(progressMonitor.CancellationToken)
 					where !ItemType.NonFileItemTypes.Contains(p.ItemType) && !String.IsNullOrEmpty(p.FileName)
 					select finder.Create(p);
 				fileContents.ForAll(

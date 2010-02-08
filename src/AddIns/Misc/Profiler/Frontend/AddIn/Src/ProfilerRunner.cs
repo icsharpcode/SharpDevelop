@@ -80,24 +80,27 @@ namespace ICSharpCode.Profiler.AddIn
 		
 		void FinishSession()
 		{
-			using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog(StringParser.Parse("${res:AddIns.Profiler.Messages.PreparingForAnalysis}"), true)) {
-				try {
+			try {
+				using (AsynchronousWaitDialog dlg = AsynchronousWaitDialog.ShowWaitDialog(StringParser.Parse("${res:AddIns.Profiler.Messages.PreparingForAnalysis}"), true)) {
 					profiler.Dispose();
 
 					WorkbenchSingleton.SafeThreadAsyncCall(() => { controlWindow.AllowClose = true; this.controlWindow.Close(); });
 					if (database != null) {
-						database.WriteTo(writer, progress => !dlg.IsCancelled);
+						database.WriteTo(writer, progress => {
+						                 	dlg.Progress = progress;
+						                 	return !dlg.CancellationToken.IsCancellationRequested;
+						                 });
 						writer.Close();
 						database.Close();
 					} else {
 						writer.Close();
 					}
 					
-					if (!dlg.IsCancelled)
+					if (!dlg.CancellationToken.IsCancellationRequested)
 						OnRunFinished(EventArgs.Empty);
-				} catch (Exception ex) {
-					Debug.Print(ex.ToString());
 				}
+			} catch (Exception ex) {
+				MessageService.ShowException(ex);
 			}
 		}
 		

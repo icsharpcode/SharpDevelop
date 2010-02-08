@@ -297,6 +297,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					this.currentPass = currentPass;
 				}
 				
+				public Gui.IProgressMonitor ProgressMonitor {
+					get { return sink.ProgressMonitor; }
+				}
+				
 				public void ReportError(BuildError error)
 				{
 					sink.ReportError(error);

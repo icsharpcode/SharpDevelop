@@ -154,32 +154,25 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			ParseableFileContentFinder finder = new ParseableFileContentFinder();
 			List<Reference> references = new List<Reference>();
-			try {
+			
+			if (progressMonitor != null)
+				progressMonitor.TaskName = StringParser.Parse("${res:SharpDevelop.Refactoring.FindingReferences}");
+			
+			foreach (ProjectItem item in files) {
+				var entry = finder.Create(item);
+				
 				if (progressMonitor != null) {
-					progressMonitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count, true);
+					progressMonitor.Progress += 1.0 / files.Count;
+					if (progressMonitor.CancellationToken.IsCancellationRequested)
+						return null;
 				}
-				int index = 0;
-				foreach (ProjectItem item in files) {
-					var entry = finder.Create(item);
-					
-					if (progressMonitor != null) {
-						progressMonitor.WorkDone = index;
-						if (progressMonitor.IsCancelled) {
-							return null;
-						}
-					}
-					
-					ITextBuffer content = entry.GetContent();
-					if (content != null) {
-						AddReferences(references, ownerClass, member, isLocal, entry.FileName, content.Text);
-					}
-					index++;
-				}
-			} finally {
-				if (progressMonitor != null) {
-					progressMonitor.Done();
+				
+				ITextBuffer content = entry.GetContent();
+				if (content != null) {
+					AddReferences(references, ownerClass, member, isLocal, entry.FileName, content.Text);
 				}
 			}
+			
 			return references;
 		}
 		

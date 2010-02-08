@@ -97,9 +97,7 @@ namespace ICSharpCode.SharpDevelop
 			string title = loadInformation.ProjectName;
 			IProgressMonitor progressMonitor = loadInformation.ProgressMonitor;
 			
-			if (progressMonitor != null) {
-				progressMonitor.BeginTask("Loading " + title, 0, false);
-			}
+			progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 			
 			IProject newProject;
 			if (!File.Exists(location)) {
@@ -112,16 +110,16 @@ namespace ICSharpCode.SharpDevelop
 						newProject = binding.LoadProject(loadInformation);
 					} catch (ProjectLoadException ex) {
 						LoggingService.Warn("Project load error", ex);
-						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
+						progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = loadInformation.TypeGuid;
-						if (progressMonitor != null) progressMonitor.ShowingDialog = false;
+						progressMonitor.ShowingDialog = false;
 					} catch (UnauthorizedAccessException ex) {
 						LoggingService.Warn("Project load error", ex);
-						if (progressMonitor != null) progressMonitor.ShowingDialog = true;
+						progressMonitor.ShowingDialog = true;
 						newProject = new UnknownProject(location, title, ex.Message, true);
 						newProject.TypeGuid = loadInformation.TypeGuid;
-						if (progressMonitor != null) progressMonitor.ShowingDialog = false;
+						progressMonitor.ShowingDialog = false;
 					}
 				} else {
 					string ext = Path.GetExtension(location);

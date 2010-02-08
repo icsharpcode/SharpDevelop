@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 using ICSharpCode.Core;
@@ -42,6 +43,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			cursorStatusBarPanel.Width = 150;
 			modeStatusBarPanel.Width = 25;
+			
+			statusProgressBar.Minimum = 0;
+			statusProgressBar.Maximum = 1;
+			
 			statusProgressBarItem.Visibility = Visibility.Hidden;
 			statusProgressBarItem.Width = 100;
 			statusProgressBarItem.Content = statusProgressBar;
@@ -103,52 +108,56 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		bool statusProgressBarIsVisible;
 		string currentTaskName;
+		OperationStatus currentStatus;
+		SolidColorBrush progressForegroundBrush;
 		
-		public void DisplayProgress(string taskName, int workDone, int totalWork)
+		public void DisplayProgress(string taskName, double workDone, OperationStatus status)
 		{
-			if (taskName == null)
-				taskName = "";
-			if (totalWork < 0)
-				totalWork = 0;
-			if (workDone < 0)
-				workDone = 0;
-			if (workDone > totalWork)
-				workDone = totalWork;
+			if (!statusProgressBarIsVisible) {
+				statusProgressBarItem.Visibility = Visibility.Visible;
+				statusProgressBarIsVisible = true;
+			}
 			
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					if (!statusProgressBarIsVisible) {
-						statusProgressBarItem.Visibility = Visibility.Visible;
-						statusProgressBarIsVisible = true;
-					}
-					
-					if (totalWork == 0) {
-						statusProgressBar.IsIndeterminate = true;
-					} else {
-						statusProgressBar.IsIndeterminate = false;
-						if (statusProgressBar.Maximum != totalWork) {
-							if (statusProgressBar.Value > totalWork)
-								statusProgressBar.Value = 0;
-							statusProgressBar.Maximum = totalWork;
-						}
-						statusProgressBar.Value = workDone;
-					}
-					
-					if (currentTaskName != taskName) {
-						currentTaskName = taskName;
-						jobNamePanel.Content = StringParser.Parse(taskName);
-					}
-				});
+			if (double.IsNaN(workDone)) {
+				statusProgressBar.IsIndeterminate = true;
+				status = OperationStatus.Normal; // indeterminate doesn't support foreground color
+			} else {
+				statusProgressBar.IsIndeterminate = false;
+				statusProgressBar.Value = workDone;
+			}
+			
+			if (status != currentStatus) {
+				if (progressForegroundBrush == null) {
+					SolidColorBrush defaultForeground = statusProgressBar.Foreground as SolidColorBrush;
+					progressForegroundBrush = new SolidColorBrush(defaultForeground != null ? defaultForeground.Color : Colors.Blue);
+				}
+				
+				if (status == OperationStatus.Error) {
+					statusProgressBar.Foreground = progressForegroundBrush;
+					progressForegroundBrush.BeginAnimation(SolidColorBrush.ColorProperty, new ColorAnimation(
+						Colors.Red, new Duration(TimeSpan.FromSeconds(0.6)), FillBehavior.HoldEnd));
+				} else if (status == OperationStatus.Warning) {
+					statusProgressBar.Foreground = progressForegroundBrush;
+					progressForegroundBrush.BeginAnimation(SolidColorBrush.ColorProperty, new ColorAnimation(
+						Colors.YellowGreen, new Duration(TimeSpan.FromSeconds(0.6)), FillBehavior.HoldEnd));
+				} else {
+					statusProgressBar.ClearValue(ProgressBar.ForegroundProperty);
+					progressForegroundBrush = null;
+				}
+				currentStatus = status;
+			}
+			
+			if (currentTaskName != taskName) {
+				currentTaskName = taskName;
+				jobNamePanel.Content = taskName;
+			}
 		}
 		
 		public void HideProgress()
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					statusProgressBarIsVisible = false;
-					statusProgressBarItem.Visibility = Visibility.Collapsed;
-					jobNamePanel.Content = currentTaskName = "";
-				});
+			statusProgressBarIsVisible = false;
+			statusProgressBarItem.Visibility = Visibility.Collapsed;
+			jobNamePanel.Content = currentTaskName = "";
 		}
 	}
 }

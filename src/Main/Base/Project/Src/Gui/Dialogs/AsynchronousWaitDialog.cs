@@ -6,20 +6,30 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	internal sealed partial class AsynchronousWaitDialogForm
 	{
-		internal AsynchronousWaitDialogForm()
+		internal AsynchronousWaitDialogForm(bool allowCancel)
 		{
 			InitializeComponent();
 			cancelButton.Text = ResourceService.GetString("Global.CancelButtonText");
+			
+			if (allowCancel) {
+				cancelButton.Visible = true;
+				progressBar.Width = cancelButton.Left - 8 - progressBar.Left;
+			} else {
+				cancelButton.Visible = false;
+				progressBar.Width = cancelButton.Right - progressBar.Left;
+			}
 		}
 	}
 	
@@ -30,27 +40,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 	///   long_running_action();
 	/// }
 	/// or:
-	/// using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("title")) {
+	/// using (IProgressMonitor monitor = AsynchronousWaitDialog.ShowWaitDialog("title")) {
 	///   long_running_action(monitor);
 	/// }
 	/// </summary>
-	public sealed class AsynchronousWaitDialog : IProgressMonitor, IDisposable
+	public sealed class AsynchronousWaitDialog : IProgressMonitor
 	{
 		/// <summary>
 		/// Delay until the wait dialog becomes visible, in ms.
 		/// </summary>
 		public const int ShowWaitDialogDelay = 500;
 		
-		readonly object lockObject = new object();
-		bool disposed;
-		AsynchronousWaitDialogForm dlg;
-		volatile int totalWork;
-		volatile string titleName;
-		volatile string taskName;
-		volatile int workDone;
-		volatile bool cancelled;
-		volatile bool allowCancel;
+		readonly string titleName;
+		readonly string defaultTaskName;
+		readonly CancellationTokenSource cancellation;
+		readonly ProgressCollector collector;
 		
+		readonly SynchronizationHelper synchronizationHelper = new SynchronizationHelper();
+		AsynchronousWaitDialogForm dlg;
+		
+		#region Constructors
 		/// <summary>
 		/// Shows a wait dialog.
 		/// </summary>
@@ -59,11 +68,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// To close the wait dialog, call Dispose() on the AsynchronousWaitDialog object</returns>
 		public static AsynchronousWaitDialog ShowWaitDialog(string titleName)
 		{
-			if (titleName == null)
-				throw new ArgumentNullException("titleName");
-			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, false);
-			h.Start();
-			return h;
+			return ShowWaitDialog(titleName, null, false);
 		}
 		
 		/// <summary>
@@ -75,19 +80,108 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// To close the wait dialog, call Dispose() on the AsynchronousWaitDialog object</returns>
 		public static AsynchronousWaitDialog ShowWaitDialog(string titleName, bool allowCancel)
 		{
+			return ShowWaitDialog(titleName, null, allowCancel);
+		}
+		
+		/// <summary>
+		/// Shows a wait dialog that does not support cancelling.
+		/// </summary>
+		/// <param name="titleName">Title of the wait dialog</param>
+		/// <param name="allowCancel">Specifies whether a cancel button should be shown.</param>
+		/// <param name="defaultTaskName">The default description text, if no named task is active.</param>
+		/// <returns>AsynchronousWaitDialog object - you can use it to access the wait dialog's properties.
+		/// To close the wait dialog, call Dispose() on the AsynchronousWaitDialog object</returns>
+		public static AsynchronousWaitDialog ShowWaitDialog(string titleName, string defaultTaskName, bool allowCancel)
+		{
 			if (titleName == null)
 				throw new ArgumentNullException("titleName");
-			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, allowCancel);
+			AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, defaultTaskName, allowCancel);
 			h.Start();
 			return h;
 		}
 		
-		private AsynchronousWaitDialog(string titleName, bool allowCancel)
+		/// <summary>
+		/// Shows a wait dialog that does supports cancelling.
+		/// </summary>
+		/// <param name="titleName">Title of the wait dialog</param>
+		/// <param name="defaultTaskName">The default description text, if no named task is active.</param>
+		/// <param name="action">The action to run within the wait dialog</param>
+		public static void RunInCancellableWaitDialog(string titleName, string defaultTaskName, Action<AsynchronousWaitDialog> action)
 		{
-			this.titleName = titleName;
-			Done(); // set default values for titleName
-			this.allowCancel = allowCancel;
+			if (titleName == null)
+				throw new ArgumentNullException("titleName");
+			using (AsynchronousWaitDialog h = new AsynchronousWaitDialog(titleName, defaultTaskName, true)) {
+				h.Start();
+				try {
+					action(h);
+				} catch (OperationCanceledException ex) {
+					// consume OperationCanceledException
+					if (ex.CancellationToken != h.CancellationToken)
+						throw;
+				}
+			}
 		}
+		
+		private AsynchronousWaitDialog(string titleName, string defaultTaskName, bool allowCancel)
+		{
+			this.titleName = StringParser.Parse(titleName);
+			this.defaultTaskName = StringParser.Parse(defaultTaskName ?? "${res:Global.PleaseWait}");
+			if (allowCancel)
+				this.cancellation = new CancellationTokenSource();
+			this.collector = new ProgressCollector(synchronizationHelper, allowCancel ? cancellation.Token : CancellationToken.None);
+		}
+		#endregion
+		
+		#region SynchronizationHelper
+		// this class works around the issue that we don't initially have an ISynchronizeInvoke implementation
+		// for the target thread, we only create it after ShowWaitDialogDelay.
+		sealed class SynchronizationHelper : ISynchronizeInvoke
+		{
+			volatile ISynchronizeInvoke targetSynchronizeInvoke;
+			
+			public bool InvokeRequired {
+				get {
+					ISynchronizeInvoke si = targetSynchronizeInvoke;
+					return si != null && si.InvokeRequired;
+				}
+			}
+			
+			public IAsyncResult BeginInvoke(Delegate method, object[] args)
+			{
+				ISynchronizeInvoke si = targetSynchronizeInvoke;
+				if (si != null)
+					return si.BeginInvoke(method, args);
+				else {
+					// When target is not available, invoke method on current thread, but use a lock
+					// to ensure we don't run multiple methods concurrently.
+					lock (this) {
+						method.DynamicInvoke(args);
+						return null;
+					}
+					// yes this is morally questionable - maybe it would be better to enqueue all invocations and run them later?
+					// ProgressCollector would have to avoid enqueuing stuff multiple times for all kinds of updates
+					// (currently it does this only with updates to the Progress property)
+				}
+			}
+			
+			public void SetTarget(ISynchronizeInvoke targetSynchronizeInvoke)
+			{
+				lock (this) {
+					this.targetSynchronizeInvoke = targetSynchronizeInvoke;
+				}
+			}
+			
+			public object EndInvoke(IAsyncResult result)
+			{
+				throw new NotSupportedException();
+			}
+			
+			public object Invoke(Delegate method, object[] args)
+			{
+				throw new NotSupportedException();
+			}
+		}
+		#endregion
 		
 		#region Start waiting thread
 		/// <summary>
@@ -106,19 +200,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void Run()
 		{
 			Thread.Sleep(ShowWaitDialogDelay);
-			bool isShowingDialog;
-			lock (lockObject) {
-				if (disposed)
-					return;
-				dlg = new AsynchronousWaitDialogForm();
-				dlg.Text = StringParser.Parse(titleName);
-				dlg.cancelButton.Click += CancelButtonClick;
-				UpdateTask();
-				dlg.CreateControl();
-				IntPtr h = dlg.Handle; // force handle creation
-				isShowingDialog = showingDialog;
+			if (collector.ProgressMonitorIsDisposed)
+				return;
+			
+			dlg = new AsynchronousWaitDialogForm(cancellation != null);
+			dlg.Text = titleName;
+			dlg.cancelButton.Click += CancelButtonClick;
+			dlg.CreateControl();
+			IntPtr h = dlg.Handle; // force handle creation
+			
+			// ensure events occur on this thread, then register event handlers
+			synchronizationHelper.SetTarget(dlg);
+			collector.ProgressMonitorDisposed += progress_ProgressMonitorDisposed;
+			collector.PropertyChanged += progress_PropertyChanged;
+			
+			// check IsDisposed once again (we might have missed an event while we initialized the dialog):
+			if (collector.ProgressMonitorIsDisposed) {
+				dlg.Dispose();
+				return;
 			}
-			if (isShowingDialog) {
+			
+			progress_PropertyChanged(null, new System.ComponentModel.PropertyChangedEventArgs("TaskName"));
+			
+			if (collector.ShowingDialog) {
 				Application.Run();
 			} else {
 				Application.Run(dlg);
@@ -129,166 +233,92 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Closes the wait dialog.
 		/// </summary>
-		public void Dispose()
-		{
-			lock (lockObject) {
-				if (disposed) return;
-				disposed = true;
-				if (dlg != null) {
-					dlg.BeginInvoke(new MethodInvoker(DisposeInvoked));
-				}
-			}
-		}
-		
-		void DisposeInvoked()
+		void progress_ProgressMonitorDisposed(object sender, EventArgs e)
 		{
 			dlg.Dispose();
 			Application.ExitThread();
 		}
 		
-		public int WorkDone {
-			get {
-				return workDone;
-			}
-			set {
-				if (workDone != value) {
-					lock (lockObject) {
-						workDone = value;
-						if (dlg != null && disposed == false) {
-							dlg.BeginInvoke(new MethodInvoker(UpdateProgress));
-						}
-					}
-				}
-			}
-		}
+		bool reshowTimerRunning = false;
 		
-		public string TaskName {
-			get {
-				lock (lockObject) {
-					return taskName;
-				}
-			}
-			set {
-				if (taskName != value) {
-					lock (lockObject) {
-						taskName = value;
-						if (dlg != null && disposed == false) {
-							dlg.BeginInvoke(new MethodInvoker(UpdateTask));
-						}
-					}
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Begins a new task with the specified name and total amount of work.
-		/// </summary>
-		/// <param name="name">Name of the task. Use null to display "please wait..." message</param>
-		/// <param name="totalWork">Total amount of work in work units. Use 0 for unknown amount of work.</param>
-		/// <param name="allowCancel">Specifies whether the task can be cancelled.</param>
-		public void BeginTask(string name, int totalWork, bool allowCancel)
+		void progress_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (name == null)
-				name = "${res:Global.PleaseWait}";
-			if (totalWork < 0)
-				totalWork = 0;
-			
-			lock (lockObject) {
-				this.allowCancel = allowCancel;
-				this.totalWork = totalWork;
-				this.taskName = name;
-				if (dlg != null && disposed == false) {
-					dlg.BeginInvoke(new MethodInvoker(UpdateTask));
+			// show/hide dialog as required by ShowingDialog
+			if (dlg.Visible == collector.ShowingDialog) {
+				if (collector.ShowingDialog) {
+					dlg.Hide();
+				} else if (!reshowTimerRunning) {
+					reshowTimerRunning = true;
+					var timer = new System.Windows.Forms.Timer();
+					timer.Interval = 100;
+					timer.Tick += delegate {
+						timer.Dispose();
+						reshowTimerRunning = false;
+						if (!collector.ShowingDialog)
+							dlg.Show();
+					};
+					timer.Start();
 				}
-			}
-		}
-		
-		/// <summary>
-		/// Resets the task to a generic "please wait" with marquee progress bar.
-		/// </summary>
-		public void Done()
-		{
-			workDone = 0;
-			BeginTask(null, 0, false);
-		}
-		
-		void UpdateTask()
-		{
-			int totalWork = this.totalWork;
-			
-			dlg.taskLabel.Text = StringParser.Parse(taskName);
-			if (allowCancel) {
-				dlg.cancelButton.Visible = true;
-				dlg.progressBar.Width = dlg.cancelButton.Left - 8 - dlg.progressBar.Left;
-			} else {
-				dlg.cancelButton.Visible = false;
-				dlg.progressBar.Width = dlg.cancelButton.Right - dlg.progressBar.Left;
 			}
 			
-			if (totalWork > 0) {
-				if (dlg.progressBar.Value > totalWork) {
-					dlg.progressBar.Value = 0;
-				}
-				dlg.progressBar.Maximum = totalWork + 1;
-				dlg.progressBar.Style = ProgressBarStyle.Continuous;
-			} else {
+			// update task name and progress
+			if (e.PropertyName == "TaskName")
+				dlg.taskLabel.Text = collector.TaskName ?? defaultTaskName;
+			if (double.IsNaN(collector.Progress)) {
 				dlg.progressBar.Style = ProgressBarStyle.Marquee;
-			}
-			UpdateProgress();
-		}
-		
-		void UpdateProgress()
-		{
-			int workDone = this.workDone;
-			if (workDone < 0) workDone = 0;
-			if (workDone > dlg.progressBar.Maximum)
-				workDone = dlg.progressBar.Maximum;
-			dlg.progressBar.Value = workDone;
-		}
-		
-		bool showingDialog;
-		
-		public bool ShowingDialog {
-			get { return showingDialog; }
-			set {
-				if (showingDialog != value) {
-					lock (lockObject) {
-						showingDialog = value;
-						if (dlg != null && disposed == false) {
-							if (value) {
-								dlg.BeginInvoke(new MethodInvoker(dlg.Hide));
-							} else {
-								dlg.BeginInvoke(new MethodInvoker(delegate {
-								                                  	Thread.Sleep(100);
-								                                  	if (showingDialog) {
-								                                  		dlg.Show();
-								                                  	}
-								                                  }));
-							}
-						}
-					}
-				}
+			} else {
+				dlg.progressBar.Style = ProgressBarStyle.Continuous;
+				dlg.progressBar.Value = Math.Max(0, Math.Min(100, (int)(collector.Progress * 100)));
 			}
 		}
 		
 		void CancelButtonClick(object sender, EventArgs e)
 		{
 			dlg.cancelButton.Enabled = false;
-			if (!cancelled) {
-				cancelled = true;
-				EventHandler eh = Cancelled;
-				if (eh != null) {
-					eh(this, e);
-				}
-			}
+			if (cancellation != null)
+				cancellation.Cancel();
 		}
 		
-		public bool IsCancelled {
-			get {
-				return cancelled;
-			}
+		#region IProgressMonitor interface impl (forwards to progress.ProgressMonitor)
+		/// <inheritdoc/>
+		public string TaskName {
+			get { return collector.ProgressMonitor.TaskName; }
+			set { collector.ProgressMonitor.TaskName = value; }
 		}
 		
-		public event EventHandler Cancelled;
+		/// <inheritdoc/>
+		public double Progress {
+			get { return collector.ProgressMonitor.Progress; }
+			set { collector.ProgressMonitor.Progress = value; }
+		}
+		
+		/// <inheritdoc/>
+		public bool ShowingDialog {
+			get { return collector.ProgressMonitor.ShowingDialog; }
+			set { collector.ProgressMonitor.ShowingDialog = value; }
+		}
+		
+		/// <inheritdoc/>
+		public OperationStatus Status {
+			get { return collector.ProgressMonitor.Status; }
+			set { collector.ProgressMonitor.Status = value; }
+		}
+		
+		/// <inheritdoc/>
+		public CancellationToken CancellationToken {
+			get { return collector.ProgressMonitor.CancellationToken; }
+		}
+		
+		/// <inheritdoc/>
+		public IProgressMonitor CreateSubTask(double workAmount)
+		{
+			return collector.ProgressMonitor.CreateSubTask(workAmount);
+		}
+		
+		public void Dispose()
+		{
+			collector.ProgressMonitor.Dispose();
+		}
+		#endregion
 	}
 }

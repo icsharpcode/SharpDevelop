@@ -11,7 +11,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
-	/// Description of ProjectLoadInformation.
+	/// Parameter object for loading an existing project.
 	/// </summary>
 	public class ProjectLoadInformation
 	{
@@ -21,7 +21,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string ProjectName { get; private set; }
 		public string TypeGuid { get; set; }
 		internal string Guid { get; set; }
-		public Gui.IProgressMonitor ProgressMonitor { get; set; }
+		
+		Gui.IProgressMonitor progressMonitor = new Gui.DummyProgressMonitor();
+		
+		/// <summary>
+		/// Gets/Sets the progress monitor used during the load.
+		/// This property never returns null.
+		/// </summary>
+		public Gui.IProgressMonitor ProgressMonitor {
+			get { return progressMonitor; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException();
+				progressMonitor = value;
+			}
+		}
 		
 		public ProjectLoadInformation(Solution parentSolution, string fileName, string projectName)
 		{

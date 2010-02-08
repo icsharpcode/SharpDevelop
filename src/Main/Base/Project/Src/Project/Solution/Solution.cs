@@ -511,6 +511,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static ProjectSection SetupSolutionLoadSolutionProjects(Solution newSolution, StreamReader sr, IProgressMonitor progressMonitor)
 		{
+			if (progressMonitor == null)
+				throw new ArgumentNullException("progressMonitor");
+			
 			string solutionDirectory = Path.GetDirectoryName(newSolution.FileName);
 			
 			ProjectSection nestedProjectsSection = null;
@@ -542,15 +545,10 @@ namespace ICSharpCode.SharpDevelop.Project
 						ProjectLoadInformation loadInfo = new ProjectLoadInformation(newSolution, location, title);
 						loadInfo.TypeGuid = projectGuid;
 						loadInfo.Guid = guid;
-//						loadInfo.ProgressMonitor = progressMonitor;
-//						IProject newProject = ProjectBindingService.LoadProject(loadInfo);
-//						newProject.IdGuid = guid;
 						projectsToLoad.Add(loadInfo);
 						IList<ProjectSection> currentProjectSections = new List<ProjectSection>();
 						ReadProjectSections(sr, currentProjectSections);
 						readProjectSections.Add(currentProjectSections);
-//						newSolution.AddFolder(newProject);
-
 					}
 					match = match.NextMatch();
 				} else {
@@ -578,10 +576,16 @@ namespace ICSharpCode.SharpDevelop.Project
 				loadInfo.Platform = AbstractProject.GetPlatformNameFromKey(projectConfig.Location);
 				
 				loadInfo.ProgressMonitor = progressMonitor;
-				IProject newProject = ProjectBindingService.LoadProject(loadInfo);
-				newProject.IdGuid = loadInfo.Guid;
-				newProject.ProjectSections.AddRange(projectSections);
-				newSolution.AddFolder(newProject);
+				progressMonitor.Progress = (double)i / projectsToLoad.Count;
+				progressMonitor.TaskName = "Loading " + loadInfo.ProjectName;
+				
+				using (IProgressMonitor nestedProgressMonitor = progressMonitor.CreateSubTask(1.0 / projectsToLoad.Count)) {
+					loadInfo.ProgressMonitor = nestedProgressMonitor;
+					IProject newProject = ProjectBindingService.LoadProject(loadInfo);
+					newProject.IdGuid = loadInfo.Guid;
+					newProject.ProjectSections.AddRange(projectSections);
+					newSolution.AddFolder(newProject);
+				}
 			}
 			return nestedProjectsSection;
 		}

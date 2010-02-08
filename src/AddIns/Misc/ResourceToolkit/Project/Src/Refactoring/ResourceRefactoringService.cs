@@ -73,12 +73,14 @@ namespace Hornung.ResourceToolkit.Refactoring
 				ICollection<string> files = GetPossibleFiles(scope);
 				
 				if (monitor != null) {
-					monitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count, true);
+					monitor.TaskName = StringParser.Parse("${res:SharpDevelop.Refactoring.FindingReferences}");
 				}
-				
+				double workDone = 0;
 				foreach (string fileName in files) {
-					
-					if (monitor != null && monitor.IsCancelled) {
+					if (monitor != null)
+						monitor.Progress = workDone / files.Count;
+					workDone += 1;
+					if (monitor != null && monitor.CancellationToken.IsCancellationRequested) {
 						return null;
 					}
 					
@@ -91,13 +93,11 @@ namespace Hornung.ResourceToolkit.Refactoring
 					} catch (FileNotFoundException) {
 					}
 					if (doc == null) {
-						if (monitor != null) ++monitor.WorkDone;
 						continue;
 					}
 					
 					string fileContent = doc.Text;
 					if (String.IsNullOrEmpty(fileContent)) {
-						if (monitor != null) ++monitor.WorkDone;
 						continue;
 					}
 					
@@ -139,15 +139,12 @@ namespace Hornung.ResourceToolkit.Refactoring
 						}
 						
 					}
-					
-					if (monitor != null) ++monitor.WorkDone;
 				}
 				
 				LoggingService.Info("ResourceToolkit: FindReferences finished in "+(DateTime.UtcNow - startTime).TotalSeconds.ToString(System.Globalization.CultureInfo.CurrentCulture)+"s");
 				
 			} finally {
 				NRefactoryAstCacheService.DisableCache();
-				if (monitor != null) monitor.Done();
 			}
 			
 			return references;
@@ -210,10 +207,6 @@ namespace Hornung.ResourceToolkit.Refactoring
 				return null;
 			}
 			
-			if (monitor != null) {
-				monitor.BeginTask(null, 0, false);
-			}
-			
 			List<ResourceItem> unused = new List<ResourceItem>();
 			
 			// Get a list of all referenced resource files.
@@ -256,8 +249,6 @@ namespace Hornung.ResourceToolkit.Refactoring
 					}
 				}
 			}
-			
-			if (monitor != null) monitor.Done();
 			
 			return unused.AsReadOnly();
 		}
@@ -302,10 +293,6 @@ namespace Hornung.ResourceToolkit.Refactoring
 				return;
 			}
 			
-			if (monitor != null) {
-				monitor.BeginTask(null, 0, false);
-			}
-			
 			try {
 				// rename definition (if present)
 				if (rrr.ResourceFileContent.ContainsKey(rrr.Key)) {
@@ -319,7 +306,6 @@ namespace Hornung.ResourceToolkit.Refactoring
 				if (monitor != null) monitor.ShowingDialog = true;
 				MessageService.ShowWarningFormatted("${res:Hornung.ResourceToolkit.ErrorProcessingResourceFile}" + Environment.NewLine + ex.Message, rrr.ResourceFileContent.FileName);
 				if (monitor != null) monitor.ShowingDialog = false;
-				if (monitor != null) monitor.Done();
 				// Do not rename the references when renaming the definition failed.
 				return;
 			}
@@ -340,8 +326,6 @@ namespace Hornung.ResourceToolkit.Refactoring
 					if (monitor != null) monitor.ShowingDialog = false;
 				}
 			}
-			
-			if (monitor != null) monitor.Done();
 		}
 		
 		// ********************************************************************************************************************************

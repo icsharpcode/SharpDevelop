@@ -6,67 +6,88 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// This is a basic interface to a "progress bar" type of
-	/// control.
+	/// Represents a target where an active task reports progress to.
 	/// </summary>
-	public interface IProgressMonitor
+	/// <remarks>
+	/// This interface is not thread-safe, but it can be used to report progress from background threads which will be
+	/// automatically sent to the correct GUI thread.
+	/// Using a progress monitor from multiple threads is possible if the user synchronizes the access.
+	/// </remarks>
+	public interface IProgressMonitor : IDisposable
 	{
 		/// <summary>
-		/// Begins a new task with the specified name and total amount of work.
+		/// Gets/Sets the amount of work already done within this task.
+		/// Always uses a scale from 0 to 1 local to this progress monitor.
 		/// </summary>
-		/// <param name="name">Name of the task. Use null to display a default message</param>
-		/// <param name="totalWork">Total amount of work in work units. Use 0 for unknown amount of work.</param>
-		/// <param name="allowCancel">Specifies whether the task can be cancelled.</param>
-		void BeginTask(string name, int totalWork, bool allowCancel);
+		double Progress { get; set; }
 		
 		/// <summary>
-		/// Gets/Sets the amount of work already done
+		/// Creates a nested task.
 		/// </summary>
-		int WorkDone {
-			get;
-			set;
-		}
+		/// <param name="workAmount">The amount of work this sub-task performs in relation to the work of this task.
+		/// That means, this parameter is used as a scaling factor for work performed within the subtask.</param>
+		/// <returns>A new progress monitor representing the sub-task.
+		/// Multiple child progress monitors can be used at once; even concurrently on multiple threads.</returns>
+		IProgressMonitor CreateSubTask(double workAmount);
 		
 		/// <summary>
-		/// Marks the current task as Done.
+		/// Gets/Sets the name to show while the task is active.
 		/// </summary>
-		void Done();
-		
-		/// <summary>
-		/// Gets/Sets the current task name.
-		/// </summary>
-		string TaskName {
-			get;
-			set;
-		}
+		string TaskName { get; set; }
 		
 		/// <summary>
 		/// Gets/sets if the task current shows a modal dialog. Set this property to true to make progress
 		/// dialogs windows temporarily invisible while your modal dialog is showing.
 		/// </summary>
-		bool ShowingDialog {
+		bool ShowingDialog { // TODO: get rid of this. Don't mix calculations and UI!
 			get;
 			set;
 		}
 		
 		/// <summary>
-		/// Gets whether the user has cancelled the operation.
+		/// Gets the cancellation token.
 		/// </summary>
-		bool IsCancelled {
-			get;
-		}
+		CancellationToken CancellationToken { get; }
 		
 		/// <summary>
-		/// Occurs when the user cancels the operation.
-		/// This event could be raised on any thread.
+		/// Gets/Sets the operation status.
+		/// 
+		/// Note: the status of the whole operation is the most severe status of all nested monitors.
+		/// The more severe value persists even if the child monitor gets disposed.
 		/// </summary>
-		event EventHandler Cancelled;
+		OperationStatus Status { get; set; }
 	}
 	
+	/// <summary>
+	/// Represents the status of a operation with progress monitor.
+	/// </summary>
+	public enum OperationStatus : byte
+	{
+		/// <summary>
+		/// Everything is normal.
+		/// </summary>
+		Normal,
+		/// <summary>
+		/// There was at least one warning.
+		/// </summary>
+		Warning,
+		/// <summary>
+		/// There was at least one error.
+		/// </summary>
+		Error
+	}
+	
+	/// <summary>
+	/// Adapter IDomProgressMonitor -> IProgressMonitor
+	/// </summary>
 	public sealed class DomProgressMonitor : Dom.IDomProgressMonitor
 	{
 		IProgressMonitor monitor;
@@ -92,41 +113,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	internal class DummyProgressMonitor : IProgressMonitor
+	/// <summary>
+	/// Dummy progress monitor implementation that does not report the progress anywhere.
+	/// </summary>
+	public sealed class DummyProgressMonitor : IProgressMonitor
 	{
-		int workDone;
-		string taskName;
-		bool showingDialog;
+		public string TaskName { get; set; }
 		
-		public int WorkDone {
-			get { return workDone; }
-			set { workDone = value; }
+		public bool ShowingDialog { get; set; }
+		
+		public OperationStatus Status { get; set; }
+		
+		public CancellationToken CancellationToken {
+			get { return CancellationToken.None; }
 		}
 		
-		public string TaskName {
-			get { return taskName; }
-			set { taskName = value; }
-		}
+		public double Progress { get; set; }
 		
-		public void BeginTask(string name, int totalWork, bool allowCancel)
+		public IProgressMonitor CreateSubTask(double workAmount)
 		{
-			taskName = name;
-			workDone = 0;
+			return new DummyProgressMonitor();
 		}
 		
-		public void Done()
+		public void Dispose()
 		{
 		}
-		
-		public bool IsCancelled {
-			get { return false; }
-		}
-		
-		public bool ShowingDialog {
-			get { return showingDialog; }
-			set { showingDialog = value; }
-		}
-		
-		public event EventHandler Cancelled { add { } remove { } }
 	}
 }

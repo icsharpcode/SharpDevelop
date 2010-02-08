@@ -352,7 +352,7 @@ namespace SearchAndReplace
 		
 		static void ShowNotFoundMessage(IProgressMonitor monitor)
 		{
-			if (monitor != null && monitor.IsCancelled)
+			if (monitor != null && monitor.CancellationToken.IsCancellationRequested)
 				return;
 			if (monitor != null) monitor.ShowingDialog = true;
 			MessageBox.Show(WorkbenchSingleton.MainWin32Window,

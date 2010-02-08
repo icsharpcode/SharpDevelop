@@ -89,7 +89,7 @@ namespace SearchAndReplace
 			Debug.Assert(documentIterator    != null);
 			Debug.Assert(textIteratorBuilder != null);
 			
-			if (monitor != null && monitor.IsCancelled)
+			if (monitor != null && monitor.CancellationToken.IsCancellationRequested)
 				return null;
 			
 			if (info != null && textIterator != null && documentIterator.CurrentFileName != null) {

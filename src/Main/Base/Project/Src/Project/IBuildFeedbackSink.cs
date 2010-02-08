@@ -16,6 +16,13 @@ namespace ICSharpCode.SharpDevelop.Project
 	public interface IBuildFeedbackSink
 	{
 		/// <summary>
+		/// Gets the progress monitor associated with this build.
+		/// Does not return null.
+		/// This member is thread-safe.
+		/// </summary>
+		Gui.IProgressMonitor ProgressMonitor { get; }
+		
+		/// <summary>
 		/// Reports an build error by adding it to the error list.
 		/// This member is thread-safe.
 		/// </summary>

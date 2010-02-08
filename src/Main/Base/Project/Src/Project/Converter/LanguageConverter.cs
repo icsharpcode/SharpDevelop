@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 		
-		protected virtual int GetRequiredWork(ProjectItem item)
+		protected virtual double GetRequiredWork(ProjectItem item)
 		{
 			if (item.ItemType == ItemType.Compile) {
 				return 50;
@@ -121,13 +121,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				throw new ArgumentNullException("targetProjectItems");
 			
 			ICollection<ProjectItem> sourceItems = sourceProject.Items;
-			int totalWork = 0;
+			double totalWork = 0;
 			foreach (ProjectItem item in sourceItems) {
 				totalWork += GetRequiredWork(item);
 			}
 			
-			monitor.BeginTask("Converting", totalWork, true);
-			int workDone = 0;
 			foreach (ProjectItem item in sourceItems) {
 				FileProjectItem fileItem = item as FileProjectItem;
 				if (fileItem != null && FileUtility.IsBaseDirectory(sourceProject.Directory, fileItem.FileName)) {
@@ -148,13 +146,9 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				} else {
 					targetProjectItems.AddProjectItem(item.CloneFor(targetProject));
 				}
-				if (monitor.IsCancelled) {
-					return;
-				}
-				workDone += GetRequiredWork(item);
-				monitor.WorkDone = workDone;
+				monitor.CancellationToken.ThrowIfCancellationRequested();
+				monitor.Progress += GetRequiredWork(item) / totalWork;
 			}
-			monitor.Done();
 		}
 		
 		protected StringBuilder conversionLog;
@@ -178,16 +172,23 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			conversionLog.Append(ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.Convert.TargetDirectory")).Append(": ");
 			conversionLog.AppendLine(targetProjectDirectory);
 			
+			try {
+				PerformConversion(translatedTitle, sourceProject, targetProjectDirectory);
+			} catch (OperationCanceledException) {
+				// ignore
+			}
+		}
+		
+		void PerformConversion(string translatedTitle, MSBuildBasedProject sourceProject, string targetProjectDirectory)
+		{
 			IProject targetProject;
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog(translatedTitle)) {
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog(translatedTitle, "Converting", true)) {
 				Directory.CreateDirectory(targetProjectDirectory);
 				targetProject = CreateProject(targetProjectDirectory, sourceProject);
 				CopyProperties(sourceProject, targetProject);
 				conversionLog.AppendLine();
 				CopyItems(sourceProject, targetProject, monitor);
-				if (monitor.IsCancelled) {
-					return;
-				}
+				monitor.CancellationToken.ThrowIfCancellationRequested();
 				conversionLog.AppendLine();
 				AfterConversion(targetProject);
 				conversionLog.AppendLine(ResourceService.GetString("ICSharpCode.SharpDevelop.Commands.Convert.ConversionComplete"));

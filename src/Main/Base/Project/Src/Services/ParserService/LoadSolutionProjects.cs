@@ -77,8 +77,8 @@ namespace ICSharpCode.SharpDevelop
 						if (!reParse1.Contains(pc)) {
 							LoggingService.Debug("Enqueue for reinitializing references: " + project);
 							reParse1.Add(pc);
-							jobs.AddJob(new JobTask(ct => ReInitializeReferences(pc, ct),
-							                        "Loading references for "  + project.Name + "...",
+							jobs.AddJob(new JobTask(pm => ReInitializeReferences(pc, pm),
+							                        GetLoadReferenceTaskTitle(project.Name),
 							                        10
 							                       ));
 						}
@@ -89,8 +89,8 @@ namespace ICSharpCode.SharpDevelop
 						if (!reParse2.Contains(pc)) {
 							LoggingService.Debug("Enqueue for reparsing code: " + project);
 							reParse2.Add(pc);
-							jobs.AddJob(new JobTask(ct => ReparseCode(pc, ct),
-							                        "${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} "  + project.Name + "...",
+							jobs.AddJob(new JobTask(pm => ReparseCode(pc, pm),
+							                        GetParseTaskTitle(project.Name),
 							                        pc.GetInitializationWorkAmount()
 							                       ));
 						}
@@ -100,20 +100,20 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		static void ReInitializeReferences(ParseProjectContent pc, CancellationToken ct)
+		static void ReInitializeReferences(ParseProjectContent pc, IProgressMonitor progressMonitor)
 		{
 			lock (reParse1) {
 				reParse1.Remove(pc);
 			}
-			pc.ReInitialize1(ct);
+			pc.ReInitialize1(progressMonitor);
 		}
 		
-		static void ReparseCode(ParseProjectContent pc, CancellationToken ct)
+		static void ReparseCode(ParseProjectContent pc, IProgressMonitor progressMonitor)
 		{
 			lock (reParse2) {
 				reParse2.Remove(pc);
 			}
-			pc.ReInitialize2(ct);
+			pc.ReInitialize2(progressMonitor);
 		}
 		#endregion
 		
@@ -132,26 +132,36 @@ namespace ICSharpCode.SharpDevelop
 			for (int i = 0; i < createdContents.Count; i++) {
 				ParseProjectContent pc = createdContents[i];
 				jobs.AddJob(new JobTask(pc.Initialize1,
-				                        "Loading references for "  + pc.ProjectName + "...",
+				                        GetLoadReferenceTaskTitle(pc.ProjectName),
 				                        10));
 			}
 			for (int i = 0; i < createdContents.Count; i++) {
 				ParseProjectContent pc = createdContents[i];
 				jobs.AddJob(new JobTask(pc.Initialize2,
-				                        "${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} "  + pc.ProjectName + "...",
+				                        GetParseTaskTitle(pc.ProjectName),
 				                        pc.GetInitializationWorkAmount()));
 			}
 			jobs.AddJob(new JobTask(ct => RaiseThreadEnded(openedSolution), "", 0));
 			jobs.StartRunningIfRequired();
 		}
 		
+		static string GetLoadReferenceTaskTitle(string projectName)
+		{
+			return "Loading references for "  + projectName + "...";
+		}
+		
+		static string GetParseTaskTitle(string projectName)
+		{
+			return StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} ")  + projectName + "...";
+		}
+		
 		internal static void InitNewProject(ParseProjectContent pc)
 		{
 			jobs.AddJob(new JobTask(pc.Initialize1,
-			                        "Loading references for "  + pc.ProjectName + "...",
+			                        GetLoadReferenceTaskTitle(pc.ProjectName),
 			                        10));
 			jobs.AddJob(new JobTask(pc.Initialize2,
-			                        "${res:ICSharpCode.SharpDevelop.Internal.ParserService.Parsing} "  + pc.ProjectName + "...",
+			                        GetParseTaskTitle(pc.ProjectName),
 			                        pc.GetInitializationWorkAmount()));
 			jobs.StartRunningIfRequired();
 		}
@@ -171,11 +181,11 @@ namespace ICSharpCode.SharpDevelop
 		{
 			readonly object lockObj = new object();
 			readonly Queue<JobTask> actions = new Queue<JobTask>();
-			readonly IProgressMonitor progressMonitor = StatusBarService.CreateProgressMonitor();
 			CancellationTokenSource cancellationSource = new CancellationTokenSource();
+			IProgressMonitor progressMonitor;
 			bool threadIsRunning;
-			int totalWork;
-			int workDone;
+			double totalWork;
+			double workDone;
 			
 			public void AddJob(JobTask task)
 			{
@@ -193,8 +203,8 @@ namespace ICSharpCode.SharpDevelop
 					if (!this.threadIsRunning && this.actions.Count > 0) {
 						this.threadIsRunning = true;
 						
-						progressMonitor.BeginTask(this.actions.Peek().name, totalWork, false);
-						progressMonitor.WorkDone = 0;
+						progressMonitor = StatusBarService.CreateProgressMonitor(cancellationSource.Token);
+						progressMonitor.TaskName = this.actions.Peek().name;
 						
 						Thread thread = new Thread(new ThreadStart(RunThread));
 						thread.Name = "LoadSolutionProjects";
@@ -208,26 +218,29 @@ namespace ICSharpCode.SharpDevelop
 			void RunThread()
 			{
 				while (true) {
-					CancellationToken token;
 					JobTask task;
-					int totalWork, workDone;
+					// copy fields from this class into local variables to ensure thread-safety
+					// with concurrent Clear() calls
+					double totalWork, workDone;
+					IProgressMonitor progressMonitor;
 					lock (lockObj) {
 						if (actions.Count == 0) {
 							this.threadIsRunning = false;
-							progressMonitor.Done();
+							this.progressMonitor.Dispose();
+							this.progressMonitor = null;
 							return;
 						}
 						task = this.actions.Dequeue();
-						token = this.cancellationSource.Token;
 						totalWork = this.totalWork;
 						workDone = this.workDone;
+						progressMonitor = this.progressMonitor;
 					}
-					if (task.cost > 0) {
-						progressMonitor.BeginTask(task.name, totalWork, false);
-						progressMonitor.WorkDone = workDone;
-					}
+					progressMonitor.Progress = workDone / totalWork;
+					progressMonitor.TaskName = task.name;
 					try {
-						task.Run(token);
+						using (IProgressMonitor subTask = progressMonitor.CreateSubTask(task.cost / totalWork)) {
+							task.Run(subTask);
+						}
 						lock (lockObj) {
 							this.workDone += task.cost;
 						}
@@ -245,6 +258,10 @@ namespace ICSharpCode.SharpDevelop
 					cancellationSource.Cancel();
 					actions.Clear();
 					cancellationSource = new CancellationTokenSource();
+					if (progressMonitor != null) {
+						progressMonitor.Dispose();
+						progressMonitor = null;
+					}
 					this.totalWork = 0;
 					this.workDone = 0;
 				}
@@ -253,11 +270,11 @@ namespace ICSharpCode.SharpDevelop
 		
 		sealed class JobTask
 		{
-			readonly Action<CancellationToken> action;
+			readonly Action<IProgressMonitor> action;
 			internal readonly string name;
-			internal readonly int cost;
+			internal readonly double cost;
 			
-			public JobTask(Action<CancellationToken> action, string name, int cost)
+			public JobTask(Action<IProgressMonitor> action, string name, double cost)
 			{
 				if (action == null)
 					throw new ArgumentNullException("action");
@@ -266,9 +283,9 @@ namespace ICSharpCode.SharpDevelop
 				this.cost = cost;
 			}
 			
-			public void Run(CancellationToken token)
+			public void Run(IProgressMonitor progressMonitor)
 			{
-				action(token);
+				action(progressMonitor);
 			}
 		}
 	}

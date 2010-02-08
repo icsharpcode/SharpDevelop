@@ -7,10 +7,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -97,107 +100,58 @@ namespace ICSharpCode.SharpDevelop
 			Visible = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.StatusBarVisible", true);
 		}
 		
-		public static void Update()
-		{
-			System.Diagnostics.Debug.Assert(statusBar != null);
-			/*		statusBar.Panels.Clear();
-			statusBar.Controls.Clear();
-			
-			foreach (StatusBarContributionItem item in Items) {
-				if (item.Control != null) {
-					statusBar.Controls.Add(item.Control);
-				} else if (item.Panel != null) {
-					statusBar.Panels.Add(item.Panel);
-				} else {
-					throw new ApplicationException("StatusBarContributionItem " + item.ItemID + " has no Control or Panel defined.");
-				}
-			}*/
-		}
-		
 		#region Progress Monitor
-		static HashSet<StatusBarProgressMonitor> activeProgressMonitors = new HashSet<StatusBarProgressMonitor>();
-		static StatusBarProgressMonitor currentProgressMonitor;
+		static Stack<ProgressCollector> waitingProgresses = new Stack<ProgressCollector>();
+		static ProgressCollector currentProgress;
 		
-		public static IProgressMonitor CreateProgressMonitor()
+		public static IProgressMonitor CreateProgressMonitor(CancellationToken cancellationToken)
 		{
-			System.Diagnostics.Debug.Assert(statusBar != null);
-			return new StatusBarProgressMonitor();
+			ProgressCollector progress = new ProgressCollector(WorkbenchSingleton.Workbench.SynchronizingObject, cancellationToken);
+			AddProgress(progress);
+			return progress.ProgressMonitor;
 		}
 		
-		sealed class StatusBarProgressMonitor : IProgressMonitor
+		public static void AddProgress(ProgressCollector progress)
 		{
-			int workDone, totalWork;
-			
-			public int WorkDone {
-				get { return workDone; }
-				set {
-					if (workDone == value)
-						return;
-					workDone = value;
-					lock (activeProgressMonitors) {
-						if (currentProgressMonitor == this) {
-							UpdateDisplay();
-						}
-					}
-				}
+			if (progress == null)
+				throw new ArgumentNullException("progress");
+			System.Diagnostics.Debug.Assert(statusBar != null);
+			WorkbenchSingleton.AssertMainThread();
+			if (currentProgress != null) {
+				currentProgress.ProgressMonitorDisposed -= progress_ProgressMonitorDisposed;
+				currentProgress.PropertyChanged -= progress_PropertyChanged;
+			}
+			waitingProgresses.Push(currentProgress); // push even if currentProgress==null
+			SetActiveProgress(progress);
+		}
+		
+		static void SetActiveProgress(ProgressCollector progress)
+		{
+			WorkbenchSingleton.AssertMainThread();
+			currentProgress = progress;
+			if (progress == null) {
+				statusBar.HideProgress();
+				return;
 			}
 			
-			void UpdateDisplay()
-			{
-				statusBar.DisplayProgress(taskName, workDone, totalWork);
+			progress.ProgressMonitorDisposed += progress_ProgressMonitorDisposed;
+			if (progress.ProgressMonitorIsDisposed) {
+				progress_ProgressMonitorDisposed(progress, null);
+				return;
 			}
-			
-			string taskName;
-			
-			public string TaskName {
-				get { return taskName; }
-				set {
-					if (taskName == value)
-						return;
-					taskName = value;
-					lock (activeProgressMonitors) {
-						if (currentProgressMonitor == this) {
-							UpdateDisplay();
-						}
-					}
-				}
-			}
-			
-			public bool ShowingDialog { get; set; }
-			
-			public bool IsCancelled {
-				get { return false; }
-			}
-			
-			public void BeginTask(string name, int totalWork, bool allowCancel)
-			{
-				lock (activeProgressMonitors) {
-					activeProgressMonitors.Add(this);
-					currentProgressMonitor = this;
-					this.taskName = name;
-					this.workDone = 0;
-					this.totalWork = totalWork;
-					UpdateDisplay();
-				}
-			}
-			
-			public void Done()
-			{
-				lock (activeProgressMonitors) {
-					activeProgressMonitors.Remove(this);
-					if (currentProgressMonitor == this) {
-						if (activeProgressMonitors.Count > 0) {
-							currentProgressMonitor = activeProgressMonitors.First();
-							currentProgressMonitor.UpdateDisplay();
-						} else {
-							currentProgressMonitor = null;
-							statusBar.HideProgress();
-						}
-					}
-				}
-			}
-			
-			public event EventHandler Cancelled { add { } remove { } }
+			progress.PropertyChanged += progress_PropertyChanged;
+		}
+		
+		static void progress_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			Debug.Assert(sender == currentProgress);
+			statusBar.DisplayProgress(currentProgress.TaskName, currentProgress.Progress, currentProgress.Status);
+		}
+		
+		static void progress_ProgressMonitorDisposed(object sender, EventArgs e)
+		{
+			Debug.Assert(sender == currentProgress);
+			SetActiveProgress(waitingProgresses.Pop()); // stack is never empty: we push null as first element
 		}
 		#endregion
 	}
