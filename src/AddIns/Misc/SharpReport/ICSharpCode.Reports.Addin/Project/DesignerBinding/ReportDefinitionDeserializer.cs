@@ -3,7 +3,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
-
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 
@@ -11,9 +11,9 @@ namespace ICSharpCode.Reports.Addin
 {
 	internal class ReportDefinitionDeserializer : ReportDefinitionParser
 	{
-		IDesignerHost host;
-		ReportSettings reportSettings;
-		Stream stream;
+		private IDesignerHost host;
+		private ReportSettings reportSettings;
+		private Stream stream;
 		
 		#region Constructor
 		
@@ -48,12 +48,19 @@ namespace ICSharpCode.Reports.Addin
 		private ReportModel LoadObjectFromXmlDocument(XmlElement elem)
 		{
 			//ReportSettings
+			OpenedFile file =(OpenedFile) host.GetService(typeof(OpenedFile));
 			BaseItemLoader baseItemLoader = new BaseItemLoader();
 			XmlNodeList n =  elem.FirstChild.ChildNodes;
 			XmlElement rse = (XmlElement) n[0];
 			ReportModel model = ReportModel.Create();
-
+			
+			// manipulate reportSettings if Filename differs
 			this.reportSettings = baseItemLoader.Load(rse) as ReportSettings;
+			if (this.reportSettings.FileName != file.FileName) {
+				System.Diagnostics.Trace.WriteLine("LoadObjectFromXmlDocument - filename changed" );
+				this.reportSettings.FileName = file.FileName;
+			}
+			
 			model.ReportSettings = this.reportSettings;
 			
 			host.Container.Add(this.reportSettings);

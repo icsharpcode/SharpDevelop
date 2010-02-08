@@ -242,12 +242,12 @@ namespace ICSharpCode.Reports.Addin
 				string absolute = FileUtility.GetAbsolutePath(reportFileName,imageFileName);
 				if (File.Exists(absolute)){
 					System.Diagnostics.Trace.WriteLine("Image.AbsoluteFileName");
-					System.Diagnostics.Trace.WriteLine(String.Format("Load from {0}",absolute));
-					System.Diagnostics.Trace.WriteLine(String.Format("report {0}",this.reportFileName));
-					System.Diagnostics.Trace.WriteLine(String.Format("img ab {0}",this.ImageFileName));
-					System.Diagnostics.Trace.WriteLine(String.Format("im rel {0}",this.relativeFileName));
+					System.Diagnostics.Trace.WriteLine(String.Format("Absolute FIleN {0}",absolute));
+					System.Diagnostics.Trace.WriteLine(String.Format("Report FileNam {0}",this.reportFileName));
+					System.Diagnostics.Trace.WriteLine(String.Format("Image absolute {0}",this.ImageFileName));
+					System.Diagnostics.Trace.WriteLine(String.Format("Image relative {0}",this.relativeFileName));
 					string t = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
-					System.Diagnostics.Trace.WriteLine(String.Format("rebuild {0}",t));
+					System.Diagnostics.Trace.WriteLine(String.Format("rebuild        {0}",t));
 					System.Diagnostics.Trace.WriteLine("---------");
 					return absolute;
 				}

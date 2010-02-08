@@ -132,6 +132,12 @@ namespace ICSharpCode.Reports.Addin
 			defaultServiceContainer.AddService(typeof(MemberRelationshipService),
 			                                   new DefaultMemberRelationshipService());
 			
+			//need this to resolve the filename and manipulate
+			//ReportSettings in ReportDefinitionDeserializer.LoadObjectFromXmlDocument
+			//if the filename in ReportSettings is different from load location
+			
+			defaultServiceContainer.AddService(typeof(OpenedFile),base.PrimaryFile);
+			
 			DesignerOptionService dos = new System.Windows.Forms.Design.WindowsFormsDesignerOptionService();
 			dos.Options.Properties.Find( "UseSmartTags", true ).SetValue( dos, true );
 			dos.Options.Properties.Find( "ShowGrid", true ).SetValue( dos, false );
@@ -700,29 +706,20 @@ namespace ICSharpCode.Reports.Addin
 		
 		public override void Load(OpenedFile file, Stream stream)
 		{
+			LoggingService.Debug("ReportDesigner: Load from: " + file.FileName);
 			base.Load(file, stream);
 			this.LoadDesigner(stream);
 			this.SetupSecondaryView();
-			
-			//Always set Filename, otherwise rel path didn#t work
-			ComponentCollection c = Host.Container.Components;
-			foreach (IComponent component in c) {
-				if (component is ReportSettings) {
-					var r = component as ReportSettings;
-					r.FileName = file.FileName;
-				}
-			}
 		}
 		
 		
 		public override void Save(ICSharpCode.SharpDevelop.OpenedFile file,Stream stream)
 		{
-			LoggingService.Debug("ReportDesigner: Save " + file.FileName);
+			LoggingService.Debug("ReportDesigner: Save to: " + file.FileName);
 			
 			if (hasUnmergedChanges) {
 				this.MergeFormChanges();
 			}
-		
 			using(StreamWriter writer = new StreamWriter(stream)) {
 				writer.Write(this.ReportFileContent);
 			}
