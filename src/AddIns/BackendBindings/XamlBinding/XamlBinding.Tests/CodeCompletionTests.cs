@@ -646,6 +646,27 @@ namespace ICSharpCode.XamlBinding.Tests
 			              	Assert.Contains("ColumnSpan", items);
 			              });
 		}
+		
+		[Test]
+		public void CtrlSpaceTest27()
+		{
+			string fileHeader = @"<Window xmlns='clr-namespace:System.Windows;assembly=PresentationFramework'
+ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' ";
+			string fileFooter = @">
+</Window>";
+			
+			TestCtrlSpace(fileHeader, fileFooter, true,
+			              list => {
+			              	Assert.AreEqual(0, list.PreselectionLength);
+			              	Assert.IsNull(list.SuggestedItem);
+			              	Assert.IsTrue(list.Items.Any());
+			              	var items = list.Items.Select(item => item.Text).ToArray();
+			              	Assert.Contains("x:Class", items);
+			              	Assert.Contains("x:Subclass", items);
+			              	Assert.Contains("x:ClassModifier", items);
+			              	Assert.False(items.Contains("x:FieldModifier"));
+			              });
+		}
 		#endregion
 		
 		#region KeyPress

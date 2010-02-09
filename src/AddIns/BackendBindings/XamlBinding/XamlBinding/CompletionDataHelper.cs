@@ -51,6 +51,10 @@ namespace ICSharpCode.XamlBinding
 			"Class", "ClassModifier", "Subclass"
 		}.AsReadOnly();
 		
+		public static readonly ReadOnlyCollection<string> ChildOnlyElements = new List<string> {
+			"FieldModifier"
+		}.AsReadOnly();
+		
 		static readonly List<ICompletionItem> emptyList = new List<ICompletionItem>();
 		
 		/// <summary>
@@ -94,6 +98,7 @@ namespace ICSharpCode.XamlBinding
 				bool inAttributeValue = false;
 				AttributeValue value = null;
 				bool isRoot = false;
+				bool wasAXmlElement = false;
 				int offsetFromValueStart = -1;
 				
 				List<AXmlElement> ancestors = new List<AXmlElement>();
@@ -120,6 +125,11 @@ namespace ICSharpCode.XamlBinding
 							if (string.IsNullOrEmpty(xamlNamespacePrefix) && attr.Value == XamlNamespace)
 								xamlNamespacePrefix = attr.LocalName;
 						}
+						
+						if (!wasAXmlElement && item.Parent is AXmlDocument)
+							isRoot = true;
+						
+						wasAXmlElement = true;
 					}
 					
 					item = item.Parent;
@@ -263,7 +273,6 @@ namespace ICSharpCode.XamlBinding
 			} else {
 				if (rt == null) {
 					list.Add(new XamlCompletionItem(xamlPrefix, XamlNamespace, "Uid"));
-					return list;
 				} else {
 					AddAttributes(rt, list, includeEvents);
 					list.AddRange(GetListOfAttached(context, string.Empty, string.Empty, includeEvents, true));
@@ -296,7 +305,7 @@ namespace ICSharpCode.XamlBinding
 		
 		static bool AllowedInElement(bool inRoot, string item)
 		{
-			return inRoot || !RootOnlyElements.Contains(item);
+			return inRoot ? !ChildOnlyElements.Contains(item) : !RootOnlyElements.Contains(item);
 		}
 		
 		public static IEnumerable<ICompletionItem> CreateListForXmlnsCompletion(IProjectContent projectContent)
