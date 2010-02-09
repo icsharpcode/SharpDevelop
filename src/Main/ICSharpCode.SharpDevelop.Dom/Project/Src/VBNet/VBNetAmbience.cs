@@ -50,19 +50,19 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			return builder.ToString();
 		}
 		
-		string ConvertAccessibility(ModifierEnum modifier)
+		public override string ConvertAccessibility(ModifierEnum accessibility)
 		{
 			StringBuilder builder = new StringBuilder();
 			if (ShowAccessibility) {
-				if ((modifier & ModifierEnum.Public) == ModifierEnum.Public) {
+				if ((accessibility & ModifierEnum.Public) == ModifierEnum.Public) {
 					builder.Append("Public");
-				} else if ((modifier & ModifierEnum.Private) == ModifierEnum.Private) {
+				} else if ((accessibility & ModifierEnum.Private) == ModifierEnum.Private) {
 					builder.Append("Private");
-				} else if ((modifier & (ModifierEnum.Protected | ModifierEnum.Internal)) == (ModifierEnum.Protected | ModifierEnum.Internal)) {
+				} else if ((accessibility & (ModifierEnum.Protected | ModifierEnum.Internal)) == (ModifierEnum.Protected | ModifierEnum.Internal)) {
 					builder.Append("Protected Friend");
-				} else if ((modifier & ModifierEnum.Internal) == ModifierEnum.Internal) {
+				} else if ((accessibility & ModifierEnum.Internal) == ModifierEnum.Internal) {
 					builder.Append("Friend");
-				} else if ((modifier & ModifierEnum.Protected) == ModifierEnum.Protected) {
+				} else if ((accessibility & ModifierEnum.Protected) == ModifierEnum.Protected) {
 					builder.Append("Protected");
 				}
 				builder.Append(' ');

@@ -95,18 +95,18 @@ namespace Grunwald.BooBinding
 			return (modifier & query) == query;
 		}
 		
-		string ConvertAccessibility(ModifierEnum modifier)
+		public override string ConvertAccessibility(ModifierEnum accessibility)
 		{
 			if (ShowAccessibility) {
-				if (ModifierIsSet(modifier, ModifierEnum.Public)) {
+				if (ModifierIsSet(accessibility, ModifierEnum.Public)) {
 					return "public ";
-				} else if (ModifierIsSet(modifier, ModifierEnum.Private)) {
+				} else if (ModifierIsSet(accessibility, ModifierEnum.Private)) {
 					return "private ";
-				} else if (ModifierIsSet(modifier, ModifierEnum.ProtectedAndInternal)) {
+				} else if (ModifierIsSet(accessibility, ModifierEnum.ProtectedAndInternal)) {
 					return "protected internal ";
-				} else if (ModifierIsSet(modifier, ModifierEnum.Internal)) {
+				} else if (ModifierIsSet(accessibility, ModifierEnum.Internal)) {
 					return "internal ";
-				} else if (ModifierIsSet(modifier, ModifierEnum.Protected)) {
+				} else if (ModifierIsSet(accessibility, ModifierEnum.Protected)) {
 					return "protected ";
 				}
 			}

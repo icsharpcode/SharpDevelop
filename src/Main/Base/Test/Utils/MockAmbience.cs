@@ -78,5 +78,10 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		{
 			return String.Empty;
 		}
+		
+		public override string ConvertAccessibility(ModifierEnum accessibility)
+		{
+			return String.Empty;
+		}
 	}
 }

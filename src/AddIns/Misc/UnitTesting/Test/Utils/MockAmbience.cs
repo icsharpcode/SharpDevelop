@@ -93,5 +93,10 @@ namespace UnitTesting.Tests.Utils
 		{
 			return String.Empty;
 		}
+		
+		public string ConvertAccessibility(ModifierEnum accessibility)
+		{
+			return String.Empty;
+		}
 	}
 }

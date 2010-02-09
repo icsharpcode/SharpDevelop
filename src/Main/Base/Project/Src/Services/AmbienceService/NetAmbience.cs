@@ -284,5 +284,10 @@ namespace ICSharpCode.SharpDevelop
 		{
 			return dotNetTypeName;
 		}
+		
+		public override string ConvertAccessibility(ModifierEnum accessibility)
+		{
+			return string.Empty;
+		}
 	}
 }

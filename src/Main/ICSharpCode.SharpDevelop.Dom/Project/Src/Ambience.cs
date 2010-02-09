@@ -99,6 +99,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string Convert(IParameter param);
 		string Convert(IReturnType returnType);
 		
+		string ConvertAccessibility(ModifierEnum accessibility);
+		
 		string WrapAttribute(string attribute);
 		string WrapComment(string comment);
 		
@@ -239,5 +241,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public abstract string WrapAttribute(string attribute);
 		public abstract string WrapComment(string comment);
 		public abstract string GetIntrinsicTypeName(string dotNetTypeName);
+		public abstract string ConvertAccessibility(ModifierEnum accessibility);
 	}
 }

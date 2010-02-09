@@ -23,6 +23,7 @@ namespace ICSharpCode.XamlBinding
 		IClass generatedClass;
 		IProjectContent projectContent;
 		Stack<NodeWrapper> nodeStack;
+		IAmbience currentAmbience;
 		
 		/// <summary>
 		/// string representation of the document, used to create DOM regions.
@@ -39,6 +40,7 @@ namespace ICSharpCode.XamlBinding
 			this.fileContent = fileContent;
 			this.lexerTags = lexerTags;
 			this.projectContent = projectContent;
+			this.currentAmbience = projectContent.Language.GetAmbience();
 			
 			this.nodeStack = new Stack<NodeWrapper>();
 		}
@@ -66,7 +68,16 @@ namespace ICSharpCode.XamlBinding
 						IReturnType type = TypeFromXmlNode(CompilationUnit, attribute.ParentElement);
 						DomRegion position = CreateRegion(attribute.ParentElement.StartOffset, attribute.ParentElement.StartOffset + attribute.ParentElement.Name.Length);
 						
-						generatedClass.Fields.Add(new DefaultField(type, name, ModifierEnum.Internal, position, generatedClass));
+						ModifierEnum fieldModifier = ModifierEnum.Internal;
+						
+						string modifierValue = (attribute.ParentElement.GetAttributeValue(CompletionDataHelper.XamlNamespace, "FieldModifier") ?? string.Empty).Trim();
+						
+						string publicString = currentAmbience.ConvertAccessibility(ModifierEnum.Public).Trim();
+						
+						if (projectContent.Language.NameComparer.Compare(modifierValue, publicString) == 0)
+							fieldModifier = ModifierEnum.Public;
+						
+						generatedClass.Fields.Add(new DefaultField(type, name, fieldModifier, position, generatedClass));
 					}
 				}
 			}
@@ -100,7 +111,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			AXmlTag tag = element.Children.FirstOrDefault() as AXmlTag;
 			
-			if (tag != null && tag.IsStartOrEmptyTag) {				
+			if (tag != null && tag.IsStartOrEmptyTag) {
 				NodeWrapper node = new NodeWrapper() {
 					ElementName = element.LocalName,
 					StartOffset = element.StartOffset,
@@ -128,7 +139,17 @@ namespace ICSharpCode.XamlBinding
 		
 		IClass AddClass(string className, AXmlElement element) {
 			DefaultClass c = new DefaultClass(CompilationUnit, className);
+			string modifierValue = (element.GetAttributeValue(CompletionDataHelper.XamlNamespace, "ClassModifier") ?? string.Empty).Trim();
+			
 			c.Modifiers = ModifierEnum.Partial;
+			
+			string internalString = currentAmbience.ConvertAccessibility(ModifierEnum.Internal).Trim();
+			
+			if (projectContent.Language.NameComparer.Compare(modifierValue, internalString) == 0)
+				c.Modifiers |= ModifierEnum.Internal;
+			else
+				c.Modifiers |= ModifierEnum.Public;
+			
 			c.Region = CreateRegion(element.StartOffset, element.EndOffset);
 			c.BaseTypes.Add(TypeFromXmlNode(CompilationUnit, element));
 			CompilationUnit.Classes.Add(c);
