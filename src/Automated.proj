@@ -22,7 +22,7 @@
 			(but this works using the command line) -->
 		<!-- B) The Wix task assembly is locked if we do not use a separate MSBuild process -->
 		<!-- C) We need to use MSBuild 4.0, but the build server uses MSBuild 2.0 -->
-		<MSBuildExecutable>&quot;$(MSBuildBinPath)\..\v4.0.21006\msbuild.exe&quot;</MSBuildExecutable>
+		<MSBuildExecutable>&quot;$(MSBuildBinPath)\..\v4.0.30128\msbuild.exe&quot;</MSBuildExecutable>
 		<BuildProperties>/p:Configuration=Release</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:SharpDevelopBinPath=$(SharpDevelopBin)&quot;</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:BooBinPath=$(SharpDevelopSrc)\AddIns\BackendBindings\Boo\RequiredLibraries&quot;</BuildProperties>
