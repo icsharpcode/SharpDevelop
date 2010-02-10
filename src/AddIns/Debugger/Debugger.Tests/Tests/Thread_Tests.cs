@@ -56,11 +56,11 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ThreadStartedEvent>
       <Thread
-        Callstack="{void System.AppDomain.SetupDomain(Boolean allowRedirects, String path, String configFile)}"
+        Callstack="{void System.AppDomain.SetupDomain(Boolean allowRedirects, String path, String configFile, String[] propertyNames, String[] propertyValues)}"
         CurrentExceptionType="0"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="void System.AppDomain.SetupDomain(Boolean allowRedirects, String path, String configFile)"
+        MostRecentStackFrame="void System.AppDomain.SetupDomain(Boolean allowRedirects, String path, String configFile, String[] propertyNames, String[] propertyValues)"
         Name=""
         Priority="Normal"
         RuntimeValue="null" />

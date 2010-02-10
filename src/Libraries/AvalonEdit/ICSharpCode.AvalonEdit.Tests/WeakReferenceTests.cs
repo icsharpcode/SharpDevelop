@@ -14,8 +14,6 @@ using NUnit.Framework;
 namespace ICSharpCode.AvalonEdit
 {
 	[TestFixture]
-	[Ignore(".NET 4.0 Beta 2 seems to cause trouble here. With the same AvalonEdit binary, " +
-	        "the second inside this fixture fails depending on whether it runs in NUnit on .NET 3.5 or .NET 4.0.")]
 	public class WeakReferenceTests
 	{
 		[Test]
@@ -51,6 +49,7 @@ namespace ICSharpCode.AvalonEdit
 		}
 		
 		[Test]
+		[Ignore]
 		public void DocumentDoesNotHoldReferenceToTextArea()
 		{
 			bool collectedTextArea = false;
@@ -66,6 +65,7 @@ namespace ICSharpCode.AvalonEdit
 		}
 		
 		[Test]
+		[Ignore]
 		public void DocumentDoesNotHoldReferenceToTextEditor()
 		{
 			bool collectedTextEditor = false;
