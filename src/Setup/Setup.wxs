@@ -55,8 +55,8 @@
 		<Property Id="NETFRAMEWORK40FULLVERSION" Secure="yes">
 			<RegistrySearch Id="NetFramework40FullVersion" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Version" Type="raw" />
 		</Property>
-		<Condition Message="This setup requires the .NET 4.0 Full Framework Beta 2 to be installed.">
-			Installed OR (NETFRAMEWORK40FULL AND NETFRAMEWORK40FULLVERSION = "4.0.21006")
+		<Condition Message="This setup requires the .NET 4.0 Full Framework RC to be installed.">
+			Installed OR (NETFRAMEWORK40FULL AND NETFRAMEWORK40FULLVERSION = "4.0.30128")
 		</Condition>
 		
 		<!--
