@@ -242,16 +242,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Calls a method on the GUI thread, but delays the call a bit.
 		/// </summary>
-		public static void CallLater(int delayMilliseconds, Action method)
+		public static void CallLater(TimeSpan delay, Action method)
 		{
-			if (delayMilliseconds <= 0)
-				throw new ArgumentOutOfRangeException("delayMilliseconds", delayMilliseconds, "Value must be positive");
+			int delayMilliseconds = (int)delay.TotalMilliseconds;
+			if (delayMilliseconds < 0)
+				throw new ArgumentOutOfRangeException("delay", delay, "Value must be positive");
 			if (method == null)
 				throw new ArgumentNullException("method");
 			SafeThreadAsyncCall(
 				delegate {
 					Timer t = new Timer();
-					t.Interval = delayMilliseconds;
+					t.Interval = Math.Max(1, delayMilliseconds);
 					t.Tick += delegate {
 						t.Stop();
 						t.Dispose();

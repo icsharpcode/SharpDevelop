@@ -161,7 +161,7 @@ namespace ICSharpCode.SharpDevelop
 					// when the file changes twice in quick succession; and prevents
 					// trying to reload the file while it is still being written
 					WorkbenchSingleton.CallLater(
-						500,
+						TimeSpan.FromSeconds(0.5),
 						delegate { MainForm_Activated(this, EventArgs.Empty); } );
 				}
 			}

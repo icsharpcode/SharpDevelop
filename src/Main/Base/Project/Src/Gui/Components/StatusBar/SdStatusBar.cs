@@ -12,6 +12,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Shell;
 
 using ICSharpCode.Core;
 
@@ -113,17 +114,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void DisplayProgress(string taskName, double workDone, OperationStatus status)
 		{
+//			LoggingService.Debug("DisplayProgress(\"" + taskName + "\", " + workDone + ", " + status + ")");
 			if (!statusProgressBarIsVisible) {
 				statusProgressBarItem.Visibility = Visibility.Visible;
 				statusProgressBarIsVisible = true;
+				StopHideProgress();
 			}
 			
+			TaskbarItemProgressState taskbarProgressState;
 			if (double.IsNaN(workDone)) {
 				statusProgressBar.IsIndeterminate = true;
 				status = OperationStatus.Normal; // indeterminate doesn't support foreground color
+				taskbarProgressState = TaskbarItemProgressState.Indeterminate;
 			} else {
 				statusProgressBar.IsIndeterminate = false;
 				statusProgressBar.Value = workDone;
+				
+				if (status == OperationStatus.Error)
+					taskbarProgressState = TaskbarItemProgressState.Error;
+				else
+					taskbarProgressState = TaskbarItemProgressState.Normal;
+			}
+			
+			TaskbarItemInfo taskbar = WorkbenchSingleton.MainWindow.TaskbarItemInfo;
+			if (taskbar != null) {
+				taskbar.ProgressState = taskbarProgressState;
+				taskbar.ProgressValue = workDone;
 			}
 			
 			if (status != currentStatus) {
@@ -135,11 +151,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (status == OperationStatus.Error) {
 					statusProgressBar.Foreground = progressForegroundBrush;
 					progressForegroundBrush.BeginAnimation(SolidColorBrush.ColorProperty, new ColorAnimation(
-						Colors.Red, new Duration(TimeSpan.FromSeconds(0.6)), FillBehavior.HoldEnd));
+						Colors.Red, new Duration(TimeSpan.FromSeconds(0.2)), FillBehavior.HoldEnd));
 				} else if (status == OperationStatus.Warning) {
 					statusProgressBar.Foreground = progressForegroundBrush;
 					progressForegroundBrush.BeginAnimation(SolidColorBrush.ColorProperty, new ColorAnimation(
-						Colors.YellowGreen, new Duration(TimeSpan.FromSeconds(0.6)), FillBehavior.HoldEnd));
+						Colors.YellowGreen, new Duration(TimeSpan.FromSeconds(0.2)), FillBehavior.HoldEnd));
 				} else {
 					statusProgressBar.ClearValue(ProgressBar.ForegroundProperty);
 					progressForegroundBrush = null;
@@ -155,9 +171,44 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void HideProgress()
 		{
+//			LoggingService.Debug("HideProgress()");
 			statusProgressBarIsVisible = false;
-			statusProgressBarItem.Visibility = Visibility.Collapsed;
-			jobNamePanel.Content = currentTaskName = "";
+			// to allow the user to see the red progress bar as a visual clue of a failed 
+			// build even if it occurs close to the end of the build, we'll hide the progress bar
+			// with a bit of time delay
+			WorkbenchSingleton.CallLater(
+				TimeSpan.FromMilliseconds(currentStatus == OperationStatus.Error ? 500 : 150),
+				new Action(DoHideProgress));
+		}
+		
+		void DoHideProgress()
+		{
+			if (!statusProgressBarIsVisible) {
+				// make stuff look nice and delay it a little more by using an animation
+				// on the progress bar
+				TimeSpan timeSpan = TimeSpan.FromSeconds(0.25);
+				var animation = new DoubleAnimation(0, new Duration(timeSpan), FillBehavior.HoldEnd);
+				statusProgressBarItem.BeginAnimation(OpacityProperty, animation);
+				jobNamePanel.BeginAnimation(OpacityProperty, animation);
+				WorkbenchSingleton.CallLater(
+					timeSpan,
+					delegate{
+						if (!statusProgressBarIsVisible) {
+							statusProgressBarItem.Visibility = Visibility.Collapsed;
+							jobNamePanel.Content = currentTaskName = "";
+							var taskbar = WorkbenchSingleton.MainWindow.TaskbarItemInfo;
+							if (taskbar != null)
+								taskbar.ProgressState = TaskbarItemProgressState.None;
+							StopHideProgress();
+						}
+					});
+			}
+		}
+		
+		void StopHideProgress()
+		{
+			statusProgressBarItem.BeginAnimation(OpacityProperty, null);
+			jobNamePanel.BeginAnimation(OpacityProperty, null);
 		}
 	}
 }

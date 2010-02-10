@@ -11,6 +11,10 @@
 	AllowDrop = "True"
 	Style = "{x:Static core:GlobalStyles.WindowStyle}"
 >
+	<Window.TaskbarItemInfo>
+		<TaskbarItemInfo />
+	</Window.TaskbarItemInfo>
+	
 	<DockPanel Name="dockPanel">
 		<Menu Name="mainMenu" DockPanel.Dock="Top"/>
 		<!-- Toolbars will be inserted here (index: 1) -->
