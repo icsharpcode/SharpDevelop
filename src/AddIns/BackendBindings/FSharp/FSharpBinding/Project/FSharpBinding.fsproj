@@ -29,7 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <OtherFlags>--staticlink:FSharp.Core</OtherFlags>
+    <OtherFlags>--standalone</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Src\project.fs" />
