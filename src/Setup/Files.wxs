@@ -1510,6 +1510,13 @@
 										</Directory>
 									</Directory>
 								</Directory>
+								<Directory Id="DebuggerFolder" Name="Debugger">
+									<Component Guid="27C66A5A-0149-45F4-B1AF-C320FE005E6B" Id="DebuggerAddInFiles" DiskId="1">
+										<File Source="..\..\AddIns\AddIns\Debugger\Debugger.AddIn.addin" Id="Debugger.AddIn.addin" Name="Debugger.AddIn.addin" />
+										<File Source="..\..\AddIns\AddIns\Debugger\Debugger.AddIn.dll" Id="Debugger.AddIn.dll" Name="Debugger.AddIn.dll" />
+										<File Source="..\..\AddIns\AddIns\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
+									</Component>
+								</Directory>
 								<Directory Id="MiscAddInsFolder" Name="Misc">
 									<Directory Id="AddInManagerFolder" Name="AddInManager">
 										<Component Guid="AA44E205-CCE8-46F3-B84B-D031BDB3570D" Id="AddInManagerSharpZipLibDll" DiskId="1">
@@ -1539,13 +1546,6 @@
 										<Component Guid="C3CBE9CD-ED60-4B07-9082-D5D31755C388" Id="ComponentInspectorAddInDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.addin" Id="ComponentInspector.addin" Name="ComponentInspector.addin" />
 											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.AddIn.dll" Id="ComponentInspector.AddIn.dll" Name="ComponentInspector.AddIn.dll" Assembly=".net" AssemblyApplication="ComponentInspector.AddIn.dll" AssemblyManifest="ComponentInspector.AddIn.dll" KeyPath="yes" />
-										</Component>
-									</Directory>
-									<Directory Id="DebuggerFolder" Name="Debugger">
-										<Component Guid="3A14B928-3319-429B-8F39-8870431C49CB" Id="DebuggerAddInFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Debugger\Debugger.AddIn.addin" Id="Debugger.AddIn.addin" Name="Debugger.AddIn.addin" />
-											<File Source="..\..\AddIns\AddIns\Debugger\Debugger.AddIn.dll" Id="Debugger.AddIn.dll" Name="Debugger.AddIn.dll" />
-											<File Source="..\..\AddIns\AddIns\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
 										</Component>
 									</Directory>
 									<Directory Id="FiletypeRegistererFolder" Name="FiletypeRegisterer">
