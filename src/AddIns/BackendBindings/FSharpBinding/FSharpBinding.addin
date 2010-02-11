@@ -25,7 +25,7 @@
 		<SyntaxMode id         = "F# Syntax Mode"
 		            name       = "F#"
 		            extensions = ".fs;.fsi"
-		            resource   = "FS-Mode.xshd" />
+		            resource   = "FSharpBinding.Resources.FS-Mode.xshd" />
 	</Path>
 
 	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
@@ -101,8 +101,7 @@
 		     category = "Main"
 		     title    = "F# Interactive"
 		     icon     = "F#.ProjectIcon"
-		     defaultPosition = "Bottom, Hidden"
-		     class = "FSharpBinding.FSharpInteractive"/>
+		     class    = "FSharpBinding.FSharpInteractive"/>
 	</Path>
 
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
