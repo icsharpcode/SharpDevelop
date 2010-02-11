@@ -77,9 +77,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			classDefinition = node;
 			componentName = node.Name;
-			if (node.Body != null) {
-				node.Body.Walk(this);
-			}
+			node.Body.Walk(this);
 			return false;
 		}
 				

@@ -328,7 +328,7 @@
             <summary>
             Convert an object to a 32-bit integer. This adds two features to Converter.ToInt32:
               1. Sign is ignored. For example, 0xffff0000 converts to 4294901760, where Convert.ToInt32
-                 would throw because 0xffff000 is less than zero.
+                 would throw because 0xffff0000 is less than zero.
               2. Overflow exceptions are thrown. Converter.ToInt32 throws TypeError if x is
                  an integer, but is bigger than 32 bits. Instead, we throw OverflowException.
             </summary>
@@ -735,6 +735,9 @@
         <member name="F:IronPython.Modules.CTypes.SimpleTypeKind.Boolean">
             <summary> '?' </summary>
         </member>
+        <member name="F:IronPython.Modules.CTypes.SimpleTypeKind.VariantBool">
+            <summary> 'v' </summary>
+        </member>
         <member name="T:IronPython.Modules.CTypes.CData">
             <summary>
             Base class for all ctypes interop types.
@@ -802,6 +805,12 @@
         <member name="P:IronPython.Modules.CTypes.INativeType.Alignment">
             <summary>
             Gets the required alignment for the type
+            </summary>
+        </member>
+        <member name="P:IronPython.Modules.CTypes.INativeType.TypeFormat">
+            <summary>
+            Returns a string which describes the type.  Used for _buffer_info implementation which
+            only exists for testing purposes.
             </summary>
         </member>
         <member name="M:IronPython.Modules.CTypes.ArrayType.from_param(System.Object)">
@@ -1099,7 +1108,12 @@
             Gets or sets the dictionary used for storing extra attributes on the partial object.
             </summary>
         </member>
-        <member name="M:IronPython.Modules.PythonWeakRef.ref.RefEquals(IronPython.Runtime.CodeContext,System.Object,System.Object)">
+        <member name="M:IronPython.Modules.PythonWeakRef.ref.__hash__(IronPython.Runtime.CodeContext)">
+            <summary>
+            Special hash function because IStructuralEquatable.GetHashCode is not allowed to throw.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonWeakRef.ref.RefEquals(System.Object,System.Object,System.Collections.IEqualityComparer)">
             <summary>
             Special equals because none of the special cases in Ops.Equals
             are applicable here, and the reference equality check breaks some tests.
@@ -1110,9 +1124,19 @@
             gets the object or throws a reference exception
             </summary>
         </member>
+        <member name="M:IronPython.Modules.PythonWeakRef.weakproxy.__eq__(System.Object)">
+            <summary>
+            Special equality function because IStructuralEquatable.Equals is not allowed to throw.
+            </summary>
+        </member>
         <member name="M:IronPython.Modules.PythonWeakRef.weakcallableproxy.GetObject">
             <summary>
             gets the object or throws a reference exception
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonWeakRef.weakcallableproxy.__eq__(System.Object)">
+            <summary>
+            Special equality function because IStructuralEquatable.Equals is not allowed to throw.
             </summary>
         </member>
     </members>
