@@ -307,6 +307,9 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				updateControl = ShowCompleted;
 				Invoke (updateControl);
 			}
+			if (this.dataManager != null) {
+				this.dataManager.GetNavigator.Reset();
+			}
 			this.SetPages();
 			this.CheckEnable();
 			this.cancelButton.Enabled = false;

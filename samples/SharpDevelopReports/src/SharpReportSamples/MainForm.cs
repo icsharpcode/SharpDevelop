@@ -164,11 +164,12 @@ namespace SharpReportSamples
 			
 			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
 			{
-				this.RunContributors(fileName);
+				this.previewControl1.RunReport(model,dataManager);
 			};
 			
 			this.previewControl1.RunReport(model,dataManager);
 		}
+		
 		
 		//Try this to react to SectionrenderEvent,
 		/*

@@ -334,6 +334,10 @@
     <EmbeddedResource Include="Project\ReportViewer\Resources\MakePdf.bmp" />
     <EmbeddedResource Include="Project\Resources\CoreResource.resx" />
     <None Include="Project\Expressions\SimpleExpressionEvaluator\Parser\SimpleExpressionLanguage.tpg" />
+    <None Include="Project\ReportViewer\Resources\Icons\Back.bmp" />
+    <None Include="Project\ReportViewer\Resources\Icons\First.bmp" />
+    <None Include="Project\ReportViewer\Resources\Icons\Last.bmp" />
+    <None Include="Project\ReportViewer\Resources\Icons\Next.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Project\BaseClasses\Printing" />
@@ -363,6 +367,7 @@
     <Folder Include="Project\Interfaces" />
     <Folder Include="Project\DataSource" />
     <Folder Include="Project\Expressions" />
+    <Folder Include="Project\ReportViewer\Resources\Icons" />
     <Folder Include="Project\Resources" />
     <Folder Include="Project\Printing" />
     <Folder Include="Project\Printing\Graphics" />
