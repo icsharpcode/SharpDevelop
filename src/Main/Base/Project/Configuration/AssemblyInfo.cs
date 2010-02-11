@@ -16,7 +16,8 @@ using System.Runtime.CompilerServices;
 // Use hard-binding for ICSharpCode.SharpDevelop:
 [assembly: Dependency("ICSharpCode.Core", LoadHint.Always)]
 [assembly: Dependency("ICSharpCode.Core.WinForms", LoadHint.Always)]
-[assembly: Dependency("ICSharpCode.TextEditor", LoadHint.Always)]
+[assembly: Dependency("ICSharpCode.Core.Presentation", LoadHint.Always)]
+[assembly: Dependency("ICSharpCode.AvalonEdit", LoadHint.Always)]
 [assembly: Dependency("ICSharpCode.NRefactory", LoadHint.Always)]
 [assembly: Dependency("ICSharpCode.SharpDevelop.Dom", LoadHint.Always)]
 [assembly: Dependency("ICSharpCode.SharpDevelop.Widgets", LoadHint.Always)]
@@ -24,9 +25,6 @@ using System.Runtime.CompilerServices;
 [assembly: Dependency("System.Drawing", LoadHint.Always)]
 [assembly: Dependency("System.Xml", LoadHint.Always)]
 [assembly: Dependency("System.Windows.Forms", LoadHint.Always)]
-[assembly: Dependency("WeifenLuo.WinFormsUI.Docking", LoadHint.Always)]
-[assembly: Dependency("Microsoft.Build.Framework", LoadHint.Always)]
-[assembly: Dependency("Microsoft.Build.Engine", LoadHint.Always)]
 
 [assembly: AssemblyTitle("SharpDevelopBase")]
 [assembly: AssemblyDescription("The base add-in of SharpDevelop")]
