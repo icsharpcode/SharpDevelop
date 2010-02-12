@@ -263,17 +263,7 @@
 				<ComponentRef Id="WixCopExe"/>
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
-				
-				<ComponentRef Id="SHFBMain"/>
-				<ComponentRef Id="SHFBBuildComponents"/>
-				<ComponentRef Id="SHFBColorizer"/>
-				<ComponentRef Id="SHFBConceptualTemplates"/>
-				<ComponentRef Id="SHFBPlugins"/>
-				<ComponentRef Id="SHFBSharedContent"/>
-				<ComponentRef Id="SHFBTemplates"/>
-				<ComponentRef Id="SHFBWeb"/>
 
-				<ComponentRef Id="NUnitUiKitDll"/>
 				<ComponentRef Id="NUnitUtilDll"/>
 				<ComponentRef Id="NUnitConsoleFiles"/>
 				<ComponentRef Id="NUnitConsoleX86Files"/>

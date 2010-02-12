@@ -11,28 +11,15 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Svn
 {
-	public class TortoiseSvnNotFoundForm : BaseSharpDevelopForm
+	public class TortoiseSvnNotFoundForm : ToolNotFoundDialog
 	{
 		public TortoiseSvnNotFoundForm()
+			: base(StringParser.Parse("${res:AddIns.Subversion.TortoiseSVNRequired}"), "http://tortoisesvn.net/", null)
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.TortoiseSvnNotFoundForm.xfrm"));
-			
-			((Label)ControlDictionary["messageLabel"]).Text = StringParser.Parse("${res:AddIns.Subversion.TortoiseSVNRequired}");
-			((PictureBox)ControlDictionary["iconPictureBox"]).Image = WinFormsResourceService.GetBitmap("Icons.32x32.Information");
-			((LinkLabel)ControlDictionary["linkLabel"]).Click += LinkLabelClicked;
-		}
-		
-		void LinkLabelClicked(object sender, EventArgs e)
-		{
-			try {
-				Process.Start("http://tortoisesvn.tigris.org");
-			} catch (Exception ex) {
-				LoggingService.Warn("Cannot start http://tortoisesvn.tigris.org", ex);
-			}
 		}
 	}
 }

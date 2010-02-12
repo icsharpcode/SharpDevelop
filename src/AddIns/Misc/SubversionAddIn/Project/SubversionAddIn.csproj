@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Svn</RootNamespace>
@@ -70,7 +71,6 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <EmbeddedResource Include="Resources\TortoiseSvnNotFoundForm.xfrm" />
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.Designer.cs">
       <DependentUpon>DiffPanel.cs</DependentUpon>
     </Compile>
