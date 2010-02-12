@@ -194,13 +194,7 @@
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				
-				<ComponentRef Id="DIfxAppXsd"/>
-				<ComponentRef Id="IisXsd"/>
-				<ComponentRef Id="PsXsd"/>
-				<ComponentRef Id="SqlXsd"/>
-				<ComponentRef Id="UtilXsd"/>
 				<ComponentRef Id="DariceCub"/>
-				<ComponentRef Id="NetFxSchema"/>
 				<ComponentRef Id="HeatExe"/>
 				<ComponentRef Id="MeltExe"/>
 				<ComponentRef Id="MergeModCub"/>
@@ -234,18 +228,11 @@
 				<ComponentRef Id="WixVSSchema"/>
 				<ComponentRef Id="WixFirewallSchema"/>
 				<ComponentRef Id="WixGamingSchema"/>
-				<ComponentRef Id="VSExtensionSchema"/>
 				<ComponentRef Id="WixLicenseFiles"/>
 				<ComponentRef Id="WixBitmapFiles"/>
-				<ComponentRef Id="WixDocFiles"/>
-				<ComponentRef Id="WixDtfHelpFile"/>
-				<ComponentRef Id="WixDtfApiHelpFile"/>
 				<ComponentRef Id="WixVSExtension"/>
 				<ComponentRef Id="Difxapp_x64Wixlib"/>
 				<ComponentRef Id="Difxapp_x86Wixlib"/>
-				<ComponentRef Id="MSMQXsd"/>
-				<ComponentRef Id="WixFirewallXsd"/>
-				<ComponentRef Id="WixGamingXsd"/>
 				<ComponentRef Id="EmptyWixFileTemplate"/>				
 				<ComponentRef Id="WixDefaultLicenseRtf"/>				
 				<ComponentRef Id="EmptyWixProjectTemplate"/>				

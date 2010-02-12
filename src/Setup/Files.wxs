@@ -281,49 +281,6 @@
 											<File Source="..\..\bin\Tools\Wix\Bitmaps\Up.ico" Name="Up.ico" Id="Up.ico" />
 										</Component>
 									</Directory>
-									<Directory Id="WixDocFolder" Name="doc">
-										<Component Guid="2F5AC556-CE36-47EA-AB6C-F8623AA4A6BE" Id="WixDocFiles" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\WiX.chm" Name="Wix.chm" Id="Wix.chm" />
-											<File Source="..\..\bin\Tools\Wix\doc\wix.xsd" Name="wix.xsd" Id="wix.xsd" KeyPath="yes" />
-											<File Source="..\..\bin\Tools\Wix\doc\wixloc.xsd" Name="wixloc.xsd" Id="wixloc.xsd" />
-										</Component>
-										<Component Guid="709867E5-F226-4ADF-8204-E77ED2F67EEC" Id="NetFxSchema" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\netfx.xsd" Name="netfx.xsd" Id="netfx.xsd" />
-										</Component>
-										<Component Guid="6CF70F72-AB78-4122-BC7F-0CA6B3CC6E97" Id="VSExtensionSchema" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\vs.xsd" Name="vs.xsd" Id="vs.xsd" KeyPath="yes" />
-										</Component>
-										<Component Guid="878D4E54-755C-4D0B-967A-C78CDC7F04C9" Id="DIfxAppXsd" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\difxapp.xsd" Name="difxapp.xsd" Id="difxapp.xsd" KeyPath="yes" />
-										</Component>
-										<Component Guid="38D4BD3C-F299-49B3-A5F7-5DFE9BE92830" Id="IisXsd" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\iis.xsd" Name="iis.xsd" Id="iis.xsd" KeyPath="yes" />
-										</Component>
-										<Component Guid="E301BCF5-E98D-43F6-A47E-DC9BD51B70C1" Id="PsXsd" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\ps.xsd" Name="ps.xsd" Id="ps.xsd" KeyPath="yes" />
-										</Component>
-										<Component Guid="474EF744-E3CF-4BED-A10E-7BC906CD1A80" Id="SqlXsd" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\sql.xsd" Name="sql.xsd" Id="sql.xsd" KeyPath="yes" />
-										</Component>
-										<Component Guid="96DD82B8-5183-4C6C-BF15-455895F78A89" Id="UtilXsd" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\util.xsd" Name="util.xsd" Id="util.xsd" KeyPath="yes" />
-										</Component>
-										<Component Guid="3E8291C1-F920-40C9-BFF2-3E0DD361EBB6" Id="MSMQXsd" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\msmq.xsd" Name="msmq.xsd" Id="msmq.xsd" KeyPath="yes" />
-										</Component>
-										<Component Guid="5169B461-92D6-4C1C-B343-136C69092814" Id="WixDtfHelpFile" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\DTF.chm" Name="DTF.chm" Id="WixDTF.chm" KeyPath="yes" />
-										</Component>
-										<Component Guid="8902BE9A-A694-4ACD-9271-9B4E4C07C6ED" Id="WixDtfApiHelpFile" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\DTFAPI.chm" Name="DTFAPI.chm" Id="WixDtfApi.chm" KeyPath="yes" />
-										</Component>
-										<Component Guid="A85759C4-AEEB-46B6-BE15-0957348A3D50" Id="WixFirewallXsd" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\firewall.xsd" Name="firewall.xsd" Id="WixFirewall.xsd" KeyPath="yes" />
-										</Component>
-										<Component Guid="4C41DDBD-CE42-4669-87B0-250F0BF83DA9" Id="WixGamingXsd" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\doc\gaming.xsd" Name="gaming.xsd" Id="WixGaming.xsd" KeyPath="yes" />
-										</Component>
-									</Directory>
 									<Component Guid="6D18FAA0-440D-47FA-B9C1-790A00ADF96D" Id="DariceCub" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\darice.cub" Name="darice.cub" Id="darice.cub" KeyPath="yes" />
 									</Component>
