@@ -135,7 +135,7 @@ namespace SharpReportSamples
 			{
 				this.RunProviderIndependent(reportName);
 			};
-			this.previewControl1.SetupAsynchron(reportName,parameters);
+			this.previewControl1.RunReport(reportName,parameters);
 		}
 		
 		
@@ -152,7 +152,12 @@ namespace SharpReportSamples
 		private void RunContributors (string fileName)
 		{
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
-
+			
+			// sorting is done here, but, be carefull, misspelled fieldnames will cause an exception
+			
+			//ReportSettings settings = model.ReportSettings;
+			//settings.SortColumnCollection.Add(new SortColumn("First",System.ComponentModel.ListSortDirection.Ascending));
+		
 			// Both variable declarations  are valid
 			
 			ContributorCollection contributorCollection = ContributorsReportData.CreateContributorsList();

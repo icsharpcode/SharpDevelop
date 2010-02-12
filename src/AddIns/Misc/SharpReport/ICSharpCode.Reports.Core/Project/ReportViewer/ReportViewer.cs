@@ -128,11 +128,11 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				this.dataManager = DataManagerFactory.CreateDataManager(reportModel,parameters);
 				RunDataReport (reportModel,dataManager);
 			}
-			*/
-		}	
+			 */
+		}
 		
 		
-			public void RunReport (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
+		public void RunReport (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -143,8 +143,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			RunReport (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
 		}
 		
-			
-			[Obsolete("Use RunReport(reportModel,dataTable,parameters)")]
+		
+		[Obsolete("Use RunReport(reportModel,dataTable,parameters)")]
 		public void SetupAsynchron (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
 		{
 			RunReport(reportModel,dataTable,parameters);
@@ -156,7 +156,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				throw new ArgumentNullException("dataTable");
 			}
 			SetupAsynchron (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
-			*/
+			 */
 		}
 		
 		
@@ -190,7 +190,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.SetupViewer(reportModel);
 			this.dataManager = dataManager;
 			RunDataReport(reportModel,dataManager);
-			*/
+			 */
 		}
 		
 		#region Rendering
@@ -218,7 +218,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		#endregion
 		
-	
+		
 		#region Events from worker
 		
 		
@@ -270,8 +270,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				default:
 					break;
 			}
-		}	
-	*/
+		}
+		 */
 		
 		#endregion
 		
@@ -353,6 +353,10 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.Invalidate(true);
 			this.Update();
 			this.AdjustDrawArea();
+			if ((this.pages != null) && (pageNumber < pages.Count))
+             {
+                 this.ShowSelectedPage();
+             }
 			EventHelper.Raise<EventArgs>(this.PreviewLayoutChanged,this,e);
 		}
 		
@@ -437,9 +441,20 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		}
 		
 		
+		 private void CenterDisplayPanel()
+         {
+             if (this.Width > drawingPanel.Width)
+                 drawingPanel.Left = (this.Width - drawingPanel.Width) / 2;
+             else
+                 drawingPanel.Left = 3;
+         }
+
+		
+		
 		private void DrawingPanelPaint(object sender, PaintEventArgs e)
 		{
 			e.Graphics.Clear(this.drawingPanel.BackColor);
+			CenterDisplayPanel();
 			if (this.bitmap != null) {
 				e.Graphics.DrawImage(this.bitmap,0,0);
 			}
@@ -449,12 +464,12 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		private Bitmap CreateBitmap (ExporterPage page)
 		{
 			Bitmap bm = new Bitmap(this.drawingPanel.ClientSize.Width,this.drawingPanel.ClientSize.Height,System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-		
+			
 			using (Graphics gr = Graphics.FromImage(bm)) {
 
 				// Reset Transform to org. Value
 				gr.Clear(this.drawingPanel.BackColor);
-			//	this.Invalidate();
+				//	this.Invalidate();
 				gr.ScaleTransform(1F,1F);
 				gr.Clear(this.drawingPanel.BackColor);
 				gr.ScaleTransform(this.zoom,this.zoom);
@@ -573,9 +588,9 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				saveDialog.ValidateNames = true;
 				if(saveDialog.ShowDialog() == DialogResult.OK){
 					using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(this.reportSettings,
-					                                                        this.pages,
-					                                                        saveDialog.FileName,
-					                                                        true)) {
+					                                                            this.pages,
+					                                                            saveDialog.FileName,
+					                                                            true)) {
 						pdfRenderer.Start();
 						pdfRenderer.RenderOutput();
 						pdfRenderer.End();
@@ -622,7 +637,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			ReportModel m = ReportEngine.LoadReportModel(fileName);
 			this.SetupAsynchron(m,parameters);
 		}
-		*/
+		 */
 		/// <summary>
 		/// For internal use only
 		/// </summary>
@@ -646,7 +661,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 			this.bgw.RunWorkerAsync(reportModel);
 		}
-		*/
+		 */
 		#region PushModel - IList
 		
 		/*
@@ -677,7 +692,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.bgw.DoWork += new DoWorkEventHandler(PushPullWorker);
 			this.bgw.RunWorkerAsync(reportModel);
 		}
-		*/
+		 */
 		#endregion
 		
 		/*
@@ -689,7 +704,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker_RunWorkerCompleted);
 			this.bgw.ProgressChanged +=    new ProgressChangedEventHandler(BackgroundWorker_ProgressChanged);
 		}
-		*/
+		 */
 		
 		#region Worker
 		
@@ -699,7 +714,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			BackgroundWorker worker = sender as BackgroundWorker;
 			e.Result = RunFormSheet((ReportModel)e.Argument,worker,e);
 		}
-		*/
+		 */
 		/*
 		
 		private void PushPullWorker(object sender,DoWorkEventArgs e)
@@ -707,7 +722,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			BackgroundWorker worker = sender as BackgroundWorker;
 			e.Result = RunDataReport((ReportModel)e.Argument,this.dataManager,worker,e);
 		}
-		*/
+		 */
 		#endregion
 		
 		
@@ -726,15 +741,15 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 			this.ShowCompleted();
 		}
-*/
-/*
+		 */
+		/*
 		
 		private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
 		{
 			this.pageNumber = e.ProgressPercentage;
 			this.ShowSelectedPage();
 		}
-*/
+		 */
 		#endregion
 		
 		#region Worker
@@ -773,7 +788,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 			return null;
 		}
-		*/
+		 */
 		/*
 		
 		private object RunDataReport (ReportModel reportModel,IDataManager data,BackgroundWorker worker,DoWorkEventArgs e)
@@ -799,7 +814,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 			return null;
 		}
-		*/
+		 */
 		#endregion
 		
 		#endregion
