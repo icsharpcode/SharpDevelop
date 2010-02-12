@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public virtual object InitiallyFocusedControl {
-			get { return this.Control; }
+			get { return null; }
 		}
 		
 		IWorkbenchWindow workbenchWindow;

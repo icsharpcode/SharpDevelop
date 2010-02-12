@@ -7,6 +7,7 @@
 			Name="lastProjectsListView"
 			SelectionMode="Single"
 			core:SortableGridViewColumn.SortMode="Automatic"
+			Margin="0,0,0,20"
 			MouseDoubleClick="lastProjectsDoubleClick"
 			KeyDown="lastProjectsKeyDown">
 			<ListView.Resources>
@@ -38,8 +39,7 @@
 			</ListView.View>
 		</ListView>
 		<StackPanel
-			Orientation="Horizontal"
-			Margin="0,20,0,0">
+			Orientation="Horizontal">
 			<Button
 				Content="{core:Localize StartPage.StartMenu.OpenCombineButton}"
 				Click="openSolutionClick" />

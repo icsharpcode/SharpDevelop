@@ -54,6 +54,7 @@ namespace ICSharpCode.StartPage
 				}
 			}
 			lastProjectsListView.ItemsSource = items;
+			lastProjectsListView.Visibility = items.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 		}
 		
 		class RecentOpenItem

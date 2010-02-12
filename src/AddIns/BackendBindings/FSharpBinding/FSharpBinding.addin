@@ -101,7 +101,8 @@
 		     category = "Main"
 		     title    = "F# Interactive"
 		     icon     = "F#.ProjectIcon"
-		     class    = "FSharpBinding.FSharpInteractive"/>
+		     class    = "FSharpBinding.FSharpInteractive"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">

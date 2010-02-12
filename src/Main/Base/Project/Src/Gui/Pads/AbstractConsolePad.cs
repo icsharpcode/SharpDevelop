@@ -71,6 +71,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get { return panel; }
 		}
 		
+		public override object InitiallyFocusedControl {
+			get { return console.editor; }
+		}
+		
 		string GetText()
 		{
 			return this.TextEditor.Document.Text;
@@ -130,6 +134,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 					return false;
 				case Key.Down:
+					if (console.CommandText.Contains("\n"))
+						return false;
 					this.historyPointer = Math.Min(this.historyPointer + 1, this.history.Count);
 					if (this.historyPointer == this.history.Count)
 						console.CommandText = "";
@@ -138,6 +144,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 					console.editor.ScrollToEnd();
 					return true;
 				case Key.Up:
+					if (console.CommandText.Contains("\n"))
+						return false;
 					this.historyPointer = Math.Max(this.historyPointer - 1, 0);
 					if (this.historyPointer == this.history.Count)
 						console.CommandText = "";
@@ -148,19 +156,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 				case Key.Return:
 					if (Keyboard.Modifiers == ModifierKeys.Shift)
 						return false;
+					int caretOffset = this.console.TextEditor.Caret.Offset;
 					string commandText = console.CommandText;
-					this.console.TextEditor.Document.Insert(this.console.TextEditor.Document.TextLength, "\n");
+					cleared = false;
 					if (AcceptCommand(commandText)) {
-						if (!cleared)
+						if (!cleared) {
+							console.TextEditor.Document.Insert(console.TextEditor.Document.TextLength, Environment.NewLine);
 							AppendPrompt();
-						else
+							console.TextEditor.Select(console.TextEditor.Document.TextLength, 0);
+						} else {
 							console.CommandText = "";
+						}
 						cleared = false;
 						this.history.Add(commandText);
 						this.historyPointer = this.history.Count;
+						console.editor.ScrollToEnd();
+						return true;
 					}
-					console.editor.ScrollToEnd();
-					return true;
+					return false;
 				default:
 					return false;
 			}
@@ -224,11 +237,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			console.Append(text);
 		}
 		
-		protected void InsertLineBeforePrompt(string text)
+		protected void InsertBeforePrompt(string text)
 		{
-			text += Environment.NewLine;
-			this.console.editor.Document.Insert(this.console.readOnlyRegion.EndOffset - Prompt.Length, text);
-			this.console.SetReadonly(this.console.readOnlyRegion.EndOffset + text.Length);
+			int endOffset = this.console.readOnlyRegion.EndOffset;
+			bool needScrollDown = this.console.editor.CaretOffset >= endOffset;
+			this.console.editor.Document.Insert(endOffset - Prompt.Length, text);
+			this.console.editor.ScrollToEnd();
+			this.console.SetReadonly(endOffset + text.Length);
 		}
 		
 		protected virtual void Clear()

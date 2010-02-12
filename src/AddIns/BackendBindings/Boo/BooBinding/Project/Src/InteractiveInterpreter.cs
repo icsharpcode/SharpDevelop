@@ -95,7 +95,7 @@ namespace Grunwald.BooBinding
 				if (processing)
 					AppendLine(text.ToString());
 				else
-					InsertLineBeforePrompt(text.ToString());
+					InsertBeforePrompt(text.ToString() + Environment.NewLine);
 			}
 		}
 		

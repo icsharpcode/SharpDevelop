@@ -5,54 +5,37 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace FSharpBinding
 {
-	public class FSharpInteractive : AbstractPadContent
+	public class FSharpInteractive : AbstractConsolePad
 	{
 		Queue<string> outputQueue = new Queue<string>();
 		internal readonly Process fsiProcess = new Process();
-		Panel panel = new Panel();
-		TextBox input, output;
 		internal readonly bool foundCompiler;
 		
 		public FSharpInteractive()
 		{
-			input = new TextBox {
-				Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right,
-				Width = panel.Width
-			};
-			output = new TextBox {
-				Multiline = true,
-				Top = input.Height,
-				Height = panel.Height - input.Height,
-				Width = panel.Width,
-				ReadOnly = true,
-				ScrollBars = ScrollBars.Both,
-				WordWrap = false,
-				Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom
-			};
-			panel.Controls.Add(input);
-			panel.Controls.Add(output);
-			
 			if (Array.Exists(ConfigurationManager.AppSettings.AllKeys, x => x == "alt_fs_bin_path")) {
 				string path = Path.Combine(ConfigurationManager.AppSettings["alt_fs_bin_path"], "fsi.exe");
 				if (File.Exists(path)) {
 					fsiProcess.StartInfo.FileName = path;
 					foundCompiler = true;
 				} else {
-					output.Text = "you are trying to use the app setting alt_fs_bin_path, but fsi.exe is not localed in the given directory";
+					AppendLine("you are trying to use the app setting alt_fs_bin_path, but fsi.exe is not localed in the given directory");
 					foundCompiler = false;
 				}
 			} else {
@@ -68,37 +51,26 @@ namespace FSharpBinding
 					foundCompiler = true;
 				} else {
 					string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-					var possibleFiles = from fsdir in Directory.GetDirectories(programFiles, "FSharp*")
-						//LoggingService.Debug("Trying to find fsi in '" + fsdir + "'");
-						let fileInfo = new FileInfo(Path.Combine(fsdir, "bin\\fsi.exe"))
-						where fileInfo.Exists
-						orderby fileInfo.CreationTime
-						select fileInfo;
-					FileInfo file = possibleFiles.FirstOrDefault();
-					if (file != null) {
-						fsiProcess.StartInfo.FileName = file.FullName;
+					path = Path.Combine(programFiles, @"Microsoft F#\v4.0\Fsi.exe");
+					if (File.Exists(path)) {
+						fsiProcess.StartInfo.FileName = path;
 						foundCompiler = true;
 					} else {
-						output.Text = "Can not find the fsi.exe, ensure a version of the F# compiler is installed." + Environment.NewLine +
-							"Please see http://research.microsoft.com/fsharp for details of how to install the compiler";
+						AppendLine("Can not find the fsi.exe, ensure a version of the F# compiler is installed." + Environment.NewLine +
+						           "Please see http://research.microsoft.com/fsharp for details of how to install the compiler");
 						foundCompiler = false;
 					}
 				}
 			}
 			
 			if (foundCompiler) {
-				input.KeyUp += delegate(object sender, KeyEventArgs e) {
-					if (e.KeyData == Keys.Return) {
-						fsiProcess.StandardInput.WriteLine(input.Text);
-						input.Text = "";
-					}
-				};
 				//fsiProcess.StartInfo.Arguments <- "--fsi-server sharpdevelopfsi";
 				fsiProcess.StartInfo.UseShellExecute = false;
 				fsiProcess.StartInfo.CreateNoWindow = true;
 				fsiProcess.StartInfo.RedirectStandardError = true;
 				fsiProcess.StartInfo.RedirectStandardInput = true;
 				fsiProcess.StartInfo.RedirectStandardOutput = true;
+				fsiProcess.EnableRaisingEvents = true;
 				fsiProcess.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) {
 					lock (outputQueue) {
 						outputQueue.Enqueue(e.Data);
@@ -117,31 +89,52 @@ namespace FSharpBinding
 						outputQueue.Enqueue("restarting ...");
 					}
 					WorkbenchSingleton.SafeThreadAsyncCall(ReadAll);
-					fsiProcess.Start();
+					WorkbenchSingleton.SafeThreadAsyncCall(StartFSharp);
 				};
-				fsiProcess.Start();
-				fsiProcess.BeginErrorReadLine();
-				fsiProcess.BeginOutputReadLine();
-			} else {
-				input.KeyUp += delegate(object sender, KeyEventArgs e) {
-					if (e.KeyData == Keys.Return) {
-						output.AppendText(Environment.NewLine + "F# not installed - could not execute command");
-						input.Text = "";
-					}
-				};
+				StartFSharp();
 			}
 		}
+		
+		void StartFSharp()
+		{
+			fsiProcess.Start();
+			fsiProcess.BeginErrorReadLine();
+			fsiProcess.BeginOutputReadLine();
+		}
+		
+		int expectedPrompts;
 		
 		void ReadAll()
 		{
+			StringBuilder b = new StringBuilder();
 			lock (outputQueue) {
 				while (outputQueue.Count > 0)
-					output.AppendText(outputQueue.Dequeue() + Environment.NewLine);
+					b.AppendLine(outputQueue.Dequeue());
 			}
+			int offset = 0;
+			// ignore prompts inserted by fsi.exe (we only see them too late as we're reading line per line)
+			for (int i = 0; i < expectedPrompts; i++) {
+				if (offset + 1 < b.Length && b[offset] == '>' && b[offset + 1] == ' ')
+					offset += 2;
+				else
+					break;
+			}
+			expectedPrompts = 0;
+			InsertBeforePrompt(b.ToString(offset, b.Length - offset));
 		}
 		
-		public override object Control {
-			get { return panel; }
+		protected override string Prompt {
+			get { return "> "; }
+		}
+		
+		protected override bool AcceptCommand(string command)
+		{
+			if (command.TrimEnd().EndsWith(";;", StringComparison.Ordinal)) {
+				expectedPrompts++;
+				fsiProcess.StandardInput.WriteLine(command);
+				return true;
+			}
+			return false;
 		}
 	}
 	

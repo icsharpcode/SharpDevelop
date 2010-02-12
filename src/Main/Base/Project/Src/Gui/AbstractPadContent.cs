@@ -12,8 +12,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public abstract class AbstractPadContent : IPadContent
 	{
+		/// <inheritdoc/>
 		public abstract object Control {
 			get;
+		}
+		
+		/// <inheritdoc/>
+		public virtual object InitiallyFocusedControl {
+			get {
+				return null;
+			}
 		}
 		
 		public virtual void Dispose()

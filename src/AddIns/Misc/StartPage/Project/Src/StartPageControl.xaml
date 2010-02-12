@@ -5,7 +5,7 @@
 	<ScrollViewer
 		VerticalScrollBarVisibility="Visible"
 		HorizontalScrollBarVisibility="Disabled">
-		<Grid>
+		<Grid MinWidth="200"> <!-- use minimum width to avoid the text wrapping from getting ridiculous -->
 			<Grid.RowDefinitions>
 				<RowDefinition
 					Height="72" />

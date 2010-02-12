@@ -8,7 +8,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui 
+namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
 	/// The IPadContent interface is the basic interface to all "tool" windows
@@ -21,6 +21,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// You can use both Windows.Forms and WPF controls.
 		/// </summary>
 		object Control {
+			get;
+		}
+		
+		/// <summary>
+		/// Gets the control which has focus initially.
+		/// </summary>
+		object InitiallyFocusedControl {
 			get;
 		}
 	}

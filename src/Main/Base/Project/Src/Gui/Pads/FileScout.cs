@@ -331,6 +331,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public object InitiallyFocusedControl {
+			get {
+				return null;
+			}
+		}
+		
 		Splitter      splitter1     = new Splitter();
 		
 		FileList   filelister = new FileList();
