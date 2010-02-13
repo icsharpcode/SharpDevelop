@@ -2,28 +2,27 @@
 <ReportModel>
     <ReportSettings>
         <ReportSettings>
-            <GridSize>8, 8</GridSize>
-            <PageSize>827, 1169</PageSize>
-            <CommandText />
-            <Landscape>False</Landscape>
-            <GroupColumnsCollection />
-            <RightMargin>50</RightMargin>
-            <NoDataMessage>No Data for this Report</NoDataMessage>
             <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
-            <ReportType>DataReport</ReportType>
-            <UseStandardPrinter>True</UseStandardPrinter>
-            <CommandType>Text</CommandType>
-            <GraphicsUnit>Millimeter</GraphicsUnit>
-            <TopMargin>50</TopMargin>
-            <ConnectionString />
-            <Padding>5, 5, 5, 5</Padding>
-            <LeftMargin>50</LeftMargin>
-            <SortColumnCollection />
             <DataModel>PushData</DataModel>
-            <BottomMargin>50</BottomMargin>
+            <RightMargin>50</RightMargin>
+            <UseStandardPrinter>True</UseStandardPrinter>
+            <SortColumnCollection />
             <AvailableFieldsCollection />
-            <ReportName>Report1</ReportName>
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <LeftMargin>50</LeftMargin>
+            <PageSize>827, 1169</PageSize>
+            <Padding>5, 5, 5, 5</Padding>
+            <BottomMargin>50</BottomMargin>
+            <CommandType>Text</CommandType>
             <ParameterCollection />
+            <Landscape>False</Landscape>
+            <ReportName>Report1</ReportName>
+            <TopMargin>50</TopMargin>
+            <GroupColumnsCollection />
+            <GraphicsUnit>Millimeter</GraphicsUnit>
+            <CommandText />
+            <ReportType>DataReport</ReportType>
+            <ConnectionString />
         </ReportSettings>
     </ReportSettings>
     <SectionCollection>
@@ -87,8 +86,8 @@
                     <Size>661, 42</Size>
                     <ScaleImageToSize>False</ScaleImageToSize>
                     <BackColor>Window</BackColor>
-                    <RelativeFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</RelativeFileName>
-                    <ImageFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
+                    <RelativeFileName>..\Logos\Bannerbeige2.gif</RelativeFileName>
+                    <ImageFileName>D:\SharpDevelop3.0_CHECKOUT\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
                 </BaseImageItem>
                 <BaseLineItem>
                     <StartLineCap>Flat</StartLineCap>

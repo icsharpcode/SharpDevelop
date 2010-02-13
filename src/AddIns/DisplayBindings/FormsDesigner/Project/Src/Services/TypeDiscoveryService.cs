@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Core;
@@ -48,7 +49,13 @@ namespace ICSharpCode.FormsDesigner.Services
 						continue;
 					}
 				}
-				AddDerivedTypes(baseType, asm, types);
+				try {
+					AddDerivedTypes(baseType, asm, types);
+				} catch (FileNotFoundException) {
+				} catch (FileLoadException) {
+				} catch (BadImageFormatException) {
+					// ignore assembly load errors
+				}
 			}
 			LoggingService.Debug("TypeDiscoveryService returns " + types.Count + " types");
 			

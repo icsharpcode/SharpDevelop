@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Project.Converter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,9 +12,12 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project.Converter;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using MSBuild = Microsoft.Build.Evaluation;
@@ -1067,6 +1069,43 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			MSBuildEngine.StartBuild(this, buildServices, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
+		}
+		
+		public override ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+		{
+			ProjectBuildOptions projectOptions = base.CreateProjectBuildOptions(options, isRootBuildable);
+			Solution solution = this.ParentSolution;
+			var configMatchings = solution.GetActiveConfigurationsAndPlatformsForProjects(options.SolutionConfiguration, options.SolutionPlatform);
+			// Find the project configuration, and build an XML string containing all configurations from the solution
+			StringWriter solutionConfigurationXml = new StringWriter();
+			using (XmlTextWriter solutionConfigurationWriter = new XmlTextWriter(solutionConfigurationXml)) {
+				solutionConfigurationWriter.WriteStartElement("SolutionConfiguration");
+				foreach (var matching in configMatchings) {
+					solutionConfigurationWriter.WriteStartElement("ProjectConfiguration");
+					solutionConfigurationWriter.WriteAttributeString("Project", matching.Project.IdGuid);
+					solutionConfigurationWriter.WriteValue(matching.Configuration + "|" + MSBuildInternals.FixPlatformNameForProject(matching.Platform));
+					solutionConfigurationWriter.WriteEndElement();
+				}
+				solutionConfigurationWriter.WriteEndElement();
+			}
+			// Set property for solution configuration. This allows MSBuild to know the correct configuration for project references,
+			// which is necessary to resolve the referenced project's OutputPath.
+			projectOptions.Properties["CurrentSolutionConfigurationContents"] = solutionConfigurationXml.ToString();
+			
+			projectOptions.Properties["SolutionDir"] = EnsureBackslash(solution.Directory);
+			projectOptions.Properties["SolutionExt"] = ".sln";
+			projectOptions.Properties["SolutionFileName"] = Path.GetFileName(solution.FileName);
+			projectOptions.Properties["SolutionPath"] = solution.FileName;
+			
+			return projectOptions;
+		}
+		
+		static string EnsureBackslash(string path)
+		{
+			if (path.EndsWith("\\", StringComparison.Ordinal))
+				return path;
+			else
+				return path + "\\";
 		}
 		#endregion
 		

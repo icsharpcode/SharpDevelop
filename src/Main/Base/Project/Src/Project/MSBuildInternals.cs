@@ -82,6 +82,31 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		/// <summary>
+		/// This is a special case in MSBuild we need to take care of.
+		/// </summary>
+		public static string FixPlatformNameForProject(string platformName)
+		{
+			if (platformName == "Any CPU") {
+				return "AnyCPU";
+			} else {
+				return platformName;
+			}
+		}
+		
+		/// <summary>
+		/// This is a special case in MSBuild we need to take care of.
+		/// Opposite of FixPlatformNameForProject
+		/// </summary>
+		public static string FixPlatformNameForSolution(string platformName)
+		{
+			if (platformName == "AnyCPU") {
+				return "Any CPU";
+			} else {
+				return platformName;
+			}
+		}
+		
 		internal static PropertyStorageLocations GetLocationFromCondition(MSBuild.Construction.ProjectElement element)
 		{
 			while (element != null) {

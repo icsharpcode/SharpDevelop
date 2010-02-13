@@ -184,13 +184,7 @@
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				
-				<ComponentRef Id="DIfxAppXsd"/>
-				<ComponentRef Id="IisXsd"/>
-				<ComponentRef Id="PsXsd"/>
-				<ComponentRef Id="SqlXsd"/>
-				<ComponentRef Id="UtilXsd"/>
 				<ComponentRef Id="DariceCub"/>
-				<ComponentRef Id="NetFxSchema"/>
 				<ComponentRef Id="HeatExe"/>
 				<ComponentRef Id="MeltExe"/>
 				<ComponentRef Id="MergeModCub"/>
@@ -224,18 +218,11 @@
 				<ComponentRef Id="WixVSSchema"/>
 				<ComponentRef Id="WixFirewallSchema"/>
 				<ComponentRef Id="WixGamingSchema"/>
-				<ComponentRef Id="VSExtensionSchema"/>
 				<ComponentRef Id="WixLicenseFiles"/>
 				<ComponentRef Id="WixBitmapFiles"/>
-				<ComponentRef Id="WixDocFiles"/>
-				<ComponentRef Id="WixDtfHelpFile"/>
-				<ComponentRef Id="WixDtfApiHelpFile"/>
 				<ComponentRef Id="WixVSExtension"/>
 				<ComponentRef Id="Difxapp_x64Wixlib"/>
 				<ComponentRef Id="Difxapp_x86Wixlib"/>
-				<ComponentRef Id="MSMQXsd"/>
-				<ComponentRef Id="WixFirewallXsd"/>
-				<ComponentRef Id="WixGamingXsd"/>
 				<ComponentRef Id="EmptyWixFileTemplate"/>				
 				<ComponentRef Id="WixDefaultLicenseRtf"/>				
 				<ComponentRef Id="EmptyWixProjectTemplate"/>				
@@ -253,17 +240,7 @@
 				<ComponentRef Id="WixCopExe"/>
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
-				
-				<ComponentRef Id="SHFBMain"/>
-				<ComponentRef Id="SHFBBuildComponents"/>
-				<ComponentRef Id="SHFBColorizer"/>
-				<ComponentRef Id="SHFBConceptualTemplates"/>
-				<ComponentRef Id="SHFBPlugins"/>
-				<ComponentRef Id="SHFBSharedContent"/>
-				<ComponentRef Id="SHFBTemplates"/>
-				<ComponentRef Id="SHFBWeb"/>
 
-				<ComponentRef Id="NUnitUiKitDll"/>
 				<ComponentRef Id="NUnitUtilDll"/>
 				<ComponentRef Id="NUnitConsoleFiles"/>
 				<ComponentRef Id="NUnitConsoleX86Files"/>
@@ -417,7 +394,6 @@
 				<ComponentRef Id="IronRubyDll"/>
 				<ComponentRef Id="IronRubyLibrariesDll"/>
 				<ComponentRef Id="IronRubyLibrariesYamlDll"/>
-				<ComponentRef Id="MicrosoftScriptingHelpersDll"/>
 				<ComponentRef Id="RubyBindingAddin"/>
 				<ComponentRef Id="RubyBindingDll"/>
 				<ComponentRef Id="RubyMicrosoftDynamicDll"/>

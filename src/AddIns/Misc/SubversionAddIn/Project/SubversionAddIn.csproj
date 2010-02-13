@@ -82,7 +82,6 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <EmbeddedResource Include="Resources\TortoiseSvnNotFoundForm.xfrm" />
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.Designer.cs">
       <DependentUpon>DiffPanel.cs</DependentUpon>
     </Compile>

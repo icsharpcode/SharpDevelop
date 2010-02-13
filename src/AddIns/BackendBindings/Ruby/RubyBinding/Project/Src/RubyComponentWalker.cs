@@ -34,7 +34,7 @@ namespace ICSharpCode.RubyBinding
 		IComponentCreator componentCreator;
 		string componentName = String.Empty;
 		RubyCodeDeserializer deserializer;
-		ClassDeclaration classDeclaration;
+		ClassDefinition classDefinition;
 		
 		public RubyComponentWalker(IComponentCreator componentCreator)
 		{
@@ -61,23 +61,23 @@ namespace ICSharpCode.RubyBinding
 		/// <summary>
 		/// Gets the fully qualified name of the base class.
 		/// </summary>
-		public static string GetBaseClassName(ClassDeclaration classDeclaration)
+		public static string GetBaseClassName(ClassDefinition classDefinition)
 		{
-			ConstantVariable variable = classDeclaration.SuperClass as ConstantVariable;
+			ConstantVariable variable = classDefinition.SuperClass as ConstantVariable;
 			if (variable != null) {
 				return RubyControlFieldExpression.GetQualifiedName(variable);
 			}
 			return String.Empty;
 		}
 		
-		protected override void Walk(ClassDeclaration node)
+		protected override void Walk(ClassDefinition node)
 		{
-			classDeclaration = node;
+			classDefinition = node;
 			componentName = node.QualifiedName.Name;
 			base.Walk(node);
 		}
 
-		protected override void Walk(MethodDeclaration node)
+		protected override void Walk(MethodDefinition node)
 		{
 			if (IsInitializeComponentMethod(node)) {
 				Type type = GetComponentType();
@@ -213,7 +213,7 @@ namespace ICSharpCode.RubyBinding
 			return null;
 		}
 		
-		static bool IsInitializeComponentMethod(MethodDeclaration node)
+		static bool IsInitializeComponentMethod(MethodDefinition node)
 		{
 			string name = node.Name.ToLowerInvariant();
 			return name == "initializecomponent" || name == "initializecomponents";
@@ -224,7 +224,7 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		Type GetComponentType()
 		{
-			string baseClass = GetBaseClassName(classDeclaration);
+			string baseClass = GetBaseClassName(classDefinition);
 			Type type = componentCreator.GetType(baseClass);
 			if (type != null) {
 				return type;

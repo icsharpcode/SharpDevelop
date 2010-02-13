@@ -89,7 +89,7 @@ namespace ICSharpCode.RubyBinding
 			return requireString;
 		}
 		
-		protected override void Walk(ModuleDeclaration node)
+		protected override void Walk(ModuleDefinition node)
 		{
 			globalClass = CreateClass(node);
 			
@@ -98,7 +98,7 @@ namespace ICSharpCode.RubyBinding
 			currentClass = null;
 		}		
 		
-		protected override void Walk(ClassDeclaration node)
+		protected override void Walk(ClassDefinition node)
 		{
 			DefaultClass c = CreateClass(node);
 			AddBaseType(c, node);
@@ -109,7 +109,7 @@ namespace ICSharpCode.RubyBinding
 			currentClass = null;	
 		}
 		
-		protected override void Walk(MethodDeclaration node)
+		protected override void Walk(MethodDefinition node)
 		{
 			IClass c = currentClass;
 			if (currentClass == null) {
@@ -146,7 +146,7 @@ namespace ICSharpCode.RubyBinding
 		/// <summary>
 		/// Gets the region of a method. This does not include the body.
 		/// </summary>
-		DomRegion GetMethodRegion(MethodDeclaration node)
+		DomRegion GetMethodRegion(MethodDefinition node)
 		{
 			return new DomRegion(node.Location.Start.Line, node.Location.Start.Column, node.Parameters.Location.End.Line, node.Parameters.Location.End.Column);
 		}
@@ -216,7 +216,7 @@ namespace ICSharpCode.RubyBinding
 			}
 		}
 		
-		DefaultClass CreateClass(ModuleDeclaration node)
+		DefaultClass CreateClass(ModuleDefinition node)
 		{
 			DefaultClass c = new DefaultClass(compilationUnit, node.QualifiedName.Name);
 			c.Region = GetRegion(node.Location);
@@ -228,9 +228,9 @@ namespace ICSharpCode.RubyBinding
 		/// <summary>
 		/// Adds the named base type to the class.
 		/// </summary>
-		void AddBaseType(IClass c, ClassDeclaration classDec)
+		void AddBaseType(IClass c, ClassDefinition classDef)
 		{
-			string name = RubyComponentWalker.GetBaseClassName(classDec);
+			string name = RubyComponentWalker.GetBaseClassName(classDef);
 			c.BaseTypes.Add(new SearchClassReturnType(c.ProjectContent, c, 0, 0, name, 0));
 		}
 		

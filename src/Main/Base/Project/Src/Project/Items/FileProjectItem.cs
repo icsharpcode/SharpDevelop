@@ -62,6 +62,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[LocalizedProperty("${res:Global.FileName}",
+		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description}")]
+		[Browsable(true)]
+		[ReadOnly(true)]
+		public override string FileName {
+			get { return base.FileName; }
+			set { base.FileName = value; }
+		}
+		
 		sealed class BuildActionEditor : DropDownEditor
 		{
 			protected override Control CreateDropDownControl(ITypeDescriptorContext context, IWindowsFormsEditorService editorService)

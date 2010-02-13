@@ -4,7 +4,7 @@
         <ReportSettings>
             <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
             <DataModel>FormSheet</DataModel>
-            <FileName>Report1.srd</FileName>
+            <FileName>D:\SharpDevelop3.0_CHECKOUT\SharpDevelop\samples\SharpDevelopReports\SampleReports\FormSheet\JCA.srd</FileName>
             <RightMargin>50</RightMargin>
             <UseStandardPrinter>True</UseStandardPrinter>
             <SortColumnCollection />
@@ -42,8 +42,8 @@
                     <Size>582, 50</Size>
                     <ScaleImageToSize>False</ScaleImageToSize>
                     <BackColor>Window</BackColor>
-                    <RelativeFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</RelativeFileName>
-                    <ImageFileName>D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
+                    <RelativeFileName>..\..\Logos\Bannerbeige2.gif</RelativeFileName>
+                    <ImageFileName>D:\SharpDevelop3.0_CHECKOUT\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
                 </BaseImageItem>
             </Items>
             <Location>50, 50</Location>
@@ -75,20 +75,6 @@ Joint Copyright Assignment by Contributor To AlphaSierraPapa</Text>
                     <Size>597, 57</Size>
                     <ForeColor>ControlText</ForeColor>
                 </BaseTextItem>
-                <BaseLineItem>
-                    <StartLineCap>Flat</StartLineCap>
-                    <FromPoint>10, 5</FromPoint>
-                    <Location>92, 82</Location>
-                    <Name>reportLineControl1</Name>
-                    <Size>597, 9</Size>
-                    <EndLineCap>Flat</EndLineCap>
-                    <DashStyle>Solid</DashStyle>
-                    <BackColor>White</BackColor>
-                    <DashLineCap>Flat</DashLineCap>
-                    <ForeColor>ControlText</ForeColor>
-                    <ToPoint>40, 5</ToPoint>
-                    <Thickness>1</Thickness>
-                </BaseLineItem>
             </Items>
             <Location>50, 150</Location>
             <DrawBorder>False</DrawBorder>
@@ -122,7 +108,7 @@ Country:_______________________________           Facsimile     :_______________
                     <FormatString />
                     <Name>reportTextItem1</Name>
                     <FrameColor>WindowFrame</FrameColor>
-                    <Size>622, 135</Size>
+                    <Size>639, 135</Size>
                     <ForeColor>ControlText</ForeColor>
                 </BaseTextItem>
                 <BaseTextItem>
@@ -142,7 +128,7 @@ Country:_______________________________           Facsimile     :_______________
                     <FormatString />
                     <Name>reportTextItem2</Name>
                     <FrameColor>WindowFrame</FrameColor>
-                    <Size>675, 67</Size>
+                    <Size>639, 67</Size>
                     <ForeColor>ControlText</ForeColor>
                 </BaseTextItem>
                 <BaseTextItem>
@@ -165,7 +151,7 @@ Country:_______________________________           Facsimile     :_______________
                     <FormatString />
                     <Name>reportTextItem3</Name>
                     <FrameColor>WindowFrame</FrameColor>
-                    <Size>695, 113</Size>
+                    <Size>639, 113</Size>
                     <ForeColor>ControlText</ForeColor>
                 </BaseTextItem>
                 <BaseTextItem>
@@ -204,7 +190,7 @@ Please send a signed copy of this assignment by facsimile to AlphaSierraPapa at:
                     <FormatString />
                     <Name>reportTextItem5</Name>
                     <FrameColor>WindowFrame</FrameColor>
-                    <Size>695, 80</Size>
+                    <Size>639, 80</Size>
                     <ForeColor>ControlText</ForeColor>
                 </BaseTextItem>
                 <BaseTextItem>

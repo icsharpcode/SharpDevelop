@@ -39,13 +39,13 @@ namespace SharpReportSamples
 			UpdateStatusbar (Application.StartupPath);
 			this.previewControl1.Messages = new ReportViewerMessagesProvider();
 			
-		/*
+			/*
 			EventLog ev = new EventLog();
 			ev.Log = "System";
 			ev.MachineName = ".";  // Lokale Maschine
 			ArrayList ar = new ArrayList();
 			ar.AddRange(ev.Entries);
-			*/
+			 */
 		}
 		
 		
@@ -58,7 +58,7 @@ namespace SharpReportSamples
 			int y = startupPath.IndexOf(samplesDir);
 			string startPath = startupPath.Substring(0,y + samplesDir.Length) + @"SampleReports\";
 			
-//D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports
+			//D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports
 			
 			string pathToFormSheet = startPath + formSheetDir;
 			
@@ -94,7 +94,6 @@ namespace SharpReportSamples
 		private void UpdateStatusbar (string text)
 		{
 			this.label1.Text = text;
-			
 		}
 		
 		
@@ -106,7 +105,6 @@ namespace SharpReportSamples
 			} else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
 			}
-			
 			else {
 				
 				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
@@ -114,10 +112,14 @@ namespace SharpReportSamples
 				if ((parameters != null)&& (parameters.SqlParameters.Count > 0)){
 					parameters.SqlParameters[0].ParameterValue = "I'm the Parameter";
 				}
-				
-				this.previewControl1.SetupAsynchron(reportName,parameters);
+				this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+				{
+					this.RunStandardReport(reportName);
+				};
+				this.previewControl1.RunReport(reportName,parameters);
 			}
 		}
+		
 		
 		#region ProviderIndependent
 		private void RunProviderIndependent (string reportName)
@@ -129,10 +131,14 @@ namespace SharpReportSamples
 			
 			parameters.ConnectionObject = con;
 			parameters.SqlParameters[0].ParameterValue = "Provider Independent";
-			this.previewControl1.SetupAsynchron(reportName,parameters);
+			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+			{
+				this.RunProviderIndependent(reportName);
+			};
+			this.previewControl1.RunReport(reportName,parameters);
 		}
-			
-			
+		
+		
 		#endregion
 		
 		#region Contributors
@@ -140,25 +146,35 @@ namespace SharpReportSamples
 		/// <summary>
 		/// Some values in the Datastructure are not set (means they are null), you can handle this values by setting
 		/// the NullValue in the properties of this Item, or, you can use the SectionRenderingEvent as shown
-		/// below 
+		/// below
 		/// </summary>
 		/// <param name="fileName"></param>
 		private void RunContributors (string fileName)
 		{
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
-
+			
+			// sorting is done here, but, be carefull, misspelled fieldnames will cause an exception
+			
+			//ReportSettings settings = model.ReportSettings;
+			//settings.SortColumnCollection.Add(new SortColumn("First",System.ComponentModel.ListSortDirection.Ascending));
+		
 			// Both variable declarations  are valid
 			
-			ContributorCollection list = ContributorsReportData.CreateContributorsList();
-			IDataManager dm = DataManager.CreateInstance(list,model.ReportSettings);
+			ContributorCollection contributorCollection = ContributorsReportData.CreateContributorsList();
+			IDataManager dataManager = DataManager.CreateInstance(contributorCollection,model.ReportSettings);
 			
 //			List<Contributor> list = ContributorsReportData.CreateContributorsList();
 //			IDataManager dm = DataManager.CreateInstance(list,model.ReportSettings);
 			
-//			this.previewControl1.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
-			this.previewControl1.SetupAsynchron(model,dm);
 			
+			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+			{
+				this.previewControl1.RunReport(model,dataManager);
+			};
+			
+			this.previewControl1.RunReport(model,dataManager);
 		}
+		
 		
 		//Try this to react to SectionrenderEvent,
 		/*
@@ -191,8 +207,8 @@ namespace SharpReportSamples
 				default:
 					break;
 			}
-		}	
-		*/
+		}
+		 */
 		#endregion
 		
 
@@ -231,7 +247,7 @@ namespace SharpReportSamples
 		}
 		
 		
-		private string SelectFilename() 
+		private string SelectFilename()
 		{
 			using (SaveFileDialog saveDialog = new SaveFileDialog()){
 
@@ -245,8 +261,6 @@ namespace SharpReportSamples
 				}
 			}
 		}
-		
-		*/
-		
+		 */
 	}
 }

@@ -72,7 +72,7 @@ namespace Hornung.ResourceToolkit.Gui
 			this.panel.Dock = DockStyle.Fill;
 			
 			this.listView = new ListView();
-			this.ListView.Columns.Add(StringParser.Parse("${res:Hornung.ResourceToolkit.FileName}"), 60);
+			this.ListView.Columns.Add(StringParser.Parse("${res:Global.FileName}"), 60);
 			this.ListView.Columns.Add(StringParser.Parse("${res:Hornung.ResourceToolkit.Key}"), 140);
 			this.ListView.Columns.Add(StringParser.Parse("${res:Hornung.ResourceToolkit.Value}"), 140);
 			this.ListView.View = View.Details;

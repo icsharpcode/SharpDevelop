@@ -2,25 +2,11 @@
 <ReportModel>
     <ReportSettings>
         <ReportSettings>
-            <GridSize>8, 8</GridSize>
-            <PageSize>827, 1169</PageSize>
-            <CommandText>SELECT * FROM Kategorien</CommandText>
-            <Landscape>False</Landscape>
-            <GroupColumnsCollection />
-            <RightMargin>50</RightMargin>
-            <NoDataMessage>No Data for this Report</NoDataMessage>
             <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
-            <ReportType>DataReport</ReportType>
-            <UseStandardPrinter>True</UseStandardPrinter>
-            <CommandType>Text</CommandType>
-            <GraphicsUnit>Millimeter</GraphicsUnit>
-            <TopMargin>50</TopMargin>
-            <ConnectionString />
-            <Padding>5, 5, 5, 5</Padding>
-            <LeftMargin>50</LeftMargin>
-            <SortColumnCollection />
             <DataModel>PullData</DataModel>
-            <BottomMargin>50</BottomMargin>
+            <RightMargin>50</RightMargin>
+            <UseStandardPrinter>True</UseStandardPrinter>
+            <SortColumnCollection />
             <AvailableFieldsCollection>
                 <AbstractColumn>
                     <ColumnName>Kategorie-Nr</ColumnName>
@@ -39,13 +25,26 @@
                     <DataTypeName>System.Byte[]</DataTypeName>
                 </AbstractColumn>
             </AvailableFieldsCollection>
-            <ReportName>Report1</ReportName>
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <LeftMargin>50</LeftMargin>
+            <PageSize>827, 1169</PageSize>
+            <Padding>5, 5, 5, 5</Padding>
+            <BottomMargin>50</BottomMargin>
+            <CommandType>Text</CommandType>
             <ParameterCollection>
                 <BasicParameter>
                     <ParameterName>p1</ParameterName>
                     <ParameterValue>aaaaa</ParameterValue>
                 </BasicParameter>
             </ParameterCollection>
+            <Landscape>False</Landscape>
+            <ReportName>Report1</ReportName>
+            <TopMargin>50</TopMargin>
+            <GroupColumnsCollection />
+            <GraphicsUnit>Millimeter</GraphicsUnit>
+            <CommandText>SELECT * FROM Kategorien</CommandText>
+            <ReportType>DataReport</ReportType>
+            <ConnectionString />
         </ReportSettings>
     </ReportSettings>
     <SectionCollection>
@@ -311,7 +310,7 @@
                     <BackColor>Gainsboro</BackColor>
                     <CanShrink>False</CanShrink>
                     <StringTrimming>None</StringTrimming>
-                    <Text>'This Report contains : ' + count() + ' DataRows'</Text>
+                    <Text>='This Report contains : ' + count() + ' DataRows'</Text>
                     <Location>5, 4</Location>
                     <ContentAlignment>MiddleCenter</ContentAlignment>
                     <Visible>True</Visible>

@@ -51,10 +51,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </remarks>
 		public static readonly IDictionary<string, string> MSBuildProperties = new SortedList<string, string> {
 			{ "SharpDevelopBinPath", SharpDevelopBinPath },
-			// 'BuildingInsideVisualStudio' tells MSBuild that we took care of building a project's dependencies
+			// 'BuildingSolutionFile' tells MSBuild that we took care of building a project's dependencies
 			// before trying to build the project itself. This speeds up compilation because it prevents MSBuild from
 			// repeatedly looking if a project needs to be rebuilt.
-			{ "BuildingInsideVisualStudio", "true" }
+			{ "BuildingSolutionFile", "true" }
 		};
 		
 		/// <summary>
@@ -178,12 +178,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			Dictionary<string, string> globalProperties = new Dictionary<string, string>();
 			MSBuildBasedProject.InitializeMSBuildProjectProperties(globalProperties);
-			
-			Solution solution = project.ParentSolution;
-			globalProperties["SolutionDir"] = EnsureBackslash(solution.Directory);
-			globalProperties["SolutionExt"] = ".sln";
-			globalProperties["SolutionFileName"] = Path.GetFileName(solution.FileName);
-			globalProperties["SolutionPath"] = solution.FileName;
 			
 			foreach (KeyValuePair<string, string> pair in options.Properties) {
 				LoggingService.Debug("Setting property " + pair.Key + " to '" + pair.Value + "'");
@@ -320,14 +314,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			LoggingService.Info("Start job (buildInProcess=" + buildInProcess + "): " + job.ToString());
 		 */
-		
-		static string EnsureBackslash(string path)
-		{
-			if (path.EndsWith("\\", StringComparison.Ordinal))
-				return path;
-			else
-				return path + "\\";
-		}
 		
 		BuildError currentErrorOrWarning;
 		

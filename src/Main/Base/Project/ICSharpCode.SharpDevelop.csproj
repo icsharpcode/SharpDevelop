@@ -187,6 +187,10 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.cs" />
+    <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.Designer.cs">
+      <DependentUpon>ToolNotFoundDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\XmlFormsOptionPanel.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\SolutionConfiguration\AddNewConfigurationDialog.Designer.cs">

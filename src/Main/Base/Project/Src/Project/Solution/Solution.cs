@@ -792,11 +792,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		static string FixPlatformNameForProject(string platformName)
 		{
-			if (platformName == "Any CPU") {
-				return "AnyCPU";
-			} else {
-				return platformName;
-			}
+			return MSBuildInternals.FixPlatformNameForProject(platformName);
 		}
 		
 		/// <summary>
@@ -805,11 +801,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		static string FixPlatformNameForSolution(string platformName)
 		{
-			if (platformName == "AnyCPU") {
-				return "Any CPU";
-			} else {
-				return platformName;
-			}
+			return MSBuildInternals.FixPlatformNameForSolution(platformName);
 		}
 		
 		internal sealed class ProjectConfigurationPlatformMatching

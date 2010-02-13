@@ -1,10 +1,880 @@
 CHANGELOG
 =========
 
+ironruby-0.9.4 (RC2) 2010-02-10
+-------------------------------
+	Here are all the commits for this release:
+	http://github.com/ironruby/ironruby/commits/v1.0-rc2
+
+	Up until the first commit after the last release:
+	http://github.com/ironruby/ironruby/commit/6da2f24f57cb0f3799daac2ba190f7888cf7753c
+
+	The following commit messages are for all the commits in GIT which are
+	marked as "sync to tfs" or something to that effect:
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1561136
+	User: tomat
+	Checked in by: merllab
+	Date: Saturday, February 06, 2010 5:43:11 PM
+
+	Comment:
+		The OverloadResolver was performing quite a bit of reflection (mostly calling ParameterInfo.IsDefined) which turned out to consume about 15% of RoR request time.
+		This change introduces OverloadInfo abstraction which captures all properties of a method that are needed to perform overload resolution. The default implementation (ReflectionOverloadInfo) holds on a MethodBase and uses reflection to determine these properties. The implementation caches information that is expensive to retrieve via reflection. The OverloadInfo is a public abstract class and could be implemented by languages so that almost no reflection is needed at runtime. The ultimate goal is to remove OverloadResolver’s dependency on Reflection types (other than Type). This change goes half way – it abstracts away reflection in the first phase of overload resolution (building target sets). More work needs to be done to remove the dependency on Reflection completely in the expression building phase. It would also require some breaking changes in DLR so we keep that part post IronRuby v1.0. 
+		
+		IronRuby implements LibraryOverload subclass of OverloadInfo. Library initializers generator performs custom attribute reflection on library methods and compresses the retrieved information to 31 bits. It imposes a limit of 15 parameters on library methods (more parameters can be supported if needed). The flags are then used at overload resolution time instead of calling ParameterInfo.IsDefined.
+		
+		The difference in perf:
+		> ir.exe -X:CompilationThreshold 2 test.rb
+		
+		// before change
+		Initialized in 7.8005s
+		10000 requests: 289 requests per second
+		Peak working set: 217MB
+		
+		// after change
+		Initialized in 7.64449s
+		10000 requests: 337 requests per second
+		Peak working set: 216MB
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1560250
+	User: jdeville
+	Checked in by: merllab
+	Date: Friday, February 05, 2010 2:20:09 PM
+
+	Comment:
+		Upgrades the IronRuby installer creation to Wix3.
+		* Adds Wix3 files to External
+		* Refactor's installer wxs's to allow per-user installs 
+		* lays the foundations for per user installs
+		** At this time I am unable to get a true single package installer to work correctly. I plan on looking into this more, but for now elevation is still required
+		* Adds a rake library and a Rakefile for building the MSI. `rake IronRuby-0.9.4.0.msi` will build the stated file. This requires Wix3 since it uses the HEAT tool.
+		* Updates the version number to 0.9.4.0
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1559161
+	User: jdeville
+	Checked in by: merllab
+	Date: Thursday, February 04, 2010 11:33:13 PM
+
+	Comment:
+		 Closes:
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2146
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2959
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2949
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2907
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2765
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2753
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2686
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2462
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1357
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3183
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2913
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=957
+		
+			 http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1849
+		
+		
+		
+			 * Also adds a spec for CP# 3834
+		
+			 * Adds the ComTest project and exe, and modifies InstallAndRun.bat to register it
+		
+			 * Deletes the ADODB specs in favor of the COMTest specs
+		
+		
+		
+			 Also includes the IR Release queue files that are live on MerlinSnap1 to check them in.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1546541
+	User: jimmysch
+	Checked in by: merllab
+	Date: Monday, February 01, 2010 9:46:49 PM
+
+	Comment:
+		Couple of easy fixes for IronRuby 1.0 RC2:
+		
+		"NoOf" does not mangle to "no_of"
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3562
+		
+		exec cant run a batch file
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3619
+		
+		ir.exe -e doesn't treat arguments correctly
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=462
+		
+		IO.pipe and IP.sysopen not defined
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1919
+		
+		Zlib::Deflate missing constructors
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3319
+		
+		See bugs for more info.
+	 
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1545267
+	User: tomat
+	Checked in by: merllab
+	Date: Monday, February 01, 2010 3:25:22 AM
+
+	Comment:
+		Kernel#binding captures receiver and eval uses it as "self".
+		Adds FxCop configuration to yaml .csproj.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1544575
+	User: tomat
+	Checked in by: merllab
+	Date: Saturday, January 30, 2010 11:50:02 AM
+
+	Comment:
+			Fixes:
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3306
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3307
+			http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3616
+			and related issues.
+			
+			Enables some tests in active_support suite.
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1544546
+	User: tomat
+	Checked in by: merllab
+	Date: Saturday, January 30, 2010 10:59:27 AM
+
+	Comment:
+		Fixes target object boxing in singleton method definition.
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1544319
+	User: sborde
+	Checked in by: merllab
+	Date: Friday, January 29, 2010 6:21:06 PM
+
+	Comment:
+		Config::CONFIG[“libdir”] was not normalized in non-dev environments. This was causing "igem install" to install bat files for the gems to a less than ideal location.
+		Adds some dash_r specs
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1532924
+	User: jimmysch
+	Date: Thursday, January 28, 2010 7:48:26 PM
+
+	Comment:
+		Update ironruby.rack readme, and add a fails tag for the adodb com interop test which keeps failing in snap (OK'd by jdeville).
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1532917
+	User: jimmysch
+	Checked in by: merllab
+	Date: Thursday, January 28, 2010 7:38:01 PM
+
+	Comment:
+		Fixes for running rack-based applications.
+		
+		Ruby changes:
+		- Put ESPIPE class in Errno module; it was defined at top-level which is
+			incorrect, and Sinatra's error-reporting depends on it.
+		- Remove 'hacks' from irake; it doesn't exist anymore
+		- Adds sinatra 0.9.4 and make sure other gems have executables in the
+			gembin dir. If that is added to the path, then "ir -S rails" will work.
+		
+		IronRuby.Rack changes:
+		- Fix bug that the "Rails checkbox" found:
+			http://api.rubyonrails.org/classes/ActionView/Helpers/FormHelper.html#M001612.
+			Basically take the query-string and request body directly from IIS,
+			rather than *incorrectly* reconstructing it. =P
+		- rack.version should be set to Rack::VERSION, rather than hardcoded.
+		- Generate the rack env with Ruby types the first time around, and only
+			execute Ruby code where needed.
+		- Make sure AppPath is a full path
+		- Lazy load web.config settings, and allow setting RACK_ENV from
+			web.config.
+		- Remove locks in HttpHandler and HttpHandlerFactory.
+		- Implement a asynchronous request handler, but it's not wired up yet.
+		- Manually set TOPLEVEL_BINDING since it's not set automatically when
+			IronRuby is embedded.
+		- Canonlicalize paths of files added to the load path, so Ruby files
+			always show "/" as the path separator.
+		- Ruby errors shouldn't be swallowed because the error handler threw
+		- Always log exceptions to ironrack.log, and only show them to the HTML
+			page when RACK_ENV is 'development' or the build is DEBUG.
+		- Update Rails example app, and run all examples in RACK_ENV production
+			mode.
+		- Add Rails example that uses ActiveRecord (IronRuby.RailsDB.Example)
+		- Add Microsoft.Dynamic.csproj to IronRuby.Rack.sln
+		- Update permissions instructions in README.
+		- Clean up little perf test, and add an actual test of IronRuby.Rack,
+			though testing is still very lacking.
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1496558
+	User: tomat
+	Checked in by: merllab
+	Date: Wednesday, January 27, 2010 5:19:21 PM
+
+	Comment:
+		File.basename fix
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1496258
+	User: tomat
+	Checked in by: merllab
+	Date: Wednesday, January 27, 2010 2:26:19 PM
+
+	Comment:
+		tfpt review /shelveset:RSym14;tomat
+		
+		DLR:
+		Adds ExpressionCollectionBuilder as a specialization of ExpressionCollectionBuilder<Expression>.
+		
+		Ruby:
+		Replaces SymbolId usage by RubySymbol class. Ruby symbols are possibly encoded interned frozen strings.
+		Enables KCODE on Silverlight.
+		Allows class reopening in libraries (a class defined in Ruby can be reopened by a library class).
+		Fixes bunch of bugs in YAML.
+		
+		Fixes
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3466
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1494375
+	User: sborde
+	Checked in by: merllab
+	Date: Tuesday, January 26, 2010 4:48:53 PM
+
+	Comment:
+		Dir.mkdir should raise Errno::EACCESS instead of System.UnauthorizedException
+		Diables ActiveRecord tests since some fail intermittently
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1493766
+	User: jimmysch
+	Checked in by: merllab
+	Date: Tuesday, January 26, 2010 12:12:15 PM
+
+	Comment:
+		-S command-line argument: load file from path (eg. ir -S irb)
+		
+		(Shelveset: dash_upper_s;REDMOND\jimmysch | SNAP CheckinId: 10198)
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1484364
+	User: sborde
+	Checked in by: merllab
+	Date: Monday, January 25, 2010 2:12:20 PM
+
+	Comment:
+		Enables active_record tests in irtests.rb. They require SQLExpress to be installed on the machine.
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1482236
+	User: sborde
+	Checked in by: merllab
+	Date: Friday, January 22, 2010 5:44:06 PM
+
+	Comment:
+		Flushes out iconv implementation. Added more specs
+		Made String#encoding visible only in 1.9 mode
+		Adds optional paramter to StringScanner.new
+		The above fixes enable many more Rails tests
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1481259
+	User: jdeville
+	Checked in by: merllab
+	Date: Friday, January 22, 2010 10:22:23 AM
+
+	Comment:
+		cleans up a few critical tags:
+		* re-patches mock.rb with the patch to remove respond_to last
+		* implements a basic implementation of ARGF, there are many holes that still need to be filled in the back end, but the basic idea works, and the specs are no longer critical.
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1481229
+	User: jdeville
+	Checked in by: merllab
+	Date: Friday, January 22, 2010 9:14:51 AM
+
+	Comment:
+		Silverlight Debug binaries raise an assert when hit by the tests, and if SL Debug is built after SL Release, the SL Debug binaries overwrite the SL Release binaries in the IIS direcotry. By not running BuildSilverLightTests.bat we ensure that only the release binaries get tested, even if they run on the same machine one after another.
+		
+		This also fixes the assert issue by changing the code page in Silverlight
+		
+		(Shelveset: silverlightdebugfix;REDMOND\jdeville | SNAP CheckinId: 10174)
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1480603
+	User: sborde
+	Checked in by: merllab
+	Date: Friday, January 22, 2010 12:01:14 AM
+
+	Comment:
+		Added active_resource and action_mailer tests to irtests.rb
+		Added a category (disable_unstable_tests) of unstable tests to utr.rb so that we can track non-deterministic failures. Also a category (exclude_critical_files) for critical test files that cause an exception when loaded (even if no tests are run from the file).
+		Disabled a TestMultiTask test in rake_tests. MultiTaskTest uses monitor.rb which uses Thread.critical= in a way that is not friendly with native threads. Ideally, we will implement our own version of monitor.rb that does not uses Thread.critical=
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1480064
+	User: jdeville
+	Checked in by: merllab
+	Date: Thursday, January 21, 2010 3:32:17 PM
+
+	Comment:
+		Moves APTCA out of an if SIGNED ifdef so we pass FxCop when unsigned.
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1479709
+	User: tomat
+	Checked in by: merllab
+	Date: Thursday, January 21, 2010 1:57:23 PM
+
+	Comment:
+		Implements BEGIN and END blocks.
+		Fixes exception handling during shutdown.
+		Fixes block comparisons.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1479540
+	User: sborde
+	Checked in by: merllab
+	Date: Thursday, January 21, 2010 11:32:57 AM
+
+	Comment:
+		Updates to Rails 2.3.5
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1479538
+	User: sborde
+	Checked in by: merllab
+	Date: Thursday, January 21, 2010 11:29:28 AM
+
+	Comment:
+		open("|shell_command")
+		Removes other tags for Kernel.open
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1478595
+	User: dinov
+	Checked in by: merllab
+	Date: Thursday, January 21, 2010 8:20:13 AM
+
+	Comment:
+		25819 DynamicObject.TryBinaryOperation not called for comparison operators
+		25477 Compat conversion binder isn't used to let objects convert themselves
+								We need to respect errorSuggestion and always fallback for all binders.  Also fixes a problem w/ incorrect # of arguments in the invoke binder.
+		25796 Debugging is Hit-and-Miss under 2.6 and Eclipse
+								We cannot clear the trace pipeline when calling a trace function because that will clear it for all threads.  Instead we remember if we are in a traceback and if so don’t dispatch further events.  Also fixes an issue where the code name was in correct (should be “<modue>”) and updates a bunch of tests accordingly.
+		25775 Can't delete function attributes.
+								This was already fixed, adding a test case
+		25700 Importing is not thread safe
+								We need to lock when creating a built-in module.
+		25673 Silverlight lookup_error isn't available
+								Just making this available in Silverlight be removing ifdef’s
+		25708 ctypes.wintypes missing / wintypes simple types not implemented 
+										Add support for variant bool type along w/ new test cases added to CPython’s ctypes tests
+		25709 _winreg exception missing error codes 
+										Improves the error reporting in _winreg, and also improves our automatic translation of Win32Exceptions.
+										
+										
+		Also:
+										Fixing span reported for function w/o parameters
+										Fix issue w/ calling flush on non-Python file
+										Moving PythonService to GetService API so it works cross-process
+										Fixing performance of getting/setting scope vars via object operations
+										Standardizes on Not/IsFalse DLR expression types
+										Exposes PropertyType for all ReflectedGetter/Setters
+										Exposes DynamicOperations off of LanguageContext for languages to use
+										Adds CreateModule API to Python class for creating and publishing modules
+		
+		codeplexcomment
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1475764
+	User: tomat
+	Checked in by: merllab
+	Date: Tuesday, January 19, 2010 7:37:08 PM
+
+	Comment:
+		The changeset focuses on reducing time spent in JIT to compile generic instantiations of various helper methods. These are mostly related to generic instructions that implement dynamic sites and method calls. It reduces the number of methods jitted during startup time of irb from 481 to 80 (with -X:CompilationThreshold 10000000), which translates to 34% time reduction:
+		
+		rbr -X:CompilationThreshold 10000000 i.rb < exit.txt
+		
+		i.rb:
+		---
+		s = Time.now
+		require 'irb'
+		IRB.start(__FILE__)
+		t = Time.now
+		p t - s
+		---
+		
+		Before: 0.961096 seconds
+		After: 0.631063 seconds
+		
+		DLR
+		
+		Adds LightDynamicExpression – these reducible nodes reduce to strongly typed DynamicExpressions yet when interpreted use untyped dynamic sites (sites typed to CallSite<Func<CallSite, object*>>). Using light sites avoids jitting generic instantiations of various instructions, stubs and helpers that are strongly typed to the call-site signature. Also, strongly typed delegate types are created only when compiling the sites.
+		
+		Adds helpers to CallInstruction that add MethodInfo to CallInstruction mapping into the internal cache. These helpers can be used by reflection caches that look up CLR helper methods. For example, Ruby’s ReflectionCache holds on MethodInfos for all RubyOps. Whenever a helper MethodInfo is needed a delegate is created for it and cached into CallInstruction’s cache along with the instruction that dispatches to it. Since all static helpers are known upfront the delegates and the corresponding instructions can all be ngen’d. 
+		
+		Moves helpers for rule interpretation from Ruby to DynamicUtils. 
+		
+		Python
+		Replaces LazyDynamicExpressions with subclasses of LightDynamicExpressions. 
+		
+		Ruby
+		Simplifies rules interpretation, moves related helpers to DLR.
+		Uses LightDynamicExpression for all dynamic sites.
+		Uses CallInstruction caching for RubyOps.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1475657
+	User: sborde
+	Checked in by: merllab
+	Date: Tuesday, January 19, 2010 5:35:17 PM
+
+	Comment:
+		("%+d" % 0) should equal "+0", not "0"
+		defined? should clear $! of any exception that may have been thrown by const_missing
+		Makes NativeMethods.SetEnvironmentVariable check if the call succeeded
+		Added –g to utr.rb to generate the tags for the failing tests
+		Adds an unstable tag for library\socket\basicsocket\send_spec as it hung on my machine
+		Fix for library\logger\logger\new_spec closing STDERR
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1475655
+	User: rdawson
+	Checked in by: merllab
+	Date: Tuesday, January 19, 2010 5:33:34 PM
+
+	Comment:
+		Bug fixes for gopackage against the latest dev10
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1473028
+	User: jdeville
+	Checked in by: merllab
+	Date: Monday, January 18, 2010 1:41:35 PM
+
+	Comment:
+		Updates RubySpecs and fixes bugs in FileOps, FileTest and Kernel. Also implements etc.rb to match MRI on windows.
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1472246
+	User: sborde
+	Checked in by: merllab
+	Date: Monday, January 18, 2010 8:16:30 AM
+
+	Comment:
+		Fixes a bug in Proc equality comparison which was causing the ActionPack caching tests to fail
+		ENV["foo"] = "" should set the environment variable to an empty string, not delete it
+		Added Iconv::IllegalSequence etc
+		Implements RubyLambdaMethodInfo.GetArity
+		
+		Rails test expect Array#sort_by to be a stable sort (ie. if #<=> returns 0, then the relative order of the elements in the original array is maintained). Worked around this in action_pack_tests
+		Splits up the Rails test harness files into tests that fail with MRI as well (which are often issues with the test)
+		Changes the tests to load specific versions of Rails and other gems. Without that, you get load errors because of incorrect versions being loaded
+		Changed the default of irtests to run the Rails tests. They can be skipped by using -m (for "minimum")
+		Added –r to utr.rb to run a single test case.
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1461731
+	User: jimmysch
+	Checked in by: merllab
+	Date: Tuesday, January 12, 2010 2:11:06 PM
+
+	Comment:
+		IronRuby should emit PDBs in Silverlight
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1453163
+	User: sborde
+	Checked in by: merllab
+	Date: Friday, January 08, 2010 1:35:10 PM
+
+	Comment:
+		Fixes 25448: Can't use ObservableCollection in clrtype.py
+		Added some basic tests for clrtype.py other than the small sample. With this in place, it will be easier to add more tests going forward for new issues.
+		Fixed some other bugs that were caught by the new tests
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1438355
+	User: tomat
+	Checked in by: merllab
+	Date: Thursday, January 07, 2010 2:52:59 PM
+
+	Comment:
+		Adds support for Mono to Dev.bat. Dev.bat takes an optional “mono” parameter and a path to the Mono bin directory. If supplied, it sets ROWAN_RUNTIME environment variable to “mono” and Mono bin directory is added to PATH. ROWAN_RUNTIME variable is used by ir.cmd, irtest, and irtests.rb.
+		
+		Adds aliases ipym, ipyrm, ipydm, rbxm, rbrm, rbdm that launch IronPython and IronRuby on Mono.
+		
+		Fixes issues reported by mcs.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1429753
+	User: tomat
+	Checked in by: merllab
+	Date: Wednesday, January 06, 2010 1:32:35 PM
+
+	Comment:
+			DLR, Python:
+			-	Adds more file system APIs to PAL. Obsoletes virtual methods GetFiles and GetDirectories in favor of GetFileSystemEntries. 
+			
+			Ruby:
+			-	Fixes some Dir specs, adds support for Unicode file/directory names. 
+			-	Changes Dir and File methods to use PAL for file system operations. Adds Dir tests exercising a custom virtual file system.
+			-	Fixes encoding of file paths. This might fix some of the reported System::Text::DecoderFallbackException issues (http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2931)
+			-	Fixes issues with –v command line option.
+			-	Fixes bugs in methods using MutableString.GetByteArray.
+			-	Fixes MutableString#inspect and dump to handle strings with incomplete UTF16 characters.
+			-	Fixes bugs in glob.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1426166
+	User: tomat
+	Checked in by: merllab
+	Date: Tuesday, January 05, 2010 7:22:28 PM
+
+	Comment:
+		(AstImprovements2)
+				DLR:
+				Adds ExpressionCollectionBuilder (moves the implementation from IronRuby). This allows to construct optimized expressions via C# initializer syntax. Adds a subclass BlockBuilder that can be used to build blocks like so:
+				
+				Expression result = new BlockBuilder {
+						expression1,
+						…
+						(condition) ? foo : null,
+						anotherExpression
+				};
+				
+				If the expression used in the initializer is null it is skipped.
+				If the expression is a sequence of expressions (IEnumerable<Expression>) its content is included in the block.
+				BlockBuilder defines an implicit conversion to Expression.
+				
+				Ruby:
+				
+				Tree transformation refactorings:
+				-	Replaces some AstFactory utility methods with AstUtils equivalents.
+				-	Creates Lambda<T> explicitly to avoid calls to MakeGenericType.
+				-	Uses BlockBuilder for building complex blocks.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1425432
+	User: tomat
+	Checked in by: merllab
+	Date: Tuesday, January 05, 2010 11:07:32 AM
+
+	Comment:
+		Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2819&ProjectName=ironruby.
+		Sets RUBY_PLATFORM according to Environment.OSVersion.Platform.
+	 
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1405890
+	User: jdeville
+	Checked in by: merllab
+	Date: Wednesday, December 30, 2009 1:51:56 PM
+
+	Comment:
+		Closes the following bugs:
+		
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3196
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2118
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2044
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2217
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2912
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2962
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1920
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2116
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1353
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1354
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1651
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2051
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2892
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2827
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2514
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2654
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2191
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2190
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1558
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1486
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1485
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=923
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=597
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1483
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2421
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1366657
+	User: jdeville
+	Checked in by: merllab
+	Date: Thursday, December 17, 2009 11:16:24 PM
+
+	Comment:
+		Unifies the test runner for Test::Unit. I've really just removed the duplication found in the various *Tests.rb files in Ruby\Tests\Scripts. I've adjusted all affected scripts:
+		* irtests
+		* generate_test-unit_tags.rb
+		* rake.generictest
+		* rubygems.generictest
+		
+		Also adds tzinfo to SNAP
+		
+		Usage of utr:
+		utr testname will run the tests setup by the file testname_tests.rb, thus utr gem will run the Gem tests. Passing the -all flag will ignore the skipped tests and run all tests, this currently doesn't work for gems, but I will be removing our custom skips and going back to the monkeypatching model. Eventually, I will implement a -list flag to list all tests utr can see.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1346865
+	User: ddicato
+	Checked in by: merllab
+	Date: Tuesday, December 15, 2009 10:24:40 AM
+
+	Comment:
+		Removes some excess methods from BigIntegerV4 that the underlying BigInt does not implement, to help phase out this wrapper:
+			- Moves ToFloat64 and TryToFloat64 into MathUtils as extension methods
+			- Removes the IConvertible interface from BigIntegerV4
+		
+		Fixes minor bugs in math.cs and socket.cs, and removes dependenies on BigInteger's IConvertible methods.
+		
+		Corrects BigIntegerV2's broken right-shift so we don't have to permute the value in LongOps.RightShift (which is broken given BigIntegerV4's correct behavior).
+		
+		Fixes BigIntegerV4's float and double conversions to overflow properly by adding an implicit BigInteger to double conversion.
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1309049
+	User: tomat
+	Checked in by: merllab
+	Date: Friday, December 04, 2009 5:17:58 PM
+
+	Comment:
+			Fixes handling of encoded strings in MutableString.Append, CompareTo and Inspect.
+			
+			Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2892
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1309042
+	User: dinov
+	Checked in by: merllab
+	Date: Friday, December 04, 2009 5:15:01 PM
+
+	Comment:
+		Default Binder Improvements:
+			Decouples DefaultBinder from ScriptDomainManager.  Leaves ScriptDomainManager ctors for backwards compat, moves IronPython/IronRuby to overriding PrivateBinding which is the only reason we needed the SDM
+			Makes DefaultBinder non-abstract so that you can simply new one up if you don't need any customization
+			Removes unused "DefaultLanguageContext.cs" file which was actually a DefaultBinder subclass
+			Adds overloads for various default binder operations which don't take a OverloadResolverFactory - instead they use the DefaultOverloadResolverFactory.
+			Adds DoOperation overload which takes an ExpressionType for better compat w/ the DLR binders, obsoletes string version, moves this lookup for OperatorInfo into a dictionary lookup
+		
+		Also starts adding some unit tests for the default binder
+
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1305319
+	User: tomat
+	Checked in by: merllab
+	Date: Thursday, December 03, 2009 12:12:24 PM
+
+	Comment:
+		Implements adaptive loop compilation. This feature needed major changes to local variable handling and control flow implementation in interpreter.
+		
+		Local variables
+		
+		Replaces a list of local variables with LocalsVariable structure that encapsulates a dictionary. It doesn’t support variable shadowing yet but it at least detects it and throws NotSupportedException. Previously we silently used wrong indices to the variable array. 
+		
+		Control flow
+		
+		Reimplements interpreter goto instructions and exception handling. Goto instructions used to encode all information describing the jump (a list of finally blocks to be executed and target stack depth). The loop compiler needs to find all GotoExpressions within the loop that jump out of the loop and associate them with the corresponding Goto instructions. This cannot be done in presence of reducible nodes as they don’t preserve nodes identity. Therefore we need to move the jump information from goto instruction to the target label and track current try and finally blocks. 
+		
+		GotoInstruction, EnterTryFinallyInstruction and LeaveExceptionHandlerInstruction derive now from IndexedBranchInstruction. While OffsetInstruction hold on a relative offset these instructions hold on the target label index in the table of RuntimeLabels. RuntimeLabel struct comprises of target instruction index and target stack depth and target continuation stack depth. That’s all it is needed for a jump to be executed. Jumps via label index are a little bit slower than jumps to relative offset since they need to look up the target index in the label table. Also the label table is only as big as there are gotos and try-catch/try-finally blocks in the lambda. We can easily convert other branch instructions into IndexedBranchInstructions if we find it better.
+		
+		Using indexed branch instructions moves target stack depth to the label. We also need to move finally list out of goto instruction. Since a single label might be used as a target of multiple goto instructions/expressions and these could be nested in different try-finally blocks we need to track the stack of finally blocks that we enter and leave as we execute instructions.
+		EnterTryFinallyInstruction is added at the beginning of every try-finally block. This instruction pushes a local continuation into the stack of continuations stored on InterpretedFrame. The top item of this stack is current continuation. A continuation is implemented as an integer index into label table. The continuation pushed by EnterTryFinally points to finally clause. 
+		GotoInstruction sets the current pending continuation and pending value (if it transfers a value) and jumps to the current continuation if there is any.
+		A GotoInstruction is emitted at the end of the try-finally body. This goto’s target is the end of the entire try expression. 
+		EnterFinallyInstruction is emitted at the beginning of finally clause. It removes the current continuation from the continuation stack, pushes the pending continuation and value onto the data stack and invalidates them. If any exception is thrown but not caught during execution of finally clause the current pending continuation is canceled (and forgotten) and a new one is set. 
+		LeaveFinallyInstruction is emitted at the end of the finally clause. It pops the pending continuation (and pending value) from data stack and yields to it. YeildToPendingContinuation operation compares continuation stack depth of the current continuation with the continuation stack depth of the pending one. It jumps to the pending one only if its depth is less, i.e. when there is no continuation (finally clause) to be executed before we can jump to the target block. Otherwise it jumps to the current continuation.
+		Whenever an exception occurs we catch it in Interpreter.Run method. We look for the exception handler that should be executed. 
+		If we find one we perform the same steps as if we just executed GotoInstruction targeted to the exception handle: we set the current pending continuation to the label that points to the handler and set pending value to the exception object. Finally, we jump to the current continuation.
+		If there is no catch or fault handler we do the same as if there was one with instruction index Int32.MaxValue. That emulates a jump to the end of the instruction sequence. If this jump is not interrupted by another exception raised from some finally/fault block or goto jumping from a finally block we finish instruction execution and return from Run method with the current InstructionIndex set to the special value Int32.MaxValue. That indicates that we should rethrow the exception and so we do.
+		
+		Moves InterpretedFrame chaining from IronRuby to the interpreter. The frames are linked into a stack by Interpreter.Run method so that each CLR frame of this method corresponds to an interpreted stack frame in the interpreted stack. The two traces can be combined into one. A static ThreadLocal<InterpretedFrame> variable is updated upon entry and exit from Run method.
+		
+		Loop compiler
+		Adds a new EnterLoopInstruction that is injected at the beginning of a loop generated from LoopExpression. This instruction has a counter that increments each time it is executed. If the counter reached CompilationThreshold a compilation is started on a background thread. The instruction holds on the LoopExpression to compile. The loop needs to be massaged before we can compile it to a lambda. The lambda we produce looks like:
+		
+		int lambda(InterpretedFrame frame) {
+			T$1 loc$1 = (T$1)frame.Data[$index1];
+			…
+			T$n loc$n = (T$n)frame.Data[$indexN];
+			StrongBox<object> closure_loc$1 = frame.Closure[$index1];
+			…
+			StrongBox<object> closure_loc$M = frame.Closure[$indexM];
+			try { 
+				… loc$1 = value …
+				… closure_loc$1.Value = (object)value;
+		
+		… return frame.Goto(labelIndex, value)     // for each goto label (value), where label is outside loop
+		} finally {
+			// write back
+			Frame.Data[$index1] = (object)loc$1;
+		}
+		
+			return $breakOffset;
+		}
+		
+		When the lambda is ready the EnterLoopInstruction is replaced by a CompiledLoopInstruction that holds on a delegate to the compiled lambda and calls it upon execution. 
+		
+		Perf impact
+		The interpreter thruput with disabled compilation is about 5% worse on Pystone with this change. About 1% amounts for tracking interpreted stack chain the rest is probably due to the more expensive try-finally blocks (continuation stack is allocated, continuations are pushed/popped on entry/exit to try and finally blocks, etc.). 
+		
+		–X:NoAdaptiveCompilation is now better than adaptive compilation only by 4-7% (for compilation threshold 2 and 32, respectively), it used to be about 4 times better.
+		
+		Misc
+		
+		Special cases adaptive compilation for CompilationThreshold 0 and 1. In both cases the compilation is synchronous. This allows us to easily test and debug loop compiler and lambda compiler. 
+		
+		Implements instruction provider for FinallyFlowControlExpression – the interpreter handles jumps from finally directly, so we don’t need to rewrite the tree. 
+		FlowControlRewriter should reduce all extensible nodes within the tree. It might miss some goto expressions or finally clauses otherwise (e.g. { label: try { REDUCIBLE } finally { REDUCIBLE; } }, where any of the REDUCIBLEs reduces to “goto label”.
+		
+		Ruby, Python:
+		CatchBlock defines a scope for its exception variable, which wasn’t taken into account in Python and Ruby AST generators and rewriters. They declared the variable in the containing block duplicating the variable definition and depending on variable shadowing. Removes the duplicate declarations.
+		Removes “compileLoops” argument passed to LightCompile. All loops are adaptively compiled now.
+		
+		Python
+		Increases test_memory limit to 18k since the loop is adaptively compiled now. We might want to disable adaptive compilation during this test.
+		Disables test_dict.py run:test_container_iterator. Filed bug: http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=25419
+		Disables test_traceback.py run:test_throw_while_yield. Filed bug: http://ironpython.codeplex.com/WorkItem/View.aspx?WorkItemId=25428
+		
+		Ruby:
+		Fixes mangling of “me” name.
+		Disabled one test case in core/kernel/caller_spec.rb. The behavior that made this test accidentally pass was incorrect. 
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1301388
+	User: tomat
+	Checked in by: merllab
+	Date: Wednesday, December 02, 2009 5:12:48 PM
+
+	Comment:
+		Fixes Time#strftime, which makes all TzInfo tests pass.
+		Fixes Array#reject and removes a guard from corresponding spec.
+		Cleans up a few specs.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1300588
+	User: tomat
+	Checked in by: merllab
+	Date: Wednesday, December 02, 2009 11:26:38 AM
+
+	Comment:
+		DLR:
+		Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3183: OutAttribute on parameters whose type is not ByRef should be ignored. The attribute is only used by native marshaller.
+		
+		Removes dead and duplicate code (various reflection related helpers) and moves them to ReflectionUtils or TypeUtils. 
+		
+		Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=957.
+		Removes non-null restriction on the instance parameter of an extension method - C# allows to call the extension method on null value:
+		public static class Ext {
+			public static bool IsNull(this object value) {
+				return value == null;
+			}
+		}
+		
+		public static void F(object o) {
+			Console.WriteLine(o.IsNull());
+		}
+		
+		public static void Main() {
+			F(null);
+		}
+		
+		We also didn’t recognize extension methods correctly if they are compiled by desktop C# 3.0 (our IsExtension method only detected those that are compiled by us and thus use ExtensionAttribute in ExtensionAttribute.dll). This causes binding to extension methods to behave differently on desktop CLR from Silverlight. The fix is to use ExtensionAttribute from System.Core v3.5 assembly if it is available at runtime.
+		
+		
+		Ruby:
+		Fixes 
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2827: adds ToString, GetHashCode, GetType methods on NilClass.
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2914
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2913 
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3068
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2962
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1299354
+	User: tomat
+	Checked in by: merllab
+	Date: Tuesday, December 01, 2009 7:09:12 PM
+
+	Comment:
+		Implements missing super-call features (super with implicit arguments in eval), fixes bugs, improves super site caching and removes helpers with “out” parameters that were forcing the interpreter to compile the rules.
+		Also removes “hacks.rb” and test directory from Libs since the workarounds implemented there are needed anymore.
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1290543
+	User: tomat
+	Checked in by: merllab
+	Date: Monday, November 30, 2009 11:26:46 AM
+
+	Comment:
+		(Time7)
+		
+		Adds NoUnderlyingType to ModuleRestrictions. 
+		-	If set, the members of the underlying CLR type are not accessible from Ruby (not even via clr_new, etc.) 
+		-	A Ruby library class/module can either extend an existing CLR type or be self-contained.  A self-contained class/module has ModuleRestriction.NoUnderlyingType set by default.
+		
+		Separates Ruby method implementations on RubyTime to a separate class so that we can expose RubyTime underlying CLR type.
+		
+		Fixes bugs and Time related specs:
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2912
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2217
+		
+		Time zones
+		It seems that MRI is using CRT zone API (_tzset) on Windows. That API (http://msdn.microsoft.com/en-us/library/90s5c885(VS.80).aspx) is buggy and also different from Unix API based on TZ environment variable. The only thing _tzset does is that it parses TZ environment variable value using format <time-zone-name>< zone offset hh:mm:ss> and stores the parsed values into global variables. It doesn’t look up time zone name in any database (registry) or even allow to specify DST offset and rule (unlike POSIX TZ variable). As a consequence MRI on Windows doesn’t correctly implement daylight saving related API (Time#dst?). If the offset is not specified in TZ variable we don’t know anything about the zone and thus no zone related methods work correctly. And indeed the specs are failing. Besides, MRI doesn’t update the current time zone if TZ environment variable is changed at runtime (it only parses it once when the process is initialized) - http://redmine.ruby-lang.org/issues/show/1972.
+		
+		This change makes IronRuby recognize TZ environment variable and update the current time zone whenever ENV[“TZ”] is assigned to. Current limitations:
+		1)	TZ variable needs to define zone offset. We don’t do time zone name lookup and so only time zone name or abbreviation is not sufficient. If the offset is not specified we use the default time zone provided by OS and report a warning.
+		2)	Time#dst? always uses the default OS zone, not the one that is specified by TZ variable. A warning is reported if the current zone comes from TZ variable. 
+		
+		Fixes Time specs that were relying on Unix specific commands.
+		
+		Fixes time related bugs in YAML and a bug in the YAML scanner:
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2044
+		
+		Enables subclassing socket classes, fixes:
+		http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3196 
+		
+		There is a bug in tzinfo gem:
+		C:\M0\Merlin\External.LCA_RESTRICTED\Languages\Ruby\ruby-1.8.6p368\lib\ruby\gems\1.8\gems\tzinfo-0.3.15\lib\tzinfo\time_or_datetime.rb
+		Line #43 is missing usec parameter:
+		@time = Time.utc(@time.year, @time.mon, @time.mday, @time.hour, @time.min, @time.sec, @time.usec) unless @time.zone == 'UTC'        
+		
+	-----------------------------------------------------------------------------------------------------------------------------------
+	Changeset: 1286631
+	User: tomat
+	Checked in by: merllab
+	Date: Tuesday, November 24, 2009 6:30:19 PM
+
+	Comment:
+		Enables FxCop rules in Globalization group for Ruby assemblies and fixes all violations.
+		Shri's fix to ConditionalVariable: http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3151.
+	 
+
 ironruby-0.9.3 (RC1) 2009-11-20
 -------------------------------
 	Here are all the commits for this release:
-	http://github.com/ironruby/ironruby/commits/v0.9.3
+	http://github.com/ironruby/ironruby/commits/v1.0-rc1
 
 	Up until the first commit after the last release:
 	http://github.com/ironruby/ironruby/commit/81c509da483590e0995f3bd7e5ac27d0d88ab29c
@@ -21,24 +891,6 @@ ironruby-0.9.3 (RC1) 2009-11-20
 	Comment:
 		Makes Time mutable. It was mapped to System.DateTime which is immutable. However, Time#utc mutates the instance. So now we define a new type Time with a _dateTime field. The core\shared\gmtime test is not enabled because it expects that modifying ENV['TZ'] at runtime changes the timezone, which is not supported yet in IronRuby (and MRI too)
 		
-		(Shelveset: time;REDMOND\sborde | SNAP CheckinId: 9875)
-
-	Items:
-		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ClrTests.cs
-		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
-		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/FileOps.cs
-		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/TimeOps.cs
-		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Zlib/zlib.cs
-		edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Attributes.cs
-		add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/bcl/system_datetime/conversion_spec.rb
-		delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/bcl/system_datetime/instantiation_spec.rb;X13092237
-		delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/bcl/system_datetime/mapping_spec.rb;X13092237
-
-	Check-in Notes:
-		Code Reviewer:
-		Performance Reviewer:
-		Security Reviewer:
-
 	---------------------------------------------------------------------------------------------------
 	Changeset: 1281837
 	User: jdeville
@@ -48,17 +900,6 @@ ironruby-0.9.3 (RC1) 2009-11-20
 	Comment:
 		Updates IronRuby to 0.9.3
 		
-		(Shelveset: version0.9.3;REDMOND\jdeville | SNAP CheckinId: 9872)
-
-	Items:
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/Wix/IronRuby.wxs
-
-	Check-in Notes:
-		Code Reviewer:
-		Performance Reviewer:
-		Security Reviewer:
-
 	---------------------------------------------------------------------------------------------------
 	Changeset: 1277176
 	User: sborde
@@ -69,20 +910,6 @@ ironruby-0.9.3 (RC1) 2009-11-20
 		Implements Kernel.srand with no parameters
 		Changes RubyRegex to not clone the input string when being used for String#scan, and to share the cloned string when possible. Without the sharing, you could cause OutOfMemoryException.
 		
-		(Shelveset: regex;REDMOND\sborde | SNAP CheckinId: 9855)
-
-	Items:
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/KernelOps.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/MutableStringOps.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MatchData.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyRegex.cs
-
-	Check-in Notes:
-		Code Reviewer:
-		Performance Reviewer:
-		Security Reviewer:
-
 	---------------------------------------------------------------------------------------------------
 	Changeset: 1265896
 	User: jdeville
@@ -90,14 +917,6 @@ ironruby-0.9.3 (RC1) 2009-11-20
 
 	Comment:
 		Fixing transformation paths for .exe.config. doesnt' affect snap.
-
-	Items:
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/context.rb
-
-	Check-in Notes:
-		Code Reviewer:
-		Performance Reviewer:
-		Security Reviewer:
 
 	---------------------------------------------------------------------------------------------------
 	Changeset: 1264343
@@ -120,25 +939,6 @@ ironruby-0.9.3 (RC1) 2009-11-20
 		Obsoletes InterpretedMode, NoAdaptiveCompilation and PerfStats properties on LanguageSetup. The options can still be set via dictionary.
 		
 		Reduces the number of instruction instances that are executed at least once during the run of “mspec ci core” from 1,274,454 to 280,684.
-		
-		
-		(Shelveset: InstructionRefactoring;REDMOND\tomat | SNAP CheckinId: 9786)
-
-	Items:
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/InterpreterTests.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Ast/Instructions/FrameTracking.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyOptionsParser.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyScriptCode.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/MethodDispatcher.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMetaBinder.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Conversions/Converter.Generated.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/CodeGenerator.rb
-
-	Check-in Notes:
-		Code Reviewer:
-		Performance Reviewer:
-		Security Reviewer:
 
 	---------------------------------------------------------------------------------------------------
 	Changeset: 1250989
@@ -148,18 +948,6 @@ ironruby-0.9.3 (RC1) 2009-11-20
 	Comment:
 		(sborde) Fixes for double formatting on non-English culture
 		
-		(Shelveset: cul;REDMOND\sborde | SNAP CheckinId: 9744)
-
-	Items:
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/BigDecimal/BigDecimal.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/StringFormatter.cs
-		edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyOptionsParser.cs
-
-	Check-in Notes:
-		Code Reviewer:
-		Performance Reviewer:
-		Security Reviewer:
-
 
 
 ironruby-0.9.2.0 - 2009-10-29

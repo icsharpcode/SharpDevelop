@@ -4,17 +4,8 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<SHFBFiles Include="SHFB\*"/>
-		<SHFBBuildComponents Include="SHFB\BuildComponents\*"/>
-		<SHFBColorizerFiles Include="SHFB\Colorizer\*"/>
-		<SHFBConceptualTemplates Include="SHFB\ConceptualTemplates\*"/>
-		<SHFBPluginsFiles Include="SHFB\Plugins\*"/>
-		<SHFBSharedContentFiles Include="SHFB\SharedContent\*"/>
-		<SHFBTemplatesFiles Include="SHFB\Templates\*"/>
-		<SHFBWebFiles Include="SHFB\Web\*"/>
 		<WixFiles Include="wix\*"/>
 		<WixBitmapFiles Include="wix\Bitmaps\*"/>
-		<WixDocFiles Include="wix\doc\*"/>
 		<WixLibFiles Include="wix\lib\*"/>
 		<NUnitFiles Include="NUnit\*.dll;NUnit\*.exe"/>
 		<NUnitConfigFiles Include="NUnit\*.config"/>
@@ -33,17 +24,7 @@
 	</Target>
 	
 	<Target Name="Build" DependsOnTargets="CompileLanguageResources">
-		<Copy SourceFiles="@(SHFBFiles)" DestinationFolder="..\..\bin\Tools\SHFB" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(SHFBBuildComponents)" DestinationFolder="..\..\bin\Tools\SHFB\BuildComponents" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(SHFBColorizerFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Colorizer" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(SHFBConceptualTemplates)" DestinationFolder="..\..\bin\Tools\SHFB\ConceptualTemplates" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(SHFBPluginsFiles)" DestinationFolder="..\..\bin\Tools\SHFB\PlugIns" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(SHFBSharedContentFiles)" DestinationFolder="..\..\bin\Tools\SHFB\SharedContent" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(SHFBTemplatesFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Templates" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(SHFBWebFiles)" DestinationFolder="..\..\bin\Tools\SHFB\Web" SkipUnchangedFiles="true"/>
-
 		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixBitmapFiles)" DestinationFolder="..\..\bin\Tools\Wix\Bitmaps" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(NUnitFiles)" DestinationFolder="..\..\bin\Tools\NUnit" SkipUnchangedFiles="true"/>

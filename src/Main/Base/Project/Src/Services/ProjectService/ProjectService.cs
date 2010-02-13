@@ -268,7 +268,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				CommandManager.InvalidateRequerySuggested();
 				if (openSolution == null)
 					return;
+			} catch (IOException ex) {
+				LoggingService.Warn(ex);
+				MessageService.ShowError(ex.Message);
+				return;
 			} catch (UnauthorizedAccessException ex) {
+				LoggingService.Warn(ex);
 				MessageService.ShowError(ex.Message);
 				return;
 			}

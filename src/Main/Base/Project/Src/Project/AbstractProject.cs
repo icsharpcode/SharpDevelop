@@ -516,7 +516,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
+		public virtual ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)
 		{
 			if (options == null)
 				throw new ArgumentNullException("options");
@@ -530,14 +530,17 @@ namespace ICSharpCode.SharpDevelop.Project
 					projectOptions.Platform = matching.Platform;
 				}
 			}
+			// fall back to solution config if we don't find any entries for the project
 			if (string.IsNullOrEmpty(projectOptions.Configuration))
 				projectOptions.Configuration = options.SolutionConfiguration;
 			if (string.IsNullOrEmpty(projectOptions.Platform))
 				projectOptions.Platform = options.SolutionPlatform;
 			
-			// copy properties to project options
-			options.GlobalAdditionalProperties.ForEach(projectOptions.Properties.Add);
+			// copy global properties to project options
+			foreach (var pair in options.GlobalAdditionalProperties)
+				projectOptions.Properties[pair.Key] = pair.Value;
 			if (isRootBuildable) {
+				// copy properties for root project to project options
 				foreach (var pair in options.ProjectAdditionalProperties) {
 					projectOptions.Properties[pair.Key] = pair.Value;
 				}
