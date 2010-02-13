@@ -12,6 +12,7 @@
 	<Runtime>
 		<Import assembly=":ICSharpCode.SharpDevelop"/>
 		<Import assembly="$ICSharpCode.FormsDesigner/FormsDesigner.dll"/>
+		<Import assembly="IronRuby.Libraries.dll"/>
 		<Import assembly="RubyBinding.dll"/>
 	</Runtime>
 	

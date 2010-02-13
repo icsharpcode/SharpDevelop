@@ -406,7 +406,6 @@
 				<ComponentRef Id="IronRubyDll"/>
 				<ComponentRef Id="IronRubyLibrariesDll"/>
 				<ComponentRef Id="IronRubyLibrariesYamlDll"/>
-				<ComponentRef Id="MicrosoftScriptingHelpersDll"/>
 				<ComponentRef Id="RubyBindingAddin"/>
 				<ComponentRef Id="RubyBindingDll"/>
 				<ComponentRef Id="RubyMicrosoftDynamicDll"/>

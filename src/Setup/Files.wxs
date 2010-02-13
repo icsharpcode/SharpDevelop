@@ -1148,9 +1148,6 @@
 										<Component Guid="5A1F81D4-8F6C-41E0-8FFE-B6BBFB2F3804" Id="RubyMicrosoftScriptingExtensionAttributeDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" />
 										</Component>
-										<Component Guid="C9C304B7-28A1-4E0C-923D-6D3E9F95F8DF" Id="MicrosoftScriptingHelpersDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Helpers.dll" Name="Microsoft.Scripting.Helpers.dll" Id="Microsoft.Scripting.Helpers.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Helpers.dll" AssemblyManifest="Microsoft.Scripting.Helpers.dll" />
-										</Component>
 										<Component Guid="6877EFD9-7005-4BDD-80E6-FB4790436E23" Id="RubyBindingAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\RubyBinding.addin" Name="RubyBinding.addin" Id="RubyBinding.addin" KeyPath="yes" />
 										</Component>

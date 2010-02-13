@@ -30,7 +30,7 @@ namespace RubyBinding.Tests.Designer
 							"    end\r\n" +
 							"end";
 			
-			ClassDeclaration classDef = GetClassDeclaration(code);
+			ClassDefinition classDef = GetClassDefinition(code);
 			
 			Assert.AreEqual("System.Windows.Forms.Form", RubyComponentWalker.GetBaseClassName(classDef));
 		}
@@ -43,7 +43,7 @@ namespace RubyBinding.Tests.Designer
 							"    end\r\n" +
 							"end";
 			
-			ClassDeclaration classDef = GetClassDeclaration(code);
+			ClassDefinition classDef = GetClassDefinition(code);
 			
 			Assert.AreEqual(String.Empty, RubyComponentWalker.GetBaseClassName(classDef));
 		}
@@ -63,16 +63,16 @@ namespace RubyBinding.Tests.Designer
 							"    end\r\n" +
 							"end";
 			
-			ClassDeclaration classDef = GetClassDeclaration(code);
+			ClassDefinition classDef = GetClassDefinition(code);
 			
 			Assert.AreEqual("Form", RubyComponentWalker.GetBaseClassName(classDef));
 		}		
 		
-		ClassDeclaration GetClassDeclaration(string code)
+		ClassDefinition GetClassDefinition(string code)
 		{
 			RubyParser parser = new RubyParser();
 			SourceUnitTree unit = parser.CreateAst(@"test.rb", code);
-			return unit.Statements.First as ClassDeclaration;
+			return unit.Statements.First as ClassDefinition;
 		}
 	}
 }
