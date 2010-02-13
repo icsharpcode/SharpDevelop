@@ -251,12 +251,14 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			try {
 				project.Load(fileName);
 				
+				/* No longer necessary as we stopped using BuildingInsideVisualStudio
 				// When we set BuildingInsideVisualStudio, MSBuild tries to build all projects
 				// every time because in Visual Studio, the host compiler does the change detection
 				// We override the property '_ComputeNonExistentFileProperty' which is responsible
 				// for recompiling each time - our _ComputeNonExistentFileProperty does nothing,
 				// which re-enables the MSBuild's usual change detection
 				project.Targets.AddNewTarget("_ComputeNonExistentFileProperty");
+				*/
 				
 				foreach (string additionalImport in currentJob.AdditionalImports) {
 					project.AddNewImport(additionalImport, null);

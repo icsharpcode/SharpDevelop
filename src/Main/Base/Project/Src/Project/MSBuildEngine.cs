@@ -73,7 +73,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			MSBuildProperties = new SortedList<string, string>();
 			MSBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
-			MSBuildProperties.Add("BuildingInsideVisualStudio", "true");
+			// we always need this (even when compiling a single project) to prevent MSBuild from automatically
+			// building referenced projects
+			MSBuildProperties.Add("BuildingSolutionFile", "true");
 		}
 		
 		

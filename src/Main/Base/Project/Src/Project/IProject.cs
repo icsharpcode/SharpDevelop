@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -301,13 +303,25 @@ namespace ICSharpCode.SharpDevelop.Project
 			// start of default implementation
 			var configMatchings = buildable.ParentSolution.GetActiveConfigurationsAndPlatformsForProjects(options.SolutionConfiguration, options.SolutionPlatform);
 			ProjectBuildOptions projectOptions = new ProjectBuildOptions(isRootBuildable ? options.ProjectTarget : options.TargetForDependencies);
-			// find the project configuration
-			foreach (var matching in configMatchings) {
-				if (matching.Project == buildable) {
-					projectOptions.Configuration = matching.Configuration;
-					projectOptions.Platform = matching.Platform;
+			// Find the project configuration, and build an XML string containing all configurations from the solution
+			StringWriter solutionConfigurationXml = new StringWriter();
+			using (XmlTextWriter solutionConfigurationWriter = new XmlTextWriter(solutionConfigurationXml)) {
+				solutionConfigurationWriter.WriteStartElement("SolutionConfiguration", "");
+				foreach (var matching in configMatchings) {
+					if (matching.Project == buildable) {
+						projectOptions.Configuration = matching.Configuration;
+						projectOptions.Platform = matching.Platform;
+					}
+					
+					solutionConfigurationWriter.WriteStartElement("ProjectConfiguration");
+					solutionConfigurationWriter.WriteAttributeString("Project", matching.Project.IdGuid);
+					solutionConfigurationWriter.WriteValue(matching.Configuration + "|" + MSBuildInternals.FixPlatformNameForProject(matching.Platform));
+					solutionConfigurationWriter.WriteEndElement();
 				}
+				solutionConfigurationWriter.WriteEndElement();
 			}
+			
+			// fall back to solution config if we don't find any entries for the project
 			if (string.IsNullOrEmpty(projectOptions.Configuration))
 				projectOptions.Configuration = options.SolutionConfiguration;
 			if (string.IsNullOrEmpty(projectOptions.Platform))
@@ -320,6 +334,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					projectOptions.Properties[pair.Key] = pair.Value;
 				}
 			}
+			// Set property for solution configuration. This allows MSBuild to know the correct configuration for project references,
+			// which is necessary to resolve the referenced project's OutputPath.
+			projectOptions.Properties["CurrentSolutionConfigurationContents"] = solutionConfigurationXml.ToString();
 			return projectOptions;
 		}
 	}
