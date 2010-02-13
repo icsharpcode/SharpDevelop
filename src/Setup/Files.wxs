@@ -1254,7 +1254,7 @@
 										<Component Guid="8A1A4691-E6BD-451F-AA5D-BE9C716D56A0" Id="MicrosoftScriptingDebuggingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Debugging.dll" Name="Microsoft.Scripting.Debugging.dll" Id="Microsoft.Scripting.Debugging.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Debugging.dll" AssemblyManifest="Microsoft.Scripting.Debugging.dll">
 												<netfx:NativeImage Id="MicrosoftScriptingDebuggingDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
-											</File>											
+											</File>
 										</Component>
 									</Directory>
 									<Directory Id="FSharpBinding" Name="FSharpBinding">
@@ -1422,7 +1422,7 @@
 										<Component Guid="69BD4F05-0ADD-48C9-AD46-72D9B0C4A569" Id="WorkflowDesignerDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\WorkflowDesigner.dll" Id="WorkflowDesigner.dll" Name="WorkflowDesigner.dll" />
 										</Component>-->
-										<!-- <Directory Id="WorkflowDesignerTemplatesFolder" Name="Templates">
+									<!-- <Directory Id="WorkflowDesignerTemplatesFolder" Name="Templates">
 											<Directory Id="WorkflowDesignerFilesFolder" Name="Files">
 												<Component Guid="DA3146B7-E769-4240-9C6E-74956A395782" Id="NoCodeSequentialWorkflowXft" DiskId="1">
 													<File Source="..\..\AddIns\AddIns\DisplayBindings\WorkflowDesigner\Templates\Files\NoCodeSequentialWorkflow.xft" Id="NoCodeSequentialWorkflow.xft" Name="NoCodeSequentialWorkflow.xft" />
@@ -1777,22 +1777,14 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="Programs">
-				<Directory Id="SharpDevelopProgramMenuFolder" Name="SharpDevelop 4.0">
-					<Component Id="SharpDevelopProgramMenuItems" Guid="8324B9EF-8B3C-41A0-B89B-72A7A12492C1">
-						<!--
-							Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
-							http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
-						-->
-						<RegistryValue Id="SharpDevelopExeStartMenuShortcutRegistryKey" Root="HKCU" Type="string" KeyPath="yes" Key="Software\SharpDevelop3" Name="ProgramFilesShortcut" Value="1" />
-						<Shortcut Name="SharpDevelop" Target="[!SharpDevelop.exe]" Id="SharpDevelopExeStartMenuShortcut" WorkingDirectory="BinFolder" Icon="SharpDevelopIcon.exe" Directory="SharpDevelopProgramMenuFolder" />
-						<Shortcut Name="Website" Target="[!SharpDevelop.url]" Id="SharpDevelopUrlStartMenuShortcut" WorkingDirectory="BinFolder" Directory="SharpDevelopProgramMenuFolder" />
-						<!--
-							Fix ICE64 by adding a remove folder element 
-							http://windowssdk.msdn.microsoft.com/en-us/library/ms704358.aspx
-						-->
-						<RemoveFolder Id="RemoveSharpDevelopProgramMenuFolder" On="uninstall" />
-					</Component>
-				</Directory>
+				<Component Id="SharpDevelopProgramMenuItems" Guid="A505F0F2-5971-436D-8E3E-ABDDC0B59BF7">
+					<!--
+						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
+						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
+					-->
+					<RegistryValue Id="SharpDevelopExeStartMenuShortcutRegistryKey" Root="HKCU" Type="string" KeyPath="yes" Key="Software\SharpDevelop4" Name="ProgramFilesShortcut" Value="1" />
+					<Shortcut Name="SharpDevelop 4.0" Target="[!SharpDevelop.exe]" Id="SharpDevelopExeStartMenuShortcut" WorkingDirectory="BinFolder" Icon="SharpDevelopIcon.exe" Directory="ProgramMenuFolder" />
+				</Component>
 			</Directory>
 			<!-- Desktop shortcuts -->
 			<Directory Id="DesktopFolder" Name="Desktop">
@@ -1801,7 +1793,7 @@
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
 					-->
-					<RegistryValue Id="SharpDevelopExeDesktopShortcutRegistryKey" Type="string" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop3" Name="DesktopShortcut" Value="1" />
+					<RegistryValue Id="SharpDevelopExeDesktopShortcutRegistryKey" Type="string" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop4" Name="DesktopShortcut" Value="1" />
 					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDevelop 4.0" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
 				</Component>
 			</Directory>
