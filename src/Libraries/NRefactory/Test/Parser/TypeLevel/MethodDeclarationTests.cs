@@ -282,6 +282,25 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(new Location(1, 2), md.Body.StartLocation);
 			Assert.AreEqual(new Location(2, 5), md.Body.EndLocation);
 		}
+		
+		[Test]
+		public void CSharpOptionalParameterTest()
+		{
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(
+				"public void Foo(string bar = null, int baz = 0) { }"
+			);
+			Assert.AreEqual("Foo", md.Name);
+			
+			Assert.AreEqual("bar", md.Parameters[0].ParameterName);
+			Assert.AreEqual("System.String", md.Parameters[0].TypeReference.Type);
+			Assert.AreEqual(ParameterModifiers.In | ParameterModifiers.Optional, md.Parameters[0].ParamModifier);
+			Assert.IsNull(((PrimitiveExpression)md.Parameters[0].DefaultValue).Value);
+			
+			Assert.AreEqual("baz", md.Parameters[1].ParameterName);
+			Assert.AreEqual("System.Int32", md.Parameters[1].TypeReference.Type);
+			Assert.AreEqual(ParameterModifiers.In | ParameterModifiers.Optional, md.Parameters[1].ParamModifier);
+			Assert.AreEqual(0, ((PrimitiveExpression)md.Parameters[1].DefaultValue).Value);
+		}
 		#endregion
 		
 		#region VB.NET

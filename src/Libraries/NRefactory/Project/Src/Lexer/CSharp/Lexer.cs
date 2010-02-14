@@ -23,7 +23,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		protected override Token Next()
 		{
-			int nextChar;
 			char ch;
 			bool hadLineEnd = false;
 			if (Line == 1 && Col == 1) {
@@ -31,7 +30,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				hadLineEnd = true; // beginning of document
 			}
 			
-			while ((nextChar = ReaderRead()) != -1) {
+			while (true) {
+				Location startLocation = new Location(Col, Line);
+				int nextChar = ReaderRead();
+				if (nextChar == -1)
+					break;
+				
 				Token token;
 				
 				switch (nextChar) {
@@ -40,12 +44,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						continue;
 					case '\r':
 					case '\n':
+						HandleLineEnd((char)nextChar);
 						if (hadLineEnd) {
 							// second line end before getting to a token
 							// -> here was a blank line
-							specialTracker.AddEndOfLine(new Location(Col, Line));
+							specialTracker.AddEndOfLine(startLocation);
 						}
-						HandleLineEnd((char)nextChar);
 						hadLineEnd = true;
 						isAtLineBegin = true;
 						continue;

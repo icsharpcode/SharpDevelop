@@ -777,5 +777,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("extern alias Name;");
 		}
+		
+		[Test]
+		public void Variance()
+		{
+			TestProgram("interface C<out X, in Y, Z>\n{\n}");
+		}
+		
+		[Test]
+		public void OptionalParameters()
+		{
+			TestTypeMember("void M(int x = 0);");
+		}
 	}
 }

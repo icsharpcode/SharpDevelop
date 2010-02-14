@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-# SharpDevelop 3.0.0.3337
+# SharpDevelop 4.0.0.5490
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactory", "Project\NRefactory.csproj", "{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryTests", "Test\NRefactoryTests.csproj", "{870115DD-960A-4406-A6B9-600BCDC36A03}"

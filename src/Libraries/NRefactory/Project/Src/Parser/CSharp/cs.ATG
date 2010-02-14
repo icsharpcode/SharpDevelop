@@ -636,21 +636,14 @@ FormalParameterList<List<ParameterDeclarationExpression> parameter>
 .)
 =
 	{ AttributeSection<out section> (.attributes.Add(section); .) }
-	(
-		FixedParameter<out p> (. bool paramsFound = false;
-		                         p.Attributes = attributes;
-		                         parameter.Add(p);
-		                      .)
-		{
-			","                              (. attributes = new List<AttributeSection>(); if (paramsFound) Error("params array must be at end of parameter list"); .)
-			{ AttributeSection<out section> (.attributes.Add(section); .) }
-			(
-				FixedParameter<out p>        (. p.Attributes = attributes; parameter.Add(p); .)
-				| ParameterArray<out p>      (. paramsFound = true; p.Attributes = attributes; parameter.Add(p); .)
-			)
-		}
-		| ParameterArray<out p>              (. p.Attributes = attributes; parameter.Add(p); .)
-	)
+	FixedParameter<out p> (. p.Attributes = attributes;
+	                         parameter.Add(p);
+	                      .)
+	{
+		","        (. attributes = new List<AttributeSection>(); .)
+		{ AttributeSection<out section> (.attributes.Add(section); .) }
+		FixedParameter<out p>        (. p.Attributes = attributes; parameter.Add(p); .)
+	}
 .
 
 FixedParameter<out ParameterDeclarationExpression p>
@@ -658,20 +651,19 @@ FixedParameter<out ParameterDeclarationExpression p>
 	TypeReference type;
 	ParameterModifiers mod = ParameterModifiers.In;
 	Location start = la.Location;
+	Expression expr;
 .)
 =
 	[
 		"ref"    (. mod = ParameterModifiers.Ref; .)
 		| "out"  (. mod = ParameterModifiers.Out; .)
+		| "params" (. mod = ParameterModifiers.Params; .)
 	]
-	Type<out type> Identifier (. p = new ParameterDeclarationExpression(type, t.val, mod); p.StartLocation = start; p.EndLocation = t.Location; .)
+	Type<out type>
+	Identifier (. p = new ParameterDeclarationExpression(type, t.val, mod); .)
+	[ "=" Expr<out expr> (. p.DefaultValue = expr; p.ParamModifier |= ParameterModifiers.Optional; .) ]
+	(. p.StartLocation = start; p.EndLocation = t.EndLocation; .)
 .
-
-ParameterArray<out ParameterDeclarationExpression p>
-(. TypeReference type; .)
-=
-	"params" Type<out type> Identifier (. p = new ParameterDeclarationExpression(type, t.val, ParameterModifiers.Params); .)
-. 
 
 AccessorModifiers<out ModifierList m>
 (. m = new ModifierList(); .)
@@ -2343,15 +2335,30 @@ TypeArgumentList<out List<TypeReference> types, bool canBeUnbound>
 
 TypeParameterList<List<TemplateDefinition> templates>
 (.
-	AttributeSection section;
-	List<AttributeSection> attributes = new List<AttributeSection>();
+	TemplateDefinition template;
 .)
 =
-	"<" { AttributeSection<out section> (. attributes.Add(section); .) }
-	Identifier (. templates.Add(new TemplateDefinition(t.val, attributes)); .)
-	{ "," { AttributeSection<out section> (. attributes.Add(section); .) }
-	Identifier (. templates.Add(new TemplateDefinition(t.val, attributes)); .)}
+	"<"
+	VariantTypeParameter<out template> (. templates.Add(template); .)
+	{	","
+		VariantTypeParameter<out template> (. templates.Add(template); .)
+	}
 	">"
+.
+
+VariantTypeParameter<out TemplateDefinition typeParameter>
+(.
+	typeParameter = new TemplateDefinition();
+	AttributeSection section;
+.)
+=
+	{ AttributeSection<out section> (. typeParameter.Attributes.Add(section); .) }
+	[
+		"in"  (. typeParameter.VarianceModifier = VarianceModifier.Contravariant; .)
+	|	"out" (. typeParameter.VarianceModifier = VarianceModifier.Covariant; .)
+	]
+	Identifier (. typeParameter.Name = t.val; typeParameter.StartLocation = t.Location; .)
+(. typeParameter.EndLocation = t.EndLocation; .)
 .
 
 TypeParameterConstraintsClause<List<TemplateDefinition> templates>

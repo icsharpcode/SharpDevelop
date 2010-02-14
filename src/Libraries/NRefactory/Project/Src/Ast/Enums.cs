@@ -119,6 +119,13 @@ namespace ICSharpCode.NRefactory.Ast
 		Optional = 16
 	}
 	
+	public enum VarianceModifier
+	{
+		Invariant,
+		Covariant,
+		Contravariant
+	};
+	
 	public enum AssignmentOperatorType
 	{
 		None,

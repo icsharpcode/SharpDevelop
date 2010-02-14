@@ -119,6 +119,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.LessThan);
 			for (int i = 0; i < templates.Count; i++) {
 				if (i > 0) PrintFormattedComma();
+				if (templates[i].VarianceModifier == VarianceModifier.Contravariant) {
+					outputFormatter.PrintToken(Tokens.In);
+					outputFormatter.Space();
+				} else if (templates[i].VarianceModifier == VarianceModifier.Covariant) {
+					outputFormatter.PrintToken(Tokens.Out);
+					outputFormatter.Space();
+				}
 				outputFormatter.PrintIdentifier(templates[i].Name);
 			}
 			outputFormatter.PrintToken(Tokens.GreaterThan);
@@ -741,17 +748,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);
-			if (!parameterDeclarationExpression.DefaultValue.IsNull) {
-				outputFormatter.PrintText("[System.Runtime.InteropServices.OptionalAttribute, System.Runtime.InteropServices.DefaultParameterValueAttribute(");
-				TrackVisit(parameterDeclarationExpression.DefaultValue, data);
-				outputFormatter.PrintText(")] ");
-			}
 			OutputModifier(parameterDeclarationExpression.ParamModifier, parameterDeclarationExpression);
 			if (!parameterDeclarationExpression.TypeReference.IsNull) {
 				TrackVisit(parameterDeclarationExpression.TypeReference, data);
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintIdentifier(parameterDeclarationExpression.ParameterName);
+			if (!parameterDeclarationExpression.DefaultValue.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Assign);
+				outputFormatter.Space();
+				TrackVisit(parameterDeclarationExpression.DefaultValue, data);
+			}
 			return null;
 		}
 		
@@ -2938,9 +2946,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if ((modifier & ParameterModifiers.Params) == ParameterModifiers.Params) {
 				outputFormatter.PrintToken(Tokens.Params);
 				outputFormatter.Space();
-			}
-			if ((modifier & ParameterModifiers.Optional) == ParameterModifiers.Optional) {
-				Error(node, String.Format("Optional parameters aren't supported in C#"));
 			}
 		}
 		

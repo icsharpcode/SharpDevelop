@@ -152,8 +152,8 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			List<ISpecial> specials = lexer.SpecialTracker.RetrieveSpecials();
 			
 			Assert.IsTrue(specials[0] is BlankLine);
-			Assert.AreEqual(new Location(2, 1), specials[0].StartPosition);
-			Assert.AreEqual(new Location(2, 1), specials[0].EndPosition);
+			Assert.AreEqual(new Location(1, 1), specials[0].StartPosition);
+			Assert.AreEqual(new Location(1, 1), specials[0].EndPosition);
 			
 			Assert.AreEqual("#region", (specials[1] as PreprocessingDirective).Cmd);
 			Assert.AreEqual("Region Title", (specials[1] as PreprocessingDirective).Arg);

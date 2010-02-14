@@ -21,12 +21,16 @@ namespace NRefactoryASTGenerator.Ast
 		public NamespaceDeclaration(string name) {}
 	}
 	
+	enum VarianceModifier { Invariant, Covariant, Contravariant };
+	
 	class TemplateDefinition : AttributedNode
 	{
 		[QuestionMarkDefault]
 		string name;
+		VarianceModifier varianceModifier;
 		List<TypeReference> bases;
 		
+		public TemplateDefinition() {}
 		public TemplateDefinition(string name, List<AttributeSection> attributes) : base(attributes) {}
 	}
 	
