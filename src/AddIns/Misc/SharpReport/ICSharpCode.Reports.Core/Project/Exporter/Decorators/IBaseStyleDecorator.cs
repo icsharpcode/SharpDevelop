@@ -15,6 +15,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 		bool DrawBorder { get; set; }
 		Color BackColor { get; set; }
 		iTextSharp.text.BaseColor PdfBackColor { get; }
+		
+		Color FrameColor {get;set;}
+		iTextSharp.text.BaseColor PdfFrameColor { get; }
+		
 		Color ForeColor { get; set; }
 		iTextSharp.text.BaseColor PdfForeColor { get; }
 		Point Location { get; set; }

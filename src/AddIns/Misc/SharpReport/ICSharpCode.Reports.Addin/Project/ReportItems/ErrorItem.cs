@@ -40,13 +40,13 @@ namespace ICSharpCode.Reports.Addin
 				graphics.FillRectangle(b, base.DrawingRectangle);
 			}
 			
-			base.DrawControl(graphics);
 			string s = String.Format(System.Globalization.CultureInfo.CurrentCulture,
 			                         "Error : <{0}> is missing or obsolete",base.Text);
 			ICSharpCode.Reports.Core.TextDrawer.DrawString(graphics,s,this.Font,
 			                                               new SolidBrush(Color.Red),
 			                                               this.ClientRectangle,
 			                                               base.StringTrimming,base.ContentAlignment);
+			base.DrawControl(graphics,base.DrawingRectangle);
 		}
 	}
 }

@@ -51,7 +51,7 @@ namespace ICSharpCode.Reports.Addin
 			using (Brush b = new SolidBrush(this.BackColor)){
 				graphics.FillRectangle(b, base.DrawingRectangle);
 			}
-			base.DrawControl(graphics);
+			base.DrawControl(graphics,base.DrawingRectangle);
 		}
 		
 	}

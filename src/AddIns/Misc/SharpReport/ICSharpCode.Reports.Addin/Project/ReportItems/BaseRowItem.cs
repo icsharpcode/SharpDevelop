@@ -23,7 +23,6 @@ namespace ICSharpCode.Reports.Addin
 	public class BaseRowItem:AbstractItem
 	{
 
-//		private Padding padding;
 		private Color alternateBackColor;
 		private int changeBackColorEveryNRow;
 		private RectangleShape backgroundShape = new RectangleShape();
@@ -53,7 +52,8 @@ namespace ICSharpCode.Reports.Addin
 			using (Brush b = new SolidBrush(this.BackColor)){
 				graphics.FillRectangle(b, base.DrawingRectangle);
 			}
-			base.DrawControl(graphics);
+			
+			base.DrawControl(graphics,base.DrawingRectangle);
 			
 		}
 		
@@ -63,6 +63,7 @@ namespace ICSharpCode.Reports.Addin
 			get { return alternateBackColor; }
 			set { alternateBackColor = value; }
 		}
+	
 		
 		public int ChangeBackColorEveryNRow {
 			get { return changeBackColorEveryNRow; }
@@ -74,12 +75,7 @@ namespace ICSharpCode.Reports.Addin
 			set { backgroundShape = value; }
 		}
 		
-		/*
-		public Padding Padding {
-			get { return padding; }
-			set { padding = value; }
-		}
-		*/
+	
 		#endregion
 		
 	}
@@ -141,18 +137,16 @@ namespace ICSharpCode.Reports.Addin
 			
 			prop = props.Find("Controls",true);
 			allProperties.Add(prop);
-			
+			/*
 			prop = props.Find("Padding",true);
 			allProperties.Add(prop);
-			
+			*/
 			prop = props.Find("AlternateBackColor",true);
 			allProperties.Add(prop);
 			
 			prop = props.Find("ChangeBackColorEveryNRow",true);
 			allProperties.Add(prop);
 			
-//			prop = props.Find("Padding",true);
-//			allProperties.Add(prop);
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}

@@ -17,10 +17,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class BaseExportColumn
 	{
 		
-		IBaseStyleDecorator styleDecorator;
-		bool isContainer;
-		ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter;
-		PdfWriter pdfWriter;
+		private IBaseStyleDecorator styleDecorator;
+		private bool isContainer;
+		private ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter;
+		private PdfWriter pdfWriter;
 		
 		#region Constructors
 		
@@ -130,7 +130,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private Border CreateDefaultBorder()
 		{
-			return new Border(new BaseLine (this.styleDecorator.ForeColor,
+			return new Border(new BaseLine (this.styleDecorator.FrameColor,
 			                                    System.Drawing.Drawing2D.DashStyle.Solid,1));
 		}
 		

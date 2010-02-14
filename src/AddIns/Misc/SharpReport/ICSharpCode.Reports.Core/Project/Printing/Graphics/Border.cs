@@ -36,14 +36,6 @@ namespace ICSharpCode.Reports.Core {
 			this.bottom = baseLine;
 		}
 		
-//		public Border(BaseLine left, BaseLine top, BaseLine right, BaseLine bottom)
-//		{
-//			this.left = left;
-//			this.top = top;
-//			this.right = right;
-//			this.bottom = bottom;
-//		}
-		
 		
 		public void DrawBorder (Graphics graphics, Rectangle rectangle ) {
 			if (graphics == null) {
@@ -63,7 +55,8 @@ namespace ICSharpCode.Reports.Core {
 			if ( contentByte == null) {
 				throw new ArgumentNullException("contentByte");
 			}
-			contentByte.SetColorStroke(style.PdfForeColor);
+
+			contentByte.SetColorStroke(style.PdfFrameColor);
 			contentByte.SetLineWidth(UnitConverter.FromPixel(baseline.Thickness).Point);
 			
 			contentByte.MoveTo(rectangle.Left ,rectangle.Top );

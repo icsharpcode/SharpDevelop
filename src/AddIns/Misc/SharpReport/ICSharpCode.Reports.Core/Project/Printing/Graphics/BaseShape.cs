@@ -71,8 +71,6 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
-		
-		
 		#region Standard graphics
 		
 		// Draw a Line
@@ -117,7 +115,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		protected static void SetupShape (PdfContentByte cb,IBaseStyleDecorator style)
 		{
-			cb.SetColorStroke(style.PdfForeColor);
+			cb.SetColorStroke(style.PdfFrameColor);
 			cb.SetColorFill(style.PdfBackColor);
 		}
 		

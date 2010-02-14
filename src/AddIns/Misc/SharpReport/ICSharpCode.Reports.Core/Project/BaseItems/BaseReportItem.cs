@@ -23,12 +23,15 @@ namespace ICSharpCode.Reports.Core {
 		private bool canShrink;
 		
 		private Color foreColor;
+		private Color backColor;
+		private Color frameColor;
+		
 		private string name;
 		private BaseReportItem parent;
 		
 		private Size size;
 		private Point location;
-		private Color backColor;
+	
 		private int  sectionOffset;
 		private Font font;
 		
@@ -43,6 +46,7 @@ namespace ICSharpCode.Reports.Core {
 		{
 			this.size = GlobalValues.PreferedSize;
 			this.backColor = GlobalValues.DefaultBackColor;
+			this.frameColor = GlobalValues.DefaultBackColor;
 			this.foreColor = Color.Black;
 			this.font = GlobalValues.DefaultFont;
 		}
@@ -168,17 +172,6 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public virtual Color BackColor 
-		{
-			get {
-				return backColor;
-			}
-			set {
-				backColor = value;
-			}
-		}
-		
-		
 		public virtual int SectionOffset 
 		{
 			get {
@@ -203,23 +196,28 @@ namespace ICSharpCode.Reports.Core {
 
 		public virtual Color ForeColor 
 		{
-			get {
-				return foreColor;
-			}
-			set {
-				foreColor = value;
-			}
+			get {return foreColor;}
+			set {foreColor = value;}
 		}
 		
 		
-		public virtual Font Font 
+		public virtual Color BackColor
 		{
-			get {
-				return this.font;
-			}
-			set {
-				this.font = value;
-			}
+			get {return backColor;}
+			set {backColor = value;}
+		}
+		
+		
+		public Color FrameColor {
+			get { return frameColor; }
+			set { frameColor = value; }
+		}
+		
+		
+		public virtual Font Font
+		{
+			get {return this.font;}			
+			set {this.font = value;}		
 		}
 			
 		#endregion

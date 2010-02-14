@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
+using ICSharpCode.Reports.Core;
+
 namespace ICSharpCode.Reports.Addin
 {
 	/// <summary>
@@ -21,7 +23,7 @@ namespace ICSharpCode.Reports.Addin
 	[TypeDescriptionProvider(typeof(AbstractItemTypeProvider))]
 	public abstract class AbstractItem:System.Windows.Forms.Control
 	{
-		private Color frameColor = SystemColors.WindowFrame;
+		private Color frameColor =  GlobalValues.DefaultBackColor;
 		private bool drawBorder;
 		private Size defaultSize;
 
@@ -31,11 +33,16 @@ namespace ICSharpCode.Reports.Addin
 			TypeDescriptor.AddProvider(new AbstractItemTypeProvider(), typeof(AbstractItem));
 		}
 		
-		protected void DrawControl (Graphics graphics)
+		
+		protected void DrawControl (Graphics graphics,Rectangle borderRectangle)
 		{
-			Rectangle borderRectangle = this.ClientRectangle;
-			System.Windows.Forms.ControlPaint.DrawBorder3D(graphics, borderRectangle,
+			if (this.drawBorder == true) {
+				graphics.DrawRectangle(new Pen(this.frameColor),borderRectangle);
+				
+			} else {
+				System.Windows.Forms.ControlPaint.DrawBorder3D(graphics, this.ClientRectangle,
 			                                               System.Windows.Forms.Border3DStyle.Etched);
+			}
 		}
 		
 		
@@ -44,15 +51,16 @@ namespace ICSharpCode.Reports.Addin
 		
 		protected Rectangle DrawingRectangle {
 			get {
-				Rectangle r = new Rectangle(this.ClientRectangle.Left ,
+				
+				return new Rectangle(this.ClientRectangle.Left ,
 				                            this.ClientRectangle.Top ,
 				                            this.ClientRectangle.Width -1,
 				                            this.ClientRectangle.Height -1);
-				return r;
 			}
 		}
 		
 		
+		[Category("Border")]
 		public Color FrameColor {
 			get { return frameColor; }
 			set {
@@ -61,9 +69,9 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
-		[Browsable(true),
-		 Category("Appearance"),
-		 Description("Draw a Border around the Item")]
+		
+		[Category("Border"),
+		Description("Draw a Border around the Item")]
 		public bool DrawBorder {
 			get { return drawBorder; }
 			set {

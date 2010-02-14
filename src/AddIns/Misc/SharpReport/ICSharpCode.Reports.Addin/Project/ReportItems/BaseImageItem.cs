@@ -61,7 +61,7 @@ namespace ICSharpCode.Reports.Addin
 			                               this.ClientRectangle.Right -1,
 			                               this.ClientRectangle.Bottom -1);
 
-			base.DrawControl(graphics);
+			base.DrawControl(graphics,rect);
 			if (this.Image != null) {
 				
 				if (this.scaleImageToSize) {

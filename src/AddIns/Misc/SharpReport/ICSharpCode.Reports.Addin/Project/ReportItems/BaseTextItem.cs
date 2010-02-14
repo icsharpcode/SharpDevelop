@@ -59,11 +59,12 @@ namespace ICSharpCode.Reports.Addin
 				graphics.FillRectangle(b, base.DrawingRectangle);
 			}
 			
-			base.DrawControl(graphics);
 			TextDrawer.DrawString(graphics,this.Text,this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      this.ClientRectangle,
 			                      this.stringTrimming,this.contentAlignment);
+				
+			base.DrawControl(graphics,base.DrawingRectangle);
 		}
 		
 		

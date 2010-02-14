@@ -52,8 +52,11 @@ namespace ICSharpCode.Reports.Core
 			TextStyleDecorator style = new TextStyleDecorator();
 			
 			style.BackColor = this.BackColor;
-			style.Font = new Font(this.Font,Font.Style);
 			style.ForeColor = this.ForeColor;
+			style.FrameColor = this.FrameColor;
+			
+			style.Font = new Font(this.Font,Font.Style);
+			
 			style.Location = this.Location;
 			style.Size = this.Size;
 			style.DrawBorder = this.DrawBorder;
@@ -78,7 +81,8 @@ namespace ICSharpCode.Reports.Core
 			
 			base.Render(rpea);
 			base.FillBackground(rpea.PrintPageEventArgs.Graphics);
-			Border b = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
+			//Border b = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
+			Border b = new Border(new BaseLine (this.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
 			base.DrawFrame(rpea.PrintPageEventArgs.Graphics,b);
 			
 			string formated = StandardFormatter.FormatOutput(this.text,this.FormatString,this.DataType,String.Empty);

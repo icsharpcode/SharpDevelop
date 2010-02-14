@@ -45,9 +45,9 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		public  override void Draw(Graphics g)
+		public  override void Draw(Graphics graphics)
 		{
-			base.DrawControl(g);
+			base.DrawControl(graphics,new Rectangle(this.Location,this.Size));
 		}
 	
 		#region Propertys

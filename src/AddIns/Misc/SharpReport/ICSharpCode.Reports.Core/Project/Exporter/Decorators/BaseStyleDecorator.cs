@@ -19,6 +19,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private bool drawBorder;
 		private Color backColor;
 		private Color foreColor;
+		private Color frameColor;
 		private Point location;
 		private Size size;
 
@@ -46,7 +47,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 
 		public iTextSharp.text.BaseColor PdfBackColor {
-			get { return new iTextSharp.text.BaseColor(this.backColor.R, this.backColor.G, this.backColor.B, this.backColor.A); }
+			get {return this.ConvertToPdfBaseColor(this.backColor);}
 		}
 
 
@@ -57,10 +58,20 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 
 		public iTextSharp.text.BaseColor PdfForeColor {
-			get { return new iTextSharp.text.BaseColor(this.foreColor.R, this.foreColor.G, this.foreColor.B, this.foreColor.A); }
+			get {return this.ConvertToPdfBaseColor(this.foreColor);}
 		}
 
+		
+		public Color FrameColor {
+			get { return frameColor; }
+			set { frameColor = value; }
+		}
+		
 
+		public iTextSharp.text.BaseColor PdfFrameColor {
+			get {return this.ConvertToPdfBaseColor(frameColor);}
+		}
+		
 		public Point Location {
 			get { return location; }
 			set { location = value; }
@@ -75,5 +86,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public Rectangle DisplayRectangle {
 			get { return new Rectangle(this.location.X, this.location.Y, this.size.Width, this.size.Height); }
 		}
+		
+		private iTextSharp.text.BaseColor ConvertToPdfBaseColor (Color color)
+		{
+			return new iTextSharp.text.BaseColor(color.R, color.G, color.B, color.A);
+		}
+			
 	}
 }
