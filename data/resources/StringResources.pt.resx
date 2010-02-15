@@ -2730,6 +2730,9 @@ Pode também escolher guardar o parâmetro num ficheiro .user-file em vez de no 
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>O ficheiro '{0}' já existe.</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Nome do ficheiro</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Terminar</value>
   </data>
@@ -2849,9 +2852,6 @@ Pode também escolher guardar o parâmetro num ficheiro .user-file em vez de no 
   </data>
   <data name="Hornung.ResourceToolkit.EditStringResourceDialog.KeyIsEmpty" xml:space="preserve">
     <value>A chave de recurso não pode ser vazia!</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Nome do ficheiro</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Encontrar chaves de recurso em falta</value>

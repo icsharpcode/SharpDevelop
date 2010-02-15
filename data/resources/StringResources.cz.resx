@@ -2784,6 +2784,9 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>Soubor '{0}' již existuje.</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Jméno souboru</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Dokončit</value>
   </data>
@@ -2942,9 +2945,6 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   </data>
   <data name="Hornung.ResourceToolkit.EditStringResourceDialog.KeyIsEmpty" xml:space="preserve">
     <value>Název resource nesmí být prázdný!</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Jméno souboru</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Najít chybějící resource</value>

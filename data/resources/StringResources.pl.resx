@@ -2624,6 +2624,9 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>Plik '{0}' już istnieje.</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Nazwa pliku</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Zakończ</value>
   </data>
@@ -2755,9 +2758,6 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   </data>
   <data name="Hornung.ResourceToolkit.EditStringResourceDialog.KeyIsEmpty" xml:space="preserve">
     <value>Klucz zasobu nie może być pusty!</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Nazwa pliku</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Znajdź zagubione klucze zasobów</value>

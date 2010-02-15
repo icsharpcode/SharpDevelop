@@ -5,13 +5,13 @@
         xmlns:addin="clr-namespace:ICSharpCode.SharpDevelop.Refactoring" 
         xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
         WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" ResizeMode="NoResize"
-        Title="Introduce method" Height="400" Width="600">
+        Title="{sd:Localize Dialog.Refactoring.IntroduceMethod.Title}" Height="400" Width="600">
   <DockPanel>
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
       <Button Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" IsDefault="True" />
       <Button Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" IsCancel="True" />
     </StackPanel>
-    <TextBlock Text="{sd:Localize Dialog.Refactoring.IntroduceMethod.Description}" DockPanel.Dock="Top" Margin="3" />
+    <TextBlock Text="{sd:Localize Dialog.Refactoring.IntroduceMethod.Description}" DockPanel.Dock="Top" Margin="3" TextWrapping="Wrap" />
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -22,7 +22,7 @@
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      <RadioButton Margin="3" Content="Use existing class:" Name="rbExisting" IsChecked="True" GroupName="group" Grid.Column="0" Grid.Row="0" />
+      <RadioButton Margin="3" Content="{sd:Localize Dialog.Refactoring.IntroduceMethod.UseExisting}" Name="rbExisting" IsChecked="True" GroupName="group" Grid.Column="0" Grid.Row="0" />
       <ListBox Margin="3" Grid.Column="0" Grid.Row="1" Name="classList" IsEnabled="{Binding IsChecked, ElementName=rbExisting}">
     	<ListBox.ItemTemplate>
       		<DataTemplate>
@@ -30,9 +30,9 @@
     		</DataTemplate>
       	</ListBox.ItemTemplate>
       </ListBox>
-      <RadioButton Margin="3" Content="Create new class:" Name="rbNew" GroupName="group" Grid.Column="0" Grid.Row="2" />
+      <RadioButton Margin="3" Content="{sd:Localize Dialog.Refactoring.IntroduceMethod.CreateNew}" Name="rbNew" GroupName="group" Grid.Column="0" Grid.Row="2" />
       <DockPanel Grid.Column="0" Grid.Row="3" IsEnabled="{Binding IsChecked, ElementName=rbNew}">
-        <Label DockPanel.Dock="Left" Content="Name:" Margin="3" />
+        <Label DockPanel.Dock="Left" Content="{sd:StringParse ${res:Global.Name}:}" Margin="3" />
         <TextBox Name="newClassName" Text="Extensions" Margin="3" />
       </DockPanel>
     </Grid>

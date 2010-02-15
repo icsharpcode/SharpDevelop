@@ -617,6 +617,15 @@ Optionally you can specify a working directory and command line arguments.
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>Extracting methods in {0} is currently not supported!</value>
   </data>
+  <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
+    <value>Introduce method {0} in {1}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
+    <value>Resolve attribute: {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
+    <value>Resolve extension method {0}</value>
+  </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Check with StyleCop</value>
   </data>
@@ -783,7 +792,7 @@ SharpDevelop can collect this information and upload it automatically.</value>
     <value>Show collected data</value>
   </data>
   <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
-    <value>Usage Data Collection</value>
+    <value>Usage Data Collector</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Edit grid columns and rows</value>
@@ -3071,6 +3080,18 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="Dialog.Refactoring.ExtractInterface.SelectPublicMembers" xml:space="preserve">
     <value>Select Public Members</value>
   </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.CreateNew" xml:space="preserve">
+    <value>Create new class:</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Description" xml:space="preserve">
+    <value>The method cannot be created directly, because no source code of the class is available. Please select a static class where the method will be created as an extension method.</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Title" xml:space="preserve">
+    <value>Introduce method</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.UseExisting" xml:space="preserve">
+    <value>Use existing class:</value>
+  </data>
   <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
     <value>.NET Assembly Browser</value>
   </data>
@@ -3235,6 +3256,9 @@ You can also choose to store the setting in the .user-file instead of the projec
   </data>
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>The file '{0}' already exists.</value>
+  </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>File name</value>
   </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Finish</value>
@@ -3430,9 +3454,6 @@ You can also choose to store the setting in the .user-file instead of the projec
   </data>
   <data name="Hornung.ResourceToolkit.ErrorProcessingResourceFile" xml:space="preserve">
     <value>An error occurred while processing the resource file '{0}'.</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>File name</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Find missing resource keys</value>
@@ -4444,6 +4465,9 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.SortDirectionGroupBox.Descending" xml:space="preserve">
     <value>&amp;Descending</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.ToolNotFoundDialog.Title" xml:space="preserve">
+    <value>Tool not found</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.DialogTitle" xml:space="preserve">
     <value>Discovery Credential</value>
   </data>
@@ -4506,6 +4530,9 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description" xml:space="preserve">
     <value>Specifies the namespace the custom tool places it's output.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description" xml:space="preserve">
+    <value>The full path to the file.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName" xml:space="preserve">
     <value>Logical Name</value>
@@ -5727,6 +5754,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled2" xml:space="preserve">
     <value>The xml documentation file does not exist, you need to compile the project.</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.GenerateDocumentation.SHFBNotFound" xml:space="preserve">
+    <value>Generating documentation from XML comments requires the 'Sandcastle Help File Builder' to be installed.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.HtmlExport" xml:space="preserve">
     <value>Html E&amp;xport</value>
   </data>
@@ -6119,6 +6149,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="SharpDevelop.Refactoring.GoToProperty" xml:space="preserve">
     <value>Go to &amp;property</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ImplementAbstractClass" xml:space="preserve">
+    <value>Implement abstract class</value>
   </data>
   <data name="SharpDevelop.Refactoring.ImplementInterface" xml:space="preserve">
     <value>Implement interface</value>

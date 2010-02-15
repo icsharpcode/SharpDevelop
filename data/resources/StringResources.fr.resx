@@ -756,6 +756,30 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Mettre à jour à la révision</value>
   </data>
+  <data name="AddIns.UsageDataCollector.AcceptConfirmation" xml:space="preserve">
+    <value>Merci de votre participation! Vous pouvez changer votre participation via les options de SharpDevelop.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptRadioButton" xml:space="preserve">
+    <value>Je veux participer - collecter et transmettre les données de mon utilisation</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineConfirmation" xml:space="preserve">
+    <value>Vous pouvez changer votre participation via les options de SharpDevelop.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineRadioButton" xml:space="preserve">
+    <value>Je ne souhaite pas participer</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Introduction" xml:space="preserve">
+    <value>Nous avons besoin de vous! Pour améliorer SharpDevelop, nous aimerions connaître les points les plus utilisés. SharpDevelop peut collecter et transmettre automatiquement ces informations.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.PrivacyStatement" xml:space="preserve">
+    <value>Règles de respect de la vie privée</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.ShowCollectedData" xml:space="preserve">
+    <value>Visualiser les données collectées</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
+    <value>Collecteur de données d'utilisation</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Editer colonnes et lignes de la grille</value>
   </data>
@@ -2472,6 +2496,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox" xml:space="preserve">
     <value>C&amp;onvertir les tabulations en espaces</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition" xml:space="preserve">
+    <value>Utiliser Ctrl+Clic pour "Aller à la définition"</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox" xml:space="preserve">
     <value>A&amp;uto-insertion accolades</value>
   </data>
@@ -2516,6 +2543,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TemplateInsertCheckBox" xml:space="preserve">
     <value>Insertion de modèle automatique</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.UseSmartIndent" xml:space="preserve">
+    <value>Utiliser l'indentation intelligente</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName" xml:space="preserve">
     <value>Complétion de code</value>
@@ -3197,6 +3227,9 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>Le fichier '{0}' existe déjà.</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Nom de fichier</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Terminer</value>
   </data>
@@ -3391,9 +3424,6 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   </data>
   <data name="Hornung.ResourceToolkit.ErrorProcessingResourceFile" xml:space="preserve">
     <value>Une erreur est survenue lors du traitement du fichier resource '{0}'.</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Nom de fichier</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Trouver les clés de ressource manquantes</value>
@@ -4460,6 +4490,9 @@ Utilisez seulement des lettres, chiffres, espace, '.' ou '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description" xml:space="preserve">
     <value>Spécifie l'espace de nom où écrit l'outil de personalisation.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description" xml:space="preserve">
+    <value>Chemin complet du fichier.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName" xml:space="preserve">
     <value>Nom logique</value>

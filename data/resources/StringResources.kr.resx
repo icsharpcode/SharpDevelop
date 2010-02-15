@@ -2879,6 +2879,9 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>'{0}' 파일이 이미 있습니다.</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>파일 이름</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>마치기</value>
   </data>
@@ -3055,9 +3058,6 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   </data>
   <data name="Hornung.ResourceToolkit.ErrorProcessingResourceFile" xml:space="preserve">
     <value>'{0}' 리소스 파일을 처리하는 중 오류가 발생했습니다.</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>파일 이름</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>없는 리소스 키 찾기</value>

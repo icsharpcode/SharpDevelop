@@ -2945,6 +2945,9 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>Filen '{0}' finnes fra før.</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Filnavn</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Fullfør</value>
   </data>
@@ -3124,9 +3127,6 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
   </data>
   <data name="Hornung.ResourceToolkit.ErrorProcessingResourceFile" xml:space="preserve">
     <value>En feil oppstod under prosessering av ressursfilen '{0}'.</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Filnavn</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Finn manglende ressursnøkler</value>

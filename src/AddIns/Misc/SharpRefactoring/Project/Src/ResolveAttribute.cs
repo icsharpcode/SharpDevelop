@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -28,12 +29,7 @@ namespace SharpRefactoring
 //				return null;
 			if (!(context.ResolveResult is UnknownIdentifierResolveResult || context.ResolveResult is UnknownMethodResolveResult))
 				return null;
-			
-			MenuItem item = new MenuItem() {
-				Header = "Resolve attribute: ",
-				Icon = ClassBrowserIconService.GotoArrow.CreateImage()
-			};
-			
+
 			List<IClass> results = new List<IClass>();
 			
 			ParseInformation info = ParserService.GetParseInformation(context.Editor.FileName);
@@ -41,9 +37,11 @@ namespace SharpRefactoring
 			if (info == null || info.CompilationUnit == null || info.CompilationUnit.ProjectContent == null)
 				return null;
 			
-			ICompilationUnit unit = info.CompilationUnit;			
+			ICompilationUnit unit = info.CompilationUnit;
 			IProjectContent pc = info.CompilationUnit.ProjectContent;
-						
+			
+			string name = null;
+			
 			if (context.ResolveResult is UnknownMethodResolveResult) {
 				var rr = context.ResolveResult as UnknownMethodResolveResult;
 				SearchAttributesWithName(results, pc, rr.CallName);
@@ -51,7 +49,7 @@ namespace SharpRefactoring
 				foreach (IProjectContent content in pc.ReferencedContents)
 					SearchAttributesWithName(results, content, rr.CallName);
 				
-				item.Header += rr.CallName;
+				name = rr.CallName;
 			}
 			
 			if (context.ResolveResult is UnknownIdentifierResolveResult) {
@@ -61,11 +59,16 @@ namespace SharpRefactoring
 				foreach (IProjectContent content in pc.ReferencedContents)
 					SearchAttributesWithName(results, content, rr.Identifier);
 				
-				item.Header += rr.Identifier;
+				name = rr.Identifier;
 			}
 			
 			if (!results.Any())
 				return null;
+			
+			MenuItem item = new MenuItem() {
+				Header = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ResolveAttribute}"), name),
+				Icon = ClassBrowserIconService.GotoArrow.CreateImage()
+			};
 			
 			foreach (IClass c in results) {
 				string newNamespace = c.Namespace;

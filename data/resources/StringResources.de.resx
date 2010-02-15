@@ -615,6 +615,15 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>Extrahieren von Methoden in {0} wird derzeit nicht unterstützt.</value>
   </data>
+  <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
+    <value>Methode {0} in {1} erstellen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
+    <value>Attribut auflösen: {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
+    <value>Erweiterungsmethode {0} auflösen</value>
+  </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Mit StyleCop überprüfen</value>
   </data>
@@ -757,6 +766,36 @@ Sie müssen diese Dateien speichern, bevor die Operation ausgeführt werden kann
   </data>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Aktualisiere zu Revision</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptConfirmation" xml:space="preserve">
+    <value>Danke für Ihre Teilnahme! Sie können sich später in den SharpDevelop Optionen von der Teilnahme abmelden.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptRadioButton" xml:space="preserve">
+    <value>Ich möchte teilnehmen - Nutzungsdaten sammeln und hochladen</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineConfirmation" xml:space="preserve">
+    <value>Sie können sich später in den SharpDevelop Optionen anmelden.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineRadioButton" xml:space="preserve">
+    <value>Ich möchte nicht teilnehmen</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Introduction" xml:space="preserve">
+    <value>Wir brauchen Ihre Hilfe! Um SharpDevelop in Zukunft noch weiter verbessern zu können, würden wir gerne erfahren, welche Features am meisten genutzt werden. SharpDevelop kann diese Informationen sammeln und automatisch hochladen.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.PrivacyStatement" xml:space="preserve">
+    <value>Datenschutz</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.ShowCollectedData" xml:space="preserve">
+    <value>Gesammelte Daten anzeigen</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
+    <value>Grid-Zeilen und Spalten bearbeiten</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
+    <value>Eigenschaften als Stil extrahieren</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
+    <value>Gruppieren in</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
     <value>Margin entfernen</value>
@@ -2558,7 +2597,7 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
     <value>Caretzeile anzeigen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
-    <value>&amp;EOL Markierungen anzeigen</value>
+    <value>Markierung an Zeilen&amp;ende anzeigen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>&amp;Passende Klammer markieren</value>
@@ -3020,6 +3059,18 @@ Sie können die Einstellungen auch in einer .user-Datei anstelle der Projektdate
   <data name="Dialog.Refactoring.ExtractInterface.SelectPublicMembers" xml:space="preserve">
     <value>Öffentliche Member auswählen</value>
   </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.CreateNew" xml:space="preserve">
+    <value>Neue Klasse erstellen:</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Description" xml:space="preserve">
+    <value>Die Methode kann nicht direkt erstellt werden, weil der Quellcode der Klasse nicht verfügbar ist. Bitte wählen Sie eine statische Klasse, in der die Methode als Erweiterungsmethode erstellt wird.</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Title" xml:space="preserve">
+    <value>Methode einführen</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.UseExisting" xml:space="preserve">
+    <value>Bestehende Klasse verwenden:</value>
+  </data>
   <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
     <value>.NET Assemblybrowser</value>
   </data>
@@ -3184,6 +3235,9 @@ Sie können die Einstellungen auch in einer .user-Datei anstelle der Projektdate
   </data>
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>Die Datei '{0}' existiert bereits.</value>
+  </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Dateiname</value>
   </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Beenden</value>
@@ -3380,9 +3434,6 @@ Bitte einen anderen Dateinamen wählen.</value>
   </data>
   <data name="Hornung.ResourceToolkit.ErrorProcessingResourceFile" xml:space="preserve">
     <value>Beim Verarbeiten der Ressourcendatei '{0}' ist ein Fehler aufgetreten.</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Dateiname</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Finde fehlende Ressourcenschlüssel</value>
@@ -6072,6 +6123,9 @@ Bitte einen anderen verwenden.</value>
   <data name="SharpDevelop.Refactoring.GoToProperty" xml:space="preserve">
     <value>Gehe zur &amp;Eigenschaft</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ImplementAbstractClass" xml:space="preserve">
+    <value>Abstrakte Klasse implementieren</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ImplementInterface" xml:space="preserve">
     <value>Interface implementieren</value>
   </data>
@@ -6877,6 +6931,12 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="Templates.Project.ConsoleProject.Name" xml:space="preserve">
     <value>Konsolenanwendung</value>
+  </data>
+  <data name="Templates.Project.ConsoleProject.Unmanaged.Description" xml:space="preserve">
+    <value>Eine Projektvorlage welche eine Konsolenapplikation in nativem (unmanaged) Code erstellt.</value>
+  </data>
+  <data name="Templates.Project.ConsoleProject.Unmanaged.Name" xml:space="preserve">
+    <value>Unmanaged Konsolenanwendung</value>
   </data>
   <data name="Templates.Project.Direct3DApplication.Description" xml:space="preserve">
     <value>Ein Projekt zum Erstellen einer Applikation mit einer Direct3D-Schnittstelle.</value>

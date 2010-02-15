@@ -2266,6 +2266,9 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Global.ErrorText" xml:space="preserve">
     <value>Error</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Filnamn</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Slutför</value>
   </data>
@@ -2406,9 +2409,6 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   </data>
   <data name="Hornung.ResourceToolkit.CodeCompletion.AddNewEntry" xml:space="preserve">
     <value>&lt;Lägg till ny&gt;</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Filnamn</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Sök efter saknade resursnycklar</value>

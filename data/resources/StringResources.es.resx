@@ -757,6 +757,31 @@ Debería recargar la solución.</value>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Actualizar a revisión</value>
   </data>
+  <data name="AddIns.UsageDataCollector.AcceptConfirmation" xml:space="preserve">
+    <value>¡Gracias por participar! Todabía puede omitir el uso posterior de las opciones de SharpDevelop.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptRadioButton" xml:space="preserve">
+    <value>Me gustaría participar - obtener y enviar datos de uso</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineConfirmation" xml:space="preserve">
+    <value>Todavía puede omitir el uso posterior de las opciones de SharpDevelop.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineRadioButton" xml:space="preserve">
+    <value>No quiero participar</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Introduction" xml:space="preserve">
+    <value>¡Necesitamos de tu ayuda! Para mejorar SharpDevelop en el futuro, nos gustaría saber que características son más utilizadas.
+SharpDevelop puede obtener esta información y enviarla automáticamente.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.PrivacyStatement" xml:space="preserve">
+    <value>Declaración de Privacidad</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.ShowCollectedData" xml:space="preserve">
+    <value>Mostrar datos obtenidos</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
+    <value>Recopilador de Datos</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Editar columnas y filas de la grilla</value>
   </data>
@@ -2476,6 +2501,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox" xml:space="preserve">
     <value>C&amp;onvertir Tabuladores a Espacios</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition" xml:space="preserve">
+    <value>Usar Ctrl+Clic para "Ir a Definición"</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox" xml:space="preserve">
     <value>A&amp;utoinsertar corchetes</value>
   </data>
@@ -2520,6 +2548,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TemplateInsertCheckBox" xml:space="preserve">
     <value>Inserción &amp;automática de plantilla</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.UseSmartIndent" xml:space="preserve">
+    <value>Usar indentación inteligente</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName" xml:space="preserve">
     <value>Completación de Código</value>
@@ -3202,6 +3233,9 @@ También puede escoger almacenar el parámetro de configuración en el archivo .
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>El archivo '{0}' ya existe.</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Nombre de archivo</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Terminar</value>
   </data>
@@ -3396,9 +3430,6 @@ También puede escoger almacenar el parámetro de configuración en el archivo .
   </data>
   <data name="Hornung.ResourceToolkit.ErrorProcessingResourceFile" xml:space="preserve">
     <value>Ocurrió un error procesando el archivo de recurso '{0}'.</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Nombre de archivo</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Buscar claves de recurso faltantes</value>
@@ -4466,6 +4497,9 @@ Solamente letras, dígitos, espacio, '.' o '_' son permitidos.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description" xml:space="preserve">
     <value>Determina el namespace para el cual la herramienta generará su salida.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description" xml:space="preserve">
+    <value>La ruta completa al archivo.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName" xml:space="preserve">
     <value>Nombre Lógico</value>

@@ -614,6 +614,15 @@ Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>Ontrekkingsmethoden worden op dit moment niet ondersteund in {0}</value>
   </data>
+  <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
+    <value>Introduceer methode {0} in {1}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
+    <value>Oplossing atribuut: {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
+    <value>Oplossen extentie methode {0}</value>
+  </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Nalopen met StyleCop</value>
   </data>
@@ -754,6 +763,30 @@ Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.
   </data>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Opwaarderen naar versie</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptConfirmation" xml:space="preserve">
+    <value>Bedankt voor de deelname!Stoppen is elk moment mogelijk via de SharpDevelop opties.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptRadioButton" xml:space="preserve">
+    <value>Ik doe graag mee met verzamelen en uploaden van gebruiksgegevens.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineConfirmation" xml:space="preserve">
+    <value>Later deelnemen kan via de SharpDevelop opties.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineRadioButton" xml:space="preserve">
+    <value>Ik wens niet deel te nemen.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Introduction" xml:space="preserve">
+    <value>Uw hulp is nodig voor toekomstige verbetering van SharpDevelop. Wij willen graag weten welke extra's het meest gebruikt worden. SharpDevelop kan deze informatie verzamelen en automatisch uploaden.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.PrivacyStatement" xml:space="preserve">
+    <value>Privacy verklaring</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.ShowCollectedData" xml:space="preserve">
+    <value>Verzamelde gegevens weergeven</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
+    <value>Gebruiksgegevens verzamelaar</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Matrix kolommen en rijen bewerken</value>
@@ -3040,6 +3073,18 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="Dialog.Refactoring.ExtractInterface.SelectPublicMembers" xml:space="preserve">
     <value>Selecteer algemeen toegankelijke leden</value>
   </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.CreateNew" xml:space="preserve">
+    <value>Maak nieuwe klasse:</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Description" xml:space="preserve">
+    <value>Doordat geen broncode van de klasse beschikbaar is, kan de methode niet rechtstreeks gemaakt worden. Selecteer aub een statische klasse waar de methode als extensie methode gemaakt zal worden.</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Title" xml:space="preserve">
+    <value>Methode introduceren</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.UseExisting" xml:space="preserve">
+    <value>Gebruik bestaande klasse:</value>
+  </data>
   <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
     <value>.NET Assembly Browser</value>
   </data>
@@ -3204,6 +3249,9 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   </data>
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>Bestand '{0}' bestaat al.</value>
+  </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Bestandsnaam</value>
   </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Beëindigen</value>
@@ -3399,9 +3447,6 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   </data>
   <data name="Hornung.ResourceToolkit.ErrorProcessingResourceFile" xml:space="preserve">
     <value>Er is een fout opgetreden bij bewerken van hulpbron bestand '{0}'.</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Bestandsnaam</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Ontbrekende hulpbron sleutels vinden</value>
@@ -4404,6 +4449,9 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.SortDirectionGroupBox.Descending" xml:space="preserve">
     <value>&amp;Aflopend</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.ToolNotFoundDialog.Title" xml:space="preserve">
+    <value>Extern gereedschap niet gevonden</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.DialogTitle" xml:space="preserve">
     <value>Ontdekken referenties</value>
   </data>
@@ -4466,6 +4514,9 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description" xml:space="preserve">
     <value>Geeft de naamruimte op, waarin de uitvoer plaatsvindt.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description" xml:space="preserve">
+    <value>Het volledige bestandspad.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName" xml:space="preserve">
     <value>Logische naam</value>
@@ -5139,7 +5190,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Taal</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
-    <value>Toon argument namen</value>
+    <value>Argumentnamen weergeven</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentValues" xml:space="preserve">
     <value>Toon argument waardes</value>
@@ -5687,6 +5738,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled2" xml:space="preserve">
     <value>XML documentatie bestand komt niet voor, u dient het project te compileren.</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.GenerateDocumentation.SHFBNotFound" xml:space="preserve">
+    <value>Documentatie genereren van XML commentaar vereist de installatie van de 'Sandcastle Help bestand bouwer'.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.HtmlExport" xml:space="preserve">
     <value>Html E&amp;xport</value>
   </data>
@@ -6079,6 +6133,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="SharpDevelop.Refactoring.GoToProperty" xml:space="preserve">
     <value>Ga naar eigenschap</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ImplementAbstractClass" xml:space="preserve">
+    <value>Abstracte klasse implementeren</value>
   </data>
   <data name="SharpDevelop.Refactoring.ImplementInterface" xml:space="preserve">
     <value>Implementeer interface</value>

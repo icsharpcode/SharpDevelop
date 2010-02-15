@@ -6,10 +6,11 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -44,7 +45,7 @@ namespace SharpRefactoring
 				return null;
 			
 			MenuItem item = new MenuItem() {
-				Header = "Introduce method " + rr.CallName + " in " + rr.Target.FullyQualifiedName,
+				Header = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.IntroduceMethod}"), rr.CallName, rr.Target.FullyQualifiedName),
 				Icon = ClassBrowserIconService.GotoArrow.CreateImage()
 			};
 			

@@ -2685,6 +2685,9 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>'{0}' dosyası zaten var.</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Dosya adı</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Sonlandır</value>
   </data>
@@ -2813,9 +2816,6 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   </data>
   <data name="Hornung.ResourceToolkit.EditStringResourceDialog.KeyIsEmpty" xml:space="preserve">
     <value>Kaynak anahtarı boş olamaz!</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Dosya adı</value>
   </data>
   <data name="Hornung.ResourceToolkit.FindMissingResourceKeys" xml:space="preserve">
     <value>Kayıp kaynak anahtarlarını bul</value>

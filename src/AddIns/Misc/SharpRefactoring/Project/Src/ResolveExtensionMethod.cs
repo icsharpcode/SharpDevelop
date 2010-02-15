@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -31,7 +32,7 @@ namespace SharpRefactoring
 			UnknownMethodResolveResult rr = context.ResolveResult as UnknownMethodResolveResult;
 			
 			MenuItem item = new MenuItem() {
-				Header = "Resolve extension method " + rr.CallName,
+				Header = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ResolveExtensionMethod}"), rr.CallName),
 				Icon = ClassBrowserIconService.GotoArrow.CreateImage()
 			};
 			

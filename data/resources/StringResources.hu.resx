@@ -2468,6 +2468,9 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   <data name="Global.FileAlreadyExists" xml:space="preserve">
     <value>„{0}” nevű fájl már létezik.</value>
   </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Fájlnév</value>
+  </data>
   <data name="Global.FinishButtonText" xml:space="preserve">
     <value>Befejezés</value>
   </data>
@@ -2581,9 +2584,6 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   </data>
   <data name="Gui.ProjectBrowser.ShowAllFiles" xml:space="preserve">
     <value>Minden fájl mutatása</value>
-  </data>
-  <data name="Hornung.ResourceToolkit.FileName" xml:space="preserve">
-    <value>Fájlnév</value>
   </data>
   <data name="Hornung.ResourceToolkit.ToolTips.UnknownKey" xml:space="preserve">
     <value>&lt;Unknown&gt;</value>
