@@ -121,7 +121,11 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		
 		public void CloseContent(IViewContent content)
 		{
-			throw new NotImplementedException();
+			if (views.Contains(content)) {
+				views.Remove(content);
+			}
+			
+			content.Dispose();
 		}
 		
 		public void CloseAllViews()

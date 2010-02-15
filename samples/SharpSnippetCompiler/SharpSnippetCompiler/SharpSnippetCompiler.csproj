@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="SnippetTabPage.cs" />
+    <Compile Include="TextEditorDisplayBinding.cs" />
     <Compile Include="WorkbenchLayout.cs" />
     <Compile Include="WorkbenchWindow.cs" />
     <EmbeddedResource Include="MainForm.resx">

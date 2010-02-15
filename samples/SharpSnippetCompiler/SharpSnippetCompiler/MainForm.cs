@@ -1,5 +1,5 @@
 ﻿// SharpDevelop samples
-// Copyright (c) 2008, AlphaSierraPapa
+// Copyright (c) 2010, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -31,6 +31,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -91,7 +93,7 @@ namespace ICSharpCode.SharpSnippetCompiler
 			get { return fileTabControl.SelectedTab as SnippetTabPage; }
 		}
 		
-		public void LoadFile(string fileName)
+		public IViewContent LoadFile(string fileName)
 		{
 			// Create a new tab page.
 			SharpSnippetCompilerControl snippetControl = new SharpSnippetCompilerControl();
@@ -110,6 +112,8 @@ namespace ICSharpCode.SharpSnippetCompiler
 			WorkbenchSingleton.Workbench.ViewContentCollection.Add(view);
 			
 			UpdateActiveView(view);
+			
+			return view;
 		}
 		
 		public void ActivateErrorList()
@@ -357,7 +361,14 @@ namespace ICSharpCode.SharpSnippetCompiler
 				if (item != null) {
 					ProjectService.RemoveProjectItem(project, item);
 					project.Save();
-
+					
+					foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
+						if (view.Control == snippetControl) {
+							WorkbenchSingleton.Workbench.CloseContent(view);
+							break;
+						}
+					}
+						
 					fileTabControl.TabPages.Remove(activeTabPage);
 					activeTabPage.Dispose();
 				}
