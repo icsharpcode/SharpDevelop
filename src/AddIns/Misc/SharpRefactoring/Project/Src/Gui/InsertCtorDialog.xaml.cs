@@ -46,6 +46,7 @@ namespace SharpRefactoring.Gui
 		protected override string GenerateCode(CodeGenerator generator, IClass currentClass)
 		{
 			StringBuilder builder = new StringBuilder();
+			builder.AppendLine();
 			
 			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
 			
