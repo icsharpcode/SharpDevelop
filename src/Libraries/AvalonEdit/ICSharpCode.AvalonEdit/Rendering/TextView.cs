@@ -1149,7 +1149,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			GeneralTransform childTransform = visual.TransformToAncestor(this);
 			rectangle = childTransform.TransformBounds(rectangle);
 			
-			MakeVisible(rectangle);
+			MakeVisible(Rect.Offset(rectangle, scrollOffset));
 			
 			return rectangle;
 		}
