@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ICSharpCode.UsageDataCollector.Service {
+namespace ICSharpCode.UsageDataCollector.ServiceReference {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -17,10 +17,10 @@ namespace ICSharpCode.UsageDataCollector.Service {
         
         // CODEGEN: Generating message contract since the wrapper name (UDCUploadRequest) of message UDCUploadRequest does not match the default value (UploadUsageData)
         [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IUDCUploadService/UploadUsageData")]
-        void UploadUsageData(ICSharpCode.UsageDataCollector.Service.UDCUploadRequest request);
+        void UploadUsageData(ICSharpCode.UsageDataCollector.ServiceReference.UDCUploadRequest request);
         
         [System.ServiceModel.OperationContractAttribute(IsOneWay=true, AsyncPattern=true, Action="http://tempuri.org/IUDCUploadService/UploadUsageData")]
-        System.IAsyncResult BeginUploadUsageData(ICSharpCode.UsageDataCollector.Service.UDCUploadRequest request, System.AsyncCallback callback, object asyncState);
+        System.IAsyncResult BeginUploadUsageData(ICSharpCode.UsageDataCollector.ServiceReference.UDCUploadRequest request, System.AsyncCallback callback, object asyncState);
         
         void EndUploadUsageData(System.IAsyncResult result);
     }
@@ -46,12 +46,12 @@ namespace ICSharpCode.UsageDataCollector.Service {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    internal interface IUDCUploadServiceChannel : ICSharpCode.UsageDataCollector.Service.IUDCUploadService, System.ServiceModel.IClientChannel {
+    internal interface IUDCUploadServiceChannel : ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    internal partial class UDCUploadServiceClient : System.ServiceModel.ClientBase<ICSharpCode.UsageDataCollector.Service.IUDCUploadService>, ICSharpCode.UsageDataCollector.Service.IUDCUploadService {
+    internal partial class UDCUploadServiceClient : System.ServiceModel.ClientBase<ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService>, ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService {
         
         private BeginOperationDelegate onBeginUploadUsageDataDelegate;
         
@@ -81,28 +81,28 @@ namespace ICSharpCode.UsageDataCollector.Service {
         public event System.EventHandler<System.ComponentModel.AsyncCompletedEventArgs> UploadUsageDataCompleted;
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        void ICSharpCode.UsageDataCollector.Service.IUDCUploadService.UploadUsageData(ICSharpCode.UsageDataCollector.Service.UDCUploadRequest request) {
+        void ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService.UploadUsageData(ICSharpCode.UsageDataCollector.ServiceReference.UDCUploadRequest request) {
             base.Channel.UploadUsageData(request);
         }
         
         public void UploadUsageData(string ApplicationKey, System.IO.Stream UsageData) {
-            ICSharpCode.UsageDataCollector.Service.UDCUploadRequest inValue = new ICSharpCode.UsageDataCollector.Service.UDCUploadRequest();
+            ICSharpCode.UsageDataCollector.ServiceReference.UDCUploadRequest inValue = new ICSharpCode.UsageDataCollector.ServiceReference.UDCUploadRequest();
             inValue.ApplicationKey = ApplicationKey;
             inValue.UsageData = UsageData;
-            ((ICSharpCode.UsageDataCollector.Service.IUDCUploadService)(this)).UploadUsageData(inValue);
+            ((ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService)(this)).UploadUsageData(inValue);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        System.IAsyncResult ICSharpCode.UsageDataCollector.Service.IUDCUploadService.BeginUploadUsageData(ICSharpCode.UsageDataCollector.Service.UDCUploadRequest request, System.AsyncCallback callback, object asyncState) {
+        System.IAsyncResult ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService.BeginUploadUsageData(ICSharpCode.UsageDataCollector.ServiceReference.UDCUploadRequest request, System.AsyncCallback callback, object asyncState) {
             return base.Channel.BeginUploadUsageData(request, callback, asyncState);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         public System.IAsyncResult BeginUploadUsageData(string ApplicationKey, System.IO.Stream UsageData, System.AsyncCallback callback, object asyncState) {
-            ICSharpCode.UsageDataCollector.Service.UDCUploadRequest inValue = new ICSharpCode.UsageDataCollector.Service.UDCUploadRequest();
+            ICSharpCode.UsageDataCollector.ServiceReference.UDCUploadRequest inValue = new ICSharpCode.UsageDataCollector.ServiceReference.UDCUploadRequest();
             inValue.ApplicationKey = ApplicationKey;
             inValue.UsageData = UsageData;
-            return ((ICSharpCode.UsageDataCollector.Service.IUDCUploadService)(this)).BeginUploadUsageData(inValue, callback, asyncState);
+            return ((ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService)(this)).BeginUploadUsageData(inValue, callback, asyncState);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]

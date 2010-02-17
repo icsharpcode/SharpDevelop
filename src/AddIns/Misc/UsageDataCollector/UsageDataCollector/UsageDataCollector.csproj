@@ -56,7 +56,8 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Contracts\UsageDataMessage.cs" />
+    <Compile Include="Contracts\UsageDataDataContracts.cs" />
+    <Compile Include="Contracts\UsageDataServiceContracts.cs" />
     <Compile Include="Reference.cs" />
     <Compile Include="UsageDataSessionWriter.cs" />
     <Compile Include="UsageDataUploader.cs" />

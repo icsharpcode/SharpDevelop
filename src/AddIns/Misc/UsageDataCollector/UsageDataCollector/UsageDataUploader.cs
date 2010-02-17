@@ -18,7 +18,7 @@ using System.ServiceModel.Channels;
 using System.Xml;
 
 using ICSharpCode.UsageDataCollector.Contracts;
-using ICSharpCode.UsageDataCollector.Service;
+using UdcProxy = ICSharpCode.UsageDataCollector.ServiceReference;
 
 namespace ICSharpCode.UsageDataCollector
 {
@@ -116,7 +116,7 @@ namespace ICSharpCode.UsageDataCollector
 					data = ms.ToArray();
 				}
 				
-				UDCUploadServiceClient client = new UDCUploadServiceClient(binding, endpoint);
+				UdcProxy.UDCUploadServiceClient client = new UdcProxy.UDCUploadServiceClient(binding, endpoint);
 				try {
 					client.BeginUploadUsageData("sharpdevelop", new MemoryStream(data),
 					                            ar => UsageDataUploaded(ar, client, commaSeparatedSessionIDList), null);
@@ -126,7 +126,7 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
-		void UsageDataUploaded(IAsyncResult result, UDCUploadServiceClient client, string commaSeparatedSessionIDList)
+		void UsageDataUploaded(IAsyncResult result, UdcProxy.UDCUploadServiceClient client, string commaSeparatedSessionIDList)
 		{
 			bool success = false;
 			try {
