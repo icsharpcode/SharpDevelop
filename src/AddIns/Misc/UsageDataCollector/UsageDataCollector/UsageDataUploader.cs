@@ -17,7 +17,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Xml;
 
-using ICSharpCode.UsageDataCollector.DataContract;
+using ICSharpCode.UsageDataCollector.Contracts;
 using ICSharpCode.UsageDataCollector.Service;
 
 namespace ICSharpCode.UsageDataCollector

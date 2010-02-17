@@ -56,10 +56,13 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Contracts\UsageDataMessage.cs" />
     <Compile Include="Reference.cs" />
-    <Compile Include="UsageDataMessage.cs" />
     <Compile Include="UsageDataSessionWriter.cs" />
     <Compile Include="UsageDataUploader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Contracts" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

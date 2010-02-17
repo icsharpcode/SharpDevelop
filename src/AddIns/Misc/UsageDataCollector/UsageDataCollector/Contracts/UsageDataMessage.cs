@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace ICSharpCode.UsageDataCollector.DataContract
+namespace ICSharpCode.UsageDataCollector.Contracts
 {
 	/// <summary>
 	/// Represents a message used to send data to the server.
