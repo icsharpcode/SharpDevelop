@@ -13,7 +13,8 @@ namespace ICSharpCode.UsageDataCollector.ServiceReference {
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="Service.IUDCUploadService")]
-    internal interface IUDCUploadService {
+    public interface IUDCUploadService
+    {
         
         // CODEGEN: Generating message contract since the wrapper name (UDCUploadRequest) of message UDCUploadRequest does not match the default value (UploadUsageData)
         [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IUDCUploadService/UploadUsageData")]
@@ -28,7 +29,8 @@ namespace ICSharpCode.UsageDataCollector.ServiceReference {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.MessageContractAttribute(WrapperName="UDCUploadRequest", WrapperNamespace="http://tempuri.org/", IsWrapped=true)]
-    internal partial class UDCUploadRequest {
+    public partial class UDCUploadRequest
+    {
         
         [System.ServiceModel.MessageHeaderAttribute(Namespace="http://tempuri.org/")]
         public string ApplicationKey;
@@ -46,12 +48,13 @@ namespace ICSharpCode.UsageDataCollector.ServiceReference {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    internal interface IUDCUploadServiceChannel : ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService, System.ServiceModel.IClientChannel {
+    public interface IUDCUploadServiceChannel : ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    internal partial class UDCUploadServiceClient : System.ServiceModel.ClientBase<ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService>, ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService {
+    public partial class UDCUploadServiceClient : System.ServiceModel.ClientBase<ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService>, ICSharpCode.UsageDataCollector.ServiceReference.IUDCUploadService
+    {
         
         private BeginOperationDelegate onBeginUploadUsageDataDelegate;
         
