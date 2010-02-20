@@ -48,9 +48,6 @@
     <Reference Include="IronRuby.Libraries">
       <HintPath>..\..\IronRuby\bin\IronRuby.Libraries.dll</HintPath>
     </Reference>
-    <Reference Include="IronRuby.Libraries.Yaml">
-      <HintPath>..\..\IronRuby\bin\IronRuby.Libraries.Yaml.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Dynamic">
@@ -59,16 +56,8 @@
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Scripting.Core">
-      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Scripting.Debugging">
-      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Debugging.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
