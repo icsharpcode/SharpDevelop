@@ -54,9 +54,29 @@ namespace ICSharpCode.PythonBinding
 			get { return callingClass; }
 		}
 		
-		public bool NamespaceExists(string name)
+		public bool NamespaceExistsInProjectReferences(string name)
 		{
 			return projectContent.NamespaceExists(name);
+		}
+		
+		public bool PartialNamespaceExistsInProjectReferences(string name)
+		{
+			foreach (IProjectContent referencedContent in projectContent.ReferencedContents) {
+				if (PartialNamespaceExists(referencedContent, name)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		bool PartialNamespaceExists(IProjectContent projectContent, string name)
+		{
+			foreach (string namespaceReference in projectContent.NamespaceNames) {
+				if (namespaceReference.StartsWith(name)) {
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		/// <summary>
@@ -158,7 +178,7 @@ namespace ICSharpCode.PythonBinding
 		/// <param name="name">The unqualified class name.</param>
 		public IClass GetImportedClass(string name)
 		{
-			foreach (Object obj in GetImportedTypes()) {
+			foreach (object obj in GetImportedTypes()) {
 				IClass c = obj as IClass;
 				if ((c != null) && IsSameClassName(name, c.Name)) {
 					return c;
@@ -237,6 +257,52 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return modules.ToArray();
+		}
+		
+		public bool IsStartOfDottedModuleNameImported(string fullDottedModuleName)
+		{
+			return FindStartOfDottedModuleNameInImports(fullDottedModuleName) != null;
+		}
+		
+		public string FindStartOfDottedModuleNameInImports(string fullDottedModuleName)
+		{
+			MemberName memberName = new MemberName(fullDottedModuleName);
+			while (memberName.HasName) {
+				string partialNamespace = memberName.Type;
+				if (HasImport(partialNamespace)) {
+					return partialNamespace;
+				}
+				memberName = new MemberName(partialNamespace);
+			}
+			return null;
+		}
+		
+		public string UnaliasStartOfDottedImportedModuleName(string fullDottedModuleName)
+		{
+			string startOfModuleName = FindStartOfDottedModuleNameInImports(fullDottedModuleName);
+			if (startOfModuleName != null) {
+				return UnaliasStartOfDottedImportedModuleName(startOfModuleName, fullDottedModuleName);
+			}
+			return fullDottedModuleName;
+		}
+		
+		string UnaliasStartOfDottedImportedModuleName(string startOfModuleName, string fullModuleName)
+		{
+			string unaliasedStartOfModuleName = UnaliasImportedModuleName(startOfModuleName);
+			return unaliasedStartOfModuleName + fullModuleName.Substring(startOfModuleName.Length);
+		}
+		
+		public bool HasDottedImportNameThatStartsWith(string importName)
+		{
+			string dottedImportNameStartsWith = importName + ".";
+			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+				foreach (string ns in u.Usings) {
+					if (ns.StartsWith(dottedImportNameStartsWith)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 }

@@ -32,6 +32,7 @@ namespace PythonBinding.Tests.Utils
 		object project;
 		Dictionary<string, List<ICompletionEntry>> namespaceContents = new Dictionary<string, List<ICompletionEntry>>();
 		LanguageProperties language = LanguageProperties.CSharp;
+		List<IProjectContent> referencedContents = new List<IProjectContent>();
 		
 		public MockProjectContent()
 		{
@@ -143,14 +144,16 @@ namespace PythonBinding.Tests.Utils
 		
 		public ICollection<string> NamespaceNames {
 			get {
-				throw new NotImplementedException();
+				List<string> names = new List<string>();
+				foreach (string existingNamespace in namespaceContents.Keys) {
+					names.Add(existingNamespace);
+				}
+				return names;
 			}
 		}
 		
 		public ICollection<IProjectContent> ReferencedContents {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return this.referencedContents; }
 		}
 		
 		public IUsing DefaultImports {

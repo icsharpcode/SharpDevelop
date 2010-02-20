@@ -48,14 +48,22 @@ namespace PythonBinding.Tests.Designer
 		}
 		
 		/// <summary>
-		/// Check that the PythonFormWalker does not try to walk the class body if it is null.
+		/// Check that the PythonComponentWalker does not try to walk the class body if it is null.
+		/// IronPython 2.6.1 now throws an ArgumentNullException if null is passed for the 
+		/// class body.
 		/// </summary>
 		[Test]
-		public void ClassWithNoBody()
+		public void ClassWithNoBodyCannotBeCreated()
+		{
+			ArgumentNullException ex = 
+				Assert.Throws<ArgumentNullException>(delegate { CreateClassWithNullBody(); });
+			
+			Assert.AreEqual("body", ex.ParamName);
+		}
+		
+		void CreateClassWithNullBody()
 		{
 			ClassDefinition classDef = new ClassDefinition("classWithNoBody", null, null);
-			PythonComponentWalker walker = new PythonComponentWalker(this);
-			walker.Walk(classDef);
 		}
 		
 		/// <summary>

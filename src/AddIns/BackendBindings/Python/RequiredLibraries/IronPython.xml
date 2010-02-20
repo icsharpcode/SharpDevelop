@@ -4,100 +4,18 @@
         <name>IronPython</name>
     </assembly>
     <members>
+        <member name="M:IronPython.Compiler.Ast.Node.AddFrame(Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.Expression)">
+            <summary>
+            Creates a method frame for tracking purposes and enforces recursion
+            </summary>
+        </member>
         <member name="P:IronPython.Compiler.Ast.Node.CanThrow">
             <summary>
             Returns true if the node can throw, false otherwise.  Used to determine
             whether or not we need to update the current dynamic stack info.
             </summary>
         </member>
-        <member name="T:IronPython.Compiler.Ast.ArrayGlobalAllocator">
-            <summary>
-            A global allocator that puts all of the globals into an array access.  The array is an
-            array of PythonGlobal objects.  We then just close over the array for any inner functions.
-            
-            Once compiled a RuntimeScriptCode is produced which is closed over the entire execution
-            environment.
-            </summary>
-        </member>
-        <member name="T:IronPython.Compiler.Ast.GlobalAllocator">
-            <summary>
-            Provides specific behaviors for different compilation modes.  For example pre-compiled
-            code, optimized code, collectible code all have different code gen properties.  For
-            the most part these are how we access globals and call sites  and cache static fields.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.GlobalAllocator.PrepareScope(IronPython.Compiler.Ast.AstGenerator)">
-            <summary>
-            Generates any preparation code for a new class def or function def scope.
-            </summary>
-        </member>
-        <member name="T:IronPython.Compiler.Ast.ArrayGlobalAllocator.GlobalArrayConstant">
-            <summary>
-            Provides a wrapper expression for our PythonGlobal array of global variables.
-            
-            This always reduces to a PythonGlobal[] but we update it at the very end of the
-            compilation process.  This enables us to create nodes which refer to this
-            array and burn them in as constants even before the array has been created.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.AstGenerator.#ctor(System.String,System.Boolean,System.String,System.Boolean)">
-            <summary>
-            Provides common initialization between top-level and class/function definition ast generators.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.AstGenerator.#ctor(IronPython.Compiler.Ast.AstGenerator,System.String,System.Boolean,System.String)">
-            <summary>
-            Creates a new AstGenerator for a class or function definition.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.AstGenerator.#ctor(IronPython.Compiler.CompilationMode,Microsoft.Scripting.Runtime.CompilerContext,Microsoft.Scripting.SourceSpan,System.String,System.Boolean,System.Boolean)">
-            <summary>
-            Creates a new AstGenerator for top-level (module) code.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.AstGenerator.WrapScopeStatements(Microsoft.Scripting.Ast.Expression)">
-            <summary>
-            Wraps the body of a statement which should result in a frame being available during
-            exception handling.  This ensures the line number is updated as the stack is unwound.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.AstGenerator.GetUpdateTrackbackExpression">
-            <summary>
-            Gets the expression for updating the dynamic stack trace at runtime when an
-            exception is thrown.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.AstGenerator.GetSaveLineNumberExpression(System.Boolean)">
-            <summary>
-            Gets the expression for the actual updating of the line number for stack traces to be available
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.AstGenerator.GetHelperMethod(System.String)">
-            <summary>
-            Returns MethodInfo of the Python helper method given its name.
-            </summary>
-            <param name="name">Method name to find.</param>
-            <returns></returns>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.AstGenerator.GetHelperMethod(System.String,System.Type[])">
-            <summary>
-            Returns MethodInfo of the Python helper method given its name and signature.
-            </summary>
-            <param name="name">Name of the method to return</param>
-            <param name="types">Parameter types</param>
-            <returns></returns>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.AstGenerator.AddFrame(Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.Expression)">
-            <summary>
-            Creates a method frame for tracking purposes and enforces recursion
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.Ast.AstGenerator.LineNumberExpression">
-            <summary>
-            A temporary variable to track the current line number
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.Ast.AstGenerator.LineNumberUpdated">
+        <member name="P:IronPython.Compiler.Ast.Node.LineNumberUpdated">
             <summary>
             A temporary variable to track if the current line number has been emitted via the fault update block.
             
@@ -115,16 +33,92 @@
             We also sometimes directly check _lineNoUpdated to avoid creating this unless we have nested exceptions.
             </summary>
         </member>
-        <member name="T:IronPython.Compiler.Ast.AstGenerator.DelayedProfiling">
+        <member name="P:IronPython.Compiler.Ast.Node.LineNumberExpression">
             <summary>
-            Reducible node so that re-writing for profiling does not occur until
-            after the script code has been completed and is ready to be compiled.
-            
-            Without this extra node profiling would force reduction of the node
-            and we wouldn't have setup our constant access correctly yet.
+            A temporary variable to track the current line number
             </summary>
         </member>
-        <member name="T:IronPython.Compiler.Ast.AstGenerator.DelayedFunctionCode">
+        <member name="T:IronPython.Compiler.Ast.SerializedScopeStatement">
+            <summary>
+            Fake ScopeStatement for FunctionCode's to hold on to after we have deserialized pre-compiled code.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.ScopeStatement.GetOrMakeFunctionCode">
+            <summary>
+            Gets or creates the FunctionCode object for this FunctionDefinition.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.ScopeStatement.GetUpdateTrackbackExpression">
+            <summary>
+            Gets the expression for updating the dynamic stack trace at runtime when an
+            exception is thrown.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.ScopeStatement.GetSaveLineNumberExpression(System.Boolean)">
+            <summary>
+            Gets the expression for the actual updating of the line number for stack traces to be available
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.ScopeStatement.WrapScopeStatements(Microsoft.Scripting.Ast.Expression,System.Boolean)">
+            <summary>
+            Wraps the body of a statement which should result in a frame being available during
+            exception handling.  This ensures the line number is updated as the stack is unwound.
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.ScopeStatement.LocalParentTuple">
+            <summary>
+            The variable used to hold out parents closure tuple in our local scope.
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.ScopeStatement.LocalContext">
+            <summary>
+            Gets the expression associated with the local CodeContext.  If the function
+            doesn't have a local CodeContext then this is the global context.
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.ScopeStatement.IsClosure">
+            <summary>
+            True if this scope accesses a variable from an outer scope.
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.ScopeStatement.ContainsNestedFreeVariables">
+            <summary>
+            True if an inner scope is accessing a variable defined in this scope.
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.ScopeStatement.NeedsLocalsDictionary">
+            <summary>
+            True if we are forcing the creation of a dictionary for storing locals.
+            
+            This occurs for calls to locals(), dir(), vars(), unqualified exec, and
+            from ... import *.
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.ScopeStatement.HasLateBoundVariableSets">
+            <summary>
+            True if variables can be set in a late bound fashion that we don't
+            know about at code gen time - for example via from foo import *.
+            
+            This is tracked independently of the ContainsUnqualifiedExec/NeedsLocalsDictionary
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.ScopeStatement.FreeVariables">
+            <summary>
+            Variables that are bound in an outer scope - but not a global scope
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.ScopeStatement.GlobalVariables">
+            <summary>
+            Variables that are bound to the global scope
+            </summary>
+        </member>
+        <member name="P:IronPython.Compiler.Ast.ScopeStatement.CellVariables">
+            <summary>
+            Variables that are referred to from a nested scope and need to be
+            promoted to cells.
+            </summary>
+        </member>
+        <member name="T:IronPython.Compiler.Ast.ScopeStatement.DelayedFunctionCode">
             <summary>
             Provides a place holder for the expression which represents
             a FunctionCode.  For functions/classes this gets updated after
@@ -133,7 +127,54 @@
             immediately have the value because it always comes in as a parameter.
             </summary>
         </member>
-        <member name="T:IronPython.Compiler.Ast.SharedGlobalAllocator">
+        <member name="T:IronPython.Compiler.Ast.ScopeStatement.DelayedProfiling">
+            <summary>
+            Reducible node so that re-writing for profiling does not occur until
+            after the script code has been completed and is ready to be compiled.
+            
+            Without this extra node profiling would force reduction of the node
+            and we wouldn't have setup our constant access correctly yet.
+            </summary>
+        </member>
+        <member name="T:IronPython.Compiler.Ast.CollectableCompilationMode">
+            <summary>
+            A global allocator that puts all of the globals into an array access.  The array is an
+            array of PythonGlobal objects.  We then just close over the array for any inner functions.
+            
+            Once compiled a RuntimeScriptCode is produced which is closed over the entire execution
+            environment.
+            </summary>
+        </member>
+        <member name="T:IronPython.Compiler.CompilationMode">
+            <summary>
+            Specifies the compilation mode which will be used during the AST transformation
+            </summary>
+        </member>
+        <member name="F:IronPython.Compiler.CompilationMode.ToDisk">
+            <summary>
+            Compilation will proceed in a manner in which the resulting AST can be serialized to disk.
+            </summary>
+        </member>
+        <member name="F:IronPython.Compiler.CompilationMode.Uncollectable">
+            <summary>
+            Compilation will use a type and declare static fields for globals.  The resulting type
+            is uncollectible and therefore extended use of this will cause memory leaks.
+            </summary>
+        </member>
+        <member name="F:IronPython.Compiler.CompilationMode.Collectable">
+            <summary>
+            Compilation will use an array for globals.  The resulting code will be fully collectible
+            and once all references are released will be collected.
+            </summary>
+        </member>
+        <member name="F:IronPython.Compiler.CompilationMode.Lookup">
+            <summary>
+            Compilation will force all global accesses to do a full lookup.  This will also happen for
+            any unbound local references.  This is the slowest form of code generation and is only
+            used for exec/eval code where we can run against an arbitrary dictionary.
+            </summary>
+        </member>
+        <member name="T:IronPython.Compiler.Ast.UncollectableCompilationMode">
             <summary>
             Implements globals which are backed by a static type, followed by an array if the static types' slots become full.  The global
             variables are stored in static fields on a type for fast access.  The type also includes fields for constants and call sites
@@ -164,6 +205,15 @@
         <member name="M:IronPython.Compiler.Ast.SiteStorage`1.SiteStorageType(System.Int32)">
             <summary>Ensures the underlying array is long enough to accomodate the given index</summary>
             <returns>The site storage type corresponding to the given index</returns>
+        </member>
+        <member name="T:IronPython.DictionaryTypeInfoAttribute">
+            <summary>
+            Provides more specific type information for Python dictionaries which are not strongly typed.
+            
+            This attribute can be applied to fields, parameters, proeprties, and return values.  It can be
+            inspected to get type information about the types of the keys and values of the expected 
+            dictionary or the returned dictionary.
+            </summary>
         </member>
         <member name="T:IronPython.Runtime.DictionaryStorage">
             <summary>
@@ -232,7 +282,7 @@
             Attempts to lookup the provided name in this scope or any outer scope.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.CodeContext.TryLookupGlobal(System.String,System.Object@)">
+        <member name="M:IronPython.Runtime.CodeContext.TryLookupBuiltin(System.String,System.Object@)">
             <summary>
             Looks up a global variable.  If the variable is not defined in the
             global scope then built-ins is consulted.
@@ -487,60 +537,10 @@
             Gets the PythonVariable for which this closure expression was created.
             </summary>
         </member>
-        <member name="T:IronPython.Compiler.ClosureInfo">
-            <summary>
-            Tracking for variables lifted into closure objects. 
-            
-            The primary purpose of ClosureInfo is to ensure that a parent scope
-            has created the variables for a child scope.  There are two cases where we need
-            to do this:
-                1. The parent scope defines the variable.  In this case we use a DefinitionClosureInfo
-                   and it will create the new ClosureCell.
-                2. There are 3 or more scopes.  The outer most scope defines a variable and the inner most
-                   scope refers to it.  But there is an interleaving scope which does not refer to the variable
-                   but needs to pass it down.  In this case we have a ReferenceClosureInfo which pulls the closure
-                   cell from the defintion (or previous reference) scope and puts it into it's own tuple.
-            </summary>
-        </member>
-        <member name="T:IronPython.Compiler.DefinitionClosureInfo">
-            <summary>
-            The ClosureInfo used when a variable is defined in the current scope and referenced
-            from a child scope.
-            </summary>
-        </member>
         <member name="T:IronPython.Compiler.ReferenceClosureInfo">
             <summary>
-            The variable info used when a variable is defined in a parent scope and referenced
-            in a child scope but not referenced in this scope.
-            </summary>
-        </member>
-        <member name="T:IronPython.Compiler.CompilationMode">
-            <summary>
-            Specifies the compilation mode which will be used during the AST transformation
-            </summary>
-        </member>
-        <member name="F:IronPython.Compiler.CompilationMode.ToDisk">
-            <summary>
-            Compilation will proceed in a manner in which the resulting AST can be serialized to disk.
-            </summary>
-        </member>
-        <member name="F:IronPython.Compiler.CompilationMode.Uncollectable">
-            <summary>
-            Compilation will use a type and declare static fields for globals.  The resulting type
-            is uncollectible and therefore extended use of this will cause memory leaks.
-            </summary>
-        </member>
-        <member name="F:IronPython.Compiler.CompilationMode.Collectable">
-            <summary>
-            Compilation will use an array for globals.  The resulting code will be fully collectible
-            and once all references are released will be collected.
-            </summary>
-        </member>
-        <member name="F:IronPython.Compiler.CompilationMode.Lookup">
-            <summary>
-            Compilation will force all global accesses to do a full lookup.  This will also happen for
-            any unbound local references.  This is the slowest form of code generation and is only
-            used for exec/eval code where we can run against an arbitrary dictionary.
+            Tracking for variables lifted into closure objects. Used to store information in a function
+            about the outer variables it accesses.
             </summary>
         </member>
         <member name="T:IronPython.Compiler.GeneratorRewriter">
@@ -607,6 +607,15 @@
             <summary>
             Marks a type so that IronPython will not expose the IEnumerable interface out as
             __contains__
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.SequenceTypeInfoAttribute">
+            <summary>
+            Provides more specific type information for Python lists which are not strongly typed.
+            
+            This attribute can be applied to fields, parameters, proeprties, and return values.  It can be
+            inspected to get type information about the types of the values of the expected 
+            list or the returned list.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.ModuleContext">
@@ -842,59 +851,7 @@
             part of its exclusive time.
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.Ast.ScopeStatement.CreateLocalVariables(IronPython.Compiler.Ast.AstGenerator,System.Collections.Generic.List{Microsoft.Scripting.Ast.Expression},System.Boolean)">
-            <summary>
-            Creates variables which are defined in this scope.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.ScopeStatement.CreateReferencedVariables(IronPython.Compiler.Ast.AstGenerator,System.Collections.Generic.List{Microsoft.Scripting.Ast.Expression},System.Boolean,System.Boolean)">
-            <summary>
-            Creates variables which are defined in a parent scope and accessed in this scope.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.ScopeStatement.CreateChildReferencedVariables(IronPython.Compiler.Ast.AstGenerator,Microsoft.Scripting.Ast.Expression,System.Collections.Generic.List{Microsoft.Scripting.Ast.Expression})">
-            <summary>
-            Creates variables which are defined in a parent scope and used by a child scope.
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.Ast.ScopeStatement.ContainsNestedFreeVariables">
-            <summary>
-            True if an inner scope is accessing a variable defined in this scope.
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.Ast.ScopeStatement.NeedsLocalsDictionary">
-            <summary>
-            True if we are forcing the creation of a dictionary for storing locals.
-            
-            This occurs for calls to locals(), dir(), vars(), unqualified exec, and
-            from ... import *.
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.Ast.ScopeStatement.HasLateBoundVariableSets">
-            <summary>
-            True if variables can be set in a late bound fashion that we don't
-            know about at code gen time - for example via from foo import *.
-            
-            This is tracked independently of the ContainsUnqualifiedExec/NeedsLocalsDictionary
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.Ast.ScopeStatement.FreeVariables">
-            <summary>
-            Variables that are bound in an outer scope - but not a global scope
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.Ast.ScopeStatement.GlobalVariables">
-            <summary>
-            Variables that are bound to the global scope
-            </summary>
-        </member>
-        <member name="P:IronPython.Compiler.Ast.ScopeStatement.CellVariables">
-            <summary>
-            Variables that are referred to from a nested scope and need to be
-            promoted to cells.
-            </summary>
-        </member>
-        <member name="M:IronPython.Compiler.Ast.ClassDefinition.GetClosureTuple">
+        <member name="M:IronPython.Compiler.Ast.ClassDefinition.GetParentClosureTuple">
             <summary>
             Gets the closure tuple from our parent context.
             </summary>
@@ -909,9 +866,29 @@
             PythonWalkerNonRecursive class - The Python AST Walker (default result is false)
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.Ast.FunctionDefinition.GetClosureTuple">
+        <member name="M:IronPython.Compiler.Ast.FunctionDefinition.GetParentClosureTuple">
             <summary>
             Pulls the closure tuple from our function/generator which is flowed into each function call.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.FunctionDefinition.MakeFunctionExpression">
+            <summary>
+            Returns an expression which creates the function object.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.FunctionDefinition.EnsureFunctionLambda">
+            <summary>
+            Creates the LambdaExpression which is the actual function body.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.FunctionDefinition.CreateFunctionLambda">
+            <summary>
+            Creates the LambdaExpression which implements the body of the function.
+            
+            The functions signature is either "object Function(PythonFunction, ...)"
+            where there is one object parameter for each user defined parameter or
+            object Function(PythonFunction, object[]) for functions which take more
+            than PythonCallTargets.MaxArgs arguments.
             </summary>
         </member>
         <member name="M:IronPython.Compiler.Ast.FunctionDefinition.GetDelegateType(IronPython.Compiler.Ast.Parameter[],System.Boolean,System.Delegate@)">
@@ -919,12 +896,7 @@
             Determines delegate type for the Python function
             </summary>
         </member>
-        <member name="P:IronPython.Compiler.Ast.FunctionDefinition.IsClosure">
-            <summary>
-            True if this scope accesses a variable from an outer scope.
-            </summary>
-        </member>
-        <member name="T:IronPython.Compiler.Ast.DictionaryGlobalAllocator">
+        <member name="T:IronPython.Compiler.Ast.LookupCompilationMode">
             <summary>
             Provides globals for when we need to lookup into a dictionary for each global access.
             
@@ -960,6 +932,44 @@
             Parameter name
             </summary>
         </member>
+        <member name="T:IronPython.Compiler.Ast.PythonAst">
+            <summary>
+            Top-level ast for all Python code.  Typically represents a module but could also
+            be exec or eval code.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.PythonAst.Bind">
+            <summary>
+            Binds an AST and makes it capable of being reduced and compiled.  Before calling Bind an AST cannot successfully
+            be reduced.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.PythonAst.EnsureGlobalVariable(System.String)">
+            <summary>
+            Creates a variable at the global level.  Called for known globals (e.g. __name__),
+            for variables explicitly declared global by the user, and names accessed
+            but not defined in the lexical scope.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.PythonAst.Reduce">
+            <summary>
+            Reduces the PythonAst to a LambdaExpression of type Type.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.PythonAst.ToScriptCode">
+            <summary>
+            Returns a ScriptCode object for this PythonAst.  The ScriptCode object
+            can then be used to execute the code against it's closed over scope or
+            to execute it against a different scope.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.PythonAst.MakeLookupCode">
+            <summary>
+            Rewrites the tree for performing lookups against globals instead of being bound
+            against the optimized scope.  This is used if the user compiles optimied code and then
+            runs it against a different scope.
+            </summary>
+        </member>
         <member name="P:IronPython.Compiler.Ast.PythonAst.TrueDivision">
             <summary>
             True division is enabled in this AST.
@@ -973,6 +983,12 @@
         <member name="P:IronPython.Compiler.Ast.PythonAst.AbsoluteImports">
             <summary>
             True if absolute imports are enabled
+            </summary>
+        </member>
+        <member name="T:IronPython.Compiler.Ast.PythonReference">
+            <summary>
+            Represents a reference to a name.  A PythonReference is created for each name
+            referred to in a scope (global, class, or function).  
             </summary>
         </member>
         <member name="P:IronPython.Compiler.Ast.SliceExpression.StepProvided">
@@ -1001,15 +1017,14 @@
             The body of the optional finally associated with this try. NULL if there is no finally block.
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.Ast.TryStatement.TransformHandlers(IronPython.Compiler.Ast.AstGenerator,Microsoft.Scripting.Ast.ParameterExpression@)">
+        <member name="M:IronPython.Compiler.Ast.TryStatement.TransformHandlers(Microsoft.Scripting.Ast.ParameterExpression)">
             <summary>
             Transform multiple python except handlers for a try block into a single catch body.
             </summary>
-            <param name="ag"></param>
-            <param name="variable">The variable for the exception in the catch block.</param>
+            <param name="exception">The variable for the exception in the catch block.</param>
             <returns>Null if there are no except handlers. Else the statement to go inside the catch handler</returns>
         </member>
-        <member name="M:IronPython.Compiler.Ast.TryStatement.GetTracebackHeader(IronPython.Compiler.Ast.AstGenerator,Microsoft.Scripting.Ast.ParameterExpression,Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Compiler.Ast.TryStatement.GetTracebackHeader(IronPython.Compiler.Ast.Statement,Microsoft.Scripting.Ast.ParameterExpression,Microsoft.Scripting.Ast.Expression)">
             <summary>
             Surrounds the body of an except block w/ the appropriate code for maintaining the traceback.
             </summary>
@@ -1031,16 +1046,6 @@
             Local variables can be referenced from nested lambdas
             </summary>
         </member>
-        <member name="F:IronPython.Compiler.Ast.VariableKind.GlobalLocal">
-            <summary>
-            Variables that weren't assigned within the using scope and were hoisted to the global scope.
-            </summary>
-        </member>
-        <member name="F:IronPython.Compiler.Ast.VariableKind.HiddenLocal">
-            <summary>
-            Variables that weren't assigned within the scope that contains unqualified exec, eval, locals().
-            </summary>
-        </member>
         <member name="F:IronPython.Compiler.Ast.VariableKind.Parameter">
             <summary>
             Parameter to a LambdaExpression
@@ -1055,7 +1060,7 @@
             Should only appear in global (top level) lambda.
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.Ast.WithStatement.Transform(IronPython.Compiler.Ast.AstGenerator)">
+        <member name="M:IronPython.Compiler.Ast.WithStatement.Reduce">
             <summary>
             WithStatement is translated to the DLR AST equivalent to
             the following Python code snippet (from with statement spec):
@@ -1083,6 +1088,11 @@
         <member name="T:IronPython.Compiler.OnDiskScriptCode">
             <summary>
             A ScriptCode which has been loaded from an assembly which is saved on disk.
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.OnDiskScriptCode.MakeAstFromSourceUnit(Microsoft.Scripting.SourceUnit)">
+            <summary>
+            Creates a fake PythonAst object which is represenative of the on-disk script code.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.Binding.FastGetBase">
@@ -1292,7 +1302,7 @@
             Makes the comparison rule which returns an int (-1, 0, 1).  TODO: Better name?
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.PythonProtocol.MakeIndexerOperation(System.Dynamic.DynamicMetaObjectBinder,IronPython.Runtime.Binding.PythonIndexType,System.Dynamic.DynamicMetaObject[])">
+        <member name="M:IronPython.Runtime.Binding.PythonProtocol.MakeIndexerOperation(System.Dynamic.DynamicMetaObjectBinder,IronPython.Runtime.Binding.PythonIndexType,System.Dynamic.DynamicMetaObject[],System.Dynamic.DynamicMetaObject)">
             <summary>
             Python has three protocols for slicing:
                Simple Slicing x[i:j]
@@ -1695,18 +1705,18 @@
             Returns the ones complement of the instance.
             </summary>
         </member>
-        <member name="F:IronPython.Runtime.Binding.PythonOperationKind.Not">
+        <member name="F:IronPython.Runtime.Binding.PythonOperationKind.IsFalse">
             <summary>
             Unary operator.
             
             Boolean negation
             </summary>
         </member>
-        <member name="F:IronPython.Runtime.Binding.PythonOperationKind.NotRetObject">
+        <member name="F:IronPython.Runtime.Binding.PythonOperationKind.Not">
             <summary>
             Unary operator.
             
-            Boolean negation
+            Negation, returns object
             </summary>
         </member>
         <member name="F:IronPython.Runtime.Binding.PythonOperationKind.GetEnumeratorForIteration">
@@ -2429,6 +2439,162 @@
             as well. (2.6 only)
             </summary>
         </member>
+        <member name="F:IronPython.Runtime.PythonContext.NewObject">
+            <summary> stored for copy_reg module, used for reduce protocol </summary>
+        </member>
+        <member name="F:IronPython.Runtime.PythonContext.PythonReconstructor">
+            <summary> stored for copy_reg module, used for reduce protocol </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.#ctor(Microsoft.Scripting.Runtime.ScriptDomainManager,System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Creates a new PythonContext not bound to Engine.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.HasModuleState(System.Object)">
+            <summary>
+            Checks to see if module state has the current value stored already.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.GetModuleState(System.Object)">
+            <summary>
+            Gets per-runtime state used by a module.  The module should have a unique key for
+            each piece of state it needs to store.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.SetModuleState(System.Object,System.Object)">
+            <summary>
+            Sets per-runtime state used by a module.  The module should have a unique key for
+            each piece of state it needs to store.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.GetSetModuleState(System.Object,System.Object)">
+            <summary>
+            Sets per-runtime state used by a module and returns the previous value.  The module
+            should have a unique key for each piece of state it needs to store.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.GetOrCreateModuleState``1(System.Object,Microsoft.Scripting.Utils.Func{``0})">
+            <summary>
+            Sets per-runtime state used by a module and returns the previous value.  The module
+            should have a unique key for each piece of state it needs to store.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.InitializeSystemState">
+            <summary>
+            Initializes the sys module on startup.  Called both to load and reload sys
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.ReadOneLine(System.IO.StreamReader,System.Int32@)">
+            <summary>
+            Reads one line keeping track of the # of bytes read
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.HookAssemblyResolve">
+            <summary>
+            We use Assembly.LoadFile to load assemblies from a path specified by the script (in LoadAssemblyFromFileWithPath).
+            However, when the CLR loader tries to resolve any of assembly references, it will not be able to
+            find the dependencies, unless we can hook into the CLR loader.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.GetPythonService(Microsoft.Scripting.Hosting.ScriptEngine)">
+            <summary>
+            Returns (and creates if necessary) the PythonService that is associated with this PythonContext.
+            
+            The PythonService is used for providing remoted convenience helpers for the DLR hosting APIs.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.GetMemberNames(System.Object)">
+            <summary>
+            Gets the member names associated with the object
+            TODO: Move "GetMemberNames" functionality into MetaObject implementations
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.GetGenericSiteStorage``1">
+            <summary>
+            Gets a SiteLocalStorage when no call site is available.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.Operation(IronPython.Runtime.Binding.PythonOperationKind,System.Object,System.Object)">
+            <summary>
+            Invokes the specified operation on the provided arguments and returns the new resulting value.
+            
+            operation is usually a value from StandardOperators (standard CLR/DLR operator) or 
+            OperatorStrings (a Python specific operator)
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.GetComparer(System.Object,System.Type)">
+            <summary>
+            Gets a function which can be used for comparing two values.  If cmp is not null
+            then the comparison will use the provided comparison function.  Otherwise
+            it will use the normal Python semantics.
+            
+            If type is null then a generic comparison function is returned.  If type is 
+            not null a comparison function is returned that's used for just that type.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.Collect(System.Int32)">
+            <summary>
+            Performs a GC collection including the possibility of freeing weak data structures held onto by the Python runtime.
+            </summary>
+            <param name="generation"></param>
+        </member>
+        <member name="M:IronPython.Runtime.PythonContext.GetPythonContext(System.Dynamic.DynamicMetaObjectBinder)">
+            <summary>
+            Gets a PythonContext given a DynamicMetaObjectBinder.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.RecursionLimit">
+            <summary>
+            Gets or sets the maximum depth of function calls.  Equivalent to sys.getrecursionlimit
+            and sys.setrecursionlimit.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.DefaultEncoding">
+            <summary>
+            Gets or sets the default encoding for this system state / engine.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.BuiltinModules">
+            <summary>
+            Dictionary from name to type of all known built-in module names.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.BuiltinModuleNames">
+            <summary>
+            Dictionary from type to name of all built-in modules.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.BuiltinModuleInstance">
+            <summary>
+            TODO: Remove me, or stop caching built-ins.  This is broken if the user changes __builtin__
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.ErrorHandlers">
+            <summary> Dictionary of error handlers for string codecs. </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.SearchFunctions">
+            <summary> Table of functions used for looking for additional codecs. </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.SharedContext">
+            <summary>
+            Returns a shared code context for the current PythonContext.  This shared
+            context can be used for performing general operations which usually
+            require a CodeContext.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.SharedOverloadResolverFactory">
+            <summary>
+            Returns an overload resolver for the current PythonContext.  The overload
+            resolver will flow the shared context through as it's CodeContext.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonContext.SharedClsContext">
+            <summary>
+            Returns a shared code context for the current PythonContext.  This shared
+            context can be used for doing lookups which need to occur as if they
+            happened in a module which has done "import clr".
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.PythonDynamicStackFrame">
             <summary>
             A DynamicStackFrame which has Python specific data.  Currently this
@@ -2524,6 +2690,11 @@
                 80000000 - unused
                 
             Enforce recursion is added at runtime.
+            </summary>
+        </member>
+        <member name="P:IronPython.Runtime.PythonFunction.Context">
+            <summary>
+            The parent CodeContext in which this function was declared.
             </summary>
         </member>
         <member name="P:IronPython.Runtime.PythonFunction.FunctionCompatibility">
@@ -3059,11 +3230,6 @@
             If this value is null then no indentation level is specified.
             </summary>
         </member>
-        <member name="T:IronPython.Compiler.Parser">
-            <summary>
-            Summary description for Parser.
-            </summary>
-        </member>
         <member name="F:IronPython.Compiler.Parser._languageFeatures">
             <summary>
             Language features initialized on parser construction and possibly updated during parsing. 
@@ -3372,6 +3538,29 @@
             
             The LanguageSetup object can be used with other LanguageSetup objects from other languages to
             configure a ScriptRuntimeSetup object.
+            </summary>
+        </member>
+        <member name="M:IronPython.Hosting.Python.CreateModule(Microsoft.Scripting.Hosting.ScriptEngine,System.String)">
+            <summary>
+            Creates a new PythonModule with the specified name and published it in sys.modules.  
+            
+            Returns the ScriptScope associated with the module.
+            </summary>
+        </member>
+        <member name="M:IronPython.Hosting.Python.CreateModule(Microsoft.Scripting.Hosting.ScriptEngine,System.String,System.String)">
+            <summary>
+            Creates a new PythonModule with the specified name and filename published it 
+            in sys.modules.  
+            
+            Returns the ScriptScope associated with the module.
+            </summary>
+        </member>
+        <member name="M:IronPython.Hosting.Python.CreateModule(Microsoft.Scripting.Hosting.ScriptEngine,System.String,System.String,System.String)">
+            <summary>
+            Creates a new PythonModule with the specified name, filename, and doc string and 
+            published it in sys.modules.  
+            
+            Returns the ScriptScope associated with the module.
             </summary>
         </member>
         <member name="T:IronPython.Resources">
@@ -4423,7 +4612,7 @@
             so that we don't race against sys.settrace/sys.setprofile.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.FunctionCode.#ctor(IronPython.Runtime.PythonContext,System.Delegate,System.String,System.String,System.String[],IronPython.Runtime.FunctionAttributes,Microsoft.Scripting.SourceSpan,System.String,System.String[],System.String[],System.String[],System.String[],System.Int32)">
+        <member name="M:IronPython.Runtime.FunctionCode.#ctor(IronPython.Runtime.PythonContext,System.Delegate,IronPython.Compiler.Ast.ScopeStatement,System.String,System.Int32)">
             <summary>
             Constructor used to create a FunctionCode for code that's been serialized to disk.  
             
@@ -4432,7 +4621,7 @@
             Function codes created this way do support recursion enforcement and are therefore registered in the global function code registry.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.FunctionCode.#ctor(IronPython.Runtime.PythonContext,System.Delegate,Microsoft.Scripting.Ast.LambdaExpression,System.String,System.String,System.String[],IronPython.Runtime.FunctionAttributes,Microsoft.Scripting.SourceSpan,System.String,System.Boolean,System.Boolean,System.Collections.Generic.IList{System.String},System.Collections.Generic.IList{System.String},System.Collections.Generic.IList{System.String},System.Collections.Generic.IList{System.String},System.Int32,System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.Dictionary{System.Int32,System.Boolean}},System.Collections.Generic.Dictionary{System.Int32,System.Boolean})">
+        <member name="M:IronPython.Runtime.FunctionCode.#ctor(IronPython.Runtime.PythonContext,System.Delegate,IronPython.Compiler.Ast.ScopeStatement,System.String)">
             <summary>
             Constructor to create a FunctionCode at runtime.
             
@@ -4707,6 +4896,14 @@
             True iff the thread is currently inside the generator (ie, invoking the _next delegate).
             This can be used to enforce that a generator does not call back into itself. 
             Pep255 says that a generator should throw a ValueError if called reentrantly.
+            </summary>
+        </member>
+        <member name="F:IronPython.Runtime.PythonGenerator._LastFinalizer">
+            <summary>
+            We cache the GeneratorFinalizer of generators that were closed on the user
+            thread, and did not get finalized on the finalizer thread. We can then reuse
+            the object. Reusing objects with a finalizer is good because it reduces
+            the load on the GC's finalizer queue.
             </summary>
         </member>
         <member name="F:IronPython.Runtime.PythonGenerator._excInfo">
@@ -5530,6 +5727,50 @@
             defined in the CLS System.String type.
             </summary>
         </member>
+        <member name="M:IronPython.Runtime.Operations.StringOps.capitalize(System.String)">
+            <summary>
+            Returns a copy of this string converted to uppercase
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Operations.StringOps.istitle(System.String)">
+            <summary>
+            return true if self is a titlecased string and there is at least one
+            character in self; also, uppercase characters may only follow uncased
+            characters (e.g. whitespace) and lowercase characters only cased ones.
+            return false otherwise.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Operations.StringOps.join(System.String,System.Object)">
+            <summary>
+            Return a string which is the concatenation of the strings 
+            in the sequence seq. The separator between elements is the 
+            string providing this method
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Operations.StringOps.format(IronPython.Runtime.CodeContext,System.String,System.Object[])">
+            <summary>
+            Replaces each replacement field in the string with the provided arguments.
+            
+            replacement_field =  "{" field_name ["!" conversion] [":" format_spec] "}"
+            field_name        =  (identifier | integer) ("." identifier | "[" element_index "]")*
+            
+            format_spec: [[fill]align][sign][#][0][width][.precision][type]
+            
+            Conversion can be 'r' for repr or 's' for string.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Operations.StringOps.format(IronPython.Runtime.CodeContext,System.String,System.Collections.Generic.IDictionary{System.Object,System.Object},System.Object[])">
+            <summary>
+            Replaces each replacement field in the string with the provided arguments.
+            
+            replacement_field =  "{" field_name ["!" conversion] [":" format_spec] "}"
+            field_name        =  (identifier | integer) ("." identifier | "[" element_index "]")*
+            
+            format_spec: [[fill]align][sign][#][0][width][.precision][type]
+            
+            Conversion can be 'r' for repr or 's' for string.
+            </summary>
+        </member>
         <member name="M:IronPython.Runtime.Operations.StringOps.GetStartingOffset(System.Text.Encoding,System.Byte[])">
             <summary>
             Gets the starting offset checking to see if the incoming bytes already include a preamble.
@@ -5568,6 +5809,12 @@
             which case we'll display the result of __repr__.
             </summary>
         </member>
+        <member name="T:IronPython.Runtime.Operations.UserTypeDebugView">
+            <summary>
+            Provides a debug view for user defined types.  This class is declared as public
+            because it is referred to from generated code.  You should not use this class.
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.PythonBuffer.BufferMeta">
             <summary>
             A DynamicMetaObject which is just used to support custom conversions to COM.
@@ -5576,162 +5823,6 @@
         <member name="T:IronPython.Runtime.IPythonArray">
             <summary>
             A marker interface so we can recognize and access sequence members on our array objects.
-            </summary>
-        </member>
-        <member name="F:IronPython.Runtime.PythonContext.NewObject">
-            <summary> stored for copy_reg module, used for reduce protocol </summary>
-        </member>
-        <member name="F:IronPython.Runtime.PythonContext.PythonReconstructor">
-            <summary> stored for copy_reg module, used for reduce protocol </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.#ctor(Microsoft.Scripting.Runtime.ScriptDomainManager,System.Collections.Generic.IDictionary{System.String,System.Object})">
-            <summary>
-            Creates a new PythonContext not bound to Engine.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.HasModuleState(System.Object)">
-            <summary>
-            Checks to see if module state has the current value stored already.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.GetModuleState(System.Object)">
-            <summary>
-            Gets per-runtime state used by a module.  The module should have a unique key for
-            each piece of state it needs to store.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.SetModuleState(System.Object,System.Object)">
-            <summary>
-            Sets per-runtime state used by a module.  The module should have a unique key for
-            each piece of state it needs to store.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.GetSetModuleState(System.Object,System.Object)">
-            <summary>
-            Sets per-runtime state used by a module and returns the previous value.  The module
-            should have a unique key for each piece of state it needs to store.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.GetOrCreateModuleState``1(System.Object,Microsoft.Scripting.Utils.Func{``0})">
-            <summary>
-            Sets per-runtime state used by a module and returns the previous value.  The module
-            should have a unique key for each piece of state it needs to store.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.InitializeSystemState">
-            <summary>
-            Initializes the sys module on startup.  Called both to load and reload sys
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.ReadOneLine(System.IO.StreamReader,System.Int32@)">
-            <summary>
-            Reads one line keeping track of the # of bytes read
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.HookAssemblyResolve">
-            <summary>
-            We use Assembly.LoadFile to load assemblies from a path specified by the script (in LoadAssemblyFromFileWithPath).
-            However, when the CLR loader tries to resolve any of assembly references, it will not be able to
-            find the dependencies, unless we can hook into the CLR loader.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.GetPythonService(Microsoft.Scripting.Hosting.ScriptEngine)">
-            <summary>
-            Returns (and creates if necessary) the PythonService that is associated with this PythonContext.
-            
-            The PythonService is used for providing remoted convenience helpers for the DLR hosting APIs.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.GetMemberNames(System.Object)">
-            <summary>
-            Gets the member names associated with the object
-            TODO: Move "GetMemberNames" functionality into MetaObject implementations
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.GetGenericSiteStorage``1">
-            <summary>
-            Gets a SiteLocalStorage when no call site is available.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.Operation(IronPython.Runtime.Binding.PythonOperationKind,System.Object,System.Object)">
-            <summary>
-            Invokes the specified operation on the provided arguments and returns the new resulting value.
-            
-            operation is usually a value from StandardOperators (standard CLR/DLR operator) or 
-            OperatorStrings (a Python specific operator)
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.GetComparer(System.Object,System.Type)">
-            <summary>
-            Gets a function which can be used for comparing two values.  If cmp is not null
-            then the comparison will use the provided comparison function.  Otherwise
-            it will use the normal Python semantics.
-            
-            If type is null then a generic comparison function is returned.  If type is 
-            not null a comparison function is returned that's used for just that type.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.Collect(System.Int32)">
-            <summary>
-            Performs a GC collection including the possibility of freeing weak data structures held onto by the Python runtime.
-            </summary>
-            <param name="generation"></param>
-        </member>
-        <member name="M:IronPython.Runtime.PythonContext.GetPythonContext(System.Dynamic.DynamicMetaObjectBinder)">
-            <summary>
-            Gets a PythonContext given a DynamicMetaObjectBinder.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.RecursionLimit">
-            <summary>
-            Gets or sets the maximum depth of function calls.  Equivalent to sys.getrecursionlimit
-            and sys.setrecursionlimit.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.DefaultEncoding">
-            <summary>
-            Gets or sets the default encoding for this system state / engine.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.BuiltinModules">
-            <summary>
-            Dictionary from name to type of all known built-in module names.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.BuiltinModuleNames">
-            <summary>
-            Dictionary from type to name of all built-in modules.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.BuiltinModuleInstance">
-            <summary>
-            TODO: Remove me, or stop caching built-ins.  This is broken if the user changes __builtin__
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.ErrorHandlers">
-            <summary> Dictionary of error handlers for string codecs. </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.SearchFunctions">
-            <summary> Table of functions used for looking for additional codecs. </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.SharedContext">
-            <summary>
-            Returns a shared code context for the current PythonContext.  This shared
-            context can be used for performing general operations which usually
-            require a CodeContext.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.SharedOverloadResolverFactory">
-            <summary>
-            Returns an overload resolver for the current PythonContext.  The overload
-            resolver will flow the shared context through as it's CodeContext.
-            </summary>
-        </member>
-        <member name="P:IronPython.Runtime.PythonContext.SharedClsContext">
-            <summary>
-            Returns a shared code context for the current PythonContext.  This shared
-            context can be used for doing lookups which need to occur as if they
-            happened in a module which has done "import clr".
             </summary>
         </member>
         <member name="T:IronPython.Runtime.UnaryOperators">
@@ -5802,7 +5893,7 @@
         </member>
         <member name="T:IronPython.Runtime.SetHelpers">
             <summary>
-            Contains common set functionality between set and forzenSet
+            Contains common set functionality between set and frozenSet
             </summary>
         </member>
         <member name="M:IronPython.Runtime.SetHelpers.GetHashableSetIfSet(System.Object)">
@@ -5832,7 +5923,7 @@
         </member>
         <member name="T:IronPython.Runtime.FrozenSetCollection">
             <summary>
-            Non-mutable set class
+            Immutable set class
             </summary>
         </member>
         <member name="T:IronPython.Runtime.SetIterator">
@@ -5900,6 +5991,30 @@
             <summary>
             Provides a CustomTracker which handles special fields which have custom
             behavior on get/set.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.Types.CustomInstanceDictionaryStorage">
+            <summary>
+            Provides custom, versioned, dictionary access for instances.  Used for both
+            new-style and old-style instances.
+            
+            Each class can allocate a version for instance storage using the 
+            CustomInstanceDictionaryStorage.AllocateInstance method.  The version allocated
+            is dependent upon the names which are likely to appear in the instance 
+            dictionary.  Currently these names are calculated by collecting the names
+            that are assigned to during the __init__ method and combining these with
+            all such names in the types MRO.
+            
+            When creating the dictionary for storing instance values the class can then create
+            a PythonDictionary backed by a CustomInstanceDictionaryStorage with it's
+            version.  When doing a get/set optimized code can then be produced that
+            verifies we have CustomInstanceDictionaryStorage and it has the 
+            correct version.  If we have a matching dictionary then gets/sets can turn
+            into simple array accesses rather than dictionary gets/sets.  For programs
+            which access a large number of instance variables this can dramatically
+            speed up the program.
+            
+            TODO: Should we attempt to unify all versions which share the same keys?
             </summary>
         </member>
         <member name="T:IronPython.Runtime.Types.FunctionType">
@@ -6014,6 +6129,12 @@
             </summary>
         </member>
         <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.CodeContext,System.String,IronPython.Runtime.PythonTuple,IronPython.Runtime.PythonDictionary)">
+            <summary>
+            Creates a new type for a user defined type.  The name, base classes (a tuple of type
+            objects), and a dictionary of members is provided.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.PythonType.#ctor(IronPython.Runtime.CodeContext,System.String,IronPython.Runtime.PythonTuple,IronPython.Runtime.PythonDictionary,System.String)">
             <summary>
             Creates a new type for a user defined type.  The name, base classes (a tuple of type
             objects), and a dictionary of members is provided.
@@ -6477,7 +6598,8 @@
         </member>
         <member name="M:IronPython.Runtime.Types.TypeInfo.HashResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
             <summary>
-            Provides a resolution for IValueEquality.GetValueHashCode to __hash__.
+            Provides a resolution for __hash__, first looking for IStructuralEquatable.GetHashCode,
+            then IValueEquality.GetValueHashCode.
             </summary>
         </member>
         <member name="M:IronPython.Runtime.Types.TypeInfo.NewResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
@@ -6501,16 +6623,6 @@
         <member name="M:IronPython.Runtime.Types.TypeInfo.IterResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
             <summary>
             Provides a resolution for __iter__
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.EqualityResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
-            <summary>
-            Provides a mapping of IValueEquality.ValueEquals to __eq__
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.InequalityResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
-            <summary>
-            Provides a mapping of IValueEquality.ValueNotEquals to __ne__
             </summary>
         </member>
         <member name="M:IronPython.Runtime.Types.TypeInfo.FallbackInequalityResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
@@ -6705,6 +6817,21 @@
         <member name="T:IronPython.Runtime.Types.TypeInfo.StandardResolver">
             <summary>
             Standard resolver for looking up .NET members.  Uses reflection to get the members by name.
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.Types.TypeInfo.EqualityResolver">
+            <summary>
+            Resolves methods mapped to __eq__ and __ne__ from:
+                1. IStructuralEquatable.Equals
+                2. IValueEquality.Equals (CLR2 only)
+            </summary>
+        </member>
+        <member name="T:IronPython.Runtime.Types.TypeInfo.ComparisonResolver">
+            <summary>
+            Resolves methods mapped to __gt__, __lt__, __ge__, __le__, as well as providing an alternate resolution
+            for __eq__ and __ne__, from the comparable type's CompareTo method.
+            
+            This should be run after the EqualityResolver.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.Types.TypeInfo.OperatorResolver">

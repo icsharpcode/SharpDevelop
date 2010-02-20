@@ -27,5 +27,9 @@ namespace ICSharpCode.PythonBinding
 		public override CodeDomProvider CodeDomProvider {
 			get { return new CSharpCodeProvider(); }
 		}
+		
+		public override bool AllowObjectConstructionOutsideContext {
+			get { return true; }
+		}
 	}
 }

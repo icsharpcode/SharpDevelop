@@ -200,6 +200,18 @@ namespace PythonBinding.Tests.Indentation
 								"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-		}		
+		}
+		
+		[Test]
+		public void IndentingFirstLineDoesNotThrowArgumentOutOfRangeException()
+		{
+			textEditor.Text = "print 'hello'";
+			
+			int indentResult = -1;
+			Assert.DoesNotThrow(delegate { indentResult =
+				formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 0); });
+			
+			Assert.AreEqual("print 'hello'", textEditor.Text);
+		}
 	}
 }

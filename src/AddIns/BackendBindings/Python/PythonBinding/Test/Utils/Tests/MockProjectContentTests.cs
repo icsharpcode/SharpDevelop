@@ -143,5 +143,77 @@ namespace PythonBinding.Tests.Utils.Tests
 			projectContent.NamespaceExists("System");
 			Assert.IsTrue(projectContent.NamespaceExistsCalled);
 		}
+		
+		[Test]
+		public void GetClassReturnsNullByDefault()
+		{
+			Assert.IsNull(projectContent.GetClass("test", 0));
+		}
+		
+		[Test]
+		public void GetClassNameReturnsClassNamePassedToGetClassMethod()
+		{
+			projectContent.GetClass("abc", 0);
+			Assert.AreEqual("abc", projectContent.GetClassName);
+		}
+		
+		[Test]
+		public void GetClassCalledIsFalseByDefault()
+		{
+			Assert.IsFalse(projectContent.GetClassCalled);
+		}
+		
+		[Test]
+		public void GetClassCalledIsTrueAfterGetClassCalled()
+		{
+			projectContent.GetClass("abc", 0);
+			Assert.IsTrue(projectContent.GetClassCalled);
+		}
+		
+		[Test]
+		public void GetClassReturnsClassEvenIfClassNameDoesNotMatchAndNoClassNameForGetClassSpecified()
+		{
+			MockClass c = new MockClass(projectContent, "test");
+			projectContent.ClassToReturnFromGetClass = c;
+			
+			Assert.AreEqual(c, projectContent.GetClass("abcdef", 0));
+		}
+		
+		[Test]
+		public void GetClassReturnsNullIfClassNameDoesNotMatchClassNameForGetClassProperty()
+		{
+			MockClass c = new MockClass(projectContent, "test");
+			projectContent.ClassToReturnFromGetClass = c;
+			projectContent.ClassNameForGetClass = "test";
+			
+			Assert.IsNull(projectContent.GetClass("abcdef", 0));
+		}
+		
+		[Test]
+		public void GetClassReturnsClassIfClassNameMatchesClassNameForGetClassProperty()
+		{
+			MockClass c = new MockClass(projectContent, "test");
+			projectContent.ClassToReturnFromGetClass = c;
+			projectContent.ClassNameForGetClass = "test";
+			
+			Assert.AreEqual(c, projectContent.GetClass("test", 0));
+		}
+		
+		[Test]
+		public void NamespaceNamesHasNoItemsByDefault()
+		{
+			Assert.AreEqual(0, projectContent.ReferencedContents.Count);
+		}
+		
+		[Test]
+		public void NamespaceNamesContainingsNamespaceAddedToExistingNamespaces()
+		{
+			List<ICompletionEntry> namespaceItems = new List<ICompletionEntry>();
+			projectContent.AddExistingNamespaceContents("System", namespaceItems);
+			List<string> expectedNames = new List<string>();
+			expectedNames.Add("System");
+			
+			Assert.AreEqual(expectedNames, projectContent.NamespaceNames);
+		}
 	}
 }

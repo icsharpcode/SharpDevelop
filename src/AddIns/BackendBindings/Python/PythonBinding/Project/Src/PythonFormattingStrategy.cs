@@ -20,6 +20,10 @@ namespace ICSharpCode.PythonBinding
 		
 		protected override int SmartIndentLine(TextArea textArea, int line)
 		{
+			if (line == 0) {
+				return base.SmartIndentLine(textArea, line);
+			}
+			
 			IDocument document = textArea.Document;
 			LineSegment previousLine = document.GetLineSegment(line - 1);
 			string previousLineText = document.GetText(previousLine).Trim();

@@ -20,5 +20,11 @@ namespace PythonBinding.Tests
 		{
 			Assert.IsNotNull(PythonLanguageProperties.Default.CodeDomProvider);
 		}
+		
+		[Test]
+		public void AllowObjectConstructionOutsideContextReturnsTrueToEnableMethodInsightForConstructors()
+		{
+			Assert.IsTrue(PythonLanguageProperties.Default.AllowObjectConstructionOutsideContext);
+		}
 	}
 }

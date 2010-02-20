@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -15,33 +15,29 @@ using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Resolver
 {
-	/// <summary>
-	/// Tests the PythonResolver does not return a namespace resolve result for
-	/// an unknown namespace.
-	/// </summary>
 	[TestFixture]
-	public class ResolveUnknownNamespaceTestFixture : ResolveTestFixtureBase
+	public class ResolveSystemWithImportSystemWindowsTestFixture : ResolveTestFixtureBase
 	{
 		protected override ExpressionResult GetExpressionResult()
 		{
-			projectContent.AddExistingNamespaceContents("System", new List<ICompletionEntry>());
-			
-			return new ExpressionResult("Unknown", new DomRegion(3, 2), null, null);
+			return new ExpressionResult("System");
 		}
 		
 		protected override string GetPythonScript()
 		{
 			return
-				"import System\r\n" +
-				"class Test:\r\n" +
-				"    def __init__(self):\r\n" +
-				"        Unknown\r\n";
+				"import System.Windows\r\n" +
+				"System\r\n";
+		}
+		
+		NamespaceResolveResult NamespaceResolveResult {
+			get { return resolveResult as NamespaceResolveResult; }
 		}
 		
 		[Test]
-		public void ResolveResultDoesNotExist()
+		public void NamespaceResolveResultHasSystemNamespace()
 		{
-			Assert.IsNull(resolveResult);
+			Assert.AreEqual("System", NamespaceResolveResult.Name);
 		}
 	}
 }
