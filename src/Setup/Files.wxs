@@ -1053,23 +1053,11 @@
 										<Component Guid="2B7F1625-2BAA-4A55-B186-75F7ADCF3BA8" Id="IronRubyLibrariesDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\IronRuby.Libraries.dll" Name="IronRuby.Libraries.dll" Id="IronRuby.Libraries.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronRuby.Libraries.dll" AssemblyManifest="IronRuby.Libraries.dll" />
 										</Component>
-										<Component Guid="83A4BB07-15B9-4F75-9BF5-712447B60064" Id="IronRubyLibrariesYamlDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\IronRuby.Libraries.Yaml.dll" Name="IronRuby.Libraries.Yaml.dll" Id="IronRuby.Libraries.Yaml.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronRuby.Libraries.Yaml.dll" AssemblyManifest="IronRuby.Libraries.Yaml.dll" />
-										</Component>
 										<Component Guid="09FCB2E9-FA7E-40B2-8FCF-182C7DF2F5EC" Id="RubyMicrosoftDynamicDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Dynamic.dll" Name="Microsoft.Dynamic.dll" Id="RubyBinding.Microsoft.Dynamic.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Dynamic.dll" AssemblyManifest="RubyBinding.Microsoft.Dynamic.dll" />
 										</Component>
-										<Component Guid="1428A68B-743C-481E-A6DE-2DD3984CC2EB" Id="RubyMicrosoftScriptingCoreDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Core.dll" Name="Microsoft.Scripting.Core.dll" Id="RubyBinding.Microsoft.Scripting.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.Core.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.Core.dll" />
-										</Component>
-										<Component Guid="52F58B6D-98F9-4BDD-9055-67AE84403A62" Id="RubyMicrosoftScriptingDebuggingDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Debugging.dll" Name="Microsoft.Scripting.Debugging.dll" Id="RubyBinding.Microsoft.Scripting.Debugging.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.Debugging.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.Debugging.dll" />
-										</Component>
 										<Component Guid="3E1BAAE7-D366-43B4-88CE-8D2ED5731CC6" Id="RubyMicrosoftScriptingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="RubyBinding.Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.dll" />
-										</Component>
-										<Component Guid="5A1F81D4-8F6C-41E0-8FFE-B6BBFB2F3804" Id="RubyMicrosoftScriptingExtensionAttributeDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" />
 										</Component>
 										<Component Guid="6877EFD9-7005-4BDD-80E6-FB4790436E23" Id="RubyBindingAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\RubyBinding.addin" Name="RubyBinding.addin" Id="RubyBinding.addin" KeyPath="yes" />
