@@ -59,11 +59,22 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			previewRenderer = PreviewRenderer.CreateInstance();
 			this.CheckEnable();
 			this.printButton.Enabled = false;
+			this.printButton.ImageTransparentColor = Color.White;
+			
 			this.pdfButton.Enabled = false;
+			this.pdfButton.ImageTransparentColor = Color.White;
+			
 			this.firstPageButton.Enabled = false;
+			this.firstPageButton.ImageTransparentColor = Color.White;
+			
 			this.forwardButton.Enabled = false;
+			this.forwardButton.ImageTransparentColor = Color.White;
+			
 			this.backButton.Enabled = false;
+			this.backButton.ImageTransparentColor = Color.White;
+			
 			this.lastPageButton.Enabled = false;
+			this.lastPageButton.ImageTransparentColor = Color.White;
 			this.numericToolStripTextBox2.Navigate += new EventHandler <PageNavigationEventArgs> (OnNavigate);
 		}
 		

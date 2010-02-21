@@ -62,15 +62,13 @@ namespace ICSharpCode.Reports.Addin
 			                               this.ClientRectangle.Bottom -1);
 
 			base.DrawControl(graphics,rect);
-			if (this.Image != null) {
-				
-				if (this.scaleImageToSize) {
-					graphics.DrawImageUnscaled(this.Image,this.Location.X,this.Location.Y);
-				} else {
-					graphics.DrawImage(this.Image,this.ClientRectangle);
-				}
+			if (this.scaleImageToSize) {
+				graphics.DrawImageUnscaled(this.Image,this.Location.X,this.Location.Y);
+			} else {
+				graphics.DrawImage(this.Image,this.ClientRectangle);
 			}
 		}
+		
 		
 		#region Property's
 		[Category("Image")]
@@ -78,7 +76,7 @@ namespace ICSharpCode.Reports.Addin
 		public string ImageFileName {
 			get { return imageFileName; }
 			set { imageFileName = value;
-				System.Diagnostics.Trace.WriteLine(String.Format("<ADDIN.Set BaseImage > {0}",this.ImageFileName));
+				this.relativeFileName = FileUtility.GetRelativePath(Path.GetFullPath(this.reportFileName),Path.GetFullPath(this.ImageFileName));
 			}
 		}
 		
@@ -100,52 +98,13 @@ namespace ICSharpCode.Reports.Addin
 		private Image LoadImage ()
 		{
 			try {
-				Image im;
-				string absFileName = this.AbsoluteFileName;
-				if (!String.IsNullOrEmpty(absFileName) && File.Exists(absFileName)) {
-					im = Image.FromFile (this.AbsoluteFileName);
-				} else {
-					im = BaseImageItem.ErrorBitmap(base.Size);
-				}
-				if (im == null) {
-					string str = String.Format(CultureInfo.InvariantCulture,
-					                           "Unable to Load {0}",imageFileName);
-					throw new ReportException(str);
-				}
-				return im;
-			} catch (System.OutOfMemoryException) {
-				throw;
-			} catch (System.IO.FileNotFoundException) {
-				throw;
-			}
-		}
-		
-		
-		
-		private Image old_LoadImage ()
-		{
-			try {
 				Image im = null;
 
-				if (!string.IsNullOrEmpty(relativeFileName)) {
-					string testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
-					if (File.Exists(testFileName)){
-						System.Diagnostics.Trace.WriteLine("Found");
-					}
-				}
-				
-				
-				this.relativeFileName = FileUtility.GetRelativePath(this.ReportFileName,this.ImageFileName);
 				string absFileName = this.AbsoluteFileName;
 				if (!String.IsNullOrEmpty(absFileName) && File.Exists(absFileName)){
 					im = Image.FromFile (absFileName);
 				} else {
 					im = BaseImageItem.ErrorBitmap(base.Size);
-				}
-				if (im == null) {
-					string str = String.Format(CultureInfo.InvariantCulture,
-					                           "Unable to Load {0}",imageFileName);
-					throw new ReportException(str);
 				}
 				return im;
 				
@@ -172,11 +131,11 @@ namespace ICSharpCode.Reports.Addin
 				return null;
 			}
 			set {
-				this.imageFileName = String.Empty;
 				this.image = value;
 				this.imageSource = GlobalEnums.ImageSource.External;
 			}
 		}
+		
 		
 		[Category("Layout")]
 		public bool ScaleImageToSize {
@@ -216,45 +175,40 @@ namespace ICSharpCode.Reports.Addin
 		[Category("Image")]
 		public string ReportFileName {
 			get { return Path.GetFullPath(reportFileName); }
-			set { reportFileName = value;
-				System.Diagnostics.Trace.WriteLine("");
-				System.Diagnostics.Trace.WriteLine(String.Format("<ADDIN.ImageItem>ReportFileName  {0}",Path.GetFullPath(this.reportFileName)));}
+			set { reportFileName = value;}
 		}
 		
 		
 		[Category("Image")]
-//		[Browsable(false)]
+		[Browsable(false)]
 		public string RelativeFileName {
 			get { return relativeFileName; }
-			set { relativeFileName = value;
-				System.Diagnostics.Trace.WriteLine("");
-				System.Diagnostics.Trace.WriteLine(String.Format("<ADDIN.RelativeFilenamee > {0}",this.relativeFileName));
-			}
+			set { relativeFileName = value;}
 		}
 		
 		
 		[XmlIgnoreAttribute]
-//		[Category("Image")]
+		[Category("Image")]
 //		[Browsable(false)]
 		public string AbsoluteFileName
 		{
 			get {
-				string absolute = FileUtility.GetAbsolutePath(reportFileName,imageFileName);
-				if (File.Exists(absolute)){
-					System.Diagnostics.Trace.WriteLine("Image.AbsoluteFileName");
-					System.Diagnostics.Trace.WriteLine(String.Format("Absolute FIleN {0}",absolute));
-					System.Diagnostics.Trace.WriteLine(String.Format("Report FileNam {0}",this.reportFileName));
-					System.Diagnostics.Trace.WriteLine(String.Format("Image absolute {0}",this.ImageFileName));
-					System.Diagnostics.Trace.WriteLine(String.Format("Image relative {0}",this.relativeFileName));
-					string t = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
-					System.Diagnostics.Trace.WriteLine(String.Format("rebuild        {0}",t));
-					System.Diagnostics.Trace.WriteLine("---------");
-					return absolute;
-				}
+//D:\SharpDevelop3.0_WorkingCopy\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos				
+				
 				if (!string.IsNullOrEmpty(relativeFileName)) {
+					Console.WriteLine("");
 					string testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
 					if (File.Exists(testFileName)){
+						Console.WriteLine("Image found with Relative Filename");
+						Console.WriteLine("Report Filename {0}",this.reportFileName);
+						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
+						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 						return testFileName;
+					} else {
+						Console.WriteLine("AbsoluteFileName can't load image");
+						Console.WriteLine("Report Filename {0}",this.reportFileName);
+						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
+						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 					}
 				}
 				return this.ImageFileName;

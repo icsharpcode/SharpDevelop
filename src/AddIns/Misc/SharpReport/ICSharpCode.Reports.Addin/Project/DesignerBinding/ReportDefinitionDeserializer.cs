@@ -84,20 +84,26 @@ namespace ICSharpCode.Reports.Addin
 		
 		private static void Absolut2RelativePath (BaseSection section, string fileName)
 		{
+			
 			foreach (Control item in section.Controls) {
 				BaseImageItem baseImageItem = item as BaseImageItem;
 				if (baseImageItem != null) {
 					baseImageItem.ReportFileName = fileName;
 					
 					if (Path.IsPathRooted(baseImageItem.ImageFileName)) {
+						Console.WriteLine("Absolut2RelativePath");
+						Console.WriteLine("Image Filename {0}",fileName);
+						Console.WriteLine("Image Filename {0}",baseImageItem.ImageFileName);
 						string d = ICSharpCode.Reports.Core.FileUtility.GetRelativePath(
 							Path.GetDirectoryName(fileName),
 							Path.GetDirectoryName(baseImageItem.ImageFileName));
 
 						baseImageItem.RelativeFileName = d + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
+			Console.WriteLine("Rel Filename {0}",baseImageItem.RelativeFileName);
 					}
 				}
 			}
+			Console.WriteLine("");
 		}
 		
 		private static void old_Absolut2RelativePath (BaseSection section, string fileName)

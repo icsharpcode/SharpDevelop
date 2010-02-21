@@ -329,9 +329,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Project\ReportViewer\ReportViewer.resx">
       <DependentUpon>ReportViewer.Designer.cs</DependentUpon>
+      <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Project\ReportViewer\Resources\Icons.16x16.StopProcess.png" />
-    <EmbeddedResource Include="Project\ReportViewer\Resources\MakePdf.bmp" />
     <EmbeddedResource Include="Project\Resources\CoreResource.resx" />
     <None Include="Project\Expressions\SimpleExpressionEvaluator\Parser\SimpleExpressionLanguage.tpg" />
     <None Include="Project\ReportViewer\Resources\Icons\Back.bmp" />
@@ -379,9 +378,6 @@
     <Folder Include="Project\Exporter\ExportColumns" />
     <Folder Include="Project\ReportViewer" />
     <Folder Include="Project\ReportViewer\Resources" />
-    <EmbeddedResource Include="Project\ReportViewer\Resources\Icons.16x16.Print.png" />
-    <EmbeddedResource Include="Project\ReportViewer\Resources\Icons.16x16.BrowserBefore.png" />
-    <EmbeddedResource Include="Project\ReportViewer\Resources\Icons.16x16.BrowserAfter.png" />
     <ProjectReference Include="..\Irony\Irony.csproj">
       <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
       <Name>Irony</Name>

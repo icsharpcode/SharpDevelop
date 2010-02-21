@@ -34,7 +34,7 @@ namespace ICSharpCode.Reports.Core {
 		private string columnName;
 		private string baseTableName;
 		private string reportFileName;
-		private string relativeFileName = "aa";
+		private string relativeFileName;
 		
 		public BaseImageItem():base() {
 		}
@@ -194,9 +194,19 @@ namespace ICSharpCode.Reports.Core {
 			get {
 				if (!string.IsNullOrEmpty(relativeFileName)) {
 					string testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
-						System.Diagnostics.Trace.WriteLine(String.Format("<CORE.BaseImage> AbsoluteFilename {0}",Path.GetFullPath(testFileName)));
+						
 					if (File.Exists(testFileName)){
+						Console.WriteLine("Image found with Relative Filename");
+						Console.WriteLine("Report Filename {0}",this.reportFileName);
+						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
+						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 						return testFileName;
+					
+					} else {
+						Console.WriteLine("AbsoluteFileName can't load image");
+						Console.WriteLine("Report Filename {0}",this.reportFileName);
+						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
+						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 					}
 				}
 			
