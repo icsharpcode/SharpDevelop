@@ -50,7 +50,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			Point currentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
 			Point dataAreaStart = new Point(baseTable.Items[0].Location.X,baseTable.Items[0].Location.Y + currentPosition.Y);
-			
+			BaseRowItem headerRow = null;
 			int defaultLeftPos = PrintHelper.DrawingAreaRelativeToParent(this.baseTable.Parent,this.baseTable).Left;
 			
 			this.baseTable.Items.SortByLocation();
@@ -61,13 +61,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 					row.Location = new Point (row.Location.X + defaultLeftPos,row.Location.Y);
 					row.Parent = (BaseReportItem)this.baseTable;
 					Size rowSize = new Size (row.Size.Width,row.Size.Height);
+					
 					// Header/FooterRow
+				
 					if (PrintHelper.IsTextOnlyRow(row) ) {
-						PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
-						currentPosition = DoConvert (mylist,row,defaultLeftPos,currentPosition);
+						headerRow = row;
+						currentPosition = PrintTableHeader(mylist,headerRow,defaultLeftPos,currentPosition);
 					}
 					
-					else {
+					else 
+					{
 						// DataRegion
 						rowSize = new Size (row.Size.Width,row.Size.Height);
 						do {
@@ -78,13 +81,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 							
 							PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
 							
-							if (this.IsPageFull(new Rectangle(row.Location,row.Size))) {
+							if (this.IsPageFull(new Rectangle(new Point (row.Location.X,currentPosition.Y),row.Size))) {
 								base.FirePageFull(mylist);
-								currentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
 								mylist.Clear();
-								if (row != null) {
-									currentPosition = this.DoConvert (mylist,row,defaultLeftPos,currentPosition);
-								}
+								currentPosition = PrintTableHeader(mylist,headerRow,
+								                                   defaultLeftPos,
+								                                   base.SectionBounds.ReportHeaderRectangle.Location);
 							}
 							currentPosition = this.DoConvert(mylist,row,defaultLeftPos,currentPosition);
 							row.Size = rowSize;
@@ -103,6 +105,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return mylist;
 		}
 		
+		
+		private Point PrintTableHeader(ExporterCollection list,BaseRowItem row,int leftPos,Point curPos	)
+		{
+			PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
+			return  DoConvert (list,row,leftPos,curPos);
+		}
+			
 		
 		private Point DoConvert(ExporterCollection mylist,BaseRowItem row,int x,Point dp)                      
 		{

@@ -615,7 +615,6 @@ namespace ICSharpCode.Reports.Addin
 		#endregion
 		
 		
-		
 		#region IPrintable
 		
 		public System.Drawing.Printing.PrintDocument PrintDocument {

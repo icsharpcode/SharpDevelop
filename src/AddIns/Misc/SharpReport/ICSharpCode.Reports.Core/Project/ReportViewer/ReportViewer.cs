@@ -98,7 +98,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				throw new ArgumentNullException("fileName");
 			}
 			ReportModel m = ReportEngine.LoadReportModel(fileName);
-//			this.SetupAsynchron(m,parameters);
 			RunReport(m,parameters);
 		}
 		
@@ -190,19 +189,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		public void SetupAsynchron (ReportModel reportModel,IDataManager dataManager)
 		{
 			RunReport(reportModel,dataManager);
-			/*
-			if (reportModel == null) {
-				throw new ArgumentNullException("reportModel");
-			}
-			if (dataManager == null) {
-				throw new ArgumentNullException("dataManager");
-			}
-			
-			this.SetupViewer(reportModel);
-			this.dataManager = dataManager;
-			RunDataReport(reportModel,dataManager);
-			 */
 		}
+		
 		
 		#region Rendering
 		
