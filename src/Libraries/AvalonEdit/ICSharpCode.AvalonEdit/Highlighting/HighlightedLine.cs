@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -79,7 +80,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 						return 1;
 				} else {
 					if (IsEnd)
-						return -Nesting.CompareTo(other.Nesting);
+						return other.Nesting.CompareTo(Nesting);
 					else
 						return Nesting.CompareTo(other.Nesting);
 				}
@@ -121,24 +122,24 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			elements.Sort();
 			
 			TextDocument document = this.Document;
-			StringBuilder b = new StringBuilder();
+			StringWriter w = new StringWriter();
 			int textOffset = startOffset;
 			foreach (HtmlElement e in elements) {
 				int newOffset = Math.Min(e.Offset, endOffset);
 				if (newOffset > startOffset) {
-					HtmlClipboard.EscapeHtml(b, document.GetText(textOffset, newOffset - textOffset), options);
+					HtmlClipboard.EscapeHtml(w, document.GetText(textOffset, newOffset - textOffset), options);
 				}
 				textOffset = Math.Max(textOffset, newOffset);
 				if (e.IsEnd) {
-					b.Append("</span>");
+					w.Write("</span>");
 				} else {
-					b.Append("<span style=\"");
-					b.Append(e.Color.ToCss());
-					b.Append("\">");
+					w.Write("<span");
+					options.WriteStyleAttributeForColor(w, e.Color);
+					w.Write('>');
 				}
 			}
-			HtmlClipboard.EscapeHtml(b, document.GetText(textOffset, endOffset - textOffset), options);
-			return b.ToString();
+			HtmlClipboard.EscapeHtml(w, document.GetText(textOffset, endOffset - textOffset), options);
+			return w.ToString();
 		}
 		
 		/// <inheritdoc/>

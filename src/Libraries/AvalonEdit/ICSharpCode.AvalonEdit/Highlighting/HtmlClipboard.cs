@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Windows;
 
@@ -101,13 +102,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Escapes text and writes the result to the StringBuilder.
 		/// </summary>
-		internal static void EscapeHtml(StringBuilder b, string text, HtmlOptions options)
+		internal static void EscapeHtml(StringWriter w, string text, HtmlOptions options)
 		{
 			int spaceCount = -1;
 			foreach (char c in text) {
 				if (c == ' ') {
 					if (spaceCount < 0)
-						b.Append("&nbsp;");
+						w.Write("&nbsp;");
 					else
 						spaceCount++;
 				} else if (c == '\t') {
@@ -116,34 +117,34 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					spaceCount += options.TabSize;
 				} else {
 					if (spaceCount == 1) {
-						b.Append(' ');
+						w.Write(' ');
 					} else if (spaceCount >= 1) {
 						for (int i = 0; i < spaceCount; i++) {
-							b.Append("&nbsp;");
+							w.Write("&nbsp;");
 						}
 					}
 					spaceCount = 0;
 					switch (c) {
 						case '<':
-							b.Append("&lt;");
+							w.Write("&lt;");
 							break;
 						case '>':
-							b.Append("&gt;");
+							w.Write("&gt;");
 							break;
 						case '&':
-							b.Append("&amp;");
+							w.Write("&amp;");
 							break;
 						case '"':
-							b.Append("&quot;");
+							w.Write("&quot;");
 							break;
 						default:
-							b.Append(c);
+							w.Write(c);
 							break;
 					}
 				}
 			}
 			for (int i = 0; i < spaceCount; i++) {
-				b.Append("&nbsp;");
+				w.Write("&nbsp;");
 			}
 		}
 	}
@@ -176,5 +177,19 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// The amount of spaces a tab gets converted to.
 		/// </summary>
 		public int TabSize { get; set; }
+		
+		/// <summary>
+		/// Writes the HTML attribute for the style to the text writer.
+		/// </summary>
+		public virtual void WriteStyleAttributeForColor(TextWriter writer, HighlightingColor color)
+		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+			if (color == null)
+				throw new ArgumentNullException("color");
+			writer.Write(" style=\"");
+			writer.Write(color.ToCss());
+			writer.Write("\"");
+		}
 	}
 }

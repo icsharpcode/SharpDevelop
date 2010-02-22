@@ -1,5 +1,5 @@
 ﻿// SharpDevelop samples
-// Copyright (c) 2007, AlphaSierraPapa
+// Copyright (c) 2010, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -26,9 +26,11 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Collections.Generic;
+
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace ICSharpCode.HtmlSyntaxColorizer
 {
@@ -36,11 +38,13 @@ namespace ICSharpCode.HtmlSyntaxColorizer
 	{
 		public static void Main(string[] args)
 		{
+			IHighlightingDefinition highlightDefinition = HighlightingManager.Instance.GetDefinition("C#");
+			
 			HtmlWriter w = new HtmlWriter();
 			w.ShowLineNumbers = true;
 			w.AlternateLineBackground = true;
 			string code = File.ReadAllText("../../Main.cs");
-			string html = w.GenerateHtml(code, "C#");
+			string html = w.GenerateHtml(code, highlightDefinition);
 			File.WriteAllText("output.html", "<html><body>" + html + "</body></html>");
 			Process.Start("output.html"); // view in browser
 		}

@@ -1,5 +1,5 @@
 ﻿// SharpDevelop samples
-// Copyright (c) 2007, AlphaSierraPapa
+// Copyright (c) 2010, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -30,8 +30,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace ICSharpCode.HtmlSyntaxColorizer
 {
@@ -57,10 +58,11 @@ namespace ICSharpCode.HtmlSyntaxColorizer
 		public string StyleClassPrefix = "code";
 		
 		Dictionary<string, string> stylesheetCache = new Dictionary<string, string>();
+		StringBuilder stylesheet = new StringBuilder();
 		
 		/// <summary>
 		/// Resets the CSS stylesheet cache. Stylesheet classes will be cached on GenerateHtml calls.
-		/// If you want to reuse the HtmlWriter for multiple
+		/// If you want to reuse the HtmlWriter for multiple .html files.
 		/// </summary>
 		public void ResetStylesheetCache()
 		{
@@ -69,182 +71,117 @@ namespace ICSharpCode.HtmlSyntaxColorizer
 		
 		string GetClass(string style)
 		{
-			return stylesheetCache[style];
-		}
-		
-		void CacheClass(string style, StringBuilder b)
-		{
-			if (style == null) return;
-			if (!stylesheetCache.ContainsKey(style)) {
-				string styleName = StyleClassPrefix + stylesheetCache.Count;
-				stylesheetCache[style] = styleName;
-				b.Append('.');
-				b.Append(styleName);
-				b.Append(" { ");
-				b.Append(style);
-				b.AppendLine(" }");
+			string className;
+			if (!stylesheetCache.TryGetValue(style, out className)) {
+				className = StyleClassPrefix + stylesheetCache.Count;
+				stylesheet.Append('.');
+				stylesheet.Append(className);
+				stylesheet.Append(" { ");
+				stylesheet.Append(style);
+				stylesheet.AppendLine(" }");
+				stylesheetCache[style] = className;
 			}
+			return className;
 		}
 		#endregion
 		
-		public string GenerateHtml(string code, string highlighterName)
+		public string GenerateHtml(string code, IHighlightingDefinition highlightDefinition)
 		{
-			IDocument doc = new DocumentFactory().CreateDocument();
-			doc.HighlightingStrategy = HighlightingManager.Manager.FindHighlighter(highlighterName);
-			doc.TextContent = code;
-			return GenerateHtml(doc);
+			return GenerateHtml(new TextDocument(code), highlightDefinition);
 		}
 		
-		HighlightColor currentDefaultTextColor;
+		public string GenerateHtml(TextDocument document, IHighlightingDefinition highlightDefinition)
+		{
+			return GenerateHtml(document, new DocumentHighlighter(document, highlightDefinition.MainRuleSet));
+		}
 		
-		public string GenerateHtml(IDocument document)
+		public string GenerateHtml(TextDocument document, IHighlighter highlighter)
 		{
 			string myMainStyle = MainStyle;
-			currentDefaultTextColor = document.HighlightingStrategy.GetColorFor("Default");
-			myMainStyle += " color: " + ColorToString(currentDefaultTextColor.Color) + ";"
-				+ " background-color: " + ColorToString(currentDefaultTextColor.BackgroundColor) + ";";
+			string LineNumberStyle = "color: #606060;";
 			
-			string LineNumberStyle;
-			HighlightColor lineNumbersColor = document.HighlightingStrategy.GetColorFor("LineNumbers");
-			if (lineNumbersColor != null) {
-				LineNumberStyle = "color: " + ColorToString(lineNumbersColor.Color) + ";"
-					+ " background-color: " + ColorToString(lineNumbersColor.BackgroundColor) + ";";
-			} else {
-				LineNumberStyle = "color: #606060;";
-			}
-			
-			StringBuilder b = new StringBuilder();
-			if (CreateStylesheet) {
-				b.AppendLine("<style type=\"text/css\">");
-				if (ShowLineNumbers || AlternateLineBackground) {
-					CacheClass(myMainStyle, b);
-					CacheClass(LineStyle, b);
-				} else {
-					CacheClass(myMainStyle + LineStyle, b);
-				}
-				if (AlternateLineBackground) CacheClass(AlternateLineStyle, b);
-				if (ShowLineNumbers) CacheClass(LineNumberStyle, b);
-				foreach (LineSegment ls in document.LineSegmentCollection) {
-					foreach (TextWord word in ls.Words) {
-						CacheClass(GetStyle(word), b);
-					}
-				}
-				b.AppendLine("</style>");
-			}
+			StringWriter output = new StringWriter();
 			if (ShowLineNumbers || AlternateLineBackground) {
-				b.Append("<div");
-				WriteStyle(myMainStyle, b);
-				b.AppendLine(">");
+				output.Write("<div");
+				WriteStyle(output, myMainStyle);
+				output.WriteLine(">");
 				
-				int longestNumberLength = 1 + (int)Math.Log10(document.TotalNumberOfLines);
+				int longestNumberLength = 1 + (int)Math.Log10(document.LineCount);
 				
-				int lineNumber = 1;
-				foreach (LineSegment lineSegment in document.LineSegmentCollection) {
-					b.Append("<pre");
+				for (int lineNumber = 1; lineNumber <= document.LineCount; lineNumber++) {
+					HighlightedLine line = highlighter.HighlightLine(lineNumber);
+					output.Write("<pre");
 					if (AlternateLineBackground && (lineNumber % 2) == 0) {
-						WriteStyle(AlternateLineStyle, b);
+						WriteStyle(output, AlternateLineStyle);
 					} else {
-						WriteStyle(LineStyle, b);
+						WriteStyle(output, LineStyle);
 					}
-					b.Append(">");
+					output.Write(">");
 					
 					if (ShowLineNumbers) {
-						b.Append("<span");
-						WriteStyle(LineNumberStyle, b);
-						b.Append('>');
-						b.Append(lineNumber.ToString().PadLeft(longestNumberLength));
-						b.Append(":  ");
-						b.Append("</span>");
+						output.Write("<span");
+						WriteStyle(output, LineNumberStyle);
+						output.Write('>');
+						output.Write(lineNumber.ToString().PadLeft(longestNumberLength));
+						output.Write(":  ");
+						output.Write("</span>");
 					}
 					
-					
-					if (lineSegment.Words.Count == 0) {
-						b.Append("&nbsp;");
-					} else {
-						PrintWords(lineSegment, b);
-					}
-					b.AppendLine("</pre>");
-					
-					lineNumber++;
+					PrintWords(output, line);
+					output.WriteLine("</pre>");
 				}
-				b.AppendLine("</div>");
+				output.WriteLine("</div>");
 			} else {
-				b.Append("<pre");
-				WriteStyle(myMainStyle + LineStyle, b);
-				b.AppendLine(">");
-				foreach (LineSegment lineSegment in document.LineSegmentCollection) {
-					PrintWords(lineSegment, b);
-					b.AppendLine();
+				output.Write("<pre");
+				WriteStyle(output, myMainStyle + LineStyle);
+				output.WriteLine(">");
+				for (int lineNumber = 1; lineNumber <= document.LineCount; lineNumber++) {
+					HighlightedLine line = highlighter.HighlightLine(lineNumber);
+					PrintWords(output, line);
+					output.WriteLine();
 				}
-				b.AppendLine("</pre>");
+				output.WriteLine("</pre>");
 			}
-			return b.ToString();
-		}
-		
-		void PrintWords(LineSegment lineSegment, StringBuilder b)
-		{
-			string currentSpan = null;
-			foreach (TextWord word in lineSegment.Words) {
-				if (word.Type == TextWordType.Space) {
-					b.Append(' ');
-				} else if (word.Type == TextWordType.Tab) {
-					b.Append('\t');
-				} else {
-					string newSpan = GetStyle(word);
-					if (currentSpan != newSpan) {
-						if (currentSpan != null) b.Append("</span>");
-						if (newSpan != null) {
-							b.Append("<span");
-							WriteStyle(newSpan, b);
-							b.Append('>');
-						}
-						currentSpan = newSpan;
-					}
-					b.Append(HtmlEncode(word.Word));
-				}
+			if (CreateStylesheet && stylesheet.Length > 0) {
+				string result = "<style type=\"text/css\">" + stylesheet.ToString() + "</style>" + output.ToString();
+				stylesheet = new StringBuilder();
+				return result;
+			} else {
+				return output.ToString();
 			}
-			if (currentSpan != null) b.Append("</span>");
 		}
 		
-		static string HtmlEncode(string word)
+		void PrintWords(TextWriter writer, HighlightedLine line)
 		{
-			return word.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+			writer.Write(line.ToHtml(new MyHtmlOptions(this)));
 		}
 		
-		void WriteStyle(string style, StringBuilder b)
+		class MyHtmlOptions : HtmlOptions
+		{
+			readonly HtmlWriter htmlWriter;
+			
+			internal MyHtmlOptions(HtmlWriter htmlWriter)
+			{
+				this.htmlWriter = htmlWriter;
+			}
+			
+			public override void WriteStyleAttributeForColor(TextWriter writer, HighlightingColor color)
+			{
+				htmlWriter.WriteStyle(writer, color.ToCss());
+			}
+		}
+		
+		void WriteStyle(TextWriter writer, string style)
 		{
 			if (CreateStylesheet) {
-				b.Append(" class=\"");
-				b.Append(GetClass(style));
-				b.Append('"');
+				writer.Write(" class=\"");
+				writer.Write(GetClass(style));
+				writer.Write('"');
 			} else {
-				b.Append(" style='");
-				b.Append(style);
-				b.Append("'");
+				writer.Write(" style='");
+				writer.Write(style);
+				writer.Write("'");
 			}
-		}
-		
-		string GetStyle(TextWord word)
-		{
-			if (word.SyntaxColor == null || word.SyntaxColor.ToString() == currentDefaultTextColor.ToString())
-				return null;
-			
-			string style = "color: " + ColorToString(word.Color) + ";";
-			if (word.Bold) {
-				style += " font-weight: bold;";
-			}
-			if (word.Italic) {
-				style += "  font-style: italic;";
-			}
-			if (word.SyntaxColor.HasBackground) {
-				style += "  background-color: " + ColorToString(word.SyntaxColor.BackgroundColor) + ";";
-			}
-			return style;
-		}
-		
-		static string ColorToString(System.Drawing.Color color)
-		{
-			return "#" + color.R.ToString("x2") + color.G.ToString("x2") + color.B.ToString("x2");
 		}
 	}
 }
