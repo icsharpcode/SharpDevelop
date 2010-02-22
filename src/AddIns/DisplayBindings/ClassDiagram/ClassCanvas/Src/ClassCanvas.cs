@@ -1,8 +1,8 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Itai Bar-Haim" email=""/>
-//     <version>$Revision: 2231 $</version>
+//     <author name="Itai Bar-Haim"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;

@@ -1,3 +1,10 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Markus Palme"/>
+//     <version>$Revision$</version>
+// </file>
+
 using System;
 using System.Windows.Forms;
 using System.Drawing;

@@ -4,6 +4,7 @@
 //     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+
 using ICSharpCode.Profiler.Controller.Data;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,11 @@
-﻿using System;
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Daniel Grunwald"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;

@@ -1,4 +1,11 @@
-﻿/*
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Daniel Grunwald"/>
+//     <version>$Revision$</version>
+// </file>
+
+/*
  * Utworzone przez SharpDevelop.
  * Użytkownik: trecio
  * Data: 2009-07-07

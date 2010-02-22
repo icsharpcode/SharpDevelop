@@ -4,6 +4,7 @@
 //     <owner name="Martin Koníček" email="martin.konicek@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+
 using Expression = ICSharpCode.NRefactory.Ast.Expression;
 using System;
 using System.Collections.Generic;

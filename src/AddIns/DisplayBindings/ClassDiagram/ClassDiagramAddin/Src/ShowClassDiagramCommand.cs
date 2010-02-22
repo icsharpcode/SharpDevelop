@@ -1,11 +1,10 @@
-/*
- * Created by SharpDevelop.
- * User: itai
- * Date: 23/09/2006
- * Time: 12:18
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Itai Bar-Haim"/>
+//     <version>$Revision$</version>
+// </file>
+
 using System;
 using System.IO;
 using System.Windows.Forms;

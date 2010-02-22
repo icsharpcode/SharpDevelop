@@ -4,6 +4,7 @@
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
 //     <version>$Revision$</version>
 // </file>
+
 using Debugger.Interop.CorDebug;
 using System;
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Robert Zaunere" email=""/>
+//     <author name="Robert Zaunere"/>
 //     <version>$Revision$</version>
 // </file>
 

@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbeck�" email="dsrbecky@gmail.com"/>
+//     <author name="David Srbecký"/>
 //     <version>$Revision$</version>
 // </file>
 

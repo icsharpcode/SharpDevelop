@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision: 2858 $</version>
+//     <version>$Revision$</version>
 // </file>
 #region License
 //  

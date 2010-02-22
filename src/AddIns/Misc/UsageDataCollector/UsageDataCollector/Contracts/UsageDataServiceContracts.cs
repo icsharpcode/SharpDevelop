@@ -1,8 +1,8 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Christoph Wille"/>
-//     <version>$Revision: 5513 $</version>
+//     <author name="Christoph Wille"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;

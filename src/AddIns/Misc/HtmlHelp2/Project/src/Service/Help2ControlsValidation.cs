@@ -1,7 +1,7 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mathias Simmack" email="mathias@simmack.de"/>
+//     <author name="Mathias Simmack"/>
 //     <version>$Revision$</version>
 // </file>
 

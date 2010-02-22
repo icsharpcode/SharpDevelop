@@ -1,4 +1,11 @@
-﻿using ICSharpCode.Profiler.Controller.Data;
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Siegfried Pammer"/>
+//     <version>$Revision$</version>
+// </file>
+
+using ICSharpCode.Profiler.Controller.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

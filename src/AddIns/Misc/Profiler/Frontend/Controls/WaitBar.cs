@@ -1,3 +1,10 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Siegfried Pammer"/>
+//     <version>$Revision$</version>
+// </file>
+
 using System;
 using System.Windows;
 using System.Windows.Controls;

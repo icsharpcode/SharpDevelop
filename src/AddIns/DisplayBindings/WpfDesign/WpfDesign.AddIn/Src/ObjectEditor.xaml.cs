@@ -1,4 +1,11 @@
-﻿using System;
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Ivan Shumilin"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
 using System.Windows;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.Services;

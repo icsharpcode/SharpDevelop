@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -39,28 +39,38 @@ namespace CheckFileHeaders
 		{
 			int count = 0;
 			foreach (string file in Directory.GetFiles(dir, "*.cs")) {
-				if (file.EndsWith(".Designer.cs"))
+				if (file.EndsWith(".Designer.cs") || file.EndsWith("\\AssemblyInfo.cs"))
 					continue;
 				count++;
 				ProcessFile(file);
 			}
 			foreach (string subdir in Directory.GetDirectories(dir)) {
-				if (subdir.EndsWith("\\.svn"))
+				if (subdir.EndsWith("\\.svn") || subdir.EndsWith("\\obj"))
 					continue;
-				if (subdir.EndsWith("Libraries\\DockPanel_Src"))
+				if (subdir.EndsWith("Libraries\\AvalonDock"))
 					continue;
 				if (subdir.EndsWith("Libraries\\log4net"))
 					continue;
 				if (subdir.EndsWith("Libraries\\NUnit.Framework"))
 					continue;
+				if (subdir.EndsWith("Libraries\\IQToolkit"))
+					continue;
+				if (subdir.EndsWith("Libraries\\TreeViewAdv"))
+					continue;
 				if (Path.GetFullPath(subdir).EndsWith("src\\Tools"))
 					continue;
 				// Disabled addins:
-				if (subdir.EndsWith("AddIns\\Misc\\Debugger\\TreeListView\\Project"))
-					continue;
 				if (subdir.EndsWith("AddIns\\Misc\\SharpReport"))
 					continue;
 				if (subdir.EndsWith("AddIns\\Misc\\ComponentInspector"))
+					continue;
+				if (subdir.EndsWith("AddIns\\BackendBindings\\CppBinding"))
+					continue;
+				if (subdir.EndsWith(@"AddIns\BackendBindings\CSharpBinding\Project\Resources"))
+					continue;
+				if (subdir.EndsWith(@"Debugger\Debugger.Core\Mono.Cecil"))
+					continue;
+				if (subdir.EndsWith(@"AddIns\DisplayBindings\Data"))
 					continue;
 				count += Run(subdir);
 			}
@@ -104,21 +114,18 @@ namespace CheckFileHeaders
 					do {
 						Console.Write("Enter author name: ");
 						author = Console.ReadLine();
-						if (author == "David") author = "David Srbecky";
-						if (author == "Markus") author = "Markus Palme";
-						if (author == "Peter") author = "Peter Forstmeier";
-						email = CheckAuthor(ref author);
+						author = CheckAuthor(author);
 						ok = author != null;
 					} while (!ok);
 				} else if (ch == 'I') {
 					ignoreCount++;
 					return;
 				} else {
-					author = "none";
+					author = "unknown";
 				}
 			}
 			string oldAuthor = author;
-			email = CheckAuthor(ref author);
+			author = CheckAuthor(author);
 			if (author == null) {
 				Console.WriteLine("Unknown author: " + oldAuthor + " in " + file);
 				Console.WriteLine("    File was ignored.");
@@ -127,24 +134,34 @@ namespace CheckFileHeaders
 			StringBuilder builder = new StringBuilder();
 			builder.AppendLine("// <file>");
 			builder.AppendLine("//     <copyright see=\"prj:///doc/copyright.txt\"/>");
-			builder.AppendLine("//     <license see=\"prj:///doc/license.txt\"/>");
-			builder.Append("//     <owner name=\"");
-			builder.Append(author);
-			builder.Append("\" email=\"");
-			builder.Append(email);
+			if (headerType != 6) { // only if file doesn't have explicit license
+				builder.AppendLine("//     <license see=\"prj:///doc/license.txt\"/>");
+			}
+			
+			if (!string.IsNullOrEmpty(email)) {
+				builder.Append("//     <owner name=\"");
+				builder.Append(author);
+				builder.Append("\" email=\"");
+				builder.Append(email);
+			} else {
+				builder.Append("//     <author name=\"");
+				builder.Append(author);
+			}
 			builder.AppendLine("\"/>");
 			
 			// must be splitted because this file is under version control, too
 			const string versionLine = "//     <version>$Revi" + "sion$</version>";
 			builder.AppendLine(versionLine);
 			builder.AppendLine("// </file>");
-			builder.AppendLine();
+			if (headerType != 6) { // only if file doesn't have explicit license
+				builder.AppendLine();
+			}
 			int offset = FindLineOffset(content, lastLine + 1);
 			builder.Append(content.Substring(offset).Trim());
 			builder.AppendLine();
 			string newContent = builder.ToString();
 			string resettedVersion = resetVersionRegex.Replace(content, versionLine);
-			if (newContent != resettedVersion) {
+			if (newContent.TrimEnd() != resettedVersion.TrimEnd()) {
 				using (StreamWriter w = new StreamWriter(file, false, GetOptimalEncoding(newContent))) {
 					changeCount++;
 					w.Write(newContent);
@@ -152,74 +169,60 @@ namespace CheckFileHeaders
 			}
 		}
 		
-		string CheckAuthor(ref string author)
+		string CheckAuthor(string author)
 		{
 			switch (author) {
-				case "Mike Kr�ger":
-					author = "Mike Kr�ger";
-					return "mike@icsharpcode.net";
-				case "Daniel Grunwald":
-					return "daniel@danielgrunwald.de";
-				case "David Srbeck�":
+				case "none":
+				case "unknown":
+					return "unknown";
+				case "David":
+				case "David Srbecký":
 				case "David Srbecky":
-					author = "David Srbeck�";
-					return "dsrbecky@gmail.com";
-				case "Andrea Paatz":
-					author = "Andrea Paatz";
-					return "andrea@icsharpcode.net";
-				case "Matthew Ward":
-					return "mrward@users.sourceforge.net";
-				case "Mathias Simmack":
-					return "mathias@simmack.de";
-				case "Poul Staugaard":
-					return "poul@staugaard.dk";
-				case "Roman Taranchenko":
-					return "rnt@smtp.ru";
-				case "Markus Palme":
-					return "MarkusPalme@gmx.de";
-				case "David McCloskey":
-					return "dave_a_mccloskey@hotmail.com";
-				case "Shinsaku Nakagawa":
-					return "shinsaku@users.sourceforge.jp";
-				case "Denis ERCHOFF":
-					return "d_erchoff@hotmail.com";
-				case "Georg Brandl":
-					return "g.brandl@gmx.net";
-				case "Ivo Kovacka":
-					return "ivok@internet.sk";
-				case "Scott Ferrett":
-					return "surf@softvelocity.com";
-				case "David Alpert":
-					return "david@spinthemoose.com";
-				case "Luc Morin":
-					return "";
+					return "David Srbecký";
 				case "Peter Forstmeier":
 				case "Forstmeier Peter":
-					author = "Peter Forstmeier";
-					return "peter.forstmeier@t-online.de";
-				case "John Simons":
-					return "johnsimons007@yahoo.com.au";
-				case "Dickon Field":
-					return "";
-				case "Robert Zaunere":
-					return "";
+					return "Peter Forstmeier";
+				case "Daniel":
+				case "Daniel Grunwald":
+					return "Daniel Grunwald";
+				case "Martin":
+				case "Martin Koníček":
+				case "Martin Konícek":
+					return "Martin Koníček";
+				case "Siegfried":
+				case "Siegfried Pammer":
+					return "Siegfried Pammer";
+				case "Itai Bar-Haim":
+				case "itai":
+					return "Itai Bar-Haim";
+					
+				case "Markus Palme":
+				case "Mike Krüger":
+				case "Mathias Simmack":
+				case "David Alpert":
+				case "Matthew Ward":
+				case "Andrea Paatz":
+				case "Ivan Shumilin":
 				case "Christian Hornung":
-					return "";
-				case "none":
-					return "";
+				case "Denis ERCHOFF":
+				case "Georg Brandl":
+				case "Matt Everson":
+				case "Shinsaku Nakagawa":
+				case "Christoph Wille":
+				case "Robert Zaunere":
+				case "Justin Dearing":
+				case "Poul Staugaard":
+				case "Roman Taranchenko":
+				case "John Simons":
+					return author;
 				default:
-					author = null;
 					return null;
 			}
 		}
 		
 		Encoding GetOptimalEncoding(string content)
 		{
-			foreach (char ch in content) {
-				if ((int)ch >= 128)
-					return Encoding.UTF8;
-			}
-			return Encoding.ASCII;
+			return Encoding.UTF8;
 		}
 		
 		int FindLineOffset(string content, int lineNumber)
@@ -235,7 +238,8 @@ namespace CheckFileHeaders
 		}
 		
 		#region AnalyzeHeader
-		Regex xmlRegex = new Regex(@"<owner name=""(\w[\w\s]*\w)"" email=""([\w\s@\.\-]*)""\s?/>");
+		Regex xmlRegex = new Regex(@"<owner name=""(\w[\w\s\-]*\w)"" email=""([\w\s@\.\-]*)""\s?/>");
+		Regex xmlRegex2 = new Regex(@"<(author|owner) name=""(\w[\w\s\-]*\w)""\s?/>");
 		Regex sdRegex = new Regex(@"\* User: (.*)");
 		
 		// Returns:
@@ -245,6 +249,7 @@ namespace CheckFileHeaders
 		// 3 = GPL header (unused)
 		// 4 = unknown header
 		// 5 = outcommented file
+		// 6 = XML header followed by explicit license
 		int AnalyzeHeader(string content, out string author, out string email, out int lastLine)
 		{
 			string content2 = content;
@@ -252,6 +257,7 @@ namespace CheckFileHeaders
 			author = null;
 			email = null;
 			int lineNumber = -1;
+			lastLine = -1;
 			
 			byte state = 0;
 			// state:
@@ -260,6 +266,7 @@ namespace CheckFileHeaders
 			// 2 = parse SharpDevelop header
 			// 3 = search end of GPL header
 			// 4 = block comment start
+			// 5 = parse after XML header
 			using (StringReader r = new StringReader(content)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
@@ -290,11 +297,15 @@ namespace CheckFileHeaders
 					} else if (state == 1) {
 						if (line == "// </file>") {
 							lastLine = lineNumber;
-							return 1;
+							state = 5;
 						} else if (xmlRegex.IsMatch(line)) {
 							Match m = xmlRegex.Match(line);
 							author = m.Groups[1].Value;
 							email = m.Groups[2].Value;
+						} else if (xmlRegex2.IsMatch(line)) {
+							Match m = xmlRegex2.Match(line);
+							author = m.Groups[2].Value;
+							email = null;
 						}
 					} else if (state == 2) {
 						if (line == "*/") {
@@ -319,6 +330,13 @@ namespace CheckFileHeaders
 						} else {
 							break;
 						}
+					} else if (state == 5) {
+						if (line.Length == 0)
+							continue;
+						if (line == "#region License")
+							return 6;
+						else
+							return 1;
 					} else {
 						throw new NotSupportedException();
 					}

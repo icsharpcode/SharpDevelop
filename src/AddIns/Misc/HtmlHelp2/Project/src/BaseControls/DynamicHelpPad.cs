@@ -1,10 +1,7 @@
-using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Editor;
-
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mathias Simmack" email="mathias@simmack.de"/>
+//     <author name="Mathias Simmack"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -27,7 +24,9 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.Project;
 	using MSHelpServices;
-
+	using ICSharpCode.NRefactory;
+	using ICSharpCode.SharpDevelop.Editor;
+	
 	public class ShowDynamicHelpMenuCommand : AbstractMenuCommand
 	{
 		public override void Run()

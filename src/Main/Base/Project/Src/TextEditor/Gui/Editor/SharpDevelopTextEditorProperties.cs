@@ -1,7 +1,7 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="none" email=""/>
+//     <author name="unknown"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -355,5 +355,3 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 	}
 }
-
-

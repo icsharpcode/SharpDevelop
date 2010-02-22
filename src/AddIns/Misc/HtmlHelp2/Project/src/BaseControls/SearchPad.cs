@@ -1,8 +1,7 @@
-using ICSharpCode.SharpDevelop.Editor.Search;
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mathias Simmack" email="mathias@simmack.de"/>
+//     <author name="Mathias Simmack"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -18,6 +17,7 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.Project;
+	using ICSharpCode.SharpDevelop.Editor.Search;
 	using MSHelpServices;
 
 	public class ShowSearchMenuCommand : AbstractMenuCommand

@@ -1,11 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 10/28/2006
- * Time: 11:16 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Daniel Grunwald"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,11 @@
-﻿using System;
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <author name="Siegfried Pammer"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;

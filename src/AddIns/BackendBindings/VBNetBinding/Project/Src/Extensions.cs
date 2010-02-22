@@ -2,7 +2,7 @@
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Markus Palme" email="MarkusPalme@gmx.de"/>
-//     <version>$Revision: 4094 $</version>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
