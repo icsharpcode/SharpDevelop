@@ -92,7 +92,12 @@ namespace ICSharpCode.SharpDevelop
 						markerLength = 2;
 					}
 					
-					parameterList.Add(arg.Substring(markerLength));
+					string param = arg.Substring(markerLength);
+					// work around .NET "feature" that causes trouble with /addindir:"c:\temp\"
+					// http://www.mobzystems.com/code/bugingetcommandlineargs.aspx
+					if (param.EndsWith("\"", StringComparison.Ordinal))
+						param = param.Substring(0, param.Length - 1) + "\\";
+					parameterList.Add(param);
 				} else {
 					requestedFileList.Add(arg);
 				}

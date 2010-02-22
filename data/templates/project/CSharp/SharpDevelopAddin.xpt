@@ -8,7 +8,7 @@
 		<Subcategory>SharpDevelop</Subcategory>
 		<Icon>C#.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.SharpDevelopAddin.Description}</Description>
-		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -28,6 +28,10 @@
 			<Reference Include="System.Drawing" />
 			<Reference Include="System.Windows.Forms" />
 			<Reference Include="System.Xml" />
+			<Reference Include="System.Xaml" />
+			<Reference Include="WindowsBase" />
+			<Reference Include="PresentationCore" />
+			<Reference Include="PresentationFramework" />
 		</ProjectItems>
 		
 		<PropertyGroup>
