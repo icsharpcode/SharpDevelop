@@ -1,0 +1,20 @@
+﻿<AddIn name        = "StressTest"
+       author      = "Daniel Grunwald"
+       url         = ""
+       description = "TODO: Put description here">
+	
+	<Runtime>
+		<Import assembly = "StressTest.dll"/>
+	</Runtime>
+	
+	<Path name="/Workspace/Tools">
+		<MenuItem id="StressTest"
+		          label="Stress Test"
+		          class="StressTest.StressTestMenuCommand"/>
+	</Path>
+	
+	<Path name="/Workspace/AutostartNothingLoaded">
+		<Class id="StressTest"
+		       class="StressTest.StressTestMenuCommand"/>
+	</Path>
+</AddIn>

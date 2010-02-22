@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="StressTest.UserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<ScrollViewer>
+		<StackPanel>
+			<StackPanel Orientation="Horizontal"><Label>Repetitions:</Label><TextBox Name="repetitionsTextBox" Text="1" Width="40"/></StackPanel>
+			<Button
+				Content="Open File"
+				Height="23"
+				Click="openFileButton_Click" />
+			<Button
+				Content="Type Comment in C# File"
+				Height="23"
+				Click="TypeTextButton_Click" />
+			<Button
+				Content="Erasing Text in C# code"
+				Height="23"
+				Click="EraseTextButton_Click" />
+			<Button
+				Content="Typing C# code"
+				Height="23"
+				Click="TypeCodeButton_Click" />
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>
