@@ -136,9 +136,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextDocumentWeakEventManager.Changing)) {
-				// put redraw into background so that other input events can be handled before the redraw
+				// TODO: put redraw into background so that other input events can be handled before the redraw.
+				// Unfortunately the "easy" approach (just use DispatcherPriority.Background) here makes the editor twice as slow because
+				// the caret position change forces an immediate redraw, and the text input then forces a background redraw.
+				// When fixing this, make sure performance on the SharpDevelop "type text in C# comment" stress test doesn't get significantly worse.
 				DocumentChangeEventArgs change = (DocumentChangeEventArgs)e;
-				Redraw(change.Offset, change.RemovalLength, DispatcherPriority.Background);
+				Redraw(change.Offset, change.RemovalLength, DispatcherPriority.Normal);
 				return true;
 			} else if (managerType == typeof(PropertyChangedWeakEventManager)) {
 				OnOptionChanged((PropertyChangedEventArgs)e);
