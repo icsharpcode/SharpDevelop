@@ -157,6 +157,11 @@ namespace ICSharpCode.Reports.Core {
 				tableContainer.DataNavigator = nav;
 				tableContainer.Parent = base.CurrentSection;
 				tableContainer.ExpressionEvaluatorFacade = base.ExpressionFassade;
+				if (rpea.SinglePage.PageNumber == 1) {
+					tableContainer.StartLayoutAt(base.Sections[2]);
+				} else {
+					tableContainer.StartLayoutAt(base.Sections[1]);
+				}
 				
 				tableContainer.RenderTable(base.CurrentSection,this.SectionBounds,rpea,this.Layout);
 				this.ReportDocument.DetailsDone = true;
@@ -183,7 +188,7 @@ namespace ICSharpCode.Reports.Core {
 					                             base.CurrentSection.Size.Height);
 
 					
-					if (AbstractRenderer.IsPageFull(sectionRect,base.SectionBounds)) {
+					if (PrintHelper.IsPageFull(sectionRect,base.SectionBounds)) {
 						AbstractRenderer.PageBreak(rpea);
 						this.RemoveSectionEvents();
 						return;

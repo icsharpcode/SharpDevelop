@@ -76,7 +76,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				Rectangle r = new Rectangle(section.Location.X,section.SectionOffset,
 				                            section.Size.Width,section.Size.Height);
 				
-				if (base.IsPageFull(r)) {
+				if (PrintHelper.IsPageFull(r,base.SectionBounds)) {
 					base.FirePageFull(mylist);
 					section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
 					mylist.Clear();

@@ -81,7 +81,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							
 							PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
 							
-							if (this.IsPageFull(new Rectangle(new Point (row.Location.X,currentPosition.Y),row.Size))) {
+							if (PrintHelper.IsPageFull(new Rectangle(new Point (row.Location.X,currentPosition.Y),row.Size),base.SectionBounds)) {
 								base.FirePageFull(mylist);
 								mylist.Clear();
 								currentPosition = PrintTableHeader(mylist,headerRow,

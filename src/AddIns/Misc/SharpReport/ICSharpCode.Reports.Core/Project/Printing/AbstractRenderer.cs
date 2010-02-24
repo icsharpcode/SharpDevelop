@@ -197,16 +197,6 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		
-		public static bool IsPageFull (Rectangle rectangle,SectionBounds bounds)
-		{
-			if (rectangle.Bottom > bounds.PageFooterRectangle.Top) {
-				return true;
-			}
-			return false;
-		}
-		
-		
 		protected void PrintNoDataMessage(PrintPageEventArgs e)
 		{
 			if (e == null) {

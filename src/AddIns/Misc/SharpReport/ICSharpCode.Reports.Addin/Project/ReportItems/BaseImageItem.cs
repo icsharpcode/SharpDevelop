@@ -95,6 +95,22 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
+		private static Bitmap FakeImage(Size size)
+		{
+			Bitmap b = new Bitmap (size.Width,size.Height);
+			using (Graphics g = Graphics.FromImage (b)){
+				g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+				g.DrawRectangle (new Pen(Color.Black, 1),
+				                 1,1,size.Width -2,size.Height -2);
+				
+				g.DrawString("<Database>",GlobalValues.DefaultFont,
+				             new SolidBrush(Color.Gray),
+				             new RectangleF(2,2,size.Width,size.Height) );
+			}
+			return b;
+		}
+		
+		
 		private Image LoadImage ()
 		{
 			try {
@@ -120,6 +136,9 @@ namespace ICSharpCode.Reports.Addin
 		[XmlIgnoreAttribute]
 		public Image Image {
 			get {
+				if (this.imageSource == GlobalEnums.ImageSource.Database ) {
+					this.image = FakeImage(base.Size);
+				}
 				if (this.image != null) {
 					return image;
 				} else {

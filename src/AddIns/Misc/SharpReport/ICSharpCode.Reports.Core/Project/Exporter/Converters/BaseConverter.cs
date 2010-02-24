@@ -55,15 +55,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected bool IsPageFull (Rectangle rectangle)
-		{
-			if (rectangle.Bottom > SectionBounds.PageFooterRectangle.Top) {
-				return true;
-			}
-			return false;
-		}
-		
-		
 		protected void FirePageFull (ExporterCollection items)
 		{
 			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));
