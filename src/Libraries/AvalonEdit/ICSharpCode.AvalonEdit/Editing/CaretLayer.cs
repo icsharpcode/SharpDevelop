@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
@@ -21,16 +22,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 		bool isVisible;
 		Rect caretRectangle;
 		
-		DoubleAnimationUsingKeyFrames blinkAnimation;
+		DispatcherTimer caretBlinkTimer = new DispatcherTimer();
+		bool blink;
 		
 		public CaretLayer(TextView textView) : base(textView, KnownLayer.Caret)
 		{
 			this.IsHitTestVisible = false;
-			
-			blinkAnimation = new DoubleAnimationUsingKeyFrames();
-			blinkAnimation.KeyFrames.Add(new DiscreteDoubleKeyFrame(1, KeyTime.FromPercent(0)));
-			blinkAnimation.KeyFrames.Add(new DiscreteDoubleKeyFrame(0, KeyTime.FromPercent(0.5)));
-			blinkAnimation.RepeatBehavior = RepeatBehavior.Forever;
+			caretBlinkTimer.Tick += new EventHandler(caretBlinkTimer_Tick);
+		}
+
+		void caretBlinkTimer_Tick(object sender, EventArgs e)
+		{
+			blink = !blink;
+			InvalidateVisual();
 		}
 		
 		public void Show(Rect caretRectangle)
@@ -54,16 +58,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			TimeSpan blinkTime = Win32.CaretBlinkTime;
 			if (blinkTime.TotalMilliseconds >= 0) {
-				BeginAnimation(OpacityProperty, null);
-				// duration = 2*blink time
-				blinkAnimation.Duration = new Duration(blinkTime + blinkTime);
-				BeginAnimation(OpacityProperty, blinkAnimation);
+				blink = false;
+				caretBlinkTimer_Tick(null, null);
+				caretBlinkTimer.Interval = blinkTime;
+				caretBlinkTimer.Start();
 			}
 		}
 		
 		void StopBlinkAnimation()
 		{
-			BeginAnimation(OpacityProperty, null);
+			caretBlinkTimer.Stop();
 		}
 		
 		internal Brush CaretBrush;
@@ -71,7 +75,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			base.OnRender(drawingContext);
-			if (isVisible) {
+			if (isVisible && blink) {
 				Brush caretBrush = this.CaretBrush;
 				if (caretBrush == null)
 					caretBrush = (Brush)textView.GetValue(TextBlock.ForegroundProperty);
