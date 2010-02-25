@@ -37,7 +37,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		static void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
 		{
 			CommandBindings.Add(new CommandBinding(command, handler));
-			InputBindings.Add(new KeyBinding(command, key, modifiers));
+			InputBindings.Add(TextAreaDefaultInputHandler.CreateFrozenKeyBinding(command, modifiers, key));
 		}
 		
 		static CaretNavigationCommandHandler()

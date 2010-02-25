@@ -60,7 +60,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			var editingKeyBindings = this.TextArea.DefaultInputHandler.Editing.InputBindings.OfType<KeyBinding>();
 			var tabBinding = editingKeyBindings.Single(b => b.Key == Key.Tab && b.Modifiers == ModifierKeys.None);
-			tabBinding.Command = new CustomTabCommand(this, tabBinding.Command);
+			this.TextArea.DefaultInputHandler.Editing.InputBindings.Remove(tabBinding);
+			var newTabBinding = new KeyBinding(new CustomTabCommand(this, tabBinding.Command), tabBinding.Key, tabBinding.Modifiers);
+			this.TextArea.DefaultInputHandler.Editing.InputBindings.Add(newTabBinding);
 		}
 		
 		protected override void OnOptionChanged(PropertyChangedEventArgs e)

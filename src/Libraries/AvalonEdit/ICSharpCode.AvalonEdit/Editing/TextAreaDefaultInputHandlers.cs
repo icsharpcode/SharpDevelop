@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Windows;
 using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Editing
@@ -42,6 +44,17 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Undo, ExecuteUndo, CanExecuteUndo));
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Redo, ExecuteRedo, CanExecuteRedo));
+		}
+		
+		internal static KeyBinding CreateFrozenKeyBinding(ICommand command, ModifierKeys modifiers, Key key)
+		{
+			KeyBinding kb = new KeyBinding(command, key, modifiers);
+			// Mark KeyBindings as frozen because they're shared between multiple editor instances.
+			// KeyBinding derives from Freezable only in .NET 4, so we have to use this little trick:
+			Freezable f = ((object)kb) as Freezable;
+			if (f != null)
+				f.Freeze();
+			return kb;
 		}
 		
 		#region Undo / Redo
