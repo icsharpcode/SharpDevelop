@@ -136,5 +136,20 @@ namespace StressTest
 			}
 			vc.WorkbenchWindow.CloseWindow(true);
 		}
+		
+		void SwitchLayoutButton_Click(object sender, RoutedEventArgs e)
+		{
+			Run("Switch Layout", SwitchLayout());
+		}
+		
+		IEnumerable<DispatcherPriority> SwitchLayout()
+		{
+			for (int i = 0; i < Repetitions; i++) {
+				LayoutConfiguration.CurrentLayoutName = "Debug";
+				yield return DispatcherPriority.SystemIdle;
+				LayoutConfiguration.CurrentLayoutName = "Default";
+				yield return DispatcherPriority.SystemIdle;
+			}
+		}
 	}
 }

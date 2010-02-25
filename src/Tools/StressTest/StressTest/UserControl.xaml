@@ -4,22 +4,34 @@
 	<ScrollViewer>
 		<StackPanel>
 			<StackPanel Orientation="Horizontal"><Label>Repetitions:</Label><TextBox Name="repetitionsTextBox" Text="1" Width="40"/></StackPanel>
-			<Button
-				Content="Open File"
-				Height="23"
-				Click="openFileButton_Click" />
-			<Button
-				Content="Type Comment in C# File"
-				Height="23"
-				Click="TypeTextButton_Click" />
-			<Button
-				Content="Erasing Text in C# code"
-				Height="23"
-				Click="EraseTextButton_Click" />
-			<Button
-				Content="Typing C# code"
-				Height="23"
-				Click="TypeCodeButton_Click" />
+			<Expander Header="Editor" IsExpanded="True">
+				<StackPanel>
+					<Button
+						Content="Open File"
+						Height="23"
+						Click="openFileButton_Click" />
+					<Button
+						Content="Type Comment in C# File"
+						Height="23"
+						Click="TypeTextButton_Click" />
+					<Button
+						Content="Erasing Text in C# code"
+						Height="23"
+						Click="EraseTextButton_Click" />
+					<Button
+						Content="Typing C# code"
+						Height="23"
+						Click="TypeCodeButton_Click" />
+				</StackPanel>
+			</Expander>
+			<Expander Header="Workbench" IsExpanded="True">
+				<StackPanel>
+					<Button
+						Content="Switch Layout"
+						Height="23"
+						Click="SwitchLayoutButton_Click" />
+				</StackPanel>
+			</Expander>
 		</StackPanel>
 	</ScrollViewer>
 </UserControl>
