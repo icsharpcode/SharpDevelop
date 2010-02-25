@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get;
 		}
 		
+		event EventHandler ActiveWorkbenchWindowChanged;
 		event EventHandler ActiveContentChanged;
 		
 		/// <summary>

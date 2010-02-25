@@ -89,12 +89,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			NavigationService.InitializeService();
 			
 			workbench.ActiveContentChanged += delegate {
+				Debug.WriteLine("ActiveContentChanged to " + workbench.ActiveContent);
 				LoggingService.Debug("ActiveContentChanged to " + workbench.ActiveContent);
 			};
 			workbench.ActiveViewContentChanged += delegate {
+				Debug.WriteLine("ActiveViewContentChanged to " + workbench.ActiveViewContent);
 				LoggingService.Debug("ActiveViewContentChanged to " + workbench.ActiveViewContent);
 			};
 			workbench.ActiveWorkbenchWindowChanged += delegate {
+				Debug.WriteLine("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
 				LoggingService.Debug("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
 			};
 		}

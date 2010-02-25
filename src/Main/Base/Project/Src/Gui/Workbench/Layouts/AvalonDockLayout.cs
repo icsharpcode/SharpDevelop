@@ -63,26 +63,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void dockingManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "ActiveContent") {
-				UpdateActiveWorkbenchWindow();
 				if (ActiveContentChanged != null)
 					ActiveContentChanged(this, e);
 				CommandManager.InvalidateRequerySuggested();
 			} else if (e.PropertyName == "ActiveDocument") {
-				UpdateActiveWorkbenchWindow();
+				if (ActiveWorkbenchWindowChanged != null)
+					ActiveWorkbenchWindowChanged(this, e);
 				CommandManager.InvalidateRequerySuggested();
 			}
 		}
 		
-		public event EventHandler ActiveContentChanged;
+		public event EventHandler ActiveWorkbenchWindowChanged;
 		
-		public IWorkbenchWindow ActiveWorkbenchWindow { get; private set; }
-		
-		void UpdateActiveWorkbenchWindow()
-		{
-			IWorkbenchWindow window = dockingManager.ActiveDocument as IWorkbenchWindow;
-			if (window != null)
-				this.ActiveWorkbenchWindow = window;
+		public IWorkbenchWindow ActiveWorkbenchWindow { 
+			get {
+				return dockingManager.ActiveDocument as IWorkbenchWindow;
+			}
 		}
+		
+		public event EventHandler ActiveContentChanged;
 		
 		public object ActiveContent {
 			get {
@@ -240,10 +239,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void window_Closed(object sender, EventArgs e)
 		{
 			workbenchWindows.Remove((IWorkbenchWindow)sender);
-			if (this.ActiveWorkbenchWindow == sender) {
-				this.ActiveWorkbenchWindow = null;
-				UpdateActiveWorkbenchWindow();
-			}
 		}
 		
 		public void LoadConfiguration()
