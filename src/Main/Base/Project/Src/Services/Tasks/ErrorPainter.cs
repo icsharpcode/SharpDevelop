@@ -138,8 +138,11 @@ namespace ICSharpCode.SharpDevelop
 				int offset = textEditor.Document.PositionToOffset(task.Line, task.Column);
 				int length = textEditor.Document.GetWordAt(offset).Length;
 				
-				if (length < 2)
-					length = 2;
+				if (length < 2) {
+					// marker should be at least 2 characters long, but take care that we don't make
+					// it longer than the document
+					length = Math.Min(2, textEditor.Document.TextLength - offset);
+				}
 				
 				ITextMarker marker = this.markerService.Create(offset, length);
 				
