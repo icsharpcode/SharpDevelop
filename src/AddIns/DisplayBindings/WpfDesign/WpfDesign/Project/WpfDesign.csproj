@@ -130,4 +130,7 @@
   <ItemGroup>
     <CodeAnalysisDictionary Include="Configuration\CodeAnalysisDictionary.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="ProfilingSessions\Session20100219_112744.sdps" />
+  </ItemGroup>
 </Project>

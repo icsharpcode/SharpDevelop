@@ -7,6 +7,8 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,11 +21,15 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	/// <summary>
 	/// Adorner that displays the blue bar next to grids that can be used to create new rows/column.
 	/// </summary>
-	public class GridRailAdorner : Control
+	public class GridRailAdorner : FrameworkElement
 	{
 		static GridRailAdorner()
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(GridRailAdorner), new FrameworkPropertyMetadata(typeof(GridRailAdorner)));
+			bgBrush = new SolidColorBrush(Color.FromArgb(0x30, 0x20, 0x20, 0xff));
+			bgBrush.Freeze();
+			
+			selBrush = new SolidColorBrush(Color.FromArgb(0xC0, 0xff, 0xb7, 0x4f));
+			selBrush.Freeze();
 		}
 		
 		readonly DesignItem gridItem;
@@ -31,6 +37,10 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		readonly AdornerPanel adornerPanel;
 		readonly GridSplitterAdorner previewAdorner;
 		readonly Orientation orientation;
+		readonly GridUnitSelector unitSelector;
+		
+		static readonly SolidColorBrush bgBrush;
+		static readonly SolidColorBrush selBrush;
 		
 		public const double RailSize = 10;
 		public const double RailDistance = 6;
@@ -46,21 +56,106 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			this.adornerPanel = adornerPanel;
 			this.orientation = orientation;
 			
+			this.unitSelector = new GridUnitSelector(this);
+			
+			adornerPanel.Children.Add(unitSelector);
+			
+			gridItem.Services.Selection.SelectionChanged += delegate {
+				if (orientation == Orientation.Vertical) {
+					if (gridItem.Properties["RowDefinitions"].CollectionElements.Any(e => gridItem.Services.Selection.IsComponentSelected(e)))
+						unitSelector.Visibility = Visibility.Visible;
+					else
+						unitSelector.Visibility = Visibility.Hidden;
+				} else {
+					if (gridItem.Properties["ColumnDefinitions"].CollectionElements.Any(e => gridItem.Services.Selection.IsComponentSelected(e)))
+						unitSelector.Visibility = Visibility.Visible;
+					else
+						unitSelector.Visibility = Visibility.Hidden;
+				}
+				InvalidateVisual();
+			};
+			
 			if (orientation == Orientation.Horizontal) {
 				this.Height = RailSize;
-				previewAdorner = new GridColumnSplitterAdorner(gridItem, null, null);
+				previewAdorner = new GridColumnSplitterAdorner(this, gridItem, null, null);
 			} else { // vertical
 				this.Width = RailSize;
-				previewAdorner = new GridRowSplitterAdorner(gridItem, null, null);
+				previewAdorner = new GridRowSplitterAdorner(this, gridItem, null, null);
 			}
+			unitSelector.Orientation = orientation;
 			previewAdorner.IsPreview = true;
 			previewAdorner.IsHitTestVisible = false;
+		}
+		
+		protected override void OnRender(DrawingContext drawingContext)
+		{
+			base.OnRender(drawingContext);
+			
+			if (orientation == Orientation.Horizontal) {
+				Rect bgRect = new Rect(0, 0, grid.ActualWidth, RailSize);
+				drawingContext.DrawRectangle(bgBrush, null, bgRect);
+				
+				DesignItemProperty colCollection = gridItem.Properties["ColumnDefinitions"];
+				foreach (var colItem in colCollection.CollectionElements) {
+					ColumnDefinition column = colItem.Component as ColumnDefinition;
+					Rect selRect = new Rect(column.Offset, 0, column.ActualWidth, RailSize);
+					GridLength len = (GridLength)column.GetValue(ColumnDefinition.WidthProperty);
+					
+					FormattedText text = new FormattedText(GridLengthToText(len), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Sergio UI"), 10, Brushes.Black);
+					text.TextAlignment = TextAlignment.Center;
+					if (gridItem.Services.Selection.IsComponentSelected(colItem)) {
+						drawingContext.DrawRectangle(selBrush, null, selRect);
+					}
+					drawingContext.DrawText(text, new Point(column.Offset + column.ActualWidth / 2, 0));
+				}
+			} else {
+				Rect bgRect = new Rect(0, 0, RailSize, grid.ActualHeight);
+				drawingContext.DrawRectangle(bgBrush, null, bgRect);
+				
+				DesignItemProperty rowCollection = gridItem.Properties["RowDefinitions"];
+				foreach (var rowItem in rowCollection.CollectionElements) {
+					RowDefinition row = rowItem.Component as RowDefinition;
+					Rect selRect = new Rect(0, row.Offset, RailSize, row.ActualHeight);
+					
+					GridLength len = (GridLength)row.GetValue(RowDefinition.HeightProperty);
+					
+					FormattedText text = new FormattedText(GridLengthToText(len), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Sergio UI"), 10, Brushes.Black);
+					text.TextAlignment = TextAlignment.Center;
+					if (gridItem.Services.Selection.IsComponentSelected(rowItem)) {
+						drawingContext.DrawRectangle(selBrush, null, selRect);
+					}
+					drawingContext.PushTransform(new RotateTransform(-270));
+					drawingContext.PushTransform(new TranslateTransform(0, -10));
+					drawingContext.DrawText(text, new Point(row.Offset + row.ActualHeight / 2, 0));
+					drawingContext.Pop();
+					drawingContext.Pop();
+				}
+			}
 		}
 		
 		#region Handle mouse events to add a new row/column
 		protected override void OnMouseEnter(MouseEventArgs e)
 		{
 			base.OnMouseEnter(e);
+			
+			if (orientation == Orientation.Vertical) {
+				double insertionPosition = e.GetPosition(this).Y;
+				RowDefinition current = grid.RowDefinitions
+					.FirstOrDefault(r => insertionPosition >= r.Offset &&
+					                insertionPosition <= (r.Offset + r.ActualHeight));
+				
+				if (current == null || !gridItem.Services.Selection.IsComponentSelected(gridItem.Services.Component.GetDesignItem(current)))
+					return;
+			} else {
+				double insertionPosition = e.GetPosition(this).X;
+				ColumnDefinition current = grid.ColumnDefinitions
+					.FirstOrDefault(r => insertionPosition >= r.Offset &&
+					                insertionPosition <= (r.Offset + r.ActualWidth));
+				
+				if (current == null || !gridItem.Services.Selection.IsComponentSelected(gridItem.Services.Component.GetDesignItem(current)))
+					return;
+			}
+			
 			adornerPanel.Children.Add(previewAdorner);
 		}
 		
@@ -68,20 +163,48 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		{
 			base.OnMouseMove(e);
 			RelativePlacement rp = new RelativePlacement();
+			RelativePlacement rpUnitSelector = new RelativePlacement();
 			if (orientation == Orientation.Vertical) {
+				double insertionPosition = e.GetPosition(this).Y;
+				RowDefinition current = grid.RowDefinitions
+					.FirstOrDefault(r => insertionPosition >= r.Offset &&
+					                insertionPosition <= (r.Offset + r.ActualHeight));
+				
+				DesignItem component;
+				
+				if (current == null || !gridItem.Services.Selection.IsComponentSelected(component = gridItem.Services.Component.GetDesignItem(current)))
+					return;
+				
 				rp.XOffset = -(RailSize + RailDistance);
 				rp.WidthOffset = RailSize + RailDistance;
 				rp.WidthRelativeToContentWidth = 1;
 				rp.HeightOffset = SplitterWidth;
 				rp.YOffset = e.GetPosition(this).Y - SplitterWidth / 2;
+				
+				rpUnitSelector.XOffset = -(RailSize + RailDistance) * 2.75;
+				rpUnitSelector.WidthOffset = RailSize + RailDistance;
+				rpUnitSelector.WidthRelativeToContentWidth = 1;
+				rpUnitSelector.HeightOffset = 55;
+				rpUnitSelector.YOffset = current.Offset + current.ActualHeight / 2 - 25;
+				unitSelector.SelectedItem = component;
 			} else {
+				double insertionPosition = e.GetPosition(this).X;
+				ColumnDefinition current = grid.ColumnDefinitions
+					.FirstOrDefault(r => insertionPosition >= r.Offset &&
+					                insertionPosition <= (r.Offset + r.ActualWidth));
+				
+				if (current == null || !gridItem.Services.Selection.IsComponentSelected(gridItem.Services.Component.GetDesignItem(current)))
+					return;
+				
 				rp.YOffset = -(RailSize + RailDistance);
 				rp.HeightOffset = RailSize + RailDistance;
 				rp.HeightRelativeToContentHeight = 1;
 				rp.WidthOffset = SplitterWidth;
 				rp.XOffset = e.GetPosition(this).X - SplitterWidth / 2;
 			}
+			
 			AdornerPanel.SetPlacement(previewAdorner, rp);
+			AdornerPanel.SetPlacement(unitSelector, rpUnitSelector);
 		}
 		
 		protected override void OnMouseLeave(MouseEventArgs e)
@@ -97,14 +220,42 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			Focus();
 			adornerPanel.Children.Remove(previewAdorner);
 			if (orientation == Orientation.Vertical) {
-				using (ChangeGroup changeGroup = gridItem.OpenGroup("Split grid row")) {
-					DesignItemProperty rowCollection = gridItem.Properties["RowDefinitions"];
+				double insertionPosition = e.GetPosition(this).Y;
+				DesignItemProperty rowCollection = gridItem.Properties["RowDefinitions"];
+				
+				DesignItem currentRow = null;
+				
+				using (ChangeGroup changeGroup = gridItem.OpenGroup("Change selection")) {
 					if (rowCollection.CollectionElements.Count == 0) {
 						DesignItem firstRow = gridItem.Services.Component.RegisterComponentForDesigner(new RowDefinition());
 						rowCollection.CollectionElements.Add(firstRow);
 						grid.UpdateLayout(); // let WPF assign firstRow.ActualHeight
+						
+						currentRow = firstRow;
+					} else {
+						RowDefinition current = grid.RowDefinitions
+							.FirstOrDefault(r => insertionPosition >= r.Offset &&
+							                insertionPosition <= (r.Offset + r.ActualHeight));
+						if (current != null)
+							currentRow = gridItem.Services.Component.GetDesignItem(current);
 					}
-					double insertionPosition = e.GetPosition(this).Y;
+					
+					if (currentRow == null)
+						currentRow = gridItem.Services.Component.GetDesignItem(grid.RowDefinitions.Last());
+					
+					unitSelector.SelectedItem = currentRow;
+					
+					if (!gridItem.Services.Selection.IsComponentSelected(currentRow)) {
+						gridItem.Services.Selection.SetSelectedComponents(new DesignItem[] { currentRow }, SelectionTypes.Auto);
+						if (!adornerPanel.Children.Contains(previewAdorner))
+							adornerPanel.Children.Add(previewAdorner);
+						
+						OnMouseMove(e);
+						return;
+					}
+				}
+				
+				using (ChangeGroup changeGroup = gridItem.OpenGroup("Split grid row")) {
 					for (int i = 0; i < grid.RowDefinitions.Count; i++) {
 						RowDefinition row = grid.RowDefinitions[i];
 						if (row.Offset > insertionPosition) continue;
@@ -126,14 +277,42 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 					}
 				}
 			} else {
-				using (ChangeGroup changeGroup = gridItem.OpenGroup("Split grid column")) {
-					DesignItemProperty columnCollection = gridItem.Properties["ColumnDefinitions"];
+				double insertionPosition = e.GetPosition(this).X;
+				DesignItemProperty columnCollection = gridItem.Properties["ColumnDefinitions"];
+				
+				DesignItem currentColumn = null;
+				
+				using (ChangeGroup changeGroup = gridItem.OpenGroup("Change selection")) {
 					if (columnCollection.CollectionElements.Count == 0) {
 						DesignItem firstColumn = gridItem.Services.Component.RegisterComponentForDesigner(new ColumnDefinition());
 						columnCollection.CollectionElements.Add(firstColumn);
 						grid.UpdateLayout(); // let WPF assign firstColumn.ActualWidth
+						
+						currentColumn = firstColumn;
+					} else {
+						ColumnDefinition current = grid.ColumnDefinitions
+							.FirstOrDefault(r => insertionPosition >= r.Offset &&
+							                insertionPosition <= (r.Offset + r.ActualWidth));
+						if (current != null)
+							currentColumn = gridItem.Services.Component.GetDesignItem(current);
 					}
-					double insertionPosition = e.GetPosition(this).X;
+					
+					if (currentColumn == null)
+						currentColumn = gridItem.Services.Component.GetDesignItem(grid.ColumnDefinitions.Last());
+					
+					unitSelector.SelectedItem = currentColumn;
+					
+					if (!gridItem.Services.Selection.IsComponentSelected(currentColumn)) {
+						gridItem.Services.Selection.SetSelectedComponents(new DesignItem[] { currentColumn }, SelectionTypes.Auto);
+						if (!adornerPanel.Children.Contains(previewAdorner))
+							adornerPanel.Children.Add(previewAdorner);
+						OnMouseMove(e);
+						InvalidateVisual();
+						return;
+					}
+				}
+				
+				using (ChangeGroup changeGroup = gridItem.OpenGroup("Split grid column")) {
 					for (int i = 0; i < grid.ColumnDefinitions.Count; i++) {
 						ColumnDefinition column = grid.ColumnDefinitions[i];
 						if (column.Offset > insertionPosition) continue;
@@ -171,16 +350,61 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		}
 		
 		static void SplitLength(GridLength oldLength, double insertionPosition, double oldActualValue,
-		                 out GridLength newLength1, out GridLength newLength2)
+		                        out GridLength newLength1, out GridLength newLength2)
 		{
 			if (oldLength.IsAuto) {
 				oldLength = new GridLength(oldActualValue);
 			}
 			double percentage = insertionPosition / oldActualValue;
-			newLength1 = new GridLength(oldLength.Value * percentage, oldLength.GridUnitType);
-			newLength2 = new GridLength(oldLength.Value - newLength1.Value, oldLength.GridUnitType);
+			newLength1 = new GridLength((int)(oldLength.Value * percentage), oldLength.GridUnitType);
+			newLength2 = new GridLength((int)(oldLength.Value - newLength1.Value), oldLength.GridUnitType);
 		}
 		#endregion
+		
+		string GridLengthToText(GridLength len)
+		{
+			switch (len.GridUnitType) {
+				case GridUnitType.Auto:
+					return "Auto";
+				case GridUnitType.Star:
+					return len.Value == 1 ? "*" : Math.Round(len.Value, 2) + "*";
+				case GridUnitType.Pixel:
+					return Math.Round(len.Value, 2) + "px";
+			}
+			return string.Empty;
+		}
+		
+		public void SetGridLengthUnit(GridUnitType unit)
+		{
+			DesignItem item = unitSelector.SelectedItem;
+			GridLength value;
+			
+			grid.UpdateLayout();
+			
+			Debug.Assert(item != null);
+			
+			if (orientation == Orientation.Vertical) {
+				value = (GridLength)item.Properties[RowDefinition.HeightProperty].ValueOnInstance;
+
+				if (unit == GridUnitType.Auto)
+					value = GridLength.Auto;
+				else
+					value = new GridLength(value.Value, unit);
+
+				item.Properties[RowDefinition.HeightProperty].SetValue(value);
+			} else {
+				switch (unit) {
+					case GridUnitType.Auto:
+						(item.Component as ColumnDefinition).SetValue(ColumnDefinition.WidthProperty, GridLength.Auto);
+						break;
+					default:
+						
+						break;
+				}
+			}
+			grid.UpdateLayout();
+			InvalidateVisual();
+		}
 	}
 	
 	public abstract class GridSplitterAdorner : Control
@@ -191,14 +415,16 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		protected readonly Grid grid;
 		protected readonly DesignItem gridItem;
 		protected readonly DesignItem firstRow, secondRow; // can also be columns
+		protected readonly GridRailAdorner rail;
 		
-		internal GridSplitterAdorner(DesignItem gridItem, DesignItem firstRow, DesignItem secondRow)
+		internal GridSplitterAdorner(GridRailAdorner rail, DesignItem gridItem, DesignItem firstRow, DesignItem secondRow)
 		{
 			Debug.Assert(gridItem != null);
 			this.grid = (Grid)gridItem.Component;
 			this.gridItem = gridItem;
 			this.firstRow = firstRow;
 			this.secondRow = secondRow;
+			this.rail = rail;
 		}
 		
 		public bool IsPreview {
@@ -268,7 +494,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				new2 = new GridLength(originalPixelSize2 - delta);
 			firstRow.Properties[RowColumnSizeProperty].SetValue(new1);
 			secondRow.Properties[RowColumnSizeProperty].SetValue(new2);
-			((UIElement)VisualTreeHelper.GetParent(this)).InvalidateArrange();
+			UIElement e = ((UIElement)VisualTreeHelper.GetParent(this));
+			e.InvalidateArrange();
+			rail.InvalidateVisual();
 		}
 		
 		protected override void OnMouseUp(MouseButtonEventArgs e)
@@ -312,8 +540,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			CursorProperty.OverrideMetadata(typeof(GridRowSplitterAdorner), new FrameworkPropertyMetadata(Cursors.SizeNS));
 		}
 		
-		
-		internal GridRowSplitterAdorner(DesignItem gridItem, DesignItem firstRow, DesignItem secondRow) : base(gridItem, firstRow, secondRow)
+		internal GridRowSplitterAdorner(GridRailAdorner rail, DesignItem gridItem, DesignItem firstRow, DesignItem secondRow)
+			: base(rail, gridItem, firstRow, secondRow)
 		{
 		}
 		
@@ -345,7 +573,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			CursorProperty.OverrideMetadata(typeof(GridColumnSplitterAdorner), new FrameworkPropertyMetadata(Cursors.SizeWE));
 		}
 		
-		internal GridColumnSplitterAdorner(DesignItem gridItem, DesignItem firstRow, DesignItem secondRow) : base(gridItem, firstRow, secondRow)
+		internal GridColumnSplitterAdorner(GridRailAdorner rail, DesignItem gridItem, DesignItem firstRow, DesignItem secondRow)
+			: base(rail, gridItem, firstRow, secondRow)
 		{
 		}
 		

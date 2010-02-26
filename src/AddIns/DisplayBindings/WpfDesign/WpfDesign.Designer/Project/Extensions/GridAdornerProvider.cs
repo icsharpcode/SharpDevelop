@@ -117,7 +117,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					IList<DesignItem> col = this.ExtendedItem.Properties["RowDefinitions"].CollectionElements;
 					for (int i = 1; i < grid.RowDefinitions.Count; i++) {
 						RowDefinition row = grid.RowDefinitions[i];
-						GridRowSplitterAdorner splitter = new GridRowSplitterAdorner(this.ExtendedItem, col[i-1], col[i]);
+						GridRowSplitterAdorner splitter = new GridRowSplitterAdorner(leftBar, this.ExtendedItem, col[i-1], col[i]);
 						AdornerPanel.SetPlacement(splitter, new RowSplitterPlacement(row));
 						adornerPanel.Children.Add(splitter);
 						splitterList.Add(splitter);
@@ -125,7 +125,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					col = this.ExtendedItem.Properties["ColumnDefinitions"].CollectionElements;
 					for (int i = 1; i < grid.ColumnDefinitions.Count; i++) {
 						ColumnDefinition column = grid.ColumnDefinitions[i];
-						GridColumnSplitterAdorner splitter = new GridColumnSplitterAdorner(this.ExtendedItem, col[i-1], col[i]);
+						GridColumnSplitterAdorner splitter = new GridColumnSplitterAdorner(topBar, this.ExtendedItem, col[i-1], col[i]);
 						AdornerPanel.SetPlacement(splitter, new ColumnSplitterPlacement(column));
 						adornerPanel.Children.Add(splitter);
 						splitterList.Add(splitter);

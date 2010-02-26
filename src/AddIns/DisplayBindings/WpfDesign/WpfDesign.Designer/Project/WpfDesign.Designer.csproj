@@ -88,6 +88,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\GridAdorner.cs" />
+    <Compile Include="Controls\GridUnitSelector.xaml.cs">
+      <DependentUpon>GridUnitSelector.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controls\NumericUpDown.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
@@ -228,6 +232,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\GridUnitSelector.xaml" />
     <Page Include="Controls\NumericUpDown.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

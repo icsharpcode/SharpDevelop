@@ -53,6 +53,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			if (components == null)
 				components = SharedInstances.EmptyDesignItemArray;
+			
+			if (components.Contains(null))
+				throw new ArgumentException("Cannot select 'null'.");
 
 			var prevSelectedItems = _selectedComponents.ToArray();
 			
