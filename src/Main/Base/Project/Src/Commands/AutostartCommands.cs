@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Interop;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
@@ -30,7 +31,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			app = new App();
 			System.Windows.Forms.Integration.WindowsFormsHost.EnableWindowsFormsInterop();
+			ComponentDispatcher.ThreadIdle -= ComponentDispatcher_ThreadIdle; // ensure we don't register twice
+			ComponentDispatcher.ThreadIdle += ComponentDispatcher_ThreadIdle;
 			WorkbenchSingleton.InitializeWorkbench(new WpfWorkbench(), new AvalonDockLayout());
+		}
+		
+		static void ComponentDispatcher_ThreadIdle(object sender, EventArgs e)
+		{
+			System.Windows.Forms.Application.RaiseIdle(e);
 		}
 		
 		public void Run(IList<string> fileList)

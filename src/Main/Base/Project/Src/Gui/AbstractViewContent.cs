@@ -477,7 +477,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (!registeredOnViewContentChange) {
 					// register WorkbenchSingleton.Workbench.ActiveViewContentChanged only on demand
 					wasActiveViewContent = IsActiveViewContent;
-					WorkbenchSingleton.Workbench.ActiveViewContentChanged += OnActiveViewContentChanged;
+					// null check is required to support running in unit test mode
+					if (WorkbenchSingleton.Workbench != null) {
+						WorkbenchSingleton.Workbench.ActiveViewContentChanged += OnActiveViewContentChanged;
+					}
 					registeredOnViewContentChange = true;
 				}
 				isActiveViewContentChanged += value;
@@ -490,7 +493,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void UnregisterOnActiveViewContentChanged()
 		{
 			if (registeredOnViewContentChange) {
-				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= OnActiveViewContentChanged;
+				// null check is required to support running in unit test mode
+				if (WorkbenchSingleton.Workbench != null) {
+					WorkbenchSingleton.Workbench.ActiveViewContentChanged -= OnActiveViewContentChanged;
+				}
 				registeredOnViewContentChange = false;
 			}
 		}

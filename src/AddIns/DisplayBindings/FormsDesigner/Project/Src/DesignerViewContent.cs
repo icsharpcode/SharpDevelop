@@ -123,10 +123,7 @@ namespace ICSharpCode.FormsDesigner
 			this.sourceCodeStorage = new DesignerSourceCodeStorage();
 			this.resourceStore = new ResourceStore(this);
 			
-			// null check is required to support running in unit test mode
-			if (WorkbenchSingleton.Workbench != null) {
-				this.IsActiveViewContentChanged += this.IsActiveViewContentChangedHandler;
-			}
+			this.IsActiveViewContentChanged += this.IsActiveViewContentChangedHandler;
 			
 			FileService.FileRemoving += this.FileServiceFileRemoving;
 			ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting += this.DebugStarting;
@@ -140,7 +137,7 @@ namespace ICSharpCode.FormsDesigner
 			if (generator == null)
 				throw new ArgumentNullException("generator");
 			
-			this.loaderProvider    = loaderProvider;
+			this.loaderProvider = loaderProvider;
 			this.generator = generator;
 			this.generator.Attach(this);
 			

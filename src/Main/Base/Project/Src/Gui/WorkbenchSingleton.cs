@@ -100,6 +100,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Debug.WriteLine("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
 				LoggingService.Debug("ActiveWorkbenchWindowChanged to " + workbench.ActiveWorkbenchWindow);
 			};
+			
+			System.Windows.Forms.Application.Idle += delegate {
+				LoggingService.Debug("Idle");
+			};
 		}
 		
 		/// <summary>
