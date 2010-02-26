@@ -202,13 +202,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		// Special handler: handledEventsToo
 		void OnMouseUp(object sender, MouseButtonEventArgs e)
 		{
-			ActiveParentWindow();
+			ActivateParentWindow();
 		}
 		
 		/// <summary>
 		/// Activates the parent window.
 		/// </summary>
-		protected virtual void ActiveParentWindow()
+		protected virtual void ActivateParentWindow()
 		{
 			if (parentWindow != null)
 				parentWindow.Activate();

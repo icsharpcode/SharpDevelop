@@ -19,7 +19,7 @@ using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
 	/// <summary>
-	/// Description of CodeSnippetCompletionWindow.
+	/// Completion window used for code snippets.
 	/// </summary>
 	public class CodeSnippetCompletionWindow : SharpDevelopCompletionWindow
 	{
@@ -47,16 +47,20 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			
 			this.Loaded += delegate { Keyboard.Focus(snippetInput); };
 			this.snippetInput.PreviewKeyDown += new KeyEventHandler(CodeSnippetCompletionWindowPreviewKeyDown);
+			this.snippetInput.TextChanged += new TextChangedEventHandler(CodeSnippetCompletionWindow_TextChanged);
 		}
-
+		
 		void CodeSnippetCompletionWindowPreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			CompletionList.HandleKey(e);
-			if (!e.Handled)
-				CompletionList.SelectItemWithStart(this.snippetInput.Text);
 		}
 		
-		protected override void ActiveParentWindow()
+		void CodeSnippetCompletionWindow_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			CompletionList.SelectItemWithStart(this.snippetInput.Text);
+		}
+		
+		protected override void ActivateParentWindow()
 		{
 		}
 	}
