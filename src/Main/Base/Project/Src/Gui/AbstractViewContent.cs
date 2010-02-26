@@ -466,7 +466,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Gets if this view content is the active view content.
 		/// </summary>
 		protected bool IsActiveViewContent {
-			get { return WorkbenchSingleton.Workbench.ActiveViewContent == this; }
+			get { return WorkbenchSingleton.Workbench != null && WorkbenchSingleton.Workbench.ActiveViewContent == this; }
 		}
 		
 		/// <summary>
