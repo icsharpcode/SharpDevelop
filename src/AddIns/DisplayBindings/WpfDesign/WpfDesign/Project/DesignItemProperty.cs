@@ -74,7 +74,7 @@ namespace ICSharpCode.WpfDesign
 		/// Is raised when the value of the property changes (by calling <see cref="SetValue"/> or <see cref="Reset"/>).
 		/// </summary>
 		public abstract event EventHandler ValueChanged;
-
+		
 		/// <summary>
 		/// Is raised when the <see cref="ValueOnInstance"/> property changes.
 		/// This event is not raised when the value is changed without going through the designer infrastructure.
@@ -84,9 +84,8 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets/Sets the value of the property on the designed instance.
 		/// If the property is not set, this returns the default value.
-		/// The setter does NOT update the underlying model, use SetValue() instead!
 		/// </summary>
-		public abstract object ValueOnInstance { get; set; }
+		public abstract object ValueOnInstance { get; }
 		
 		/// <summary>
 		/// Sets the value of the property.

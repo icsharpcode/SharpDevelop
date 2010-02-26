@@ -141,7 +141,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override object ValueOnInstance {
 			get { return _property.ValueOnInstance; }
-			set { _property.ValueOnInstance = value; }
+			//set { _property.ValueOnInstance = value; }
 		}
 		
 		public override bool IsSet {
