@@ -224,10 +224,16 @@ namespace ICSharpCode.SharpDevelop
 					double totalWork, workDone;
 					IProgressMonitor progressMonitor;
 					lock (lockObj) {
-						if (actions.Count == 0) {
+						// enqueued null: quit thread and restart (used for cancellation)
+						if (actions.Count == 0 || this.actions.Peek() == null) {
 							this.threadIsRunning = false;
 							this.progressMonitor.Dispose();
 							this.progressMonitor = null;
+							// restart if necessary:
+							if (actions.Count > 0) {
+								actions.Dequeue(); // dequeue the null
+								WorkbenchSingleton.SafeThreadAsyncCall(StartRunningIfRequired);
+							}
 							return;
 						}
 						task = this.actions.Dequeue();
@@ -258,12 +264,14 @@ namespace ICSharpCode.SharpDevelop
 					cancellationSource.Cancel();
 					actions.Clear();
 					cancellationSource = new CancellationTokenSource();
-					if (progressMonitor != null) {
-						progressMonitor.Dispose();
-						progressMonitor = null;
-					}
 					this.totalWork = 0;
 					this.workDone = 0;
+					// progress monitor gets disposed when the worker thread exits
+					if (threadIsRunning) {
+						actions.Enqueue(null); // force worker thread to restart using a new progress monitor
+						// This is necessary so that actions enqueued after the Clear() call get executed using
+						// the fresh CancellationToken.
+					}
 				}
 			}
 		}
