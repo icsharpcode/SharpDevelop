@@ -73,13 +73,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			CreateSplitter();
 			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
+			this.ExtendedItem.Services.Selection.SelectionChanged += GridAdornerProviderSelectionChanged;
 			
 			base.OnInitialized();
+		}
+
+		void GridAdornerProviderSelectionChanged(object sender, DesignItemCollectionEventArgs e)
+		{
+			leftBar.SelectionChanged();
+			topBar.SelectionChanged();
 		}
 		
 		protected override void OnRemove()
 		{
 			this.ExtendedItem.PropertyChanged -= OnPropertyChanged;
+			this.ExtendedItem.Services.Selection.SelectionChanged -= GridAdornerProviderSelectionChanged;
 			base.OnRemove();
 		}
 		

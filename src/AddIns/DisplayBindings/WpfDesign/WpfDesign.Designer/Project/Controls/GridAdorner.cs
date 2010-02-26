@@ -60,21 +60,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			
 			adornerPanel.Children.Add(unitSelector);
 			
-			gridItem.Services.Selection.SelectionChanged += delegate {
-				if (orientation == Orientation.Vertical) {
-					if (gridItem.Properties["RowDefinitions"].CollectionElements.Any(e => gridItem.Services.Selection.IsComponentSelected(e)))
-						unitSelector.Visibility = Visibility.Visible;
-					else
-						unitSelector.Visibility = Visibility.Hidden;
-				} else {
-					if (gridItem.Properties["ColumnDefinitions"].CollectionElements.Any(e => gridItem.Services.Selection.IsComponentSelected(e)))
-						unitSelector.Visibility = Visibility.Visible;
-					else
-						unitSelector.Visibility = Visibility.Hidden;
-				}
-				InvalidateVisual();
-			};
-			
 			if (orientation == Orientation.Horizontal) {
 				this.Height = RailSize;
 				previewAdorner = new GridColumnSplitterAdorner(this, gridItem, null, null);
@@ -85,6 +70,22 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			unitSelector.Orientation = orientation;
 			previewAdorner.IsPreview = true;
 			previewAdorner.IsHitTestVisible = false;
+		}
+		
+		public void SelectionChanged()
+		{
+			if (orientation == Orientation.Vertical) {
+				if (gridItem.Properties["RowDefinitions"].CollectionElements.Any(e => gridItem.Services.Selection.IsComponentSelected(e)))
+					unitSelector.Visibility = Visibility.Visible;
+				else
+					unitSelector.Visibility = Visibility.Hidden;
+			} else {
+				if (gridItem.Properties["ColumnDefinitions"].CollectionElements.Any(e => gridItem.Services.Selection.IsComponentSelected(e)))
+					unitSelector.Visibility = Visibility.Visible;
+				else
+					unitSelector.Visibility = Visibility.Hidden;
+			}
+			InvalidateVisual();
 		}
 		
 		protected override void OnRender(DrawingContext drawingContext)
@@ -98,6 +99,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				DesignItemProperty colCollection = gridItem.Properties["ColumnDefinitions"];
 				foreach (var colItem in colCollection.CollectionElements) {
 					ColumnDefinition column = colItem.Component as ColumnDefinition;
+					if (column.ActualWidth < 0) continue;
 					Rect selRect = new Rect(column.Offset, 0, column.ActualWidth, RailSize);
 					GridLength len = (GridLength)column.GetValue(ColumnDefinition.WidthProperty);
 					
@@ -115,6 +117,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				DesignItemProperty rowCollection = gridItem.Properties["RowDefinitions"];
 				foreach (var rowItem in rowCollection.CollectionElements) {
 					RowDefinition row = rowItem.Component as RowDefinition;
+					if (row.ActualHeight < 0) continue;
 					Rect selRect = new Rect(0, row.Offset, RailSize, row.ActualHeight);
 					
 					GridLength len = (GridLength)row.GetValue(RowDefinition.HeightProperty);
@@ -187,13 +190,16 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				rpUnitSelector.HeightOffset = 55;
 				rpUnitSelector.YOffset = current.Offset + current.ActualHeight / 2 - 25;
 				unitSelector.SelectedItem = component;
+				unitSelector.Unit = ((GridLength)component.Properties[RowDefinition.HeightProperty].ValueOnInstance).GridUnitType;
 			} else {
 				double insertionPosition = e.GetPosition(this).X;
 				ColumnDefinition current = grid.ColumnDefinitions
 					.FirstOrDefault(r => insertionPosition >= r.Offset &&
 					                insertionPosition <= (r.Offset + r.ActualWidth));
 				
-				if (current == null || !gridItem.Services.Selection.IsComponentSelected(gridItem.Services.Component.GetDesignItem(current)))
+				DesignItem component;
+				
+				if (current == null || !gridItem.Services.Selection.IsComponentSelected(component = gridItem.Services.Component.GetDesignItem(current)))
 					return;
 				
 				rp.YOffset = -(RailSize + RailDistance);
@@ -201,6 +207,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				rp.HeightRelativeToContentHeight = 1;
 				rp.WidthOffset = SplitterWidth;
 				rp.XOffset = e.GetPosition(this).X - SplitterWidth / 2;
+				
+				rpUnitSelector.YOffset = -(RailSize + RailDistance) * 2.75;
+				rpUnitSelector.HeightOffset = RailSize + RailDistance;
+				rpUnitSelector.HeightRelativeToContentHeight = 1;
+				rpUnitSelector.WidthOffset = 75;
+				rpUnitSelector.XOffset = current.Offset + current.ActualWidth / 2 - 35;
+				unitSelector.SelectedItem = component;
+				unitSelector.Unit = ((GridLength)component.Properties[ColumnDefinition.WidthProperty].ValueOnInstance).GridUnitType;
 			}
 			
 			AdornerPanel.SetPlacement(previewAdorner, rp);
@@ -225,7 +239,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				
 				DesignItem currentRow = null;
 				
-				using (ChangeGroup changeGroup = gridItem.OpenGroup("Change selection")) {
+				using (ChangeGroup changeGroup = gridItem.OpenGroup("Split grid row")) {
 					if (rowCollection.CollectionElements.Count == 0) {
 						DesignItem firstRow = gridItem.Services.Component.RegisterComponentForDesigner(new RowDefinition());
 						rowCollection.CollectionElements.Add(firstRow);
@@ -247,15 +261,15 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 					
 					if (!gridItem.Services.Selection.IsComponentSelected(currentRow)) {
 						gridItem.Services.Selection.SetSelectedComponents(new DesignItem[] { currentRow }, SelectionTypes.Auto);
+						changeGroup.Commit();
 						if (!adornerPanel.Children.Contains(previewAdorner))
 							adornerPanel.Children.Add(previewAdorner);
 						
 						OnMouseMove(e);
+						InvalidateVisual();
 						return;
 					}
-				}
-				
-				using (ChangeGroup changeGroup = gridItem.OpenGroup("Split grid row")) {
+
 					for (int i = 0; i < grid.RowDefinitions.Count; i++) {
 						RowDefinition row = grid.RowDefinitions[i];
 						if (row.Offset > insertionPosition) continue;
@@ -282,7 +296,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				
 				DesignItem currentColumn = null;
 				
-				using (ChangeGroup changeGroup = gridItem.OpenGroup("Change selection")) {
+				using (ChangeGroup changeGroup = gridItem.OpenGroup("Split grid column")) {
 					if (columnCollection.CollectionElements.Count == 0) {
 						DesignItem firstColumn = gridItem.Services.Component.RegisterComponentForDesigner(new ColumnDefinition());
 						columnCollection.CollectionElements.Add(firstColumn);
@@ -304,15 +318,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 					
 					if (!gridItem.Services.Selection.IsComponentSelected(currentColumn)) {
 						gridItem.Services.Selection.SetSelectedComponents(new DesignItem[] { currentColumn }, SelectionTypes.Auto);
+						changeGroup.Commit();
 						if (!adornerPanel.Children.Contains(previewAdorner))
 							adornerPanel.Children.Add(previewAdorner);
 						OnMouseMove(e);
 						InvalidateVisual();
 						return;
 					}
-				}
-				
-				using (ChangeGroup changeGroup = gridItem.OpenGroup("Split grid column")) {
+
 					for (int i = 0; i < grid.ColumnDefinitions.Count; i++) {
 						ColumnDefinition column = grid.ColumnDefinitions[i];
 						if (column.Offset > insertionPosition) continue;
@@ -393,14 +406,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 
 				item.Properties[RowDefinition.HeightProperty].SetValue(value);
 			} else {
-				switch (unit) {
-					case GridUnitType.Auto:
-						(item.Component as ColumnDefinition).SetValue(ColumnDefinition.WidthProperty, GridLength.Auto);
-						break;
-					default:
-						
-						break;
-				}
+				value = (GridLength)item.Properties[ColumnDefinition.WidthProperty].ValueOnInstance;
+
+				if (unit == GridUnitType.Auto)
+					value = GridLength.Auto;
+				else
+					value = new GridLength(value.Value, unit);
+
+				item.Properties[ColumnDefinition.WidthProperty].SetValue(value);
 			}
 			grid.UpdateLayout();
 			InvalidateVisual();
