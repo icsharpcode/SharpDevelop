@@ -33,20 +33,19 @@ namespace ICSharpCode.Reports.Core
 		private ReportSectionCollection sections;
 		private ReportSettings reportSettings;
 		
-		private int sectionInUse;
-		private int currentRow;
-		private int currentPageNumber;
+		private int currentPageNumber;		
 		
-		private SectionBounds sectionBounds;
-		private bool cancel;		
 		private IExpressionEvaluatorFacade expressionFassade;
+		private ILayouter layout;
+		private IReportModel reportModel;
+		
 		public event EventHandler<SectionRenderEventArgs> Rendering;
 		public event EventHandler<SectionRenderEventArgs> SectionRendered;
-		private ILayouter layout;
 		
-		protected AbstractRenderer(IReportModel model,ReportDocument reportDocument,ILayouter layout)
+		
+		protected AbstractRenderer(IReportModel reportModel,ReportDocument reportDocument,ILayouter layout)
 		{
-			if (model == null) {
+			if (reportModel == null) {
 				throw new MissingModelException();
 			}
 			if (reportDocument == null) {
@@ -55,22 +54,27 @@ namespace ICSharpCode.Reports.Core
 			if (layout == null) {
 				throw new ArgumentNullException("layout");
 			}
-			this.reportSettings = model.ReportSettings;
+			this.reportModel = reportModel;
+			this.reportSettings = reportModel.ReportSettings;
 			this.reportDocument = reportDocument;
 			this.layout = layout;
-			this.sections = model.SectionCollection;
+			this.sections = reportModel.SectionCollection;
 			Init();
 		}
 		
 		
-		void Init() 
+		private void Init()
 		{
 			this.reportDocument.DocumentName = reportSettings.ReportName;
 			
 			// Events from ReportDocument
 			this.reportDocument.QueryPageSettings += new QueryPageSettingsEventHandler (ReportQueryPage);
 			this.reportDocument.BeginPrint += new PrintEventHandler(ReportBegin);
-			this.reportDocument.PrintPage += new PrintPageEventHandler(ReportPageStart);
+			
+			this.reportDocument.PrintPage += delegate(object sender,PrintPageEventArgs e){
+				this.CalculatePageBounds ();
+			};
+			
 			this.reportDocument.EndPrint += new PrintEventHandler(ReportEnd);
 
 			// homemade events
@@ -109,21 +113,20 @@ namespace ICSharpCode.Reports.Core
 			if (this.Rendering != null) {
 				SectionRenderEventArgs ea = new SectionRenderEventArgs (e.Section,
 				                                                        this.currentPageNumber,
-				                                                        this.currentRow,
-				                                                        (GlobalEnums.ReportSection)this.sectionInUse);
+				                                                        this.CurrentRow,
+				                                                        this.CurrentSection);
 				this.Rendering(this,ea);
-			} 
+			}
 		}
 		
 		
-		private void OnSectionPrinted (object sender,SectionEventArgs e) 
+		private void OnSectionPrinted (object sender,SectionEventArgs e)
 		{
 			if (this.SectionRendered != null) {
 				SectionRenderEventArgs ea = new SectionRenderEventArgs (e.Section,
 				                                                        this.currentPageNumber,
-				                                                        this.currentRow,
-				                                                        (GlobalEnums.ReportSection)this.sectionInUse);
-				
+				                                                        this.CurrentRow,
+				                                                        this.CurrentSection);
 				this.SectionRendered(this,ea);
 			}
 		}
@@ -135,59 +138,53 @@ namespace ICSharpCode.Reports.Core
 		
 		internal virtual void PrintReportHeader (object sender, ReportPageEventArgs rpea)
 		{
-			SectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportHeader,
-			                               CultureInfo.InvariantCulture);
+			this.CurrentSection = this.reportModel.ReportHeader;
 			this.AddSectionEvents();
 		}
 		
 		internal virtual void PrintPageHeader (object sender, ReportPageEventArgs rpea) 
 		{
-			SectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportPageHeader,
-			                               CultureInfo.InvariantCulture);
+			this.CurrentSection = this.reportModel.PageHeader;
 			this.AddSectionEvents();
 		}
 		
 
 		internal virtual void  BodyStart (object sender,ReportPageEventArgs rpea) 
 		{
-			this.SectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportDetail,
-			                                    CultureInfo.InvariantCulture);
-			
+			this.CurrentSection = this.reportModel.DetailSection;
 		}
 	
 		
 		internal virtual void  PrintDetail (object sender,ReportPageEventArgs rpea) 
 		{
-			SectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportDetail,
-			                               CultureInfo.InvariantCulture);
+			this.CurrentSection = this.reportModel.DetailSection;
 			this.AddSectionEvents();
 		}
 		
 		
 		internal virtual void  BodyEnd (object sender,ReportPageEventArgs rpea) 
 		{
-			this.SectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportFooter,
-			                                    CultureInfo.InvariantCulture);
+			this.CurrentSection = this.reportModel.ReportFooter;
 		}
+		
 		
 		internal virtual void  PrintPageEnd (object sender,ReportPageEventArgs rpea) 
 		{
-			SectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportPageFooter,
-			                               CultureInfo.InvariantCulture);
+			this.CurrentSection = this.reportModel.ReportFooter;
 			this.AddSectionEvents();
 		}
 		
 		
 		internal virtual void  PrintReportFooter (object sender,ReportPageEventArgs rpea) 
 		{
-			SectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportFooter,
-			                               CultureInfo.InvariantCulture);
+			this.CurrentSection = this.reportModel.ReportFooter;
 			this.AddSectionEvents();
 		}
 		
+		
 		#endregion
 		
-		public static void PageBreak(ReportPageEventArgs pea) 
+		public  static void PageBreak(ReportPageEventArgs pea) 
 		{
 			if (pea == null) {
 				throw new ArgumentNullException("pea");
@@ -203,9 +200,9 @@ namespace ICSharpCode.Reports.Core
 				throw new ArgumentNullException("e");
 			}
 			e.Graphics.DrawString(this.reportSettings.NoDataMessage,
-			                                            this.ReportSettings.DefaultFont,
-			                                            new SolidBrush(Color.Black),
-			                                            sectionBounds.DetailArea);
+			                      this.ReportSettings.DefaultFont,
+			                      new SolidBrush(Color.Black),
+			                      this.SectionBounds.DetailArea);
 		}
 		
 	
@@ -265,47 +262,12 @@ namespace ICSharpCode.Reports.Core
 		
 		private void CalculatePageBounds () 
 		{
-			sectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportHeader,
-			                               CultureInfo.InvariantCulture);
-			sectionBounds.MeasureReportHeader(this.CurrentSection);
-			
-			//PageHeader
-			sectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportPageHeader,
-			                               CultureInfo.InvariantCulture);
-			this.sectionBounds.MeasurePageHeader(this.CurrentSection);
-			
-			//Detail
-			sectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportDetail,
-			                               CultureInfo.InvariantCulture);
-			sectionBounds.DetailSectionRectangle = new Rectangle(this.CurrentSection.Location,this.CurrentSection.Size);
-			
-			//PageFooter
-			sectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportPageFooter,
-			                               CultureInfo.InvariantCulture);
-			this.sectionBounds.MeasurePageFooter (this.CurrentSection);
-			
-			//ReportFooter
-			sectionInUse = Convert.ToInt16(GlobalEnums.ReportSection.ReportFooter,
-			                               CultureInfo.InvariantCulture);
-			this.sectionBounds.MeasureReportFooter(this.CurrentSection);
-			this.sectionBounds.MeasureDetailArea();
-			
-		}
-		
-		
-		private void ReportPageStart (object sender, PrintPageEventArgs ppea)
-		{
-			System.Diagnostics.Trace.WriteLine("ReportPageStart");
-			if (this.sectionBounds == null) {
-				throw new ArgumentException("page");
-			}
-			this.CalculatePageBounds ();
+			this.SinglePage.CalculatePageBounds(this.reportModel);
 		}
 		
 		
 		internal virtual void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) 
 		{
-			
 			qpea.PageSettings.Margins = new Margins(reportSettings.LeftMargin,reportSettings.RightMargin,reportSettings.TopMargin,reportSettings.BottomMargin);
 			bool firstPage;
 			if (this.currentPageNumber == 0) {
@@ -313,9 +275,8 @@ namespace ICSharpCode.Reports.Core
 			} else {
 				firstPage = false;
 			}
-			this.sectionBounds = new SectionBounds (reportSettings,firstPage);
 			this.currentPageNumber ++;
-			ISinglePage sp  = new SinglePage(this.sectionBounds,0);	
+			ISinglePage sp  = new SinglePage(new SectionBounds (reportSettings,firstPage),0);	
 			PrintHelper.InitPage(sp,this.reportSettings);
 			sp.PageNumber = this.currentPageNumber;
 			reportDocument.SinglePage = sp;
@@ -334,90 +295,36 @@ namespace ICSharpCode.Reports.Core
 		#endregion
 		
 		
-	
 		#region property's
 		
-		public ReportDocument ReportDocument
-		{
-			get {
-				return reportDocument;
-			}
-		}
+		public ReportDocument ReportDocument {get {return this.reportDocument;}}
 		
 		
-		public ReportSettings ReportSettings 
-		{
-			get {
-				return reportSettings;
-			}
-		}
+		public ReportSettings ReportSettings {get {return reportSettings;}}
 		
 		
-		public ReportSectionCollection Sections 
-		{
-			get {
-				return sections;
-			}
-		}
+		public ReportSectionCollection Sections {get {return this.sections;}}
 		
 		
-		public bool Cancel 
-		{
-			get {
-				return cancel;
-			}
-			set {
-				cancel = value;
-			}
-		}
-		
-		public ISinglePage SinglePage {
-			get { return this.reportDocument.SinglePage; }
-		}
+		public bool Cancel {get;set;}
 		
 		
-		protected int SectionInUse 
-		{
-			get {
-				return sectionInUse;
-			}
-			set {
-				sectionInUse = value;
-			}
-		}
-		
-		
-		protected int CurrentRow {
-			get { return currentRow; }
-			set { currentRow = value; }
-		}
-		
-		
-		protected BaseSection CurrentSection 
-		{
-			get {
-				return (BaseSection)sections[sectionInUse];
-			}
-		}
-		
-		
-		protected SectionBounds SectionBounds 
-		{
-			get {
-				return sectionBounds;
-			}
-			set {
-				sectionBounds = value;
-			}
-		}
-		
-		
-		protected IExpressionEvaluatorFacade ExpressionFassade {
-			get { return expressionFassade; }
-		}
+		public ISinglePage SinglePage {get { return this.reportDocument.SinglePage; }}
 	
-		protected ILayouter Layout
-		{get {return this.layout;}}
+		
+		protected int CurrentRow {get;set;}
+		
+		
+		protected BaseSection CurrentSection {get;set;}
+		
+		
+		protected SectionBounds SectionBounds { get {return this.SinglePage.SectionBounds;}}
+		
+		
+		protected IExpressionEvaluatorFacade ExpressionFassade {get { return expressionFassade; }}
+	
+	
+		protected ILayouter Layout {get {return this.layout;}}
 		
 		
 		#endregion

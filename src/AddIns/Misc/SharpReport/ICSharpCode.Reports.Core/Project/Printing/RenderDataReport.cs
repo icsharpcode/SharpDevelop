@@ -160,7 +160,7 @@ namespace ICSharpCode.Reports.Core {
 				if (rpea.SinglePage.PageNumber == 1) {
 					tableContainer.StartLayoutAt(base.Sections[2]);
 				} else {
-					tableContainer.StartLayoutAt(base.Sections[1]);
+					tableContainer.StartLayoutAt(base.Sections[0]);
 				}
 				
 				tableContainer.RenderTable(base.CurrentSection,this.SectionBounds,rpea,this.Layout);

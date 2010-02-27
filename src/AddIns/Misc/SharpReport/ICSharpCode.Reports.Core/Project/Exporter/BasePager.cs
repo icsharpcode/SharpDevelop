@@ -233,7 +233,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				new SectionRenderEventArgs(section,
 				                           pages.Count,
 				                           currentRow,
-				                           (GlobalEnums.ReportSection)GlobalEnums.ReportSection.Parse(typeof(GlobalEnums.ReportSection),section.Name));
+				                           section);
 			
 			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,ea);
 		}

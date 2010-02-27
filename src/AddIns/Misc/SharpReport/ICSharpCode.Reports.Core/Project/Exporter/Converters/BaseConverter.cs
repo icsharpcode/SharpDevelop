@@ -66,7 +66,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			SectionRenderEventArgs srea = new SectionRenderEventArgs(section,
 			                                                         this.SinglePage.PageNumber,
 			                                                         this.dataNavigator.CurrentRow,
-			                                                         (GlobalEnums.ReportSection)GlobalEnums.ReportSection.Parse(typeof(GlobalEnums.ReportSection),section.Name));
+			                                                         section);
 			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,srea);
 		}
 		

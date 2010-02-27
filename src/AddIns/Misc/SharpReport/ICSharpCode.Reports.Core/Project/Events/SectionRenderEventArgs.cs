@@ -15,11 +15,11 @@ namespace ICSharpCode.Reports.Core {
 	public class SectionRenderEventArgs:SectionEventArgs{
 		private int pageNumber;
 		private int rowNumber;
-		private GlobalEnums.ReportSection currentSection;
+		private BaseSection currentSection;
 		
 		public SectionRenderEventArgs(BaseSection section,
 		                              int pageNumber,int rowNumber,
-		                              GlobalEnums.ReportSection currentSection):base(section){
+		                              BaseSection currentSection):base(section){
 		                             
 			this.pageNumber = pageNumber;
 			this.currentSection = currentSection;
@@ -40,7 +40,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public GlobalEnums.ReportSection CurrentSection {
+		public BaseSection CurrentSection {
 			get {
 				return currentSection;
 			}

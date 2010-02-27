@@ -86,8 +86,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 //
 			Point saveLocation = this.Location;
-//			Point currentPosition = new Point(this.SectionBounds.DetailStart.X,rpea.LocationAfterDraw.Y);
-			Point currentPosition = new Point(this.startSection.Location.X,rpea.LocationAfterDraw.Y);
+			Point currentPosition = new Point(this.startSection.Location.X,this.startSection.Location.Y);
 			Point tableStart = currentPosition;
 			base.Render(rpea);
 			int defaultLeftPos = PrintHelper.DrawingAreaRelativeToParent(this.Parent,this).Left;
