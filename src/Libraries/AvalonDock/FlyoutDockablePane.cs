@@ -62,6 +62,8 @@ namespace AvalonDock
             //if (double.IsInfinity(ResizingPanel.GetResizeHeight(this)))
             //    ResizingPanel.SetResizeHeight(this, 200);
 
+            this.Style = _referencedPane.Style;
+
             //remove content from container pane
             //and add content to my temporary pane
             _referencedPane.Items.RemoveAt(_arrayIndexPreviousPane);

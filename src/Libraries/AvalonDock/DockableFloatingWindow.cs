@@ -86,9 +86,7 @@ namespace AvalonDock
             _previousPane = content.ContainerPane;
             _arrayIndexPreviousPane = _previousPane.Items.IndexOf(content);
             
-            
-            //pane.SetValue(ResizingPanel.ResizeWidthProperty, _previousPane.GetValue(ResizingPanel.ResizeWidthProperty));
-            //pane.SetValue(ResizingPanel.ResizeHeightProperty, _previousPane.GetValue(ResizingPanel.ResizeHeightProperty));
+            pane.Style = content.ContainerPane.Style;
 
             //remove content from container pane
             content.ContainerPane.RemoveContent(_arrayIndexPreviousPane);
@@ -131,6 +129,8 @@ namespace AvalonDock
                 Height = dockablePane.ActualHeight;
             }
 
+            //transfer the style from the original dockablepane
+            pane.Style = dockablePane.Style;
 
             //Width = dockablePane.ActualWidth;
             //Height = dockablePane.ActualHeight;
@@ -193,13 +193,10 @@ namespace AvalonDock
         {
             DockablePane paneToAnchor = new DockablePane();
 
-            //transfer the resizing panel sizes
-            //paneToAnchor.SetValue(ResizingPanel.ResizeWidthProperty,
-            //    HostedPane.GetValue(ResizingPanel.ResizeWidthProperty));
-            //paneToAnchor.SetValue(ResizingPanel.ResizeHeightProperty,
-            //    HostedPane.GetValue(ResizingPanel.ResizeHeightProperty));
             ResizingPanel.SetEffectiveSize(paneToAnchor, new Size(Width, Height));
 
+            if (HostedPane.Style != null)
+                paneToAnchor.Style = HostedPane.Style;
 
             int selectedIndex = HostedPane.SelectedIndex;
 
@@ -254,6 +251,10 @@ namespace AvalonDock
                     newContainerPane.Items.Add(HostedPane.RemoveContent(0));
                     newContainerPane.SetValue(ResizingPanel.ResizeWidthProperty, _previousPane.GetValue(ResizingPanel.ResizeWidthProperty));
                     newContainerPane.SetValue(ResizingPanel.ResizeHeightProperty, _previousPane.GetValue(ResizingPanel.ResizeHeightProperty));
+
+                    if (_previousPane.Style != null)
+                        newContainerPane.Style = _previousPane.Style;
+                    
                     Manager.Anchor(newContainerPane, ((DockablePane)_previousPane).Anchor);
                 }
                 else

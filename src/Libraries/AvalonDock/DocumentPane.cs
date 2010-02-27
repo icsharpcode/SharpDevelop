@@ -55,6 +55,9 @@ namespace AvalonDock
 
         void DocumentPane_Loaded(object sender, RoutedEventArgs e)
         {
+            if (Parent == null)
+                return;
+
             if (GetManager() == null)
                 throw new InvalidOperationException("DocumentPane must be put under a DockingManager!");
 

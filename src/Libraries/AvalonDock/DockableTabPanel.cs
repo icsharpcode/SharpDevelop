@@ -51,7 +51,7 @@ namespace AvalonDock
 
             List<UIElement> childsOrderedByWidth = new List<UIElement>();
 
-            foreach (DockableContent child in Children)
+            foreach (FrameworkElement child in Children)
             {
                 child.Width = double.NaN;
                 child.Height = double.NaN;
