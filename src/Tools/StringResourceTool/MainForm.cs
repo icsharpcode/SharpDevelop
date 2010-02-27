@@ -8,11 +8,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace StringResourceTool
@@ -258,46 +260,32 @@ namespace StringResourceTool
 			"ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand."};
 		
 		/// <summary>Gets entries in t1 that are missing from t2.</summary>
-		List<string> FindMissing(Hashtable t1, Hashtable t2)
+		List<string> FindMissing(HashSet<string> t1, HashSet<string> t2)
 		{
-			List<string> result = new List<string>();
-			foreach (DictionaryEntry e in t1) {
-				if (!t2.ContainsKey(e.Key)) {
-					string v = (string)e.Key;
-					foreach (string txt in specialStarts) {
-						if (v.StartsWith(txt))
-							goto next;
-					}
-					result.Add(v);
-				}
-				next:;
-			}
-			result.Sort();
-			return result;
+			return t1.Except(t2).OrderBy(s=>s).ToList();
 		}
 		
-		readonly static Regex pattern         = new Regex(@"\$\{res:([^\}]*)\}");
-		readonly static Regex resourceService = new Regex(@"ResourceService.GetString\(\""([^\""]*)\""\)");
-		
-		Hashtable FindUsedStrings()
+		HashSet<string> FindUsedStrings()
 		{
-			Hashtable t = new Hashtable();
+			HashSet<string> t = new HashSet<string>();
 			FindUsedStrings(t, @"..\..\..\..\..");
 			return t;
 		}
-		void FindUsedStrings(Hashtable t, string path)
+		void FindUsedStrings(HashSet<string> t, string path)
 		{
 			foreach (string subPath in Directory.GetDirectories(path)) {
-				if (subPath.EndsWith(".svn") || subPath.EndsWith("\\obj")) {
-					continue;
+				if (!(subPath.EndsWith(".svn") || subPath.EndsWith("\\obj"))) {
+					FindUsedStrings(t, subPath);
 				}
-				FindUsedStrings(t, subPath);
 			}
-			foreach (string fileName in Directory.GetFiles(path, "*.*")) {
+			foreach (string fileName in Directory.EnumerateFiles(path)) {
 				switch (Path.GetExtension(fileName).ToLowerInvariant()) {
 					case ".cs":
 					case ".boo":
-						FindUsedStrings(fileName, t, true);
+						FindUsedStrings(fileName, t, resourceService);
+						break;
+					case ".xaml":
+						FindUsedStrings(fileName, t, xamlLocalize);
 						break;
 					case ".resx":
 					case ".resources":
@@ -306,35 +294,43 @@ namespace StringResourceTool
 					case ".pdb":
 						break;
 					default:
-						FindUsedStrings(fileName, t, false);
+						FindUsedStrings(fileName, t, null);
 						break;
 				}
 			}
 		}
-		void FindUsedStrings(string fileName, Hashtable t, bool resourceServicePattern)
+		
+		const string resourceNameRegex = @"[\.\w\d]+";
+		
+		readonly static Regex pattern         = new Regex(@"\$\{res:(" + resourceNameRegex + @")\}", RegexOptions.Compiled);
+		readonly static Regex resourceService = new Regex(@"ResourceService.GetString\(\""(" + resourceNameRegex + @")\""\)", RegexOptions.Compiled);
+		readonly static Regex xamlLocalize = new Regex(@"\{\w+:Localize\s+(" + resourceNameRegex + @")\}", RegexOptions.Compiled);
+		
+		void FindUsedStrings(string fileName, HashSet<string> t, Regex extraPattern)
 		{
 			StreamReader sr = File.OpenText(fileName);
 			string content = sr.ReadToEnd();
 			sr.Close();
 			foreach (Match m in pattern.Matches(content)) {
 				//Debug.WriteLine(fileName);
-				t[m.Groups[1].Captures[0].Value] = null;
+				t.Add(m.Groups[1].Captures[0].Value);
 			}
-			if (resourceServicePattern) {
-				foreach (Match m in resourceService.Matches(content)) {
+			if (extraPattern != null) {
+				foreach (Match m in extraPattern.Matches(content)) {
 					//Debug.WriteLine(fileName);
-					t[m.Groups[1].Captures[0].Value] = null;
+					t.Add(m.Groups[1].Captures[0].Value);
 				}
 			}
 		}
 		const string srcDir = @"..\..\..\..\";
-		Hashtable FindResourceStrings()
+		HashSet<string> FindResourceStrings()
 		{
-			ResourceSet rs = new ResourceSet(srcDir + @"Main\StartUp\Project\Resources\StringResources.resources");
-			Hashtable t = new Hashtable();
+			var rs = new ResXResourceReader(srcDir + @"..\data\resources\StringResources.resx");
+			HashSet<string> t = new HashSet<string>();
 			foreach (DictionaryEntry e in rs) {
-				t.Add(e.Key, null);
+				t.Add(e.Key.ToString());
 			}
+			rs.Close();
 			return t;
 		}
 		
@@ -370,7 +366,7 @@ namespace StringResourceTool
 				                         text => { outputTextBox.Text += "\r\n" + text; Application.DoEvents();});
 				
 				outputTextBox.Text += "\r\nBuilding SharpDevelop...";
-				RunBatch(srcDir, "debugbuild.bat", null);
+				RunBatch(Path.Combine(srcDir, ".."), "debugbuild.bat", null);
 			};
 			server.DownloadDatabase("LocalizeDb_DL_Corsavy.mdb", onDownloadFinished);
 			//onDownloadFinished(null, null);
