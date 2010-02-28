@@ -127,6 +127,7 @@ namespace Debugger.Tests
 			int* iPtr = &i;
 			float pi = 3.14f;
 			string hi = "hi";
+			string emptyString = "";
 			
 			char[] array = "Hello".ToCharArray();
 			char[] array2 = "world".ToCharArray();
@@ -166,7 +167,7 @@ namespace Debugger.Tests {
 				b; i; *i; *iPtr; pi
 				pi - 3; pi + b; i + b; (uint)2 - 3; ((uint)2 - 3).GetType() ; (ulong)2 - 3 ; (b + b).GetType()
 				1 << 4; 7 << -1; 1 << (uint)2; 1.0 & 2.0; System.Int32.MaxValue + 1; (uint)2 - (uint)3; 1 / 0
-				hi + hi;  hi + ''#'';  hi + pi;  hi + null
+				hi + hi;  hi + ''#'';  hi + pi;  hi + null; emptyString; ''''
 				hi + ''#'' == ''hi#''; hi + ''#'' == (object) ''hi#''; hi == (string)null; hi == null; hi == 1; null == null
 				
 				(5 + 6) % (1 + 2); 3 % 2 == 1
@@ -313,9 +314,9 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:146,4-146,40</DebuggingPaused>
-    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:147,4-147,19</DebuggingPaused>
-    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:148,4-148,39</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:147,4-147,40</DebuggingPaused>
+    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:148,4-148,19</DebuggingPaused>
+    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:149,4-149,39</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -340,6 +341,8 @@ namespace Debugger.Tests {
     <Eval> hi + "#" = "hi#" </Eval>
     <Eval> hi + pi = "hi3.14" </Eval>
     <Eval> hi + null = "hi" </Eval>
+    <Eval> emptyString = "" </Eval>
+    <Eval> "" = "" </Eval>
     <Eval> hi + "#" == "hi#" = True </Eval>
     <Eval> hi + "#" == (object) "hi#" = False </Eval>
     <Eval> hi == (string)null = False </Eval>
@@ -451,7 +454,7 @@ namespace Debugger.Tests {
     <TypesIdentitcal>True</TypesIdentitcal>
     <TypesEqual>True</TypesEqual>
     <WorkerThreadMoved>False</WorkerThreadMoved>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:149,4-149,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:150,4-150,40</DebuggingPaused>
     <WorkerThreadMoved>True</WorkerThreadMoved>
     <ProcessExited />
   </Test>

@@ -44,6 +44,9 @@ namespace Debugger.Interop
 		{
 			string managedString;
 			
+			// DebugStringValue does not like buffer size of 0
+			defaultBufferSize = Math.Max(defaultBufferSize, 1);
+			
 			char[] buffer = new char[(int)defaultBufferSize];
 			fixed(char* pBuffer = buffer) {
 				uint actualLength = 0;
