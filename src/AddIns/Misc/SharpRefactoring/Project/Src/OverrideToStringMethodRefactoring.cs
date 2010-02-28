@@ -10,18 +10,17 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using SharpRefactoring.Gui;
 
 namespace SharpRefactoring
 {
-	/// <summary>
-	/// Description of InsertCtorCommand
-	/// </summary>
-	public class InsertCtorCommand : AbstractRefactoringCommand
+	public class OverrideToStringMethodRefactoring : ICompletionItemHandler
 	{
-		protected override void Run(ITextEditor textEditor, RefactoringProvider provider)
+		public void Insert(CompletionContext context)
 		{
+			ITextEditor textEditor = context.Editor;
+			
 			IEditorUIService uiService = textEditor.GetService(typeof(IEditorUIService)) as IEditorUIService;
 			
 			if (uiService == null)
@@ -41,9 +40,21 @@ namespace SharpRefactoring
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
 			anchor.MovementType = AnchorMovementType.AfterInsertion;
 			
-			AbstractInlineRefactorDialog dialog = new InsertCtorDialog(textEditor, anchor, current);
+			var line = textEditor.Document.GetLineForOffset(textEditor.Caret.Offset);
+			
+			string indent = DocumentUtilitites.GetWhitespaceAfter(textEditor.Document, line.Offset);
+			
+			textEditor.Document.Insert(anchor.Offset, "public override string ToString()\n" + indent + "{\n" + indent + "\t");
+			textEditor.Document.Insert(anchor.Offset + 1, indent + "}\n");
+			
+			AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(null, textEditor, anchor, current.Fields);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
+		}
+		
+		public bool Handles(ICompletionItem item)
+		{
+			return item is OverrideCompletionItem && item.Text == "ToString()";
 		}
 	}
 }

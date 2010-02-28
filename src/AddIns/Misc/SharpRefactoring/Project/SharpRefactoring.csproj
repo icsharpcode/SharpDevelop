@@ -79,6 +79,8 @@
       <DependentUpon>ExtractMethodForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\AbstractInlineRefactorDialog.cs" />
+    <Compile Include="Src\Gui\CtorParamWrapper.cs" />
+    <Compile Include="Src\Gui\InlineRefactorSnippetElement.cs" />
     <Compile Include="Src\Gui\InsertCtorDialog.xaml.cs">
       <DependentUpon>InsertCtorDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -96,11 +98,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Wrapper.cs" />
-    <Compile Include="Src\InsertCtorCommand.cs" />
+    <Compile Include="Src\InsertCtorSnippetRefactoring.cs" />
     <Compile Include="Src\IntroduceMethod.cs" />
     <Compile Include="Src\MethodExtractorBase.cs" />
-    <Compile Include="Src\OverrideEqualsGetHashCodeMethodsCommand.cs" />
-    <Compile Include="Src\OverrideToStringMethodCommand.cs" />
+    <Compile Include="Src\OverrideEqualsGetHashCodeMethodsRefactoring.cs" />
+    <Compile Include="Src\OverrideToStringMethodRefactoring.cs" />
     <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
     <Compile Include="Src\Options.cs" />
     <Compile Include="Src\ResolveAttribute.cs" />
@@ -124,6 +126,11 @@
     <Page Include="Src\Gui\OverrideToStringMethodDialog.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>

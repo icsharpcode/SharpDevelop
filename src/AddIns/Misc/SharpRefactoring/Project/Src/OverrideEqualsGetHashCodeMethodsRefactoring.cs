@@ -10,18 +10,18 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Refactoring;
 using SharpRefactoring.Gui;
 
 namespace SharpRefactoring
 {
-	/// <summary>
-	/// Description of OverrideToStringMethodCommand
-	/// </summary>
-	public class OverrideToStringMethodCommand : AbstractRefactoringCommand
+	public class OverrideEqualsGetHashCodeMethodsRefactoring : ICompletionItemHandler
 	{
-		protected override void Run(ITextEditor textEditor, RefactoringProvider provider)
+		public void Insert(CompletionContext context)
 		{
+			ITextEditor textEditor = context.Editor;
+			
 			IEditorUIService uiService = textEditor.GetService(typeof(IEditorUIService)) as IEditorUIService;
 			
 			if (uiService == null)
@@ -41,16 +41,14 @@ namespace SharpRefactoring
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
 			anchor.MovementType = AnchorMovementType.AfterInsertion;
 			
-			var line = textEditor.Document.GetLineForOffset(textEditor.Caret.Offset);
-			
-			string indent = DocumentUtilitites.GetWhitespaceAfter(textEditor.Document, line.Offset);
-			
-			textEditor.Document.Insert(anchor.Offset, "public override string ToString()\n" + indent + "{\n" + indent + "\t");
-			textEditor.Document.Insert(anchor.Offset + 1, indent + "}\n");
-			
-			AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(textEditor, anchor, current.Fields);
+			AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(textEditor, anchor, current);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
+		}
+		
+		public bool Handles(ICompletionItem item)
+		{
+			return item is OverrideCompletionItem && (item.Text == "GetHashCode()" || item.Text == "Equals(object obj)");
 		}
 	}
 }

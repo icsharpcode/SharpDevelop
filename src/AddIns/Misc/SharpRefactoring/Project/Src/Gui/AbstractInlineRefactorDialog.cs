@@ -13,6 +13,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Ast;
@@ -23,19 +25,21 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace SharpRefactoring.Gui
 {
-	public abstract class AbstractInlineRefactorDialog : DockPanel, IOptionBindingContainer
+	public abstract class AbstractInlineRefactorDialog : GroupBox, IOptionBindingContainer, IActiveElement
 	{
 		protected ITextAnchor anchor;
 		protected ITextEditor editor;
 		
 		ClassFinder classFinderContext;
+		InsertionContext context;
 		
 		public IInlineUIElement Element { get; set; }
 		
-		public AbstractInlineRefactorDialog(ITextEditor editor, ITextAnchor anchor)
+		public AbstractInlineRefactorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor)
 		{
 			this.anchor = anchor;
 			this.editor = editor;
+			this.context = context;
 			
 			this.classFinderContext = new ClassFinder(ParserService.ParseCurrentViewContent(), editor.Document.Text, editor.Caret.Offset);
 			
@@ -46,36 +50,30 @@ namespace SharpRefactoring.Gui
 		
 		protected void OKButtonClick(object sender, RoutedEventArgs e)
 		{
-			if (Element == null)
-				throw new InvalidOperationException("no IInlineUIElement set!");
-			
 			ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
 			
 			try {
+				if (optionBindings != null) {
+					foreach (OptionBinding binding in optionBindings)
+						binding.Save();
+				}
+				
 				if (parseInfo != null) {
 					CodeGenerator generator = parseInfo.CompilationUnit.Language.CodeGenerator;
 					IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 					
 					editor.Document.Insert(anchor.Offset, GenerateCode(generator, current) ?? "");
 				}
-				
-				if (optionBindings != null) {
-					foreach (OptionBinding binding in optionBindings)
-						binding.Save();
-				}
-				
-				Element.Remove();
 			} catch (Exception ex) {
 				MessageService.ShowError(ex.Message);
 			}
+			
+			Deactivate();
 		}
 		
 		protected void CancelButtonClick(object sender, RoutedEventArgs e)
 		{
-			if (Element == null)
-				throw new InvalidOperationException("no IInlineUIElement set!");
-			
-			Element.Remove();
+			Deactivate();
 		}
 		
 		List<OptionBinding> optionBindings;
@@ -91,6 +89,31 @@ namespace SharpRefactoring.Gui
 		protected TypeReference ConvertType(IReturnType type)
 		{
 			return CodeGenerator.ConvertType(type, classFinderContext);
+		}
+		
+		bool IActiveElement.IsEditable {
+			get { return false; }
+		}
+		
+		ICSharpCode.AvalonEdit.Document.ISegment IActiveElement.Segment {
+			get { return null; }
+		}
+		
+		void IActiveElement.OnInsertionCompleted()
+		{
+		}
+		
+		void IActiveElement.Deactivate()
+		{
+			Deactivate();
+		}
+
+		void Deactivate()
+		{
+			if (Element == null)
+				throw new InvalidOperationException("no IInlineUIElement set!");
+
+			Element.Remove();
 		}
 	}
 }

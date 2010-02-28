@@ -27,7 +27,7 @@ namespace SharpRefactoring.Gui
 		IClass selectedClass;
 		
 		public OverrideEqualsGetHashCodeMethodsDialog(ITextEditor editor, ITextAnchor anchor, IClass selectedClass)
-			: base(editor, anchor)
+			: base(null, editor, anchor)
 		{
 			if (selectedClass == null)
 				throw new ArgumentNullException("selectedClass");
@@ -105,6 +105,31 @@ namespace SharpRefactoring.Gui
 			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
 			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
+			
+			if (Options.AddIEquatableInterface) {
+				// TODO : add IEquatable<T> to class
+//				IAmbience ambience = currentClass.CompilationUnit.Language.GetAmbience();
+//				
+//				IReturnType baseRType = currentClass.CompilationUnit.ProjectContent.GetClass("System.IEquatable", 1).DefaultReturnType;
+//				
+//				IClass newClass = new DefaultClass(currentClass.CompilationUnit, currentClass.FullyQualifiedName, currentClass.Modifiers, currentClass.Region, null);
+//				
+//				foreach (IReturnType type in currentClass.BaseTypes) {
+//					newClass.BaseTypes.Add(type);
+//				}
+//				
+//				
+//				newClass.BaseTypes.Add(new ConstructedReturnType(baseRType, new List<IReturnType>() { currentClass.DefaultReturnType }));
+//				
+//				ambience.ConversionFlags = ConversionFlags.IncludeBody;
+//				
+//				string a = ambience.Convert(currentClass);
+//				
+//				int startOffset = editor.Document.PositionToOffset(currentClass.Region.BeginLine, currentClass.Region.BeginColumn);
+//				int endOffset = editor.Document.PositionToOffset(currentClass.BodyRegion.EndLine, currentClass.BodyRegion.EndColumn);
+//				
+//				editor.Document.Replace(startOffset, endOffset - startOffset, a);
+			}
 			
 			if (Options.SurroundWithRegion) {
 				code.AppendLine("#region Equals and GetHashCode implementation");
@@ -273,45 +298,47 @@ namespace SharpRefactoring.Gui
 			
 			getHashCodeMethod.Body.AddChild(new LocalVariableDeclaration(hashCodeVar));
 			
-			bool usePrimeMultiplication = currentClass.ProjectContent.Language == LanguageProperties.CSharp;
-			BlockStatement hashCalculationBlock;
-			
-			if (usePrimeMultiplication) {
-				hashCalculationBlock = new BlockStatement();
-				getHashCodeMethod.Body.AddChild(new UncheckedStatement(hashCalculationBlock));
-			} else {
-				hashCalculationBlock = getHashCodeMethod.Body;
-			}
-			
-			int fieldIndex = 0;
-			Expression expr;
-			
-			foreach (IField field in currentClass.Fields) {
-				if (field.IsStatic) continue;
+			if (currentClass.Fields.Any(f => !f.IsStatic)) {
+				bool usePrimeMultiplication = currentClass.ProjectContent.Language == LanguageProperties.CSharp;
+				BlockStatement hashCalculationBlock;
 				
-				expr = new InvocationExpression(new MemberReferenceExpression(new IdentifierExpression(field.Name), "GetHashCode"));
 				if (usePrimeMultiplication) {
-					int prime = largePrimes[fieldIndex++ % largePrimes.Length];
-					expr = new AssignmentExpression(
-						new IdentifierExpression(hashCodeVar.Name),
-						AssignmentOperatorType.Add,
-						new BinaryOperatorExpression(new PrimitiveExpression(prime, prime.ToString()),
-						                             BinaryOperatorType.Multiply,
-						                             expr));
+					hashCalculationBlock = new BlockStatement();
+					getHashCodeMethod.Body.AddChild(new UncheckedStatement(hashCalculationBlock));
 				} else {
-					expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name),
-					                                AssignmentOperatorType.ExclusiveOr,
-					                                expr);
+					hashCalculationBlock = getHashCodeMethod.Body;
 				}
-				if (IsValueType(field.ReturnType)) {
-					hashCalculationBlock.AddChild(new ExpressionStatement(expr));
-				} else {
-					hashCalculationBlock.AddChild(new IfElseStatement(
-						new BinaryOperatorExpression(new IdentifierExpression(field.Name),
-						                             BinaryOperatorType.ReferenceInequality,
-						                             new PrimitiveExpression(null, "null")),
-						new ExpressionStatement(expr)
-					));
+				
+				int fieldIndex = 0;
+				Expression expr;
+				
+				foreach (IField field in currentClass.Fields) {
+					if (field.IsStatic) continue;
+					
+					expr = new InvocationExpression(new MemberReferenceExpression(new IdentifierExpression(field.Name), "GetHashCode"));
+					if (usePrimeMultiplication) {
+						int prime = largePrimes[fieldIndex++ % largePrimes.Length];
+						expr = new AssignmentExpression(
+							new IdentifierExpression(hashCodeVar.Name),
+							AssignmentOperatorType.Add,
+							new BinaryOperatorExpression(new PrimitiveExpression(prime, prime.ToString()),
+							                             BinaryOperatorType.Multiply,
+							                             expr));
+					} else {
+						expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name),
+						                                AssignmentOperatorType.ExclusiveOr,
+						                                expr);
+					}
+					if (IsValueType(field.ReturnType)) {
+						hashCalculationBlock.AddChild(new ExpressionStatement(expr));
+					} else {
+						hashCalculationBlock.AddChild(new IfElseStatement(
+							new BinaryOperatorExpression(new IdentifierExpression(field.Name),
+							                             BinaryOperatorType.ReferenceInequality,
+							                             new PrimitiveExpression(null, "null")),
+							new ExpressionStatement(expr)
+						));
+					}
 				}
 			}
 			
@@ -323,7 +350,7 @@ namespace SharpRefactoring.Gui
 		{
 			return new OperatorDeclaration() {
 				OverloadableOperator = op,
-					TypeReference = new TypeReference("System.Boolean", true),
+				TypeReference = new TypeReference("System.Boolean", true),
 				Parameters = {
 					new ParameterDeclarationExpression(ConvertType(currentClass.DefaultReturnType), "lhs"),
 					new ParameterDeclarationExpression(ConvertType(currentClass.DefaultReturnType), "rhs")

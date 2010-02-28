@@ -1,4 +1,5 @@
 ﻿<local:AbstractInlineRefactorDialog x:Class="SharpRefactoring.Gui.OverrideToStringMethodDialog"
+	Header="{sd:Localize AddIns.SharpRefactoring.OverrideToStringMethod}"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:local="clr-namespace:SharpRefactoring.Gui"
 	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"

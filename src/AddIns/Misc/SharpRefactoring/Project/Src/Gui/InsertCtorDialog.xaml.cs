@@ -7,10 +7,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Windows.Data;
 
+using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -23,10 +26,10 @@ namespace SharpRefactoring.Gui
 	/// </summary>
 	public partial class InsertCtorDialog : AbstractInlineRefactorDialog
 	{
-		IList<CtorParamWrapper> paramList;
+		protected IList<CtorParamWrapper> paramList;
 		
-		public InsertCtorDialog(ITextEditor editor, ITextAnchor anchor, IClass current)
-			: base(editor, anchor)
+		public InsertCtorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IClass current)
+			: base(context, editor, anchor)
 		{
 			InitializeComponent();
 			
@@ -46,7 +49,6 @@ namespace SharpRefactoring.Gui
 		protected override string GenerateCode(CodeGenerator generator, IClass currentClass)
 		{
 			StringBuilder builder = new StringBuilder();
-			builder.AppendLine();
 			
 			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
 			
@@ -73,23 +75,18 @@ namespace SharpRefactoring.Gui
 							)
 						);
 				}
-				if (!string.IsNullOrWhiteSpace(w.UpperBound) && !string.IsNullOrWhiteSpace(w.LowerBound)) {
-					double upper, lower;
-					if (!double.TryParse(w.UpperBound, out upper))
-						throw new Exception("Upper bound not valid for parameter " + w.Name);
-					if (!double.TryParse(w.LowerBound, out lower))
-						throw new Exception("Lower bound not valid for parameter " + w.Name);
+				if (w.AddRangeCheck) {
 					block.AddChild(
 						new IfElseStatement(
 							new BinaryOperatorExpression(
-								new BinaryOperatorExpression(new IdentifierExpression(w.Name), BinaryOperatorType.LessThan, new PrimitiveExpression(lower)),
+								new BinaryOperatorExpression(new IdentifierExpression(w.Name), BinaryOperatorType.LessThan, new IdentifierExpression("lower")),
 								BinaryOperatorType.LogicalOr,
-								new BinaryOperatorExpression(new IdentifierExpression(w.Name), BinaryOperatorType.GreaterThan, new PrimitiveExpression(upper))
+								new BinaryOperatorExpression(new IdentifierExpression(w.Name), BinaryOperatorType.GreaterThan, new IdentifierExpression("upper"))
 							),
 							new ThrowStatement(
 								new ObjectCreateExpression(
 									new TypeReference("ArgumentOutOfRangeException"),
-									new List<Expression>() { new PrimitiveExpression(w.Name, '"' + w.Name + '"'), new IdentifierExpression(w.Name), new PrimitiveExpression("Value must be between " + lower.ToString(CultureInfo.InvariantCulture) + " and " + upper.ToString(CultureInfo.InvariantCulture)) }
+									new List<Expression>() { new PrimitiveExpression(w.Name, '"' + w.Name + '"'), new IdentifierExpression(w.Name), new BinaryOperatorExpression(new PrimitiveExpression("Value must be between "), BinaryOperatorType.Add, new BinaryOperatorExpression(new IdentifierExpression("lower"), BinaryOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(" and "), BinaryOperatorType.Add, new IdentifierExpression("upper")))) }
 								)
 							)
 						)
@@ -106,7 +103,7 @@ namespace SharpRefactoring.Gui
 			
 			builder.Append(generator.GenerateCode(ctor, indent));
 			
-			return builder.ToString();
+			return builder.ToString().TrimStart();
 		}
 		
 		void UpClick(object sender, System.Windows.RoutedEventArgs e)
@@ -130,7 +127,7 @@ namespace SharpRefactoring.Gui
 		{
 			int selection = varList.SelectedIndex;
 			
-			if (selection >= paramList.Count - 1)
+			if (selection < 0 || selection >= paramList.Count - 1)
 				return;
 			
 			var curItem = paramList.First(p => p.Index == selection);
@@ -144,65 +141,17 @@ namespace SharpRefactoring.Gui
 		}
 	}
 	
-	public class CtorParamWrapper
+	[ValueConversion(typeof(int), typeof(bool))]
+	public class IntToBoolConverter : IValueConverter
 	{
-		IField field;
-		
-		public string Text {
-			get { return field.ProjectContent.Language.GetAmbience().Convert(field); }
-		}
-		
-		public bool IsNullable {
-			get {
-				return field.ReturnType.IsReferenceType == true ||
-					field.ReturnType.IsConstructedReturnType && field.ReturnType.Name == "Nullable";
-			}
-		}
-		
-		public bool HasRange {
-			get {
-				return (field.ReturnType.IsConstructedReturnType &&
-				        IsTypeWithRange(field.ReturnType.CastToConstructedReturnType().TypeArguments.First())
-				       ) || IsTypeWithRange(field.ReturnType);
-			}
-		}
-		
-		public int Index { get; set; }
-		
-		public bool IsSelected { get; set; }
-		
-		public bool AddCheckForNull { get; set; }
-		
-		public string LowerBound { get; set; }
-		
-		public string UpperBound { get; set; }
-		
-		public string Name {
-			get { return field.Name; }
-		}
-		
-		public IReturnType Type {
-			get { return field.ReturnType; }
-		}
-		
-		bool IsTypeWithRange(IReturnType type)
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			return type.Name == "Int32" ||
-				type.Name == "Int16" ||
-				type.Name == "Int64" ||
-				type.Name == "Single" ||
-				type.Name == "Double" ||
-				type.Name == "UInt16" ||
-				type.Name == "UInt32" ||
-				type.Name == "UInt64";
+			return ((int)value) != -1;
 		}
 		
-		public CtorParamWrapper(IField field)
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (field == null || field.ReturnType == null)
-				throw new ArgumentNullException("field");
-			
-			this.field = field;
+			return ((bool)value) ? 0 : -1;
 		}
 	}
 }

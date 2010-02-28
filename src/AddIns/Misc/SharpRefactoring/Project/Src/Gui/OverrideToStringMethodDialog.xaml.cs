@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
@@ -29,8 +30,8 @@ namespace SharpRefactoring.Gui
 	{
 		List<Wrapper<IField>> fields;
 		
-		public OverrideToStringMethodDialog(ITextEditor editor, ITextAnchor anchor, IList<IField> fields)
-			: base(editor, anchor)
+		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IList<IField> fields)
+			: base(context, editor, anchor)
 		{
 			InitializeComponent();
 			

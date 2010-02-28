@@ -1,9 +1,13 @@
 ﻿<gui:AbstractInlineRefactorDialog x:Class="SharpRefactoring.Gui.InsertCtorDialog"
+	Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor}"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:gui="clr-namespace:SharpRefactoring.Gui"
 	xmlns:addin="clr-namespace:SharpRefactoring"
 	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<gui:AbstractInlineRefactorDialog.Resources>
+		<gui:IntToBoolConverter x:Key="intToBoolConverter" />
+	</gui:AbstractInlineRefactorDialog.Resources>
 	<DockPanel Cursor="Arrow">
 		<TextBlock DockPanel.Dock="Top" Margin="3"
 		           Text="{sd:Localize AddIns.SharpRefactoring.InsertCtor.Description}"
@@ -11,8 +15,8 @@
 		<DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
 			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" />
 			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
-			<Button DockPanel.Dock="Right" Content="Down" Margin="3" Click="DownClick" />
-			<Button DockPanel.Dock="Right" Content="Up" Margin="3" Click="UpClick" />
+			<Button DockPanel.Dock="Right" Content="Down" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="DownClick" />
+			<Button DockPanel.Dock="Right" Content="Up" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="UpClick" />
 		</DockPanel>
 		<ListView x:Name="varList">
 			<ListView.View>
@@ -34,14 +38,7 @@
 					<GridViewColumn Header="Add range check">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
-								<Grid>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<TextBox Margin="3,0" Text="{Binding LowerBound, Mode=TwoWay}" IsEnabled="{Binding HasRange}" />
-									<TextBox Margin="3,0" Grid.Column="1" Text="{Binding UpperBound, Mode=TwoWay}" IsEnabled="{Binding HasRange}" />
-								</Grid>
+								<CheckBox IsChecked="{Binding AddRangeCheck, Mode=TwoWay}" IsEnabled="{Binding HasRange}" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
