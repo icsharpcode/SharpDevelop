@@ -1268,6 +1268,23 @@
 										<File Source="..\..\AddIns\AddIns\Debugger\Debugger.AddIn.dll" Id="Debugger.AddIn.dll" Name="Debugger.AddIn.dll" />
 										<File Source="..\..\AddIns\AddIns\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
 									</Component>
+									<Component Id="NeatoFiles" Guid="7169CD73-012D-45E2-AA22-BB45F8FF4BE1" DiskId="1">
+										<File Id="neato.exe" Name="neato.exe" Source="..\..\AddIns\AddIns\Debugger\neato.exe" KeyPath="yes" />
+										<File Id="config6" Name="config6" Source="..\..\AddIns\AddIns\Debugger\config6" />
+										<File Id="cdt.dll" Name="cdt.dll" Source="..\..\AddIns\AddIns\Debugger\cdt.dll" />
+										<File Id="graph.dll" Name="graph.dll" Source="..\..\AddIns\AddIns\Debugger\graph.dll" />
+										<File Id="gvc.dll" Name="gvc.dll" Source="..\..\AddIns\AddIns\Debugger\gvc.dll" />
+										<File Id="gvplugin_core.dll" Name="gvplugin_core.dll" Source="..\..\AddIns\AddIns\Debugger\gvplugin_core.dll" />
+										<File Id="gvplugin_dot_layout.dll" Name="gvplugin_dot_layout.dll" Source="..\..\AddIns\AddIns\Debugger\gvplugin_dot_layout.dll" />
+										<File Id="gvplugin_neato_layout.dll" Name="gvplugin_neato_layout.dll" Source="..\..\AddIns\AddIns\Debugger\gvplugin_neato_layout.dll" />
+										<File Id="iconv.dll" Name="iconv.dll" Source="..\..\AddIns\AddIns\Debugger\iconv.dll" />
+										<File Id="intl.dll" Name="intl.dll" Source="..\..\AddIns\AddIns\Debugger\intl.dll" />
+										<File Id="libexpat.dll" Name="libexpat.dll" Source="..\..\AddIns\AddIns\Debugger\libexpat.dll" />
+										<File Id="libglib_2.0_0.dll" Name="libglib-2.0-0.dll" Source="..\..\AddIns\AddIns\Debugger\libglib-2.0-0.dll" />
+										<File Id="ltdl.dll" Name="ltdl.dll" Source="..\..\AddIns\AddIns\Debugger\ltdl.dll" />
+										<File Id="Pathplan.dll" Name="Pathplan.dll" Source="..\..\AddIns\AddIns\Debugger\Pathplan.dll" />
+										<File Id="zlib1.dll" Name="zlib1.dll" Source="..\..\AddIns\AddIns\Debugger\zlib1.dll" />
+									</Component>
 								</Directory>
 								<Directory Id="MiscAddInsFolder" Name="Misc">
 									<Directory Id="AddInManagerFolder" Name="AddInManager">

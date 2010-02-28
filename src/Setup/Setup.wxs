@@ -336,6 +336,7 @@
 				<ComponentRef Id="ComponentInspectorAddInDll"/>
 				<ComponentRef Id="ComponentInspectorAddInCoreDll"/>
 				<ComponentRef Id="DebuggerAddInFiles"/>
+				<ComponentRef Id="NeatoFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>
 				<ComponentRef Id="FiletypeRegistererFiles"/>
 				<ComponentRef Id="HtmlHelp2Files"/>
