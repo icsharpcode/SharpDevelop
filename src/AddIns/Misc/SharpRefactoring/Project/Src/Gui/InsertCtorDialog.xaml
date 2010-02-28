@@ -21,21 +21,21 @@
 		<ListView x:Name="varList">
 			<ListView.View>
 				<GridView>
-					<GridViewColumn Header="Variable">
+					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.VariableLabel}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<CheckBox Content="{Binding Text}" IsChecked="{Binding IsSelected, Mode=TwoWay}" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="Add check for null">
+					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.AddCheckForNullLabel}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<CheckBox IsChecked="{Binding AddCheckForNull, Mode=TwoWay}" IsEnabled="{Binding IsNullable}" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="Add range check">
+					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.AddRangeCheckLabel}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<CheckBox IsChecked="{Binding AddRangeCheck, Mode=TwoWay}" IsEnabled="{Binding HasRange}" />

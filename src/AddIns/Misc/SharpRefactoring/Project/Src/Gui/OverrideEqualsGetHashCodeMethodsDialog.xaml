@@ -6,24 +6,21 @@
 	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<DockPanel Cursor="Arrow">
-		<TextBlock DockPanel.Dock="Top" Margin="3"
-		           Text="{sd:Localize AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.Description}"
-		           TextWrapping="Wrap" />	
 		<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
 			<Button Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" />
 			<Button Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
 		</StackPanel>
 		<StackPanel Orientation="Vertical">
-			<!-- TODO : remove Visibilty="Hidden" -->
+			<!-- TODO : remove Visibilty="Collapsed" -->
 			<CheckBox
 				x:Name="addIEquatable"
 				Margin="3"
-				Visibility="Hidden"
+				Visibility="Collapsed"
 				IsChecked="{sd:OptionBinding addin:Options.AddIEquatableInterface}" />
 			<CheckBox
-				Content="{sd:Localize AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverrides}"
+				Content="{sd:Localize AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads}"
 				Margin="3"
-				IsChecked="{sd:OptionBinding addin:Options.AddOperatorOverrides}" />
+				IsChecked="{sd:OptionBinding addin:Options.AddOperatorOverloads}" />
 			<CheckBox
 				Content="{sd:Localize AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion}"
 				Margin="3"

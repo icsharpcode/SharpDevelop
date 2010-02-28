@@ -36,7 +36,7 @@ namespace SharpRefactoring.Gui
 			
 			this.selectedClass = selectedClass;
 			
-			addIEquatable.Content = string.Format(StringParser.Parse("Add interface {0}"),
+			addIEquatable.Content = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface}"),
 			                                      "IEquatable<" + selectedClass.Name + ">");
 			
 			addIEquatable.IsEnabled = !selectedClass.BaseTypes.Any(

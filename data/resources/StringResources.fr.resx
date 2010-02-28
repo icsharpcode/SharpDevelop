@@ -614,6 +614,15 @@ En option, vous pouvez spécifer un répertoire de travail et des arguments en l
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>L'extraction de méthodes dans {0} n'est pas actuellement supportée !</value>
   </data>
+  <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
+    <value>Insérer la méthode {0} dans {1}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
+    <value>Résoudre l'attribut: {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
+    <value>Résoudre la méthode d'extension {0}</value>
+  </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Tester avec StyleCop</value>
   </data>
@@ -3062,6 +3071,18 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="Dialog.Refactoring.ExtractInterface.SelectPublicMembers" xml:space="preserve">
     <value>Sélectionner les membres publics</value>
   </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.CreateNew" xml:space="preserve">
+    <value>Créer la nouvelle classe:</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Description" xml:space="preserve">
+    <value>La méthode ne peut pas être créée, car le code source de la classe est indisponible. Sélectionner une classe statique et une méthode d'extension sera créée.</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Title" xml:space="preserve">
+    <value>Insérer une méthode</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.UseExisting" xml:space="preserve">
+    <value>Utiliser la classe existante:</value>
+  </data>
   <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
     <value>Browser d'assemblies .NET</value>
   </data>
@@ -4428,6 +4449,9 @@ Utilisez seulement des lettres, chiffres, espace, '.' ou '_'.</value>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.SortDirectionGroupBox.Descending" xml:space="preserve">
     <value>&amp;Décroissant</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.ToolNotFoundDialog.Title" xml:space="preserve">
+    <value>Outil non trouvé</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.DialogTitle" xml:space="preserve">
     <value>Informations de connection</value>
   </data>
@@ -5714,6 +5738,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled2" xml:space="preserve">
     <value>Le fichier de documentation XML n'existe pas, il vous faut compiler le projet.</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.GenerateDocumentation.SHFBNotFound" xml:space="preserve">
+    <value>Générer la documentation depuis les commentaires XML nécessite l'installation du 'Sandcastle Help File Builder'.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.HtmlExport" xml:space="preserve">
     <value>E&amp;xport HTML</value>
   </data>
@@ -6106,6 +6133,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="SharpDevelop.Refactoring.GoToProperty" xml:space="preserve">
     <value>Aller à la &amp;propriété</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ImplementAbstractClass" xml:space="preserve">
+    <value>Implémenter une classe abstraite</value>
   </data>
   <data name="SharpDevelop.Refactoring.ImplementInterface" xml:space="preserve">
     <value>Implémenter une interface</value>
@@ -7600,7 +7630,7 @@ Erreur lors du démarrage:</value>
     <value>&amp;Plein écran</value>
   </data>
   <data name="XML.MainMenu.ViewMenu.SetupMenu" xml:space="preserve">
-    <value>Configuration</value>
+    <value>Installeur (WiX)</value>
   </data>
   <data name="XML.MainMenu.ViewMenu.SetupMenu.DialogsMenu" xml:space="preserve">
     <value>Boîtes de Dialogue</value>
