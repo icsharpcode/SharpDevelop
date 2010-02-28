@@ -59,12 +59,19 @@
 			Installed OR (NETFRAMEWORK40FULL AND NETFRAMEWORK40FULLVERSION = "4.0.30128")
 		</Condition>
 		
-		<!-- Check for C++ 2008 Runtime (we accept any 2008 runtime version) -->
+		<!--
+			Check for C++ 2008 Runtime (we accept any 2008 runtime version).
+			We only need the VC9 CRT, but unfortunately I couldn't find any way to detect if that is installed.
+			So instead, we conservatively check that the whole C++ runtime is installed.
+			However, we know that .NET 3.5 installs the C++ runtime parts we need (.NET 4.0 doesn't), so we'll check for
+			VCPP2008RUNTIME OR DOTNET35.
+ 		-->
 		<Property Id="VCPP2008RUNTIME" Secure="yes">
 			<RegistrySearch Id="VCpp2008Runtime" Root="HKLM" Key="SOFTWARE\Microsoft\DevDiv\VC\Servicing\9.0" Name="SP" Type="raw" />
 		</Property>
+		<PropertyRef Id="NETFRAMEWORK35"/>
 		<Condition Message="This setup requires the Microsoft Visual C++ 2008 SP1 Redistributable Package to be installed.">
-			Installed OR (VCPP2008RUNTIME &lt;&gt; "")
+			Installed OR (VCPP2008RUNTIME &lt;&gt; "") OR NETFRAMEWORK35
 		</Condition>
 		
 		<!--
