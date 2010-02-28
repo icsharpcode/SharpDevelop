@@ -130,6 +130,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return new SnippetSelectionElement();
 			if ("Caret".Equals(val, StringComparison.OrdinalIgnoreCase))
 				return new SnippetCaretElement();
+			foreach (ISnippetElementProvider provider in SnippetManager.Instance.SnippetElementProviders) {
+				SnippetElement element = provider.GetElement(val);
+				if (element != null)
+					return element;
+			}
 			if (replaceableElements.TryGetValue(val, out srte))
 				return new SnippetBoundElement { TargetElement = srte };
 			Match m = functionPattern.Match(val);

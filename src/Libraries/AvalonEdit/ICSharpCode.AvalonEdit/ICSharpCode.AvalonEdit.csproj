@@ -280,6 +280,7 @@
       <DependentUpon>VisualLine.cs</DependentUpon>
     </Compile>
     <Compile Include="Snippets\IActiveElement.cs" />
+    <Compile Include="Snippets\ISnippetElementProvider.cs" />
     <Compile Include="Snippets\SnippetEventArgs.cs" />
     <Compile Include="Snippets\SnippetInputHandler.cs" />
     <Compile Include="Snippets\Snippet.cs" />

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
+using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
@@ -75,7 +76,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "ctor",
 						Description = "Constructor",
-						Text = "public ${ClassName}(${Caret})\n{\n\t${Selection}\n}"
+						Text = "${refactoring:ctor}"
 					},
 					new CodeSnippet {
 						Name = "switch",
@@ -101,7 +102,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			}
 		};
 		
-		private SnippetManager() {}
+		readonly List<ISnippetElementProvider> snippetElementProviders;
+		
+		public List<ISnippetElementProvider> SnippetElementProviders {
+			get { return snippetElementProviders; }
+		}
+		
+		private SnippetManager()
+		{
+			snippetElementProviders = AddInTree.BuildItems<ISnippetElementProvider>("/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders", null, false);
+		}
 		
 		/// <summary>
 		/// Loads copies of all code snippet groups.
