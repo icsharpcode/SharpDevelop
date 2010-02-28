@@ -367,7 +367,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		internal void BringCaretToView(double border)
 		{
-			if (textView != null) {
+			if (textView != null && textView.Document != null) {
 				VisualLine visualLine = textView.GetOrConstructVisualLine(textView.Document.GetLineByNumber(position.Line));
 				Rect caretRectangle = CalcCaretRectangle(visualLine);
 				caretRectangle.Inflate(border, border);
