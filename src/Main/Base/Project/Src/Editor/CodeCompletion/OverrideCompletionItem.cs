@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -17,6 +19,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		IMember member;
 		string text;
 		IImage image;
+		
+		static readonly List<ICompletionItemHandler> handlers = AddInTree.BuildItems<ICompletionItemHandler>("/SharpDevelop/ViewContent/TextEditor/OverrideCompletionHandler", null, false);
 		
 		public OverrideCompletionItem(IMember member)
 		{
@@ -67,13 +71,25 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					return;
 				}
 			}
+			
 			string indentation = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
+
+			editor.Document.Remove(line.Offset, caretPosition - line.Offset);
+			
+			foreach (ICompletionItemHandler handler in handlers) {
+				if (handler.Handles(this)) {
+					editor.Document.Insert(line.Offset, indentation);
+					handler.Insert(context);
+					return;
+				}
+			}
 			
 			CodeGenerator codeGen = ParserService.CurrentProjectContent.Language.CodeGenerator;
 			
 			string text = codeGen.GenerateCode(codeGen.GetOverridingMethod(member, classFinder), indentation);
 			text = text.TrimEnd(); // remove newline from end
-			editor.Document.Replace(line.Offset, caretPosition - line.Offset, text);
+			
+			editor.Document.Insert(line.Offset, text);
 			
 			int endPos = line.Offset + text.Length;
 			line = editor.Document.GetLineForOffset(endPos);
