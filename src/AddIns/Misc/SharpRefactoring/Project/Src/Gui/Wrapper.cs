@@ -30,7 +30,7 @@ namespace SharpRefactoring.Gui
 		public object Create(Action<Wrapper<T>> checkChange)
 		{
 			CheckBox box = new CheckBox() {
-				Content = Entity.Name
+				Content = Entity.ProjectContent.Language.GetAmbience().Convert(Entity)
 			};
 			
 			box.Checked += delegate {
