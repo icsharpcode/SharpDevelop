@@ -74,6 +74,7 @@
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextSourceAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
+    <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemHandler.cs" />
     <Compile Include="Src\Editor\IEditorUIService.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />

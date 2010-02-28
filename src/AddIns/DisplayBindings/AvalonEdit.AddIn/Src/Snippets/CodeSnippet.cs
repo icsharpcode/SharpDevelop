@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 using ICSharpCode.AvalonEdit.Snippets;
@@ -16,6 +16,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets

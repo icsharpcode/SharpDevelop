@@ -6,11 +6,12 @@
 // </file>
 
 using System;
+using ICSharpCode.AvalonEdit.Snippets;
 
-namespace ICSharpCode.AvalonEdit.Snippets
+namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {
 	/// <summary>
-	/// Description of ISnippetElementProvider.
+	/// Used in "/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders" to allow AddIns to provide custom snippet elements.
 	/// </summary>
 	public interface ISnippetElementProvider
 	{

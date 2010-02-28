@@ -90,6 +90,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		
 		readonly int startPosition;
 		AnchorSegment wholeSnippetAnchor;
+		bool deactivateIfSnippetEmpty;
 		
 		/// <summary>
 		/// Inserts text at the insertion position and advances the insertion position.
@@ -163,8 +164,6 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			get { return registeredElements; }
 		}
 		
-		bool wasNotEmpty = true;
-		
 		/// <summary>
 		/// Calls the <see cref="IActiveElement.OnInsertionCompleted"/> method on all registered active elements
 		/// and raises the <see cref="InsertionCompleted"/> event.
@@ -183,6 +182,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			int endPosition = this.InsertionPosition;
 			this.wholeSnippetAnchor = new AnchorSegment(Document, startPosition, endPosition - startPosition);
 			TextDocumentWeakEventManager.UpdateFinished.AddListener(Document, this);
+			deactivateIfSnippetEmpty = (endPosition != startPosition);
 			
 			foreach (IActiveElement element in registeredElements) {
 				element.OnInsertionCompleted();
@@ -194,7 +194,6 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				// deactivate immediately if there are no interactive elements
 				Deactivate(new SnippetEventArgs(DeactivateReason.NoActiveElements));
 			} else {
-				wasNotEmpty = false;
 				myInputHandler = new SnippetInputHandler(this);
 				// disable existing snippet input handlers - there can be only 1 active snippet
 				foreach (TextAreaStackedInputHandler h in TextArea.StackedInputHandlers) {
@@ -252,9 +251,8 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			if (managerType == typeof(TextDocumentWeakEventManager.UpdateFinished)) {
 				// Deactivate if snippet is deleted. This is necessary for correctly leaving interactive
 				// mode if Undo is pressed after a snippet insertion.
-				if (wholeSnippetAnchor.Length == 0 && wasNotEmpty)
+				if (wholeSnippetAnchor.Length == 0 && deactivateIfSnippetEmpty)
 					Deactivate(new SnippetEventArgs(DeactivateReason.Deleted));
-				wasNotEmpty = true;
 				return true;
 			}
 			return false;

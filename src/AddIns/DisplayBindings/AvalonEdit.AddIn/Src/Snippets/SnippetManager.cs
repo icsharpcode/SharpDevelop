@@ -12,6 +12,7 @@ using System.Linq;
 
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
