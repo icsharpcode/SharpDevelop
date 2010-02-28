@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -30,6 +31,18 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Condition="Exists('$(VCTargetsPath)\Microsoft.Cpp.targets')" Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PlatformToolset>v90</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PlatformToolset>v90</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformToolset>v90</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PlatformToolset>v90</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
@@ -42,9 +55,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-	<WholeProgramOptimization Condition="'$(Configuration)'=='Release'">true</WholeProgramOptimization>
+    <WholeProgramOptimization Condition="'$(Configuration)'=='Release'">true</WholeProgramOptimization>
     <OutDir>$(ProjectDir)..\bin\</OutDir>
-	<IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
     <TargetName Condition="'$(Platform)'=='Win32'">$(ProjectName)32</TargetName>
     <TargetName Condition="'$(Platform)'=='X64'">$(ProjectName)64</TargetName>
     <TargetExt>.dll</TargetExt>
@@ -158,9 +171,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
-	<PostBuildEvent>
-	  <Command>$(MSBuildBinPath)\MSBuild Hook.vcxproj /p:Configuration=$(Configuration) /p:Platform=x64</Command>
-	</PostBuildEvent>
+    <PostBuildEvent>
+      <Command>$(MSBuildBinPath)\MSBuild Hook.vcxproj /p:Configuration=$(Configuration) /p:Platform=x64</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="allocator.h" />
