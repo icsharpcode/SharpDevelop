@@ -135,6 +135,9 @@
 			<OptionPanel id = "Behavior"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
 			             class = "ICSharpCode.AvalonEdit.AddIn.Options.BehaviorOptions"/>
+			<OptionPanel id = "Highlighting"
+			             label = "${res:Dialog.Options.TextEditorOptions.EditHighlighting.Title}"
+			             class = "ICSharpCode.AvalonEdit.AddIn.Options.HighlightingOptions"/>
 		</OptionPanel>
 	</Path>
 </AddIn>

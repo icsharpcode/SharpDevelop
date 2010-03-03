@@ -189,6 +189,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				
 				c.Name = color.Name;
 				c.Foreground = color.Foreground;
+				c.Background = color.Background;
 				c.FontStyle = color.FontStyle;
 				c.FontWeight = color.FontWeight;
 				return c;
@@ -370,6 +371,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				return c;
 			else
 				return null;
+		}
+		
+		public IEnumerable<HighlightingColor> NamedHighlightingColors {
+			get {
+				return colorDict.Values;
+			}
 		}
 		
 		public override string ToString()

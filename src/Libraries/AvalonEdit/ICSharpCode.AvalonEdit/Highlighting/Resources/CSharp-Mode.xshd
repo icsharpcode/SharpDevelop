@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <SyntaxDefinition name="C#" extensions=".cs" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 	<!-- The named colors 'Comment' and 'String' are used in SharpDevelop to detect if a line is inside a multiline string/comment -->
-	<Color name="Comment" foreground="Green"/>
-	<Color name="String" foreground="Blue"/>
-	<Color name="Char" foreground="Magenta"/>
+	<Color name="Comment" foreground="Green" exampleText = "// comment" />
+	<Color name="String" foreground="Blue" exampleText = "string text = &quot;Hello, World!&quot;"/>
+	<Color name="Char" foreground="Magenta" exampleText = "char linefeed = '\n';"/>
 	
 	<RuleSet name="CommentMarkerSet">
 		<Keywords fontWeight="bold" foreground="Red">

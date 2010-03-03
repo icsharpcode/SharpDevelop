@@ -272,7 +272,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return "[RectangleSelection " + document.GetLocation(StartOffset) + " to " + document.GetLocation(EndOffset) + "]";
+			// It's possible that ToString() gets called on old (invalid) selections, e.g. for "change from... to..." debug message
+			// make sure we don't crash even when the desired locations don't exist anymore.
+			if (StartOffset < document.TextLength && EndOffset < document.TextLength)
+				return "[RectangleSelection " + document.GetLocation(StartOffset) + " to " + document.GetLocation(EndOffset) + "]";
+			else
+				return "[RectangleSelection " + StartOffset + " to " + EndOffset + "]";
 		}
 	}
 }

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace ICSharpCode.AvalonEdit.Highlighting
@@ -37,5 +38,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		/// <returns>The highlighting color, or null if it is not found.</returns>
 		HighlightingColor GetNamedColor(string name);
+		
+		/// <summary>
+		/// Gets the list of named highlighting colors.
+		/// </summary>
+		IEnumerable<HighlightingColor> NamedHighlightingColors { get; }
 	}
 }

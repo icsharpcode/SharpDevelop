@@ -4,8 +4,18 @@
 <!-- Updated 2005 by Daniel Grunwald for VB.NET 2.0 -->
 <!-- Converted to AvalonEdit format by Daniel Grunwald in 2010 -->
 <SyntaxDefinition name="VBNET" extensions=".vb" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-	<Color name="Comment" foreground="Green" />
-	<Color name="String" />
+	<Color name="Comment" foreground="Green" exampleText="' comment" />
+	<Color name="String" exampleText="Dim text As String = &quot;Hello, World!&quot;" />
+	
+	<Color name="DateLiteral" foreground="Blue" exampleText="Dim endOfWorld As DateTime = #2012-12-21#" />
+	<Color name="Preprocessor" foreground="Maroon" exampleText="#Region &quot;Title&quot;" />
+	<Color name="DataTypes" foreground="#FF6F002F" exampleText="Dim b As Boolean = True" />
+	<Color name="Operators" foreground="#FF8515EA" exampleText="If a OrElse b Then"/>
+	<Color name="Constants" foreground="Blue" exampleText="Dim b As Boolean = True" />
+	<Color name="Keywords" foreground="Blue" exampleText="If a OrElse b Then" />
+	<Color name="FunctionKeywords" foreground="Blue" exampleText="CInt(a)" />
+	<Color name="ContextKeywords" foreground="Blue" exampleText="Declare Unicode Sub SomeMethod" />
+	
 	<RuleSet ignoreCase="true">
 		<Span color="String">
 			<Begin>"</Begin>
@@ -14,11 +24,10 @@
 				<Span begin="&quot;&quot;" end="" />
 			</RuleSet>
 		</Span>
-		<Span foreground="Maroon" ruleSet="PreprocessorSet">
+		<Span color="Preprocessor" ruleSet="PreprocessorSet">
 			<Begin>(?&lt;=(^\s*))\#</Begin>
 		</Span>
-		<Span foreground="Blue">
-			<!-- Date Literal -->
+		<Span color="DateLiteral">
 			<Begin>(?&lt;!(^\s*))\#</Begin>
 			<End>\#</End>
 		</Span>
@@ -31,7 +40,7 @@
 		<Span color="Comment">
 			<Begin>\bREM\b</Begin>
 		</Span>
-		<Keywords foreground="#FF6F002F">
+		<Keywords color="DataTypes">
 			<Word>Boolean</Word>
 			<Word>Byte</Word>
 			<Word>Char</Word>
@@ -50,7 +59,7 @@
 			<Word>UShort</Word>
 			<Word>Variant</Word>
 		</Keywords>
-		<Keywords foreground="#FF8515EA">
+		<Keywords color="Operators">
 			<Word>AddressOf</Word>
 			<Word>And</Word>
 			<Word>AndAlso</Word>
@@ -64,17 +73,15 @@
 			<Word>OrElse</Word>
 			<Word>Xor</Word>
 		</Keywords>
-		<Keywords foreground="Blue">
+		<Keywords color="Constants">
 			<Word>False</Word>
 			<Word>Me</Word>
 			<Word>MyBase</Word>
 			<Word>MyClass</Word>
 			<Word>Nothing</Word>
 			<Word>True</Word>
-			<Word>As</Word>
-			<Word>Of</Word>
-			<Word>New</Word>
-			<Word>End</Word>
+		</Keywords>
+		<Keywords color="FunctionKeywords">
 			<Word>CBool</Word>
 			<Word>CByte</Word>
 			<Word>CChar</Word>
@@ -96,6 +103,12 @@
 			<Word>GetType</Word>
 			<Word>TryCast</Word>
 			<Word>TypeOf</Word>
+		</Keywords>
+		<Keywords color="Keywords">
+			<Word>As</Word>
+			<Word>Of</Word>
+			<Word>New</Word>
+			<Word>End</Word>
 			<Word>ByRef</Word>
 			<Word>ByVal</Word>
 			<Word>Optional</Word>
@@ -188,6 +201,8 @@
 			<Word>Next</Word>
 			<Word>Select</Word>
 			<Word>Case</Word>
+		</Keywords>
+		<Keywords color="ContextKeywords">
 			<Word>Ansi</Word>
 			<Word>Auto</Word>
 			<Word>Unicode</Word>
@@ -196,7 +211,7 @@
 		</Keywords>
 	</RuleSet>
 	<RuleSet name="PreprocessorSet" ignoreCase="true">
-		<Keywords foreground="Maroon" fontWeight="bold">
+		<Keywords fontWeight="bold">
 			<Word>Const</Word>
 			<Word>If</Word>
 			<Word>ElseIf</Word>

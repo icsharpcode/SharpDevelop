@@ -98,6 +98,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				return GetDefinition().GetNamedColor(name);
 			}
 			
+			public IEnumerable<HighlightingColor> NamedHighlightingColors {
+				get {
+					return GetDefinition().NamedHighlightingColors;
+				}
+			}
+			
 			public override string ToString()
 			{
 				return this.Name;

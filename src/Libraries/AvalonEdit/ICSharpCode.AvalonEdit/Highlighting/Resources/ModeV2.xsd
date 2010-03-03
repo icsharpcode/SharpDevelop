@@ -32,6 +32,7 @@
 	<!-- Color -->
 	<xsd:attributeGroup name="ColorAttributes">
 		<xsd:attribute name="foreground" type="xsd:string" use="optional" />
+		<xsd:attribute name="background" type="xsd:string" use="optional" />
 		<xsd:attribute name="fontWeight" type="FontWeight" use="optional" />
 		<xsd:attribute name="fontStyle" type="FontStyle" use="optional" />
 	</xsd:attributeGroup>
@@ -44,6 +45,7 @@
 	<xsd:element name="Color">
 		<xsd:complexType>
 			<xsd:attribute name="name" type="xsd:string" use="required" />
+			<xsd:attribute name="exampleText" type="xsd:string" use="optional" />
 			<xsd:attributeGroup ref="ColorAttributes"/>
 		</xsd:complexType>
 	</xsd:element>

@@ -54,8 +54,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			
 			using (Stream stream = OpenStream(name)) {
 				using (XmlTextReader reader = new XmlTextReader(stream)) {
-					XshdSyntaxDefinition xshd = HighlightingLoader.LoadXshd(reader);
-					return HighlightingLoader.Load(xshd, resolver);
+					return HighlightingLoader.Load(reader, resolver);
 				}
 			}
 		}

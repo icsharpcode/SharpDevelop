@@ -18,50 +18,59 @@ using System.Windows.Media;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// Interaction logic for ColorPicker.xaml
+	/// A user control for choosing a color.
 	/// </summary>
 	public partial class ColorPicker : UserControl
 	{
-		SharpDevelopColorDialog dialog;
-		
 		public static readonly DependencyProperty ValueProperty =
-			DependencyProperty.Register("Value", typeof(Color), typeof(ColorPicker));
+			DependencyProperty.Register("Value", typeof(Color), typeof(ColorPicker), new FrameworkPropertyMetadata(new Color(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
 		
 		public Color Value {
 			get { return (Color)GetValue(ValueProperty); }
 			set { SetValue(ValueProperty, value); }
 		}
 		
+		public static readonly DependencyProperty TextProperty =
+			DependencyProperty.Register("Text", typeof(string), typeof(ColorPicker),
+			                            new FrameworkPropertyMetadata(OnValueChanged));
+		
+		public string Text {
+			get { return (string)GetValue(TextProperty); }
+			set { SetValue(TextProperty, value); }
+		}
+		
+		static void OnValueChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+		{
+			ColorPicker picker = obj as ColorPicker;
+			if (picker != null) {
+				Color color = picker.Value;
+				picker.button.Background = new SolidColorBrush(color);
+				// find a foreground color that is visible on the background
+				if (color.A < 128)
+					picker.button.Foreground = SystemColors.WindowTextBrush;
+				else if (0.299f * color.R + 0.587f * color.G + 0.114f * color.B > 128)
+					picker.button.Foreground = Brushes.Black;
+				else
+					picker.button.Foreground = Brushes.WhiteSmoke;
+				
+				picker.button.Content = picker.Text ?? color.ToString();
+			}
+		}
+		
 		public ColorPicker()
 		{
 			InitializeComponent();
-			dialog = new SharpDevelopColorDialog();
 		}
 		
 		void ButtonClick(object sender, RoutedEventArgs e)
 		{
-			if (dialog.ShowWpfDialog() == true) {
-				this.Value = dialog.WpfColor;
+			using (SharpDevelopColorDialog dlg = new SharpDevelopColorDialog()) {
+				dlg.WpfColor = this.Value;
+				if (dlg.ShowWpfDialog() == true) {
+					// use SetCurrentValue instead of SetValue so that two-way data binding can be used
+					SetCurrentValue(ValueProperty, dlg.WpfColor);
+				}
 			}
-		}
-	}
-	
-	public class ColorToBrushConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			if (value is Color)
-				return new SolidColorBrush((Color)value);
-			
-			throw new NotSupportedException();
-		}
-		
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
-			if (value is SolidColorBrush)
-				return (value as SolidColorBrush).Color;
-			
-			throw new NotSupportedException();		
 		}
 	}
 }

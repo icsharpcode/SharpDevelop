@@ -29,6 +29,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		public HighlightingBrush Foreground { get; set; }
 		
 		/// <summary>
+		/// Gets/sets the background brush.
+		/// </summary>
+		public HighlightingBrush Background { get; set; }
+		
+		/// <summary>
 		/// Gets/sets the font weight.
 		/// </summary>
 		public FontWeight? FontWeight { get; set; }
@@ -37,6 +42,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		/// Gets/sets the font style.
 		/// </summary>
 		public FontStyle? FontStyle { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the example text that demonstrates where the color is used.
+		/// </summary>
+		public string ExampleText { get; set; }
 		
 		/// <summary>
 		/// Creates a new XshdColor instance.
@@ -54,10 +64,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				throw new ArgumentNullException("info");
 			this.Name = info.GetString("Name");
 			this.Foreground = (HighlightingBrush)info.GetValue("Foreground", typeof(HighlightingBrush));
+			this.Background = (HighlightingBrush)info.GetValue("Background", typeof(HighlightingBrush));
 			if (info.GetBoolean("HasWeight"))
 				this.FontWeight = System.Windows.FontWeight.FromOpenTypeWeight(info.GetInt32("Weight"));
 			if (info.GetBoolean("HasStyle"))
 				this.FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
+			this.ExampleText = info.GetString("ExampleText");
 		}
 		
 		/// <summary>
@@ -70,12 +82,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				throw new ArgumentNullException("info");
 			info.AddValue("Name", this.Name);
 			info.AddValue("Foreground", this.Foreground);
+			info.AddValue("Background", this.Background);
 			info.AddValue("HasWeight", this.FontWeight.HasValue);
 			if (this.FontWeight.HasValue)
 				info.AddValue("Weight", this.FontWeight.Value.ToOpenTypeWeight());
 			info.AddValue("HasStyle", this.FontStyle.HasValue);
 			if (this.FontStyle.HasValue)
 				info.AddValue("Style", this.FontStyle.Value.ToString());
+			info.AddValue("ExampleText", this.ExampleText);
 		}
 		
 		/// <inheritdoc/>

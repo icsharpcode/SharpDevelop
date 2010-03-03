@@ -92,6 +92,7 @@
     <Compile Include="Src\Commands\SortSelectionCommand.cs" />
     <Compile Include="Src\Commands\SurroundWithCommand.cs" />
     <Compile Include="Src\CustomCommands.cs" />
+    <Compile Include="Src\CustomizedHighlightingRule.cs" />
     <Compile Include="Src\DocumentPrinter.cs" />
     <Compile Include="Src\IncrementalSearch.cs" />
     <Compile Include="Src\InlineUIElementGenerator.cs" />
@@ -101,11 +102,18 @@
       <DependentUpon>BehaviorOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Options\CustomizedHighlightingItem.cs" />
     <Compile Include="Src\Options\GeneralEditorOptions.xaml.cs">
       <DependentUpon>GeneralEditorOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Options\CodeEditorOptions.cs" />
+    <Compile Include="Src\Options\HighlightingOptions.xaml.cs">
+      <DependentUpon>HighlightingOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Options\IHighlightingItem.cs" />
+    <Compile Include="Src\Options\NamedColorHighlightingItem.cs" />
     <Compile Include="Src\Options\TextViewOptions.xaml.cs">
       <DependentUpon>TextViewOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -174,6 +182,7 @@
     <Page Include="Src\Commands\SortOptionsDialog.xaml" />
     <Page Include="Src\Options\BehaviorOptions.xaml" />
     <Page Include="Src\Options\GeneralEditorOptions.xaml" />
+    <Page Include="Src\Options\HighlightingOptions.xaml" />
     <Page Include="Src\Options\TextViewOptions.xaml" />
     <Page Include="Src\Snippets\SnippetOptionPanel.xaml">
       <DependentUpon>SnippetOptionPanel.cs</DependentUpon>

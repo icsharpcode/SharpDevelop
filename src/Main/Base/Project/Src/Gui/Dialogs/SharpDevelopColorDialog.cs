@@ -90,7 +90,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public System.Windows.Media.Color WpfColor {
 			get {
-				return System.Windows.Media.Color.FromArgb(this.Color.A, this.Color.R, this.Color.G, this.Color.B);
+				var c = this.Color;
+				return System.Windows.Media.Color.FromArgb(c.A, c.R, c.G, c.B);
+			}
+			set {
+				this.Color = System.Drawing.Color.FromArgb(value.A, value.R, value.G, value.B);
 			}
 		}
 	}

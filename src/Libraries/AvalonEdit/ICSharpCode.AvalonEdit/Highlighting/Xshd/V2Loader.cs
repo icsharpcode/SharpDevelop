@@ -241,6 +241,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			//	throw Error(reader, "A named color must have at least one element.");
 			color.Name = reader.GetAttribute("name");
 			CheckElementName(reader, color.Name);
+			color.ExampleText = reader.GetAttribute("exampleText");
 			return color;
 		}
 		
@@ -263,7 +264,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		{
 			XshdColor color = new XshdColor();
 			SetPosition(color, reader);
-			color.Foreground = ParseForeground(reader as IXmlLineInfo, reader.GetAttribute("foreground"));
+			color.Foreground = ParseColor(reader as IXmlLineInfo, reader.GetAttribute("foreground"));
+			color.Background = ParseColor(reader as IXmlLineInfo, reader.GetAttribute("background"));
 			color.FontWeight = ParseFontWeight(reader.GetAttribute("fontWeight"));
 			color.FontStyle = ParseFontStyle(reader.GetAttribute("fontStyle"));
 			return color;
@@ -273,14 +275,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		internal readonly static FontWeightConverter FontWeightConverter = new FontWeightConverter();
 		internal readonly static FontStyleConverter FontStyleConverter = new FontStyleConverter();
 		
-		static HighlightingBrush ParseForeground(IXmlLineInfo lineInfo, string foreground)
+		static HighlightingBrush ParseColor(IXmlLineInfo lineInfo, string color)
 		{
-			if (string.IsNullOrEmpty(foreground))
+			if (string.IsNullOrEmpty(color))
 				return null;
-			if (foreground.StartsWith("SystemColors.", StringComparison.Ordinal))
-				return GetSystemColorBrush(lineInfo, foreground);
+			if (color.StartsWith("SystemColors.", StringComparison.Ordinal))
+				return GetSystemColorBrush(lineInfo, color);
 			else
-				return FixedColorHighlightingBrush((Color?)ColorConverter.ConvertFromInvariantString(foreground));
+				return FixedColorHighlightingBrush((Color?)ColorConverter.ConvertFromInvariantString(color));
 		}
 		
 		internal static SystemColorHighlightingBrush GetSystemColorBrush(IXmlLineInfo lineInfo, string name)

@@ -42,6 +42,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		public HighlightingBrush Foreground { get; set; }
 		
 		/// <summary>
+		/// Gets/sets the background color applied by the highlighting.
+		/// </summary>
+		public HighlightingBrush Background { get; set; }
+		
+		/// <summary>
 		/// Creates a new HighlightingColor instance.
 		/// </summary>
 		public HighlightingColor()
@@ -61,6 +66,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (info.GetBoolean("HasStyle"))
 				this.FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
 			this.Foreground = (HighlightingBrush)info.GetValue("Foreground", typeof(HighlightingBrush));
+			this.Background = (HighlightingBrush)info.GetValue("Background", typeof(HighlightingBrush));
 		}
 		
 		/// <summary>
@@ -79,6 +85,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (this.FontStyle.HasValue)
 				info.AddValue("Style", this.FontStyle.Value.ToString());
 			info.AddValue("Foreground", this.Foreground);
+			info.AddValue("Background", this.Background);
 		}
 		
 		/// <summary>

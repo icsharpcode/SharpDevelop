@@ -99,6 +99,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		{
 			if (color.Foreground != null)
 				writer.WriteAttributeString("foreground", color.Foreground.ToString());
+			if (color.Background != null)
+				writer.WriteAttributeString("background", color.Background.ToString());
 			if (color.FontWeight != null)
 				writer.WriteAttributeString("fontWeight", V2Loader.FontWeightConverter.ConvertToInvariantString(color.FontWeight.Value).ToLowerInvariant());
 			if (color.FontStyle != null)
@@ -111,6 +113,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 			if (color.Name != null)
 				writer.WriteAttributeString("name", color.Name);
 			WriteColorAttributes(color);
+			if (color.ExampleText != null)
+				writer.WriteAttributeString("exampleText", color.ExampleText);
 			writer.WriteEndElement();
 			return null;
 		}

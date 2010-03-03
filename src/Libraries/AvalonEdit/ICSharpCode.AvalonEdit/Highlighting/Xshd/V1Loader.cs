@@ -89,7 +89,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		
 		static XshdColor GetColorFromElement(XmlElement element)
 		{
-			if (!element.HasAttribute("bold") && !element.HasAttribute("italic") && !element.HasAttribute("color"))
+			if (!element.HasAttribute("bold") && !element.HasAttribute("italic") && !element.HasAttribute("color") && !element.HasAttribute("bgcolor"))
 				return null;
 			XshdColor color = new XshdColor();
 			if (element.HasAttribute("bold"))
@@ -98,6 +98,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 				color.FontStyle = XmlConvert.ToBoolean(element.GetAttribute("italic")) ? FontStyles.Italic : FontStyles.Normal;
 			if (element.HasAttribute("color"))
 				color.Foreground = ParseColor(element.GetAttribute("color"));
+			if (element.HasAttribute("bgcolor"))
+				color.Background = ParseColor(element.GetAttribute("bgcolor"));
 			return color;
 		}
 		

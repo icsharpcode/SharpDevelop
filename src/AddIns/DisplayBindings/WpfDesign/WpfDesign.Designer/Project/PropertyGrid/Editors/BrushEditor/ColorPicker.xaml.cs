@@ -31,7 +31,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 
 		public static readonly DependencyProperty ColorProperty =
 			DependencyProperty.Register("Color", typeof(Color), typeof(ColorPicker),
-			new FrameworkPropertyMetadata(new Color(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+			                            new FrameworkPropertyMetadata(new Color(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 		public Color Color {
 			get { return (Color)GetValue(ColorProperty); }
@@ -118,27 +118,25 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 
 			if (updating) return;
 			updating = true;
-
-			if (e.Property == ColorProperty) {
-				UpdateSource(ColorSource.Hsv);
-				UpdateRest(ColorSource.Hsv);
+			try {
+				if (e.Property == ColorProperty) {
+					UpdateSource(ColorSource.Hsv);
+					UpdateRest(ColorSource.Hsv);
+				} else if (e.Property == HProperty || e.Property == SProperty || e.Property == VProperty) {
+					var c = ColorHelper.ColorFromHsv(H, S / 100.0, V / 100.0);
+					c.A = A;
+					Color = c;
+					UpdateRest(ColorSource.Hsv);
+				} else if (e.Property == RProperty || e.Property == GProperty || e.Property == BProperty || e.Property == AProperty) {
+					Color = Color.FromArgb(A, R, G, B);
+					UpdateRest(ColorSource.Rgba);
+				} else if (e.Property == HexProperty) {
+					Color = ColorHelper.ColorFromString(Hex);
+					UpdateRest(ColorSource.Hex);
+				}
+			} finally {
+				updating = false;
 			}
-			else if (e.Property == HProperty || e.Property == SProperty || e.Property == VProperty) {
-				var c = ColorHelper.ColorFromHsv(H, S / 100.0, V / 100.0);
-				c.A = A;
-				Color = c;
-				UpdateRest(ColorSource.Hsv);
-			}
-			else if (e.Property == RProperty || e.Property == GProperty || e.Property == BProperty || e.Property == AProperty) {
-				Color = Color.FromArgb(A, R, G, B);
-				UpdateRest(ColorSource.Rgba);
-			}
-			else if (e.Property == HexProperty) {
-				Color = ColorHelper.ColorFromString(Hex);
-				UpdateRest(ColorSource.Hex);
-			}
-
-			updating = false;
 		}
 
 		void UpdateRest(ColorSource source)

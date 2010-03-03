@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-# SharpDevelop 3.1.0.4545
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.5563
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamlDesigner", "XamlDesigner.csproj", "{27DA2B5C-2AAA-4478-AB00-3E184273C241}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfDesign", "..\..\src\AddIns\DisplayBindings\WpfDesign\WpfDesign\Project\WpfDesign.csproj", "{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}"
