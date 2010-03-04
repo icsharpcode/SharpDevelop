@@ -20,13 +20,13 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
 	{
 		/// <summary>Gets if the current line is read only (because it is not in the
 		/// selected text region)</summary>
-		bool ReadOnly { get; }
+		bool IsReadOnly { get; }
 		/// <summary>Gets the number of the current line.</summary>
 		int LineNumber { get; }
 		/// <summary>Gets/Sets the text of the current line.</summary>
 		string Text { get; set; }
 		/// <summary>Advances to the next line.</summary>
-		bool Next();
+		bool MoveNext();
 	}
 	
 	#region TextDocumentAccessor
@@ -68,7 +68,7 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
 		DocumentLine line;
 		
 		/// <inheritdoc/>
-		public bool ReadOnly {
+		public bool IsReadOnly {
 			get {
 				return num < minLine;
 			}
@@ -94,7 +94,7 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
 		}
 		
 		/// <inheritdoc/>
-		public bool Next()
+		public bool MoveNext()
 		{
 			if (lineDirty) {
 				doc.Replace(line, text);

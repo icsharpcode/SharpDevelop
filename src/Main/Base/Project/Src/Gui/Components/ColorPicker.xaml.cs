@@ -44,16 +44,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ColorPicker picker = obj as ColorPicker;
 			if (picker != null) {
 				Color color = picker.Value;
-				picker.button.Background = new SolidColorBrush(color);
+				picker.border.Background = new SolidColorBrush(color);
 				// find a foreground color that is visible on the background
 				if (color.A < 128)
-					picker.button.Foreground = SystemColors.WindowTextBrush;
+					picker.textBlock.Foreground = SystemColors.WindowTextBrush;
 				else if (0.299f * color.R + 0.587f * color.G + 0.114f * color.B > 128)
-					picker.button.Foreground = Brushes.Black;
+					picker.textBlock.Foreground = Brushes.Black;
 				else
-					picker.button.Foreground = Brushes.WhiteSmoke;
+					picker.textBlock.Foreground = Brushes.WhiteSmoke;
 				
-				picker.button.Content = picker.Text ?? color.ToString();
+				picker.textBlock.Text = picker.Text ?? color.ToString();
 			}
 		}
 		
@@ -64,6 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ButtonClick(object sender, RoutedEventArgs e)
 		{
+			e.Handled = true;
 			using (SharpDevelopColorDialog dlg = new SharpDevelopColorDialog()) {
 				dlg.WpfColor = this.Value;
 				if (dlg.ShowWpfDialog() == true) {

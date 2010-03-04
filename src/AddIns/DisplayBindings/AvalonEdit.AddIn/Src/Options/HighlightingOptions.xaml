@@ -36,7 +36,7 @@
 			        Click="ResetButtonClick" Padding="8,0" Height="21" Margin="0,4"
 			        Content="Reset" />
 			<Label Content="{core:StringParse ${res:Dialog.HighlightingEditor.SampleText}:}" />
-			<core:RestrictDesiredSize Height="50">
+			<core:RestrictDesiredSize Height="50" MinWidth="200">
 				<avalonedit:TextEditor Name="textEditor" IsReadOnly="True" />
 			</core:RestrictDesiredSize>
 		</StackPanel>

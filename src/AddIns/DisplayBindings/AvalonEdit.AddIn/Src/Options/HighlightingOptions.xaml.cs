@@ -55,6 +55,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					&& name.EndsWith(".xshd", StringComparison.OrdinalIgnoreCase)
 					&& !name.EndsWith("XmlDoc.xshd", StringComparison.OrdinalIgnoreCase)
 					let def = LoadBuiltinXshd(name)
+					where def.Elements.OfType<XshdColor>().Any(c => c.ExampleText != null)
 					orderby def.Name
 					select def
 				).ToList();
@@ -63,35 +64,30 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			customizationList = CustomizedHighlightingColor.LoadColors();
 			
 			languageComboBox.Items.Clear();
-			languageComboBox.Items.Add(new XshdSyntaxDefinition { Name = "All languages" });
+			//languageComboBox.Items.Add(new XshdSyntaxDefinition { Name = "All languages" });
 			foreach (XshdSyntaxDefinition def in allSyntaxDefinitions)
 				languageComboBox.Items.Add(def);
-			languageComboBox.SelectedIndex = 0;
+			if (allSyntaxDefinitions.Count > 0)
+				languageComboBox.SelectedIndex = 0;
 		}
 		
 		void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			listBox.Items.Clear();
-			if (languageComboBox.SelectedIndex == 0) {
-				var namedColors =
-					from def in allSyntaxDefinitions
-					from color in def.Elements.OfType<XshdColor>()
-					where color.ExampleText != null
-					group new { DefinitionName = def.Name, Color = color } by color.Name into g
-					orderby g.Key
-					select g.First();
-				
-				foreach (var namedColor in namedColors) {
-					var def = HighlightingManager.Instance.GetDefinition(namedColor.DefinitionName);
-					IHighlightingItem item = new NamedColorHighlightingItem(def, namedColor.Color);
-					item = new CustomizedHighlightingItem(customizationList, item, null);
-					listBox.Items.Add(item);
-					item.PropertyChanged += item_PropertyChanged;
+			XshdSyntaxDefinition xshd = (XshdSyntaxDefinition)languageComboBox.SelectedItem;
+			if (xshd != null) {
+				IHighlightingDefinition def = HighlightingManager.Instance.GetDefinition(xshd.Name);
+				foreach (XshdColor namedColor in xshd.Elements.OfType<XshdColor>()) {
+					if (namedColor.ExampleText != null) {
+						IHighlightingItem item = new NamedColorHighlightingItem(def, namedColor);
+						item = new CustomizedHighlightingItem(customizationList, item, xshd.Name);
+						listBox.Items.Add(item);
+						item.PropertyChanged += item_PropertyChanged;
+					}
 				}
-			} else {
-				throw new NotImplementedException();
+				if (listBox.Items.Count > 0)
+					listBox.SelectedIndex = 0;
 			}
-			listBox.SelectedIndex = 0;
 		}
 
 		void item_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -107,7 +103,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		
 		void ResetButtonClick(object sender, RoutedEventArgs e)
 		{
-			((IHighlightingItem)resetButton.DataContext).Reset();
+			IHighlightingItem item = resetButton.DataContext as IHighlightingItem;
+			if (item != null)
+				item.Reset();
 		}
 		
 		void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

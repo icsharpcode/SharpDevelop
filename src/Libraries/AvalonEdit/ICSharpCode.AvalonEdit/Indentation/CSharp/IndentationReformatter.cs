@@ -121,7 +121,7 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
 		{
 			Init();
 			
-			while (doc.Next()) {
+			while (doc.MoveNext()) {
 				Step(doc, set);
 			}
 		}
@@ -389,7 +389,7 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
 				oldBlock.OneLineBlock = block.OneLineBlock - 1;
 			}
 			
-			if (doc.ReadOnly) {
+			if (doc.IsReadOnly) {
 				// We can't change the current line, but we should accept the existing
 				// indentation if possible (=if the current statement is not a multiline
 				// statement).

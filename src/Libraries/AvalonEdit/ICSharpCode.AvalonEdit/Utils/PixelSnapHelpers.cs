@@ -34,18 +34,18 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
-		/// Aligns val on the next middle of a pixel.
+		/// Aligns <paramref name="value"/> on the next middle of a pixel.
 		/// </summary>
-		/// <param name="val">The value that should be aligned</param>
+		/// <param name="value">The value that should be aligned</param>
 		/// <param name="pixelSize">The size of one pixel</param>
-		public static double PixelAlign(double val, double pixelSize)
+		public static double PixelAlign(double value, double pixelSize)
 		{
 			// 0 -> 0.5
 			// 0.1 -> 0.5
 			// 0.5 -> 0.5
 			// 0.9 -> 0.5
 			// 1 -> 1.5
-			return pixelSize * (Math.Round((val / pixelSize) + 0.5) - 0.5);
+			return pixelSize * (Math.Round((value / pixelSize) + 0.5) - 0.5);
 		}
 		
 		/// <summary>
@@ -61,11 +61,11 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
-		/// Rounds val to whole number of pixels.
+		/// Rounds <paramref name="point"/> to whole number of pixels.
 		/// </summary>
-		public static Point Round(Point val, Size pixelSize)
+		public static Point Round(Point point, Size pixelSize)
 		{
-			return new Point(Round(val.X, pixelSize.Width), Round(val.Y, pixelSize.Height));
+			return new Point(Round(point.X, pixelSize.Width), Round(point.Y, pixelSize.Height));
 		}
 		
 		/// <summary>
@@ -78,19 +78,19 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
-		/// Rounds val to a whole number of pixels.
+		/// Rounds <paramref name="value"/> to a whole number of pixels.
 		/// </summary>
-		public static double Round(double val, double pixelSize)
+		public static double Round(double value, double pixelSize)
 		{
-			return pixelSize * Math.Round(val / pixelSize);
+			return pixelSize * Math.Round(value / pixelSize);
 		}
 		
 		/// <summary>
-		/// Rounds val to an whole odd number of pixels.
+		/// Rounds <paramref name="value"/> to an whole odd number of pixels.
 		/// </summary>
-		public static double RoundToOdd(double val, double pixelSize)
+		public static double RoundToOdd(double value, double pixelSize)
 		{
-			return Round(val - pixelSize, pixelSize * 2) + pixelSize;
+			return Round(value - pixelSize, pixelSize * 2) + pixelSize;
 		}
 	}
 }

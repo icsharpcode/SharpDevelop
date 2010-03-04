@@ -19,7 +19,7 @@
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <RunCodeAnalysis>False</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1020;-Microsoft.Design#CA1033;-Microsoft.Performance#CA1810</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1020;-Microsoft.Design#CA1033;-Microsoft.Performance#CA1805;-Microsoft.Performance#CA1810</CodeAnalysisRules>
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <DocumentationFile>..\..\..\..\bin\ICSharpCode.AvalonEdit.xml</DocumentationFile>
   </PropertyGroup>
