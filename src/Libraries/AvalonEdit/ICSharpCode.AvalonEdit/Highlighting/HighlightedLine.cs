@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -122,7 +123,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			elements.Sort();
 			
 			TextDocument document = this.Document;
-			StringWriter w = new StringWriter();
+			StringWriter w = new StringWriter(CultureInfo.InvariantCulture);
 			int textOffset = startOffset;
 			foreach (HtmlElement e in elements) {
 				int newOffset = Math.Min(e.Offset, endOffset);

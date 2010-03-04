@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Media;
 
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 
@@ -45,8 +46,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		void Reset();
 		
 		/// <summary>
+		/// Parent definition to use in conjunction with the example.
+		/// </summary>
+		IHighlightingDefinition ParentDefinition { get; }
+		
+		/// <summary>
 		/// Shows an example
 		/// </summary>
-		void ShowExample(TextView exampleTextView);
+		void ShowExample(TextArea exampleTextArea);
 	}
 }

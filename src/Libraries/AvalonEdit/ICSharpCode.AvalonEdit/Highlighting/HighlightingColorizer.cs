@@ -19,97 +19,85 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 	/// <summary>
 	/// A colorizes that interprets a highlighting rule set and colors the document accordingly.
 	/// </summary>
-	public class HighlightingColorizer : DocumentColorizingTransformer, IWeakEventListener
+	public class HighlightingColorizer : DocumentColorizingTransformer
 	{
-		readonly TextView textView;
 		readonly HighlightingRuleSet ruleSet;
-		DocumentHighlighter highlighter;
-		bool isInTextView;
 		
 		/// <summary>
 		/// Creates a new HighlightingColorizer instance.
 		/// </summary>
-		/// <param name="textView">The text view for which the highlighting should be provided.</param>
 		/// <param name="ruleSet">The root highlighting rule set.</param>
-		public HighlightingColorizer(TextView textView, HighlightingRuleSet ruleSet)
+		public HighlightingColorizer(HighlightingRuleSet ruleSet)
 		{
-			if (textView == null)
-				throw new ArgumentNullException("textView");
 			if (ruleSet == null)
 				throw new ArgumentNullException("ruleSet");
-			this.textView = textView;
 			this.ruleSet = ruleSet;
-			TextViewWeakEventManager.DocumentChanged.AddListener(textView, this);
-			OnDocumentChanged();
 		}
 		
-		/// <inheritdoc cref="IWeakEventListener.ReceiveWeakEvent"/>
-		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		/// <summary>
+		/// This constructor is obsolete - please use the other overload instead.
+		/// </summary>
+		/// <param name="textView">UNUSED</param>
+		/// <param name="ruleSet">The root highlighting rule set.</param>
+		[Obsolete("The TextView parameter is no longer used, please use the constructor taking only HighlightingRuleSet instead")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "textView")]
+		public HighlightingColorizer(TextView textView, HighlightingRuleSet ruleSet)
+			: this(ruleSet)
 		{
-			if (managerType == typeof(TextViewWeakEventManager.DocumentChanged)) {
-				OnDocumentChanged();
-				return true;
-			}
-			return false;
 		}
 		
-		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+		void textView_DocumentChanged(object sender, EventArgs e)
 		{
-			return ReceiveWeakEvent(managerType, sender, e);
+			OnDocumentChanged((TextView)sender);
 		}
 		
-		void OnDocumentChanged()
+		void OnDocumentChanged(TextView textView)
 		{
-			if (highlighter != null && isInTextView) {
-				textView.Services.RemoveService(typeof(DocumentHighlighter));
-				textView.Services.RemoveService(typeof(IHighlighter));
-			}
+			// remove existing highlighter, if any exists
+			textView.Services.RemoveService(typeof(IHighlighter));
+			textView.Services.RemoveService(typeof(DocumentHighlighter));
 			
 			TextDocument document = textView.Document;
-			if (document != null)
-				highlighter = new TextViewDocumentHighlighter(this, document, ruleSet);
-			else
-				highlighter = null;
-			
-			if (highlighter != null && isInTextView) {
-				// for backward compatiblity, we're registering using both the interface and concrete types
-				textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
+			if (document != null) {
+				IHighlighter highlighter = CreateHighlighter(textView, document);
 				textView.Services.AddService(typeof(IHighlighter), highlighter);
+				// for backward compatiblity, we're registering using both the interface and concrete types
+				if (highlighter is DocumentHighlighter)
+					textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
 			}
+		}
+		
+		/// <summary>
+		/// Creates the IHighlighter instance for the specified text document.
+		/// </summary>
+		protected virtual IHighlighter CreateHighlighter(TextView textView, TextDocument document)
+		{
+			return new TextViewDocumentHighlighter(textView, document, ruleSet);
 		}
 		
 		/// <inheritdoc/>
 		protected override void OnAddToTextView(TextView textView)
 		{
 			base.OnAddToTextView(textView);
-			isInTextView = true;
-			if (highlighter != null) {
-				textView.Services.AddService(typeof(DocumentHighlighter), highlighter);
-				textView.Services.AddService(typeof(IHighlighter), highlighter);
-			}
+			textView.DocumentChanged += textView_DocumentChanged;
+			OnDocumentChanged(textView);
 		}
 		
 		/// <inheritdoc/>
 		protected override void OnRemoveFromTextView(TextView textView)
 		{
 			base.OnRemoveFromTextView(textView);
-			isInTextView = false;
-			if (highlighter != null) {
-				textView.Services.RemoveService(typeof(DocumentHighlighter));
-				textView.Services.RemoveService(typeof(IHighlighter));
-			}
+			textView.Services.RemoveService(typeof(IHighlighter));
+			textView.Services.RemoveService(typeof(DocumentHighlighter));
+			textView.DocumentChanged -= textView_DocumentChanged;
 		}
-		
-		int currentLineEndOffset;
 		
 		/// <inheritdoc/>
 		protected override void ColorizeLine(DocumentLine line)
 		{
-			if (CurrentContext.TextView != textView)
-				throw new InvalidOperationException("Wrong TextView");
+			IHighlighter highlighter = CurrentContext.TextView.Services.GetService(typeof(IHighlighter)) as IHighlighter;
 			if (highlighter != null) {
-				currentLineEndOffset = line.Offset + line.TotalLength;
-				HighlightedLine hl = highlighter.HighlightLine(line);
+				HighlightedLine hl = highlighter.HighlightLine(line.LineNumber);
 				foreach (HighlightedSection section in hl.Sections) {
 					ChangeLinePart(section.Offset, section.Offset + section.Length,
 					               visualLineElement => ApplyColorToElement(visualLineElement, section.Color));
@@ -140,29 +128,29 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		sealed class TextViewDocumentHighlighter : DocumentHighlighter
 		{
-			HighlightingColorizer colorizer;
+			TextView textView;
 			
-			public TextViewDocumentHighlighter(HighlightingColorizer colorizer, TextDocument document, HighlightingRuleSet baseRuleSet)
+			public TextViewDocumentHighlighter(TextView textView, TextDocument document, HighlightingRuleSet baseRuleSet)
 				: base(document, baseRuleSet)
 			{
-				Debug.Assert(colorizer != null);
-				this.colorizer = colorizer;
+				Debug.Assert(textView != null);
+				this.textView = textView;
 			}
 			
 			protected override void OnHighlightStateChanged(DocumentLine line, int lineNumber)
 			{
 				base.OnHighlightStateChanged(line, lineNumber);
-				if (colorizer.currentLineEndOffset >= 0) {
+				int lineEndOffset = line.Offset + line.TotalLength;
+				if (lineEndOffset >= 0) {
 					// Do not use colorizer.CurrentContext - the colorizer might not be the only
 					// class calling DocumentHighlighter.HighlightLine, the the context might be null.
-					int length = this.Document.TextLength - colorizer.currentLineEndOffset;
+					int length = this.Document.TextLength - lineEndOffset;
 					if (length != 0) {
 						// don't redraw if length == 0: at the end of the document, this would cause
 						// the last line which was already constructed to be redrawn ->
 						// we would get an exception due to disposing the line that was already constructed
-						colorizer.textView.Redraw(colorizer.currentLineEndOffset, length, DispatcherPriority.Normal);
+						textView.Redraw(lineEndOffset, length, DispatcherPriority.Normal);
 					}
-					colorizer.currentLineEndOffset = -1;
 				}
 			}
 		}

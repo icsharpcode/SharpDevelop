@@ -3,8 +3,8 @@
 		<BooleanToVisibilityConverter x:Key="boolToVisibility" />
 	</FrameworkElement.Resources>
 	<DockPanel>
-		<StackPanel DockPanel.Dock="Right" Margin="4,0,8,0" DataContext="{Binding SelectedItem, ElementName=listBox}">
-			<Grid>
+		<StackPanel DockPanel.Dock="Right" Margin="4,0,0,0" DataContext="{Binding SelectedItem, ElementName=listBox}">
+			<Grid Margin="0,0,8,0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="Auto" />
@@ -28,19 +28,33 @@
 				                 Grid.Column="1" Grid.Row="1"
 				                 Visibility="{Binding CanSetBackground, Converter={StaticResource boolToVisibility}}" />
 			</Grid>
-			<CheckBox IsEnabled="{Binding CanSetFont}" IsChecked="{Binding Bold}" Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Bold}"/>
-			<CheckBox IsEnabled="{Binding CanSetFont}" IsChecked="{Binding Italic}" Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Italic}"/>
-			<Button Name="resetButton" IsEnabled="{Binding IsCustomized}" Click="ResetButtonClick">Reset</Button>
+			<CheckBox IsEnabled="{Binding CanSetFont}" IsChecked="{Binding Bold}"
+			          Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Bold}"/>
+			<CheckBox IsEnabled="{Binding CanSetFont}" IsChecked="{Binding Italic}"
+			          Content="{core:Localize Dialog.HighlightingEditor.ColorDlg.Italic}"/>
+			<Button Name="resetButton" IsEnabled="{Binding IsCustomized}" HorizontalAlignment="Left"
+			        Click="ResetButtonClick" Padding="8,0" Height="21" Margin="0,4"
+			        Content="Reset" />
 			<Label Content="{core:StringParse ${res:Dialog.HighlightingEditor.SampleText}:}" />
-			<Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" 
-			        BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" 
-			        BorderThickness="1">
-				<avalonedit:TextView Name="textView" Width="140" Height="40" />
-			</Border>
+			<core:RestrictDesiredSize Height="50">
+				<avalonedit:TextEditor Name="textEditor" IsReadOnly="True" />
+			</core:RestrictDesiredSize>
 		</StackPanel>
-		<ComboBox Name="languageComboBox" DockPanel.Dock="Top"/>
+		<ComboBox Name="languageComboBox" DockPanel.Dock="Top" SelectionChanged="LanguageComboBox_SelectionChanged">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Name}" />
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
 		<core:RestrictDesiredSize>
-			<ListBox Name="listBox" />
+			<ListBox Name="listBox" SelectionChanged="ListBox_SelectionChanged">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Name}" FontWeight="{Binding IsCustomized, Converter={x:Static local:BooleanToBoldConverter.Instance}}"/>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
 		</core:RestrictDesiredSize>
 	</DockPanel>
 </gui:OptionPanel>

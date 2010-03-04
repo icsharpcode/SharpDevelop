@@ -27,6 +27,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		internal const int StatePlaybackModifyDocument = 2;
 		/// state is used for checking that noone but the UndoStack performs changes
 		/// during Undo events
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1085:DoNotInitializeUnnecessarily")]
 		internal int state = StateListen;
 		
 		Deque<IUndoableOperation> undostack = new Deque<IUndoableOperation>();

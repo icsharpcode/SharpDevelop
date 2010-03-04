@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
@@ -20,6 +21,7 @@ using System.Windows.Input;
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -56,7 +58,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;
 			this.MouseLeave += TextEditorMouseLeave;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
-			this.TextArea.Caret.PositionChanged += TextArea_PositionChanged;
+			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			
 			var editingKeyBindings = this.TextArea.DefaultInputHandler.Editing.InputBindings.OfType<KeyBinding>();
 			var tabBinding = editingKeyBindings.Single(b => b.Key == Key.Tab && b.Modifiers == ModifierKeys.None);
@@ -69,12 +71,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			base.OnOptionChanged(e);
 			if (e.PropertyName == "HighlightBrackets")
-				TextArea_PositionChanged(null, e);
+				CaretPositionChanged(null, e);
 			else if (e.PropertyName == "EnableFolding")
 				UpdateParseInformation();
 		}
 		
-		void TextArea_PositionChanged(object sender, EventArgs e)
+		#region CaretPositionChanged - Bracket Highlighting
+		void CaretPositionChanged(object sender, EventArgs e)
 		{
 			if (CodeEditorOptions.Instance.HighlightBrackets) {
 				/*
@@ -91,7 +94,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.bracketRenderer.SetHighlight(null);
 			}
 		}
+		#endregion
 		
+		#region Custom Tab command (code snippet expansion)
 		sealed class CustomTabCommand : ICommand
 		{
 			CodeEditorView editor;
@@ -131,7 +136,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				baseCommand.Execute(parameter);
 			}
 		}
+		#endregion
 		
+		#region OnKeyDown
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
@@ -142,6 +149,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
+		#endregion
 		
 		#region Help
 		void OnHelpExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -345,6 +353,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Focus();
 		}
 		
+		#region UpdateParseInformation - Folding
 		void UpdateParseInformation()
 		{
 			UpdateParseInformation(ParserService.GetExistingParseInformation(this.Adapter.FileName));
@@ -371,7 +380,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				folding.UpdateFoldings(parseInfo);
 			}
 		}
+		#endregion
 		
+		#region Printing
 		void OnPrint(object sender, ExecutedRoutedEventArgs e)
 		{
 			PrintDialog printDialog = PrintPreviewViewContent.PrintDialog;
@@ -395,6 +406,24 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			fd.PageHeight = printDialog.PrintableAreaHeight;
 			fd.PageWidth = printDialog.PrintableAreaWidth;
 			PrintPreviewViewContent.ShowDocument(fd, Path.GetFileName(this.Adapter.FileName));
+		}
+		#endregion
+		
+		protected override IVisualLineTransformer CreateColorizer(IHighlightingDefinition highlightingDefinition)
+		{
+			return new CustomizableHighlightingColorizer(
+				highlightingDefinition.MainRuleSet,
+				FetchCustomizations(highlightingDefinition.Name));
+		}
+		
+		static IEnumerable<CustomizedHighlightingColor> FetchCustomizations(string languageName)
+		{
+			// Access CustomizedHighlightingColor.ActiveColors within enumerator so that always the latest version is used.
+			// Using CustomizedHighlightingColor.ActiveColors.Where(...) would not work correctly!
+			foreach (CustomizedHighlightingColor color in CustomizedHighlightingColor.ActiveColors) {
+				if (color.Language == null || color.Language == languageName)
+					yield return color;
+			}
 		}
 	}
 }

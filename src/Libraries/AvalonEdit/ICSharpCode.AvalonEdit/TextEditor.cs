@@ -307,7 +307,7 @@ namespace ICSharpCode.AvalonEdit
 			set { SetValue(SyntaxHighlightingProperty, value); }
 		}
 		
-		HighlightingColorizer colorizer;
+		IVisualLineTransformer colorizer;
 		
 		static void OnSyntaxHighlightingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
@@ -321,10 +321,21 @@ namespace ICSharpCode.AvalonEdit
 				colorizer = null;
 			}
 			if (newValue != null) {
-				TextView textView = this.TextArea.TextView;
-				colorizer = new HighlightingColorizer(textView, newValue.MainRuleSet);
-				textView.LineTransformers.Insert(0, colorizer);
+				colorizer = CreateColorizer(newValue);
+				this.TextArea.TextView.LineTransformers.Insert(0, colorizer);
 			}
+		}
+		
+		/// <summary>
+		/// Creates the highlighting colorizer for the specified highlighting definition.
+		/// Allows derived classes to provide custom colorizer implementations for special highlighting definitions.
+		/// </summary>
+		/// <returns></returns>
+		protected virtual IVisualLineTransformer CreateColorizer(IHighlightingDefinition highlightingDefinition)
+		{
+			if (highlightingDefinition == null)
+				throw new ArgumentNullException("highlightingDefinition");
+			return new HighlightingColorizer(highlightingDefinition.MainRuleSet);
 		}
 		#endregion
 		

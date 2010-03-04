@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Highlighting;
+
 namespace ICSharpCode.AvalonEdit.AddIn.Options
 {
 	sealed class CustomizedHighlightingItem : IHighlightingItem
@@ -185,9 +188,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			AllPropertiesChanged();
 		}
 		
-		public void ShowExample(ICSharpCode.AvalonEdit.Rendering.TextView exampleTextView)
+		public IHighlightingDefinition ParentDefinition {
+			get { return original.ParentDefinition; }
+		}
+		
+		public void ShowExample(TextArea exampleTextArea)
 		{
-			original.ShowExample(exampleTextView);
+			original.ShowExample(exampleTextArea);
 		}
 		
 		public override string ToString()

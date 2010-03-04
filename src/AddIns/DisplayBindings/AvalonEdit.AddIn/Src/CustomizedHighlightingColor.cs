@@ -47,6 +47,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				activeColors = null;
 				PropertyService.Set("CustomizedHighlightingRules", colors.ToList());
 			}
+			EventHandler e = ActiveColorsChanged;
+			if (e != null)
+				e(null, EventArgs.Empty);
 		}
 		
 		static ReadOnlyCollection<CustomizedHighlightingColor> activeColors;
@@ -61,5 +64,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 		}
+		
+		/// <summary>
+		/// Occurs when the set of customized highlighting colors was changed.
+		/// </summary>
+		public static EventHandler ActiveColorsChanged;
 	}
 }

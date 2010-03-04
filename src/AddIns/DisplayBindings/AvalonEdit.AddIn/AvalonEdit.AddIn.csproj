@@ -92,7 +92,8 @@
     <Compile Include="Src\Commands\SortSelectionCommand.cs" />
     <Compile Include="Src\Commands\SurroundWithCommand.cs" />
     <Compile Include="Src\CustomCommands.cs" />
-    <Compile Include="Src\CustomizedHighlightingRule.cs" />
+    <Compile Include="Src\CustomizableHighlightingColorizer.cs" />
+    <Compile Include="Src\CustomizedHighlightingColor.cs" />
     <Compile Include="Src\DocumentPrinter.cs" />
     <Compile Include="Src\IncrementalSearch.cs" />
     <Compile Include="Src\InlineUIElementGenerator.cs" />

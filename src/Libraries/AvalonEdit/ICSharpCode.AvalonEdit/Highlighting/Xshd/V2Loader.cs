@@ -264,8 +264,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		{
 			XshdColor color = new XshdColor();
 			SetPosition(color, reader);
-			color.Foreground = ParseColor(reader as IXmlLineInfo, reader.GetAttribute("foreground"));
-			color.Background = ParseColor(reader as IXmlLineInfo, reader.GetAttribute("background"));
+			IXmlLineInfo position = reader as IXmlLineInfo;
+			color.Foreground = ParseColor(position, reader.GetAttribute("foreground"));
+			color.Background = ParseColor(position, reader.GetAttribute("background"));
 			color.FontWeight = ParseFontWeight(reader.GetAttribute("fontWeight"));
 			color.FontStyle = ParseFontStyle(reader.GetAttribute("fontStyle"));
 			return color;

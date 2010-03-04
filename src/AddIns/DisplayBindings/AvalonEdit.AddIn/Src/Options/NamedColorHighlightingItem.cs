@@ -6,11 +6,11 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 
@@ -20,11 +20,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 	{
 		readonly XshdColor color;
 		
-		public NamedColorHighlightingItem(XshdColor color)
+		public NamedColorHighlightingItem(IHighlightingDefinition parentDefinition, XshdColor color)
 		{
+			if (parentDefinition == null)
+				throw new ArgumentNullException("parentDefinition");
 			if (color == null)
 				throw new ArgumentNullException("color");
 			
+			this.ParentDefinition = parentDefinition;
 			this.color = color;
 		}
 		
@@ -123,9 +126,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			return color.Name;
 		}
 		
-		public void ShowExample(ICSharpCode.AvalonEdit.Rendering.TextView exampleTextView)
+		public IHighlightingDefinition ParentDefinition { get; private set; }
+		
+		public void ShowExample(TextArea exampleTextArea)
 		{
-			throw new NotImplementedException();
+			exampleTextArea.Document.Text = color.ExampleText;
 		}
 		
 		event System.ComponentModel.PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged { add {} remove {} }

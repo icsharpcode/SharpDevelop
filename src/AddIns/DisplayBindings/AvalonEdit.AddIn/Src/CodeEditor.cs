@@ -141,6 +141,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public CodeEditor()
 		{
 			CodeEditorOptions.Instance.PropertyChanged += CodeEditorOptions_Instance_PropertyChanged;
+			CustomizedHighlightingColor.ActiveColorsChanged += CustomizedHighlightingColor_ActiveColorsChanged;
+			
 			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
 			
 			textMarkerService = new TextMarkerService(this);
@@ -166,6 +168,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (e.PropertyName == "EnableQuickClassBrowser")
 				FetchParseInformation();
+		}
+		
+		void CustomizedHighlightingColor_ActiveColorsChanged(object sender, EventArgs e)
+		{
+			// CustomizableHighlightingColorizer loads the new values automatically, we just need
+			// to force a refresh in AvalonEdit.
+			primaryTextEditor.TextArea.TextView.Redraw();
+			if (secondaryTextEditor != null)
+				secondaryTextEditor.TextArea.TextView.Redraw();
 		}
 		
 		protected virtual CodeEditorView CreateTextEditor()
@@ -522,6 +533,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void Dispose()
 		{
 			CodeEditorOptions.Instance.PropertyChanged -= CodeEditorOptions_Instance_PropertyChanged;
+			CustomizedHighlightingColor.ActiveColorsChanged -= CustomizedHighlightingColor_ActiveColorsChanged;
+			
 			primaryTextEditorAdapter.Language.Detach();
 			if (secondaryTextEditorAdapter != null)
 				secondaryTextEditorAdapter.Language.Detach();
