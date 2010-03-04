@@ -95,6 +95,11 @@ namespace ICSharpCode.UsageDataCollector
 							session.AddEnvironmentData("architecture", PROCESSOR_ARCHITECTURE);
 						}
 						session.AddEnvironmentData("userAddInCount", AddInTree.AddIns.Where(a => !a.IsPreinstalled).Count().ToString());
+						
+						#if DEBUG
+						session.AddEnvironmentData("debug", "true");
+						#endif
+						
 						sessionOpened = true;
 					} catch (IncompatibleDatabaseException ex) {
 						if (ex.ActualVersion < ex.ExpectedVersion) {
