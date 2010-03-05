@@ -49,7 +49,7 @@ namespace CSharpBinding.FormattingStrategy
 		IDocumentLine line;
 		
 		/// <inheritdoc/>
-		public bool ReadOnly {
+		public bool IsReadOnly {
 			get {
 				return num < minLine;
 			}
@@ -75,7 +75,7 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		
 		/// <inheritdoc/>
-		public bool Next()
+		public bool MoveNext()
 		{
 			if (lineDirty) {
 				DocumentUtilitites.SmartReplaceLine(doc, line, text);
