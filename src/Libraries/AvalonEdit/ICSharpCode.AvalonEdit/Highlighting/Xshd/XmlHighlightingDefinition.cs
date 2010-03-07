@@ -203,23 +203,46 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 					if (string.IsNullOrEmpty(keyword))
 						throw Error(keywords, "Cannot use empty string as keyword");
 				}
-				StringBuilder keyWordRegex = new StringBuilder(@"\b(?>");
-				// (?> = atomic group
-				// atomic groups increase matching performance, but we
-				// must ensure that the keywords are sorted correctly.
-				// "\b(?>in|int)\b" does not match "int" because the atomic group captures "in".
-				// To solve this, we are sorting the keywords by descending length.
-				int i = 0;
-				foreach (string keyword in keywords.Words.OrderByDescending(w=>w.Length)) {
-					if (i++ > 0)
-						keyWordRegex.Append('|');
-					keyWordRegex.Append(Regex.Escape(keyword));
+				StringBuilder keyWordRegex = new StringBuilder();
+				// We can use "\b" only where the keyword starts/ends with a letter or digit, otherwise we don't
+				// highlight correctly. (example: ILAsm-Mode.xshd with ".maxstack" keyword)
+				if (keywords.Words.All(IsSimpleWord)) {
+					keyWordRegex.Append(@"\b(?>");
+					// (?> = atomic group
+					// atomic groups increase matching performance, but we
+					// must ensure that the keywords are sorted correctly.
+					// "\b(?>in|int)\b" does not match "int" because the atomic group captures "in".
+					// To solve this, we are sorting the keywords by descending length.
+					int i = 0;
+					foreach (string keyword in keywords.Words.OrderByDescending(w=>w.Length)) {
+						if (i++ > 0)
+							keyWordRegex.Append('|');
+						keyWordRegex.Append(Regex.Escape(keyword));
+					}
+					keyWordRegex.Append(@")\b");
+				} else {
+					keyWordRegex.Append('(');
+					int i = 0;
+					foreach (string keyword in keywords.Words) {
+						if (i++ > 0)
+							keyWordRegex.Append('|');
+						if (char.IsLetterOrDigit(keyword[0]))
+							keyWordRegex.Append(@"\b");
+						keyWordRegex.Append(Regex.Escape(keyword));
+						if (char.IsLetterOrDigit(keyword[keyword.Length - 1]))
+							keyWordRegex.Append(@"\b");
+					}
+					keyWordRegex.Append(')');
 				}
-				keyWordRegex.Append(@")\b");
 				return new HighlightingRule {
 					Color = GetColor(keywords, keywords.ColorReference),
 					Regex = CreateRegex(keywords, keyWordRegex.ToString(), XshdRegexType.Default)
 				};
+			}
+			
+			static bool IsSimpleWord(string word)
+			{
+				return char.IsLetterOrDigit(word[0]) && char.IsLetterOrDigit(word, word.Length - 1);
 			}
 			
 			Regex CreateRegex(XshdElement position, string regex, XshdRegexType regexType)
