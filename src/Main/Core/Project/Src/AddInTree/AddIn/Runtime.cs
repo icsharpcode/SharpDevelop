@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Xml;
 
 namespace ICSharpCode.Core
@@ -25,14 +26,17 @@ namespace ICSharpCode.Core
 		IList<AddIn> addIns;
 		bool isActive = true;
 		bool isAssemblyLoaded;
+		readonly object lockObj = new object(); // used to protect mutable parts of runtime
 		
 		public bool IsActive {
 			get {
-				if (conditions != null) {
-					isActive = Condition.GetFailedAction(conditions, this) == ConditionFailedAction.Nothing;
-					conditions = null;
+				lock (lockObj) {
+					if (conditions != null) {
+						isActive = Condition.GetFailedAction(conditions, this) == ConditionFailedAction.Nothing;
+						conditions = null;
+					}
+					return isActive;
 				}
-				return isActive;
 			}
 		}
 		
@@ -57,50 +61,59 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public void Load()
 		{
-			if (!isAssemblyLoaded) {
-				LoggingService.Info("Loading addin " + assembly);
-				
-				isAssemblyLoaded = true;
-				
-				try {
-					if (assembly[0] == ':') {
-						loadedAssembly = LoadAssembly(assembly.Substring(1));
-					} else if (assembly[0] == '$') {
-						int pos = assembly.IndexOf('/');
-						if (pos < 0)
-							throw new CoreException("Expected '/' in path beginning with '$'!");
-						string referencedAddIn = assembly.Substring(1, pos - 1);
-						foreach (AddIn addIn in addIns) {
-							if (addIn.Enabled && addIn.Manifest.Identities.ContainsKey(referencedAddIn)) {
-								string assemblyFile = Path.Combine(Path.GetDirectoryName(addIn.FileName),
-								                                   assembly.Substring(pos + 1));
-								loadedAssembly = LoadAssemblyFrom(assemblyFile);
-								break;
+			lock (lockObj) {
+				if (!isAssemblyLoaded) {
+					LoggingService.Info("Loading addin " + assembly);
+					
+					if (!this.IsActive)
+						throw new InvalidOperationException("Cannot load inactive AddIn runtime");
+					
+					isAssemblyLoaded = true;
+					
+					try {
+						if (assembly[0] == ':') {
+							loadedAssembly = LoadAssembly(assembly.Substring(1));
+						} else if (assembly[0] == '$') {
+							int pos = assembly.IndexOf('/');
+							if (pos < 0)
+								throw new CoreException("Expected '/' in path beginning with '$'!");
+							string referencedAddIn = assembly.Substring(1, pos - 1);
+							foreach (AddIn addIn in addIns) {
+								if (addIn.Enabled && addIn.Manifest.Identities.ContainsKey(referencedAddIn)) {
+									string assemblyFile = Path.Combine(Path.GetDirectoryName(addIn.FileName),
+									                                   assembly.Substring(pos + 1));
+									loadedAssembly = LoadAssemblyFrom(assemblyFile);
+									break;
+								}
 							}
+							if (loadedAssembly == null) {
+								throw new FileNotFoundException("Could not find referenced AddIn " + referencedAddIn);
+							}
+						} else {
+							loadedAssembly = LoadAssemblyFrom(Path.Combine(hintPath, assembly));
 						}
-						if (loadedAssembly == null) {
-							throw new FileNotFoundException("Could not find referenced AddIn " + referencedAddIn);
-						}
-					} else {
-						loadedAssembly = LoadAssemblyFrom(Path.Combine(hintPath, assembly));
-					}
 
-					#if DEBUG
-					// preload assembly to provoke FileLoadException if dependencies are missing
-					loadedAssembly.GetExportedTypes();
-					#endif
-				} catch (FileNotFoundException ex) {
-					ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
-				} catch (FileLoadException ex) {
-					ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+						#if DEBUG
+						// preload assembly to provoke FileLoadException if dependencies are missing
+						loadedAssembly.GetExportedTypes();
+						#endif
+					} catch (FileNotFoundException ex) {
+						ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+					} catch (FileLoadException ex) {
+						ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+					}
 				}
 			}
 		}
 		
 		public Assembly LoadedAssembly {
 			get {
-				Load(); // load the assembly, if not already done
-				return loadedAssembly;
+				if (this.IsActive) {
+					Load(); // load the assembly, if not already done
+					return loadedAssembly;
+				} else {
+					return null;
+				}
 			}
 		}
 		
@@ -118,14 +131,10 @@ namespace ICSharpCode.Core
 		
 		public Type FindType(string className)
 		{
-			if (IsActive) {
-				Assembly asm = LoadedAssembly;
-				if (asm == null)
-					return null;
-				return asm.GetType(className);
-			} else {
+			Assembly asm = LoadedAssembly;
+			if (asm == null)
 				return null;
-			}
+			return asm.GetType(className);
 		}
 		
 		internal static void ReadSection(XmlReader reader, AddIn addIn, string hintPath)

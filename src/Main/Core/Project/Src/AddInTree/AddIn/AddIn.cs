@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 
 namespace ICSharpCode.Core
@@ -54,20 +55,40 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
+		public Stream GetManifestResourceStream(string resourceName)
+		{
+			LoadDependencies();
+			foreach (Runtime runtime in runtimes) {
+				Assembly assembly = runtime.LoadedAssembly;
+				if (assembly != null) {
+					Stream s = assembly.GetManifestResourceStream(resourceName);
+					if (s != null) {
+						return s;
+					}
+				}
+			}
+			return null;
+		}
+		
 		public void LoadRuntimeAssemblies()
 		{
 			LoadDependencies();
 			foreach (Runtime runtime in runtimes) {
-				runtime.Load();
+				if (runtime.IsActive)
+					runtime.Load();
 			}
 		}
 		
-		bool dependenciesLoaded;
+		volatile bool dependenciesLoaded;
 		
 		void LoadDependencies()
 		{
+			// Thread-safe dependency loading:
+			// Because the methods being called should be thread-safe, there's
+			// no problem when we load dependencies multiple times concurrently.
+			// However, we need to make sure we don't return before the dependencies are ready,
+			// so "bool dependenciesLoaded" must be volatile and set only at the very end of this method.
 			if (!dependenciesLoaded) {
-				dependenciesLoaded = true;
 				foreach (AddInReference r in manifest.Dependencies) {
 					if (r.RequirePreload) {
 						bool found = false;
@@ -82,6 +103,7 @@ namespace ICSharpCode.Core
 						}
 					}
 				}
+				dependenciesLoaded = true;
 			}
 		}
 		
