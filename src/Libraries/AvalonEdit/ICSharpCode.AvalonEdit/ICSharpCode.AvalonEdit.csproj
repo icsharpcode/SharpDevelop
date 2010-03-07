@@ -374,7 +374,6 @@
     </Compile>
     <Resource Include="themes\RightArrow.cur" />
     <EmbeddedResource Include="Highlighting\Resources\ASPX.xshd" />
-    <EmbeddedResource Include="Highlighting\Resources\BAT-Mode.xshd" />
     <EmbeddedResource Include="Highlighting\Resources\Boo.xshd" />
     <EmbeddedResource Include="Highlighting\Resources\Coco-Mode.xshd" />
     <EmbeddedResource Include="Highlighting\Resources\CPP-Mode.xshd" />

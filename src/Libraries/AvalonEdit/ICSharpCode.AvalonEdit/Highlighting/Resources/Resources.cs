@@ -31,7 +31,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			hlm.RegisterHighlighting("HTML", new[] { ".htm", ".html" }, "HTML-Mode.xshd");
 			hlm.RegisterHighlighting("ASP/XHTML", new[] { ".asp", ".aspx", ".asax", ".asmx" }, "ASPX.xshd");
 			
-			//hlm.RegisterHighlighting("Batch", new[] { ".bat", ".cmd" }, "BAT-Mode.xshd");
 			hlm.RegisterHighlighting("Boo", new[] { ".boo" }, "Boo.xshd");
 			hlm.RegisterHighlighting("Coco", new[] { ".atg" }, "Coco-Mode.xshd");
 			hlm.RegisterHighlighting("C++", new[] { ".c", ".h", ".cc", ".cpp" , ".hpp" }, "CPP-Mode.xshd");

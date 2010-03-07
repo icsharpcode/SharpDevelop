@@ -19,6 +19,8 @@
 						HorizontalContentAlignment="Left"
 						Background="{TemplateBinding Background}"
 						Padding="{TemplateBinding Padding}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
 					/>
 					<ControlTemplate.Triggers>
 						<Trigger Property="WordWrap"
@@ -37,7 +39,7 @@
 		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
 		<Setter Property="SelectionBrush">
 			<Setter.Value>
-				<SolidColorBrush 
+				<SolidColorBrush
 					Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"
 					Opacity="0.7"/>
 			</Setter.Value>

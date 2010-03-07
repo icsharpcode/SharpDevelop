@@ -174,9 +174,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			// CustomizableHighlightingColorizer loads the new values automatically, we just need
 			// to force a refresh in AvalonEdit.
-			primaryTextEditor.TextArea.TextView.Redraw();
+			primaryTextEditor.UpdateCustomizedHighlighting();
 			if (secondaryTextEditor != null)
-				secondaryTextEditor.TextArea.TextView.Redraw();
+				secondaryTextEditor.UpdateCustomizedHighlighting();
 		}
 		
 		protected virtual CodeEditorView CreateTextEditor()
@@ -485,8 +485,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return primaryTextEditor.SyntaxHighlighting; }
 			set {
 				primaryTextEditor.SyntaxHighlighting = value;
+				primaryTextEditor.UpdateCustomizedHighlighting();
 				if (secondaryTextEditor != null) {
 					secondaryTextEditor.SyntaxHighlighting = value;
+					secondaryTextEditor.UpdateCustomizedHighlighting();
 				}
 			}
 		}

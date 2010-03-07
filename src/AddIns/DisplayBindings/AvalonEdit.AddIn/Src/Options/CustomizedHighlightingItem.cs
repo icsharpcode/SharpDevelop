@@ -21,7 +21,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		readonly string language;
 		CustomizedHighlightingColor customization;
 		
-		public CustomizedHighlightingItem(List<CustomizedHighlightingColor> customizationList, IHighlightingItem original, string language)
+		public CustomizedHighlightingItem(List<CustomizedHighlightingColor> customizationList, IHighlightingItem original, string language,
+		                                  bool canSetForeground = true, bool canSetBackground = true, bool canSetFont = true)
 		{
 			if (customizationList == null)
 				throw new ArgumentNullException("customizationList");
@@ -30,6 +31,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			this.customizationList = customizationList;
 			this.original = original;
 			this.language = language;
+			this.CanSetForeground = canSetForeground;
+			this.CanSetBackground = canSetBackground;
+			this.CanSetFont = canSetFont;
 			foreach (CustomizedHighlightingColor c in customizationList) {
 				if (c.Language == language && c.Name == this.Name) {
 					this.customization = c;
@@ -165,17 +169,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			get { return original.CanUseDefaultColors; }
 		}
 		
-		public bool CanSetForeground {
-			get { return true; }
-		}
-		
-		public bool CanSetBackground {
-			get { return true; }
-		}
-		
-		public bool CanSetFont {
-			get { return true; }
-		}
+		public bool CanSetForeground { get; private set; }
+		public bool CanSetBackground { get; private set; }
+		public bool CanSetFont { get; private set; }
 		
 		public bool IsCustomized {
 			get { return customization != null || original.IsCustomized; }

@@ -18,16 +18,17 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 {
 	sealed class NamedColorHighlightingItem : IHighlightingItem
 	{
+		readonly IHighlightingItem defaultText;
 		readonly XshdColor color;
 		
-		public NamedColorHighlightingItem(IHighlightingDefinition parentDefinition, XshdColor color)
+		public NamedColorHighlightingItem(IHighlightingItem defaultText, XshdColor color)
 		{
-			if (parentDefinition == null)
-				throw new ArgumentNullException("parentDefinition");
+			if (defaultText == null)
+				throw new ArgumentNullException("defaultText");
 			if (color == null)
 				throw new ArgumentNullException("color");
 			
-			this.ParentDefinition = parentDefinition;
+			this.defaultText = defaultText;
 			this.color = color;
 		}
 		
@@ -59,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				if (c != null)
 					return c.Value;
 				else
-					return Colors.Black;
+					return defaultText.Foreground;
 			}
 			set {
 				throw new NotSupportedException();
@@ -81,7 +82,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				if (c != null)
 					return c.Value;
 				else
-					return Colors.White;
+					return defaultText.Background;
 			}
 			set {
 				throw new NotSupportedException();
@@ -126,7 +127,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			return color.Name;
 		}
 		
-		public IHighlightingDefinition ParentDefinition { get; private set; }
+		public IHighlightingDefinition ParentDefinition { get; set; }
 		
 		public void ShowExample(TextArea exampleTextArea)
 		{

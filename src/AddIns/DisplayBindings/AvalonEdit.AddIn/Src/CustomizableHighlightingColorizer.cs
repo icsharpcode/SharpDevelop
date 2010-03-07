@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 
@@ -23,6 +24,52 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public class CustomizableHighlightingColorizer : HighlightingColorizer
 	{
+		public const string DefaultTextAndBackground = "Default text/background";
+		public const string SelectedText = "Selected text";
+		
+		public static void ApplyCustomizationsToDefaultElements(TextEditor textEditor, IEnumerable<CustomizedHighlightingColor> customizations)
+		{
+			textEditor.ClearValue(TextEditor.BackgroundProperty);
+			textEditor.ClearValue(TextEditor.ForegroundProperty);
+			textEditor.TextArea.ClearValue(TextArea.SelectionBorderProperty);
+			textEditor.TextArea.ClearValue(TextArea.SelectionBrushProperty);
+			textEditor.TextArea.ClearValue(TextArea.SelectionForegroundProperty);
+			bool assignedDefaultText = false;
+			bool assignedSelectedText = false;
+			foreach (CustomizedHighlightingColor color in customizations) {
+				switch (color.Name) {
+					case DefaultTextAndBackground:
+						if (assignedDefaultText)
+							continue;
+						assignedDefaultText = true;
+						
+						if (color.Background != null)
+							textEditor.Background = CreateFrozenBrush(color.Background.Value);
+						if (color.Foreground != null)
+							textEditor.Foreground = CreateFrozenBrush(color.Foreground.Value);
+						break;
+					case SelectedText:
+						if (assignedSelectedText)
+							continue;
+						assignedSelectedText = true;
+						
+						if (color.Background != null) {
+							Pen pen = new Pen(CreateFrozenBrush(color.Background.Value), 1);
+							pen.Freeze();
+							textEditor.TextArea.SelectionBorder = pen;
+							SolidColorBrush back = new SolidColorBrush(color.Background.Value);
+							back.Opacity = 0.7;
+							back.Freeze();
+							textEditor.TextArea.SelectionBrush = back;
+						}
+						if (color.Foreground != null) {
+							textEditor.TextArea.SelectionForeground = CreateFrozenBrush(color.Foreground.Value);
+						}
+						break;
+				}
+			}
+		}
+		
 		readonly IEnumerable<CustomizedHighlightingColor> customizations;
 		
 		public CustomizableHighlightingColorizer(HighlightingRuleSet ruleSet, IEnumerable<CustomizedHighlightingColor> customizations)
@@ -101,8 +148,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			public CustomizedBrush(Color color)
 			{
-				brush = new SolidColorBrush(color);
-				brush.Freeze();
+				brush = CreateFrozenBrush(color);
 			}
 			
 			public override Brush GetBrush(ITextRunConstructionContext context)
@@ -114,6 +160,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			{
 				return brush.ToString();
 			}
+		}
+		
+		static SolidColorBrush CreateFrozenBrush(Color color)
+		{
+			SolidColorBrush brush = new SolidColorBrush(color);
+			brush.Freeze();
+			return brush;
 		}
 	}
 }

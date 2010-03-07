@@ -54,6 +54,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			options = ICSharpCode.AvalonEdit.AddIn.Options.CodeEditorOptions.Instance;
 			options.BindToTextEditor(this);
 			
+			UpdateCustomizedHighlighting();
+			
 			bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
 			
 			this.MouseHover += TextEditorMouseHover;
@@ -416,6 +418,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new CustomizableHighlightingColorizer(
 				highlightingDefinition.MainRuleSet,
 				FetchCustomizations(highlightingDefinition.Name));
+		}
+		
+		public void UpdateCustomizedHighlighting()
+		{
+			string language = this.SyntaxHighlighting != null ? this.SyntaxHighlighting.Name : null;
+			CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(this, FetchCustomizations(language));
+			this.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
 		}
 		
 		static IEnumerable<CustomizedHighlightingColor> FetchCustomizations(string languageName)

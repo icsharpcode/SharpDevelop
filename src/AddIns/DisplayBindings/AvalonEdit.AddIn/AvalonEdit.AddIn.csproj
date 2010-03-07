@@ -103,6 +103,7 @@
       <DependentUpon>BehaviorOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Options\Converters.cs" />
     <Compile Include="Src\Options\CustomizedHighlightingItem.cs" />
     <Compile Include="Src\Options\GeneralEditorOptions.xaml.cs">
       <DependentUpon>GeneralEditorOptions.xaml</DependentUpon>
@@ -115,6 +116,7 @@
     </Compile>
     <Compile Include="Src\Options\IHighlightingItem.cs" />
     <Compile Include="Src\Options\NamedColorHighlightingItem.cs" />
+    <Compile Include="Src\Options\SimpleHighlightingItem.cs" />
     <Compile Include="Src\Options\TextViewOptions.xaml.cs">
       <DependentUpon>TextViewOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
