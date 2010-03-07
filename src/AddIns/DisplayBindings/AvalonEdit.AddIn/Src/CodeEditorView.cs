@@ -45,6 +45,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public CodeEditorView()
 		{
+			AvalonEditDisplayBinding.RegisterAddInHighlightingDefinitions();
+			
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Print, OnPrint));
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.PrintPreview, OnPrintPreview));

@@ -16,7 +16,7 @@
 		<Import assembly="PythonBinding.dll"/>
 	</Runtime>
 	
-	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
 		<SyntaxMode id="Python.SyntaxMode"
 		            extensions=".py"
 		            name="Python"

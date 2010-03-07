@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Codons;
 
 namespace PythonBinding.Tests.Utils
 {

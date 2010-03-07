@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -15,8 +15,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 {
 	public class AvalonEditDisplayBinding : IDisplayBinding
 	{
-		const string path = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes";
-		bool builtAddInHighlighting;
+		static bool addInHighlightingDefinitionsRegistered;
+		
+		internal static void RegisterAddInHighlightingDefinitions()
+		{
+			WorkbenchSingleton.AssertMainThread();
+			if (!addInHighlightingDefinitionsRegistered) {
+				foreach (AddInTreeSyntaxMode syntaxMode in AddInTree.BuildItems<AddInTreeSyntaxMode>(SyntaxModeDoozer.Path, null, false)) {
+					syntaxMode.Register(HighlightingManager.Instance);
+				}
+				addInHighlightingDefinitionsRegistered = true;
+			}
+		}
 		
 		public bool CanCreateContentForFile(string fileName)
 		{
@@ -25,16 +35,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			BuildAddInHighlighting();
+			RegisterAddInHighlightingDefinitions();
 			return new AvalonEditViewContent(file);
-		}
-		
-		void BuildAddInHighlighting()
-		{
-			if (!builtAddInHighlighting) {
-				builtAddInHighlighting = true;
-				AddInTree.BuildItems<object>(path, this, false);
-			}
 		}
 	}
 }

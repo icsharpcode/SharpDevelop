@@ -9,7 +9,9 @@
 	
 	<Runtime>
 		<Import assembly = ":ICSharpCode.AvalonEdit"/>
-		<Import assembly = "ICSharpCode.AvalonEdit.AddIn.dll"/>
+		<Import assembly = "ICSharpCode.AvalonEdit.AddIn.dll">
+			<Doozer name="SyntaxMode" class="ICSharpCode.AvalonEdit.AddIn.SyntaxModeDoozer"/>
+		</Import>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">

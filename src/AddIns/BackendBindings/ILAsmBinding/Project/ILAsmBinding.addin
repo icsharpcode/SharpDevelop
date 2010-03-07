@@ -37,7 +37,7 @@
 		<Directory id = "ILAsm" path = "./Templates" />
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
+	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
 		<SyntaxMode id         = "IL Syntax Mode"
 		            name       = "ILAsm"
 		            extensions = ".il"

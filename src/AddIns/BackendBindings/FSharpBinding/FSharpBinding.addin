@@ -21,7 +21,7 @@
 		       class = "FSharpBindings.FSharpAmbience"/>
 	</Path>
 
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
+	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
 		<SyntaxMode id         = "F# Syntax Mode"
 		            name       = "F#"
 		            extensions = ".fs;.fsi"

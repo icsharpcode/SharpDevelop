@@ -26,6 +26,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 	{
 		public HighlightingOptions()
 		{
+			// ensure all definitions from AddIns are registered so that they are available for the example view
+			AvalonEditDisplayBinding.RegisterAddInHighlightingDefinitions();
+			
 			InitializeComponent();
 			textEditor.Document.UndoStack.SizeLimit = 0;
 			textEditor.Options = CodeEditorOptions.Instance;
@@ -50,16 +53,18 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			base.LoadOptions();
 			if (allSyntaxDefinitions == null) {
 				allSyntaxDefinitions = (
-					from name in typeof(HighlightingManager).Assembly.GetManifestResourceNames()
+					from name in typeof(HighlightingManager).Assembly.GetManifestResourceNames().AsParallel()
 					where name.StartsWith(typeof(HighlightingManager).Namespace + ".Resources.", StringComparison.OrdinalIgnoreCase)
 					&& name.EndsWith(".xshd", StringComparison.OrdinalIgnoreCase)
 					&& !name.EndsWith("XmlDoc.xshd", StringComparison.OrdinalIgnoreCase)
-					let def = LoadBuiltinXshd(name)
-					where def.Elements.OfType<XshdColor>().Any(c => c.ExampleText != null)
-					orderby def.Name
-					select def
-				).ToList();
-				// TODO: also find syntax definitions defined in addins
+					select LoadBuiltinXshd(name)
+				).Concat(
+					ICSharpCode.Core.AddInTree.BuildItems<AddInTreeSyntaxMode>(SyntaxModeDoozer.Path, null, false).AsParallel()
+					.Select(m => m.LoadXshd())
+				)
+					.Where(def => def.Elements.OfType<XshdColor>().Any(c => c.ExampleText != null))
+					.OrderBy(def => def.Name)
+					.ToList();
 			}
 			customizationList = CustomizedHighlightingColor.LoadColors();
 			
@@ -77,12 +82,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			XshdSyntaxDefinition xshd = (XshdSyntaxDefinition)languageComboBox.SelectedItem;
 			if (xshd != null) {
 				IHighlightingDefinition def = HighlightingManager.Instance.GetDefinition(xshd.Name);
-				foreach (XshdColor namedColor in xshd.Elements.OfType<XshdColor>()) {
-					if (namedColor.ExampleText != null) {
-						IHighlightingItem item = new NamedColorHighlightingItem(def, namedColor);
-						item = new CustomizedHighlightingItem(customizationList, item, xshd.Name);
-						listBox.Items.Add(item);
-						item.PropertyChanged += item_PropertyChanged;
+				if (def == null) {
+					throw new InvalidOperationException("Expected that all XSHDs are registered in default highlighting manager; but highlighting definition was not found");
+				} else {
+					foreach (XshdColor namedColor in xshd.Elements.OfType<XshdColor>()) {
+						if (namedColor.ExampleText != null) {
+							IHighlightingItem item = new NamedColorHighlightingItem(def, namedColor);
+							item = new CustomizedHighlightingItem(customizationList, item, xshd.Name);
+							listBox.Items.Add(item);
+							item.PropertyChanged += item_PropertyChanged;
+						}
 					}
 				}
 				if (listBox.Items.Count > 0)

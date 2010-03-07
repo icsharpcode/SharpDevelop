@@ -11,7 +11,6 @@ using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Codons;
 using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;

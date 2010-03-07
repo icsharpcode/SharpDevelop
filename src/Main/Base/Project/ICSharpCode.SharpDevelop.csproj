@@ -573,8 +573,6 @@
     <Compile Include="Src\Bookmarks\BookmarkManager.cs" />
     <Compile Include="Src\Bookmarks\SDMarkerBookmark.cs" />
     <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
-    <Compile Include="Src\TextEditor\Codons\AddInTreeSyntaxModeProvider.cs" />
-    <Compile Include="Src\TextEditor\Codons\SyntaxModeDoozer.cs" />
     <Compile Include="Src\TextEditor\Commands\SearchCommands.cs" />
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />

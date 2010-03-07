@@ -12,8 +12,8 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
+using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Codons;
 using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 
@@ -34,7 +34,7 @@ namespace PythonBinding.Tests
 		Span stringSpan;
 		Span charSpan;
 		Span docCommentSpan;
-		const string SyntaxModePath = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes";
+		const string SyntaxModePath = SyntaxModeDoozer.Path;
 		XmlElement importsKeyWordsElement;
 		XmlElement iterationStatementsKeyWordsElement;
 		XmlElement jumpStatementsKeyWordsElement;
@@ -92,7 +92,7 @@ namespace PythonBinding.Tests
 				if (syntaxModeCodon != null) {
 					SyntaxModeDoozer doozer = new SyntaxModeDoozer();
 					AddInTreeSyntaxMode syntaxMode = (AddInTreeSyntaxMode)doozer.BuildItem(null, syntaxModeCodon, null);
-					highlightingStrategy = HighlightingDefinitionParser.Parse(syntaxMode, syntaxMode.CreateTextReader());
+					highlightingStrategy = HighlightingDefinitionParser.Parse(new SyntaxMode(null, syntaxMode.Name, syntaxMode.Extensions), syntaxMode.CreateXmlReader());
 				
 					// Load Python syntax file into XML document since
 					// we cannot get all the information stored in this
@@ -101,7 +101,7 @@ namespace PythonBinding.Tests
 					// LookupTable does not have a getter which is easy
 					// to use.
 					syntaxModeDocument = new XmlDocument();
-					syntaxModeDocument.Load(syntaxMode.CreateTextReader());
+					syntaxModeDocument.Load(syntaxMode.CreateXmlReader());
 					
 					// Get default ruleset.
 					foreach (HighlightRuleSet ruleSet in highlightingStrategy.Rules) {

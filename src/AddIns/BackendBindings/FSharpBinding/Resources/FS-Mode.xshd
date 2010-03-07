@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- syntaxdefinition for F# 2000 by Robert Pickering -->
 
-<SyntaxDefinition name = "F#" extensions = ".fs">
+<SyntaxDefinition name = "F#" extensions = ".fs;.fsi">
 	
 	<Properties>
 		<Property name="LineComment" value="//"/>

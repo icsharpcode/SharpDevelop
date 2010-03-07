@@ -16,7 +16,7 @@
 		<Import assembly="RubyBinding.dll"/>
 	</Runtime>
 	
-	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
 		<SyntaxMode id="Ruby.SyntaxMode"
 		            extensions=".rb"
 		            name="Ruby"
