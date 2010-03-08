@@ -60,7 +60,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			CheckIsHighlighting();
 			int number = line.LineNumber;
-			InvalidateHighlighting();
 			storedSpanStacks.RemoveAt(number);
 			isValid.RemoveAt(number);
 			if (number < isValid.Count) {

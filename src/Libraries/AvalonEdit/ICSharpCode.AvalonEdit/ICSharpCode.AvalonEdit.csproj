@@ -262,6 +262,7 @@
       <DependentUpon>TextView.cs</DependentUpon>
     </Compile>
     <Compile Include="Rendering\VisualLine.cs" />
+    <Compile Include="Rendering\VisualLineConstructionStartEventArgs.cs" />
     <Compile Include="Rendering\VisualLineElement.cs" />
     <Compile Include="Rendering\VisualLineElementGenerator.cs" />
     <Compile Include="Rendering\VisualLineElementTextRunProperties.cs">

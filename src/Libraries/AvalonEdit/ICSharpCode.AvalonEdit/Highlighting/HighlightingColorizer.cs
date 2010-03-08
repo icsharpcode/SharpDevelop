@@ -80,6 +80,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			base.OnAddToTextView(textView);
 			textView.DocumentChanged += textView_DocumentChanged;
+			textView.VisualLineConstructionStarting += textView_VisualLineConstructionStarting;
 			OnDocumentChanged(textView);
 		}
 		
@@ -90,6 +91,19 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			textView.Services.RemoveService(typeof(IHighlighter));
 			textView.Services.RemoveService(typeof(DocumentHighlighter));
 			textView.DocumentChanged -= textView_DocumentChanged;
+			textView.VisualLineConstructionStarting -= textView_VisualLineConstructionStarting;
+		}
+		
+		void textView_VisualLineConstructionStarting(object sender, VisualLineConstructionStartEventArgs e)
+		{
+			IHighlighter highlighter = ((TextView)sender).Services.GetService(typeof(IHighlighter)) as IHighlighter;
+			if (highlighter != null) {
+				// Force update of highlighting state up to the position where we start generating visual lines.
+				// This is necessary in case the document gets modified above the FirstLineInView so that the highlighting state changes.
+				// We need to detect this case and issue a redraw (through TextViewDocumentHighligher.OnHighlightStateChanged)
+				// before the visual line construction reuses existing lines that were built using the invalid highlighting state.
+				highlighter.GetSpanStack(e.FirstLineInView.LineNumber - 1);
+			}
 		}
 		
 		/// <inheritdoc/>
@@ -128,7 +142,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		sealed class TextViewDocumentHighlighter : DocumentHighlighter
 		{
-			TextView textView;
+			readonly TextView textView;
 			
 			public TextViewDocumentHighlighter(TextView textView, TextDocument document, HighlightingRuleSet baseRuleSet)
 				: base(document, baseRuleSet)
@@ -140,18 +154,58 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			protected override void OnHighlightStateChanged(DocumentLine line, int lineNumber)
 			{
 				base.OnHighlightStateChanged(line, lineNumber);
-				int lineEndOffset = line.Offset + line.TotalLength;
-				if (lineEndOffset >= 0) {
-					// Do not use colorizer.CurrentContext - the colorizer might not be the only
-					// class calling DocumentHighlighter.HighlightLine, the the context might be null.
-					int length = this.Document.TextLength - lineEndOffset;
-					if (length != 0) {
-						// don't redraw if length == 0: at the end of the document, this would cause
-						// the last line which was already constructed to be redrawn ->
-						// we would get an exception due to disposing the line that was already constructed
-						textView.Redraw(lineEndOffset, length, DispatcherPriority.Normal);
-					}
+				if (textView.Document != this.Document) {
+					// May happen if document on text view was changed but some user code is still using the
+					// existing IHighlighter instance.
+					return;
 				}
+				
+				// The user may have inserted "/*" into the current line, and so far only that line got redrawn.
+				// So when the highlighting state is changed, we issue a redraw for the line immediately below.
+				// If the highlighting state change applies to the lines below, too, the construction of each line
+				// will invalidate the next line, and the construction pass will regenerate all lines.
+				
+				Debug.WriteLine("OnHighlightStateChanged forces redraw of line " + (lineNumber + 1));
+				
+				// If the VisualLine construction is in progress, we have to avoid sending redraw commands for
+				// anything above the line currently being constructed.
+				// It takes some explanation to see why this cannot happen.
+				// VisualLines always get constructed from top to bottom.
+				// Each VisualLine construction calls into the highlighter and thus forces an update of the
+				// highlighting state for all lines up to the one being constructed.
+				
+				// To guarantee that we don't redraw lines we just constructed, we need to show that when
+				// a VisualLine is being reused, the highlighting state at that location is still up-to-date.
+				
+				// This isn't exactly trivial and the initial implementation was incorrect in the presence of external document changes
+				// (e.g. split view).
+				
+				// For the first line in the view, the TextView.VisualLineConstructionStarting event is used to check that the
+				// highlighting state is up-to-date. If it isn't, this method will be executed, and it'll mark the first line
+				// in the view as requiring a redraw. This is safely possible because that event occurs before any lines are reused.
+				
+				// Once we take care of the first visual line, we won't get in trouble with other lines due to the top-to-bottom
+				// construction process.
+				
+				// We'll prove that: if line N is being reused, then the highlighting state is up-to-date until (end of) line N-1.
+				
+				// Start of induction: the first line in view can is reused only if the highlighting state was up-to-date
+				// until line N-1 (no change detected in VisualLineConstructionStarting event).
+				
+				// Induction step:
+				// If another line N+1 is being reused, then either
+				//     a) the previous line (the visual line containing document line N) was newly constructed
+				// or  b) the previous line was reused
+				// In case a, the construction updated the highlighting state. This means the stack at end of line N is up-to-date.
+				// In case b, the highlighting state at N-1 was up-to-date, and the text of line N was not changed.
+				//   (if the text was changed, the line could not have been reused).
+				// From this follows that the highlighting state at N is still up-to-date.
+				
+				// The above proof holds even in the presence of folding: folding only ever hides text in the middle of a visual line.
+				// The HighlightingColorizer will always be asked to highlight the LastDocumentLine of a visual line, so it will always
+				// invalidate the next visual line when a folded line is constructed and the highlighting stack changed.
+				
+				textView.Redraw(line.NextLine, DispatcherPriority.Normal);
 			}
 		}
 	}

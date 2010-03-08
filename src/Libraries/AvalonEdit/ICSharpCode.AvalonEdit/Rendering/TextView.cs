@@ -398,18 +398,27 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			VerifyAccess();
 			bool removedLine = false;
+			bool changedSomethingBeforeOrInLine = false;
 			for (int i = 0; i < allVisualLines.Count; i++) {
 				VisualLine visualLine = allVisualLines[i];
 				int lineStart = visualLine.FirstDocumentLine.Offset;
 				int lineEnd = visualLine.LastDocumentLine.Offset + visualLine.LastDocumentLine.TotalLength;
-				if (!(lineEnd < offset || lineStart > offset + length)) {
-					removedLine = true;
-					allVisualLines.RemoveAt(i--);
-					DisposeVisualLine(visualLine);
+				if (offset <= lineEnd) {
+					changedSomethingBeforeOrInLine = true;
+					if (offset + length >= lineStart) {
+						removedLine = true;
+						allVisualLines.RemoveAt(i--);
+						DisposeVisualLine(visualLine);
+					}
 				}
 			}
 			if (removedLine) {
 				visibleVisualLines = null;
+			}
+			if (changedSomethingBeforeOrInLine) {
+				// Repaint not only when something in visible area was changed, but also when anything in front of it
+				// was changed. We might have to redraw the line number margin. Or the highlighting changed.
+				// However, we'll try to reuse the existing VisualLines.
 				InvalidateMeasure(redrawPriority);
 			}
 		}
@@ -571,12 +580,19 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		/// <summary>
 		/// Gets whether the visual lines are valid.
-		/// Will return false after a call to Redraw(). Accessing the visual lines property
-		/// will force immediate regeneration of valid lines.
+		/// Will return false after a call to Redraw().
+		/// Accessing the visual lines property will cause a <see cref="VisualLinesInvalidException"/>
+		/// if this property is <c>false</c>.
 		/// </summary>
 		public bool VisualLinesValid {
 			get { return visibleVisualLines != null; }
 		}
+		
+		/// <summary>
+		/// Occurs when the TextView is about to be measured and will regenerate its visual lines.
+		/// This event may be used to mark visual lines as invalid that would otherwise be reused.
+		/// </summary>
+		public event EventHandler<VisualLineConstructionStartEventArgs> VisualLineConstructionStarting;
 		
 		/// <summary>
 		/// Occurs when the TextView was measured and changed its visual lines.
@@ -694,6 +710,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			Debug.Assert(clippedPixelsOnTop >= 0);
 			
 			newVisualLines = new List<VisualLine>();
+			
+			if (VisualLineConstructionStarting != null)
+				VisualLineConstructionStarting(this, new VisualLineConstructionStartEventArgs(firstLineInView));
 			
 			var elementGeneratorsArray = elementGenerators.ToArray();
 			var lineTransformersArray = lineTransformers.ToArray();
