@@ -84,11 +84,11 @@ namespace ICSharpCode.NRefactory.Ast
 	
 	public enum ClassType
 	{
-		Class = 0x0,
-		Module = 0x1,
-		Interface = 0x2,
-		Struct = 0x3,
-		Enum = 0x4
+		Class,
+		Module,
+		Interface,
+		Struct,
+		Enum
 	}
 	
 	public enum ParentType

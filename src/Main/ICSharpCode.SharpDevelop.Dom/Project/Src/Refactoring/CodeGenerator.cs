@@ -375,7 +375,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				}
 				
 				t.Children.AddRange(members);
-				t.Children.AddRange(c.InnerClasses.Select(c2 => ConvertClass(c2, null)));
+				t.Children.AddRange(c.InnerClasses.Select(c2 => ConvertClass(c2, targetContext)));
 				
 				return t;
 			}

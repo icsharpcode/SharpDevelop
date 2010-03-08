@@ -186,7 +186,7 @@ namespace ICSharpCode.XamlBinding
 					
 					discriminator--;
 					
-					ParametrizedNode node = CodeGenerator.ConvertMember(invokeMethod, new ClassFinder(part, context.Editor.Caret.Line, context.Editor.Caret.Column)) as ParametrizedNode;
+					ParametrizedNode node = (ParametrizedNode)CodeGenerator.ConvertMember(invokeMethod, new ClassFinder(part, context.Editor.Caret.Line, context.Editor.Caret.Column));
 					
 					node.Name = handlerName;
 					

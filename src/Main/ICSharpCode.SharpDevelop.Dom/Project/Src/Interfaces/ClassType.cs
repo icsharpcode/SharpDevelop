@@ -8,11 +8,11 @@
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	public enum ClassType {
-		Class = 0x0,
-		Enum = 0x4,
-		Interface = 0x2,
-		Struct = 0x3,
+		Class = ICSharpCode.NRefactory.Ast.ClassType.Class,
+		Enum = ICSharpCode.NRefactory.Ast.ClassType.Enum,
+		Interface = ICSharpCode.NRefactory.Ast.ClassType.Interface,
+		Struct = ICSharpCode.NRefactory.Ast.ClassType.Struct,
 		Delegate = 0x5,
-		Module = 0x1
+		Module = ICSharpCode.NRefactory.Ast.ClassType.Module
 	}
 }
