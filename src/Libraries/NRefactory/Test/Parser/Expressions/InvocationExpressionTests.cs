@@ -158,6 +158,19 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(1, ictr.BaseType.GenericTypes.Count);
 			Assert.AreEqual("T", ictr.BaseType.GenericTypes[0].Type);
 		}
+		
+		[Test]
+		public void InvocationWithNamedArgument()
+		{
+			InvocationExpression expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("a(arg: ref v)");
+			Assert.AreEqual(1, expr.Arguments.Count);
+			NamedArgumentExpression nae = (NamedArgumentExpression)expr.Arguments[0];
+			Assert.AreEqual("arg", nae.Name);
+			DirectionExpression dir = (DirectionExpression)nae.Expression;
+			Assert.AreEqual(FieldDirection.Ref, dir.FieldDirection);
+			Assert.IsInstanceOf<IdentifierExpression>(dir.Expression);
+			
+		}
 		#endregion
 		
 		#region VB.NET

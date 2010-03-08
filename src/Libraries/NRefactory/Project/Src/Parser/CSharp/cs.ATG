@@ -1363,6 +1363,19 @@ OverloadableOperator<out OverloadableOperatorType op>
 .
 
 Argument<out Expression argumentexpr>
+(. argumentexpr = null; .)
+=
+	IF (IdentAndColon())
+	(. Token ident; Expression expr; .)
+	Identifier (. ident = t; .)
+	":"
+	ArgumentValue<out expr>
+	(. argumentexpr = new NamedArgumentExpression(ident.val, expr) { StartLocation = ident.Location, EndLocation = t.EndLocation }; .)
+
+|	ArgumentValue<out argumentexpr>
+.
+
+ArgumentValue<out Expression argumentexpr>
 (.
 	Expression expr;
 	FieldDirection fd = FieldDirection.None;
