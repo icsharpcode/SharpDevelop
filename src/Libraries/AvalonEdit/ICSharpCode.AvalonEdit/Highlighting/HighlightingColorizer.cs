@@ -106,6 +106,26 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 		}
 		
+		DocumentLine lastColorizedLine;
+		
+		/// <inheritdoc/>
+		protected override void Colorize(ITextRunConstructionContext context)
+		{
+			this.lastColorizedLine = null;
+			base.Colorize(context);
+			if (this.lastColorizedLine != context.VisualLine.LastDocumentLine) {
+				IHighlighter highlighter = context.TextView.Services.GetService(typeof(IHighlighter)) as IHighlighter;
+				if (highlighter != null) {
+					// In some cases, it is possible that we didn't highlight the last document line within the visual line
+					// (e.g. when the line ends with a fold marker).
+					// But even if we didn't highlight it, we'll have to update the highlighting state for it so that the
+					// proof inside TextViewDocumentHighlighter.OnHighlightStateChanged holds.
+					highlighter.GetSpanStack(context.VisualLine.LastDocumentLine.LineNumber);
+				}
+			}
+			this.lastColorizedLine = null;
+		}
+		
 		/// <inheritdoc/>
 		protected override void ColorizeLine(DocumentLine line)
 		{
@@ -117,6 +137,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					               visualLineElement => ApplyColorToElement(visualLineElement, section.Color));
 				}
 			}
+			this.lastColorizedLine = line;
 		}
 		
 		/// <summary>
@@ -140,6 +161,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 		}
 		
+		/// <summary>
+		/// This class is responsible for telling the TextView to redraw lines when the highlighting state has changed.
+		/// </summary>
+		/// <remarks>
+		/// Creation of a VisualLine triggers the syntax highlighter (which works on-demand), so it says:
+		/// Hey, the user typed "/*". Don't just recreate that line, but also the next one
+		/// because my highlighting state (at end of line) changed!
+		/// </remarks>
 		sealed class TextViewDocumentHighlighter : DocumentHighlighter
 		{
 			readonly TextView textView;
@@ -202,10 +231,23 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				// From this follows that the highlighting state at N is still up-to-date.
 				
 				// The above proof holds even in the presence of folding: folding only ever hides text in the middle of a visual line.
-				// The HighlightingColorizer will always be asked to highlight the LastDocumentLine of a visual line, so it will always
-				// invalidate the next visual line when a folded line is constructed and the highlighting stack changed.
+				// Our Colorize-override ensures that the highlighting state is always updated for the LastDocumentLine,
+				// so it will always invalidate the next visual line when a folded line is constructed
+				// and the highlighting stack has changed.
 				
 				textView.Redraw(line.NextLine, DispatcherPriority.Normal);
+				
+				/*
+				 * Meta-comment: "why does this have to be so complicated?"
+				 * 
+				 * The problem is that I want to re-highlight only on-demand and incrementally;
+				 * and at the same time only repaint changed lines.
+				 * So the highlighter and the VisualLine construction both have to run in a single pass.
+				 * The highlighter must take care that it never touches already constructed visual lines;
+				 * if it detects that something must be redrawn because the highlighting state changed,
+				 * it must do so early enough in the construction process.
+				 * But doing it too early means it doesn't have the information necessary to re-highlight and redraw only the desired parts.
+				 */
 			}
 		}
 	}

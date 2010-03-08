@@ -66,8 +66,13 @@ namespace ICSharpCode.SharpDevelop.Util
 		}
 		
 		readonly object lockObject = new object();
+		
+		// access needs lock using 'lockObject'
 		Queue<AsyncTask> taskQueue = new Queue<AsyncTask>();
+		// access needs lock using 'lockObject'
 		bool workerRunning;
+		
+		// not a shared variable: accessed only within worker thread
 		bool exitWorker;
 		
 		/// <summary>
