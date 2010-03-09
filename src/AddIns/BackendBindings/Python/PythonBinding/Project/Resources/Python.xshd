@@ -11,16 +11,16 @@
 			
 			<Delimiters>()[]{}@,:.`=;+-*/% &amp;|^&gt;&lt;</Delimiters>
 			
-			<Span name="Char" stopateol="true" color="Magenta" escapecharacter="\">
-				<Begin>'</Begin>
-				<End>'</End>
-			</Span>
-			
 			<Span name="DocComment" color="Green">
 				<Begin>"""</Begin>
 				<End>"""</End>
 			</Span>
 			
+			<Span name="SingleQuoteDocComment" color="Green">
+				<Begin>'''</Begin>
+				<End>'''</End>
+			</Span>
+
 			<Span name="LineComment" stopateol="true" color="Green">
 				<Begin>#</Begin>
 			</Span>
@@ -28,6 +28,11 @@
 			<Span name="String" stopateol="true" color="Blue" escapecharacter="\">
 				<Begin>"</Begin>
 				<End>"</End>
+			</Span>
+			
+			<Span name="Char" stopateol="true" color="Magenta" escapecharacter="\">
+				<Begin>'</Begin>
+				<End>'</End>
 			</Span>
 			
 			<MarkPrevious bold="true" color="MidnightBlue">(</MarkPrevious>

@@ -34,6 +34,7 @@ namespace PythonBinding.Tests
 		Span stringSpan;
 		Span charSpan;
 		Span docCommentSpan;
+		Span singleQuoteDocCommentSpan;
 		const string SyntaxModePath = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes";
 		XmlElement importsKeyWordsElement;
 		XmlElement iterationStatementsKeyWordsElement;
@@ -139,6 +140,8 @@ namespace PythonBinding.Tests
 							charSpan = s;
 						} else if (s.Name == "DocComment") {
 							docCommentSpan = s;
+						} else if (s.Name == "SingleQuoteDocComment") {
+							singleQuoteDocCommentSpan = s;
 						}
 					}
 				}
@@ -244,6 +247,65 @@ namespace PythonBinding.Tests
 		{
 			HighlightColor expectedColor = new HighlightColor(Color.Green, false, false);
 			Assert.AreEqual(expectedColor.ToString(), docCommentSpan.Color.ToString());
+		}
+		
+		[Test]
+		public void DocCommentSpanOccursBeforeStringSpan()
+		{
+			Assert.IsTrue(SpanOccursBefore("DocComment", "String"));
+		}
+		
+		bool SpanOccursBefore(string before, string after)
+		{
+			int beforeIndex = -1;
+			int afterIndex = -1;
+			
+			for (int i = 0; i < defaultRuleSet.Spans.Count; ++i) {
+				Span span = (Span)defaultRuleSet.Spans[i];
+				if (span.Name == before) {
+					beforeIndex = i;
+				} else if (span.Name == after) {
+					afterIndex = i;
+				}
+			}
+			
+			Assert.AreNotEqual(-1, beforeIndex);
+			Assert.AreNotEqual(-1, afterIndex);
+			
+			return beforeIndex < afterIndex;
+		}
+		
+		[Test]
+		public void SingleQuoteDocCommentStopAtEndOfLine()
+		{
+			Assert.IsFalse(singleQuoteDocCommentSpan.StopEOL);
+		}
+		
+		[Test]
+		public void SingleQuoteDocCommentBegin()
+		{
+			char[] begin = new char[] {'\'', '\'', '\''};
+			Assert.AreEqual(begin, singleQuoteDocCommentSpan.Begin);
+		}
+		
+		[Test]
+		public void SingleQuoteDocCommentEnd()
+		{
+			char[] begin = new char[] {'\'', '\'', '\''};
+			Assert.AreEqual(begin, singleQuoteDocCommentSpan.End);
+		}
+		
+		[Test]
+		public void SingleQuoteDocCommentSpanColor()
+		{
+			HighlightColor expectedColor = new HighlightColor(Color.Green, false, false);
+			Assert.AreEqual(expectedColor.ToString(), singleQuoteDocCommentSpan.Color.ToString());
+		}
+		
+		[Test]
+		public void SingleQuoteDocCommentSpanOccursBeforeCharSpan()
+		{
+			Assert.IsTrue(SpanOccursBefore("DocComment", "Char"));
 		}
 		
 		[Test]
