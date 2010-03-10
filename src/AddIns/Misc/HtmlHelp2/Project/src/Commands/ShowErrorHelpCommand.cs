@@ -29,6 +29,9 @@ namespace HtmlHelp2.Commands
 			
 			// Search all selected tasks
 			foreach (Task t in new List<Task>(view.SelectedTasks)) {
+				if (t.BuildError == null)
+					continue;
+				
 				string code = t.BuildError.ErrorCode;
 				
 				if (string.IsNullOrEmpty(code))

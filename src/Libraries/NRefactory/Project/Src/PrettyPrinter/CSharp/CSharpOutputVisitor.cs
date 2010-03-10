@@ -358,7 +358,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void OutputEnumMembers(TypeDeclaration typeDeclaration, object data)
 		{
 			for (int i = 0; i < typeDeclaration.Children.Count; i++) {
-				FieldDeclaration fieldDeclaration = (FieldDeclaration)typeDeclaration.Children[i];
+				FieldDeclaration fieldDeclaration = typeDeclaration.Children[i] as FieldDeclaration;
+				if (fieldDeclaration == null) {
+					// not a field?
+					TrackVisit(typeDeclaration.Children[i], data);
+					continue;
+				}
 				BeginVisit(fieldDeclaration);
 				VariableDeclaration f = (VariableDeclaration)fieldDeclaration.Fields[0];
 				VisitAttributes(fieldDeclaration.Attributes, data);

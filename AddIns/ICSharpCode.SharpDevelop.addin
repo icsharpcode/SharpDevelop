@@ -2203,6 +2203,14 @@
 		             type = "ComboBox"/>
 	</Path>
 	
+	<Path name="/SharpDevelop/Pads/TaskList/TaskContextMenu">
+		<MenuItem id = "Copy"
+		          label = "${res:XML.MainMenu.EditMenu.Copy}"
+		          type = "Item"
+		          icon = "Icons.16x16.CopyIcon"
+		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+	</Path>
+	
 	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">
 		<String id = "System" text = "System"/>
 		<String id = "System.Core" text = "System.Core"/>

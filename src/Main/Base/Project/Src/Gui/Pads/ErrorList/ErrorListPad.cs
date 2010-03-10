@@ -15,6 +15,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class ErrorListPad : AbstractPadContent, IClipboardHandler
 	{
+		public const string DefaultContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/TaskContextMenu";
+		
 		static ErrorListPad instance;
 		public static ErrorListPad Instance {
 			get {
@@ -24,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		ToolStrip toolStrip;
 		Panel contentPanel = new Panel();
-		TaskView taskView = new TaskView();
+		TaskView taskView = new TaskView() { DefaultContextMenuAddInTreeEntry = ErrorListPad.DefaultContextMenuAddInTreeEntry };
 		
 		Properties properties;
 		

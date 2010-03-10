@@ -19,6 +19,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class TaskListPad : AbstractPadContent, IClipboardHandler
 	{
+		public const string DefaultContextMenuAddInTreeEntry = "/SharpDevelop/Pads/TaskList/TaskContextMenu";
+		
 		static TaskListPad instance;
 		Dictionary<string, bool> displayedTokens;
 		IClass oldClass;
@@ -32,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ToolStrip toolStrip;
 		Panel contentPanel = new Panel();
 		
-		TaskView taskView = new TaskView();
+		TaskView taskView = new TaskView() { DefaultContextMenuAddInTreeEntry = TaskListPad.DefaultContextMenuAddInTreeEntry };
 		
 		public Dictionary<string, bool> DisplayedTokens {
 			get { return displayedTokens; }
