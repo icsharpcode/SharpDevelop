@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory;
 using System;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
@@ -17,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// </summary>
 	public abstract class SDMarkerBookmark : SDBookmark
 	{
-		public SDMarkerBookmark(string fileName, Location location) : base(fileName, location)
+		public SDMarkerBookmark(FileName fileName, Location location) : base(fileName, location)
 		{
 			//SetMarker();
 		}

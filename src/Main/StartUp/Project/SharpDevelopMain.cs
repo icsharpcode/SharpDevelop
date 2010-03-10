@@ -101,6 +101,9 @@ namespace ICSharpCode.SharpDevelop
 					noLogo = true;
 			}
 			
+			if (!CheckEnvironment())
+				return;
+			
 			if (!noLogo) {
 				SplashScreenForm.ShowSplashScreen();
 			}
@@ -111,6 +114,15 @@ namespace ICSharpCode.SharpDevelop
 					SplashScreenForm.SplashScreen.Dispose();
 				}
 			}
+		}
+		
+		static bool CheckEnvironment()
+		{
+			if (Environment.Version < new Version(4, 0, 30128)) {
+				MessageBox.Show("This version of SharpDevelop requires .NET 4 RC. You are using: " + Environment.Version);
+				return false;
+			}
+			return true;
 		}
 		
 		static void RunApplication()

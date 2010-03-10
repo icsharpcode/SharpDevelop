@@ -6,11 +6,12 @@
 // </file>
 
 using System;
+using System.Windows.Media;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -32,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				Remove();
 		}
 		
-		public static void SetPosition(string fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
+		public static void SetPosition(FileName fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
 		{
 			Remove();
 			
@@ -71,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public CurrentLineBookmark(string fileName, Location location) : base(fileName, location)
+		public CurrentLineBookmark(FileName fileName, Location location) : base(fileName, location)
 		{
 			this.IsSaved = false;
 			this.IsVisibleInBookmarkPad = false;

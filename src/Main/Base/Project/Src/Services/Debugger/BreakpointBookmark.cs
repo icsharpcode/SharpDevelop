@@ -7,6 +7,7 @@
 
 using System;
 using System.Windows.Media;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
@@ -85,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			set { tooltip = value; }
 		}
 		
-		public BreakpointBookmark(string fileName, Location location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, location)
+		public BreakpointBookmark(FileName fileName, Location location, BreakpointAction action, string scriptLanguage, string script) : base(fileName, location)
 		{
 			this.action = action;
 			this.scriptLanguage = scriptLanguage;

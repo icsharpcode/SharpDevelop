@@ -5,14 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace SearchAndReplace
@@ -146,11 +148,14 @@ namespace SearchAndReplace
 				IDocumentLine segment = textArea.Document.GetLineForOffset(result.Offset);
 				
 				int lineNr = segment.LineNumber;
-				// TODO: AVALONEDIT
-				throw new NotImplementedException();
-//				if (!textArea.Document.BookmarkManager.IsMarked(lineNr)) {
-//					textArea.Document.BookmarkManager.ToggleMarkAt(new TextLocation(result.Offset - segment.Offset, lineNr));
-//				}
+				
+				foreach (var bookmark in BookmarkManager.GetBookmarks(result.FileName)) {
+					if (bookmark.CanToggle && bookmark.LineNumber == lineNr) {
+						// bookmark or breakpoint already exists at that line
+						return;
+					}
+				}
+				BookmarkManager.AddMark(new SDBookmark(result.FileName, textArea.Document.OffsetToPosition(result.Offset)));
 			}
 		}
 		

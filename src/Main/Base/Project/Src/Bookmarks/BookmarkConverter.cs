@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				string[] v = ((string)value).Split('|');
 				if (v.Length != 8)
 					return null;
-				string fileName = v[1];
+				FileName fileName = FileName.Create(v[1]);
 				int lineNumber = int.Parse(v[2], culture);
 				int columnNumber = int.Parse(v[3], culture);
 				Debugging.BreakpointAction action = Debugging.BreakpointAction.Break;

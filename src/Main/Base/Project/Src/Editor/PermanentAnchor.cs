@@ -265,7 +265,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 		
 		/// <summary>
-		/// Tells detached permanent anchors to attach to the specified text editor.
+		/// Tells attached permanent anchors to detach from the specified text editor.
 		/// </summary>
 		public static void DetachDocument(FileName fileName, IDocument document)
 		{

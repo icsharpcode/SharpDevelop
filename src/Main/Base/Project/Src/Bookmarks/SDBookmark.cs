@@ -18,9 +18,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	[TypeConverter(typeof(BookmarkConverter))]
 	public class SDBookmark : BookmarkBase
 	{
-		public SDBookmark(string fileName, Location location) : base(location)
+		public SDBookmark(FileName fileName, Location location) : base(location)
 		{
-			this.fileName = FileName.Create(fileName);
+			this.fileName = fileName;
 		}
 		
 		FileName fileName;
