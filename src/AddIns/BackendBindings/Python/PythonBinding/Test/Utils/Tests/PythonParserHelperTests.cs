@@ -24,7 +24,7 @@ namespace PythonBinding.Tests.Utils.Tests
 				"pass";
 			
 			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
-			Assert.AreEqual("foo", parseInfo.MostRecentCompilationUnit.Classes[0].Name);
+			Assert.AreEqual("foo", parseInfo.CompilationUnit.Classes[0].Name);
 		}
 		
 		[Test]

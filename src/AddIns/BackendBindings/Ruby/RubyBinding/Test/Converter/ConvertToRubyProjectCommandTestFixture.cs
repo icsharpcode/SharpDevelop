@@ -13,7 +13,6 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Codons;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;

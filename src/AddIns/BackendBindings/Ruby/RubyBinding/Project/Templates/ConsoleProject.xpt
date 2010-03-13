@@ -22,14 +22,14 @@
 		
 		<PropertyGroup configuration="Debug" escapeValue="false">
 			<DebugInfo>True</DebugInfo>
-			<StartArguments>-19 -D Program.rb</StartArguments>
+			<StartArguments>-1.9 -D Program.rb</StartArguments>
 			<StartWorkingDirectory>.\</StartWorkingDirectory>
 			<StartAction>Program</StartAction>
 			<StartProgram>${addinpath:ICSharpCode.RubyBinding}\ir.exe</StartProgram>
 		</PropertyGroup>
 
 		<PropertyGroup configuration="Release" escapeValue="false">
-			<StartArguments>-19 Program.rb</StartArguments>
+			<StartArguments>-1.9 Program.rb</StartArguments>
 			<StartWorkingDirectory>.\</StartWorkingDirectory>
 			<StartAction>Program</StartAction>
 			<StartProgram>${addinpath:ICSharpCode.RubyBinding}\ir.exe</StartProgram>

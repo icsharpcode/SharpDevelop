@@ -1,5 +1,1331 @@
 CHANGELOG
 =========
+ironruby-0.9.5 (RC3) 2010-03-12
+-------------------------------
+	Here are all the commits for this release:
+	http://github.com/ironruby/ironruby/commits/v1.0-rc3
+
+	Up until the first commit after the last release:
+        http://github.com/ironruby/ironruby/commit/51920c25aaf2a24e82055e0807f51a19a01d3a40
+
+	The following commit messages are for all the commits in GIT which are
+	marked as "sync to tfs" or something to that effect:
+		
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1675820
+        User: jdeville
+        Date: Friday, March 12, 2010 10:02:43 AM
+
+        Comment:
+          doh, minor fixes needed.
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/rakelib/package.rake
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1675808
+        User: jdeville
+        Date: Friday, March 12, 2010 9:50:52 AM
+
+        Comment:
+            Readme changes and tweaks to rake package. Going in directly since there are no test dependencies.
+
+        Items:
+          delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Licenses;X13115842
+          delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Licenses/CHANGELOG.txt;X13115842
+          delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Licenses/LICENSE.CPL.txt;X13115842
+          delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Licenses/LICENSE.MSPL.html;X13115842
+          delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Licenses/LICENSE.Ruby.txt;X13115842
+          delete $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Licenses/README.txt;X13115842
+          branch $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public
+          branch $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/CHANGELOG.txt
+          branch $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/LICENSE.CPL.txt
+          branch $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/LICENSE.MSPL.html
+          branch $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/LICENSE.Ruby.txt
+          branch $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/README.txt
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/README.txt
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/python
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/python/app
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/python/app/app.py
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/python/app/app.xaml
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/python/index.html
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/ruby
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/ruby/app
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/ruby/app/app.rb
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/ruby/app/app.xaml
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/ruby/app/Silverlight.rb
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/clock/ruby/index.html
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/images
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/images/loading.gif
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/index.html
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/css
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/css/lightbox.css
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/images
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/images/blank.gif
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/images/close.gif
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/images/closelabel.gif
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/images/loading.gif
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/images/next.gif
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/images/nextlabel.gif
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/images/prev.gif
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/images/prevlabel.gif
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/js
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/js/effects.js
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/js/lightbox.js
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/js/prototype.js
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/lightbox/js/scriptaculous.js
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/ruby
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/ruby/app.rb
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/ruby/render.rb
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/ruby/silverlight.rb
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/ruby/system-json.rb
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/ruby/System.Json.dll
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/stylesheets
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/photoviewer/stylesheets/screen.css
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/python
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/python/console.css
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/python/index.html
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/python/python
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/python/python/app.py
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/ruby
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/ruby/console.css
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/ruby/index.html
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/ruby/ruby
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/samples/repl/ruby/ruby/app.rb
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/chr.bat
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/chr
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/sl.bat
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/sl
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/python
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/python/app
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/python/app/app.py
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/python/app/app.xaml
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/python/css
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/python/css/screen.css
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/python/index.html
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/python/js
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/python/js/error.js
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/ruby
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/ruby/app
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/ruby/app/app.rb
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/ruby/app/app.xaml
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/ruby/css
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/ruby/css/screen.css
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/ruby/index.html
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/ruby/js
+          add    $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Public/silverlight/script/templates/ruby/js/error.js
+          edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/rakelib/package.rake
+          edit   $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/bin/ir
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1675082
+        User: tomat
+        Checked in by: merllab
+        Date: Thursday, March 11, 2010 6:35:43 PM
+
+        Comment:
+          Adds filtering of invalid names from the lists that are produced by methods, instance_methods, constants, etc. 
+            Fixes Dev.bat. Environment variables are incorrectly expanded on 64 machines.
+          
+          
+          (Shelveset: InvalidNames;REDMOND\tomat | SNAP CheckinId: 10503)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ClrTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/KernelOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ModuleOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Parser/Tokenizer.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1674642
+        User: sborde
+        Checked in by: merllab
+        Date: Thursday, March 11, 2010 2:42:21 PM
+
+        Comment:
+          Change RbConfig::CONFIG["arch"] to "universal-dotnet2.0" (or "universal-dotnet4.0" on .NET 4)
+          Also changed RbConfig::CONFIG["host_os"] to be based on RUBY_PLATFORM so that it will be mswin32 on Windows and linux on Linux.
+          Removed some config values that are not present in JRuby
+          
+          (Shelveset: config;REDMOND\sborde | SNAP CheckinId: 10498)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libs/rbconfig.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/uncategorized_spec.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1666067
+        User: sborde
+        Checked in by: merllab
+        Date: Tuesday, March 09, 2010 11:40:15 AM
+
+        Comment:
+          When installing gems from a remote server that is using MRI, the gem information that is
+           sent down to the local machine is incorrect since MRI is not able to parse the platform
+           string of "universal-.net" until a patch is applied to RubyGems in Gem::Platform#initialize,
+           similar to the way other platforms are handled in that method. IronRuby does include
+           this patch. For now, we work around the problem in Gem::Specification._load
+          Running word_spec was leaving behind a Word dialog box asking whether to save the Word document or not. Fixed the spec to close Word without prompting.
+          
+          (Shelveset: gems;REDMOND\sborde | SNAP CheckinId: 10482)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/com/apps/word_spec.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1661012
+        User: tomat
+        Checked in by: merllab
+        Date: Monday, March 08, 2010 7:33:06 PM
+
+        Comment:
+          Implements character enumerator.
+          Fixes String#split to handle case of empty separator and KCODE set - it should split the string to characters using the current KCODE encoding.
+          
+          (Shelveset: CharEnum4;REDMOND\tomat | SNAP CheckinId: m11346)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/MutableStringTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/MutableStringOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/RubyTime.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/ClrStringOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/CharacterMap.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.BinaryContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.CharArrayContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.Content.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.KBinaryContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.StringContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyBufferedStream.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.Build.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/BinaryDecoderFallback.cs
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/LosslessDecoderFallback.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyExceptions.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Utils.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_support_3_tests.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_support_tests.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1660716
+        User: jdeville
+        Checked in by: merllab
+        Date: Monday, March 08, 2010 4:13:20 PM
+
+        Comment:
+          * adds clr_ext library including Array#to_clr_array, Kernel#as, and Ivan's attr_event to Samples
+          * version => 0.9.5.0
+          Closes:
+          * CP#1594
+          * CP#3934
+          * CP#3083
+          * CP#1840
+          * CP#3319
+          * CP#3314
+          * CP#3450
+          
+          
+          (Shelveset: bugfixrc3;REDMOND\jdeville | SNAP CheckinId: m11341)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Samples/clr_ext.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/irtests.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/powershell/dev.ps1
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/powershell/merlin/merlin.psm1
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/com/apps/comtest_spec.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/dlr/python/python_spec.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/A/a.generated.dll
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/assembly/access/custom_assembly_spec.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/B/b.generated.dll
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/class/fixtures/classes.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/fixtures.generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/fixtures.generated.dll
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/helpers.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/interface/fixtures/classes.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/interface/methods_spec.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/matchers.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/method/binding/generic_spec.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/method/fixtures/classes.rb
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/ruby/additions/clr_ext
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/ruby/additions/clr_ext/as_spec.rb
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/ruby/additions/clr_member_spec.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/ruby/fixtures/classes.rb
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/legacy
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/legacy/matchers.rb
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/legacy/runtime
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/legacy/runtime/block_spec.rb
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/legacy/runtime/fixtures
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/legacy/runtime/fixtures/blocks.rb
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/legacy/spec_helper.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/run_builtin.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_record_tests.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1658814
+        User: sborde
+        Checked in by: merllab
+        Date: Sunday, March 07, 2010 3:01:48 PM
+
+        Comment:
+          Add a stub implementation of YAML.add_builtin_type
+          Enables Rails 3 tests that now work after Tomas's fixes for Symbol#to_proc and encoding
+          
+          (Shelveset: r3;REDMOND\sborde | SNAP CheckinId: 10467)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/action_pack_3_tests.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_support_3_tests.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1658466
+        User: tomat
+        Checked in by: merllab
+        Date: Saturday, March 06, 2010 9:35:45 AM
+
+        Comment:
+            Implements Symbol#to_proc
+          
+          (Shelveset: SymToProc;REDMOND\tomat | SNAP CheckinId: 10466)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/BlockTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ProcOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/SymbolOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/Proc.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1658344
+        User: tomat
+        Checked in by: merllab
+        Date: Saturday, March 06, 2010 1:20:12 AM
+
+        Comment:
+            Fixes bunch of encoding issues including http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3920. 
+            Fixes handling of DST transitions in Time operators.
+            Fixes bug in Array: http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3314
+          
+          
+          
+          (Shelveset: Encs2;REDMOND\tomat | SNAP CheckinId: 10465)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/MutableStringTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/RegexTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/RubyArrayTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/RubyRegexOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/RubyTime.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/StringScanner/StringScanner.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libs/win32ole.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MatchData.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.BinaryContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.CharArrayContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.Content.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.cs
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.KBinaryContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.StringContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyArray.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyEncoding.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyRegex.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyRegexOptions.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyCommandLine.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyOptionsParser.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.Build.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.csproj
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/BinaryDecoderFallback.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/KCoding.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Utils.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1651534
+        User: sborde
+        Checked in by: merllab
+        Date: Thursday, March 04, 2010 2:34:00 PM
+
+        Comment:
+          Change RbConfig::CONFIG["arch"] to "universal-.net2.0"
+          Changes RubyGems to know about the ".net" OS
+          
+          (Shelveset: config;REDMOND\sborde | SNAP CheckinId: 10454)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libs/rbconfig.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/net/uncategorized_spec.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1643171
+        User: tomat
+        Checked in by: merllab
+        Date: Thursday, March 04, 2010 10:26:23 AM
+
+        Comment:
+          DLR:
+          Fixes interop with CLR4 BigInteger (adds implicit conversions from and to our BigInteger).
+          
+          Ruby:
+          Fixes module duplication (initializers and methods were copied incorrectly).
+          Adds co- and contra- variance smoke tests.
+          
+          
+          (Shelveset: MoreFixes;REDMOND\tomat | SNAP CheckinId: 10450)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/IronRuby.Tests.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ClrTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ModuleTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/RubyUtilsTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyModule.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMemberInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Utils.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1613348
+        User: ddicato
+        Checked in by: merllab
+        Date: Monday, March 01, 2010 11:49:15 PM
+
+        Comment:
+          Switches underlying implementation of bigint and complex to System.Numerics
+          
+          Also fixes a couple CodePlex bugs:
+           - 25893: <float> in <bytearray> throws wrong exception
+           - 25895: coerce(<complex>, <huge_long>) doesn't throw
+          
+          codeplexcomment
+          
+          
+          (Shelveset: numerics;REDMOND\ddicato | SNAP CheckinId: 10430)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/IronRuby.Libraries.Build.csproj
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1613222
+        User: tomat
+        Checked in by: merllab
+        Date: Monday, March 01, 2010 9:28:38 PM
+
+        Comment:
+          Ignores UTF8 BOM in 1.8 mode unless $KCODE is SJIS or EUC.
+          Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3913
+          Fixes -d and --version options.
+          Fixes a bug in StringScanner: scan doesn't copy the original string and [] uses the current value.
+          Makes MutableString.GetSlice out-of-range tolerant (needed by StringScanner#[] fix).
+          Improves performance of repeated Regex.Match called on the same input string.
+          
+          
+          (Shelveset: MiscStrings;REDMOND\tomat | SNAP CheckinId: 10429)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Parser/ParserTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/BacktraceTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/MutableStringTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/MutableStringOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/RubyTime.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/StringScanner/StringScanner.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MatchData.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.BinaryContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.CharArrayContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.Content.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.StringContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyBufferedStream.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyRegex.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Errors.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Parser/Tokenizer.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyOptionsParser.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyOptions.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyStackTraceBuilder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Utils.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1610422
+        User: tomat
+        Checked in by: merllab
+        Date: Sunday, February 28, 2010 12:45:47 AM
+
+        Comment:
+           Implements implicit conversions to COM types when binding to COM objects.
+          
+          (Shelveset: ComConversions;REDMOND\tomat | SNAP CheckinId: m11282)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libs/win32ole.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubySymbol.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/InteropBinder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/com/apps/excel_spec.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1610421
+        User: tomat
+        Checked in by: merllab
+        Date: Sunday, February 28, 2010 12:44:24 AM
+
+        Comment:
+            Polishes Ruby Hosting APIs:
+            -	Removes Ruby.GetExecutionContext
+            -	Changes RequireFile to be an extension method on ScriptEngine.
+            -	Adds missing comments.
+            
+            Removes unnecessary frozen flag checks.
+            Adds flags to Hash.
+          
+          
+          (Shelveset: RbHAPI;REDMOND\tomat | SNAP CheckinId: m11282)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Driver.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ConstantTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/HostingTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ArrayOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/HashOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/IDictionaryOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/Hash.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyArray.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/Subclasses.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyCommandLine.cs
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyService.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.Build.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1610406
+        User: tomat
+        Checked in by: merllab
+        Date: Saturday, February 27, 2010 10:16:28 PM
+
+        Comment:
+          DLR interpreter:
+          Inlines RunInstructions into Run to reduce stack consumption.
+          The interpreter saves interpreted stack trace when it catches an exception. The stack trace is stored in Exception.Data and can be inspected later by code that builds stack traces.
+          Fixes synchronous compilation to run the compiled code immediately.
+          
+          Ruby:
+          Factors stack building logic out of RubyExceptionData into RubyStackTraceBuilder.
+          Adds /sync0, /sync1, /debug and /debug /partial to irtest.rb to cover more cases.
+          
+          Fixes:
+          
+          http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=4010
+          http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=1979
+          
+          
+          
+          (Shelveset: STraces2;REDMOND\tomat | SNAP CheckinId: 10420)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Driver.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/BacktraceTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Ast/BlockDefinition.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Ast/Definitions/MethodDefinition.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Ast/SourceUnitTree.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Generation/Profiler.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.Build.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyExceptionData.cs
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyStackTraceBuilder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/irtest.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1607854
+        User: sborde
+        Checked in by: merllab
+        Date: Thursday, February 25, 2010 4:48:25 PM
+
+        Comment:
+          Adds ActiveSupport 3.0.pre tests. Pass rate is 98%!
+          Conditionally disables some ActiveRecord tests that fail on non-English machines
+          Adds support to run the ActiveRecord tests with a private version of ironruby-dbi for ironruby-dbi development scenarios.
+          
+          (Shelveset: as3;REDMOND\sborde | SNAP CheckinId: 10406)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/irtests.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_record_tests.rb
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_support_3_tests.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/gem_tests.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1605253
+        User: tomat
+        Checked in by: merllab
+        Date: Wednesday, February 24, 2010 11:04:35 AM
+
+        Comment:
+            DLR:
+            Fixes bugs in type inference:
+              
+              1) By-ref generic parameter
+              public void Foo<T>(ref T x);
+              
+              Foo(1)
+              Foo(StrongBox())
+              
+              2) Multiple generic parameters
+              public IEnumerable<TResult> Select<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, TResult> selector);
+              
+              3) Generic arrays 
+              public int Foo<T>(T[] x);
+              
+              4) Type shape difference
+              public static int f5<T>(Dictionary<Dictionary<string, T>, Dictionary<int, T>> arg);
+              C.f5( Dictionary[List[str], Dictionary[int, str]]() )
+              
+              In general type inference seems to need more test coverage û various type shapes, arrays, ref/out with and w/o strong boxes, params array, params dict, optional, named combinations.
+              IÆve added a few tests for the cases above to Ruby unit tests.
+            
+            Ruby:
+            Implements IInferableInvokable on blocks so that they can be coerced to Func<object*> and Action<object*> delegates:
+            Enumerable.select([1,2,3], lambda { |x| x + 1 }).each { |a| puts a }
+          
+          Fixes:
+          http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3934
+          http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3395
+          
+          
+          (Shelveset: TypeInferenceBugs2;REDMOND\tomat | SNAP CheckinId: 10393)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/IronRuby.Tests.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ClrTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/Proc.Meta.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1602311
+        User: tomat
+        Checked in by: merllab
+        Date: Monday, February 22, 2010 7:50:54 PM
+
+        Comment:
+          Fixes failing UDPSocket#bind specs.
+          
+          (Shelveset: UDPFix;REDMOND\tomat | SNAP CheckinId: 10386)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/socket/BasicSocket.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1602122
+        User: tomat
+        Checked in by: merllab
+        Date: Monday, February 22, 2010 5:16:26 PM
+
+        Comment:
+          Improves perf of IO#each_line.
+          Fixes a few socket specs.
+          
+          Fixes:
+          http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3314
+          http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3231
+          
+          
+          (Shelveset: Buffer7;REDMOND\tomat | SNAP CheckinId: 10384)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/IoTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/RubyArrayTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/IoOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/KernelOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/RubyTime.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/StringFormatter.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/IListOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/socket/BasicSocket.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/socket/IPSocket.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/socket/Socket.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/socket/TCPServer.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/socket/TCPSocket.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyArray.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyBufferedStream.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyIO.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Utils.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1599184
+        User: sborde
+        Checked in by: merllab
+        Date: Friday, February 19, 2010 9:25:13 AM
+
+        Comment:
+          Ruby 1.8.7 and 1.9 compat - I wanted to get a feel for where were with Rails 3 compat. For V1 RTM, we can have a crisper message like "IronRuby 1.0 supports Rails 2.3.5. Rails 3 tests pass at 98%, and full support will follow after the 1.0 RTM". I started off looking at the -19 mode but gave up on that after I could not get MRI 1.9 to install 1.9 gems (1.9 must include a different version of RubyGems, and I could not use the existing 1.8 gems)
+          
+          1.8.7 related changes
+          - Adds -187 command line option
+          - Enables ActionPack 3.0.pre tests in irtests
+          - Adds Object#tag
+          - avoids an ArgumentException("Illegal characters in path") that was happenning when a bad file name string was passed in to eval
+          - Adds String#start_with? and String#end_with?
+          - RUBY_VERSION is tied to the command-line argument specified
+          
+          1.9 related changes
+          - Adds Integer#fdiv
+          - Allows calling convention argument to Win32API.new
+          
+          
+          (Shelveset: r187;REDMOND\sborde | SNAP CheckinId: 10375)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Parser/ParserTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/BlockTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/MethodTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/StringTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/SuperTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/Dir.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/KernelOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ModuleOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/MutableStringOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/RubyTime.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ThreadOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/ClrBigInteger.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/ClrInteger.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Win32API/Win32API.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libs/rbconfig.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Parser/Parser.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Parser/Tokenizer.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Hosting/RubyOptionsParser.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/RubyCompatibility.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Globals/SpecialGlobalVariableInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyExceptionData.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyOptions.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyUtils.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/irtests.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/generate_test-unit_tags.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr.rb
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/action_pack_3_tests.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1597865
+        User: tomat
+        Checked in by: merllab
+        Date: Thursday, February 18, 2010 1:25:56 PM
+
+        Comment:
+            tfpt review "/shelveset:V4bugs;REDMOND\tomat"
+            Comment  : 
+            DLR:
+            Marks generated assemblies by SecurityRulesAttributes.
+            
+            Ruby:
+            Corrects paths in run_syntax and MSpec (ruby_exe.rb).
+            Adds RubyIO subclass to avoid type gen.
+            Fixes tests to run correctly in V4 partial trust
+          
+          
+          (Shelveset: V4Bugs;REDMOND\tomat | SNAP CheckinId: 10373)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Driver.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Helpers.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Parser/ParserTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ClrTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/DlrInteropTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/HostingTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/MethodTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyIO.cs
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyIO.Subclass.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyRegex.Subclass.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/Subclasses.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Generation/RubyTypeDispenser.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.Build.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Loader.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr.bat
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Syntax/run_syntax.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1594871
+        User: tomat
+        Checked in by: merllab
+        Date: Tuesday, February 16, 2010 8:27:33 PM
+
+        Comment:
+          Replaces all remaining calls to Expession.Dynamic by AstUtils.LightDynamic.
+          Removes superfluous restriction in InteropBinder.InvokeMember.FallbackInvoke. This caused a failure when binding to DynamicObject.
+          Fixes Silverlight and FxCop build settings in Rowan4.sln.
+          Adds YAML to Rowan4.sln
+          
+          
+          (Shelveset: InteropFix;REDMOND\tomat | SNAP CheckinId: 10370)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/DlrInteropTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Win32API/Win32API.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/InteropBinder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyBinder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyScopeMethodMissingInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Utils.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/ircoverage.bat
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1594104
+        User: tomat
+        Checked in by: merllab
+        Date: Tuesday, February 16, 2010 10:48:03 AM
+
+        Comment:
+          DLR, Python:
+          -	Adds IInvokeOnGetBinder to Microsoft.System.Core.
+          -	Adds Rowan4.sln that includes DLR, IronRuby and IronPython projects.
+          
+          Ruby:
+          -	Implements meta-protocol for accessing DLR scopes with fall back to standard method_missing.
+          o	Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=2478
+          -	Fixes http://ironruby.codeplex.com/WorkItem/View.aspx?WorkItemId=3083
+          -	Fixes name mangling on COM objects.
+          -	Fixes send(:foo=, args) to call indexed property on foreign meta-objects if the number of arguments is > 1.
+          -	Implements factories for interop binders that cache them on RubyContext.
+          -	Implements non-lexical super call action (a flag on RubyCallAction).
+          
+          
+          (Shelveset: InteropBinding;REDMOND\tomat | SNAP CheckinId: 10368)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Console/Ruby.ConsoleAny.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/HostingTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/IronRuby.Libraries.Build.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/IronRuby.Libraries.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/ReflectionCache.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.Build.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/InteropBinder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/MetaObjectBuilder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyCallAction.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyCallSignature.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMemberInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMetaBinder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMetaBinderFactory.cs
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyScopeMethodMissingInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/SuperCallAction.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Conversions/Converter.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Conversions/ConvertToSAction.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Conversions/GenericConversionAction.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Conversions/ProtocolConversionAction.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyScope.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyUtils.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/com/apps/comtest_spec.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/com/fixtures.generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/com/fixtures.generated.dll
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Interop/com/fixtures/classes.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1590922
+        User: sborde
+        Checked in by: merllab
+        Date: Friday, February 12, 2010 11:14:08 PM
+
+        Comment:
+          remove_const does not return the old value in some cases
+          This fix brings the ActiveRecord test pass rate to 98%. Only 54 out of 2300 tests are not disabled.
+          
+          (Shelveset: ar;REDMOND\sborde | SNAP CheckinId: 10357)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyModule.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_record_tests.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1590145
+        User: sborde
+        Checked in by: merllab
+        Date: Friday, February 12, 2010 10:18:34 AM
+
+        Comment:
+          Adds OpenSSL::SSL::SSLError which fixes all the remaining active_resource failures
+          Adds an overload of NoMethodError.new that takes 3 arguments
+          Implements Zlib.crc32
+          
+          (Shelveset: rails;REDMOND\sborde | SNAP CheckinId: 10342)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/Exceptions.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Zlib/zlib.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1589426
+        User: tomat
+        Checked in by: merllab
+        Date: Thursday, February 11, 2010 9:57:12 PM
+
+        Comment:
+          Optimizes allocation of singletons. Module singletons could be allocated lazily. We used to eagerly allocate a singleton for each allocated RubyModule. This is only necessary for classes. Their singletons are chained in the inheritance hierarchy parallel to the hierarchy of the classes. A module doesn't have a super-class and thus we don't need to create a singleton for it unless it has some members. Consequently 2 modules of the same meta-module type with no singletons can share the same call-site rules. This sharing significantly improves RoR request time and reduces working set since the request processing code is using such modules.
+          
+          Also fixes a few releated minor bugs.
+          
+          
+          
+          (Shelveset: SingletonOptimizations;REDMOND\tomat | SNAP CheckinId: 10338)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/ClassInitGenerator/Libraries/LibraryDef.cs
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Experimental/Singletons/DummySingletons.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Experimental/Singletons/Ultimate.MethodLookup.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/CloningTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ClrTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/SingletonTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ClassOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/KernelOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ModuleOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/Precision.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/SingletonOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/ParseTree/IronRubyParseTreeOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/LibraryInitializer.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyClass.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyClass.Meta.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyModule.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyStruct.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/ReflectionCache.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMetaBinder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyExceptionData.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyExceptions.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyScope.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyUtils.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby4.sln
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1589071
+        User: sborde
+        Checked in by: merllab
+        Date: Thursday, February 11, 2010 5:15:53 PM
+
+        Comment:
+          Adds OpenSSL::SSL::SSLError which fixes all the remaining active_resource failures
+          Adds an overload of NoMethodError.new that takes 3 arguments
+          Implements Zlib.crc32
+          
+          (Shelveset: rails;REDMOND\sborde | SNAP CheckinId: 10336)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/Exceptions.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/OpenSSL/OpenSSL.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Zlib/zlib.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_record_tests.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_resource_tests.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1586787
+        User: tomat
+        Checked in by: merllab
+        Date: Wednesday, February 10, 2010 11:39:35 AM
+
+        Comment:
+          Improves perf of String#+
+          
+          (Shelveset: MutableStringConcatPerf2;REDMOND\tomat | SNAP CheckinId: 10323)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/MutableStringTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/MutableStringOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.BinaryContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.CharArrayContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.Content.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/MutableString.StringContent.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyClass.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Utils.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/ircoverage.bat
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1584920
+        User: jimmysch
+        Checked in by: merllab
+        Date: Tuesday, February 09, 2010 2:10:00 PM
+
+        Comment:
+          Check in SL4 beta (4.0.41108) and latest internal SL4 (4.0.50205):
+          
+          Outer-ring Changes
+          ------------------
+          - BigInteger.Parse isn't available in Silverlight, so remove it from BigIntegerV4
+          - Don't expose HashSet from Microsoft.Dynamic in Silverlight, since it's in been added back to System.Collections.Generic.
+          - Throw in PAL's GetFiles and GetDirectories (should be overridden in Microsoft.Scripting.Silverlight's many PALs)
+          
+          IronPython changes
+          -------------------
+          - IronPython.Runtime.Binding.CompatibilityGetMemberBinder should always return false from InvokeOnGet.
+          
+          Silverlight changes
+          -------------------
+          - Because Python/Ruby/Microsoft.Dynamic depend on System.Numerics and Microsoft.CSharp, and it is NOT in the core in SL4 (it's in the SDK), need to make sure it gets added to the XAP/SLVX files.
+          
+          Infrastructure changes
+          ----------------------
+          - All Chiron's build configurations have "Silverlight" prepended to it, so update that in all the various solution files (IronPython.sln, Ruby.sln, etc). Also make sure that Chiron builds last.
+          - Update SL4 Beta in v4-x86fre and latest SL4 in v4-internal-x86fre.
+            o Note: Python (build against SL4Beta) does not work in SL4Beta, as there have been breaking changes from SL4 Beta that IronPython depends on. Both work fine against internal build, and Ruby works fine against SL4Beta. Also, both built against SL3 work in SL4 (both beta and internal build).
+          - Add SLv4 aliases for building and running Chiron (bsd4, chd4, etc)
+            o builds against beta by default: to build against internal build: bsd4 /p:SilverlightPath="%MERLIN_ROOT%\utilities\silverlight\v4-internal-x86fre"
+          - Fixes for update_silverlight.rb
+          
+          (Shelveset: sl4-beta-and-internal;REDMOND\jimmysch | SNAP CheckinId: 10321)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby4.sln
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1570153
+        User: sborde
+        Checked in by: merllab
+        Date: Monday, February 08, 2010 9:00:09 PM
+
+        Comment:
+          Fixed issue with extra 0s being appended to id. This was being caused by a bug in BigDecimal#to_i
+          Fixed issue in ironruby-dbi with Statement#fetch being called after the reader was closed
+          Fixed issue in ironruby-dbi where multiple Statements were active for a connection. We need to close the previous Statement first
+          Will follow up to get these fixes into the ironruby-dbi gem
+          Modified "utr -i foo" to generate tags to disable failing test in the utr\foo_tests.rb file itself. This way, it is possible to run "utr -i foo" in a loop and generate tags for all flaky tests (ie. tests which fail non-deterministically)
+          Ran "utr -i active_record" to tag all failing ActiveRecord tests.
+          Enabled the ActiveRecord tests in irtests
+          
+          (Shelveset: ar;REDMOND\sborde | SNAP CheckinId: 10307)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/BigDecimal/BigDecimal.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/irtests.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/generate_test-unit_tags.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr.rb
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Tests/Scripts/utr/active_record_tests.rb
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1569144
+        User: tomat
+        Checked in by: merllab
+        Date: Monday, February 08, 2010 3:36:53 PM
+
+        Comment:
+          1)	Implements a new block return optimization. It targets frame unwinding in the cases of returning from (nested) blocks like these:
+          
+          def foo
+            x.times do
+              y.times do
+                 return
+              end
+            end
+          end
+          
+          We were throwing an exception in such cases to unwind the block frames. This is unnecessary because we already handle other kinds of control-flow (retry) in call sites with a block (x.times and y.times in the example above). So adding one more check (for frame unwinding return) there enables us to not throw an exception and doesnÆt slow down the fast path (no cross-frame control flow).
+          
+          2)	Removes an unnecessary allocation in dynamic call sites that dispatch to a Ruby method and take a block.
+          3)	Adds targeted unit tests to increase code coverage of control flow constructs.
+          
+          
+          (Shelveset: CFOptimization4;REDMOND\tomat | SNAP CheckinId: 10309)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/RubyTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/BlockTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/LoopTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/OverloadResolutionTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/SuperTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/Enumerable.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ProcOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ThreadOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/TypeGroupOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Thread/ThreadOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/Proc.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Ast/Definitions/MethodDefinition.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Ast/Expressions/MethodCall.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Ast/JumpStatements/ReturnStatement.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/Ast/LeftValues/LeftValue.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Compiler/ReflectionCache.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/BlockParam.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/MethodDispatcher.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyCallSignature.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMethodInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyOps.FlowControl.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/StackUnwinder.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Scripts/ircoverage.bat
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
+        Changeset: 1561136
+        User: tomat
+        Checked in by: merllab
+        Date: Saturday, February 06, 2010 5:43:11 PM
+
+        Comment:
+          The OverloadResolver was performing quite a bit of reflection (mostly calling ParameterInfo.IsDefined) which turned out to consume about 15% of RoR request time.
+          This change introduces OverloadInfo abstraction which captures all properties of a method that are needed to perform overload resolution. The default implementation (ReflectionOverloadInfo) holds on a MethodBase and uses reflection to determine these properties. The implementation caches information that is expensive to retrieve via reflection. The OverloadInfo is a public abstract class and could be implemented by languages so that almost no reflection is needed at runtime. The ultimate goal is to remove OverloadResolverÆs dependency on Reflection types (other than Type). This change goes half way û it abstracts away reflection in the first phase of overload resolution (building target sets). More work needs to be done to remove the dependency on Reflection completely in the expression building phase. It would also require some breaking changes in DLR so we keep that part post IronRuby v1.0. 
+          
+          IronRuby implements LibraryOverload subclass of OverloadInfo. Library initializers generator performs custom attribute reflection on library methods and compresses the retrieved information to 31 bits. It imposes a limit of 15 parameters on library methods (more parameters can be supported if needed). The flags are then used at overload resolution time instead of calling ParameterInfo.IsDefined.
+          
+          The difference in perf:
+          > ir.exe -X:CompilationThreshold 2 test.rb
+          
+          // before change
+          Initialized in 7.8005s
+          10000 requests: 289 requests per second
+          Peak working set: 217MB
+          
+          // after change
+          Initialized in 7.64449s
+          10000 requests: 337 requests per second
+          Peak working set: 216MB
+          
+          
+          (Shelveset: OverloadInfo8;REDMOND\tomat | SNAP CheckinId: 10301)
+
+        Items:
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/ClassInitGenerator/Libraries/LibraryDef.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/LoaderTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/OverloadResolutionTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/ProtocolTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/IronRuby.Tests/Runtime/SplattingTests.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/Enumerable.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/EnvironmentSingletonOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/FileOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/HashOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/KernelOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/MatchDataOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/MethodOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ModuleOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/MutableStringOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/Precision.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/PrintOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ProcOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/RubyRegexOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/RubyTime.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/SingletonOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/StructOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/ThreadOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Builtins/UnboundMethod.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Enumerator/Enumerator.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/ClrInteger.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/ClrStringOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/IDictionaryOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/IListOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/ScopeOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Extensions/TypeGroupOps.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Iconv/Iconv.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Initializers.Generated.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/StringIO/StringIO.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Libraries.LCA_RESTRICTED/Thread/SizedQueue.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/LibraryInitializer.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyClass.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Builtins/RubyStruct.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.Build.csproj
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Ruby.csproj
+          add  $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/LibraryOverloadInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyLibraryMethodInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMethodGroupBase.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyMethodGroupInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyOverloadGroupInfo.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Calls/RubyOverloadResolver.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Conversions/ProtocolConversionAction.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/Protocols.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyContext.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyScope.cs
+          edit $/Dev10/feature/vs_langs01_s/Merlin/Main/Languages/Ruby/Ruby/Runtime/RubyUtils.cs
+
+        Check-in Notes:
+          Code Reviewer:
+          Performance Reviewer:
+          Security Reviewer:
+
+        -----------------------------------------------------------------------------------------------------------------------
 
 ironruby-0.9.4 (RC2) 2010-02-10
 -------------------------------

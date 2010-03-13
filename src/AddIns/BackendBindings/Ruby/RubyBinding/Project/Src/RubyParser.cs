@@ -7,6 +7,7 @@
 
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
+using Microsoft.Scripting.Hosting.Providers;
 using Microsoft.Scripting.Runtime;
 using System;
 using System.IO;
@@ -73,8 +74,8 @@ namespace ICSharpCode.RubyBinding
 			if (scriptEngine == null) {
 				scriptEngine = Ruby.CreateEngine();
 			}
-
-			RubyContext rubyContext = Ruby.GetExecutionContext(scriptEngine);
+			
+			RubyContext rubyContext = HostingHelpers.GetLanguageContext(scriptEngine) as RubyContext;
 			SourceUnit sourceUnit = rubyContext.CreateFileUnit(fileName, fileContent.Text);
 			RubyCompilerSink sink = new RubyCompilerSink();
 			RubyCompilerOptions compilerOptions = new RubyCompilerOptions((RubyOptions)rubyContext.Options);
