@@ -65,8 +65,8 @@ namespace ICSharpCode.RubyBinding
 		string GetArguments()
 		{
 			// Get the Ruby script filename.
-			string rubyScriptFileName = "\"" + workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName + "\"";
-			string args = "-19 " + rubyScriptFileName;
+			string rubyScriptFileName = Path.GetFileName(workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName);
+			string args = "-1.9 " + rubyScriptFileName;
 			
 			if (Debug) {
 				return "-D " + args;

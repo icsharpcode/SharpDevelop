@@ -57,7 +57,7 @@ namespace RubyBinding.Tests
 		[Test]
 		public void ProcessInfoArgs()
 		{
-			Assert.AreEqual("-D -19 \"C:\\Projects\\test.rb\"", debugger.ProcessStartInfo.Arguments);
+			Assert.AreEqual("-D -1.9 test.rb", debugger.ProcessStartInfo.Arguments);
 		}
 	}
 }

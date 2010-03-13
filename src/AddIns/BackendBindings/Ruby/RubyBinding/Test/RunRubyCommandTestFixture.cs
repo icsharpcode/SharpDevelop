@@ -65,12 +65,12 @@ namespace RubyBinding.Tests
 		}
 		
 		/// <summary>
-		/// The -19 parameter is used to enable Ruby 1.9 mode otherwise UTF8 files cannot be processed.
+		/// The -1.9 parameter is used to enable Ruby 1.9 mode otherwise UTF8 files cannot be processed.
 		/// </summary>
 		[Test]
 		public void ProcessInfoArgs()
 		{
-			Assert.AreEqual("-19 \"C:\\Projects\\test.rb\"", debugger.ProcessStartInfo.Arguments);
+			Assert.AreEqual("-1.9 test.rb", debugger.ProcessStartInfo.Arguments);
 		}
 		
 		[Test]
