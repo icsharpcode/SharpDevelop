@@ -213,6 +213,7 @@
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\ProgressCollector.cs" />
+    <Compile Include="Src\Gui\SimpleViewContent.cs" />
     <Compile Include="Src\Gui\Workbench\FullScreenEnabledWindow.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonDockLayout.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonPadContent.cs" />
@@ -580,7 +581,6 @@
     <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextEditorProperties.cs" />
     <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
     <Compile Include="Src\TextEditor\Gui\TextEditorAdapter.cs" />
-    <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />

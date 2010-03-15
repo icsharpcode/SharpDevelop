@@ -50,9 +50,9 @@ namespace SharpDevelopInteraction
 		
 		void MakeTransparentInternal()
 		{
-			WorkbenchSingleton.MainForm.Opacity *= 0.85;
-			if (WorkbenchSingleton.MainForm.Opacity < 0.2)
-				WorkbenchSingleton.MainForm.Opacity = 1;
+			WorkbenchSingleton.MainWindow.Opacity *= 0.85;
+			if (WorkbenchSingleton.MainWindow.Opacity < 0.2)
+				WorkbenchSingleton.MainWindow.Opacity = 1;
 		}
 	}
 }

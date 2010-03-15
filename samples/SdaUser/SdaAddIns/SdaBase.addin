@@ -18,7 +18,7 @@
 			<ConditionEvaluator name="ActiveWindowState" class="ICSharpCode.SharpDevelop.ActiveWindowStateConditionEvaluator"/>
 			<ConditionEvaluator name="OpenWindowState" class="ICSharpCode.SharpDevelop.OpenWindowStateConditionEvaluator"/>
 			
-			<Doozer name="DialogPanel" class="ICSharpCode.SharpDevelop.DialogPanelDoozer"/>
+			<Doozer name="OptionPanel" class="ICSharpCode.SharpDevelop.OptionPanelDoozer"/>
 			<Doozer name="DisplayBinding" class="ICSharpCode.SharpDevelop.DisplayBindingDoozer"/>
 		</Import>
 	</Runtime>
@@ -44,9 +44,6 @@
 	
 	<!-- REQUIRED to open views -->
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id = "Text"
-		                supportedformats = "Text Files,Source Files"
-		                class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding" />
 	</Path>
 	
 	<!-- REQUIRED to open views -->
@@ -64,53 +61,14 @@
 		          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.CloseAllButThisFileTab" />
 	</Path>
 	
-	<!-- REQUIRED if you use the default text editor (TextEditorDisplayBinding) -->
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
-		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
-		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
-		<Include id = "Paste" item = "/SharpDevelop/Workbench/MainMenu/Edit/Paste"/>
-		<Include id = "Delete" item = "/SharpDevelop/Workbench/MainMenu/Edit/Delete"/>
-		<MenuItem id = "Separator1" type = "Separator" />
-		<MenuItem id = "Options"
-		          label = "${res:XML.TextAreaContextMenu.BufferOptions}"
-		          icon = "Icons.16x16.PropertiesIcon"
-		          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowBufferOptions"/>
-	</Path>
-	
-	<!-- required for BufferOptions command in text editor context menu -->
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog">
-		<DialogPanel id = "General"
-		             label = "${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
-		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
-		<DialogPanel id = "Markers"
-		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
-		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
-		<DialogPanel id = "Behavior"
-		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
-		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
-	</Path>
-	
 	<!-- required for main menu options command -->
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
-		<DialogPanel id    = "ToolsOptions"
+		<OptionPanel id    = "ToolsOptions"
 		             label = "${res:Dialog.Options.IDEOptions.ToolsOptionsText}">
-			<DialogPanel id    = "ExternalTools"
+			<OptionPanel id    = "ExternalTools"
 			             label = "${res:Dialog.Options.ExternalToolsText}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPane"/>
-		</DialogPanel>
-		
-		<DialogPanel id    = "TextEditorOptions"
-		             label = "${res:Dialog.Options.IDEOptions.TextEditorOptionsText}">
-			<DialogPanel id = "General"
-			             label = "${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
-			<DialogPanel id = "Markers"
-			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
-			<DialogPanel id = "Behavior"
-			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
-		</DialogPanel>
+		</OptionPanel>
 	</Path>
 	
 	<!-- Main menu -->
@@ -173,49 +131,42 @@
 			          icon = "Icons.16x16.UndoIcon"
 			          type = "Item"
 			          shortcut = "Control|Z"
-			          loadclasslazy = "false"
-			          class = "ICSharpCode.SharpDevelop.Commands.Undo"/>
+			          command = "Undo"/>
 			<MenuItem id = "Redo"
 			          label = "${res:XML.MainMenu.EditMenu.Redo}"
 			          icon = "Icons.16x16.RedoIcon"
 			          type = "Item"
 			          shortcut = "Control|Y"
-			          loadclasslazy = "false"
-			          class = "ICSharpCode.SharpDevelop.Commands.Redo"/>
+			          command = "Redo"/>
 			<MenuItem id = "Separator1" type = "Separator"  />
 			<MenuItem id = "Cut"
 			          label = "${res:XML.MainMenu.EditMenu.Cut}"
 			          icon = "Icons.16x16.CutIcon"
 			          type = "Item"
 			          shortcut = "Control|X"
-			          loadclasslazy = "false"
-			          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
+			          command = "Cut"/>
 			<MenuItem id = "Copy"
 			          label = "${res:XML.MainMenu.EditMenu.Copy}"
 			          icon = "Icons.16x16.CopyIcon"
 			          type = "Item"
 			          shortcut = "Control|C"
-			          loadclasslazy = "false"
-			          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+			          command = "Copy"/>
 			<MenuItem id = "Paste"
 			          label = "${res:XML.MainMenu.EditMenu.Paste}"
 			          icon = "Icons.16x16.PasteIcon"
 			          type = "Item"
 			          shortcut = "Control|V"
-			          loadclasslazy = "false"
-			          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
+			          command = "Paste"/>
 			<MenuItem id = "Delete"
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
 			          icon = "Icons.16x16.DeleteIcon"
 			          type = "Item"
-			          loadclasslazy = "false"
-			          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
+			          command = "Delete"/>
 			<MenuItem id = "SelectAll"
 			          label = "${res:XML.MainMenu.EditMenu.SelectAll}"
 			          type = "Item"
 			          shortcut = "Control|A"
-			          loadclasslazy = "false"
-			          class = "ICSharpCode.SharpDevelop.Commands.SelectAll"/>
+			          command = "SelectAll"/>
 		</MenuItem> <!-- end EDIT menu -->
 	
 		<MenuItem id = "Tools" label = "${res:XML.MainMenu.ToolMenu}" type="Menu">
@@ -236,7 +187,7 @@
 		</MenuItem>
 	</Path>
 
-	<Path name="/SharpDevelop/Workbench/ToolBar">
+	<Path name="/SharpDevelop/Workbench/ToolBar/Standard">
 		<ToolbarItem id      = "New"
 		             icon    = "Icons.16x16.NewDocumentIcon"
 		             tooltip = "${res:XML.MainMenu.FileMenu.New.File.Description}"

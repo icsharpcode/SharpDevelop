@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop
 			return file;
 		}
 		
-				/// <summary>
+		/// <summary>
 		/// Gets or creates an opened file.
 		/// Warning: the opened file will be a file without any views attached.
 		/// Make sure to attach a view to it, or call CloseIfAllViewsClosed on the OpenedFile to
@@ -258,12 +258,11 @@ namespace ICSharpCode.SharpDevelop
 			
 			IDisplayBinding binding = DisplayBindingService.GetBindingPerFileName(fileName);
 			
-			if (binding != null) {
-				if (FileUtility.ObservedLoad(new NamedFileOperationDelegate(new LoadFileWrapper(binding, switchToOpenedView).Invoke), fileName) == FileOperationResult.OK) {
-					FileService.RecentOpen.AddLastFile(fileName);
-				}
-			} else {
-				throw new ApplicationException("Cannot open " + fileName + ", no display codon found.");
+			if (binding == null) {
+				binding = new ErrorFallbackBinding("Could not find any display binding for " + Path.GetFileName(fileName));
+			}
+			if (FileUtility.ObservedLoad(new NamedFileOperationDelegate(new LoadFileWrapper(binding, switchToOpenedView).Invoke), fileName) == FileOperationResult.OK) {
+				FileService.RecentOpen.AddLastFile(fileName);
 			}
 			return GetOpenFile(fileName);
 		}
@@ -292,23 +291,22 @@ namespace ICSharpCode.SharpDevelop
 			
 			IDisplayBinding binding = DisplayBindingService.GetBindingPerFileName(defaultName);
 			
-			if (binding != null) {
-				OpenedFile file = CreateUntitledOpenedFile(defaultName, content);
-				
-				IViewContent newContent = binding.CreateContentForFile(file);
-				if (newContent == null) {
-					LoggingService.Warn("Created view content was null - DefaultName:" + defaultName);
-					file.CloseIfAllViewsClosed();
-					return null;
-				}
-				
-				DisplayBindingService.AttachSubWindows(newContent, false);
-				
-				WorkbenchSingleton.Workbench.ShowView(newContent);
-				return newContent;
-			} else {
-				throw new ApplicationException("Can't create display binding for file " + defaultName);
+			if (binding == null) {
+				binding = new ErrorFallbackBinding("Can't create display binding for file " + defaultName);
 			}
+			OpenedFile file = CreateUntitledOpenedFile(defaultName, content);
+			
+			IViewContent newContent = binding.CreateContentForFile(file);
+			if (newContent == null) {
+				LoggingService.Warn("Created view content was null - DefaultName:" + defaultName);
+				file.CloseIfAllViewsClosed();
+				return null;
+			}
+			
+			DisplayBindingService.AttachSubWindows(newContent, false);
+			
+			WorkbenchSingleton.Workbench.ShowView(newContent);
+			return newContent;
 		}
 		
 		/// <summary>
@@ -654,6 +652,26 @@ namespace ICSharpCode.SharpDevelop
 		public static event EventHandler<FileEventArgs> FileReplaced;
 		
 		#endregion Events
+		
+		sealed class ErrorFallbackBinding : IDisplayBinding
+		{
+			string errorMessage;
+			
+			public ErrorFallbackBinding(string errorMessage)
+			{
+				this.errorMessage = errorMessage;
+			}
+			
+			public bool CanCreateContentForFile(string fileName)
+			{
+				return true;
+			}
+			
+			public IViewContent CreateContentForFile(OpenedFile file)
+			{
+				return new SimpleViewContent(errorMessage) { TitleName = Path.GetFileName(file.FileName) };
+			}
+		}
 	}
 }
 

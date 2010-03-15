@@ -38,7 +38,9 @@ namespace SdaUser
 	public partial class MainForm
 	{
 		#region Application Startup
+		// The LoaderOptimization hint is important - without it, loading WPF into the SD AppDomain takes very long
 		[STAThread]
+		[LoaderOptimization(LoaderOptimization.MultiDomainHost)]
 		public static void Main(string[] args)
 		{
 			Application.EnableVisualStyles();
@@ -80,14 +82,15 @@ namespace SdaUser
 			if (host == null) {
 				StartupSettings startup = new StartupSettings();
 				startup.ApplicationName = "HostedSharpDevelop";
+				startup.ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ICSharpCode\\HostedSharpDevelop4");
 				startup.DataDirectory = Path.Combine(Path.GetDirectoryName(typeof(SharpDevelopHost).Assembly.Location), "../data");
-				string sdaDir = Path.Combine(Path.GetDirectoryName(typeof(MainForm).Assembly.Location), "SdaAddIns");
-				startup.AddAddInFile(Path.Combine(sdaDir, "SdaBase.addin"));
+				string sdaAddInDir = Path.Combine(Path.GetDirectoryName(typeof(MainForm).Assembly.Location), "SdaAddIns");
+				startup.AddAddInsFromDirectory(sdaAddInDir);
 				
 				host = new SharpDevelopHost(startup);
 				host.InvokeTarget = this;
 				host.BeforeRunWorkbench += delegate { groupBox1.Enabled = true; };
-				host.WorkbenchClosed += delegate { groupBox1.Enabled = false; runButton.Enabled = true; };
+				host.WorkbenchClosed += delegate { groupBox1.Enabled = false; };
 			}
 			
 			host.RunWorkbench(wbSettings);
@@ -127,6 +130,7 @@ namespace SdaUser
 			
 			// disable the group box so no events are fired
 			groupBox1.Enabled = false;
+			runButton.Enabled = true;
 		}
 		
 		void OpenFileButtonClick(object sender, System.EventArgs e)

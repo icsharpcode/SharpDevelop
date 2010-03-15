@@ -14,12 +14,13 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Threading;
+using System.Windows;
+using System.Windows.Threading;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Windows;
 
 namespace ICSharpCode.SharpDevelop.Sda
 {
@@ -266,19 +267,18 @@ namespace ICSharpCode.SharpDevelop.Sda
 		}
 		bool CloseWorkbenchInternal(bool force)
 		{
-			if (force) {
-				foreach (IWorkbenchWindow window in WorkbenchSingleton.Workbench.WorkbenchWindowCollection.ToArray()) {
-					window.CloseWindow(true);
-				}
+			foreach (IWorkbenchWindow window in WorkbenchSingleton.Workbench.WorkbenchWindowCollection.ToArray()) {
+				if (!window.CloseWindow(force))
+					return false;
 			}
 			WorkbenchSingleton.MainWindow.Close();
-			return WorkbenchSingleton.MainWindow == null;
+			return true;
 		}
 		
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "needs to be run in correct AppDomain")]
 		public void KillWorkbench()
 		{
-			System.Windows.Forms.Application.Exit();
+			Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Normal);
 		}
 		
 		public bool WorkbenchVisible {

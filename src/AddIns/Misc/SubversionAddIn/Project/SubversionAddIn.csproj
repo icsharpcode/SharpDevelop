@@ -82,15 +82,8 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.Designer.cs">
-      <DependentUpon>DiffPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.cs" />
     <Compile Include="Src\SvnClientWrapper.cs" />
     <Compile Include="Src\SvnMessageView.cs" />
-    <EmbeddedResource Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.resx">
-      <DependentUpon>DiffPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.resx">
       <DependentUpon>InfoPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -114,11 +107,6 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
