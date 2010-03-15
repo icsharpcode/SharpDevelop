@@ -151,17 +151,10 @@ namespace ICSharpCode.NAnt.Gui
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the pad
 		/// </summary>
-		public override Control Control {
+		public override object Control {
 			get {
 				return contentPanel;
 			}
-		}
-		
-		/// <summary>
-		/// Refreshes the pad
-		/// </summary>
-		public override void RedrawContent()
-		{
 		}
 		
 		/// <summary>

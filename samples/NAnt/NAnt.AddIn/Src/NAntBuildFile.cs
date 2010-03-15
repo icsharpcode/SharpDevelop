@@ -275,7 +275,7 @@ namespace ICSharpCode.NAnt
 					}
 				}
 			} catch(XmlException ex) {
-				buildFileError = new NAntBuildFileError(ex.Message, ex.LineNumber - 1, ex.LinePosition - 1);
+				buildFileError = new NAntBuildFileError(ex.Message, ex.LineNumber, ex.LinePosition);
 			} finally {
 				xmlReader.Close();
 			}
@@ -340,9 +340,8 @@ namespace ICSharpCode.NAnt
 		/// </summary>
 		void ParseTargetElement(XmlTextReader xmlReader)
 		{
-			// Take off one for line/col since SharpDevelop is zero based.
-			int line = xmlReader.LineNumber - 1;
-			int col = xmlReader.LinePosition - 1;
+			int line = xmlReader.LineNumber;
+			int col = xmlReader.LinePosition;
 			
 			string targetName = GetAttribute(xmlReader, NameAttributeName);
 			

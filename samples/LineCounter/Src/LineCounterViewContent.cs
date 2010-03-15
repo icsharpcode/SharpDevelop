@@ -31,17 +31,14 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace LineCounterAddin
 {
-	/// <summary>
-	/// Description of the view content
-	/// </summary>
 	public class LineCounterViewContent : AbstractViewContent
 	{
 		LineCounterBrowser browser = new LineCounterBrowser();
 		
 		/// <summary>
-		/// The <see cref="System.Windows.Forms.Control"/> representing the view.
+		/// The Control representing the view. Both WPF and WinForms controls are supported.
 		/// </summary>
-		public override Control Control {
+		public override object Control {
 			get {
 				return browser;
 			}

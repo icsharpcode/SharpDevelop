@@ -29,13 +29,14 @@ using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.NAnt.Gui
 {
 	/// <summary>
 	/// Options panel for the NAnt add-in.
 	/// </summary>
-	public class NAntAddInOptionPanel : AbstractOptionPanel
+	public class NAntAddInOptionPanel : XmlFormsOptionPanel
 	{
 		static readonly string commandTextBoxName = "nantCommandTextBox";
 		static readonly string argumentsTextBoxName = "argumentsTextBox";

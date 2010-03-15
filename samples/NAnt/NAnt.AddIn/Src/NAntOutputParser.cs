@@ -29,6 +29,7 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.NAnt
@@ -133,16 +134,15 @@ namespace ICSharpCode.NAnt
 			Match match = Regex.Match(textLine, @"^.*?(\w+:[/\\].*?)\(([\d]*),([\d]*)\): (.*?) (.*?): (.*?)$");
 			if (match.Success) {
 				try	{
-					// Take off 1 for line/col since SharpDevelop is zero index based.
-					int line = Convert.ToInt32(match.Groups[2].Value) - 1;
-					int col = Convert.ToInt32(match.Groups[3].Value) - 1;                     
+					int line = Convert.ToInt32(match.Groups[2].Value);
+					int col = Convert.ToInt32(match.Groups[3].Value);                     
 					string description = String.Concat(match.Groups[6].Value, " (", match.Groups[5], ")");
 					
 					TaskType taskType = TaskType.Error;
 					if (String.Compare(match.Groups[4].Value, "warning", true) == 0) {
 						taskType = TaskType.Warning;
 					}
-					task = new Task(match.Groups[1].Value, description, col, line, taskType);
+					task = new Task(FileName.Create(match.Groups[1].Value), description, col, line, taskType);
 				} catch (Exception) {
 					// Ignore.
 				}
@@ -165,11 +165,10 @@ namespace ICSharpCode.NAnt
 			Match match = Regex.Match(textLine, @"^.*?(\w+:[/\\].*?)\(([\d]*),([\d]*)\): (.*?)$");
 			if (match.Success) {
 				try	{
-					// Take off 1 for line/col since SharpDevelop is zero index based.
-					int line = Convert.ToInt32(match.Groups[2].Value) - 1;
-					int col = Convert.ToInt32(match.Groups[3].Value) - 1;                     
+					int line = Convert.ToInt32(match.Groups[2].Value);
+					int col = Convert.ToInt32(match.Groups[3].Value);                     
 					
-					task = new Task(match.Groups[1].Value, match.Groups[4].Value, col, line, TaskType.Warning);
+					task = new Task(FileName.Create(match.Groups[1].Value), match.Groups[4].Value, col, line, TaskType.Warning);
 				} catch (Exception) {
 					// Ignore.
 				}
@@ -193,15 +192,14 @@ namespace ICSharpCode.NAnt
 			Match match = Regex.Match(textLine, @"^.*?(\w+:[/\\].*?)\(([\d]*)\) : (.*?) (.*?): (.*?)$");
 			if (match.Success) {
 				try	{
-					// Take off 1 for line/col since SharpDevelop is zero index based.
-					int line = Convert.ToInt32(match.Groups[2].Value) - 1;
+					int line = Convert.ToInt32(match.Groups[2].Value);
 					string description = String.Concat(match.Groups[5].Value, " (", match.Groups[4], ")");
 					
 					TaskType taskType = TaskType.Error;
 					if (String.Compare(match.Groups[3].Value, "warning", true) == 0) {
 						taskType = TaskType.Warning;
 					}
-					task = new Task(match.Groups[1].Value, description, 0, line, taskType);
+					task = new Task(FileName.Create(match.Groups[1].Value), description, 0, line, taskType);
 				} catch (Exception) {
 					// Ignore.
 				}
@@ -223,7 +221,7 @@ namespace ICSharpCode.NAnt
 			Match match = Regex.Match(textLine, @"^.*?(fatal error .*?: .*?)$");
 			if (match.Success) {
 				try	{
-					task = new Task(String.Empty, match.Groups[1].Value, 0, 0, TaskType.Error);
+					task = new Task(null, match.Groups[1].Value, 0, 0, TaskType.Error);
 				} catch (Exception) {
 					// Ignore.
 				}
@@ -246,7 +244,7 @@ namespace ICSharpCode.NAnt
 			if (match.Success) {
 				try	{
 					string description = String.Concat(match.Groups[2].Value, " (", match.Groups[1].Value, ")");
-					task = new Task(String.Empty, description, 0, 0, TaskType.Error);
+					task = new Task(null, description, 0, 0, TaskType.Error);
 				} catch (Exception) {
 					// Ignore.
 				}
@@ -268,7 +266,7 @@ namespace ICSharpCode.NAnt
 			Match match = Regex.Match(textLine, @"^.*?(Read-only property .*? cannot be overwritten.)$");
 			if (match.Success) {
 				try	{
-					task = new Task(String.Empty, match.Groups[1].Value, 0, 0, TaskType.Warning);
+					task = new Task(null, match.Groups[1].Value, 0, 0, TaskType.Warning);
 				} catch (Exception) {
 					// Ignore.
 				}
@@ -295,18 +293,17 @@ namespace ICSharpCode.NAnt
 			if (match.Success) {
 				
 				try	{
-					// Take off 1 for line/col since SharpDevelop is zero index based.
-					int line = Convert.ToInt32(match.Groups[2].Value) - 1;
-					int col = Convert.ToInt32(match.Groups[3].Value) - 1;
+					int line = Convert.ToInt32(match.Groups[2].Value);
+					int col = Convert.ToInt32(match.Groups[3].Value);
 					string description = String.Concat(match.Groups[4], Environment.NewLine, match.Groups[5]);
-					task = new Task(match.Groups[1].Value, description, col, line, TaskType.Error);
+					task = new Task(FileName.Create(match.Groups[1].Value), description, col, line, TaskType.Error);
 				} catch(Exception) { };
 			} else {
 				
 				match = Regex.Match(output, @"^BUILD FAILED$\n^$\n^(.*?)$", RegexOptions.Multiline);
 				
 				if (match.Success) {
-					task = new Task(String.Empty, match.Groups[1].Value, 0, 0, TaskType.Error);
+					task = new Task(null, match.Groups[1].Value, 0, 0, TaskType.Error);
 				}
 			}	
 			
@@ -330,15 +327,14 @@ namespace ICSharpCode.NAnt
 			if (match.Success) {
 				
 				try	{
-					// Take off 1 for line/col since SharpDevelop is zero index based.
-					int line = Convert.ToInt32(match.Groups[2].Value) - 1;
-					int col = Convert.ToInt32(match.Groups[3].Value) - 1;
+					int line = Convert.ToInt32(match.Groups[2].Value);
+					int col = Convert.ToInt32(match.Groups[3].Value);
 					string description = String.Concat(match.Groups[4]);
-					task = new Task(match.Groups[1].Value, description, col, line, TaskType.Error);
+					task = new Task(FileName.Create(match.Groups[1].Value), description, col, line, TaskType.Error);
 				} catch(Exception) { };
 			}
 			
 			return task;
-		}		
+		}
 	}
 }

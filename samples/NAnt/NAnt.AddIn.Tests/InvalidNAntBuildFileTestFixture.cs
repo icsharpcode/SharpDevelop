@@ -28,8 +28,8 @@ namespace ICSharpCode.NAnt.Tests
 			                error.Message, 
 			                "Error message is incorrect.");
 			
-			Assert.AreEqual(0, error.Line, "Error's line number is incorrect.");
-			Assert.AreEqual(9, error.Column, "Error's column number is incorrect.");
+			Assert.AreEqual(1, error.Line, "Error's line number is incorrect.");
+			Assert.AreEqual(10, error.Column, "Error's column number is incorrect.");
 		}
 	}
 }

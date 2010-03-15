@@ -16,7 +16,7 @@ namespace ICSharpCode.NAnt.Tests
 		
 			Task task = tasks[0];
 			
-			Assert.AreEqual(String.Empty, task.FileName, "Task filename is incorrect.");
+			Assert.IsNull(task.FileName, "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Warning, task.TaskType, "Should be a warning task.");
 			Assert.AreEqual(0, task.Line, "Incorrect line number.");
 			Assert.AreEqual(0, task.Column, "Incorrect col number.");

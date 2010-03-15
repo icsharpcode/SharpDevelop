@@ -20,9 +20,9 @@ namespace ICSharpCode.NAnt.Tests
 
 			// First task.
 			Task task = tasks[0];
-			Assert.AreEqual("c:\\Projects\\dotnet\\Test\\corsavytest\\Foo.cs", task.FileName, "Task filename is incorrect.");
-			Assert.AreEqual(33, task.Line, "Task line is incorrect.");
-			Assert.AreEqual(3, task.Column, "Task column is incorrect.");
+			Assert.AreEqual("c:\\Projects\\dotnet\\Test\\corsavytest\\Foo.cs", task.FileName.ToString(), "Task filename is incorrect.");
+			Assert.AreEqual(34, task.Line, "Task line is incorrect.");
+			Assert.AreEqual(4, task.Column, "Task column is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be error task.");
 			Assert.AreEqual(@"Invalid expression term '/' (CS1525)",  
 			                task.Description,
@@ -30,9 +30,9 @@ namespace ICSharpCode.NAnt.Tests
 			
 			// Second task.
 			task = tasks[1];
-			Assert.AreEqual("c:\\Projects\\dotnet\\Test\\corsavytest\\Foo.cs", task.FileName, "Task filename is incorrect.");
-			Assert.AreEqual(33, task.Line, "Task line is incorrect.");
-			Assert.AreEqual(4, task.Column, "Task column is incorrect.");
+			Assert.AreEqual("c:\\Projects\\dotnet\\Test\\corsavytest\\Foo.cs", task.FileName.ToString(), "Task filename is incorrect.");
+			Assert.AreEqual(34, task.Line, "Task line is incorrect.");
+			Assert.AreEqual(5, task.Column, "Task column is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be error task.");
 			Assert.AreEqual(@"; expected (CS1002)",  
 			                task.Description,
@@ -40,9 +40,9 @@ namespace ICSharpCode.NAnt.Tests
 			
 			// Last task task.
 			task = tasks[2];
-			Assert.AreEqual(@"C:\Projects\dotnet\Test\corsavytest\corsavytest.build", task.FileName, "Task filename is incorrect.");
-			Assert.AreEqual(47, task.Line, "Task line is incorrect.");
-			Assert.AreEqual(5, task.Column, "Task column is incorrect.");
+			Assert.AreEqual(@"C:\Projects\dotnet\Test\corsavytest\corsavytest.build", task.FileName.ToString(), "Task filename is incorrect.");
+			Assert.AreEqual(48, task.Line, "Task line is incorrect.");
+			Assert.AreEqual(6, task.Column, "Task column is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be error task.");
 			Assert.AreEqual(@"External Program Failed: C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\csc.exe (return code was 1)",  
 			                task.Description,
@@ -58,9 +58,9 @@ namespace ICSharpCode.NAnt.Tests
 
 			// First task.
 			Task task = tasks[0];
-			Assert.AreEqual("c:\\Projects\\dotnet\\Test\\corsavytest\\Foo.cs", task.FileName, "Task filename is incorrect.");
-			Assert.AreEqual(38, task.Line, "Task line is incorrect.");
-			Assert.AreEqual(11, task.Column, "Task column is incorrect.");
+			Assert.AreEqual("c:\\Projects\\dotnet\\Test\\corsavytest\\Foo.cs", task.FileName.ToString(), "Task filename is incorrect.");
+			Assert.AreEqual(39, task.Line, "Task line is incorrect.");
+			Assert.AreEqual(12, task.Column, "Task column is incorrect.");
 			Assert.AreEqual(TaskType.Warning, task.TaskType, "Should be error task.");
 			Assert.AreEqual(@"The variable 'Test' is assigned but its value is never used (CS0219)",  
 			                task.Description,

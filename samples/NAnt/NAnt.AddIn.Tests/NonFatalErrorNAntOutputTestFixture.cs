@@ -18,10 +18,10 @@ namespace ICSharpCode.NAnt.Tests
 		
 			Task task = tasks[0];
 			
-			Assert.AreEqual("C:\\Projects\\dotnet\\Corsavy\\SharpDevelop\\src\\StandardAddIn.include", task.FileName, "Task filename is incorrect.");
+			Assert.AreEqual("C:\\Projects\\dotnet\\Corsavy\\SharpDevelop\\src\\StandardAddIn.include", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be a warning task.");
-			Assert.AreEqual(93, task.Line, "Incorrect line number.");
-			Assert.AreEqual(4, task.Column, "Incorrect col number.");
+			Assert.AreEqual(94, task.Line, "Incorrect line number.");
+			Assert.AreEqual(5, task.Column, "Incorrect col number.");
 			Assert.AreEqual("Cannot delete directory 'C:\\Projects\\dotnet\\Corsavy\\SharpDevelop\\AddIns\\AddIns\\Misc\\Debugger.AddIn'. The directory does not exist.",
 			                task.Description,
 			                "Task description is wrong.");

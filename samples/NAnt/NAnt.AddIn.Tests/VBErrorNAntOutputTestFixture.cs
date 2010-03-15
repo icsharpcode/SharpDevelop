@@ -21,28 +21,28 @@ namespace ICSharpCode.NAnt.Tests
 		
 			Task task = tasks[0];
 			
-			Assert.AreEqual("C:\\Projects\\dotnet\\test\\corsavyvbtest\\corsavyvbtest.build", task.FileName, "Task filename is incorrect.");
+			Assert.AreEqual("C:\\Projects\\dotnet\\test\\corsavyvbtest\\corsavyvbtest.build", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Warning, task.TaskType, "Should be a warning task.");
-			Assert.AreEqual(47, task.Line, "Incorrect line number.");
-			Assert.AreEqual(5, task.Column, "Incorrect col number.");
+			Assert.AreEqual(48, task.Line, "Incorrect line number.");
+			Assert.AreEqual(6, task.Column, "Incorrect col number.");
 			Assert.AreEqual("Attribute 'imports' for <vbc ... /> is deprecated.  Use the <imports> element instead.",
 			                task.Description,
 			                "Task description is wrong.");
 			
 			task = tasks[1];
-			Assert.AreEqual("C:\\Projects\\dotnet\\test\\corsavyvbtest\\MainForm.vb", task.FileName, "Task filename is incorrect.");
+			Assert.AreEqual("C:\\Projects\\dotnet\\test\\corsavyvbtest\\MainForm.vb", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
-			Assert.AreEqual(13, task.Line, "Incorrect line number.");
-			Assert.AreEqual(0, task.Column, "Should be col number 0");
+			Assert.AreEqual(14, task.Line, "Incorrect line number.");
+			Assert.AreEqual(1, task.Column, "Should be col number 1");
 			Assert.AreEqual("Syntax error. (BC30035)",
 			                task.Description,
 			                "Task description is wrong.");
 
 			task = tasks[2];
-			Assert.AreEqual("C:\\Projects\\dotnet\\test\\corsavyvbtest\\corsavyvbtest.build", task.FileName, "Task filename is incorrect.");
+			Assert.AreEqual("C:\\Projects\\dotnet\\test\\corsavyvbtest\\corsavyvbtest.build", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
-			Assert.AreEqual(47, task.Line, "Incorrect line number.");
-			Assert.AreEqual(5, task.Column, "Incorrect col number.");
+			Assert.AreEqual(48, task.Line, "Incorrect line number.");
+			Assert.AreEqual(6, task.Column, "Incorrect col number.");
 			Assert.AreEqual("External Program Failed: C:\\WINDOWS\\Microsoft.NET\\Framework\\v1.1.4322\\vbc.exe (return code was 1)",
 			                task.Description,
 			                "Task description is wrong.");

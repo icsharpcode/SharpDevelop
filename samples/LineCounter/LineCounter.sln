@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1394
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.5571
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineCounter", "LineCounter.csproj", "{880A7EAF-D0B4-46AC-A9B6-B6156512037A}"
 EndProject
 Global

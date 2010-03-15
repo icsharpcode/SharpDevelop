@@ -18,9 +18,9 @@ namespace ICSharpCode.NAnt.Tests
 			Assert.AreEqual(1, tasks.Count, "Should be one task.");
 			
 			Task task = tasks[0];
-			Assert.AreEqual(@"C:\Projects\foo\foo.build", task.FileName, "Task filename is incorrect.");
-			Assert.AreEqual(6, task.Line, "Task line is incorrect.");
-			Assert.AreEqual(4, task.Column, "Task column is incorrect.");
+			Assert.AreEqual(@"C:\Projects\foo\foo.build", task.FileName.ToString(), "Task filename is incorrect.");
+			Assert.AreEqual(7, task.Line, "Task line is incorrect.");
+			Assert.AreEqual(5, task.Column, "Task column is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be error task.");
 			string description = "Error loading buildfile.\r\n    The 'ifnot1' start tag on line '5' doesn't match the end tag of 'ifnot' in file 'file:///C:/Projects/foo/foo.build'. Line 7, position 5.";
 			

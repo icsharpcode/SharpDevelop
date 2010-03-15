@@ -18,19 +18,19 @@ namespace ICSharpCode.NAnt.Tests
 			Assert.AreEqual(2, tasks.Count, "Should be two tasks.");
 		
 			Task task = tasks[0];
-			Assert.AreEqual("C:\\Projects\\dotnet\\Test\\corsavytest\\corsavytest.build", task.FileName, "Task filename is incorrect.");
+			Assert.AreEqual("C:\\Projects\\dotnet\\Test\\corsavytest\\corsavytest.build", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Warning, task.TaskType, "Should be a warning task.");
-			Assert.AreEqual(4, task.Line, "Incorrect line number.");
-			Assert.AreEqual(3, task.Column, "Incorrect col number.");
+			Assert.AreEqual(5, task.Line, "Incorrect line number.");
+			Assert.AreEqual(4, task.Column, "Incorrect col number.");
 			Assert.AreEqual("Attribute 'propertyexists' for <ifnot ... /> is deprecated.  Use <if test=\"${property::exists('propertyname')}\"> instead.",
 			                task.Description,
 			                "Task description is wrong.");
 			
 			task = tasks[1];
-			Assert.AreEqual("C:\\Projects\\dotnet\\Test\\corsavytest\\corsavytest.build", task.FileName, "Task filename is incorrect.");
+			Assert.AreEqual("C:\\Projects\\dotnet\\Test\\corsavytest\\corsavytest.build", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
-			Assert.AreEqual(47, task.Line, "Incorrect line number.");
-			Assert.AreEqual(5, task.Column, "Incorrect col number.");
+			Assert.AreEqual(48, task.Line, "Incorrect line number.");
+			Assert.AreEqual(6, task.Column, "Incorrect col number.");
 			Assert.AreEqual("An empty string is not a valid value for attribute 'win32icon' of <csc ... />.",
 			                task.Description,
 			                "Task description is wrong.");

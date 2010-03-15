@@ -42,20 +42,20 @@ namespace ICSharpCode.NAnt.Tests
 			NAntBuildTarget target = buildFile.Targets[0];
 			Assert.AreEqual("clean", target.Name, "Target name should be 'clean'.");
 			Assert.IsFalse(target.IsDefault, "Clean target should not have default target flag set.");
-			Assert.AreEqual(4, target.Line, "Clean target line number is incorrect.");
-			Assert.AreEqual(5, target.Column, "Clean target column number is incorrect.");
+			Assert.AreEqual(5, target.Line, "Clean target line number is incorrect.");
+			Assert.AreEqual(6, target.Column, "Clean target column number is incorrect.");
 
 			target = buildFile.Targets[1];
 			Assert.IsFalse(target.IsDefault, "Build target should not have default target flag set.");
 			Assert.AreEqual("build", target.Name, "Target name should be 'build'.");
-			Assert.AreEqual(13, target.Line, "Build target line number is incorrect.");
-			Assert.AreEqual(5, target.Column, "Build target column number is incorrect.");
+			Assert.AreEqual(14, target.Line, "Build target line number is incorrect.");
+			Assert.AreEqual(6, target.Column, "Build target column number is incorrect.");
 			
 			target = buildFile.Targets[2];
 			Assert.AreEqual("test", target.Name, "Target name should be 'test'.");
 			Assert.IsTrue(target.IsDefault, "Test target should have default target flag set.");
-			Assert.AreEqual(31, target.Line, "Test target line number is incorrect.");
-			Assert.AreEqual(5, target.Column, "Test target column number is incorrect.");
+			Assert.AreEqual(32, target.Line, "Test target line number is incorrect.");
+			Assert.AreEqual(6, target.Column, "Test target column number is incorrect.");
 		}
 		
 		/// <summary>

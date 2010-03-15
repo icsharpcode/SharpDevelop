@@ -21,7 +21,7 @@ namespace ICSharpCode.NAnt.Tests
 		
 			Task task = tasks[0];
 		
-			Assert.AreEqual(String.Empty, task.FileName, "Task filename should be blank.");
+			Assert.IsNull(task.FileName, "Task filename should be blank.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
 			Assert.AreEqual(0, task.Line, "Should be line number 0.");
 			Assert.AreEqual(0, task.Column, "Should be col number 0");
@@ -30,10 +30,10 @@ namespace ICSharpCode.NAnt.Tests
 			                "Task description is wrong.");
 
 			task = tasks[1];
-			Assert.AreEqual("C:\\Projects\\dotnet\\Test\\corsavytest\\corsavytest.build", task.FileName, "Task filename is incorrect.");
+			Assert.AreEqual("C:\\Projects\\dotnet\\Test\\corsavytest\\corsavytest.build", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
-			Assert.AreEqual(47, task.Line, "Incorrect line number.");
-			Assert.AreEqual(5, task.Column, "Incorrect col number.");
+			Assert.AreEqual(48, task.Line, "Incorrect line number.");
+			Assert.AreEqual(6, task.Column, "Incorrect col number.");
 			Assert.AreEqual("External Program Failed: C:\\WINDOWS\\Microsoft.NET\\Framework\\v1.1.4322\\csc.exe (return code was 1)",
 			                task.Description,
 			                "Task description is wrong.");
@@ -48,7 +48,7 @@ namespace ICSharpCode.NAnt.Tests
 		
 			Task task = tasks[0];
 		
-			Assert.AreEqual(String.Empty, task.FileName, "Task filename should be blank.");
+			Assert.IsNull(task.FileName, "Task filename should be blank.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
 			Assert.AreEqual(0, task.Line, "Should be line number 0.");
 			Assert.AreEqual(0, task.Column, "Should be col number 0");
@@ -57,7 +57,7 @@ namespace ICSharpCode.NAnt.Tests
 			                "Task description is wrong.");
 
 			task = tasks[1];
-			Assert.AreEqual(String.Empty, task.FileName, "Task filename should be blank.");
+			Assert.IsNull(task.FileName, "Task filename should be blank.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
 			Assert.AreEqual(0, task.Line, "Should be line number 0.");
 			Assert.AreEqual(0, task.Column, "Should be col number 0");
@@ -66,10 +66,10 @@ namespace ICSharpCode.NAnt.Tests
 			                "Task description is wrong.");
 
 			task = tasks[2];
-			Assert.AreEqual("C:\\Projects\\dotnet\\test\\corsavyvbtest\\corsavyvbtest.build", task.FileName, "Task filename is incorrect.");
+			Assert.AreEqual("C:\\Projects\\dotnet\\test\\corsavyvbtest\\corsavyvbtest.build", task.FileName.ToString(), "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
-			Assert.AreEqual(47, task.Line, "Incorrect line number.");
-			Assert.AreEqual(5, task.Column, "Incorrect col number.");
+			Assert.AreEqual(48, task.Line, "Incorrect line number.");
+			Assert.AreEqual(6, task.Column, "Incorrect col number.");
 			Assert.AreEqual("External Program Failed: C:\\WINDOWS\\Microsoft.NET\\Framework\\v1.1.4322\\vbc.exe (return code was 1)",
 			                task.Description,
 			                "Task description is wrong.");

@@ -46,7 +46,7 @@ namespace Mono.AddIn
 				return;
 			}
 			using (SelectMonoReferenceDialog selDialog = new SelectMonoReferenceDialog(project)) {
-				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {				
+				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {				
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
 						ProjectService.AddProjectItem(project, reference);
 					}

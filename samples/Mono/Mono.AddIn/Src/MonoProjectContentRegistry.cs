@@ -38,7 +38,7 @@ namespace Mono.AddIn
 		protected override IProjectContent LoadProjectContent(string itemInclude, string itemFileName)
 		{
 			if (File.Exists(itemFileName)) {
-				return ParserService.DefaultProjectContentRegistry.GetProjectContentForReference(itemInclude, itemFileName);
+				return AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference(itemInclude, itemFileName);
 			}
 			MonoAssemblyName assemblyName = MonoGlobalAssemblyCache.FindAssemblyName(itemInclude);
 			if (assemblyName != null && assemblyName.FileName != null) {
