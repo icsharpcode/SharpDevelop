@@ -48,7 +48,7 @@ namespace ImageViewer
 			file.ForceInitializeView(this);
 		}
 		
-		public override Control Control {
+		public override object Control {
 			get {
 				return box;
 			}

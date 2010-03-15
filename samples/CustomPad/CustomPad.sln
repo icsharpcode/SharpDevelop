@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.1116
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.5571
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPad", "CustomPad.csproj", "{7B1152A2-9072-419A-B256-5772D114C5A9}"
 EndProject
 Global

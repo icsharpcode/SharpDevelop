@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddInManager.ActionCancelUpdate" xml:space="preserve">
+    <value>Update abbrechen</value>
+  </data>
+  <data name="AddInManager.ActionInstall" xml:space="preserve">
+    <value>Installieren</value>
+  </data>
+  <data name="AddInManager.ActionUninstall" xml:space="preserve">
+    <value>Deinstallieren</value>
+  </data>
+  <data name="AddInManager.DescriptionCancelUpdate" xml:space="preserve">
+    <value>Bricht die Aktualisierung der gewählten AddIn(s) ab.</value>
+  </data>
+  <data name="AddInManager.AddInInstalled" xml:space="preserve">
+    <value>AddIn wird nach Neustart von SharpDevelop installiert</value>
+  </data>
+  <data name="AddInManager.OpenWebsite" xml:space="preserve">
+    <value>Webseite öffnen</value>
+  </data>
+  <data name="AddInManager.AddInDisabled" xml:space="preserve">
+    <value>Deaktiviert</value>
+  </data>
+  <data name="AddInManager.FileAssociation" xml:space="preserve">
+    <value>AddIn Installationspaket</value>
+  </data>
+  <data name="AddInManager.NoAddInsInstalled" xml:space="preserve">
+    <value>Sie haben keine AddIns installiert.
+Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installieren" und wählen Sie die heruntergeladene Datei, um sie zu installieren.</value>
+  </data>
+  <data name="AddInManager.AddInWillBeDisabled" xml:space="preserve">
+    <value>AddIn wird nach Neustart von SharpDevelop deaktiviert</value>
+  </data>
+  <data name="AddInManager.DescriptionCancelInstall" xml:space="preserve">
+    <value>Bricht die Installation der gewählten AddIn(s) ab.</value>
+  </data>
+  <data name="AddInManager.FileFilter" xml:space="preserve">
+    <value>SharpDevelop AddIns|*.addin;*.sdaddin|Alle Dateien|*.*</value>
+  </data>
+  <data name="AddInManager.ActionCancelInstallation" xml:space="preserve">
+    <value>Installation abbrechen</value>
+  </data>
+  <data name="AddInManager.DescriptionCancelDeinstallation" xml:space="preserve">
+    <value>Bricht die Deinstallation der gewählten AddIn(s) ab.</value>
+  </data>
+  <data name="AddInManager.AddInRemoved" xml:space="preserve">
+    <value>AddIn wird nach Neustart von SharpDevelop entfernt</value>
+  </data>
+  <data name="AddInManager.ActionEnable" xml:space="preserve">
+    <value>Aktivieren</value>
+  </data>
+  <data name="AddInManager.AddInDependencyFailed" xml:space="preserve">
+    <value>Eine Abhängigkeit dieses AddIns wurde nicht gefunden. Installieren Sie sie, um dieses AddIn zu aktivieren.</value>
+  </data>
+  <data name="AddInManager.ActionCancelDeinstallation" xml:space="preserve">
+    <value>Deinstallation abbrechen</value>
+  </data>
+  <data name="AddInManager.AddInEnabled" xml:space="preserve">
+    <value>AddIn wird nach Neustart von SharpDevelop aktiviert</value>
+  </data>
+  <data name="AddInManager.ActionUpdate" xml:space="preserve">
+    <value>Update installieren</value>
+  </data>
+  <data name="AddInManager.RequiredDependencies" xml:space="preserve">
+    <value>Benötigte Abhängigkeiten:</value>
+  </data>
+  <data name="AddInManager.RequiredBy" xml:space="preserve">
+    <value>AddIns werden benötigt von:</value>
+  </data>
+  <data name="AddInManager.DescriptionInconsistentSelection" xml:space="preserve">
+    <value>Die Selektion ist ungültig, bitte wähle nur AddIns mit dem gleichen Status.</value>
+  </data>
+  <data name="AddInManager.ShowPreinstalledAddIns" xml:space="preserve">
+    <value>Zeigt vorinstallierte AddIns</value>
+  </data>
+  <data name="AddInManager.DescriptionEnable" xml:space="preserve">
+    <value>Aktiviert die gewählten AddIn(s).</value>
+  </data>
+  <data name="AddInManager.DescriptionDisable" xml:space="preserve">
+    <value>Deaktiviert die gewählten AddIn(s).</value>
+  </data>
+  <data name="AddInManager.InstallButton" xml:space="preserve">
+    <value>AddIn &amp;installieren</value>
+  </data>
+  <data name="AddInManager.AddInInstalledTwice" xml:space="preserve">
+    <value>Dieses AddIn ist doppelt installiert. Bitte entfernen Sie eine Kopie.</value>
+  </data>
+  <data name="AddInManager.ActionDisable" xml:space="preserve">
+    <value>Deaktivieren</value>
+  </data>
+  <data name="AddInManager.About" xml:space="preserve">
+    <value>Über...</value>
+  </data>
+  <data name="AddInManager.AddInUpdated" xml:space="preserve">
+    <value>AddIn wird nach Neustart von SharpDevelop aktualisiert</value>
+  </data>
+  <data name="AddInManager.Options" xml:space="preserve">
+    <value>Optionen</value>
+  </data>
+</root>

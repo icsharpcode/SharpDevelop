@@ -85,7 +85,7 @@ namespace Startup
 					// Save changed properties
 					PropertyService.Save();
 				} catch (Exception ex) {
-					MessageService.ShowError(ex, "Error storing properties");
+					MessageService.ShowException(ex, "Error storing properties");
 				}
 			}
 			

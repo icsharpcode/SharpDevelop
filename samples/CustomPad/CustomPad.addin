@@ -13,6 +13,7 @@
 		     category = "Main"
 		     icon     = "PadIcons.Output"
 		     title    = "Custom Pad"
-		     class    = "CustomPad.MyCustomPad"/>
+		     class    = "CustomPad.MyCustomPad"
+		     defaultPosition = "Left" />
 	</Path>
 </AddIn>

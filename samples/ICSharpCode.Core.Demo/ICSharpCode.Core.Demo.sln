@@ -1,18 +1,18 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-# SharpDevelop 3.0.0.3507
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base", "Base\Base.csproj", "{C9A2B6BC-5260-4DE3-8082-DCE8B391F7BB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Startup", "Startup\Startup.csproj", "{0AF8FEF6-32B9-46BD-A270-AB3B20EB39A3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddInManager", "AddInManager\AddInManager.csproj", "{8B4FE9EF-5899-4E84-88DE-C37D021A0658}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.5571
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{491D60D3-3F16-4887-8ED2-541535E4AACD}"
 	ProjectSection(SolutionItems) = postProject
 		doc\copyright.txt = doc\copyright.txt
 		doc\license.txt = doc\license.txt
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base", "Base\Base.csproj", "{C9A2B6BC-5260-4DE3-8082-DCE8B391F7BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Startup", "Startup\Startup.csproj", "{0AF8FEF6-32B9-46BD-A270-AB3B20EB39A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddInManager", "AddInManager\AddInManager.csproj", "{8B4FE9EF-5899-4E84-88DE-C37D021A0658}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichTextEditor", "RichTextEditor\RichTextEditor.csproj", "{C663289E-DD00-463F-8988-9913DDDAEEE1}"
 EndProject

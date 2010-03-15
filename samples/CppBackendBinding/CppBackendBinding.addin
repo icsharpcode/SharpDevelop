@@ -39,10 +39,10 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id                   = "C++"
-		                 guid                 = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
-		                 supportedextensions  = ".cpp;.c"
-		                 projectfileextension = ".vcproj"
-		                 class                = "CppBackendBinding.CppLanguageBinding" />
+		<ProjectBinding id                   = "C++"
+		                guid                 = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
+		                supportedextensions  = ".cpp;.c"
+		                projectfileextension = ".vcproj"
+		                class                = "CppBackendBinding.CppProjectBinding" />
 	</Path>
 </AddIn>

@@ -30,9 +30,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
-
 using Dom = ICSharpCode.SharpDevelop.Dom;
 using NRefactoryResolver = ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver;
 
@@ -98,7 +98,7 @@ namespace CSharpEditor
 			                                        textArea.MotherTextEditorControl.Text);
 			List<ICompletionData> resultList = new List<ICompletionData>();
 			if (rr != null) {
-				ArrayList completionData = rr.GetCompletionData(mainForm.myProjectContent);
+				var completionData = rr.GetCompletionData(mainForm.myProjectContent);
 				if (completionData != null) {
 					AddCompletionData(resultList, completionData);
 				}
@@ -126,7 +126,7 @@ namespace CSharpEditor
 			return expression;
 		}
 		
-		void AddCompletionData(List<ICompletionData> resultList, ArrayList completionData)
+		void AddCompletionData(List<ICompletionData> resultList, IEnumerable<Dom.ICompletionEntry> completionData)
 		{
 			// used to store the method names for grouping overloads
 			Dictionary<string, CodeCompletionData> nameDictionary = new Dictionary<string, CodeCompletionData>();

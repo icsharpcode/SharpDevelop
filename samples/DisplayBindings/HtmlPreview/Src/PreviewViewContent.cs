@@ -48,7 +48,7 @@ namespace HtmlPreview
 		WebBrowser browser = new WebBrowser();
 		
 		#region ICSharpCode.SharpDevelop.Gui.AbstractSecondaryViewContent interface implementation
-		public override Control Control {
+		public override object Control {
 			get {
 				return browser;
 			}

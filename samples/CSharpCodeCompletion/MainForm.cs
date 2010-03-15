@@ -49,7 +49,7 @@ namespace CSharpEditor
 		
 		internal Dom.ProjectContentRegistry pcRegistry;
 		internal Dom.DefaultProjectContent myProjectContent;
-		internal Dom.ParseInformation parseInformation = new Dom.ParseInformation();
+		internal Dom.ParseInformation parseInformation;
 		Dom.ICompilationUnit lastCompilationUnit;
 		Thread parserThread;
 		
@@ -113,6 +113,9 @@ class A
 			
 			myProjectContent = new Dom.DefaultProjectContent();
 			myProjectContent.Language = CurrentLanguageProperties;
+			// create dummy parseInformation to prevent NullReferenceException when using CC before parsing
+			// for the first time
+			parseInformation = new Dom.ParseInformation(new Dom.DefaultCompilationUnit(myProjectContent));
 		}
 		
 		protected override void OnLoad(EventArgs e)
@@ -186,7 +189,7 @@ class A
 			// Remove information from lastCompilationUnit and add information from newCompilationUnit.
 			myProjectContent.UpdateCompilationUnit(lastCompilationUnit, newCompilationUnit, DummyFileName);
 			lastCompilationUnit = newCompilationUnit;
-			parseInformation.SetCompilationUnit(newCompilationUnit);
+			parseInformation = new Dom.ParseInformation(newCompilationUnit);
 		}
 		
 		Dom.ICompilationUnit ConvertCompilationUnit(NRefactory.Ast.CompilationUnit cu)

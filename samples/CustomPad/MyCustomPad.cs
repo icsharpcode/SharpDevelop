@@ -44,8 +44,9 @@ namespace CustomPad
 			testLabel.Location = new Point(8, 8);
 			panel.Controls.Add(testLabel);
 		}
-				
-		public override Control Control {
+		
+		// return type is object: both WPF and Windows Forms controls are supported
+		public override object Control {
 			get {
 				return panel;
 			}

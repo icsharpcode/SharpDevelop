@@ -46,22 +46,15 @@ namespace CustomView
 			panel.Controls.Add(testLabel);
 			
 			TitleName = "My Custom View";
-		}	
+		}
 		
 		/// <summary>
 		/// The control that will be displayed in SharpDevelop.
+		/// Both WPF and WinForms control can be used.
 		/// </summary>
-		public override Control Control {
+		public override object Control {
 			get {
 				return panel;
-			}
-		}
-		
-		// must be overriden, but *may* be useless for
-		// 'custom'  views
-		public override bool IsReadOnly {
-			get {
-				return false;
 			}
 		}
 		
@@ -73,15 +66,6 @@ namespace CustomView
 		{
 		}
 		
-		// the redraw should get new add-in tree information
-		// and update the view, the language or layout manager
-		// may have changed.
-		public override void RedrawContent()
-		{
-		}
-		
-		// The Dispose must be overriden, there is no default implementation
-		// (because in this case I wouldn't override dipose, I would forget it ...)
 		public override void Dispose()
 		{
 			testLabel.Dispose();

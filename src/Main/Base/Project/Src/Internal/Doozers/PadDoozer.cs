@@ -36,6 +36,9 @@ namespace ICSharpCode.SharpDevelop
 	/// <attribute name="shortcut" use="optional">
 	/// Shortcut that activates the 'Show pad' command (e.g. "Control|Alt|T").
 	/// </attribute>
+	/// <attribute name="defaultPosition" use="optional">
+	/// Default position of the pad, as a ICSharpCode.SharpDevelop.DefaultPadPositions enum value (e.g. "Bottom, Hidden").
+	/// </attribute>
 	/// <usage>Only in /Workspace/Parser</usage>
 	/// <returns>
 	/// An PadDescriptor object that wraps the IPadContent object.

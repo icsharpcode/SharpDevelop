@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{F279DD27-21A9-4D69-AAE3-00DB403257CB}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -6,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>CppBackendBinding</RootNamespace>
     <AssemblyName>CppBackendBinding</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <OutputPath>..\..\AddIns\Samples\CppBinding\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -61,7 +62,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="CppLanguageBinding.cs" />
+    <Compile Include="CppProjectBinding.cs" />
     <Compile Include="CppProject.cs" />
     <Compile Include="FileGroup.cs" />
     <Compile Include="FileItem.cs" />

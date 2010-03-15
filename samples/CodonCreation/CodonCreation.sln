@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.1084
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.5571
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodonCreation", "CodonCreation.csproj", "{F60D18F4-D293-43FE-8FE2-A2CE565B3AB5}"
 EndProject
 Global

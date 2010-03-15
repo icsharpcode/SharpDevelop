@@ -42,6 +42,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region Cache management
 		public string SaveProjectContent(ReflectionProjectContent pc)
 		{
+			// create cache directory, if necessary
+			Directory.CreateDirectory(cacheDirectory);
+			
 			string assemblyFullName = pc.AssemblyFullName;
 			int pos = assemblyFullName.IndexOf(',');
 			string fileName = Path.Combine(cacheDirectory,

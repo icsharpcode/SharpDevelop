@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,8 +14,11 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Win32;
 
 namespace CppBackendBinding
 {
@@ -32,13 +34,13 @@ namespace CppBackendBinding
 		/// <summary>
 		/// Create a new C++ project that loads the specified .vcproj file.
 		/// </summary>
-		public CppProject(string fileName, string projectName)
+		public CppProject(ProjectLoadInformation info)
 		{
-			this.Name = projectName;
-			this.FileName = fileName;
+			this.Name = info.ProjectName;
+			this.FileName = info.FileName;
 			this.TypeGuid = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}";
 			
-			using (StreamReader r = new StreamReader(fileName, Encoding.Default)) {
+			using (StreamReader r = new StreamReader(info.FileName, Encoding.Default)) {
 				try {
 					document.Load(r);
 				} catch (Exception ex) {
@@ -64,7 +66,7 @@ namespace CppBackendBinding
 		}
 		
 		public override string Language {
-			get { return CppLanguageBinding.LanguageName; }
+			get { return CppProjectBinding.LanguageName; }
 		}
 		
 		public override void Save(string fileName)
@@ -211,7 +213,7 @@ namespace CppBackendBinding
 			return null;
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			string productDir = GetPathFromRegistry(@"SOFTWARE\Microsoft\VisualStudio\9.0\Setup\VC", "ProductDir");
 			

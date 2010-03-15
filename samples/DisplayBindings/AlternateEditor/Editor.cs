@@ -25,19 +25,22 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.IO;
 using System.Windows.Forms;
 
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
+
 namespace AlternateEditor
 {
-	public class Editor : AbstractViewContent
+	// TODO: implement ITextEditorProvider interface to enable advanced editor features
+	public class Editor : AbstractViewContent // , ITextEditorProvider
 	{
 		RichTextBox rtb = new RichTextBox();
 		
-		public override Control Control {
+		public override object Control {
 			get {
 				return rtb;
 			}
@@ -59,16 +62,11 @@ namespace AlternateEditor
 			rtb.TextChanged += TextChanged;			
 		}
 		
-		public override void RedrawContent()
-		{
-			rtb.Refresh();
-		}
-		
 		public override void Dispose()
 		{
 			rtb.Dispose();
 		}
-
+		
 		public override void Save(OpenedFile file, Stream stream)
 		{
 			rtb.SaveFile(stream, RichTextBoxStreamType.PlainText);
@@ -87,5 +85,21 @@ namespace AlternateEditor
 				PrimaryFile.MakeDirty();
 			}
 		}
+		
+		/*
+		public ITextEditor TextEditor { 
+			get {
+				return new TextEditorAdapter(rtb);
+			}
+		}
+		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			if (file == this.PrimaryFile)
+				return this.TextEditor.Document;
+			else
+				return null;
+		}
+		*/
 	}
 }

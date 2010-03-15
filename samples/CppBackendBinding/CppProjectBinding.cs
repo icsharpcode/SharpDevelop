@@ -6,14 +6,15 @@
 // </file>
 
 using System;
+using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using System.IO;
 
 namespace CppBackendBinding
 {
-	public class CppLanguageBinding : ILanguageBinding
+	public class CppProjectBinding : IProjectBinding
 	{
 		public const string LanguageName = "C++";
 		
@@ -23,9 +24,9 @@ namespace CppBackendBinding
 			}
 		}
 		
-		public IProject LoadProject(IMSBuildEngineProvider provider, string fileName, string projectName)
+		public IProject LoadProject(ProjectLoadInformation info)
 		{
-			return new CppProject(fileName, projectName);
+			return new CppProject(info);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)
