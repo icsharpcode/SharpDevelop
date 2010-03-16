@@ -23,7 +23,6 @@ namespace ICSharpCode.Svn
 		string fileName;
 		
 		InfoPanel infoPanel;
-		DiffPanel diffPanel = null;
 		
 		public HistoryViewPanel(string fileName)
 		{
@@ -115,9 +114,9 @@ namespace ICSharpCode.Svn
 			if (infoPanel != null) {
 				WorkbenchSingleton.SafeThreadAsyncCall(infoPanel.AddLogMessage, logMessage);
 			}
-			if (diffPanel != null) {
-				WorkbenchSingleton.SafeThreadAsyncCall(diffPanel.AddLogMessage, logMessage);
-			}
+//			if (diffPanel != null) {
+//				WorkbenchSingleton.SafeThreadAsyncCall(diffPanel.AddLogMessage, logMessage);
+//			}
 		}
 	}
 }
