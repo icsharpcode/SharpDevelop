@@ -416,7 +416,6 @@
     <Compile Include="Src\Gui\XmlForms\BaseSharpDevelopForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\ContentInterfaces\IParseInformationListener.cs" />
     <Compile Include="Src\Commands\CustomStringTagProvider.cs" />
     <Compile Include="Src\Commands\VBConverter\CSharpConvertBuffer.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveViewContentUntitledEvaluator.cs" />

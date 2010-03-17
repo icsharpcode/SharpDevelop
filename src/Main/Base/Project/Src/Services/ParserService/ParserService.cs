@@ -425,12 +425,15 @@ namespace ICSharpCode.SharpDevelop
 						}
 					}
 					
+					ParseInformation newParseInfo = new ParseInformation(resultUnit);
+					
 					for (int i = 0; i < newUnits.Length; i++) {
 						IProjectContent pc = projectContents[i];
 						// update the compilation unit
 						ICompilationUnit oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
 						pc.UpdateCompilationUnit(oldUnit, newUnits[i], fileName);
-						RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, pc, oldUnit, newUnits[i]));
+						ParseInformation newUnitParseInfo = (newUnits[i] == resultUnit) ? newParseInfo : new ParseInformation(newUnits[i]);
+						RaiseParseInformationUpdated(new ParseInformationEventArgs(fileName, pc, oldUnit, newUnitParseInfo));
 					}
 					
 					// remove all old units that don't exist anymore
@@ -443,7 +446,6 @@ namespace ICSharpCode.SharpDevelop
 					
 					this.bufferVersion = fileContentVersion;
 					this.oldUnits = newUnits;
-					ParseInformation newParseInfo = new ParseInformation(resultUnit);
 					this.parseInfo = newParseInfo;
 					TaskService.UpdateCommentTags(fileName, resultUnit.TagComments);
 					return newParseInfo;
@@ -758,15 +760,6 @@ namespace ICSharpCode.SharpDevelop
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					ParseInformationUpdated(null, e);
-					
-					IViewContent currentView = WorkbenchSingleton.Workbench.ActiveViewContent;
-					IParseInformationListener listener = currentView as IParseInformationListener;
-					if (listener != null && FileUtility.IsEqualFileName(e.FileName, currentView.PrimaryFileName)) {
-						if (e.NewCompilationUnit != null)
-							listener.ParseInformationUpdated(new ParseInformation(e.NewCompilationUnit));
-						else
-							listener.ParseInformationUpdated(null);
-					}
 				});
 		}
 		

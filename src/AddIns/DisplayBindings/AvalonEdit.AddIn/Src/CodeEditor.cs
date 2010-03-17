@@ -137,6 +137,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			CodeEditorOptions.Instance.PropertyChanged += CodeEditorOptions_Instance_PropertyChanged;
 			CustomizedHighlightingColor.ActiveColorsChanged += CustomizedHighlightingColor_ActiveColorsChanged;
+			ParserService.ParseInformationUpdated += ParserServiceParseInformationUpdated;
 			
 			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
 			
@@ -492,12 +493,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			ParseInformation parseInfo = ParserService.GetExistingParseInformation(this.FileName);
 			if (parseInfo == null) {
-				// if parse info is not yet available, start parsing
-				var future = ParserService.BeginParse(this.FileName, primaryTextEditorAdapter.Document);
-				if (future.Wait(50))
-					parseInfo = future.Result;
+				// if parse info is not yet available, start parsing on background
+				ParserService.BeginParse(this.FileName, primaryTextEditorAdapter.Document);
+				// we'll receive the result using the ParseInformationUpdated event
 			}
 			ParseInformationUpdated(parseInfo);
+		}
+		
+		ParseInformation updateParseInfoTo;
+		
+		void ParserServiceParseInformationUpdated(object sender, ParseInformationEventArgs e)
+		{
+			if (e.FileName != this.FileName)
+				return;
+			this.VerifyAccess();
+			// When parse information is updated quickly in succession, only do a single update
+			// to the latest version.
+			updateParseInfoTo = e.NewParseInformation;
+			this.Dispatcher.BeginInvoke(
+				DispatcherPriority.Background,
+				new Action(
+					delegate {
+						if (updateParseInfoTo != null) {
+							ParseInformationUpdated(updateParseInfoTo);
+							updateParseInfoTo = null;
+						}
+					}));
 		}
 		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
@@ -531,6 +552,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			CodeEditorOptions.Instance.PropertyChanged -= CodeEditorOptions_Instance_PropertyChanged;
 			CustomizedHighlightingColor.ActiveColorsChanged -= CustomizedHighlightingColor_ActiveColorsChanged;
+			ParserService.ParseInformationUpdated -= ParserServiceParseInformationUpdated;
 			
 			primaryTextEditorAdapter.Language.Detach();
 			if (secondaryTextEditorAdapter != null)

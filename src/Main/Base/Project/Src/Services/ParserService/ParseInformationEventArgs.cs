@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop
 		FileName fileName;
 		IProjectContent projectContent;
 		ICompilationUnit oldCompilationUnit;
-		ICompilationUnit newCompilationUnit;
+		ParseInformation newParseInformation;
 		
 		public FileName FileName {
 			get { return fileName; }
@@ -34,13 +34,20 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// The new parse information.
+		/// </summary>
+		public ParseInformation NewParseInformation {
+			get { return newParseInformation; }
+		}
+		
+		/// <summary>
 		/// The new compilation unit.
 		/// </summary>
 		public ICompilationUnit NewCompilationUnit {
-			get { return newCompilationUnit; }
+			get { return newParseInformation.CompilationUnit; }
 		}
 		
-		public ParseInformationEventArgs(FileName fileName, IProjectContent projectContent, ICompilationUnit oldCompilationUnit, ICompilationUnit newCompilationUnit)
+		public ParseInformationEventArgs(FileName fileName, IProjectContent projectContent, ICompilationUnit oldCompilationUnit, ParseInformation newParseInformation)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -49,7 +56,7 @@ namespace ICSharpCode.SharpDevelop
 			this.fileName = fileName;
 			this.projectContent = projectContent;
 			this.oldCompilationUnit = oldCompilationUnit;
-			this.newCompilationUnit = newCompilationUnit;
+			this.newParseInformation = newParseInformation;
 		}
 	}
 	

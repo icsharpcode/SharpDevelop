@@ -27,7 +27,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	}
 	
 	public class AvalonEditViewContent
-		: AbstractViewContent, IEditable, IMementoCapable, ICodeEditorProvider, IPositionable, IParseInformationListener, IToolsHost
+		: AbstractViewContent, IEditable, IMementoCapable, ICodeEditorProvider, IPositionable, IToolsHost
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		
@@ -258,27 +258,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void JumpTo(int line, int column)
 		{
 			codeEditor.ActiveTextEditor.JumpTo(line, column);
-		}
-		#endregion
-		
-		#region IParseInformationListener
-		ParseInformation updateParseInfoTo;
-		
-		public void ParseInformationUpdated(ParseInformation parseInfo)
-		{
-			WorkbenchSingleton.AssertMainThread();
-			// When parse information is updated quickly in succession, only do a single update
-			// to the latest version.
-			updateParseInfoTo = parseInfo;
-			codeEditor.Dispatcher.BeginInvoke(
-				DispatcherPriority.Background,
-				new Action(
-					delegate {
-						if (updateParseInfoTo != null) {
-							codeEditor.ParseInformationUpdated(updateParseInfoTo);
-							updateParseInfoTo = null;
-						}
-					}));
 		}
 		#endregion
 		
