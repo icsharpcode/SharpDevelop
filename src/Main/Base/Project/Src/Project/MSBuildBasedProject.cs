@@ -20,6 +20,7 @@ using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
+using Microsoft.Build.Exceptions;
 using MSBuild = Microsoft.Build.Evaluation;
 using StringPair = System.Tuple<string, string>;
 
@@ -1142,6 +1143,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			isLoading = true;
 			try {
 				LoadProjectInternal(loadInformation);
+			} catch (InvalidProjectFileException ex) {
+				LoggingService.Warn(ex);
+				LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
+				throw new ProjectLoadException(ex.Message, ex);
 			} finally {
 				isLoading = false;
 			}
@@ -1153,46 +1158,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.FileName = loadInformation.FileName;
 			this.ActivePlatform = loadInformation.Platform;
 			
-			//try {
 			projectFile = ProjectRootElement.Open(loadInformation.FileName, projectCollection);
-			/*} catch (MSBuild.InvalidProjectFileException ex) {
-				LoggingService.Warn(ex);
-				LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
-				bool isVS2003ProjectWithInvalidEncoding = false;
-				if (ex.ErrorCode == "MSB4025") {
-					// Invalid XML.
-					// This MIGHT be a VS2003 project in default encoding, so we have to use this
-					// ugly trick to detect old-style projects
-					using (StreamReader r = File.OpenText(fileName)) {
-						if (r.ReadLine() == "<VisualStudioProject>") {
-							isVS2003ProjectWithInvalidEncoding = true;
-						}
-					}
-				}
-				if (ex.ErrorCode == "MSB4075" || isVS2003ProjectWithInvalidEncoding) {
-					// MSB4075 is:
-					// "The project file must be opened in VS IDE and converted to latest version
-					// before it can be build by MSBuild."
-					try {
-						Converter.PrjxToSolutionProject.ConvertVSNetProject(fileName);
-						projectFile.Load(fileName);
-					} catch (System.Xml.XmlException ex2) {
-						throw new ProjectLoadException(ex2.Message, ex2);
-					} catch (MSBuild.InvalidProjectFileException ex2) {
-						throw new ProjectLoadException(ex2.Message, ex2);
-					}
-				} else {
-					throw new ProjectLoadException(ex.Message, ex);
-				}
-			}*/
 			
 			string userFileName = loadInformation.FileName + ".user";
 			if (File.Exists(userFileName)) {
-				//try {
+				try {
 				userProjectFile = ProjectRootElement.Open(userFileName, projectCollection);
-				/*} catch (MSBuild.InvalidProjectFileException ex) {
-					throw new ProjectLoadException("Error loading user part " + userFileName + ":\n" + ex.Message);
-				}*/
+				} catch (InvalidProjectFileException ex) {
+					throw new ProjectLoadException("Error loading user part " + userFileName + ":\n" + ex.Message, ex);
+				}
 			} else {
 				userProjectFile = ProjectRootElement.Create(userFileName, projectCollection);
 			}
