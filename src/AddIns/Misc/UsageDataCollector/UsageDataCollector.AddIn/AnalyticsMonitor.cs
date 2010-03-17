@@ -6,14 +6,16 @@
 // </file>
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.UsageDataCollector.Contracts;
 
 namespace ICSharpCode.UsageDataCollector
 {
@@ -78,29 +80,12 @@ namespace ICSharpCode.UsageDataCollector
 		/// </summary>
 		public void OpenSession()
 		{
+			IEnumerable<UsageDataEnvironmentProperty> appEnvironmentProperties = GetAppProperties();
 			bool sessionOpened = false;
 			lock (lockObj) {
 				if (session == null) {
 					try {
 						session = new UsageDataSessionWriter(dbFileName);
-						session.OnException = MessageService.ShowException;
-						session.AddEnvironmentData("appVersion", RevisionClass.FullVersion);
-						session.AddEnvironmentData("language", ResourceService.Language);
-						session.AddEnvironmentData("culture", CultureInfo.CurrentCulture.Name);
-						string PROCESSOR_ARCHITECTURE = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
-						if (string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {
-							PROCESSOR_ARCHITECTURE = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
-						}
-						if (!string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {
-							session.AddEnvironmentData("architecture", PROCESSOR_ARCHITECTURE);
-						}
-						session.AddEnvironmentData("userAddInCount", AddInTree.AddIns.Where(a => !a.IsPreinstalled).Count().ToString());
-						
-						#if DEBUG
-						session.AddEnvironmentData("debug", "true");
-						#endif
-						
-						sessionOpened = true;
 					} catch (IncompatibleDatabaseException ex) {
 						if (ex.ActualVersion < ex.ExpectedVersion) {
 							LoggingService.Info("AnalyticsMonitor: " + ex.Message + ", removing old database");
@@ -115,12 +100,41 @@ namespace ICSharpCode.UsageDataCollector
 							LoggingService.Warn("AnalyticsMonitor: " + ex.Message);
 						}
 					}
+					
+					if (session != null) {
+						session.OnException = MessageService.ShowException;
+						session.AddEnvironmentData(appEnvironmentProperties);
+						
+						sessionOpened = true;
+					}
 				}
 			}
 			if (sessionOpened) {
 				UsageDataUploader uploader = new UsageDataUploader(dbFileName);
+				uploader.EnvironmentDataForDummySession = appEnvironmentProperties;
 				ThreadPool.QueueUserWorkItem(delegate { uploader.StartUpload(UploadUrl); });
 			}
+		}
+		
+		static IEnumerable<UsageDataEnvironmentProperty> GetAppProperties()
+		{
+			List<UsageDataEnvironmentProperty> properties = new List<UsageDataEnvironmentProperty> {
+				new UsageDataEnvironmentProperty { Name = "appVersion", Value = RevisionClass.FullVersion },
+				new UsageDataEnvironmentProperty { Name = "language", Value = ResourceService.Language },
+				new UsageDataEnvironmentProperty { Name = "culture", Value = CultureInfo.CurrentCulture.Name },
+				new UsageDataEnvironmentProperty { Name = "userAddInCount", Value = AddInTree.AddIns.Where(a => !a.IsPreinstalled).Count().ToString() }
+			};
+			string PROCESSOR_ARCHITECTURE = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
+			if (string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {
+				PROCESSOR_ARCHITECTURE = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
+			}
+			if (!string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {
+				properties.Add(new UsageDataEnvironmentProperty { Name = "architecture", Value = PROCESSOR_ARCHITECTURE });
+			}
+			#if DEBUG
+			properties.Add(new UsageDataEnvironmentProperty { Name = "debug", Value = "true" });
+			#endif
+			return properties;
 		}
 		
 		/// <summary>

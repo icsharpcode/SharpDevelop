@@ -11,12 +11,16 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading;
+
+using ICSharpCode.UsageDataCollector.Contracts;
 
 namespace ICSharpCode.UsageDataCollector
 {
@@ -25,7 +29,7 @@ namespace ICSharpCode.UsageDataCollector
 	/// 
 	/// This class is thread-safe.
 	/// </summary>
-	public class UsageDataSessionWriter : IDisposable
+	public sealed class UsageDataSessionWriter : IDisposable
 	{
 		readonly object lockObj = new object();
 		SQLiteConnection connection;
@@ -153,6 +157,19 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
+		/// <summary>
+		/// Gets the default environment data.
+		/// </summary>
+		public static UsageDataEnvironmentProperty[] GetDefaultEnvironmentData()
+		{
+			return new [] {
+				new UsageDataEnvironmentProperty { Name = "platform", Value = Environment.OSVersion.Platform.ToString() },
+				new UsageDataEnvironmentProperty { Name = "osVersion", Value = Environment.OSVersion.Version.ToString() },
+				new UsageDataEnvironmentProperty { Name = "processorCount", Value = Environment.ProcessorCount.ToString() },
+				new UsageDataEnvironmentProperty { Name = "dotnetRuntime", Value = Environment.Version.ToString() }
+			};
+		}
+		
 		void StartSession()
 		{
 			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
@@ -161,10 +178,7 @@ namespace ICSharpCode.UsageDataCollector
 						"SELECT last_insert_rowid();";
 					sessionID = (long)cmd.ExecuteScalar();
 				}
-				AddEnvironmentData("platform", Environment.OSVersion.Platform.ToString());
-				AddEnvironmentData("osVersion", Environment.OSVersion.Version.ToString());
-				AddEnvironmentData("processorCount", Environment.ProcessorCount.ToString());
-				AddEnvironmentData("dotnetRuntime", Environment.Version.ToString());
+				AddEnvironmentData(GetDefaultEnvironmentData());
 				transaction.Commit();
 			}
 		}
@@ -185,22 +199,26 @@ namespace ICSharpCode.UsageDataCollector
 		/// <summary>
 		/// Adds environment data to the current session.
 		/// </summary>
-		/// <param name="name">Name of the data entry.</param>
-		/// <param name="value">Value of the data entry.</param>
-		public void AddEnvironmentData(string name, string value)
+		public void AddEnvironmentData(IEnumerable<UsageDataEnvironmentProperty> properties)
 		{
-			if (name == null)
-				throw new ArgumentNullException("name");
+			if (properties == null)
+				throw new ArgumentNullException("properties");
+			UsageDataEnvironmentProperty[] pArray = properties.ToArray();
 			lock (lockObj) {
 				if (isDisposed)
 					throw new ObjectDisposedException(GetType().Name);
-				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-					cmd.CommandText = "INSERT INTO Environment (session, name, value)" +
-						" VALUES (?, ?, ?);";
-					cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
-					cmd.Parameters.Add(new SQLiteParameter { Value = name });
-					cmd.Parameters.Add(new SQLiteParameter { Value = value });
-					cmd.ExecuteNonQuery();
+				using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
+					foreach (UsageDataEnvironmentProperty p in pArray) {
+						using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+							cmd.CommandText = "INSERT INTO Environment (session, name, value)" +
+								" VALUES (?, ?, ?);";
+							cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
+							cmd.Parameters.Add(new SQLiteParameter { Value = p.Name });
+							cmd.Parameters.Add(new SQLiteParameter { Value = p.Value });
+							cmd.ExecuteNonQuery();
+						}
+					}
+					transaction.Commit();
 				}
 			}
 		}
@@ -485,6 +503,16 @@ namespace ICSharpCode.UsageDataCollector
 		/// <summary>
 		/// Creates a new IncompatibleDatabaseException instance.
 		/// </summary>
+		public IncompatibleDatabaseException(string message) : base(message) {}
+		
+		/// <summary>
+		/// Creates a new IncompatibleDatabaseException instance.
+		/// </summary>
+		public IncompatibleDatabaseException(string message, Exception innerException) : base(message, innerException) {}
+		
+		/// <summary>
+		/// Creates a new IncompatibleDatabaseException instance.
+		/// </summary>
 		public IncompatibleDatabaseException(Version expectedVersion, Version actualVersion)
 			: base("Expected DB version " + expectedVersion + " but found " + actualVersion)
 		{
@@ -504,6 +532,7 @@ namespace ICSharpCode.UsageDataCollector
 		}
 		
 		/// <inheritdoc/>
+		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);

@@ -37,6 +37,11 @@ namespace ICSharpCode.UsageDataCollector
 			this.databaseFileName = databaseFileName;
 		}
 		
+		/// <summary>
+		/// Gets/Sets environment data that is sent with the dummy session on the first upload.
+		/// </summary>
+		public IEnumerable<UsageDataEnvironmentProperty> EnvironmentDataForDummySession { get; set; }
+		
 		SQLiteConnection OpenConnection()
 		{
 			SQLiteConnectionStringBuilder conn = new SQLiteConnectionStringBuilder();
@@ -60,7 +65,7 @@ namespace ICSharpCode.UsageDataCollector
 					message = FetchDataForUpload(connection, true);
 				}
 			}
-			using (StringWriter w = new StringWriter()) {
+			using (StringWriter w = new StringWriter(CultureInfo.InvariantCulture)) {
 				using (XmlTextWriter xmlWriter = new XmlTextWriter(w)) {
 					xmlWriter.Formatting = Formatting.Indented;
 					DataContractSerializer serializer = new DataContractSerializer(typeof(UsageDataMessage));
@@ -93,19 +98,36 @@ namespace ICSharpCode.UsageDataCollector
 		public void StartUpload(Binding binding, EndpointAddress endpoint)
 		{
 			UsageDataMessage message;
+			bool addDummySession = false;
 			using (SQLiteConnection connection = OpenConnection()) {
 				using (SQLiteTransaction transaction = connection.BeginTransaction()) {
 					CheckDatabaseVersion(connection);
-					if (HasAlreadyUploadedToday(connection)) {
+					HasUploadedTodayStatus status = HasAlreadyUploadedToday(connection);
+					if (status == HasUploadedTodayStatus.Yes) {
 						message = null;
 					} else {
 						message = FetchDataForUpload(connection, false);
+						if (status == HasUploadedTodayStatus.NeverUploaded)
+							addDummySession = true;
 					}
 					transaction.Commit();
 				}
 			}
 			if (message != null) {
 				string commaSeparatedSessionIDList = GetCommaSeparatedIDList(message.Sessions);
+				
+				if (addDummySession) {
+					// A dummy session is used for the first upload to notify the server of the user's environment.
+					// Without this, we couldn't tell the version of a user who tries SharpDevelop once but doesn't use it long
+					// enough for an actual session to be uploaded.
+					UsageDataSession dummySession = new UsageDataSession();
+					dummySession.SessionID = 0;
+					dummySession.StartTime = DateTime.UtcNow;
+					dummySession.EnvironmentProperties.AddRange(UsageDataSessionWriter.GetDefaultEnvironmentData());
+					if (this.EnvironmentDataForDummySession != null)
+						dummySession.EnvironmentProperties.AddRange(this.EnvironmentDataForDummySession);
+					message.Sessions.Add(dummySession);
+				}
 				
 				DataContractSerializer serializer = new DataContractSerializer(typeof(UsageDataMessage));
 				byte[] data;
@@ -158,19 +180,26 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
-		bool HasAlreadyUploadedToday(SQLiteConnection connection)
+		enum HasUploadedTodayStatus
+		{
+			No,
+			Yes,
+			NeverUploaded
+		}
+		
+		static HasUploadedTodayStatus HasAlreadyUploadedToday(SQLiteConnection connection)
 		{
 			using (SQLiteCommand cmd = connection.CreateCommand()) {
 				cmd.CommandText = "SELECT value > datetime('now','-1 day') FROM Properties WHERE name='lastUpload';";
 				object result = cmd.ExecuteScalar();
 				if (result == null)
-					return false; // no lastUpload entry -> DB was never uploaded
-				return (long)result > 0;
+					return HasUploadedTodayStatus.NeverUploaded; // no lastUpload entry -> DB was never uploaded
+				return (long)result > 0 ? HasUploadedTodayStatus.Yes : HasUploadedTodayStatus.No;
 			}
 		}
 		
 		#region FetchDataForUpload
-		UsageDataMessage FetchDataForUpload(SQLiteConnection connection, bool fetchIncompleteSessions)
+		static UsageDataMessage FetchDataForUpload(SQLiteConnection connection, bool fetchIncompleteSessions)
 		{
 			UsageDataMessage message = new UsageDataMessage();
 			// Retrieve the User ID
@@ -261,7 +290,7 @@ namespace ICSharpCode.UsageDataCollector
 		}
 		#endregion
 		
-		string GetCommaSeparatedIDList(IEnumerable<UsageDataSession> sessions)
+		static string GetCommaSeparatedIDList(IEnumerable<UsageDataSession> sessions)
 		{
 			return string.Join(
 				",",
