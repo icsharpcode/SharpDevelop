@@ -41,7 +41,7 @@ namespace SharpRefactoring.Gui
 			int i = 0;
 			
 			foreach (IField f in fields) {
-				yield return new CtorParamWrapper(f) { Index = i };
+				yield return new CtorParamWrapper(f) { Index = i, IsSelected = f.IsReadonly };
 				i++;
 			}
 		}

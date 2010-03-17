@@ -184,6 +184,8 @@
 		             class = "ICSharpCode.Svn.Gui.SubversionOptionsPanel"/>
 	</Path>
 	
+	<!--
+	These options aren't really useful and just add to the confusion in our menu system as other SVN commands aren't available in Tools>SVN.
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
 		<MenuItem id = "SvnExport"
 		          label = "Subversion"
@@ -199,4 +201,5 @@
 			          class = "ICSharpCode.Svn.Commands.CheckoutCommand"/>
 		</MenuItem>
 	</Path>
+	-->
 </AddIn>

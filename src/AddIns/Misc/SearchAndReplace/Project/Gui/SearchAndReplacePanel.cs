@@ -118,6 +118,7 @@ namespace SearchAndReplace
 			} else {
 				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
+					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
 					SearchReplaceManager.FindNext(monitor);
 				}
 			}
@@ -134,6 +135,7 @@ namespace SearchAndReplace
 			} else {
 				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
+					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
 					SearchInFilesManager.FindAll(monitor);
 				}
 			}
@@ -149,6 +151,7 @@ namespace SearchAndReplace
 			} else {
 				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
+					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
 					SearchReplaceManager.MarkAll(monitor);
 				}
 			}
@@ -164,6 +167,7 @@ namespace SearchAndReplace
 			} else {
 				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
+					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
 					SearchReplaceManager.ReplaceAll(monitor);
 				}
 			}
@@ -179,6 +183,7 @@ namespace SearchAndReplace
 			} else {
 				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
 				{
+					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
 					SearchReplaceManager.Replace(monitor);
 				}
 			}
