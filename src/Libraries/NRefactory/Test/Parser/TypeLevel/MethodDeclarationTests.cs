@@ -312,7 +312,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
-		[Ignore("End line for function is off by one.")]
 		public void VBNetFunctionMethodDeclarationTest()
 		{
 			const string program = @"public function MyFunction() as Integer
