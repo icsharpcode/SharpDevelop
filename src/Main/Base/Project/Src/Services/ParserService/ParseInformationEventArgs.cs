@@ -44,7 +44,12 @@ namespace ICSharpCode.SharpDevelop
 		/// The new compilation unit.
 		/// </summary>
 		public ICompilationUnit NewCompilationUnit {
-			get { return newParseInformation.CompilationUnit; }
+			get {
+				if (newParseInformation != null)
+					return newParseInformation.CompilationUnit;
+				else
+					return null;
+			}
 		}
 		
 		public ParseInformationEventArgs(FileName fileName, IProjectContent projectContent, ICompilationUnit oldCompilationUnit, ParseInformation newParseInformation)
