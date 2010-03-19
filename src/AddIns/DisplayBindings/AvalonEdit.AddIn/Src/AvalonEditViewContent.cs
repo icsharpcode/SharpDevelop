@@ -77,7 +77,35 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (file != PrimaryFile)
 				return;
-			codeEditor.Save(stream);
+			
+			if (codeEditor.CanSaveWithCurrentEncoding()) {
+				codeEditor.Save(stream);
+			} else {
+				int r = MessageService.ShowCustomDialog(
+					"${res:Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox.FileEncodingGroupBox}",
+					StringParser.Parse("${res:AvalonEdit.FileEncoding.EncodingCausesDataLoss}",
+					                   new StringTagPair("encoding", codeEditor.Encoding.EncodingName)),
+					0, -1,
+					"${res:AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8}",
+					"${res:AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue}");
+				if (r == 1) {
+					// continue saving with data loss
+					MemoryStream ms = new MemoryStream();
+					codeEditor.Save(ms);
+					ms.Position = 0;
+					ms.WriteTo(stream);
+					ms.Position = 0;
+					// Read back the version we just saved to show the data loss to the user (he'll be able to press Undo).
+					using (StreamReader reader = new StreamReader(ms, codeEditor.Encoding, false)) {
+						codeEditor.Document.Text = reader.ReadToEnd();
+					}
+					return;
+				} else {
+					// unfortunately we don't support cancel within IViewContent.Save, so we'll use the safe choice of UTF-8 instead
+					codeEditor.Encoding = System.Text.Encoding.UTF8;
+					codeEditor.Save(stream);
+				}
+			}
 		}
 		
 		bool isLoading;
@@ -92,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				codeEditor.PrimaryTextEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				
-					codeEditor.Load(stream);
+				codeEditor.Load(stream);
 				// we set the file name after loading because this will place the fold markers etc.
 				codeEditor.FileName = FileName.Create(file.FileName);
 				BookmarksAttach();

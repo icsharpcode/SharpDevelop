@@ -250,6 +250,24 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		public bool UseFixedEncoding { get; set; }
 		
+		public Encoding Encoding {
+			get { return primaryTextEditor.Encoding; }
+			set { primaryTextEditor.Encoding = value; }
+		}
+		
+		/// <summary>
+		/// Gets if the document can be saved with the current encoding without losing data.
+		/// </summary>
+		public bool CanSaveWithCurrentEncoding()
+		{
+			Encoding encoding = this.Encoding;
+			if (encoding == null || Utils.FileReader.IsUnicode(encoding))
+				return true;
+			// not a unicode codepage
+			string text = document.Text;
+			return encoding.GetString(encoding.GetBytes(text)) == text;
+		}
+		
 		// always use primary text editor for loading/saving
 		// (the file encoding is stored only there)
 		public void Load(Stream stream)
