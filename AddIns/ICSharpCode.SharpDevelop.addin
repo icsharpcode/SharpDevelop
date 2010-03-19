@@ -1762,7 +1762,7 @@
 		<MenuItem id = "SaveAs"
 		          label = "${res:XML.MainMenu.FileMenu.SaveAs}"
 		          class = "ICSharpCode.SharpDevelop.Commands.SaveFileAs"/>
-		<MenuItem id = "File"
+		<MenuItem id = "CloseFile"
 		          label = "${res:XML.MainMenu.FileMenu.Close}"
 		          icon  = "Icons.16x16.CloseFileIcon"
 		          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
@@ -2072,7 +2072,7 @@
 		             class = "ICSharpCode.SharpDevelop.Gui.SelectScopeCommand"
 		             type = "ComboBox"/>
 	</Path>
-
+	
 	<Path name="/SharpDevelop/Pads/CommonConsole/ToolBar">
 		<ToolbarItem id = "ClearConsole"
 		             tooltip = "Clear console"

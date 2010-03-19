@@ -28,6 +28,26 @@
 		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider">
+			<MenuItem id = "SaveWithEncoding"
+			          label = "${res:XML.MainMenu.FileMenu.SaveWithEncoding}"
+			          insertafter="SaveAs"
+			          insertbefore="CloseFile"
+			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.SaveFileWithEncoding"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/File">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider" action="Disable">
+			<MenuItem id = "SaveWithEncoding"
+			          label = "${res:XML.MainMenu.FileMenu.SaveWithEncoding}"
+			          insertafter="SaveAs"
+			          insertbefore="SaveAll"
+			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.SaveFileWithEncoding"/>
+		</Condition>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
 			<MenuItem id = "RemoveLeadingWs"
@@ -119,7 +139,7 @@
 			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.RunReverseIncrementalSearch"
 			          insertbefore = "SearchInFilesSeparator"/>
 		</Condition>
-	</Path>	
+	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
 		<OptionPanel id = "CodeTemplates"

@@ -89,6 +89,7 @@
     <Compile Include="Src\CodeEditorView.cs" />
     <Compile Include="Src\Commands\FoldingCommands.cs" />
     <Compile Include="Src\Commands\RunIncrementalSearch.cs" />
+    <Compile Include="Src\Commands\SaveFileWithEncoding.cs" />
     <Compile Include="Src\Commands\SortOptionsDialog.xaml.cs">
       <DependentUpon>SortOptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>

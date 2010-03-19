@@ -867,7 +867,7 @@ SharpDevelop can collect this information and upload it automatically.</value>
     <value>Event handler name pattern:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.HighlightingDescription" xml:space="preserve">
-    <value>Select the colours that should be used by the XAML highlighter:</value>
+    <value>Select the colors that should be used by the XAML highlighter:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.HighlightingGroupLabel" xml:space="preserve">
     <value>Highlighting</value>
@@ -3464,6 +3464,9 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditor" xml:space="preserve">
     <value>Text editor</value>
   </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditorWithEncoding" xml:space="preserve">
+    <value>Text editor (choose encoding)</value>
+  </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser" xml:space="preserve">
     <value>Built-in Web Browser</value>
   </data>
@@ -3698,7 +3701,7 @@ If NCover is installed, please specify the location of the application in the Co
     <value>No code coverage results file generated:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText" xml:space="preserve">
-    <value>Code Coverage Colours</value>
+    <value>Code Coverage Colors</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.CommandLineLabel" xml:space="preserve">
     <value>&amp;Command:</value>
@@ -7476,6 +7479,9 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="XML.MainMenu.FileMenu.SaveAs" xml:space="preserve">
     <value>Save &amp;As…</value>
   </data>
+  <data name="XML.MainMenu.FileMenu.SaveWithEncoding" xml:space="preserve">
+    <value>Save with &amp;encoding...</value>
+  </data>
   <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
     <value>F&amp;ormat</value>
   </data>
@@ -7637,6 +7643,9 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="XML.MainMenu.RunMenu.BuildProject.Description" xml:space="preserve">
     <value>Builds the current project.</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.BuildSolution.Description" xml:space="preserve">
+    <value>Builds all projects in the current solution.</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.Description" xml:space="preserve">
     <value>Build active project or buffer (when no project is open) (does autosave)</value>

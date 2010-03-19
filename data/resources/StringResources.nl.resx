@@ -433,6 +433,9 @@ Om het help systeem te verkrijgen dient u de .NET Framework SDK te installeren.<
   <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
     <value>Alle functies van {0}</value>
   </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>De gekozen SharpDevelop profileer sessie is gemaakt met een jongere versie van SharpDevelop en kan daardoor niet geopend worden.</value>
+  </data>
   <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
     <value>SharpDevelop Profileer Sessie</value>
   </data>
@@ -602,6 +605,16 @@ Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Onttrekken</value>
   </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsBreakError" xml:space="preserve">
+    <value>
+De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig de selectie aub!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsContinueError" xml:space="preserve">
+    <value>De geselecteerde code bevat een continue opdracht zonder de insluitende lus. Wijzig de selectie aub!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsGotoError" xml:space="preserve">
+    <value>De geselecteerde code bevat een goto opdracht zonder het label. Wijzig de selectie aub!</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod.EnterName" xml:space="preserve">
     <value>Voer een naam in voor de nieuwe methode:</value>
   </data>
@@ -614,8 +627,41 @@ Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>Ontrekkingsmethoden worden op dit moment niet ondersteund in {0}</value>
   </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor" xml:space="preserve">
+    <value>Constructor invoegen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddCheckForNullLabel" xml:space="preserve">
+    <value>Voeg null test toe</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddRangeCheckLabel" xml:space="preserve">
+    <value>Voeg bereik test toe</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.Description" xml:space="preserve">
+    <value>Kies alle velden waarmee u een constructor wilt creëren:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.VariableLabel" xml:space="preserve">
+    <value>Variabele</value>
+  </data>
   <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
     <value>Introduceer methode {0} in {1}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods" xml:space="preserve">
+    <value>Overschrijf Equals() en GetHashCode()</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface" xml:space="preserve">
+    <value>Voeg interface {0} toe</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
+    <value>Voeg operator overladingen toe</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
+    <value>Insluiten met #region</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod" xml:space="preserve">
+    <value>Overschrijf ToString()</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod.Description" xml:space="preserve">
+    <value>Selecteer de in de ToString() implementatie te gebruiken velden :</value>
   </data>
   <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
     <value>Oplossing atribuut: {0}</value>
@@ -814,6 +860,15 @@ Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.
   </data>
   <data name="AddIns.XamlBinding.Options.EventHandlerNamePattern" xml:space="preserve">
     <value>Event handler naam sjabloon</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingDescription" xml:space="preserve">
+    <value>Kies de voor XAML benadrukking toe te passen  kleuren</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingGroupLabel" xml:space="preserve">
+    <value>Benadrukken</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.IgnoredElementColor" xml:space="preserve">
+    <value>Genegeerde element kleur:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.NamespaceDeclarationColor" xml:space="preserve">
     <value>XML naamruimte declaratie kleur:</value>
@@ -3711,6 +3766,45 @@ Als NCover is geïnstalleerd, vermeld aub de locatie van de toepassing in de Cod
   <data name="ICSharpCode.Core.Services.ErrorDialogs.ShowExceptionButton" xml:space="preserve">
     <value>Toon uitzondering</value>
   </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions" xml:space="preserve">
+    <value>Extra opties</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker" xml:space="preserve">
+    <value>Linker</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs" xml:space="preserve">
+    <value>Link toegevoegde bestanden</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.AddModule" xml:space="preserve">
+    <value>Link opgegeven .NET modules mee</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.GenerateDebugInfo" xml:space="preserve">
+    <value>Foutopsporing info aanmaken</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.Library" xml:space="preserve">
+    <value>Bibliotheek bestand locaties</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.ManagedResourceFile" xml:space="preserve">
+    <value>Neem .NET hulpbron bestand op</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor" xml:space="preserve">
+    <value>Voorbewerker</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Definitions" xml:space="preserve">
+    <value>Definiëer volgende voorbewerking symbolen</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes" xml:space="preserve">
+    <value>Header bestand locaties</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.UndefineAll" xml:space="preserve">
+    <value>Maak alle definities van voorbewerking symbolen ongedaan</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Undefinitions" xml:space="preserve">
+    <value>Maak definities van volgende voorbewerkng symbolen ongedaan</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.SymbolLabel" xml:space="preserve">
+    <value>Symbool</value>
+  </data>
   <data name="ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation" xml:space="preserve">
     <value>.NET hulpbron bestand (binair)</value>
   </data>
@@ -5366,6 +5460,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.Modules.VersionColumn" xml:space="preserve">
     <value>Versie</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
+    <value>Object Graph</value>
+  </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Uitvoeren tot de cursor</value>
   </data>
@@ -6089,6 +6186,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
     <value>Van ${Name} afgeleidde klassen</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
+    <value>Converteer naar automatische eigenschap</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CreateChangedEvent" xml:space="preserve">
     <value>Maak een 'Changed-event'</value>
   </data>
@@ -6106,6 +6206,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="SharpDevelop.Refactoring.DeclaringType" xml:space="preserve">
     <value>Declarerend type</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ExpandAutomaticProperty" xml:space="preserve">
+    <value>Breid automatische eigenschap uit</value>
   </data>
   <data name="SharpDevelop.Refactoring.ExtractInterfaceCommand" xml:space="preserve">
     <value>Extract interface</value>
@@ -7520,6 +7623,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="XML.MainMenu.RunMenu.BuildProject.Description" xml:space="preserve">
     <value>Bouwt het momentele project op.</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.BuildSolution.Description" xml:space="preserve">
+    <value>Bouw alle projecten in momentele oplossing.</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.Description" xml:space="preserve">
     <value>Bouwt het actieve project of buffer op (als er geen project geopend is) (slaat automatisch op)</value>
