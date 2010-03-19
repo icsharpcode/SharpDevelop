@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 		{
 			Type type = parameterInfo.ParameterType;
 			
-			this.ReturnType = ReflectionReturnType.Create(member, type, false);
+			this.ReturnType = ReflectionReturnType.Create(member, type, attributeProvider: parameterInfo);
 			
 			if (type.IsByRef && parameterInfo.IsOut) {
 				this.Modifiers = ParameterModifiers.Out;

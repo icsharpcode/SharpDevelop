@@ -524,7 +524,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			MethodInfo mInfo = eventType.GetMethod("Invoke");
 			DefaultMethod m = new DefaultMethod(declaringType, methodName);
-			m.ReturnType = ReflectionLayer.ReflectionReturnType.Create(m, mInfo.ReturnType, false);
+			m.ReturnType = ReflectionLayer.ReflectionReturnType.Create(m, mInfo.ReturnType);
 			foreach (ParameterInfo pInfo in mInfo.GetParameters()) {
 				m.Parameters.Add(new ReflectionLayer.ReflectionParameter(pInfo, m));
 			}

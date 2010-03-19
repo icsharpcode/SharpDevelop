@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 		internal static void AddAttributes(IProjectContent pc, IList<IAttribute> list, IList<CustomAttributeData> attributes)
 		{
 			foreach (CustomAttributeData att in attributes) {
-				DefaultAttribute a = new DefaultAttribute(ReflectionReturnType.Create(pc, null, att.Constructor.DeclaringType, false));
+				DefaultAttribute a = new DefaultAttribute(ReflectionReturnType.Create(pc, att.Constructor.DeclaringType));
 				foreach (CustomAttributeTypedArgument arg in att.ConstructorArguments) {
 					a.PositionalArguments.Add(ReplaceTypeByIReturnType(pc, arg.Value));
 				}
@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 		static object ReplaceTypeByIReturnType(IProjectContent pc, object val)
 		{
 			if (val is Type) {
-				return ReflectionReturnType.Create(pc, null, (Type)val, false, false);
+				return ReflectionReturnType.Create(pc, (Type)val, forceGenericType: false);
 			} else {
 				return val;
 			}
@@ -208,11 +208,11 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			
 			// set base classes
 			if (type.BaseType != null) { // it's null for System.Object ONLY !!!
-				BaseTypes.Add(ReflectionReturnType.Create(this, type.BaseType, false));
+				BaseTypes.Add(ReflectionReturnType.Create(this, type.BaseType));
 			}
 			
 			foreach (Type iface in type.GetInterfaces()) {
-				BaseTypes.Add(ReflectionReturnType.Create(this, iface, false));
+				BaseTypes.Add(ReflectionReturnType.Create(this, iface));
 			}
 			
 			InitMembers(type);
@@ -222,9 +222,9 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 		{
 			foreach (Type constraint in type.GetGenericParameterConstraints()) {
 				if (tp.Method != null) {
-					tp.Constraints.Add(ReflectionReturnType.Create(tp.Method, constraint, false));
+					tp.Constraints.Add(ReflectionReturnType.Create(tp.Method, constraint));
 				} else {
-					tp.Constraints.Add(ReflectionReturnType.Create(tp.Class, constraint, false));
+					tp.Constraints.Add(ReflectionReturnType.Create(tp.Class, constraint));
 				}
 			}
 		}

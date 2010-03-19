@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
@@ -90,47 +92,69 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 		}
 		#endregion
 		
-		public static IReturnType Create(IClass @class, Type type, bool createLazyReturnType)
-		{
-			return Create(@class.ProjectContent, @class, type, createLazyReturnType);
-		}
-		
-		public static IReturnType Create(IMember member, Type type, bool createLazyReturnType)
-		{
-			return Create(member.DeclaringType.ProjectContent, member, type, createLazyReturnType);
-		}
-		
-		public static IReturnType Create(IProjectContent pc, IEntity member, Type type, bool createLazyReturnType)
-		{
-			return Create(pc, member, type, createLazyReturnType, true);
-		}
-		
 		/// <summary>
 		/// Creates a IReturnType from the reflection type.
 		/// </summary>
 		/// <param name="pc">The project content used as context.</param>
-		/// <param name="member">The member used as context (e.g. as GenericReturnType)</param>
+		/// <param name="entity">The member used as context (e.g. as GenericReturnType)</param>
 		/// <param name="type">The reflection return type that should be converted</param>
 		/// <param name="createLazyReturnType">Set this parameter to false to create a direct return type
 		/// (without GetClassReturnType indirection) where possible</param>
 		/// <param name="forceGenericType">Set this parameter to false to allow unbound generic types</param>
 		/// <returns>The IReturnType</returns>
-		public static IReturnType Create(IProjectContent pc, IEntity member, Type type, bool createLazyReturnType, bool forceGenericType)
+		/// <param name="attributeProvider">Attribute provider for lookup of [Dynamic] attribute</param>
+		public static IReturnType Create(IProjectContent pc, Type type,
+		                                 IEntity entity = null,
+		                                 bool createLazyReturnType = false,
+		                                 bool forceGenericType = true,
+		                                 ICustomAttributeProvider attributeProvider = null)
+		{
+			if (pc == null)
+				throw new ArgumentNullException("pc");
+			if (type == null)
+				throw new ArgumentNullException("type");
+			int typeIndex = 0;
+			return Create(pc, type, entity, createLazyReturnType, attributeProvider, ref typeIndex, forceGenericType);
+		}
+		
+		public static IReturnType Create(IEntity entity, Type type,
+		                                 bool createLazyReturnType = false,
+		                                 bool forceGenericType = true,
+		                                 ICustomAttributeProvider attributeProvider = null)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			if (type == null)
+				throw new ArgumentNullException("type");
+			int typeIndex = 0;
+			return Create(entity.ProjectContent, type, entity, createLazyReturnType, attributeProvider, ref typeIndex, forceGenericType);
+		}
+		
+		static IReturnType Create(IProjectContent pc, Type type,
+		                          IEntity member,
+		                          bool createLazyReturnType,
+		                          ICustomAttributeProvider attributeProvider,
+		                          ref int typeIndex,
+		                          bool forceGenericType = true)
 		{
 			if (type.IsByRef) {
 				// TODO: Use ByRefRefReturnType
-				return Create(pc, member, type.GetElementType(), createLazyReturnType);
+				return Create(pc, type.GetElementType(), member, createLazyReturnType, attributeProvider, ref typeIndex);
 			} else if (type.IsPointer) {
-				return new PointerReturnType(Create(pc, member, type.GetElementType(), createLazyReturnType));
+				typeIndex++;
+				return new PointerReturnType(Create(pc, type.GetElementType(), member, createLazyReturnType, attributeProvider, ref typeIndex));
 			} else if (type.IsArray) {
-				return new ArrayReturnType(pc, Create(pc, member, type.GetElementType(), createLazyReturnType), type.GetArrayRank());
+				typeIndex++;
+				return new ArrayReturnType(pc, Create(pc, type.GetElementType(), member, createLazyReturnType, attributeProvider, ref typeIndex), type.GetArrayRank());
 			} else if (type.IsGenericType && (forceGenericType || !type.IsGenericTypeDefinition)) {
+				IReturnType baseType = Create(pc, type.GetGenericTypeDefinition(), member, createLazyReturnType, attributeProvider, ref typeIndex, forceGenericType: false);
 				Type[] args = type.GetGenericArguments();
 				List<IReturnType> para = new List<IReturnType>(args.Length);
 				for (int i = 0; i < args.Length; ++i) {
-					para.Add(Create(pc, member, args[i], createLazyReturnType));
+					typeIndex++;
+					para.Add(Create(pc, args[i], member, createLazyReturnType, attributeProvider, ref typeIndex));
 				}
-				return new ConstructedReturnType(Create(pc, member, type.GetGenericTypeDefinition(), createLazyReturnType, false), para);
+				return new ConstructedReturnType(baseType, para);
 			} else if (type.IsGenericParameter) {
 				IClass c = (member is IClass) ? (IClass)member : (member is IMember) ? ((IMember)member).DeclaringType : null;
 				if (c != null && type.GenericParameterPosition < c.TypeParameters.Count) {
@@ -154,6 +178,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 					throw new ApplicationException("type.FullName returned null. Type: " + type.ToString());
 				int typeParameterCount;
 				name = ReflectionClass.ConvertReflectionNameToFullName(name, out typeParameterCount);
+				
+				if (typeParameterCount == 0 && name == "System.Object" && HasDynamicAttribute(attributeProvider, typeIndex))
+					return new DynamicReturnType(pc);
+				
 				if (!createLazyReturnType) {
 					IClass c = pc.GetClass(name, typeParameterCount);
 					if (c != null)
@@ -163,6 +191,23 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 				}
 				return new GetClassReturnType(pc, name, typeParameterCount);
 			}
+		}
+		
+		static bool HasDynamicAttribute(ICustomAttributeProvider attributeProvider, int typeIndex)
+		{
+			if (attributeProvider == null)
+				return false;
+			object[] attributes = attributeProvider.GetCustomAttributes(typeof(DynamicAttribute), false);
+			if (attributes.Length == 0)
+				return false;
+			DynamicAttribute attr = attributes[0] as DynamicAttribute;
+			if (attr != null) {
+				var transformFlags = attr.TransformFlags;
+				if (transformFlags != null && typeIndex < transformFlags.Count)
+					return transformFlags[typeIndex];
+				return true;
+			}
+			return false;
 		}
 	}
 }

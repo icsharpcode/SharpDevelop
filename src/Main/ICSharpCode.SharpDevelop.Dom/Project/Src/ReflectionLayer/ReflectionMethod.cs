@@ -30,7 +30,8 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			: base(declaringType, methodBase is ConstructorInfo ? "#ctor" : methodBase.Name)
 		{
 			if (methodBase is MethodInfo) {
-				this.ReturnType = ReflectionReturnType.Create(this, ((MethodInfo)methodBase).ReturnType, false);
+				MethodInfo m = ((MethodInfo)methodBase);
+				this.ReturnType = ReflectionReturnType.Create(this, m.ReturnType, attributeProvider: m.ReturnTypeCustomAttributes);
 			} else if (methodBase is ConstructorInfo) {
 				this.ReturnType = DeclaringType.DefaultReturnType;
 			}

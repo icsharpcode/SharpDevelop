@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 	{
 		public ReflectionField(FieldInfo fieldInfo, IClass declaringType) : base(declaringType, fieldInfo.Name)
 		{
-			this.ReturnType = ReflectionReturnType.Create(this, fieldInfo.FieldType, false);
+			this.ReturnType = ReflectionReturnType.Create(this, fieldInfo.FieldType, attributeProvider: fieldInfo);
 			
 			ModifierEnum modifiers  = ModifierEnum.None;
 			if (fieldInfo.IsInitOnly) {

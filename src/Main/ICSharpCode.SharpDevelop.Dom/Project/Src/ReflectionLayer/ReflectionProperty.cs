@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 	{
 		public ReflectionProperty(PropertyInfo propertyInfo, IClass declaringType) : base(declaringType, propertyInfo.Name)
 		{
-			this.ReturnType = ReflectionReturnType.Create(this, propertyInfo.PropertyType, false);
+			this.ReturnType = ReflectionReturnType.Create(this, propertyInfo.PropertyType, attributeProvider: propertyInfo);
 			
 			CanGet = propertyInfo.CanRead;
 			CanSet = propertyInfo.CanWrite;

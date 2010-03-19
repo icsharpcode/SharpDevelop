@@ -34,9 +34,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return new CecilProjectContent(asm.Name.FullName, fileName, referencedAssemblies.ToArray(), asm, registry);
 		}
 		
-		static void AddAttributes(IProjectContent pc, IList<IAttribute> list, CustomAttributeCollection attributes)
+		static void AddAttributes(IProjectContent pc, IList<IAttribute> list, ICustomAttributeProvider attributeProvider)
 		{
-			foreach (CustomAttribute att in attributes) {
+			if (!attributeProvider.HasCustomAttributes)
+				return;
+			foreach (CustomAttribute att in attributeProvider.CustomAttributes) {
 				DefaultAttribute a = new DefaultAttribute(CreateType(pc, null, att.Constructor.DeclaringType));
 				// Currently Cecil returns string instead of TypeReference for typeof() arguments to attributes
 				var parameters = att.Constructor.Parameters;
@@ -74,7 +76,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Create a SharpDevelop return type from a Cecil type reference.
 		/// </summary>
-		internal static IReturnType CreateType(IProjectContent pc, IEntity member, TypeReference type)
+		internal static IReturnType CreateType(IProjectContent pc, IEntity member, TypeReference type, ICustomAttributeProvider attributeProvider = null)
+		{
+			int typeIndex = 0;
+			return CreateType(pc, member, type, attributeProvider, ref typeIndex);
+		}
+		
+		static IReturnType CreateType(IProjectContent pc, IEntity member, TypeReference type, ICustomAttributeProvider attributeProvider, ref int typeIndex)
 		{
 			while (type is ModType) {
 				type = (type as ModType).ElementType;
@@ -85,18 +93,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (type is ReferenceType) {
 				// TODO: Use ByRefRefReturnType
-				return CreateType(pc, member, (type as ReferenceType).ElementType);
+				return CreateType(pc, member, (type as ReferenceType).ElementType, attributeProvider, ref typeIndex);
 			} else if (type is PointerType) {
-				return new PointerReturnType(CreateType(pc, member, (type as PointerType).ElementType));
+				typeIndex++;
+				return new PointerReturnType(CreateType(pc, member, (type as PointerType).ElementType, attributeProvider, ref typeIndex));
 			} else if (type is ArrayType) {
-				return new ArrayReturnType(pc, CreateType(pc, member, (type as ArrayType).ElementType), (type as ArrayType).Rank);
+				typeIndex++;
+				return new ArrayReturnType(pc, CreateType(pc, member, (type as ArrayType).ElementType, attributeProvider, ref typeIndex), (type as ArrayType).Rank);
 			} else if (type is GenericInstanceType) {
 				GenericInstanceType gType = (GenericInstanceType)type;
+				IReturnType baseType = CreateType(pc, member, gType.ElementType, attributeProvider, ref typeIndex);
 				IReturnType[] para = new IReturnType[gType.GenericArguments.Count];
 				for (int i = 0; i < para.Length; ++i) {
-					para[i] = CreateType(pc, member, gType.GenericArguments[i]);
+					typeIndex++;
+					para[i] = CreateType(pc, member, gType.GenericArguments[i], attributeProvider, ref typeIndex);
 				}
-				return new ConstructedReturnType(CreateType(pc, member, gType.ElementType), para);
+				return new ConstructedReturnType(baseType, para);
 			} else if (type is GenericParameter) {
 				GenericParameter typeGP = type as GenericParameter;
 				if (typeGP.Owner is MethodDefinition) {
@@ -137,6 +149,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					name = ReflectionClass.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
 				}
 				
+				if (typeParameterCount == 0 && name == "System.Object" && HasDynamicAttribute(attributeProvider, typeIndex))
+					return new DynamicReturnType(pc);
+				
 				IClass c = pc.GetClass(name, typeParameterCount);
 				if (c != null) {
 					return c.DefaultReturnType;
@@ -148,6 +163,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		static bool HasDynamicAttribute(ICustomAttributeProvider attributeProvider, int typeIndex)
+		{
+			if (attributeProvider == null || attributeProvider.HasCustomAttributes == false)
+				return false;
+			foreach (CustomAttribute a in attributeProvider.CustomAttributes) {
+				if (a.Constructor.DeclaringType.FullName == "System.Runtime.CompilerServices.DynamicAttribute") {
+					if (a.ConstructorParameters.Count == 1) {
+						object[] values = a.ConstructorParameters[0] as object[];
+						if (values != null && typeIndex < values.Length && values[typeIndex] is bool)
+							return (bool)values[typeIndex];
+					}
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		private sealed class CecilProjectContent : ReflectionProjectContent
 		{
 			public CecilProjectContent(string fullName, string fileName, DomAssemblyName[] referencedAssemblies,
@@ -157,7 +189,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (ModuleDefinition module in assembly.Modules) {
 					AddTypes(module.Types);
 				}
-				AddAttributes(this, this.AssemblyCompilationUnit.Attributes, assembly.CustomAttributes);
+				AddAttributes(this, this.AssemblyCompilationUnit.Attributes, assembly);
 				InitializeSpecialClasses();
 				this.AssemblyCompilationUnit.Freeze();
 			}
@@ -203,7 +235,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				this.FullyQualifiedName = fullName;
 				
-				AddAttributes(compilationUnit.ProjectContent, this.Attributes, td.CustomAttributes);
+				AddAttributes(compilationUnit.ProjectContent, this.Attributes, td);
 				
 				// set classtype
 				if (td.IsInterface) {
@@ -297,8 +329,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (IsVisible(field.Attributes) && !field.IsSpecialName) {
 						DefaultField f = new DefaultField(this, field.Name);
 						f.Modifiers = TranslateModifiers(field);
-						f.ReturnType = CreateType(this.ProjectContent, this, field.FieldType);
-						AddAttributes(CompilationUnit.ProjectContent, f.Attributes, field.CustomAttributes);
+						f.ReturnType = CreateType(this.ProjectContent, this, field.FieldType, field);
+						AddAttributes(CompilationUnit.ProjectContent, f.Attributes, field);
 						Fields.Add(f);
 					}
 				}
@@ -315,8 +347,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 						} else {
 							e.Modifiers = TranslateModifiers(eventDef);
 						}
-						e.ReturnType = CreateType(this.ProjectContent, this, eventDef.EventType);
-						AddAttributes(CompilationUnit.ProjectContent, e.Attributes, eventDef.CustomAttributes);
+						e.ReturnType = CreateType(this.ProjectContent, this, eventDef.EventType, eventDef);
+						AddAttributes(CompilationUnit.ProjectContent, e.Attributes, eventDef);
 						Events.Add(e);
 					}
 				}
@@ -343,7 +375,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					} else {
 						p.Modifiers = TranslateModifiers(property);
 					}
-					p.ReturnType = CreateType(this.ProjectContent, this, property.PropertyType);
+					p.ReturnType = CreateType(this.ProjectContent, this, property.PropertyType, property);
 					p.CanGet = property.GetMethod != null && IsVisible(property.GetMethod.Attributes);
 					p.CanSet = property.SetMethod != null && IsVisible(property.SetMethod.Attributes);
 					if (p.CanGet)
@@ -354,7 +386,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						p.IsIndexer = true;
 					}
 					AddParameters(p, property.Parameters);
-					AddAttributes(CompilationUnit.ProjectContent, p.Attributes, property.CustomAttributes);
+					AddAttributes(CompilationUnit.ProjectContent, p.Attributes, property);
 					Properties.Add(p);
 				}
 			}
@@ -386,8 +418,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (method.IsConstructor)
 						m.ReturnType = this.DefaultReturnType;
 					else
-						m.ReturnType = CreateType(this.ProjectContent, m, method.ReturnType.ReturnType);
-					AddAttributes(CompilationUnit.ProjectContent, m.Attributes, method.CustomAttributes);
+						m.ReturnType = CreateType(this.ProjectContent, m, method.ReturnType.ReturnType, method.ReturnType);
+					AddAttributes(CompilationUnit.ProjectContent, m.Attributes, method);
 					if (this.ClassType == ClassType.Interface) {
 						m.Modifiers = ModifierEnum.Public | ModifierEnum.Abstract;
 					} else {
@@ -416,7 +448,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			void AddParameters(IMethodOrProperty target, ParameterDefinitionCollection plist)
 			{
 				foreach (ParameterDefinition par in plist) {
-					IReturnType pReturnType = CreateType(this.ProjectContent, target, par.ParameterType);
+					IReturnType pReturnType = CreateType(this.ProjectContent, target, par.ParameterType, par);
 					DefaultParameter p = new DefaultParameter(par.Name, pReturnType, DomRegion.Empty);
 					if (par.ParameterType is ReferenceType) {
 						if ((par.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out) {

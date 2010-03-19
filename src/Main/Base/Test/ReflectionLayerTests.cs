@@ -7,12 +7,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 using NUnit.Framework;
 
@@ -37,6 +38,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		protected override IClass GetClass(Type type)
 		{
 			ICompilationUnit cu = new ReflectionProjectContent("TestName", "testlocation", new DomAssemblyName[0], AssemblyParserService.DefaultProjectContentRegistry).AssemblyCompilationUnit;
+			((ReflectionProjectContent)cu.ProjectContent).AddReferencedContent(mscorlib);
 			IClass c = new ReflectionClass(cu, type, type.FullName, null);
 			cu.ProjectContent.AddClassToNamespaceList(c);
 			return c;
@@ -73,7 +75,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			DomPersistence.WriteProjectContent((ReflectionProjectContent)c.ProjectContent, memory);
 			
 			memory.Position = 0;
-			return DomPersistence.LoadProjectContent(memory, AssemblyParserService.DefaultProjectContentRegistry).Classes.Single();
+			ReflectionProjectContent loadedPC = DomPersistence.LoadProjectContent(memory, AssemblyParserService.DefaultProjectContentRegistry);
+			loadedPC.AddReferencedContent(mscorlib);
+			return loadedPC.Classes.Single();
 		}
 		
 		protected override IEnumerable<IAttribute> GetAssemblyAttributes(Assembly assembly)
@@ -99,8 +103,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		IProjectContent LoadAssembly(Assembly assembly)
 		{
-			IProjectContent pc = CecilReader.LoadAssembly(assembly.Location, AssemblyParserService.DefaultProjectContentRegistry);
+			var pc = CecilReader.LoadAssembly(assembly.Location, AssemblyParserService.DefaultProjectContentRegistry);
 			Assert.IsNotNull(pc);
+			pc.AddReferencedContent(mscorlib);
 			return pc;
 		}
 		
@@ -330,7 +335,13 @@ namespace ICSharpCode.SharpDevelop.Tests
 			public void GetIndex<T>(T element) where T: IEquatable<T> {}
 			
 			public int Property { get; protected set; }
-			public int ReadOnlyPropertyWithPrivateSetter { get; private set; }
+			public dynamic ReadOnlyPropertyWithPrivateSetter { get; private set; }
+			
+			public List<dynamic> DynamicGenerics1(Action<object, dynamic[], object> param) { return null; }
+			public void DynamicGenerics2(Action<object, dynamic, object> param) { }
+			public void DynamicGenerics3(Action<int, dynamic, object> param) { }
+			public void DynamicGenerics4(Action<int[], dynamic, object> param) { }
+			public void DynamicGenerics5(Action<int*[], dynamic, object> param) { }
 		}
 		
 		protected abstract IClass GetClass(Type type);
@@ -396,6 +407,25 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual(ModifierEnum.Public, p.Modifiers);
 			Assert.AreEqual(ModifierEnum.None, p.GetterModifiers);
 			Assert.IsFalse(p.CanSet);
+		}
+		
+		[Test]
+		public void DynamicType()
+		{
+			IProperty p = testClass.Properties.Single(pr => pr.Name == "ReadOnlyPropertyWithPrivateSetter");
+			Assert.IsInstanceOf(typeof(DynamicReturnType), p.ReturnType);
+		}
+		
+		[Test]
+		public void DynamicTypeInGenerics()
+		{
+			CSharpAmbience a = new CSharpAmbience();
+			a.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterList;
+			Assert.AreEqual("List<dynamic> DynamicGenerics1(Action<object, dynamic[], object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics1")));
+			Assert.AreEqual("void DynamicGenerics2(Action<object, dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics2")));
+			Assert.AreEqual("void DynamicGenerics3(Action<int, dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics3")));
+			Assert.AreEqual("void DynamicGenerics4(Action<int[], dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics4")));
+			Assert.AreEqual("void DynamicGenerics5(Action<Int32*[], dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics5")));
 		}
 		
 		[Test]

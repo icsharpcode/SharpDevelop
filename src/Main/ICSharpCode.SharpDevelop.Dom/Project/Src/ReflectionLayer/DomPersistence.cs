@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 25;
+		public const short FileVersion = 26;
 		
 		ProjectContentRegistry registry;
 		string cacheDirectory;
@@ -592,6 +592,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			const int NullRTReferenceCode = -5;
 			const int VoidRTCode          = -6;
 			const int PointerRTCode       = -7;
+			const int DynamicRTCode       = -8;
 			
 			void WriteType(IReturnType rt)
 			{
@@ -603,6 +604,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					string name = rt.FullyQualifiedName;
 					if (name == "System.Void") {
 						writer.Write(VoidRTCode);
+					} else if (name == "dynamic") {
+						writer.Write(DynamicRTCode);
 					} else {
 						writer.Write(classIndices[new ClassNameTypeCountPair(rt)]);
 					}
@@ -660,6 +663,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 						return new VoidReturnType(pc);
 					case PointerRTCode:
 						return new PointerReturnType(ReadType());
+					case DynamicRTCode:
+						return new DynamicReturnType(pc);
 					default:
 						return types[index];
 				}

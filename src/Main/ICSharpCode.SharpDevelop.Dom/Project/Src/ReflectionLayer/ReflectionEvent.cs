@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 	{
 		public ReflectionEvent(EventInfo eventInfo, IClass declaringType) : base(declaringType, eventInfo.Name)
 		{
-			this.ReturnType = ReflectionReturnType.Create(this, eventInfo.EventHandlerType, false);
+			this.ReturnType = ReflectionReturnType.Create(this, eventInfo.EventHandlerType, attributeProvider: eventInfo);
 			
 			// get modifiers
 			MethodInfo methodBase = null;

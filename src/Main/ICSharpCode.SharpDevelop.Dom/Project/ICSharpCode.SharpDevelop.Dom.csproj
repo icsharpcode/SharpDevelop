@@ -92,6 +92,7 @@
     <Compile Include="Src\Implementations\DefaultTypeParameter.cs" />
     <Compile Include="Src\Implementations\DefaultUsing.cs" />
     <Compile Include="Src\Implementations\DefaultUsingScope.cs" />
+    <Compile Include="Src\Implementations\DynamicReturnType.cs" />
     <Compile Include="Src\Implementations\ElementReturnType.cs" />
     <Compile Include="Src\Implementations\GenericReturnType.cs" />
     <Compile Include="Src\Implementations\GetClassReturnType.cs" />
