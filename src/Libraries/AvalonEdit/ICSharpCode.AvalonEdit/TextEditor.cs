@@ -828,9 +828,8 @@ namespace ICSharpCode.AvalonEdit
 		public void Load(Stream stream)
 		{
 			using (StreamReader reader = FileReader.OpenStream(stream, Encoding ?? Encoding.UTF8)) {
-				reader.Peek(); // peek so that the StreamReader can autodetect the encoding
 				Text = reader.ReadToEnd();
-				Encoding = reader.CurrentEncoding;
+				Encoding = reader.CurrentEncoding; // assign encoding after ReadToEnd() so that the StreamReader can autodetect the encoding
 			}
 		}
 		

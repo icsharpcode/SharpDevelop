@@ -18,6 +18,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 	/// The problem is that Clipboard.ContainsText may wait for the application owning the clipboard,
 	/// which in turn may currently wait for SharpDevelop (through the debugger)
 	/// </summary>
+	[Obsolete]
 	static class ClipboardHandling
 	{
 		public static void Initialize()

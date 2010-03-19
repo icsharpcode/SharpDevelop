@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -244,11 +245,23 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		/// <summary>
+		/// Use fixed encoding for loading.
+		/// </summary>
+		public bool UseFixedEncoding { get; set; }
+		
 		// always use primary text editor for loading/saving
 		// (the file encoding is stored only there)
 		public void Load(Stream stream)
 		{
-			primaryTextEditor.Load(stream);
+			if (UseFixedEncoding) {
+				using (StreamReader reader = new StreamReader(stream, primaryTextEditor.Encoding, detectEncodingFromByteOrderMarks: false)) {
+					primaryTextEditor.Text = reader.ReadToEnd();
+				}
+			} else {
+				// let AvalonEdit do auto-detection
+				primaryTextEditor.Load(stream);
+			}
 		}
 		
 		public void Save(Stream stream)
@@ -554,8 +567,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			CustomizedHighlightingColor.ActiveColorsChanged -= CustomizedHighlightingColor_ActiveColorsChanged;
 			ParserService.ParseInformationUpdated -= ParserServiceParseInformationUpdated;
 			
-			primaryTextEditorAdapter.Language.Detach();
-			if (secondaryTextEditorAdapter != null)
+			if (primaryTextEditorAdapter.Language != null)
+				primaryTextEditorAdapter.Language.Detach();
+			if (secondaryTextEditorAdapter != null && secondaryTextEditorAdapter.Language != null)
 				secondaryTextEditorAdapter.Language.Detach();
 			
 			if (errorPainter != null)

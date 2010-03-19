@@ -8,16 +8,18 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using System.Windows.Threading;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -31,12 +33,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
 		
-		public AvalonEditViewContent(OpenedFile file)
+		public AvalonEditViewContent(OpenedFile file, Encoding fixedEncodingForLoading = null)
 		{
+			if (fixedEncodingForLoading != null) {
+				codeEditor.UseFixedEncoding = true;
+				codeEditor.PrimaryTextEditor.Encoding = fixedEncodingForLoading;
+			}
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.SourceTabPage}";
 			
 			this.Files.Add(file);
 			file.ForceInitializeView(this);
+			
 			codeEditor.Document.Changed += textEditor_Document_Changed;
 			codeEditor.CaretPositionChanged += CaretChanged;
 			codeEditor.TextCopied += codeEditor_TextCopied;
@@ -85,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				codeEditor.PrimaryTextEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				
-				codeEditor.Load(stream);
+					codeEditor.Load(stream);
 				// we set the file name after loading because this will place the fold markers etc.
 				codeEditor.FileName = FileName.Create(file.FileName);
 				BookmarksAttach();

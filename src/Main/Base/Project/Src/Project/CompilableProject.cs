@@ -339,6 +339,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public bool IsSilverlightProject {
 			get {
 				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
@@ -346,6 +347,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string TestPageFileName {
 			get {
 				return GetEvaluatedProperty("TestPageFileName") ?? "";

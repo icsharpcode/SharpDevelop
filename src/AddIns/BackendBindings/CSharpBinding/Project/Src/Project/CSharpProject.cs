@@ -21,7 +21,7 @@ using ICSharpCode.SharpDevelop.Project.Converter;
 namespace CSharpBinding
 {
 	/// <summary>
-	/// Description of CSharpProject.
+	/// IProject implementation for .csproj files.
 	/// </summary>
 	public class CSharpProject : CompilableProject
 	{

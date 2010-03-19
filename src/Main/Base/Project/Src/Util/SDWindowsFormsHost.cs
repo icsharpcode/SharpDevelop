@@ -122,7 +122,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				get { return textBox.SelectionLength > 0; }
 			}
 			public bool EnablePaste {
-				get { return !textBox.ReadOnly && ClipboardHandling.GetClipboardContainsText(); }
+				get { return !textBox.ReadOnly && Clipboard.ContainsText(); }
 			}
 			public bool EnableDelete {
 				get { return !textBox.ReadOnly && textBox.SelectionLength > 0; }
@@ -162,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				get { return comboBox.SelectionLength > 0; }
 			}
 			public bool EnablePaste {
-				get { return ClipboardHandling.GetClipboardContainsText(); }
+				get { return Clipboard.ContainsText(); }
 			}
 			public bool EnableDelete {
 				get { return true; }

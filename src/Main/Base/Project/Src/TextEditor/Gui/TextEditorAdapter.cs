@@ -22,6 +22,7 @@ using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop
 {
+	[Obsolete]
 	public class TextEditorAdapter : ITextEditor
 	{
 		readonly TextEditorControl editor;

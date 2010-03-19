@@ -1154,6 +1154,10 @@
 				          shortcut    = "Control|O"
 				          class       = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>
 				
+				<MenuItem id          = "OpenWith"
+				          label       = "${res:Gui.ProjectBrowser.OpenWith}"
+				          class       = "ICSharpCode.SharpDevelop.Commands.OpenFileWith"/>
+				
 				<MenuItem id = "Project"
 				          label = "${res:XML.MainMenu.FileMenu.Open.Project}"
 				          icon = "Icons.16x16.OpenProjectIcon"
@@ -1698,7 +1702,6 @@
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "ShellExecute"
-		                insertafter = "Text"
 		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.DefaultWindowsApplication}"
 		                class = "ICSharpCode.SharpDevelop.ShellExecuteDisplayBinding" />
 	</Path>

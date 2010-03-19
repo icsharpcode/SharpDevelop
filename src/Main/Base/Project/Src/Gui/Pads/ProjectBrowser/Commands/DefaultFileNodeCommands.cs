@@ -73,13 +73,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		/// </summary>
 		static void OpenWith(string fileName)
 		{
-			var codons = DisplayBindingService.GetCodonsPerFileName(fileName);
-			int defaultCodonIndex = codons.IndexOf(DisplayBindingService.GetDefaultCodonPerFileName(fileName));
-			using (OpenWithDialog dlg = new OpenWithDialog(codons, defaultCodonIndex, Path.GetExtension(fileName))) {
-				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					FileUtility.ObservedLoad(new FileService.LoadFileWrapper(dlg.SelectedBinding.Binding, true).Invoke, fileName);
-				}
-			}
+			ICSharpCode.SharpDevelop.Commands.OpenFileWith.OpenFilesWith(new string[] { fileName });
 		}
 	}
 	

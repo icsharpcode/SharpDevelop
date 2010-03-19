@@ -80,6 +80,10 @@
     <Compile Include="Src\AvalonEditEditorUIService.cs" />
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\BracketHighlightRenderer.cs" />
+    <Compile Include="Src\ChooseEncodingDialog.xaml.cs">
+      <DependentUpon>ChooseEncodingDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CodeEditorView.cs" />
@@ -183,6 +187,7 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Page Include="Src\ChooseEncodingDialog.xaml" />
     <Page Include="Src\Commands\SortOptionsDialog.xaml" />
     <Page Include="Src\Options\BehaviorOptions.xaml" />
     <Page Include="Src\Options\GeneralEditorOptions.xaml" />

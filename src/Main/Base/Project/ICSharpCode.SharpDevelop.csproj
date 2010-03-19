@@ -578,7 +578,6 @@
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaControlProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextEditorProperties.cs" />
-    <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
     <Compile Include="Src\TextEditor\Gui\TextEditorAdapter.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />

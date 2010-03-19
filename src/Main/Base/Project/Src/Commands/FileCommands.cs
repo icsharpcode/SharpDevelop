@@ -249,13 +249,55 @@ namespace ICSharpCode.SharpDevelop.Commands
 				fdiag.CheckFileExists = true;
 				
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					foreach (string name in fdiag.FileNames) {
-						FileService.OpenFile(name);
+					OpenFiles(fdiag.FileNames);
+				}
+			}
+		}
+		
+		protected virtual void OpenFiles(string[] fileNames)
+		{
+			foreach (string name in fileNames) {
+				FileService.OpenFile(name);
+			}
+		}
+	}
+	
+	public class OpenFileWith : OpenFile
+	{
+		protected override void OpenFiles(string[] fileNames)
+		{
+			OpenFilesWith(fileNames);
+		}
+		
+		/// <summary>
+		/// Shows the OpenWith dialog for the specified files.
+		/// </summary>
+		public static void OpenFilesWith(string[] fileNames)
+		{
+			if (fileNames.Length == 0)
+				return;
+			
+			List<DisplayBindingDescriptor> codons = DisplayBindingService.GetCodonsPerFileName(fileNames[0]).ToList();
+			for (int i = 1; i < fileNames.Length; i++) {
+				var codonsForThisFile = DisplayBindingService.GetCodonsPerFileName(fileNames[1]);
+				codons.RemoveAll(c => !codonsForThisFile.Contains(c));
+			}
+			if (codons.Count == 0)
+				return;
+			
+			int defaultCodonIndex = codons.IndexOf(DisplayBindingService.GetDefaultCodonPerFileName(fileNames[0]));
+			if (defaultCodonIndex < 0)
+				defaultCodonIndex = 0;
+			using (OpenWithDialog dlg = new OpenWithDialog(codons, defaultCodonIndex, Path.GetExtension(fileNames[0]))) {
+				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					foreach (string fileName in fileNames) {
+						FileUtility.ObservedLoad(new FileService.LoadFileWrapper(dlg.SelectedBinding.Binding, true).Invoke, fileName);
 					}
 				}
 			}
 		}
 	}
+
 	public class ExitWorkbenchCommand : AbstractMenuCommand
 	{
 		public override void Run()
@@ -263,7 +305,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			WorkbenchSingleton.MainWindow.Close();
 		}
 	}
-	
+
 	public class ClearRecentFiles : AbstractMenuCommand
 	{
 		public override void Run()

@@ -20,7 +20,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		{
 			SortOptionsDialog dlg = new SortOptionsDialog();
 			dlg.Owner = WorkbenchSingleton.MainWindow;
-			if (dlg.ShowDialog() ?? false) {
+			if (dlg.ShowDialog() == true) {
 				StringComparer comparer = SortOptions.CaseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase;
 				if (SortOptions.IgnoreTrailingWhitespaces)
 					comparer = new IgnoreTrailingWhitespaceComparer(comparer);

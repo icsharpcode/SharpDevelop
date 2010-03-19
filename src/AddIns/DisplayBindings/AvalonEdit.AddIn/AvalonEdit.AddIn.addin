@@ -16,8 +16,12 @@
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id = "Text"
-		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditor} (AvalonEdit)"
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditor}"
 		                class = "ICSharpCode.AvalonEdit.AddIn.AvalonEditDisplayBinding"/>
+		<DisplayBinding id = "TextWithEncoding"
+		                insertbefore = "ShellExecute"
+		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.TextEditorWithEncoding}"
+		                class = "ICSharpCode.AvalonEdit.AddIn.ChooseEncodingDisplayBinding"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu">
