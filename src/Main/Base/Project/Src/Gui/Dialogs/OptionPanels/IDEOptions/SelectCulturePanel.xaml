@@ -66,14 +66,14 @@
 				</MultiBinding>
 			</TextBlock.Text>
 		</TextBlock>
-		<TextBlock Grid.Row="2" Margin="5,0">
+		<!--<TextBlock Grid.Row="2" Margin="5,0">
 			<TextBlock.Text>
 				<MultiBinding StringFormat="{}{0} {1}">
 					<sd:LocalizeExtension Key="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" />
 					<Binding Path="CurrentLanguage.Name" ElementName="window" />
 				</MultiBinding>
 			</TextBlock.Text>
-		</TextBlock>
+		</TextBlock>-->
 		<TextBlock Grid.Row="3" TextWrapping="Wrap" Text="{sd:Localize Dialog.Options.IDEOptions.SelectCulture.DescriptionText}" Margin="5" />
 	</Grid>
 </gui:OptionPanel>

@@ -261,8 +261,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static Encoding DefaultFileEncoding {
 			get {
-				// TODO: how to implement without the old editor / so that it's actually thread-safe?
-				return DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.Encoding;
+				return Encoding.GetEncoding(FileService.DefaultFileEncodingCodePage);
 			}
 		}
 		

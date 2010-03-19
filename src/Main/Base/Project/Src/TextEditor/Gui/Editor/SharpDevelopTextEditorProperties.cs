@@ -289,14 +289,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		public string LineTerminator {
 			get {
-				LineTerminatorStyle lineTerminatorStyle = PropertyService.Get("SharpDevelop.LineTerminatorStyle", LineTerminatorStyle.Windows);
-				switch (lineTerminatorStyle) {
-					case LineTerminatorStyle.Windows:
-						return "\r\n";
-					case LineTerminatorStyle.Macintosh:
-						return "\r";
-				}
-				return "\n";
+				return "\r\n";
 			}
 			set {
 				throw new System.NotImplementedException();

@@ -13,10 +13,10 @@
 			Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox.FileEncodingLabel}" />
 		<ComboBox
 			Name="encodingComboBox"
-			Margin="16,0,8,8" >
+			Margin="16,0,8,8">
 			<ComboBox.ItemTemplate>
 				<DataTemplate>
-					<TextBlock Text="{Binding EncodingName}"/>
+					<TextBlock Text="{Binding DisplayName}"/>
 				</DataTemplate>
 			</ComboBox.ItemTemplate>
 		</ComboBox>

@@ -7,9 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -353,6 +355,27 @@ namespace ICSharpCode.SharpDevelop
 			}
 			set {
 				PropertyService.Set("SharpDevelop.SaveUsingTemporaryFile", value);
+			}
+		}
+		
+		public static int DefaultFileEncodingCodePage {
+			get { return PropertyService.Get("SharpDevelop.DefaultFileEncoding", 65001); }
+			set { PropertyService.Set("SharpDevelop.DefaultFileEncoding", value); }
+		}
+		
+		static readonly ReadOnlyCollection<EncodingInfo> allEncodings = Encoding.GetEncodings().OrderBy(e => e.DisplayName).ToArray().AsReadOnly();
+		
+		public static ReadOnlyCollection<EncodingInfo> AllEncodings {
+			get { return allEncodings; }
+		}
+		
+		public static EncodingInfo DefaultFileEncoding {
+			get {
+				int cp = FileService.DefaultFileEncodingCodePage;
+				return allEncodings.Single(e => e.CodePage == cp);
+			}
+			set {
+				FileService.DefaultFileEncodingCodePage = value.CodePage;
 			}
 		}
 		

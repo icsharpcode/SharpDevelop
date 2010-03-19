@@ -452,6 +452,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return String.Concat(viewContent.GetType().FullName.GetHashCode().ToString("x", CultureInfo.InvariantCulture), ":", FileUtility.NormalizePath(viewContent.PrimaryFileName).ToUpperInvariant());
 		}
 		
+		public static bool LoadDocumentProperties {
+			get { return PropertyService.Get("SharpDevelop.LoadDocumentProperties", true); }
+			set { PropertyService.Set("SharpDevelop.LoadDocumentProperties", value); }
+		}
+		
 		/// <summary>
 		/// Stores the memento for the view content.
 		/// Such mementos are automatically loaded in ShowView().
@@ -459,7 +464,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void StoreMemento(IViewContent viewContent)
 		{
 			IMementoCapable mementoCapable = viewContent as IMementoCapable;
-			if (mementoCapable != null && PropertyService.Get("SharpDevelop.LoadDocumentProperties", true)) {
+			if (mementoCapable != null && LoadDocumentProperties) {
 				if (viewContent.PrimaryFileName == null)
 					return;
 				
@@ -476,7 +481,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void LoadViewContentMemento(IViewContent viewContent)
 		{
 			IMementoCapable mementoCapable = viewContent as IMementoCapable;
-			if (mementoCapable != null && PropertyService.Get("SharpDevelop.LoadDocumentProperties", true)) {
+			if (mementoCapable != null && LoadDocumentProperties) {
 				if (viewContent.PrimaryFileName == null)
 					return;
 				

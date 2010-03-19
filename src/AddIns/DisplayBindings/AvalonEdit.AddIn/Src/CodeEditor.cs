@@ -22,6 +22,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
@@ -261,7 +262,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public bool CanSaveWithCurrentEncoding()
 		{
 			Encoding encoding = this.Encoding;
-			if (encoding == null || Utils.FileReader.IsUnicode(encoding))
+			if (encoding == null || FileReader.IsUnicode(encoding))
 				return true;
 			// not a unicode codepage
 			string text = document.Text;
@@ -277,8 +278,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					primaryTextEditor.Text = reader.ReadToEnd();
 				}
 			} else {
-				// let AvalonEdit do auto-detection
-				primaryTextEditor.Load(stream);
+				// do encoding auto-detection
+				using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? FileService.DefaultFileEncoding.GetEncoding())) {
+					primaryTextEditor.Text = reader.ReadToEnd();
+					this.Encoding = reader.CurrentEncoding;
+				}
 			}
 		}
 		
