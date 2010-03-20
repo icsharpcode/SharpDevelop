@@ -85,6 +85,7 @@
     <Compile Include="Src\PythonModuleCompletionItems.cs" />
     <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />
     <Compile Include="Src\PythonImportResolver.cs" />
+    <Compile Include="Src\PythonNameCreationService.cs" />
     <Compile Include="Src\PythonNamespaceResolver.cs" />
     <Compile Include="Src\PythonResolverContext.cs" />
     <Compile Include="Src\PythonStandardModuleMethodResolver.cs" />

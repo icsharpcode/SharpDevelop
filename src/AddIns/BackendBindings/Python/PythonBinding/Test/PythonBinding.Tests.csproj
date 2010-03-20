@@ -263,6 +263,7 @@
     <Compile Include="Designer\LoadAcceptButtonFormTestFixture.cs" />
     <Compile Include="Designer\LoadAccessibleRoleTestFixture.cs" />
     <Compile Include="Designer\LoadAnchorStylesFormTestFixture.cs" />
+    <Compile Include="Designer\LoadBindingNavigatorTestFixture.cs" />
     <Compile Include="Designer\LoadButtonFlatAppearanceTestFixture.cs" />
     <Compile Include="Designer\LoadColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\LoadControlEventHandlerTestFixture.cs" />
@@ -293,6 +294,7 @@
     <Compile Include="Designer\LoadUserControlWithDoublePropertyTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
+    <Compile Include="Designer\NameCreationServiceTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
     <Compile Include="Designer\ProjectRootNamespacePassedToMergeTestFixture.cs" />

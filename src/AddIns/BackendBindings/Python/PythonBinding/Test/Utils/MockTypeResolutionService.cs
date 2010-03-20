@@ -74,7 +74,6 @@ namespace PythonBinding.Tests.Utils
 		
 		public void ReferenceAssembly(AssemblyName name)
 		{
-			throw new NotImplementedException();
 		}
 		
 		public string GetPathOfAssembly(AssemblyName name)

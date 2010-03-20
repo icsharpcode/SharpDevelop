@@ -98,7 +98,7 @@ namespace PythonBinding.Tests.Designer
 		{			
 			List<CreatedComponent> expectedCreatedComponents = new List<CreatedComponent>();
 			expectedCreatedComponents.Add(new CreatedComponent(typeof(Form).FullName, "MainForm", null));
-			                              
+			
 			Assert.AreEqual(expectedCreatedComponents, mockDesignerLoaderHost.CreatedComponents);
 		}
 				
@@ -112,7 +112,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void NameCreationServiceCreated()
 		{
-			XmlDesignerLoader.NameCreationService service = mockDesignerLoaderHost.GetService(typeof(INameCreationService)) as XmlDesignerLoader.NameCreationService;
+			PythonNameCreationService service = mockDesignerLoaderHost.GetService(typeof(INameCreationService)) as PythonNameCreationService;
 			Assert.IsNotNull(service);
 		}
 		
