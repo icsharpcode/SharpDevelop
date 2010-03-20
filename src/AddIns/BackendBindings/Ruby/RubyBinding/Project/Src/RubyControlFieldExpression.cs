@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text;
+using System.Windows.Forms;
 using IronRuby.Builtins;
 using IronRuby.Compiler.Ast;
 
@@ -561,13 +562,30 @@ namespace ICSharpCode.RubyBinding
 		/// <summary>
 		/// Sets the value of a property on the component.
 		/// </summary>
-		static bool SetPropertyValue(object component, string name, object propertyValue)
+		bool SetPropertyValue(object component, string name, object propertyValue)
 		{
 			PropertyDescriptor property = GetProperty(component, name);
 			if (property != null) {
-				propertyValue = ConvertPropertyValue(property, propertyValue);
+				if (OverrideNameProperty(component, name)) {
+					propertyValue = variableName;
+				} else {
+					propertyValue = ConvertPropertyValue(property, propertyValue);
+				}
 				property.SetValue(component, propertyValue);
 				return true;
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Override the name property with the instance variable name when the component is a
+		/// ToolStripSeparator to support BindingNavigator separators using the same value for the 
+		/// name property.
+		/// </summary>
+		bool OverrideNameProperty(object component, string property)
+		{
+			if (property == "Name") {
+				return component is ToolStripSeparator;
 			}
 			return false;
 		}

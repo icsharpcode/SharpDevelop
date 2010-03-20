@@ -64,6 +64,7 @@ namespace PythonBinding.Tests.Utils
 		
 		public IContainer Container {
 			get { return container; }
+			set { container = value as Container; }
 		}
 		
 		public IComponent RootComponent {

@@ -45,7 +45,7 @@ namespace ICSharpCode.RubyBinding
 		public override void BeginLoad(IDesignerLoaderHost host)
 		{
 			host.AddService(typeof(ComponentSerializationService), new CodeDomComponentSerializationService((IServiceProvider)host));
-			host.AddService(typeof(INameCreationService), new XmlDesignerNameCreationService(host));
+			host.AddService(typeof(INameCreationService), new RubyNameCreationService(host));
 			host.AddService(typeof(IDesignerSerializationService), new DesignerSerializationService(host));
 			
 			ProjectResourceService projectResourceService = host.GetService(typeof(ProjectResourceService)) as ProjectResourceService;

@@ -112,7 +112,7 @@ namespace RubyBinding.Tests.Designer
 		[Test]
 		public void NameCreationServiceCreated()
 		{
-			XmlDesignerNameCreationService service = mockDesignerLoaderHost.GetService(typeof(INameCreationService)) as XmlDesignerNameCreationService;
+			RubyNameCreationService service = mockDesignerLoaderHost.GetService(typeof(INameCreationService)) as RubyNameCreationService;
 			Assert.IsNotNull(service);
 		}
 		
