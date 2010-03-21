@@ -17,7 +17,6 @@ using NUnit.Framework;
 namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 {
 	[TestFixture]
-	[Ignore]
 	public class GenerateListReportFixture
 	{
 		private const string reportName = "ListBasedReport";

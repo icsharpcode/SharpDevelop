@@ -75,9 +75,9 @@ namespace ICSharpCode.Reports.Core{
 		private int rightMargin;
 		private Size pageSize;
 		
-//		public event EventHandler FileNameChanged;
+		#region Constructor
 		
-		public ReportSettings():this(new Size(1169,827),"","")
+		public ReportSettings():this(GlobalValues.DefaultPageSize,"","")
 		{
 		}
 		
@@ -101,9 +101,8 @@ namespace ICSharpCode.Reports.Core{
 			} else {
 				this.fileName = BuildFilename(fileName);
 			}
-			
-			this.pageSize = pageSize;
 			BaseValues();
+			this.pageSize = pageSize;
 		}
 		
 		
@@ -113,16 +112,16 @@ namespace ICSharpCode.Reports.Core{
 			this.graphicsUnit = GraphicsUnit.Pixel;
 			this.padding = new Padding(5);
 			this.defaultFont = GlobalValues.DefaultFont;
-			this.availableFields = new AvailableFieldsCollection();
-			sortingCollection = new SortColumnCollection();
-			groupingsCollection = new ColumnCollection();
-			parameterCollection = new ParameterCollection();
 			this.reportType = GlobalEnums.ReportType.FormSheet;
 			this.dataModel = GlobalEnums.PushPullModel.FormSheet;
-			this.pageSize = new Size(827,1169);
-			this.topMargin = this.bottomMargin = this.leftMargin = this.rightMargin = 50;
+			this.pageSize = GlobalValues.DefaultPageSize;
+			this.topMargin = GlobalValues.DefaultPageMargin.Left;
+			this.bottomMargin = GlobalValues.DefaultPageMargin.Bottom;
+			this.leftMargin = GlobalValues.DefaultPageMargin.Left;
+			this.rightMargin = GlobalValues.DefaultPageMargin.Right;
 		}
 		
+		#endregion
 		
 		private static string BuildFilename (string file)
 		{
@@ -139,24 +138,6 @@ namespace ICSharpCode.Reports.Core{
 		}
 		
 		
-		#region Properties
-		
-		protected static string DefaultReportName
-		{
-			get {
-				return defaultReportName;
-			}
-		}
-		
-		protected static string DefaultFileName
-		{
-			get {
-				return GlobalValues.PlainFileName;
-			}
-		}
-		
-		
-		#endregion
 		
 		#region BaseSettings
 		
@@ -207,7 +188,6 @@ namespace ICSharpCode.Reports.Core{
 		}
 		
 		#endregion
-		
 		
 		#region Page Settings
 		
@@ -308,6 +288,9 @@ namespace ICSharpCode.Reports.Core{
 		
 		public SortColumnCollection SortColumnCollection {
 			get {
+				if (this.sortingCollection == null) {
+					return new SortColumnCollection();
+				}
 				return sortingCollection;
 			}
 		}

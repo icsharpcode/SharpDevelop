@@ -9,62 +9,71 @@
 
 using System;
 using System.Data;
-using NUnit.Framework;
-using ICSharpCode.Reports.Core;
 using System.Drawing;
-	
+using System.IO;
+using System.Windows.Forms;
+
+using ICSharpCode.Reports.Core;
+using NUnit.Framework;
+
 namespace ICSharpCode.Reports.Core.Test
 {
 	[TestFixture]
-	[Ignore]
+	
 	public class ReportSettingsFixture
 	{
 		const string reportName = "ReportName";	
 		const string fileName = "FileName.srd";
-		Size defaultSize = new Size(827,1169);
 		
+		#region Constructor
 		
 		[Test]
-		public void DefaultConstructureNotNull()
+		public void DefaultConstructureShouldReturnStandardValues()
 		{
 			ReportSettings rs = new ReportSettings();
 			Assert.IsNotNull(rs,"Should not be 'null'");
 			Assert.AreEqual(GlobalValues.DefaultReportName,rs.ReportName,"Should be 'Report1'");
-			Assert.AreEqual(GlobalValues.PlainFileName,rs.FileName,"Should be 'Report1.srd");
-			Assert.AreEqual(defaultSize,rs.PageSize);
+			FileInfo fileInfo = new System.IO.FileInfo(rs.FileName);
+			Assert.AreEqual(GlobalValues.PlainFileName,fileInfo.Name,"Should be 'Report1.srd");
+			Assert.AreEqual(GlobalValues.DefaultPageSize,rs.PageSize);
 		}
 		
 		
 		[Test]
 		public void ConstructorWithParams ()
 		{
-			ReportSettings rs = new ReportSettings (this.defaultSize,reportName,"FileName");
+			ReportSettings rs = new ReportSettings (GlobalValues.DefaultPageSize,reportName,"FileName");
 			Assert.IsNotNull(rs,"Should not be null");
-			
-			Assert.AreEqual(defaultSize,rs.PageSize);
+			FileInfo fileInfo = new System.IO.FileInfo(rs.FileName);
+			Assert.AreEqual(GlobalValues.DefaultPageSize,rs.PageSize);
 			Assert.AreEqual(reportName,rs.ReportName,"Should be 'ReportName'");
-			Assert.AreEqual(fileName,rs.FileName,"Should be FileName.srd'");
+			Assert.AreEqual(fileName,fileInfo.Name,"Should be FileName.srd'");
 		}
 		
 		
 		[Test]
 		public void ConstructorWithEmptyReportName ()
 		{
-			ReportSettings rs = new ReportSettings (defaultSize,"","FileName");
+			ReportSettings rs = new ReportSettings (GlobalValues.DefaultPageSize,"","FileName");
+			FileInfo fileInfo = new System.IO.FileInfo(rs.FileName);
 			Assert.IsNotNull(rs,"Should not be null");
 			Assert.AreEqual(GlobalValues.DefaultReportName,rs.ReportName,"Should be 'Report1'");
-			Assert.AreEqual(fileName,rs.FileName);
+			Assert.AreEqual(fileName,fileInfo.Name);
 		}
 		
 		
 		[Test]
 		public void ConstructorWithEmptyFileName ()
 		{
-			ReportSettings rs = new ReportSettings (defaultSize,reportName,"");
+			ReportSettings rs = new ReportSettings (GlobalValues.DefaultPageSize,reportName,"");
 			Assert.AreEqual(rs.ReportName,reportName,"Should be 'ReportName'");
-			Assert.AreEqual(rs.FileName,GlobalValues.PlainFileName,"Should be 'report1.srd'");
+			FileInfo fileInfo = new System.IO.FileInfo(rs.FileName);
+			Assert.AreEqual(GlobalValues.PlainFileName,fileInfo.Name,"Should be 'report1.srd'");
 		}
 		
+		#endregion
+		
+		#region Collections 
 		
 		[Test]
 		public void CheckDefaultCollections ()
@@ -82,7 +91,11 @@ namespace ICSharpCode.Reports.Core.Test
 			Assert.IsNotNull (rs.ParameterCollection);
 			Assert.AreEqual (0,rs.ParameterCollection.Count);
 				
+			Assert.IsNotNull(rs.AvailableFieldsCollection);
+			Assert.AreEqual(0,rs.AvailableFieldsCollection.Count);
 		}
+		
+		#endregion
 		
 		
 		[Test]
@@ -92,7 +105,7 @@ namespace ICSharpCode.Reports.Core.Test
 			Assert.AreEqual(true,rs.UseStandardPrinter,"StandartPrinter should be 'true'");
 			Assert.AreEqual (rs.GraphicsUnit,System.Drawing.GraphicsUnit.Pixel,"GraphicsUnit should be 'millimeter'");
 			
-			Assert.AreEqual (new System.Windows.Forms.Padding(5),rs.Padding);
+//			Assert.AreEqual (new System.Windows.Forms.Padding(5),rs.Padding);
 		
 			Assert.AreEqual (GlobalEnums.ReportType.FormSheet,rs.ReportType);
 			Assert.AreEqual (GlobalEnums.PushPullModel.FormSheet,rs.DataModel);
@@ -105,6 +118,7 @@ namespace ICSharpCode.Reports.Core.Test
 			Assert.AreEqual (10,rs.DefaultFont.Size);
 		}
 		
+		#region Report - FileName
 		
 		[Test]
 		public void BlankReportNameReturnsDefaultReportName()
@@ -119,8 +133,42 @@ namespace ICSharpCode.Reports.Core.Test
 		{
 			ReportSettings rs = new ReportSettings();
 			rs.FileName = String.Empty;
-			Assert.AreEqual(GlobalValues.PlainFileName,rs.FileName);
+			FileInfo fileInfo = new System.IO.FileInfo(rs.FileName);
+			Assert.AreEqual(GlobalValues.PlainFileName,fileInfo.Name);
 		}
+		
+		#endregion
+		
+		#region Size and margin
+		
+		[Test]
+		public void DefaultPageSize ()
+		{
+			ReportSettings rs = new ReportSettings();
+			Assert.AreEqual(GlobalValues.DefaultPageSize,rs.PageSize);
+		}
+		
+		[Test]
+		public void CustomePageSize ()
+		{
+			Size customSize = new Size(200,150);
+			ReportSettings rs = new ReportSettings(customSize,"aa","bb");
+			Assert.AreEqual(customSize,rs.PageSize);
+		}
+		
+		[Test]
+		public void DefaultReportMargin ()
+		{
+			ReportSettings rs = new ReportSettings();
+			System.Drawing.Printing.Margins margin = new System.Drawing.Printing.Margins(rs.LeftMargin,rs.RightMargin,
+			                                                                             rs.TopMargin,rs.BottomMargin);
+			Assert.AreEqual(margin.Left,rs.LeftMargin);
+			Assert.AreEqual(GlobalValues.DefaultPageMargin,margin);
+		}
+		
+		#endregion
+		
+		
 		
 		
 		[TestFixtureSetUp]

@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace ICSharpCode.Reports.Addin.Test.Wizard
 {
 	[TestFixture]
-	[Ignore("ignore until problem with no installed printer is fixed")]
 	public class ReportStructureFixture
 	{
 		[Test]

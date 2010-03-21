@@ -16,37 +16,28 @@ using NUnit.Framework;
 namespace ICSharpCode.Reports.Addin.Test.Wizard
 {
 	[TestFixture]
-	[Ignore]
 	public class GeneratePlainReportFixture_2
 	{
-		ReportModel modelForStandardSettings;
-		
-		[Test]
-		public void FileName()
-		{
-			
-			ReportSettings settings = this.modelForStandardSettings.ReportSettings;
-			Assert.AreEqual(GlobalValues.PlainFileName,settings.FileName,"Wrong FileName");
-		}
+		ReportModel mockReportModel;
 		
 		[Test]
 		public void StandartPrinter ()
 		{
-			ReportSettings settings = this.modelForStandardSettings.ReportSettings;
+			ReportSettings settings = this.mockReportModel.ReportSettings;
 			Assert.AreEqual(true,settings.UseStandardPrinter,"Standarprinter has should be 'true");
 		}
 		
 		[Test]
 		public void PushPullModel ()
 		{
-			ReportSettings settings = this.modelForStandardSettings.ReportSettings;
+			ReportSettings settings = this.mockReportModel.ReportSettings;
 			Assert.AreEqual(GlobalEnums.PushPullModel.FormSheet,settings.DataModel,"Wrong PusPullModel");
 		}
 		
 		[Test]
 		public void DataAcessStuffShouldBeEmpty ()
 		{
-			ReportSettings settings = this.modelForStandardSettings.ReportSettings;
+			ReportSettings settings = this.mockReportModel.ReportSettings;
 			Assert.IsTrue(String.IsNullOrEmpty(settings.ConnectionString),"ConnectionString should be empty");
 			Assert.IsTrue(String.IsNullOrEmpty(settings.CommandText),"CommandText should be empty");
 			Assert.AreEqual (System.Data.CommandType.Text,settings.CommandType);
@@ -56,14 +47,14 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 		[Test]
 		public void ModelContainFiveSections ()
 		{
-			Assert.AreEqual(5,this.modelForStandardSettings.SectionCollection.Count);
+			Assert.AreEqual(5,this.mockReportModel.SectionCollection.Count);
 		}
 		
 		
 		[Test]
 		public void PageHeaderShouldContainNoItem ()
 		{
-			ICSharpCode.Reports.Core.BaseSection s = this.modelForStandardSettings.ReportHeader;
+			ICSharpCode.Reports.Core.BaseSection s = this.mockReportModel.ReportHeader;
 			ReportItemCollection c = s.Items;
 			Assert.AreEqual(0,s.Items.Count);
 		}
@@ -72,7 +63,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 		[Test]
 		public void DetailShouldContainNoItem ()
 		{
-			ICSharpCode.Reports.Core.BaseSection s = this.modelForStandardSettings.DetailSection;
+			ICSharpCode.Reports.Core.BaseSection s = this.mockReportModel.DetailSection;
 			Assert.AreEqual(0,s.Items.Count);
 		}
 		
@@ -80,7 +71,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 		[Test]
 		public void PageFooterShouldContainNoItem ()
 		{
-			ICSharpCode.Reports.Core.BaseSection s = this.modelForStandardSettings.PageFooter;
+			ICSharpCode.Reports.Core.BaseSection s = this.mockReportModel.PageFooter;
 			Assert.AreEqual(0,s.Items.Count);
 		}
 		
@@ -110,7 +101,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 		[TestFixtureSetUp]
 		public void CreateModels ()
 		{
-			this.modelForStandardSettings = CreateModel();
+			this.mockReportModel = CreateModel();
 		}
 	}
 }

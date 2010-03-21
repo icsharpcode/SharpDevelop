@@ -142,6 +142,10 @@ namespace ICSharpCode.Reports.Core {
 		}
 		                                  
 	
+		public static Size DefaultPageSize {get {return new Size(827,1169);}}
+		
+		public static Margins DefaultPageMargin {get {return new Margins(50,50,50,50);}}
+		
 		#endregion
 		
 		
