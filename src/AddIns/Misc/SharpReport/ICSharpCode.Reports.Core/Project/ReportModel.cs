@@ -17,9 +17,6 @@ namespace ICSharpCode.Reports.Core
 		ReportSettings reportSettings ;
 		ReportSectionCollection sectionCollection;
 		
-//		public ReportModel()
-//		{
-//		}
 		
 		public static ReportModel Create() 
 		{

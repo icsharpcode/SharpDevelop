@@ -50,7 +50,7 @@ namespace ICSharpCode.Reports.Core.Test
 		{
 			ReportModel m = ReportModel.Create (System.Drawing.GraphicsUnit.Inch);
 			BaseSection s = m.ReportHeader;
-			Assert.AreEqual(GlobalEnums.ReportSection.ReportHeader.ToString(),s.Name);
+			Assert.AreEqual(ReportSectionNames.ReportHeader,s.Name);
 		}
 		
 		[Test]
@@ -58,7 +58,7 @@ namespace ICSharpCode.Reports.Core.Test
 		{
 			ReportModel m = ReportModel.Create (System.Drawing.GraphicsUnit.Inch);
 			BaseSection s = m.PageHeader;
-			Assert.AreEqual(GlobalEnums.ReportSection.ReportPageHeader.ToString(),s.Name);
+			Assert.AreEqual(ReportSectionNames.ReportPageHeader,s.Name);
 		}
 		
 		[Test]
@@ -66,7 +66,7 @@ namespace ICSharpCode.Reports.Core.Test
 		{
 			ReportModel m = ReportModel.Create (System.Drawing.GraphicsUnit.Inch);
 			BaseSection s = m.DetailSection;
-			Assert.AreEqual(GlobalEnums.ReportSection.ReportDetail.ToString(),s.Name);
+			Assert.AreEqual(ReportSectionNames.ReportDetail,s.Name);
 		}
 		
 		
@@ -75,7 +75,7 @@ namespace ICSharpCode.Reports.Core.Test
 		{
 			ReportModel m = ReportModel.Create (System.Drawing.GraphicsUnit.Inch);
 			BaseSection s = m.PageFooter;
-			Assert.AreEqual(GlobalEnums.ReportSection.ReportPageFooter.ToString(),s.Name);
+			Assert.AreEqual(ReportSectionNames.ReportPageFooter,s.Name);
 		}
 		
 		[Test]
@@ -83,7 +83,7 @@ namespace ICSharpCode.Reports.Core.Test
 		{
 			ReportModel m = ReportModel.Create (System.Drawing.GraphicsUnit.Inch);
 			BaseSection s = m.ReportFooter;
-			Assert.AreEqual(GlobalEnums.ReportSection.ReportFooter.ToString(),s.Name);
+			Assert.AreEqual(ReportSectionNames.ReportFooter,s.Name);
 		}
 		
 		[Test]

@@ -73,7 +73,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <summary>
 		/// Type of Sections used
 		/// </summary>
-		public enum ReportSection {
+		internal enum ReportSection {
 			ReportHeader,
 			ReportPageHeader,
 			ReportDetail,

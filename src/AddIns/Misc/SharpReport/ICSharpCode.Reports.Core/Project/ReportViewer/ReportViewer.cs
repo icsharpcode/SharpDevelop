@@ -199,6 +199,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			
 			Layouter layouter = new Layouter();
 			IReportCreator reportCreator = FormPageBuilder.CreateInstance(reportModel,layouter);
+			reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
 			reportCreator.PageCreated += OnPageCreated;
 			reportCreator.BuildExportList();
 			ShowCompleted ();
@@ -233,11 +234,39 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		}
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e ) {
-			Console.WriteLine ("ReportViewer - SectionRenderEventargs from <{0}> with {1} item ",e.Section.Name,e.Section.Items.Count);
+//			Console.WriteLine ("ReportViewer - SectionRenderEventargs from <{0}> with {1} item ",e.Section.Name,e.Section.Items.Count);
 			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,e);
+			string sectionName = e.Section.Name;
+			
+			if (sectionName == ReportSectionNames.ReportHeader) {
+				Console.WriteLine("xx  " + ReportSectionNames.ReportHeader);
+			} 
+			
+			else if (sectionName == ReportSectionNames.ReportPageHeader) {
+				Console.WriteLine("xx " +ReportSectionNames .ReportPageHeader);
+			} 
+			
+			else if (sectionName == ReportSectionNames.ReportDetail){
+				Console.WriteLine("xx " + ReportSectionNames.ReportDetail);
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportPageFooter){
+				Console.WriteLine("xx " + ReportSectionNames.ReportPageFooter);
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportFooter){
+				Console.WriteLine("xx " + ReportSectionNames.ReportFooter);
+			}
+			
+			
+			else{
+				Console.WriteLine("keine ahnung ");
+			}
 		}
 		
 		//testcode to handle sectionrenderevent
+		
+	
 		
 		/*
 		private void PushPrinting (object sender,SectionRenderEventArgs e)

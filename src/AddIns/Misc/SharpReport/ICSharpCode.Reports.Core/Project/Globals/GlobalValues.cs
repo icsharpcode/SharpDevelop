@@ -26,7 +26,7 @@ using System.Text;
 namespace ICSharpCode.Reports.Core {
 	public sealed class GlobalValues
 	{
-		private static string reportString = "Report";
+//		private static string reportString = "Report";
 		private static string reportExtension = ".srd";
 		private static string xsdExtension = "xsd";
 		private static string reportFileName = "Report1";
@@ -77,22 +77,21 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		#endregion
-		
-		
+	
 		#region Formatting
 		/// <summary>
 		/// Build a StringFormat witch is used allover the code to
 		/// Format all String's the same way.
 		/// </summary>
 		/// <returns>a StringFormat object</returns>
-		
+		/*
 		public static StringFormat StandardStringFormat()
 		{
 			StringFormat sFormat = StringFormat.GenericTypographic;
 			sFormat.FormatFlags |= StringFormatFlags.LineLimit;
 			return sFormat;
 		}
-		
+		*/
 		#endregion
 		
 		
@@ -100,11 +99,12 @@ namespace ICSharpCode.Reports.Core {
 		/// <summary>
 		/// The value on witch the Control is drawing bigger than the text inside
 		/// </summary>
-		public static int EnlargeControl 
+		/*
+		public static int EnlargeControl
 		{
 			get {return enlargeControl;}
 		}
-		
+		*/
 		
 		public static Margins ControlMargins 
 		{
@@ -151,13 +151,14 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region String Constant's
 		
+		/*
 		public static string ReportString
 		{
   			get {
   				return reportString;
   			}
   		}
-		
+		*/
 		
 		public static string ReportExtension 
 		{
@@ -192,7 +193,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		
+		/*
 		public static string FunctionStartTag
 		{
 			get {return "{=";}
@@ -203,13 +204,15 @@ namespace ICSharpCode.Reports.Core {
 		{
 			get {return "}";}
 		}
+		*/
 		
-		
+		/*
 		public static string StringParserStartTag
 		{
 		get {return "${";}
 			
 		}
+		*/
 		
 		#endregion
 		

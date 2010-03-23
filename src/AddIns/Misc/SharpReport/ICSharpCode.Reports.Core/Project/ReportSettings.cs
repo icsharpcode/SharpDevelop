@@ -119,6 +119,10 @@ namespace ICSharpCode.Reports.Core{
 			this.bottomMargin = GlobalValues.DefaultPageMargin.Bottom;
 			this.leftMargin = GlobalValues.DefaultPageMargin.Left;
 			this.rightMargin = GlobalValues.DefaultPageMargin.Right;
+			this.availableFields = new AvailableFieldsCollection();
+			this.groupingsCollection = new ColumnCollection();
+			this.sortingCollection = new SortColumnCollection();
+			this.parameterCollection = new ParameterCollection();
 		}
 		
 		#endregion
@@ -170,7 +174,7 @@ namespace ICSharpCode.Reports.Core{
 				return Path.GetFullPath(fileName);
 			}
 			set {
-					fileName = value;
+				fileName = value;
 			}
 		}
 		
@@ -275,33 +279,20 @@ namespace ICSharpCode.Reports.Core{
 		
 		[Browsable(false)]
 		public  AvailableFieldsCollection AvailableFieldsCollection{
-			get {
-				if (this.availableFields == null) {
-					this.availableFields = new AvailableFieldsCollection();
-				}
-				return this.availableFields;
-			}
-		}
+			get { return this.availableFields;}}
+		
 		/// <summary>
 		/// Get/Set a Collection of <see cref="SortColumn">SortColumn</see>
 		/// </summary>
 		
 		public SortColumnCollection SortColumnCollection {
-			get {
-				if (this.sortingCollection == null) {
-					return new SortColumnCollection();
-				}
-				return sortingCollection;
-			}
+			get {return sortingCollection;}
 		}
 		
 		
 		[Browsable(false)]
 		public ColumnCollection GroupColumnsCollection {
 			get {
-				if (this.groupingsCollection == null) {
-					groupingsCollection = new ColumnCollection();
-				}
 				return groupingsCollection;
 			}
 		}
@@ -315,12 +306,7 @@ namespace ICSharpCode.Reports.Core{
 		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public ParameterCollection ParameterCollection
 		{
-			get{
-				if (parameterCollection == null) {
-					parameterCollection = new ParameterCollection();
-				}
-				return parameterCollection;
-			}
+			get{return parameterCollection;}
 		}
 		
 		#endregion

@@ -236,6 +236,7 @@
     <Compile Include="Project\Globals\GlobalValues.cs" />
     <Compile Include="Project\Globals\GraphicsUnit.cs" />
     <Compile Include="Project\Globals\PdfHelper.cs" />
+    <Compile Include="Project\Globals\ReportSectionNames.cs" />
     <Compile Include="Project\Globals\UnitConverter.cs" />
     <Compile Include="Project\Interfaces\IDataAccessStrategy.cs" />
     <Compile Include="Project\Interfaces\IDataViewStrategy.cs" />
