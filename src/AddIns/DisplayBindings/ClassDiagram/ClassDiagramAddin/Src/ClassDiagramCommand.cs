@@ -92,7 +92,7 @@ namespace ClassDiagramAddin
 		{
 			get
 			{
-				ToolStrip ts = ((ToolBarComboBox)this.Owner).Owner;
+				ToolStrip ts = ((ToolBarComboBox)this.ComboBox).Owner;
 				if (ts != null)
 					return (ClassCanvas)ts.Parent;
 				return null;
@@ -119,7 +119,7 @@ namespace ClassDiagramAddin
 		protected override void OnOwnerChanged(EventArgs e)
 		{
 			base.OnOwnerChanged(e);
-			ToolBarComboBox box1 = (ToolBarComboBox) this.Owner;
+			ToolBarComboBox box1 = (ToolBarComboBox) this.ComboBox;
 			comboBox = box1.ComboBox;
 			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
 			comboBox.Items.AddRange(new object[] {"10%", "25%", "50%", "75%",
