@@ -369,8 +369,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				oldLength = new GridLength(oldActualValue);
 			}
 			double percentage = insertionPosition / oldActualValue;
-			newLength1 = new GridLength((int)(oldLength.Value * percentage), oldLength.GridUnitType);
-			newLength2 = new GridLength((int)(oldLength.Value - newLength1.Value), oldLength.GridUnitType);
+			newLength1 = new GridLength(oldLength.Value * percentage, oldLength.GridUnitType);
+			newLength2 = new GridLength(oldLength.Value - newLength1.Value, oldLength.GridUnitType);
 		}
 		#endregion
 		
