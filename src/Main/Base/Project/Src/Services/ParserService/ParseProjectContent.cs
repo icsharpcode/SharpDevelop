@@ -9,12 +9,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using System.Threading;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -246,7 +247,6 @@ namespace ICSharpCode.SharpDevelop
 		internal void Initialize2(IProgressMonitor progressMonitor)
 		{
 			if (!initializing) return;
-			//int progressStart = progressMonitor.WorkDone;
 			try {
 				IProjectContent[] referencedContents;
 				lock (this.ReferencedContents) {
@@ -261,20 +261,33 @@ namespace ICSharpCode.SharpDevelop
 				}
 				
 				ParseableFileContentFinder finder = new ParseableFileContentFinder();
-				var fileContents =
+				var fileContents = (
 					from p in project.Items.AsParallel().WithCancellation(progressMonitor.CancellationToken)
 					where !ItemType.NonFileItemTypes.Contains(p.ItemType) && !String.IsNullOrEmpty(p.FileName)
-					select finder.Create(p);
-				fileContents.ForAll(
-					entry => {
-						ITextBuffer content = entry.GetContent();
-						if (content != null)
-							ParserService.ParseFile(this, entry.FileName, content);
+					select FileName.Create(p.FileName)
+				).ToList();
+				
+				object progressLock = new object();
+				double fileCountInverse = 1.0 / fileContents.Count;
+				Parallel.ForEach(
+					fileContents,
+					fileName => {
+						ParseableFileContentEntry entry = finder.Create(fileName);
+						// Don't read files we don't have a parser for.
+						// This avoids loading huge files (e.g. sdps) when we have no intention of parsing them.
+						if (ParserService.GetParser(fileName) != null) {
+							ITextBuffer content = entry.GetContent();
+							if (content != null)
+								ParserService.ParseFile(this, fileName, content);
+						}
+						lock (progressLock) {
+							progressMonitor.Progress += fileCountInverse;
+						}
 					}
 				);
 			} finally {
 				initializing = false;
-				//progressMonitor.WorkDone = progressStart + enumerator.ItemCount;
+				progressMonitor.Progress = 1;
 			}
 		}
 		

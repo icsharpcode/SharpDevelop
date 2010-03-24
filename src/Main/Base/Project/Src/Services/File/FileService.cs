@@ -315,11 +315,11 @@ namespace ICSharpCode.SharpDevelop
 		/// Gets a list of the names of the files that are open as primary files
 		/// in view contents.
 		/// </summary>
-		public static IList<string> GetOpenFiles()
+		public static IList<FileName> GetOpenFiles()
 		{
-			List<string> fileNames = new List<string>();
+			List<FileName> fileNames = new List<FileName>();
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				string contentName = content.PrimaryFileName;
+				FileName contentName = content.PrimaryFileName;
 				if (contentName != null && !fileNames.Contains(contentName))
 					fileNames.Add(contentName);
 			}

@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class ParseableFileContentEntry
 	{
-		public string FileName { get; private set; }
+		public FileName FileName { get; private set; }
 		ITextBuffer openContent;
 		
 		public ITextBuffer GetContent()
@@ -38,12 +38,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		internal ParseableFileContentEntry(ProjectItem item, IList<string> viewContentFileNamesCollection)
+		internal ParseableFileContentEntry(FileName fileName, FileName[] viewContentFileNamesCollection)
 		{
-			this.FileName = item.FileName;
-			foreach (string name in viewContentFileNamesCollection) {
+			this.FileName = fileName;
+			foreach (FileName name in viewContentFileNamesCollection) {
 				if (FileUtility.IsEqualFileName(name, this.FileName)) {
-					openContent = WorkbenchSingleton.SafeThreadFunction(ParserService.GetParseableFileContent, this.FileName);
+					openContent = WorkbenchSingleton.SafeThreadFunction(ParserService.GetParseableFileContent, this.FileName.ToString());
 					break;
 				}
 			}
@@ -56,14 +56,14 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class ParseableFileContentFinder
 	{
-		IList<string> viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction(FileService.GetOpenFiles);
+		FileName[] viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction(FileService.GetOpenFiles).ToArray();
 		
 		/// <summary>
 		/// Retrieves the file contents for the specified project items.
 		/// </summary>
-		public ParseableFileContentEntry Create(ProjectItem p)
+		public ParseableFileContentEntry Create(FileName fileName)
 		{
-			return new ParseableFileContentEntry(p, viewContentFileNamesCollection);
+			return new ParseableFileContentEntry(fileName, viewContentFileNamesCollection);
 		}
 	}
 }

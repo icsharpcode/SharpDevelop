@@ -55,7 +55,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			ChooseEncodingDialog dlg = new ChooseEncodingDialog();
 			dlg.Owner = WorkbenchSingleton.MainWindow;
 			using (Stream stream = file.OpenRead()) {
-				using (StreamReader reader = FileReader.OpenStream(stream, Encoding.UTF8)) {
+				using (StreamReader reader = FileReader.OpenStream(stream, FileService.DefaultFileEncoding.GetEncoding())) {
 					reader.Peek(); // force reader to auto-detect encoding
 					dlg.Encoding = reader.CurrentEncoding;
 				}

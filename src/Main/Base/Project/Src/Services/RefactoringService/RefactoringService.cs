@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				progressMonitor.TaskName = StringParser.Parse("${res:SharpDevelop.Refactoring.FindingReferences}");
 			
 			foreach (ProjectItem item in files) {
-				var entry = finder.Create(item);
+				var entry = finder.Create(FileName.Create(item.FileName));
 				
 				if (progressMonitor != null) {
 					progressMonitor.Progress += 1.0 / files.Count;
