@@ -223,6 +223,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				this.ReportTargetStartedEvents = true;
 				this.ReportUnknownEvents = true;
 				loggers.Add(new SDConsoleLogger(feedbackSink, LoggerVerbosity.Diagnostic));
+				globalProperties["MSBuildTargetsVerbose"] = "true";
 			}
 			//loggers.Add(new BuildLogFileLogger(project.FileName + ".log", LoggerVerbosity.Diagnostic));
 			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {

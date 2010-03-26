@@ -82,9 +82,12 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal void ReInitialize1(IProgressMonitor progressMonitor)
 		{
+			var mscorlib = AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
+			// don't fetch mscorlib within lock - finding the correct registry might access the project, causing
+			// a deadlock between IProject.SyncRoot and the ReferencedContents lock
 			lock (ReferencedContents) {
 				ReferencedContents.Clear();
-				AddReferencedContent(AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib);
+				AddReferencedContent(mscorlib);
 			}
 			// prevent adding event handler twice
 			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
