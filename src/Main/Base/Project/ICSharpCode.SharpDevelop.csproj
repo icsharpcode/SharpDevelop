@@ -202,6 +202,10 @@
       <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\ProjectAndSolutionOptions.xaml.cs">
+      <DependentUpon>ProjectAndSolutionOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectCulturePanel.xaml.cs">
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -256,7 +260,7 @@
     <Compile Include="Src\Project\Converter\UpgradeViewContent.cs" />
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\BuildLogFileLogger.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\SDConsoleLogger.cs" />
     <Compile Include="Src\Project\MSBuildEngine\BuildWorkerManager.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildEngine.cs" />
     <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
@@ -690,8 +694,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\ProjectAndSolutionOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\ProjectAndSolutionOptionsPanel.xfrm" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\AbstractProjectNode.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\ClassNodeBuilders.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\NodeBuilder\DefaultClassNodeBuilder.cs" />
@@ -826,6 +828,7 @@
       <DependentUpon>GotoDialog.cs</DependentUpon>
     </Page>
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\LoadSaveOptions.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\ProjectAndSolutionOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectCulturePanel.xaml" />
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />

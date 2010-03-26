@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void ReportMessage(string message)
 			{
-				messageView.AppendLine(ICSharpCode.Core.StringParser.Parse(message));
+				messageView.AppendLine(message);
 			}
 			
 			public void Done(bool success)
@@ -198,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			engine.cancellationRegistration = engine.progressMonitor.CancellationToken.Register(engine.BuildCancelled);
 			
-			engine.ReportMessageInternal("${res:MainWindow.CompilerMessages.BuildStarted}");
+			engine.ReportMessageLine("${res:MainWindow.CompilerMessages.BuildStarted}");
 			engine.StartBuildProjects();
 			engine.UpdateProgressTaskName();
 		}
@@ -516,15 +516,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (buildIsCancelled) {
 				results.Result = BuildResultCode.Cancelled;
 				
-				ReportMessageInternal("${res:MainWindow.CompilerMessages.BuildCancelled}");
+				ReportMessageLine("${res:MainWindow.CompilerMessages.BuildCancelled}");
 			} else if (rootNode.hasErrors) {
 				results.Result = BuildResultCode.Error;
 				
-				ReportMessageInternal("${res:MainWindow.CompilerMessages.BuildFailed}" + buildTime);
+				ReportMessageLine("${res:MainWindow.CompilerMessages.BuildFailed}" + buildTime);
 			} else {
 				results.Result = BuildResultCode.Success;
 				
-				ReportMessageInternal("${res:MainWindow.CompilerMessages.BuildFinished}" + buildTime);
+				ReportMessageLine("${res:MainWindow.CompilerMessages.BuildFinished}" + buildTime);
 			}
 			cancellationRegistration.Dispose();
 			progressMonitor.Dispose();
@@ -635,6 +635,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				// to release the output lock again here
 				LogBuildFinished(nodeWithOutputLock);
 			}
+		}
+		
+		void ReportMessageLine(string message)
+		{
+			ReportMessageInternal(StringParser.Parse(message));
 		}
 		
 		void ReportMessageInternal(string message)

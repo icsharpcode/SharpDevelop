@@ -523,6 +523,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			// start of default implementation
 			var configMatchings = this.ParentSolution.GetActiveConfigurationsAndPlatformsForProjects(options.SolutionConfiguration, options.SolutionPlatform);
 			ProjectBuildOptions projectOptions = new ProjectBuildOptions(isRootBuildable ? options.ProjectTarget : options.TargetForDependencies);
+			projectOptions.BuildOutputVerbosity = options.BuildOutputVerbosity;
 			// find the project configuration
 			foreach (var matching in configMatchings) {
 				if (matching.Project == this) {

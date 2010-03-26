@@ -2,6 +2,10 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:ICSharpCode.Core.Presentation"
 >
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="/ICSharpCode.Core.Presentation;component/NumericUpDown.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+	
 	<Style TargetType="{x:Type Window}" x:Key="{x:Static local:GlobalStyles.WindowStyleKey}">
 		<Setter Property="UseLayoutRounding" Value="True" />
 		<Setter Property="TextOptions.TextFormattingMode" Value="Display" />

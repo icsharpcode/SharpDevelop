@@ -44,7 +44,7 @@ namespace ICSharpCode.CodeAnalysis
 			public void Initialize(IEventSource eventSource)
 			{
 				this.eventSource = eventSource;
-				engineWorker.OutputText("${res:ICSharpCode.CodeAnalysis.RunningFxCopOn} " + Path.GetFileNameWithoutExtension(engineWorker.CurrentProjectFile));
+				engineWorker.OutputText(StringParser.Parse("${res:ICSharpCode.CodeAnalysis.RunningFxCopOn} " + Path.GetFileNameWithoutExtension(engineWorker.CurrentProjectFile)));
 				eventSource.ErrorRaised += OnError;
 				eventSource.WarningRaised += OnWarning;
 			}

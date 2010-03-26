@@ -55,7 +55,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			// 'BuildingSolutionFile' tells MSBuild that we took care of building a project's dependencies
 			// before trying to build the project itself. This speeds up compilation because it prevents MSBuild from
 			// repeatedly looking if a project needs to be rebuilt.
-			{ "BuildingSolutionFile", "true" }
+			{ "BuildingSolutionFile", "true" },
+			// BuildingSolutionFile does not work in MSBuild 4.0 anymore, but BuildingInsideVisualStudio
+			// can be used to get the same effect.
+			{ "BuildingInsideVisualStudio", "true" }
 		};
 		
 		/// <summary>
@@ -189,10 +192,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
 			
-			List<ILogger> loggers = new List<ILogger> {
-				new SharpDevelopLogger(this),
-				//new BuildLogFileLogger(project.FileName + ".log", LoggerVerbosity.Diagnostic)
-			};
+			List<ILogger> loggers = new List<ILogger>();
+			loggers.Add(new SharpDevelopLogger(this));
+			if (options.BuildOutputVerbosity == BuildOutputVerbosity.Diagnostic) {
+				this.ReportMessageEvents = true;
+				this.ReportAllTaskFinishedEvents = true;
+				this.ReportAllTaskStartedEvents = true;
+				this.ReportTargetFinishedEvents = true;
+				this.ReportTargetStartedEvents = true;
+				this.ReportUnknownEvents = true;
+				loggers.Add(new SDConsoleLogger(feedbackSink, LoggerVerbosity.Diagnostic));
+			}
+			//loggers.Add(new BuildLogFileLogger(project.FileName + ".log", LoggerVerbosity.Diagnostic));
 			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
 				loggers.Add(loggerProvider.CreateLogger(this));
 			}
@@ -329,7 +340,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				this.worker = engine;
 			}
 			
-			void AppendText(string text)
+			void AppendLine(string text)
 			{
 				worker.OutputText(text);
 			}
@@ -362,7 +373,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				activeTaskName = e.TaskName;
 				if (MSBuildEngine.CompileTaskNames.Contains(e.TaskName.ToLowerInvariant())) {
-					AppendText("${res:MainWindow.CompilerMessages.CompileVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile));
+					AppendLine(StringParser.Parse("${res:MainWindow.CompilerMessages.CompileVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile)));
 				}
 			}
 			

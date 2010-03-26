@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using Microsoft.Build.Framework;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -43,6 +44,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Specifies the project platform used for the build.
 		/// </summary>
 		public string Platform { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the verbosity of build output.
+		/// </summary>
+		public BuildOutputVerbosity BuildOutputVerbosity { get; set; }
+	}
+	
+	public enum BuildOutputVerbosity
+	{
+		Normal,
+		Diagnostic
 	}
 	
 	/// <summary>
@@ -65,6 +77,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				PropertyService.Set("SharpDevelop.BuildParallelProjectCount", value);
+			}
+		}
+		
+		public static BuildOutputVerbosity DefaultBuildOutputVerbosity {
+			get {
+				return PropertyService.Get("SharpDevelop.DefaultBuildOutputVerbosity", BuildOutputVerbosity.Normal);
+			}
+			set {
+				PropertyService.Set("SharpDevelop.DefaultBuildOutputVerbosity", value);
 			}
 		}
 		
@@ -91,6 +112,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public int ParallelProjectCount { get; set; }
 		
+		/// <summary>
+		/// Gets/Sets the verbosity of build output.
+		/// </summary>
+		public BuildOutputVerbosity BuildOutputVerbosity { get; set; }
+		
 		public BuildOptions(BuildTarget target, BuildCallback callback)
 		{
 			this.callback = callback;
@@ -99,6 +125,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			this.BuildDependentProjects = true;
 			this.ParallelProjectCount = DefaultParallelProjectCount;
+			this.BuildOutputVerbosity = DefaultBuildOutputVerbosity;
 		}
 		
 		readonly BuildCallback callback;
