@@ -11,7 +11,7 @@
     <ApplicationVersion>1.0.0.*</ApplicationVersion>
     <!-- Most people will use Publish dialog in Visual Studio to increment this -->
     <MinFrameworkVersionRequired>3.0</MinFrameworkVersionRequired>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion> <!-- required as workaround for bug compiling with 32-bit MSBuild 4.0 on 64-bit Windows without having VS2010 installed -->
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -24,7 +24,6 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-	<TrackFileAccess>False</TrackFileAccess> <!-- workaround for bug compiling with 32-bit MSBuild 4.0 on 64-bit Windows without having VS2010 installed -->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -71,6 +70,9 @@
     <Reference Include="ReachFramework" />
     <Reference Include="WindowsFormsIntegration">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>

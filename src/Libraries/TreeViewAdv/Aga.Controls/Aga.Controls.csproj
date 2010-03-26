@@ -19,7 +19,7 @@
     </SccProvider>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
-    <TrackFileAccess>false</TrackFileAccess> <!-- workaround for bug compiling with 32-bit MSBuild 4.0 on 64-bit Windows without having VS2010 installed -->
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion> <!-- workaround for bug compiling with 32-bit MSBuild 4.0 on 64-bit Windows without having VS2010 installed -->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

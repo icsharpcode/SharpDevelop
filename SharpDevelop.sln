@@ -465,6 +465,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -815,6 +817,10 @@ Global
 		{B5F54272-49F0-40DB-845A-8D837875D3BA}.Release|Any CPU.ActiveCfg = Release|x86
 		{B5F54272-49F0-40DB-845A-8D837875D3BA}.Release|Win32.Build.0 = Release|x86
 		{B5F54272-49F0-40DB-845A-8D837875D3BA}.Release|Win32.ActiveCfg = Release|x86
+		{B5F54272-49F0-40DB-845A-8D837875D3BA}.Debug|x86.Build.0 = Debug|x86
+		{B5F54272-49F0-40DB-845A-8D837875D3BA}.Debug|x86.ActiveCfg = Debug|x86
+		{B5F54272-49F0-40DB-845A-8D837875D3BA}.Release|x86.Build.0 = Release|x86
+		{B5F54272-49F0-40DB-845A-8D837875D3BA}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
