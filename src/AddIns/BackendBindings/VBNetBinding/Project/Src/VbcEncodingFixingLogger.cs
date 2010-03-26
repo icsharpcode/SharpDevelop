@@ -16,77 +16,39 @@ namespace VBNetBinding
 	/// <summary>
 	/// Fixes SD2-995 : Special characters not correctly encoded for languages others than English
 	/// </summary>
-	public class VbcEncodingFixingLogger : IMSBuildAdditionalLogger
+	public sealed class VbcEncodingFixingLogger : IMSBuildLoggerFilter
 	{
-		public ILogger CreateLogger(MSBuildEngine engineWorker)
+		public IMSBuildChainedLoggerFilter CreateFilter(MSBuildEngine engine, IMSBuildChainedLoggerFilter nextFilter)
 		{
-			return new VbcLoggerImpl(engineWorker);
+			return new VbcLoggerImpl(engine, nextFilter);
 		}
 		
-		private class VbcLoggerImpl : ILogger
+		sealed class VbcLoggerImpl : IMSBuildChainedLoggerFilter
 		{
-			MSBuildEngine engineWorker;
+			readonly MSBuildEngine engineWorker;
+			readonly IMSBuildChainedLoggerFilter nextFilter;
 			
-			public VbcLoggerImpl(MSBuildEngine engineWorker)
+			public VbcLoggerImpl(MSBuildEngine engineWorker, IMSBuildChainedLoggerFilter nextFilter)
 			{
 				this.engineWorker = engineWorker;
-			}
-			
-			public LoggerVerbosity Verbosity {
-				get {
-					throw new NotImplementedException();
-				}
-				set {
-					throw new NotImplementedException();
-				}
-			}
-			
-			public string Parameters {
-				get {
-					throw new NotImplementedException();
-				}
-				set {
-					throw new NotImplementedException();
-				}
-			}
-			
-			IEventSource eventSource;
-			
-			public void Initialize(IEventSource eventSource)
-			{
-				this.eventSource = eventSource;
-				eventSource.ErrorRaised += OnError;
-				eventSource.WarningRaised += OnWarning;
-			}
-			
-			public void Shutdown()
-			{
-				if (eventSource != null) {
-					eventSource.ErrorRaised -= OnError;
-					eventSource.WarningRaised -= OnWarning;
-					eventSource = null;
-				}
-			}
-			
-			void OnError(object sender, BuildErrorEventArgs e)
-			{
-				FixMessage();
-			}
-			
-			void OnWarning(object sender, BuildWarningEventArgs e)
-			{
-				FixMessage();
-			}
-			
-			void FixMessage()
-			{
-				engineWorker.CurrentErrorOrWarning.ErrorText = FixEncoding(engineWorker.CurrentErrorOrWarning.ErrorText);
-				engineWorker.CurrentErrorOrWarning.FileName = FixEncoding(engineWorker.CurrentErrorOrWarning.FileName);
+				this.nextFilter = nextFilter;
 			}
 			
 			static string FixEncoding(string text)
 			{
 				return Encoding.Default.GetString(ICSharpCode.SharpDevelop.Util.ProcessRunner.OemEncoding.GetBytes(text));
+			}
+			
+			public void HandleError(BuildError error)
+			{
+				error.ErrorText = FixEncoding(error.ErrorText);
+				error.FileName = FixEncoding(error.FileName);
+				nextFilter.HandleError(error);
+			}
+			
+			public void HandleBuildEvent(Microsoft.Build.Framework.BuildEventArgs e)
+			{
+				nextFilter.HandleBuildEvent(e);
 			}
 		}
 	}

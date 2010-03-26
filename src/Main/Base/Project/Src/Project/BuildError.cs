@@ -50,6 +50,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		[NonSerialized]
 		object tag;
 		string contextMenuAddInTreeEntry;
+		string subcategory;
+		string helpKeyword;
+		
+		public string HelpKeyword {
+			get { return helpKeyword; }
+			set { helpKeyword = value; }
+		}
+		
+		public string Subcategory {
+			get { return subcategory; }
+			set { subcategory = value; }
+		}
 		
 		public int Column {
 			get {

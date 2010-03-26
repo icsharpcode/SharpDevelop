@@ -45,7 +45,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (guiBuildCancellation != null) {
 				BuildResults results = new BuildResults();
 				StatusBarService.ShowErrorMessage(Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
-				results.Add(new BuildError(null, Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning")));
+				BuildError error = new BuildError(null, Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
+				results.Add(error);
+				TaskService.Add(new Task(error));
 				results.Result = BuildResultCode.MSBuildAlreadyRunning;
 				if (options.Callback != null) {
 					options.Callback(results);

@@ -31,7 +31,7 @@ namespace ICSharpCode.Core.Presentation
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(NumericUpDown),
 				new FrameworkPropertyMetadata(typeof(NumericUpDown)));
 		}
-
+		
 		TextBox textBox;
 		DragRepeatButton upButton;
 		DragRepeatButton downButton;

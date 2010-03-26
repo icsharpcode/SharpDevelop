@@ -39,8 +39,8 @@
 		<String id="vbc" text = "vbc"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalLoggers">
-		<TaskBoundAdditionalLogger
+	<Path name = "/SharpDevelop/MSBuildEngine/LoggerFilters">
+		<TaskBoundLoggerFilter
 			id = "VbcEncodingFixingLogger"
 			taskname = "vbc"
 			class = "VBNetBinding.VbcEncodingFixingLogger"/>

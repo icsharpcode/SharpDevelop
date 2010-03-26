@@ -34,6 +34,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		const string CompileTaskNamesPath = "/SharpDevelop/MSBuildEngine/CompileTaskNames";
 		const string AdditionalTargetFilesPath = "/SharpDevelop/MSBuildEngine/AdditionalTargetFiles";
 		const string AdditionalLoggersPath = "/SharpDevelop/MSBuildEngine/AdditionalLoggers";
+		const string LoggerFiltersPath = "/SharpDevelop/MSBuildEngine/LoggerFilters";
 		internal const string AdditionalPropertiesPath = "/SharpDevelop/MSBuildEngine/AdditionalProperties";
 		
 		/// <summary>
@@ -75,6 +76,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static readonly IList<IMSBuildAdditionalLogger> AdditionalMSBuildLoggers;
 		
+		/// <summary>
+		/// Gets a list of MSBuild logger filter.
+		/// You can register your loggers by putting them into
+		/// "/SharpDevelop/MSBuildEngine/LoggerFilters"
+		/// </summary>
+		public static readonly IList<IMSBuildLoggerFilter> MSBuildLoggerFilters;
+		
 		public static string SharpDevelopBinPath {
 			get {
 				return Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location);
@@ -89,6 +97,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			);
 			AdditionalTargetFiles = AddInTree.BuildItems<string>(AdditionalTargetFilesPath, null, false);
 			AdditionalMSBuildLoggers = AddInTree.BuildItems<IMSBuildAdditionalLogger>(AdditionalLoggersPath, null, false);
+			MSBuildLoggerFilters = AddInTree.BuildItems<IMSBuildLoggerFilter>(LoggerFiltersPath, null, false);
 		}
 		
 		public static void StartBuild(IProject project, ThreadSafeServiceContainer serviceContainer, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
@@ -110,7 +119,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			engine.StartBuild();
 		}
 		
-		IProject project;
+		readonly string projectFileName;
+		readonly int projectMinimumSolutionVersion;
 		ProjectBuildOptions options;
 		IBuildFeedbackSink feedbackSink;
 		IEnumerable<string> additionalTargetFiles;
@@ -118,7 +128,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		private MSBuildEngine(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
-			this.project = project;
+			this.projectFileName = project.FileName;
+			this.projectMinimumSolutionVersion = project.MinimumSolutionVersion;
 			this.options = options;
 			this.feedbackSink = feedbackSink;
 		}
@@ -163,6 +174,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public bool ReportUnknownEvents { get; set; }
 		
+		/// <summary>
+		/// Gets the name of the project file being compiled by this engine.
+		/// </summary>
+		public string ProjectFileName {
+			get { return projectFileName; }
+		}
+		
 		List<string> interestingTasks = new List<string>();
 		string temporaryFileName;
 		
@@ -174,6 +192,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ICollection<string> InterestingTasks {
 			get { return interestingTasks; }
 		}
+		
+		readonly EventSource eventSource = new EventSource();
+		List<ILogger> loggers = new List<ILogger>();
+		IMSBuildChainedLoggerFilter loggerChain;
 		
 		void StartBuild()
 		{
@@ -192,7 +214,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
 			
-			List<ILogger> loggers = new List<ILogger>();
 			loggers.Add(new SharpDevelopLogger(this));
 			if (options.BuildOutputVerbosity == BuildOutputVerbosity.Diagnostic) {
 				this.ReportMessageEvents = true;
@@ -207,10 +228,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
 				loggers.Add(loggerProvider.CreateLogger(this));
 			}
+			
+			loggerChain = new EndOfChain(this);
+			foreach (IMSBuildLoggerFilter loggerFilter in MSBuildEngine.MSBuildLoggerFilters) {
+				loggerChain = loggerFilter.CreateFilter(this, loggerChain) ?? loggerChain;
+			}
+			
 			WriteAdditionalTargetsToTempFile(globalProperties);
 			
 			BuildJob job = new BuildJob();
-			job.ProjectFileName = project.FileName;
+			job.ProjectFileName = projectFileName;
 			job.Target = options.Target.TargetName;
 			
 			// First remove the flags for the controllable events.
@@ -237,11 +264,23 @@ namespace ICSharpCode.SharpDevelop.Project
 				job.Properties.Add(pair.Key, pair.Value);
 			}
 			
-			if (project.MinimumSolutionVersion <= Solution.SolutionVersionVS2008) {
-				BuildWorkerManager.MSBuild35.RunBuildJob(job, loggers, feedbackSink);
-			} else {
-				BuildWorkerManager.MSBuild40.RunBuildJob(job, loggers, feedbackSink);
+			foreach (ILogger logger in loggers) {
+				logger.Initialize(eventSource);
 			}
+			
+			if (projectMinimumSolutionVersion <= Solution.SolutionVersionVS2008) {
+				BuildWorkerManager.MSBuild35.RunBuildJob(job, loggerChain, OnDone, feedbackSink.ProgressMonitor.CancellationToken);
+			} else {
+				BuildWorkerManager.MSBuild40.RunBuildJob(job, loggerChain, OnDone, feedbackSink.ProgressMonitor.CancellationToken);
+			}
+		}
+		
+		void OnDone(bool success)
+		{
+			foreach (ILogger logger in loggers) {
+				logger.Shutdown();
+			}
+			feedbackSink.Done(success);
 		}
 		
 		void WriteAdditionalTargetsToTempFile(Dictionary<string, string> globalProperties)
@@ -273,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				// 'MsTestToolsTargets' is preferred because it's at the end of the MSBuild 3.5 and 4.0 target file,
 				// but on MSBuild 2.0 we need to fall back to 'CodeAnalysisTargets'.
 				string hijackedProperty = "MsTestToolsTargets";
-				if (project.MinimumSolutionVersion == Solution.SolutionVersionVS2005)
+				if (projectMinimumSolutionVersion == Solution.SolutionVersionVS2005)
 					hijackedProperty = "CodeAnalysisTargets";
 				
 				// because we'll replace the hijackedProperty, manually write the corresponding include
@@ -295,33 +334,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			#endif
 		}
 		
-		BuildError currentErrorOrWarning;
-		
-		/// <summary>
-		/// Gets the last build error/warning created by the default
-		/// SharpDevelop logger.
-		/// </summary>
-		public BuildError CurrentErrorOrWarning {
-			get {
-				return currentErrorOrWarning;
-			}
-		}
-		
-		Stack<string> projectFiles = new Stack<string>();
-		
-		/// <summary>
-		/// Gets the name of the currently building project file.
-		/// </summary>
-		public string CurrentProjectFile {
-			get {
-				if (projectFiles.Count == 0)
-					return null;
-				else
-					return projectFiles.Peek();
-			}
-		}
-		
-		public void OutputText(string message)
+		public void OutputTextLine(string message)
 		{
 			feedbackSink.ReportMessage(message);
 		}
@@ -331,40 +344,33 @@ namespace ICSharpCode.SharpDevelop.Project
 			feedbackSink.ReportError(error);
 		}
 		
-		class SharpDevelopLogger : ILogger
+		sealed class EndOfChain : IMSBuildChainedLoggerFilter
 		{
-			MSBuildEngine worker;
+			readonly MSBuildEngine engine;
+			
+			public EndOfChain(MSBuildEngine engine)
+			{
+				this.engine = engine;
+			}
+			
+			public void HandleError(BuildError error)
+			{
+				engine.ReportError(error);
+			}
+			
+			public void HandleBuildEvent(Microsoft.Build.Framework.BuildEventArgs e)
+			{
+				engine.eventSource.ForwardEvent(e);
+			}
+		}
+		
+		sealed class SharpDevelopLogger : ILogger
+		{
+			MSBuildEngine engine;
 			
 			public SharpDevelopLogger(MSBuildEngine engine)
 			{
-				this.worker = engine;
-			}
-			
-			void AppendLine(string text)
-			{
-				worker.OutputText(text);
-			}
-			
-			internal void FlushCurrentError()
-			{
-				if (worker.currentErrorOrWarning != null) {
-					worker.ReportError(worker.currentErrorOrWarning);
-					worker.currentErrorOrWarning = null;
-				}
-			}
-			
-			void OnProjectStarted(object sender, ProjectStartedEventArgs e)
-			{
-				worker.projectFiles.Push(e.ProjectFile);
-			}
-			
-			void OnProjectFinished(object sender, ProjectFinishedEventArgs e)
-			{
-				FlushCurrentError();
-				// it's possible that MSBuild raises ProjectFinished without a matching
-				// ProjectStarted - e.g. if an additional import is missing
-				if (worker.projectFiles.Count > 0)
-					worker.projectFiles.Pop();
+				this.engine = engine;
 			}
 			
 			string activeTaskName;
@@ -373,34 +379,28 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				activeTaskName = e.TaskName;
 				if (MSBuildEngine.CompileTaskNames.Contains(e.TaskName.ToLowerInvariant())) {
-					AppendLine(StringParser.Parse("${res:MainWindow.CompilerMessages.CompileVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile)));
+					engine.OutputTextLine(StringParser.Parse("${res:MainWindow.CompilerMessages.CompileVerb} " + Path.GetFileNameWithoutExtension(e.ProjectFile)));
 				}
-			}
-			
-			void OnTaskFinished(object sender, TaskFinishedEventArgs e)
-			{
-				FlushCurrentError();
 			}
 			
 			void OnError(object sender, BuildErrorEventArgs e)
 			{
-				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Code, e.Message, false);
+				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Code, e.Message, e.ProjectFile, e.Subcategory, e.HelpKeyword, false);
 			}
 			
 			void OnWarning(object sender, BuildWarningEventArgs e)
 			{
-				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Code, e.Message, true);
+				AppendError(e.File, e.LineNumber, e.ColumnNumber, e.Code, e.Message, e.ProjectFile, e.Subcategory, e.HelpKeyword, true);
 			}
 			
-			// TODO: Add XmlDocBloc to MSBuildError.AppendError()
-			void AppendError(string file, int lineNumber, int columnNumber, string code, string message, bool isWarning)
+			void AppendError(string file, int lineNumber, int columnNumber, string code, string message, string projectFile, string subcategory, string helpKeyword, bool isWarning)
 			{
 				if (string.Equals(file, activeTaskName, StringComparison.OrdinalIgnoreCase)) {
 					file = "";
 				} else if (FileUtility.IsValidPath(file)) {
 					bool isShortFileName = file == Path.GetFileNameWithoutExtension(file);
-					if (worker.CurrentProjectFile != null) {
-						file = Path.Combine(Path.GetDirectoryName(worker.CurrentProjectFile), file);
+					if (projectFile != null) {
+						file = Path.Combine(Path.GetDirectoryName(projectFile), file);
 					}
 					if (isShortFileName && !File.Exists(file)) {
 						file = "";
@@ -413,10 +413,11 @@ namespace ICSharpCode.SharpDevelop.Project
 						file = "";
 					}
 				}
-				FlushCurrentError();
 				BuildError error = new BuildError(file, lineNumber, columnNumber, code, message);
 				error.IsWarning = isWarning;
-				worker.currentErrorOrWarning = error;
+				error.Subcategory = subcategory;
+				error.HelpKeyword = helpKeyword;
+				engine.loggerChain.HandleError(error);
 			}
 			
 			#region ILogger interface implementation
@@ -425,10 +426,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void Initialize(IEventSource eventSource)
 			{
-				eventSource.ProjectStarted  += OnProjectStarted;
-				eventSource.ProjectFinished += OnProjectFinished;
 				eventSource.TaskStarted     += OnTaskStarted;
-				eventSource.TaskFinished    += OnTaskFinished;
 				
 				eventSource.ErrorRaised     += OnError;
 				eventSource.WarningRaised   += OnWarning;
@@ -436,10 +434,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void Shutdown()
 			{
-				FlushCurrentError();
-				if (worker.temporaryFileName != null) {
-					File.Delete(worker.temporaryFileName);
-					worker.temporaryFileName = null;
+				if (engine.temporaryFileName != null) {
+					File.Delete(engine.temporaryFileName);
+					engine.temporaryFileName = null;
 				}
 			}
 			#endregion

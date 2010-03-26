@@ -31,10 +31,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.workerProcessName = workerProcessName;
 		}
 		
-		public void RunBuildJob(BuildJob job, IEnumerable<ILogger> loggers, IBuildFeedbackSink reportWhenDone)
+		public void RunBuildJob(BuildJob job, IMSBuildChainedLoggerFilter loggerChain, Action<bool> reportWhenDone, CancellationToken cancellationToken)
 		{
 			BuildWorker worker = GetFreeWorker();
-			worker.RunJob(job, loggers, reportWhenDone);
+			worker.RunJob(job, loggerChain, reportWhenDone, cancellationToken);
 		}
 		
 		BuildWorker GetFreeWorker()
@@ -70,26 +70,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				process.Start(startInfo);
 			}
 
-			EventSource source;
-			IEnumerable<ILogger> loggers;
-			IBuildFeedbackSink reportWhenDone;
+			IMSBuildChainedLoggerFilter loggerChain;
+			Action<bool> reportWhenDone;
 			CancellationTokenRegistration cancellationRegistration;
 			
-			public void RunJob(BuildJob job, IEnumerable<ILogger> loggers, IBuildFeedbackSink reportWhenDone)
+			public void RunJob(BuildJob job, IMSBuildChainedLoggerFilter loggerChain, Action<bool> reportWhenDone, CancellationToken cancellationToken)
 			{
-				this.source = new EventSource();
-				this.loggers = loggers;
+				this.loggerChain = loggerChain;
 				this.reportWhenDone = reportWhenDone;
-				foreach (var logger in loggers) {
-					logger.Initialize(source);
-				}
 				try {
 					process.Writer.Write("StartBuild");
 					job.WriteTo(process.Writer);
-					this.cancellationRegistration = reportWhenDone.ProgressMonitor.CancellationToken.Register(OnCancel);
+					this.cancellationRegistration = cancellationToken.Register(OnCancel);
 				} catch (IOException ex) {
 					// "Pipe is broken"
-					source.ForwardEvent(new BuildErrorEventArgs(null, null, null, 0, 0, 0, 0, "Error talking to build worker: " + ex.Message, null, null));
+					loggerChain.HandleError(new BuildError(null, 0, 0, null, "Error talking to build worker: " + ex.Message));
 					BuildDone(false);
 				}
 			}
@@ -105,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				LoggingService.Debug("Received command " + command);
 				switch (command) {
 					case "ReportEvent":
-						source.ForwardEvent(EventSource.DecodeEvent(reader));
+						loggerChain.HandleBuildEvent(EventSource.DecodeEvent(reader));
 						break;
 					case "BuildDone":
 						bool success = reader.ReadBoolean();
@@ -127,10 +122,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (reportWhenDone == null)
 						return;
 					cancellationRegistration.Dispose();
-					foreach (var logger in loggers) {
-						logger.Shutdown();
-					}
-					reportWhenDone.Done(success);
+					reportWhenDone(success);
 					reportWhenDone = null;
 				}
 			}
@@ -163,11 +155,11 @@ namespace ICSharpCode.SharpDevelop.Project
 						parentManager.freeWorkers.Remove(this);
 						MarkAsInUse();
 					} else {
-						reportBuildError = true;
+						reportBuildError = (reportWhenDone != null); // only if not done
 					}
 				}
 				if (reportBuildError) {
-					source.ForwardEvent(new BuildErrorEventArgs(null, null, null, 0, 0, 0, 0, "Build worker process exited unexpectedly.", null, null));
+					loggerChain.HandleError(new BuildError(null, 0, 0, null, "Build worker process exited unexpectedly."));
 					BuildDone(false);
 				}
 				process.Dispose();

@@ -42,8 +42,8 @@
 		</ComplexCondition>
 	</Path>
 	
-	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalLoggers">
-		<TaskBoundAdditionalLogger
+	<Path name = "/SharpDevelop/MSBuildEngine/LoggerFilters">
+		<TaskBoundLoggerFilter
 			id = "FxCopLogger"
 			taskname = "FxCop"
 			class = "ICSharpCode.CodeAnalysis.FxCopLogger"/>
