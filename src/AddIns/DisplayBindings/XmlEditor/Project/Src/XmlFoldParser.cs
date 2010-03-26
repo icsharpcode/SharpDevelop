@@ -76,17 +76,23 @@ namespace ICSharpCode.XmlEditor
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
-			try {
-				CreateCompilationUnit(projectContent, fileName);
-				GetFolds(fileContent.CreateReader());
-				AddFoldsToCompilationUnit(unit, folds);
-			} catch (Exception) {
-				ICompilationUnit existingUnit = FindPreviouslyParsedCompilationUnit(projectContent, fileName);
-				if (existingUnit != null) {
-					return existingUnit;
+			// SharpDevelop may call IParser.Parse in parallel. This will be done on the same IParser instance
+			// if there are two parallel parse requests for the same file. Parser implementations must be thread-safe.
+			
+			// In XmlFoldParser, we do this by simply using a big lock per IParser instance.
+			lock (this) {
+				try {
+					CreateCompilationUnit(projectContent, fileName);
+					GetFolds(fileContent.CreateReader());
+					AddFoldsToCompilationUnit(unit, folds);
+				} catch (XmlException) {
+					ICompilationUnit existingUnit = FindPreviouslyParsedCompilationUnit(projectContent, fileName);
+					if (existingUnit != null) {
+						return existingUnit;
+					}
 				}
+				return unit;
 			}
-			return unit;
 		}
 		
 		void CreateCompilationUnit(IProjectContent projectContent, string fileName)

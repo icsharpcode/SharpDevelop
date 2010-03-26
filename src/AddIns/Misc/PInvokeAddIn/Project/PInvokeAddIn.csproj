@@ -53,9 +53,6 @@
     <None Include="signatures.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="signatures.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="PInvoke.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
