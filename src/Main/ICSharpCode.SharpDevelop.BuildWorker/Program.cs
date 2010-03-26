@@ -15,13 +15,12 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Threading;
 
-using ICSharpCode.SharpDevelop.BuildWorker.Interprocess;
-using Microsoft.Build.BuildEngine;
+using ICSharpCode.SharpDevelop.Interprocess;
 using Microsoft.Build.Framework;
 
 namespace ICSharpCode.SharpDevelop.BuildWorker
 {
-	class Program
+	sealed class Program
 	{
 		static HostProcess host;
 		BuildJob currentJob;
@@ -34,8 +33,8 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			
 			if (args.Length == 3 && args[0] == "worker") {
 				try {
-					host = new HostProcess(new Program());
-					host.WorkerProcessMain(args[1], args[2]);
+					host = new HostProcess(args[1], args[2]);
+					host.Run(new Program().DataReceived);
 				} catch (Exception ex) {
 					ShowMessageBox(ex.ToString());
 				}
@@ -47,6 +46,22 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			}
 		}
 		
+		readonly MSBuildWrapper buildWrapper = new MSBuildWrapper();
+		
+		void DataReceived(string command, BinaryReader reader)
+		{
+			switch (command) {
+				case "StartBuild":
+					StartBuild(BuildJob.ReadFrom(reader));
+					break;
+				case "Cancel":
+					CancelBuild();
+					break;
+				default:
+					throw new InvalidOperationException("Unknown command");
+			}
+		}
+		
 		static void AppDomain_CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			ShowMessageBox(e.ExceptionObject.ToString());
@@ -55,18 +70,6 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		#if RELEASE && WORKERDEBUG
 		#error WORKERDEBUG must not be defined if RELEASE is defined
 		#endif
-		
-		internal static ProcessStartInfo CreateStartInfo()
-		{
-			ProcessStartInfo info = new ProcessStartInfo(typeof(Program).Assembly.Location);
-			info.WorkingDirectory = Path.GetDirectoryName(info.FileName);
-			info.Arguments = "worker";
-			info.UseShellExecute = false;
-			#if RELEASE || !WORKERDEBUG
-			info.CreateNoWindow = true;
-			#endif
-			return info;
-		}
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
 		internal static void ShowMessageBox(string text)
@@ -84,7 +87,6 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			#endif
 		}
 		
-		// Called with CallMethodOnWorker
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		public void StartBuild(BuildJob job)
 		{
@@ -108,13 +110,14 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			thread.Start();
 		}
 		
-		// Called with CallMethodOnWorker
-		//[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		// TODO: make use of CancelBuild
 		public void CancelBuild()
 		{
+			Program.Log("CancelBuild()");
 			lock (this) {
-				requestCancellation = true;
+				if (!requestCancellation) {
+					requestCancellation = true;
+					buildWrapper.Cancel();
+				}
 			}
 		}
 		
@@ -124,9 +127,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			Program.Log("In build thread");
 			bool success = false;
 			try {
-				success = DoBuild();
+				success = buildWrapper.DoBuild(currentJob, new ForwardingLogger(this));
 			} catch (Exception ex) {
-				host.CallMethodOnHost("ReportException", ex.ToString());
+				host.Writer.Write("ReportException");
+				host.Writer.Write(ex.ToString());
 			} finally {
 				Program.Log("BuildDone");
 				
@@ -139,164 +143,15 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 					currentJob = null;
 				}
 				// in the moment we call BuildDone, we can get the next job
-				host.CallMethodOnHost("BuildDone", success);
+				host.Writer.Write("BuildDone");
+				host.Writer.Write(success);
 			}
-		}
-		
-		Engine CreateEngine()
-		{
-			Engine engine = new Engine(ToolsetDefinitionLocations.Registry
-			                           | ToolsetDefinitionLocations.ConfigurationFile);
-			
-			engine.RegisterLogger(new ForwardingLogger(this));
-			//engine.RegisterLogger(new ConsoleLogger(LoggerVerbosity.Diagnostic));
-			
-			return engine;
-		}
-		
-		EventSource hostEventSource;
-		
-		internal void BuildInProcess(BuildSettings settings, BuildJob job)
-		{
-			lock (this) {
-				if (currentJob != null)
-					throw new InvalidOperationException("Already running a job");
-				currentJob = job;
-				requestCancellation = false;
-				hostEventSource = new EventSource();
-			}
-			job.CancelCallback = delegate {
-				lock (this) {
-					if (currentJob == job) {
-						requestCancellation = true;
-					}
-				}
-			};
-			bool success = false;
-			try {
-				foreach (ILogger logger in settings.Logger) {
-					logger.Initialize(hostEventSource);
-				}
-				success = DoBuild();
-				foreach (ILogger logger in settings.Logger) {
-					logger.Shutdown();
-				}
-			} finally {
-				lock (this) {
-					currentJob = null;
-				}
-				if (settings.BuildDoneCallback != null)
-					settings.BuildDoneCallback(success);
-			}
-		}
-		
-		Engine engine;
-		Dictionary<string, string> lastJobProperties;
-		
-		// Fix for SD2-1533 - Project configurations get confused
-		// Whenever the global properties change, we have to create a new Engine
-		// to ensure MSBuild doesn't cache old paths
-		bool GlobalPropertiesChanged(Dictionary<string, string> newJobProperties)
-		{
-			Debug.Assert(newJobProperties != null);
-			if (lastJobProperties == null || lastJobProperties.Count != newJobProperties.Count) {
-				Log("Recreating engine: Number of build properties changed");
-				return true;
-			}
-			foreach (KeyValuePair<string, string> pair in lastJobProperties) {
-				string val;
-				if (!newJobProperties.TryGetValue(pair.Key, out val)) {
-					Log("Recreating engine: Build property removed: " + pair.Key);
-					return true;
-				}
-				if (val != pair.Value) {
-					Log("Recreating engine: Build property changed: " + pair.Key);
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		bool DoBuild()
-		{
-			if (currentJob.IntPtrSize != IntPtr.Size)
-				throw new ApplicationException("Incompatible IntPtr.Size between host and worker");
-			
-			if (engine == null || GlobalPropertiesChanged(currentJob.Properties)) {
-				engine = CreateEngine();
-				lastJobProperties = currentJob.Properties;
-				engine.GlobalProperties.Clear();
-				foreach (KeyValuePair<string, string> pair in currentJob.Properties) {
-					engine.GlobalProperties.SetProperty(pair.Key, pair.Value);
-				}
-			}
-			
-			Log("Loading " + currentJob.ProjectFileName);
-			Project project = LoadProject(engine, currentJob.ProjectFileName);
-			if (project == null)
-				return false;
-			
-			if (string.IsNullOrEmpty(currentJob.Target)) {
-				Log("Building default target in " + currentJob.ProjectFileName);
-				return engine.BuildProject(project);
-			} else {
-				Log("Building target '" + currentJob.Target + "' in " + currentJob.ProjectFileName);
-				return engine.BuildProject(project, currentJob.Target.Split(';'));
-			}
-		}
-		
-		Project LoadProject(Engine engine, string fileName)
-		{
-			Project project = engine.CreateNewProject();
-			try {
-				project.Load(fileName);
-				
-				/* No longer necessary as we stopped using BuildingInsideVisualStudio
-				// When we set BuildingInsideVisualStudio, MSBuild tries to build all projects
-				// every time because in Visual Studio, the host compiler does the change detection
-				// We override the property '_ComputeNonExistentFileProperty' which is responsible
-				// for recompiling each time - our _ComputeNonExistentFileProperty does nothing,
-				// which re-enables the MSBuild's usual change detection
-				project.Targets.AddNewTarget("_ComputeNonExistentFileProperty");
-				*/
-				
-				foreach (string additionalImport in currentJob.AdditionalImports) {
-					project.AddNewImport(additionalImport, null);
-				}
-				
-				return project;
-			} catch (ArgumentException ex) {
-				ReportError(ex.Message);
-			} catch (InvalidProjectFileException ex) {
-				ReportError(new BuildErrorEventArgs(ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
-				                                    ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
-				                                    ex.BaseMessage, ex.HelpKeyword, ex.Source));
-			}
-			return null;
-		}
-		
-		void ReportError(string message)
-		{
-			ReportError(new BuildErrorEventArgs(null, null, null, -1, -1, -1, -1,
-			                                    message, null, "SharpDevelopBuildWorker"));
-		}
-		
-		void ReportError(BuildErrorEventArgs e)
-		{
-			HostReportEvent(e);
 		}
 		
 		void HostReportEvent(BuildEventArgs e)
 		{
-			if (host != null) {
-				host.CallMethodOnHost("ReportEvent", e);
-			} else {
-				// enable error reporting for in-process builds
-				EventSource eventSource = hostEventSource;
-				if (eventSource != null) {
-					eventSource.RaiseEvent(e);
-				}
-			}
+			host.Writer.Write("ReportEvent");
+			EventSource.EncodeEvent(host.Writer, e);
 		}
 		
 		sealed class ForwardingLogger : ILogger
@@ -347,8 +202,6 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 					eventSource.CustomEventRaised += OnEvent;
 				if ((eventMask & EventTypes.Unknown) != 0)
 					eventSource.AnyEventRaised += OnUnknownEventRaised;
-				if (eventMask != EventTypes.All)
-					eventSource.AnyEventRaised += OnAnyEvent;
 				
 				#if WORKERDEBUG
 				eventSource.AnyEventRaised += CountEvent;
@@ -388,28 +241,15 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 					eventSource.CustomEventRaised -= OnEvent;
 				if ((eventMask & EventTypes.Unknown) != 0)
 					eventSource.AnyEventRaised -= OnUnknownEventRaised;
-				if (eventMask != EventTypes.All)
-					eventSource.AnyEventRaised -= OnAnyEvent;
 				
 				#if WORKERDEBUG
 				eventSource.AnyEventRaised -= CountEvent;
 				#endif
 			}
 			
-			// registered for AnyEventRaised to support build cancellation.
-			// is not registered if all events should be forwarded, in that case, OnEvent
-			// already handles build cancellation
-			void OnAnyEvent(object sender, BuildEventArgs e)
-			{
-				if (program.requestCancellation)
-					throw new BuildCancelException();
-			}
-			
 			// used for all events that should be forwarded
 			void OnEvent(object sender, BuildEventArgs e)
 			{
-				if (program.requestCancellation)
-					throw new BuildCancelException();
 				program.HostReportEvent(e);
 			}
 			

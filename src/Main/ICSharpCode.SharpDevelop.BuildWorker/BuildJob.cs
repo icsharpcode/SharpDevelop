@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace ICSharpCode.SharpDevelop.BuildWorker
@@ -14,17 +15,8 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 	/// <summary>
 	/// The settings used to start a build.
 	/// </summary>
-	[Serializable]
-	public class BuildJob
+	class BuildJob
 	{
-		/// <summary>
-		/// The value of IntPtr.Size on the host. The build worker will report an error if its IntPtr.Size
-		/// doesn't match. This is a safety feature to prevent compiling half of a solution using 32-bit MSBuild
-		/// and the other half using 64-bit MSBuild.
-		/// </summary>
-		public int IntPtrSize { get; set; }
-		
-		
 		public string ProjectFileName { get; set; }
 		public string Target { get; set; }
 		
@@ -44,12 +36,6 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			get { return properties; }
 		}
 		
-		List<string> additionalImports = new List<string>();
-		
-		public IList<string> AdditionalImports {
-			get { return additionalImports; }
-		}
-		
 		HashSet<string> interestingTaskNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		
 		public ICollection<string> InterestingTaskNames {
@@ -66,10 +52,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			foreach (KeyValuePair<string, string> pair in Properties) {
 				b.AppendLine("    " + pair.Key + " = " + pair.Value);
 			}
-			b.AppendLine("  " + AdditionalImports.Count + " Additional Imports:");
-			foreach (string import in AdditionalImports) {
-				b.AppendLine("    " + import);
-			}
+//			b.AppendLine("  " + AdditionalImports.Count + " Additional Imports:");
+//			foreach (string import in AdditionalImports) {
+//				b.AppendLine("    " + import);
+//			}
 			b.AppendLine("  " + InterestingTaskNames.Count + " Interesting Task Names:");
 			foreach (string name in InterestingTaskNames) {
 				b.AppendLine("    " + name);
@@ -77,14 +63,38 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			return b.ToString();
 		}
 		
-		[NonSerialized]
-		internal Action CancelCallback;
-		
-		public void Cancel()
+		public void WriteTo(BinaryWriter writer)
 		{
-			if (CancelCallback != null) {
-				CancelCallback();
+			writer.Write(this.ProjectFileName);
+			writer.Write(this.Target);
+			writer.WriteInt32((int)eventMask);
+			
+			writer.WriteInt32(properties.Count);
+			foreach (var pair in properties) {
+				writer.Write(pair.Key);
+				writer.Write(pair.Value);
 			}
+			
+			writer.WriteInt32(interestingTaskNames.Count);
+			foreach (string taskName in interestingTaskNames)
+				writer.Write(taskName);
+		}
+		
+		public static BuildJob ReadFrom(BinaryReader reader)
+		{
+			BuildJob job = new BuildJob();
+			job.ProjectFileName = reader.ReadString();
+			job.Target = reader.ReadString();
+			job.EventMask = (EventTypes)reader.ReadInt32();
+			int c = reader.ReadInt32();
+			for (int i = 0; i < c; i++) {
+				job.properties.Add(reader.ReadString(), reader.ReadString());
+			}
+			c = reader.ReadInt32();
+			for (int i = 0; i < c; i++) {
+				job.interestingTaskNames.Add(reader.ReadString());
+			}
+			return job;
 		}
 	}
 }

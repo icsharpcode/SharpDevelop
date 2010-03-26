@@ -16,6 +16,7 @@ using System.Threading;
 using System.Xml;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.BuildWorker;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Execution;
@@ -119,6 +120,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.feedbackSink = feedbackSink;
 		}
 		
+		const EventTypes ControllableEvents = EventTypes.Message | EventTypes.TargetStarted | EventTypes.TargetFinished
+			| EventTypes.TaskStarted | EventTypes.TaskFinished | EventTypes.Unknown;
+		
 		/// <summary>
 		/// Controls whether messages should be made available to loggers.
 		/// Logger AddIns should set this property in their CreateLogger method.
@@ -170,12 +174,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void StartBuild()
 		{
-			// perform initialization of the build in parallel
-			ThreadPool.QueueUserWorkItem(RunBuild);
-		}
-		
-		void RunBuild(object state)
-		{
 			Dictionary<string, string> globalProperties = new Dictionary<string, string>();
 			MSBuildBasedProject.InitializeMSBuildProjectProperties(globalProperties);
 			
@@ -188,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				globalProperties["Platform"] = "AnyCPU";
 			else
 				globalProperties["Platform"] = options.Platform;
-
+			
 			InterestingTasks.AddRange(MSBuildEngine.CompileTaskNames);
 			
 			List<ILogger> loggers = new List<ILogger> {
@@ -198,15 +196,45 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
 				loggers.Add(loggerProvider.CreateLogger(this));
 			}
+			WriteAdditionalTargetsToTempFile(globalProperties);
 			
-			// Get ParallelMSBuildManager (or create a new one if one doesn't exist already).
-			// The serviceContainer will automatically dispose it after the build has completed.
-			ParallelMSBuildManager manager = (ParallelMSBuildManager)serviceContainer.GetOrCreateService(
-				typeof(ParallelMSBuildManager),
-				delegate {
-					return new ParallelMSBuildManager(new MSBuild.ProjectCollection());
-				});
+			BuildJob job = new BuildJob();
+			job.ProjectFileName = project.FileName;
+			job.Target = options.Target.TargetName;
 			
+			// First remove the flags for the controllable events.
+			job.EventMask = EventTypes.All & ~ControllableEvents;
+			// Add back active controllable events.
+			if (ReportMessageEvents)
+				job.EventMask |= EventTypes.Message;
+			if (ReportTargetStartedEvents)
+				job.EventMask |= EventTypes.TargetStarted;
+			if (ReportTargetFinishedEvents)
+				job.EventMask |= EventTypes.TargetFinished;
+			if (ReportAllTaskStartedEvents)
+				job.EventMask |= EventTypes.TaskStarted;
+			if (ReportAllTaskFinishedEvents)
+				job.EventMask |= EventTypes.TaskFinished;
+			if (ReportUnknownEvents)
+				job.EventMask |= EventTypes.Unknown;
+			
+			if (!(ReportAllTaskStartedEvents && ReportAllTaskFinishedEvents)) {
+				// just some TaskStarted & TaskFinished events should be reported
+				job.InterestingTaskNames.AddRange(InterestingTasks);
+			}
+			foreach (var pair in globalProperties) {
+				job.Properties.Add(pair.Key, pair.Value);
+			}
+			
+			if (project.MinimumSolutionVersion <= Solution.SolutionVersionVS2008) {
+				BuildWorkerManager.MSBuild35.RunBuildJob(job, loggers, feedbackSink);
+			} else {
+				BuildWorkerManager.MSBuild40.RunBuildJob(job, loggers, feedbackSink);
+			}
+		}
+		
+		void WriteAdditionalTargetsToTempFile(Dictionary<string, string> globalProperties)
+		{
 			// Using projects with in-memory modifications doesn't work with parallel build.
 			// As a work-around, we'll write our modifications to a file and force MSBuild to include that file using a custom property.
 			temporaryFileName = Path.GetTempFileName();
@@ -254,66 +282,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			#if DEBUG
 			LoggingService.Debug(File.ReadAllText(temporaryFileName));
 			#endif
-			
-			string fileName = project.FileName;
-			string[] targets = { options.Target.TargetName };
-			BuildRequestData requestData = new BuildRequestData(fileName, globalProperties, null, targets, new HostServices());
-			manager.StartBuild(requestData, loggers, OnComplete);
 		}
-		
-		void OnComplete(BuildSubmission submission)
-		{
-			Debug.Assert(submission.IsCompleted);
-			
-			feedbackSink.Done(submission.BuildResult.OverallResult == Microsoft.Build.Execution.BuildResultCode.Success);
-		}
-		
-		/*
-			WorkerManager.ShowError = MessageService.ShowError;
-			BuildWorker.BuildSettings settings = new BuildWorker.BuildSettings();
-			SharpDevelopLogger logger = new SharpDevelopLogger(this);
-			settings.Logger.Add(logger);
-			
-			foreach (IMSBuildAdditionalLogger loggerProvider in MSBuildEngine.AdditionalMSBuildLoggers) {
-				settings.Logger.Add(loggerProvider.CreateLogger(this));
-			}
-			
-			BuildJob job = new BuildJob();
-			job.IntPtrSize = IntPtr.Size;
-			job.ProjectFileName = project.FileName;
-			// Never report custom events (those are usually derived EventArgs classes, and SharpDevelop
-			// doesn't have the matching assemblies loaded - see SD2-1514).
-			// Also, remove the flags for the controllable events.
-			job.EventMask = EventTypes.All & ~(ControllableEvents | EventTypes.Custom);
-			// Add back active controllable events.
-			if (ReportMessageEvents)
-				job.EventMask |= EventTypes.Message;
-			if (ReportTargetStartedEvents)
-				job.EventMask |= EventTypes.TargetStarted;
-			if (ReportTargetFinishedEvents)
-				job.EventMask |= EventTypes.TargetFinished;
-			if (ReportAllTaskStartedEvents)
-				job.EventMask |= EventTypes.TaskStarted;
-			if (ReportAllTaskFinishedEvents)
-				job.EventMask |= EventTypes.TaskFinished;
-			if (ReportUnknownEvents)
-				job.EventMask |= EventTypes.Unknown;
-			
-			if (!(ReportAllTaskStartedEvents && ReportAllTaskFinishedEvents)) {
-				// just some TaskStarted & TaskFinished events should be reported
-				job.InterestingTaskNames.AddRange(InterestingTasks);
-			}
-			
-			job.AdditionalImports.AddRange(additionalTargetFiles);
-			
-			job.Target = options.Target.TargetName;
-			
-			bool buildInProcess = false;
-			if (AllowBuildInProcess && Interlocked.CompareExchange(ref isBuildingInProcess, 1, 0) == 0) {
-				buildInProcess = true;
-			}
-			LoggingService.Info("Start job (buildInProcess=" + buildInProcess + "): " + job.ToString());
-		 */
 		
 		BuildError currentErrorOrWarning;
 		
@@ -456,6 +425,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void Shutdown()
 			{
+				FlushCurrentError();
 				if (worker.temporaryFileName != null) {
 					File.Delete(worker.temporaryFileName);
 					worker.temporaryFileName = null;

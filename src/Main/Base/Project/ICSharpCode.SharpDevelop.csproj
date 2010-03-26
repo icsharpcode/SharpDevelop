@@ -30,15 +30,16 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>Full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>DEBUG,TRACE</DefineConstants>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG,TRACE;PUBLICINTERPROCESS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE;PUBLICINTERPROCESS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">
@@ -67,6 +68,18 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\BuildJob.cs">
+      <Link>Src\Project\MSBuildEngine\BuildJob.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\EventSource.cs">
+      <Link>Src\Project\MSBuildEngine\EventSource.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\EventTypes.cs">
+      <Link>Src\Project\MSBuildEngine\EventTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
+      <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
+    </Compile>
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />
@@ -244,9 +257,9 @@
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
     <Compile Include="Src\Project\MSBuildEngine\BuildLogFileLogger.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\EventSource.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\BuildWorkerManager.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildEngine.cs" />
-    <Compile Include="Src\Project\MSBuildEngine\ParallelMSBuildManager.cs" />
+    <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
     <Compile Include="Src\Project\ProjectLoadInformation.cs" />

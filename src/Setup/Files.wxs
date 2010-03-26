@@ -450,6 +450,18 @@
 							<Component Guid="84FB3C82-23BD-11DE-8F18-C06F55D89593" Id="ICSharpCodeTreeViewDll" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.TreeView.dll" Name="ICSharpCode.TreeView.dll" Id="ICSharpCode.TreeView.dll" KeyPath="yes" />
 							</Component>
+							<Component Id="ICSharpCodeSharpDevelopBuildWorker35Exe" Guid="5065CD28-3B76-4AB9-B334-1DC1A91AA172" DiskId="1">
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker35.exe" Name="ICSharpCode.SharpDevelop.BuildWorker35.exe" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker35.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.BuildWorker35.exe" AssemblyManifest="ICSharpCode.SharpDevelop.BuildWorker35.exe">
+									<netfx:NativeImage Id="BuildWorker35NGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+								</File>
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker35.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker35.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker35.exe.config" />
+							</Component>
+							<Component Id="ICSharpCodeSharpDevelopBuildWorker40Exe" Guid="25731457-7DB4-40F6-8AA9-21AF7F9C04DD" DiskId="1">
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker40.exe" Name="ICSharpCode.SharpDevelop.BuildWorker40.exe" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker40.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.BuildWorker40.exe" AssemblyManifest="ICSharpCode.SharpDevelop.BuildWorker40.exe">
+									<netfx:NativeImage Id="BuildWorker40NGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+								</File>
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker40.exe.config" />
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">

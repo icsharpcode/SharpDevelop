@@ -179,6 +179,8 @@
 				<ComponentRef Id="ICSharpCodeTextEditorDll"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditDll"/>
 				<ComponentRef Id="ICSharpCodeTreeViewDll"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker35Exe"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker40Exe"/>
 				<ComponentRef Id="AgaControlsDll"/>
 				<ComponentRef Id="log4netDll"/>
 				<ComponentRef Id="MonoCecilDll"/>

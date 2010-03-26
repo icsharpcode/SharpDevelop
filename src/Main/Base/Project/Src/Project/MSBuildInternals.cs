@@ -202,12 +202,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			List<ILogger> loggers = new List<ILogger>();
 			if (referenceReplacements == null)
 				loggers.Add(new SimpleErrorLogger());
-			
-			using (ParallelMSBuildManager buildManager = new ParallelMSBuildManager(baseProject.MSBuildProjectCollection)) {
-				BuildSubmission submission = buildManager.StartBuild(requestData, loggers, null);
+			lock (SolutionProjectCollectionLock) {
+				BuildParameters parameters = new BuildParameters(baseProject.MSBuildProjectCollection);
+				parameters.Loggers = loggers;
+				
 				LoggingService.Debug("Started build for ResolveAssemblyReferences");
-				submission.WaitHandle.WaitOne();
-				BuildResult result = submission.BuildResult;
+				BuildResult result = BuildManager.DefaultBuildManager.Build(parameters, requestData);
 				if (result == null)
 					throw new InvalidOperationException("BuildResult is null");
 				LoggingService.Debug("Build for ResolveAssemblyReferences finished: " + result.OverallResult);
