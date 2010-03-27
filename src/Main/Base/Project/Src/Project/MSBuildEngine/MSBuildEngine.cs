@@ -400,8 +400,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					file = "";
 				} else if (FileUtility.IsValidPath(file)) {
 					bool isShortFileName = file == Path.GetFileNameWithoutExtension(file);
-					if (projectFile != null) {
-						file = Path.Combine(Path.GetDirectoryName(projectFile), file);
+					if (engine.ProjectFileName != null) {
+						file = Path.Combine(Path.GetDirectoryName(engine.ProjectFileName), file);
 					}
 					if (isShortFileName && !File.Exists(file)) {
 						file = "";
