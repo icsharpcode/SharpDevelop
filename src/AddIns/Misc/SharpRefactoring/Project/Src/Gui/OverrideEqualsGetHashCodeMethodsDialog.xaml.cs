@@ -139,7 +139,7 @@ namespace SharpRefactoring.Gui
 			
 			code.Append("\n" + string.Join("\n", CreateEqualsOverrides(currentClass).Select(item => generator.GenerateCode(item, indent))));
 			
-			if (Options.AddOperatorOverrides) {
+			if (Options.AddOperatorOverloads) {
 				var checkStatements = new[] {
 					new IfElseStatement(
 						new InvocationExpression(

@@ -40,9 +40,9 @@ namespace SharpRefactoring
 			set { properties.Set("SurroundWithRegion", value); }
 		}
 		
-		public static bool AddOperatorOverrides {
-			get { return properties.Get("AddOperatorOverrides", true); }
-			set { properties.Set("AddOperatorOverrides", value); }
+		public static bool AddOperatorOverloads {
+			get { return properties.Get("AddOperatorOverloads", true); }
+			set { properties.Set("AddOperatorOverloads", value); }
 		}
 	}
 }
