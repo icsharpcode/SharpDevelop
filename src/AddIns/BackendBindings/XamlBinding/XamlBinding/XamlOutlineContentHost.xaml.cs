@@ -20,10 +20,9 @@ namespace ICSharpCode.XamlBinding
 	/// <summary>
 	/// Interaction logic for XamlOutlineContentHost.xaml
 	/// </summary>
-	public partial class XamlOutlineContentHost : DockPanel, IOutlineContentHost
+	public partial class XamlOutlineContentHost : DockPanel, IOutlineContentHost, IDisposable
 	{
 		ITextEditor editor;
-		DispatcherTimer timer;
 		
 		public XamlOutlineContentHost(ITextEditor editor)
 		{
@@ -31,14 +30,10 @@ namespace ICSharpCode.XamlBinding
 			
 			InitializeComponent();
 			
-			this.timer = new DispatcherTimer(DispatcherPriority.Background, this.Dispatcher);
-			this.timer.Tick += new EventHandler(XamlOutlineContentHostTick);
-
-			this.timer.Interval = new TimeSpan(0, 0, 2);
-			this.timer.Start();
+			ParserService.ParseInformationUpdated += ParseInfoUpdated;
 		}
 
-		void XamlOutlineContentHostTick(object sender, EventArgs e)
+		void ParseInfoUpdated(object sender, EventArgs e)
 		{
 			if (this.editor == null || string.IsNullOrEmpty(this.editor.FileName))
 				return;
@@ -113,6 +108,11 @@ namespace ICSharpCode.XamlBinding
 			get {
 				return this;
 			}
+		}
+		
+		public void Dispose()
+		{
+			ParserService.ParseInformationUpdated -= ParseInfoUpdated;
 		}
 	}
 }

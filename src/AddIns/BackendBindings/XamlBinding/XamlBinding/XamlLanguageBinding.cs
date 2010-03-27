@@ -21,6 +21,7 @@ namespace ICSharpCode.XamlBinding
 	{
 		XamlColorizer colorizer;
 		TextView textView;
+		XamlOutlineContentHost contentHost;
 
 		public override void Attach(ITextEditor editor)
 		{
@@ -38,7 +39,8 @@ namespace ICSharpCode.XamlBinding
 					// attach the colorizer
 					textView.LineTransformers.Add(colorizer);
 					// add the XamlOutlineContentHost, which manages the tree view
-					textView.Services.AddService(typeof(IOutlineContentHost), new XamlOutlineContentHost(editor));
+					contentHost = new XamlOutlineContentHost(editor);
+					textView.Services.AddService(typeof(IOutlineContentHost), contentHost);
 				}
 				// add ILanguageBinding
 				textView.Services.AddService(typeof(XamlLanguageBinding), this);
@@ -50,12 +52,13 @@ namespace ICSharpCode.XamlBinding
 			base.Detach();
 			
 			// if we added something before
-			if (textView != null && colorizer != null) {
+			if (textView != null && colorizer != null && contentHost != null) {
 				// remove and dispose everything we added
 				textView.LineTransformers.Remove(colorizer);
 				textView.Services.RemoveService(typeof(IOutlineContentHost));
 				textView.Services.RemoveService(typeof(XamlLanguageBinding));
 				colorizer.Dispose();
+				contentHost.Dispose();
 			}
 		}
 	}
