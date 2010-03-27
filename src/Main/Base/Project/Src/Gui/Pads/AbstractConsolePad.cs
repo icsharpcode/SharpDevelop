@@ -160,10 +160,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 					string commandText = console.CommandText;
 					cleared = false;
 					if (AcceptCommand(commandText)) {
+						IDocument document = console.TextEditor.Document;
 						if (!cleared) {
-							console.TextEditor.Document.Insert(console.TextEditor.Document.TextLength, Environment.NewLine);
+							if (document.GetCharAt(document.TextLength - 1) != '\n')
+								document.Insert(document.TextLength, Environment.NewLine);
 							AppendPrompt();
-							console.TextEditor.Select(console.TextEditor.Document.TextLength, 0);
+							console.TextEditor.Select(document.TextLength, 0);
 						} else {
 							console.CommandText = "";
 						}

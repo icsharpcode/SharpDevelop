@@ -42,6 +42,7 @@ namespace Grunwald.BooBinding
 				ProcessCommand(command);
 				return true;
 			} else if (!command.Contains("\n") && !command.EndsWith(":")) {
+				AppendLine("");
 				ProcessCommand(command);
 				return true;
 			} else {

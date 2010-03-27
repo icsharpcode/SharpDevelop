@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (!string.IsNullOrEmpty(command)) {
 				string result = Evaluate(command);
 				if (!string.IsNullOrEmpty(result)) {
-					Append(result + Environment.NewLine);
+					Append(Environment.NewLine + result);
 				}
 			}
 			return true;
