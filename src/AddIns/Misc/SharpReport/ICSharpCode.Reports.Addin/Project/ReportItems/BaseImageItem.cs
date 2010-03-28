@@ -65,7 +65,11 @@ namespace ICSharpCode.Reports.Addin
 			if (this.scaleImageToSize) {
 				graphics.DrawImageUnscaled(this.Image,this.Location.X,this.Location.Y);
 			} else {
-				graphics.DrawImage(this.Image,this.ClientRectangle);
+				Image im = this.image;
+				if (im != null) {
+					graphics.DrawImage(this.Image,this.ClientRectangle);
+				}
+				
 			}
 		}
 		
@@ -95,7 +99,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		private static Bitmap FakeImage(Size size)
+		private static Bitmap FakeImage(Size size, string text)
 		{
 			Bitmap b = new Bitmap (size.Width,size.Height);
 			using (Graphics g = Graphics.FromImage (b)){
@@ -103,7 +107,7 @@ namespace ICSharpCode.Reports.Addin
 				g.DrawRectangle (new Pen(Color.Black, 1),
 				                 1,1,size.Width -2,size.Height -2);
 				
-				g.DrawString("<Database>",GlobalValues.DefaultFont,
+				g.DrawString(text,GlobalValues.DefaultFont,
 				             new SolidBrush(Color.Gray),
 				             new RectangleF(2,2,size.Width,size.Height) );
 			}
@@ -137,7 +141,7 @@ namespace ICSharpCode.Reports.Addin
 		public Image Image {
 			get {
 				if (this.imageSource == GlobalEnums.ImageSource.Database ) {
-					this.image = FakeImage(base.Size);
+					this.image = FakeImage(base.Size,"<Database>");
 				}
 				if (this.image != null) {
 					return image;
@@ -163,11 +167,13 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		[Browsable(false)]
+		[Category("Image")]
 		public GlobalEnums.ImageSource ImageSource {
 			get { return imageSource; }
 			set { imageSource = value; }
 		}
+		
+		
 		
 		
 		[Category("Image from Database")]
@@ -175,7 +181,6 @@ namespace ICSharpCode.Reports.Addin
 			get { return columnName; }
 			set {
 				columnName = value;
-				this.imageSource = GlobalEnums.ImageSource.Database;
 			}
 		}
 		
@@ -185,7 +190,6 @@ namespace ICSharpCode.Reports.Addin
 			get { return baseTableName; }
 			set {
 				baseTableName = value;
-				this.imageSource = GlobalEnums.ImageSource.Database;
 			}
 		}
 		
@@ -308,6 +312,7 @@ namespace ICSharpCode.Reports.Addin
 			
 			prop = props.Find("BaseTableName",true);
 			allProperties.Add(prop);
+			
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}

@@ -40,11 +40,13 @@ namespace SharpReportSamples
 			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("PullModel");
 			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("PushModel-IList");
 			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Provider Independent");
-			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Sample Reports", new System.Windows.Forms.TreeNode[] {
+			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Customized");
+			System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Sample Reports", new System.Windows.Forms.TreeNode[] {
 									treeNode1,
 									treeNode2,
 									treeNode3,
-									treeNode4});
+									treeNode4,
+									treeNode5});
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.label1 = new System.Windows.Forms.Label();
@@ -81,18 +83,20 @@ namespace SharpReportSamples
 			this.treeView1.Location = new System.Drawing.Point(10, 10);
 			this.treeView1.Margin = new System.Windows.Forms.Padding(5);
 			this.treeView1.Name = "treeView1";
-			treeNode1.Name = "FormSheetItem";
+			treeNode1.Name = "FormSheetNode";
 			treeNode1.Text = "FormSheet";
-			treeNode2.Name = "PullModelItem";
+			treeNode2.Name = "PullModelNode";
 			treeNode2.Text = "PullModel";
-			treeNode3.Name = "iListNode";
+			treeNode3.Name = "IListNode";
 			treeNode3.Text = "PushModel-IList";
-			treeNode4.Name = "Knoten0";
+			treeNode4.Name = "ProviderIndependedNode";
 			treeNode4.Text = "Provider Independent";
-			treeNode5.Name = "Knoten0";
-			treeNode5.Text = "Sample Reports";
+			treeNode5.Name = "CustomizedNode";
+			treeNode5.Text = "Customized";
+			treeNode6.Name = "Customized";
+			treeNode6.Text = "Sample Reports";
 			this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-									treeNode5});
+									treeNode6});
 			this.treeView1.Size = new System.Drawing.Size(148, 444);
 			this.treeView1.TabIndex = 0;
 			this.treeView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TreeView1MouseDoubleClick);

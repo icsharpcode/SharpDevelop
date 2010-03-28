@@ -63,6 +63,7 @@
     <Compile Include="BaseItems\BaseGraphicItemFixture.cs" />
     <Compile Include="BaseItems\BaseReportItemFixture.cs" />
     <Compile Include="BaseItems\BaseRowItemFixture.cs" />
+    <Compile Include="BaseItems\BaseSectionFixture.cs" />
     <Compile Include="BaseItems\BaseTextItemFixture.cs" />
     <Compile Include="Collections\AvailableFieldsCollection.cs" />
     <Compile Include="Collections\ColumnCollectionFixture.cs" />

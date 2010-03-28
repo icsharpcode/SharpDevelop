@@ -1,11 +1,14 @@
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
-using ICSharpCode.SharpDevelop;
+
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -85,8 +88,8 @@ namespace ICSharpCode.Reports.Addin
 		private static void Absolut2RelativePath (BaseSection section, string fileName)
 		{
 			
-			foreach (Control item in section.Controls) {
-				BaseImageItem baseImageItem = item as BaseImageItem;
+			foreach (Control ctrl in section.Controls) {
+				BaseImageItem baseImageItem = ctrl as BaseImageItem;
 				if (baseImageItem != null) {
 					baseImageItem.ReportFileName = fileName;
 					
@@ -99,7 +102,7 @@ namespace ICSharpCode.Reports.Addin
 							Path.GetDirectoryName(baseImageItem.ImageFileName));
 
 						baseImageItem.RelativeFileName = d + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
-			Console.WriteLine("Rel Filename {0}",baseImageItem.RelativeFileName);
+						Console.WriteLine("Rel Filename {0}",baseImageItem.RelativeFileName);
 					}
 				}
 			}

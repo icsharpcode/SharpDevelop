@@ -265,9 +265,8 @@ namespace ICSharpCode.Reports.Core {
 		/// 
 		public GlobalEnums.ImageSource ImageSource 
 		{
-			get {
-				return imageSource;
-			}
+			get {return imageSource;}
+			set {this.imageSource = value;}
 		}
 		
 		///<summary>

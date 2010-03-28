@@ -28,6 +28,8 @@ namespace SharpReportSamples
 		private TreeNode pullNode;
 		private TreeNode iListNode;
 		private TreeNode providerIndependent;
+		private TreeNode customized;
+		
 		
 		public MainForm()
 		{
@@ -66,12 +68,14 @@ namespace SharpReportSamples
 			this.pullNode =  this.treeView1.Nodes[0].Nodes[1];
 			this.iListNode = this.treeView1.Nodes[0].Nodes[2];
 			this.providerIndependent = this.treeView1.Nodes[0].Nodes[3];
+			this.customized = this.treeView1.Nodes[0].Nodes[4];
 			
 			AddNodesToTree (this.formNode,startPath + @"FormSheet\" );
 			AddNodesToTree (this.pullNode,startPath + @"PullModel\" );
 			AddNodesToTree (this.iListNode,startPath + @"IList\" );
 			AddNodesToTree (this.providerIndependent,startPath + @"ProviderIndependent\" );
-
+			AddNodesToTree (this.customized,startPath + @"Customized\" );
+			
 		}
 		
 		private void AddNodesToTree (TreeNode parent,string path)
@@ -104,7 +108,8 @@ namespace SharpReportSamples
 				this.RunContributors(reportName);
 			} else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
-			}
+			} else if (s =="Customized")
+				this.RunEventlogger(reportName);
 			else {
 				
 				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
@@ -176,39 +181,82 @@ namespace SharpReportSamples
 		}
 		
 		
-		//Try this to react to SectionrenderEvent,
-		/*
-		private void PushPrinting (object sender,SectionRenderEventArgs e)
+		
+		ImageList imageList;
+		
+		private void RunEventlogger (string fileName)
 		{
-
-			switch (e.CurrentSection) {
-				case GlobalEnums.ReportSection.ReportHeader:
-					break;
-
-				case GlobalEnums.ReportSection.ReportPageHeader:
-					break;
-					
-				case GlobalEnums.ReportSection.ReportDetail:
-					BaseRowItem ri = e.Section.Items[0] as BaseRowItem;
-					if (ri != null) {
-						BaseDataItem r = (BaseDataItem)ri.Items.Find("unbound3");
-						if (r != null) {
-							r.DBValue = "xxxxxxx";
-						}
+			EventLogger eLog = new EventLogger(fileName);
+			this.imageList = eLog.Images;
+			
+			ReportModel model = ReportEngine.LoadReportModel(fileName);
+			IDataManager dataManager = DataManager.CreateInstance(eLog.EventLog,model.ReportSettings);
+			
+			this.previewControl1.SectionRendering += PushPrinting;
+			
+			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+		
+			{
+				this.previewControl1.RunReport(model,dataManager);
+			};
+			this.previewControl1.RunReport(model,dataManager);
+		}
+		
+		
+		//Handles  SectionRenderEvent
+		
+		private void PushPrinting (object sender, SectionRenderEventArgs e ) 
+		{
+			string sectionName = e.Section.Name;
+			
+			if (sectionName == ReportSectionNames.ReportHeader) {
+				Console.WriteLine("xx  " + ReportSectionNames.ReportHeader);
+			} 
+			
+			else if (sectionName == ReportSectionNames.ReportPageHeader) {
+				Console.WriteLine("xx " +ReportSectionNames .ReportPageHeader);
+			} 
+			
+			else if (sectionName == ReportSectionNames.ReportDetail){
+				
+				BaseDataItem item = e.Section.FindItem("EntryType") as BaseDataItem;
+				if (item != null) {
+					string s = item.DBValue;
+					Image im = null;
+					if (s == "Information") {
+						im = this.imageList.Images[1];
+					} else if (s == "Warning") {
+						im = this.imageList.Images[2];
+					} else if (s == "Error")
+					{
+						im = this.imageList.Images[0];
 					}
 					
-					break;
-				case GlobalEnums.ReportSection.ReportPageFooter:
-					break;
-					
-				case GlobalEnums.ReportSection.ReportFooter:
-					break;
-					
-				default:
-					break;
+					if (im != null)
+					{
+						BaseImageItem bi = e.Section.FindItem("BaseImageItem1") as BaseImageItem;
+						if (bi != null) {
+							bi.Image = im;
+						}
+						
+					}
+				}
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportPageFooter){
+				Console.WriteLine("xx " + ReportSectionNames.ReportPageFooter);
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportFooter){
+				Console.WriteLine("xx " + ReportSectionNames.ReportFooter);
+			}
+			
+			else{
+				throw new WrongSectionException(sectionName);
 			}
 		}
-		 */
+		
+		
 		#endregion
 		
 

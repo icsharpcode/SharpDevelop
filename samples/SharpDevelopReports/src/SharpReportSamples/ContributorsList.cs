@@ -17,10 +17,7 @@ namespace SharpReportSamples
 	/// </summary>
 	public class ContributorsReportData
 	{
-/*
-		This list is by no means exhaustive:
-•Siegfried Pammer
-*/
+
 		public static ContributorCollection CreateContributorsList () {
 			ContributorCollection list = new ContributorCollection();
 			

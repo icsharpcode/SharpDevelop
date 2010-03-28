@@ -8,6 +8,8 @@
 using System;
 using System.ComponentModel;
 using System.Xml.Serialization;
+using System.Linq;
+using ICSharpCode.Reports.Core.Interfaces;
 
 /// <summary>
 /// This Class is the BaseClass for <see cref="ReportSection"></see>
@@ -18,7 +20,7 @@ namespace ICSharpCode.Reports.Core
 {
 	public class BaseSection : BaseReportItem {
 		
-		private int sectionMargin;
+//		private int sectionMargin;
 		private bool pageBreakAfter;
 		private ReportItemCollection items;
 		
@@ -68,18 +70,47 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 		
+		#region FindItem
+		
+		private BaseReportItem FindRec (ReportItemCollection items, string name)
+		{
+			foreach(BaseReportItem item in items)
+			{
+				IContainerItem cont = item as IContainerItem;
+				if (cont != null) {
+					return FindRec(cont.Items,name);
+				} else {
+					var query = from bt in items where bt.Name == name select bt;
+					if (query.Count() >0) {
+						return query.FirstOrDefault();
+					}
+				}
+			}
+			return null;
+		}
+		
+		
+		
+		public BaseReportItem FindItem (string itemName)
+		{
+			foreach (BaseReportItem item in items)
+			{
+				IContainerItem cont = item as IContainerItem;
+				if (cont != null) {
+					return FindRec (cont.Items,itemName);
+				} else {
+					//return InnerFind(itemName);
+					return FindRec(this.items,itemName);
+				}
+			}
+			return null;
+		}
+		
+		#endregion
+		
 		#region properties
 		
-		
-		public  int SectionMargin 
-		{
-			get {
-				return this.sectionMargin;
-			}
-			set {
-				this.sectionMargin = value;
-			}
-		}
+		public  int SectionMargin {get;set;}
 	
 		
 		public override System.Drawing.Point Location

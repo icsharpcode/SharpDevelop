@@ -234,7 +234,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		}
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e ) {
-//			Console.WriteLine ("ReportViewer - SectionRenderEventargs from <{0}> with {1} item ",e.Section.Name,e.Section.Items.Count);
 			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,e);
 			string sectionName = e.Section.Name;
 			
@@ -258,9 +257,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				Console.WriteLine("xx " + ReportSectionNames.ReportFooter);
 			}
 			
-			
 			else{
-				Console.WriteLine("keine ahnung ");
+				throw new WrongSectionException(sectionName);
 			}
 		}
 		

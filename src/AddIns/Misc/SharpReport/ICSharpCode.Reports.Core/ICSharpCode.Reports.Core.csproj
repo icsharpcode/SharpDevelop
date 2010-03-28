@@ -127,6 +127,7 @@
     <Compile Include="Project\Exceptions\UnknownFunctionException.cs" />
     <Compile Include="Project\Exceptions\UnknownItemException.cs" />
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
+    <Compile Include="Project\Exceptions\WrongSectionException.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />
     <Compile Include="Project\Exporter\Converters\BaseConverter.cs" />
     <Compile Include="Project\Exporter\Converters\ConverterFactory.cs" />

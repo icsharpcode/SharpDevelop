@@ -10,7 +10,8 @@ using System.Runtime.Serialization;
 /// <summary>
 /// Description of MissingSectionException.
 /// </summary>
-namespace ICSharpCode.Reports.Core{
+namespace ICSharpCode.Reports.Core
+{
 
 	[Serializable()]
 	public class MissingSectionException: Exception

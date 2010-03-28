@@ -264,9 +264,12 @@ namespace ICSharpCode.Reports.Core {
 				
 				//image processing from IList
 				BaseImageItem baseImageItem = item as BaseImageItem;
+				
 				if (baseImageItem != null) {
 					PropertyDescriptor p = this.listProperties.Find(baseImageItem.ColumnName, true);
-					baseImageItem.Image = p.GetValue(this.Current) as System.Drawing.Image;
+					if (p != null) {
+						baseImageItem.Image = p.GetValue(this.Current) as System.Drawing.Image;
+					}
 					return;
 				}
 			}
