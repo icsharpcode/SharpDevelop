@@ -108,7 +108,7 @@ namespace SharpReportSamples
 				this.RunContributors(reportName);
 			} else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
-			} else if (s =="Customized")
+			} else if (s =="EventLog")
 				this.RunEventlogger(reportName);
 			else {
 				
