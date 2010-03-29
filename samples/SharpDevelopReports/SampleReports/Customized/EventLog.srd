@@ -34,6 +34,14 @@
             <SectionOffset>0</SectionOffset>
             <BackColor>White</BackColor>
             <Items>
+                <BaseImageItem>
+                    <ImageSource>File</ImageSource>
+                    <Location>12, 26</Location>
+                    <Name>BaseImageItem2</Name>
+                    <Size>75, 23</Size>
+                    <ScaleImageToSize>False</ScaleImageToSize>
+                    <BackColor>White</BackColor>
+                </BaseImageItem>
                 <BaseTextItem>
                     <BackColor>Silver</BackColor>
                     <CanShrink>False</CanShrink>

@@ -75,7 +75,8 @@ namespace ICSharpCode.Reports.Addin
 				try {
 					object o = this.Load(sectionNode as XmlElement,null);
 					BaseSection section = o as BaseSection;
-					Absolut2RelativePath(section,this.reportSettings.FileName);
+					ConvertAbsolut2RelativePath(section.Controls,this.reportSettings.FileName);
+//					ConvertAbsolut2RelativePath(section,this.reportSettings.FileName);
 					host.Container.Add(section);
 				} catch (Exception e) {
 					MessageService.ShowError(e);
@@ -85,11 +86,17 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		private static void Absolut2RelativePath (BaseSection section, string fileName)
+		
+		
+		private static void ConvertAbsolut2RelativePath (System.Windows.Forms.Control.ControlCollection controls, string fileName)
 		{
-			
-			foreach (Control ctrl in section.Controls) {
-				BaseImageItem baseImageItem = ctrl as BaseImageItem;
+			foreach (Control control in controls) {
+				
+				if (control.Controls.Count > 0) {
+					ConvertAbsolut2RelativePath(control.Controls,fileName);
+				}
+				
+				BaseImageItem baseImageItem = control as BaseImageItem;
 				if (baseImageItem != null) {
 					baseImageItem.ReportFileName = fileName;
 					
@@ -106,38 +113,7 @@ namespace ICSharpCode.Reports.Addin
 					}
 				}
 			}
-			Console.WriteLine("");
-		}
-		
-		private static void old_Absolut2RelativePath (BaseSection section, string fileName)
-		{
-			System.Diagnostics.Trace.WriteLine("Absolut2RelativePath");
-			foreach (Control item in section.Controls) {
-				BaseImageItem baseImageItem = item as BaseImageItem;
-				if (baseImageItem != null) {
-					baseImageItem.ReportFileName = fileName;
-					
-					if (Path.IsPathRooted(baseImageItem.ImageFileName)) {
-						
-						string relPath = ICSharpCode.Reports.Core.FileUtility.GetRelativePath(
-							Path.GetDirectoryName(fileName),
-							Path.GetDirectoryName(baseImageItem.ImageFileName));
-						
-						System.Diagnostics.Trace.WriteLine(String.Format("relativ image {0}",relPath));
-						
-						string relFile = relPath + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
-						System.Diagnostics.Trace.WriteLine(String.Format("ggg image {0}",relFile));
-
-						baseImageItem.RelativeFileName = relPath + Path.DirectorySeparatorChar + Path.GetFileName(baseImageItem.ImageFileName);
-						
-						string ddd = ICSharpCode.Reports.Core.FileUtility.GetAbsolutePath(Path.GetDirectoryName(fileName),relFile);
-						System.Diagnostics.Trace.WriteLine(String.Format("baseImageItem.RelativeFileName {0}",relFile));
-						if (File.Exists(ddd)){
-							Console.WriteLine("found");
-						}
-					}
-				}
-			}
+			Console.WriteLine("------------------");
 		}
 		
 		

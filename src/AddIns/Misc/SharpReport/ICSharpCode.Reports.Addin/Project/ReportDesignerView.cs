@@ -353,6 +353,12 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void OnComponentChanged (object sender, ComponentChangedEventArgs e)
 		{
+			BaseImageItem item = e.Component as BaseImageItem;
+			
+			if (item != null) {
+				item.ReportFileName = this.loader.ReportModel.ReportSettings.FileName;
+			}
+			
 			bool loading = this.loader != null && this.loader.Loading;
 			LoggingService.Debug("ReportDesigner: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
 			if (!loading && !unloading) {
