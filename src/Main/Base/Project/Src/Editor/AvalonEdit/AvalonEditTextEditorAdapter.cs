@@ -45,6 +45,16 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			OnDocumentChanged();
 		}
 		
+		public static TextEditor CreateAvalonEditInstance()
+		{
+			var node = Core.AddInTree.GetTreeNode("/SharpDevelop/ViewContent/AvalonEdit/TextEditorInstance", false);
+			if (node != null && node.Codons.Count > 0) {
+				return (TextEditor)node.Codons[0].BuildItem(null, null);
+			} else {
+				return new TextEditor();
+			}
+		}
+		
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
 			if (managerType == typeof(TextEditorWeakEventManager.DocumentChanged)) {
@@ -75,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		public virtual ITextEditorOptions Options { get; private set; }
 		
 		public virtual ILanguageBinding Language {
-			get { throw new NotSupportedException(); }
+			get { return AggregatedLanguageBinding.NullLanguageBinding; }
 		}
 		
 		sealed class CaretAdapter : ITextEditorCaret

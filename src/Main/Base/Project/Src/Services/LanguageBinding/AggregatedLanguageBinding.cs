@@ -16,12 +16,16 @@ namespace ICSharpCode.SharpDevelop
 	/// Aggregates multiple ILanguageBinding instances to allow more
 	/// than one language binding for a filename extension.
 	/// </summary>
-	class AggregatedLanguageBinding : ILanguageBinding
+	sealed class AggregatedLanguageBinding : ILanguageBinding
 	{
-		IEnumerable<ILanguageBinding> allBindings;
+		public static readonly AggregatedLanguageBinding NullLanguageBinding = new AggregatedLanguageBinding(System.Linq.Enumerable.Empty<ILanguageBinding>());
+		
+		readonly IEnumerable<ILanguageBinding> allBindings;
 		
 		public AggregatedLanguageBinding(IEnumerable<ILanguageBinding> bindings)
 		{
+			if (bindings == null)
+				throw new ArgumentNullException("bindings");
 			this.allBindings = bindings;
 		}
 		

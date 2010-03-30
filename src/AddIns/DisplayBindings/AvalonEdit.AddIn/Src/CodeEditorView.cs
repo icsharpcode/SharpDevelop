@@ -36,23 +36,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// There can be two CodeEditorView instances in a single CodeEditor if split-view
 	/// is enabled.
 	/// </summary>
-	public class CodeEditorView : TextEditor
+	public class CodeEditorView : SharpDevelopTextEditor
 	{
 		public ITextEditor Adapter { get; set; }
 		
-		CodeEditorOptions options;
 		BracketHighlightRenderer bracketRenderer;
 		
 		public CodeEditorView()
 		{
-			AvalonEditDisplayBinding.RegisterAddInHighlightingDefinitions();
-			
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
-			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Print, OnPrint));
-			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.PrintPreview, OnPrintPreview));
-			
-			options = ICSharpCode.AvalonEdit.AddIn.Options.CodeEditorOptions.Instance;
-			options.BindToTextEditor(this);
 			
 			UpdateCustomizedHighlighting();
 			
@@ -69,6 +61,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.TextArea.DefaultInputHandler.Editing.InputBindings.Remove(tabBinding);
 			var newTabBinding = new KeyBinding(new CustomTabCommand(this, tabBinding.Command), tabBinding.Key, tabBinding.Modifiers);
 			this.TextArea.DefaultInputHandler.Editing.InputBindings.Add(newTabBinding);
+		}
+		
+		protected override string FileName {
+			get { return this.Adapter.FileName; }
 		}
 		
 		protected override void OnOptionChanged(PropertyChangedEventArgs e)
@@ -386,33 +382,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		#endregion
 		
-		#region Printing
-		void OnPrint(object sender, ExecutedRoutedEventArgs e)
-		{
-			PrintDialog printDialog = PrintPreviewViewContent.PrintDialog;
-			if (printDialog.ShowDialog() == true) {
-				FlowDocument fd = DocumentPrinter.CreateFlowDocumentForEditor(this);
-				fd.ColumnGap = 0;
-				fd.ColumnWidth = printDialog.PrintableAreaWidth;
-				fd.PageHeight = printDialog.PrintableAreaHeight;
-				fd.PageWidth = printDialog.PrintableAreaWidth;
-				IDocumentPaginatorSource doc = fd;
-				printDialog.PrintDocument(doc.DocumentPaginator, Path.GetFileName(this.Adapter.FileName));
-			}
-		}
-		
-		void OnPrintPreview(object sender, ExecutedRoutedEventArgs e)
-		{
-			PrintDialog printDialog = PrintPreviewViewContent.PrintDialog;
-			FlowDocument fd = DocumentPrinter.CreateFlowDocumentForEditor(this);
-			fd.ColumnGap = 0;
-			fd.ColumnWidth = printDialog.PrintableAreaWidth;
-			fd.PageHeight = printDialog.PrintableAreaHeight;
-			fd.PageWidth = printDialog.PrintableAreaWidth;
-			PrintPreviewViewContent.ShowDocument(fd, Path.GetFileName(this.Adapter.FileName));
-		}
-		#endregion
-		
 		protected override IVisualLineTransformer CreateColorizer(IHighlightingDefinition highlightingDefinition)
 		{
 			return new CustomizableHighlightingColorizer(
@@ -420,6 +389,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				FetchCustomizations(highlightingDefinition.Name));
 		}
 		
+		// TODO: move this into SharpDevelopTextEditor
 		public void UpdateCustomizedHighlighting()
 		{
 			string language = this.SyntaxHighlighting != null ? this.SyntaxHighlighting.Name : null;

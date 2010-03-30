@@ -264,13 +264,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 			this.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
 			
-			this.editor = new ICSharpCode.AvalonEdit.TextEditor();
+			this.editor = Editor.AvalonEdit.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
 			this.editor.SetValue(Grid.ColumnProperty, 0);
 			this.editor.SetValue(Grid.RowProperty, 0);
 			
-			this.editor.Background = Brushes.White;
-			this.editor.FontFamily = new FontFamily("Consolas");
-			this.editor.FontSize = 13;
 			this.Children.Add(editor);
 			
 			editor.TextArea.ReadOnlySectionProvider = readOnlyRegion = new BeginReadOnlySectionProvider();

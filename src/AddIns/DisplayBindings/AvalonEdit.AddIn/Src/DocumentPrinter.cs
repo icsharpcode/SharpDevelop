@@ -55,9 +55,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return p;
 		}
 		
-		public static FlowDocument CreateFlowDocumentForEditor(CodeEditorView editor)
+		public static FlowDocument CreateFlowDocumentForEditor(TextEditor editor)
 		{
-			IHighlighter highlighter = editor.Adapter.GetService(typeof(IHighlighter)) as IHighlighter;
+			IHighlighter highlighter = editor.TextArea.GetService(typeof(IHighlighter)) as IHighlighter;
 			FlowDocument doc = new FlowDocument(ConvertTextDocumentToBlock(editor.Document, highlighter));
 			doc.FontFamily = editor.FontFamily;
 			doc.FontSize = editor.FontSize;

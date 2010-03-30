@@ -28,6 +28,10 @@
 		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/TextEditorInstance">
+		<Class id="CodeEditorView" class="ICSharpCode.AvalonEdit.AddIn.SharpDevelopTextEditor"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider">
 			<MenuItem id = "SaveWithEncoding"

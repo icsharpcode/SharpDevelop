@@ -5,14 +5,16 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
+using System.IO;
+using System.Windows;
 using System.Windows.Forms;
+
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -21,10 +23,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public class DefinitionViewPad : AbstractPadContent
 	{
-		TextEditorControl ctl;
+		AvalonEdit.TextEditor ctl;
 		
 		/// <summary>
-		/// The <see cref="System.Windows.Forms.Control"/> representing the pad
+		/// The control representing the pad
 		/// </summary>
 		public override object Control {
 			get {
@@ -37,12 +39,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public DefinitionViewPad()
 		{
-			ctl = new TextEditorControl();
-			ctl.Document.ReadOnly = true;
-			ctl.TextEditorProperties = SharpDevelopTextEditorProperties.Instance;
-			ctl.ActiveTextAreaControl.TextArea.DoubleClick += OnDoubleClick;
+			ctl = Editor.AvalonEdit.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
+			ctl.IsReadOnly = true;
+			ctl.MouseDoubleClick += OnDoubleClick;
 			ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
-			ctl.VisibleChanged += delegate { UpdateTick(null); };
+			//this.IsVisibleChanged += delegate { UpdateTick(null); };
 		}
 		
 		/// <summary>
@@ -51,16 +52,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public override void Dispose()
 		{
 			ParserService.ParserUpdateStepFinished -= OnParserUpdateStep;
-			ctl.Dispose();
+			ctl.Document = null;
 			base.Dispose();
 		}
 		
 		void OnDoubleClick(object sender, EventArgs e)
 		{
-			string fileName = ctl.FileName;
+			string fileName = currentFileName;
 			if (fileName != null) {
-				Caret caret = ctl.ActiveTextAreaControl.Caret;
-				FileService.JumpToFilePosition(fileName, caret.Line + 1, caret.Column + 1);
+				var caret = ctl.TextArea.Caret;
+				FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
 				
 				// refresh DefinitionView to show the definition of the expression that was double-clicked
 				UpdateTick(null);
@@ -69,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OnParserUpdateStep(object sender, ParserUpdateStepEventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(UpdateTick, e);
+			UpdateTick(e);
 		}
 		
 		void UpdateTick(ParserUpdateStepEventArgs e)
@@ -114,24 +115,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return ParserService.Resolve(expr, caret.Line, caret.Column, editor.FileName, content);
 			} catch (Exception ex) {
 				disableDefinitionView = true;
-				ctl.Visible = false;
+				ctl.Visibility = Visibility.Collapsed;
 				MessageService.ShowException(ex, "Error resolving at " + caret.Line + "/" + caret.Column
-				                         + ". DefinitionViewPad is disabled until you restart SharpDevelop.");
+				                             + ". DefinitionViewPad is disabled until you restart SharpDevelop.");
 				return null;
 			}
 		}
 		
 		FilePosition oldPosition;
+		string currentFileName;
 		
 		void OpenFile(FilePosition pos)
 		{
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
-			if (pos.FileName != ctl.FileName)
+			if (pos.FileName != currentFileName)
 				LoadFile(pos.FileName);
-			ctl.ActiveTextAreaControl.ScrollTo(int.MaxValue); // scroll completely down
-			ctl.ActiveTextAreaControl.Caret.Line = pos.Line - 1;
-			ctl.ActiveTextAreaControl.ScrollToCaret(); // scroll up to search position
+			ctl.ScrollToEnd(); // scroll completely down
+			ctl.TextArea.Caret.Line = pos.Line;
+			ctl.TextArea.Caret.BringCaretToView(); // scroll up to search position
 		}
 		
 		/// <summary>
@@ -149,12 +151,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			// Load the text into the definition view's text editor.
 			if (openTextEditor != null) {
-				ctl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
+//				AvalonEdit.TextEditor aeEditor = openTextEditor.GetService(
 				ctl.Text = openTextEditor.Document.Text;
-				ctl.FileName = fileName;
+				currentFileName = fileName;
 			} else {
-				ctl.LoadFile(fileName, true, true); // TODO: get AutoDetectEncoding from settings
+				ctl.Load(fileName);
 			}
+			ctl.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}
 	}
 }
