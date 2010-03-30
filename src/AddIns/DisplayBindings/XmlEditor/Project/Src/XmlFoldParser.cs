@@ -138,6 +138,7 @@ namespace ICSharpCode.XmlEditor
 		void CreateXmlTextReaderWithNoNamespaceSupport(TextReader textReader)
 		{
 			reader = new XmlTextReader(textReader);
+			reader.XmlResolver = null; // prevent XmlTextReader from loading external DTDs
 			reader.Namespaces = false;
 		}
 
