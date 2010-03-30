@@ -96,6 +96,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool mouseWheelZoom = true;
+		
+		[DefaultValue(true)]
+		public bool MouseWheelZoom {
+			get { return mouseWheelZoom; }
+			set {
+				if (mouseWheelZoom != value) {
+					mouseWheelZoom = value;
+					OnPropertyChanged("MouseWheelZoom");
+				}
+			}
+		}
+		
 		bool underlineErrors = true;
 		
 		[DefaultValue(true)]

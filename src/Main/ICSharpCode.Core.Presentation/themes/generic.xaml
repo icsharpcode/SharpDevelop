@@ -4,6 +4,7 @@
 >
 	<ResourceDictionary.MergedDictionaries>
 		<ResourceDictionary Source="/ICSharpCode.Core.Presentation;component/NumericUpDown.xaml" />
+		<ResourceDictionary Source="/ICSharpCode.Core.Presentation;component/ZoomScrollViewer.xaml" />
 	</ResourceDictionary.MergedDictionaries>
 	
 	<Style TargetType="{x:Type Window}" x:Key="{x:Static local:GlobalStyles.WindowStyleKey}">
@@ -189,7 +190,8 @@
 						Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=AnimationProgress, Converter={StaticResource visibilityConverter}}"
 					>
 						<Border.LayoutTransform>
-							<ScaleTransform ScaleY="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=AnimationProgress}"/>
+							<ScaleTransform ScaleX="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=AnimationProgressX}"
+							                ScaleY="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=AnimationProgressY}"/>
 						</Border.LayoutTransform>
 						<ContentPresenter
 							Margin="{TemplateBinding Control.Padding}"

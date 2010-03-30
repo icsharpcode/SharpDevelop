@@ -15,14 +15,17 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -38,6 +41,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public class SharpDevelopTextEditor : TextEditor
 	{
+		static SharpDevelopTextEditor()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(SharpDevelopTextEditor),
+			                                         new FrameworkPropertyMetadata(typeof(SharpDevelopTextEditor)));
+		}
+		
 		protected readonly CodeEditorOptions options;
 		
 		public SharpDevelopTextEditor()
@@ -81,5 +90,23 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			PrintPreviewViewContent.ShowDocument(fd, Path.GetFileName(this.FileName));
 		}
 		#endregion
+	}
+	
+	sealed class ZoomLevelToTextFormattingModeConverter : IValueConverter
+	{
+		public static readonly ZoomLevelToTextFormattingModeConverter Instance = new ZoomLevelToTextFormattingModeConverter();
+		
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			if (((double)value) == 1.0)
+				return TextFormattingMode.Display;
+			else
+				return TextFormattingMode.Ideal;
+		}
+		
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			throw new NotSupportedException();
+		}
 	}
 }

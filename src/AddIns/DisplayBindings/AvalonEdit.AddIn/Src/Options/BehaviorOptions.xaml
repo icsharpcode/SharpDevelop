@@ -25,7 +25,7 @@
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.BehaviourGroupBox}">
 			<StackPanel>
 				<CheckBox
-					IsEnabled="False"
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.MouseWheelZoom}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.MouseWheelZoomCheckBoxCheckBox}" />
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.CutCopyWholeLine}"

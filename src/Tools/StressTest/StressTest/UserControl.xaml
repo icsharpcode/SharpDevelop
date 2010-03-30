@@ -10,14 +10,20 @@
 						Content="Open File"
 						Height="23"
 						Click="openFileButton_Click" />
-					<Button
-						Content="Type Comment in C# File"
-						Height="23"
-						Click="TypeTextButton_Click" />
-					<Button
-						Content="Erasing Text in C# code"
-						Height="23"
-						Click="EraseTextButton_Click" />
+					<StackPanel Orientation="Horizontal">
+						<TextBox Name="typeCommentTextBox">This is a comment</TextBox>
+						<Button
+							Content="Type Comment in C# File"
+							Height="23"
+							Click="TypeTextButton_Click" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<CheckBox Name="eraseTextBackwards">Backwards</CheckBox>
+						<Button
+							Content="Erasing Text in C# code"
+							Height="23"
+							Click="EraseTextButton_Click" />
+					</StackPanel>
 					<Button
 						Content="Typing C# code"
 						Height="23"

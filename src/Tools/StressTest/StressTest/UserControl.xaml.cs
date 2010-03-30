@@ -77,17 +77,21 @@ namespace StressTest
 		
 		void TypeTextButton_Click(object sender, RoutedEventArgs e)
 		{
-			Run("Type Comment In C# file", TypeText());
+			Run("Type Comment In C# file", TypeText(typeCommentTextBox.Text));
 		}
 		
-		IEnumerable<DispatcherPriority> TypeText()
+		IEnumerable<DispatcherPriority> TypeText(string theText)
 		{
+			const string csharpHeader = "using System;\n\nclass Test {\n\tpublic void M() {\n\t\t";
+			const string csharpFooter = "\n\t}\n}\n";
 			IViewContent vc = FileService.NewFile("stresstest.cs", "");
 			ITextEditor editor = ((ITextEditorProvider)vc).TextEditor;
+			editor.Document.Text = csharpHeader + csharpFooter;
+			editor.Caret.Offset = csharpHeader.Length;
 			TextArea textArea = (TextArea)editor.GetService(typeof(TextArea));
 			yield return DispatcherPriority.SystemIdle;
 			for (int i = 0; i < Repetitions; i++) {
-				foreach (char c in "// This is a comment\n") {
+				foreach (char c in "// " + theText + "\n") {
 					textArea.PerformTextInput(c.ToString());
 					yield return DispatcherPriority.SystemIdle;
 				}
@@ -97,19 +101,19 @@ namespace StressTest
 		
 		void EraseTextButton_Click(object sender, RoutedEventArgs e)
 		{
-			Run("Erase Text In C# file", EraseText());
+			Run("Erase Text In C# file", EraseText((eraseTextBackwards.IsChecked == true) ? EditingCommands.Backspace : EditingCommands.Delete));
 		}
 		
-		IEnumerable<DispatcherPriority> EraseText()
+		IEnumerable<DispatcherPriority> EraseText(RoutedUICommand deleteCommand)
 		{
 			IViewContent vc = FileService.NewFile("stresstest.cs", "");
 			ITextEditor editor = ((ITextEditorProvider)vc).TextEditor;
 			TextArea textArea = (TextArea)editor.GetService(typeof(TextArea));
 			editor.Document.Text = File.ReadAllText(bigFile);
-			editor.Caret.Offset = 0;
+			editor.Caret.Offset = editor.Document.TextLength / 2;
 			yield return DispatcherPriority.SystemIdle;
 			for (int i = 0; i < Repetitions; i++) {
-				EditingCommands.Delete.Execute(null, textArea);
+				deleteCommand.Execute(null, textArea);
 				yield return DispatcherPriority.SystemIdle;
 			}
 			vc.WorkbenchWindow.CloseWindow(true);

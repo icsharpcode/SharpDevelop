@@ -9,7 +9,9 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace ICSharpCode.Core.Presentation
 {
@@ -33,6 +35,15 @@ namespace ICSharpCode.Core.Presentation
 		public bool IsCollapsed {
 			get { return (bool)GetValue(IsCollapsedProperty); }
 			set { SetValue(IsCollapsedProperty, value); }
+		}
+		
+		public static readonly DependencyProperty CollapseOrientationProperty =
+			DependencyProperty.Register("CollapseOrientation", typeof(Orientation), typeof(CollapsiblePanel),
+			                            new FrameworkPropertyMetadata(Orientation.Vertical));
+		
+		public Orientation CollapseOrientation {
+			get { return (Orientation)GetValue(CollapseOrientationProperty); }
+			set { SetValue(CollapseOrientationProperty, value); }
 		}
 		
 		public static readonly DependencyProperty DurationProperty = DependencyProperty.Register(
@@ -59,6 +70,30 @@ namespace ICSharpCode.Core.Presentation
 			set { SetValue(AnimationProgressProperty, value); }
 		}
 		
+		protected internal static readonly DependencyProperty AnimationProgressXProperty = DependencyProperty.Register(
+			"AnimationProgressX", typeof(double), typeof(CollapsiblePanel),
+			new FrameworkPropertyMetadata(1.0));
+		
+		/// <summary>
+		/// Value between 0 and 1 specifying how far the animation currently is.
+		/// </summary>
+		protected internal double AnimationProgressX {
+			get { return (double)GetValue(AnimationProgressXProperty); }
+			set { SetValue(AnimationProgressXProperty, value); }
+		}
+		
+		protected internal static readonly DependencyProperty AnimationProgressYProperty = DependencyProperty.Register(
+			"AnimationProgressY", typeof(double), typeof(CollapsiblePanel),
+			new FrameworkPropertyMetadata(1.0));
+		
+		/// <summary>
+		/// Value between 0 and 1 specifying how far the animation currently is.
+		/// </summary>
+		protected internal double AnimationProgressY {
+			get { return (double)GetValue(AnimationProgressYProperty); }
+			set { SetValue(AnimationProgressYProperty, value); }
+		}
+		
 		static void OnIsCollapsedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			((CollapsiblePanel)d).SetupAnimation((bool)e.NewValue);
@@ -79,8 +114,17 @@ namespace ICSharpCode.Core.Presentation
 				animation.FillBehavior = FillBehavior.HoldEnd;
 				
 				this.BeginAnimation(AnimationProgressProperty, animation);
+				if (CollapseOrientation == Orientation.Horizontal) {
+					this.BeginAnimation(AnimationProgressXProperty, animation);
+					this.AnimationProgressY = 1.0;
+				} else {
+					this.AnimationProgressX = 1.0;
+					this.BeginAnimation(AnimationProgressYProperty, animation);
+				}
 			} else {
 				this.AnimationProgress = isCollapsed ? 0.0 : 1.0;
+				this.AnimationProgressX = (CollapseOrientation == Orientation.Horizontal) ? this.AnimationProgress : 1.0;
+				this.AnimationProgressY = (CollapseOrientation == Orientation.Vertical) ? this.AnimationProgress : 1.0;
 			}
 		}
 	}
@@ -98,6 +142,47 @@ namespace ICSharpCode.Core.Presentation
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
 			throw new NotImplementedException();
+		}
+	}
+	
+	public class SelfCollapsingPanel : CollapsiblePanel
+	{
+		public static readonly DependencyProperty CanCollapseProperty =
+			DependencyProperty.Register("CanCollapse", typeof(bool), typeof(SelfCollapsingPanel),
+			                            new FrameworkPropertyMetadata(false, new PropertyChangedCallback(OnCanCollapseChanged)));
+		
+		public bool CanCollapse {
+			get { return (bool)GetValue(CanCollapseProperty); }
+			set { SetValue(CanCollapseProperty, value); }
+		}
+		
+		static void OnCanCollapseChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			SelfCollapsingPanel panel = (SelfCollapsingPanel)d;
+			if ((bool)e.NewValue) {
+				if (!panel.HeldOpenByMouse)
+					panel.IsCollapsed = true;
+			} else {
+				panel.IsCollapsed = false;
+			}
+		}
+		
+		bool HeldOpenByMouse {
+			get { return IsMouseOver || IsMouseCaptureWithin; }
+		}
+		
+		protected override void OnMouseLeave(MouseEventArgs e)
+		{
+			base.OnMouseLeave(e);
+			if (CanCollapse && !HeldOpenByMouse)
+				IsCollapsed = true;
+		}
+		
+		protected override void OnLostMouseCapture(MouseEventArgs e)
+		{
+			base.OnLostMouseCapture(e);
+			if (CanCollapse && !HeldOpenByMouse)
+				IsCollapsed = true;
 		}
 	}
 }
