@@ -92,9 +92,6 @@
       <DependentUpon>GridUnitSelector.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\NumericUpDown.cs">
-      <DependentUpon>NumericUpDown.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
@@ -217,6 +214,11 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
       <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
       <Name>WpfDesign.XamlDom</Name>
@@ -233,10 +235,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\GridUnitSelector.xaml" />
-    <Page Include="Controls\NumericUpDown.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Controls\ControlStyles.xaml" />
     <Page Include="DesignSurface.xaml">
       <SubType>Designer</SubType>

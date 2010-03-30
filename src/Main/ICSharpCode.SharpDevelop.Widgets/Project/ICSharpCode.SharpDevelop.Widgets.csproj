@@ -40,16 +40,30 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CollapsiblePanel.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="DragListener.cs" />
     <Compile Include="ListViewSorting\AbstractListViewParseableColumnComparer.cs" />
     <Compile Include="ListViewSorting\AbstractListViewSubItemComparer.cs" />
     <Compile Include="ListViewSorting\ListViewIntegerParseColumnComparer.cs" />
@@ -58,6 +72,9 @@
     <Compile Include="ListViewSorting\IListViewItemComparer.cs" />
     <Compile Include="ListViewSorting\ListViewItemSorter.cs" />
     <Compile Include="MouseWheelHandler.cs" />
+    <Compile Include="NumericUpDown.cs">
+      <DependentUpon>NumericUpDown.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\BitmapResources.cs" />
     <Compile Include="SideBar\SideBar.cs">
       <SubType>UserControl</SubType>
@@ -68,10 +85,27 @@
     <Compile Include="DesignTimeSupport\DropDownEditorListBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ZoomButtons.cs">
+      <DependentUpon>ZoomScrollViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ZoomScrollViewer.cs">
+      <DependentUpon>ZoomScrollViewer.xaml</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Resources\Icons.16x16.SortAscending.png" />
     <EmbeddedResource Include="Resources\Icons.16x16.SortDescending.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="NumericUpDown.xaml" />
+    <Page Include="themes\generic.xaml" />
+    <Page Include="ZoomScrollViewer.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Images" />
+    <Folder Include="themes" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ZoomIn.png" />
+    <Resource Include="Images\ZoomOut.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
-	x:Class="ICSharpCode.UsageDataCollector.StartPageMessage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:local="clr-namespace:ICSharpCode.UsageDataCollector">
+	x:Class="ICSharpCode.UsageDataCollector.StartPageMessage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:local="clr-namespace:ICSharpCode.UsageDataCollector" xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
 	<StackPanel>
-		<core:CollapsiblePanel
+		<widgets:CollapsiblePanel
 			Name="mainPanel">
 			<StackPanel>
 				<TextBlock
@@ -26,17 +26,17 @@
 					Click="SaveButton_Click"
 					Content="{core:Localize Dialog.Options.IDEOptions.LoadSaveOptions.SaveLabel}"/>
 			</StackPanel>
-		</core:CollapsiblePanel>
-		<core:CollapsiblePanel
+		</widgets:CollapsiblePanel>
+		<widgets:CollapsiblePanel
 			Name="acceptedMessage"
 			IsCollapsed="True">
 			<TextBlock TextWrapping="Wrap" Text="{core:Localize AddIns.UsageDataCollector.AcceptConfirmation}"/>
-		</core:CollapsiblePanel>
-		<core:CollapsiblePanel
+		</widgets:CollapsiblePanel>
+		<widgets:CollapsiblePanel
 			Name="declinedMessage"
 			IsCollapsed="True">
 			<TextBlock TextWrapping="Wrap" Text="{core:Localize AddIns.UsageDataCollector.DeclineConfirmation}"/>
-		</core:CollapsiblePanel>
+		</widgets:CollapsiblePanel>
 		<TextBlock
 			HorizontalAlignment="Left">
 			<Hyperlink

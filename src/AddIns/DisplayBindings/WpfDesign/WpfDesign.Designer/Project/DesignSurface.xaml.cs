@@ -63,7 +63,7 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
-			if (e.OriginalSource == uxZoom.ScrollViewer) {
+			if (e.OriginalSource == uxZoom) {
 				UnselectAll();
 			}
 		}

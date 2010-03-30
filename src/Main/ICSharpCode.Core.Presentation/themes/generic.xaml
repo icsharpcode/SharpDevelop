@@ -2,11 +2,6 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:ICSharpCode.Core.Presentation"
 >
-	<ResourceDictionary.MergedDictionaries>
-		<ResourceDictionary Source="/ICSharpCode.Core.Presentation;component/NumericUpDown.xaml" />
-		<ResourceDictionary Source="/ICSharpCode.Core.Presentation;component/ZoomScrollViewer.xaml" />
-	</ResourceDictionary.MergedDictionaries>
-	
 	<Style TargetType="{x:Type Window}" x:Key="{x:Static local:GlobalStyles.WindowStyleKey}">
 		<Setter Property="UseLayoutRounding" Value="True" />
 		<Setter Property="TextOptions.TextFormattingMode" Value="Display" />
@@ -168,40 +163,6 @@
 							<Setter Property="Panel.Background" TargetName="PART_DropDownArrow" Value="Transparent"/>
 						</Trigger>
 					</ControlTemplate.Triggers>
-				</ControlTemplate>
-			</Setter.Value>
-		</Setter>
-	</Style>
-	
-	<!-- Template for CollapsiblePanel -->
-	<Style TargetType="{x:Type local:CollapsiblePanel}">
-		<Setter Property="Template">
-			<Setter.Value>
-				<ControlTemplate TargetType="local:CollapsiblePanel">
-					<ControlTemplate.Resources>
-						<local:CollapsiblePanelProgressToVisibilityConverter x:Key="visibilityConverter"/>
-					</ControlTemplate.Resources>
-					<Border
-						BorderThickness="{TemplateBinding Border.BorderThickness}"
-						BorderBrush="{TemplateBinding Border.BorderBrush}"
-						Background="{TemplateBinding Panel.Background}"
-						SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
-						Name="PART_Border"
-						Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=AnimationProgress, Converter={StaticResource visibilityConverter}}"
-					>
-						<Border.LayoutTransform>
-							<ScaleTransform ScaleX="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=AnimationProgressX}"
-							                ScaleY="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=AnimationProgressY}"/>
-						</Border.LayoutTransform>
-						<ContentPresenter
-							Margin="{TemplateBinding Control.Padding}"
-							Content="{TemplateBinding ContentControl.Content}"
-							ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
-							ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
-							HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
-							VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
-							SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-					</Border>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>

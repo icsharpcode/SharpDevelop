@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-namespace ICSharpCode.Core.Presentation
+namespace ICSharpCode.SharpDevelop.Widgets
 {
 	/// <summary>
 	/// Allows animated collapsing of the content of this panel.

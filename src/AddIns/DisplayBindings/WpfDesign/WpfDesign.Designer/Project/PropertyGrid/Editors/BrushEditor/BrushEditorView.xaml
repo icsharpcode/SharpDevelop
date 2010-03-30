@@ -6,6 +6,7 @@
              xmlns:BrushEditor="clr-namespace:ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor"
              xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters"
              xmlns:PropertyGrid="clr-namespace:ICSharpCode.WpfDesign.Designer.PropertyGrid"
+             xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
              Width="395">
 	
 	<UserControl.Resources>
@@ -51,7 +52,7 @@
 				            Margin="5">
 					<TextBlock Text="Angle"
 					           VerticalAlignment="Center" />
-					<Controls:NumericUpDown Value="{Binding GradientAngle}"
+					<widgets:NumericUpDown Value="{Binding GradientAngle}"
 					                 Minimum="-360"
 					                 Maximum="360"
 					                 Margin="5 0 0 0"

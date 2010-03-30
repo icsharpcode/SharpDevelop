@@ -22,7 +22,7 @@ using System.Windows.Controls.Primitives;
 using System.Globalization;
 using System.Diagnostics;
 
-namespace ICSharpCode.Core.Presentation
+namespace ICSharpCode.SharpDevelop.Widgets
 {
 	public class NumericUpDown : Control
 	{

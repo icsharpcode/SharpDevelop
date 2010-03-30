@@ -1,6 +1,7 @@
 ﻿<gui:OptionPanel x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.ProjectAndSolutionOptions"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
                  xmlns:sd="clr-namespace:ICSharpCode.SharpDevelop"
                  xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
                  xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project"
@@ -27,7 +28,7 @@
 					<Label
 						Content="{core:Localize Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ParallelBuild}"
 						Target="{Binding ElementName=parallelBuildCount}" />
-					<core:NumericUpDown Minimum="1" Maximum="16" Name="parallelBuildCount" Width="45" />
+					<widgets:NumericUpDown Minimum="1" Maximum="16" Name="parallelBuildCount" Width="45" />
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<Label

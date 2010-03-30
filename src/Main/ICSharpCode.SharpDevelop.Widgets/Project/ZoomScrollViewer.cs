@@ -16,7 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ICSharpCode.Core.Presentation
+namespace ICSharpCode.SharpDevelop.Widgets
 {
 	public class ZoomScrollViewer : ScrollViewer
 	{
@@ -28,7 +28,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static readonly DependencyProperty CurrentZoomProperty =
 			DependencyProperty.Register("CurrentZoom", typeof(double), typeof(ZoomScrollViewer),
-			                            new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, null, CoerceZoom));
+			                            new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, CalculateZoomButtonCollapsed, CoerceZoom));
 		
 		public double CurrentZoom {
 			get { return (double)GetValue(CurrentZoomProperty); }
@@ -67,6 +67,33 @@ namespace ICSharpCode.Core.Presentation
 		public bool MouseWheelZoom {
 			get { return (bool)GetValue(MouseWheelZoomProperty); }
 			set { SetValue(MouseWheelZoomProperty, value); }
+		}
+		
+		public static readonly DependencyProperty AlwaysShowZoomButtonsProperty =
+			DependencyProperty.Register("AlwaysShowZoomButtons", typeof(bool), typeof(ZoomScrollViewer),
+			                            new FrameworkPropertyMetadata(false, CalculateZoomButtonCollapsed));
+		
+		public bool AlwaysShowZoomButtons {
+			get { return (bool)GetValue(AlwaysShowZoomButtonsProperty); }
+			set { SetValue(AlwaysShowZoomButtonsProperty, value); }
+		}
+		
+		static readonly DependencyPropertyKey ComputedZoomButtonCollapsedPropertyKey =
+			DependencyProperty.RegisterReadOnly("ComputedZoomButtonCollapsed", typeof(bool), typeof(ZoomScrollViewer),
+			                                    new FrameworkPropertyMetadata(true));
+		
+		public static readonly DependencyProperty ComputedZoomButtonCollapsedProperty = ComputedZoomButtonCollapsedPropertyKey.DependencyProperty;
+		
+		public bool ComputedZoomButtonCollapsed {
+			get { return (bool)GetValue(ComputedZoomButtonCollapsedProperty); }
+			private set { SetValue(ComputedZoomButtonCollapsedPropertyKey, value); }
+		}
+		
+		static void CalculateZoomButtonCollapsed(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			ZoomScrollViewer z = d as ZoomScrollViewer;
+			if (z != null)
+				z.ComputedZoomButtonCollapsed = (z.AlwaysShowZoomButtons == false) && (z.CurrentZoom == 1.0);
 		}
 		
 		protected override void OnMouseWheel(MouseWheelEventArgs e)
@@ -138,6 +165,8 @@ namespace ICSharpCode.Core.Presentation
 		
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
+			if (parameter is bool && (bool)parameter)
+				return true;
 			return ((double)value) == 1.0;
 		}
 		

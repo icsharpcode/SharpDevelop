@@ -16,7 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ICSharpCode.Core.Presentation
+namespace ICSharpCode.SharpDevelop.Widgets
 {
 	public class ZoomButtons : RangeBase
 	{

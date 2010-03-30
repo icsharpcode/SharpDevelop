@@ -13,7 +13,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Diagnostics;
 
-namespace ICSharpCode.Core.Presentation
+namespace ICSharpCode.SharpDevelop.Widgets
 {
 	public delegate void DragHandler(DragListener drag);
 

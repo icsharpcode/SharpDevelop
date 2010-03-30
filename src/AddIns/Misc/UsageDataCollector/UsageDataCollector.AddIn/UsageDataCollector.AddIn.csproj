@@ -92,6 +92,11 @@
       <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\UsageDataCollector\UsageDataCollector.csproj">
       <Project>{6B1CFE35-DA17-4DEB-9C6E-227E5E251DA0}</Project>
       <Name>UsageDataCollector</Name>
