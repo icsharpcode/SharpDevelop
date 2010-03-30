@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.SharpDevelop.Widgets</RootNamespace>
@@ -58,38 +59,11 @@
     <Compile Include="ListViewSorting\ListViewItemSorter.cs" />
     <Compile Include="MouseWheelHandler.cs" />
     <Compile Include="Resources\BitmapResources.cs" />
-    <Compile Include="TreeGrid\CollectionWithEvents.cs" />
-    <Compile Include="TreeGrid\DynamicList.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="TreeGrid\DynamicListColumn.cs" />
-    <Compile Include="TreeGrid\DynamicListItem.cs" />
-    <Compile Include="TreeGrid\DynamicListRow.cs" />
-    <Compile Include="TreeGrid\DynamicTreeRow.cs" />
-    <Compile Include="TreeGrid\ScrollButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TreeGrid\VerticalScrollContainer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DesignHelper.cs" />
-    <Compile Include="AutoHide\AutoHideContainer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="AutoHide\AutoHideMenuStripContainer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="AutoHide\AutoHideStatusStripContainer.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="SideBar\SideBar.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="SideBar\SideTab.cs" />
     <Compile Include="SideBar\SideTabItem.cs" />
-    <Compile Include="SpinnerControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="DesignTimeSupport\DropDownEditor.cs" />
     <Compile Include="DesignTimeSupport\DropDownEditorListBox.cs">
       <SubType>Component</SubType>

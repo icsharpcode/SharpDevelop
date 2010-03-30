@@ -244,23 +244,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 		
 		#region Tool tips
-		static DebuggerGridControl oldToolTipControl;
-		
-		static bool CanCloseOldToolTip {
-			get {
-				return oldToolTipControl != null && oldToolTipControl.AllowClose;
-			}
-		}
-		
-		static void CloseOldToolTip()
-		{
-			if (oldToolTipControl != null) {
-				Form frm = oldToolTipControl.FindForm();
-				if (frm != null) frm.Close();
-				oldToolTipControl = null;
-			}
-		}
-		
 		/// <summary>
 		/// Gets debugger tooltip information for the specified position.
 		/// A descriptive text for the element or a DebuggerGridControl

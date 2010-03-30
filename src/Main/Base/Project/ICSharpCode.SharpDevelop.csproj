@@ -668,7 +668,6 @@
     <Compile Include="Src\Gui\Components\StringListEditor.cs" />
     <Compile Include="Src\Project\ConfigurationGuiBinding.cs" />
     <Compile Include="Src\Project\ChooseStorageLocationButton.cs" />
-    <Compile Include="Src\Services\Debugger\DebuggerGridControl.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskView.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPad.cs" />
