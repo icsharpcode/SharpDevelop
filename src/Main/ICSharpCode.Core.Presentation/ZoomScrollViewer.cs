@@ -72,7 +72,52 @@ namespace ICSharpCode.Core.Presentation
 		protected override void OnMouseWheel(MouseWheelEventArgs e)
 		{
 			if (!e.Handled && Keyboard.Modifiers == ModifierKeys.Control && MouseWheelZoom) {
-				SetCurrentValue(CurrentZoomProperty, RoundToOneIfClose(CurrentZoom * Math.Pow(1.001, e.Delta)));
+				double oldZoom = CurrentZoom;
+				double newZoom = RoundToOneIfClose(CurrentZoom * Math.Pow(1.001, e.Delta));
+				newZoom = Math.Max(this.MinimumZoom, Math.Min(this.MaximumZoom, newZoom));
+				
+				// adjust scroll position so that mouse stays over the same virtual coordinate
+				ContentPresenter presenter = Template.FindName("PART_Presenter", this) as ContentPresenter;
+				Vector relMousePos;
+				if (presenter != null) {
+					Point mousePos = e.GetPosition(presenter);
+					relMousePos = new Vector(mousePos.X / presenter.ActualWidth, mousePos.Y / presenter.ActualHeight);
+				} else {
+					relMousePos = new Vector(0.5, 0.5);
+				}
+				
+				Point scrollOffset = new Point(this.HorizontalOffset, this.VerticalOffset);
+				Vector oldHalfViewport = new Vector(this.ViewportWidth / 2, this.ViewportHeight / 2);
+				Vector newHalfViewport = oldHalfViewport / newZoom * oldZoom;
+				Point oldCenter = scrollOffset + oldHalfViewport;
+				Point virtualMousePos = scrollOffset + new Vector(relMousePos.X * this.ViewportWidth, relMousePos.Y * this.ViewportHeight);
+				
+				// As newCenter, we want to choose a point between oldCenter and virtualMousePos. The more we zoom in, the closer
+				// to virtualMousePos. We'll create the line x = oldCenter + lambda * (virtualMousePos-oldCenter).
+				// On this line, we need to choose lambda between -1 and 1:
+				// -1 = zoomed out completely
+				//  0 = zoom unchanged
+				// +1 = zoomed in completely
+				// But the zoom factor (newZoom/oldZoom) we have is in the range [0,+Infinity].
+				
+				// Basically, I just played around until I found a function that maps this to [-1,1] and works well.
+				// "f" is squared because otherwise the mouse simply stays over virtualMousePos, but I wanted virtualMousePos
+				// to move towards the middle -> squaring f causes lambda to be closer to 1, giving virtualMousePos more weight
+				// then oldCenter.
+				
+				double f = Math.Min(newZoom, oldZoom) / Math.Max(newZoom, oldZoom);
+				double lambda = 1 - f*f;
+				if (oldZoom > newZoom)
+					lambda = -lambda;
+				
+				Point newCenter = oldCenter + lambda * (virtualMousePos - oldCenter);
+				scrollOffset = newCenter - newHalfViewport;
+				
+				SetCurrentValue(CurrentZoomProperty, newZoom);
+				
+				this.ScrollToHorizontalOffset(scrollOffset.X);
+				this.ScrollToVerticalOffset(scrollOffset.Y);
+				
 				e.Handled = true;
 			}
 			base.OnMouseWheel(e);

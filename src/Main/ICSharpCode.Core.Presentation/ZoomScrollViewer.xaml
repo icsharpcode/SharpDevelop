@@ -20,7 +20,7 @@
 							<Controls:ZoomButtons x:Name="zoomButtons" Value="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}" Minimum="{TemplateBinding MinimumZoom}" Maximum="{TemplateBinding MaximumZoom}" />
 						</Controls:SelfCollapsingPanel>
 						<Rectangle Grid.Column="2" Grid.Row="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
-						<ScrollContentPresenter Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="{TemplateBinding Control.Padding}" Content="{TemplateBinding ContentControl.Content}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}">
+						<ScrollContentPresenter Name="PART_Presenter" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="{TemplateBinding Control.Padding}" Content="{TemplateBinding ContentControl.Content}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}">
 							<ScrollContentPresenter.LayoutTransform>
 								<ScaleTransform ScaleX="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}" ScaleY="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 							</ScrollContentPresenter.LayoutTransform>
