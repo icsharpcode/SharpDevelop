@@ -36,18 +36,20 @@
             <Items>
                 <BaseImageItem>
                     <ImageSource>File</ImageSource>
-                    <Location>12, 26</Location>
+                    <Location>83, 13</Location>
                     <Name>BaseImageItem2</Name>
-                    <Size>75, 23</Size>
+                    <Size>568, 36</Size>
                     <ScaleImageToSize>False</ScaleImageToSize>
                     <BackColor>White</BackColor>
+                    <RelativeFileName>..\Logos\Bannerbeige2.gif</RelativeFileName>
+                    <ImageFileName>D:\SharpDevelop3.0_WorkingCopy\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
                 </BaseImageItem>
                 <BaseTextItem>
                     <BackColor>Silver</BackColor>
                     <CanShrink>False</CanShrink>
                     <StringTrimming>None</StringTrimming>
                     <Text>System - Eventlog</Text>
-                    <Location>83, 26</Location>
+                    <Location>83, 55</Location>
                     <ContentAlignment>TopCenter</ContentAlignment>
                     <Visible>True</Visible>
                     <DrawBorder>False</DrawBorder>
@@ -134,7 +136,7 @@
                     <Size>697, 30</Size>
                     <BackColor>White</BackColor>
                     <Visible>True</Visible>
-                    <ForeColor>ControlText</ForeColor>
+                    <ForeColor>Black</ForeColor>
                 </BaseRowItem>
             </Items>
             <Location>50, 147</Location>

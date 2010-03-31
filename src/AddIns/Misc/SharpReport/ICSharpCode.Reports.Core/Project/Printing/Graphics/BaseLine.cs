@@ -40,6 +40,10 @@ namespace ICSharpCode.Reports.Core
 		
 		public BaseLine(Color color, DashStyle dashStyle,float thickness, LineCap startLineCap, LineCap endLineCap, DashCap dashLineCap)
 		{
+			if (color == Color.White) {
+				this.color = Color.Black;
+			}
+			
 			this.color = color;
 			this.dashStyle = dashStyle;
 			this.thickness = thickness;

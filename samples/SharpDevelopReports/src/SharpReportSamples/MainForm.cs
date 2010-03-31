@@ -15,6 +15,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
 
 namespace SharpReportSamples
 {
@@ -29,7 +30,7 @@ namespace SharpReportSamples
 		private TreeNode iListNode;
 		private TreeNode providerIndependent;
 		private TreeNode customized;
-		
+		private ImageList imageList;
 		
 		public MainForm()
 		{
@@ -40,14 +41,6 @@ namespace SharpReportSamples
 			InitTree();
 			UpdateStatusbar (Application.StartupPath);
 			this.previewControl1.Messages = new ReportViewerMessagesProvider();
-			
-			/*
-			EventLog ev = new EventLog();
-			ev.Log = "System";
-			ev.MachineName = ".";  // Lokale Maschine
-			ArrayList ar = new ArrayList();
-			ar.AddRange(ev.Entries);
-			 */
 		}
 		
 		
@@ -57,10 +50,9 @@ namespace SharpReportSamples
 			
 			string startupPath = Application.StartupPath;
 			string samplesDir = @"SharpDevelopReports\";
-			int y = startupPath.IndexOf(samplesDir);
-			string startPath = startupPath.Substring(0,y + samplesDir.Length) + @"SampleReports\";
+			int i = startupPath.IndexOf(samplesDir);
+			string startPath = startupPath.Substring(0,i + samplesDir.Length) + @"SampleReports\";
 			
-			//D:\Reporting3.0_branches\SharpDevelop\samples\SharpDevelopReports\SampleReports
 			
 			string pathToFormSheet = startPath + formSheetDir;
 			
@@ -75,8 +67,8 @@ namespace SharpReportSamples
 			AddNodesToTree (this.iListNode,startPath + @"IList\" );
 			AddNodesToTree (this.providerIndependent,startPath + @"ProviderIndependent\" );
 			AddNodesToTree (this.customized,startPath + @"Customized\" );
-			
 		}
+		
 		
 		private void AddNodesToTree (TreeNode parent,string path)
 		{
@@ -109,7 +101,8 @@ namespace SharpReportSamples
 			} else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
 			} else if (s =="EventLog")
-				this.RunEventlogger(reportName);
+				this.RunEventLogger(reportName);
+//			this.RunEventLogger_Pdf(reportName);
 			else {
 				
 				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
@@ -182,11 +175,45 @@ namespace SharpReportSamples
 		
 		
 		
-		ImageList imageList;
 		
-		private void RunEventlogger (string fileName)
+		
+		
+		private void RunEventLogger_Pdf (string fileName)
 		{
 			EventLogger eLog = new EventLogger(fileName);
+			ReportModel model = ReportEngine.LoadReportModel(fileName);
+			IReportCreator creator = ReportEngine.CreatePageBuilder(model,eLog.EventLog,null);
+			creator.BuildExportList();
+			using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(creator,SelectFilename(),true))
+			{
+				pdfRenderer.Start();
+				pdfRenderer.RenderOutput();
+				pdfRenderer.End();
+			}
+		}
+		
+		private string SelectFilename()
+		{
+			using (SaveFileDialog saveDialog = new SaveFileDialog()){
+
+				saveDialog.FileName = "_pdf";
+				saveDialog.DefaultExt = "PDF";
+				saveDialog.ValidateNames = true;
+				if(saveDialog.ShowDialog() == DialogResult.OK){
+					return saveDialog.FileName;
+				} else {
+					return String.Empty;
+				}
+			}
+		}
+		
+		
+		private void RunEventLogger (string fileName)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			EventLogger eLog = new EventLogger(fileName);
+			Cursor.Current = Cursors.Default;
+
 			this.imageList = eLog.Images;
 			
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
@@ -204,51 +231,76 @@ namespace SharpReportSamples
 		
 		
 		//Handles  SectionRenderEvent
+		int hour = 0;
 		
-		private void PushPrinting (object sender, SectionRenderEventArgs e ) 
+		private void PushPrinting (object sender, SectionRenderEventArgs e )
 		{
 			string sectionName = e.Section.Name;
 			
 			if (sectionName == ReportSectionNames.ReportHeader) {
-				Console.WriteLine("xx  " + ReportSectionNames.ReportHeader);
+				Console.WriteLine("PushPrinting  :" + ReportSectionNames.ReportHeader);
 			} 
 			
 			else if (sectionName == ReportSectionNames.ReportPageHeader) {
-				Console.WriteLine("xx " +ReportSectionNames .ReportPageHeader);
+				Console.WriteLine("PushPrinting :" +ReportSectionNames .ReportPageHeader);
 			} 
 			
 			else if (sectionName == ReportSectionNames.ReportDetail){
+				Console.WriteLine("PushPrinting :" + ReportSectionNames.ReportDetail);
+				// TimeWritten
+				BaseDataItem time = e.Section.FindItem("BaseDataItem1") as BaseDataItem;
+				if (time != null) {
+					DateTime dateTime = Convert.ToDateTime(time.DBValue);
+					
+					int newhour = dateTime.Hour;
+					if (hour != newhour) {
+						hour = newhour;
+						e.Section.Items[0].DrawBorder = true;
+						e.Section.Items[0].FrameColor = Color.Black;
+//						e.Section.Items[0].BackColor = Color.LightGray;
+						time.DBValue = dateTime.Hour.ToString();
+						time.ContentAlignment = ContentAlignment.MiddleLeft;
+					
+					} else {
+						time.DrawBorder = false;
+						e.Section.Items[0].FrameColor = Color.White;
+//						e.Section.Items[0].BackColor = Color.White;
+						time.DBValue = dateTime.Minute.ToString() + ":" + dateTime.Second.ToString();
+						time.ContentAlignment = ContentAlignment.MiddleRight;
+						
+					}
+				}
 				
-				BaseDataItem item = e.Section.FindItem("EntryType") as BaseDataItem;
-				if (item != null) {
-					string s = item.DBValue;
-					Image im = null;
-					if (s == "Information") {
-						im = this.imageList.Images[1];
-					} else if (s == "Warning") {
-						im = this.imageList.Images[2];
-					} else if (s == "Error")
+				//  Image
+				BaseDataItem dataItem = e.Section.FindItem("EntryType") as BaseDataItem;
+				if (dataItem != null) {
+					string str = dataItem.DBValue;
+					Image image = null;
+					if (str == "Information") {
+						image = this.imageList.Images[1];
+					} else if (str == "Warning") {
+						image = this.imageList.Images[2];
+					} else if (str == "Error")
 					{
-						im = this.imageList.Images[0];
+						image = this.imageList.Images[0];
 					}
 					
-					if (im != null)
+					if (image != null)
 					{
-						BaseImageItem bi = e.Section.FindItem("BaseImageItem1") as BaseImageItem;
-						if (bi != null) {
-							bi.Image = im;
+						BaseImageItem imageItem = e.Section.FindItem("BaseImageItem1") as BaseImageItem;
+						if (imageItem != null) {
+							imageItem.Image = image;
 						}
-						
 					}
 				}
 			}
 			
 			else if (sectionName == ReportSectionNames.ReportPageFooter){
-				Console.WriteLine("xx " + ReportSectionNames.ReportPageFooter);
+				Console.WriteLine("PushPrinting :" + ReportSectionNames.ReportPageFooter);
 			}
 			
 			else if (sectionName == ReportSectionNames.ReportFooter){
-				Console.WriteLine("xx " + ReportSectionNames.ReportFooter);
+				Console.WriteLine("PushPrinting :" + ReportSectionNames.ReportFooter);
 			}
 			
 			else{
@@ -294,21 +346,6 @@ namespace SharpReportSamples
 			}
 		}
 		
-		
-		private string SelectFilename()
-		{
-			using (SaveFileDialog saveDialog = new SaveFileDialog()){
-
-				saveDialog.FileName = "_pdf";
-				saveDialog.DefaultExt = "PDF";
-				saveDialog.ValidateNames = true;
-				if(saveDialog.ShowDialog() == DialogResult.OK){
-					return saveDialog.FileName;
-				} else {
-					return String.Empty;
-				}
-			}
-		}
 		 */
 	}
 }

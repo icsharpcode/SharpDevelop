@@ -34,6 +34,7 @@ namespace ICSharpCode.Reports.Core {
 			this.top = baseLine;
 			this.right = baseLine;
 			this.bottom = baseLine;
+			System.Console.WriteLine("baseline color {0}",baseline.Color);
 		}
 		
 		
@@ -41,7 +42,10 @@ namespace ICSharpCode.Reports.Core {
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
+		System.Console.WriteLine("drawBorder color {0}",baseline.Color);
+		
 			using (Pen p = baseline.CreatePen(baseline.Thickness)) {
+			Console.WriteLine("pen {0}",p.Color);
 				Rectangle r = System.Drawing.Rectangle.Inflate(rectangle,1,1);
 				graphics.DrawRectangle (p,rectangle);
 			}

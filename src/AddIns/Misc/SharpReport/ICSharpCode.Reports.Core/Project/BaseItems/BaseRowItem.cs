@@ -74,8 +74,10 @@ namespace ICSharpCode.Reports.Core{
 			if (this.BackColor != GlobalValues.DefaultBackColor) {
 				base.FillBackground(rpea.PrintPageEventArgs.Graphics);       
 			}
-			       
-			Border b = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
+			 
+			
+			Border b = new Border(new BaseLine (this.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
+			
 			base.DrawFrame (rpea.PrintPageEventArgs.Graphics,b);
 			
 			this.Location = new Point(base.DrawingRectangle.Left,this.Location.Y);
