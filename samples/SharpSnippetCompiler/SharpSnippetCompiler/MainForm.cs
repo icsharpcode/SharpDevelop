@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpSnippetCompiler
 			
 			WorkbenchWindow window = new WorkbenchWindow(fileTabControl, tabPage);
 			MainViewContent view = new MainViewContent(fileName, snippetControl, window);
-			WorkbenchSingleton.Workbench.ViewContentCollection.Add(view);
+			WorkbenchSingleton.Workbench.ShowView(view);
 			
 			UpdateActiveView(view);
 			

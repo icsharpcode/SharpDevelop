@@ -91,7 +91,8 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		
 		public void ShowView(IViewContent content)
 		{
-			throw new NotImplementedException();
+			views.Add(content);
+			OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
 		public void ShowPad(PadDescriptor content)

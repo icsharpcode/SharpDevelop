@@ -32,8 +32,6 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			textEditor = new SharpDevelopTextAreaControl();
 			textEditor.Dock = DockStyle.Fill;
 			this.Controls.Add(textEditor);
-			
-			textEditor.ActiveTextAreaControl.TextArea.IconBarMargin.MouseDown += MarginMouseDown;
 		}
 		
 		public TextEditorControl TextEditor {
@@ -49,18 +47,5 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		{
 			textEditor.SaveFile(textEditor.FileName);
 		}
-		
-		static void MarginMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
-		{
-			if (mouseButtons != MouseButtons.Left) return;
-			
-			Rectangle viewRect = iconBar.TextArea.TextView.DrawingPosition;
-			TextLocation logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
-			
-			if (logicPos.Y >= 0 && logicPos.Y < iconBar.TextArea.Document.TotalNumberOfLines) {
-				DebuggerService.ToggleBreakpointAt(iconBar.TextArea.Document, iconBar.TextArea.MotherTextEditorControl.FileName, logicPos.Y);
-				iconBar.TextArea.Refresh(iconBar);
-			}
-		}		
 	}
 }
