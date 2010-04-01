@@ -61,7 +61,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			
 			base.DrawItem(pdfWriter, converter);
-			
 			iTextSharp.text.Image im = iTextSharp.text.Image.GetInstance(image,null,false);
 			
 			iTextSharp.text.Rectangle r = base.ConvertToPdfRectangle();

@@ -137,8 +137,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private  void DrawFrame (Graphics graphics)
 		{
-			System.Diagnostics.Trace.WriteLine("draw border {0}",this.styleDecorator.DrawBorder.ToString());
-			System.Console.WriteLine("draw border {0}",this.styleDecorator.DrawBorder);
 			if (this.styleDecorator.DrawBorder) {
 				Border b = this.CreateDefaultBorder();
 				b.DrawBorder(graphics,this.styleDecorator.DisplayRectangle);

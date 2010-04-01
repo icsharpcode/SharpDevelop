@@ -101,7 +101,7 @@ namespace SharpReportSamples
 			} else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
 			} else if (s =="EventLog")
-				this.RunEventLogger(reportName);
+			this.RunEventLogger(reportName);
 //			this.RunEventLogger_Pdf(reportName);
 			else {
 				
@@ -169,20 +169,22 @@ namespace SharpReportSamples
 			{
 				this.previewControl1.RunReport(model,dataManager);
 			};
-			
 			this.previewControl1.RunReport(model,dataManager);
 		}
 		
 		
 		
-		
-		
-		
 		private void RunEventLogger_Pdf (string fileName)
 		{
-			EventLogger eLog = new EventLogger(fileName);
+			Cursor.Current = Cursors.WaitCursor;
+			EventLogger eventLogger = new EventLogger(fileName);
+			Cursor.Current = Cursors.Default;
+
+			this.imageList = eventLogger.Images;
+			
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
-			IReportCreator creator = ReportEngine.CreatePageBuilder(model,eLog.EventLog,null);
+			IReportCreator creator = ReportEngine.CreatePageBuilder(model,eventLogger.EventLog,null);
+			creator.SectionRendering += PushPrinting;
 			creator.BuildExportList();
 			using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(creator,SelectFilename(),true))
 			{
@@ -192,24 +194,18 @@ namespace SharpReportSamples
 			}
 		}
 		
-		private string SelectFilename()
-		{
-			using (SaveFileDialog saveDialog = new SaveFileDialog()){
-
-				saveDialog.FileName = "_pdf";
-				saveDialog.DefaultExt = "PDF";
-				saveDialog.ValidateNames = true;
-				if(saveDialog.ShowDialog() == DialogResult.OK){
-					return saveDialog.FileName;
-				} else {
-					return String.Empty;
-				}
-			}
-		}
-		
 		
 		private void RunEventLogger (string fileName)
 		{
+			/*
+			using (var provider = ProfilingDataSQLiteProvider.FromFile("ProfilingSession.sdps")){
+				var functions = provider.GetFunctions(0, provider.DataSets.Count - 1);
+				foreach (CallTreeNode n in functions) {
+					Console.WriteLine("{0}: {1} calls, {2:f2}ms", n.Name, n.CallCount, n.TimeSpent);
+				}
+				
+			}
+			*/
 			Cursor.Current = Cursors.WaitCursor;
 			EventLogger eLog = new EventLogger(fileName);
 			Cursor.Current = Cursors.Default;
@@ -308,6 +304,21 @@ namespace SharpReportSamples
 			}
 		}
 		
+		
+		private string SelectFilename()
+		{
+			using (SaveFileDialog saveDialog = new SaveFileDialog()){
+
+				saveDialog.FileName = "_pdf";
+				saveDialog.DefaultExt = "PDF";
+				saveDialog.ValidateNames = true;
+				if(saveDialog.ShowDialog() == DialogResult.OK){
+					return saveDialog.FileName;
+				} else {
+					return String.Empty;
+				}
+			}
+		}
 		
 		#endregion
 		
