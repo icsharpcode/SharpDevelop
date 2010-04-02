@@ -266,7 +266,7 @@ namespace SharpReportSamples
 						
 					}
 				}
-				
+//				D:\SharpDevelop3.0_WorkingCopy\SharpDevelop\samples\SharpDevelopReports\SampleReports\EventLogger\Error.png
 				//  Image
 				BaseDataItem dataItem = e.Section.FindItem("EntryType") as BaseDataItem;
 				if (dataItem != null) {

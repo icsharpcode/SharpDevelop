@@ -68,14 +68,14 @@ namespace SharpReportSamples
 //			}
 
 			this.imageList = new ImageList();
-
-			Stream imgStream =  a.GetManifestResourceStream("SharpReportSamples.Resources.Error.png");
+Stream imgStream =  a.GetManifestResourceStream("SharpReportSamples.Resources.error.ico");
+//			Stream imgStream =  a.GetManifestResourceStream("SharpReportSamples.Resources.Error.png");
 			this.imageList.Images.Add(Image.FromStream(imgStream));
 			
 			imgStream =  a.GetManifestResourceStream("SharpReportSamples.Resources.Info.png");
 			this.imageList.Images.Add(Image.FromStream(imgStream));
-			
-			imgStream =  a.GetManifestResourceStream("SharpReportSamples.Resources.Warning.png");
+			imgStream =  a.GetManifestResourceStream("SharpReportSamples.Resources.warning.ico");
+//			imgStream =  a.GetManifestResourceStream("SharpReportSamples.Resources.Warning.png");
 			this.imageList.Images.Add(Image.FromStream(imgStream));
 			
 //			System.Console.WriteLine("imagelist contains {0} images",this.imageList.Images.Count);

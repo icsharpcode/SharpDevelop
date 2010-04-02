@@ -176,7 +176,7 @@
                             <ImageSource>Database</ImageSource>
                             <Location>20, 7</Location>
                             <Name>BaseImageItem1</Name>
-                            <Size>75, 53</Size>
+                            <Size>30, 30</Size>
                             <ScaleImageToSize>False</ScaleImageToSize>
                             <BackColor>White</BackColor>
                             <ColumnName>Image</ColumnName>
