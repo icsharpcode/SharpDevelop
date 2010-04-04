@@ -243,7 +243,16 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void OnComponentChanged(object sender, ComponentChangedEventArgs ce)
 		{
-//			System.Console.WriteLine("RootDesigner:OnComponentChanged {0}",ce.Component.ToString());
+			System.Console.WriteLine("RootDesigner:OnComponentChanged {0} from {1} to {2}",ce.Component.ToString(),ce.OldValue,ce.NewValue);
+			
+			MemberDescriptor m = ce.Member;
+			if (ce.Member.Name == "Name") {
+				AbstractItem item = ce.Component as AbstractItem;
+				if (item != null) {
+					item.Name = ce.NewValue.ToString();
+				}
+			}
+			
 			BaseSection section = ce.Component as BaseSection;
 			if (section != null) {
 				foreach (BaseSection s in sections)

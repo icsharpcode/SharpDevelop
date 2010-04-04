@@ -51,14 +51,14 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void OnComponentChanging (object sender,ComponentChangingEventArgs e)
 		{
-			System.Console.WriteLine("changing");
+//			System.Console.WriteLine("changing");
 //			System.Console.WriteLine("{0}",this.baseLine.ClientRectangle);
 		}
 		
 		
 		private void OnComponentChanged(object sender,ComponentChangedEventArgs e)
 		{
-			System.Console.WriteLine("changed");
+//			System.Console.WriteLine("changed");
 //			System.Console.WriteLine("{0}",this.baseLine.ClientRectangle);
 		}
 		

@@ -55,7 +55,6 @@ namespace ICSharpCode.Reports.Addin
 			get {
 				DesignerActionListCollection actions = new DesignerActionListCollection ();
 				actions.Add (new TextBasedDesignerActionList(this.Component));
-				
 				return actions;
 			}
 		}

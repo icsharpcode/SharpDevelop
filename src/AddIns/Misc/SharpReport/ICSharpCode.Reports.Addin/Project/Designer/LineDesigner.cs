@@ -56,8 +56,8 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void OnComponentChanging (object sender,ComponentChangingEventArgs e)
 		{
-			System.Console.WriteLine("changing");
-			System.Console.WriteLine("{0}",this.baseLine.ClientRectangle);
+//			System.Console.WriteLine("changing");
+//			System.Console.WriteLine("{0}",this.baseLine.ClientRectangle);
 		}
 		
 		

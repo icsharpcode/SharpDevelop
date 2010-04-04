@@ -74,13 +74,24 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			iTextSharp.text.Rectangle r = base.ConvertToPdfRectangle();
 			ColumnText columnText = new ColumnText(contentByte);
 			PdfFormat pdfFormat = new PdfFormat(this.StyleDecorator,font);
-			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Height,pdfFormat.Leading,pdfFormat.Alignment);
 			
+			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Height,pdfFormat.Leading,pdfFormat.Alignment);
+//			int a = Convert.ToInt16((r.Height/font.Size) + 1);
+//			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Height,a,pdfFormat.Alignment);
 			string formated = StandardFormatter.FormatOutput(this.text,this.StyleDecorator.FormatString,
 			                                                 this.StyleDecorator.DataType,String.Empty);
+			
 			Chunk chunk = new Chunk(formated,font);
+			
 			columnText.AddText(chunk);
+			
 			columnText.Go();
+			int i = columnText.LinesWritten;
+			
+			if (i > 1) {
+				Console.WriteLine("{0} - {1}",i,this.text);
+				Console.WriteLine("dif {0}",r.Height/font.Size);
+			}
 		}
 		
 		

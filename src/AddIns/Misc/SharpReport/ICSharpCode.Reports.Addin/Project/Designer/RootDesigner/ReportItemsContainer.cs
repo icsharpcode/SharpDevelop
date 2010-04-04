@@ -32,13 +32,12 @@ namespace ICSharpCode.Reports.Addin
 				PrintMargin(pea.Graphics);
 			}
 			using (Font f = GlobalsDesigner.DesignerFont) {
-				foreach (Component c in this.Controls)
+				foreach(System.Windows.Forms.Control ctrl in this.Controls)
 				{
-					System.Windows.Forms.Control cc = c as System.Windows.Forms.Control;
-					pea.Graphics.DrawString(cc.Name,
+					pea.Graphics.DrawString(ctrl.Name,
 					                        f,
 					                        Brushes.LightGray,
-					                        cc.Location.X,cc.Location.Y - (int)f.GetHeight() - 3);
+					                        ctrl.Location.X,ctrl.Location.Y - (int)f.GetHeight() - 3);
 				}
 			}
 		}

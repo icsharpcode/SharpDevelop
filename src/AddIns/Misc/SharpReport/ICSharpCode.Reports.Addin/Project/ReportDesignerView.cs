@@ -260,7 +260,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		#endregion
 
-		public virtual void MergeFormChanges()
+		private void MergeFormChanges()
 		{
 			System.Diagnostics.Trace.WriteLine("View:MergeFormChanges()");
 			this.designSurface.Flush();
@@ -353,6 +353,8 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void OnComponentChanged (object sender, ComponentChangedEventArgs e)
 		{
+			// More customization of items can be found in 
+			//ICSharpCode.Reports.Addin.ReportRootDesigner
 			BaseImageItem item = e.Component as BaseImageItem;
 			
 			if (item != null) {
@@ -360,7 +362,7 @@ namespace ICSharpCode.Reports.Addin
 			}
 			
 			bool loading = this.loader != null && this.loader.Loading;
-			LoggingService.Debug("ReportDesigner: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
+			LoggingService.Debug("ReportDesignerView: ComponentChanged: " + (e.Component == null ? "<null>" : e.Component.ToString()) + ", Member=" + (e.Member == null ? "<null>" : e.Member.Name) + ", OldValue=" + (e.OldValue == null ? "<null>" : e.OldValue.ToString()) + ", NewValue=" + (e.NewValue == null ? "<null>" : e.NewValue.ToString()) + "; Loading=" + loading + "; Unloading=" + this.unloading);
 			if (!loading && !unloading) {
 				this.MakeDirty();
 			}
