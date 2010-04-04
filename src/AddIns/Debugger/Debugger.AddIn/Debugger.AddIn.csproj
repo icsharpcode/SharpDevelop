@@ -400,7 +400,4 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="PostBuildEvent.proj" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(ProjectDir)Visualizers\Graph\Graphviz\*.*" "$(TargetDir)" /Y</PostBuildEvent>
-  </PropertyGroup>
 </Project>
