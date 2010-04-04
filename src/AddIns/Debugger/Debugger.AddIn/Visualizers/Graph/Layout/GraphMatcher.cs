@@ -22,7 +22,6 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		
 		public GraphDiff MatchGraphs(PositionedGraph oldGraph, PositionedGraph newGraph)
 		{
-			// handle any of the graphs null
 			if (oldGraph == null)
 			{
 				if (newGraph == null)
@@ -33,14 +32,19 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				{
 					GraphDiff addAllDiff = new GraphDiff();
 					foreach	(PositionedGraphNode newNode in newGraph.Nodes)
-					{
 						addAllDiff.SetAdded(newNode);
-					}
 					return addAllDiff;
 				}
 			}
+			else if (newGraph == null)
+			{
+				GraphDiff removeAllDiff = new GraphDiff();
+				foreach	(PositionedGraphNode oldNode in oldGraph.Nodes)
+					removeAllDiff.SetRemoved(oldNode);
+				return removeAllDiff;
+			}
 			
-			// both graph are not null
+			// none of the graphs is null
 			GraphDiff diff = new GraphDiff();
 			
 			Dictionary<int, PositionedGraphNode> newNodeForHashCode = buildHashToNodeMap(newGraph);

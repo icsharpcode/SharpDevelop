@@ -159,6 +159,21 @@
     <Compile Include="Visualizers\Graph\Layout\ContentNodeEventArgs.cs" />
     <Compile Include="Visualizers\Graph\Layout\ContentPropertyNode.cs" />
     <Compile Include="Visualizers\Graph\Layout\ContentNode.cs" />
+    <Compile Include="Visualizers\Graph\Layout\GraphEdgeRouter.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\Box.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\Edge.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\EdgeRouter.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\GeomUtils.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\IEdge.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\IPoint.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\IRect.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\Point2D.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\EdgeStartEnd.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RoutedEdge.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RouteGraph.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RouteGraphEdge.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph\RouteVertex.cs" />
+    <Compile Include="Visualizers\Graph\Layout\SplineRouting\ShortestPath\AStarShortestPathFinder.cs" />
     <Compile Include="Visualizers\Graph\NodeControlCache.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraphControl.xaml.cs">
       <DependentUpon>ObjectGraphControl.xaml</DependentUpon>
@@ -272,23 +287,6 @@
     <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
     <Compile Include="Visualizers\PresentationBindings\ViewModelBase.cs" />
     <None Include="COPYING" />
-    <None Include="Visualizers\Graph\Graphviz\cdt.dll" />
-    <None Include="Visualizers\Graph\Graphviz\config6" />
-    <None Include="Visualizers\Graph\Graphviz\graph.dll" />
-    <None Include="Visualizers\Graph\Graphviz\gvc.dll" />
-    <None Include="Visualizers\Graph\Graphviz\gvplugin_core.dll" />
-    <None Include="Visualizers\Graph\Graphviz\gvplugin_dot_layout.dll" />
-    <None Include="Visualizers\Graph\Graphviz\gvplugin_neato_layout.dll" />
-    <None Include="Visualizers\Graph\Graphviz\iconv.dll" />
-    <None Include="Visualizers\Graph\Graphviz\intl.dll" />
-    <None Include="Visualizers\Graph\Graphviz\libexpat.dll" />
-    <None Include="Visualizers\Graph\Graphviz\libglib-2.0-0.dll" />
-    <None Include="Visualizers\Graph\Graphviz\ltdl.dll" />
-    <None Include="Visualizers\Graph\Graphviz\msvcp80.dll" />
-    <None Include="Visualizers\Graph\Graphviz\msvcr80.dll" />
-    <None Include="Visualizers\Graph\Graphviz\neato.exe" />
-    <None Include="Visualizers\Graph\Graphviz\Pathplan.dll" />
-    <None Include="Visualizers\Graph\Graphviz\zlib1.dll" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Debugger.AddIn.addin">
@@ -357,8 +355,10 @@
     <Folder Include="Visualizers\Graph" />
     <Folder Include="Visualizers\Graph\Drawing" />
     <Folder Include="Visualizers\Graph\Layout" />
+    <Folder Include="Visualizers\Graph\Layout\SplineRouting" />
+    <Folder Include="Visualizers\Graph\Layout\SplineRouting\RouteGraph" />
+    <Folder Include="Visualizers\Graph\Layout\SplineRouting\ShortestPath" />
     <Folder Include="Visualizers\Graph\Layout\Tree" />
-    <Folder Include="Visualizers\Graph\Graphviz" />
     <Folder Include="Visualizers\Graph\TreeModel" />
     <Folder Include="Visualizers\Graph\ObjectGraph" />
     <Folder Include="Visualizers\GridVisualizer\ValueProviders" />

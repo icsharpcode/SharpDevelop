@@ -33,14 +33,11 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		{
 			DotFormatter dotFormatter = new BoxDotFormatter(graphWithNodesPositioned);
 			
-			// start Neato.exe
-			NeatoProcess neatoProcess = NeatoProcess.Start();
-			
 			// convert PosGraph to .dot string
 			string dotGraphString = dotFormatter.OutputGraphInDotFormat();
 				
-			// pass to neato.exe
-			string dotGraphStringWithPositions = neatoProcess.CalculatePositions(dotGraphString);
+			// pass to neato.exe and wait for output
+			string dotGraphStringWithPositions = NeatoProcess.Start().CalculatePositions(dotGraphString);
 			
 			// parse edge positions from neato's plain output format
 			PositionedGraph result = dotFormatter.ParseEdgePositions(dotGraphStringWithPositions);

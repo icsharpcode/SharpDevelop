@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using Debugger.AddIn.Visualizers.Graph.Drawing;
-using System.Windows;
 using System.Linq;
+using System.Windows;
+using Debugger.AddIn.Visualizers.Graph.Drawing;
 using Debugger.AddIn.Visualizers.Utils;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
@@ -17,7 +17,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 	/// <summary>
 	/// ObjectNode with added position information.
 	/// </summary>
-	public class PositionedGraphNode
+	public class PositionedGraphNode : SplineRouting.IRect
 	{
 		public static readonly double MaxHeight = 300;
 		
@@ -158,5 +158,13 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				this.ContentNodeCollapsed(sender, e);
 		}
 		#endregion
+		
+		SplineRouting.Box box;
+		public SplineRouting.IRect Inflated(double padding)
+		{
+			if (box == null)
+				box = new SplineRouting.Box(this);
+			return box.Inflated(padding);
+		}
 	}
 }

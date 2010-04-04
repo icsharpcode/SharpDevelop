@@ -51,8 +51,9 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			// second layout pass
 			calculateNodePosRecursive((TreeGraphNode)resultGraph.Root, 0, 0);
 			
-			var neatoRouter = new NeatoEdgeRouter();
-			resultGraph = neatoRouter.CalculateEdges(resultGraph);
+			//var neatoRouter = new NeatoEdgeRouter();
+			//resultGraph = neatoRouter.CalculateEdges(resultGraph);
+			resultGraph = new GraphEdgeRouter().RouteEdges(resultGraph);
 			
 			return resultGraph;
 		}
