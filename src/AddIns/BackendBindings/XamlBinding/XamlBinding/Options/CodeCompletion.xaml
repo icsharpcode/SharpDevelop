@@ -28,7 +28,7 @@
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="1" Margin="3" Text="{sd:Localize AddIns.XamlBinding.Options.HighlightingDescription}" />
+        <TextBlock Grid.ColumnSpan="2" Margin="3" Text="{sd:Localize AddIns.XamlBinding.Options.HighlightingDescription}" />
         <Label Grid.Row="1" Content="{sd:Localize AddIns.XamlBinding.Options.PropertyColor}" />
         <Label Grid.Row="2" Content="{sd:Localize AddIns.XamlBinding.Options.EventColor}" />
         <Label Grid.Row="3" Content="{sd:Localize AddIns.XamlBinding.Options.NamespaceDeclarationColor}" />
