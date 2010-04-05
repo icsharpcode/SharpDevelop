@@ -39,5 +39,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// This property is '\0' when completion was triggered using the mouse.
 		/// </summary>
 		public char CompletionChar { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets whether the CompletionChar was already inserted.
+		/// </summary>
+		public bool CompletionCharHandled { get; set; }
 	}
 }

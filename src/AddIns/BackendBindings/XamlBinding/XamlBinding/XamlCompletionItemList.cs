@@ -74,6 +74,7 @@ namespace ICSharpCode.XamlBinding
 					if (cItem.Entity is IProperty || cItem.Entity is IEvent) {
 						if (xamlContext.Description == XamlContextDescription.InTag) {
 							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
+							context.CompletionCharHandled = context.CompletionChar == '=';
 							context.Editor.Caret.Offset--;
 							XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
 						} else if (xamlContext.Description == XamlContextDescription.InMarkupExtension && !string.IsNullOrEmpty(xamlContext.RawAttributeValue)) {
@@ -140,6 +141,7 @@ namespace ICSharpCode.XamlBinding
 				
 				if (item.Text.StartsWith("/", StringComparison.OrdinalIgnoreCase)) {
 					context.Editor.Document.Insert(context.EndOffset, ">");
+					context.CompletionCharHandled = context.CompletionChar == '>';
 					context.Editor.Caret.Offset++;
 				}
 			}

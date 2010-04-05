@@ -51,5 +51,29 @@ namespace ICSharpCode.XamlBinding.Tests
 			
 			constraint(list);
 		}
+		
+		protected void TestTextInsert(string fileHeader, string fileFooter, char completionChar, ICompletionItemList list, ICompletionItem item, string expectedOutput, int expectedOffset)
+		{
+			this.textEditor.Document.Text = fileHeader + fileFooter;
+			this.textEditor.Caret.Offset = fileHeader.Length;
+			this.textEditor.CreateParseInformation();
+			
+			CompletionContext context = new CompletionContext() {
+				Editor = this.textEditor,
+				CompletionChar = completionChar,
+				StartOffset = textEditor.Caret.Offset,
+				EndOffset = textEditor.Caret.Offset
+			};
+			
+			list.Complete(context, item);
+			
+			if (!context.CompletionCharHandled && context.CompletionChar != '\n')
+				this.textEditor.Document.Insert(this.textEditor.Caret.Offset, completionChar + "");
+			
+			string insertedText = this.textEditor.Document.GetText(fileHeader.Length, this.textEditor.Document.TextLength - fileHeader.Length - fileFooter.Length);
+			
+			Assert.AreEqual(expectedOutput, insertedText);
+			Assert.AreEqual(fileHeader.Length + expectedOffset, textEditor.Caret.Offset);
+		}
 	}
 }

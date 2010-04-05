@@ -182,6 +182,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			else if (kea != null && kea.Key == Key.Tab)
 				context.CompletionChar = '\t';
 			window.ItemList.Complete(context, item);
+			if (context.CompletionCharHandled && txea != null)
+				txea.Handled = true;
 		}
 	}
 }

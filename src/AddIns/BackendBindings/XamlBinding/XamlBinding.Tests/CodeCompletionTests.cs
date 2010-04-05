@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -507,7 +508,7 @@ namespace ICSharpCode.XamlBinding.Tests
 	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 	<Grid>
 		<Button AllowDrop='True' Grid.Row='0' Content='test ";
-		string fileFooter = @"' />
+			string fileFooter = @"' />
 	</Grid>
 </Window>";
 			
@@ -677,16 +678,16 @@ namespace ICSharpCode.XamlBinding.Tests
 	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 	<Grid>
 		<Button AllowDrop='True' Grid.Row='0' Content='test ";
-		string fileFooter = @"' />
+			string fileFooter = @"' />
 	</Grid>
 </Window>";
 			
 			TestKeyPress(fileHeader, fileFooter, 'a', CodeCompletionKeyPressResult.None,
-			              list => {
-			              	Assert.AreEqual(0, list.PreselectionLength);
-			              	Assert.IsNull(list.SuggestedItem);
-			              	Assert.IsTrue(!list.Items.Any());
-			              });
+			             list => {
+			             	Assert.AreEqual(0, list.PreselectionLength);
+			             	Assert.IsNull(list.SuggestedItem);
+			             	Assert.IsTrue(!list.Items.Any());
+			             });
 		}
 		
 		[Test]
