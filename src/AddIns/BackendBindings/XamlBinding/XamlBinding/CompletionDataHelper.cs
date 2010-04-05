@@ -362,7 +362,6 @@ namespace ICSharpCode.XamlBinding
 		{
 			var items = GetClassesFromContext(context);
 			var result = new List<ICompletionItem>();
-
 			var last = context.ParentElement;
 			
 			if (context.ParseInformation == null)
@@ -409,7 +408,8 @@ namespace ICSharpCode.XamlBinding
 						}
 					} else {
 						if (!(c.ClassType == ClassType.Class && c.IsAbstract == includeAbstract && !c.IsStatic &&
-						      !c.DerivesFrom("System.Attribute") && c.Methods.Any(m => m.IsConstructor && m.IsPublic)))
+						      // TODO : use c.DefaultReturnType.GetConstructors(ctor => ctor.IsAccessible(context.ParseInformation.CompilationUnit.Classes.FirstOrDefault(), false)) after DOM rewrite
+						      !c.DerivesFrom("System.Attribute") && (c.AddDefaultConstructorIfRequired || c.Methods.Any(m => m.IsConstructor && m.IsAccessible(context.ParseInformation.CompilationUnit.Classes.FirstOrDefault(), false)))))
 							continue;
 					}
 					
