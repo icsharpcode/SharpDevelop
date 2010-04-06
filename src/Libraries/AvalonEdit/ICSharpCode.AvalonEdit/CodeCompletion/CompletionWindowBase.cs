@@ -340,6 +340,10 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		void textArea_Document_Changing(object sender, DocumentChangeEventArgs e)
 		{
+			if (e.Offset + e.RemovalLength == this.StartOffset && e.RemovalLength > 0) {
+				Close(); // removal immediately in front of completion segment: close the window
+				// this is necessary when pressing backspace after dot-completion
+			}
 			if (e.Offset == startOffset && e.RemovalLength == 0 && ExpectInsertionBeforeStart) {
 				startOffset = e.GetNewOffset(startOffset, AnchorMovementType.AfterInsertion);
 				this.ExpectInsertionBeforeStart = false;

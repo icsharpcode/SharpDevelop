@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 			ServiceContainer container = new ServiceContainer();
 			container.AddService(typeof(ITextMarkerService), new MockTextMarkerService());
 			
-			return new AvalonEditDocumentAdapter(container);
+			return new AvalonEditDocumentAdapter(new ICSharpCode.AvalonEdit.Document.TextDocument(), container);
 		}
 		
 		List<ITextMarker> markers;

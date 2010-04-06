@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// <summary>
 	/// Use this class to pass a text editor document to the refactoring API.
 	/// </summary>
+	[Obsolete]
 	public sealed class TextEditorDocument : ICSharpCode.SharpDevelop.Editor.IDocument
 	{
 		ICSharpCode.TextEditor.Document.IDocument doc;
@@ -190,6 +191,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return CreateSnapshot().CreateReader();
 		}
 		
+		public System.IO.TextReader CreateReader(int offset, int length)
+		{
+			return CreateSnapshot(offset, length).CreateReader();
+		}
+		
 		public ITextBuffer CreateSnapshot()
 		{
 			return new StringTextBuffer(Gui.WorkbenchSingleton.SafeThreadFunction<string>(() => this.Text));
@@ -298,6 +304,24 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			public int Column {
 				get { return anchor.ColumnNumber + 1; }
+			}
+		}
+		
+		event EventHandler<TextChangeEventArgs> ICSharpCode.SharpDevelop.Editor.IDocument.Changing {
+			add {
+				throw new NotImplementedException();
+			}
+			remove {
+				throw new NotImplementedException();
+			}
+		}
+		
+		event EventHandler<TextChangeEventArgs> ICSharpCode.SharpDevelop.Editor.IDocument.Changed {
+			add {
+				throw new NotImplementedException();
+			}
+			remove {
+				throw new NotImplementedException();
 			}
 		}
 	}

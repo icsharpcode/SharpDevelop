@@ -34,7 +34,7 @@ namespace XmlEditor.Tests.XPath
 			ServiceContainer container = new ServiceContainer();
 			container.AddService(typeof(MockTextMarkerService), new MockTextMarkerService());
 			
-			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(container);
+			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(new ICSharpCode.AvalonEdit.Document.TextDocument(), container);
 			doc.Text = xml;
 			XPathNodeTextMarker xpathNodeMarker = new XPathNodeTextMarker(doc);
 			xpathNodeMarker.AddMarkers(nodes);
@@ -64,7 +64,7 @@ namespace XmlEditor.Tests.XPath
 			ServiceContainer container = new ServiceContainer();
 			container.AddService(typeof(MockTextMarkerService), new MockTextMarkerService());
 			
-			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(container);
+			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(new ICSharpCode.AvalonEdit.Document.TextDocument(), container);
 			doc.Text = xml;
 			XPathNodeTextMarker xpathNodeMarker = new XPathNodeTextMarker(doc);
 			xpathNodeMarker.AddMarkers(nodes);

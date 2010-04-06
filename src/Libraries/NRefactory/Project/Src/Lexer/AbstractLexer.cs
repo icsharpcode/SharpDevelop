@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// This is the base class for the C# and VB.NET lexer
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1708:IdentifiersShouldDifferByMoreThanCase")]
-	public abstract class AbstractLexer : ILexer
+	internal abstract class AbstractLexer : ILexer
 	{
 		TextReader reader;
 		int col  = 1;
@@ -93,6 +93,14 @@ namespace ICSharpCode.NRefactory.Parser
 		protected int ReaderPeek()
 		{
 			return reader.Peek();
+		}
+		
+		public void SetInitialLocation(Location location)
+		{
+			if (lastToken != null || curToken != null || peekToken != null)
+				throw new InvalidOperationException();
+			this.line = location.Line;
+			this.col = location.Column;
 		}
 		
 		public Errors Errors {

@@ -60,6 +60,11 @@ namespace XmlEditor.Tests.Utils
 			return new StringReader(text);
 		}
 		
+		public TextReader CreateReader(int offset, int length)
+		{
+			return new StringReader(text);
+		}
+		
 		public char GetCharAt(int offset)
 		{
 			throw new NotImplementedException();

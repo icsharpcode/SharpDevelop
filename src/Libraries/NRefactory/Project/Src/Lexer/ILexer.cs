@@ -15,6 +15,11 @@ namespace ICSharpCode.NRefactory.Parser
 	/// </summary>
 	public interface ILexer : IDisposable
 	{
+		/// <summary>
+		/// Sets the start line/column number. This method can be called only before the first token is read.
+		/// </summary>
+		void SetInitialLocation(Location location);
+		
 		Errors Errors {
 			get;
 		}

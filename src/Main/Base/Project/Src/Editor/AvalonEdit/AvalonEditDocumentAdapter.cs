@@ -44,15 +44,6 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			this.document = new TextDocument();
 		}
 		
-		/// <summary>
-		/// Creates a new document.
-		/// </summary>
-		public AvalonEditDocumentAdapter(IServiceProvider parentServiceProvider)
-		{
-			this.document = new TextDocument();
-			this.parentServiceProvider = parentServiceProvider;
-		}
-		
 		sealed class LineAdapter : IDocumentLine
 		{
 			readonly TextDocument document;
@@ -171,6 +162,11 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		public System.IO.TextReader CreateReader()
 		{
 			return document.CreateSnapshot().CreateReader();
+		}
+		
+		public System.IO.TextReader CreateReader(int offset, int length)
+		{
+			return document.CreateSnapshot(offset, length).CreateReader();
 		}
 		
 		#region Snapshots and ITextBufferVersion
@@ -376,6 +372,63 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			
 			public int Column {
 				get { return anchor.Column; }
+			}
+		}
+		#endregion
+		
+		#region Changing/Changed events
+		EventHandler<TextChangeEventArgs> changing, changed;
+		bool eventsAreAttached;
+		
+		void AttachEvents()
+		{
+			if (!eventsAreAttached && (changing != null || changed != null)) {
+				eventsAreAttached = true;
+				document.Changing += document_Changing;
+				document.Changed += document_Changed;
+			}
+		}
+		
+		void DetachEvents()
+		{
+			if (eventsAreAttached && changing == null && changed == null) {
+				eventsAreAttached = false;
+				document.Changing -= document_Changing;
+				document.Changed -= document_Changed;
+			}
+		}
+		
+		void document_Changing(object sender, DocumentChangeEventArgs e)
+		{
+			if (changing != null)
+				changing(this, new TextChangeEventArgs(e.Offset, e.RemovedText, e.InsertedText));
+		}
+		
+		void document_Changed(object sender, DocumentChangeEventArgs e)
+		{
+			if (changed != null)
+				changed(this, new TextChangeEventArgs(e.Offset, e.RemovedText, e.InsertedText));
+		}
+		
+		public event EventHandler<TextChangeEventArgs> Changing {
+			add {
+				changing += value;
+				AttachEvents();
+			}
+			remove {
+				changing -= value;
+				DetachEvents();
+			}
+		}
+		
+		public event EventHandler<TextChangeEventArgs> Changed {
+			add {
+				changed += value;
+				AttachEvents();
+			}
+			remove {
+				changed -= value;
+				DetachEvents();
 			}
 		}
 		#endregion

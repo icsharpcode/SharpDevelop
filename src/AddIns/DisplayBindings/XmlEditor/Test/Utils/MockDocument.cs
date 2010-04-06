@@ -144,5 +144,20 @@ namespace XmlEditor.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public event EventHandler<TextChangeEventArgs> Changing {
+			add { throw new NotImplementedException(); }
+			remove { throw new NotImplementedException(); }
+		}
+		
+		public event EventHandler<TextChangeEventArgs> Changed {
+			add { throw new NotImplementedException(); }
+			remove { throw new NotImplementedException(); }
+		}
+		
+		public TextReader CreateReader(int offset, int length)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

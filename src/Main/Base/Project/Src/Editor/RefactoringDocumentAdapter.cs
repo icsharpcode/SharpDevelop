@@ -60,11 +60,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 		}
 		
-		public event EventHandler TextChanged {
-			add { document.TextChanged += value; }
-			remove { document.TextChanged -= value; }
-		}
-		
 		public int TextLength {
 			get { return document.TextLength; }
 		}

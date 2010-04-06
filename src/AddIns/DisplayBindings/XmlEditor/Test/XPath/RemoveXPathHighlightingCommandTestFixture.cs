@@ -37,7 +37,7 @@ namespace XmlEditor.Tests.XPath
 			container.AddService(typeof(ITextMarkerService), markerService);
 			
 			// Add xpath marker to document.
-			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(container);
+			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(new ICSharpCode.AvalonEdit.Document.TextDocument(), container);
 			doc.Text = "<Test/>";
 			XPathNodeTextMarker xpathNodeMarker = new XPathNodeTextMarker(doc);
 			XPathNodeMatch nodeMatch = new XPathNodeMatch("Test", "<Test/>", 0, 1, XPathNodeType.Element);

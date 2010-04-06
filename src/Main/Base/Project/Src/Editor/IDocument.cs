@@ -66,5 +66,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Creates a new text anchor at the specified position.
 		/// </summary>
 		ITextAnchor CreateAnchor(int offset);
+		
+		event EventHandler<TextChangeEventArgs> Changing;
+		event EventHandler<TextChangeEventArgs> Changed;
 	}
 }

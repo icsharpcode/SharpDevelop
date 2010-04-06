@@ -5,15 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -94,6 +96,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			this.Provider = new SDItemProvider(this);
 			this.Style = ICSharpCode.Core.Presentation.GlobalStyles.WindowStyle;
+			AttachEvents();
 		}
 		
 		public IList<IInsightItem> Items {
@@ -112,5 +115,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.Provider.SelectedIndex = items.IndexOf(value);
 			}
 		}
+		
+		TextDocument document;
+		
+		void AttachEvents()
+		{
+			document = this.TextArea.Document;
+			if (document != null)
+				document.Changed += document_Changed;
+		}
+		
+		/// <inheritdoc/>
+		protected override void DetachEvents()
+		{
+			if (document != null)
+				document.Changed -= document_Changed;
+			base.DetachEvents();
+		}
+		
+		void document_Changed(object sender, DocumentChangeEventArgs e)
+		{
+			if (DocumentChanged != null)
+				DocumentChanged(this, new TextChangeEventArgs(e.Offset, e.RemovedText, e.InsertedText));
+		}
+		
+		public event EventHandler<TextChangeEventArgs> DocumentChanged;
 	}
 }

@@ -36,11 +36,6 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 		string Text { get; set; }
 		
 		/// <summary>
-		/// Is raised when the Text property changes.
-		/// </summary>
-		event EventHandler TextChanged;
-		
-		/// <summary>
 		/// Gets the document line with the specified number.
 		/// </summary>
 		/// <param name="lineNumber">The number of the line to retrieve. The first line has number 1.</param>

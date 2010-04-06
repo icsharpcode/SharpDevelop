@@ -44,6 +44,11 @@ namespace ICSharpCode.SharpDevelop
 		TextReader CreateReader();
 		
 		/// <summary>
+		/// Creates a new TextReader to read from this text buffer.
+		/// </summary>
+		TextReader CreateReader(int offset, int length);
+		
+		/// <summary>
 		/// Gets the total text length.
 		/// </summary>
 		/// <returns>The length of the text, in characters.</returns>

@@ -71,8 +71,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			var undoStack = GetUndoStack();
 			if (undoStack != null) {
-				if (undoStack.CanUndo)
+				if (undoStack.CanUndo) {
 					undoStack.Undo();
+					this.TextArea.Caret.BringCaretToView();
+				}
 				e.Handled = true;
 			}
 		}
@@ -90,8 +92,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			var undoStack = GetUndoStack();
 			if (undoStack != null) {
-				if (undoStack.CanRedo)
+				if (undoStack.CanRedo) {
 					undoStack.Redo();
+					this.TextArea.Caret.BringCaretToView();
+				}
 				e.Handled = true;
 			}
 		}

@@ -50,6 +50,14 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			return textSource.CreateReader();
 		}
 		
+		/// <summary>
+		/// Creates a new TextReader to read from this text buffer.
+		/// </summary>
+		public System.IO.TextReader CreateReader(int offset, int length)
+		{
+			return textSource.CreateSnapshot(offset, length).CreateReader();
+		}
+		
 		public int TextLength {
 			get { return textSource.TextLength; }
 		}

@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	public abstract class NRefactoryCodeCompletionBinding : DefaultCodeCompletionBinding
 	{
 		readonly SupportedLanguage language;
-		readonly int eofToken, commaToken, openParensToken, closeParensToken, openBracketToken, closeBracketToken, openBracesToken, closeBracesToken;
+		readonly int eofToken, commaToken, openParensToken, closeParensToken, openBracketToken, closeBracketToken, openBracesToken, closeBracesToken, statementEndToken;
 		readonly LanguageProperties languageProperties;
 		
 		protected NRefactoryCodeCompletionBinding(SupportedLanguage language)
@@ -42,6 +42,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				closeBracketToken = CSTokens.CloseSquareBracket;
 				openBracesToken = CSTokens.OpenCurlyBrace;
 				closeBracesToken = CSTokens.CloseCurlyBrace;
+				statementEndToken = CSTokens.Semicolon;
 				
 				languageProperties = LanguageProperties.CSharp;
 			} else {
@@ -53,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				closeBracketToken = -1;
 				openBracesToken = VBTokens.OpenCurlyBrace;
 				closeBracesToken = VBTokens.CloseCurlyBrace;
+				statementEndToken = VBTokens.EOL;
 				
 				languageProperties = LanguageProperties.VBNet;
 			}
@@ -225,6 +227,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 			IInsightWindow insightWindow = editor.ShowInsightWindow(insightItems);
 			if (insightWindow != null) {
+				InitializeOpenedInsightWindow(editor, insightWindow);
 				insightWindow.SelectedItem = insightItems[defaultIndex];
 			}
 			if (overloadIsSure) {
@@ -263,6 +266,42 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			} else {
 				return null;
 			}
+		}
+		
+		protected override void InitializeOpenedInsightWindow(ITextEditor editor, IInsightWindow insightWindow)
+		{
+			EventHandler<TextChangeEventArgs> onDocumentChanged = delegate {
+				// whenever the document is changed, recalculate EndOffset
+				var remainingDocument = editor.Document.CreateReader(insightWindow.StartOffset, editor.Document.TextLength - insightWindow.StartOffset);
+				using (ILexer lexer = ParserFactory.CreateLexer(language, remainingDocument)) {
+					lexer.SetInitialLocation(editor.Document.OffsetToPosition(insightWindow.StartOffset));
+					Token token;
+					int bracketCount = 0;
+					while ((token = lexer.NextToken()) != null && token.Kind != eofToken) {
+						if (token.Kind == openParensToken || token.Kind == openBracketToken || token.Kind == openBracketToken) {
+							bracketCount++;
+						} else if (token.Kind == closeParensToken || token.Kind == closeBracketToken || token.Kind == closeBracesToken) {
+							bracketCount--;
+							if (bracketCount <= 0) {
+								MarkInsightWindowEndOffset(insightWindow, editor, token.Location);
+								break;
+							}
+						} else if (token.Kind == statementEndToken) {
+							MarkInsightWindowEndOffset(insightWindow, editor, token.Location);
+							break;
+						}
+					}
+				}
+			};
+			insightWindow.DocumentChanged += onDocumentChanged;
+			onDocumentChanged(null, null);
+		}
+		
+		void MarkInsightWindowEndOffset(IInsightWindow insightWindow, ITextEditor editor, Location endLocation)
+		{
+			insightWindow.EndOffset = editor.Document.PositionToOffset(endLocation.Line, endLocation.Column);
+			if (editor.Caret.Offset > insightWindow.EndOffset)
+				insightWindow.Close();
 		}
 	}
 }

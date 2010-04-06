@@ -168,18 +168,26 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 		}
 		
+		protected virtual void InitializeOpenedInsightWindow(ITextEditor editor, IInsightWindow insightWindow)
+		{
+		}
+		
 		public virtual CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			switch (ch) {
 				case '(':
 					if (enableMethodInsight && CodeCompletionOptions.InsightEnabled) {
-						editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
+						IInsightWindow insightWindow = editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
+						if (insightWindow != null)
+							InitializeOpenedInsightWindow(editor, insightWindow);
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
 				case '[':
 					if (enableIndexerInsight && CodeCompletionOptions.InsightEnabled) {
-						editor.ShowInsightWindow(new IndexerInsightProvider().ProvideInsight(editor));
+						IInsightWindow insightWindow = editor.ShowInsightWindow(new IndexerInsightProvider().ProvideInsight(editor));
+						if (insightWindow != null)
+							InitializeOpenedInsightWindow(editor, insightWindow);
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;

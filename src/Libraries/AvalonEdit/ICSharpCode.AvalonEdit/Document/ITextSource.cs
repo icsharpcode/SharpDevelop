@@ -57,14 +57,20 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		/// <summary>
 		/// Creates a snapshot of the current text.
-		/// This method is generally not thread-safe when called on a mutable text buffer, but the resulting text buffer is immutable and thread-safe.
 		/// </summary>
+		/// <remarks>
+		/// This method is generally not thread-safe when called on a mutable text buffer, but the resulting text buffer is immutable and thread-safe.
+		/// However, some implementing classes may provide additional thread-safety guarantees, see <see cref="TextDocument.CreateSnapshot()">TextDocument.CreateSnapshot</see>.
+		/// </remarks>
 		ITextSource CreateSnapshot();
 		
 		/// <summary>
 		/// Creates a snapshot of a part of the current text.
-		/// This method is not thread-safe when called on a mutable text buffer, but the resulting text buffer is immutable and thread-safe.
 		/// </summary>
+		/// <remarks>
+		/// This method is generally not thread-safe when called on a mutable text buffer, but the resulting text buffer is immutable and thread-safe.
+		/// However, some implementing classes may provide additional thread-safety guarantees, see <see cref="TextDocument.CreateSnapshot()">TextDocument.CreateSnapshot</see>.
+		/// </remarks>
 		ITextSource CreateSnapshot(int offset, int length);
 		
 		/// <summary>
@@ -276,6 +282,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <inheritdoc/>
 		public ITextSource CreateSnapshot()
 		{
+			// we clone the underlying rope because the creator of the RopeTextSource might be modifying it
 			return new RopeTextSource(rope.Clone());
 		}
 		
