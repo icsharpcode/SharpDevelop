@@ -28,7 +28,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			this.textEditor.Caret.Offset = fileHeader.Length;
 			this.textEditor.CreateParseInformation();
 			
-			bool invoked = XamlCodeCompletionBinding.Instance.CtrlSpace(textEditor);
+			bool invoked = new XamlCodeCompletionBinding().CtrlSpace(textEditor);
 			
 			Assert.AreEqual(expected, invoked);
 			
@@ -43,7 +43,7 @@ namespace ICSharpCode.XamlBinding.Tests
 			this.textEditor.Caret.Offset = fileHeader.Length;
 			this.textEditor.CreateParseInformation();
 			
-			CodeCompletionKeyPressResult result = XamlCodeCompletionBinding.Instance.HandleKeyPress(textEditor, keyPressed);
+			CodeCompletionKeyPressResult result = new XamlCodeCompletionBinding().HandleKeyPress(textEditor, keyPressed);
 			
 			Assert.AreEqual(keyPressResult, result);
 			

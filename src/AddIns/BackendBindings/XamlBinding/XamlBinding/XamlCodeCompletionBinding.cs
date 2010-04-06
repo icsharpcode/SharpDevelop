@@ -16,17 +16,7 @@ namespace ICSharpCode.XamlBinding
 {
 	public class XamlCodeCompletionBinding : ICodeCompletionBinding
 	{
-		static XamlCodeCompletionBinding instance;
 		bool trackForced = true;
-		
-		public static XamlCodeCompletionBinding Instance {
-			get {
-				if (instance == null)
-					instance = new XamlCodeCompletionBinding();
-				
-				return instance;
-			}
-		}
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{

@@ -533,7 +533,7 @@ namespace ICSharpCode.XamlBinding
 					DebugTimer.Stop("CreateListForContext - InTag");
 					break;
 				case XamlContextDescription.InAttributeValue:
-					XamlCodeCompletionBinding.Instance.CtrlSpace(editor);
+					new XamlCodeCompletionBinding().CtrlSpace(editor);
 					break;
 			}
 			

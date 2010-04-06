@@ -76,7 +76,7 @@ namespace ICSharpCode.XamlBinding
 							context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 							context.CompletionCharHandled = context.CompletionChar == '=';
 							context.Editor.Caret.Offset--;
-							XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
+							new XamlCodeCompletionBinding().CtrlSpace(context.Editor);
 						} else if (xamlContext.Description == XamlContextDescription.InMarkupExtension && !string.IsNullOrEmpty(xamlContext.RawAttributeValue)) {
 							string valuePart = xamlContext.RawAttributeValue.Substring(0, xamlContext.ValueStartOffset);
 							AttributeValue value = MarkupExtensionParser.ParseValue(valuePart);
@@ -100,7 +100,7 @@ namespace ICSharpCode.XamlBinding
 							}
 							
 							if (cItem.Text.EndsWith("=", StringComparison.OrdinalIgnoreCase))
-								XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
+								new XamlCodeCompletionBinding().CtrlSpace(context.Editor);
 						}
 					}
 				}
@@ -121,7 +121,7 @@ namespace ICSharpCode.XamlBinding
 				if (item is XamlCompletionItem && xamlContext.Description == XamlContextDescription.InTag) {
 					context.Editor.Document.Insert(context.EndOffset, "=\"\"");
 					context.Editor.Caret.Offset--;
-					XamlCodeCompletionBinding.Instance.CtrlSpace(context.Editor);
+					new XamlCodeCompletionBinding().CtrlSpace(context.Editor);
 				}
 				
 				switch (item.Text) {
