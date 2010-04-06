@@ -68,7 +68,9 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			
 //	itextsharp + columntext + textheight		
 //itextsharp + columntext + rectangle			
-			
+
+//itextsharp + simulate
+//http://www.mail-archive.com/itext-questions@lists.sourceforge.net/msg04747.html
 			base.Decorate();
 			PdfContentByte contentByte = base.PdfWriter.DirectContent;
 			iTextSharp.text.Rectangle r = base.ConvertToPdfRectangle();

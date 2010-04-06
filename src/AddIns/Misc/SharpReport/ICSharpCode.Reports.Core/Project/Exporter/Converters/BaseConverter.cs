@@ -33,7 +33,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		
 		
-		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,IExportItemsConverter exportItemsConverter,ILayouter layouter)
+		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
+		                     IExportItemsConverter exportItemsConverter,ILayouter layouter)
 		{
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
@@ -140,5 +141,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		public Graphics Graphics {get;set;}
 		#endregion
+		
+		protected Size KeepSize {get;set;}
+		
+		protected void DoRow (BaseRowItem row)
+		{
+			Console.WriteLine("DoRow");
+			DataNavigator.Fill(row.Items);
+			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
+		}
 	}
 }

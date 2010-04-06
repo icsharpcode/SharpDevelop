@@ -22,7 +22,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class RowConverter:BaseConverter
 	{
 		private BaseRowItem baseRowItem;
-		
+		private BaseReportItem parent;
 		
 		public RowConverter(IDataNavigator dataNavigator,
 		                    ExporterPage singlePage,
@@ -39,46 +39,51 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (item == null) {
 				throw new ArgumentNullException("item");
 			}
-			IContainerItem row = item as IContainerItem;
+			this.parent = parent;
 			
-			PrintHelper.AdjustParent(parent,row.Items);
-			if (PrintHelper.IsTextOnlyRow(item as BaseRowItem)) {
-				return this.ConvertTextOnlyRow(parent, item);
+			this.baseRowItem = item as BaseRowItem;
+			this.baseRowItem.Parent = parent;
+			
+			PrintHelper.AdjustParent(parent,this.baseRowItem.Items);
+			if (PrintHelper.IsTextOnlyRow(this.baseRowItem)) {
+				ExporterCollection myList = new ExporterCollection();
+				 this.InternalConvertRow(myList, item,parent.Location.X,
+				                        new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y));
+				return myList;
 			} else {
-				return this.ConvertDataRow(parent,item);
+				return this.ConvertDataRow(item);
 			}
 		}
 		
-		
-		
-		private ExporterCollection ConvertDataRow (BaseReportItem parent, BaseReportItem item)
+		private ExporterCollection ConvertDataRow ( BaseReportItem item)
+//		private ExporterCollection ConvertDataRow (BaseReportItem parent, BaseReportItem item)
 		{
 			ExporterCollection mylist = new ExporterCollection();
+			Point currentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
 			BaseSection section = parent as BaseSection;
-
 			IContainerItem row = section.Items[0] as IContainerItem;
-		
+			int defaultLeftPos = parent.Location.X;
+				
 			do {
 				section.Location = new Point(section.Location.X,section.SectionOffset );
-				base.DataNavigator.Fill(row.Items);
-				
-				//
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
+				base.KeepSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
+				
+				base.DoRow(row as BaseRowItem);
 				base.FireSectionRendering(section);
 				
-				Size containerSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
-				
-				PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
-				mylist.AddRange(this.ConvertTextOnlyRow(parent,item));
-				section.Items[0].Size = containerSize;
+				currentPosition = this.InternalConvertRow(mylist,item,defaultLeftPos,currentPosition);
+				section.Items[0].Size = base.KeepSize;
 				
 				section.SectionOffset += section.Size.Height + 2 * base.SinglePage.SectionBounds.Gap;
-				Rectangle r = new Rectangle(section.Location.X,section.SectionOffset,
-				                            section.Size.Width,section.Size.Height);
+
+				
+				Rectangle r = new Rectangle(new Point (((BaseRowItem)row).Location.X,currentPosition.Y), section.Size);
 				
 				if (PrintHelper.IsPageFull(r,base.SectionBounds)) {
 					base.FirePageFull(mylist);
 					section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
+					currentPosition = new Point(base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Y);
 					mylist.Clear();
 				}
 			}
@@ -91,20 +96,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 			                                                     SectionBounds.ReportFooterRectangle.Height);
 			return mylist;
 		}
+		                                   
 		
-	
-		private ExporterCollection ConvertTextOnlyRow(BaseReportItem parent,
-		                                              BaseReportItem item)                                            
+		private Point InternalConvertRow(ExporterCollection myList,BaseReportItem item,int leftPos,Point curPos)                                                   
 		{
-			ExporterCollection mylist = base.Convert(parent,item);
 			this.baseRowItem = item as BaseRowItem;
-
-			Point drawAt = base.ParentRectangle.Location;
-			baseRowItem.Location = new Point (base.ParentRectangle.Left,baseRowItem.Location.Y);
-			ExporterCollection ml = this.ConvertItems (parent,baseRowItem, drawAt);			
-			drawAt = new Point (base.ParentRectangle.Left,drawAt.Y + baseRowItem.Size.Height);
-			mylist.AddRange(ml);
-			return mylist;
+			baseRowItem.Location = new Point (leftPos,baseRowItem.Location.Y);	
+			ExporterCollection ml = this.ConvertItems (this.parent,baseRowItem, curPos);		
+			myList.AddRange(ml);
+			return new Point (leftPos,curPos.Y + this.baseRowItem.Size.Height + (3 *GlobalValues.GapBetweenContainer));
 		}
 	}
 }

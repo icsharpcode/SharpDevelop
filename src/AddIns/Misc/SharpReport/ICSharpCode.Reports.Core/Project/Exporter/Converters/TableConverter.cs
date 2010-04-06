@@ -60,36 +60,34 @@ namespace ICSharpCode.Reports.Core.Exporter
 				if (row.Items.Count > 0) {
 					row.Location = new Point (row.Location.X + defaultLeftPos,row.Location.Y);
 					row.Parent = (BaseReportItem)this.baseTable;
-					Size rowSize = new Size (row.Size.Width,row.Size.Height);
-					
+					base.KeepSize =  new Size (row.Size.Width,row.Size.Height);
 					// Header/FooterRow
 				
 					if (PrintHelper.IsTextOnlyRow(row) ) {
 						headerRow = row;
-						currentPosition = PrintTableHeader(mylist,headerRow,defaultLeftPos,currentPosition);
+						currentPosition = InternalConvertRow(mylist,headerRow,defaultLeftPos,currentPosition);
 					}
 					
 					else 
 					{
 						// DataRegion
-						rowSize = new Size (row.Size.Width,row.Size.Height);
+						base.KeepSize = new Size (row.Size.Width,row.Size.Height);
 						do {
 							//
 							BaseSection section = this.baseTable.Parent as BaseSection;
 							section.Location = new Point(section.Location.X,section.SectionOffset );
-							base.DataNavigator.Fill(row.Items);
-							
-							PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
+							base.DoRow(row);
 							
 							if (PrintHelper.IsPageFull(new Rectangle(new Point (row.Location.X,currentPosition.Y),row.Size),base.SectionBounds)) {
 								base.FirePageFull(mylist);
 								mylist.Clear();
-								currentPosition = PrintTableHeader(mylist,headerRow,
+								currentPosition = InternalConvertRow(mylist,headerRow,
 								                                   defaultLeftPos,
 								                                   base.SectionBounds.ReportHeaderRectangle.Location);
 							}
-							currentPosition = this.DoConvert(mylist,row,defaultLeftPos,currentPosition);
-							row.Size = rowSize;
+							
+							currentPosition = InternalConvertRow(mylist,row,defaultLeftPos,currentPosition);
+							row.Size = base.KeepSize;
 						}
 						while (base.DataNavigator.MoveNext());
 						//Allway's reset the DataNavigator
@@ -106,19 +104,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private Point PrintTableHeader(ExporterCollection list,BaseRowItem row,int leftPos,Point curPos	)
+		private Point InternalConvertRow(ExporterCollection myList,BaseRowItem row,int leftPos,Point curPos	)
 		{
-			PrintHelper.SetLayoutForRow(base.Graphics,base.Layouter,row);
-			return  DoConvert (list,row,leftPos,curPos);
+			ExporterCollection ml = base.ConvertItems (this.baseTable.Parent,row, curPos);
+			myList.AddRange(ml);
+			return new Point (leftPos,curPos.Y + row.Size.Height + (3 *GlobalValues.GapBetweenContainer));
 		}
-			
-		
-		private Point DoConvert(ExporterCollection mylist,BaseRowItem row,int x,Point dp)                      
-		{
-			ExporterCollection ml = base.ConvertItems (this.baseTable.Parent,row, dp);
-			mylist.AddRange(ml);
-			return new Point (x,dp.Y + row.Size.Height + (3 *GlobalValues.GapBetweenContainer));
-		}
-		
+
 	}
 }
