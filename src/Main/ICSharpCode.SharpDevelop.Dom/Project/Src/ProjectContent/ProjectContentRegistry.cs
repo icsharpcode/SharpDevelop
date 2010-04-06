@@ -261,7 +261,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (pc == null && asmName != null) {
 						string subPath = Path.Combine(asmName.ShortName, GetVersion__Token(asmName));
 						subPath = Path.Combine(subPath, asmName.ShortName + ".dll");
-						foreach (string dir in Directory.GetDirectories(GacInterop.GacRootPath, "GAC*")) {
+						foreach (string dir in Directory.GetDirectories(GacInterop.GacRootPathV4, "GAC*")) {
 							itemFileName = Path.Combine(dir, subPath);
 							if (File.Exists(itemFileName)) {
 								pc = CecilReader.LoadAssembly(itemFileName, this);

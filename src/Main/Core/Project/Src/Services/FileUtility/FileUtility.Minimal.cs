@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Text;
 
 namespace ICSharpCode.Core
@@ -102,6 +103,16 @@ namespace ICSharpCode.Core
 			return string.Equals(NormalizePath(fileName1),
 			                     NormalizePath(fileName2),
 			                     StringComparison.OrdinalIgnoreCase);
+		}
+		
+		public static bool IsBaseDirectory(string baseDirectory, string testDirectory)
+		{
+			if (baseDirectory == null || testDirectory == null)
+				return false;
+			baseDirectory = NormalizePath(baseDirectory) + Path.DirectorySeparatorChar;
+			testDirectory = NormalizePath(testDirectory) + Path.DirectorySeparatorChar;
+			
+			return testDirectory.StartsWith(baseDirectory, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

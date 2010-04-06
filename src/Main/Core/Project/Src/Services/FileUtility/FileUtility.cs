@@ -277,16 +277,6 @@ namespace ICSharpCode.Core
 			return NormalizePath(Path.Combine(baseDirectoryPath, relPath));
 		}
 		
-		public static bool IsBaseDirectory(string baseDirectory, string testDirectory)
-		{
-			if (baseDirectory == null || testDirectory == null)
-				return false;
-			baseDirectory = NormalizePath(baseDirectory) + Path.DirectorySeparatorChar;
-			testDirectory = NormalizePath(testDirectory) + Path.DirectorySeparatorChar;
-			
-			return testDirectory.StartsWith(baseDirectory, StringComparison.OrdinalIgnoreCase);
-		}
-		
 		public static string RenameBaseDirectory(string fileName, string oldDirectory, string newDirectory)
 		{
 			fileName     = NormalizePath(fileName);

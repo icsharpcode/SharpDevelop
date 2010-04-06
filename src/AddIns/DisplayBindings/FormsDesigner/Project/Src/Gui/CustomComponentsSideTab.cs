@@ -83,7 +83,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 						continue;
 					if (rpc.AssemblyFullName == typeof(object).Assembly.FullName)
 						continue;
-					if (FileUtility.IsBaseDirectory(GacInterop.GacRootPath, rpc.AssemblyLocation))
+					if (GacInterop.IsWithinGac(rpc.AssemblyLocation))
 						continue;
 				}
 				foreach (IClass c in pc.Classes) {

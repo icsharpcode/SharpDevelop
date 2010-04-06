@@ -134,7 +134,7 @@ namespace ICSharpCode.FormsDesigner.Services
 					} else if (rpc is ReflectionProjectContent) {
 						ReflectionProjectContent rrpc = (ReflectionProjectContent)rpc;
 						if (rrpc.AssemblyFullName != typeof(object).FullName
-						    && !FileUtility.IsBaseDirectory(GacInterop.GacRootPath, rrpc.AssemblyLocation))
+						    && !GacInterop.IsWithinGac(rrpc.AssemblyLocation))
 						{
 							LoadAssembly(rpc);
 						}
@@ -148,7 +148,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				return LoadAssembly(((IProject)pc.Project).OutputAssemblyFullPath);
 			} else if (pc is ReflectionProjectContent) {
 				ReflectionProjectContent rpc = (ReflectionProjectContent)pc;
-				if (FileUtility.IsBaseDirectory(GacInterop.GacRootPath, rpc.AssemblyLocation))
+				if (GacInterop.IsWithinGac(rpc.AssemblyLocation))
 					return LoadAssembly(new AssemblyName(rpc.AssemblyFullName), false);
 				else
 					return LoadAssembly(rpc.AssemblyLocation);

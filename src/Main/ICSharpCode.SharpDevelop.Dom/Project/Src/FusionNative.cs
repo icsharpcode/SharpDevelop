@@ -245,12 +245,16 @@ namespace MSjogren.GacTool.FusionNative
 		                                        [MarshalAs(UnmanagedType.LPWStr)] StringBuilder wzDir,
 		                                        ref uint pdwSize);
 		
-		public static string GetGacPath()
+		public static string GetGacPath(bool isCLRv4 = false)
 		{
-			const int size = 260;
+			const uint ASM_CACHE_ROOT    = 0x08; // CLR V2.0
+			const uint ASM_CACHE_ROOT_EX = 0x80; // CLR V4.0
+			uint flags = isCLRv4 ? ASM_CACHE_ROOT_EX : ASM_CACHE_ROOT;
+			
+			const int size = 260; // MAX_PATH
 			StringBuilder b = new StringBuilder(size);
 			uint tmp = size;
-			GetCachePath(8, b, ref tmp); // flag 8 = GAC_ROOT_PATH
+			GetCachePath(flags, b, ref tmp);
 			return b.ToString();
 		}
 		
