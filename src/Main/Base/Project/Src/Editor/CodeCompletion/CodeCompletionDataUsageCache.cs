@@ -51,7 +51,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public static string CacheFilename {
 			get {
-				return Path.Combine(PropertyService.ConfigDirectory, "CodeCompletionUsageCache.dat");
+				if (string.IsNullOrEmpty(PropertyService.ConfigDirectory))
+					return null;
+				else
+					return Path.Combine(PropertyService.ConfigDirectory, "CodeCompletionUsageCache.dat");
 			}
 		}
 		
@@ -59,9 +62,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		{
 			dict = new Dictionary<string, UsageStruct>();
 			ProjectService.SolutionClosed += delegate(object sender, EventArgs e) { SaveCache(); };
-			if (!File.Exists(CacheFilename))
+			string cacheFileName = CodeCompletionDataUsageCache.CacheFilename;
+			if (string.IsNullOrEmpty(cacheFileName) || !File.Exists(cacheFileName))
 				return;
-			using (FileStream fs = new FileStream(CacheFilename, FileMode.Open, FileAccess.Read)) {
+			using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read)) {
 				using (BinaryReader reader = new BinaryReader(fs)) {
 					if (reader.ReadInt64() != magic) {
 						LoggingService.Warn("CodeCompletionDataUsageCache: wrong file magic");
@@ -91,11 +95,12 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public static void SaveCache()
 		{
-			if (dict == null) {
+			string cacheFileName = CodeCompletionDataUsageCache.CacheFilename;
+			if (dict == null || string.IsNullOrEmpty(cacheFileName)) {
 				return;
 			}
 			int count;
-			using (FileStream fs = new FileStream(CacheFilename, FileMode.Create, FileAccess.Write)) {
+			using (FileStream fs = new FileStream(cacheFileName, FileMode.Create, FileAccess.Write)) {
 				using (BinaryWriter writer = new BinaryWriter(fs)) {
 					count = SaveCache(writer);
 				}
