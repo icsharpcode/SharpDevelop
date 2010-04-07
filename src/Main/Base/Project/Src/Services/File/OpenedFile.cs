@@ -285,7 +285,9 @@ namespace ICSharpCode.SharpDevelop
 				Properties memento = GetMemento(newView);
 				using (Stream sourceStream = OpenRead()) {
 					currentView = newView;
-					fileData = null;
+					// don't reset fileData if the file is untitled, because OpenRead() wouldn't be able to read it otherwise
+					if (this.IsUntitled == false)
+						fileData = null;
 					newView.Load(this, sourceStream);
 				}
 				RestoreMemento(newView, memento);
