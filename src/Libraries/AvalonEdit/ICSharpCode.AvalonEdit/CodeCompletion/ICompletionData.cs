@@ -39,6 +39,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		object Description { get; }
 		
 		/// <summary>
+		/// Gets the priority. This property is used in the selection logic. You can use it to prefer selecting those items
+		/// which the user is accessing most frequently.
+		/// </summary>
+		double Priority { get; }
+		
+		/// <summary>
 		/// Perform the completion.
 		/// </summary>
 		/// <param name="textArea">The text area on which completion is performed.</param>

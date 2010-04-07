@@ -70,6 +70,7 @@ namespace ICSharpCode.XamlBinding
 		public override void Complete(CompletionContext context)
 		{
 			if (addType) {
+				MarkAsUsed();
 				string newText = Entity.DeclaringType.Name + "." + Text;
 				context.Editor.Document.Replace(context.StartOffset, context.Length, newText);
 				context.EndOffset = context.StartOffset + newText.Length;

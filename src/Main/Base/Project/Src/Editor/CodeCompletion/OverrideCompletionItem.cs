@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
-	public class OverrideCompletionItem : ICompletionItem
+	public sealed class OverrideCompletionItem : ICompletionItem
 	{
 		IMember member;
 		string text;
@@ -48,6 +48,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					+ "\n\n" + CodeCompletionItem.ConvertDocumentation(member.Documentation);
 			}
 		}
+		
+		double ICompletionItem.Priority { get { return 0; } }
 		
 		static string GetName(IMember member, ConversionFlags flags)
 		{

@@ -19,6 +19,15 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// Performs code completion for the item.
 		/// </summary>
 		void Complete(CompletionContext context);
+		
+		/// <summary>
+		/// Gets a priority value for the completion data item.
+		/// When selecting items by their start characters, the item with the highest
+		/// priority is selected first.
+		/// </summary>
+		double Priority {
+			get;
+		}
 	}
 	
 	public class DefaultCompletionItem : ICompletionItem
@@ -26,6 +35,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		public string Text { get; private set; }
 		public virtual string Description { get; set; }
 		public virtual IImage Image { get; set; }
+		
+		public virtual double Priority { get { return 0; } }
 		
 		public DefaultCompletionItem(string text)
 		{

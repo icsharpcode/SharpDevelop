@@ -189,7 +189,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			for (int i = 0; i < completionData.Count; ++i) {
 				string itemText = completionData[i].Text;
 				if (itemText.StartsWith(startText, StringComparison.OrdinalIgnoreCase)) {
-					double priority = 0; //completionData[i].Priority;
+					double priority = completionData[i].Priority;
 					int quality;
 					if (string.Equals(itemText, startText, StringComparison.OrdinalIgnoreCase)) {
 						if (startText == itemText)

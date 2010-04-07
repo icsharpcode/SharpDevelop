@@ -168,6 +168,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		public double Priority {
+			get { return item.Priority; }
+		}
+		
 		public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
 		{
 			CompletionContext context = new CompletionContext {

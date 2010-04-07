@@ -182,8 +182,6 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	
 	public class CodeCompletionItem : ICompletionItem
 	{
-		// TODO: what to do with these properties?
-		[Obsolete]
 		public double Priority { get; set; }
 		
 		readonly IEntity entity;
@@ -201,6 +199,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			description = ambience.Convert(entity);
 			this.Image = ClassBrowserIconService.GetIcon(entity);
 			this.Overloads = 1;
+			
+			this.Priority = CodeCompletionDataUsageCache.GetPriority(entity.DotNetName, true);
 		}
 		
 		public IEntity Entity {
@@ -213,8 +213,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public IImage Image { get; set; }
 		
+		protected void MarkAsUsed()
+		{
+			CodeCompletionDataUsageCache.IncrementUsage(entity.DotNetName);
+		}
+		
 		public virtual void Complete(CompletionContext context)
 		{
+			MarkAsUsed();
 			context.Editor.Document.Replace(context.StartOffset, context.Length, this.Text);
 			
 			context.EndOffset = context.StartOffset + this.Text.Length;

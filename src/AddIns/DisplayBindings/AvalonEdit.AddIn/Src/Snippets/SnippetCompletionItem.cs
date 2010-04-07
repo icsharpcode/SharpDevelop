@@ -38,6 +38,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			if (textArea == null)
 				throw new ArgumentException("textEditor must be an AvalonEdit text editor");
 			this.codeSnippet = codeSnippet;
+			
+			this.Priority = CodeCompletionDataUsageCache.GetPriority("snippet" + codeSnippet.Name, true);
 		}
 		
 		public bool AlwaysInsertSnippet { get; set; }
@@ -63,6 +65,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		{
 			if (context.Editor != this.textEditor)
 				throw new ArgumentException("wrong editor");
+			
+			CodeCompletionDataUsageCache.IncrementUsage("snippet" + codeSnippet.Name);
+			
 			using (context.Editor.Document.OpenUndoGroup()) {
 				if (context.CompletionChar == '\t' || AlwaysInsertSnippet) {
 					context.Editor.Document.Remove(context.StartOffset, context.Length);
@@ -98,5 +103,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return fancyDescription;
 			}
 		}
+		
+		public double Priority { get; set; }
 	}
 }
