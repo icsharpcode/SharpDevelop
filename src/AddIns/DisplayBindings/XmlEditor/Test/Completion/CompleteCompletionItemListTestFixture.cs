@@ -42,6 +42,10 @@ namespace XmlEditor.Tests.Completion
 		
 		ICSharpCode.SharpDevelop.IImage ICompletionItem.Image {
 			get { return null; }
-		}		
+		}
+		
+		double ICompletionItem.Priority {
+			get { return 0; }
+		}
 	}
 }

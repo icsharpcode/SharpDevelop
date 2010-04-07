@@ -164,12 +164,12 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			IEntity entity = o as IEntity;
 			if (entity != null) {
 				return new CodeCompletionItem(entity);
+			} else if (o is Dom.NRefactoryResolver.KeywordEntry) {
+				return new KeywordCompletionItem(o.ToString());
 			} else {
 				DefaultCompletionItem item = new DefaultCompletionItem(o.ToString());
 				if (o is NamespaceEntry)
 					item.Image = ClassBrowserIconService.Namespace;
-				else if (o is Dom.NRefactoryResolver.KeywordEntry)
-					item.Image = ClassBrowserIconService.Keyword;
 				return item;
 			}
 		}
@@ -178,6 +178,27 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	public class DotCodeCompletionItemProvider : CodeCompletionItemProvider
 	{
 		
+	}
+	
+	sealed class KeywordCompletionItem : DefaultCompletionItem
+	{
+		readonly double priority;
+		
+		public KeywordCompletionItem(string text) : base(text)
+		{
+			this.Image = ClassBrowserIconService.Keyword;
+			priority = CodeCompletionDataUsageCache.GetPriority("keyword." + this.Text, true);
+		}
+		
+		public override double Priority {
+			get { return priority; }
+		}
+		
+		public override void Complete(CompletionContext context)
+		{
+			CodeCompletionDataUsageCache.IncrementUsage("keyword." + this.Text);
+			base.Complete(context);
+		}
 	}
 	
 	public class CodeCompletionItem : ICompletionItem
