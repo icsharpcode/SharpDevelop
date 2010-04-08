@@ -139,6 +139,7 @@
       <DependentUpon>LayoutPanelControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Project\SecondaryViews\ReportPreview.cs" />
+    <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs" />
     <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
     <Compile Include="Project\SecondaryViews\XmlView.cs" />
     <Compile Include="Project\Services\DefaultMemberRelationshipService.cs" />

@@ -37,6 +37,7 @@ namespace ICSharpCode.Reports.Addin
 			}
 			this.designerLoader = designerLoader;
 			this.control = new ICSharpCode.Reports.Core.ReportViewer.PreviewControl();
+			this.control.Messages = new ReportViewerMessages();
 			this.control.PreviewLayoutChanged += OnPreviewLayoutChanged;
 			base.TabPageText = ResourceService.GetString("SharpReport.ReportViewer");
 		}

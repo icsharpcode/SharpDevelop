@@ -49,7 +49,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.pageInfoLabel = new System.Windows.Forms.ToolStripLabel();
 			this.forwardButton = new System.Windows.Forms.ToolStripButton();
 			this.lastPageButton = new System.Windows.Forms.ToolStripButton();
-			this.cancelButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.comboZoom = new System.Windows.Forms.ToolStripComboBox();
 			this.printButton = new System.Windows.Forms.ToolStripButton();
@@ -111,7 +110,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 									this.pageInfoLabel,
 									this.forwardButton,
 									this.lastPageButton,
-									this.cancelButton,
 									this.toolStripSeparator1,
 									this.comboZoom,
 									this.printButton,
@@ -175,16 +173,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.lastPageButton.Size = new System.Drawing.Size(23, 22);
 			this.lastPageButton.Text = "&&LastPage";
 			this.lastPageButton.Click += new System.EventHandler(this.LastPageButtonClick);
-			// 
-			// cancelButton
-			// 
-			this.cancelButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.cancelButton.Image = ((System.Drawing.Image)(resources.GetObject("cancelButton.Image")));
-			this.cancelButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.cancelButton.Name = "cancelButton";
-			this.cancelButton.Size = new System.Drawing.Size(23, 22);
-			this.cancelButton.Text = "toolStripButton1";
-			this.cancelButton.Click += new System.EventHandler(this.StopButtonClick);
+			
 			// 
 			// toolStripSeparator1
 			// 
@@ -239,7 +228,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		private System.Windows.Forms.ToolStripButton firstPageButton;
 		private System.Windows.Forms.ToolStripMenuItem createPdfMenu;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-		private System.Windows.Forms.ToolStripButton cancelButton;
 		private System.Windows.Forms.ToolStripButton forwardButton;
 		private System.Windows.Forms.ToolStripButton printButton;
 		private System.Windows.Forms.ToolStripComboBox comboZoom;

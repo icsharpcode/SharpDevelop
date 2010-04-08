@@ -17,16 +17,12 @@ namespace ICSharpCode.Reports.Core.ReportViewer{
 		
 		string PrintButtonMessage {get;}
 		
-		string CancelButtonMessage {get;}
-		
-//		string PagesOfMessage {get;}
 		string PagesCreatedMessage {get;}
 		
 		string FirstPageMessage {get;}
 		
 		string LastPageMessage {get;}
 		
-//		string NoDataMessage {get;}
 		string PdfFileMessage {get;}
 		
 		string ZoomMessage {get;}

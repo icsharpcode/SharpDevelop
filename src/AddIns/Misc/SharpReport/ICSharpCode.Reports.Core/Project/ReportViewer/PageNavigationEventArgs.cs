@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 	/// Description of PageNavigationEventArgs.
 	/// </summary>
 	public class PageNavigationEventArgs: EventArgs
-	{
+	{ 
 		private ExporterPage page;
 		private int pageNumber;
 		

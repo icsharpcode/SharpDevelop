@@ -321,7 +321,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		{
 			this.pages = new PagesCollection();
 			this.reportSettings = reportModel.ReportSettings;
-			this.cancelButton.Enabled = true;
 			this.AdjustDrawArea();
 		}
 		
@@ -338,7 +337,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 			this.SetPages();
 			this.CheckEnable();
-			this.cancelButton.Enabled = false;
 			this.printButton.Enabled = true;
 			this.pdfButton.Enabled = true;
 			this.UpdateToolStrip();
@@ -395,7 +393,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				this.forwardButton.ToolTipText = this.reportViewerMessages.NextButtonMessage;
 				this.lastPageButton.ToolTipText = this.reportViewerMessages.LastPageMessage;
 				
-				this.cancelButton.ToolTipText = this.reportViewerMessages.CancelButtonMessage;
 				this.printButton.ToolTipText = this.reportViewerMessages.PrintButtonMessage;
 				this.comboZoom.ToolTipText = this.reportViewerMessages.ZoomMessage;
 				this.createPdfMenu.Text = this.reportViewerMessages.PdfFileMessage;
@@ -578,12 +575,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.ShowSelectedPage();
 		}
 		
-		
-		private void StopButtonClick(object sender, System.EventArgs e)
-		{
-//			this.bgw.CancelAsync();
-			this.cancelButton.Enabled = false;
-		}
 		
 		
 		private void PrintButton(object sender, System.EventArgs e)
