@@ -24,13 +24,13 @@ namespace ICSharpCode.Reports.Addin
 		
 		public string BackButtonText {
 			get {
-				return ResourceService.GetString("Global.BackButtonText");
+				return ResourceService.GetString("SharpReport.ReportViewer.PreviousPage");
 			}
 		}
 		
 		public string NextButtonMessage {
 			get {
-				return ResourceService.GetString("Global.NextButtonText");
+				return ResourceService.GetString("SharpReport.ReportViewer.NextPage");
 			}
 		}
 		

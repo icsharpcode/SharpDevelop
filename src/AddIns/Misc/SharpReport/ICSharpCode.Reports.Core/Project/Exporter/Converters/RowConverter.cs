@@ -55,8 +55,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 		}
 		
-		private ExporterCollection ConvertDataRow ( BaseReportItem item)
-//		private ExporterCollection ConvertDataRow (BaseReportItem parent, BaseReportItem item)
+		private ExporterCollection ConvertDataRow (BaseReportItem item)
 		{
 			ExporterCollection mylist = new ExporterCollection();
 			Point currentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
@@ -100,11 +99,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private Point InternalConvertRow(ExporterCollection myList,BaseReportItem item,int leftPos,Point curPos)                                                   
 		{
+			return base.BaseConvert(myList,parent,item,leftPos,curPos);
+			/*
 			this.baseRowItem = item as BaseRowItem;
 			baseRowItem.Location = new Point (leftPos,baseRowItem.Location.Y);	
 			ExporterCollection ml = this.ConvertItems (this.parent,baseRowItem, curPos);		
 			myList.AddRange(ml);
 			return new Point (leftPos,curPos.Y + this.baseRowItem.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+			                                                                       * */
 		}
 	}
 }

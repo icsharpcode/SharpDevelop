@@ -150,5 +150,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 			DataNavigator.Fill(row.Items);
 			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}
+		
+		
+		protected Point BaseConvert(ExporterCollection myList,BaseReportItem parent, BaseReportItem item,int leftPos,Point curPos)
+		{
+			BaseRowItem br = item as BaseRowItem;
+			br.Location = new Point (leftPos,br.Location.Y);	
+			ExporterCollection ml = this.ConvertItems (parent,br, curPos);		
+			myList.AddRange(ml);
+			return new Point (leftPos,curPos.Y + br.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+		}
 	}
 }

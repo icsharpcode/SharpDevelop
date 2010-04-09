@@ -82,8 +82,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 								base.FirePageFull(mylist);
 								mylist.Clear();
 								currentPosition = InternalConvertRow(mylist,headerRow,
-								                                   defaultLeftPos,
-								                                   base.SectionBounds.ReportHeaderRectangle.Location);
+								                                     defaultLeftPos,
+								                                     base.SectionBounds.ReportHeaderRectangle.Location);
 							}
 							
 							currentPosition = InternalConvertRow(mylist,row,defaultLeftPos,currentPosition);
@@ -106,10 +106,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private Point InternalConvertRow(ExporterCollection myList,BaseRowItem row,int leftPos,Point curPos	)
 		{
+			return base.BaseConvert(myList,this.baseTable.Parent,row,leftPos,curPos);
+			/*
 			ExporterCollection ml = base.ConvertItems (this.baseTable.Parent,row, curPos);
 			myList.AddRange(ml);
 			return new Point (leftPos,curPos.Y + row.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+			                                                          * */
 		}
-
 	}
 }
