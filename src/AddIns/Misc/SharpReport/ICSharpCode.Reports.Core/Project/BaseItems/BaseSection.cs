@@ -76,7 +76,7 @@ namespace ICSharpCode.Reports.Core
 		{
 			foreach(BaseReportItem item in items)
 			{
-				IContainerItem cont = item as IContainerItem;
+				ISimpleContainer cont = item as ISimpleContainer;
 				if (cont != null) {
 					return FindRec(cont.Items,name);
 				} else {
@@ -95,7 +95,7 @@ namespace ICSharpCode.Reports.Core
 		{
 			foreach (BaseReportItem item in items)
 			{
-				IContainerItem cont = item as IContainerItem;
+				ISimpleContainer cont = item as ISimpleContainer;
 				if (cont != null) {
 					return FindRec (cont.Items,itemName);
 				} else {

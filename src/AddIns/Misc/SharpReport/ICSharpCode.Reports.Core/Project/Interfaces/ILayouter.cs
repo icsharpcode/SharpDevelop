@@ -17,6 +17,6 @@ namespace ICSharpCode.Reports.Core.Interfaces
 	public interface ILayouter
 	{
 		Rectangle Layout (Graphics graphics,BaseSection section);
-		Rectangle Layout (Graphics graphics,IContainerItem container);
+		Rectangle Layout (Graphics graphics,ISimpleContainer container);
 	}
 }

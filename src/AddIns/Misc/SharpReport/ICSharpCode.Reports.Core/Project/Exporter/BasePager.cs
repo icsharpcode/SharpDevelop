@@ -105,7 +105,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			if (section.Items.Count > 0) {
 				
-				IContainerItem container = section.Items[0] as IContainerItem;
+				ISimpleContainer container = section.Items[0] as ISimpleContainer;
 				if (container != null) {
 
 					ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(container);
@@ -137,7 +137,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 		}
 		
-		private void AdjustBackColor (IContainerItem container)
+		private void AdjustBackColor (ISimpleContainer container)
 		{
 			BaseReportItem parent = container as BaseReportItem;
 			foreach (BaseReportItem item in container.Items)

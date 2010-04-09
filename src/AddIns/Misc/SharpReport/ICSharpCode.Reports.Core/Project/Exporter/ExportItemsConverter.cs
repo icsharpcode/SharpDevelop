@@ -41,7 +41,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		public ExportContainer ConvertToContainer (IContainerItem item) 
+		public ExportContainer ConvertToContainer (ISimpleContainer item) 
 		{
 			if (item == null) {
 				throw new ArgumentNullException("item");

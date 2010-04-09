@@ -19,7 +19,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public interface IExportItemsConverter
 	{
 		BaseExportColumn ConvertToLineItem (BaseReportItem item);
-		ExportContainer ConvertToContainer (IContainerItem item);
+		ExportContainer ConvertToContainer (ISimpleContainer item);
 		Point ParentLocation {get;set;}
 		int Offset {set;}
 	}

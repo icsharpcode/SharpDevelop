@@ -58,10 +58,10 @@ namespace ICSharpCode.Reports.Core
 		{
 			base.SinglePage.IDataNavigator = this.dataNavigator;
 			base.CurrentRow = this.dataNavigator.CurrentRow;
-			IContainerItem container = null;
+			ISimpleContainer container = null;
 			bool hasContainer = false;
 			foreach (BaseReportItem item in this.CurrentSection.Items) {
-				container = item as IContainerItem;
+				container = item as ISimpleContainer;
 				if (container != null) {
 					hasContainer = true;
 					break;
@@ -78,7 +78,7 @@ namespace ICSharpCode.Reports.Core
 		
 		
 		private  Point DoContainerControl (BaseSection section,
-		                                   IContainerItem container,
+		                                   ISimpleContainer container,
 		                                   ReportPageEventArgs rpea)
 		{
 			Point drawPoint	= Point.Empty;
@@ -88,7 +88,7 @@ namespace ICSharpCode.Reports.Core
 				
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				Size containerSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
-				IContainerItem row =(IContainerItem) section.Items[0];
+				ISimpleContainer row =(ISimpleContainer) section.Items[0];
 				PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
 				section.Render (rpea);
 				

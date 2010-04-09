@@ -21,7 +21,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class AbstractLayout
 	{
 		ReportModel reportModel;
-		IContainerItem parentItem;
+		ISimpleContainer parentItem;
 		
 		public AbstractLayout(ReportModel reportModel)
 		{
@@ -41,7 +41,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.reportModel.ReportHeader.Items.Add(a);
 		}
 		
-		public virtual void SetParent (IContainerItem parentItem)
+		public virtual void SetParent (ISimpleContainer parentItem)
 		{
 			this.parentItem = parentItem;
 		}
@@ -188,7 +188,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 		}
 		*/
-		protected IContainerItem ParentItem {
+		protected ISimpleContainer ParentItem {
 			get { return parentItem; }
 		}
 		

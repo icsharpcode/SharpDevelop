@@ -62,7 +62,7 @@ namespace ICSharpCode.Reports.Core {
 		{
 			foreach (BaseReportItem be in items) {
 				
-				IContainerItem  ec = be as IContainerItem;
+				ISimpleContainer  ec = be as ISimpleContainer;
 				if (ec != null)
 				{
 					if (ec.Items.Count > 0) {

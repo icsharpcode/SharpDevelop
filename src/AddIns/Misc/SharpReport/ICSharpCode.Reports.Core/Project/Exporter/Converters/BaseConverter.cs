@@ -28,6 +28,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private Rectangle parentRectangle;
 		private IExportItemsConverter exportItemsConverter;
 		private ILayouter layouter;
+		private Size saveSize;
 	
 		public event EventHandler <NewPageEventArgs> PageFull;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
@@ -74,7 +75,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 			
 		protected  ExporterCollection ConvertItems (BaseReportItem parent,
-		                                            IContainerItem row,Point offset)
+		                                            ISimpleContainer row,Point offset)
 		                                
 		{
 			this.exportItemsConverter.Offset = offset.Y;
@@ -103,6 +104,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 			return null;
 		}
+		
 		
 		#region IBaseConverter
 		
@@ -142,11 +144,20 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public Graphics Graphics {get;set;}
 		#endregion
 		
-		protected Size KeepSize {get;set;}
-		
-		protected void DoRow (BaseRowItem row)
+		protected Size SaveSize
 		{
-			Console.WriteLine("DoRow");
+			set { this.saveSize = value;}
+		}
+		
+		
+		protected Size RestoreSize
+		{
+			get {return this.saveSize;}
+		}
+		
+		
+		protected void FillAndLayoutRow (ISimpleContainer row)
+		{
 			DataNavigator.Fill(row.Items);
 			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}
@@ -154,11 +165,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected Point BaseConvert(ExporterCollection myList,BaseReportItem parent, BaseReportItem item,int leftPos,Point curPos)
 		{
-			BaseRowItem br = item as BaseRowItem;
-			br.Location = new Point (leftPos,br.Location.Y);	
-			ExporterCollection ml = this.ConvertItems (parent,br, curPos);		
+			BaseRowItem row = item as BaseRowItem;
+			row.Location = new Point (leftPos,row.Location.Y);	
+			ExporterCollection ml = this.ConvertItems (parent,row, curPos);		
 			myList.AddRange(ml);
-			return new Point (leftPos,curPos.Y + br.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+			return new Point (leftPos,curPos.Y + row.Size.Height + (3 *GlobalValues.GapBetweenContainer));
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace ICSharpCode.Reports.Core{
 	/// Description of BaseRowItem.
 	/// </summary>
 	
-	public class BaseRowItem:BaseReportItem,IContainerItem,IExportColumnBuilder
+	public class BaseRowItem:BaseReportItem,ISimpleContainer,IExportColumnBuilder
 	{
 		
 		private ReportItemCollection items;

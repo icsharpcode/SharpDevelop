@@ -24,7 +24,7 @@ namespace ICSharpCode.Reports.Core
 		
 		#region Layout
 		
-		public static void SetLayoutForRow (Graphics graphics, ILayouter layouter,IContainerItem row)
+		public static void SetLayoutForRow (Graphics graphics, ILayouter layouter,ISimpleContainer row)
 		{
 			BaseReportItem item = row as BaseReportItem;
 			int extend = item.Size.Height - row.Items[0].Size.Height;
@@ -42,7 +42,7 @@ namespace ICSharpCode.Reports.Core
 		{
 			foreach (BaseReportItem i in items) {
 				i.Parent = parent;
-				IContainerItem ic = i as IContainerItem;
+				ISimpleContainer ic = i as ISimpleContainer;
 				if (ic != null) {
 					AdjustParentInternal(ic.Items,i);
 				} else {
@@ -62,7 +62,7 @@ namespace ICSharpCode.Reports.Core
 		#endregion
 		
 		
-		public static Rectangle DrawingAreaRelativeToParent (BaseReportItem parent,IContainerItem item)
+		public static Rectangle DrawingAreaRelativeToParent (BaseReportItem parent,ISimpleContainer item)
 		{
 			if ( parent == null) {
 				throw new ArgumentNullException("parent");
@@ -175,7 +175,7 @@ namespace ICSharpCode.Reports.Core
 			Console.WriteLine("BasePager:Displaychain");
 			foreach(BaseReportItem i in items)
 			{
-				IContainerItem ic = i as IContainerItem;
+				ISimpleContainer ic = i as ISimpleContainer;
 				if (ic != null) {
 					Console.WriteLine("recursive with <{0}> as parent",i.ToString());
 					Displaychain(ic.Items);

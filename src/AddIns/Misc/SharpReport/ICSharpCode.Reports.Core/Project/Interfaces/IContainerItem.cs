@@ -5,24 +5,28 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Reports.Expressions.ReportingLanguage;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
+
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Interfaces
 {
 	/// <summary>
 	/// Description of IContainerControl.
 	/// </summary>
-	public interface IContainerItem{
+	public interface ISimpleContainer{
 
 		ReportItemCollection Items {get;}
-		BaseReportItem Parent {set;get;}	
+		BaseReportItem Parent {set;get;}
+		Point Location {set;get;}
+		Size Size {get;set;}
 	}
 	
 	
-	public interface ITableContainer:IContainerItem
+	public interface ITableContainer:ISimpleContainer
 	{
 		IDataNavigator DataNavigator {set;}
 		IExpressionEvaluatorFacade ExpressionEvaluatorFacade {set;}

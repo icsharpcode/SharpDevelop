@@ -175,7 +175,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 				
 				do {
-					IContainerItem i = base.CurrentSection.Items[0] as IContainerItem;
+					ISimpleContainer i = base.CurrentSection.Items[0] as ISimpleContainer;
 					if (i != null) {
 						nav.Fill (i.Items);
 					} else {

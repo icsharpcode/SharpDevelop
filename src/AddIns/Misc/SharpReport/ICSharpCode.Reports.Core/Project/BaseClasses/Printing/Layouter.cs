@@ -22,7 +22,7 @@ namespace ICSharpCode.Reports.Core
 	public class Layouter:ILayouter
 	{
 
-		public Rectangle Layout(Graphics graphics,IContainerItem container)
+		public Rectangle Layout(Graphics graphics,ISimpleContainer container)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
