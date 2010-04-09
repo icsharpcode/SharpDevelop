@@ -58,48 +58,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			List<object> resultItems = new List<object>();
 			IDocument doc = textEditor.Document;
 			int caretLine = textEditor.Caret.Line;
-			IBookmarkMargin bookmarkMargin = textEditor.GetService(typeof(IBookmarkMargin)) as IBookmarkMargin;
 			
-			// list of dotnet names that have definition bookmarks in this line
+			// list of dotnet names that have definitions in this line
 			List<string> definitions = new List<string>();
-			
-			// Include definitions (use the bookmarks which should already be present)
-			if (bookmarkMargin != null) {
-				// we need to use .ToArray() because the bookmarks might change during enumeration:
-				// building member/class submenus can cause reparsing the current file, which might change
-				// the available bookmarks
-				foreach (IBookmark mark in bookmarkMargin.Bookmarks.ToArray()) {
-					if (mark != null && mark.LineNumber == caretLine) {
-						ClassMemberBookmark cmb = mark as ClassMemberBookmark;
-						ClassBookmark cb = mark as ClassBookmark;
-						IClass type = null;
-						if (cmb != null) {
-							definitions.Add(cmb.Member.DotNetName);
-							item = new MenuItem {
-								Header = MemberNode.GetText(cmb.Member),
-								Icon = cmb.Image.CreateImage(),
-								ItemsSource = MenuService.CreateMenuItems(null, mark, ClassMemberBookmark.ContextMenuPath)
-							};
-							resultItems.Add(item);
-							type = cmb.Member.DeclaringType;
-						} else if (cb != null) {
-							type = cb.Class;
-						}
-						if (type != null) {
-							definitions.Add(type.DotNetName);
-							item = new MenuItem {
-								Header = ClassNode.GetText(type),
-								Icon = ClassBrowserIconService.GetIcon(type).CreateImage(),
-								ItemsSource = MenuService.CreateMenuItems(null,
-								                                          cb ?? new ClassBookmark(type),
-								                                          ClassBookmark.ContextMenuPath)
-							};
-							resultItems.Add(item);
-						}
-					}
-				}
-			}
-			
 			
 			// Include menu for member that has been clicked on
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textEditor.FileName);
