@@ -68,8 +68,7 @@ namespace ICSharpCode.Reports.Addin
 				Image im = this.image;
 				if (im != null) {
 					graphics.DrawImage(this.Image,this.ClientRectangle);
-				}
-				
+				} 
 			}
 		}
 		
@@ -140,9 +139,11 @@ namespace ICSharpCode.Reports.Addin
 		[XmlIgnoreAttribute]
 		public Image Image {
 			get {
+				string text = "<Image>";
 				if (this.imageSource == GlobalEnums.ImageSource.Database ) {
-					this.image = FakeImage(base.Size,"<Database>");
+					text = "<Database>";
 				}
+				this.image = FakeImage(base.Size,text);
 				if (this.image != null) {
 					return image;
 				} else {

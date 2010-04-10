@@ -52,6 +52,8 @@ namespace ICSharpCode.Reports.Addin
 		
 		public override void Draw(Graphics graphics)
 		{
+			StringTrimming designTrimmimg = StringTrimming.EllipsisCharacter;
+			
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
 			}
@@ -59,11 +61,15 @@ namespace ICSharpCode.Reports.Addin
 				graphics.FillRectangle(b, base.DrawingRectangle);
 			}
 			
+			if (this.stringTrimming != StringTrimming.None) {
+				designTrimmimg = stringTrimming;
+			}
 			TextDrawer.DrawString(graphics,this.Text,this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      this.ClientRectangle,
-			                      this.stringTrimming,this.contentAlignment);
-				
+			                      designTrimmimg,
+			                      this.contentAlignment);
+			
 			base.DrawControl(graphics,base.DrawingRectangle);
 		}
 		
