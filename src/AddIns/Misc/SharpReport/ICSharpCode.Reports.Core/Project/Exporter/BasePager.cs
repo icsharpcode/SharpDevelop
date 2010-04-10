@@ -137,7 +137,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 		}
 		
-		private void AdjustBackColor (ISimpleContainer container)
+		private static void AdjustBackColor (ISimpleContainer container)
 		{
 			BaseReportItem parent = container as BaseReportItem;
 			foreach (BaseReportItem item in container.Items)

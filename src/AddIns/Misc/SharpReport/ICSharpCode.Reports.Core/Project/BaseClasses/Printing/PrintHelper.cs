@@ -104,8 +104,8 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		
-		public static bool IsTextOnlyRow (BaseRowItem item)
+		public static bool IsTextOnlyRow (ISimpleContainer item)
+		//public static bool IsTextOnlyRow (BaseRowItem item)
 		{
 			var res =  from r in item.Items where r is BaseDataItem
 				select ((BaseTextItem)r);

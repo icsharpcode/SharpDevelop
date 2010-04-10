@@ -21,7 +21,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class BaseConverter:IBaseConverter
 	{
 		
-		private BaseReportItem parentItem;
 		private IDataNavigator dataNavigator;
 		private ExporterPage singlePage;
 		private SectionBounds sectionBounds;
@@ -73,10 +72,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-			
-		protected  ExporterCollection ConvertItems (BaseReportItem parent,
-		                                            ISimpleContainer row,Point offset)
-		                                
+		
+		protected  ExporterCollection ConvertItems (ISimpleContainer row,Point offset)		                                          
 		{
 			this.exportItemsConverter.Offset = offset.Y;
 			IExportColumnBuilder exportLineBuilder = row as IExportColumnBuilder;
@@ -110,7 +107,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		public virtual ExporterCollection Convert(BaseReportItem parent, BaseReportItem item)
 		{
-			this.parentItem = parent;
 			this.parentRectangle = new Rectangle(parent.Location,parent.Size);
 			return new ExporterCollection();;
 		}
@@ -162,14 +158,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}
 		
-		
-		protected Point BaseConvert(ExporterCollection myList,BaseReportItem parent, BaseReportItem item,int leftPos,Point curPos)
+		protected Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
-			BaseRowItem row = item as BaseRowItem;
-			row.Location = new Point (leftPos,row.Location.Y);	
-			ExporterCollection ml = this.ConvertItems (parent,row, curPos);		
+			container.Location = new Point (leftPos,container.Location.Y);	
+			ExporterCollection ml = this.ConvertItems (container, curPos);		
 			myList.AddRange(ml);
-			return new Point (leftPos,curPos.Y + row.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+			return new Point (leftPos,curPos.Y + container.Size.Height + (3 *GlobalValues.GapBetweenContainer));
 		}
 	}
 }

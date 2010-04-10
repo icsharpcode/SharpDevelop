@@ -21,7 +21,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 	public class RowConverter:BaseConverter
 	{
-		private BaseRowItem baseRowItem;
+
 		private BaseReportItem parent;
 		
 		public RowConverter(IDataNavigator dataNavigator,
@@ -39,47 +39,45 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (item == null) {
 				throw new ArgumentNullException("item");
 			}
+			ISimpleContainer simpleContainer = item as ISimpleContainer;
 			this.parent = parent;
 			
-			this.baseRowItem = item as BaseRowItem;
-			this.baseRowItem.Parent = parent;
+			simpleContainer.Parent = parent;
 			
-			PrintHelper.AdjustParent(parent,this.baseRowItem.Items);
-			if (PrintHelper.IsTextOnlyRow(this.baseRowItem)) {
+			PrintHelper.AdjustParent(parent,simpleContainer.Items);
+			if (PrintHelper.IsTextOnlyRow(simpleContainer)) {
 				ExporterCollection myList = new ExporterCollection();
 
-				base.BaseConvert (myList,parent, item,parent.Location.X,
+				base.BaseConvert (myList,simpleContainer,parent.Location.X,
 				                  new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y));
 				return myList;
 			} else {
-				return this.ConvertDataRow(item);
+				return this.ConvertDataRow(simpleContainer);
 			}
 		}
 		
-		private ExporterCollection ConvertDataRow (BaseReportItem item)
+		private ExporterCollection ConvertDataRow (ISimpleContainer simpleContainer)
 		{
 			ExporterCollection mylist = new ExporterCollection();
 			Point currentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
 			BaseSection section = parent as BaseSection;
-			ISimpleContainer row = section.Items[0] as ISimpleContainer;
+			
 			int defaultLeftPos = parent.Location.X;
 			
 			do {
 				section.Location = new Point(section.Location.X,section.SectionOffset );
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
-				base.SaveSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
+				base.SaveSize = section.Items[0].Size;
 				
-				base.FillAndLayoutRow(row as BaseRowItem);
+				base.FillAndLayoutRow(simpleContainer);
 				base.FireSectionRendering(section);
-				currentPosition = base.BaseConvert(mylist,parent,item,defaultLeftPos,currentPosition);
-				section.Items[0].Size = base.RestoreSize;
+				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				
+				section.Items[0].Size = base.RestoreSize;
 				section.SectionOffset += section.Size.Height + 2 * base.SinglePage.SectionBounds.Gap;
 
 				
-				Rectangle r = new Rectangle(new Point (((BaseRowItem)row).Location.X,currentPosition.Y), section.Size);
-				
-				if (PrintHelper.IsPageFull(r,base.SectionBounds)) {
+				if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y), section.Size),base.SectionBounds)) {
 					base.FirePageFull(mylist);
 					section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
 					currentPosition = new Point(base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Y);

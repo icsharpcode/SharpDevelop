@@ -50,45 +50,46 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			Point currentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
 			Point dataAreaStart = new Point(baseTable.Items[0].Location.X,baseTable.Items[0].Location.Y + currentPosition.Y);
-			BaseRowItem headerRow = null;
+			ISimpleContainer headerContainer = null;
+			
 			int defaultLeftPos = PrintHelper.DrawingAreaRelativeToParent(this.baseTable.Parent,this.baseTable).Left;
 			
 			this.baseTable.Items.SortByLocation();
 			
-			foreach (BaseRowItem row in this.baseTable.Items)
+			foreach (ISimpleContainer simpleContainer in this.baseTable.Items)
 			{
-				if (row.Items.Count > 0) {
-					row.Location = new Point (row.Location.X + defaultLeftPos,row.Location.Y);
-					row.Parent = (BaseReportItem)this.baseTable;
-					base.SaveSize =  new Size (row.Size.Width,row.Size.Height);
+				if (simpleContainer.Items.Count > 0) {
+					simpleContainer.Location = new Point (simpleContainer.Location.X + defaultLeftPos,simpleContainer.Location.Y);
+					simpleContainer.Parent = (BaseReportItem)this.baseTable;
+					base.SaveSize =  new Size (simpleContainer.Size.Width,simpleContainer.Size.Height);
 					// Header/FooterRow
 				
-					if (PrintHelper.IsTextOnlyRow(row) ) {
-						headerRow = row;
-						currentPosition = base.BaseConvert(mylist,this.baseTable.Parent,headerRow,defaultLeftPos,currentPosition);
+					if (PrintHelper.IsTextOnlyRow(simpleContainer) ) {
+						headerContainer = simpleContainer;
+						currentPosition = base.BaseConvert(mylist,headerContainer,defaultLeftPos,currentPosition);
 					}
 					
 					else 
 					{
 						// DataRegion
-						base.SaveSize = new Size (row.Size.Width,row.Size.Height);
+						base.SaveSize = simpleContainer.Size;
 						do {
 							//
 							BaseSection section = this.baseTable.Parent as BaseSection;
 							section.Location = new Point(section.Location.X,section.SectionOffset );
-							base.FillAndLayoutRow(row);
+							base.FillAndLayoutRow(simpleContainer);
 							
-							if (PrintHelper.IsPageFull(new Rectangle(new Point (row.Location.X,currentPosition.Y),row.Size),base.SectionBounds)) {
+							if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y),simpleContainer.Size),base.SectionBounds)) {
 								base.FirePageFull(mylist);
 								mylist.Clear();
 
-								currentPosition = base.BaseConvert(mylist,this.baseTable.Parent,headerRow,
+								currentPosition = base.BaseConvert(mylist,headerContainer,
 								                                     defaultLeftPos,
 								                                     base.SectionBounds.ReportHeaderRectangle.Location);
 							}
 							
-							currentPosition = base.BaseConvert(mylist,this.baseTable.Parent,row,defaultLeftPos,currentPosition);
-							row.Size = base.RestoreSize;
+							currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+							simpleContainer.Size = base.RestoreSize;
 						}
 						while (base.DataNavigator.MoveNext());
 						//Allway's reset the DataNavigator

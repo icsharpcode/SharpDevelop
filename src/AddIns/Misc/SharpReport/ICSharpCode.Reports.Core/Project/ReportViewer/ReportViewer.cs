@@ -39,7 +39,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		private delegate void invokeDelegate();
 		private ReportSettings reportSettings;
 		private IDataManager dataManager;
-		private string pagesCreatedMessage;
+//		private string pagesCreatedMessage;
 		
 		#region Constructor
 		
@@ -397,7 +397,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				this.comboZoom.ToolTipText = this.reportViewerMessages.ZoomMessage;
 				this.createPdfMenu.Text = this.reportViewerMessages.PdfFileMessage;
 				this.pdfButton.ToolTipText = this.reportViewerMessages.PdfFileMessage;
-				this.pagesCreatedMessage = this.reportViewerMessages.PagesCreatedMessage;
+//				this.pagesCreatedMessage = this.reportViewerMessages.PagesCreatedMessage;
 			}
 		}
 		
