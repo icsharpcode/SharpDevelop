@@ -44,7 +44,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		public void LoadOrCreateReport()
 		{
-			string baseClassName = String.Empty;
+			//string baseClassName = String.Empty;
 
 			Application.UseWaitCursor = true;
 			Application.DoEvents();

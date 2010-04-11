@@ -158,6 +158,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}
 		
+		
 		protected Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
 			container.Location = new Point (leftPos,container.Location.Y);	

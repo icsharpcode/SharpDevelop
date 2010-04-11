@@ -245,7 +245,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			System.Console.WriteLine("RootDesigner:OnComponentChanged {0} from {1} to {2}",ce.Component.ToString(),ce.OldValue,ce.NewValue);
 			
-			MemberDescriptor m = ce.Member;
+//			MemberDescriptor m = ce.Member;
 			if (ce.Member.Name == "Name") {
 				AbstractItem item = ce.Component as AbstractItem;
 				if (item != null) {

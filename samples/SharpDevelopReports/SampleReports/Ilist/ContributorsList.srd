@@ -86,7 +86,7 @@
                     <Size>661, 42</Size>
                     <ScaleImageToSize>False</ScaleImageToSize>
                     <BackColor>Window</BackColor>
-                    <RelativeFileName>..\Logos\Bannerbeige2.gif</RelativeFileName>
+                    <RelativeFileName>..\..\..\..\..\..\SharpDevelop3.0_CHECKOUT\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</RelativeFileName>
                     <ImageFileName>D:\SharpDevelop3.0_CHECKOUT\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
                 </BaseImageItem>
                 <BaseLineItem>
@@ -133,13 +133,9 @@
             <BackColor>Window</BackColor>
             <Items>
                 <BaseRowItem>
-                    <AlternateBackColor />
-                    <FrameColor>WindowFrame</FrameColor>
-                    <Name>Row</Name>
                     <Location>3, 10</Location>
-                    <Visible>True</Visible>
-                    <Size>699, 40</Size>
-                    <Padding>5, 5, 5, 5</Padding>
+                    <AlternateBackColor />
+                    <Name>Row</Name>
                     <Items>
                         <BaseDataItem>
                             <DataType>System.String</DataType>
@@ -200,9 +196,12 @@
                             <FrameColor>WindowFrame</FrameColor>
                         </BaseDataItem>
                     </Items>
-                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
-                    <BackColor>White</BackColor>
                     <DrawBorder>False</DrawBorder>
+                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+                    <FrameColor>WindowFrame</FrameColor>
+                    <Size>699, 40</Size>
+                    <BackColor>White</BackColor>
+                    <Visible>True</Visible>
                     <ForeColor>ControlText</ForeColor>
                 </BaseRowItem>
             </Items>

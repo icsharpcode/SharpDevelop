@@ -65,7 +65,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			BaseLine baseLine = null;
 			baseLine = new BaseLine (lineStyle.ForeColor,lineStyle.DashStyle,lineStyle.Thickness);
-			LineShape ls = lineStyle.Shape as LineShape;;
 			
 			Point from = new Point(lineStyle.DisplayRectangle.Left +  lineStyle.From.X,
 			                       lineStyle.DisplayRectangle.Top + lineStyle.From.Y);
@@ -79,8 +78,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		
-		private void PdfLineDrawer (PdfWriter pdfWriter,
-		                            ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
+		private void PdfLineDrawer (PdfWriter pdfWriter)                    
 		{
 			LineDecorator lineStyle = base.StyleDecorator as LineDecorator;
 			if (lineStyle != null) {
@@ -90,14 +88,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 				Point from = new Point ((int)UnitConverter.FromPixel(l),
 				                        (int)r.Top - (int)UnitConverter.FromPixel(lineStyle.From.Y));
 				                        
-//				Point from = new Point((int)r.Left +  (int)UnitConverter.FromPixel(lineStyle.From.X),
-//				                       (int)r.Top - (int)UnitConverter.FromPixel(lineStyle.From.Y));
+
 				l = lineStyle.DisplayRectangle.Left + lineStyle.To.X;
 				
 				Point to = new Point ((int)UnitConverter.FromPixel(l),
 				                        (int)r.Top - (int)UnitConverter.FromPixel(lineStyle.To.Y));
-//				Point to = new Point((int)r.Left +  lineStyle.To.X,
-//				                     (int)r.Top - lineStyle.To.Y);
+
 				lineStyle.Shape.DrawShape(base.PdfWriter.DirectContent,
 				                          new BaseLine (lineStyle.ForeColor,lineStyle.DashStyle,lineStyle.Thickness),
 				                          lineStyle,
@@ -112,7 +108,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.DrawItem(pdfWriter, converter);
 			ILineDecorator lineDecorator = base.StyleDecorator as LineDecorator;
 			if (lineDecorator != null) {
-				PdfLineDrawer (pdfWriter,converter);
+				PdfLineDrawer (pdfWriter);
 			}
 			else  {
 				IGraphicStyleDecorator style = base.StyleDecorator as GraphicStyleDecorator;

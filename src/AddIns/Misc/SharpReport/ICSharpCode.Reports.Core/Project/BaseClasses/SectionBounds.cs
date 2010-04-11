@@ -41,16 +41,13 @@ namespace ICSharpCode.Reports.Core{
 		bool firstPage;
 		bool landscape;
 		int gap = 1;
-		
 		Rectangle printableArea;
-		ReportSettings settings;
 		
 		#region Constructor
 	
 		
 		public SectionBounds (ReportSettings settings,bool firstPage)
 		{
-			this.settings = settings;
 			this.firstPage = firstPage;
 			this.landscape = settings.Landscape;
 			this.printableArea = new Rectangle(settings.LeftMargin,settings.TopMargin,

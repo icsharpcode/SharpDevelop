@@ -50,7 +50,7 @@ namespace ICSharpCode.Reports.Addin
 		private XmlView xmlView;
 		private ReportPreview preview;
 		private ReportViewerSecondaryView reportViewer;
-		private Encoding defaultEncoding = Encoding.UTF8;
+//		private Encoding defaultEncoding = Encoding.UTF8;
 		
 		#region Constructor
 		
@@ -332,7 +332,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		#region Transaction
 		
-		bool shouldUpdateSelectableObjects = false;
+		bool shouldUpdateSelectableObjects;
 		
 		void TransactionClose(object sender, DesignerTransactionCloseEventArgs e)
 		{

@@ -26,7 +26,6 @@ namespace ICSharpCode.Reports.Addin
 	public class ReportDesignerGenerator:IDesignerGenerator
 	{
 		private ReportDesignerView viewContent;
-		private StringWriter generated;
 		
 		public ReportDesignerGenerator()
 		{
@@ -72,7 +71,6 @@ namespace ICSharpCode.Reports.Addin
 				StringWriterWithEncoding writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
 				XmlTextWriter xml = XmlHelper.CreatePropperWriter(writer);
 				this.InternalMergeFormChanges(xml);
-				this.generated = writer;
 				viewContent.ReportFileContent = writer.ToString();
 		}
 		
