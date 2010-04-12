@@ -55,8 +55,9 @@
 		<Property Id="NETFRAMEWORK40FULLVERSION" Secure="yes">
 			<RegistrySearch Id="NetFramework40FullVersion" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Version" Type="raw" />
 		</Property>
-		<Condition Message="This setup requires the .NET 4.0 Full Framework RC to be installed.">
-			Installed OR (NETFRAMEWORK40FULL AND NETFRAMEWORK40FULLVERSION = "4.0.30128")
+		<!-- we could check NETFRAMEWORK40FULLVERSION optionally if we want to force the user to install a specific version -->
+		<Condition Message="This setup requires the .NET 4.0 Full Framework to be installed.">
+			Installed OR NETFRAMEWORK40FULL
 		</Condition>
 		
 		<!--
@@ -64,7 +65,7 @@
 			We only need the VC9 CRT, but unfortunately I couldn't find any way to detect if that is installed.
 			So instead, we conservatively check that the whole C++ runtime is installed.
 			However, we know that .NET 3.5 installs the C++ runtime parts we need (.NET 4.0 doesn't), so we'll check for
-			VCPP2008RUNTIME OR DOTNET35.
+			VCPP2008RUNTIME OR NETFRAMEWORK35.
  		-->
 		<Property Id="VCPP2008RUNTIME" Secure="yes">
 			<RegistrySearch Id="VCpp2008Runtime" Root="HKLM" Key="SOFTWARE\Microsoft\DevDiv\VC\Servicing\9.0" Name="SP" Type="raw" />

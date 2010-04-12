@@ -118,8 +118,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		static bool CheckEnvironment()
 		{
-			if (Environment.Version < new Version(4, 0, 30128)) {
-				MessageBox.Show("This version of SharpDevelop requires .NET 4 RC. You are using: " + Environment.Version);
+			// Safety check: our setup already checks that .NET 4 is installed, but we manually check the .NET version in case SharpDevelop is
+			// used on another machine than it was installed on (e.g. "SharpDevelop on USB stick")
+			if (Environment.Version < new Version(4, 0, 30319)) {
+				MessageBox.Show("This version of SharpDevelop requires .NET 4.0. You are using: " + Environment.Version, "SharpDevelop");
 				return false;
 			}
 			return true;
