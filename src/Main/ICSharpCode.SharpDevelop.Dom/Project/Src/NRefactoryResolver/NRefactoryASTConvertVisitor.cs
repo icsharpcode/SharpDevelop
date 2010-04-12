@@ -549,11 +549,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass currentClass = GetCurrentClass();
 			
 			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, null, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, currentClass);
-			method.IsExtensionMethod = methodDeclaration.IsExtensionMethod;
 			method.Documentation = GetDocumentation(region.BeginLine, methodDeclaration.Attributes);
 			ConvertTemplates(methodDeclaration.Templates, method);
 			method.ReturnType = CreateReturnType(methodDeclaration.TypeReference, method, TypeVisitor.ReturnTypeOptions.None);
 			ConvertAttributes(methodDeclaration, method);
+			method.IsExtensionMethod = methodDeclaration.IsExtensionMethod
+				|| method.Attributes.Any(att => att.AttributeType != null && att.AttributeType.FullyQualifiedName == "System.Runtime.CompilerServices.ExtensionAttribute");
 			if (methodDeclaration.Parameters.Count > 0) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					method.Parameters.Add(CreateParameter(par, method));

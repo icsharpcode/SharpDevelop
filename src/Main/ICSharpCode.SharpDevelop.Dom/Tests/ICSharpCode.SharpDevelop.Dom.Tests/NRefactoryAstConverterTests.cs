@@ -18,11 +18,14 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 	[TestFixture]
 	public class NRefactoryAstConverterTests
 	{
-		ICompilationUnit Parse(string code, SupportedLanguage language, bool referenceMscorlib)
+		ICompilationUnit Parse(string code, SupportedLanguage language, bool referenceMscorlib, params IProjectContent[] references)
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
 			if (referenceMscorlib) {
 				pc.AddReferencedContent(SharedProjectContentRegistryForTests.Instance.Mscorlib);
+			}
+			foreach (var reference in references) {
+				pc.AddReferencedContent(reference);
 			}
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			using (IParser p = ParserFactory.CreateParser(language, new StringReader(code))) {
@@ -33,6 +36,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 				visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			}
 			return visitor.Cu;
+		}
+		
+		ICompilationUnit Parse(string code, SupportedLanguage language, bool referenceMscorlib)
+		{
+			return Parse(code, language, referenceMscorlib, new IProjectContent[0]);
 		}
 		
 		ICompilationUnit Parse(string code, SupportedLanguage language)
@@ -304,6 +312,27 @@ class Outer<T1> where T1 : IDisposable {
 			
 			Assert.AreEqual(0, cu.Classes[0].Methods.Count);
 			Assert.IsFalse(cu.Classes[0].DefaultReturnType.GetMethods().Any(m => m.IsConstructor));
+		}
+		
+		[Test]
+		public void VBNetIsExtensionMethodTest()
+		{
+			string code = @"Imports System.Runtime.CompilerServices
+
+Module StringExtensions
+	<Extension> _
+	Sub Print(s As String)
+	End Sub
+End Module";
+			ICompilationUnit cu = Parse(code, SupportedLanguage.VBNet, true,
+			                            SharedProjectContentRegistryForTests.Instance.GetProjectContentForReference("System.Core", "System.Core"));
+			Assert.Greater(cu.Classes.Count, 0);
+			Assert.AreEqual("StringExtensions", cu.Classes[0].Name);
+			Assert.AreEqual(ClassType.Module, cu.Classes[0].ClassType);
+			Assert.Greater(cu.Classes[0].Methods.Count, 0);
+			
+			Assert.IsTrue(cu.Classes[0].Methods[0].IsExtensionMethod);
+			Assert.AreEqual("Print", cu.Classes[0].Methods[0].Name);
 		}
 	}
 }
