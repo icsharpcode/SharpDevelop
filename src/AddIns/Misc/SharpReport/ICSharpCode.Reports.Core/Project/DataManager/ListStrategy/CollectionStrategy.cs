@@ -257,8 +257,11 @@ namespace ICSharpCode.Reports.Core {
 				BaseDataItem baseDataItem = item as BaseDataItem;
 				if (baseDataItem != null) {
 					PropertyDescriptor p = this.listProperties.Find(baseDataItem.ColumnName, true);
-					baseDataItem.DBValue = "";
-					baseDataItem.DBValue = p.GetValue(this.Current).ToString();
+					if (p != null) {
+						baseDataItem.DBValue = p.GetValue(this.Current).ToString();
+					} else {
+						baseDataItem.DBValue = string.Format("<{0}> missing!", baseDataItem.ColumnName);
+					}
 					return;
 				}
 				

@@ -83,6 +83,22 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			                "CurrentRow should be -1");
 		}
 		
+		
+		[Test]
+		public void DataNavigator_Return_ErrMessage_If_ColumnName_NotExist ()
+		{
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection as System.Collections.IList,new ReportSettings());
+			IDataNavigator dataNav = dm.GetNavigator;
+			BaseDataItem item = new BaseDataItem();
+			item.ColumnName = "ColumnNotExist";
+			var items = new ReportItemCollection();
+			items.Add(item);
+			dataNav.Fill(items);
+			string str = "<" + item.ColumnName +">";
+			Assert.That(item.DBValue.Contains(str));
+		}
+		
+		
 		#region Standart Enumerator
 		[Test]
 		public void EnumeratorStartFromBegin ()
