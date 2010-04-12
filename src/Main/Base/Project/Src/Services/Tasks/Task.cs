@@ -22,13 +22,14 @@ namespace ICSharpCode.SharpDevelop
 	
 	public class Task
 	{
-		public const string DefaultContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/TaskContextMenu";
+		[Obsolete("Default path now depends on parent pad, use ErrorListPad.DefaultContextMenuAddInTreeEntry instead.")]
+		public const string DefaultContextMenuAddInTreeEntry = Gui.ErrorListPad.DefaultContextMenuAddInTreeEntry;
 		
 		string   description;
 		TaskType type;
 		PermanentAnchor position;
 		bool hasLocation;
-		string contextMenuAddInTreeEntry = DefaultContextMenuAddInTreeEntry;
+		string contextMenuAddInTreeEntry;
 		object tag;
 
 		public override string ToString()

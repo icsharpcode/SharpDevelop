@@ -4,7 +4,6 @@
         <ReportSettings>
             <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
             <DataModel>FormSheet</DataModel>
-            <FileName>D:\SharpDevelop3.0_CHECKOUT\SharpDevelop\samples\SharpDevelopReports\SampleReports\FormSheet\JCA.srd</FileName>
             <RightMargin>50</RightMargin>
             <UseStandardPrinter>True</UseStandardPrinter>
             <SortColumnCollection />
@@ -43,7 +42,7 @@
                     <ScaleImageToSize>False</ScaleImageToSize>
                     <BackColor>Window</BackColor>
                     <RelativeFileName>..\..\Logos\Bannerbeige2.gif</RelativeFileName>
-                    <ImageFileName>D:\SharpDevelop3.0_CHECKOUT\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
+                    <ImageFileName>D:\SharpDevelop3.0_WorkingCopy\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
                 </BaseImageItem>
             </Items>
             <Location>50, 50</Location>

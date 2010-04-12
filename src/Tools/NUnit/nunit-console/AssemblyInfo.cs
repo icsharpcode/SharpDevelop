@@ -1,8 +1,8 @@
 ﻿// ****************************************************************
 // This is free software licensed under the NUnit license. You
 // may obtain a copy of the license as well as information regarding
-// copyright ownership at http://nunit.org/?p=license&r=2.4.
-// 
+// copyright ownership at http://nunit.org.
+// ****************************************************************
 
 using System.Reflection;
 
@@ -36,5 +36,5 @@ using System.Reflection;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("2.5.3")]
-[assembly: AssemblyInformationalVersion("2.5.3")]
+[assembly: AssemblyVersion("2.5.4")]
+[assembly: AssemblyInformationalVersion("2.5.4")]

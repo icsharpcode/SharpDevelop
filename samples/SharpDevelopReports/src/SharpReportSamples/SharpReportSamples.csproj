@@ -43,6 +43,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
@@ -51,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContributorsList.cs" />
+    <Compile Include="EventLogger.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -61,15 +63,9 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\SampleReports\EventLogger\Error.png">
-      <Link>Resources\Error.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\SampleReports\EventLogger\Info.png">
-      <Link>Resources\Info.png</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\SampleReports\EventLogger\Warning.png">
-      <Link>Resources\Warning.png</Link>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\error.ico" />
+    <EmbeddedResource Include="Resources\Info.png" />
+    <EmbeddedResource Include="Resources\warning.ico" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources" />

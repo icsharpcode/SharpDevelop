@@ -1,5 +1,5 @@
 ﻿// SharpDevelop samples
-// Copyright (c) 2008, AlphaSierraPapa
+// Copyright (c) 2010, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -32,6 +32,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpSnippetCompiler.Core;
@@ -54,6 +55,10 @@ namespace ICSharpCode.SharpSnippetCompiler
 			SharpSnippetCompilerManager.Init();
 		
 			mainForm = new MainForm();
+			
+			// Force creation of the debugger before workbench is created.
+			IDebugger debugger = DebuggerService.CurrentDebugger;
+			
 			Workbench workbench = new Workbench(mainForm);
 			WorkbenchSingleton.InitializeWorkbench(workbench, new WorkbenchLayout());
 			PadDescriptor errorList = workbench.GetPad(typeof(ErrorListPad));

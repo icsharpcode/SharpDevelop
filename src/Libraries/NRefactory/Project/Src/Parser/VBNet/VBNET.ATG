@@ -903,6 +903,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			HandlesClause<out handlesClause>
 		)
 	]
+	(. Location endLocation = t.EndLocation; .)
 	(
 		/* abstract methods without a body */
 		IF(IsMustOverride(m))
@@ -912,7 +913,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					Name = name, Modifier = m.Modifier, TypeReference = type,
 					Parameters = p, Attributes = attributes,
 					StartLocation = m.GetDeclarationLocation(startPos),
-					EndLocation   = t.EndLocation,
+					EndLocation   = endLocation,
 					HandlesClause = handlesClause,
 					Templates     = templates,
 					InterfaceImplementations = implementsClause
@@ -930,7 +931,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					Name = name, Modifier = m.Modifier, TypeReference = type,
 					Parameters = p, Attributes = attributes,
 					StartLocation = m.GetDeclarationLocation(startPos),
-					EndLocation   = t.EndLocation,
+					EndLocation   = endLocation,
 					Templates     = templates,
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause

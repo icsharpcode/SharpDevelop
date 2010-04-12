@@ -41,6 +41,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ColumnHeader path        = new ColumnHeader();
 		ToolTip taskToolTip = new ToolTip();
 
+		public string DefaultContextMenuAddInTreeEntry { get; set; }
+
 		public Task SelectedTask {
 			get {
 				if (this.FocusedItem==null) {
@@ -243,11 +245,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 					for (int i = 1; i < this.SelectedItems.Count; i++) {
 						string entry2 = ((Task)this.SelectedItems[i].Tag).ContextMenuAddInTreeEntry;
 						if (entry2 != entry) {
-							entry = Task.DefaultContextMenuAddInTreeEntry;
+							entry = null;
 							break;
 						}
 					}
-					MenuService.ShowContextMenu(this, entry, this, pos.X, pos.Y);
+					if (entry == null)
+						entry = DefaultContextMenuAddInTreeEntry;
+					if (entry != null)
+						MenuService.ShowContextMenu(this, entry, this, pos.X, pos.Y);
 				}
 			}
 			base.WndProc(ref m);

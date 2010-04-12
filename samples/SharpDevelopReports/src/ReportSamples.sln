@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-# SharpDevelop 3.2.0.5405
+# SharpDevelop 3.2.0.5633
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpReportSamples", "SharpReportSamples\SharpReportSamples.csproj", "{BB5D34DA-3561-48B1-894A-46765C2A18C1}"
 EndProject
 Global

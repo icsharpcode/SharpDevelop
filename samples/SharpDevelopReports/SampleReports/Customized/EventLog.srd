@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReportModel>
+    <ReportSettings>
+        <ReportSettings>
+            <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+            <DataModel>PushData</DataModel>
+            <RightMargin>50</RightMargin>
+            <UseStandardPrinter>True</UseStandardPrinter>
+            <SortColumnCollection />
+            <AvailableFieldsCollection />
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <LeftMargin>50</LeftMargin>
+            <PageSize>827, 1169</PageSize>
+            <Padding>5, 5, 5, 5</Padding>
+            <BottomMargin>50</BottomMargin>
+            <CommandType>Text</CommandType>
+            <ParameterCollection />
+            <Landscape>False</Landscape>
+            <ReportName>Customized</ReportName>
+            <TopMargin>50</TopMargin>
+            <GroupColumnsCollection />
+            <GraphicsUnit>Pixel</GraphicsUnit>
+            <CommandText />
+            <ReportType>DataReport</ReportType>
+            <ConnectionString />
+        </ReportSettings>
+    </ReportSettings>
+    <SectionCollection>
+        <BaseSection>
+            <Size>727, 91</Size>
+            <Name>ReportHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items>
+                <BaseImageItem>
+                    <ImageSource>File</ImageSource>
+                    <Location>83, 13</Location>
+                    <Name>BaseImageItem2</Name>
+                    <Size>568, 36</Size>
+                    <ScaleImageToSize>False</ScaleImageToSize>
+                    <BackColor>White</BackColor>
+                    <RelativeFileName>..\Logos\Bannerbeige2.gif</RelativeFileName>
+                    <ImageFileName>D:\SharpDevelop3.0_WorkingCopy\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos\Bannerbeige2.gif</ImageFileName>
+                </BaseImageItem>
+                <BaseTextItem>
+                    <BackColor>Silver</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>System - Eventlog</Text>
+                    <Location>83, 55</Location>
+                    <ContentAlignment>TopCenter</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 15pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>BaseTextItem2147483643</Name>
+                    <FrameColor>White</FrameColor>
+                    <Size>568, 33</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+            </Items>
+            <Location>50, 50</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportPageHeader</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items>
+                <BaseRowItem>
+                    <Location>12, 3</Location>
+                    <AlternateBackColor />
+                    <Name>BaseRowItem2</Name>
+                    <Items>
+                        <BaseTextItem>
+                            <BackColor>White</BackColor>
+                            <CanShrink>False</CanShrink>
+                            <StringTrimming>None</StringTrimming>
+                            <Text>Image</Text>
+                            <Location>20, 7</Location>
+                            <ContentAlignment>TopCenter</ContentAlignment>
+                            <Visible>True</Visible>
+                            <DrawBorder>False</DrawBorder>
+                            <Font>Microsoft Sans Serif, 12pt</Font>
+                            <CanGrow>False</CanGrow>
+                            <FormatString />
+                            <Name>BaseTextItem2147483642</Name>
+                            <FrameColor>White</FrameColor>
+                            <Size>100, 20</Size>
+                            <ForeColor>ControlText</ForeColor>
+                        </BaseTextItem>
+                        <BaseTextItem>
+                            <BackColor>White</BackColor>
+                            <CanShrink>False</CanShrink>
+                            <StringTrimming>None</StringTrimming>
+                            <Text>EntryType</Text>
+                            <Location>135, 7</Location>
+                            <ContentAlignment>TopCenter</ContentAlignment>
+                            <Visible>True</Visible>
+                            <DrawBorder>False</DrawBorder>
+                            <Font>Microsoft Sans Serif, 12pt</Font>
+                            <CanGrow>False</CanGrow>
+                            <FormatString />
+                            <Name>BaseTextItem2147483644</Name>
+                            <FrameColor>White</FrameColor>
+                            <Size>100, 20</Size>
+                            <ForeColor>ControlText</ForeColor>
+                        </BaseTextItem>
+                        <BaseTextItem>
+                            <BackColor>White</BackColor>
+                            <CanShrink>False</CanShrink>
+                            <StringTrimming>None</StringTrimming>
+                            <Text>DateWritten</Text>
+                            <Location>261, 7</Location>
+                            <ContentAlignment>TopCenter</ContentAlignment>
+                            <Visible>True</Visible>
+                            <DrawBorder>False</DrawBorder>
+                            <Font>Microsoft Sans Serif, 12pt</Font>
+                            <CanGrow>False</CanGrow>
+                            <FormatString />
+                            <Name>BaseTextItem2147483645</Name>
+                            <FrameColor>White</FrameColor>
+                            <Size>100, 20</Size>
+                            <ForeColor>ControlText</ForeColor>
+                        </BaseTextItem>
+                        <BaseTextItem>
+                            <BackColor>White</BackColor>
+                            <CanShrink>False</CanShrink>
+                            <StringTrimming>None</StringTrimming>
+                            <Text>Message</Text>
+                            <Location>391, 7</Location>
+                            <ContentAlignment>TopLeft</ContentAlignment>
+                            <Visible>True</Visible>
+                            <DrawBorder>False</DrawBorder>
+                            <Font>Microsoft Sans Serif, 12pt</Font>
+                            <CanGrow>False</CanGrow>
+                            <FormatString />
+                            <Name>BaseTextItem2147483646</Name>
+                            <FrameColor>White</FrameColor>
+                            <Size>248, 20</Size>
+                            <ForeColor>ControlText</ForeColor>
+                        </BaseTextItem>
+                    </Items>
+                    <DrawBorder>False</DrawBorder>
+                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+                    <FrameColor>White</FrameColor>
+                    <Size>697, 44</Size>
+                    <BackColor>White</BackColor>
+                    <Visible>True</Visible>
+                    <ForeColor>Black</ForeColor>
+                </BaseRowItem>
+            </Items>
+            <Location>50, 156</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 90</Size>
+            <Name>ReportDetail</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items>
+                <BaseRowItem>
+                    <Location>12, 14</Location>
+                    <AlternateBackColor />
+                    <Name>BaseRowItem1</Name>
+                    <Items>
+                        <BaseImageItem>
+                            <ImageSource>Database</ImageSource>
+                            <Location>20, 7</Location>
+                            <Name>BaseImageItem1</Name>
+                            <Size>30, 30</Size>
+                            <ScaleImageToSize>False</ScaleImageToSize>
+                            <BackColor>White</BackColor>
+                            <ColumnName>Image</ColumnName>
+                        </BaseImageItem>
+                        <BaseDataItem>
+                            <Text>EntryType</Text>
+                            <Font>Microsoft Sans Serif, 8.25pt</Font>
+                            <Location>135, 7</Location>
+                            <CanGrow>False</CanGrow>
+                            <ForeColor>Black</ForeColor>
+                            <StringTrimming>None</StringTrimming>
+                            <ColumnName>EntryType</ColumnName>
+                            <DrawBorder>False</DrawBorder>
+                            <CanShrink>False</CanShrink>
+                            <ContentAlignment>TopLeft</ContentAlignment>
+                            <BackColor>White</BackColor>
+                            <FormatString />
+                            <Name>EntryType</Name>
+                            <Visible>True</Visible>
+                            <Size>100, 20</Size>
+                            <FrameColor>White</FrameColor>
+                        </BaseDataItem>
+                        <BaseDataItem>
+                            <Text>Message</Text>
+                            <Font>Microsoft Sans Serif, 8.25pt</Font>
+                            <Location>391, 7</Location>
+                            <CanGrow>False</CanGrow>
+                            <ForeColor>Black</ForeColor>
+                            <StringTrimming>None</StringTrimming>
+                            <ColumnName>Message</ColumnName>
+                            <DrawBorder>False</DrawBorder>
+                            <CanShrink>False</CanShrink>
+                            <ContentAlignment>TopLeft</ContentAlignment>
+                            <BackColor>White</BackColor>
+                            <FormatString />
+                            <Name>Message</Name>
+                            <Visible>True</Visible>
+                            <Size>248, 20</Size>
+                            <FrameColor>White</FrameColor>
+                        </BaseDataItem>
+                        <BaseDataItem>
+                            <Text>TimeWritten</Text>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <Location>261, 7</Location>
+                            <CanGrow>False</CanGrow>
+                            <ForeColor>Black</ForeColor>
+                            <StringTrimming>None</StringTrimming>
+                            <ColumnName>TimeWritten</ColumnName>
+                            <DrawBorder>False</DrawBorder>
+                            <CanShrink>False</CanShrink>
+                            <ContentAlignment>TopLeft</ContentAlignment>
+                            <BackColor>White</BackColor>
+                            <FormatString />
+                            <Name>BaseDataItem1</Name>
+                            <Visible>True</Visible>
+                            <Size>100, 20</Size>
+                            <FrameColor>White</FrameColor>
+                        </BaseDataItem>
+                    </Items>
+                    <DrawBorder>False</DrawBorder>
+                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+                    <FrameColor>White</FrameColor>
+                    <Size>697, 63</Size>
+                    <BackColor>White</BackColor>
+                    <Visible>True</Visible>
+                    <ForeColor>Black</ForeColor>
+                </BaseRowItem>
+            </Items>
+            <Location>50, 231</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportPageFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items>
+                <BaseTextItem>
+                    <BackColor>White</BackColor>
+                    <CanShrink>False</CanShrink>
+                    <StringTrimming>None</StringTrimming>
+                    <Text>='Page (' + Globals!PageNumber + ') of ( ' + Globals!TotalPages +  ' ) Pages'</Text>
+                    <Location>403, 21</Location>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <Visible>True</Visible>
+                    <DrawBorder>False</DrawBorder>
+                    <Font>Microsoft Sans Serif, 8.25pt</Font>
+                    <CanGrow>False</CanGrow>
+                    <FormatString />
+                    <Name>='Page ' + Global!PageNumber + 'of ' + Global!Pages + 'Pages'</Name>
+                    <FrameColor>White</FrameColor>
+                    <Size>166, 20</Size>
+                    <ForeColor>ControlText</ForeColor>
+                </BaseTextItem>
+            </Items>
+            <Location>50, 336</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+        <BaseSection>
+            <Size>727, 60</Size>
+            <Name>ReportFooter</Name>
+            <PageBreakAfter>False</PageBreakAfter>
+            <SectionMargin>0</SectionMargin>
+            <SectionOffset>0</SectionOffset>
+            <BackColor>White</BackColor>
+            <Items />
+            <Location>50, 411</Location>
+            <DrawBorder>False</DrawBorder>
+        </BaseSection>
+    </SectionCollection>
+</ReportModel>

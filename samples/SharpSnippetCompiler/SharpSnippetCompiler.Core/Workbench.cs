@@ -91,7 +91,8 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		
 		public void ShowView(IViewContent content)
 		{
-			throw new NotImplementedException();
+			views.Add(content);
+			OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
 		public void ShowPad(PadDescriptor content)
@@ -121,7 +122,11 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		
 		public void CloseContent(IViewContent content)
 		{
-			throw new NotImplementedException();
+			if (views.Contains(content)) {
+				views.Remove(content);
+			}
+			
+			content.Dispose();
 		}
 		
 		public void CloseAllViews()

@@ -850,13 +850,13 @@
 		
 		<ToolbarItem id      = "Compile"
 		             icon    = "Icons.16x16.BuildCombine"
-		             tooltip = "${res:XML.MainMenu.RunMenu.Compile.Description}"
+		             tooltip = "${res:XML.MainMenu.RunMenu.BuildSolution.Description}"
 		             class   = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
 		
 		<ToolbarItem id      = "BuildProject"
 		             icon    = "Icons.16x16.BuildCurrentSelectedProject"
 		             tooltip = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
-		             class   = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
 		
 		<ToolbarItem id = "DebuggerSeparator" type = "Separator"  />
 		
@@ -2072,6 +2072,14 @@
 		<ToolbarItem id = "SelectScope"
 		             class = "ICSharpCode.SharpDevelop.Gui.SelectScopeCommand"
 		             type = "ComboBox"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/TaskList/TaskContextMenu">
+		<MenuItem id = "Copy"
+		          label = "${res:XML.MainMenu.EditMenu.Copy}"
+		          type = "Item"
+		          icon = "Icons.16x16.CopyIcon"
+		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/CommonConsole/ToolBar">
