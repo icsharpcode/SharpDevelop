@@ -4,10 +4,24 @@
         <name>IronPython.Modules</name>
     </assembly>
     <members>
-        <member name="M:IronPython.Modules.ComplexMath.GetImag(Microsoft.Scripting.Math.Complex64)">
+        <member name="M:IronPython.Modules.PythonCodecs.charmap_build(System.String)">
             <summary>
-            For reasons unknown, allowing the Imag property on Complex64 to be optimized seems to mangle
-            positive vs. negative values of zero. Calling this method avoids that.
+            Creates an optimized encoding mapping that can be consumed by an optimized version of charmap_encode.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonCodecs.charmap_decode(System.String,System.String,System.String)">
+            <summary>
+            Decodes the input string using the provided string mapping.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonCodecs.charmap_encode(System.String,System.String,IronPython.Modules.PythonCodecs.EncodingMap)">
+            <summary>
+            Encodes the input string with the specified optimized encoding map.
+            </summary>
+        </member>
+        <member name="T:IronPython.Modules.PythonCodecs.EncodingMap">
+            <summary>
+            Optimied encoding mapping that can be consumed by charmap_encode.
             </summary>
         </member>
         <member name="T:IronPython.Modules.ModuleOps">
@@ -831,12 +845,12 @@
             Creates a new CFuncPtr with the specfied address.
             </summary>
         </member>
-        <member name="M:IronPython.Modules.CTypes._CFuncPtr.#ctor(Microsoft.Scripting.Math.BigInteger)">
+        <member name="M:IronPython.Modules.CTypes._CFuncPtr.#ctor(System.Numerics.BigInteger)">
             <summary>
             Creates a new CFuncPtr with the specfied address.
             </summary>
         </member>
-        <member name="M:IronPython.Modules.CTypes._CFuncPtr.Meta.AddKeepAlives(IronPython.Modules.CTypes._CFuncPtr.Meta.ArgumentMarshaller[],System.Collections.Generic.List{Microsoft.Scripting.Ast.Expression})">
+        <member name="M:IronPython.Modules.CTypes._CFuncPtr.Meta.AddKeepAlives(IronPython.Modules.CTypes._CFuncPtr.Meta.ArgumentMarshaller[],System.Collections.Generic.List{System.Linq.Expressions.Expression})">
             <summary>
             we need to keep alive any methods which have arguments for the duration of the
             call.  Otherwise they could be collected on the finalizer thread before we come back.
@@ -1106,6 +1120,12 @@
         <member name="P:IronPython.Modules.FunctionTools.partial.__dict__">
             <summary>
             Gets or sets the dictionary used for storing extra attributes on the partial object.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonSsl.ReadInt(System.Byte[],System.Int32@)">
+            <summary>
+            BER encoding of an integer value is the number of bytes
+            required to represent the integer followed by the bytes
             </summary>
         </member>
         <member name="M:IronPython.Modules.PythonWeakRef.ref.__hash__(IronPython.Runtime.CodeContext)">

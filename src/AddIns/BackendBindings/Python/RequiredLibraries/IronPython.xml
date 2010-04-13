@@ -4,9 +4,15 @@
         <name>IronPython</name>
     </assembly>
     <members>
-        <member name="M:IronPython.Compiler.Ast.Node.AddFrame(Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Compiler.Ast.Node.AddFrame(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
             <summary>
             Creates a method frame for tracking purposes and enforces recursion
+            </summary>
+        </member>
+        <member name="M:IronPython.Compiler.Ast.Node.RemoveFrame(System.Linq.Expressions.Expression)">
+            <summary>
+            Removes the frames from generated code for when we're compiling the tracing delegate
+            which will track the frames it's self.
             </summary>
         </member>
         <member name="P:IronPython.Compiler.Ast.Node.CanThrow">
@@ -59,7 +65,7 @@
             Gets the expression for the actual updating of the line number for stack traces to be available
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.Ast.ScopeStatement.WrapScopeStatements(Microsoft.Scripting.Ast.Expression,System.Boolean)">
+        <member name="M:IronPython.Compiler.Ast.ScopeStatement.WrapScopeStatements(System.Linq.Expressions.Expression,System.Boolean)">
             <summary>
             Wraps the body of a statement which should result in a frame being available during
             exception handling.  This ensures the line number is updated as the stack is unwound.
@@ -511,7 +517,7 @@
             Reduces the closure cell to a read of the value stored in the cell.
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.ClosureExpression.Assign(Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Compiler.ClosureExpression.Assign(System.Linq.Expressions.Expression)">
             <summary>
             Assigns a value to the closure cell.
             </summary>
@@ -551,13 +557,13 @@
             closure, so they survive yields.
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.GeneratorRewriter.ToTemp(Microsoft.Scripting.Ast.Expression@)">
+        <member name="M:IronPython.Compiler.GeneratorRewriter.ToTemp(System.Linq.Expressions.Expression@)">
             <summary>
             Spills the right side into a temp, and replaces it with its temp.
             Returns the expression that initializes the temp.
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.GeneratorRewriter.MakeAssign(Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Compiler.GeneratorRewriter.MakeAssign(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
             <summary>
             Makes an assignment to this variable. Pushes the assignment as far
             into the right side as possible, to allow jumps into it.
@@ -822,13 +828,13 @@
             Resets the current summary of profile data back to zero
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Profiler.AddProfiling(Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.ParameterExpression,System.String,System.Boolean)">
+        <member name="M:IronPython.Runtime.Profiler.AddProfiling(System.Linq.Expressions.Expression,System.Linq.Expressions.ParameterExpression,System.String,System.Boolean)">
             <summary>
             Adds profiling calls to a Python method.
             Calculates both the time spent only in this method
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Profiler.AddProfiling(Microsoft.Scripting.Ast.Expression,System.Reflection.MethodBase)">
+        <member name="M:IronPython.Runtime.Profiler.AddProfiling(System.Linq.Expressions.Expression,System.Reflection.MethodBase)">
             <summary>
             Wraps a call to a MethodInfo with profiling capture for that MethodInfo
             </summary>
@@ -1017,14 +1023,14 @@
             The body of the optional finally associated with this try. NULL if there is no finally block.
             </summary>
         </member>
-        <member name="M:IronPython.Compiler.Ast.TryStatement.TransformHandlers(Microsoft.Scripting.Ast.ParameterExpression)">
+        <member name="M:IronPython.Compiler.Ast.TryStatement.TransformHandlers(System.Linq.Expressions.ParameterExpression)">
             <summary>
             Transform multiple python except handlers for a try block into a single catch body.
             </summary>
             <param name="exception">The variable for the exception in the catch block.</param>
             <returns>Null if there are no except handlers. Else the statement to go inside the catch handler</returns>
         </member>
-        <member name="M:IronPython.Compiler.Ast.TryStatement.GetTracebackHeader(IronPython.Compiler.Ast.Statement,Microsoft.Scripting.Ast.ParameterExpression,Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Compiler.Ast.TryStatement.GetTracebackHeader(IronPython.Compiler.Ast.Statement,System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.Expression)">
             <summary>
             Surrounds the body of an except block w/ the appropriate code for maintaining the traceback.
             </summary>
@@ -1196,7 +1202,7 @@
             Provides support for emitting warnings when built in methods are invoked at runtime.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.Binders.Convert(Microsoft.Scripting.Ast.Expression,IronPython.Runtime.PythonContext,System.Type,Microsoft.Scripting.Actions.ConversionResultKind,Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Runtime.Binding.Binders.Convert(System.Linq.Expressions.Expression,IronPython.Runtime.PythonContext,System.Type,Microsoft.Scripting.Actions.ConversionResultKind,System.Linq.Expressions.Expression)">
             <summary>
             Backwards compatible Convert for the old sites that need to flow CodeContext
             </summary>
@@ -1268,7 +1274,7 @@
             for user defined objects.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.PythonProtocol.GetConvertByLengthBody(IronPython.Runtime.PythonContext,Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Runtime.Binding.PythonProtocol.GetConvertByLengthBody(IronPython.Runtime.PythonContext,System.Linq.Expressions.Expression)">
             <summary>
             Used for conversions to bool
             </summary>
@@ -1292,7 +1298,7 @@
             is ultimately returned (e.g. to turn __cmp__ into a bool after a comparison)
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.PythonProtocol.DoCoerce(IronPython.Runtime.PythonContext,IronPython.Runtime.Binding.ConditionalBuilder,IronPython.Runtime.Binding.PythonOperationKind,System.Dynamic.DynamicMetaObject[],System.Boolean,Microsoft.Scripting.Utils.Func{Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.Expression})">
+        <member name="M:IronPython.Runtime.Binding.PythonProtocol.DoCoerce(IronPython.Runtime.PythonContext,IronPython.Runtime.Binding.ConditionalBuilder,IronPython.Runtime.Binding.PythonOperationKind,System.Dynamic.DynamicMetaObject[],System.Boolean,System.Func{System.Linq.Expressions.Expression,System.Linq.Expressions.Expression})">
             <summary>
             calls __coerce__ for old-style classes and performs the operation if the coercion is successful.
             </summary>
@@ -1390,7 +1396,7 @@
             we want to pass in the tuple
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.PythonProtocol.Callable.CompleteRuleTarget(System.Dynamic.DynamicMetaObject[],Microsoft.Scripting.Utils.Func{System.Dynamic.DynamicMetaObject})">
+        <member name="M:IronPython.Runtime.Binding.PythonProtocol.Callable.CompleteRuleTarget(System.Dynamic.DynamicMetaObject[],System.Func{System.Dynamic.DynamicMetaObject})">
             <summary>
             Adds the target of the call to the rule.
             </summary>
@@ -1429,7 +1435,7 @@
         </member>
         <member name="M:IronPython.Runtime.Binding.BindingHelpers.TryGetStaticFunction(IronPython.Runtime.PythonContext,System.String,System.Dynamic.DynamicMetaObject,IronPython.Runtime.Types.BuiltinFunction@)">
             <summary>
-            Trys to get the BuiltinFunction for the given name on the type of the provided MetaObject.  
+            Tries to get the BuiltinFunction for the given name on the type of the provided MetaObject.  
             
             Succeeds if the MetaObject is a BuiltinFunction or BuiltinMethodDescriptor.
             </summary>
@@ -1458,12 +1464,12 @@
             type associated with the second MetaObject.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.BindingHelpers.AddRecursionCheck(IronPython.Runtime.PythonContext,Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Runtime.Binding.BindingHelpers.AddRecursionCheck(IronPython.Runtime.PythonContext,System.Linq.Expressions.Expression)">
             <summary>
             Adds a try/finally which enforces recursion limits around the target method.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.BindingHelpers.InvokeFallback(System.Dynamic.DynamicMetaObjectBinder,Microsoft.Scripting.Ast.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[])">
+        <member name="M:IronPython.Runtime.Binding.BindingHelpers.InvokeFallback(System.Dynamic.DynamicMetaObjectBinder,System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[])">
             <summary>
             Helper to do fallback for Invoke's so we can handle both StandardAction and Python's 
             InvokeBinder.
@@ -1494,19 +1500,19 @@
             branch must be added.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.ConditionalBuilder.AddCondition(Microsoft.Scripting.Ast.Expression,Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Runtime.Binding.ConditionalBuilder.AddCondition(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">
             <summary>
             Adds a new conditional and body.  The first call this becomes the top-level
             conditional, subsequent calls will have it added as false statement of the
             previous conditional.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.ConditionalBuilder.AddCondition(Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Runtime.Binding.ConditionalBuilder.AddCondition(System.Linq.Expressions.Expression)">
             <summary>
             Adds a new condition to the last added body / condition.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.ConditionalBuilder.FinishCondition(Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Runtime.Binding.ConditionalBuilder.FinishCondition(System.Linq.Expressions.Expression)">
             <summary>
             Adds the non-conditional terminating node.
             </summary>
@@ -1517,7 +1523,7 @@
             must have been called.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.ConditionalBuilder.AddVariable(Microsoft.Scripting.Ast.ParameterExpression)">
+        <member name="M:IronPython.Runtime.Binding.ConditionalBuilder.AddVariable(System.Linq.Expressions.ParameterExpression)">
             <summary>
             Adds a variable which will be scoped at the level of the final expression.
             </summary>
@@ -2219,7 +2225,7 @@
             </summary>
             <returns>true if the value was deleted, false if it can't be deleted</returns>
         </member>
-        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.MakeGetExpression(IronPython.Runtime.Binding.PythonBinder,Microsoft.Scripting.Ast.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject,IronPython.Runtime.Binding.ConditionalBuilder)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeSlot.MakeGetExpression(IronPython.Runtime.Binding.PythonBinder,System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject,IronPython.Runtime.Binding.ConditionalBuilder)">
             <summary>
             Gets an expression which is used for accessing this slot.  If the slot lookup fails the error expression
             is used again.
@@ -2473,7 +2479,7 @@
             should have a unique key for each piece of state it needs to store.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.PythonContext.GetOrCreateModuleState``1(System.Object,Microsoft.Scripting.Utils.Func{``0})">
+        <member name="M:IronPython.Runtime.PythonContext.GetOrCreateModuleState``1(System.Object,System.Func{``0})">
             <summary>
             Sets per-runtime state used by a module and returns the previous value.  The module
             should have a unique key for each piece of state it needs to store.
@@ -2978,13 +2984,13 @@
             neededed
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeBoundFunctionTest(Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeBoundFunctionTest(System.Linq.Expressions.Expression)">
             <summary>
             Makes a test for the built-in function against the private _data 
             which is unique per built-in function.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeBuiltinFunctionCall(System.Dynamic.DynamicMetaObjectBinder,Microsoft.Scripting.Ast.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[],System.Boolean,System.Dynamic.BindingRestrictions,Microsoft.Scripting.Utils.Func{System.Dynamic.DynamicMetaObject[],IronPython.Runtime.Types.BuiltinFunction.BindingResult})">
+        <member name="M:IronPython.Runtime.Types.BuiltinFunction.MakeBuiltinFunctionCall(System.Dynamic.DynamicMetaObjectBinder,System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[],System.Boolean,System.Dynamic.BindingRestrictions,System.Func{System.Dynamic.DynamicMetaObject[],IronPython.Runtime.Types.BuiltinFunction.BindingResult})">
             <summary>
             Helper for generating the call to a builtin function.  This is used for calls from built-in method
             descriptors and built-in functions w/ and w/o a bound instance.  
@@ -3795,7 +3801,7 @@
             old .NET type we use the default binder which supports CallSignatures.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.PythonInvokeBinder.Fallback(Microsoft.Scripting.Ast.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[])">
+        <member name="M:IronPython.Runtime.Binding.PythonInvokeBinder.Fallback(System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[])">
             <summary>
             Fallback - performs the default binding operation if the object isn't recognized
             as being invokable.
@@ -3806,7 +3812,7 @@
             Creates a nested dynamic site which uses the unpacked arguments.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.PythonInvokeBinder.TranslateArguments(System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[],System.Dynamic.CallInfo@,System.Collections.Generic.List{Microsoft.Scripting.Ast.Expression}@,Microsoft.Scripting.Ast.Expression@,System.Dynamic.BindingRestrictions@)">
+        <member name="M:IronPython.Runtime.Binding.PythonInvokeBinder.TranslateArguments(System.Dynamic.DynamicMetaObject,System.Dynamic.DynamicMetaObject[],System.Dynamic.CallInfo@,System.Collections.Generic.List{System.Linq.Expressions.Expression}@,System.Linq.Expressions.Expression@,System.Dynamic.BindingRestrictions@)">
             <summary>
             Translates our CallSignature into a DLR Argument list and gives the simple MetaObject's which are extracted
             from the tuple or dictionary parameters being splatted.
@@ -3854,7 +3860,7 @@
             items arary
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.CommonDictionaryStorage.#ctor(IronPython.Runtime.CommonDictionaryStorage.Bucket[],System.Int32,System.Type,Microsoft.Scripting.Utils.Func{System.Object,System.Int32},Microsoft.Scripting.Utils.Func{System.Object,System.Object,System.Boolean})">
+        <member name="M:IronPython.Runtime.CommonDictionaryStorage.#ctor(IronPython.Runtime.CommonDictionaryStorage.Bucket[],System.Int32,System.Type,System.Func{System.Object,System.Int32},System.Func{System.Object,System.Object,System.Boolean})">
             <summary>
             Creates a new dictionary storage with the given set of buckets
             and size.  Used when cloning the dictionary storage.
@@ -4311,40 +4317,40 @@
             delegate type before being used.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.FinishArguments(Microsoft.Scripting.Ast.Expression[],System.Collections.Generic.List{Microsoft.Scripting.Ast.Expression},System.Collections.Generic.Dictionary{System.String,Microsoft.Scripting.Ast.Expression})">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.FinishArguments(System.Linq.Expressions.Expression[],System.Collections.Generic.List{System.Linq.Expressions.Expression},System.Collections.Generic.Dictionary{System.String,System.Linq.Expressions.Expression})">
             <summary>
             Binds any missing arguments to values from params array, kw dictionary, or default values.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.TryFinishList(Microsoft.Scripting.Ast.Expression[],System.Collections.Generic.List{Microsoft.Scripting.Ast.Expression})">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.TryFinishList(System.Linq.Expressions.Expression[],System.Collections.Generic.List{System.Linq.Expressions.Expression})">
             <summary>
             Creates the argument for the list expansion parameter.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeParamsAddition(System.Collections.Generic.List{Microsoft.Scripting.Ast.Expression})">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeParamsAddition(System.Collections.Generic.List{System.Linq.Expressions.Expression})">
             <summary>
             Adds extra positional arguments to the start of the expanded list.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.TryFinishDictionary(Microsoft.Scripting.Ast.Expression[],System.Collections.Generic.Dictionary{System.String,Microsoft.Scripting.Ast.Expression})">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.TryFinishDictionary(System.Linq.Expressions.Expression[],System.Collections.Generic.Dictionary{System.String,System.Linq.Expressions.Expression})">
             <summary>
             Creates the argument for the dictionary expansion parameter.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeDictionaryAddition(System.Collections.Generic.KeyValuePair{System.String,Microsoft.Scripting.Ast.Expression})">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeDictionaryAddition(System.Collections.Generic.KeyValuePair{System.String,System.Linq.Expressions.Expression})">
             <summary>
             Adds an unbound keyword argument into the dictionary.
             </summary>
             <param name="kvp"></param>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.AddCheckForNoExtraParameters(Microsoft.Scripting.Ast.Expression[])">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.AddCheckForNoExtraParameters(System.Linq.Expressions.Expression[])">
             <summary>
             Adds a check to the last parameter (so it's evaluated after we've extracted
             all the parameters) to ensure that we don't have any extra params or kw-params
             when we don't have a params array or params dict to expand them into.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.ValidateNotDuplicate(Microsoft.Scripting.Ast.Expression,System.String,System.Int32)">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.ValidateNotDuplicate(System.Linq.Expressions.Expression,System.String,System.Int32)">
             <summary>
             Helper function to validate that a named arg isn't duplicated with by
             a params list or the dictionary (or both).
@@ -4378,7 +4384,7 @@
             Helper function to extract the next argument from the params list.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.GetArgumentsForTargetType(Microsoft.Scripting.Ast.Expression[])">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.GetArgumentsForTargetType(System.Linq.Expressions.Expression[])">
             <summary>
             Fixes up the argument list for the appropriate target delegate type.
             </summary>
@@ -4394,39 +4400,39 @@
             dictionary and verify that it contains only valid string names.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeParamsCopy(Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeParamsCopy(System.Linq.Expressions.Expression)">
             <summary>
             Called when the user is expanding a params argument
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeDictionary(System.Collections.Generic.Dictionary{System.String,Microsoft.Scripting.Ast.Expression})">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeDictionary(System.Collections.Generic.Dictionary{System.String,System.Linq.Expressions.Expression})">
             <summary>
             Called when the user hasn't supplied a dictionary to be expanded but the
             function takes a dictionary to be expanded.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeParamsTuple(System.Collections.Generic.List{Microsoft.Scripting.Ast.Expression})">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeParamsTuple(System.Collections.Generic.List{System.Linq.Expressions.Expression})">
             <summary>
             Helper function to create the expression for creating the actual tuple passed through.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeFunctionInvoke(Microsoft.Scripting.Ast.Expression[])">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.MakeFunctionInvoke(System.Linq.Expressions.Expression[])">
             <summary>
             Creates the code to invoke the target delegate function w/ the specified arguments.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.AddInitialization(Microsoft.Scripting.Ast.Expression)">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonFunction.FunctionBinderHelper.AddInitialization(System.Linq.Expressions.Expression)">
             <summary>
             Appends the initialization code for the call to the function if any exists.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonType.MakeStandardDotNetTypeCall(System.Dynamic.DynamicMetaObjectBinder,Microsoft.Scripting.Ast.Expression,System.Dynamic.DynamicMetaObject[])">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonType.MakeStandardDotNetTypeCall(System.Dynamic.DynamicMetaObjectBinder,System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject[])">
             <summary>
             Creating a standard .NET type is easy - we just call it's constructor with the provided
             arguments.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Binding.MetaPythonType.MakePythonTypeCall(System.Dynamic.DynamicMetaObjectBinder,Microsoft.Scripting.Ast.Expression,System.Dynamic.DynamicMetaObject[])">
+        <member name="M:IronPython.Runtime.Binding.MetaPythonType.MakePythonTypeCall(System.Dynamic.DynamicMetaObjectBinder,System.Linq.Expressions.Expression,System.Dynamic.DynamicMetaObject[])">
             <summary>
             Creating a Python type involves calling __new__ and __init__.  We resolve them
             and generate calls to either the builtin funcions directly or embed sites which
@@ -4854,6 +4860,15 @@
             
             Currently these are published on IDictionary&lt;object, object&gt;
             </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Types.DocBuilder.GetOverloadDoc(System.Reflection.MethodBase,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Creates a DLR OverloadDoc object which describes information about this overload.
+            </summary>
+            <param name="info">The method to document</param>
+            <param name="name">The name of the method if it should override the name in the MethodBase</param>
+            <param name="endParamSkip">Parameters to skip at the end - used for removing the value on a setter method</param>
+            <param name="includeSelf">true to include self on instance methods</param>
         </member>
         <member name="M:IronPython.Runtime.Types.DocBuilder.AppendTypeFormat(System.Type,System.Text.StringBuilder)">
             <summary>
@@ -5629,7 +5644,7 @@
             Helper to determine if the type is a simple numeric type (int or big int or bool) but not a subclass
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Operations.PythonOps.NormalizeBigInteger(System.Object,Microsoft.Scripting.Math.BigInteger,System.Nullable{System.Int32}@)">
+        <member name="M:IronPython.Runtime.Operations.PythonOps.NormalizeBigInteger(System.Object,System.Numerics.BigInteger,System.Nullable{System.Int32}@)">
             <summary>
             For slicing.  Fixes up a BigInteger and returns an integer w/ the length of the
             object added if the value is negative.
@@ -5710,6 +5725,13 @@
             </summary>
             <param name="type">original type of exception requested</param>
             <returns>a TypeEror exception</returns>
+        </member>
+        <member name="T:IronPython.Runtime.Operations.UnicodeHelper">
+            <summary>
+            Helper clas for calls to unicode(...).  We generate code which checks if unicode
+            is str and if it is we redirect those calls to the unicode function defined on this
+            class.
+            </summary>
         </member>
         <member name="T:IronPython.Runtime.Operations.ExtensibleString">
             <summary>
@@ -5961,7 +5983,7 @@
             for BigInteger below that should be kept in sync.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.StringFormatter.AppendBaseBigInt(Microsoft.Scripting.Math.BigInteger,System.Char,System.Int32)">
+        <member name="M:IronPython.Runtime.StringFormatter.AppendBaseBigInt(System.Numerics.BigInteger,System.Char,System.Int32)">
             <summary>
             BigInteger version of AppendBase.  Should be kept in sync w/ AppendBase
             </summary>
@@ -6086,6 +6108,13 @@
             
             This is available alternate operators don't have special names and therefore
             could be confused for a normal method which isn't fulfilling the contract.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Scripting.Generation.ParameterInfoWrapper">
+            <summary>
+            This helper type lets us build a fake ParameterInfo object with a specific type and name
+            to pass along to methods that expect ParameterInfos.  This is currently found useful
+            for the NewTypeMaker code and may be useful in other situations as well.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.Types.PythonSiteCache">

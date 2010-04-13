@@ -107,10 +107,11 @@
     <Compile Include="Src\RunRubyCommand.cs" />
     <Compile Include="Src\TextEditor.cs" />
     <EmbeddedResource Include="Resources\Ruby.xshd" />
-    <None Include="ir.exe.config">
+    <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
+    <None Include="..\..\IronRuby\bin\ir.exe.config">
+      <Link>ir.exe.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
     <None Include="RubyBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
