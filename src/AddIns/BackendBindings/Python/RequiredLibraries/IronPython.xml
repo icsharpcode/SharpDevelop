@@ -9,6 +9,12 @@
             Creates a method frame for tracking purposes and enforces recursion
             </summary>
         </member>
+        <member name="M:IronPython.Compiler.Ast.Node.RemoveFrame(Microsoft.Scripting.Ast.Expression)">
+            <summary>
+            Removes the frames from generated code for when we're compiling the tracing delegate
+            which will track the frames it's self.
+            </summary>
+        </member>
         <member name="P:IronPython.Compiler.Ast.Node.CanThrow">
             <summary>
             Returns true if the node can throw, false otherwise.  Used to determine
@@ -1429,7 +1435,7 @@
         </member>
         <member name="M:IronPython.Runtime.Binding.BindingHelpers.TryGetStaticFunction(IronPython.Runtime.PythonContext,System.String,System.Dynamic.DynamicMetaObject,IronPython.Runtime.Types.BuiltinFunction@)">
             <summary>
-            Trys to get the BuiltinFunction for the given name on the type of the provided MetaObject.  
+            Tries to get the BuiltinFunction for the given name on the type of the provided MetaObject.  
             
             Succeeds if the MetaObject is a BuiltinFunction or BuiltinMethodDescriptor.
             </summary>
@@ -4855,6 +4861,15 @@
             Currently these are published on IDictionary&lt;object, object&gt;
             </summary>
         </member>
+        <member name="M:IronPython.Runtime.Types.DocBuilder.GetOverloadDoc(System.Reflection.MethodBase,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Creates a DLR OverloadDoc object which describes information about this overload.
+            </summary>
+            <param name="info">The method to document</param>
+            <param name="name">The name of the method if it should override the name in the MethodBase</param>
+            <param name="endParamSkip">Parameters to skip at the end - used for removing the value on a setter method</param>
+            <param name="includeSelf">true to include self on instance methods</param>
+        </member>
         <member name="M:IronPython.Runtime.Types.DocBuilder.AppendTypeFormat(System.Type,System.Text.StringBuilder)">
             <summary>
             Converts a Type object into a string suitable for lookup in the help file.  All generic types are
@@ -5711,6 +5726,13 @@
             <param name="type">original type of exception requested</param>
             <returns>a TypeEror exception</returns>
         </member>
+        <member name="T:IronPython.Runtime.Operations.UnicodeHelper">
+            <summary>
+            Helper clas for calls to unicode(...).  We generate code which checks if unicode
+            is str and if it is we redirect those calls to the unicode function defined on this
+            class.
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.Operations.ExtensibleString">
             <summary>
             ExtensibleString is the base class that is used for types the user defines
@@ -6086,6 +6108,13 @@
             
             This is available alternate operators don't have special names and therefore
             could be confused for a normal method which isn't fulfilling the contract.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Scripting.Generation.ParameterInfoWrapper">
+            <summary>
+            This helper type lets us build a fake ParameterInfo object with a specific type and name
+            to pass along to methods that expect ParameterInfos.  This is currently found useful
+            for the NewTypeMaker code and may be useful in other situations as well.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.Types.PythonSiteCache">
