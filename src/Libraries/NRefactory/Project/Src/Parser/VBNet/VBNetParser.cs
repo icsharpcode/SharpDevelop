@@ -140,7 +140,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		bool IsIdentifiedExpressionRange()
 		{
-			return la.kind == Tokens.As || la.kind == Tokens.Assign;
+			// t = Select
+			// la = Identifier
+			// Peek(1) = As or Assign
+			Token token = Peek(1);
+			return IsIdentifierToken(la) && (token.kind == Tokens.As || token.kind == Tokens.Assign);
 		}
 		
 		bool IsQueryExpression()

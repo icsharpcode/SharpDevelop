@@ -4374,6 +4374,32 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
+	public class QueryExpressionVB : Expression {
+		
+		List<QueryExpressionClause> clauses;
+		
+		public List<QueryExpressionClause> Clauses {
+			get {
+				return clauses;
+			}
+			set {
+				clauses = value ?? new List<QueryExpressionClause>();
+			}
+		}
+		
+		public QueryExpressionVB() {
+			clauses = new List<QueryExpressionClause>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitQueryExpressionVB(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[QueryExpressionVB Clauses={0}]", GetCollectionString(Clauses));
+		}
+	}
+	
 	public class QueryExpressionWhereClause : QueryExpressionClause {
 		
 		Expression condition;

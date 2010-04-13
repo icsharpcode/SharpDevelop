@@ -199,6 +199,8 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data);
 		
+		object VisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data);
+		
 		object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data);
 		
 		object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data);

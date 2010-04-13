@@ -1012,6 +1012,16 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data) {
+			Debug.Assert((queryExpressionVB != null));
+			Debug.Assert((queryExpressionVB.Clauses != null));
+			foreach (QueryExpressionClause o in queryExpressionVB.Clauses) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			return null;
+		}
+		
 		public virtual object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data) {
 			Debug.Assert((queryExpressionWhereClause != null));
 			Debug.Assert((queryExpressionWhereClause.Condition != null));

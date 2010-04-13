@@ -2013,13 +2013,12 @@ LambdaExpr<out Expression expr>
 
 QueryExpr<out Expression expr>
 	(.
-		QueryExpression qexpr = new QueryExpression();
+		QueryExpressionVB qexpr = new QueryExpressionVB();
 		qexpr.StartLocation = la.Location;
-		List<QueryExpressionClause> middleClauses = new List<QueryExpressionClause>();
 		expr = qexpr;
 	.) =
-	FromOrAggregateQueryOperator<middleClauses>
-	{ QueryOperator<middleClauses> }
+	FromOrAggregateQueryOperator<qexpr.Clauses>
+	{ QueryOperator<qexpr.Clauses> }
 	(.
 		qexpr.EndLocation = t.EndLocation;
 	.)
@@ -2045,6 +2044,7 @@ QueryOperator<List<QueryExpressionClause> middleClauses>
 	| WhereQueryOperator<middleClauses>
 	| OrderByQueryOperator<middleClauses>
 	| PartitionQueryOperator<out partitionClause>
+	  (. middleClauses.Add(partitionClause); .)
 	| LetQueryOperator<middleClauses>
 	| JoinQueryOperator<out joinClause>
 	  (. middleClauses.Add(joinClause); .)
@@ -2177,11 +2177,12 @@ PartitionQueryOperator<out QueryExpressionPartitionVBClause partitionClause>
 		partitionClause.StartLocation = la.Location;
 		Expression expr = null;
 	.) =
-	  "Take" (. partitionClause.PartitionType = QueryExpressionPartitionType.Take; .)
+	  (
+	   "Take" (. partitionClause.PartitionType = QueryExpressionPartitionType.Take; .)
 	  [ "While" (. partitionClause.PartitionType = QueryExpressionPartitionType.TakeWhile; .) ]
-	  Expr<out expr>
 	| "Skip" (. partitionClause.PartitionType = QueryExpressionPartitionType.Skip; .)
-      [ "While" ] (. partitionClause.PartitionType = QueryExpressionPartitionType.SkipWhile; .)
+      [ "While" (. partitionClause.PartitionType = QueryExpressionPartitionType.SkipWhile; .) ]
+      )
 	  Expr<out expr>
 	(.
 		partitionClause.Expression = expr;
@@ -2297,7 +2298,7 @@ CollectionRangeVariableDeclaration<out QueryExpressionFromClause fromClause>
 		TypeReference typeName = null;
 		Expression inExpr = null;
 	.) =
-	Identifier
+	Identifier (. fromClause.Identifier = t.val; .)
 	[ "As" TypeName<out typeName> (. fromClause.Type = typeName; .) ] 
 	"In" Expr<out inExpr>
 	(.

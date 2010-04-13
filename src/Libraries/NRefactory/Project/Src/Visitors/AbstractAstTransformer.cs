@@ -1843,6 +1843,23 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data) {
+			Debug.Assert((queryExpressionVB != null));
+			Debug.Assert((queryExpressionVB.Clauses != null));
+			for (int i = 0; i < queryExpressionVB.Clauses.Count; i++) {
+				QueryExpressionClause o = queryExpressionVB.Clauses[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (QueryExpressionClause)nodeStack.Pop();
+				if (o == null)
+					queryExpressionVB.Clauses.RemoveAt(i--);
+				else
+					queryExpressionVB.Clauses[i] = o;
+			}
+			return null;
+		}
+		
 		public virtual object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data) {
 			Debug.Assert((queryExpressionWhereClause != null));
 			Debug.Assert((queryExpressionWhereClause.Condition != null));

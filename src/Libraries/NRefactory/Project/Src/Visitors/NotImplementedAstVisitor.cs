@@ -386,6 +386,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 			throw new global::System.NotImplementedException("QueryExpressionSelectVBClause");
 		}
 		
+		public virtual object VisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data) {
+			throw new global::System.NotImplementedException("QueryExpressionVB");
+		}
+		
 		public virtual object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data) {
 			throw new global::System.NotImplementedException("QueryExpressionWhereClause");
 		}

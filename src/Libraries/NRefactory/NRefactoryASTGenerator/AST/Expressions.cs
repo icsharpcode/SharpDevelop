@@ -268,6 +268,10 @@ namespace NRefactoryASTGenerator.Ast
 		QueryExpressionClause selectOrGroupClause;
 	}
 	
+	class QueryExpressionVB : Expression {
+		List<QueryExpressionClause> clauses;
+	}
+	
 	[ImplementNullable]
 	abstract class QueryExpressionClause : AbstractNode, INullable { }
 	

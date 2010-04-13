@@ -22,6 +22,12 @@ namespace NRefactoryToBooConverter
 			return null;
 		}
 		
+		public object VisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data)
+		{
+			AddError(queryExpressionVB, "QueryExpressionVB is not supported.");
+			return null;
+		}
+		
 		public object VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data)
 		{
 			AddError(queryExpressionFromClause, "QueryExpressionFromClause is not supported.");

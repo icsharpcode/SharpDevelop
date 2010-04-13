@@ -675,6 +675,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data) {
+			this.BeginVisit(queryExpressionVB);
+			object result = this.TrackedVisitQueryExpressionVB(queryExpressionVB, data);
+			this.EndVisit(queryExpressionVB);
+			return result;
+		}
+		
 		public sealed override object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data) {
 			this.BeginVisit(queryExpressionWhereClause);
 			object result = this.TrackedVisitQueryExpressionWhereClause(queryExpressionWhereClause, data);
@@ -1251,6 +1258,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data) {
 			return base.VisitQueryExpressionSelectVBClause(queryExpressionSelectVBClause, data);
+		}
+		
+		public virtual object TrackedVisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data) {
+			return base.VisitQueryExpressionVB(queryExpressionVB, data);
 		}
 		
 		public virtual object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data) {
