@@ -285,18 +285,13 @@ namespace NRefactoryASTGenerator.Ast
 		Expression expression;
 	}
 	
-	abstract class QueryExpressionFromOrJoinClause : QueryExpressionClause {
-		TypeReference type;
-		[QuestionMarkDefault]
-		string identifier;
-		Expression inExpression;
-	}
-	
 	[ImplementNullable(NullableImplementation.Shadow)]
-	class QueryExpressionFromClause : QueryExpressionFromOrJoinClause { }
+	class QueryExpressionFromClause : QueryExpressionClause {
+		List<CollectionRangeVariable> sources;
+	}
 
 	class QueryExpressionAggregateClause : 	QueryExpressionClause {
-		QueryExpressionFromClause fromClause;
+		CollectionRangeVariable source;
 		List<QueryExpressionClause> middleClauses;
 		List<ExpressionRangeVariable> intoVariables;
 	}
@@ -308,16 +303,24 @@ namespace NRefactoryASTGenerator.Ast
 		TypeReference type;
 	}
 	
-	class QueryExpressionJoinClause : QueryExpressionFromOrJoinClause {
+	[ImplementNullable]
+	class CollectionRangeVariable : AbstractNode, INullable {
+		string identifier;
+		Expression expression;
+		TypeReference type;
+	}
+	
+	class QueryExpressionJoinClause : QueryExpressionClause {
 		Expression onExpression;
 		Expression equalsExpression;
+		CollectionRangeVariable source;
 		
 		string intoIdentifier;
 	}
 	
 	[ImplementNullable(NullableImplementation.Shadow)]
 	class QueryExpressionJoinVBClause : QueryExpressionClause {
-		QueryExpressionFromClause joinVariable;
+		CollectionRangeVariable joinVariable;
 		QueryExpressionJoinVBClause subJoin;
 		List<QueryExpressionJoinConditionVB> conditions;
 	}

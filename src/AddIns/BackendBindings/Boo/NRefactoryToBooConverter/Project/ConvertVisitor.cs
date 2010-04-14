@@ -266,5 +266,10 @@ namespace NRefactoryToBooConverter
 		{
 			return ConvertTypeReference(typeReference);
 		}
+		
+		public object VisitCollectionRangeVariable(CollectionRangeVariable collectionRangeVariable, object data)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

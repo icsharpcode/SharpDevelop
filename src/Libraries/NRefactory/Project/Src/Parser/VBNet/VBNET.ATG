@@ -2025,9 +2025,14 @@ QueryExpr<out Expression expr>
 .
 
 FromOrAggregateQueryOperator<List<QueryExpressionClause> middleClauses>
-	(.  .) =
-	   FromQueryOperator<middleClauses>
-	|  AggregateQueryOperator<middleClauses>
+	(.
+		QueryExpressionFromClause fromClause = null;
+		QueryExpressionAggregateClause aggregateClause = null;
+	.) =
+	   FromQueryOperator<out fromClause>
+	   (. middleClauses.Add(fromClause); .)
+	|  AggregateQueryOperator<out aggregateClause>
+	   (. middleClauses.Add(aggregateClause); .)
 .
 
 QueryOperator<List<QueryExpressionClause> middleClauses>
@@ -2036,10 +2041,14 @@ QueryOperator<List<QueryExpressionClause> middleClauses>
 		QueryExpressionGroupVBClause groupByClause = null;
 		QueryExpressionPartitionVBClause partitionClause = null;
 		QueryExpressionGroupJoinVBClause groupJoinClause = null;
+		QueryExpressionFromClause fromClause = null;
+		QueryExpressionAggregateClause aggregateClause = null;
 	.) =
-	  FromQueryOperator<middleClauses>
-	| AggregateQueryOperator<middleClauses>
-	| SelectQueryOperator<middleClauses>
+	   FromQueryOperator<out fromClause>
+	   (. middleClauses.Add(fromClause); .)
+	|  AggregateQueryOperator<out aggregateClause>
+	   (. middleClauses.Add(aggregateClause); .)
+    | SelectQueryOperator<middleClauses>
 	| DistinctQueryOperator<middleClauses>
 	| WhereQueryOperator<middleClauses>
 	| OrderByQueryOperator<middleClauses>
@@ -2126,10 +2135,15 @@ GroupJoinQueryOperator<out QueryExpressionGroupJoinVBClause groupJoinClause>
 	.)
 .
 
-FromQueryOperator<List<QueryExpressionClause> middleClauses>
+FromQueryOperator<out QueryExpressionFromClause fromClause>
 	(.
+	    fromClause = new QueryExpressionFromClause();
+	    fromClause.StartLocation = la.Location;
 	.) =
-	"From" CollectionRangeVariableDeclarationList<middleClauses>
+	"From" CollectionRangeVariableDeclarationList<fromClause.Sources>
+	(.
+	   fromClause.EndLocation = t.EndLocation;
+	.)
 .
 
 SelectQueryOperator<List<QueryExpressionClause> middleClauses>
@@ -2190,16 +2204,16 @@ PartitionQueryOperator<out QueryExpressionPartitionVBClause partitionClause>
 	.)
 .
 
-AggregateQueryOperator<List<QueryExpressionClause> middleClauses>
+AggregateQueryOperator<out QueryExpressionAggregateClause aggregateClause>
 	(.
-		QueryExpressionFromClause fromClause = null;
-		QueryExpressionAggregateClause aggregateClause = new QueryExpressionAggregateClause();
+		aggregateClause = new QueryExpressionAggregateClause();
 		aggregateClause.IntoVariables = new List<ExpressionRangeVariable>();
 		aggregateClause.StartLocation = la.Location;
+		CollectionRangeVariable source;
 	.) =
-	"Aggregate" CollectionRangeVariableDeclaration<out fromClause>
+	"Aggregate" CollectionRangeVariableDeclaration<out source>
 	(.
-		aggregateClause.FromClause = fromClause;
+		aggregateClause.Source = source;
 	.)
 	{
 		QueryOperator<aggregateClause.MiddleClauses>
@@ -2207,7 +2221,6 @@ AggregateQueryOperator<List<QueryExpressionClause> middleClauses>
 	"Into" ExpressionRangeVariableDeclarationList<aggregateClause.IntoVariables>
 	(.
 		aggregateClause.EndLocation = t.EndLocation;
-		middleClauses.Add(aggregateClause);
 	.)
 .
 
@@ -2259,7 +2272,7 @@ JoinQueryOperator<out QueryExpressionJoinVBClause joinClause>
 	(.
 		joinClause = new QueryExpressionJoinVBClause();
 		joinClause.StartLocation = la.Location;
-		QueryExpressionFromClause joinVariable = null;
+		CollectionRangeVariable joinVariable = null;
 		QueryExpressionJoinVBClause subJoin = null;
 		QueryExpressionJoinConditionVB condition = null;
 		
@@ -2282,28 +2295,27 @@ JoinQueryOperator<out QueryExpressionJoinVBClause joinClause>
 	.)
 .
 
-CollectionRangeVariableDeclarationList<List<QueryExpressionClause> middleClauses>
-	(.
-		QueryExpressionFromClause fromClause = null;
-	.) =
-	CollectionRangeVariableDeclaration<out fromClause>
-	(. middleClauses.Add(fromClause); .)
-	{ "," CollectionRangeVariableDeclaration<out fromClause> (. middleClauses.Add(fromClause); .) }
+CollectionRangeVariableDeclarationList<List<CollectionRangeVariable> rangeVariables>
+(. CollectionRangeVariable variableDeclaration; .)
+  =
+	CollectionRangeVariableDeclaration<out variableDeclaration>
+	(. rangeVariables.Add(variableDeclaration); .)
+	{ "," CollectionRangeVariableDeclaration<out variableDeclaration> (. rangeVariables.Add(variableDeclaration); .) }
 .
 
-CollectionRangeVariableDeclaration<out QueryExpressionFromClause fromClause>
+CollectionRangeVariableDeclaration<out CollectionRangeVariable rangeVariable>
 	(.
-		fromClause = new QueryExpressionFromClause();
-		fromClause.StartLocation = la.Location;
+		rangeVariable = new CollectionRangeVariable();
+		rangeVariable.StartLocation = la.Location;
 		TypeReference typeName = null;
 		Expression inExpr = null;
 	.) =
-	Identifier (. fromClause.Identifier = t.val; .)
-	[ "As" TypeName<out typeName> (. fromClause.Type = typeName; .) ] 
+	Identifier (. rangeVariable.Identifier = t.val; .)
+	[ "As" TypeName<out typeName> (. rangeVariable.Type = typeName; .) ] 
 	"In" Expr<out inExpr>
 	(.
-		fromClause.InExpression = inExpr;
-		fromClause.EndLocation = t.EndLocation;
+		rangeVariable.Expression = inExpr;
+		rangeVariable.EndLocation = t.EndLocation;
 	.)
 .
 

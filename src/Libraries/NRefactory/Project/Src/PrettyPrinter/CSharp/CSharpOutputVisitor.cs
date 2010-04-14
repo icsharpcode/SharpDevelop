@@ -3046,14 +3046,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
 		{
 			if (queryExpression.IsQueryContinuation) {
-				queryExpression.FromClause.InExpression.AcceptVisitor(this, data);
+				queryExpression.FromClause.Sources.First().AcceptVisitor(this, data);
 			}
 			outputFormatter.IndentationLevel++;
 			if (queryExpression.IsQueryContinuation) {
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Into);
 				outputFormatter.Space();
-				outputFormatter.PrintIdentifier(queryExpression.FromClause.Identifier);
+				outputFormatter.PrintIdentifier(queryExpression.FromClause.Sources.First().Identifier);
 			} else {
 				queryExpression.FromClause.AcceptVisitor(this, data);
 			}
@@ -3074,9 +3074,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
 		{
+			CollectionRangeVariable variable = fromClause.Sources.Single();
 			outputFormatter.PrintToken(Tokens.From);
 			outputFormatter.Space();
-			VisitQueryExpressionFromOrJoinClause(fromClause, data);
+			outputFormatter.PrintIdentifier(variable.Identifier);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.In);
+			outputFormatter.Space();
+			variable.Expression.AcceptVisitor(this, data);
 			return null;
 		}
 		
@@ -3084,7 +3089,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintToken(Tokens.Join);
 			outputFormatter.Space();
-			VisitQueryExpressionFromOrJoinClause(joinClause, data);
+			outputFormatter.PrintIdentifier(joinClause.Source.Identifier);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.In);
+			outputFormatter.Space();
+			joinClause.Source.Expression.AcceptVisitor(this, data);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.On);
 			outputFormatter.Space();
@@ -3100,15 +3109,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintIdentifier(joinClause.IntoIdentifier);
 			}
 			return null;
-		}
-		
-		void VisitQueryExpressionFromOrJoinClause(QueryExpressionFromOrJoinClause clause, object data)
-		{
-			outputFormatter.PrintIdentifier(clause.Identifier);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.In);
-			outputFormatter.Space();
-			clause.InExpression.AcceptVisitor(this, data);
 		}
 		
 		public override object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause letClause, object data)

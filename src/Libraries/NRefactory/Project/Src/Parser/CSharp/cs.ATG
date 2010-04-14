@@ -2424,21 +2424,26 @@ QueryExpression<out Expression outExpr>
 .
 
 QueryExpressionFromClause<out QueryExpressionFromClause fc>
-(.	fc = new QueryExpressionFromClause(); fc.StartLocation = la.Location; 
+(.	fc = new QueryExpressionFromClause();
+fc.StartLocation = la.Location;
+CollectionRangeVariable variable;
 .)
 =
 	"from"
-	QueryExpressionFromOrJoinClause<fc>
-	(. fc.EndLocation = t.EndLocation; .)
+	QueryExpressionFromOrJoinClause<out variable>
+	(. fc.EndLocation = t.EndLocation;
+	fc.Sources.Add(variable);
+	.)
 .
 
 QueryExpressionJoinClause<out QueryExpressionJoinClause jc>
 (.	jc = new QueryExpressionJoinClause(); jc.StartLocation = la.Location; 
 	Expression expr;
+	CollectionRangeVariable variable;
 .)
 =
 	"join"
-	QueryExpressionFromOrJoinClause<jc>
+	QueryExpressionFromOrJoinClause<out variable>
 	"on"
 	Expr<out expr> (. jc.OnExpression = expr; .)
 	"equals"
@@ -2446,17 +2451,20 @@ QueryExpressionJoinClause<out QueryExpressionJoinClause jc>
 	[ "into"
 		Identifier (. jc.IntoIdentifier = t.val; .)
 	]
-	(. jc.EndLocation = t.EndLocation; .)
+	(.
+	   jc.EndLocation = t.EndLocation;
+	   jc.Source = variable;
+	.)
 .
 
-QueryExpressionFromOrJoinClause<QueryExpressionFromOrJoinClause fjc>
-(. TypeReference type; Expression expr; .)
+QueryExpressionFromOrJoinClause<out CollectionRangeVariable variable>
+(. TypeReference type; Expression expr; variable = new CollectionRangeVariable(); .)
 =
-	(. fjc.Type = null; .)
-	[ IF (IsLocalVarDecl()) Type<out type> (. fjc.Type = type; .) ]
-	Identifier  (. fjc.Identifier = t.val; .)
+	(. variable.Type = null; .)
+	[ IF (IsLocalVarDecl()) Type<out type> (. variable.Type = type; .) ]
+	Identifier  (. variable.Identifier = t.val; .)
 	"in"
-	Expr<out expr> (. fjc.InExpression = expr; .)
+	Expr<out expr> (. variable.Expression = expr; .)
 .
 
 QueryExpressionBody<ref QueryExpression q>
@@ -2541,15 +2549,17 @@ QueryExpressionIntoClause<ref QueryExpression q>
 	continuedQuery.StartLocation = q.StartLocation;
 	firstQuery.EndLocation = la.Location;
 	continuedQuery.FromClause = new QueryExpressionFromClause();
-	continuedQuery.FromClause.StartLocation = la.Location;
+	CollectionRangeVariable fromVariable = new CollectionRangeVariable();
+	continuedQuery.FromClause.Sources.Add(fromVariable);
+	fromVariable.StartLocation = la.Location;
 	// nest firstQuery inside continuedQuery.
-	continuedQuery.FromClause.InExpression = firstQuery;
+	fromVariable.Expression = firstQuery;
 	continuedQuery.IsQueryContinuation = true;
 	q = continuedQuery;
 .)
 =
 	"into"
-	Identifier (. continuedQuery.FromClause.Identifier = t.val; .)
+	Identifier (. fromVariable.Identifier = t.val; .)
 	(. continuedQuery.FromClause.EndLocation = t.EndLocation; .)
 	QueryExpressionBody<ref q>
 .

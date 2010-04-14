@@ -51,6 +51,8 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitCollectionInitializerExpression(CollectionInitializerExpression collectionInitializerExpression, object data);
 		
+		object VisitCollectionRangeVariable(CollectionRangeVariable collectionRangeVariable, object data);
+		
 		object VisitCompilationUnit(CompilationUnit compilationUnit, object data);
 		
 		object VisitConditionalExpression(ConditionalExpression conditionalExpression, object data);

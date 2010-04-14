@@ -7,9 +7,11 @@
 
 using System;
 using System.IO;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.Parser;
+using System.Linq;
+
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Parser;
+using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.Tests.Ast
 {
@@ -22,8 +24,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
 				"from c in customers where c.City == \"London\" select c"
 			);
-			Assert.AreEqual("c", qe.FromClause.Identifier);
-			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.AreEqual("c", qe.FromClause.Sources.First().Identifier);
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.Sources.First().Expression).Identifier);
 			Assert.AreEqual(1, qe.MiddleClauses.Count);
 			Assert.IsInstanceOf(typeof(QueryExpressionWhereClause), qe.MiddleClauses[0]);
 			QueryExpressionWhereClause wc = (QueryExpressionWhereClause)qe.MiddleClauses[0];
@@ -37,9 +39,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
 				"from Customer c in customers select c"
 			);
-			Assert.AreEqual("c", qe.FromClause.Identifier);
-			Assert.AreEqual("Customer", qe.FromClause.Type.ToString());
-			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.AreEqual("c", qe.FromClause.Sources.First().Identifier);
+			Assert.AreEqual("Customer", qe.FromClause.Sources.First().Type.ToString());
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.Sources.First().Expression).Identifier);
 			Assert.IsInstanceOf(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}
 		
@@ -49,9 +51,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
 				"from int c in customers select c"
 			);
-			Assert.AreEqual("c", qe.FromClause.Identifier);
-			Assert.AreEqual("System.Int32", qe.FromClause.Type.Type);
-			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.AreEqual("c", qe.FromClause.Sources.First().Identifier);
+			Assert.AreEqual("System.Int32", qe.FromClause.Sources.First().Type.Type);
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.Sources.First().Expression).Identifier);
 			Assert.IsInstanceOf(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}
 		
@@ -62,9 +64,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
 				"from S<int[]>? c in customers select c"
 			);
-			Assert.AreEqual("c", qe.FromClause.Identifier);
-			Assert.AreEqual("System.Nullable<S<System.Int32[]>>", qe.FromClause.Type.ToString());
-			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.AreEqual("c", qe.FromClause.Sources.First().Identifier);
+			Assert.AreEqual("System.Nullable<S<System.Int32[]>>", qe.FromClause.Sources.First().Type.ToString());
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.Sources.First().Expression).Identifier);
 			Assert.IsInstanceOf(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}
 		
@@ -91,8 +93,8 @@ select new { c.Name, o.OrderID, o.Total }");
 			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
 				"from c in customers orderby c.Name select c"
 			);
-			Assert.AreEqual("c", qe.FromClause.Identifier);
-			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.AreEqual("c", qe.FromClause.Sources.First().Identifier);
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.Sources.First().Expression).Identifier);
 			Assert.IsInstanceOf(typeof(QueryExpressionOrderClause), qe.MiddleClauses[0]);
 			Assert.IsInstanceOf(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);
 		}
@@ -103,8 +105,8 @@ select new { c.Name, o.OrderID, o.Total }");
 			QueryExpression qe = ParseUtilCSharp.ParseExpression<QueryExpression>(
 				"from c in customers orderby c.Name let x = c select x"
 			);
-			Assert.AreEqual("c", qe.FromClause.Identifier);
-			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.InExpression).Identifier);
+			Assert.AreEqual("c", qe.FromClause.Sources.First().Identifier);
+			Assert.AreEqual("customers", ((IdentifierExpression)qe.FromClause.Sources.First().Expression).Identifier);
 			Assert.IsInstanceOf(typeof(QueryExpressionOrderClause), qe.MiddleClauses[0]);
 			Assert.IsInstanceOf(typeof(QueryExpressionLetClause), qe.MiddleClauses[1]);
 			Assert.IsInstanceOf(typeof(QueryExpressionSelectClause), qe.SelectOrGroupClause);

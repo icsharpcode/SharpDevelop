@@ -164,6 +164,14 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitCollectionRangeVariable(CollectionRangeVariable collectionRangeVariable, object data) {
+			Debug.Assert((collectionRangeVariable != null));
+			Debug.Assert((collectionRangeVariable.Expression != null));
+			Debug.Assert((collectionRangeVariable.Type != null));
+			collectionRangeVariable.Expression.AcceptVisitor(this, data);
+			return collectionRangeVariable.Type.AcceptVisitor(this, data);
+		}
+		
 		public virtual object VisitCompilationUnit(CompilationUnit compilationUnit, object data) {
 			Debug.Assert((compilationUnit != null));
 			return compilationUnit.AcceptChildren(this, data);
@@ -856,10 +864,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object VisitQueryExpressionAggregateClause(QueryExpressionAggregateClause queryExpressionAggregateClause, object data) {
 			Debug.Assert((queryExpressionAggregateClause != null));
-			Debug.Assert((queryExpressionAggregateClause.FromClause != null));
+			Debug.Assert((queryExpressionAggregateClause.Source != null));
 			Debug.Assert((queryExpressionAggregateClause.MiddleClauses != null));
 			Debug.Assert((queryExpressionAggregateClause.IntoVariables != null));
-			queryExpressionAggregateClause.FromClause.AcceptVisitor(this, data);
+			queryExpressionAggregateClause.Source.AcceptVisitor(this, data);
 			foreach (QueryExpressionClause o in queryExpressionAggregateClause.MiddleClauses) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
@@ -878,10 +886,12 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data) {
 			Debug.Assert((queryExpressionFromClause != null));
-			Debug.Assert((queryExpressionFromClause.Type != null));
-			Debug.Assert((queryExpressionFromClause.InExpression != null));
-			queryExpressionFromClause.Type.AcceptVisitor(this, data);
-			return queryExpressionFromClause.InExpression.AcceptVisitor(this, data);
+			Debug.Assert((queryExpressionFromClause.Sources != null));
+			foreach (CollectionRangeVariable o in queryExpressionFromClause.Sources) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			return null;
 		}
 		
 		public virtual object VisitQueryExpressionGroupClause(QueryExpressionGroupClause queryExpressionGroupClause, object data) {
@@ -926,14 +936,12 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object VisitQueryExpressionJoinClause(QueryExpressionJoinClause queryExpressionJoinClause, object data) {
 			Debug.Assert((queryExpressionJoinClause != null));
-			Debug.Assert((queryExpressionJoinClause.Type != null));
-			Debug.Assert((queryExpressionJoinClause.InExpression != null));
 			Debug.Assert((queryExpressionJoinClause.OnExpression != null));
 			Debug.Assert((queryExpressionJoinClause.EqualsExpression != null));
-			queryExpressionJoinClause.Type.AcceptVisitor(this, data);
-			queryExpressionJoinClause.InExpression.AcceptVisitor(this, data);
+			Debug.Assert((queryExpressionJoinClause.Source != null));
 			queryExpressionJoinClause.OnExpression.AcceptVisitor(this, data);
-			return queryExpressionJoinClause.EqualsExpression.AcceptVisitor(this, data);
+			queryExpressionJoinClause.EqualsExpression.AcceptVisitor(this, data);
+			return queryExpressionJoinClause.Source.AcceptVisitor(this, data);
 		}
 		
 		public virtual object VisitQueryExpressionJoinConditionVB(QueryExpressionJoinConditionVB queryExpressionJoinConditionVB, object data) {

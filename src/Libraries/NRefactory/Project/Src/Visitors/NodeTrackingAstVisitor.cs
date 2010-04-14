@@ -157,6 +157,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitCollectionRangeVariable(CollectionRangeVariable collectionRangeVariable, object data) {
+			this.BeginVisit(collectionRangeVariable);
+			object result = this.TrackedVisitCollectionRangeVariable(collectionRangeVariable, data);
+			this.EndVisit(collectionRangeVariable);
+			return result;
+		}
+		
 		public sealed override object VisitCompilationUnit(CompilationUnit compilationUnit, object data) {
 			this.BeginVisit(compilationUnit);
 			object result = this.TrackedVisitCompilationUnit(compilationUnit, data);
@@ -962,6 +969,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitCollectionInitializerExpression(CollectionInitializerExpression collectionInitializerExpression, object data) {
 			return base.VisitCollectionInitializerExpression(collectionInitializerExpression, data);
+		}
+		
+		public virtual object TrackedVisitCollectionRangeVariable(CollectionRangeVariable collectionRangeVariable, object data) {
+			return base.VisitCollectionRangeVariable(collectionRangeVariable, data);
 		}
 		
 		public virtual object TrackedVisitCompilationUnit(CompilationUnit compilationUnit, object data) {

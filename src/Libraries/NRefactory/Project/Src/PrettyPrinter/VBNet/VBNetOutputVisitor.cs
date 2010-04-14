@@ -2977,18 +2977,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
 		{
-			if (queryExpression.IsQueryContinuation) {
-				queryExpression.FromClause.InExpression.AcceptVisitor(this, data);
-			}
 			outputFormatter.IndentationLevel++;
-			if (queryExpression.IsQueryContinuation) {
-				outputFormatter.PrintToken(Tokens.Into);
-				outputFormatter.PrintIdentifier(queryExpression.FromClause.Identifier);
-			} else {
-				queryExpression.FromClause.AcceptVisitor(this, data);
-			}
 			queryExpression.MiddleClauses.ForEach(PrintClause);
-			PrintClause(queryExpression.SelectOrGroupClause);
 			outputFormatter.IndentationLevel--;
 			return null;
 		}
@@ -3006,7 +2996,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintText("From");
 			outputFormatter.Space();
-			VisitQueryExpressionFromOrJoinClause(fromClause, data);
+			for (int i = 0; i < fromClause.Sources.Count; i++) {
+				CollectionRangeVariable clause = fromClause.Sources[i];
+				outputFormatter.PrintIdentifier(clause.Identifier);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.In);
+				outputFormatter.Space();
+				clause.Expression.AcceptVisitor(this, data);
+				if (i < fromClause.Sources.Count - 1)
+					outputFormatter.PrintToken(Tokens.Comma);
+			}
 			return null;
 		}
 		
@@ -3014,7 +3013,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintText("Join");
 			outputFormatter.Space();
-			VisitQueryExpressionFromOrJoinClause(joinClause, data);
+			CollectionRangeVariable clause = joinClause.Source;
+			outputFormatter.PrintIdentifier(clause.Identifier);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.In);
+			outputFormatter.Space();
+			clause.Expression.AcceptVisitor(this, data);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.On);
 			outputFormatter.Space();
@@ -3032,14 +3036,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		void VisitQueryExpressionFromOrJoinClause(QueryExpressionFromOrJoinClause clause, object data)
-		{
-			outputFormatter.PrintIdentifier(clause.Identifier);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.In);
-			outputFormatter.Space();
-			clause.InExpression.AcceptVisitor(this, data);
-		}
+//		void VisitQueryExpressionFromOrJoinClause(QueryExpressionFromOrJoinClause clause, object data)
+//		{
+//			outputFormatter.PrintIdentifier(clause.Identifier);
+//			outputFormatter.Space();
+//			outputFormatter.PrintToken(Tokens.In);
+//			outputFormatter.Space();
+//			clause.InExpression.AcceptVisitor(this, data);
+//		}
 		
 		public override object TrackedVisitQueryExpressionLetClause(QueryExpressionLetClause letClause, object data)
 		{

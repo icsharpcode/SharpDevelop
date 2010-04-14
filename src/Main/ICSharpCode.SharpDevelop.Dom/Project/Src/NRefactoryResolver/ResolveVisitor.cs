@@ -549,7 +549,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (selectClause != null) {
 				// Fake a call to 'Select'
 				var fakeInvocation = new InvocationExpression(new MemberReferenceExpression(
-					queryExpression.FromClause.InExpression, "Select"));
+					queryExpression.FromClause.Sources.First().Expression, "Select"));
 				
 				var selector = new LambdaExpression();
 				selector.Parameters.Add(new ParameterDeclarationExpression(null, "__rangeVariable"));
@@ -562,7 +562,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else if (groupClause != null) {
 				// Fake a call to 'GroupBy'
 				var fakeInvocation = new InvocationExpression(new MemberReferenceExpression(
-					queryExpression.FromClause.InExpression, "GroupBy"));
+					queryExpression.FromClause.Sources.First().Expression, "GroupBy"));
 				
 				var keySelector = new LambdaExpression();
 				keySelector.Parameters.Add(new ParameterDeclarationExpression(null, "__rangeVariable"));

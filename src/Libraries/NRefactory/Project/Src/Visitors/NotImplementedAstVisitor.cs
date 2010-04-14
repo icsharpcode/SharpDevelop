@@ -90,6 +90,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 			throw new global::System.NotImplementedException("CollectionInitializerExpression");
 		}
 		
+		public virtual object VisitCollectionRangeVariable(CollectionRangeVariable collectionRangeVariable, object data) {
+			throw new global::System.NotImplementedException("CollectionRangeVariable");
+		}
+		
 		public virtual object VisitCompilationUnit(CompilationUnit compilationUnit, object data) {
 			throw new global::System.NotImplementedException("CompilationUnit");
 		}

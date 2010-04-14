@@ -802,6 +802,89 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 	}
 	
+	public class CollectionRangeVariable : AbstractNode, INullable {
+		
+		string identifier;
+		
+		Expression expression;
+		
+		TypeReference type;
+		
+		public string Identifier {
+			get {
+				return identifier;
+			}
+			set {
+				identifier = value ?? "";
+			}
+		}
+		
+		public Expression Expression {
+			get {
+				return expression;
+			}
+			set {
+				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
+			}
+		}
+		
+		public TypeReference Type {
+			get {
+				return type;
+			}
+			set {
+				type = value ?? TypeReference.Null;
+				if (!type.IsNull) type.Parent = this;
+			}
+		}
+		
+		public CollectionRangeVariable() {
+			identifier = "";
+			expression = Expression.Null;
+			type = TypeReference.Null;
+		}
+		
+		public virtual bool IsNull {
+			get {
+				return false;
+			}
+		}
+		
+		public static CollectionRangeVariable Null {
+			get {
+				return NullCollectionRangeVariable.Instance;
+			}
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitCollectionRangeVariable(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[CollectionRangeVariable Identifier={0} Expression={1} Type={2}]", Identifier, Expression, Type);
+		}
+	}
+	
+	internal sealed class NullCollectionRangeVariable : CollectionRangeVariable {
+		
+		internal static NullCollectionRangeVariable Instance = new NullCollectionRangeVariable();
+		
+		public override bool IsNull {
+			get {
+				return true;
+			}
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return null;
+		}
+		
+		public override string ToString() {
+			return "[NullCollectionRangeVariable]";
+		}
+	}
+	
 	public class ConditionalExpression : Expression {
 		
 		Expression condition;
@@ -3670,19 +3753,19 @@ public Location ExtendedEndLocation { get; set; }
 	
 	public class QueryExpressionAggregateClause : QueryExpressionClause {
 		
-		QueryExpressionFromClause fromClause;
+		CollectionRangeVariable source;
 		
 		List<QueryExpressionClause> middleClauses;
 		
 		List<ExpressionRangeVariable> intoVariables;
 		
-		public QueryExpressionFromClause FromClause {
+		public CollectionRangeVariable Source {
 			get {
-				return fromClause;
+				return source;
 			}
 			set {
-				fromClause = value ?? QueryExpressionFromClause.Null;
-				if (!fromClause.IsNull) fromClause.Parent = this;
+				source = value ?? CollectionRangeVariable.Null;
+				if (!source.IsNull) source.Parent = this;
 			}
 		}
 		
@@ -3705,7 +3788,7 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public QueryExpressionAggregateClause() {
-			fromClause = QueryExpressionFromClause.Null;
+			source = CollectionRangeVariable.Null;
 			middleClauses = new List<QueryExpressionClause>();
 			intoVariables = new List<ExpressionRangeVariable>();
 		}
@@ -3715,8 +3798,7 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[QueryExpressionAggregateClause FromClause={0} MiddleClauses={1} IntoVariables={2" +
-					"}]", FromClause, GetCollectionString(MiddleClauses), GetCollectionString(IntoVariables));
+			return string.Format("[QueryExpressionAggregateClause Source={0} MiddleClauses={1} IntoVariables={2}]", Source, GetCollectionString(MiddleClauses), GetCollectionString(IntoVariables));
 		}
 	}
 	
@@ -3771,9 +3853,21 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
-	public class QueryExpressionFromClause : QueryExpressionFromOrJoinClause {
+	public class QueryExpressionFromClause : QueryExpressionClause {
+		
+		List<CollectionRangeVariable> sources;
+		
+		public List<CollectionRangeVariable> Sources {
+			get {
+				return sources;
+			}
+			set {
+				sources = value ?? new List<CollectionRangeVariable>();
+			}
+		}
 		
 		public QueryExpressionFromClause() {
+			sources = new List<CollectionRangeVariable>();
 		}
 		
 		public new static QueryExpressionFromClause Null {
@@ -3787,7 +3881,7 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[QueryExpressionFromClause Type={0} Identifier={1} InExpression={2}]", Type, Identifier, InExpression);
+			return string.Format("[QueryExpressionFromClause Sources={0}]", GetCollectionString(Sources));
 		}
 	}
 	
@@ -3807,50 +3901,6 @@ public Location ExtendedEndLocation { get; set; }
 		
 		public override string ToString() {
 			return "[NullQueryExpressionFromClause]";
-		}
-	}
-	
-	public abstract class QueryExpressionFromOrJoinClause : QueryExpressionClause {
-		
-		TypeReference type;
-		
-		string identifier;
-		
-		Expression inExpression;
-		
-		public TypeReference Type {
-			get {
-				return type;
-			}
-			set {
-				type = value ?? TypeReference.Null;
-				if (!type.IsNull) type.Parent = this;
-			}
-		}
-		
-		public string Identifier {
-			get {
-				return identifier;
-			}
-			set {
-				identifier = string.IsNullOrEmpty(value) ? "?" : value;
-			}
-		}
-		
-		public Expression InExpression {
-			get {
-				return inExpression;
-			}
-			set {
-				inExpression = value ?? Expression.Null;
-				if (!inExpression.IsNull) inExpression.Parent = this;
-			}
-		}
-		
-		protected QueryExpressionFromOrJoinClause() {
-			type = TypeReference.Null;
-			identifier = "?";
-			inExpression = Expression.Null;
 		}
 	}
 	
@@ -3984,11 +4034,13 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
-	public class QueryExpressionJoinClause : QueryExpressionFromOrJoinClause {
+	public class QueryExpressionJoinClause : QueryExpressionClause {
 		
 		Expression onExpression;
 		
 		Expression equalsExpression;
+		
+		CollectionRangeVariable source;
 		
 		string intoIdentifier;
 		
@@ -4012,6 +4064,16 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
+		public CollectionRangeVariable Source {
+			get {
+				return source;
+			}
+			set {
+				source = value ?? CollectionRangeVariable.Null;
+				if (!source.IsNull) source.Parent = this;
+			}
+		}
+		
 		public string IntoIdentifier {
 			get {
 				return intoIdentifier;
@@ -4024,6 +4086,7 @@ public Location ExtendedEndLocation { get; set; }
 		public QueryExpressionJoinClause() {
 			onExpression = Expression.Null;
 			equalsExpression = Expression.Null;
+			source = CollectionRangeVariable.Null;
 			intoIdentifier = "";
 		}
 		
@@ -4032,8 +4095,8 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[QueryExpressionJoinClause OnExpression={0} EqualsExpression={1} IntoIdentifier={" +
-					"2} Type={3} Identifier={4} InExpression={5}]", OnExpression, EqualsExpression, IntoIdentifier, Type, Identifier, InExpression);
+			return string.Format("[QueryExpressionJoinClause OnExpression={0} EqualsExpression={1} Source={2} IntoI" +
+					"dentifier={3}]", OnExpression, EqualsExpression, Source, IntoIdentifier);
 		}
 	}
 	
@@ -4079,18 +4142,18 @@ public Location ExtendedEndLocation { get; set; }
 	
 	public class QueryExpressionJoinVBClause : QueryExpressionClause {
 		
-		QueryExpressionFromClause joinVariable;
+		CollectionRangeVariable joinVariable;
 		
 		QueryExpressionJoinVBClause subJoin;
 		
 		List<QueryExpressionJoinConditionVB> conditions;
 		
-		public QueryExpressionFromClause JoinVariable {
+		public CollectionRangeVariable JoinVariable {
 			get {
 				return joinVariable;
 			}
 			set {
-				joinVariable = value ?? QueryExpressionFromClause.Null;
+				joinVariable = value ?? CollectionRangeVariable.Null;
 				if (!joinVariable.IsNull) joinVariable.Parent = this;
 			}
 		}
@@ -4115,7 +4178,7 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public QueryExpressionJoinVBClause() {
-			joinVariable = QueryExpressionFromClause.Null;
+			joinVariable = CollectionRangeVariable.Null;
 			subJoin = QueryExpressionJoinVBClause.Null;
 			conditions = new List<QueryExpressionJoinConditionVB>();
 		}

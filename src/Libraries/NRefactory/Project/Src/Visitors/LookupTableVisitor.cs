@@ -166,26 +166,29 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
 		{
 			QueryExpression parent = fromClause.Parent as QueryExpression;
-			AddVariable(fromClause.Type, fromClause.Identifier,
-			            fromClause.StartLocation, CurrentEndLocation,
-			            false, true, fromClause.InExpression, null, parent != null && parent.IsQueryContinuation);
+			foreach (CollectionRangeVariable variable in fromClause.Sources) {
+				AddVariable(variable.Type, variable.Identifier,
+				            variable.StartLocation, CurrentEndLocation,
+				            false, true, variable.Expression, null, parent != null && parent.IsQueryContinuation);
+			}
+
 			return base.VisitQueryExpressionFromClause(fromClause, data);
 		}
 		
 		public override object VisitQueryExpressionJoinClause(QueryExpressionJoinClause joinClause, object data)
 		{
 			if (string.IsNullOrEmpty(joinClause.IntoIdentifier)) {
-				AddVariable(joinClause.Type, joinClause.Identifier,
-				            joinClause.StartLocation, CurrentEndLocation,
-				            false, true, joinClause.InExpression, null, false);
+				AddVariable(joinClause.Source.Type, joinClause.Source.Identifier,
+				            joinClause.Source.StartLocation, CurrentEndLocation,
+				            false, true, joinClause.Source.Expression, null, false);
 			} else {
-				AddVariable(joinClause.Type, joinClause.Identifier,
-				            joinClause.StartLocation, joinClause.EndLocation,
-				            false, true, joinClause.InExpression, null, false);
+				AddVariable(joinClause.Source.Type, joinClause.Source.Identifier,
+				            joinClause.Source.StartLocation, joinClause.Source.EndLocation,
+				            false, true, joinClause.Source.Expression, null, false);
 				
-				AddVariable(joinClause.Type, joinClause.IntoIdentifier,
-				            joinClause.StartLocation, CurrentEndLocation,
-				            false, false, joinClause.InExpression, null, false);
+				AddVariable(joinClause.Source.Type, joinClause.IntoIdentifier,
+				            joinClause.Source.StartLocation, CurrentEndLocation,
+				            false, false, joinClause.Source.Expression, null, false);
 			}
 			return base.VisitQueryExpressionJoinClause(joinClause, data);
 		}
@@ -210,7 +213,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				            forNextStatement.EndLocation,
 				            false, false,
 				            forNextStatement.Start,
-				            null, 
+				            null,
 				            false);
 				
 				base.VisitForNextStatement(forNextStatement, data);
