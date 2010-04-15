@@ -95,6 +95,42 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void SkipWhileTakeWhileQueryTest()
+		{
+			RunTest("From o In db.Orders Select o.OrderID Skip While o.OrderId > 2 Take While o.OrderId < 5", 4,
+			        expr => {
+			        	var fromClause = expr.Clauses[0] as QueryExpressionFromClause;
+			        	var selectClause = expr.Clauses[1] as QueryExpressionSelectVBClause;
+			        	var skipClause = expr.Clauses[2] as QueryExpressionPartitionVBClause;
+			        	var takeClause = expr.Clauses[3] as QueryExpressionPartitionVBClause;
+			        	
+			        	Assert.AreEqual(1, fromClause.Sources.Count);
+			        	
+			        	var var1 = fromClause.Sources.First();
+			        	
+			        	Assert.AreEqual("o", var1.Identifier);
+			        	Assert.IsTrue(var1.Expression is MemberReferenceExpression);
+			        	var inExpr = var1.Expression as MemberReferenceExpression;
+			        	Assert.IsTrue(inExpr.MemberName == "Orders" && inExpr.TargetObject is IdentifierExpression && (inExpr.TargetObject as IdentifierExpression).Identifier == "db");
+			        	
+			        	Assert.AreEqual(1, selectClause.Variables.Count);
+			        	Assert.IsTrue(selectClause.Variables[0].Expression is MemberReferenceExpression);
+			        	var member = selectClause.Variables[0].Expression as MemberReferenceExpression;
+			        	
+			        	Assert.IsTrue(member.MemberName == "OrderID" && member.TargetObject is IdentifierExpression && (member.TargetObject as IdentifierExpression).Identifier == "o");
+			        	
+			        	Assert.AreEqual(QueryExpressionPartitionType.SkipWhile, skipClause.PartitionType);
+			        	Assert.IsTrue(skipClause.Expression is BinaryOperatorExpression);
+			        	
+			        	Assert.AreEqual(QueryExpressionPartitionType.TakeWhile, takeClause.PartitionType);
+			        	Assert.IsTrue(takeClause.Expression is BinaryOperatorExpression);
+			        },
+			        typeof(QueryExpressionFromClause), typeof(QueryExpressionSelectVBClause),
+			        typeof(QueryExpressionPartitionVBClause), typeof(QueryExpressionPartitionVBClause)
+			       );
+		}
+		
+		[Test]
 		public void MultipleValuesSelectTest()
 		{
 			RunTest(@"From i In list Select i, x2 = i^2",
@@ -213,10 +249,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				var iv = groupClause.IntoVariables.First();
 				
 				Assert.IsTrue(gv.Expression is IdentifierExpression && (gv.Expression as IdentifierExpression).Identifier == "p");
-				Assert.IsTrue(bv.Expression is MemberReferenceExpression &&
-				              (bv.Expression as MemberReferenceExpression).MemberName == "Category");
-				Assert.IsTrue((bv.Expression as MemberReferenceExpression).TargetObject is IdentifierExpression &&
-				              ((bv.Expression as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "p");
+				CheckMemberReferenceExpression(bv.Expression, "Category", "p");
 				Assert.IsTrue(iv.Expression is IdentifierExpression &&
 				              (iv.Expression as IdentifierExpression).Identifier == "Group");
 				
@@ -226,11 +259,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				var letVariable = letClause.Variables.First();
 				
 				Assert.AreEqual("minPrice", letVariable.Identifier);
-				Assert.IsTrue(letVariable.Expression is InvocationExpression &&
-				              (letVariable.Expression as InvocationExpression).TargetObject is MemberReferenceExpression &&
-				              ((letVariable.Expression as InvocationExpression).TargetObject as MemberReferenceExpression).MemberName == "Min" &&
-				              ((letVariable.Expression as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject is IdentifierExpression &&
-				              (((letVariable.Expression as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "Group");
+				Assert.IsTrue(letVariable.Expression is InvocationExpression);
+				CheckMemberReferenceExpression((letVariable.Expression as InvocationExpression).TargetObject, "Min", "Group");
 
 				// Select
 				Assert.AreEqual(2, selectClause.Variables.Count);
@@ -240,11 +270,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				
 				Assert.IsTrue(var1.Expression is IdentifierExpression &&
 				              (var1.Expression as IdentifierExpression).Identifier == "Category");
-				Assert.IsTrue(var2.Expression is InvocationExpression &&
-				              (var2.Expression as InvocationExpression).TargetObject is MemberReferenceExpression &&
-				              ((var2.Expression as InvocationExpression).TargetObject as MemberReferenceExpression).MemberName == "Where" &&
-				              ((var2.Expression as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject is IdentifierExpression &&
-				              (((var2.Expression as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "Group");
+				Assert.IsTrue(var2.Expression is InvocationExpression);
+				CheckMemberReferenceExpression((var2.Expression as InvocationExpression).TargetObject, "Where", "Group");
 			};
 			
 			RunTest(@"From p In products _
@@ -285,10 +312,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				var condition1 = joinClause.Conditions.First();
 				
 				Assert.IsTrue(condition1.LeftSide is IdentifierExpression && (condition1.LeftSide as IdentifierExpression).Identifier == "c");
-				Assert.IsTrue(condition1.RightSide is MemberReferenceExpression &&
-				              ((condition1.RightSide as MemberReferenceExpression).TargetObject is IdentifierExpression) &&
-				              ((condition1.RightSide as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "p" &&
-				              (condition1.RightSide as MemberReferenceExpression).MemberName == "Category");
+				
+				CheckMemberReferenceExpression(condition1.RightSide, "Category", "p");
+				
 				// Select
 				Assert.AreEqual(2, selectClause.Variables.Count);
 				
@@ -300,10 +326,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				
 				Assert.IsTrue(var1.Expression is IdentifierExpression &&
 				              (var1.Expression as IdentifierExpression).Identifier == "c");
-				Assert.IsTrue(var2.Expression is MemberReferenceExpression &&
-				              (var2.Expression as MemberReferenceExpression).MemberName == "ProductName" &&
-				              (var2.Expression as MemberReferenceExpression).TargetObject is IdentifierExpression &&
-				              ((var2.Expression as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "p");
+				CheckMemberReferenceExpression(var2.Expression, "ProductName", "p");
 			};
 			
 			RunTest(@"From c In categories _
@@ -421,13 +444,11 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				var ordering1 = orderClause.Orderings.First();
 				var ordering2 = orderClause.Orderings.Skip(1).First();
 				
-				Assert.IsTrue(ordering1.Criteria is MemberReferenceExpression);
-				Assert.IsTrue((ordering1.Criteria as MemberReferenceExpression).MemberName == "Length");
-				Assert.IsTrue((ordering1.Criteria as MemberReferenceExpression).TargetObject is IdentifierExpression);
-				Assert.IsTrue(((ordering1.Criteria as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "d");
+				CheckMemberReferenceExpression(ordering1.Criteria, "Length", "d");
 
 				Assert.IsTrue(ordering2.Criteria is IdentifierExpression &&
 				              (ordering2.Criteria as IdentifierExpression).Identifier == "d");
+				
 				Assert.AreEqual(QueryExpressionOrderingDirection.None, ordering1.Direction);
 				Assert.AreEqual(QueryExpressionOrderingDirection.None, ordering2.Direction);
 
@@ -459,9 +480,103 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void AggregateTest()
+		{
+			Action<QueryExpressionVB> constraint = expr => {
+				var clause = expr.Clauses[0] as QueryExpressionAggregateClause;
+				
+				Assert.AreEqual("p", clause.Source.Identifier);
+				CheckMemberReferenceExpression(clause.Source.Expression, "GetProcesses", "Process");
+				
+				Assert.AreEqual(1, clause.IntoVariables.Count);
+				
+				var into1 = clause.IntoVariables.First();
+				
+				Assert.AreEqual("virtualMemory", into1.Identifier);
+				
+				Assert.IsTrue(into1.Expression is InvocationExpression &&
+				              (into1.Expression as InvocationExpression).TargetObject is IdentifierExpression &&
+				              ((into1.Expression as InvocationExpression).TargetObject as IdentifierExpression).Identifier == "Sum");
+				Assert.AreEqual(1, (into1.Expression as InvocationExpression).Arguments.Count);
+				CheckMemberReferenceExpression((into1.Expression as InvocationExpression).Arguments.First(), "VirtualMemorySize64", "p");
+			};
+			
+			RunTest(@"Aggregate p In Process.GetProcesses _
+			Into virtualMemory = Sum(p.VirtualMemorySize64)", 1, constraint, typeof(QueryExpressionAggregateClause));
+		}
+		
+		[Test]
 		public void GroupJoinTest()
 		{
+			Action<QueryExpressionVB> constraint = expr => {
+				var fromClause1 = expr.Clauses[0] as QueryExpressionFromClause;
+				var groupJoinClause = expr.Clauses[1] as QueryExpressionGroupJoinVBClause;
+				var fromClause2 = expr.Clauses[2] as QueryExpressionFromClause;
+				var selectClause = expr.Clauses[3] as QueryExpressionSelectVBClause;
+				
+				// From 1
+				Assert.AreEqual(1, fromClause1.Sources.Count);
+				
+				var var1 = fromClause1.Sources.First();
+				
+				Assert.AreEqual("s", var1.Identifier);
+				Assert.IsTrue(var1.Expression is IdentifierExpression &&
+				              (var1.Expression as IdentifierExpression).Identifier == "fileList");
+				
+				// From 2
+				Assert.AreEqual(1, fromClause2.Sources.Count);
+				
+				var var2 = fromClause2.Sources.First();
+				
+				Assert.AreEqual("p", var2.Identifier);
+				Assert.IsTrue(var2.Expression is IdentifierExpression &&
+				              (var2.Expression as IdentifierExpression).Identifier == "Group");
+				
+				// Select
+				Assert.AreEqual(1, selectClause.Variables.Count);
+				
+				var var3 = selectClause.Variables.First();
+				
+				Assert.IsEmpty(var3.Identifier);
+				Assert.IsTrue(var3.Expression is IdentifierExpression &&
+				              (var3.Expression as IdentifierExpression).Identifier == "s");
+				
+				// Group Join
+				var joinClause = groupJoinClause.JoinClause;
+				
+				// Join In On Equals
+				var inClause = joinClause.JoinVariable as CollectionRangeVariable;
+				
+				Assert.AreEqual("p", inClause.Identifier);
+				Assert.IsTrue(inClause.Expression is IdentifierExpression &&
+				              (inClause.Expression as IdentifierExpression).Identifier == "IMAGES");
+				
+				Assert.IsTrue(joinClause.SubJoin.IsNull);
+				
+				Assert.AreEqual(1, joinClause.Conditions.Count);
+				
+				var condition1 = joinClause.Conditions.First();
+				
+				Assert.IsTrue(condition1.LeftSide is InvocationExpression);
+				Assert.IsTrue((condition1.LeftSide as InvocationExpression).TargetObject is MemberReferenceExpression);
+				Assert.IsTrue(((condition1.LeftSide as InvocationExpression).TargetObject as MemberReferenceExpression).MemberName == "ToUpper");
+				Assert.IsTrue(((condition1.LeftSide as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject is MemberReferenceExpression);
+				Assert.IsTrue((((condition1.LeftSide as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject as MemberReferenceExpression).MemberName == "Extension");
+				Assert.IsTrue((((condition1.LeftSide as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject as MemberReferenceExpression).TargetObject is IdentifierExpression);
+				Assert.IsTrue(((((condition1.LeftSide as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "s");
+				
+				Assert.IsTrue(condition1.RightSide is InvocationExpression);
+				Assert.IsTrue((condition1.RightSide as InvocationExpression).TargetObject is MemberReferenceExpression);
+				Assert.IsTrue(((condition1.RightSide as InvocationExpression).TargetObject as MemberReferenceExpression).MemberName == "ToUpper");
+				Assert.IsTrue(((condition1.RightSide as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject is IdentifierExpression);
+				Assert.IsTrue((((condition1.RightSide as InvocationExpression).TargetObject as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "p");
+			};
 			
+			RunTest(@"From s In fileList _
+Group Join p In IMAGES On s.Extension.ToUpper() Equals p.ToUpper() Into Group _
+From p In Group _
+Select s", 4, constraint,
+			        typeof(QueryExpressionFromClause), typeof(QueryExpressionGroupJoinVBClause), typeof(QueryExpressionFromClause), typeof(QueryExpressionSelectVBClause));
 		}
 		
 		[Test]
@@ -483,18 +598,12 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				Assert.IsTrue((fromVar1.Expression as IdentifierExpression).Identifier == "customers");
 				
 				Assert.AreEqual("o", fromVar2.Identifier);
-				Assert.IsTrue(fromVar2.Expression is MemberReferenceExpression);
-				Assert.IsTrue((fromVar2.Expression as MemberReferenceExpression).MemberName == "Orders");
-				Assert.IsTrue((fromVar2.Expression as MemberReferenceExpression).TargetObject is IdentifierExpression);
-				Assert.IsTrue(((fromVar2.Expression as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "c");
+				CheckMemberReferenceExpression(fromVar2.Expression, "Orders", "c");
 				
 				// Where
 				Assert.IsTrue(whereClause.Condition is BinaryOperatorExpression);
 				Assert.IsTrue((whereClause.Condition as BinaryOperatorExpression).Op == BinaryOperatorType.LessThan);
-				Assert.IsTrue((whereClause.Condition as BinaryOperatorExpression).Left is MemberReferenceExpression);
-				Assert.IsTrue(((whereClause.Condition as BinaryOperatorExpression).Left as MemberReferenceExpression).MemberName == "Total");
-				Assert.IsTrue(((whereClause.Condition as BinaryOperatorExpression).Left as MemberReferenceExpression).TargetObject is IdentifierExpression);
-				Assert.IsTrue((((whereClause.Condition as BinaryOperatorExpression).Left as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "o");
+				CheckMemberReferenceExpression((whereClause.Condition as BinaryOperatorExpression).Left, "Total", "o");
 				Assert.IsTrue((whereClause.Condition as BinaryOperatorExpression).Right is PrimitiveExpression);
 				Assert.IsTrue((double)((whereClause.Condition as BinaryOperatorExpression).Right as PrimitiveExpression).Value == 500.0);
 				
@@ -507,11 +616,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 				var var2 = selectClause.Variables.Skip(1).First();
 				var var3 = selectClause.Variables.Skip(2).First();
 				
-				Assert.IsTrue(var1.Expression is MemberReferenceExpression);
-				Assert.IsTrue((var1.Expression as MemberReferenceExpression).MemberName == "CustomerID" &&
-				              (var1.Expression as MemberReferenceExpression).TargetObject is IdentifierExpression &&
-				              ((var1.Expression as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == "c");
-				CheckMemberReferenceExpression("CustomerID", "c");
+				CheckMemberReferenceExpression(var1.Expression, "CustomerID", "c");
+				CheckMemberReferenceExpression(var2.Expression, "OrderID", "o");
+				CheckMemberReferenceExpression(var3.Expression, "Total", "o");
 			};
 			
 			RunTest(@"From c In customers, o In c.Orders _
@@ -519,9 +626,12 @@ namespace ICSharpCode.NRefactory.Tests.Ast
         Select c.CustomerID, o.OrderID, o.Total", 3, constraint, typeof(QueryExpressionFromClause), typeof(QueryExpressionWhereClause), typeof(QueryExpressionSelectVBClause));
 		}
 		
-		void CheckMemberReferenceExpression(string member, string target)
+		void CheckMemberReferenceExpression(Expression expr, string memberName, string targetObjectIdentifier)
 		{
-			
+			Assert.IsTrue(expr is MemberReferenceExpression);
+			Assert.IsTrue((expr as MemberReferenceExpression).MemberName == memberName &&
+			              (expr as MemberReferenceExpression).TargetObject is IdentifierExpression &&
+			              ((expr as MemberReferenceExpression).TargetObject as IdentifierExpression).Identifier == targetObjectIdentifier);
 		}
 	}
 }
