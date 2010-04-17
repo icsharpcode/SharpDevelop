@@ -18,12 +18,9 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 	[TestFixture]
 	public class NRefactoryAstConverterTests
 	{
-		ICompilationUnit Parse(string code, SupportedLanguage language, bool referenceMscorlib, params IProjectContent[] references)
+		ICompilationUnit Parse(string code, SupportedLanguage language, params IProjectContent[] references)
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
-			if (referenceMscorlib) {
-				pc.AddReferencedContent(SharedProjectContentRegistryForTests.Instance.Mscorlib);
-			}
 			foreach (var reference in references) {
 				pc.AddReferencedContent(reference);
 			}
@@ -36,16 +33,6 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 				visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			}
 			return visitor.Cu;
-		}
-		
-		ICompilationUnit Parse(string code, SupportedLanguage language, bool referenceMscorlib)
-		{
-			return Parse(code, language, referenceMscorlib, new IProjectContent[0]);
-		}
-		
-		ICompilationUnit Parse(string code, SupportedLanguage language)
-		{
-			return Parse(code, language, false);
 		}
 		
 		ICompilationUnit Parse(string code)
@@ -212,7 +199,7 @@ class X {
 		get { return 0; }
 	}
 }
-", SupportedLanguage.CSharp, true);
+", SupportedLanguage.CSharp, SharedProjectContentRegistryForTests.Instance.Mscorlib);
 			
 			IProperty p = cu.Classes[0].Properties[0];
 			Assert.IsTrue(p.IsIndexer, "IsIndexer must be true");
@@ -255,7 +242,7 @@ class Outer<T1> where T1 : IDisposable {
 		[Test]
 		public void DefaultConstructorTest()
 		{
-			ICompilationUnit cu = Parse("class X { }", SupportedLanguage.CSharp, true);
+			ICompilationUnit cu = Parse("class X { }", SupportedLanguage.CSharp, SharedProjectContentRegistryForTests.Instance.Mscorlib);
 			
 			Assert.AreEqual(0, cu.Classes[0].Methods.Count);
 			
@@ -267,7 +254,7 @@ class Outer<T1> where T1 : IDisposable {
 		[Test]
 		public void DefaultConstructorOnAbstractClassTest()
 		{
-			ICompilationUnit cu = Parse("abstract class X { }", SupportedLanguage.CSharp, true);
+			ICompilationUnit cu = Parse("abstract class X { }", SupportedLanguage.CSharp, SharedProjectContentRegistryForTests.Instance.Mscorlib);
 			
 			Assert.AreEqual(0, cu.Classes[0].Methods.Count);
 			
@@ -279,7 +266,7 @@ class Outer<T1> where T1 : IDisposable {
 		[Test]
 		public void NoDefaultConstructorWithExplicitConstructorTest()
 		{
-			ICompilationUnit cu = Parse("class X { private X(int a) {} }", SupportedLanguage.CSharp, true);
+			ICompilationUnit cu = Parse("class X { private X(int a) {} }", SupportedLanguage.CSharp, SharedProjectContentRegistryForTests.Instance.Mscorlib);
 			
 			Assert.AreEqual(1, cu.Classes[0].Methods.Count);
 			
@@ -291,7 +278,7 @@ class Outer<T1> where T1 : IDisposable {
 		[Test]
 		public void DefaultConstructorWithExplicitConstructorOnStructTest()
 		{
-			ICompilationUnit cu = Parse("struct X { private X(int a) {} }", SupportedLanguage.CSharp, true);
+			ICompilationUnit cu = Parse("struct X { private X(int a) {} }", SupportedLanguage.CSharp, SharedProjectContentRegistryForTests.Instance.Mscorlib);
 			
 			Assert.AreEqual(1, cu.Classes[0].Methods.Count);
 			
@@ -308,7 +295,7 @@ class Outer<T1> where T1 : IDisposable {
 		[Test]
 		public void NoDefaultConstructorOnStaticClassTest()
 		{
-			ICompilationUnit cu = Parse("static class X { }", SupportedLanguage.CSharp, true);
+			ICompilationUnit cu = Parse("static class X { }", SupportedLanguage.CSharp);
 			
 			Assert.AreEqual(0, cu.Classes[0].Methods.Count);
 			Assert.IsFalse(cu.Classes[0].DefaultReturnType.GetMethods().Any(m => m.IsConstructor));
@@ -324,7 +311,7 @@ Module StringExtensions
 	Sub Print(s As String)
 	End Sub
 End Module";
-			ICompilationUnit cu = Parse(code, SupportedLanguage.VBNet, true,
+			ICompilationUnit cu = Parse(code, SupportedLanguage.VBNet, SharedProjectContentRegistryForTests.Instance.Mscorlib,
 			                            SharedProjectContentRegistryForTests.Instance.GetProjectContentForReference("System.Core", "System.Core"));
 			Assert.Greater(cu.Classes.Count, 0);
 			Assert.AreEqual("StringExtensions", cu.Classes[0].Name);

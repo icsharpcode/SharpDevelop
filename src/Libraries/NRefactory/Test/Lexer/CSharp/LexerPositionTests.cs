@@ -233,5 +233,24 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Assert.AreEqual(new Location(1, 1), t.Location);
 			Assert.AreEqual(new Location(2, 2), t.EndLocation);
 		}
+		
+		[Test]
+		public void TestPositionOfEOF1()
+		{
+			ILexer l = GenerateLexer("public");
+			l.NextToken(); // public
+			Token t = l.NextToken();
+			Assert.AreEqual(new Location(7, 1), t.Location);
+			Assert.AreEqual(new Location(7, 1), t.EndLocation);
+		}
+		
+		[Test]
+		public void TestPositionOfEOF2()
+		{
+			ILexer l = GenerateLexer("\n ");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Location(2, 2), t.Location);
+			Assert.AreEqual(new Location(2, 2), t.EndLocation);
+		}
 	}
 }

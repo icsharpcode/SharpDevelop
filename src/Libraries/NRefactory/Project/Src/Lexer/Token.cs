@@ -60,10 +60,6 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public Token(int kind) : this(kind, 0, 0)
-		{
-		}
-		
 		public Token(int kind, int col, int line) : this (kind, col, line, null)
 		{
 		}
@@ -74,7 +70,7 @@ namespace ICSharpCode.NRefactory.Parser
 			this.col          = col;
 			this.line         = line;
 			this.val          = val;
-			this.endLocation  = new Location(col + (string.IsNullOrEmpty(val) ? 1 : val.Length), line);
+			this.endLocation  = new Location(col + (val == null ? 1 : val.Length), line);
 		}
 		
 		internal Token(int kind, int x, int y, string val, object literalValue, LiteralFormat literalFormat)

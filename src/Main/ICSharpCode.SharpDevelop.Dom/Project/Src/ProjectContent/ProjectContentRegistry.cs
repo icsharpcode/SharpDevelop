@@ -198,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				try {
 					pc = LoadProjectContent(itemInclude, itemFileName);
 				} catch (Exception ex) {
-					HostCallback.ShowAssemblyLoadErrorInternal(itemFileName, itemInclude, "Error loading assembly:\n" + ex.ToString());
+					HostCallback.ShowError("Error loading assembly " + itemFileName, ex);
 				} finally {
 					#if DEBUG
 					LoggingService.Debug(string.Format("Loaded {0} in {1}ms", itemInclude, Environment.TickCount - time));

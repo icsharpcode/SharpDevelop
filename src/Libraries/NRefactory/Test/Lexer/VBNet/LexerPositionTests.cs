@@ -56,5 +56,37 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(new Location(1, 2), t.Location);
 			Assert.AreEqual(new Location(7, 2), t.EndLocation);
 		}
+		
+		[Test]
+		public void TestPositionOfEOF1()
+		{
+			ILexer l = GenerateLexer("public");
+			l.NextToken(); // public
+			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.EOL, t.Kind);
+			Assert.AreEqual(new Location(7, 1), t.Location);
+			Assert.AreEqual(new Location(7, 1), t.EndLocation);
+			
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.EOF, t.Kind);
+			Assert.AreEqual(new Location(7, 1), t.Location);
+			Assert.AreEqual(new Location(7, 1), t.EndLocation);
+		}
+		
+		[Test]
+		public void TestPositionOfEOF2()
+		{
+			ILexer l = GenerateLexer("public _\n ");
+			l.NextToken(); // public
+			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.EOL, t.Kind);
+			Assert.AreEqual(new Location(2, 2), t.Location);
+			Assert.AreEqual(new Location(2, 2), t.EndLocation);
+			
+			t = l.NextToken();
+			Assert.AreEqual(Tokens.EOF, t.Kind);
+			Assert.AreEqual(new Location(2, 2), t.Location);
+			Assert.AreEqual(new Location(2, 2), t.EndLocation);
+		}
 	}
 }

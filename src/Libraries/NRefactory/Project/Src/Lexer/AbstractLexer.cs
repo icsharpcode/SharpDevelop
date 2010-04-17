@@ -77,7 +77,6 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected int ReaderRead()
 		{
-			++col;
 			int val = reader.Read();
 			if (recordRead)
 				recordedText.Append ((char)val);
@@ -85,6 +84,8 @@ namespace ICSharpCode.NRefactory.Parser
 				++line;
 				col = 1;
 				LineBreak ();
+			} else if (val >= 0) {
+				col++;
 			}
 			return val;
 		}

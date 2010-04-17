@@ -40,9 +40,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			curToken = curToken.next;
 			
 			if (curToken.kind == Tokens.EOF && !(lastToken.kind == Tokens.EOL)) { // be sure that before EOF there is an EOL token
-				curToken = new Token(Tokens.EOL, curToken.col, curToken.line, "\n");
+				curToken = new Token(Tokens.EOL, curToken.col, curToken.line, string.Empty);
 				specialTracker.InformToken(curToken.kind);
-				curToken.next = new Token(Tokens.EOF, curToken.col, curToken.line, "\n");
+				curToken.next = new Token(Tokens.EOF, curToken.col, curToken.line, string.Empty);
 				specialTracker.InformToken(curToken.next.kind);
 			}
 			//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					Location startLocation = new Location(Col, Line);
 					int nextChar = ReaderRead();
 					if (nextChar == -1)
-						return new Token(Tokens.EOF);
+						return new Token(Tokens.EOF, Col, Line, string.Empty);
 					char ch = (char)nextChar;
 					if (Char.IsWhiteSpace(ch)) {
 						if (HandleLineEnd(ch)) {
@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					if (ch == '_') {
 						if (ReaderPeek() == -1) {
 							errors.Error(Line, Col, String.Format("No EOF expected after _"));
-							return new Token(Tokens.EOF);
+							return new Token(Tokens.EOF, Col, Line, string.Empty);
 						}
 						if (!Char.IsWhiteSpace((char)ReaderPeek())) {
 							int x = Col - 1;
@@ -102,7 +102,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								ch = (char)ReaderRead();
 							} else {
 								errors.Error(Line, Col, String.Format("No EOF expected after _"));
-								return new Token(Tokens.EOF);
+								return new Token(Tokens.EOF, Col, Line, string.Empty);
 							}
 						}
 						if (!lineEnd) {
