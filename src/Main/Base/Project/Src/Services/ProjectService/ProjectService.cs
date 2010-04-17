@@ -432,13 +432,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Returns a File Dialog filter that can be used to filter on all registered project formats
 		/// </summary>
-		public static string GetAllProjectsFilter(object caller)
+		public static string GetAllProjectsFilter(object caller, bool includeSolutions)
 		{
 			AddInTreeNode addinTreeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
 			StringBuilder b = new StringBuilder(StringParser.Parse("${res:SharpDevelop.Solution.AllKnownProjectFormats}|"));
 			bool first = true;
 			foreach (Codon c in addinTreeNode.Codons) {
 				string ext = c.Properties.Get("extensions", "");
+				if (!includeSolutions && ext == "*.sln")
+					continue;
 				if (ext != "*.*" && ext.Length > 0) {
 					if (!first) {
 						b.Append(';');
@@ -449,6 +451,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			foreach (string entry in addinTreeNode.BuildChildItems(caller)) {
+				if (!includeSolutions && entry.EndsWith("*.sln"))
+					continue;
 				b.Append('|');
 				b.Append(entry);
 			}

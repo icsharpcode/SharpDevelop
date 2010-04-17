@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null) {
 				using (OpenFileDialog fdiag = new OpenFileDialog()) {
 					fdiag.AddExtension    = true;
-					fdiag.Filter = ProjectService.GetAllProjectsFilter(this);
+					fdiag.Filter = ProjectService.GetAllProjectsFilter(this, false);
 					fdiag.Multiselect     = true;
 					fdiag.CheckFileExists = true;
 					fdiag.InitialDirectory = AddNewProjectToSolution.GetInitialDirectorySuggestion(solutionFolderNode);

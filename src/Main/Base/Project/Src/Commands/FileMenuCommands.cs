@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
 				fdiag.AddExtension    = true;
-				fdiag.Filter          = ProjectService.GetAllProjectsFilter(this);
+				fdiag.Filter          = ProjectService.GetAllProjectsFilter(this, true);
 				fdiag.Multiselect     = false;
 				fdiag.CheckFileExists = true;
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
