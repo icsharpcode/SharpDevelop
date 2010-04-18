@@ -181,6 +181,15 @@ namespace Debugger.AddIn.TreeModel
 				fullText = FormatInteger(val.PrimitiveValue);
 			} else if (val.Type.IsPointer) {
 				fullText = String.Format("0x{0:X}", val.PointerAddress);
+			} else if ((val.Type.FullName == typeof(string).FullName ||
+			            val.Type.FullName == typeof(char).FullName) && !val.IsNull) {
+				try {
+					fullText = '"' + Escape(val.InvokeToString()) + '"';
+				} catch (GetValueException e) {
+					error = e;
+					fullText = e.Message;
+					return;
+				}
 			} else if ((val.Type.IsClass || val.Type.IsValueType) && !val.IsNull) {
 				try {
 					fullText = val.InvokeToString();
@@ -194,6 +203,19 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			this.Text = (fullText.Length > 256) ? fullText.Substring(0, 256) + "..." : fullText;
+		}
+		
+		string Escape(string source)
+		{
+			return source.Replace("\n", "\\n")
+				.Replace("\t", "\\t")
+				.Replace("\r", "\\r")
+				.Replace("\0", "\\0")
+				.Replace("\b", "\\b")
+				.Replace("\a", "\\a")
+				.Replace("\f", "\\f")
+				.Replace("\v", "\\v")
+				.Replace("\"", "\\\"");  
 		}
 		
 		string FormatInteger(object i)
