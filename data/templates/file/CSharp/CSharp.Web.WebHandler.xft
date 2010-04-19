@@ -1,0 +1,65 @@
+﻿<?xml version="1.0"?>
+<Template author="Justin Dearing" version="1.0">
+
+	<Config
+		name        = "${res:Templates.File.WebHandler.Name}"
+		icon        = "C#.File.NewClass"
+		category    = "C#"
+		subcategory = "ASP.NET"
+		defaultname = "WebHandler${Number}.ashx"
+		language    = "C#"
+	/>
+
+	<Description>${res:Templates.File.WebHandler.Description}</Description>
+	<!--
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${Path}/${FileName}.cs" DependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
+using System;
+using System.Web;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}
+	/// </summary>
+	public class ${ClassName} : IHttpHandler
+	{	
+
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#region Process Request
+		public void ProcessRequest(HttpContext context)
+		{
+			context.Response.ContentType = "text/plain";
+			context.Response.Write(@"Hello #Develop.");
+			context.Response.Flush();
+			context.Response.Close();
+		}
+		#endregion
+		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		
+		public bool IsReusable
+		{
+			get { return true; }
+		}
+
+	}
+}
+]]></File>
+		<File name="${FullName}" language="HTML"><![CDATA[<%@ WebHandler
+	Language           = "C#"
+	Class           = "${StandardNamespace}.${ClassName}"
+%>
+]]>		</File>
+
+	</Files>
+
+	<AdditionalOptions/>
+</Template>
