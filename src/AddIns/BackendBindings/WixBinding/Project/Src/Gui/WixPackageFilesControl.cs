@@ -39,6 +39,11 @@ namespace ICSharpCode.WixBinding
 		/// Raised when the files are changed and require saving.
 		/// </summary>
 		public event DirtyChangedEventHandler DirtyChanged;
+		
+		public bool ContextMenuEnabled {
+			get { return packageFilesTreeView.ContextMenuStrip.Enabled; }
+			set { packageFilesTreeView.ContextMenuStrip.Enabled = value; }
+		}
 				
 		/// <summary>
 		/// Gets or sets the error message that will be displayed instead of the

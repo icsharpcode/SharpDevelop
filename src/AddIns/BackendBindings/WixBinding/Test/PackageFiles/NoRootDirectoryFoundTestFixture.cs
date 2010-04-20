@@ -40,6 +40,12 @@ namespace WixBinding.Tests.PackageFiles
 			Assert.IsTrue(view.IsNoRootDirectoryFoundMessageDisplayed);
 		}
 		
+		[Test]
+		public void ContextMenuIsDisabled()
+		{
+			Assert.IsFalse(view.ContextMenuEnabled);
+		}
+		
 		/// <summary>
 		/// Deliberately use WiX 2.0's namespace so the test fixture will not find any
 		/// target directory element.

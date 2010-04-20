@@ -39,6 +39,12 @@ namespace WixBinding.Tests.PackageFiles
 			Assert.IsTrue(view.IsNoRootDirectoryFoundMessageDisplayed);
 		}
 		
+		[Test]
+		public void ContextMenuIsDisabled()
+		{
+			Assert.IsFalse(view.ContextMenuEnabled);
+		}
+		
 		protected override string GetWixXml()
 		{
 			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +
