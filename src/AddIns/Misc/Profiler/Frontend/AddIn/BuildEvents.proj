@@ -6,8 +6,35 @@
 	<ItemGroup>
 		<CopyHook Include="..\..\bin\Hook*.dll" />
 		<CopyHook Include="..\..\bin\Hook*.pdb" />
+		
+		<CleanupDirectories Include="..\..\Hook\Win32"/>
+		<CleanupDirectories Include="..\..\Hook\x64"/>
 	</ItemGroup>
+	<PropertyGroup>
+		<ProfilerHookDir>$(MSBuildProjectDirectory)\..\..\Hook</ProfilerHookDir>
+		
+		<ProgramFiles32>$(MSBuildExtensionsPath32)\..</ProgramFiles32>
+		<CppBatch32>$(ProgramFiles32)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat</CppBatch32>
+		<CppBatch64Native>$(ProgramFiles32)\Microsoft Visual Studio 9.0\VC\bin\vcvars64.bat</CppBatch64Native>
+		<CppBatch64Cross>$(ProgramFiles32)\Microsoft Visual Studio 9.0\VC\bin\vcvarsx86_amd64.bat</CppBatch64Cross>
+		<CppBatch64 Condition="Exists('$(CppBatch64Native)')">$(CppBatch64Native)</CppBatch64>
+		<CppBatch64 Condition="'$(CppBatch64)'==''">$(CppBatch64Cross)</CppBatch64>
+		<VcBuildArguments>/showenv "$(ProfilerHookDir)\Hook.vcproj" $(Configuration)</VcBuildArguments>
+	</PropertyGroup>
 	<Target Name="MyPostBuildTarget">
+		<Exec WorkingDirectory="$(ProfilerHookDir)"
+		      Command='call "$(CppBatch32)" &amp;&amp; vcbuild /platform:Win32 $(VcBuildArguments)'
+		      Condition="Exists('$(CppBatch32)')"/>
+		<Warning Text="$(CppBatch32) not found, skipped compiling profiler" Condition="!Exists('$(CppBatch32)')"/>
+
+		<Exec WorkingDirectory="$(ProfilerHookDir)"
+		      Command='call "$(CppBatch64)" &amp;&amp; vcbuild /platform:x64 $(VcBuildArguments)'
+			  Condition="Exists('$(CppBatch64)')"/>
+		<Warning Text="$(CppBatch64) not found, skipped compiling 64-bit profiler" Condition="!Exists('$(CppBatch64)')"/>
+		
 		<Copy SourceFiles="@(CopyHook)" DestinationFolder="$(OutputPath)" />
+	</Target>
+	<Target Name="MyPostCleanupTarget" AfterTargets="Clean">
+		<RemoveDir Directories="@(CleanupDirectories)" />
 	</Target>
 </Project>
