@@ -48,6 +48,7 @@
 
 	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders">
 		<Class id="ctor" class="SharpRefactoring.InsertCtorSnippetRefactoring" />
+		<Class id="ctor" class="SharpRefactoring.SwitchSnippetProvider" />
 	</Path>
 
 	<Path name="/SharpDevelop/ViewContent/TextEditor/OverrideCompletionHandler">

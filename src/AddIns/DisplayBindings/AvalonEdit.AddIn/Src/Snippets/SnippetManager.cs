@@ -82,7 +82,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "switch",
 						Description = "Switch statement",
-						Text = "switch (${condition}) {\n\tcase ${firstcase=0}:\n\t\t${Caret}\n\t\tbreak;\n\tdefault:\n\t\t${Selection}\n\t\tbreak;\n}"
+						// dynamic switch snippet (inserts switch body dependent on condition)
+						Text = "switch (${condition}) {\n${refactoring:switchbody}}"
+						// static switch snippet (always inserts the same, independent of condition)
+						//Text = "switch (${condition}) {\n\tcase ${firstcase=0}:\n\t\t${Caret}\n\t\tbreak;\n\tdefault:\n\t\t${Selection}\n\t\tbreak;\n}"
 					},
 					new CodeSnippet {
 						Name = "try",

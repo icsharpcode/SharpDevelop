@@ -107,6 +107,8 @@
     <Compile Include="Src\Options.cs" />
     <Compile Include="Src\ResolveAttribute.cs" />
     <Compile Include="Src\ResolveExtensionMethod.cs" />
+    <Compile Include="Src\SwitchBodySnippetElement.cs" />
+    <Compile Include="Src\SwitchSnippetProvider.cs" />
     <Compile Include="Src\Visitors\FindJumpInstructionsVisitor.cs" />
     <Compile Include="Src\Visitors\FindMemberVisitor.cs" />
     <Compile Include="Src\Visitors\FindReferenceVisitor.cs" />
