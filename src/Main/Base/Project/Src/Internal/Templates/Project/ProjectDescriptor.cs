@@ -5,16 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Build.Exceptions;
 using Import = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
@@ -329,26 +331,30 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				// Add Imports
 				if (clearExistingImports || projectImports.Count > 0) {
-					if (!(project is MSBuildBasedProject))
+					MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
+					if (msbuildProject == null)
 						throw new Exception("<Imports> may be only used in project templates for MSBuildBasedProjects");
-					throw new NotImplementedException();
-					/*
-					if (clearExistingImports) {
-						MSBuildInternals.ClearImports(((MSBuildBasedProject)project).MSBuildProject);
-					}
 					try {
-						foreach (Import projectImport in projectImports) {
-							((MSBuildBasedProject)project).MSBuildProject.AddNewImport(projectImport.Key, projectImport.Value);
-						}
-						((MSBuildBasedProject)project).CreateItemsListFromMSBuild();
-					} catch (MSBuild.InvalidProjectFileException ex) {
+						msbuildProject.PerformUpdateOnProjectFile(
+							delegate {
+								var projectFile = msbuildProject.MSBuildProjectFile;
+								if (clearExistingImports) {
+									foreach (var import in projectFile.Imports.ToArray())
+										projectFile.RemoveChild(import);
+								}
+								foreach (Import projectImport in projectImports) {
+									projectFile.AddImport(projectImport.Key).Condition = projectImport.Value;
+								}
+								
+							});
+					} catch (InvalidProjectFileException ex) {
 						if (string.IsNullOrEmpty(importsFailureMessage)) {
 							MessageService.ShowError("Error creating project:\n" + ex.Message);
 						} else {
 							MessageService.ShowError(importsFailureMessage + "\n\n" + ex.Message);
 						}
 						return null;
-					}*/
+					}
 				}
 				
 				if (projectProperties.Count > 0) {
@@ -417,7 +423,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					if (MessageService.AskQuestion(
 						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion}",
 						                   new StringTagPair("projectLocation", projectLocation)),
-						"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) 
+						"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}"))
 					{
 						project.Save();
 					}

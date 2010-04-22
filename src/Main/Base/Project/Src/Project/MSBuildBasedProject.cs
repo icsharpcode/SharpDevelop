@@ -113,10 +113,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected void SetToolsVersion(string newToolsVersion)
 		{
+			PerformUpdateOnProjectFile(
+				delegate {
+					projectFile.ToolsVersion = newToolsVersion;
+					userProjectFile.ToolsVersion = newToolsVersion;
+				});
+		}
+		
+		public void PerformUpdateOnProjectFile(Action action)
+		{
+			if (action == null)
+				throw new ArgumentNullException("action");
 			lock (SyncRoot) {
 				UnloadCurrentlyOpenProject();
-				projectFile.ToolsVersion = newToolsVersion;
-				userProjectFile.ToolsVersion = newToolsVersion;
+				action();
 				CreateItemsListFromMSBuild();
 			}
 		}
@@ -226,8 +236,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
-		/// Adds an MSBuild import to the project, refreshes the list of available item names
-		/// and recreates the project items.
+		/// Adds an MSBuild import to the project.
 		/// </summary>
 		protected void AddImport(string importedProjectFile, string condition)
 		{
@@ -1163,7 +1172,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			string userFileName = loadInformation.FileName + ".user";
 			if (File.Exists(userFileName)) {
 				try {
-				userProjectFile = ProjectRootElement.Open(userFileName, projectCollection);
+					userProjectFile = ProjectRootElement.Open(userFileName, projectCollection);
 				} catch (InvalidProjectFileException ex) {
 					throw new ProjectLoadException("Error loading user part " + userFileName + ":\n" + ex.Message, ex);
 				}
