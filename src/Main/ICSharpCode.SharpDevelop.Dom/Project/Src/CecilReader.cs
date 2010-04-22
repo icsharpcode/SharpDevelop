@@ -18,6 +18,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public static class CecilReader
 	{
+		sealed class DummyAssemblyResolver : IAssemblyResolver
+		{
+			public AssemblyDefinition Resolve(AssemblyNameReference name)
+			{
+				return null;
+			}
+			
+			public AssemblyDefinition Resolve(string fullName)
+			{
+				return null;
+			}
+		}
+		
 		public static ReflectionProjectContent LoadAssembly(string fileName, ProjectContentRegistry registry)
 		{
 			if (fileName == null)
@@ -25,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (registry == null)
 				throw new ArgumentNullException("registry");
 			LoggingService.Info("Cecil: Load from " + fileName);
-			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName);
+			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() });
 			List<DomAssemblyName> referencedAssemblies = new List<DomAssemblyName>();
 			foreach (ModuleDefinition module in asm.Modules) {
 				foreach (AssemblyNameReference anr in module.AssemblyReferences) {
@@ -42,11 +55,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			foreach (CustomAttribute att in attributeProvider.CustomAttributes) {
 				DefaultAttribute a = new DefaultAttribute(CreateType(pc, member, att.Constructor.DeclaringType));
 				// Currently Cecil returns string instead of TypeReference for typeof() arguments to attributes
-				foreach (var argument in att.ConstructorArguments) {
-					a.PositionalArguments.Add(GetValue(pc, member, argument));
-				}
-				foreach (CustomAttributeNamedArgument entry in att.Properties) {
-					a.NamedArguments.Add(entry.Name, GetValue(pc, member, entry.Argument));
+				try {
+					foreach (var argument in att.ConstructorArguments) {
+						a.PositionalArguments.Add(GetValue(pc, member, argument));
+					}
+					foreach (CustomAttributeNamedArgument entry in att.Properties) {
+						a.NamedArguments.Add(entry.Name, GetValue(pc, member, entry.Argument));
+					}
+				} catch (NullReferenceException) {
+					// Workaround for Cecil bug. TODO: remove when http://github.com/jbevain/cecil/issues#issue/6 is fixed
 				}
 				list.Add(a);
 			}

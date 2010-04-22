@@ -47,6 +47,8 @@ namespace ICSharpCode.XamlBinding.Tests
 			};
 			foreach (var assembly in referencedAssemblies) {
 				IProjectContent referenceProjectContent = AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference(assembly.Key, assembly.Value ?? assembly.Key);
+				if (referenceProjectContent == null)
+					throw new Exception("Error loading " + assembly.Key);
 				pc.ReferencedContents.Add(referenceProjectContent);
 				if (referenceProjectContent is ReflectionProjectContent) {
 					(referenceProjectContent as ReflectionProjectContent).InitializeReferences();

@@ -21,6 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public static Action<string, Exception> ShowError = delegate(string message, Exception ex) {
 			LoggingService.Error(message, ex);
+			throw new Exception(message, ex);
 		};
 		
 		public static Action<string> ShowMessage = delegate(string message) {

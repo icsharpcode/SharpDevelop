@@ -35,7 +35,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		/// <summary>
-		/// Creates a new TextSegmentReadOnlySectionProvider instance for the specified document.
+		/// Creates a new TextSegmentReadOnlySectionProvider instance using the specified TextSegmentCollection.
 		/// </summary>
 		public TextSegmentReadOnlySectionProvider(TextSegmentCollection<T> segments)
 		{
