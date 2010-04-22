@@ -23,6 +23,7 @@ namespace ICSharpCode.Reports.Core {
 		Font Font {get;set;}
 		bool Visible {get;set;}
 		Color BackColor {get;set;}
+		Color FrameColor {get;set;}
 		int SectionOffset {get;set;}
 		bool CanGrow {get;set;}
 		bool CanShrink {get;set;} 

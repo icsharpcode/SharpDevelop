@@ -32,7 +32,7 @@ namespace ICSharpCode.Reports.Addin
 
 		public BaseSection():base()
 		{
-			base.BackColor = Color.White;
+			base.FrameColor = Color.Black;
 			TypeDescriptor.AddProvider(new SectionItemTypeProvider(), typeof(BaseSection));
 		}
 		
@@ -47,9 +47,10 @@ namespace ICSharpCode.Reports.Addin
 		
 		public  override void Draw(Graphics graphics)
 		{
-			base.DrawControl(graphics,new Rectangle(this.Location,this.Size));
+			base.DrawControl(graphics,Rectangle.Inflate(this.ClientRectangle,-2,-2));
 		}
 	
+		
 		#region Propertys
 		
 		public int SectionOffset {
@@ -76,7 +77,6 @@ namespace ICSharpCode.Reports.Addin
 			get { return canShrink; }
 			set { canShrink = value; }
 		}
-		
 		
 		#endregion
 	}
@@ -140,7 +140,8 @@ namespace ICSharpCode.Reports.Addin
 			prop = props.Find("Controls",true);
 			allProperties.Add(prop);
 			
-			
+			prop = props.Find("FrameColor",true);
+			allProperties.Add(prop);
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}

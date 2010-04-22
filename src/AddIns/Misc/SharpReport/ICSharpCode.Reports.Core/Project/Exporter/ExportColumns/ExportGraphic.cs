@@ -47,7 +47,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 					BaseLine baseLine = null;
 					if (style.BackColor == GlobalValues.DefaultBackColor){
 						baseLine = new BaseLine (style.ForeColor,style.DashStyle,style.Thickness);
-
 					} else {
 						baseLine = new BaseLine (style.BackColor,style.DashStyle,style.Thickness);
 					}

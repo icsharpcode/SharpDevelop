@@ -95,8 +95,24 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildPageHeader ()
 		{
 			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
-			base.ConvertSection (base.ReportModel.PageHeader,
-			                     this.dataNavigator.CurrentRow );
+			ExporterCollection convertedList = new ExporterCollection();
+			/*
+			IBaseConverter baseConverter = ConverterFactory.CreateConverter(base.ReportModel.PageHeader.Items[0],
+			                                                                dataNavigator,
+			                                                                this.SinglePage,this.ExportItemsConverter,
+			                                                                base.Layouter);
+			if (baseConverter != null) {
+				
+				convertedList = baseConverter.Convert(base.ReportModel.PageHeader,base.ReportModel.PageHeader.Items[0]);
+				
+			} else {
+				convertedList = base.bak_Convert (base.ReportModel.PageHeader);
+				                    
+			}
+			*/
+			convertedList = base.bak_Convert (base.ReportModel.PageHeader);
+			
+			base.SinglePage.Items.AddRange(convertedList);
 		}
 		
 		

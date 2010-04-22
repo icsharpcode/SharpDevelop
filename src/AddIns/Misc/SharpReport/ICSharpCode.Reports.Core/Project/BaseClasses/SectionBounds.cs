@@ -24,6 +24,7 @@ namespace ICSharpCode.Reports.Core{
 		Point DetailStart {get;}
 		Point DetailEnds {get;}
 		Rectangle DetailArea {get;}
+		Size PageSize {get;set;}
 		int Gap {get;}
 		bool Landscape{get;}
 	}
@@ -38,6 +39,7 @@ namespace ICSharpCode.Reports.Core{
 		Rectangle marginBounds;
 		Rectangle detailArea;
 		
+		
 		bool firstPage;
 		bool landscape;
 		int gap = 1;
@@ -46,17 +48,24 @@ namespace ICSharpCode.Reports.Core{
 		#region Constructor
 	
 		
-		public SectionBounds (ReportSettings settings,bool firstPage)
+		public SectionBounds (ReportSettings reportSettings,bool firstPage)
 		{
+			if (reportSettings == null) {
+				throw new ArgumentNullException("reportSettings");
+			}
+			
 			this.firstPage = firstPage;
-			this.landscape = settings.Landscape;
-			this.printableArea = new Rectangle(settings.LeftMargin,settings.TopMargin,
-			                                   settings.PageSize.Width - settings.RightMargin,settings.PageSize.Height - settings.BottomMargin);
+			this.landscape = reportSettings.Landscape;
+			this.PageSize = reportSettings.PageSize;
+			
+			this.printableArea = new Rectangle(reportSettings.LeftMargin,reportSettings.TopMargin,
+			                                   reportSettings.PageSize.Width - reportSettings.RightMargin,
+			                                   reportSettings.PageSize.Height - reportSettings.BottomMargin);
 		
-			this.marginBounds = new Rectangle(settings.LeftMargin,
-			                                  settings.TopMargin,
-			                                  settings.PageSize.Width - settings.LeftMargin - settings.RightMargin,
-			                                  settings.PageSize.Height - settings.TopMargin - settings.BottomMargin);
+			this.marginBounds = new Rectangle(reportSettings.LeftMargin,
+			                                  reportSettings.TopMargin,
+			                                  reportSettings.PageSize.Width - reportSettings.LeftMargin - reportSettings.RightMargin,
+			                                  reportSettings.PageSize.Height - reportSettings.TopMargin - reportSettings.BottomMargin);
 		}
 		
 		#endregion
@@ -104,11 +113,18 @@ namespace ICSharpCode.Reports.Core{
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
+			/*
 			section.SectionOffset = this.printableArea.Bottom - section.Size.Height;
 			this.pageFooterRectangle =  new Rectangle(this.printableArea.Location.X,
 			                                          section.SectionOffset,
 			                                          this.marginBounds.Width,
 			                                          section.Size.Height);
+			*/
+			this.pageFooterRectangle =  new Rectangle(this.printableArea.Location.X,
+			                                          this.marginBounds.Bottom  - section.Size.Height,
+			                                          this.marginBounds.Width,
+			                                          section.Size.Height);
+			                                         
 		}
 		
 		//Test
@@ -192,7 +208,7 @@ namespace ICSharpCode.Reports.Core{
 		{
 			get {
 				return new Point(this.pageHeaderRectangle.Left,
-				                 this.pageHeaderRectangle.Bottom);
+				                 this.pageHeaderRectangle.Bottom + this.Gap);
 			}
 		}
 		
@@ -201,7 +217,7 @@ namespace ICSharpCode.Reports.Core{
 		public Point DetailEnds
 		{
 			get {
-				return new Point(this.pageFooterRectangle.Left,this.pageFooterRectangle.Top);
+				return new Point(this.pageFooterRectangle.Left,this.pageFooterRectangle.Top - this.Gap);
 			}
 		}
 		
@@ -235,6 +251,9 @@ namespace ICSharpCode.Reports.Core{
 		
 		public bool Landscape
 		{get {return this.landscape;}}
+		
+		public Size PageSize {get;set;}
+		
 		#endregion
 	}
 }

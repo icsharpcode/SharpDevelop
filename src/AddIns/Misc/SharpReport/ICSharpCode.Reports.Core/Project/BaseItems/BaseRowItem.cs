@@ -53,6 +53,7 @@ namespace ICSharpCode.Reports.Core{
 				style.Location = this.Location;
 			}
 			
+			//style.Location = this.Location;
 			style.Size = this.Size;
 			style.DrawBorder = this.DrawBorder;
 			return style;

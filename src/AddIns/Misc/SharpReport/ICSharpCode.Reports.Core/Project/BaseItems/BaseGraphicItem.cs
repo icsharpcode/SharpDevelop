@@ -36,6 +36,7 @@ namespace ICSharpCode.Reports.Core {
 			style.Location = this.Location;
 			style.BackColor = this.BackColor;
 			style.ForeColor = this.ForeColor;
+			style.FrameColor = this.FrameColor;
 			
 			style.Thickness = this.thickness;
 			style.DashStyle = this.dashStyle;
@@ -99,6 +100,7 @@ namespace ICSharpCode.Reports.Core {
 			get { return base.DrawBorder; }
 			set { base.DrawBorder = value; }
 		}
+		
 		
 		[XmlIgnoreAttribute]
 		[Browsable(false)]

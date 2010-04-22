@@ -103,6 +103,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 			PrintHelper.AdjustParent((BaseSection)section,section.Items);
 			ExporterCollection list = null;
 			
+			if (section.DrawBorder == true) {
+				BaseRectangleItem debugRectangle = new BaseRectangleItem();
+				debugRectangle = new BaseRectangleItem();
+				debugRectangle.Location = new Point (0 ,0);
+				debugRectangle.Size = new Size(section.Size.Width,section.Size.Height);
+				debugRectangle.FrameColor = section.FrameColor;
+				section.Items.Insert(0,debugRectangle);
+			}
+			
 			if (section.Items.Count > 0) {
 				
 				ISimpleContainer container = section.Items[0] as ISimpleContainer;
@@ -114,7 +123,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 					AdjustBackColor (container);
 					
 					ExporterCollection clist = container.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem) as ExporterCollection;
-					
 					
 					exportContainer.Items.AddRange(clist);
 					list = new ExporterCollection();
@@ -129,12 +137,65 @@ namespace ICSharpCode.Reports.Core.Exporter
 					if (!sectionRectangle.Contains(desiredRectangle)) {
 						section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
 					}
+					
+				
 					list = section.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
 				}
 				if ((list != null) && (list.Count) > 0) {
 					this.singlePage.Items.AddRange(list);
 				}
 			}
+		}
+		
+		protected ExporterCollection bak_Convert (BaseSection section)
+		{
+			this.exportItemsConverter.Offset = section.SectionOffset;
+			PrintHelper.AdjustParent((BaseSection)section,section.Items);
+			ExporterCollection list = null;
+			/*
+			if (section.DrawBorder == true) {
+				BaseRectangleItem debugRectangle = new BaseRectangleItem();
+				debugRectangle = new BaseRectangleItem();
+				debugRectangle.Location = new Point (0 ,0);
+				debugRectangle.Size = new Size(section.Size.Width,section.Size.Height);
+				debugRectangle.FrameColor = section.FrameColor;
+				section.Items.Insert(0,debugRectangle);
+			}
+			*/
+			if (section.Items.Count > 0) {
+				
+				ISimpleContainer container = section.Items[0] as ISimpleContainer;
+				if (container != null) {
+
+					ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(container);
+					this.exportItemsConverter.ParentLocation = exportContainer.StyleDecorator.Location;
+					
+					AdjustBackColor (container);
+					
+					ExporterCollection clist = container.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem) as ExporterCollection;
+					
+					exportContainer.Items.AddRange(clist);
+					list = new ExporterCollection();
+					list.Add(exportContainer);
+					
+				} else {
+					this.exportItemsConverter.ParentLocation = section.Location;
+					
+					Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
+					Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
+					
+					if (!sectionRectangle.Contains(desiredRectangle)) {
+						section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
+					}
+					
+				
+					list = section.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
+				}
+				if ((list != null) && (list.Count) > 0) {
+//					this.singlePage.Items.AddRange(list);
+				}
+			}
+			return list;
 		}
 		
 		private static void AdjustBackColor (ISimpleContainer container)

@@ -17,24 +17,7 @@ using System.Xml.Serialization;
 namespace ICSharpCode.Reports.Core {
 	public class BaseReportItem : IReportItem
 	{
-		private bool drawBorder;
-		private bool visible = true;
-		private bool canGrow;
-		private bool canShrink;
-		
-		private Color foreColor;
-		private Color backColor;
-		private Color frameColor;
-		
-		private string name;
-		private BaseReportItem parent;
-		
-		private Size size;
-		private Point location;
 	
-		private int  sectionOffset;
-		private Font font;
-		
 		[Obsolete ("will be deleted")]
 		public event EventHandler<BeforePrintEventArgs> ItemPrinting;
 		[Obsolete("will be deleted")]
@@ -44,11 +27,12 @@ namespace ICSharpCode.Reports.Core {
 		
 		public BaseReportItem() 
 		{
-			this.size = GlobalValues.PreferedSize;
-			this.backColor = GlobalValues.DefaultBackColor;
-			this.frameColor = GlobalValues.DefaultBackColor;
-			this.foreColor = Color.Black;
-			this.font = GlobalValues.DefaultFont;
+			this.Size = GlobalValues.PreferedSize;
+			this.BackColor = GlobalValues.DefaultBackColor;
+			this.FrameColor = Color.Black;
+			this.ForeColor = Color.Black;
+			this.Font = GlobalValues.DefaultFont;
+			this.Visible = true;
 		}
 		
 		#region EventHandling
@@ -104,122 +88,32 @@ namespace ICSharpCode.Reports.Core {
 	
 		#region Properties
 		
-		//
-		public virtual bool Visible 
-		{
-			get {
-				return visible;
-			}
-			set {
-				visible = value;
-			}
-		}
+		public virtual bool Visible {get;set;}
 		
-		
-		public bool CanGrow {
-			get { return canGrow; }
-			set { canGrow = value; }
-		}
-		
-		
-		public bool CanShrink {
-			get { return canShrink; }
-			set { canShrink = value; }
-		}
-		
-		
-		public virtual bool DrawBorder 
-		{
-			get {
-				return drawBorder;
-			}
-			set {
-				drawBorder = value;
-			}
-		}
-		
-		
-		public virtual string Name 
-		{
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}			
-		}
-		
-		
-		public virtual Size Size 
-		{
-			get {
-				return size;
-			}
-			set {
-				size = value;
-			}
-		}
-		
-		
-		public virtual Point Location 
-		{
-			get {
-				return location;
-			}
-			set {
-				location = value;
-			}
-		}
-		
-		
-		public virtual int SectionOffset 
-		{
-			get {
-				return sectionOffset;
-			}
-			set {
-				sectionOffset = value;
-			}
-		}
-		
-		
-		public  BaseReportItem Parent
-		{
-			get {
-				return parent;
-			}
-			set {
-				parent = value;
-			}
-		}
-		
-
-		public virtual Color ForeColor 
-		{
-			get {return foreColor;}
-			set {foreColor = value;}
-		}
-		
-		
-		public virtual Color BackColor
-		{
-			get {return backColor;}
-			set {backColor = value;}
-		}
-		
-		
-		public Color FrameColor {
-			get { return frameColor; }
-			set { frameColor = value; }
-		}
-		
-		
-		public virtual Font Font
-		{
-			get {return this.font;}			
-			set {this.font = value;}		
-		}
+		public bool CanGrow {get;set;}
 			
+		public bool CanShrink {get;set;}
+			
+		public virtual bool DrawBorder {get;set;}
+		
+		public virtual string Name {get;set;}
+		
+		public virtual Size Size {get;set;}
+		
+		public virtual Point Location {get;set;}
+		
+		public virtual int SectionOffset {get;set;}
+		
+		public  BaseReportItem Parent{get;set;}
+		
+		public virtual Color ForeColor {get;set;}
+	
+		public virtual Color BackColor{get;set;}
+		
+		public Color FrameColor{get;set;}
+		
+		public virtual Font Font {get;set;}
+		
 		#endregion
 		
 		
@@ -228,9 +122,9 @@ namespace ICSharpCode.Reports.Core {
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposing){
-				if (this.font != null){
-					this.font = null;
-					this.font.Dispose();
+				if (this.Font != null){
+					this.Font = null;
+					this.Font.Dispose();
 				}
 			}
 			

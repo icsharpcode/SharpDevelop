@@ -23,7 +23,7 @@ namespace ICSharpCode.Reports.Addin
 	[TypeDescriptionProvider(typeof(AbstractItemTypeProvider))]
 	public abstract class AbstractItem:System.Windows.Forms.Control
 	{
-		private Color frameColor =  GlobalValues.DefaultBackColor;
+		private Color frameColor = Color.Black;
 		private bool drawBorder;
 		private Size defaultSize;
 
@@ -38,13 +38,10 @@ namespace ICSharpCode.Reports.Addin
 		{
 			if (this.drawBorder == true) {
 				graphics.DrawRectangle(new Pen(this.frameColor),borderRectangle);
-				
-			} else {
-				System.Windows.Forms.ControlPaint.DrawBorder3D(graphics, this.ClientRectangle,
-			                                               System.Windows.Forms.Border3DStyle.Etched);
-			}
+			} 
+			System.Windows.Forms.ControlPaint.DrawBorder3D(graphics, this.ClientRectangle,
+				                                               System.Windows.Forms.Border3DStyle.Etched);
 		}
-		
 		
 		
 		#region Property's

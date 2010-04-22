@@ -53,9 +53,8 @@ namespace ICSharpCode.Reports.Core
 			
 			style.BackColor = this.BackColor;
 			style.ForeColor = this.ForeColor;
-			style.FrameColor = this.FrameColor;
 			
-			style.Font = new Font(this.Font,Font.Style);
+			style.Font = this.Font;
 			
 			style.Location = this.Location;
 			style.Size = this.Size;

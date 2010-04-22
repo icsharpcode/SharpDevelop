@@ -150,6 +150,7 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		[Test]
 		public void MeasurePageFooter()
 		{
+			var setting = new ReportSettings();
 			SectionBounds sectionBounds  = new SectionBounds(new ReportSettings(),true);
 			BaseSection baseSection = new BaseSection();
 			baseSection.Location = new Point (50,50);
@@ -161,6 +162,8 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			               
 			Assert.AreEqual(sectionBounds.MarginBounds.Width,
 			                sectionBounds.PageFooterRectangle.Width);
+			//int i = sectionBounds.PageSize.Height - setting.BottomMargin;
+			//Assert.AreEqual(i,sectionBounds.PageFooterRectangle.Location.Y);
 		}
 		
 		#endregion
@@ -214,7 +217,7 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			baseSection.Location = new Point (50,50);
 			baseSection.Size = new Size (727,60);
 			sectionBounds.MeasurePageHeader(baseSection);
-			Point p = new Point(sectionBounds.PageHeaderRectangle.Left,sectionBounds.PageHeaderRectangle.Bottom	);
+			Point p = new Point(sectionBounds.PageHeaderRectangle.Left,sectionBounds.PageHeaderRectangle.Bottom + sectionBounds.Gap	);
 			Assert.AreEqual(p,sectionBounds.DetailStart);
 		}
 			
@@ -226,7 +229,7 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			baseSection.Location = new Point (50,50);
 			baseSection.Size = new Size (727,60);
 			sectionBounds.MeasurePageFooter(baseSection);
-			Point p = new Point(sectionBounds.PageFooterRectangle.Left,sectionBounds.PageFooterRectangle.Top	);
+			Point p = new Point(sectionBounds.PageFooterRectangle.Left,sectionBounds.PageFooterRectangle.Top - sectionBounds.Gap);
 			Assert.AreEqual(p,sectionBounds.DetailEnds);
 		}
 		

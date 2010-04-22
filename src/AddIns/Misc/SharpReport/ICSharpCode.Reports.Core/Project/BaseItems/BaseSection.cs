@@ -7,8 +7,10 @@
 
 using System;
 using System.ComponentModel;
-using System.Xml.Serialization;
+using System.Drawing;
 using System.Linq;
+using System.Xml.Serialization;
+
 using ICSharpCode.Reports.Core.Interfaces;
 
 /// <summary>
@@ -20,7 +22,6 @@ namespace ICSharpCode.Reports.Core
 {
 	public class BaseSection : BaseReportItem {
 		
-//		private int sectionMargin;
 		private bool pageBreakAfter;
 		private ReportItemCollection items;
 		
@@ -48,6 +49,12 @@ namespace ICSharpCode.Reports.Core
 		{
 			this.NotifyPrinting();
 			base.Render(rpea);
+			
+			if (this.DrawBorder == true) {
+				Border b = new Border(new BaseLine (this.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
+				Rectangle r = new Rectangle (this.Location,this.Size);
+				b.DrawBorder(rpea.PrintPageEventArgs.Graphics,r);
+			}
 			this.NotifyPrinted();
 		}
 		

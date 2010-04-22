@@ -224,7 +224,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void OnPageCreated (object sender, PageCreatedEventArgs e)
 		{
-			System.Console.WriteLine("OnPageCreatd {0}",this.Pages.Count);
 			this.Pages.Add(e.SinglePage);
 			if (this.Pages.Count == 1) {
 				ShowSelectedPage();
