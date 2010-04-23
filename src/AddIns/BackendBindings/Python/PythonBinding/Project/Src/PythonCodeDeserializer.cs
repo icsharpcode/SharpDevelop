@@ -155,8 +155,7 @@ namespace ICSharpCode.PythonBinding
 		object DeserializeCreateArrayExpression(CallExpression callExpression, IndexExpression target)
 		{
 			ListExpression list = callExpression.Args[0].Expression as ListExpression;
-			MemberExpression arrayTypeMemberExpression = target.Index as MemberExpression;
-			Type arrayType = componentCreator.GetType(PythonControlFieldExpression.GetMemberName(arrayTypeMemberExpression));
+			Type arrayType = GetType(target.Index as MemberExpression);
 			Array array = Array.CreateInstance(arrayType, list.Items.Count);
 			for (int i = 0; i < list.Items.Count; ++i) {
 				Expression listItemExpression = list.Items[i];
@@ -172,11 +171,18 @@ namespace ICSharpCode.PythonBinding
 				} else if (nameExpression != null) {
 					array.SetValue(componentCreator.GetInstance(nameExpression.Name), i);
 				} else if (listItemCallExpression != null) {
-					object instance = componentCreator.CreateInstance(arrayType, GetArguments(listItemCallExpression), null, false);
+					Type arrayInstanceType = GetType(listItemCallExpression.Target as MemberExpression);
+					object instance = componentCreator.CreateInstance(arrayInstanceType, GetArguments(listItemCallExpression), null, false);
 					array.SetValue(instance, i);
 				}
 			}
-			return array;			
+			return array;
+		}
+		
+		Type GetType(MemberExpression memberExpression)
+		{
+			string typeName = PythonControlFieldExpression.GetMemberName(memberExpression);
+			return componentCreator.GetType(typeName);
 		}
 		
 		/// <summary>

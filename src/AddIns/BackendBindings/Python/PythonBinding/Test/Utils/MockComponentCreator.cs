@@ -10,8 +10,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
-using System.Globalization;
+using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Reflection;
 using System.Resources;
 using System.Windows.Forms;
@@ -133,6 +134,9 @@ namespace PythonBinding.Tests.Utils
 			}
 			if (type == null) {
 				type = typeof(Component).Assembly.GetType(typeName);
+			}
+			if (type == null) {
+				type = typeof(DataTable).Assembly.GetType(typeName);
 			}
 			if (type == null) {
 				types.TryGetValue(typeName, out type);
