@@ -224,8 +224,9 @@ namespace NUnit.ConsoleRunner
 			}
 			else
 			{
-                // TODO: Figure out a better way to handle "anonymous" packages
-				package = new TestPackage((string)options.Parameters[0], options.Parameters);
+				// TODO: Figure out a better way to handle "anonymous" packages
+				package = new TestPackage(null, options.Parameters);
+				package.AutoBinPath = true;
 				domainUsage = DomainUsage.Multiple;
 			}
 
