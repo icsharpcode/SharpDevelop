@@ -9,9 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
@@ -24,9 +27,11 @@ namespace SharpRefactoring
 	/// The snippet element inserted inside the body curly braces.
 	/// When snippet interactive mode ends, resolves type of switch condition and generates switch cases.
 	/// </summary>
-	public class SwitchBodySnippetElement : SnippetElement//, IActiveElement would add this.Segment to know where to insert
+	public class SwitchBodySnippetElement : SnippetElement
 	{
 		InsertionContext context;
+		TextAnchor anchor;
+		ClassFinder classFinderContext;
 		
 		/// <summary>
 		/// The ITextEditor in which this switch body element has been inserted.
@@ -42,10 +47,21 @@ namespace SharpRefactoring
 		{
 			this.context = context;
 			this.context.Deactivated += new EventHandler<SnippetEventArgs>(InteractiveModeCompleted);
+			this.anchor = SetUpAnchorAtInsertion(context);
+			this.classFinderContext = new ClassFinder(ParserService.ParseCurrentViewContent(), Editor.Document.Text, Editor.Caret.Offset);
 		}
 
+		TextAnchor SetUpAnchorAtInsertion(InsertionContext context)
+		{
+			var anchor = context.Document.CreateAnchor(context.InsertionPosition);
+			anchor.MovementType = ICSharpCode.AvalonEdit.Document.AnchorMovementType.BeforeInsertion;
+			return anchor;
+		}
+		
+		int InsertionPosition { get { return this.anchor.Offset; } }
+		
 		/// <summary>
-		/// Main logic of switch spinnet. Called when user ends the snippet interactive mode.
+		/// Main logic of switch snippet. Called when user ends the snippet interactive mode.
 		/// Inserts switch body depending on the type of switch condition:
 		/// Inserts all cases if condition is enum, generic switch body with one case otherwise.
 		/// </summary>
@@ -55,23 +71,16 @@ namespace SharpRefactoring
 				return;
 			
 			int offset;
-			// conditionText is currently not needed, 
-			// could be useful if NRefactory had a public method for resolving string expressions 
-			// (NRefactoryResolver.ParseExpression is private)
 			string conditionText = GetSwitchConditionText(this.context, out offset);
-			IReturnType conditionType = ResolveConditionType(offset);
 			
-			int lineStart = this.Editor.Document.GetLineForOffset(offset).Offset;
-			// indent the whole switch body appropriately
-			string indent = DocumentUtilitites.GetWhitespaceAfter(this.Editor.Document, lineStart);
-			indent += '\t';
-			// switch body starts at next line
-			int switchBodyOffset = GetNextLineStart(this.Editor.Document, offset);
-			                                      
+			IReturnType conditionType = ResolveConditionType(conditionText, offset);
+			
+			string switchBodyIndent = GetBodyIndent(this.Editor.Document, this.InsertionPosition);
+			
 			if (conditionType != null && IsEnum(conditionType)) {
-				GenerateEnumSwitchBodyCode(switchBodyOffset, conditionType, indent);
+				GenerateEnumSwitchBodyCode(this.InsertionPosition, conditionType, switchBodyIndent);
 			} else {
-				GenerateGenericSwitchBodyCode(switchBodyOffset, indent);
+				GenerateGenericSwitchBodyCode(this.InsertionPosition, switchBodyIndent);
 			}
 		}
 		
@@ -100,16 +109,38 @@ namespace SharpRefactoring
 		{
 			if (generator == null)
 				return string.Empty;
+			
+			ParseInformation parseInfo = ParserService.GetParseInformation(this.Editor.FileName);
+			//var usings = parseInfo.CompilationUnit.UsingScope.Usings.Select(u => u.Usings[0]).ToList();
+			//bool hasUsing = usings.Contains(enumType.Namespace);
+			// Attempt to eliminate redundant namespace in Namespace.Enum.ValueA if Namespace is present in 'using' section
+			//var v = new CSharpOutputVisitor();
+			//CodeGenerator.ConvertMember(enumCase, this.classFinderContext).AcceptVisitor(v, null);
+			bool hasUsing = false;
 			StringBuilder sb = new StringBuilder();
+			bool first = true;
 			foreach (var enumCase in GetEnumCases(enumType)) {
-				sb.AppendLine(string.Format(indent + "case {0}:", enumCase.Name));
-				sb.AppendLine(indent + '\t');
-				sb.AppendLine(indent + "\tbreak;");
+				string qualifiedName = hasUsing ? (enumType.Name + "." + enumCase.Name) : enumCase.FullyQualifiedName;
+				sb.AppendLine(string.Format((first ? "" : indent) + "case {0}:", qualifiedName));
+				sb.AppendLine(indent + context.Tab);
+				sb.AppendLine(indent + context.Tab + "break;");
+				first = false;
 			}
 			sb.AppendLine(indent + "default:");
-			sb.AppendLine(string.Format(indent + "\tthrow new Exception(\"Invalid value for {0}\");", enumType.Name));
+			sb.Append(string.Format(indent + context.Tab + "throw new Exception(\"Invalid value for {0}\");", enumType.Name));
 			return sb.ToString();
 		}
+		
+		// Namespace-wise(depending on using section) IField to string conversion?
+		/*string GetSwitchBodyCode(IReturnType enumType, string indent, CodeGenerator generator)
+		{
+			var switchLabels = GetEnumCases(enumType).Select(enumCase => 
+			                  		new CaseLabel(
+			                          new MemberReferenceExpression(
+			                          	CodeGenerator.ConvertType(enumType, this.classFinderContext), enumCase.Name))).ToList();
+			var switchBody = new SwitchSection(switchLabels);
+			return string.Empty;
+		}*/
 		
 		// TODO this should use CodeGenerator and build a BlockStatement to work for both C# and VB
 		string GetGenericBodyCode(string indent, CodeGenerator generator)
@@ -117,12 +148,12 @@ namespace SharpRefactoring
 			if (generator == null)
 				return string.Empty;
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine(indent + "case :");
-			sb.AppendLine(indent + '\t');
-			sb.AppendLine(indent + "\tbreak;");
+			sb.AppendLine(/*indent +*/ "case :");
+			sb.AppendLine(indent + context.Tab);
+			sb.AppendLine(indent + context.Tab + "break;");
 			sb.AppendLine(indent + "default:");
-			sb.AppendLine(indent + '\t');
-			sb.AppendLine(indent + "\tbreak;");
+			sb.AppendLine(indent + context.Tab);
+			sb.Append(indent + "\tbreak;");
 			return sb.ToString();
 		}
 		
@@ -132,20 +163,20 @@ namespace SharpRefactoring
 			if (typeClass == null)
 				// eg. MethodGroup type has no UnderlyingClass
 				return false;
-			return typeClass.BaseClass.DotNetName == "System.Enum";
+			return typeClass.ClassType == ICSharpCode.SharpDevelop.Dom.ClassType.Enum;
 		}
 		
 		/// <summary>
 		/// Gets enum values out of enum type.
 		/// </summary>
-		IEnumerable<DefaultField> GetEnumCases(IReturnType enumType)
+		IEnumerable<IField> GetEnumCases(IReturnType enumType)
 		{
 			var typeClass = enumType.GetUnderlyingClass();
 			if (typeClass == null)
 				// eg. MethodGroup type has no UnderlyingClass
 				yield break;
-			foreach (var enumValue in typeClass.AllMembers) {
-				yield return enumValue as DefaultField;
+			foreach (var enumValue in typeClass.Fields) {
+				yield return enumValue as IField;
 			}
 		}
 
@@ -170,28 +201,12 @@ namespace SharpRefactoring
 		/// <summary>
 		/// Resolves the Dom.IReturnType of expression ending at offset, ie. the switch condition expression.
 		/// </summary>
-		IReturnType ResolveConditionType(int offset)
+		IReturnType ResolveConditionType(string conditionExpression, int offset)
 		{
-			// this could be just solved by making NRefactoryResolver.ParseExpression public and passing the string
-			// - no need for offset and expressionFinder / ExpressionResult
-			ITextEditor textEditor = this.Editor;
-			if (textEditor == null)
-				return null;
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textEditor.FileName);
-			if (expressionFinder == null)
-				return null;
-			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textEditor.Document.Text, offset);
-			
-			Location location = textEditor.Document.OffsetToPosition(offset);
-			var result = ParserService.Resolve(expressionResult, location.Line, location.Column, textEditor.FileName, textEditor.Document.Text);
+			ExpressionResult expressionResult = new ExpressionResult(conditionExpression);
+			Location location = this.Editor.Document.OffsetToPosition(offset);
+			var result = ParserService.Resolve(expressionResult, location.Line, location.Column, this.Editor.FileName, this.Editor.Document.Text);
 			return result.ResolvedType;
-			
-			/*
-			// alternate way to ParserService.Resolve
-			var resolver = new NRefactoryResolver(textEditor.Language.Properties);
-			ResolveResult rr = resolver.Resolve(expressionResult, ParserService.GetParseInformation(textEditor.FileName), textEditor.Document.Text);
-			
-			return rr.ResolvedType;*/
 		}
 		
 		/// <summary>
@@ -213,6 +228,16 @@ namespace SharpRefactoring
 		{
 			int nextLineNuber = document.GetLineForOffset(offset).LineNumber + 1;
 			return document.GetLine(nextLineNuber).Offset;
+		}
+		
+		/// <summary>
+		/// Indents the switch body by the same indent the whole snippet has and adds one TAB.
+		/// </summary>
+		string GetBodyIndent(IDocument document, int offset)
+		{
+			int lineStart = document.GetLineForOffset(offset).Offset;
+			string indent = DocumentUtilitites.GetWhitespaceAfter(document, lineStart);
+			return indent;
 		}
 	}
 }
