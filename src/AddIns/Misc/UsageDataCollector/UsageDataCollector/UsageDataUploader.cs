@@ -154,8 +154,10 @@ namespace ICSharpCode.UsageDataCollector
 			try {
 				client.EndUploadUsageData(result);
 				success = true;
-			} catch (EndpointNotFoundException) {
+			} catch (CommunicationException) {
 				// ignore error (maybe currently not connected to network)
+			} catch (TimeoutException) {
+				// ignore error (network connection trouble?)
 			}
 			client.Close();
 			
