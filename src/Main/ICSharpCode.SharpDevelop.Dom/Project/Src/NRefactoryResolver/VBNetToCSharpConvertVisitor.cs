@@ -497,7 +497,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					MemberReferenceExpression targetObjectFre = targetObject as MemberReferenceExpression;
 					if (p.IsIndexer && targetObjectFre != null) {
 						MemberResolveResult rr2 = Resolve(targetObjectFre) as MemberResolveResult;
-						if (rr2 != null && rr2.ResolvedMember == rr.ResolvedMember) {
+						if (rr2 != null && rr2.ResolvedMember.FullyQualifiedName == rr.ResolvedMember.FullyQualifiedName) {
 							// remove ".Items"
 							targetObject = targetObjectFre.TargetObject;
 						}
@@ -613,6 +613,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			FixTypeReferenceCasing(variableDeclaration.TypeReference, variableDeclaration.StartLocation);
 			return base.VisitVariableDeclaration(variableDeclaration, data);
+		}
+		
+		public override object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		{
+			FixTypeReferenceCasing(parameterDeclarationExpression.TypeReference, parameterDeclarationExpression.StartLocation);
+			return base.VisitParameterDeclarationExpression(parameterDeclarationExpression, data);
 		}
 		
 		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)

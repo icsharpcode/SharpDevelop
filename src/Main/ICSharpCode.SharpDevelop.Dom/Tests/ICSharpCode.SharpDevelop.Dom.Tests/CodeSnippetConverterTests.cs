@@ -127,6 +127,19 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 			Assert.AreEqual("ChrW(CByte(65))", converter.CSharpToVB("(char)(byte)65", out errors));
 		}
 		
+		[Test]
+		public void FixItemAccess()
+		{
+			Assert.AreEqual("public void A(System.Collections.Generic.List<string> l)\n" +
+			                "{\n" +
+			                "  l[0].ToString();\n" +
+			                "}",
+			                Normalize(converter.VBToCSharp("Sub A(l As Generic.List(Of String))\n" +
+			                                               " l.Item(0).ToString()\n" +
+			                                               "End Sub",
+			                                               out errors)));
+		}
+		
 		string Normalize(string text)
 		{
 			return text.Replace("\t", "  ").Replace("\r", "").Trim();
