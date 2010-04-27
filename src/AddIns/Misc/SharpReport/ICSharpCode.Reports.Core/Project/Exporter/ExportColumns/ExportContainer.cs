@@ -13,45 +13,49 @@ namespace ICSharpCode.Reports.Core.Exporter
 	/// <summary>
 	/// Description of ContainerItem.
 	/// </summary>
-	public class ExportContainer:BaseExportColumn
+	public class ExportContainer : BaseExportColumn, IExportContainer
 	{
 
 		ExporterCollection items;
-		
+
 		#region Constructor
-		
-		public ExportContainer():base(){
+
+		public ExportContainer() : base()
+		{
 			base.IsContainer = true;
 		}
-		
-		public ExportContainer (BaseStyleDecorator itemStyle):base(itemStyle,true){
+
+		public ExportContainer(BaseStyleDecorator itemStyle) : base(itemStyle, true)
+		{
 		}
-		
+
 		#endregion
-		
+
 		#region overrides
-		
-		
-		public override void DrawItem(System.Drawing.Graphics graphics){
+
+
+		public override void DrawItem(System.Drawing.Graphics graphics)
+		{
 			base.Decorate(graphics);
 		}
-		
+
 		public override void DrawItem(PdfWriter pdfWriter, ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
 			base.DrawItem(pdfWriter, converter);
 			base.Decorate();
 		}
-		
-		
+
+
 		#endregion
-		
-		public void AddLineItem (BaseExportColumn item) {
+
+		public void AddLineItem(BaseExportColumn item)
+		{
 			if (item == null) {
 				throw new ArgumentNullException("item");
 			}
 			this.items.Add(item);
 		}
-		
+
 		public ExporterCollection Items {
 			get {
 				if (this.items == null) {

@@ -84,10 +84,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected override void BuildReportHeader ()
 		{
-			if (base.Pages.Count == 0) {
+			if ((base.Pages.Count == 0) && (base.ReportModel.ReportHeader.Items.Count > 0)) {
+				
 				base.ReportModel.ReportHeader.SectionOffset = base.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
-				base.ConvertSection (base.ReportModel.ReportHeader,
-				                     this.dataNavigator.CurrentRow);
+				ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.ReportHeader,this.dataNavigator.CurrentRow);
+				base.SinglePage.Items.AddRange(convertedList);
 			}
 		}
 		
@@ -95,40 +96,26 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildPageHeader ()
 		{
 			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
-			ExporterCollection convertedList = new ExporterCollection();
-			/*
-			IBaseConverter baseConverter = ConverterFactory.CreateConverter(base.ReportModel.PageHeader.Items[0],
-			                                                                dataNavigator,
-			                                                                this.SinglePage,this.ExportItemsConverter,
-			                                                                base.Layouter);
-			if (baseConverter != null) {
-				
-				convertedList = baseConverter.Convert(base.ReportModel.PageHeader,base.ReportModel.PageHeader.Items[0]);
-				
-			} else {
-				convertedList = base.bak_Convert (base.ReportModel.PageHeader);
-				                    
-			}
-			*/
-			convertedList = base.bak_Convert (base.ReportModel.PageHeader);
-			
+			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,this.dataNavigator.CurrentRow);
 			base.SinglePage.Items.AddRange(convertedList);
+			//orginal
+			//base.ConvertSection(base.ReportModel.PageHeader,0);
 		}
 		
 		
 		protected override void BuildReportFooter (Rectangle footerRectangle)
 		{
 			base.ReportModel.ReportFooter.SectionOffset = footerRectangle.Top;
-			base.ConvertSection (base.ReportModel.ReportFooter,
-			                     this.dataNavigator.CurrentRow);
+			ExporterCollection convertedList = base.ConvertSection (base.ReportModel.ReportFooter,this.dataNavigator.CurrentRow);
+			base.SinglePage.Items.AddRange(convertedList);
 		}
 		
 		
 		protected override void BuildPageFooter ()
 		{
 			base.ReportModel.PageFooter.SectionOffset =  base.SinglePage.SectionBounds.PageFooterRectangle.Top;
-			base.ConvertSection (base.ReportModel.PageFooter,
-			                     this.dataNavigator.CurrentRow);
+			ExporterCollection convertedList = convertedList = base.ConvertSection (base.ReportModel.PageFooter,this.dataNavigator.CurrentRow);
+			base.SinglePage.Items.AddRange(convertedList);
 		}
 		
 				
@@ -155,7 +142,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 			
 			
-		
 		#endregion
 		
 		private void WritePages ()

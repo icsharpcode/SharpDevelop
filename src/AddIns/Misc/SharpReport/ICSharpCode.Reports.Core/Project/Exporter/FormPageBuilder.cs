@@ -51,45 +51,39 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected override void BuildReportHeader()
 		{
-			base.BuildReportHeader();
 			if (base.Pages.Count == 0) {
 				this.ReportModel.ReportHeader.SectionOffset = base.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
-				base.ConvertSection(this.ReportModel.ReportHeader,1);                 
+				ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.ReportHeader,0);
+				base.SinglePage.Items.AddRange(convertedList);
 			}
 		}
 		
 		protected override void BuildPageHeader()
 		{
-			base.BuildPageHeader();
 			this.ReportModel.PageHeader.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Top;
-			base.ConvertSection(this.ReportModel.PageHeader,
-//				                      base.SinglePage.SectionBounds.PageHeaderRectangle.Top,
-				                      1 ); 
+			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,0);
+			base.SinglePage.Items.AddRange(convertedList);	                      
 		}
 		
 		protected override void BuildDetailInternal(BaseSection section)
 		{
 			base.BuildDetailInternal(section);
 			section.SectionOffset = base.SinglePage.SectionBounds.DetailStart.Y;
-			base.ConvertSection (section,
-//			                       base.SinglePage.SectionBounds.DetailStart.Y,
-			                       1);
 		}
 
 		
 		protected override void BuildPageFooter()
 		{
-			base.BuildPageFooter();
 			this.ReportModel.PageFooter.SectionOffset = base.SinglePage.SectionBounds.PageFooterRectangle.Top;
-			base.ConvertSection(this.ReportModel.PageFooter,
-//				                      base.SinglePage.SectionBounds.PageFooterRectangle.Top,
-				                      1 ); 
+			ExporterCollection convertedList = convertedList = base.ConvertSection (base.ReportModel.PageFooter,0);
+			base.SinglePage.Items.AddRange(convertedList);	                      
 		}
 		
 		
 		protected override void BuildReportFooter(Rectangle footerRectangle)
 		{
-			base.BuildReportFooter(footerRectangle);
+			ExporterCollection convertedList = base.ConvertSection (base.ReportModel.ReportFooter,0);
+			base.SinglePage.Items.AddRange(convertedList);
 		}
 		
 		

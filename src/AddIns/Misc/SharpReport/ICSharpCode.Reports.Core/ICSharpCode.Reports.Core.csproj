@@ -136,6 +136,7 @@
     <Compile Include="Project\Exporter\Decorators\IBaseStyleDecorator.cs" />
     <Compile Include="Project\Exporter\Decorators\ILineDecorator.cs" />
     <Compile Include="Project\Exporter\Decorators\Linedecorator.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\IExportContainer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\HTMLRenderer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\PdfRenderer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\XPSRenderer.cs" />

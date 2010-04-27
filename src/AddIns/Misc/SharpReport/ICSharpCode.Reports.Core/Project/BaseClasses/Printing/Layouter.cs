@@ -33,7 +33,7 @@ namespace ICSharpCode.Reports.Core
 			}
 			
 			BaseReportItem containerItem = container as BaseReportItem;
-			container.Items.SortByLocation();
+//			container.Items.SortByLocation();
 			Rectangle desiredContainerRectangle = new Rectangle (containerItem.Location,containerItem.Size);
 			
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;
@@ -62,7 +62,7 @@ namespace ICSharpCode.Reports.Core
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
-			section.Items.SortByLocation();
+			//section.Items.SortByLocation();
 		
 			IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in section.Items where bt.CanGrow == true select bt;
 			

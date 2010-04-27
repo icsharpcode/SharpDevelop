@@ -352,6 +352,10 @@ namespace ICSharpCode.Reports.Core{
 		
 		public void AddRange (IEnumerable <BaseExportColumn> items){
 			foreach (var item in items) {
+				IExportContainer container = item as IExportContainer;
+				if (container != null) {
+					AddRange(container.Items);
+				}
 				this.Add (item);
 			}
 		}

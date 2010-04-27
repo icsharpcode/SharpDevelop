@@ -90,13 +90,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Converters
 		
+		/*
 		protected void ConvertSection (BaseSection section,int currentRow)
 		{
 			this.FireSectionRenderEvent (section ,currentRow);
 			this.Convert(section);
 		}
-		
-		
+		*/
+		/*
 		private void Convert (BaseSection section)
 		{
 			this.exportItemsConverter.Offset = section.SectionOffset;
@@ -146,57 +147,68 @@ namespace ICSharpCode.Reports.Core.Exporter
 				}
 			}
 		}
+		*/
 		
-		protected ExporterCollection bak_Convert (BaseSection section)
+		
+		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
+			FireSectionRenderEvent (section ,dataRow);
 			this.exportItemsConverter.Offset = section.SectionOffset;
 			PrintHelper.AdjustParent((BaseSection)section,section.Items);
-			ExporterCollection list = null;
-			/*
+			
+			ExporterCollection list = new ExporterCollection();
+			
 			if (section.DrawBorder == true) {
-				BaseRectangleItem debugRectangle = new BaseRectangleItem();
-				debugRectangle = new BaseRectangleItem();
-				debugRectangle.Location = new Point (0 ,0);
-				debugRectangle.Size = new Size(section.Size.Width,section.Size.Height);
-				debugRectangle.FrameColor = section.FrameColor;
-				section.Items.Insert(0,debugRectangle);
+				section.Items.Insert(0,CreateDebugItem(section));
 			}
-			*/
+			
 			if (section.Items.Count > 0) {
 				
-				ISimpleContainer container = section.Items[0] as ISimpleContainer;
-				if (container != null) {
+				foreach (IReportItem item in section.Items) {
 
-					ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(container);
-					this.exportItemsConverter.ParentLocation = exportContainer.StyleDecorator.Location;
-					
-					AdjustBackColor (container);
-					
-					ExporterCollection clist = container.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem) as ExporterCollection;
-					
-					exportContainer.Items.AddRange(clist);
-					list = new ExporterCollection();
-					list.Add(exportContainer);
-					
-				} else {
-					this.exportItemsConverter.ParentLocation = section.Location;
-					
-					Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
-					Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
-					
-					if (!sectionRectangle.Contains(desiredRectangle)) {
-						section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
+					ISimpleContainer container = item as ISimpleContainer;
+					if (container != null) {
+						ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(container);
+						this.exportItemsConverter.ParentLocation = exportContainer.StyleDecorator.Location;
+						
+						AdjustBackColor (container);
+						ExporterCollection clist = container.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
+						exportContainer.Items.AddRange(clist);
+						list.Add(exportContainer);
+						
+					} else {
+						this.exportItemsConverter.ParentLocation = section.Location;
+						
+						Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
+						Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
+						
+						if (!sectionRectangle.Contains(desiredRectangle)) {
+							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
+						}
+						
+						list = section.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
 					}
 					
-				
-					list = section.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
-				}
-				if ((list != null) && (list.Count) > 0) {
-//					this.singlePage.Items.AddRange(list);
+//				if ((list != null) && (list.Count) > 0) {
+					////					this.singlePage.Items.AddRange(list);
+//				}
+//			}
 				}
 			}
 			return list;
 		}
+		
+		
+		private static BaseRectangleItem CreateDebugItem (BaseReportItem item)
+		{
+			BaseRectangleItem debugRectangle = new BaseRectangleItem();
+			debugRectangle = new BaseRectangleItem();
+			debugRectangle.Location = new Point (0 ,0);
+			debugRectangle.Size = new Size(item.Size.Width,item.Size.Height);
+			debugRectangle.FrameColor = item.FrameColor;
+			return debugRectangle;
+		}
+		
 		
 		private static void AdjustBackColor (ISimpleContainer container)
 		{
