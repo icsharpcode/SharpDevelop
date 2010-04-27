@@ -382,6 +382,20 @@ namespace ICSharpCode.SharpDevelop.Tests
 		#endregion
 		
 		[Test]
+		public void FullyQualifyNamespaceReferencesInIdentifiers()
+		{
+			TestStatementsVB2CS("IO.Path.GetTempPath",
+			                    "System.IO.Path.GetTempPath();");
+		}
+		
+		[Test]
+		public void FullyQualifyNamespaceReferencesInTypeName()
+		{
+			TestStatementsVB2CS("Dim a As Collections.ICollection = New Collections.ArrayList",
+			                    "System.Collections.ICollection a = new System.Collections.ArrayList();");
+		}
+		
+		[Test]
 		public void AutomaticInitializeComponentCall()
 		{
 			TestProgramVB2CS("Imports System.Windows.Forms\n" +
@@ -502,7 +516,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "  End Sub\n" +
 			                 "  Public Field As Integer\n" +
 			                 "End Module",
-			                 DefaultUsingsCSharp + 
+			                 DefaultUsingsCSharp +
 			                 "class Test\n" +
 			                 "{\n" +
 			                 "  public void A()\n" +
@@ -758,11 +772,11 @@ namespace ICSharpCode.SharpDevelop.Tests
 			TestProgramCS2VB("class Test : System.Collections.Generic.List<int> {" +
 			                 "   public void RemoveAt(string strangeIndex) {}" +
 			                 "}",
-			                "Class Test\n" +
-			                "  Inherits System.Collections.Generic.List(Of Integer)\n" +
-			                "  Public Overloads Sub RemoveAt(strangeIndex As String)\n" +
-			                "  End Sub\n" +
-			                "End Class");
+			                 "Class Test\n" +
+			                 "  Inherits System.Collections.Generic.List(Of Integer)\n" +
+			                 "  Public Overloads Sub RemoveAt(strangeIndex As String)\n" +
+			                 "  End Sub\n" +
+			                 "End Class");
 		}
 	}
 }
