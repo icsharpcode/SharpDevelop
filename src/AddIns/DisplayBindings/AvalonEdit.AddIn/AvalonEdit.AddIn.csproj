@@ -80,6 +80,7 @@
     <Compile Include="Src\AvalonEditEditorUIService.cs" />
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\BracketHighlightRenderer.cs" />
+    <Compile Include="Src\CaretReferencesRenderer.cs" />
     <Compile Include="Src\ChooseEncodingDialog.xaml.cs">
       <DependentUpon>ChooseEncodingDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -87,6 +88,7 @@
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CodeEditorView.cs" />
+    <Compile Include="Src\ExpressionHighlightRenderer.cs" />
     <Compile Include="Src\SharpDevelopTextEditor.cs" />
     <Compile Include="Src\Commands\FoldingCommands.cs" />
     <Compile Include="Src\Commands\RunIncrementalSearch.cs" />

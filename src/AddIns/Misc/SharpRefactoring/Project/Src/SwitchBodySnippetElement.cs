@@ -184,7 +184,7 @@ namespace SharpRefactoring
 		/// Assuming that interactive mode of 'switch' snippet has currently finished in context,
 		/// returns the switch condition that user entered.
 		/// </summary>
-		string GetSwitchConditionText(InsertionContext context, out int startOffset)
+		string GetSwitchConditionText(InsertionContext context, out int conditionEndOffset)
 		{
 			var snippetActiveElements = context.ActiveElements.ToList();
 			if (snippetActiveElements.Count == 0)
@@ -194,17 +194,17 @@ namespace SharpRefactoring
 				throw new InvalidOperationException("Switch snippet condition should be " + typeof(IReplaceableActiveElement).Name);
 			if (switchConditionElement.Segment  == null)
 				throw new InvalidOperationException("Swith condition should have a start offset");
-			startOffset = switchConditionElement.Segment.EndOffset - 1;
+			conditionEndOffset = switchConditionElement.Segment.EndOffset - 1;
 			return switchConditionElement.Text;
 		}
 		
 		/// <summary>
 		/// Resolves the Dom.IReturnType of expression ending at offset, ie. the switch condition expression.
 		/// </summary>
-		IReturnType ResolveConditionType(string conditionExpression, int offset)
+		IReturnType ResolveConditionType(string conditionExpression, int conditionEndOffset)
 		{
 			ExpressionResult expressionResult = new ExpressionResult(conditionExpression);
-			Location location = this.Editor.Document.OffsetToPosition(offset);
+			Location location = this.Editor.Document.OffsetToPosition(conditionEndOffset);
 			var result = ParserService.Resolve(expressionResult, location.Line, location.Column, this.Editor.FileName, this.Editor.Document.Text);
 			return result.ResolvedType;
 		}

@@ -89,9 +89,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public static List<Reference> FindReferences(IMember member, IProgressMonitor progressMonitor)
 		{
+			return FindReferences(member, null, progressMonitor);
+		}
+		
+		static List<Reference> FindReferences(IMember member, string fileName, IProgressMonitor progressMonitor)
+		{
 			if (member == null)
 				throw new ArgumentNullException("member");
-			return RunFindReferences(member.DeclaringType, member, false, progressMonitor);
+			return RunFindReferences(member.DeclaringType, member, fileName, progressMonitor);
 		}
 		
 		/// <summary>
@@ -99,9 +104,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public static List<Reference> FindReferences(IClass @class, IProgressMonitor progressMonitor)
 		{
+			return FindReferences(@class, null, progressMonitor);
+		}
+		
+		static List<Reference> FindReferences(IClass @class, string fileName, IProgressMonitor progressMonitor)
+		{
 			if (@class == null)
 				throw new ArgumentNullException("class");
-			return RunFindReferences(@class, null, false, progressMonitor);
+			return RunFindReferences(@class, null, fileName, progressMonitor);
 		}
 		
 		/// <summary>
@@ -109,33 +119,47 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public static List<Reference> FindReferences(ResolveResult entity, IProgressMonitor progressMonitor)
 		{
+			return FindReferences(entity, null, progressMonitor);
+		}
+		
+		/// <summary>
+		/// Finds all references to the resolved entity, only in the file where the entity was resolved.
+		/// </summary>
+		public static List<Reference> FindReferencesLocal(ResolveResult entity, string fileName, IProgressMonitor progressMonitor)
+		{
+			return FindReferences(entity, fileName, progressMonitor);
+		}
+		
+		static List<Reference> FindReferences(ResolveResult entity, string fileName, IProgressMonitor progressMonitor)
+		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
 			if (entity is LocalResolveResult) {
-				return RunFindReferences(entity.CallingClass, (entity as LocalResolveResult).Field, true, progressMonitor);
+				return RunFindReferences(entity.CallingClass, (entity as LocalResolveResult).Field, 
+				                         entity.CallingClass.CompilationUnit.FileName, progressMonitor);
 			} else if (entity is TypeResolveResult) {
-				return FindReferences((entity as TypeResolveResult).ResolvedClass, progressMonitor);
+				return FindReferences((entity as TypeResolveResult).ResolvedClass, fileName, progressMonitor);
 			} else if (entity is MemberResolveResult) {
-				return FindReferences((entity as MemberResolveResult).ResolvedMember, progressMonitor);
+				return FindReferences((entity as MemberResolveResult).ResolvedMember, fileName, progressMonitor);
 			} else if (entity is MethodGroupResolveResult) {
 				IMethod method = (entity as MethodGroupResolveResult).GetMethodIfSingleOverload();
 				if (method != null) {
-					return FindReferences(method, progressMonitor);
+					return FindReferences(method, fileName, progressMonitor);
 				}
 			} else if (entity is MixedResolveResult) {
-				return FindReferences((entity as MixedResolveResult).PrimaryResult, progressMonitor);
+				return FindReferences((entity as MixedResolveResult).PrimaryResult, fileName, progressMonitor);
 			}
 			return null;
 		}
 		
 		/// <summary>
 		/// This method can be used in three modes:
-		/// 1. Find references to classes (parentClass = targetClass, member = null, isLocal = false)
-		/// 2. Find references to members (parentClass = parent, member = member, isLocal = false)
-		/// 3. Find references to local variables (parentClass = parent, member = local var as field, isLocal = true)
+		/// 1. Find references to classes (parentClass = targetClass, member = null, fileName = null)
+		/// 2. Find references to members (parentClass = parent, member = member, fileName = null)
+		/// 3. Find references to local variables (parentClass = parent, member = local var as field, fileName = parent.CompilationUnit.FileName)
 		/// </summary>
 		static List<Reference> RunFindReferences(IClass ownerClass, IMember member,
-		                                         bool isLocal,
+		                                         string fileName,
 		                                         IProgressMonitor progressMonitor)
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning) {
@@ -145,10 +169,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return null;
 			}
 			List<ProjectItem> files;
-			if (isLocal) {
+			if (!string.IsNullOrEmpty(fileName)) {
+				// search just in given file
 				files = new List<ProjectItem>();
-				files.Add(FindItem(ownerClass.CompilationUnit.FileName));
+				files.Add(FindItem(fileName));
 			} else {
+				// search in all possible files
 				ownerClass = ownerClass.GetCompoundClass();
 				files = GetPossibleFiles(ownerClass, member);
 			}
@@ -169,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				
 				ITextBuffer content = entry.GetContent();
 				if (content != null) {
-					AddReferences(references, ownerClass, member, isLocal, entry.FileName, content.Text);
+					AddReferences(references, ownerClass, member, entry.FileName, content.Text);
 				}
 			}
 			
@@ -181,7 +207,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		static void AddReferences(List<Reference> list,
 		                          IClass parentClass, IMember member,
-		                          bool isLocal,
 		                          string fileName, string fileContent)
 		{
 			TextFinder textFinder; // the class used to find the position to resolve

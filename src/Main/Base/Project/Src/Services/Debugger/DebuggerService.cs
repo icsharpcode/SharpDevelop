@@ -246,9 +246,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		#region Tool tips
 		/// <summary>
 		/// Gets debugger tooltip information for the specified position.
-		/// A descriptive text for the element or a DebuggerGridControl
+		/// A descriptive string for the element or a DebuggerTooltipControl
 		/// showing its current value (when in debugging mode) can be returned
-		/// through the ToolTipInfo object.
+		/// through the ToolTipRequestEventArgs.SetTooltip() method.
 		/// </summary>
 		internal static void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
@@ -276,15 +276,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 				if (toolTipText != null) {
 					if (debuggerCanShowValue && currentDebugger != null) {
-						e.ShowToolTip(currentDebugger.GetTooltipControl(expressionResult.Expression));
+						e.SetToolTip(currentDebugger.GetTooltipControl(expressionResult.Expression));
 					} else {
-						e.ShowToolTip(toolTipText);
+						e.SetToolTip(toolTipText);
 					}
 				}
 			} else {
 				#if DEBUG
 				if (Control.ModifierKeys == Keys.Control) {
-					e.ShowToolTip("no expr: " + expressionResult.ToString());
+					e.SetToolTip("no expr: " + expressionResult.ToString());
 				}
 				#endif
 			}

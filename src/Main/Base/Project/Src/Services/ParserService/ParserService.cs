@@ -182,7 +182,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
-		#region GetParser / ExpressionFinder /etc.
+		#region GetParser / ExpressionFinder / Resolve / etc.
 		static readonly string[] DefaultTaskListTokens = {"HACK", "TODO", "UNDONE", "FIXME"};
 		
 		/// <summary>
@@ -238,6 +238,9 @@ namespace ICSharpCode.SharpDevelop
 			return null;
 		}
 		
+		/// <summary>
+		/// Resolves given ExpressionResult.
+		/// </summary>
 		public static ResolveResult Resolve(ExpressionResult expressionResult,
 		                                    int caretLineNumber, int caretColumn,
 		                                    string fileName, string fileContent)
@@ -251,6 +254,27 @@ namespace ICSharpCode.SharpDevelop
 				return resolver.Resolve(expressionResult, parseInfo, fileContent);
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Resolves expression at given position. 
+		/// That is, finds ExpressionResult at that position and
+		/// calls the overload Resolve(ExpressionResult,...).
+		/// </summary>
+		public static ResolveResult Resolve(int caretLine, int caretColumn, IDocument document, string fileName)
+		{
+			IExpressionFinder expressionFinder = GetExpressionFinder(fileName);
+			if (expressionFinder == null)
+				return null;
+			if (caretColumn > document.GetLine(caretLine).Length)
+				return null;
+			string documentText = document.Text;
+			var expressionResult = expressionFinder.FindFullExpression(documentText, document.PositionToOffset(caretLine, caretColumn));
+			string expression = (expressionResult.Expression ?? "").Trim();
+			if (expression.Length > 0) {
+				return Resolve(expressionResult, caretLine, caretColumn, fileName, documentText);
+			} else
+				return null;
 		}
 		#endregion
 		

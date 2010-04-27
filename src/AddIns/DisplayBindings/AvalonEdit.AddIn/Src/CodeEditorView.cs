@@ -41,6 +41,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public ITextEditor Adapter { get; set; }
 		
 		BracketHighlightRenderer bracketRenderer;
+		CaretReferencesRenderer caretReferencesRenderer;
 		
 		public CodeEditorView()
 		{
@@ -48,19 +49,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			UpdateCustomizedHighlighting();
 			
-			bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
+			this.bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
+			this.caretReferencesRenderer = new CaretReferencesRenderer(this);
 			
 			this.MouseHover += TextEditorMouseHover;
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;
 			this.MouseLeave += TextEditorMouseLeave;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
-			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
+			this.TextArea.Caret.PositionChanged += HighlightBrackets;
 			
-			var editingKeyBindings = this.TextArea.DefaultInputHandler.Editing.InputBindings.OfType<KeyBinding>();
-			var tabBinding = editingKeyBindings.Single(b => b.Key == Key.Tab && b.Modifiers == ModifierKeys.None);
-			this.TextArea.DefaultInputHandler.Editing.InputBindings.Remove(tabBinding);
-			var newTabBinding = new KeyBinding(new CustomTabCommand(this, tabBinding.Command), tabBinding.Key, tabBinding.Modifiers);
-			this.TextArea.DefaultInputHandler.Editing.InputBindings.Add(newTabBinding);
+			SetUpTabSnippetHandler();
 		}
 		
 		protected override string FileName {
@@ -71,13 +69,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			base.OnOptionChanged(e);
 			if (e.PropertyName == "HighlightBrackets")
-				CaretPositionChanged(null, e);
+				HighlightBrackets(null, e);
 			else if (e.PropertyName == "EnableFolding")
 				UpdateParseInformation();
 		}
 		
 		#region CaretPositionChanged - Bracket Highlighting
-		void CaretPositionChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Highlights matching brackets.
+		/// </summary>
+		void HighlightBrackets(object sender, EventArgs e)
 		{
 			if (CodeEditorOptions.Instance.HighlightBrackets) {
 				/*
@@ -97,6 +98,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#endregion
 		
 		#region Custom Tab command (code snippet expansion)
+		void SetUpTabSnippetHandler()
+		{
+			var editingKeyBindings = this.TextArea.DefaultInputHandler.Editing.InputBindings.OfType<KeyBinding>();
+			var tabBinding = editingKeyBindings.Single(b => b.Key == Key.Tab && b.Modifiers == ModifierKeys.None);
+			this.TextArea.DefaultInputHandler.Editing.InputBindings.Remove(tabBinding);
+			var newTabBinding = new KeyBinding(new CustomTabCommand(this, tabBinding.Command), tabBinding.Key, tabBinding.Modifiers);
+			this.TextArea.DefaultInputHandler.Editing.InputBindings.Add(newTabBinding);
+		}
+		
 		sealed class CustomTabCommand : ICommand
 		{
 			CodeEditorView editor;
@@ -202,7 +212,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
 				
 				if (markerWithToolTip != null) {
-					args.ShowToolTip(markerWithToolTip.ToolTip);
+					args.SetToolTip(markerWithToolTip.ToolTip);
 				}
 			}
 			

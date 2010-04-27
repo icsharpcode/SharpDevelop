@@ -162,19 +162,6 @@
 		</OptionPanel>
 	</Path>
 
-	<Path name = "/Workspace/Tools">
-		<Condition name="SolutionOpen" action="disable">
-			<MenuItem id = "DebuggerObjectGraphVisualizerShowCommand"
-			          label = "Object graph visualizer"
-			          class = "Debugger.AddIn.Visualizers.ObjectGraphVisualizerMenuCommand"/>
-		</Condition>
-		<Condition name="SolutionOpen" action="disable">
-			<MenuItem id = "DebuggerGridVisualizerShowCommand"
-			          label = "Grid visualizer"
-			          class = "Debugger.AddIn.Visualizers.GridVisualizerMenuCommand"/>
-		</Condition>
-	</Path>
-
 	<Path name="/SharpDevelop/Pads/ConsolePad/ToolBar">
 		<Include id="StandardCommands" path="/SharpDevelop/Pads/CommonConsole/ToolBar" />
 		<ToolbarItem class="ICSharpCode.SharpDevelop.Gui.Pads.SelectLanguageCommand"

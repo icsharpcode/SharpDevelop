@@ -38,9 +38,9 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public object ContentToShow { get; set; }
 		
 		/// <summary>
-		/// Shows the tool tip.
+		/// Sets the tooltip to be shown.
 		/// </summary>
-		public void ShowToolTip(object content)
+		public void SetToolTip(object content)
 		{
 			if (content == null)
 				throw new ArgumentNullException("content");
