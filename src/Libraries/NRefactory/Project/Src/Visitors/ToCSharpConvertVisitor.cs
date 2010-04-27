@@ -5,9 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.AstBuilder;
 using System;
+using System.Linq;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.AstBuilder;
 
 namespace ICSharpCode.NRefactory.Visitors
 {
@@ -147,22 +148,79 @@ namespace ICSharpCode.NRefactory.Visitors
 					parent = parent.Parent;
 				}
 				if (parent != null) {
-					INode type = parent.Parent;
-					if (type != null) {
-						int pos = type.Children.IndexOf(parent);
-						if (pos >= 0) {
-							FieldDeclaration field = new FieldDeclaration(null);
-							field.TypeReference = localVariableDeclaration.TypeReference;
-							field.Modifier = Modifiers.Static;
-							field.Fields = localVariableDeclaration.Variables;
-							new PrefixFieldsVisitor(field.Fields, "static_" + GetTypeLevelEntityName(parent) + "_").Run(parent);
-							type.Children.Insert(pos + 1, field);
-							RemoveCurrentNode();
+					string fieldPrefix = "static_" + GetTypeLevelEntityName(parent) + "_";
+					foreach (VariableDeclaration v in localVariableDeclaration.Variables) {
+						if (!v.Initializer.IsNull) {
+							string initFieldName = fieldPrefix + v.Name + "_Init";
+							FieldDeclaration initField = new FieldDeclaration(null);
+							initField.TypeReference = new TypeReference("Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag");
+							initField.Modifier = (((AttributedNode)parent).Modifier & Modifiers.Static) | Modifiers.ReadOnly;
+							Expression initializer = initField.TypeReference.New();
+							initField.Fields.Add(new VariableDeclaration(initFieldName, initializer));
+							InsertBeforeSibling(parent, initField);
+							
+							InsertAfterSibling(localVariableDeclaration, InitStaticVariable(initFieldName, v.Name, v.Initializer, parent.Parent as TypeDeclaration));
 						}
+						
+						FieldDeclaration field = new FieldDeclaration(null);
+						field.TypeReference = localVariableDeclaration.TypeReference;
+						field.Modifier = ((AttributedNode)parent).Modifier & Modifiers.Static;
+						field.Fields.Add(new VariableDeclaration(fieldPrefix + v.Name) { TypeReference = v.TypeReference });
+						InsertBeforeSibling(parent, field);
 					}
+					new PrefixFieldsVisitor(localVariableDeclaration.Variables, fieldPrefix).Run(parent);
+					RemoveCurrentNode();
 				}
 			}
 			return null;
+		}
+		
+		INode InitStaticVariable(string initFieldName, string variableName, Expression initializer, TypeDeclaration typeDeclaration)
+		{
+			const string helperMethodName = "InitStaticVariableHelper";
+			
+			if (typeDeclaration != null) {
+				if (!typeDeclaration.Children.OfType<MethodDeclaration>().Any(m => m.Name == helperMethodName)) {
+					// add helper method
+					var helperMethod = new MethodDeclaration {
+						Name = helperMethodName,
+						Modifier = Modifiers.Static,
+						TypeReference = new TypeReference("System.Boolean", true),
+						Parameters = {
+							new ParameterDeclarationExpression(new TypeReference("Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag"), "flag")
+						},
+						Body = new BlockStatement()
+					};
+					BlockStatement trueBlock = new BlockStatement();
+					BlockStatement elseIfBlock = new BlockStatement();
+					BlockStatement falseBlock = new BlockStatement();
+					helperMethod.Body.AddStatement(
+						new IfElseStatement(ExpressionBuilder.Identifier("flag").Member("State").Operator(BinaryOperatorType.Equality, new PrimitiveExpression(0))) {
+							TrueStatement = { trueBlock },
+							ElseIfSections = {
+								new ElseIfSection(ExpressionBuilder.Identifier("flag").Member("State").Operator(BinaryOperatorType.Equality, new PrimitiveExpression(2)), elseIfBlock)
+							},
+							FalseStatement = { falseBlock }
+						});
+					trueBlock.Assign(ExpressionBuilder.Identifier("flag").Member("State"), new PrimitiveExpression(2));
+					trueBlock.Return(new PrimitiveExpression(true));
+					elseIfBlock.Throw(new TypeReference("Microsoft.VisualBasic.CompilerServices.IncompleteInitialization").New());
+					falseBlock.Return(new PrimitiveExpression(false));
+					typeDeclaration.AddChild(helperMethod);
+				}
+			}
+			
+			BlockStatement tryBlock = new BlockStatement();
+			BlockStatement ifTrueBlock = new BlockStatement();
+			tryBlock.AddStatement(new IfElseStatement(ExpressionBuilder.Identifier(helperMethodName).Call(ExpressionBuilder.Identifier(initFieldName)), ifTrueBlock));
+			ifTrueBlock.Assign(ExpressionBuilder.Identifier(variableName), initializer);
+			
+			BlockStatement finallyBlock = new BlockStatement();
+			finallyBlock.Assign(ExpressionBuilder.Identifier(initFieldName).Member("State"), new PrimitiveExpression(1));
+			
+			BlockStatement lockBlock = new BlockStatement();
+			lockBlock.AddStatement(new TryCatchStatement(tryBlock, null, finallyBlock));
+			return new LockStatement(ExpressionBuilder.Identifier(initFieldName), lockBlock);
 		}
 		
 		public override object VisitWithStatement(WithStatement withStatement, object data)
@@ -201,8 +259,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		static bool IsTypeLevel(INode node)
 		{
-			return node is MethodDeclaration || node is PropertyDeclaration || node is EventDeclaration
-				|| node is OperatorDeclaration || node is FieldDeclaration;
+			return node.Parent is TypeDeclaration;
 		}
 		
 		static string GetTypeLevelEntityName(INode node)

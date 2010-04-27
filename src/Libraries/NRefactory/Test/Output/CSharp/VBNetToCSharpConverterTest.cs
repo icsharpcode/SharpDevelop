@@ -507,37 +507,112 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void StaticMethodVariable()
 		{
 			TestMember(@"Private Sub Test
-	Static j As Integer = 0
+	Static j As Integer
 	j += 1
+End Sub
+Private Shared Sub Test2
+	Static j As Integer
+	j += 2
 End Sub",
-			           @"private void Test()
+			           @"int static_Test_j;
+private void Test()
 {
   static_Test_j += 1;
 }
-static int static_Test_j = 0;");
+static int static_Test2_j;
+private static void Test2()
+{
+  static_Test2_j += 2;
+}");
 		}
 		
 		[Test]
-		public void StaticMethodVariable2()
+		public void StaticMethodVariableWithInitialization()
 		{
 			TestMember(@"Private Sub Test
 	Static j As Integer = 0
 	j += 1
-End Sub
-Private Sub Test2
-	Static j As Integer = 0
-	j += 2
 End Sub",
-			           @"private void Test()
+			           @"readonly Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag static_Test_j_Init = new Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag();
+int static_Test_j;
+private void Test()
 {
+  lock (static_Test_j_Init) {
+    try {
+      if (InitStaticVariableHelper(static_Test_j_Init)) {
+        static_Test_j = 0;
+      }
+    } finally {
+      static_Test_j_Init.State = 1;
+    }
+  }
   static_Test_j += 1;
 }
-static int static_Test_j = 0;
-private void Test2()
+static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag flag)
 {
+  if (flag.State == 0) {
+    flag.State = 2;
+    return true;
+  } else if (flag.State == 2) {
+    throw new Microsoft.VisualBasic.CompilerServices.IncompleteInitialization();
+  } else {
+    return false;
+  }
+}");
+		}
+		
+		[Test]
+		public void StaticMethodVariableWithInitialization2()
+		{
+			TestMember(@"Private Sub Test
+	Static j As Integer = 10
+	j += 1
+End Sub
+Private Shared Sub Test2
+	Static j As Integer = 20
+	j += 2
+End Sub",
+			           @"readonly Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag static_Test_j_Init = new Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag();
+int static_Test_j;
+private void Test()
+{
+  lock (static_Test_j_Init) {
+    try {
+      if (InitStaticVariableHelper(static_Test_j_Init)) {
+        static_Test_j = 10;
+      }
+    } finally {
+      static_Test_j_Init.State = 1;
+    }
+  }
+  static_Test_j += 1;
+}
+static readonly Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag static_Test2_j_Init = new Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag();
+static int static_Test2_j;
+private static void Test2()
+{
+  lock (static_Test2_j_Init) {
+    try {
+      if (InitStaticVariableHelper(static_Test2_j_Init)) {
+        static_Test2_j = 20;
+      }
+    } finally {
+      static_Test2_j_Init.State = 1;
+    }
+  }
   static_Test2_j += 2;
 }
-static int static_Test2_j = 0;");
+static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag flag)
+{
+  if (flag.State == 0) {
+    flag.State = 2;
+    return true;
+  } else if (flag.State == 2) {
+    throw new Microsoft.VisualBasic.CompilerServices.IncompleteInitialization();
+  } else {
+    return false;
+  }
+}");
 		}
 		
 		[Test]

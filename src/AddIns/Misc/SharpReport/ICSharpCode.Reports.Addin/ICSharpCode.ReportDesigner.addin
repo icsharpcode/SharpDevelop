@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "SharpDevelopReports"
        author      = "Forstmeier Peter"
        url         = "http://www.sharpdevelopreports.net/"
-       description = "Reporting Tool For SharpDevelop">
+       description = "Reporting Tool For SharpDevelop"
+	   addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.Reports.Addin" version="@ICSharpCode.Reports.Addin.dll"/>

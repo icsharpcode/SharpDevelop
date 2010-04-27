@@ -492,7 +492,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			if (AddDefaultValueInitializerToLocalVariableDeclarations) {
+			if (AddDefaultValueInitializerToLocalVariableDeclarations && (localVariableDeclaration.Modifier & Modifiers.Static) == 0) {
 				for (int i = 0; i < localVariableDeclaration.Variables.Count; i++) {
 					VariableDeclaration decl = localVariableDeclaration.Variables[i];
 					if (decl.FixedArrayInitialization.IsNull && decl.Initializer.IsNull) {
