@@ -202,10 +202,23 @@ namespace SharpRefactoring
 					
 					if (parentNode is MethodDeclaration) {
 						yield return new Variable((parentNode as MethodDeclaration).Body, pde);
+					} else if (parentNode is ConstructorDeclaration) {
+						yield return new Variable((parentNode as ConstructorDeclaration).Body, pde);
 					} else {
 						throw new NotSupportedException("not supported!");
 					}
 				}
+			}
+			
+			if (parentNode is PropertyDeclaration && IsInSetter(parentNode as PropertyDeclaration)) {
+				PropertyDeclaration pd = parentNode as PropertyDeclaration;
+				yield return new Variable(
+					new LocalLookupVariable(
+						"value", pd.TypeReference,
+						pd.SetRegion.StartLocation, pd.SetRegion.EndLocation,
+						false, false, null, null, false
+					)
+				);
 			}
 		}
 		
@@ -217,6 +230,25 @@ namespace SharpRefactoring
 		public override Dom.IResolver GetResolver()
 		{
 			return new NRefactoryResolver(Dom.LanguageProperties.CSharp);
+		}
+		
+		bool IsInSetter(PropertyDeclaration property)
+		{
+			if (!property.HasSetRegion)
+				return false;
+			
+			int startOffset = textEditor.Document.PositionToOffset(property.SetRegion.StartLocation.Line,
+			                                                       property.SetRegion.StartLocation.Column);
+			
+			int endOffset = textEditor.Document.PositionToOffset(property.SetRegion.EndLocation.Line,
+			                                                     property.SetRegion.EndLocation.Column);
+			
+			int selectionEnd = textEditor.SelectionStart + textEditor.SelectionLength;
+			
+			return textEditor.SelectionStart >= startOffset &&
+				textEditor.SelectionStart <= endOffset &&
+				selectionEnd >= startOffset &&
+				selectionEnd <= endOffset;
 		}
 	}
 }

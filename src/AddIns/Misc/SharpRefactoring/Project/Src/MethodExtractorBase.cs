@@ -64,20 +64,14 @@ namespace SharpRefactoring
 			InvocationExpression expr = new InvocationExpression(new IdentifierExpression(method.Name), CreateArgumentExpressions(method.Parameters));
 
 			if (method.TypeReference.Type != "System.Void") {
-				if (parent is MethodDeclaration) {
-					if (method.TypeReference == (parent as MethodDeclaration).TypeReference)
-						caller = new ReturnStatement(expr);
-					else {
-						returnVariable.Initializer = expr;
-						caller = new LocalVariableDeclaration(returnVariable);
-					}
-				}
+				TypeReference parentType = GetParentReturnType(parent);
+				if (method.TypeReference == parentType)
+					caller = new ReturnStatement(expr);
 				else {
 					returnVariable.Initializer = expr;
 					caller = new LocalVariableDeclaration(returnVariable);
 				}
-			}
-			else {
+			} else {
 				caller = new ExpressionStatement(expr);
 			}
 			return caller;
@@ -272,6 +266,14 @@ namespace SharpRefactoring
 		public abstract bool Extract();
 		
 		public abstract Dom.IResolver GetResolver();
+		
+		static TypeReference GetParentReturnType(ParametrizedNode parent)
+		{
+			if (parent is MemberNode)
+				return (parent as MemberNode).TypeReference;
+			
+			return null;
+		}
 	}
 	
 	public class Variable {
