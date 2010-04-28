@@ -1533,19 +1533,9 @@ namespace ICSharpCode.NRefactory.Visitors
 			return continueStmt;
 		}
 
-		bool IsField(string type, int typeParameterCount, string fieldName)
+		bool IsField(string reflectionTypeName, string fieldName)
 		{
-			bool isField = environmentInformationProvider.HasField(type, typeParameterCount, fieldName);
-			
-			if (!isField) {
-				int idx = type.LastIndexOf('.');
-				if (idx >= 0) {
-					type = type.Substring(0, idx) + "+" + type.Substring(idx + 1);
-					isField = IsField(type, typeParameterCount, fieldName);
-				}
-			}
-			
-			return isField;
+			return environmentInformationProvider.HasField(reflectionTypeName, 0, fieldName);
 		}
 		
 		bool IsFieldReferenceExpression(MemberReferenceExpression fieldReferenceExpression)
@@ -1572,7 +1562,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				if (fieldReferenceExpression.TargetObject is MemberReferenceExpression) {
 					if (IsPossibleTypeReference((MemberReferenceExpression)fieldReferenceExpression.TargetObject)) {
 						CodeTypeReferenceExpression typeRef = ConvertToTypeReference((MemberReferenceExpression)fieldReferenceExpression.TargetObject);
-						if (IsField(typeRef.Type.BaseType, typeRef.Type.TypeArguments.Count, fieldReferenceExpression.MemberName)) {
+						if (IsField(typeRef.Type.BaseType, fieldReferenceExpression.MemberName)) {
 							return new CodeFieldReferenceExpression(typeRef,
 							                                        fieldReferenceExpression.MemberName);
 						} else {
@@ -1635,7 +1625,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 			//field detection for fields\props inherited from base classes
 			if (currentTypeDeclaration.BaseTypes.Count > 0) {
-				return IsField(currentTypeDeclaration.BaseTypes[0].Type, currentTypeDeclaration.BaseTypes[0].GenericTypes.Count, identifier);
+				return environmentInformationProvider.HasField(currentTypeDeclaration.BaseTypes[0].Type, currentTypeDeclaration.BaseTypes[0].GenericTypes.Count, identifier);
 			}
 			return false;
 		}

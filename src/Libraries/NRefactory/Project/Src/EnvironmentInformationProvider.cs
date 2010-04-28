@@ -11,14 +11,14 @@ namespace ICSharpCode.NRefactory
 {
 	public interface IEnvironmentInformationProvider
 	{
-		bool HasField(string fullTypeName, int typeParameterCount, string fieldName);
+		bool HasField(string reflectionTypeName, int typeParameterCount, string fieldName);
 	}
 	
 	sealed class DummyEnvironmentInformationProvider : IEnvironmentInformationProvider
 	{
 		internal static readonly IEnvironmentInformationProvider Instance = new DummyEnvironmentInformationProvider();
 		
-		public bool HasField(string fullTypeName, int typeParameterCount, string fieldName)
+		public bool HasField(string reflectionTypeName, int typeParameterCount, string fieldName)
 		{
 			return false;
 		}

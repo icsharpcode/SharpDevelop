@@ -80,7 +80,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			
 			// Get the (generated) class where the resource is defined.
-			IClass resourceClass = this.projectContent.GetClass(typeRef.Type.BaseType, 0);
+			IClass resourceClass = this.projectContent.GetClassByReflectionName(typeRef.Type.BaseType, true);
 			if (resourceClass == null) {
 				throw new InvalidOperationException("Could not find class for project resources: '" + typeRef.Type.BaseType + "'.");
 			}
