@@ -17,7 +17,7 @@ using ICSharpCode.SharpDevelop.Refactoring;
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
-	/// Description of CaretReferencesRenderer.
+	/// In the code editor, highlights all references to the expression under the caret (for better code readability).
 	/// </summary>
 	public class CaretReferencesRenderer
 	{
@@ -25,7 +25,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// Delays the highlighting after the caret position changes, so that Find references does not get called too often.
 		/// </summary>
 		DispatcherTimer delayTimer;
-		const int delayMilliseconds = 1000;
+		const int delayMilliseconds = 800;
 		DispatcherTimer delayMoveTimer;
 		const int delayMoveMilliseconds = 100;
 		

@@ -25,6 +25,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		Pen borderPen;
 		Brush backgroundBrush;
 		TextView textView;
+		readonly Color borderColor = Color.FromArgb(50, 30, 130, 255);	//Color.FromArgb(180, 70, 230, 70))
+		readonly Color fillColor = Color.FromArgb(20, 30, 130, 255); 	//Color.FromArgb(40, 60, 255, 60)
+		readonly int borderThickness = 1;
+		readonly int cornerRadius = 1;
 		
 		public void SetHighlight(List<Reference> renderedReferences)
 		{
@@ -43,12 +47,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (textView == null)
 				throw new ArgumentNullException("textView");
-			//this.borderPen = new Pen(new SolidColorBrush(Color.FromRgb(70, 230, 70)), 1);
-			this.borderPen = new Pen(Brushes.Transparent, 1);
-			this.borderPen.Freeze();
-			this.backgroundBrush = new SolidColorBrush(Color.FromArgb(120, 60, 255, 60));
-			this.backgroundBrush.Freeze();
 			this.textView = textView;
+			this.borderPen = new Pen(new SolidColorBrush(borderColor), borderThickness);
+			this.backgroundBrush = new SolidColorBrush(fillColor);
+			this.borderPen.Freeze();
+			this.backgroundBrush.Freeze();
 			this.textView.BackgroundRenderers.Add(this);
 		}
 		
@@ -63,7 +66,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (this.renderedReferences == null)
 				return;
 			BackgroundGeometryBuilder builder = new BackgroundGeometryBuilder();
-			builder.CornerRadius = 1;
+			builder.CornerRadius = cornerRadius;
 			builder.AlignToMiddleOfPixels = true;
 			foreach (var reference in this.renderedReferences) {
 				builder.AddSegment(textView, new TextSegment() { 
