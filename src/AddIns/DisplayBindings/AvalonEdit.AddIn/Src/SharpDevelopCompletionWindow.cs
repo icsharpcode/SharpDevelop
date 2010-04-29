@@ -91,7 +91,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			base.OnSourceInitialized(e);
 			if (itemList.PreselectionLength > 0 && itemList.SuggestedItem == null) {
 				string preselection = this.TextArea.Document.GetText(this.StartOffset, this.EndOffset - this.StartOffset);
-				this.CompletionList.SelectItemWithStart(preselection);
+				this.CompletionList.SelectItem(preselection);
 			}
 		}
 		

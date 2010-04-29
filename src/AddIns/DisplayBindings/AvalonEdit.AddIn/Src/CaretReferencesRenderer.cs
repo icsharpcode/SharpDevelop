@@ -35,6 +35,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		ExpressionHighlightRenderer highlightRenderer;
 		ResolveResult lastResolveResult;
 			
+		/// <summary>
+		/// In the code editor, highlights all references to the expression under the caret (for better code readability).
+		/// </summary>
 		public CaretReferencesRenderer(CodeEditorView editorView)
 		{
 			this.editorView = editorView;

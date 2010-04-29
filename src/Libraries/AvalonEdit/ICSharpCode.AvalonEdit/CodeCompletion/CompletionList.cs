@@ -13,11 +13,12 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Linq;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
 	/// <summary>
-	/// The listbox used inside the CompletionWindow.
+	/// The listbox used inside the CompletionWindow, contains CompletionListBox.
 	/// </summary>
 	public class CompletionList : Control
 	{
@@ -26,6 +27,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(CompletionList),
 			                                         new FrameworkPropertyMetadata(typeof(CompletionList)));
 		}
+		
+		/// <summary>
+		/// If true, enables the old behavior: no filtering, search by string.StartsWith.
+		/// </summary>
+		public bool IsSearchByStartOnly { get; set; }
 		
 		/// <summary>
 		/// Is raised when the completion list indicates that the user has chosen
@@ -48,6 +54,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
+			this.si
 			
 			listBox = GetTemplateChild("PART_ListBox") as CompletionListBox;
 			if (listBox != null) {
@@ -169,55 +176,73 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		/// <summary>
-		/// Selects the item that starts with the specified text.
+		/// Selects the best match, and possibly filters the items.
 		/// </summary>
-		public void SelectItemWithStart(string startText)
+		public void SelectItem(string text)
 		{
-			if (string.IsNullOrEmpty(startText))
+			if (string.IsNullOrEmpty(text))
 				return;
 			if (listBox == null)
 				ApplyTemplate();
+			
+			if (this.IsSearchByStartOnly)
+				SelectItemWithStart(text);
+			else
+				FilterMatchingItems(text);
+		}
+		
+		void FilterMatchingItems(string text)
+		{
+			// BUG Find references to itemsWithQualities returns just this one
+			// assign qualities to items
+			var itemsWithQualities = 
+				from item in completionData
+				select new { Item = item, Quality = GetMatchQuality(item.Text, text) };
+			// take items with quality > 0, order by quality
+			var matchingOrdered = from itemWithQ in itemsWithQualities
+				where itemWithQ.Quality > 0
+				orderby itemWithQ.Quality descending, itemWithQ.Item.Priority descending, itemWithQ.Item.Text
+				select itemWithQ.Item;
+			var matchingItems = new ObservableCollection<ICompletionData>();
+			foreach (var matchingItem in matchingOrdered) {
+				matchingItems.Add(matchingItem);
+			}
+			listBox.ItemsSource = matchingItems;
+			listBox.SelectIndex(0);
+		}
+		
+		/// <summary>
+		/// Selects the item that starts with the specified text.
+		/// </summary>
+		void SelectItemWithStart(string startText)
+		{
 			int selectedItem = listBox.SelectedIndex;
 			
 			int bestIndex = -1;
 			int bestQuality = -1;
-			// Qualities: 0 = match start
-			//            1 = match start case sensitive
-			//            2 = full match
-			//            3 = full match case sensitive
 			double bestPriority = 0;
 			for (int i = 0; i < completionData.Count; ++i) {
-				string itemText = completionData[i].Text;
-				if (itemText.StartsWith(startText, StringComparison.OrdinalIgnoreCase)) {
-					double priority = completionData[i].Priority;
-					int quality;
-					if (string.Equals(itemText, startText, StringComparison.OrdinalIgnoreCase)) {
-						if (startText == itemText)
-							quality = 3;
-						else
-							quality = 2;
-					} else if (itemText.StartsWith(startText, StringComparison.Ordinal)) {
-						quality = 1;
+				int quality = GetMatchQuality(completionData[i].Text, startText);
+				if (quality < 0)
+					continue;
+				
+				double priority = completionData[i].Priority;
+				bool useThisItem;
+				if (bestQuality < quality) {
+					useThisItem = true;
+				} else {
+					if (bestIndex == selectedItem) {
+						useThisItem = false;
+					} else if (i == selectedItem) {
+						useThisItem = bestQuality == quality;
 					} else {
-						quality = 0;
+						useThisItem = bestQuality == quality && bestPriority < priority;
 					}
-					bool useThisItem;
-					if (bestQuality < quality) {
-						useThisItem = true;
-					} else {
-						if (bestIndex == selectedItem) {
-							useThisItem = false;
-						} else if (i == selectedItem) {
-							useThisItem = bestQuality == quality;
-						} else {
-							useThisItem = bestQuality == quality && bestPriority < priority;
-						}
-					}
-					if (useThisItem) {
-						bestIndex = i;
-						bestPriority = priority;
-						bestQuality = quality;
-					}
+				}
+				if (useThisItem) {
+					bestIndex = i;
+					bestPriority = priority;
+					bestQuality = quality;
 				}
 			}
 			if (bestIndex < 0) {
@@ -231,6 +256,59 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					listBox.SelectIndex(bestIndex);
 				}
 			}
+		}
+
+		int GetMatchQuality(string itemText, string query)
+		{
+			// Qualities:
+			//		-1 = no match
+			//		1 = match CamelCase
+			//		2 = match sustring
+			// 		3 = match substring case sensitive
+			//		4 = match CamelCase when length of query is only 1 or 2 characters
+			//		5 = match start
+			// 		6 = match start case sensitive
+			// 		7 = full match
+			//  	8 = full match case sensitive
+			if (query == itemText)
+				return 8;
+			if (string.Equals(itemText, query, StringComparison.OrdinalIgnoreCase))
+				return 7;
+			
+			if (itemText.StartsWith(query))
+				return 6;
+			if (itemText.StartsWith(query, StringComparison.OrdinalIgnoreCase))
+				return 5;
+			
+			if (query.Length <= 2 && CamelCaseMatch(itemText, query))
+				return 4;
+			
+			// search by substring, if not turned off
+			if (!IsSearchByStartOnly && itemText.Contains(query))
+				return 3;
+			if (!IsSearchByStartOnly && itemText.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+				return 2;
+			
+			if (CamelCaseMatch(itemText, query))
+				return 1;
+			
+			return -1;
+		}
+		
+		bool CamelCaseMatch(string text, string query)
+		{
+			int i = 0;
+			foreach (char upper in text.Where(c => char.IsUpper(c))) {
+				if (i > query.Length - 1)
+					return false;	// return true here for CamelCase partial match (CQ match CodeQualityAnalysis)
+				if (char.ToUpper(query[i]) != upper)
+					return false;
+				i++;
+			}
+			// query must have the same length as how many there are uppercase characters in text
+			if (i == query.Length)
+				return true;
+			return false;
 		}
 	}
 }

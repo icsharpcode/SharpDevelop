@@ -356,6 +356,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void JumpTo(int line, int column)
 		{
+			// closes Debugger popup on debugger step
 			TryCloseExistingPopup(true);
 			
 			// the adapter sets the caret position and takes care of scrolling

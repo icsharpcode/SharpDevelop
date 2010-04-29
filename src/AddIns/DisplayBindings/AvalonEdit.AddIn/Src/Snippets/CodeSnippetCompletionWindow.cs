@@ -57,7 +57,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		
 		void CodeSnippetCompletionWindow_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			CompletionList.SelectItemWithStart(this.snippetInput.Text);
+			CompletionList.SelectItem(this.snippetInput.Text);
 		}
 		
 		protected override void ActivateParentWindow()
