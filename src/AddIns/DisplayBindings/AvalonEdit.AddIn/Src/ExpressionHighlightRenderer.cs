@@ -25,8 +25,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		Pen borderPen;
 		Brush backgroundBrush;
 		TextView textView;
-		readonly Color borderColor = Color.FromArgb(50, 30, 130, 255);	//Color.FromArgb(180, 70, 230, 70))
-		readonly Color fillColor = Color.FromArgb(20, 30, 130, 255); 	//Color.FromArgb(40, 60, 255, 60)
+		readonly Color borderColor = Color.FromArgb(60, 30, 130, 255);	//Color.FromArgb(180, 70, 230, 70))
+		readonly Color fillColor = Color.FromArgb(30, 30, 130, 255); 	//Color.FromArgb(40, 60, 255, 60)
 		readonly int borderThickness = 1;
 		readonly int cornerRadius = 1;
 		

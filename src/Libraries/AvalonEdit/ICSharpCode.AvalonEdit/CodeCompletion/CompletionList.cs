@@ -54,7 +54,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
-			this.si
 			
 			listBox = GetTemplateChild("PART_ListBox") as CompletionListBox;
 			if (listBox != null) {
