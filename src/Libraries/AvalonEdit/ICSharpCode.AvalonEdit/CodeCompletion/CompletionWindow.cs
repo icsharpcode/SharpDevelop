@@ -34,6 +34,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			// keep height automatic
 			this.CloseAutomatically = true;
 			this.SizeToContent = SizeToContent.Height;
+			this.MaxHeight = 300;
 			this.Width = 175;
 			this.Content = completionList;
 			// prevent user from resizing window to 0x0
@@ -88,15 +89,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		protected override void OnSourceInitialized(EventArgs e)
 		{
 			// prevent CompletionWindow from growing too large
-			if (this.ActualHeight > 300) {
+			/*if (this.ActualHeight > 300) {
 				if (this.SizeToContent == SizeToContent.Height)
 					this.SizeToContent = SizeToContent.Manual;
 				else if (this.SizeToContent == SizeToContent.WidthAndHeight)
 					this.SizeToContent = SizeToContent.Width;
 				this.Height = 300;
-				
-			}
-			
+			}*/
 			base.OnSourceInitialized(e);
 		}
 		
