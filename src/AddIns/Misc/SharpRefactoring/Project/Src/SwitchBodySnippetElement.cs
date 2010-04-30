@@ -114,13 +114,13 @@ namespace SharpRefactoring
 			//var usings = parseInfo.CompilationUnit.UsingScope.Usings.Select(u => u.Usings[0]).ToList();
 			//bool hasUsing = usings.Contains(enumType.Namespace);
 			// Attempt to eliminate redundant namespace in Namespace.Enum.ValueA if Namespace is present in 'using' section
-			//var v = new CSharpOutputVisitor();
-			//CodeGenerator.ConvertMember(enumCase, this.classFinderContext).AcceptVisitor(v, null);
-			bool hasUsing = false;
+			var visitor = new CSharpOutputVisitor();
+			CodeGenerator.ConvertType(enumType, this.classFinderContext).AcceptVisitor(visitor, null);
+			var qualifiedEnumType = visitor.Text;
 			StringBuilder sb = new StringBuilder();
 			bool first = true;
 			foreach (var enumCase in GetEnumCases(enumType)) {
-				string qualifiedName = hasUsing ? (enumType.Name + "." + enumCase.Name) : enumCase.FullyQualifiedName;
+				string qualifiedName = qualifiedEnumType + "." + enumCase.Name;
 				sb.AppendLine(string.Format((first ? "" : indent) + "case {0}:", qualifiedName));
 				sb.AppendLine(indent + context.Tab);
 				sb.AppendLine(indent + context.Tab + "break;");
