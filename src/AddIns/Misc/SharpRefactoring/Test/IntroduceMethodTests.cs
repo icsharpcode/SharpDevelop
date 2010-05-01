@@ -38,6 +38,14 @@ class Test2 {
 }
 ";
 		
+		string interfaceStart = @"
+interface ITest {
+";
+
+		string interfaceEnd = @"
+}
+";
+		
 		MockTextEditor editor;
 		IExpressionFinder expressionFinder;
 		
@@ -104,7 +112,31 @@ class Test2 {
 		throw new NotImplementedException();
 	}";
 			
-			RunOtherTest("", "Test2.SomeCall()", expected);
+			RunOtherTest("", "Test2.SomeCall()", expected, "");
+		}
+		#endregion
+		
+		#region InterfaceTests
+		[Test]
+		[STAThread]
+		public void EmptyInterfaceTest()
+		{
+			string expected = @"
+	
+	void SomeCall();";
+			
+			RunInterfaceTest("ITest test;", "test.SomeCall()", expected, "");
+		}
+		
+		[Test]
+		[STAThread]
+		public void SimpleInterfaceTest()
+		{
+			string expected = @"
+	
+	void SomeCall2();";
+			
+			RunInterfaceTest("ITest test;", "test.SomeCall2()", expected, @"	void SomeCall();");
 		}
 		#endregion
 		
@@ -128,10 +160,10 @@ class Test2 {
 			Assert.AreEqual(simpleStart + definitions + call + expected + simpleEnd, editor.Document.Text);
 		}
 		
-		void RunOtherTest(string definitions, string call, string expected)
+		void RunOtherTest(string definitions, string call, string expected, string existingDefinitions)
 		{
-			editor.Document.Text = otherClassStart + otherClassEnd + simpleStart + definitions + call + simpleEnd;
-			editor.Caret.Offset = otherClassStart.Length + otherClassEnd.Length + simpleStart.Length + definitions.Length + call.Length / 2;
+			editor.Document.Text = otherClassStart + existingDefinitions + otherClassEnd + simpleStart + definitions + call + simpleEnd;
+			editor.Caret.Offset = otherClassStart.Length + existingDefinitions.Length + otherClassEnd.Length + simpleStart.Length + definitions.Length + call.Length / 2;
 			
 			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
 			
@@ -149,7 +181,31 @@ class Test2 {
 			IntroduceMethod method = new IntroduceMethod();
 			method.ExecuteIntroduceMethod(rr as UnknownMethodResolveResult, ex, editor, false, null);
 			
-			Assert.AreEqual(otherClassStart + expected + otherClassEnd + simpleStart + definitions + call + simpleEnd, editor.Document.Text);
+			Assert.AreEqual(otherClassStart + existingDefinitions + expected + otherClassEnd + simpleStart + definitions + call + simpleEnd, editor.Document.Text);
+		}
+		
+		void RunInterfaceTest(string definitions, string call, string expected, string existingDefinitions)
+		{
+			editor.Document.Text = interfaceStart + existingDefinitions + interfaceEnd + simpleStart + definitions + call + simpleEnd;
+			editor.Caret.Offset = interfaceStart.Length + existingDefinitions.Length + interfaceEnd.Length + simpleStart.Length + definitions.Length + call.Length / 2;
+			
+			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
+			
+			Debug.Print("line: '" + line.Text + "'");
+			
+			editor.CreateParseInformation();
+			
+			expressionFinder = new CSharpExpressionFinder(ParserService.GetParseInformation(editor.FileName));
+			
+			ExpressionResult expression = FindFullExpressionAtCaret(editor, expressionFinder);
+			ResolveResult rr = ResolveExpressionAtCaret(editor, expression);
+			
+			Ast.Expression ex = IntroduceMethod.GetExpressionInContext(rr as UnknownMethodResolveResult, editor);
+			
+			IntroduceMethod method = new IntroduceMethod();
+			method.ExecuteIntroduceMethod(rr as UnknownMethodResolveResult, ex, editor, false, null);
+			
+			Assert.AreEqual(interfaceStart + existingDefinitions + expected + interfaceEnd + simpleStart + definitions + call + simpleEnd, editor.Document.Text);
 		}
 		
 		void RunExtensionMethodTest()

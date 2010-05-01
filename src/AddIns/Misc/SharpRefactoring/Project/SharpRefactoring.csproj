@@ -71,6 +71,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\ClassCodeGeneratorMenuBuilder.cs" />
     <Compile Include="Src\CSharpMethodExtractor.cs" />
+    <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\ExtractMethodCommand.cs" />
     <Compile Include="Src\Forms\ExtractMethodForm.cs">
       <SubType>Form</SubType>

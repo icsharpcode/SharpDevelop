@@ -117,7 +117,8 @@ namespace SharpRefactoring
 				// exclude in Unit Test mode
 				if (WorkbenchSingleton.Workbench != null)
 					editor = (FileService.OpenFile(targetClass.CompilationUnit.FileName) as ITextEditorProvider).TextEditor;
-				modifiers |= ModifierEnum.Public;
+				if (targetClass.ClassType != ClassType.Interface)
+					modifiers |= ModifierEnum.Public;
 				if (rr.IsStaticContext)
 					modifiers |= ModifierEnum.Static;
 			}
@@ -139,8 +140,10 @@ namespace SharpRefactoring
 				Modifier = CodeGenerator.ConvertModifier(modifiers, finder),
 				TypeReference = typeRef,
 				Parameters = CreateParameters(rr, finder, expression as Ast.InvocationExpression).ToList(),
-				Body = CodeGenerator.CreateNotImplementedBlock()
 			};
+			
+			if (targetClass.ClassType != ClassType.Interface)
+				method.Body = CodeGenerator.CreateNotImplementedBlock();
 			
 			RefactoringDocumentAdapter documentWrapper = new RefactoringDocumentAdapter(editor.Document);
 			
@@ -148,27 +151,42 @@ namespace SharpRefactoring
 				method.Parameters.Insert(0, new Ast.ParameterDeclarationExpression(CodeGenerator.ConvertType(rr.Target, finder), "thisInstance"));
 				method.IsExtensionMethod = true;
 				method.Modifier |= Ast.Modifiers.Static;
-				
-				if (isNew) {
-					Ast.TypeDeclaration newType = new Ast.TypeDeclaration(Ast.Modifiers.Static, null);
-					newType.Name = result as string;
-					newType.AddChild(method);
-					gen.InsertCodeAfter(targetClass, documentWrapper, newType);
-				} else {
-					gen.InsertCodeAtEnd(targetClass.BodyRegion, documentWrapper, method);
-				}
-			} else {
-				gen.InsertCodeAtEnd(targetClass.BodyRegion, documentWrapper, method);
 			}
+			
+			if (isNew) {
+				Ast.TypeDeclaration newType = new Ast.TypeDeclaration(isExtension ? Ast.Modifiers.Static : Ast.Modifiers.None, null);
+				newType.Name = result as string;
+				newType.AddChild(method);
+				gen.InsertCodeAfter(targetClass, documentWrapper, newType);
+			} else {
+				if (rr.CallingClass == targetClass)
+					gen.InsertCodeAfter(rr.CallingMember, documentWrapper, method);
+				else
+					gen.InsertCodeAtEnd(targetClass.BodyRegion, documentWrapper, method);
+			}
+			
+			if (targetClass.ClassType == ClassType.Interface)
+				return;
 			
 			ParseInformation info = ParserService.ParseFile(targetClass.CompilationUnit.FileName);
 			if (info != null) {
+				IMember newMember;
+				
 				if (isNew)
 					targetClass = info.CompilationUnit.Classes.FirstOrDefault(c => c.DotNetName == c.Namespace + "." + (result as string));
 				else
 					targetClass = info.CompilationUnit.Classes.FirstOrDefault(c => c.DotNetName == targetClass.DotNetName);
 				
-				IMethod newMember = targetClass.Methods.Last();
+				if (rr.CallingClass.DotNetName == targetClass.DotNetName) {
+					newMember = targetClass.GetInnermostMember(editor.Caret.Line, editor.Caret.Column);
+					newMember = targetClass.AllMembers
+						.OrderBy(m => m.BodyRegion.BeginLine)
+						.ThenBy(m2 => m2.BodyRegion.BeginColumn)
+						.First(m3 => m3.BodyRegion.BeginLine > newMember.BodyRegion.BeginLine);
+				} else {
+					newMember = targetClass.Methods.Last();
+				}
+				
 				IDocumentLine line = editor.Document.GetLine(newMember.BodyRegion.BeginLine + 2);
 				int indentLength = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset).Length;
 				editor.Select(line.Offset + indentLength, "throw new NotImplementedException();".Length);
@@ -268,6 +286,5 @@ namespace SharpRefactoring
 				return base.VisitInvocationExpression(invocationExpression, data);
 			}
 		}
-		
 	}
 }
