@@ -172,12 +172,11 @@ namespace SharpRefactoring
 		IEnumerable<IField> GetEnumCases(IReturnType enumType)
 		{
 			var typeClass = enumType.GetUnderlyingClass();
-			if (typeClass == null)
+			if (typeClass == null) {
 				// eg. MethodGroup type has no UnderlyingClass
-				yield break;
-			foreach (var enumValue in typeClass.Fields) {
-				yield return enumValue as IField;
+				return Enumerable.Empty<IField>();
 			}
+			return typeClass.Fields;
 		}
 
 		/// <summary>

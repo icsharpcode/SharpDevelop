@@ -85,20 +85,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				item.Complete(this.TextArea, new AnchorSegment(this.TextArea.Document, this.StartOffset, this.EndOffset - this.StartOffset), e);
 		}
 		
-		/// <inheritdoc/>
-		protected override void OnSourceInitialized(EventArgs e)
-		{
-			// prevent CompletionWindow from growing too large
-			/*if (this.ActualHeight > 300) {
-				if (this.SizeToContent == SizeToContent.Height)
-					this.SizeToContent = SizeToContent.Manual;
-				else if (this.SizeToContent == SizeToContent.WidthAndHeight)
-					this.SizeToContent = SizeToContent.Width;
-				this.Height = 300;
-			}*/
-			base.OnSourceInitialized(e);
-		}
-		
 		void AttachEvents()
 		{
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;

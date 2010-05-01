@@ -142,8 +142,10 @@ namespace ICSharpCode.UsageDataCollector
 				try {
 					client.BeginUploadUsageData("sharpdevelop", new MemoryStream(data),
 					                            ar => UsageDataUploaded(ar, client, commaSeparatedSessionIDList), null);
-				} catch (EndpointNotFoundException) {
+				} catch (CommunicationException) {
 					// ignore error (maybe currently not connected to network)
+				} catch (TimeoutException) {
+					// ignore error (network connection trouble?)
 				}
 			}
 		}

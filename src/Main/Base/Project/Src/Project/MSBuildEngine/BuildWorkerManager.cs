@@ -109,13 +109,13 @@ namespace ICSharpCode.SharpDevelop.Project
 						break;
 					case "ReportException":
 						string ex = reader.ReadString();
-						MessageService.ShowException(new Exception("Exception from build worker"), ex);
+						MessageService.ShowException(new BuildWorkerException(), ex);
 						break;
 					default:
 						throw new NotSupportedException(command);
 				}
 			}
-
+			
 			void BuildDone(bool success)
 			{
 				lock (this) {
@@ -170,6 +170,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				Debug.Assert(this.isFree);
 				this.isFree = false;
 				timer.Dispose();
+			}
+		}
+		
+		sealed class BuildWorkerException : Exception
+		{
+			public BuildWorkerException() : base("Exception from build worker")
+			{
 			}
 		}
 	}
