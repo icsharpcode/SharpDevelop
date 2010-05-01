@@ -50,7 +50,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			this.Indentation = Document.GetText(indentation.Offset, Math.Min(indentation.EndOffset, insertionPosition) - indentation.Offset);
 			this.Tab = textArea.Options.IndentationString;
 			
-			this.LineTerminator = NewLineFinder.GetNewLineFromDocument(this.Document, startLine.LineNumber);
+			this.LineTerminator = TextUtilities.GetNewLineFromDocument(this.Document, startLine.LineNumber);
 		}
 		
 		/// <summary>

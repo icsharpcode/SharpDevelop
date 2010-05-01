@@ -95,7 +95,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				throw new ArgumentNullException("initialText");
 			rope = new Rope<char>(initialText);
 			lineTree = new DocumentLineTree(this);
-			lineManager = new LineManager(rope, lineTree, this);
+			lineManager = new LineManager(lineTree, this);
 			lineTrackers.CollectionChanged += delegate {
 				lineManager.UpdateListOfLineTrackers();
 			};
@@ -138,7 +138,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <inheritdoc/>
 		public char GetCharAt(int offset)
 		{
-			VerifyAccess();
+			DebugVerifyAccess(); // frequently called, so must be fast in release builds
 			return rope[offset];
 		}
 		

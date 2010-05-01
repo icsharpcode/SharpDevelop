@@ -339,6 +339,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public void RunLookupTableVisitor(INode currentMemberNode)
 		{
+			if (currentMemberNode == null)
+				throw new ArgumentNullException("currentMemberNode");
 			lookupTableVisitor = new LookupTableVisitor(language);
 			currentMemberNode.AcceptVisitor(lookupTableVisitor, null);
 		}

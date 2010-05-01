@@ -41,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <summary>
 	/// Static helper methods for working with text.
 	/// </summary>
-	public static class TextUtilities
+	public static partial class TextUtilities
 	{
 		#region GetControlCharacterName
 		// the names of the first 32 ASCII characters = Unicode C0 block
@@ -125,15 +125,6 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Gets the leading whitespace segment on the document line.
 		/// </summary>
-		[ObsoleteAttribute("Supporting this method causes DocumentLine to use more memory than otherwise necessary. It will be removed in a future AvalonEdit version.")]
-		public static ISegment GetLeadingWhitespace(DocumentLine documentLine)
-		{
-			return GetLeadingWhitespace(documentLine.Document, documentLine);
-		}
-		
-		/// <summary>
-		/// Gets the leading whitespace segment on the document line.
-		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
 		                                                 Justification = "WPF uses 'Whitespace'")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters",
@@ -143,17 +134,6 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (documentLine == null)
 				throw new ArgumentNullException("documentLine");
 			return GetWhitespaceAfter(document, documentLine.Offset);
-		}
-		
-		/// <summary>
-		/// Gets the trailing whitespace segment on the document line.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Whitespace",
-		                                                 Justification = "WPF uses 'Whitespace'")]
-		[ObsoleteAttribute("Supporting this method causes DocumentLine to use more memory than otherwise necessary. It will be removed in a future AvalonEdit version.")]
-		public static ISegment GetTrailingWhitespace(DocumentLine documentLine)
-		{
-			return GetTrailingWhitespace(documentLine.Document, documentLine);
 		}
 		
 		/// <summary>

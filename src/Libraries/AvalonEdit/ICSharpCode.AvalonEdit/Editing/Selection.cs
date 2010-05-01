@@ -172,7 +172,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			string text = GetText(textArea.Document);
 			// Ensure we use the appropriate newline sequence for the OS
-			DataObject data = new DataObject(NewLineFinder.NormalizeNewLines(text, Environment.NewLine));
+			DataObject data = new DataObject(TextUtilities.NormalizeNewLines(text, Environment.NewLine));
 			// we cannot use DataObject.SetText - then we cannot drag to SciTe
 			// (but dragging to Word works in both cases)
 			

@@ -192,8 +192,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 							
 							bool rectangular = e.Data.GetDataPresent(RectangleSelection.RectangularSelectionDataType);
 							
-							string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
-							text = NewLineFinder.NormalizeNewLines(text, newLine);
+							string newLine = TextUtilities.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
+							text = TextUtilities.NormalizeNewLines(text, newLine);
 							
 							// Mark the undo group with the currentDragDescriptor, if the drag
 							// is originating from the same control. This allows combining

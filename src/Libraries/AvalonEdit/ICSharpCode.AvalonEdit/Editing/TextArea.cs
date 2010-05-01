@@ -824,7 +824,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		void ReplaceSelectionWithNewLine()
 		{
-			string newLine = NewLineFinder.GetNewLineFromDocument(this.Document, this.Caret.Line);
+			string newLine = TextUtilities.GetNewLineFromDocument(this.Document, this.Caret.Line);
 			using (this.Document.RunUpdate()) {
 				ReplaceSelectionWithText(newLine);
 				if (this.IndentationStrategy != null) {

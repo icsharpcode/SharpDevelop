@@ -318,7 +318,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 			
 			string text = textArea.Selection.GetText(textArea.Document);
-			text = NewLineFinder.NormalizeNewLines(text, Environment.NewLine);
+			text = TextUtilities.NormalizeNewLines(text, Environment.NewLine);
 			textArea.OnTextCopied(new TextEventArgs(text));
 		}
 		
@@ -329,7 +329,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			ISegment wholeLine = new SimpleSegment(line.Offset, line.TotalLength);
 			string text = textArea.Document.GetText(wholeLine);
 			// Ensure we use the appropriate newline sequence for the OS
-			text = NewLineFinder.NormalizeNewLines(text, Environment.NewLine);
+			text = TextUtilities.NormalizeNewLines(text, Environment.NewLine);
 			DataObject data = new DataObject(text);
 			
 			// Also copy text in HTML format to clipboard - good for pasting text into Word
@@ -368,8 +368,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 				Debug.WriteLine( Clipboard.GetText(TextDataFormat.Html) );
 				
 				// convert text back to correct newlines for this document
-				string newLine = NewLineFinder.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
-				string text = NewLineFinder.NormalizeNewLines(Clipboard.GetText(), newLine);
+				string newLine = TextUtilities.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
+				string text = TextUtilities.NormalizeNewLines(Clipboard.GetText(), newLine);
 				
 				if (!string.IsNullOrEmpty(text)) {
 					bool fullLine = textArea.Options.CutCopyWholeLine && Clipboard.ContainsData(LineSelectedType);

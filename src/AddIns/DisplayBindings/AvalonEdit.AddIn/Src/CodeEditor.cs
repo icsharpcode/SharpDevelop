@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -284,6 +285,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.Encoding = reader.CurrentEncoding;
 				}
 			}
+			NewLineConsistencyCheck.StartConsistencyCheck(this);
 		}
 		
 		public void Save(Stream stream)

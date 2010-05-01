@@ -29,42 +29,28 @@ namespace ICSharpCode.AvalonEdit.Document
 	public sealed partial class DocumentLine : ISegment
 	{
 		#region Constructor
-		internal readonly TextDocument document;
+		#if DEBUG
+		// Required for thread safety check which is done only in debug builds.
+		// To save space, we don't store the document reference in release builds as we don't need it there.
+		readonly TextDocument document;
+		#endif
+		
 		internal bool isDeleted;
 		
 		internal DocumentLine(TextDocument document)
 		{
+			#if DEBUG
 			Debug.Assert(document != null);
 			this.document = document;
-		}
-		#endregion
-		
-		#region Document / Text
-		/// <summary>
-		/// Gets the text document that owns this DocumentLine. O(1).
-		/// </summary>
-		/// <remarks>This property is still available even if the line was deleted.</remarks>
-		[ObsoleteAttribute("Supporting this property causes DocumentLine to use more memory than otherwise necessary. " +
-		                   "It will be removed in a future AvalonEdit version.")]
-		public TextDocument Document {
-			get {
-				document.DebugVerifyAccess();
-				return document;
-			}
+			#endif
 		}
 		
-		
-		/// <summary>
-		/// Gets the text on this line.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">The line was deleted.</exception>
-		[ObsoleteAttribute("Supporting this property causes DocumentLine to use more memory than otherwise necessary. " +
-		                   "It will be removed in a future AvalonEdit version. " +
-		                   "Use 'document.GetText(documentLine)' instead.")]
-		public string Text {
-			get {
-				return document.GetText(this.Offset, this.Length);
-			}
+		[Conditional("DEBUG")]
+		void DebugVerifyAccess()
+		{
+			#if DEBUG
+			document.DebugVerifyAccess();
+			#endif
 		}
 		#endregion
 		
@@ -100,7 +86,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public bool IsDeleted {
 			get {
-				document.DebugVerifyAccess();
+				DebugVerifyAccess();
 				return isDeleted;
 			}
 		}
@@ -153,7 +139,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// in that case, it contains the line's length before the deletion.</remarks>
 		public int Length {
 			get {
-				document.DebugVerifyAccess();
+				DebugVerifyAccess();
 				return totalLength - delimiterLength;
 			}
 		}
@@ -165,7 +151,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// in that case, it contains the line's length before the deletion.</remarks>
 		public int TotalLength {
 			get {
-				document.DebugVerifyAccess();
+				DebugVerifyAccess();
 				return totalLength;
 			}
 			internal set {
@@ -183,7 +169,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// in that case, it contains the line delimiter's length before the deletion.</remarks>
 		public int DelimiterLength {
 			get {
-				document.DebugVerifyAccess();
+				DebugVerifyAccess();
 				return delimiterLength;
 			}
 			internal set {
@@ -200,7 +186,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <returns>The line following this line, or null if this is the last line.</returns>
 		public DocumentLine NextLine {
 			get {
-				document.DebugVerifyAccess();
+				DebugVerifyAccess();
 				
 				if (right != null) {
 					return right.LeftMost;
@@ -223,7 +209,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <returns>The line before this line, or null if this is the first line.</returns>
 		public DocumentLine PreviousLine {
 			get {
-				document.DebugVerifyAccess();
+				DebugVerifyAccess();
 				
 				if (left != null) {
 					return left.RightMost;

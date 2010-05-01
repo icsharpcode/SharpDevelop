@@ -638,10 +638,13 @@ namespace ICSharpCode.AvalonEdit.Document
 		int IList<DocumentLine>.IndexOf(DocumentLine item)
 		{
 			document.VerifyAccess();
-			if (item == null || item.document != document || item.IsDeleted)
+			if (item == null || item.IsDeleted)
 				return -1;
+			int index = item.LineNumber - 1;
+			if (index < LineCount && GetNodeByIndex(index) == item)
+				return index;
 			else
-				return item.LineNumber - 1;
+				return -1;
 		}
 		
 		void IList<DocumentLine>.Insert(int index, DocumentLine item)
@@ -666,8 +669,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		bool ICollection<DocumentLine>.Contains(DocumentLine item)
 		{
-			document.VerifyAccess();
-			return item != null && item.document == document && !item.IsDeleted;
+			IList<DocumentLine> self = this;
+			return self.IndexOf(item) >= 0;
 		}
 		
 		void ICollection<DocumentLine>.CopyTo(DocumentLine[] array, int arrayIndex)

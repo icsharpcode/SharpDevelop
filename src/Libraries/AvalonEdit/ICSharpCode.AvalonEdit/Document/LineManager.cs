@@ -20,7 +20,6 @@ namespace ICSharpCode.AvalonEdit.Document
 	{
 		#region Constructor
 		readonly TextDocument document;
-		readonly IList<char> textBuffer;
 		readonly DocumentLineTree documentLineTree;
 		
 		/// <summary>
@@ -34,10 +33,9 @@ namespace ICSharpCode.AvalonEdit.Document
 			this.lineTrackers = document.LineTrackers.ToArray();
 		}
 		
-		public LineManager(IList<char> textBuffer, DocumentLineTree documentLineTree, TextDocument document)
+		public LineManager(DocumentLineTree documentLineTree, TextDocument document)
 		{
 			this.document = document;
-			this.textBuffer = textBuffer;
 			this.documentLineTree = documentLineTree;
 			UpdateListOfLineTrackers();
 			
@@ -95,7 +93,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			// keep the first document line
 			DocumentLine ls = documentLineTree.GetByNumber(1);
-			SimpleSegment ds = NewLineFinder.NextNewLine(textBuffer, 0);
+			SimpleSegment ds = NewLineFinder.NextNewLine(document, 0);
 			List<DocumentLine> lines = new List<DocumentLine>();
 			int lastDelimiterEnd = 0;
 			while (ds != SimpleSegment.Invalid) {
@@ -105,10 +103,10 @@ namespace ICSharpCode.AvalonEdit.Document
 				lines.Add(ls);
 				
 				ls = new DocumentLine(document);
-				ds = NewLineFinder.NextNewLine(textBuffer, lastDelimiterEnd);
+				ds = NewLineFinder.NextNewLine(document, lastDelimiterEnd);
 			}
 			ls.ResetLine();
-			ls.TotalLength = textBuffer.Count - lastDelimiterEnd;
+			ls.TotalLength = document.TextLength - lastDelimiterEnd;
 			lines.Add(ls);
 			documentLineTree.RebuildTree(lines);
 			foreach (ILineTracker lineTracker in lineTrackers)
@@ -269,13 +267,13 @@ namespace ICSharpCode.AvalonEdit.Document
 				line.DelimiterLength = 0;
 			} else {
 				int lineOffset = line.Offset;
-				char lastChar = textBuffer[lineOffset + newTotalLength - 1];
+				char lastChar = document.GetCharAt(lineOffset + newTotalLength - 1);
 				if (lastChar == '\r') {
 					line.DelimiterLength = 1;
 				} else if (lastChar == '\n') {
-					if (newTotalLength >= 2 && textBuffer[lineOffset + newTotalLength - 2] == '\r') {
+					if (newTotalLength >= 2 && document.GetCharAt(lineOffset + newTotalLength - 2) == '\r') {
 						line.DelimiterLength = 2;
-					} else if (newTotalLength == 1 && lineOffset > 0 && textBuffer[lineOffset - 1] == '\r') {
+					} else if (newTotalLength == 1 && lineOffset > 0 && document.GetCharAt(lineOffset - 1) == '\r') {
 						// we need to join this line with the previous line
 						DocumentLine previousLine = line.PreviousLine;
 						RemoveLine(line);
