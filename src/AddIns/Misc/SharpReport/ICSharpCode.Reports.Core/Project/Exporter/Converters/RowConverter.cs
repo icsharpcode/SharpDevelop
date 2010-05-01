@@ -50,6 +50,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 				base.BaseConvert (myList,simpleContainer,parent.Location.X,
 				                  new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y));
+				
+				
 				return myList;
 			} else {
 				return this.ConvertDataRow(simpleContainer);
@@ -83,8 +85,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 					currentPosition = new Point(base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Y);
 					mylist.Clear();
 				}
+				
+				if (section.DrawBorder == true) {
+					BaseRectangleItem br = BasePager.CreateDebugItem (section);
+					BaseExportColumn bec = br.CreateExportColumn();
+					bec.StyleDecorator.Location = section.Location;
+					mylist.Insert(0,bec);
+				}
 			}
-			
 			while (base.DataNavigator.MoveNext());
 			
 			SectionBounds.ReportFooterRectangle =  new Rectangle(SectionBounds.ReportFooterRectangle.Left,

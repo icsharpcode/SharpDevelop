@@ -122,17 +122,27 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected  void BuildDetail (BaseSection section,IDataNavigator dataNavigator)
 		{
 			ExporterCollection convertedList = new ExporterCollection();
+			
+			
+		
+			
 			foreach (BaseReportItem item in section.Items)
 			{
 				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
 				                                                                this.SinglePage,this.ExportItemsConverter,
 				                                                                base.Layouter);
-				baseConverter.SectionRendering += OnSectionRendering;
-				baseConverter.Graphics = base.Graphics;
-				baseConverter.PageFull += new EventHandler<NewPageEventArgs>(OnPageFull);
-				convertedList = baseConverter.Convert(section,item);
-				base.SinglePage.Items.AddRange(convertedList);
-				SetPageFull();
+				if (baseConverter != null) {
+					
+					
+					baseConverter.SectionRendering += OnSectionRendering;
+					baseConverter.Graphics = base.Graphics;
+					baseConverter.PageFull += new EventHandler<NewPageEventArgs>(OnPageFull);
+					
+					convertedList = baseConverter.Convert(section,item);
+				
+					base.SinglePage.Items.AddRange(convertedList);
+					SetPageFull();
+				}
 			}
 		}
 		

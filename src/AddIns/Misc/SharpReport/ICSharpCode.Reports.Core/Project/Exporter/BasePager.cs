@@ -172,7 +172,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 						this.exportItemsConverter.ParentLocation = exportContainer.StyleDecorator.Location;
 						
 						AdjustBackColor (container);
+						
 						ExporterCollection clist = container.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
+						
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);
 						
@@ -199,7 +201,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private static BaseRectangleItem CreateDebugItem (BaseReportItem item)
+		public static BaseRectangleItem CreateDebugItem (BaseReportItem item)
 		{
 			BaseRectangleItem debugRectangle = new BaseRectangleItem();
 			debugRectangle = new BaseRectangleItem();
@@ -283,7 +285,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{
 			foreach (BaseExportColumn be in items) {
-				ExportContainer ec = be as ExportContainer;
+				IExportContainer ec = be as IExportContainer;
 				if (ec != null)
 				{
 					if (ec.Items.Count > 0) {

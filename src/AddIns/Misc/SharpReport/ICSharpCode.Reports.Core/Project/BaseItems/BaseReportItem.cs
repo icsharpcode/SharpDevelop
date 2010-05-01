@@ -82,6 +82,9 @@ namespace ICSharpCode.Reports.Core {
 				return new Rectangle(this.Parent.Location.X + this.Location.X ,
 				                     this.Location.Y + this.SectionOffset,
 				                     this.Size.Width,this.Size.Height);
+//				return new Rectangle( this.Location.X ,
+//				                     this.Location.Y + this.SectionOffset,
+//				                     this.Size.Width,this.Size.Height);
 			}
 		}
 		

@@ -14,7 +14,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 	{
 		void DrawItem(System.Drawing.Graphics graphics);
 		void DrawItem(PdfWriter pdfWriter, ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter);
-		void AddLineItem(BaseExportColumn item);
+//		void AddLineItem(BaseExportColumn item);
 		ExporterCollection Items { get; }
 	}
 }

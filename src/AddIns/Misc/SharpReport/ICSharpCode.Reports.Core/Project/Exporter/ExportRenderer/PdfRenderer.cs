@@ -110,7 +110,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) {
 				if (baseExportColumn != null) {
 
-					ExportContainer container = baseExportColumn as ExportContainer;
+					IExportContainer container = baseExportColumn as ExportContainer;
 					if (container == null) {
 						baseExportColumn.DrawItem(this.pdfWriter,this.pdfUnitConverter);
 					} else {

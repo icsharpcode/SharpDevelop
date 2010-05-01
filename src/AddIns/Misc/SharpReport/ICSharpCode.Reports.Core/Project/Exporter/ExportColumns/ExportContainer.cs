@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Drawing;
 using iTextSharp.text.pdf;
 
 namespace ICSharpCode.Reports.Core.Exporter
@@ -34,8 +35,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		#region overrides
 
 
-		public override void DrawItem(System.Drawing.Graphics graphics)
+		public override void DrawItem(Graphics graphics)
 		{
+			if (graphics == null) {
+				throw new ArgumentNullException("graphics");
+			}
+			base.DrawItem(graphics);
 			base.Decorate(graphics);
 		}
 
@@ -48,14 +53,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		#endregion
 
-		public void AddLineItem(BaseExportColumn item)
-		{
-			if (item == null) {
-				throw new ArgumentNullException("item");
-			}
-			this.items.Add(item);
-		}
-
+		
 		public ExporterCollection Items {
 			get {
 				if (this.items == null) {

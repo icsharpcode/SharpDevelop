@@ -99,9 +99,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 		
 		public override void DrawItem(Graphics graphics)
 		{
-			if (graphics == null) {
-				throw new ArgumentNullException("graphics");
-			}
+			
 			base.DrawItem(graphics);
 			base.Decorate(graphics);
 			TextDrawer.DrawString(graphics, this.text,this.StyleDecorator);                 
