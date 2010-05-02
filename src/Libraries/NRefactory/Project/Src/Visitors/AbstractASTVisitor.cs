@@ -546,31 +546,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data) {
-			Debug.Assert((indexerDeclaration != null));
-			Debug.Assert((indexerDeclaration.Attributes != null));
-			Debug.Assert((indexerDeclaration.Parameters != null));
-			Debug.Assert((indexerDeclaration.InterfaceImplementations != null));
-			Debug.Assert((indexerDeclaration.TypeReference != null));
-			Debug.Assert((indexerDeclaration.GetRegion != null));
-			Debug.Assert((indexerDeclaration.SetRegion != null));
-			foreach (AttributeSection o in indexerDeclaration.Attributes) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			foreach (ParameterDeclarationExpression o in indexerDeclaration.Parameters) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			foreach (InterfaceImplementation o in indexerDeclaration.InterfaceImplementations) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			indexerDeclaration.TypeReference.AcceptVisitor(this, data);
-			indexerDeclaration.GetRegion.AcceptVisitor(this, data);
-			return indexerDeclaration.SetRegion.AcceptVisitor(this, data);
-		}
-		
 		public virtual object VisitIndexerExpression(IndexerExpression indexerExpression, object data) {
 			Debug.Assert((indexerExpression != null));
 			Debug.Assert((indexerExpression.TargetObject != null));

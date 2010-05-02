@@ -116,14 +116,6 @@ namespace Hornung.ResourceToolkit.Resolver
 			return base.VisitFieldDeclaration(fieldDeclaration, data);
 		}
 		
-		public override object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
-		{
-			if (this.CheckNode(indexerDeclaration)) {
-				return null;
-			}
-			return base.VisitIndexerDeclaration(indexerDeclaration, data);
-		}
-		
 		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			if (this.CheckNode(localVariableDeclaration)) {

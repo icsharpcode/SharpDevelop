@@ -309,6 +309,10 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			if (!IsClassType(ClassType.Interface) && (propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
 				propertyDeclaration.Modifier |= Modifiers.Private;
+			
+			if (propertyDeclaration.IsIndexer)
+				propertyDeclaration.Modifier |= Modifiers.Default;
+			
 			base.VisitPropertyDeclaration(propertyDeclaration, data);
 			
 			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(propertyDeclaration);

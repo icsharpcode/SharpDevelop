@@ -715,45 +715,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			property.Documentation = GetDocumentation(region.BeginLine, propertyDeclaration.Attributes);
 			ConvertAttributes(propertyDeclaration, property);
-			AddInterfaceImplementations(property, propertyDeclaration);
-			c.Properties.Add(property);
-			return null;
-		}
-		
-		public override object VisitIndexerDeclaration(AST.IndexerDeclaration indexerDeclaration, object data)
-		{
-			DomRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
-			DomRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
-			DefaultProperty i = new DefaultProperty("Item", CreateReturnType(indexerDeclaration.TypeReference), ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
-			i.IsIndexer = true;
-			if (indexerDeclaration.HasGetRegion) {
-				i.GetterRegion = GetRegion(indexerDeclaration.GetRegion.StartLocation, indexerDeclaration.GetRegion.EndLocation);
-				i.CanGet = true;
-				i.GetterModifiers = ConvertModifier(indexerDeclaration.GetRegion.Modifier, ModifierEnum.None);
-			}
-			if (indexerDeclaration.HasSetRegion) {
-				i.SetterRegion = GetRegion(indexerDeclaration.SetRegion.StartLocation, indexerDeclaration.SetRegion.EndLocation);
-				i.CanSet = true;
-				i.SetterModifiers = ConvertModifier(indexerDeclaration.SetRegion.Modifier, ModifierEnum.None);
-			}
-			i.Documentation = GetDocumentation(region.BeginLine, indexerDeclaration.Attributes);
-			ConvertAttributes(indexerDeclaration, i);
-			if (indexerDeclaration.Parameters != null) {
-				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
-					i.Parameters.Add(CreateParameter(par));
+			
+			property.IsIndexer = propertyDeclaration.IsIndexer;
+			
+			if (propertyDeclaration.Parameters != null) {
+				foreach (AST.ParameterDeclarationExpression par in propertyDeclaration.Parameters) {
+					property.Parameters.Add(CreateParameter(par));
 				}
 			}
 			// If an IndexerNameAttribute is specified, use the specified name
 			// for the indexer instead of the default name.
-			IAttribute indexerNameAttribute = i.Attributes.LastOrDefault(this.IsIndexerNameAttribute);
+			IAttribute indexerNameAttribute = property.Attributes.LastOrDefault(this.IsIndexerNameAttribute);
 			if (indexerNameAttribute != null && indexerNameAttribute.PositionalArguments.Count > 0) {
 				string name = indexerNameAttribute.PositionalArguments[0] as string;
 				if (!String.IsNullOrEmpty(name)) {
-					i.FullyQualifiedName = String.Concat(i.DeclaringType.FullyQualifiedName, ".", name);
+					property.FullyQualifiedName = String.Concat(property.DeclaringType.FullyQualifiedName, ".", name);
 				}
 			}
-			DefaultClass c = GetCurrentClass();
-			c.Properties.Add(i);
+			
+			AddInterfaceImplementations(property, propertyDeclaration);
+			c.Properties.Add(property);
 			return null;
 		}
 		

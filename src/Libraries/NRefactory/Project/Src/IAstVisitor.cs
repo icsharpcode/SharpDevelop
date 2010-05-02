@@ -119,8 +119,6 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitIfElseStatement(IfElseStatement ifElseStatement, object data);
 		
-		object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data);
-		
 		object VisitIndexerExpression(IndexerExpression indexerExpression, object data);
 		
 		object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data);

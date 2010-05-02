@@ -952,10 +952,11 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		/*--- unqualified indexer declaration (without interface name): */
 		|                                  (. m.Check(Modifiers.Indexers); .)
 		"this" "[" FormalParameterList<p> "]" (. Location endLocation = t.EndLocation; .) "{" (.
-			         IndexerDeclaration indexer = new IndexerDeclaration(type, p, m.Modifier, attributes);
+			         PropertyDeclaration indexer = new PropertyDeclaration(m.Modifier | Modifiers.Default, attributes, "Item", p);
 			         indexer.StartLocation = startPos;
 			         indexer.EndLocation   = endLocation;
 			         indexer.BodyStart     = t.Location;
+			         indexer.TypeReference = type;
 			         PropertyGetRegion getRegion;
 			         PropertySetRegion setRegion;
 			       .) 
@@ -1024,9 +1025,10 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			/*--- qualified indexer declaration (with interface name): */
 			|                              (. m.Check(Modifiers.Indexers); .)
 			"." "this" "[" FormalParameterList<p> "]" (.
-			         IndexerDeclaration indexer = new IndexerDeclaration(type, p, m.Modifier, attributes);
+			         PropertyDeclaration indexer = new PropertyDeclaration(m.Modifier | Modifiers.Default, attributes, "Item", p);
 			         indexer.StartLocation = m.GetDeclarationLocation(startPos);
 			         indexer.EndLocation   = t.EndLocation;
+			         indexer.TypeReference = type;
 			         if (explicitInterface != null)
 						SafeAdd(indexer, indexer.InterfaceImplementations, new InterfaceImplementation(explicitInterface, "this"));
 			         PropertyGetRegion getRegion;
@@ -1121,7 +1123,8 @@ InterfaceMemberDecl
 				/*--- interface indexer declaration: */
 			|	"this" "[" FormalParameterList<parameters> "]"
 				(. Location bracketEndLocation = t.EndLocation; .)
-				(. IndexerDeclaration id = new IndexerDeclaration(type, parameters, mod, attributes);
+				(. PropertyDeclaration id = new PropertyDeclaration(mod | Modifiers.Default, attributes, "Item", parameters);
+					id.TypeReference = type;
 				   compilationUnit.AddChild(id); .)
 				"{" (. Location bodyStart = t.Location;.)
 				InterfaceAccessors<out getBlock, out setBlock>

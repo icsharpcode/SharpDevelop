@@ -167,6 +167,7 @@ namespace NRefactoryASTGenerator.Ast
 	[IncludeBoolProperty("HasSetRegion", "return !setRegion.IsNull;")]
 	[IncludeBoolProperty("IsReadOnly", "return HasGetRegion && !HasSetRegion;")]
 	[IncludeBoolProperty("IsWriteOnly", "return !HasGetRegion && HasSetRegion;")]
+	[IncludeBoolProperty("IsIndexer", "return (Modifier & Modifiers.Default) != 0;")]
 	[IncludeMember(@"
 		internal PropertyDeclaration(string name, TypeReference typeReference, Modifiers modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
 		{
@@ -220,29 +221,6 @@ namespace NRefactoryASTGenerator.Ast
 		BlockStatement body;
 		
 		public DestructorDeclaration(string name, Modifiers modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
-	}
-	
-	[IncludeBoolProperty("HasGetRegion", "return !getRegion.IsNull;")]
-	[IncludeBoolProperty("HasSetRegion", "return !setRegion.IsNull;")]
-	[IncludeBoolProperty("IsReadOnly", "return HasGetRegion && !HasSetRegion;")]
-	[IncludeBoolProperty("IsWriteOnly", "return !HasGetRegion && HasSetRegion;")]
-	class IndexerDeclaration : AttributedNode
-	{
-		List<ParameterDeclarationExpression> parameters;
-		List<InterfaceImplementation> interfaceImplementations;
-		TypeReference     typeReference;
-		Location          bodyStart;
-		Location          bodyEnd;
-		PropertyGetRegion getRegion;
-		PropertySetRegion setRegion;
-		
-		public IndexerDeclaration(Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes)
-			: base(modifier, attributes)
-		{}
-		
-		public IndexerDeclaration(TypeReference typeReference, List<ParameterDeclarationExpression> parameters, Modifiers modifier, List<AttributeSection> attributes)
-			: base(modifier, attributes)
-		{}
 	}
 	
 	enum CharsetModifier { None }

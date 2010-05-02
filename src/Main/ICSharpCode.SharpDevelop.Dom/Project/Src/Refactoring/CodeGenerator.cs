@@ -264,37 +264,23 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 				throw new ArgumentException("Unknown member: " + m.GetType().FullName);
 		}
 		
-		public static AttributedNode ConvertMember(IProperty p, ClassFinder targetContext)
+		public static PropertyDeclaration ConvertMember(IProperty p, ClassFinder targetContext)
 		{
-			if (p.IsIndexer) {
-				IndexerDeclaration md;
-				md = new IndexerDeclaration(ConvertType(p.ReturnType, targetContext),
-				                            ConvertParameters(p.Parameters, targetContext),
-				                            ConvertModifier(p.Modifiers, targetContext),
-				                            ConvertAttributes(p.Attributes, targetContext));
-				md.Parameters = ConvertParameters(p.Parameters, targetContext);
-				if (p.CanGet) md.GetRegion = new PropertyGetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
-				if (p.CanSet) md.SetRegion = new PropertySetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
-				md.InterfaceImplementations = ConvertInterfaceImplementations(p.InterfaceImplementations, targetContext);
-				return md;
-			} else {
-				PropertyDeclaration md;
-				md = new PropertyDeclaration(ConvertModifier(p.Modifiers, targetContext),
-				                             ConvertAttributes(p.Attributes, targetContext),
-				                             p.Name,
-				                             ConvertParameters(p.Parameters, targetContext));
-				md.TypeReference = ConvertType(p.ReturnType, targetContext);
-				md.InterfaceImplementations = ConvertInterfaceImplementations(p.InterfaceImplementations, targetContext);
-				if (p.CanGet) {
-					md.GetRegion = new PropertyGetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
-					md.GetRegion.Modifier = ConvertModifier(p.GetterModifiers, null);
-				}
-				if (p.CanSet) {
-					md.SetRegion = new PropertySetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
-					md.SetRegion.Modifier = ConvertModifier(p.SetterModifiers, null);
-				}
-				return md;
+			PropertyDeclaration md = new PropertyDeclaration(ConvertModifier(p.Modifiers, targetContext),
+			                                                 ConvertAttributes(p.Attributes, targetContext),
+			                                                 p.Name,
+			                                                 ConvertParameters(p.Parameters, targetContext));
+			md.TypeReference = ConvertType(p.ReturnType, targetContext);
+			md.InterfaceImplementations = ConvertInterfaceImplementations(p.InterfaceImplementations, targetContext);
+			if (p.CanGet) {
+				md.GetRegion = new PropertyGetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
+				md.GetRegion.Modifier = ConvertModifier(p.GetterModifiers, null);
 			}
+			if (p.CanSet) {
+				md.SetRegion = new PropertySetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
+				md.SetRegion.Modifier = ConvertModifier(p.SetterModifiers, null);
+			}
+			return md;
 		}
 		
 		public static FieldDeclaration ConvertMember(IField f, ClassFinder targetContext)
@@ -360,11 +346,6 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 						node.Body = null;
 					}
 					foreach (PropertyDeclaration node in members.OfType<PropertyDeclaration>()) {
-						node.Modifier &= ~(Modifiers.Public | Modifiers.Private | Modifiers.Protected | Modifiers.Internal);
-						node.GetRegion.Block = null;
-						node.SetRegion.Block = null;
-					}
-					foreach (IndexerDeclaration node in members.OfType<IndexerDeclaration>()) {
 						node.Modifier &= ~(Modifiers.Public | Modifiers.Private | Modifiers.Protected | Modifiers.Internal);
 						node.GetRegion.Block = null;
 						node.SetRegion.Block = null;
@@ -710,11 +691,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					pd.Attributes.Clear();
 					if (explicitImpl || requireAlternativeImplementation) {
 						InterfaceImplementation impl = CreateInterfaceImplementation(p, context);
-						if (pd is IndexerDeclaration) {
-							((IndexerDeclaration)pd).InterfaceImplementations.Add(impl);
-						} else {
-							((PropertyDeclaration)pd).InterfaceImplementations.Add(impl);
-						}
+						((PropertyDeclaration)pd).InterfaceImplementations.Add(impl);
 						targetClassProperties.Add(CloneAndAddExplicitImpl(p, targetClass));
 						pd.Modifier = explicitImplModifier;
 					} else {

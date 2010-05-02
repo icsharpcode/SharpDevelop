@@ -395,13 +395,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data) {
-			this.BeginVisit(indexerDeclaration);
-			object result = this.TrackedVisitIndexerDeclaration(indexerDeclaration, data);
-			this.EndVisit(indexerDeclaration);
-			return result;
-		}
-		
 		public sealed override object VisitIndexerExpression(IndexerExpression indexerExpression, object data) {
 			this.BeginVisit(indexerExpression);
 			object result = this.TrackedVisitIndexerExpression(indexerExpression, data);
@@ -1105,10 +1098,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitIfElseStatement(IfElseStatement ifElseStatement, object data) {
 			return base.VisitIfElseStatement(ifElseStatement, data);
-		}
-		
-		public virtual object TrackedVisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data) {
-			return base.VisitIndexerDeclaration(indexerDeclaration, data);
 		}
 		
 		public virtual object TrackedVisitIndexerExpression(IndexerExpression indexerExpression, object data) {

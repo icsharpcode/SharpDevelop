@@ -984,59 +984,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data) {
-			Debug.Assert((indexerDeclaration != null));
-			Debug.Assert((indexerDeclaration.Attributes != null));
-			Debug.Assert((indexerDeclaration.Parameters != null));
-			Debug.Assert((indexerDeclaration.InterfaceImplementations != null));
-			Debug.Assert((indexerDeclaration.TypeReference != null));
-			Debug.Assert((indexerDeclaration.GetRegion != null));
-			Debug.Assert((indexerDeclaration.SetRegion != null));
-			for (int i = 0; i < indexerDeclaration.Attributes.Count; i++) {
-				AttributeSection o = indexerDeclaration.Attributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					indexerDeclaration.Attributes.RemoveAt(i--);
-				else
-					indexerDeclaration.Attributes[i] = o;
-			}
-			for (int i = 0; i < indexerDeclaration.Parameters.Count; i++) {
-				ParameterDeclarationExpression o = indexerDeclaration.Parameters[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (ParameterDeclarationExpression)nodeStack.Pop();
-				if (o == null)
-					indexerDeclaration.Parameters.RemoveAt(i--);
-				else
-					indexerDeclaration.Parameters[i] = o;
-			}
-			for (int i = 0; i < indexerDeclaration.InterfaceImplementations.Count; i++) {
-				InterfaceImplementation o = indexerDeclaration.InterfaceImplementations[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (InterfaceImplementation)nodeStack.Pop();
-				if (o == null)
-					indexerDeclaration.InterfaceImplementations.RemoveAt(i--);
-				else
-					indexerDeclaration.InterfaceImplementations[i] = o;
-			}
-			nodeStack.Push(indexerDeclaration.TypeReference);
-			indexerDeclaration.TypeReference.AcceptVisitor(this, data);
-			indexerDeclaration.TypeReference = ((TypeReference)(nodeStack.Pop()));
-			nodeStack.Push(indexerDeclaration.GetRegion);
-			indexerDeclaration.GetRegion.AcceptVisitor(this, data);
-			indexerDeclaration.GetRegion = ((PropertyGetRegion)(nodeStack.Pop()));
-			nodeStack.Push(indexerDeclaration.SetRegion);
-			indexerDeclaration.SetRegion.AcceptVisitor(this, data);
-			indexerDeclaration.SetRegion = ((PropertySetRegion)(nodeStack.Pop()));
-			return null;
-		}
-		
 		public virtual object VisitIndexerExpression(IndexerExpression indexerExpression, object data) {
 			Debug.Assert((indexerExpression != null));
 			Debug.Assert((indexerExpression.TargetObject != null));

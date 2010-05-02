@@ -713,12 +713,6 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
-		public override object TrackedVisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
-		{
-			Console.WriteLine("VisitIndexerDeclaration");
-			return null;
-		}
-		
 		public override object TrackedVisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			indexerExpression.TargetObject.AcceptVisitor(this, data);

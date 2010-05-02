@@ -226,10 +226,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			throw new global::System.NotImplementedException("IfElseStatement");
 		}
 		
-		public virtual object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data) {
-			throw new global::System.NotImplementedException("IndexerDeclaration");
-		}
-		
 		public virtual object VisitIndexerExpression(IndexerExpression indexerExpression, object data) {
 			throw new global::System.NotImplementedException("IndexerExpression");
 		}

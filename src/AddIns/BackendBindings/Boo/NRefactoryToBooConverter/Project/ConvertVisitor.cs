@@ -142,18 +142,6 @@ namespace NRefactoryToBooConverter
 			if ((m & Modifiers.WithEvents) != 0) {
 				// not necessary in Boo
 			}
-			if ((m & Modifiers.Default) != 0) {
-				ParametrizedNode parametrizedNode = node as ParametrizedNode;
-				string name = null;
-				if (parametrizedNode != null) {
-					name = parametrizedNode.Name;
-				} else {
-					AddError(node, "Default modifier is not supported on this member.");
-				}
-				if (name != null && currentType != null) {
-					currentType.Attributes.Add(MakeAttribute("System.Reflection.DefaultMember", new B.StringLiteralExpression(name)));
-				}
-			}
 			return r;
 		}
 		

@@ -1665,9 +1665,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			initializer = Expression.Null;
 		}
 		
-		public bool HasRaiseRegion {
+		public bool HasAddRegion {
 			get {
-				return !raiseRegion.IsNull;
+				return !addRegion.IsNull;
 			}
 		}
 		
@@ -1677,9 +1677,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public bool HasAddRegion {
+		public bool HasRaiseRegion {
 			get {
-				return !addRegion.IsNull;
+				return !raiseRegion.IsNull;
 			}
 		}
 		
@@ -1983,6 +1983,15 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 
+		public TypeReference GetTypeForField(int fieldIndex)
+		{
+			if (!typeReference.IsNull) {
+				return typeReference;
+			}
+			return ((VariableDeclaration)Fields[fieldIndex]).TypeReference;
+		}
+		
+
 		public VariableDeclaration GetVariableDeclaration(string variableName)
 		{
 			foreach (VariableDeclaration variableDeclaration in Fields) {
@@ -1991,15 +2000,6 @@ namespace ICSharpCode.NRefactory.Ast {
 				}
 			}
 			return null;
-		}
-		
-
-		public TypeReference GetTypeForField(int fieldIndex)
-		{
-			if (!typeReference.IsNull) {
-				return typeReference;
-			}
-			return ((VariableDeclaration)Fields[fieldIndex]).TypeReference;
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -2456,147 +2456,6 @@ namespace ICSharpCode.NRefactory.Ast {
 		public override string ToString() {
 			return string.Format("[IfElseStatement Condition={0} TrueStatement={1} FalseStatement={2} ElseIfSection" +
 					"s={3}]", Condition, GetCollectionString(TrueStatement), GetCollectionString(FalseStatement), GetCollectionString(ElseIfSections));
-		}
-	}
-	
-	public class IndexerDeclaration : AttributedNode {
-		
-		List<ParameterDeclarationExpression> parameters;
-		
-		List<InterfaceImplementation> interfaceImplementations;
-		
-		TypeReference typeReference;
-		
-		Location bodyStart;
-		
-		Location bodyEnd;
-		
-		PropertyGetRegion getRegion;
-		
-		PropertySetRegion setRegion;
-		
-		public List<ParameterDeclarationExpression> Parameters {
-			get {
-				return parameters;
-			}
-			set {
-				parameters = value ?? new List<ParameterDeclarationExpression>();
-			}
-		}
-		
-		public List<InterfaceImplementation> InterfaceImplementations {
-			get {
-				return interfaceImplementations;
-			}
-			set {
-				interfaceImplementations = value ?? new List<InterfaceImplementation>();
-			}
-		}
-		
-		public TypeReference TypeReference {
-			get {
-				return typeReference;
-			}
-			set {
-				typeReference = value ?? TypeReference.Null;
-				if (!typeReference.IsNull) typeReference.Parent = this;
-			}
-		}
-		
-		public Location BodyStart {
-			get {
-				return bodyStart;
-			}
-			set {
-				bodyStart = value;
-			}
-		}
-		
-		public Location BodyEnd {
-			get {
-				return bodyEnd;
-			}
-			set {
-				bodyEnd = value;
-			}
-		}
-		
-		public PropertyGetRegion GetRegion {
-			get {
-				return getRegion;
-			}
-			set {
-				getRegion = value ?? PropertyGetRegion.Null;
-				if (!getRegion.IsNull) getRegion.Parent = this;
-			}
-		}
-		
-		public PropertySetRegion SetRegion {
-			get {
-				return setRegion;
-			}
-			set {
-				setRegion = value ?? PropertySetRegion.Null;
-				if (!setRegion.IsNull) setRegion.Parent = this;
-			}
-		}
-		
-		public IndexerDeclaration(Modifiers modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) {
-			Modifier = modifier;
-			Parameters = parameters;
-			Attributes = attributes;
-			interfaceImplementations = new List<InterfaceImplementation>();
-			typeReference = TypeReference.Null;
-			bodyStart = Location.Empty;
-			bodyEnd = Location.Empty;
-			getRegion = PropertyGetRegion.Null;
-			setRegion = PropertySetRegion.Null;
-		}
-		
-		public IndexerDeclaration(TypeReference typeReference, List<ParameterDeclarationExpression> parameters, Modifiers modifier, List<AttributeSection> attributes) {
-			TypeReference = typeReference;
-			Parameters = parameters;
-			Modifier = modifier;
-			Attributes = attributes;
-			interfaceImplementations = new List<InterfaceImplementation>();
-			bodyStart = Location.Empty;
-			bodyEnd = Location.Empty;
-			getRegion = PropertyGetRegion.Null;
-			setRegion = PropertySetRegion.Null;
-		}
-		
-		public bool HasSetRegion {
-			get {
-				return !setRegion.IsNull;
-			}
-		}
-		
-		public bool IsReadOnly {
-			get {
-				return HasGetRegion && !HasSetRegion;
-			}
-		}
-		
-		public bool IsWriteOnly {
-			get {
-				return !HasGetRegion && HasSetRegion;
-			}
-		}
-		
-		public bool HasGetRegion {
-			get {
-				return !getRegion.IsNull;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitIndexerDeclaration(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[IndexerDeclaration Parameters={0} InterfaceImplementations={1} TypeReference={2}" +
-					" BodyStart={3} BodyEnd={4} GetRegion={5} SetRegion={6} Attributes={7} Modifier={" +
-					"8}]", GetCollectionString(Parameters), GetCollectionString(InterfaceImplementations), TypeReference, BodyStart, BodyEnd, GetRegion, SetRegion, GetCollectionString(Attributes), Modifier);
 		}
 	}
 	
@@ -3489,9 +3348,9 @@ public Location ExtendedEndLocation { get; set; }
 			setRegion = PropertySetRegion.Null;
 		}
 		
-		public bool IsReadOnly {
+		public bool HasGetRegion {
 			get {
-				return HasGetRegion && !HasSetRegion;
+				return !getRegion.IsNull;
 			}
 		}
 		
@@ -3501,9 +3360,21 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
+		public bool IsReadOnly {
+			get {
+				return HasGetRegion && !HasSetRegion;
+			}
+		}
+		
 		public bool IsWriteOnly {
 			get {
 				return !HasGetRegion && HasSetRegion;
+			}
+		}
+		
+		public bool IsIndexer {
+			get {
+				return (Modifier & Modifiers.Default) != 0;
 			}
 		}
 		
@@ -3516,12 +3387,6 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			if ((modifier & Modifiers.WriteOnly) != Modifiers.WriteOnly) {
 				this.GetRegion = new PropertyGetRegion(null, null);
-			}
-		}
-		
-		public bool HasGetRegion {
-			get {
-				return !getRegion.IsNull;
 			}
 		}
 		
@@ -5336,9 +5201,9 @@ public Location ExtendedEndLocation { get; set; }
 			Usings = usings;
 		}
 		
-public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
-		
 public UsingDeclaration(string @namespace) : this(@namespace, null) {}
+		
+public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitUsingDeclaration(this, data);
@@ -5494,6 +5359,43 @@ public UsingDeclaration(string @namespace) : this(@namespace, null) {}
 		
 		public override string ToString() {
 			return string.Format("[WithStatement Expression={0} Body={1}]", Expression, Body);
+		}
+	}
+	
+	public abstract class XmlLiteralExpression : AbstractNode, INullable {
+		
+		protected XmlLiteralExpression() {
+		}
+		
+		public virtual bool IsNull {
+			get {
+				return false;
+			}
+		}
+		
+		public static XmlLiteralExpression Null {
+			get {
+				return NullXmlLiteralExpression.Instance;
+			}
+		}
+	}
+	
+	internal sealed class NullXmlLiteralExpression : XmlLiteralExpression {
+		
+		internal static NullXmlLiteralExpression Instance = new NullXmlLiteralExpression();
+		
+		public override bool IsNull {
+			get {
+				return true;
+			}
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return null;
+		}
+		
+		public override string ToString() {
+			return "[NullXmlLiteralExpression]";
 		}
 	}
 	

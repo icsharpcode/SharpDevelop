@@ -188,6 +188,7 @@ namespace NRefactoryToBooConverter
 			ConvertAttributes(propertyDeclaration.Attributes, m.Attributes);
 			if (currentType != null) currentType.Members.Add(m);
 			ConvertParameters(propertyDeclaration.Parameters, m.Parameters);
+			if (propertyDeclaration.IsIndexer) m.Name = "self";
 			m.EndSourceLocation = GetLocation(propertyDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(propertyDeclaration.TypeReference);
 			m.ExplicitInfo = ConvertInterfaceImplementations(propertyDeclaration.InterfaceImplementations, propertyDeclaration, m);
@@ -206,39 +207,6 @@ namespace NRefactoryToBooConverter
 					ConvertAttributes(propertyDeclaration.SetRegion.Attributes, m.Setter.Attributes);
 					m.Setter.Modifiers = ConvertModifier(propertyDeclaration.SetRegion, B.TypeMemberModifiers.None);
 					m.Setter.Body = ConvertMethodBlock(propertyDeclaration.SetRegion.Block);
-				}
-			}
-			return m;
-		}
-		
-		public object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
-		{
-			B.Property m = new B.Property(GetLexicalInfo(indexerDeclaration));
-			
-			m.Modifiers = ConvertModifier(indexerDeclaration, B.TypeMemberModifiers.Private);
-			ConvertAttributes(indexerDeclaration.Attributes, m.Attributes);
-			if (currentType != null) currentType.Members.Add(m);
-			ConvertParameters(indexerDeclaration.Parameters, m.Parameters);
-			m.EndSourceLocation = GetLocation(indexerDeclaration.EndLocation);
-			m.Type = ConvertTypeReference(indexerDeclaration.TypeReference);
-			m.Name = "this";
-			m.ExplicitInfo = ConvertInterfaceImplementations(indexerDeclaration.InterfaceImplementations, indexerDeclaration, m);
-			m.Name = "self";
-			if (!indexerDeclaration.IsWriteOnly) {
-				m.Getter = new B.Method(GetLexicalInfo(indexerDeclaration.GetRegion));
-				if (indexerDeclaration.GetRegion != null) {
-					ConvertAttributes(indexerDeclaration.GetRegion.Attributes, m.Getter.Attributes);
-					m.Modifiers = ConvertModifier(indexerDeclaration.GetRegion, m.Visibility);
-					m.Getter.Body = ConvertMethodBlock(indexerDeclaration.GetRegion.Block);
-					m.Getter.ReturnType = m.Type;
-				}
-			}
-			if (!indexerDeclaration.IsReadOnly) {
-				m.Setter = new B.Method(GetLexicalInfo(indexerDeclaration.SetRegion));
-				if (indexerDeclaration.SetRegion != null) {
-					ConvertAttributes(indexerDeclaration.SetRegion.Attributes, m.Setter.Attributes);
-					m.Modifiers = ConvertModifier(indexerDeclaration.SetRegion, m.Visibility);
-					m.Setter.Body = ConvertMethodBlock(indexerDeclaration.SetRegion.Block);
 				}
 			}
 			return m;

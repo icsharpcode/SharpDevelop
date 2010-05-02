@@ -814,7 +814,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			printAttributeSectionInline = true;
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);
 			printAttributeSectionInline = false;
-			OutputModifier(parameterDeclarationExpression.ParamModifier, parameterDeclarationExpression.StartLocation);
+			OutputModifier(parameterDeclarationExpression.ParamModifier);
 			outputFormatter.PrintIdentifier(parameterDeclarationExpression.ParameterName);
 			if (!parameterDeclarationExpression.TypeReference.IsNull) {
 				outputFormatter.Space();
@@ -967,51 +967,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			AppendCommaSeparatedList(constructorInitializer.Arguments);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			outputFormatter.NewLine();
-			return null;
-		}
-		
-		public override object TrackedVisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
-		{
-			VisitAttributes(indexerDeclaration.Attributes, data);
-			outputFormatter.Indent();
-			OutputModifier(indexerDeclaration.Modifier);
-			outputFormatter.PrintToken(Tokens.Default);
-			outputFormatter.Space();
-			if (indexerDeclaration.IsReadOnly) {
-				outputFormatter.PrintToken(Tokens.ReadOnly);
-				outputFormatter.Space();
-			} else if (indexerDeclaration.IsWriteOnly) {
-				outputFormatter.PrintToken(Tokens.WriteOnly);
-				outputFormatter.Space();
-			}
-			
-			outputFormatter.PrintToken(Tokens.Property);
-			outputFormatter.Space();
-			outputFormatter.PrintIdentifier("Item");
-			
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(indexerDeclaration.Parameters);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			VisitReturnTypeAttributes(indexerDeclaration.Attributes, data);
-			TrackedVisit(indexerDeclaration.TypeReference, data);
-			PrintInterfaceImplementations(indexerDeclaration.InterfaceImplementations);
-			
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			exitTokenStack.Push(Tokens.Property);
-			TrackedVisit(indexerDeclaration.GetRegion, data);
-			TrackedVisit(indexerDeclaration.SetRegion, data);
-			exitTokenStack.Pop();
-			--outputFormatter.IndentationLevel;
-			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.End);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.Property);
 			outputFormatter.NewLine();
 			return null;
 		}
@@ -2782,7 +2737,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#endregion
 		
 		
-		void OutputModifier(ParameterModifiers modifier, Location position)
+		void OutputModifier(ParameterModifiers modifier)
 		{
 			if ((modifier & ParameterModifiers.Optional) == ParameterModifiers.Optional) {
 				outputFormatter.PrintToken(Tokens.Optional);
@@ -2879,6 +2834,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			if ((modifier & Modifiers.Extern) == Modifiers.Extern) {
 				// not required in VB
+			}
+			
+			if ((modifier & Modifiers.Default) == Modifiers.Default) {
+				outputFormatter.PrintToken(Tokens.Default);
+				outputFormatter.Space();
 			}
 			
 			if ((modifier & Modifiers.Volatile) == Modifiers.Volatile) {

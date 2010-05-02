@@ -604,7 +604,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				TrackVisit(propertyDeclaration.InterfaceImplementations[0].InterfaceType, data);
 				outputFormatter.PrintToken(Tokens.Dot);
 			}
-			outputFormatter.PrintIdentifier(propertyDeclaration.Name);
+			if (propertyDeclaration.IsIndexer) {
+				outputFormatter.PrintToken(Tokens.This);
+				
+				outputFormatter.PrintToken(Tokens.OpenSquareBracket);
+				if (this.prettyPrintOptions.SpacesWithinBrackets) {
+					outputFormatter.Space();
+				}
+				AppendCommaSeparatedList(propertyDeclaration.Parameters);
+				if (this.prettyPrintOptions.SpacesWithinBrackets) {
+					outputFormatter.Space();
+				}
+				outputFormatter.PrintToken(Tokens.CloseSquareBracket);
+			} else
+				outputFormatter.PrintIdentifier(propertyDeclaration.Name);
 			
 			OutputGetAndSetRegion(propertyDeclaration.GetRegion, propertyDeclaration.SetRegion);
 			
@@ -976,38 +989,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			return null;
-		}
-		
-		public override object TrackedVisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
-		{
-			VisitAttributes(indexerDeclaration.Attributes, data);
-			outputFormatter.Indent();
-			OutputModifier(indexerDeclaration.Modifier);
-			TrackVisit(indexerDeclaration.TypeReference, data);
-			outputFormatter.Space();
-			if (indexerDeclaration.InterfaceImplementations.Count > 0) {
-				TrackVisit(indexerDeclaration.InterfaceImplementations[0].InterfaceType, data);
-				outputFormatter.PrintToken(Tokens.Dot);
-			}
-			outputFormatter.PrintToken(Tokens.This);
-			outputFormatter.PrintToken(Tokens.OpenSquareBracket);
-			if (this.prettyPrintOptions.SpacesWithinBrackets) {
-				outputFormatter.Space();
-			}
-			AppendCommaSeparatedList(indexerDeclaration.Parameters);
-			if (this.prettyPrintOptions.SpacesWithinBrackets) {
-				outputFormatter.Space();
-			}
-			
-			outputFormatter.PrintToken(Tokens.CloseSquareBracket);
-			
-			outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle, this.prettyPrintOptions.IndentPropertyBody);
-			
-			TrackVisit(indexerDeclaration.GetRegion, data);
-			TrackVisit(indexerDeclaration.SetRegion, data);
-			
-			outputFormatter.EndBrace(this.prettyPrintOptions.IndentPropertyBody);
 			return null;
 		}
 		
