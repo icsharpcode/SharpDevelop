@@ -30,7 +30,7 @@ namespace SharpRefactoring
 		protected ITextEditor textEditor;
 		protected IDocument currentDocument;
 		protected MethodDeclaration extractedMethod;
-		protected ParametrizedNode parentNode;
+		protected AttributedNode parentNode;
 		protected Statement caller;
 		protected List<LocalVariableDeclaration> beforeCallDeclarations;
 		protected VariableDeclaration returnedVariable;
@@ -58,7 +58,7 @@ namespace SharpRefactoring
 			this.end = this.currentDocument.OffsetToPosition(this.textEditor.SelectionStart + this.textEditor.SelectionLength);
 		}
 		
-		protected static Statement CreateCaller(ParametrizedNode parent, MethodDeclaration method, VariableDeclaration returnVariable)
+		protected static Statement CreateCaller(AttributedNode parent, MethodDeclaration method, VariableDeclaration returnVariable)
 		{
 			Statement caller;
 			InvocationExpression expr = new InvocationExpression(new IdentifierExpression(method.Name), CreateArgumentExpressions(method.Parameters));
@@ -84,9 +84,12 @@ namespace SharpRefactoring
 			newMethod.AcceptVisitor(hrsv, null);
 
 			if (hrsv.HasReturn) {
-				if (this.parentNode is MethodDeclaration) newMethod.TypeReference = (this.parentNode as MethodDeclaration).TypeReference;
-				if (this.parentNode is PropertyDeclaration) newMethod.TypeReference = (this.parentNode as PropertyDeclaration).TypeReference;
-				if (this.parentNode is OperatorDeclaration) newMethod.TypeReference = (this.parentNode as OperatorDeclaration).TypeReference;
+				if (this.parentNode is MethodDeclaration)
+					newMethod.TypeReference = (this.parentNode as MethodDeclaration).TypeReference;
+				if (this.parentNode is PropertyDeclaration)
+					newMethod.TypeReference = (this.parentNode as PropertyDeclaration).TypeReference;
+				if (this.parentNode is OperatorDeclaration)
+					newMethod.TypeReference = (this.parentNode as OperatorDeclaration).TypeReference;
 			} else {
 				if (possibleReturnValues.Count > 0) {
 					newMethod.TypeReference = possibleReturnValues[possibleReturnValues.Count - 1].TypeReference;
@@ -202,25 +205,13 @@ namespace SharpRefactoring
 		{
 			Dom.ParseInformation parseInfo = ParserService.GetParseInformation(textEditor.FileName);
 			if (parseInfo != null) {
-				Dom.IClass c = parseInfo.CompilationUnit.GetInnermostClass(line, column);
-				if (c != null) {
-					foreach (Dom.IMember member in c.Properties) {
-						if (member.BodyRegion.IsInside(line, column)) {
-							return member;
-						}
-					}
-					foreach (Dom.IMember member in c.Methods) {
-						if (member.BodyRegion.IsInside(line, column)) {
-							return member;
-						}
-					}
-				}
+				return parseInfo.CompilationUnit.GetInnermostMember(line, column);
 			}
 			
 			return null;
 		}
 		
-		protected ParametrizedNode GetParentMember(Location start, Location end)
+		protected AttributedNode GetParentMember(Location start, Location end)
 		{
 			using (IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(this.currentDocument.Text))) {
 				parser.Parse();
@@ -238,7 +229,7 @@ namespace SharpRefactoring
 			}
 		}
 		
-		protected static bool HasOccurrencesAfter(StringComparer nameComparer, ParametrizedNode member, Location location, string name, Location start, Location end)
+		protected static bool HasOccurrencesAfter(StringComparer nameComparer, AttributedNode member, Location location, string name, Location start, Location end)
 		{
 			FindReferenceVisitor frv = new FindReferenceVisitor(nameComparer, name, start, end);
 			
@@ -267,7 +258,7 @@ namespace SharpRefactoring
 		
 		public abstract Dom.IResolver GetResolver();
 		
-		static TypeReference GetParentReturnType(ParametrizedNode parent)
+		static TypeReference GetParentReturnType(AttributedNode parent)
 		{
 			if (parent is MemberNode)
 				return (parent as MemberNode).TypeReference;
@@ -296,11 +287,16 @@ namespace SharpRefactoring
 		}
 		
 		public Variable(BlockStatement block, ParameterDeclarationExpression param)
+			: this(block.StartLocation, block.EndLocation, param)
+		{
+		}
+		
+		public Variable(Location start, Location end, ParameterDeclarationExpression param)
 		{
 			this.Type = param.TypeReference;
 			this.Name = param.ParameterName;
-			this.StartPos = block.StartLocation;
-			this.EndPos = block.EndLocation;
+			this.StartPos = start;
+			this.EndPos = end;
 			this.Initializer = param.DefaultValue;
 			this.WasOutParam = (param.ParamModifier & ParameterModifiers.Out) == ParameterModifiers.Out;
 			this.WasRefParam = (param.ParamModifier & ParameterModifiers.Ref) == ParameterModifiers.Ref;

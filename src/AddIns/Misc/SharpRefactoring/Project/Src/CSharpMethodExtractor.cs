@@ -102,7 +102,9 @@ namespace SharpRefactoring
 			parentNode.AcceptVisitor(ltv, null);
 			
 			var variablesList = (from list in ltv.Variables.Values from item in list select new Variable(item))
-				.Where(v => !(v.StartPos > end || v.EndPos < start) && HasReferencesInSelection(newMethod, v))
+				.Where(v => !(v.StartPos > end || v.EndPos < start) &&
+				       (HasReferencesInSelection(newMethod, v) || 
+				        HasOccurrencesAfter(CSharpNameComparer, this.parentNode, end, v.Name, v.StartPos, v.EndPos)))
 				.Union(FromParameters(newMethod))
 				.Select(va => ResolveVariable(va));
 			
@@ -193,19 +195,24 @@ namespace SharpRefactoring
 		
 		IEnumerable<Variable> FromParameters(MethodDeclaration newMethod)
 		{
-			foreach (ParameterDeclarationExpression pde in parentNode.Parameters) {
-				FindReferenceVisitor frv = new FindReferenceVisitor(CSharpNameComparer, pde.ParameterName, newMethod.Body.StartLocation, newMethod.Body.EndLocation);
-				
-				newMethod.AcceptVisitor(frv, null);
-				if (frv.Identifiers.Count > 0) {
-					pde.ParamModifier &= ~(ParameterModifiers.Params);
+			if (parentNode is ParametrizedNode) {
+				foreach (ParameterDeclarationExpression pde in (parentNode as ParametrizedNode).Parameters) {
+					FindReferenceVisitor frv = new FindReferenceVisitor(CSharpNameComparer, pde.ParameterName, newMethod.Body.StartLocation, newMethod.Body.EndLocation);
 					
-					if (parentNode is MethodDeclaration) {
-						yield return new Variable((parentNode as MethodDeclaration).Body, pde);
-					} else if (parentNode is ConstructorDeclaration) {
-						yield return new Variable((parentNode as ConstructorDeclaration).Body, pde);
-					} else {
-						throw new NotSupportedException("not supported!");
+					newMethod.AcceptVisitor(frv, null);
+					if (frv.Identifiers.Count > 0) {
+						pde.ParamModifier &= ~(ParameterModifiers.Params);
+						
+						if (parentNode is MethodDeclaration) {
+							yield return new Variable((parentNode as MethodDeclaration).Body, pde);
+						} else if (parentNode is ConstructorDeclaration) {
+							yield return new Variable((parentNode as ConstructorDeclaration).Body, pde);
+						} else if (parentNode is PropertyDeclaration) {
+							var p = parentNode as PropertyDeclaration;
+							yield return new Variable(p.BodyStart, p.BodyEnd, pde);
+						} else {
+							throw new NotSupportedException("not supported!");
+						}
 					}
 				}
 			}

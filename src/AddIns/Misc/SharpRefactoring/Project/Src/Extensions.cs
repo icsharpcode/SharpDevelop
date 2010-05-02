@@ -16,9 +16,23 @@ namespace SharpRefactoring
 	/// </summary>
 	public static class Extensions
 	{
+		public static IMember GetInnermostMember(this ICompilationUnit unit, int caretLine, int caretColumn)
+		{
+			IClass c = unit.GetInnermostClass(caretLine, caretColumn);
+			
+			if (c == null)
+				return null;
+			
+			return c.AllMembers
+				.SingleOrDefault(m => m.BodyRegion.IsInside(caretLine, caretColumn));
+		}
+		
 		public static IMember GetInnermostMember(this IClass instance, int caretLine, int caretColumn)
 		{
 			instance = instance.GetInnermostClass(caretLine, caretColumn);
+			
+			if (instance == null)
+				return null;
 			
 			return instance.AllMembers
 				.SingleOrDefault(m => m.BodyRegion.IsInside(caretLine, caretColumn));

@@ -15,9 +15,9 @@ namespace SharpRefactoring.Visitors
 	public class FindMemberVisitor : AbstractAstVisitor
 	{
 		Location start, end;
-		ParametrizedNode member = null;
+		AttributedNode member = null;
 		
-		public ParametrizedNode Member {
+		public AttributedNode Member {
 			get { return member; }
 		}
 		
@@ -54,6 +54,16 @@ namespace SharpRefactoring.Visitors
 			}
 			
 			return base.VisitConstructorDeclaration(constructorDeclaration, data);
+		}
+		
+		public override object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
+		{
+			if ((destructorDeclaration.Body.StartLocation < start) &&
+			    (destructorDeclaration.Body.EndLocation > end)) {
+				this.member = destructorDeclaration;
+			}
+			
+			return base.VisitDestructorDeclaration(destructorDeclaration, data);
 		}
 		
 		public override object VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
