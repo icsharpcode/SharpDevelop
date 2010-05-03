@@ -40,13 +40,6 @@ namespace SharpRefactoring
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
 			anchor.MovementType = AnchorMovementType.AfterInsertion;
 			
-			var line = textEditor.Document.GetLineForOffset(textEditor.Caret.Offset);
-			
-			string indent = DocumentUtilitites.GetWhitespaceAfter(textEditor.Document, line.Offset);
-			
-			textEditor.Document.Insert(anchor.Offset, "public override string ToString()\n" + indent + "{\n" + indent + "\t");
-			textEditor.Document.Insert(anchor.Offset + 1, indent + "}\n");
-			
 			AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(null, textEditor, anchor, current.Fields);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);

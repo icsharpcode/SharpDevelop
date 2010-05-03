@@ -98,13 +98,15 @@ namespace SharpRefactoring.Gui
 			}
 		}
 		
-		protected override string GenerateCode(CodeGenerator generator, IClass currentClass)
+		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
 			StringBuilder code = new StringBuilder();
 			
 			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
 			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
+			
+			CodeGenerator generator = language.CodeGenerator;
 			
 			if (Options.AddIEquatableInterface) {
 				// TODO : add IEquatable<T> to class

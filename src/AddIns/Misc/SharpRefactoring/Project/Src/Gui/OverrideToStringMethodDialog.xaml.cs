@@ -17,9 +17,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Snippets;
+using Ast = ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace SharpRefactoring.Gui
 {
@@ -39,15 +41,38 @@ namespace SharpRefactoring.Gui
 			this.listBox.ItemsSource = this.fields.Select(i => i.Create(null));
 		}
 		
-		protected override string GenerateCode(CodeGenerator generator, IClass currentClass)
+		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
 			var fields = this.fields
 				.Where(f => f.IsChecked)
 				.Select(f2 => f2.Entity.Name)
 				.ToArray();
 			
+			ClassFinder context = new ClassFinder(currentClass, editor.Caret.Line, editor.Caret.Column);
+			IMember member =  OverrideCompletionItemProvider.GetOverridableMembers(currentClass).First(m => m.Name == "ToString");
+			var node = language.CodeGenerator.GetOverridingMethod(member, context) as Ast.MethodDeclaration;
+			var formatString = new Ast.PrimitiveExpression(GenerateFormatString(currentClass, language.CodeGenerator, fields));
+			var param = new List<Ast.Expression>() { formatString };
+			
+			Ast.ReturnStatement ret = new Ast.ReturnStatement(new Ast.InvocationExpression(
+				new Ast.MemberReferenceExpression(new Ast.TypeReferenceExpression(new Ast.TypeReference("string", true)), "Format"),
+				param.Concat(fields.Select(f => new Ast.IdentifierExpression(f))).ToList()
+			));
+			
+			node.Body.Children.Clear();
+			node.Body.AddChild(ret);
+			
+			int offset = editor.Document.GetLineForOffset(editor.Caret.Offset).Offset;
+			
+			return language.CodeGenerator.GenerateCode(node, DocumentUtilitites.GetWhitespaceAfter(editor.Document, offset)).TrimStart();
+		}
+		
+		string GenerateFormatString(IClass currentClass, CodeGenerator generator, string[] fields)
+		{
+			string fieldsString = "";
+			
 			if (fields.Any()) {
-				StringBuilder formatString = new StringBuilder("[" + currentClass.Name + " ");
+				StringBuilder formatString = new StringBuilder();
 				
 				for (int i = 0; i < fields.Length; i++) {
 					if (i != 0)
@@ -55,12 +80,10 @@ namespace SharpRefactoring.Gui
 					formatString.AppendFormat("{0}={{{1}}}", generator.GetPropertyName(fields[i]), i);
 				}
 				
-				formatString.Append("]");
-				
-				return "return string.Format(\"" + formatString.ToString() + "\", " + string.Join(", ", fields) + ");";
+				fieldsString = " " + formatString.ToString();
 			}
 			
-			return "return string.Format(\"[" + currentClass.Name + "]\");";
+			return "[" + currentClass.Name + fieldsString + "]";
 		}
 	}
 }

@@ -46,7 +46,7 @@ namespace SharpRefactoring.Gui
 			}
 		}
 		
-		protected override string GenerateCode(CodeGenerator generator, IClass currentClass)
+		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
 			StringBuilder builder = new StringBuilder();
 			
@@ -101,7 +101,7 @@ namespace SharpRefactoring.Gui
 				Body = block
 			};
 			
-			builder.Append(generator.GenerateCode(ctor, indent));
+			builder.Append(language.CodeGenerator.GenerateCode(ctor, indent));
 			
 			return builder.ToString().TrimStart();
 		}

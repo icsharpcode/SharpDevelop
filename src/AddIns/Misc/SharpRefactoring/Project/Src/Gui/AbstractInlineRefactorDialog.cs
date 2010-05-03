@@ -46,7 +46,7 @@ namespace SharpRefactoring.Gui
 			this.Background = SystemColors.ControlBrush;
 		}
 		
-		protected abstract string GenerateCode(CodeGenerator generator, IClass currentClass);
+		protected abstract string GenerateCode(LanguageProperties language, IClass currentClass);
 		
 		protected void OKButtonClick(object sender, RoutedEventArgs e)
 		{
@@ -59,10 +59,10 @@ namespace SharpRefactoring.Gui
 				}
 				
 				if (parseInfo != null) {
-					CodeGenerator generator = parseInfo.CompilationUnit.Language.CodeGenerator;
+					LanguageProperties language = parseInfo.CompilationUnit.Language;
 					IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 					
-					editor.Document.Insert(anchor.Offset, GenerateCode(generator, current) ?? "");
+					editor.Document.Insert(anchor.Offset, GenerateCode(language, current) ?? "");
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError(ex.Message);

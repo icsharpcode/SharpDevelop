@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	public class OverrideCompletionItemProvider : AbstractCompletionItemProvider
 	{
-		static IEnumerable<IMember> GetOverridableMembers(IClass c)
+		public static IEnumerable<IMember> GetOverridableMembers(IClass c)
 		{
 			if (c == null) {
 				throw new ArgumentException("c");
