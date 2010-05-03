@@ -28,10 +28,15 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			                                         new FrameworkPropertyMetadata(typeof(CompletionList)));
 		}
 		
+		bool isFiltering = true;
 		/// <summary>
-		/// If true, enables the old behavior: no filtering, search by string.StartsWith.
+		/// If true, the CompletionList is filtered to show only matching items. Also enables search by substring.
+		/// If false, enables the old behavior: no filtering, search by string.StartsWith.
 		/// </summary>
-		public bool IsSearchByStartOnly { get; set; }
+		public bool IsFiltering {
+			get { return isFiltering; }
+			set { isFiltering = value; }
+		}
 		
 		/// <summary>
 		/// Is raised when the completion list indicates that the user has chosen
@@ -175,39 +180,49 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		/// <summary>
-		/// Selects the best match, and possibly filters the items.
+		/// Selects the best match, and filter the items if turned on using <see cref="IsFiltering" />.
 		/// </summary>
 		public void SelectItem(string text)
 		{
-			if (string.IsNullOrEmpty(text))
-				return;
 			if (listBox == null)
 				ApplyTemplate();
 			
-			if (this.IsSearchByStartOnly)
-				SelectItemWithStart(text);
-			else
+			if (this.IsFiltering) {
 				FilterMatchingItems(text);
+			}
+			else {
+				SelectItemWithStart(text);
+			}
 		}
 		
+		/// <summary>
+		/// Filters CompletionList items to show only those matching given text, and selects the best match.
+		/// </summary>
 		void FilterMatchingItems(string text)
 		{
-			// BUG Find references to itemsWithQualities returns just this one
-			// assign qualities to items
-			var itemsWithQualities = 
-				from item in completionData
+			var itemsWithQualities =
+				from item in this.completionData
 				select new { Item = item, Quality = GetMatchQuality(item.Text, text) };
-			// take items with quality > 0, order by quality
-			var matchingOrdered = from itemWithQ in itemsWithQualities
-				where itemWithQ.Quality > 0
-				orderby itemWithQ.Quality descending, itemWithQ.Item.Priority descending, itemWithQ.Item.Text
-				select itemWithQ.Item;
-			var matchingItems = new ObservableCollection<ICompletionData>();
-			foreach (var matchingItem in matchingOrdered) {
-				matchingItems.Add(matchingItem);
+			var matchingItems = itemsWithQualities.Where(item => item.Quality > 0);
+			
+			var listBoxItems = new ObservableCollection<ICompletionData>();
+			int bestIndex = -1;
+			int bestQuality = -1;
+			double bestPriority = 0;
+			int i = 0;
+			foreach (var matchingItem in matchingItems) {
+				double priority = matchingItem.Item.Priority;
+				int quality = matchingItem.Quality;
+				if (quality > bestQuality || (quality == bestQuality && priority > bestPriority)) {
+					bestIndex = i;
+					bestPriority = priority;
+					bestQuality = quality;
+				}
+				listBoxItems.Add(matchingItem.Item);
+				i++;
 			}
-			listBox.ItemsSource = matchingItems;
-			listBox.SelectIndex(0);
+			listBox.ItemsSource = listBoxItems;
+			SelectIndexCentered(bestIndex);
 		}
 		
 		/// <summary>
@@ -215,6 +230,9 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		void SelectItemWithStart(string startText)
 		{
+			if (string.IsNullOrEmpty(startText))
+				return;
+			
 			int selectedItem = listBox.SelectedIndex;
 			
 			int bestIndex = -1;
@@ -231,6 +249,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					useThisItem = true;
 				} else {
 					if (bestIndex == selectedItem) {
+						// martin.konicek: I'm not sure what this does. This item could have higher priority, why not select it?
 						useThisItem = false;
 					} else if (i == selectedItem) {
 						useThisItem = bestQuality == quality;
@@ -244,11 +263,17 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					bestQuality = quality;
 				}
 			}
+			SelectIndexCentered(bestIndex);
+		}
+
+		void SelectIndexCentered(int bestIndex)
+		{
 			if (bestIndex < 0) {
 				listBox.ClearSelection();
 			} else {
 				int firstItem = listBox.FirstVisibleItem;
 				if (bestIndex < firstItem || firstItem + listBox.VisibleItemCount <= bestIndex) {
+					// CenterViewOn does nothing as CompletionListBox.ScrollViewer is null
 					listBox.CenterViewOn(bestIndex);
 					listBox.SelectIndex(bestIndex);
 				} else {
@@ -264,7 +289,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			//		1 = match CamelCase
 			//		2 = match sustring
 			// 		3 = match substring case sensitive
-			//		4 = match CamelCase when length of query is only 1 or 2 characters
+			//		4 = match CamelCase when length of query is 1 or 2 characters
 			//		5 = match start
 			// 		6 = match start case sensitive
 			// 		7 = full match
@@ -282,10 +307,10 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			if (query.Length <= 2 && CamelCaseMatch(itemText, query))
 				return 4;
 			
-			// search by substring, if not turned off
-			if (!IsSearchByStartOnly && itemText.Contains(query))
+			// search by substring, if filtering (i.e. new behavior) turned on
+			if (IsFiltering && query.Length > 1 && itemText.Contains(query))
 				return 3;
-			if (!IsSearchByStartOnly && itemText.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+			if (IsFiltering && query.Length > 1 && itemText.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
 				return 2;
 			
 			if (CamelCaseMatch(itemText, query))

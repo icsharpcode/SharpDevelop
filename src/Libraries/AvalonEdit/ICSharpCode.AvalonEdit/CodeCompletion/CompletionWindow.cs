@@ -163,8 +163,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			int offset = this.TextArea.Caret.Offset;
 			if (offset == this.StartOffset) {
-				if (CloseAutomatically && CloseWhenCaretAtBeginning)
+				if (CloseAutomatically && CloseWhenCaretAtBeginning) {
 					Close();
+				} else {
+					completionList.SelectItem(string.Empty);
+				}
 				return;
 			}
 			if (offset < this.StartOffset || offset > this.EndOffset) {

@@ -38,7 +38,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		public int FirstVisibleItem {
 			get {
-				if (scrollViewer == null) {
+				if (scrollViewer == null || scrollViewer.ExtentHeight == 0) {
 					return 0;
 				} else {
 					return (int)(this.Items.Count * scrollViewer.VerticalOffset / scrollViewer.ExtentHeight);
@@ -57,7 +57,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		public int VisibleItemCount {
 			get {
-				if (scrollViewer == null) {
+				if (scrollViewer == null || scrollViewer.ExtentHeight == 0) {
 					return 10;
 				} else {
 					return Math.Max(
