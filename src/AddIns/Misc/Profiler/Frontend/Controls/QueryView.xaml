@@ -271,7 +271,7 @@
 									<StackPanel Orientation="Horizontal">
 										<ToggleButton Visibility="{Binding CheckBoxVisibility}" IsChecked="{Binding IsExpanded}" Margin="{Binding IndentationMargin}" Style="{StaticResource ExpandCollapseToggleStyle}" />
 										<Ellipse Width="10" Height="10" HorizontalAlignment="Center" Margin="0,0,0,3" Fill="Red" Visibility="{Binding HotPathIndicatorVisibility}" />
-										<TextBlock Text="{Binding Name}" ToolTip="{Binding ToolTip}" />
+										<TextBlock Text="{Binding ShortName}" ToolTip="{Binding ToolTip}" />
 									</StackPanel>
 								</local:CustomGridViewScrollableCell>
 							</DataTemplate>

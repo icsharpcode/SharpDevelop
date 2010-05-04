@@ -248,6 +248,20 @@ namespace ICSharpCode.Profiler.Controls
 			}
 		}
 		
+		public virtual string ShortName
+		{
+			get {
+				if (string.IsNullOrEmpty(this.node.Name))
+					return null;
+				if (!this.node.Name.Contains("."))
+					return Name;
+				int index = FullyQualifiedClassName.LastIndexOf('.');
+				if (FullyQualifiedClassName[index - 1] == '.')
+					index--;
+				return FullyQualifiedClassName.Substring(index + 1) + "." + MethodName;
+			}
+		}
+		
 		bool isExpanded;
 		
 		public bool IsExpanded {
