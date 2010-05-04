@@ -265,7 +265,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				} else {
 					// Selected name is known in the current context but resolves to something else than the user wants to insert
 					// (i.e. some other class with the same name closer to current context according to language rules)
-					// - the only solution how to insert user's choice fully qualified
+					// - the only solution is to insert user's choice fully qualified
 					insertedText = selectedClass.FullyQualifiedName;
 				}
 			} else {
