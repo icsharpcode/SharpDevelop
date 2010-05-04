@@ -75,24 +75,23 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected  ExporterCollection ConvertItems (ISimpleContainer row,Point offset)		                                          
 		{
-			this.exportItemsConverter.Offset = offset.Y;
+
 			IExportColumnBuilder exportLineBuilder = row as IExportColumnBuilder;
 
 			if (exportLineBuilder != null) {
 
-				ExportContainer lineItem = this.exportItemsConverter.ConvertToContainer(row);
+				ExportContainer lineItem = this.exportItemsConverter.ConvertToContainer(offset,row);
 				BaseReportItem baseReportItem = row as BaseReportItem;
-				
-				this.exportItemsConverter.ParentLocation = baseReportItem.Location;
-				
+
+				this.exportItemsConverter.ParentRectangle = new Rectangle(baseReportItem.Location,baseReportItem.Size);
 				if (baseReportItem.BackColor != GlobalValues.DefaultBackColor) {
 					foreach (BaseReportItem i in row.Items) {
 						i.BackColor = baseReportItem.BackColor;
 					}
 				}
 				
-				ExporterCollection list = row.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
-				
+				ExporterCollection list = this.exportItemsConverter.ConvertSimpleItems(offset,row.Items);
+					
 				lineItem.Items.AddRange(list);
 				
 				ExporterCollection containerList = new ExporterCollection();
@@ -129,9 +128,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			get { return dataNavigator; }
 		}
 		
-		public IExportItemsConverter ExportItemsConverter {
-			get { return exportItemsConverter; }
-		}
 		
 		public ILayouter Layouter {
 			get { return layouter; }
@@ -140,9 +136,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public Graphics Graphics {get;set;}
 		#endregion
 		
-		protected Size SaveSize
+		protected void  SaveSize(Size size)
 		{
-			set { this.saveSize = value;}
+			this.saveSize = size;
 		}
 		
 		

@@ -81,7 +81,7 @@ namespace ICSharpCode.Reports.Core{
 		}
 		
 		
-		
+		/*
 		public ExporterCollection ConvertAll<BaseExportColumn>(Converter<BaseReportItem, ICSharpCode.Reports.Core.Exporter.BaseExportColumn> converter)
 		{
 			List<ICSharpCode.Reports.Core.Exporter.BaseExportColumn> l  = InnerList.ConvertAll(converter);
@@ -89,7 +89,7 @@ namespace ICSharpCode.Reports.Core{
 			e.AddRange(l);
 			return e;
 		}
-		
+		*/
 		
 		public void AddRange(IEnumerable<BaseReportItem> items)
 		{

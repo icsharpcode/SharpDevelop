@@ -8,7 +8,6 @@
  */
 using System;
 using System.Drawing;
-using System.Collections.Generic;
 using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core.Exporter
@@ -61,7 +60,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				if (simpleContainer.Items.Count > 0) {
 					simpleContainer.Location = new Point (simpleContainer.Location.X + defaultLeftPos,simpleContainer.Location.Y);
 					simpleContainer.Parent = (BaseReportItem)this.baseTable;
-					base.SaveSize =  new Size (simpleContainer.Size.Width,simpleContainer.Size.Height);
+					base.SaveSize( new Size (simpleContainer.Size.Width,simpleContainer.Size.Height));
 					// Header/FooterRow
 				
 					if (PrintHelper.IsTextOnlyRow(simpleContainer) ) {
@@ -72,7 +71,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					else 
 					{
 						// DataRegion
-						base.SaveSize = simpleContainer.Size;
+						base.SaveSize(simpleContainer.Size);
 						do {
 							//
 							BaseSection section = this.baseTable.Parent as BaseSection;

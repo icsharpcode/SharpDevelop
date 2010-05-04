@@ -14,14 +14,30 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 	public class ExportItemsConverter:IExportItemsConverter
 	{
-		private int offset;
-		private Point parentLocation;
-
+	
 		public ExportItemsConverter ()
 		{
 		}
 		
-		public BaseExportColumn ConvertToLineItem (BaseReportItem item)
+		
+		public ExporterCollection ConvertSimpleItems (Point offset,ReportItemCollection items)
+		{
+			if (items == null) {
+				throw new ArgumentNullException("items");
+			}
+			ExporterCollection col = new ExporterCollection();
+			if (items.Count > 0) {
+				
+				foreach(BaseReportItem item in items)
+				{
+					col.Add(ConvertToLineItem(offset,item));
+				}
+			}
+			return col;
+		}
+		
+		
+		private BaseExportColumn ConvertToLineItem (Point offset,BaseReportItem item)
 		{
 			if (item == null) {
 				throw new ArgumentNullException("item");
@@ -32,16 +48,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			if (columnBuilder != null) {
 				lineItem = columnBuilder.CreateExportColumn();
-
-				lineItem.StyleDecorator.Location = new Point(this.parentLocation.X + lineItem.StyleDecorator.Location.X,
-				                                             lineItem.StyleDecorator.Location.Y + offset);
 				
+				lineItem.StyleDecorator.Location = new Point(this.ParentRectangle.Location.X + lineItem.StyleDecorator.Location.X,
+				                                             lineItem.StyleDecorator.Location.Y + offset.Y);
 			} 
 			return lineItem;
 		}
 		
 		
-		public ExportContainer ConvertToContainer (ISimpleContainer item) 
+		public ExportContainer ConvertToContainer (Point offset,ISimpleContainer item) 
 		{
 			if (item == null) {
 				throw new ArgumentNullException("item");
@@ -50,22 +65,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 			if (lineBuilder != null) {
 				ExportContainer lineItem = (ExportContainer)lineBuilder.CreateExportColumn();
+
 				lineItem.StyleDecorator.Location = new Point (lineItem.StyleDecorator.Location.X,
-				                                              this.offset);
+				                                              offset.Y);
+				
 				return lineItem;
 			}
 			return null;
 		}
 		
+		public Rectangle ParentRectangle {get;set;}
 		
-		public Point ParentLocation {
-			get { return parentLocation; }
-			set { parentLocation = value; }
-		}
-		
-	
-		public int Offset {
-			set { offset = value; }
-		}
 	}
 }

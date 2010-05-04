@@ -86,7 +86,7 @@ namespace ICSharpCode.Reports.Core
 		
 	
 		
-		private Rectangle FindSurroundingRectangle_2 (Graphics graphics,IEnumerable<BaseReportItem> canGrowShrinkCollection)
+		private static Rectangle FindSurroundingRectangle_2 (Graphics graphics,IEnumerable<BaseReportItem> canGrowShrinkCollection)
 		{
 			int top = int.MaxValue;
 			Rectangle rec = new Rectangle(canGrowShrinkCollection.First().Location.X,

@@ -116,7 +116,6 @@
     <Compile Include="Project\Events\NewPageEventArgs.cs" />
     <Compile Include="Project\Events\ReportPageEventArgs.cs" />
     <Compile Include="Project\Events\ReportParametersEventArgs.cs" />
-    <Compile Include="Project\Exceptions\AsyncPageBuilderException.cs" />
     <Compile Include="Project\Exceptions\FieldNotFoundException.cs" />
     <Compile Include="Project\Exceptions\GroupLevelException.cs" />
     <Compile Include="Project\Exceptions\IllegalFileFormat.cs" />

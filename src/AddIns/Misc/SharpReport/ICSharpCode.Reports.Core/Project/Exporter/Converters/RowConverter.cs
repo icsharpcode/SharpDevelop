@@ -69,7 +69,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			do {
 				section.Location = new Point(section.Location.X,section.SectionOffset );
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
-				base.SaveSize = section.Items[0].Size;
+				base.SaveSize(section.Items[0].Size);
 				
 				base.FillAndLayoutRow(simpleContainer);
 				base.FireSectionRendering(section);

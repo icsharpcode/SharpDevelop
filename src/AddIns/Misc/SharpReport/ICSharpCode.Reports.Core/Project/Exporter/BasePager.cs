@@ -90,70 +90,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Converters
 		
-		/*
-		protected void ConvertSection (BaseSection section,int currentRow)
-		{
-			this.FireSectionRenderEvent (section ,currentRow);
-			this.Convert(section);
-		}
-		*/
-		/*
-		private void Convert (BaseSection section)
-		{
-			this.exportItemsConverter.Offset = section.SectionOffset;
-			PrintHelper.AdjustParent((BaseSection)section,section.Items);
-			ExporterCollection list = null;
-			
-			if (section.DrawBorder == true) {
-				BaseRectangleItem debugRectangle = new BaseRectangleItem();
-				debugRectangle = new BaseRectangleItem();
-				debugRectangle.Location = new Point (0 ,0);
-				debugRectangle.Size = new Size(section.Size.Width,section.Size.Height);
-				debugRectangle.FrameColor = section.FrameColor;
-				section.Items.Insert(0,debugRectangle);
-			}
-			
-			if (section.Items.Count > 0) {
-				
-				ISimpleContainer container = section.Items[0] as ISimpleContainer;
-				if (container != null) {
-
-					ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(container);
-					this.exportItemsConverter.ParentLocation = exportContainer.StyleDecorator.Location;
-					
-					AdjustBackColor (container);
-					
-					ExporterCollection clist = container.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem) as ExporterCollection;
-					
-					exportContainer.Items.AddRange(clist);
-					list = new ExporterCollection();
-					list.Add(exportContainer);
-					
-				} else {
-					this.exportItemsConverter.ParentLocation = section.Location;
-					
-					Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
-					Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
-					
-					if (!sectionRectangle.Contains(desiredRectangle)) {
-						section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
-					}
-					
-				
-					list = section.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
-				}
-				if ((list != null) && (list.Count) > 0) {
-					this.singlePage.Items.AddRange(list);
-				}
-			}
-		}
-		*/
-		
 		
 		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
 			FireSectionRenderEvent (section ,dataRow);
-			this.exportItemsConverter.Offset = section.SectionOffset;
+			
 			PrintHelper.AdjustParent((BaseSection)section,section.Items);
 			
 			ExporterCollection list = new ExporterCollection();
@@ -164,22 +105,23 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			if (section.Items.Count > 0) {
 				
+				Point offset = new Point(section.Location.X,section.SectionOffset);
 				foreach (IReportItem item in section.Items) {
 
 					ISimpleContainer container = item as ISimpleContainer;
 					if (container != null) {
-						ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(container);
-						this.exportItemsConverter.ParentLocation = exportContainer.StyleDecorator.Location;
-						
+
+						ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(offset,container);
+						                                                                               
 						AdjustBackColor (container);
 						
-						ExporterCollection clist = container.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
-						
+						ExporterCollection clist = this.exportItemsConverter.ConvertSimpleItems(offset,container.Items);
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);
 						
 					} else {
-						this.exportItemsConverter.ParentLocation = section.Location;
+
+						this.exportItemsConverter.ParentRectangle = new Rectangle (section.Location,section.Size);
 						
 						Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
 						Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
@@ -188,13 +130,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
 						}
 						
-						list = section.Items.ConvertAll <BaseExportColumn> (this.exportItemsConverter.ConvertToLineItem);
+						list = this.exportItemsConverter.ConvertSimpleItems(offset,section.Items);
 					}
-					
-//				if ((list != null) && (list.Count) > 0) {
-					////					this.singlePage.Items.AddRange(list);
-//				}
-//			}
 				}
 			}
 			return list;

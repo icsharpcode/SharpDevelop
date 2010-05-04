@@ -47,7 +47,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 
 		public iTextSharp.text.BaseColor PdfBackColor {
-			get {return this.ConvertToPdfBaseColor(this.backColor);}
+			get {return ConvertToPdfBaseColor(this.backColor);}
 		}
 
 
@@ -58,7 +58,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 
 		public iTextSharp.text.BaseColor PdfForeColor {
-			get {return this.ConvertToPdfBaseColor(this.foreColor);}
+			get {return ConvertToPdfBaseColor(this.foreColor);}
 		}
 
 		
@@ -69,7 +69,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 
 		public iTextSharp.text.BaseColor PdfFrameColor {
-			get {return this.ConvertToPdfBaseColor(frameColor);}
+			get {return ConvertToPdfBaseColor(frameColor);}
 		}
 		
 		public Point Location {
@@ -87,7 +87,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			get { return new Rectangle(this.location.X, this.location.Y, this.size.Width, this.size.Height); }
 		}
 		
-		private iTextSharp.text.BaseColor ConvertToPdfBaseColor (Color color)
+		private static iTextSharp.text.BaseColor ConvertToPdfBaseColor (Color color)
 		{
 			return new iTextSharp.text.BaseColor(color.R, color.G, color.B, color.A);
 		}
