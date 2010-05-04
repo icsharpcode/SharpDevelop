@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// <summary>
 		/// Sorts the items by their text.
 		/// </summary>
-		public void SortItems()
+		public void SortItems()	// PERF this is called twice
 		{
 			// the user might use method names is his language, so sort using CurrentCulture
 			items.Sort((a,b) => {

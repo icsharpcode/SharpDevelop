@@ -276,6 +276,12 @@ namespace ICSharpCode.SharpDevelop
 			} else
 				return null;
 		}
+		
+		public static ResolveResult Resolve(int offset, IDocument document, string fileName)
+		{
+			var position = document.OffsetToPosition(offset);
+			return Resolve(position.Line, position.Column, document, fileName);
+		}
 		#endregion
 		
 		#region GetParseableFileContent

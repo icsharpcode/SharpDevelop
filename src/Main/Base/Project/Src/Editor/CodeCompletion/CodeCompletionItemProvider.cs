@@ -14,6 +14,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
@@ -242,9 +243,62 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		public virtual void Complete(CompletionContext context)
 		{
 			MarkAsUsed();
-			context.Editor.Document.Replace(context.StartOffset, context.Length, this.Text);
 			
-			context.EndOffset = context.StartOffset + this.Text.Length;
+			var selectedClass = this.Entity as IClass;
+			if (selectedClass == null)
+				return;
+			
+			var editor = context.Editor;
+			var document = context.Editor.Document;
+			
+			var position = document.OffsetToPosition(context.StartOffset);
+			var nameResult = ParserService.Resolve(new ExpressionResult(selectedClass.Name), position.Line, position.Column, editor.FileName, document.Text);
+			var fullNameResult = ParserService.Resolve(new ExpressionResult(selectedClass.FullyQualifiedName), position.Line, position.Column, editor.FileName, document.Text);
+			
+			string insertedText = this.Text;
+			bool addUsing = false;
+			
+			var cu = nameResult.CallingClass.CompilationUnit;
+			if (IsKnown(nameResult)) {
+				if (IsEqualClass(nameResult, selectedClass)) {
+					// Selected name is known in the current context - do nothing
+				} else {
+					// Selected name is known in the current context but resolves to something else than the user wants to insert
+					// (i.e. some other class with the same name closer to current context according to language rules)
+					// - the only solution how to insert user's choice fully qualified
+					insertedText = selectedClass.FullyQualifiedName;
+				}
+			} else {
+				// The name is unknown - we add a using
+				addUsing = true;
+			}
+			
+			context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
+			context.EndOffset = context.StartOffset + insertedText.Length;
+			
+			if (addUsing) {
+				NamespaceRefactoringService.AddUsingDeclaration(cu, document, selectedClass.Namespace, true);
+				ParserService.BeginParse(context.Editor.FileName, context.Editor.Document);
+			}
+		}
+		
+		/// <summary>
+		/// Returns false if <paramref name="result" /> is <see cref="UnknownIdentifierResolveResult" /> or something similar.
+		/// </summary>
+		bool IsKnown(ResolveResult result)
+		{
+			return !(result is UnknownIdentifierResolveResult || result is UnknownConstructorCallResolveResult);
+		}
+		
+		/// <summary>
+		/// Returns true if both parameters refer to the same class.
+		/// </summary>
+		bool IsEqualClass(ResolveResult nameResult, IClass selectedClass)
+		{
+			var classResult = nameResult as TypeResolveResult;
+			if (classResult == null)
+				return false;
+			return classResult.ResolvedClass.FullyQualifiedName == selectedClass.FullyQualifiedName;
 		}
 		
 		#region Description

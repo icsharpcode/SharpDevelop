@@ -90,13 +90,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IClass GetClass(string typeName, int typeParameterCount);
 		bool NamespaceExists(string name);
 		List<ICompletionEntry> GetNamespaceContents(string nameSpace);
+		List<ICompletionEntry> GetAllContents();
 		
 		IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, GetClassOptions options);
 		bool NamespaceExists(string name, LanguageProperties language, bool lookInReferences);
 		/// <summary>
 		/// Adds the contents of the specified <paramref name="subNameSpace"/> to the <paramref name="list"/>.
 		/// </summary>
+		/// <param name="lookInReferences">If true, contents of referenced projects will be added as well (not recursive - just 1 level deep).</param>
 		void AddNamespaceContents(List<ICompletionEntry> list, string subNameSpace, LanguageProperties language, bool lookInReferences);
+		/// <summary>
+		/// Adds the contents of all namespaces in this project to the <paramref name="list"/>.
+		/// </summary>
+		/// <param name="lookInReferences">If true, contents of referenced projects will be added as well (not recursive - just 1 level deep).</param>
+		void AddAllContents(List<ICompletionEntry> list, LanguageProperties language, bool lookInReferences);
 		
 		SearchTypeResult SearchType(SearchTypeRequest request);
 		

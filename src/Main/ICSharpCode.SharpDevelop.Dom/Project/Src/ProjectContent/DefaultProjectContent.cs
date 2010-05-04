@@ -698,9 +698,36 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return namespaceList;
 		}
 		
+		public List<ICompletionEntry> GetAllContents()
+		{
+			List<ICompletionEntry> list = new List<ICompletionEntry>();
+			AddAllContents(list, this.language, true);
+			return list;
+		}
+		
+		/// <summary>
+		/// Adds the contents of all namespaces in this project to the <paramref name="list"/>.
+		/// </summary>
+		/// <param name="lookInReferences">If true, contents of referenced projects will be added as well (not recursive - just 1 level deep).</param>
+		public void AddAllContents(List<ICompletionEntry> list, LanguageProperties language, bool lookInReferences)
+		{
+			if (lookInReferences) {
+				lock (referencedContents) {
+					foreach (IProjectContent content in referencedContents) {
+						content.AddAllContents(list, language, false);
+					}
+				}
+			}
+			Dictionary<string, NamespaceStruct> dict = GetNamespaces(language);
+			foreach (var namespaceStruct in dict.Values) {
+				AddNamespaceStructContents(list, namespaceStruct, language, lookInReferences);
+			}
+		}
+		
 		/// <summary>
 		/// Adds the contents of the specified <paramref name="nameSpace"/> to the <paramref name="list"/>.
 		/// </summary>
+		/// <param name="lookInReferences">If true, contents of referenced projects will be added as well (not recursive - just 1 level deep).</param>
 		public void AddNamespaceContents(List<ICompletionEntry> list, string nameSpace, LanguageProperties language, bool lookInReferences)
 		{
 			if (nameSpace == null) {
@@ -718,23 +745,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Dictionary<string, NamespaceStruct> dict = GetNamespaces(language);
 			if (dict.ContainsKey(nameSpace)) {
 				NamespaceStruct ns = dict[nameSpace];
-				int newCapacity = list.Count + ns.Classes.Count + ns.SubNamespaces.Count;
-				if (list.Capacity < newCapacity)
-					list.Capacity = Math.Max(list.Count * 2, newCapacity);
-				foreach (IClass c in ns.Classes) {
-					if (c is GenericClassContainer) {
-						foreach (IClass realClass in ((GenericClassContainer)c).RealClasses) {
-							AddNamespaceContentsClass(list, realClass, language, lookInReferences);
-						}
-					} else {
-						AddNamespaceContentsClass(list, c, language, lookInReferences);
+				AddNamespaceStructContents(list, ns, language, lookInReferences);
+			}
+		}
+
+		void AddNamespaceStructContents(List<ICompletionEntry> list, NamespaceStruct ns, LanguageProperties language, bool lookInReferences)
+		{
+			int newCapacity = list.Count + ns.Classes.Count + ns.SubNamespaces.Count;
+			if (list.Capacity < newCapacity)
+				list.Capacity = Math.Max(list.Count * 2, newCapacity);
+			foreach (IClass c in ns.Classes) {
+				if (c is GenericClassContainer) {
+					foreach (IClass realClass in ((GenericClassContainer)c).RealClasses) {
+						AddNamespaceContentsClass(list, realClass, language, lookInReferences);
 					}
+				} else {
+					AddNamespaceContentsClass(list, c, language, lookInReferences);
 				}
-				foreach (string subns in ns.SubNamespaces) {
-					NamespaceEntry subnsEntry = new NamespaceEntry(subns);
-					if (!list.Contains(subnsEntry))
-						list.Add(subnsEntry);
-				}
+			}
+			foreach (string subns in ns.SubNamespaces) {
+				NamespaceEntry subnsEntry = new NamespaceEntry(subns);
+				if (!list.Contains(subnsEntry))	// PERF
+					list.Add(subnsEntry);
 			}
 		}
 		

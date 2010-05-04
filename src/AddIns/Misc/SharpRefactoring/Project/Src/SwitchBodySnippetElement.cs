@@ -104,16 +104,13 @@ namespace SharpRefactoring
 			this.Editor.Document.Insert(offset, switchBody);
 		}
 		
-		// TODO this should use CodeGenerator and build a BlockStatement to work for both C# and VB
+		// this should use CodeGenerator and build a BlockStatement to work for both C# and VB
 		string GetSwitchBodyCode(IReturnType enumType, string indent, CodeGenerator generator)
 		{
 			if (generator == null)
 				return string.Empty;
 			
 			ParseInformation parseInfo = ParserService.GetParseInformation(this.Editor.FileName);
-			//var usings = parseInfo.CompilationUnit.UsingScope.Usings.Select(u => u.Usings[0]).ToList();
-			//bool hasUsing = usings.Contains(enumType.Namespace);
-			// Attempt to eliminate redundant namespace in Namespace.Enum.ValueA if Namespace is present in 'using' section
 			var visitor = new CSharpOutputVisitor();
 			CodeGenerator.ConvertType(enumType, this.classFinderContext).AcceptVisitor(visitor, null);
 			var qualifiedEnumType = visitor.Text;
@@ -131,18 +128,7 @@ namespace SharpRefactoring
 			return sb.ToString();
 		}
 		
-		// Namespace-wise(depending on using section) IField to string conversion?
-		/*string GetSwitchBodyCode(IReturnType enumType, string indent, CodeGenerator generator)
-		{
-			var switchLabels = GetEnumCases(enumType).Select(enumCase => 
-			                  		new CaseLabel(
-			                          new MemberReferenceExpression(
-			                          	CodeGenerator.ConvertType(enumType, this.classFinderContext), enumCase.Name))).ToList();
-			var switchBody = new SwitchSection(switchLabels);
-			return string.Empty;
-		}*/
-		
-		// TODO this should use CodeGenerator and build a BlockStatement to work for both C# and VB
+		// this should use CodeGenerator and build a BlockStatement to work for both C# and VB
 		string GetGenericBodyCode(string indent, CodeGenerator generator)
 		{
 			if (generator == null)

@@ -179,26 +179,32 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			remove { RemoveHandler(Selector.SelectionChangedEvent, value); }
 		}
 		
+		// SelectItem gets called twice for every typed character (once from FormatLine), this helps execute SelectItem only once
+		string currentText;
+		
 		/// <summary>
 		/// Selects the best match, and filter the items if turned on using <see cref="IsFiltering" />.
 		/// </summary>
 		public void SelectItem(string text)
 		{
+			if (text == currentText)
+				return;
 			if (listBox == null)
 				ApplyTemplate();
 			
 			if (this.IsFiltering) {
-				FilterMatchingItems(text);
+				SelectItemFiltering(text);
 			}
 			else {
 				SelectItemWithStart(text);
 			}
+			currentText = text;
 		}
 		
 		/// <summary>
 		/// Filters CompletionList items to show only those matching given text, and selects the best match.
 		/// </summary>
-		void FilterMatchingItems(string text)
+		void SelectItemFiltering(string text)
 		{
 			var itemsWithQualities =
 				from item in this.completionData
@@ -304,8 +310,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			if (itemText.StartsWith(query, StringComparison.OrdinalIgnoreCase))
 				return 5;
 			
-			if (query.Length <= 2 && CamelCaseMatch(itemText, query))
-				return 4;
+			bool? camelCaseMatch = null;
+			if (query.Length <= 2) {
+				camelCaseMatch = CamelCaseMatch(itemText, query);
+				if (camelCaseMatch.GetValueOrDefault(false)) return 4;
+			}
 			
 			// search by substring, if filtering (i.e. new behavior) turned on
 			if (IsFiltering && query.Length > 1 && itemText.Contains(query))
@@ -313,7 +322,9 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			if (IsFiltering && query.Length > 1 && itemText.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
 				return 2;
 			
-			if (CamelCaseMatch(itemText, query))
+			if (!camelCaseMatch.HasValue)
+				camelCaseMatch = CamelCaseMatch(itemText, query);
+			if (camelCaseMatch.GetValueOrDefault(false))
 				return 1;
 			
 			return -1;

@@ -80,6 +80,27 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Adds contents of all assemblies referenced by <paramref name="cu" />'s project.
+		/// Also adds contents of <paramref name="callingClass" />.
+		/// </summary>
+		public static void AddReferencedProjectsContents(List<ICompletionEntry> result, ICompilationUnit cu, IClass callingClass)
+		{
+			IProjectContent projectContent = cu.ProjectContent;
+			projectContent.AddNamespaceContents(result, "", projectContent.Language, true);
+			var allContents = projectContent.GetAllContents();
+			result.Capacity = result.Count + allContents.Count;
+			foreach (var entry in allContents.Where(e => !(e is NamespaceEntry))) {
+				result.Add(entry);
+			}
+			AddUsing(result, projectContent.DefaultImports, projectContent);
+			AddContentsFromCallingClass(result, projectContent, callingClass);
+		}
+		
+		/// <summary>
+		/// Adds contents of all namespaces that this <paramref name="callingClass" /> imports to the <paramref name="result" /> list.
+		/// Also adds contents of <paramref name="callingClass" />.
+		/// </summary>
 		public static void AddImportedNamespaceContents(List<ICompletionEntry> result, ICompilationUnit cu, IClass callingClass)
 		{
 			IProjectContent projectContent = cu.ProjectContent;
@@ -91,24 +112,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 				scope = scope.Parent;
 			}
 			AddUsing(result, projectContent.DefaultImports, projectContent);
-			
-			if (callingClass != null) {
-				string[] namespaceParts = callingClass.Namespace.Split('.');
-				for (int i = 1; i <= namespaceParts.Length; i++) {
-					foreach (ICompletionEntry member in projectContent.GetNamespaceContents(string.Join(".", namespaceParts, 0, i))) {
-						if (!result.Contains(member))
-							result.Add(member);
-					}
-				}
-				IClass currentClass = callingClass;
-				do {
-					foreach (IClass innerClass in currentClass.GetCompoundClass().GetAccessibleTypes(currentClass)) {
-						if (!result.Contains(innerClass))
-							result.Add(innerClass);
-					}
-					currentClass = currentClass.DeclaringType;
-				} while (currentClass != null);
+			AddContentsFromCallingClass(result, projectContent, callingClass);
+		}
+
+		static void AddContentsFromCallingClass(List<ICompletionEntry> result, IProjectContent projectContent, IClass callingClass)
+		{
+			if (callingClass == null) {
+				return;
 			}
+			string[] namespaceParts = callingClass.Namespace.Split('.');
+			for (int i = 1; i <= namespaceParts.Length; i++) {
+				foreach (ICompletionEntry member in projectContent.GetNamespaceContents(string.Join(".", namespaceParts, 0, i))) {
+					if (!result.Contains(member))
+						result.Add(member);
+				}
+			}
+			IClass currentClass = callingClass;
+			do {
+				foreach (IClass innerClass in currentClass.GetCompoundClass().GetAccessibleTypes(currentClass)) {
+					if (!result.Contains(innerClass))
+						result.Add(innerClass);
+				}
+				currentClass = currentClass.DeclaringType;
+			} while (currentClass != null);
 		}
 		
 		public static void AddUsing(List<ICompletionEntry> result, IUsing u, IProjectContent projectContent)
@@ -254,6 +280,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			return res.ToList();
-		}
-	}
+		} // FindAllExtensions
+	} // CtrlSpaceResolveHelper class
 }

@@ -1260,7 +1260,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				result.Add(new DefaultField.ParameterField(callingMember.ReturnType, "value", callingMember.Region, callingClass));
 			}
 			
-			CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);
+			// CC contains contents of all imported namespaces
+			//CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);	// FindReferences to AddImportedNamespaceContents results in OutOfMemory
+			
+			// CC contains contents of all referenced assemblies
+			CtrlSpaceResolveHelper.AddReferencedProjectsContents(result, cu, callingClass);
 		}
 		
 		sealed class CompareLambdaByLocation : IEqualityComparer<LambdaExpression>
