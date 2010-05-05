@@ -267,9 +267,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				var fullNameResult = ParserService.Resolve(new ExpressionResult(selectedClass.FullyQualifiedName), position.Line, position.Column, editor.FileName, document.Text);
 
 				bool addUsing = false;
-				var cu = nameResult.CallingClass.CompilationUnit;
-				if (IsKnown(nameResult)) {
-					if (IsEqualClass(nameResult, selectedClass)) {
+				if (nameResult != null && nameResult.IsValid) {
+					if (nameResult.IsReferenceTo(selectedClass)) {
 						// Selected name is known in the current context - do nothing
 					} else {
 						// Selected name is known in the current context but resolves to something else than the user wants to insert
@@ -286,8 +285,9 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
 				context.EndOffset = context.StartOffset + insertedText.Length;
 				
-				if (addUsing) {
-					NamespaceRefactoringService.AddUsingDeclaration(cu, document, selectedClass.Namespace, true);
+				if (addUsing && nameResult != null && nameResult.CallingClass != null) {
+					var cu = nameResult.CallingClass.CompilationUnit;
+					NamespaceRefactoringService.AddUsingDeclaration(cu, document, selectedClass.Namespace, false);
 					ParserService.BeginParse(context.Editor.FileName, context.Editor.Document);
 				}
 			} else {
@@ -295,25 +295,6 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
 				context.EndOffset = context.StartOffset + insertedText.Length;
 			}
-		}
-		
-		/// <summary>
-		/// Returns false if <paramref name="result" /> is <see cref="UnknownIdentifierResolveResult" /> or something similar.
-		/// </summary>
-		bool IsKnown(ResolveResult result)
-		{
-			return !(result is UnknownIdentifierResolveResult || result is UnknownConstructorCallResolveResult);
-		}
-		
-		/// <summary>
-		/// Returns true if both parameters refer to the same class.
-		/// </summary>
-		bool IsEqualClass(ResolveResult nameResult, IClass selectedClass)
-		{
-			var classResult = nameResult as TypeResolveResult;
-			if (classResult == null)
-				return false;
-			return classResult.ResolvedClass.FullyQualifiedName == selectedClass.FullyQualifiedName;
 		}
 		
 		#region Description

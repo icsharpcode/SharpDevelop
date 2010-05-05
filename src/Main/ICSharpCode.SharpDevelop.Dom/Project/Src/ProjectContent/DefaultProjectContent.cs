@@ -267,6 +267,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Container class that is used when multiple classes with different type parameter
 		/// count have the same class name.
+		/// 
+		/// The GenericClassContainer is only used internally to hold the class list, it is never returned by any public API.
 		/// </summary>
 		private sealed class GenericClassContainer : DefaultClass
 		{
@@ -330,11 +332,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (realClasses.Length > typeParameterCount)
 					realClasses[typeParameterCount] = null;
 			}
-		}
-		
-		static bool IsEqualFileName(string fileName1, string fileName2)
-		{
-			return ICSharpCode.Core.FileUtility.IsEqualFileName(fileName1, fileName2);
 		}
 		
 		protected void AddClassToNamespaceListInternal(IClass addClass)

@@ -223,42 +223,41 @@ namespace ICSharpCode.Profiler.Controls
 		public virtual string FullyQualifiedClassName
 		{
 			get {
-				if (string.IsNullOrEmpty(this.node.Name))
+				string nodeName = this.node.Name;
+				if (string.IsNullOrEmpty(nodeName))
 					return null;
-				if (!this.node.Name.Contains("."))
+				if (!nodeName.Contains("."))
 					return null;
-				int index = this.node.Name.LastIndexOf('.');
-				if (this.node.Name[index - 1] == '.')
+				int index = nodeName.LastIndexOf('.');
+				if (nodeName[index - 1] == '.')
 					index--;
-				return this.node.Name.Substring(0, index);
+				return nodeName.Substring(0, index);
 			}
 		}
 
 		public virtual string MethodName
 		{
 			get {
-				if (string.IsNullOrEmpty(this.node.Name))
+				string nodeName = this.node.Name;
+				if (string.IsNullOrEmpty(nodeName))
 					return null;
-				if (!this.node.Name.Contains("."))
+				if (!nodeName.Contains("."))
 					return null;
-				int index = this.node.Name.LastIndexOf('.');
-				if (this.node.Name[index - 1] == '.')
+				int index = nodeName.LastIndexOf('.');
+				if (nodeName[index - 1] == '.')
 					index--;
-				return this.node.Name.Substring(index + 1);
+				return nodeName.Substring(index + 1);
 			}
 		}
 		
 		public virtual string ShortName
 		{
 			get {
-				if (string.IsNullOrEmpty(this.node.Name))
-					return null;
-				if (!this.node.Name.Contains("."))
-					return Name;
-				int index = FullyQualifiedClassName.LastIndexOf('.');
-				if (FullyQualifiedClassName[index - 1] == '.')
-					index--;
-				return FullyQualifiedClassName.Substring(index + 1) + "." + MethodName;
+				string className = this.FullyQualifiedClassName;
+				if (className == null)
+					return this.Name;
+				int index = className.LastIndexOf('.');
+				return className.Substring(index + 1) + "." + MethodName;
 			}
 		}
 		
