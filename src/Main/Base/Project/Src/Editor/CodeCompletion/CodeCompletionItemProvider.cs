@@ -14,6 +14,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
@@ -218,6 +219,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			ambience.ConversionFlags = entity is IClass ? ConversionFlags.ShowTypeParameterList : ConversionFlags.None;
 			this.Text = ambience.Convert(entity);
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
+			if (entity is IClass) {
+				// Show fully qualified Type name (called UseFullyQualifiedMemberNames though)
+				ambience.ConversionFlags |= ConversionFlags.UseFullyQualifiedMemberNames;
+			}
 			description = ambience.Convert(entity);
 			this.Image = ClassBrowserIconService.GetIcon(entity);
 			this.Overloads = 1;
@@ -277,6 +282,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					addUsing = true;
 				}
 				
+				// Insert the text
 				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
 				context.EndOffset = context.StartOffset + insertedText.Length;
 				
