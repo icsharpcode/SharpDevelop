@@ -181,7 +181,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		// SelectItem gets called twice for every typed character (once from FormatLine), this helps execute SelectItem only once
 		string currentText;
-		
+		ObservableCollection<ICompletionData> currentList;
+			
 		/// <summary>
 		/// Selects the best match, and filter the items if turned on using <see cref="IsFiltering" />.
 		/// </summary>
@@ -206,8 +207,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		void SelectItemFiltering(string text)
 		{
-			var itemsWithQualities =
-				from item in this.completionData
+			// if the user just typed one more character, don't filter all data but just filter what we are already displaying
+			var listToFilter = (this.currentList != null && (!string.IsNullOrEmpty(this.currentText)) && (!string.IsNullOrEmpty(text)) &&
+			                    text.StartsWith(this.currentText)) ?
+								 this.currentList : this.completionData;
+			
+			var itemsWithQualities = 
+				from item in listToFilter
 				select new { Item = item, Quality = GetMatchQuality(item.Text, text) };
 			var matchingItems = itemsWithQualities.Where(item => item.Quality > 0);
 			
@@ -227,6 +233,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				listBoxItems.Add(matchingItem.Item);
 				i++;
 			}
+			this.currentList = listBoxItems;
 			listBox.ItemsSource = listBoxItems;
 			SelectIndexCentered(bestIndex);
 		}
@@ -335,13 +342,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			int i = 0;
 			foreach (char upper in text.Where(c => char.IsUpper(c))) {
 				if (i > query.Length - 1)
-					return false;	// return true here for CamelCase partial match (CQ match CodeQualityAnalysis)
+					return true;	// return true here for CamelCase partial match (CQ match CodeQualityAnalysis)
 				if (char.ToUpper(query[i]) != upper)
 					return false;
 				i++;
 			}
-			// query must have the same length as how many there are uppercase characters in text
-			if (i == query.Length)
+			if (i >= query.Length)
 				return true;
 			return false;
 		}
