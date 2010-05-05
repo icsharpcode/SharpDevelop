@@ -285,6 +285,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.Encoding = reader.CurrentEncoding;
 				}
 			}
+			primaryTextEditor.IsModified = false;
 			NewLineConsistencyCheck.StartConsistencyCheck(this);
 		}
 		

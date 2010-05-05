@@ -44,21 +44,34 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Files.Add(file);
 			file.ForceInitializeView(this);
 			
-			codeEditor.Document.Changed += textEditor_Document_Changed;
+			file.IsDirtyChanged += PrimaryFile_IsDirtyChanged;
+			codeEditor.Document.UndoStack.PropertyChanged += codeEditor_Document_UndoStack_PropertyChanged;
 			codeEditor.CaretPositionChanged += CaretChanged;
 			codeEditor.TextCopied += codeEditor_TextCopied;
+		}
+		
+		void codeEditor_Document_UndoStack_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			PrimaryFile.IsDirty = !codeEditor.Document.UndoStack.IsOriginalFile;
+		}
+		
+		void PrimaryFile_IsDirtyChanged(object sender, EventArgs e)
+		{
+			var document = codeEditor.Document;
+			if (document != null) {
+				var undoStack = document.UndoStack;
+				if (this.PrimaryFile.IsDirty) {
+					if (undoStack.IsOriginalFile)
+						undoStack.DiscardOriginalFileMarker();
+				} else {
+					undoStack.MarkAsOriginalFile();
+				}
+			}
 		}
 		
 		void codeEditor_TextCopied(object sender, ICSharpCode.AvalonEdit.Editing.TextEventArgs e)
 		{
 			TextEditorSideBar.Instance.PutInClipboardRing(e.Text);
-		}
-		
-		void textEditor_Document_Changed(object sender, DocumentChangeEventArgs e)
-		{
-			if (!isLoading) {
-				PrimaryFile.IsDirty = true;
-			}
 		}
 		
 		public CodeEditor CodeEditor {
@@ -221,6 +234,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public override void Dispose()
 		{
+			this.PrimaryFile.IsDirtyChanged -= PrimaryFile_IsDirtyChanged;
 			base.Dispose();
 			BookmarksDetach();
 			codeEditor.Dispose();

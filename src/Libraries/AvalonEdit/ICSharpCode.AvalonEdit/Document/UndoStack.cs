@@ -49,11 +49,22 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		int elementsOnUndoUntilOriginalFile;
 		
+		bool isOriginalFile = true;
+		
 		/// <summary>
 		/// Gets whether the document is currently in its original state (no modifications).
 		/// </summary>
 		public bool IsOriginalFile {
-			get { return elementsOnUndoUntilOriginalFile == 0; }
+			get { return isOriginalFile; }
+		}
+		
+		void RecalcIsOriginalFile()
+		{
+			bool newIsOriginalFile = (elementsOnUndoUntilOriginalFile == 0);
+			if (newIsOriginalFile != isOriginalFile) {
+				isOriginalFile = newIsOriginalFile;
+				NotifyPropertyChanged("IsOriginalFile");
+			}
 		}
 		
 		/// <summary>
@@ -61,10 +72,8 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public void MarkAsOriginalFile()
 		{
-			bool oldIsOriginalFile = IsOriginalFile;
 			elementsOnUndoUntilOriginalFile = 0;
-			if (!oldIsOriginalFile)
-				NotifyPropertyChanged("IsOriginalFile");
+			RecalcIsOriginalFile();
 		}
 		
 		/// <summary>
@@ -72,24 +81,20 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public void DiscardOriginalFileMarker()
 		{
-			bool oldIsOriginalFile = IsOriginalFile;
 			elementsOnUndoUntilOriginalFile = int.MinValue;
-			if (oldIsOriginalFile)
-				NotifyPropertyChanged("IsOriginalFile");
+			RecalcIsOriginalFile();
 		}
 		
 		void FileModified(int newElementsOnUndoStack)
 		{
-			if (newElementsOnUndoStack == 0 || elementsOnUndoUntilOriginalFile == int.MinValue)
+			if (elementsOnUndoUntilOriginalFile == int.MinValue)
 				return;
 			
-			bool oldIsOriginalFile = IsOriginalFile;
 			elementsOnUndoUntilOriginalFile += newElementsOnUndoStack;
 			if (elementsOnUndoUntilOriginalFile > undostack.Count)
 				elementsOnUndoUntilOriginalFile = int.MinValue;
 			
-			if (oldIsOriginalFile != IsOriginalFile)
-				NotifyPropertyChanged("IsOriginalFile");
+			// don't call RecalcIsOriginalFile(): wait until end of undo group
 		}
 		#endregion
 		
@@ -220,11 +225,11 @@ namespace ICSharpCode.AvalonEdit.Document
 				} else if (actionCountInUndoGroup > 1) {
 					// combine all actions within the group into a single grouped action
 					undostack.PushBack(new UndoOperationGroup(undostack, actionCountInUndoGroup));
-					actionCountInUndoGroup = 1; // actions were combined
+					FileModified(-actionCountInUndoGroup + 1 + optionalActionCount);
 				}
 				EnforceSizeLimit();
 				allowContinue = true;
-				FileModified(actionCountInUndoGroup);
+				RecalcIsOriginalFile(); // can raise event
 			}
 		}
 		
@@ -261,6 +266,7 @@ namespace ICSharpCode.AvalonEdit.Document
 					state = StateListen;
 				}
 				FileModified(-1);
+				RecalcIsOriginalFile();
 				if (undostack.Count == 0)
 					NotifyPropertyChanged("CanUndo");
 				if (redostack.Count == 1)
@@ -294,6 +300,7 @@ namespace ICSharpCode.AvalonEdit.Document
 					state = StateListen;
 				}
 				FileModified(1);
+				RecalcIsOriginalFile();
 				if (redostack.Count == 0)
 					NotifyPropertyChanged("CanRedo");
 				if (undostack.Count == 1)
@@ -347,6 +354,8 @@ namespace ICSharpCode.AvalonEdit.Document
 				actionCountInUndoGroup++;
 				if (isOptional)
 					optionalActionCount++;
+				else
+					FileModified(1);
 				EndUndoGroup();
 				if (wasEmpty)
 					NotifyPropertyChanged("CanUndo");

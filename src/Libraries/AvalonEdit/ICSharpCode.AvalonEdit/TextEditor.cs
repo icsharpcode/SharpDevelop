@@ -406,7 +406,7 @@ namespace ICSharpCode.AvalonEdit
 		/// </summary>
 		public bool IsModified {
 			get { return (bool)GetValue(IsModifiedProperty); }
-			set { SetValue(IsModifiedProperty, value); }
+			set { SetValue(IsModifiedProperty, Boxes.Box(value)); }
 		}
 		
 		static void OnIsModifiedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
