@@ -245,11 +245,15 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			MarkAsUsed();
 			
 			string insertedText = this.Text;
-			bool addUsing = false;
-			
 			var selectedClass = this.Entity as IClass;
+			if (selectedClass == null) {
+				// Is extension method being inserted?
+				var method = this.Entity as IMethod;
+				if (method != null && method.IsExtensionMethod)
+					selectedClass = method.DeclaringType;
+			}
 			if (selectedClass != null) {
-				// Class is being inserted
+				// Class or Extension method is being inserted - include its namespace in the using section if needed
 				var editor = context.Editor;
 				var document = context.Editor.Document;
 				
@@ -257,6 +261,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				var nameResult = ParserService.Resolve(new ExpressionResult(selectedClass.Name), position.Line, position.Column, editor.FileName, document.Text);
 				var fullNameResult = ParserService.Resolve(new ExpressionResult(selectedClass.FullyQualifiedName), position.Line, position.Column, editor.FileName, document.Text);
 
+				bool addUsing = false;
 				var cu = nameResult.CallingClass.CompilationUnit;
 				if (IsKnown(nameResult)) {
 					if (IsEqualClass(nameResult, selectedClass)) {
@@ -280,7 +285,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					ParserService.BeginParse(context.Editor.FileName, context.Editor.Document);
 				}
 			} else {
-				// Something else than a class is being inserted - just insert
+				// Something else than a class or Extension method is being inserted - just insert
 				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
 				context.EndOffset = context.StartOffset + insertedText.Length;
 			}
