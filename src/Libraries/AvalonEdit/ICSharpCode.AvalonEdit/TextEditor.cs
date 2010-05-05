@@ -121,10 +121,12 @@ namespace ICSharpCode.AvalonEdit
 		{
 			if (oldValue != null) {
 				TextDocumentWeakEventManager.TextChanged.RemoveListener(oldValue, this);
+				PropertyChangedEventManager.RemoveListener(oldValue.UndoStack, this, "IsOriginalFile");
 			}
 			textArea.Document = newValue;
 			if (newValue != null) {
 				TextDocumentWeakEventManager.TextChanged.AddListener(newValue, this);
+				PropertyChangedEventManager.AddListener(newValue.UndoStack, this, "IsOriginalFile");
 			}
 			OnDocumentChanged(EventArgs.Empty);
 			OnTextChanged(EventArgs.Empty);
@@ -187,6 +189,8 @@ namespace ICSharpCode.AvalonEdit
 			} else if (managerType == typeof(TextDocumentWeakEventManager.TextChanged)) {
 				OnTextChanged(e);
 				return true;
+			} else if (managerType == typeof(PropertyChangedEventManager)) {
+				return HandleIsOriginalChanged((PropertyChangedEventArgs)e);
 			}
 			return false;
 		}
@@ -208,10 +212,8 @@ namespace ICSharpCode.AvalonEdit
 				return document != null ? document.Text : string.Empty;
 			}
 			set {
-				if (value == null)
-					value = string.Empty;
 				TextDocument document = GetDocument();
-				document.Text = value;
+				document.Text = value ?? string.Empty;
 				// after replacing the full text, the caret is positioned at the end of the document
 				// - reset it to the beginning.
 				this.CaretOffset = 0;
@@ -387,6 +389,53 @@ namespace ICSharpCode.AvalonEdit
 				if (peer != null) {
 					peer.RaiseIsReadOnlyChanged((bool)e.OldValue, (bool)e.NewValue);
 				}
+			}
+		}
+		#endregion
+		
+		#region IsModified
+		/// <summary>
+		/// Dependency property for <see cref="IsModified"/>
+		/// </summary>
+		public static readonly DependencyProperty IsModifiedProperty =
+			DependencyProperty.Register("IsModified", typeof(bool), typeof(TextEditor),
+			                            new FrameworkPropertyMetadata(Boxes.False, OnIsModifiedChanged));
+		
+		/// <summary>
+		/// Gets/Sets the 'modified' flag.
+		/// </summary>
+		public bool IsModified {
+			get { return (bool)GetValue(IsModifiedProperty); }
+			set { SetValue(IsModifiedProperty, value); }
+		}
+		
+		static void OnIsModifiedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			TextEditor editor = d as TextEditor;
+			if (editor != null) {
+				TextDocument document = editor.Document;
+				if (document != null) {
+					UndoStack undoStack = document.UndoStack;
+					if ((bool)e.NewValue) {
+						if (undoStack.IsOriginalFile)
+							undoStack.DiscardOriginalFileMarker();
+					} else {
+						undoStack.MarkAsOriginalFile();
+					}
+				}
+			}
+		}
+		
+		bool HandleIsOriginalChanged(PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "IsOriginalFile") {
+				TextDocument document = this.Document;
+				if (document != null) {
+					this.IsModified = !document.UndoStack.IsOriginalFile;
+				}
+				return true;
+			} else {
+				return false;
 			}
 		}
 		#endregion
@@ -825,12 +874,16 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Loads the text from the stream, auto-detecting the encoding.
 		/// </summary>
+		/// <remarks>
+		/// This method sets <see cref="IsModified"/> to false.
+		/// </remarks>
 		public void Load(Stream stream)
 		{
-			using (StreamReader reader = FileReader.OpenStream(stream, Encoding ?? Encoding.UTF8)) {
-				Text = reader.ReadToEnd();
-				Encoding = reader.CurrentEncoding; // assign encoding after ReadToEnd() so that the StreamReader can autodetect the encoding
+			using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? Encoding.UTF8)) {
+				this.Text = reader.ReadToEnd();
+				this.Encoding = reader.CurrentEncoding; // assign encoding after ReadToEnd() so that the StreamReader can autodetect the encoding
 			}
+			this.IsModified = false;
 		}
 		
 		/// <summary>
@@ -854,18 +907,22 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Saves the text to the stream.
 		/// </summary>
+		/// <remarks>
+		/// This method sets <see cref="IsModified"/> to false.
+		/// </remarks>
 		public void Save(Stream stream)
 		{
 			if (stream == null)
 				throw new ArgumentNullException("stream");
-			StreamWriter writer = new StreamWriter(stream, Encoding ?? Encoding.UTF8);
-			writer.Write(Text);
+			StreamWriter writer = new StreamWriter(stream, this.Encoding ?? Encoding.UTF8);
+			writer.Write(this.Text);
 			writer.Flush();
 			// do not close the stream
+			this.IsModified = false;
 		}
 		
 		/// <summary>
-		/// Loads the text from the stream, auto-detecting the encoding.
+		/// Saves the text to the file.
 		/// </summary>
 		public void Save(string fileName)
 		{

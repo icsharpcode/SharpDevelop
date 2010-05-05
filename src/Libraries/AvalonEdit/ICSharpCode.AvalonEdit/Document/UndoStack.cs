@@ -39,6 +39,60 @@ namespace ICSharpCode.AvalonEdit.Document
 		object lastGroupDescriptor;
 		bool allowContinue;
 		
+		#region IsOriginalFile implementation
+		// implements feature request SD2-784 - File still considered dirty after undoing all changes
+		
+		/// <summary>
+		/// Number of times undo must be executed until the original state is reached.
+		/// Negative: number of times redo must be executed until the original state is reached.
+		/// Special case: int.MinValue == original state is unreachable
+		/// </summary>
+		int elementsOnUndoUntilOriginalFile;
+		
+		/// <summary>
+		/// Gets whether the document is currently in its original state (no modifications).
+		/// </summary>
+		public bool IsOriginalFile {
+			get { return elementsOnUndoUntilOriginalFile == 0; }
+		}
+		
+		/// <summary>
+		/// Marks the current state as original. Discards any previous "original" markers.
+		/// </summary>
+		public void MarkAsOriginalFile()
+		{
+			bool oldIsOriginalFile = IsOriginalFile;
+			elementsOnUndoUntilOriginalFile = 0;
+			if (!oldIsOriginalFile)
+				NotifyPropertyChanged("IsOriginalFile");
+		}
+		
+		/// <summary>
+		/// Discards the current "original" marker.
+		/// </summary>
+		public void DiscardOriginalFileMarker()
+		{
+			bool oldIsOriginalFile = IsOriginalFile;
+			elementsOnUndoUntilOriginalFile = int.MinValue;
+			if (oldIsOriginalFile)
+				NotifyPropertyChanged("IsOriginalFile");
+		}
+		
+		void FileModified(int newElementsOnUndoStack)
+		{
+			if (newElementsOnUndoStack == 0 || elementsOnUndoUntilOriginalFile == int.MinValue)
+				return;
+			
+			bool oldIsOriginalFile = IsOriginalFile;
+			elementsOnUndoUntilOriginalFile += newElementsOnUndoStack;
+			if (elementsOnUndoUntilOriginalFile > undostack.Count)
+				elementsOnUndoUntilOriginalFile = int.MinValue;
+			
+			if (oldIsOriginalFile != IsOriginalFile)
+				NotifyPropertyChanged("IsOriginalFile");
+		}
+		#endregion
+		
 		/// <summary>
 		/// Gets if the undo stack currently accepts changes.
 		/// Is false while an undo action is running.
@@ -166,9 +220,11 @@ namespace ICSharpCode.AvalonEdit.Document
 				} else if (actionCountInUndoGroup > 1) {
 					// combine all actions within the group into a single grouped action
 					undostack.PushBack(new UndoOperationGroup(undostack, actionCountInUndoGroup));
+					actionCountInUndoGroup = 1; // actions were combined
 				}
 				EnforceSizeLimit();
 				allowContinue = true;
+				FileModified(actionCountInUndoGroup);
 			}
 		}
 		
@@ -204,6 +260,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				} finally {
 					state = StateListen;
 				}
+				FileModified(-1);
 				if (undostack.Count == 0)
 					NotifyPropertyChanged("CanUndo");
 				if (redostack.Count == 1)
@@ -236,6 +293,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				} finally {
 					state = StateListen;
 				}
+				FileModified(1);
 				if (redostack.Count == 0)
 					NotifyPropertyChanged("CanRedo");
 				if (undostack.Count == 1)
@@ -304,6 +362,9 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (redostack.Count != 0) {
 				redostack.Clear();
 				NotifyPropertyChanged("CanRedo");
+				// if the "orginal file" marker is on the redo stack: remove it
+				if (elementsOnUndoUntilOriginalFile < 0)
+					elementsOnUndoUntilOriginalFile = int.MinValue;
 			}
 		}
 		
