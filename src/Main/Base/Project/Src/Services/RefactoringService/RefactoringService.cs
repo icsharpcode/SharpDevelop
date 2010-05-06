@@ -135,10 +135,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (entity == null)
 				throw new ArgumentNullException("entity");
 			if (entity is LocalResolveResult) {
-				return RunFindReferences(entity.CallingClass, (entity as LocalResolveResult).Field, 
+				return RunFindReferences(entity.CallingClass, (entity as LocalResolveResult).Field,
 				                         entity.CallingClass.CompilationUnit.FileName, progressMonitor);
 			} else if (entity is TypeResolveResult) {
-				return FindReferences((entity as TypeResolveResult).ResolvedClass, fileName, progressMonitor);
+				TypeResolveResult trr = (TypeResolveResult)entity;
+				if (trr.ResolvedClass != null) {
+					return FindReferences(trr.ResolvedClass, fileName, progressMonitor);
+				}
 			} else if (entity is MemberResolveResult) {
 				return FindReferences((entity as MemberResolveResult).ResolvedMember, fileName, progressMonitor);
 			} else if (entity is MethodGroupResolveResult) {
