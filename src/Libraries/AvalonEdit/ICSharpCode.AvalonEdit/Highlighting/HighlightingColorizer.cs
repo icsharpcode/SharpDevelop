@@ -218,7 +218,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				
 				// We'll prove that: if line N is being reused, then the highlighting state is up-to-date until (end of) line N-1.
 				
-				// Start of induction: the first line in view can is reused only if the highlighting state was up-to-date
+				// Start of induction: the first line in view is reused only if the highlighting state was up-to-date
 				// until line N-1 (no change detected in VisualLineConstructionStarting event).
 				
 				// Induction step:

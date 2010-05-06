@@ -179,7 +179,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			//Debug.WriteLine("Highlight line " + lineNumber + (highlightedLine != null ? "" : " (span stack only)"));
 			spanStack = storedSpanStacks[lineNumber - 1];
 			HighlightLineInternal(line);
-			if (storedSpanStacks[lineNumber] != spanStack) {
+			if (!EqualSpanStacks(spanStack, storedSpanStacks[lineNumber])) {
 				isValid[lineNumber] = true;
 				//Debug.WriteLine("Span stack in line " + lineNumber + " changed from " + storedSpanStacks[lineNumber] + " to " + spanStack);
 				storedSpanStacks[lineNumber] = spanStack;
@@ -196,6 +196,25 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				if (firstInvalidLine < 0)
 					firstInvalidLine = int.MaxValue;
 			}
+		}
+		
+		static bool EqualSpanStacks(SpanStack a, SpanStack b)
+		{
+			// We must use value equality between the stacks because TextViewDocumentHighlighter.OnHighlightStateChanged
+			// depends on the fact that equal input state + unchanged line contents produce equal output state.
+			if (a == b)
+				return true;
+			if (a == null || b == null)
+				return false;
+			while (!a.IsEmpty && !b.IsEmpty) {
+				if (a.Peek() != b.Peek())
+					return false;
+				a = a.Pop();
+				b = b.Pop();
+				if (a == b)
+					return true;
+			}
+			return a.IsEmpty && b.IsEmpty;
 		}
 		
 		/// <summary>
