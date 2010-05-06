@@ -9,7 +9,7 @@ using System;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -33,19 +33,14 @@ namespace ICSharpCode.XamlBinding
 			ParserService.ParseInformationUpdated += ParseInfoUpdated;
 		}
 
-		void ParseInfoUpdated(object sender, EventArgs e)
+		void ParseInfoUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (this.editor == null || string.IsNullOrEmpty(this.editor.FileName))
+			if (this.editor == null || !FileUtility.IsEqualFileName(this.editor.FileName, e.FileName))
 				return;
 			
-			ParseInformation info = ParserService.GetExistingParseInformation(this.editor.FileName);
+			var cu = e.NewCompilationUnit as XamlCompilationUnit;
 			
-			if (info == null || !(info.CompilationUnit is XamlCompilationUnit))
-				return;
-			
-			var cu = info.CompilationUnit as XamlCompilationUnit;
-			
-			if (cu.TreeRootNode != null)
+			if (cu != null && cu.TreeRootNode != null)
 				UpdateTree(cu.TreeRootNode);
 		}
 		
