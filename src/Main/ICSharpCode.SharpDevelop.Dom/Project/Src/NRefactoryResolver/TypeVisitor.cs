@@ -47,9 +47,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				reference = ((InnerClassTypeReference)reference).CombineToNormalTypeReference();
 			}
 			
-			if (reference.Type == "dynamic")
-				return new DynamicReturnType(projectContent);
-			
 			bool useLazyReturnType = (options & ReturnTypeOptions.Lazy) == ReturnTypeOptions.Lazy;
 			bool isBaseTypeReference = (options & ReturnTypeOptions.BaseTypeReference) == ReturnTypeOptions.BaseTypeReference;
 			
@@ -71,6 +68,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						}
 					}
 				}
+			}
+			if (t == null && reference.Type == "dynamic") {
+				t = new DynamicReturnType(projectContent);
 			}
 			if (t == null) {
 				int typeParameterCount = reference.GenericTypes.Count;
