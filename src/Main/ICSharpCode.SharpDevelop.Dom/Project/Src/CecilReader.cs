@@ -62,8 +62,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					foreach (CustomAttributeNamedArgument entry in att.Properties) {
 						a.NamedArguments.Add(entry.Name, GetValue(pc, member, entry.Argument));
 					}
-				} catch (NullReferenceException) {
-					// Workaround for Cecil bug. TODO: remove when http://github.com/jbevain/cecil/issues#issue/6 is fixed
+				} catch (InvalidOperationException) {
+					// Workaround for Cecil bug. (some types cannot be resolved)
 				}
 				list.Add(a);
 			}
