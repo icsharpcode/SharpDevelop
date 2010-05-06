@@ -480,7 +480,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override bool IsReferenceTo(IEntity entity)
 		{
 			IClass c = entity as IClass;
-			return c != null
+			return c != null && resolvedClass != null
 				&& resolvedClass.FullyQualifiedName == c.FullyQualifiedName
 				&& resolvedClass.TypeParameters.Count == c.TypeParameters.Count;
 		}
