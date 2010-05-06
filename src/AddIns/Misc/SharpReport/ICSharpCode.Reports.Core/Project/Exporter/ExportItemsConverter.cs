@@ -36,7 +36,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return col;
 		}
 		
-		
+		/// <summary>
+		/// Convert a single item, Location is calculated as follows
+		/// (X = ParentRectangle.X + Item.X Y = offset.Y + Item.Y)
+		/// </summary>
+		/// <param name="offset"> only Y value is used, gives the offset to Items location.Y </param>
+		/// <param name="item">Item to convert</param>
+		/// <returns></returns>
 		private BaseExportColumn ConvertToLineItem (Point offset,BaseReportItem item)
 		{
 			if (item == null) {

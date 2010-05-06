@@ -46,14 +46,15 @@ namespace ICSharpCode.Reports.Core{
 			style.ForeColor = this.ForeColor;
 			style.FrameColor = this.FrameColor;
 			
+			/*
 			if (this.Parent != null) {
 				Rectangle rect = base.DrawingRectangle;
 				style.Location = new Point(rect.Left,this.Location.Y);
 			} else {
 				style.Location = this.Location;
 			}
-			
-			//style.Location = this.Location;
+			*/
+			style.Location = this.Location;
 			style.Size = this.Size;
 			style.DrawBorder = this.DrawBorder;
 			return style;
