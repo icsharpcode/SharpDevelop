@@ -324,9 +324,9 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			}
 			
 			// search by substring, if filtering (i.e. new behavior) turned on
-			if (IsFiltering && query.Length > 1 && itemText.Contains(query))
+			if (IsFiltering && itemText.Contains(query))
 				return 3;
-			if (IsFiltering && query.Length > 1 && itemText.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+			if (IsFiltering && itemText.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
 				return 2;
 			
 			if (!camelCaseMatch.HasValue)
