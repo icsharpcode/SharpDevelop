@@ -199,7 +199,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		
 		/// <summary>
 		/// Inserts new elemetns into this rope.
-		/// Runs in O(lg N + M).
+		/// Runs in O(lg N + M), where N is the length of this rope and M is the number of new elements.
 		/// </summary>
 		/// <exception cref="ArgumentNullException">newElements is null.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">index or length is outside the valid range.</exception>
@@ -218,7 +218,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		
 		/// <summary>
 		/// Inserts new elements into this rope.
-		/// Runs in O(lg N + M).
+		/// Runs in O(lg N + M), where N is the length of this rope and M is the number of new elements.
 		/// </summary>
 		/// <exception cref="ArgumentNullException">newElements is null.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">index or length is outside the valid range.</exception>
@@ -235,8 +235,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
-		/// Inserts a piece of text in this rope.
-		/// Runs in O(lg N + M), where M is the length of the new text.
+		/// Appends multiple elements to the end of this rope.
+		/// Runs in O(lg N + M), where N is the length of this rope and M is the number of new elements.
 		/// </summary>
 		/// <exception cref="ArgumentNullException">newElements is null.</exception>
 		public void AddRange(IEnumerable<T> newElements)
@@ -245,10 +245,10 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
-		/// Inserts another rope into this rope.
-		/// Runs in O(lg N), plus a per-node cost as if <c>newText.Clone()</c> was called.
+		/// Appends another rope to the end of this rope.
+		/// Runs in O(lg N + lg M), plus a per-node cost as if <c>newElements.Clone()</c> was called.
 		/// </summary>
-		/// <exception cref="ArgumentNullException">newText is null.</exception>
+		/// <exception cref="ArgumentNullException">newElements is null.</exception>
 		public void AddRange(Rope<T> newElements)
 		{
 			InsertRange(this.Length, newElements);
@@ -256,7 +256,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		
 		/// <summary>
 		/// Appends new elements to the end of this rope.
-		/// Runs in O(lg N + M).
+		/// Runs in O(lg N + M), where N is the length of this rope and M is the number of new elements.
 		/// </summary>
 		/// <exception cref="ArgumentNullException">array is null.</exception>
 		public void AddRange(T[] array, int arrayIndex, int count)
@@ -265,7 +265,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
-		/// Removes a piece of text from the rope.
+		/// Removes a range of elements from the rope.
 		/// Runs in O(lg N).
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
