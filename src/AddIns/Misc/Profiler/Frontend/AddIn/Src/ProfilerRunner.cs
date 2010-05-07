@@ -135,7 +135,14 @@ namespace ICSharpCode.Profiler.AddIn
 				return null;
 			}
 			
-			ProfilerRunner runner = new ProfilerRunner(currentProj.CreateStartInfo(), true, writer);
+			ProcessStartInfo startInfo;
+			try {
+				startInfo = currentProj.CreateStartInfo();
+			} catch (ProjectStartException ex) {
+				MessageService.ShowError(ex.Message);
+				return null;
+			}
+			ProfilerRunner runner = new ProfilerRunner(startInfo, true, writer);
 			return runner;
 		}
 		
