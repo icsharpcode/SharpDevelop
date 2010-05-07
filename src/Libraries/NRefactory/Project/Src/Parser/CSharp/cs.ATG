@@ -252,37 +252,45 @@ Attribute<out ASTAttribute attribute>
 .
 
 AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> named>
-(.
-	bool nameFound = false;
-	string name = "";
-	Expression expr;
-.)
 =
 	"("
 	[
-		[
-			IF (IsAssignment())          (. nameFound = true; .)
-			Identifier                   (. name = t.val; .)
-			"="
-		] Expr<out expr>                 (. if (expr != null) {if(name == "") positional.Add(expr);
-		                                    else { named.Add(new NamedArgumentExpression(name, expr)); name = ""; }
-		                                    }
-		                                 .)
-		
+		AttributeArgument<positional, named>
 		{
 			","
-				(
-					IF (IsAssignment())    (. nameFound = true; .)
-					Identifier                 (. name = t.val; .)
-					"="
-					| /*Empty*/                (. if (nameFound) Error("no positional argument after named argument"); .)
-				) Expr<out expr>           (. if (expr != null) { if(name == "") positional.Add(expr);
-				                              else { named.Add(new NamedArgumentExpression(name, expr)); name = ""; }
-				                              }
-				                           .)
+			AttributeArgument<positional, named>
 		}
 	]
 	")"
+.
+
+AttributeArgument<List<Expression> positional, List<NamedArgumentExpression> named>
+(. string name = null; bool isNamed = false; Expression expr; .)
+=
+	(
+		IF (IsAssignment())          (. isNamed = true; .)
+		Identifier                   (. name = t.val; .)
+		"="
+	|
+		IF (IdentAndColon())
+		Identifier                   (. name = t.val; .)
+		":"
+	| /* empty */
+	)
+	Expr<out expr>
+	(.
+		if (expr != null) {
+			if (isNamed) {
+				named.Add(new NamedArgumentExpression(name, expr));
+			} else {
+				if (named.Count > 0)
+					Error("positional argument after named argument is not allowed");
+				if (name != null)
+					expr = new NamedArgumentExpression(name, expr);
+				positional.Add(expr);
+			}
+		}
+	.)
 .
 
 AttributeSection<out AttributeSection section>

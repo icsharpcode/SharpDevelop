@@ -789,5 +789,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestTypeMember("void M(int x = 0);");
 		}
+		
+		[Test]
+		public void NamedArguments()
+		{
+			TestExpression("M(x: 1)");
+		}
+		
+		[Test]
+		public void TestAttributeWithNamedArgument()
+		{
+			TestProgram("[assembly: Foo(1, namedArg: 2, prop = 3)]");
+		}
 	}
 }
