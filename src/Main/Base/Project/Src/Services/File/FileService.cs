@@ -148,14 +148,26 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 		
 		/// <summary>
-		/// Checks if the file name is valid <b>and shows a MessageBox if it is not valid</b>.
+		/// Checks if the path is valid <b>and shows a MessageBox if it is not valid</b>.
 		/// Do not use in non-UI methods.
 		/// </summary>
-		public static bool CheckFileName(string fileName)
+		public static bool CheckFileName(string path)
 		{
-			if (FileUtility.IsValidPath(fileName))
+			if (FileUtility.IsValidPath(path))
 				return true;
-			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", fileName}}));
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", path}}));
+			return false;
+		}
+		
+		/// <summary>
+		/// Checks that a single directory entry (file or subdirectory) name is valid.
+		/// </summary>
+		/// <param name="name">A single file name not the full path</param>
+		public static bool CheckDirectoryEntryName(string name)
+		{
+			if (FileUtility.IsValidDirectoryEntryName(name))
+				return true;
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", name}}));
 			return false;
 		}
 		
@@ -163,12 +175,10 @@ namespace ICSharpCode.SharpDevelop
 		/// Checks that a single directory name is valid.
 		/// </summary>
 		/// <param name="name">A single directory name not the full path</param>
+		[Obsolete("Use CheckDirectoryEntryName instead")]
 		public static bool CheckDirectoryName(string name)
 		{
-			if (FileUtility.IsValidDirectoryName(name))
-				return true;
-			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", name}}));
-			return false;
+			return CheckDirectoryEntryName(name);
 		}
 		
 		internal sealed class LoadFileWrapper

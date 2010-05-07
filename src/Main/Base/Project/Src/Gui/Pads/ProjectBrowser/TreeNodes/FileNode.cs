@@ -139,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (newName == null) {
 				return;
 			}
-			if (!FileService.CheckFileName(newName)) {
+			if (!FileService.CheckDirectoryEntryName(newName)) {
 				return;
 			}
 			string oldFileName = FileName;

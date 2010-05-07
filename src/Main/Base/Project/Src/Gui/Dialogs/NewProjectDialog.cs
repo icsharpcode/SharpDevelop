@@ -288,8 +288,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			if (name.Length == 0 || !char.IsLetter(name[0]) && name[0] != '_') {
 				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustStartWithLetter}";
 			}
-			if (!FileUtility.IsValidDirectoryName(solution)
-			    || !FileUtility.IsValidDirectoryName(name))
+			if (!FileUtility.IsValidDirectoryEntryName(solution)
+			    || !FileUtility.IsValidDirectoryEntryName(name))
 			{
 				return "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError}";
 			}
