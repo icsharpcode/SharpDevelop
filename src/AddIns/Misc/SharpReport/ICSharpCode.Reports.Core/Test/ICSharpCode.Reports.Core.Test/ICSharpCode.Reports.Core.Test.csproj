@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="BaseClasses\AbstractColumnFixture.cs" />
     <Compile Include="BaseClasses\GroupColumnFixture.cs" />
+    <Compile Include="BaseClasses\LayouterFixture.cs" />
     <Compile Include="BaseClasses\Parameters.cs" />
     <Compile Include="BaseClasses\SortColumnFixture.cs" />
     <Compile Include="BaseItems\BaseDataItemFixture.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="ReportModelFixture.cs" />
     <Compile Include="ReportSettings\ReportSettingsFixture.cs" />
     <Compile Include="TestHelpers\AggregateFuctionHelper.cs" />
+    <Compile Include="TestHelpers\ConcernOf.cs" />
     <Compile Include="TestHelpers\ContributorsList.cs" />
     <EmbeddedResource Include="Resources\ArtikelSchema_Data.xsd" />
   </ItemGroup>

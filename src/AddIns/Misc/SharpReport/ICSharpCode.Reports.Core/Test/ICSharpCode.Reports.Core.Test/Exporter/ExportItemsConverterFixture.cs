@@ -11,12 +11,14 @@ using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.Exporter;
 using NUnit.Framework;
+using ICSharpCode.Reports.Core.Test.TestHelpers;
 
 namespace ICSharpCode.Reports.Core.Test.Exporter
 {
 	[TestFixture]
-	public class ExportItemsConverterFixture
+	public class ExportItemsConverterFixture:ConcernOf<ExportItemsConverter>
 	{
+		
 		[Test]
 		public void CanCreateExportItemsConverter()
 		{
@@ -36,7 +38,7 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 		 
 		
 		[Test]
-		public void  ConvertSimpleItems_To_Valid_Collection()
+		public void  Convert_SimpleItems_Should_Return_Valid_Collection()
 		{
 			ReportItemCollection ri = new ReportItemCollection();
 			BaseReportItem r = new BaseTextItem(){
@@ -54,7 +56,7 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 		
 		
 		[Test]
-		public void  Convert_SimpleItems_Collection ()
+		public void  Convert_SimpleItems_Should_Calculate_Correct_Locations ()
 		{
 			ReportItemCollection ri = new ReportItemCollection();
 			Point itemLocation = new Point (10,10);
@@ -63,14 +65,13 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 				Size = new Size(20,100)
 			};
 			ri.Add(r);
-			IExportItemsConverter sut = new ExportItemsConverter();
 			
 			Point offset = new Point(20,20);
-			//
 			Rectangle parentRectangle =  new Rectangle (50,50,700,50);
-			sut.ParentRectangle = parentRectangle;
+
+			Sut.ParentRectangle = parentRectangle;
 			
-			ExporterCollection ec = sut.ConvertSimpleItems(offset,ri);
+			ExporterCollection ec = Sut.ConvertSimpleItems(offset,ri);
 			
 			BaseExportColumn be = ec[0];
 			
@@ -84,18 +85,57 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 		}
 		
 		
-		
-		
-		[TestFixtureSetUp]
-		public void Init() 
+		[Test]
+		public void Convert_Container_Should_Return_ExportContainer ()
 		{
-			// TODO: Add Init code.
+			ReportItemCollection ri = new ReportItemCollection();
+			
+			Point itemLocation = new Point (10,10);
+			
+			BaseRowItem row = new BaseRowItem() {
+				Location = itemLocation
+			};
+			
+			
+			Point offset = new Point(20,20);
+			Rectangle parentRectangle =  new Rectangle (50,50,700,50);
+
+			Sut.ParentRectangle = parentRectangle;
+			
+			var exportContainer = Sut.ConvertToContainer(offset,row);
+			
+			Assert.IsAssignableFrom(typeof(ExportContainer),exportContainer);
 		}
 		
-		[TestFixtureTearDown]
-		public void Dispose()
+		
+		[Test]
+		public void Convert_Container_Should_Calculate_Correct_Locations()
 		{
-			// TODO: Add tear down code.
+			ReportItemCollection ri = new ReportItemCollection();
+			
+			Point itemLocation = new Point (10,10);
+			
+			BaseRowItem row = new BaseRowItem() {
+				Location = itemLocation
+			};
+		
+			Point offset = new Point(20,20);
+			Rectangle parentRectangle =  new Rectangle (50,50,700,50);
+
+			Sut.ParentRectangle = parentRectangle;
+			
+			var exportContainer = Sut.ConvertToContainer(offset,row);
+			
+			Point containerLoction = new Point (itemLocation.X, offset.Y);
+			Assert.AreEqual(containerLoction,exportContainer.StyleDecorator.Location);
 		}
+		
+		
+		
+		public override void Setup()
+		{
+			Sut = new ExportItemsConverter();
+		}
+		
 	}
 }

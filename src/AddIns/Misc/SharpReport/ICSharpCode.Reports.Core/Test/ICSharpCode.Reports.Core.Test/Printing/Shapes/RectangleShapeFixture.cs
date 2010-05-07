@@ -10,12 +10,14 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+
+using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Core.Test.Printing.Shapes
 {
 	[TestFixture]
-	public class RectangleShapeFixture
+	public class RectangleShapeFixture:ConcernOf<RectangleShape>
 	{
 		[Test]
 		public void CreateLineShape()
@@ -29,22 +31,19 @@ namespace ICSharpCode.Reports.Core.Test.Printing.Shapes
 		[ExpectedException(typeof(NotImplementedException))]
 		public void RectangleThrow()
 		{
-			
-			RectangleShape ls = new RectangleShape();
 			Point from = new Point (1,1);
 			Point to = new Point (10,10);
-			GraphicsPath p = ls.CreatePath(from,to);
+			GraphicsPath p = Sut.CreatePath(from,to);
 		}
 		
 		
 		[Test]
 		public void CheckGraphicsPathBounds()
 		{
-			RectangleShape ls = new RectangleShape();
 			Point from = new Point(1,1);
 			Size size = new Size (10,10);
 			Rectangle rect = new Rectangle (from,size);
-			GraphicsPath p = ls.CreatePath(rect);
+			GraphicsPath p = Sut.CreatePath(rect);
 			RectangleF r = p.GetBounds();
 			Assert.AreEqual(from.X,r.Left);
 			Assert.AreEqual(from.Y,r.Top);
@@ -56,13 +55,17 @@ namespace ICSharpCode.Reports.Core.Test.Printing.Shapes
 		[Test]
 		public void CheckLastPointFromPath()
 		{
-			RectangleShape ls = new RectangleShape();
 			Point from = new Point(1,1);
 			Size size = new Size (10,10);
 			Rectangle rect = new Rectangle (from,size);
-			GraphicsPath p = ls.CreatePath(rect);
+			GraphicsPath p = Sut.CreatePath(rect);
 			PointF last = p.GetLastPoint();
 			Assert.AreEqual(new Point (from.X ,from.Y + size.Height),  Point.Truncate(last));              
+		}
+		
+		public override void Setup()
+		{
+			Sut = new RectangleShape();
 		}
 	}
 }

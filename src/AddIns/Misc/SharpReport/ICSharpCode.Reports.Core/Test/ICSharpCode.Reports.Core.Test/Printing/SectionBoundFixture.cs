@@ -9,16 +9,15 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Core.Test.Printing
 {
 	[TestFixture]
-	public class SectionBoundFixture
+	public class SectionBoundFixture:ConcernOf<SectionBounds>
 	{
-		private SectionBounds sectionBounds;
-		
-	
+
 		[Test]
 		public void Can_Read_SectionBounds ()
 		{
@@ -47,7 +46,7 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		[Test]
 		public void CheckForGap ()
 		{
-			Assert.AreEqual(1,this.sectionBounds.Gap);
+			Assert.AreEqual(1,Sut.Gap);
 		}
 		
 		#region MeasureReportHeader
@@ -56,7 +55,7 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void MeasureReportHeaderThrowsIfSectionIsNull()
 		{
-			this.sectionBounds.MeasureReportHeader(null);
+			Sut.MeasureReportHeader(null);
 		}
 		
 		
@@ -101,10 +100,10 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			BaseSection bs = new BaseSection();
 			bs.Location = new Point (50,50);
 			bs.Size = new Size (727,60);
-			this.sectionBounds.MeasureReportHeader(bs);
-			Assert.AreEqual(0,this.sectionBounds.ReportHeaderRectangle.Size.Height);
-			int a = this.sectionBounds.MarginBounds.Width;
-			Assert.AreEqual(this.sectionBounds.MarginBounds.Width,this.sectionBounds.ReportHeaderRectangle.Width);
+			Sut.MeasureReportHeader(bs);
+			Assert.AreEqual(0,Sut.ReportHeaderRectangle.Size.Height);
+			int a = Sut.MarginBounds.Width;
+			Assert.AreEqual(Sut.MarginBounds.Width,Sut.ReportHeaderRectangle.Width);
 		}
 		
 		#endregion
@@ -115,7 +114,7 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void MeasurePageHeaderThrowsIfSectionIsNull()
 		{
-			this.sectionBounds.MeasurePageHeader(null);
+			Sut.MeasurePageHeader(null);
 		}
 		
 		
@@ -143,7 +142,7 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void MeasurePageFooterThrowsIfSectionIsNull()
 		{
-			this.sectionBounds.MeasurePageFooter(null);
+			Sut.MeasurePageFooter(null);
 		}
 		
 		
@@ -174,7 +173,7 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void MeasureReportFooterThrowsIfSectionIsNull()
 		{
-			this.sectionBounds.MeasureReportFooter(null);
+			Sut.MeasureReportFooter(null);
 		}
 		
 		[Test]
@@ -233,22 +232,10 @@ namespace ICSharpCode.Reports.Core.Test.Printing
 			Assert.AreEqual(p,sectionBounds.DetailEnds);
 		}
 		
-		
-		#region Setup/Teardown		
-				
-		[TestFixtureSetUp]
-		public void Init()
+		public override void Setup()
 		{
 			ReportSettings rs = new ReportSettings();
-			this.sectionBounds = new SectionBounds(rs,false);
+			Sut = new SectionBounds(rs,false);
 		}
-		
-		[TestFixtureTearDown]
-		public void Dispose()
-		{
-			// TODO: Add tear down code.
-		}
-		
-		#endregion
 	}
 }

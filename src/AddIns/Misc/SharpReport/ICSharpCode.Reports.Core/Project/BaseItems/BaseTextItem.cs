@@ -47,6 +47,7 @@ namespace ICSharpCode.Reports.Core
 			return item;
 		}
 		
+		
 		protected TextStyleDecorator CreateItemStyle () {
 			
 			TextStyleDecorator style = new TextStyleDecorator();
