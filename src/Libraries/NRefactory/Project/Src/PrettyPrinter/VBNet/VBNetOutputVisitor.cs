@@ -317,7 +317,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			VisitAttributes(typeDeclaration.Attributes, data);
 			
 			outputFormatter.Indent();
-			OutputModifier(typeDeclaration.Modifier, true);
+			OutputModifier(typeDeclaration.Modifier, true, false);
 			
 			int typeToken = GetTypeToken(typeDeclaration);
 			outputFormatter.PrintToken(typeToken);
@@ -424,7 +424,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			VisitAttributes(delegateDeclaration.Attributes, data);
 			
 			outputFormatter.Indent();
-			OutputModifier(delegateDeclaration.Modifier, true);
+			OutputModifier(delegateDeclaration.Modifier, true, false);
 			outputFormatter.PrintToken(Tokens.Delegate);
 			outputFormatter.Space();
 			
@@ -501,11 +501,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (fieldDeclaration.Modifier == Modifiers.None) {
 				outputFormatter.PrintToken(Tokens.Private);
 				outputFormatter.Space();
-			} else if (fieldDeclaration.Modifier == Modifiers.Dim) {
-				outputFormatter.PrintToken(Tokens.Dim);
-				outputFormatter.Space();
 			} else {
-				OutputModifier(fieldDeclaration.Modifier);
+				OutputModifier(fieldDeclaration.Modifier, false, true);
 			}
 			currentVariableType = fieldDeclaration.TypeReference;
 			AppendCommaSeparatedList(fieldDeclaration.Fields);
@@ -1400,7 +1397,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			if (localVariableDeclaration.Modifier != Modifiers.None) {
-				OutputModifier(localVariableDeclaration.Modifier);
+				OutputModifier(localVariableDeclaration.Modifier & ~Modifiers.Dim);
 			}
 			if (!isUsingResourceAcquisition) {
 				if ((localVariableDeclaration.Modifier & Modifiers.Const) == 0) {
@@ -2806,10 +2803,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void OutputModifier(Modifiers modifier)
 		{
-			OutputModifier(modifier, false);
+			OutputModifier(modifier, false, false);
 		}
 		
-		void OutputModifier(Modifiers modifier, bool forTypeDecl)
+		void OutputModifier(Modifiers modifier, bool forTypeDecl, bool forFieldDecl)
 		{
 			if ((modifier & Modifiers.Public) == Modifiers.Public) {
 				outputFormatter.PrintToken(Tokens.Public);
@@ -2839,7 +2836,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			if ((modifier & Modifiers.Abstract) == Modifiers.Abstract) {
-				outputFormatter.PrintToken(forTypeDecl ? Tokens.MustInherit : Tokens.MustOverride);
+				if (forFieldDecl)
+					outputFormatter.PrintToken(Tokens.Dim);
+				else if (forTypeDecl)
+					outputFormatter.PrintToken(Tokens.MustInherit);
+				else
+					outputFormatter.PrintToken(Tokens.MustOverride);
 				outputFormatter.Space();
 			}
 			if ((modifier & Modifiers.Overloads) == Modifiers.Overloads) {
@@ -2870,6 +2872,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			if ((modifier & Modifiers.Const) == Modifiers.Const) {
 				outputFormatter.PrintToken(Tokens.Const);
+				outputFormatter.Space();
+			}
+			if ((modifier & Modifiers.WithEvents) == Modifiers.WithEvents) {
+				outputFormatter.PrintToken(Tokens.WithEvents);
 				outputFormatter.Space();
 			}
 			if ((modifier & Modifiers.Partial) == Modifiers.Partial) {
