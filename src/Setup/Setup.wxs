@@ -466,14 +466,14 @@
 				<ComponentRef Id="UsageDataCollectorAddin"/>
 				<ComponentRef Id="UsageDataCollectorDll"/>
 				
-				<!--<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
+				<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
 				<ComponentRef Id="ICSharpCodeReportDesignerAddin"/>
 				<ComponentRef Id="ICSharpCodeReportsAddinDll"/>
 				<ComponentRef Id="ICSharpCodeReportsCoreDll"/>
 				<ComponentRef Id="InteropMsdascDll"/>
 				<ComponentRef Id="InteropAdodbDll"/>
 				<ComponentRef Id="IronyDll"/>
-				<ComponentRef Id="ITextSharpDll"/>-->
+				<ComponentRef Id="ITextSharpDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
