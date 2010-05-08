@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//      or convert to implicit interface implementation
 		//   Modules: make all members static
 		//   Use Convert.ToInt32 for VB casts
+		//   Add System.Object-TypeReference to properties without TypeReference
 		
 		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 		{
@@ -104,6 +105,10 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
 		{
 			ConvertInterfaceImplementation(propertyDeclaration);
+			
+			if (propertyDeclaration.TypeReference.IsNull)
+				propertyDeclaration.TypeReference = new TypeReference("object", true);
+			
 			return base.VisitPropertyDeclaration(propertyDeclaration, data);
 		}
 		

@@ -571,17 +571,34 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(propertyDeclaration.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			VisitReturnTypeAttributes(propertyDeclaration.Attributes, data);
-			TrackedVisit(propertyDeclaration.TypeReference, data);
+			
+			if (!propertyDeclaration.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				
+				VisitReturnTypeAttributes(propertyDeclaration.Attributes, data);
+				
+				ObjectCreateExpression init = propertyDeclaration.Initializer as ObjectCreateExpression;
+				if (init != null && TypeReference.AreEqualReferences(init.CreateType, propertyDeclaration.TypeReference)) {
+					TrackedVisit(propertyDeclaration.Initializer, data);
+				} else {
+					TrackedVisit(propertyDeclaration.TypeReference, data);
+				}
+			}
 			
 			PrintInterfaceImplementations(propertyDeclaration.InterfaceImplementations);
 			
+			if (!propertyDeclaration.Initializer.IsNull && !(propertyDeclaration.Initializer is ObjectCreateExpression)) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Assign);
+				outputFormatter.Space();
+				TrackedVisit(propertyDeclaration.Initializer, data);
+			}
+			
 			outputFormatter.NewLine();
 			
-			if (!IsAbstract(propertyDeclaration)) {
+			if (!IsAbstract(propertyDeclaration) && (propertyDeclaration.GetRegion.Block != NullBlockStatement.Instance  || propertyDeclaration.SetRegion.Block != NullBlockStatement.Instance)) {
 				outputFormatter.IsInMemberBody = true;
 				++outputFormatter.IndentationLevel;
 				exitTokenStack.Push(Tokens.Property);

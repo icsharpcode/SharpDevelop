@@ -1094,11 +1094,6 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			TypeName<out type>
 		)
 	]
-	(.
-		if(type == null) {
-			type = new TypeReference("System.Object", true);
-		}
-	.)
 	[ "=" VariableInitializer<out initializer> ]
 	[ ImplementsClause<out implementsClause> ]
 	EndOfStmt

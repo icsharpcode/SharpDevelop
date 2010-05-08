@@ -2223,7 +2223,8 @@ out getRegion, out setRegion);
 
 #line  1074 "cs.ATG" 
 		TypeReference type;
-			AttributeSection section;
+		
+		AttributeSection section;
 		Modifiers mod = Modifiers.None;
 		List<AttributeSection> attributes = new List<AttributeSection>();
 		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();

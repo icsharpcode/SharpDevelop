@@ -122,7 +122,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("ReadOnly Property MyProperty \nGet\nEnd Get\nEnd Property");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.AreEqual("System.Object", pd.TypeReference.Type);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsFalse(pd.HasSetRegion);
 			Assert.IsTrue((pd.Modifier & Modifiers.ReadOnly) == Modifiers.ReadOnly);
@@ -133,7 +132,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("WriteOnly Property MyProperty \n Set\nEnd Set\nEnd Property ");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.AreEqual("System.Object", pd.TypeReference.Type);
 			Assert.IsFalse(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
 			Assert.IsTrue((pd.Modifier & Modifiers.WriteOnly) == Modifiers.WriteOnly);
@@ -144,7 +142,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.AreEqual("System.Object", pd.TypeReference.Type);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
 			Assert.AreEqual(pd.Initializer, Expression.Null);
@@ -155,7 +152,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("ReadOnly Property MyProperty");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.AreEqual("System.Object", pd.TypeReference.Type);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsFalse(pd.HasSetRegion);
 			Assert.AreEqual(pd.Initializer, Expression.Null);
@@ -166,7 +162,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("WriteOnly Property MyProperty");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.AreEqual("System.Object", pd.TypeReference.Type);
 			Assert.IsFalse(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
 			Assert.AreEqual(pd.Initializer, Expression.Null);
@@ -177,7 +172,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		{
 			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty = 5");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.AreEqual("System.Object", pd.TypeReference.Type);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
 			Assert.AreEqual(pd.Initializer.ToString(), new PrimitiveExpression(5).ToString());
