@@ -1269,7 +1269,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((operatorDeclaration.TypeReference != null));
 			Debug.Assert((operatorDeclaration.Body != null));
 			Debug.Assert((operatorDeclaration.Templates != null));
-			Debug.Assert((operatorDeclaration.ReturnTypeAttributes != null));
 			for (int i = 0; i < operatorDeclaration.Attributes.Count; i++) {
 				AttributeSection o = operatorDeclaration.Attributes[i];
 				Debug.Assert(o != null);
@@ -1319,17 +1318,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 					operatorDeclaration.Templates.RemoveAt(i--);
 				else
 					operatorDeclaration.Templates[i] = o;
-			}
-			for (int i = 0; i < operatorDeclaration.ReturnTypeAttributes.Count; i++) {
-				AttributeSection o = operatorDeclaration.ReturnTypeAttributes[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (AttributeSection)nodeStack.Pop();
-				if (o == null)
-					operatorDeclaration.ReturnTypeAttributes.RemoveAt(i--);
-				else
-					operatorDeclaration.ReturnTypeAttributes[i] = o;
 			}
 			return null;
 		}
@@ -1407,6 +1395,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((propertyDeclaration.TypeReference != null));
 			Debug.Assert((propertyDeclaration.GetRegion != null));
 			Debug.Assert((propertyDeclaration.SetRegion != null));
+			Debug.Assert((propertyDeclaration.Initializer != null));
 			for (int i = 0; i < propertyDeclaration.Attributes.Count; i++) {
 				AttributeSection o = propertyDeclaration.Attributes[i];
 				Debug.Assert(o != null);
@@ -1449,6 +1438,9 @@ namespace ICSharpCode.NRefactory.Visitors {
 			nodeStack.Push(propertyDeclaration.SetRegion);
 			propertyDeclaration.SetRegion.AcceptVisitor(this, data);
 			propertyDeclaration.SetRegion = ((PropertySetRegion)(nodeStack.Pop()));
+			nodeStack.Push(propertyDeclaration.Initializer);
+			propertyDeclaration.Initializer.AcceptVisitor(this, data);
+			propertyDeclaration.Initializer = ((Expression)(nodeStack.Pop()));
 			return null;
 		}
 		
