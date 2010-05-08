@@ -1,0 +1,400 @@
+﻿<AddIn name        = "SharpDevelopReports"
+       author      = "Forstmeier Peter"
+       url         = "http://www.sharpdevelopreports.net/"
+       description = "Reporting Tool For SharpDevelop"
+	   addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.Reports.Addin" version="@ICSharpCode.Reports.Addin.dll"/>
+		
+		<Dependency addin="SharpDevelop" version="4.0"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "ICSharpCode.Reports.Addin.dll"/>
+	</Runtime>
+	
+	<!-- DisplayBinding -->
+	
+	<Path name ="/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id="SharpDevelopReportsBinding"
+		                insertbefore="Text"
+		                fileNamePattern="\.srd$"
+		                languagePattern="^SharpDevelopReports$"
+		                class="ICSharpCode.Reports.Addin.ReportDesignerDisplayBinding"/>
+	</Path>
+	
+	<!-- File Filter -->
+	<Path name ="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id="SharpDevelopReports"
+		            insertbefore="AllFiles"
+		            name="SharpDevelop Reports (*.srd)"
+		            extensions="*.srd"/>
+	</Path>
+	
+	<!-- ReportExplorer -->
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+			<Pad id="reportexplorer"
+			     category = "Tools"
+			     icon="Icons.16x16.SharpQuery.Refresh"
+			     title = "ReportExplorer"
+			     shortcut = "Control|Alt|Q"
+			     class="ICSharpCode.Reports.Addin.ReportExplorerPad"
+			     defaultPosition = "Right, Hidden" />
+	</Path>
+	
+	
+	<Path name = "/SharpDevelop/ReportDesigner/ContextMenus/ContainerMenu">
+		<MenuItem id          = "ViewCode"
+		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
+		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
+		          class       = "ICSharpCode.Reports.Addin.Commands.ViewCode"/>
+		
+		<MenuItem id          = "ShowProperties"
+		          label       = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		          icon        = "Icons.16x16.Property"
+		          class       = "ICSharpCode.Reports.Addin.Commands.ShowProperties"/>
+		
+		<MenuItem id = "PageMarginSeparator" type = "Separator"/>
+		
+		<MenuItem id          = "PageMargin"
+		          label       = "PageMargin"
+		          icon        = "Icons.16x16.Property"
+		          class       = "ICSharpCode.Reports.Addin.Commands.TogglePageMargin"/>
+		
+		<MenuItem id = "DesignerSeparator" type = "Separator"/>
+		
+		<MenuItem id = "Paste"
+		          label = "${res:XML.MainMenu.EditMenu.Paste}"
+		          icon = "Icons.16x16.PasteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.Reports.Addin.Commands.Paste"/>
+		
+		<MenuItem id = "DesignerVerbsSeparator" type = "Separator"/>
+		
+		<MenuItem id = "DesignerVerbsBuilder"
+		          type = "Builder"
+		          class = "ICSharpCode.Reports.Addin.Commands.DesignerVerbSubmenuBuilder" />
+	</Path>
+
+	<Path name = "/SharpDevelop/ReportDesigner/ContextMenus/TraySelectionMenu">
+		<MenuItem id          = "ViewCode"
+		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
+		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
+		          class       = "ICSharpCode.Reports.Addin.Commands.ViewCode"/>
+		
+		<MenuItem id          = "ShowProperties"
+		          label       = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		          icon        = "Icons.16x16.Property"
+		          class       = "ICSharpCode.Reports.Addin.Commands.ShowProperties"/>
+		
+		
+		<MenuItem id = "DesignerVerbsSeparator" type = "Separator"/>
+		
+		<MenuItem id = "DesignerVerbsBuilder"
+		          type = "Builder"
+		          class = "ICSharpCode.Reports.Addin.Commands.DesignerVerbSubmenuBuilder" />
+	</Path>
+	
+	
+	<Path name = "/SharpDevelop/ReportDesigner/ContextMenus/SelectionMenu">
+		
+		<MenuItem id          = "ViewCode"
+		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
+		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
+		          class       = "ICSharpCode.Reports.Addin.Commands.ViewCode"/>
+		
+		<MenuItem id          = "ShowProperties"
+		          label       = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		          icon        = "Icons.16x16.Property"
+		          class       = "ICSharpCode.Reports.Addin.Commands.ShowProperties"/>
+		
+		<MenuItem id = "PropertySeparator" type = "Separator"/>
+		
+		<MenuItem id = "Cut"
+		          label = "${res:XML.MainMenu.EditMenu.Cut}"
+		          icon = "Icons.16x16.CutIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.Reports.Addin.Commands.Cut"/>
+			
+		<MenuItem id = "Copy"
+		          label = "${res:XML.MainMenu.EditMenu.Copy}"
+		          icon = "Icons.16x16.CopyIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.Reports.Addin.Commands.Copy"/>
+		<MenuItem id = "Paste"
+		          label = "${res:XML.MainMenu.EditMenu.Paste}"
+		          icon = "Icons.16x16.PasteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.Reports.Addin.Commands.Paste"/>
+		
+		<MenuItem id = "Delete"
+		          label = "${res:XML.MainMenu.EditMenu.Delete}"
+		          icon = "Icons.16x16.DeleteIcon"
+		          loadclasslazy = "false"
+		          class = "ICSharpCode.Reports.Addin.Commands.Delete"/>
+			
+		<MenuItem id = "DesignerVerbsSeparator" type = "Separator"/>
+		
+		<MenuItem id = "DesignerVerbsBuilder"
+		          type = "Builder"
+		          class = "ICSharpCode.Reports.Addin.Commands.DesignerVerbSubmenuBuilder" />
+	</Path>
+
+
+	 
+   <!-- ReportExplorer ContextMenu's -->
+	
+	<Path name ="/SharpDevelopReports/ContextMenu/FieldsExplorer/SectionTreeNode">
+		<MenuItem id="removenodes"
+		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Section.Clear}"
+		          class="ICSharpCode.Reports.Addin.Commands.ClearSelectedNodeCommand"/>
+	</Path>
+
+	<!-- Toggle Sortorder -->
+	<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode">
+		<MenuItem id="toggle"
+		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort}"
+		          class="ICSharpCode.Reports.Addin.Commands.ToggleOrderCommand"/>
+		
+		<MenuItem id="removenode"
+		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.Remove}"
+		          class="ICSharpCode.Reports.Addin.Commands.RemoveNodeCommand"/>
+	</Path>
+	
+	
+	<!-- Run Expression Editor -->
+	<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ParameterNode">
+	<MenuItem id="params"
+		          label="${res:SharpReport.FieldsExplorer.Parameters}"
+		          class="ICSharpCode.Reports.Addin.Commands.ParameterEditorCommand"/>
+	</Path>
+	<!-- Start SharpDevelop Reports from MainMenu -->
+	
+	<Path name = "/Workspace/Tools">
+		<MenuItem id       = "ReportGeneratorPad"
+		          label = "${res:SharpReport.ReportGenerator}"
+		          
+		          shortcut = "Control|Alt|R"
+		          class    = "ICSharpCode.Reports.Addin.Commands.StartViewCommand"/>
+	</Path>
+
+	<!-- Report wizard -->
+
+	<Path  name = "/ReportGenerator/ReportGeneratorWizard">
+		<DialogPanel id="Base" label = "${res:SharpReport.Wizard.BaseSettings}" class="ICSharpCode.Reports.Addin.ReportWizard.BaseSettingsPanel"/>
+		<DialogPanel id="PushModel" label="${res:SharpReport.Wizard.PushModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PushModelPanel"/>
+		<DialogPanel id="PullModel" label="${res:SharpReport.Wizard.PullModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PullModelPanel"/>
+		<DialogPanel id="QueryResult" label="${res:SharpReport.Wizard.ShowQueryResult}" class ="ICSharpCode.Reports.Addin.ReportWizard.ResultPanel"/>
+		<DialogPanel id="Layout" label="Layout" class ="ICSharpCode.Reports.Addin.ReportWizard.LayoutPanel"/>
+
+	</Path>
+	
+	<!-- ContextMenu Sections -->
+	<!-- Save Data from Resultpanel as *xsd File -->
+	<Path name ="/ReportGenerator/ResultPanel/ContextMenuDefault">
+		<MenuItem id="xsdcomplete" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdComplete}" class="ICSharpCode.Reports.Addin.ReportWizard.XsdSchemaAndDataCommand"/>
+		<MenuItem id="xsdschema" label="${res:SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly}" class="ICSharpCode.Reports.Addin.ReportWizard.XsdSchemaOnlyCommand"/>
+	</Path>
+
+	<!-- Tell SharpDevelop to look for the file template (EmptyReport.xft) in the AddIn directory -->
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "ICSharpCode.Reports" path = "." />
+	</Path>
+
+
+	<!-- Beginning of part merged from SharpQuery -->
+	<Path name = "/SharpQuery/Connection">
+		<Class id = "ConnectionWrapper"
+		       class = "SharpQuery.Connection.OLEDBConnectionWrapper"/>
+		<SharpQueryConnection id ="Column"
+			schema="SharpQuery.SchemaClass.SharpQueryColumn"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeColumn"/>
+		<SharpQueryConnection id ="Parameter"
+			schema="SharpQuery.SchemaClass.SharpQueryParameter"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeParameter"/>
+		<SharpQueryConnection id ="Procedure"
+			schema="SharpQuery.SchemaClass.SharpQueryProcedure"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeProcedure"/>
+		<SharpQueryConnection id ="Table"
+			schema="SharpQuery.SchemaClass.SharpQueryTable"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeTable"/>
+		<SharpQueryConnection id ="View"
+			schema="SharpQuery.SchemaClass.SharpQueryView"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeView"/>
+		<SharpQueryConnection id ="NotSupported"
+			schema="SharpQuery.SchemaClass.SharpQueryNotSupported"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeNotSupported"/>
+		<SharpQueryConnection id ="Tables"
+			schema="SharpQuery.SchemaClass.SharpQueryTables"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeTableRoot"/>
+		<SharpQueryConnection id ="Views"
+			schema="SharpQuery.SchemaClass.SharpQueryViews"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeViewRoot"/>
+		<SharpQueryConnection id ="Procedures"
+			schema="SharpQuery.SchemaClass.SharpQueryProcedures"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeProcedureRoot"/>
+		<SharpQueryConnection id ="Schema"
+			schema="SharpQuery.SchemaClass.SharpQuerySchema"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeSchema"/>
+		<SharpQueryConnection id ="Catalog"
+			schema="SharpQuery.SchemaClass.SharpQueryCatalog"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeCatalog"/>
+		<SharpQueryConnection id ="OLEDB"
+			schema="SharpQuery.Connection.OLEDBConnectionWrapper"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeConnection"/>
+		<SharpQueryConnection id ="ADO"
+			schema="SharpQuery.Connection.ADOConnectionWrapper"
+			node ="SharpQuery.Gui.TreeView.SharpQueryNodeConnection"/>
+	</Path>
+	
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id    = "SharpQuery"
+		     category = "Tools"
+		     icon = "Icons.16x16.SharpQuery.DataBaseRoot"
+		     title = "SharpQuery ${res:SharpQuery.PadTitle}"
+		     shortcut = "Control|Alt|B"
+		     class = "SharpQuery.Pads.SharpQueryPad"
+		     defaultPosition = "Right, Hidden"/>
+	</Path>
+	
+	<Path name = "/SharpQuery/ContextMenu/DatabaseRoot">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+		<MenuItem id = "Separator1" type = "Separator"/>
+		<MenuItem id = "AddConnection"
+		          label = "${res:SharpQuery.Label.AddConnection}"
+		          icon = "Icons.16x16.SharpQuery.AddConnection"
+		          class = "SharpQuery.Commands.SharpQueryAddconnectionCommand"
+		          loadclasslazy="false"/>
+	
+	</Path>
+	
+	<Path name = "/SharpQuery/ContextMenu/DatabaseConnection">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy = "false"/>
+		<MenuItem id = "Separator1" type = "Separator"/>
+		<MenuItem id = "Supprimer"
+		          label = "${res:SharpQuery.Label.Remove}"
+		          icon = "Icons.16x16.SharpQuery.Remove"
+		          class = "SharpQuery.Commands.SharpQueryRemoveConnectionCommand"
+		          loadclasslazy = "false"/>
+		<MenuItem id = "Separator2" type = "Separator"/>
+		<MenuItem id = "ModifyConnection"
+		          label = "${res:SharpQuery.Label.ModifyConnection}"
+		          class = "SharpQuery.Commands.SharpQueryModifyConnectionCommand"
+		          loadclasslazy="false"/>
+		<MenuItem id = "Disconnect"
+		          label = "${res:SharpQuery.Label.Disconnect}"
+		          class = "SharpQuery.Commands.SharpQueryDisconnectCommand"
+		          loadclasslazy="false"/>
+		<MenuItem id = "Connect"
+		          label = "${res:SharpQuery.Label.Connect}"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	<Path name = "/SharpQuery/ContextMenu/TablesRoot">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	<Path name = "/SharpQuery/ContextMenu/ViewsRoot">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	<Path name = "/SharpQuery/ContextMenu/ProceduresRoot">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	
+	<Path name = "/SharpQuery/ContextMenu/Table">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+		<MenuItem id = "ExtractData"
+		          label = "${res:SharpQuery.Label.ExtractData}"
+		          class = "SharpQuery.Commands.SharpQueryExecuteCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	<Path name = "/SharpQuery/ContextMenu/View">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+		<MenuItem id = "ExtractData"
+		          label = "${res:SharpQuery.Label.ExtractData}"
+		          class = "SharpQuery.Commands.SharpQueryExecuteCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	
+	<Path name = "/SharpQuery/ContextMenu/Procedure">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+		<MenuItem id = "ExtractData"
+		          label = "${res:SharpQuery.Label.ExtractData}"
+		          class = "SharpQuery.Commands.SharpQueryExecuteCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	
+	<Path name = "/SharpQuery/ContextMenu/Column">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	<Path name = "/SharpQuery/ContextMenu/Parameter">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	<Path name = "/SharpQuery/ContextMenu/Catalog">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	
+	<Path name = "/SharpQuery/ContextMenu/Schema">
+		<MenuItem id = "Refresh"
+		          label = "${res:SharpQuery.Label.Refresh}"
+		          icon = "Icons.16x16.SharpQuery.Refresh"
+		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
+		          loadclasslazy="false"/>
+	</Path>
+	<!-- End of part merged from SharpQuery -->
+</AddIn>

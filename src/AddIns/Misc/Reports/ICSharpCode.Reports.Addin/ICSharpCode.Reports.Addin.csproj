@@ -1,0 +1,273 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.Reports.Addin</RootNamespace>
+    <AssemblyName>ICSharpCode.Reports.Addin</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{35D002D7-C78B-44FB-92AA-104BEB431678}</ProjectGuid>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>125829120</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="itextsharp">
+      <HintPath>..\Libraries\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Project\Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Project\Commands\ExplorerCommands.cs" />
+    <Compile Include="Project\Commands\PreviewCommands.cs" />
+    <Compile Include="Project\DesignerBinding\IDesignerGenerator.cs" />
+    <Compile Include="Project\DesignerBinding\ReportDefinitionDeserializer.cs" />
+    <Compile Include="Project\DesignerBinding\ReportDesignerDisplayBinding.cs" />
+    <Compile Include="Project\DesignerBinding\ReportDesignerGenerator.cs" />
+    <Compile Include="Project\DesignerBinding\ReportDesignerLoader.cs" />
+    <Compile Include="Project\DesignerBinding\InternalReportLoader.cs" />
+    <Compile Include="Project\Designer\DataItemDesigner.cs" />
+    <Compile Include="Project\Designer\DesignerHelper.cs" />
+    <Compile Include="Project\Designer\ImageDesigner.cs" />
+    <Compile Include="Project\Designer\LineDesigner.cs" />
+    <Compile Include="Project\Designer\RowItemDesigner.cs" />
+    <Compile Include="Project\Designer\Ruler.cs" />
+    <Compile Include="Project\Designer\SectionDesigner.cs" />
+    <Compile Include="Project\Commands\EditCommands.cs" />
+    <Compile Include="Project\Commands\FormsCommand.cs" />
+    <Compile Include="Project\Commands\ViewCommands.cs" />
+    <Compile Include="Project\Configuration\AssemblyInfo.cs" />
+    <None Include="EmptyReport.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ICSharpCode.ReportDesigner.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Project\Designer\SmartTagTransactions.cs" />
+    <Compile Include="Project\Designer\TextBasedDesignerActionList.cs" />
+    <Compile Include="Project\Designer\TextItemDesigner.cs" />
+    <Compile Include="Project\Designer\RootDesigner\ReportItemsContainer.cs" />
+    <Compile Include="Project\Designer\RootDesigner\ReportRootDesigner.cs" />
+    <Compile Include="Project\Designer\ShapeDesigner.cs" />
+    <Compile Include="Project\Designer\TableDesigner.cs" />
+    <Compile Include="Project\Dialogs\ExpressionEditor.cs" />
+    <Compile Include="Project\Dialogs\ExpressionEditor.Designer.cs">
+      <DependentUpon>ExpressionEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Project\Globals\FormsDesignerLoadException.cs" />
+    <Compile Include="Project\Globals\GlobalsDesigner.cs" />
+    <Compile Include="Project\Globals\StringWriterWithEncoding.cs" />
+    <Compile Include="Project\ReportDesignerView.cs" />
+    <Compile Include="Project\ReportExplorer\ExplorerNodes.cs" />
+    <Compile Include="Project\ReportExplorer\ExplorerTree.cs" />
+    <Compile Include="Project\ReportExplorer\ReportExplorerPad.cs" />
+    <Compile Include="Project\ReportItems\AbstractItem.cs" />
+    <Compile Include="Project\ReportItems\BaseCircleItem.cs" />
+    <Compile Include="Project\ReportItems\BaseDataItem.cs" />
+    <Compile Include="Project\ReportItems\BaseImageItem.cs" />
+    <Compile Include="Project\ReportItems\BaseLine.cs" />
+    <Compile Include="Project\ReportItems\BaseRectangleItem.cs" />
+    <Compile Include="Project\ReportItems\BaseRowItem.cs" />
+    <Compile Include="Project\ReportItems\BaseTableItem.cs" />
+    <Compile Include="Project\ReportItems\BaseTextItem.cs" />
+    <Compile Include="Project\ReportItems\BaseSection.cs" />
+    <Compile Include="Project\ReportItems\ErrorItem.cs" />
+    <Compile Include="Project\ReportItems\RectangleItemTypeProvider.cs" />
+    <Compile Include="Project\ReportManagers\BaseManager.cs" />
+    <Compile Include="Project\ReportManagers\StandartPreviewManager.cs" />
+    <Compile Include="Project\ReportWizard\Generators\AbstractReportGenerator.cs" />
+    <Compile Include="Project\ReportWizard\Generators\GenerateFormSheetReport.cs" />
+    <Compile Include="Project\ReportWizard\Generators\GeneratePlainReport.cs" />
+    <Compile Include="Project\ReportWizard\Generators\GeneratePullDataReport.cs" />
+    <Compile Include="Project\ReportWizard\Generators\GeneratePushDataReport.cs" />
+    <Compile Include="Project\ReportWizard\Generators\GeneratorFactory.cs" />
+    <Compile Include="Project\ReportWizard\Generators\WizardHelper.cs" />
+    <Compile Include="Project\ReportWizard\ReportLayout\AbstractLayout.cs" />
+    <Compile Include="Project\ReportWizard\ReportLayout\ListLayout.cs" />
+    <Compile Include="Project\ReportWizard\ReportLayout\TableLayout.cs" />
+    <Compile Include="Project\ReportWizard\ReportStructure.cs" />
+    <Compile Include="Project\ReportWizard\ReportWizardCommand.cs" />
+    <Compile Include="Project\ReportWizard\SqlParameterConverter.cs" />
+    <Compile Include="Project\ReportWizard\WizardCommands.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\BaseSettingsPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\DataGridViewColumnHeaderCheckBoxCell.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\LayoutPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\PullModelPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\PushModelPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\ResultPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\LayoutPanelControl.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\LayoutPanelControl.Designer.cs">
+      <DependentUpon>LayoutPanelControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Project\SecondaryViews\ReportPreview.cs" />
+    <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs" />
+    <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
+    <Compile Include="Project\SecondaryViews\XmlView.cs" />
+    <Compile Include="Project\Services\DefaultMemberRelationshipService.cs" />
+    <Compile Include="Project\Services\DefaultServiceContainer.cs" />
+    <Compile Include="Project\Services\DesignerSerializationService.cs" />
+    <Compile Include="Project\Services\HelpService.cs" />
+    <Compile Include="Project\Services\MenuCommandService.cs" />
+    <Compile Include="Project\Services\NameCreationService.cs" />
+    <Compile Include="Project\Services\ToolboxService.cs" />
+    <Compile Include="Project\Services\TypeDiscoveryService.cs" />
+    <Compile Include="Project\Services\TypeResolutionService.cs" />
+    <Compile Include="Project\Services\UIService.cs" />
+    <Compile Include="Project\SharpQuery\AbstractSharpQueryCommand.cs" />
+    <Compile Include="Project\SharpQuery\AbstractSharpQuerySchemaClass.cs" />
+    <Compile Include="Project\SharpQuery\Collections.cs" />
+    <Compile Include="Project\SharpQuery\Connection\AbstractSharpQueryConnectionWrapper.cs" />
+    <Compile Include="Project\SharpQuery\Connection\ADOConnectionWrapper.cs" />
+    <Compile Include="Project\SharpQuery\Connection\IConnection.cs" />
+    <Compile Include="Project\SharpQuery\Connection\OLEDBConnectionWrapper.cs" />
+    <Compile Include="Project\SharpQuery\Exceptions\ConnectionStringException.cs" />
+    <Compile Include="Project\SharpQuery\Exceptions\ExecuteProcedureException.cs" />
+    <Compile Include="Project\SharpQuery\Exceptions\ExecuteSQLException.cs" />
+    <Compile Include="Project\SharpQuery\Exceptions\OpenConnectionException.cs" />
+    <Compile Include="Project\SharpQuery\Exceptions\SharpQueryAbstractException.cs" />
+    <Compile Include="Project\SharpQuery\GUI\AbstractSharpQueryNode.cs" />
+    <Compile Include="Project\SharpQuery\GUI\ISharpQueryNode.cs" />
+    <Compile Include="Project\SharpQuery\GUI\SharpQueryDataView.cs" />
+    <Compile Include="Project\SharpQuery\GUI\SharpQueryPad.cs" />
+    <Compile Include="Project\SharpQuery\GUI\SharpQueryTree\SharpQueryDataNodes.cs" />
+    <Compile Include="Project\SharpQuery\GUI\SharpQueryTree\SharpQueryNodesRoot.cs" />
+    <Compile Include="Project\SharpQuery\GUI\SharpQueryTree\SharpQueryTree.cs" />
+    <Compile Include="Project\SharpQuery\GUI\SQLParameterInput.cs" />
+    <Compile Include="Project\SharpQuery\ISchemaClass.cs" />
+    <Compile Include="Project\SharpQuery\SharpQueryCommands.cs" />
+    <Compile Include="Project\SharpQuery\SharpQuerySchemaClass.cs" />
+    <Compile Include="Project\Toolbox\SideTabItemDesigner.cs" />
+    <Compile Include="Project\Toolbox\ToolboxProvider.cs" />
+    <Compile Include="Project\UndoRedo\UndoEngine.cs" />
+    <Compile Include="Project\Xml\MycroWriter.cs" />
+    <Compile Include="Project\Xml\ReportDefinitionParser.cs" />
+    <Compile Include="Project\Xml\ReportDesignerWriter.cs" />
+    <Compile Include="Project\Xml\XmlHelper.cs" />
+    <EmbeddedResource Include="Project\Dialogs\ExpressionEditor.resx">
+      <DependentUpon>ExpressionEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Project\ReportItems\AbstractItem.resx">
+      <DependentUpon>AbstractItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Project\ReportWizard\WizardPanels\LayoutPanelControl.resx">
+      <DependentUpon>LayoutPanelControl.Designer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Project\ReportWizard\WizardPanels\PullModelPanel.resx">
+      <DependentUpon>PullModelPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Project\ReportWizard\WizardPanels\PushModelPanel.resx" />
+    <EmbeddedResource Include="Project\ReportWizard\WizardPanels\ResultPanel.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Project\Configuration" />
+    <Folder Include="Project\Commands" />
+    <Folder Include="Project\Designer" />
+    <Folder Include="Project\Designer\RootDesigner" />
+    <Folder Include="Project\DesignerBinding" />
+    <Folder Include="Project\Dialogs" />
+    <Folder Include="Project\Globals" />
+    <Folder Include="Project\SharpQuery" />
+    <Folder Include="Project\ReportExplorer" />
+    <Folder Include="Project\ReportWizard" />
+    <Folder Include="Project\ReportWizard\Generators" />
+    <Folder Include="Project\ReportWizard\ReportLayout" />
+    <Folder Include="Project\ReportWizard\Templates" />
+    <Folder Include="Project\ReportWizard\WizardPanels" />
+    <Folder Include="Project\SecondaryViews" />
+    <Folder Include="Project\ReportManagers" />
+    <Folder Include="Project\SharpQuery\Connection" />
+    <Folder Include="Project\SharpQuery\Exceptions" />
+    <Folder Include="Project\SharpQuery\GUI" />
+    <Folder Include="Project\SharpQuery\GUI\SharpQueryTree" />
+    <Folder Include="Project\Xml" />
+    <Folder Include="Project\UndoRedo" />
+    <Folder Include="Project\ReportItems" />
+    <Folder Include="Project\Toolbox" />
+    <Folder Include="Project\Services" />
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj">
+      <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
+      <Name>ICSharpCode.Reports.Core</Name>
+    </ProjectReference>
+    <COMReference Include="ADODB">
+      <Guid>{2A75196C-D9EB-4129-B803-931327F72D5C}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="MSDASC">
+      <Guid>{2206CEB0-19C1-11D1-89E0-00C04FD7A829}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

@@ -1,0 +1,5 @@
+﻿This folder is for implementation of NLALR (Non-canonical LALR) parsing algorithm. 
+It is more powerful than LALR in automatically resolving conflicts and grammar ambiguities. 
+NLALR is in fact a family of algorithms with different implementation flavors.
+
+Expect more to come soon

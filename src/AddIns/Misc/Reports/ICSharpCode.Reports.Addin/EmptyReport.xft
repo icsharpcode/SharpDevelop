@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<Template author="Peter Forstmeier" version="2.1">
+	
+	<Config
+		  name        = "${res:SharpReport.AddinName}"
+		  icon        = "Icons.32x32.TextFileIcon"
+		  category    = "${res:Templates.File.Categories.Misc}"
+		  defaultname = "Report${Number}.srd"
+		  language    = "SharpDevelopReports"/>
+	 
+	<Description>${res:Templates.SharpReport.NewReport}</Description>
+
+	<Files>
+		<File name="${FullName}" language="SharpDevelopReports"/>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

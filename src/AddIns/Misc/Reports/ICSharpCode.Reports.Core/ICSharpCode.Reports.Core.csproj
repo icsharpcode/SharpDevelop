@@ -1,0 +1,389 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.Reports.Core</RootNamespace>
+    <AssemblyName>ICSharpCode.Reports.Core</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</ProjectGuid>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>123731968</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="itextsharp">
+      <HintPath>..\Libraries\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.ServiceProcess, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Project\Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Project\BaseClasses\CurrentItem.cs" />
+    <Compile Include="Project\BaseClasses\Printing\Layouter.cs" />
+    <Compile Include="Project\BaseClasses\Printing\MeasurementService.cs" />
+    <Compile Include="Project\BaseClasses\Printing\PrintHelper.cs" />
+    <Compile Include="Project\BaseClasses\Printing\StandardFormatter.cs" />
+    <Compile Include="Project\BaseClasses\Printing\TextDrawer.cs" />
+    <Compile Include="Project\BaseClasses\SinglePage.cs" />
+    <Compile Include="Project\BaseClasses\SectionBounds.cs" />
+    <Compile Include="Project\BaseClasses\SortColumn.cs" />
+    <Compile Include="Project\BaseItems\BaseTextItem.cs" />
+    <Compile Include="Project\BaseItems\BaseGraphicItem.cs" />
+    <Compile Include="Project\BaseItems\BaseReportItem.cs" />
+    <Compile Include="Project\BaseItems\BaseSection.cs" />
+    <Compile Include="Project\BaseItems\BaseDataItem.cs" />
+    <Compile Include="Project\BaseItems\ErrorItem.cs" />
+    <Compile Include="Project\BaseItems\Graphics\BaseLineItem.cs" />
+    <Compile Include="Project\DataManager\Comparer\BaseComparer.cs" />
+    <Compile Include="Project\DataManager\Comparer\GroupSeparator.cs" />
+    <Compile Include="Project\DataManager\Comparer\SortComparer.cs" />
+    <Compile Include="Project\DataManager\ListStrategy\TableStrategy.cs" />
+    <Compile Include="Project\DataManager\SqlDataAccess.cs" />
+    <Compile Include="Project\DataManager\ListHandling\IndexList.cs" />
+    <Compile Include="Project\DataManager\ListHandling\ExtendedPropertyDescriptor.cs" />
+    <Compile Include="Project\DataManager\ListHandling\ExtendedTypeDescriptor.cs" />
+    <Compile Include="Project\DataManager\ListHandling\PropertyTypeHash.cs" />
+    <Compile Include="Project\DataManager\ListStrategy\BaseListStrategy.cs" />
+    <Compile Include="Project\DataManager\ListStrategy\CollectionStrategy.cs" />
+    <Compile Include="Project\DataManager\DataManager.cs" />
+    <Compile Include="Project\DataSource\ReportDataSource.cs" />
+    <Compile Include="Project\Dialogs\EditorDialog.cs">
+    </Compile>
+    <Compile Include="Project\Dialogs\EditorDialog.Designer.cs" />
+    <Compile Include="Project\Dialogs\ExtendedCollectionEditor.cs" />
+    <Compile Include="Project\Dialogs\ParameterDialog.cs" />
+    <Compile Include="Project\Dialogs\PreviewControl.cs">
+    </Compile>
+    <Compile Include="Project\Dialogs\DefaultTextEditor.cs" />
+    <Compile Include="Project\Events\GroupChangedEventArgs.cs" />
+    <Compile Include="Project\Events\NewPageEventArgs.cs" />
+    <Compile Include="Project\Events\ReportPageEventArgs.cs" />
+    <Compile Include="Project\Events\ReportParametersEventArgs.cs" />
+    <Compile Include="Project\Exceptions\FieldNotFoundException.cs" />
+    <Compile Include="Project\Exceptions\GroupLevelException.cs" />
+    <Compile Include="Project\Exceptions\IllegalFileFormat.cs" />
+    <Compile Include="Project\Exceptions\InvalidReportModelException.cs" />
+    <Compile Include="Project\Exceptions\MissingDataSourceException.cs" />
+    <Compile Include="Project\Exceptions\MissingParentException.cs" />
+    <Compile Include="Project\Exceptions\ReportException.cs" />
+    <Compile Include="Project\Exceptions\UnknownFunctionException.cs" />
+    <Compile Include="Project\Exceptions\UnknownItemException.cs" />
+    <Compile Include="Project\Exceptions\WrongColumnException.cs" />
+    <Compile Include="Project\Exceptions\WrongSectionException.cs" />
+    <Compile Include="Project\Exporter\BasePager.cs" />
+    <Compile Include="Project\Exporter\Converters\BaseConverter.cs" />
+    <Compile Include="Project\Exporter\Converters\ConverterFactory.cs" />
+    <Compile Include="Project\Exporter\Converters\RowConverter.cs" />
+    <Compile Include="Project\Exporter\Converters\TableConverter.cs" />
+    <Compile Include="Project\Exporter\Decorators\IBaseStyleDecorator.cs" />
+    <Compile Include="Project\Exporter\Decorators\ILineDecorator.cs" />
+    <Compile Include="Project\Exporter\Decorators\Linedecorator.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\IExportContainer.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\HTMLRenderer.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\PdfRenderer.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\XPSRenderer.cs" />
+    <Compile Include="Project\Exporter\FormPageBuilder.cs" />
+    <Compile Include="Project\Expressions\ExpressionEvaluatorFacade.cs" />
+    <Compile Include="Project\Expressions\IExpressionEvaluatorFacade.cs" />
+    <Compile Include="Project\Expressions\ReportingLanguage\ReportingLanguage.cs" />
+    <Compile Include="Project\Expressions\ReportingLanguage\ReportingLanguageCompiler.cs" />
+    <Compile Include="Project\Expressions\ReportingLanguage\SimpleExpressionEvaluator.cs" />
+    <Compile Include="Project\Expressions\ReportingLanguage\SimpleExpressionLanguageCompiler.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\DefaultExpressionNodeFactory.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\ExpressionNode.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\AggregateFunction.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\Average.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\Count.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\Filter.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\ItemAtIndex.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\MatchesAll.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\MatchesAny.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\Max.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\Min.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions\Sum.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\DateAdd.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Function.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\FunctionBase.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\IfThen.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Now.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Add.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\And.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\BinaryOperator.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\BooleanOperator.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Divide.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Dot.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Equals.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\GreaterThan.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\GreaterThanEqual.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\LessThan.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\LessThanEqual.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Modulus.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Multiply.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Neg.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Not.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\NotEquals.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\NotRegexMatches.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\NumericOperator.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Or.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Power.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\RegexMatches.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\Subtract.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\UnaryOperator.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\UserId.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\UserLanguage.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Today.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ToString.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\UnknownFunction.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\IExpressionCompiler.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\IExpressionNodeFactory.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\IExpressionNodeWithArguments.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Literal.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\NodeTypeAttribute.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\QualifiedName.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\TokensAttribute.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Variable.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation\ChildExpressionContext.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation\ExpressionContext.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation\FunctionResolutionService.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation\IExpressionContext.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation\IFunctionResolutionService.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation\IQualifiedNameResolutionService.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation\IVariableResolutionService.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation\QualifiedNameResolutionService.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation\VariableResolutionService.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Expression.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\ExpressionEvaluator.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\IExpression.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\IExpressionEvaluator.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Parser\ExpressionCompiler.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Parser\Parser.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Parser\ParseTree.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Parser\Scanner.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\CollectionExtensions.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\FieldMemberAccessor.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\IMemberAccessor.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\PropertyMemberAccessor.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\PropertyPath.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\ReflectionExtensions.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\TypeNormalizer.cs" />
+    <Compile Include="Project\Factories\ConnectionObjectFactory.cs" />
+    <Compile Include="Project\Factories\DataManagerFacrory.cs" />
+    <Compile Include="Project\Factories\DisplayNameAttribute.cs" />
+    <Compile Include="Project\Factories\RendererFactory.cs" />
+    <Compile Include="Project\Factories\SectionFactory.cs" />
+    <Compile Include="Project\Globals\CreateGraphicObject.cs" />
+    <Compile Include="Project\Globals\FilePathConverter.cs" />
+    <Compile Include="Project\Globals\FileUtility.cs" />
+    <Compile Include="Project\Globals\FontCache.cs" />
+    <Compile Include="Project\Globals\GlobalEnums.cs" />
+    <Compile Include="Project\Globals\GlobalLists.cs" />
+    <Compile Include="Project\Globals\GlobalValues.cs" />
+    <Compile Include="Project\Globals\GraphicsUnit.cs" />
+    <Compile Include="Project\Globals\PdfHelper.cs" />
+    <Compile Include="Project\Globals\ReportSectionNames.cs" />
+    <Compile Include="Project\Globals\UnitConverter.cs" />
+    <Compile Include="Project\Interfaces\IDataAccessStrategy.cs" />
+    <Compile Include="Project\Interfaces\IDataViewStrategy.cs" />
+    <Compile Include="Project\Interfaces\IExportItemsConverter.cs" />
+    <Compile Include="Project\Interfaces\IHierarchyInterfaces.cs" />
+    <Compile Include="Project\Interfaces\IItemConverter.cs" />
+    <Compile Include="Project\Interfaces\ILayouter.cs" />
+    <Compile Include="Project\Interfaces\IReportItem.cs" />
+    <Compile Include="Project\Interfaces\IMeasurementService.cs" />
+    <Compile Include="Project\Interfaces\IReportModel.cs" />
+    <Compile Include="Project\Interfaces\ISinglePage.cs" />
+    <Compile Include="Project\IReportCreator.cs" />
+    <Compile Include="Project\Printing\ExtendedPrintController.cs" />
+    <Compile Include="Project\Printing\Graphics\BaseLine.cs" />
+    <Compile Include="Project\Printing\Graphics\BaseShape.cs" />
+    <Compile Include="Project\Printing\Graphics\Border.cs" />
+    <Compile Include="Project\Printing\Graphics\EllipseShape.cs" />
+    <Compile Include="Project\Printing\Graphics\FillPatterns.cs" />
+    <Compile Include="Project\Printing\Graphics\LineShape.cs" />
+    <Compile Include="Project\Printing\Graphics\RectangleShape.cs" />
+    <Compile Include="Project\Printing\AbstractRenderer.cs" />
+    <Compile Include="Project\Printing\RenderDataReport.cs" />
+    <Compile Include="Project\Printing\RenderFormSheetReport.cs" />
+    <Compile Include="Project\Printing\ReportDocument.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportEngine.cs" />
+    <Compile Include="Project\ReportViewer\NumericToolStripTextBox.cs">
+    </Compile>
+    <Compile Include="Project\ConnectionObject.cs" />
+    <Compile Include="Project\ReportModel.cs" />
+    <Compile Include="Project\ReportParameters.cs" />
+    <Compile Include="Project\ReportSettings.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\BaseItems\Graphics\BaseRectangleItem.cs" />
+    <Compile Include="Project\BaseItems\Graphics\BaseImageItem.cs" />
+    <Compile Include="Project\BaseItems\Graphics\BaseCircleItem.cs" />
+    <Compile Include="Project\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Project\BaseClasses\AbstractColumn.cs" />
+    <Compile Include="Project\BaseClasses\BasicParameter.cs" />
+    <Compile Include="Project\BaseClasses\GroupColumn.cs" />
+    <Compile Include="Project\BaseClasses\SqlParameter.cs" />
+    <Compile Include="Project\Collections\Collections.cs" />
+    <Compile Include="Project\DataManager\SqlQueryChecker.cs" />
+    <Compile Include="Project\Exceptions\MissingModelException.cs" />
+    <Compile Include="Project\BaseItems\BaseRowItem.cs" />
+    <Compile Include="Project\Interfaces\IContainerItem.cs" />
+    <Compile Include="Project\Exceptions\MissingSectionException.cs" />
+    <Compile Include="Project\Printing\AbstractDataRenderer.cs" />
+    <Compile Include="Project\DataManager\DataNavigator.cs" />
+    <Compile Include="Project\Interfaces\IDataNavigator.cs" />
+    <Compile Include="Project\Events\PrintEventArgs.cs" />
+    <Compile Include="Project\BaseItems\BaseTableItem.cs" />
+    <Compile Include="Project\Exceptions\IllegalQueryException.cs" />
+    <Compile Include="Project\Events\SectionRenderEventArgs.cs" />
+    <Compile Include="Project\BaseClasses\DataTypeHelper.cs" />
+    <Compile Include="Project\Exporter\ExporterPage.cs" />
+    <Compile Include="Project\Exporter\DataPageBuilder.cs" />
+    <Compile Include="Project\Exporter\ExportItemsConverter.cs" />
+    <Compile Include="Project\Exceptions\MissingDataManagerException.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\BaseExportColumn.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\ExportContainer.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\ExportText.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\IExportColumnBuilder .cs" />
+    <Compile Include="Project\ReportViewer\PageNavigationEventArgs.cs" />
+    <Compile Include="Project\ReportViewer\ReportViewer.cs">
+    </Compile>
+    <Compile Include="Project\ReportViewer\ReportViewer.Designer.cs">
+      <DependentUpon>Project\ReportViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Project\Exporter\ExportColumns\ExportGraphic.cs" />
+    <Compile Include="Project\Exporter\Decorators\TextStyleDecorator.cs" />
+    <Compile Include="Project\Exporter\Decorators\GraphicStyleDecorator.cs" />
+    <Compile Include="Project\Exporter\Decorators\BaseStyleDecorator.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\ExportImage.cs" />
+    <Compile Include="Project\ReportViewer\IReportViewerMessages.cs" />
+    <Compile Include="Project\Exporter\PageEventArgs.cs" />
+    <Compile Include="Project\Events\EventHelper.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\BaseExportRenderer.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\PreviewRenderer.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\PrintRenderer.cs" />
+    <Compile Include="Project\Xml\BaseItemLoader.cs" />
+    <Compile Include="Project\Xml\MycroParser.cs" />
+    <Compile Include="Project\Xml\MycroWriter.cs" />
+    <EmbeddedResource Include="Project\Dialogs\EditorDialog.resx">
+      <DependentUpon>EditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Project\Dialogs\ParameterDialog.resx">
+      <DependentUpon>ParameterDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Project\ReportViewer\ReportViewer.resx">
+      <DependentUpon>ReportViewer.Designer.cs</DependentUpon>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Project\Resources\CoreResource.resx" />
+    <None Include="Project\Expressions\SimpleExpressionEvaluator\Parser\SimpleExpressionLanguage.tpg" />
+    <None Include="Project\ReportViewer\Resources\Icons\Back.bmp" />
+    <None Include="Project\ReportViewer\Resources\Icons\First.bmp" />
+    <None Include="Project\ReportViewer\Resources\Icons\Last.bmp" />
+    <None Include="Project\ReportViewer\Resources\Icons\Next.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Project\BaseClasses\Printing" />
+    <Folder Include="Project\BaseItems" />
+    <Folder Include="Project\BaseItems\Graphics" />
+    <Folder Include="Project\Collections" />
+    <Folder Include="Project\DataManager" />
+    <Folder Include="Project\DataManager\Comparer" />
+    <Folder Include="Project\DataManager\ListHandling" />
+    <Folder Include="Project\DataManager\ListStrategy" />
+    <Folder Include="Project\Dialogs" />
+    <Folder Include="Project\Events" />
+    <Folder Include="Project\Exceptions" />
+    <Folder Include="Project\Exporter\Converters" />
+    <Folder Include="Project\Expressions\SimpleExpressionEvaluator" />
+    <Folder Include="Project\Expressions\ReportingLanguage" />
+    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation" />
+    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions" />
+    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions" />
+    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators" />
+    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService" />
+    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation" />
+    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Parser" />
+    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Utilities" />
+    <Folder Include="Project\Factories" />
+    <Folder Include="Project\Globals" />
+    <Folder Include="Project\Interfaces" />
+    <Folder Include="Project\DataSource" />
+    <Folder Include="Project\Expressions" />
+    <Folder Include="Project\ReportViewer\Resources\Icons" />
+    <Folder Include="Project\Resources" />
+    <Folder Include="Project\Printing" />
+    <Folder Include="Project\Printing\Graphics" />
+    <Folder Include="Project\Printing\Text" />
+    <Folder Include="Project\Xml" />
+    <Folder Include="Project\Configuration" />
+    <Folder Include="Project\BaseClasses" />
+    <Folder Include="Project\Exporter" />
+    <Folder Include="Project\Exporter\ExportColumns" />
+    <Folder Include="Project\ReportViewer" />
+    <Folder Include="Project\ReportViewer\Resources" />
+    <ProjectReference Include="..\Irony\Irony.csproj">
+      <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
+      <Name>Irony</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>
