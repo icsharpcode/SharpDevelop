@@ -128,30 +128,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Profiler", "Profiler", "{C4
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.AddIn", "src\AddIns\Misc\Profiler\Frontend\AddIn\Profiler.AddIn.csproj", "{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.AddIn", "src\AddIns\Analysis\Profiler\Frontend\AddIn\Profiler.AddIn.csproj", "{D294A12D-4B38-4F25-9AA6-3D4A6CE26E7B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Controls", "src\AddIns\Misc\Profiler\Frontend\Controls\Profiler.Controls.csproj", "{BDA49550-5ED1-4C6B-B648-657B2CACD8E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Controls", "src\AddIns\Analysis\Profiler\Frontend\Controls\Profiler.Controls.csproj", "{BDA49550-5ED1-4C6B-B648-657B2CACD8E0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Controller", "src\AddIns\Misc\Profiler\Controller\Profiler.Controller.csproj", "{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Controller", "src\AddIns\Analysis\Profiler\Controller\Profiler.Controller.csproj", "{72FFB35A-C9E2-4A31-B4FA-E3E3E28DED5F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.X64Converter", "src\AddIns\Misc\Profiler\X64Converter\Profiler.X64Converter.csproj", "{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.X64Converter", "src\AddIns\Analysis\Profiler\X64Converter\Profiler.X64Converter.csproj", "{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Tests", "src\AddIns\Misc\Profiler\Tests\Profiler.Tests\Profiler.Tests.csproj", "{068F9531-5D29-49E0-980E-59982A3A0469}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Tests", "src\AddIns\Analysis\Profiler\Tests\Profiler.Tests\Profiler.Tests.csproj", "{068F9531-5D29-49E0-980E-59982A3A0469}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
@@ -534,32 +534,32 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{F3
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage.Tests", "src\AddIns\Misc\CodeCoverage\Test\CodeCoverage.Tests.csproj", "{A5C0E8F8-9D04-46ED-91D6-1DEF1575313B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage.Tests", "src\AddIns\Analysis\CodeCoverage\Test\CodeCoverage.Tests.csproj", "{A5C0E8F8-9D04-46ED-91D6-1DEF1575313B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "src\AddIns\Misc\UnitTesting\UnitTesting.csproj", "{1F261725-6318-4434-A1B1-6C70CE4CD324}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "src\AddIns\Analysis\UnitTesting\UnitTesting.csproj", "{1F261725-6318-4434-A1B1-6C70CE4CD324}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeAnalysis", "src\AddIns\Misc\CodeAnalysis\CodeAnalysis.csproj", "{3EAA45A9-735C-4AC7-A799-947B93EA449D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeAnalysis", "src\AddIns\Analysis\CodeAnalysis\CodeAnalysis.csproj", "{3EAA45A9-735C-4AC7-A799-947B93EA449D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage", "src\AddIns\Misc\CodeCoverage\Project\CodeCoverage.csproj", "{08CE9972-283B-44F4-82FA-966F7DFA6B7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCoverage", "src\AddIns\Analysis\CodeCoverage\Project\CodeCoverage.csproj", "{08CE9972-283B-44F4-82FA-966F7DFA6B7A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceAnalysis", "src\AddIns\Misc\SourceAnalysis\SourceAnalysis.csproj", "{CE498514-D12D-4B6E-AE0E-FEC29BD43748}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceAnalysis", "src\AddIns\Analysis\SourceAnalysis\SourceAnalysis.csproj", "{CE498514-D12D-4B6E-AE0E-FEC29BD43748}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting.Tests", "src\AddIns\Misc\UnitTesting\Test\UnitTesting.Tests.csproj", "{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting.Tests", "src\AddIns\Analysis\UnitTesting\Test\UnitTesting.Tests.csproj", "{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
