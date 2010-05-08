@@ -153,6 +153,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.X64Converter", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler.Tests", "src\AddIns\Analysis\Profiler\Tests\Profiler.Tests\Profiler.Tests.csproj", "{068F9531-5D29-49E0-980E-59982A3A0469}"
 	ProjectSection(ProjectDependencies) = postProject
+		{FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6} = {FE88FE17-D9FB-4FCC-9A35-6BFFB6B26CC6}
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
