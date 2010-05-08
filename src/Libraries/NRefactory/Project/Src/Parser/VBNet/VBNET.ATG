@@ -890,7 +890,16 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	Identifier			(. name = t.val; .)
 	TypeParameterList<templates>
 	[ "("	[ FormalParameterList<p> ] ")" ]
-	["As"  { AttributeSection<out returnTypeAttributeSection> } TypeName<out type> ]
+	["As"  {
+				AttributeSection<out returnTypeAttributeSection>
+				(.
+					if (returnTypeAttributeSection != null) {
+						returnTypeAttributeSection.AttributeTarget = "return";
+						attributes.Add(returnTypeAttributeSection);
+					}
+				.)
+			}
+	TypeName<out type> ]
 	(.
 		if(type == null) {
 			type = new TypeReference("System.Object", true);
@@ -918,10 +927,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					Templates     = templates,
 					InterfaceImplementations = implementsClause
 				};
-				if (returnTypeAttributeSection != null) {
-					returnTypeAttributeSection.AttributeTarget = "return";
-					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
-				}
+				
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 		|
@@ -936,10 +942,6 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					HandlesClause = handlesClause,
 					InterfaceImplementations = implementsClause
 				};
-				if (returnTypeAttributeSection != null) {
-					returnTypeAttributeSection.AttributeTarget = "return";
-					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
-				}
 				
 				compilationUnit.AddChild(methodDeclaration);
 			
@@ -1064,20 +1066,45 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		m.Check(Modifiers.VBProperties);
 		Location startPos = t.Location;
 		List<InterfaceImplementation> implementsClause = null;
+		AttributeSection returnTypeAttributeSection = null;
+		Expression initializer = null;
 	.)
 	Identifier (. string propertyName = t.val; .)
 	[ "("	[ FormalParameterList<p> ] ")" ]
-	[ "As" TypeName<out type> ]
+	[
+		"As" {
+				AttributeSection<out returnTypeAttributeSection>
+				(.
+					if (returnTypeAttributeSection != null) {
+						returnTypeAttributeSection.AttributeTarget = "return";
+						attributes.Add(returnTypeAttributeSection);
+					}
+				.)
+		}
+		(
+			IF (IsNewExpression()) ObjectCreateExpression<out initializer>
+			(.
+				if (initializer is ObjectCreateExpression) {
+					type = ((ObjectCreateExpression)initializer).CreateType.Clone();
+				} else {
+					type = ((ArrayCreateExpression)initializer).CreateType.Clone();
+				}
+			.)
+		|
+			TypeName<out type>
+		)
+	]
 	(.
 		if(type == null) {
 			type = new TypeReference("System.Object", true);
 		}
 	.)
+	[ "=" VariableInitializer<out initializer> ]
 	[ ImplementsClause<out implementsClause> ]
 	EndOfStmt
 	(
 	/* abstract properties without a body */
-	IF(IsMustOverride(m))
+	IF(IsMustOverride(m) || IsAutomaticProperty())
 		(.
 			PropertyDeclaration pDecl = new PropertyDeclaration(propertyName, type, m.Modifier, attributes);
 			pDecl.StartLocation = m.GetDeclarationLocation(startPos);
@@ -1085,6 +1112,8 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			pDecl.TypeReference = type;
 			pDecl.InterfaceImplementations = implementsClause;
 			pDecl.Parameters = p;
+			if (initializer != null)
+				pDecl.Initializer = initializer;
 			compilationUnit.AddChild(pDecl);
 		.)
 	|
@@ -1105,7 +1134,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		(.
 			pDecl.GetRegion = getRegion;
 			pDecl.SetRegion = setRegion;
-			pDecl.BodyEnd = t.EndLocation;
+			pDecl.BodyEnd = t.Location; // t = EndOfStmt; not "Property"
 			compilationUnit.AddChild(pDecl);
 		.)
 	)
@@ -1181,7 +1210,6 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		OverloadableOperatorType operatorType;
 		AttributeSection section;
 		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
-		List<AttributeSection> returnTypeAttributes = new List<AttributeSection>();
 	.)
 	OverloadableOperator<out operatorType>
 	"(" [ "ByVal" ] Identifier (. operandName = t.val; .)
@@ -1196,7 +1224,12 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		}
 	")"
 	(. Location endPos = t.EndLocation; .)
-	[ "As" { AttributeSection<out section> (. returnTypeAttributes.Add(section); .) } TypeName<out returnType> (. endPos = t.EndLocation; .) ]
+	[ "As" { AttributeSection<out section>
+			(. if (section != null) {
+					section.AttributeTarget = "return";
+					attributes.Add(section);
+		  } .)
+			} TypeName<out returnType> (. endPos = t.EndLocation; .) ]
 	EOL
 	Block<out stmt> "End" "Operator" EndOfStmt
 	(.
@@ -1207,7 +1240,6 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			TypeReference = returnType,
 			OverloadableOperator = operatorType,
 			ConversionType = opConversionType,
-			ReturnTypeAttributes = returnTypeAttributes,
 			Body = (BlockStatement)stmt,
 			StartLocation = m.GetDeclarationLocation(startPos),
 			EndLocation = endPos

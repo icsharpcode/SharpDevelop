@@ -276,7 +276,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					PrintFormattedComma();
 				}
 				for (int i = 0; i < attribute.NamedArguments.Count; ++i) {
-					TrackVisit((INode)attribute.NamedArguments[i], data);
+					NamedArgumentExpression nae = attribute.NamedArguments[i];
+					outputFormatter.PrintIdentifier(nae.Name);
+					if (prettyPrintOptions.AroundAssignmentParentheses)
+						outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.Assign);
+					if (prettyPrintOptions.AroundAssignmentParentheses)
+						outputFormatter.Space();
+					nae.Expression.AcceptVisitor(this, data);
 					if (i + 1 < attribute.NamedArguments.Count) {
 						PrintFormattedComma();
 					}
@@ -292,10 +299,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(namedArgumentExpression.Name);
-			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
-				outputFormatter.Space();
-			}
-			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.PrintToken(Tokens.Colon);
 			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
@@ -2878,7 +2882,24 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.NewLine ();
 				outputFormatter.Indent ();
 			}
-			this.AppendCommaSeparatedList (arrayInitializerExpression.CreateExpressions, true);
+			var createExprs = arrayInitializerExpression.CreateExpressions;
+			for (int i = 0; i < createExprs.Count; i++) {
+				if (i > 0) {
+					PrintFormattedCommaAndNewLine();
+				}
+				NamedArgumentExpression nae = createExprs[i] as NamedArgumentExpression;
+				if (nae != null) {
+					outputFormatter.PrintIdentifier(nae.Name);
+					if (prettyPrintOptions.AroundAssignmentParentheses)
+						outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.Assign);
+					if (prettyPrintOptions.AroundAssignmentParentheses)
+						outputFormatter.Space();
+					nae.Expression.AcceptVisitor(this, data);
+				} else {
+					createExprs[i].AcceptVisitor(this, data);
+				}
+			}
 			if (arrayInitializerExpression.CreateExpressions.Count == 1) {
 				outputFormatter.Space ();
 			} else {

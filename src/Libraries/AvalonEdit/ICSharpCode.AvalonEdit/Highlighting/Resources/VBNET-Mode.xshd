@@ -201,6 +201,16 @@
 			<Word>Next</Word>
 			<Word>Select</Word>
 			<Word>Case</Word>
+			<Word>From</Word>
+			<Word>Aggregate</Word>
+			<Word>Distinct</Word>
+			<Word>Group</Word>
+			<Word>Where</Word>
+			<Word>Skip</Word>
+			<Word>Join</Word>
+			<Word>Into</Word>
+			<Word>Equals</Word>
+			<Word>Take</Word>
 		</Keywords>
 		<Keywords color="ContextKeywords">
 			<Word>Ansi</Word>

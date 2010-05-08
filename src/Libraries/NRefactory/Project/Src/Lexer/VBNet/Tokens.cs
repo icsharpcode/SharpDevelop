@@ -246,6 +246,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public static BitArray Null = NewSet(Nothing);
 		public static BitArray BlockSucc = NewSet(Case, Catch, Else, ElseIf, End, Finally, Loop, Next);
 		public static BitArray IdentifierTokens = NewSet(Text, Binary, Compare, Assembly, Ansi, Auto, Preserve, Unicode, Until, Off, Explicit, Infer, From, Join, Equals, Distinct, Where, Take, Skip, Order, By, Ascending, Descending, Group, Into, Aggregate);
+		public static BitArray TypeLevel = NewSet(Public, Friend, Class, Interface, Structure, Enum, Delegate, Shared, Partial, Protected, Private, Public, Const, Event, Explicit, New, Operator);
+		public static BitArray GlobalLevel = NewSet(Namespace, Imports, Public, Friend, Class, Interface, Structure, Enum, Delegate, Partial);
 
 		static string[] tokenList = new string[] {
 			// ----- terminal classes -----
