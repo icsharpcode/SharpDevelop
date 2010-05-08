@@ -344,6 +344,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (ReplaceWithInvocation(identifierExpression, rr)) {}
 			else if (FullyQualifyModuleMemberReference(identifierExpression, rr)) {}
+			else if (FullyQualifyNamespaceReference(identifierExpression, rr)) {}
 			
 			return null;
 		}
@@ -428,6 +429,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return true;
 		}
 		
+		bool FullyQualifyNamespaceReference(IdentifierExpression ident, ResolveResult rr)
+		{
+			NamespaceResolveResult nrr = rr as NamespaceResolveResult;
+			if (nrr == null)
+				return false;
+			if (nrr.Name.IndexOf('.') >= 0) {
+				// simple identifier points to complex namespace
+				ReplaceCurrentNode(MakeFieldReferenceExpression(nrr.Name));
+			} else {
+				ident.Identifier = nrr.Name;
+			}
+			return true;
+		}
+		
 		TypeReference ConvertType(IReturnType type)
 		{
 			return Refactoring.CodeGenerator.ConvertType(type, CreateContext());
@@ -482,7 +497,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					MemberReferenceExpression targetObjectFre = targetObject as MemberReferenceExpression;
 					if (p.IsIndexer && targetObjectFre != null) {
 						MemberResolveResult rr2 = Resolve(targetObjectFre) as MemberResolveResult;
-						if (rr2 != null && rr2.ResolvedMember == rr.ResolvedMember) {
+						if (rr2 != null && rr2.ResolvedMember.FullyQualifiedName == rr.ResolvedMember.FullyQualifiedName) {
 							// remove ".Items"
 							targetObject = targetObjectFre.TargetObject;
 						}
@@ -588,33 +603,50 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			// default(TypeReference).
 			// MyType m = null; looks nicer than MyType m = default(MyType))
 			// so we replace default(ReferenceType) with null
-			if (type != null && (type.IsDefaultReturnType || type.IsConstructedReturnType)) {
-				IClass c = type.GetUnderlyingClass();
-				if (c != null && (c.ClassType == ClassType.Class || c.ClassType == ClassType.Interface || c.ClassType == ClassType.Delegate)) {
-					ReplaceCurrentNode(new PrimitiveExpression(null, "null"));
-				}
+			if (type != null && type.IsReferenceType == true) {
+				ReplaceCurrentNode(new PrimitiveExpression(null, "null"));
 			}
 			return null;
 		}
-
+		
 		public override object VisitVariableDeclaration(VariableDeclaration variableDeclaration, object data)
 		{
 			FixTypeReferenceCasing(variableDeclaration.TypeReference, variableDeclaration.StartLocation);
 			return base.VisitVariableDeclaration(variableDeclaration, data);
 		}
-
+		
+		public override object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		{
+			FixTypeReferenceCasing(parameterDeclarationExpression.TypeReference, parameterDeclarationExpression.StartLocation);
+			return base.VisitParameterDeclarationExpression(parameterDeclarationExpression, data);
+		}
+		
+		public override object VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
+		{
+			FixTypeReferenceCasing(objectCreateExpression.CreateType, objectCreateExpression.StartLocation);
+			return base.VisitObjectCreateExpression(objectCreateExpression, data);
+		}
+		
 		IReturnType FixTypeReferenceCasing(TypeReference tr, Location loc)
 		{
 			if (resolver.CompilationUnit == null) return null;
 			if (tr.IsNull) return null;
-			IReturnType rt = resolver.SearchType(tr.Type, tr.GenericTypes.Count, loc).Result;
+			var searchTypeResult = resolver.SearchType(tr.Type, tr.GenericTypes.Count, loc);
+			IReturnType rt = searchTypeResult.Result;
 			if (rt != null) {
 				IClass c = rt.GetUnderlyingClass();
 				if (c != null) {
-					if (string.Equals(tr.Type, c.Name, StringComparison.InvariantCultureIgnoreCase)) {
+					if (string.Equals(tr.Type, c.Name, StringComparison.OrdinalIgnoreCase)) {
 						tr.Type = c.Name;
+					} else if (string.Equals(tr.Type, c.FullyQualifiedName, StringComparison.OrdinalIgnoreCase)) {
+						tr.Type = c.FullyQualifiedName;
+					} else if (searchTypeResult.UsedUsing != null && !searchTypeResult.UsedUsing.HasAliases) {
+						tr.Type = c.FullyQualifiedName;
 					}
 				}
+			}
+			foreach (TypeReference arg in tr.GenericTypes) {
+				FixTypeReferenceCasing(arg, loc);
 			}
 			return rt;
 		}
@@ -639,6 +671,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			base.VisitForeachStatement(foreachStatement, data);
+			
+			FixTypeReferenceCasing(foreachStatement.TypeReference, foreachStatement.StartLocation);
 			
 			if (resolver.CompilationUnit == null)
 				return null;

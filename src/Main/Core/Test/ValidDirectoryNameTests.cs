@@ -16,55 +16,55 @@ namespace ICSharpCode.Core.Tests
 		[Test]
 		public void ValidDirectoryNameProjectTest()
 		{
-			Assert.IsTrue(FileUtility.IsValidDirectoryName("projecttest"));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName("projecttest"));
 		}
 		
 		[Test]
 		public void ValidDirectoryNameWithPeriod()
 		{
-			Assert.IsTrue(FileUtility.IsValidDirectoryName("project.test"));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName("project.test"));
 		}
 		
 		[Test]
 		public void ValidDirectoryNameWithTwoPeriodAtStart()
 		{
-			Assert.IsTrue(FileUtility.IsValidDirectoryName("..projecttest"));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName("..projecttest"));
 		}
 		
 		[Test]
 		public void ValidDirectoryNameCOM()
 		{
-			Assert.IsTrue(FileUtility.IsValidDirectoryName("COM"));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName("COM"));
 		}
 		
 		[Test]
 		public void ValidDirectoryNameCOM10()
 		{
-			Assert.IsTrue(FileUtility.IsValidDirectoryName("COM10"));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName("COM10"));
 		}
 		
 		[Test]
 		public void ValidDirectoryNameLPT()
 		{
-			Assert.IsTrue(FileUtility.IsValidDirectoryName("LPT"));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName("LPT"));
 		}
 		
 		[Test]
 		public void ValidDirectoryNameLPT10()
 		{
-			Assert.IsTrue(FileUtility.IsValidDirectoryName("LPT10"));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName("LPT10"));
 		}
 		
 		[Test]
 		public void ValidEightThreeDirectoryName()
 		{
-			Assert.IsTrue(FileUtility.IsValidDirectoryName("projec~1.est"));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName("projec~1.est"));
 		}
 		
 		[Test]
 		public void SmallestDirectoryNameLength()
 		{
-			Assert.IsTrue(FileUtility.IsValidDirectoryName("a"));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName("a"));
 		}
 		
 		[Test]
@@ -77,7 +77,7 @@ namespace ICSharpCode.Core.Tests
 			{
 				tempString.Append('a');
 			}
-			Assert.IsTrue(FileUtility.IsValidDirectoryName(tempString.ToString()));
+			Assert.IsTrue(FileUtility.IsValidDirectoryEntryName(tempString.ToString()));
 		}
 	}
 }

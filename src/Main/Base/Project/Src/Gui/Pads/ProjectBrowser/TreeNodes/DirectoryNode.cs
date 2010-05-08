@@ -478,10 +478,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (newName == null) {
 				return;
 			}
-			if (!FileService.CheckFileName(newName)) {
-				return;
-			}
-			if (!FileService.CheckDirectoryName(newName)) {
+			if (!FileService.CheckDirectoryEntryName(newName)) {
 				return;
 			}
 			if (String.Compare(Text, newName, true) == 0) {

@@ -46,6 +46,12 @@ namespace WixBinding.Tests.PackageFiles
 			Assert.IsTrue(view.IsNoDifferencesFoundMessageDisplayed);
 		}
 		
+		[Test]
+		public void ContextMenuIsEnabled()
+		{
+			Assert.IsTrue(view.ContextMenuEnabled);
+		}
+
 		protected override string GetWixXml()
 		{
 			return "<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\r\n" +

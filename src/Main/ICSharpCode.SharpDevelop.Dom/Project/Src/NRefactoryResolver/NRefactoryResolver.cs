@@ -685,6 +685,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		                                     List<TypeReference> typeArguments, bool isInvocation,
 		                                     bool allowExtensionMethods, bool? isAccessThoughReferenceOfCurrentClass)
 		{
+			// in VB everything can be used with invocation syntax (because the same syntax also accesses indexers),
+			// do don't use 'isInvocation'.
+			if (language == NR.SupportedLanguage.VBNet)
+				isInvocation = false;
+			
 			List<IList<IMember>> members = MemberLookupHelper.LookupMember(declaringType, memberName, callingClass, languageProperties, isInvocation, isAccessThoughReferenceOfCurrentClass);
 			List<IReturnType> typeArgs = null;
 			if (members != null && typeArguments != null && typeArguments.Count != 0) {

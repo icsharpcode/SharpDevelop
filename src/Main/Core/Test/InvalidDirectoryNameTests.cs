@@ -16,67 +16,67 @@ namespace ICSharpCode.Core.Tests
 		[Test]
 		public void ContainsBackslash()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName(@"project\test"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName(@"project\test"));
 		}
 		
 		[Test]
 		public void ContainsForwardSlash()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName(@"project/test"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName(@"project/test"));
 		}
 		
 		[Test]
 		public void IsPRN()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("PRN"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("PRN"));
 		}
 		
 		[Test]
 		public void IsEmptySpace()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName(" "));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName(" "));
 		}
 		
 		[Test]
 		public void ContainsLessThan() 
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("project<test"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("project<test"));
 		}
 		
 		[Test]
 		public void ContainsGreaterThan()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("project>test"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("project>test"));
 		}
 		
 		[Test]
 		public void ContainsColon()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("project:test"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("project:test"));
 		}
 		
 		[Test]
 		public void ContainsDoubleQuote()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName(@"project""test"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName(@"project""test"));
 		}
 		
 		[Test]
 		public void ContainsPipe()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("project|test"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("project|test"));
 		}
 		
 		[Test]
 		public void ContainsQuestionMark()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("project?test"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("project?test"));
 		}
 		
 		[Test]
 		public void ContainsStar()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("project*test"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("project*test"));
 		}
 		
 		[Test]
@@ -86,152 +86,152 @@ namespace ICSharpCode.Core.Tests
 			{
 				char testChar = (char)i;
 				string testString = string.Format("project{0}test", testChar);
-				Assert.IsFalse(FileUtility.IsValidDirectoryName(testString));
+				Assert.IsFalse(FileUtility.IsValidDirectoryEntryName(testString));
 			}
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCON()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("CON"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("CON"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNamePRN()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("PRN"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("PRN"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameAUX()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("AUX"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("AUX"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameNUL()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("NUL"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("NUL"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCOM1()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("COM1"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("COM1"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCOM2()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("COM2"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("COM2"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCOM3()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("COM3"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("COM3"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCOM4()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("COM4"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("COM4"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCOM5()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("COM5"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("COM5"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCOM6()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("COM6"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("COM6"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCOM7()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("COM7"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("COM7"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCOM8()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("COM8"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("COM8"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameCOM9()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("COM9"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("COM9"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameLPT1()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("LPT1"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("LPT1"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameLPT2()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("LPT2"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("LPT2"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameLPT3()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("LPT3"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("LPT3"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameLPT4()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("LPT4"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("LPT4"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameLPT5()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("LPT5"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("LPT5"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameLPT6()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("LPT6"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("LPT6"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameLPT7()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("LPT7"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("LPT7"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameLPT8()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("LPT8"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("LPT8"));
 		}
 		
 		[Test]
 		public void ReservedDeviceNameLPT9()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("LPT9"));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("LPT9"));
 		}
 		
 		[Test]
 		public void EndWithSpace()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("projecttest "));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("projecttest "));
 		}
 		
 		[Test]
 		public void EndWithPeriod()
 		{
-			Assert.IsFalse(FileUtility.IsValidDirectoryName("projecttest."));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName("projecttest."));
 		}
 
 		/// <summary>
@@ -250,7 +250,7 @@ namespace ICSharpCode.Core.Tests
 				tempString.Append('a');
 			}
 			Assert.IsTrue(tempString.Length == MAX_LENGTH, "Failed to build a test directory string of {0} length.", MAX_LENGTH);
-			Assert.IsFalse(FileUtility.IsValidDirectoryName(tempString.ToString()));
+			Assert.IsFalse(FileUtility.IsValidDirectoryEntryName(tempString.ToString()));
 		}
 	}
 }

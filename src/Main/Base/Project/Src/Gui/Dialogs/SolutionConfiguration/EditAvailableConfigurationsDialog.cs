@@ -182,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			if (MSBuildInternals.Escape(newName) != newName
-			    || !FileUtility.IsValidDirectoryName(newName)
+			    || !FileUtility.IsValidDirectoryEntryName(newName)
 			    || newName.Contains("'"))
 			{
 				MessageService.ShowMessage("${res:Dialog.EditAvailableConfigurationsDialog.InvalidName}");

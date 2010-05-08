@@ -16,6 +16,8 @@ namespace ICSharpCode.WixBinding
 	/// </summary>
 	public interface IWixPackageFilesView
 	{
+		bool ContextMenuEnabled { get; set; }
+		
 		/// <summary>
 		/// Displays the message in the view that no WiX source file is contained
 		/// in the project.

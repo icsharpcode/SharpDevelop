@@ -40,7 +40,7 @@ namespace ICSharpCode.Core.Tests
 			                TopologicalSort.Sort(input).ConvertAll(c => c.Id).ToArray());
 		}
 		
-		Codon CreateCodon(string id, string insertBefore = null, string insertAfter = null)
+		Codon CreateCodon(string id, string insertBefore = "", string insertAfter = "")
 		{
 			Properties p = new Properties();
 			p["id"] = id;

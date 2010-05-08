@@ -23,10 +23,21 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			UncheckedStatement uncheckedStatement = ParseUtilCSharp.ParseStatement<UncheckedStatement>("unchecked { }");
 			Assert.IsFalse(uncheckedStatement.Block.IsNull);
 		}
+		
+		
+		[Test]
+		public void CSharpUncheckedStatementAndExpressionTest()
+		{
+			UncheckedStatement uncheckedStatement = ParseUtilCSharp.ParseStatement<UncheckedStatement>("unchecked { unchecked(++i); }");
+			Assert.IsFalse(uncheckedStatement.Block.IsNull);
+			ExpressionStatement es = (ExpressionStatement)uncheckedStatement.Block.Children[0];
+			UncheckedExpression ce = (UncheckedExpression)es.Expression;
+			Assert.IsInstanceOf<UnaryOperatorExpression>(ce.Expression);
+		}
 		#endregion
 		
 		#region VB.NET
-			// No VB.NET representation
+		// No VB.NET representation
 		#endregion
 	}
 }

@@ -63,6 +63,7 @@ namespace ICSharpCode.WixBinding
 		{
 			// Look for Wix document containing root directory.
 			document = null;
+			view.ContextMenuEnabled = false;
 			if (project.WixSourceFiles.Count > 0) {
 				bool errors = false;
 				WixDocument currentDocument = null;
@@ -83,6 +84,7 @@ namespace ICSharpCode.WixBinding
 				} else if (document == null) {
 					view.ShowNoRootDirectoryFoundMessage();
 				} else {
+					view.ContextMenuEnabled = true;
 					SelectedElementChanged();
 				}
 			} else {

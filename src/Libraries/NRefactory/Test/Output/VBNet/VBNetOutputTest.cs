@@ -532,5 +532,11 @@ End Using");
 			            " End Sub\n" +
 			            "End Module");
 		}
+		
+		[Test]
+		public void WithEvents()
+		{
+			TestTypeMember("Dim WithEvents a As Button");
+		}
 	}
 }

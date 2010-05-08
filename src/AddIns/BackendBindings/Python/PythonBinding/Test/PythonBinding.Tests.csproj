@@ -207,6 +207,7 @@
     <Compile Include="Designer\DeserializeAssignmentTestFixtureBase.cs" />
     <Compile Include="Designer\DeserializeColorFromArgbTestFixture.cs" />
     <Compile Include="Designer\DeserializeComponentAssignmentTestFixture.cs" />
+    <Compile Include="Designer\DeserializeConstraintArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeDateTimeArrayTestFixture.cs" />
     <Compile Include="Designer\DeserializeLocalVariableTestFixture.cs" />
     <Compile Include="Designer\DeserializeMethodParametersTestFixture.cs" />
@@ -474,6 +475,7 @@
     <Compile Include="Utils\PythonCompletionItemsHelper.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <Compile Include="Utils\Tests\MockComponentCreatorTests.cs" />
     <Compile Include="Utils\Tests\MockProjectContentTests.cs" />
     <Compile Include="Utils\Tests\PythonCompletionItemsHelperTests.cs" />
     <Compile Include="Utils\Tests\PythonParserHelperTests.cs" />

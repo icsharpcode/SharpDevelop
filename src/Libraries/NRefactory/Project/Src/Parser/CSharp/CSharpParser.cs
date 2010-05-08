@@ -381,7 +381,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 
 		/* True, if "checked" or "unchecked" are followed by "{" */
 		bool UnCheckedAndLBrace () {
-			return la.kind == Tokens.Checked || la.kind == Tokens.Unchecked &&
+			return (la.kind == Tokens.Checked || la.kind == Tokens.Unchecked) &&
 				Peek(1).kind == Tokens.OpenCurlyBrace;
 		}
 

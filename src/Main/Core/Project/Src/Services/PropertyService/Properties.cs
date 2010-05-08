@@ -95,6 +95,10 @@ namespace ICSharpCode.Core
 		
 		public void Set<T>(string property, T value)
 		{
+			if (property == null)
+				throw new ArgumentNullException("property");
+			if (value == null)
+				throw new ArgumentNullException("value");
 			T oldValue = default(T);
 			lock (properties) {
 				if (!properties.ContainsKey(property)) {

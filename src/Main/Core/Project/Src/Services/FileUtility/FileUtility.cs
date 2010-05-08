@@ -426,12 +426,21 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Checks that a single directory name (not the full path) is valid.
 		/// </summary>
+		[ObsoleteAttribute("Use IsValidDirectoryEntryName instead")]
 		public static bool IsValidDirectoryName(string name)
+		{
+			return IsValidDirectoryEntryName(name);
+		}
+		
+		/// <summary>
+		/// Checks that a single directory name (not the full path) is valid.
+		/// </summary>
+		public static bool IsValidDirectoryEntryName(string name)
 		{
 			if (!IsValidPath(name)) {
 				return false;
 			}
-			if (name.IndexOfAny(new char[]{Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar}) >= 0) {
+			if (name.IndexOfAny(new char[]{Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar,Path.VolumeSeparatorChar}) >= 0) {
 				return false;
 			}
 			if (name.Trim(' ').Length == 0) {

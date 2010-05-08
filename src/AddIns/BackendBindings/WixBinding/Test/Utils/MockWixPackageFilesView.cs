@@ -33,6 +33,7 @@ namespace WixBinding.Tests.Utils
 		List<XmlElement> directoriesAdded = new List<XmlElement>();
 		bool clearDirectoriesCalled;
 		WixPackageFilesDiffResult[] diffResults;
+		bool contextMenuEnabled;
 		
 		public MockWixPackageFilesView()
 		{
@@ -177,6 +178,11 @@ namespace WixBinding.Tests.Utils
 		
 		public WixPackageFilesDiffResult[] DiffResults {
 			get { return diffResults; }
+		}
+		
+		public bool ContextMenuEnabled {
+			get { return contextMenuEnabled; }
+			set { contextMenuEnabled = value; }
 		}
 	}
 }

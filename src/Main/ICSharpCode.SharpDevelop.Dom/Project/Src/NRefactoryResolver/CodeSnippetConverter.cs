@@ -47,8 +47,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			project = new DefaultProjectContent();
 			project.ReferencedContents.AddRange(ReferencedContents);
 			if (sourceLanguage == SupportedLanguage.VBNet) {
+				project.Language = LanguageProperties.VBNet;
 				project.DefaultImports = new DefaultUsing(project);
 				project.DefaultImports.Usings.AddRange(DefaultImportsToAdd);
+			} else {
+				project.Language = LanguageProperties.CSharp;
 			}
 			SnippetParser parser = new SnippetParser(sourceLanguage);
 			INode result = parser.Parse(sourceCode);
@@ -142,7 +145,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			TypeDeclaration type = new TypeDeclaration(Modifiers.None, null) {
 				Name = "DummyTypeForConversion",
 				StartLocation = members[0].StartLocation,
-				EndLocation = members[members.Count - 1].EndLocation
+				EndLocation = GetEndLocation(members[members.Count - 1])
 			};
 			type.Children.AddRange(members);
 			return new CompilationUnit {
@@ -150,6 +153,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					type
 				}
 			};
+		}
+		
+		Location GetEndLocation(INode node)
+		{
+			// workaround: MethodDeclaration.EndLocation is the end of the method header,
+			// but for the end of the dummy class we need the body end
+			MethodDeclaration method = node as MethodDeclaration;
+			if (method != null && !method.Body.IsNull)
+				return method.Body.EndLocation;
+			else
+				return node.EndLocation;
 		}
 		#endregion
 		

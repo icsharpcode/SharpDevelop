@@ -1,2 +1,0 @@
-SharpDevelop is currently using a slighly modified version of NUnit 2.5.4.10098:
-nunit.util.dll is modified: the hardcoded .NET version "4.0.21006" (.NET 4 Beta 2) was replaced with "4.0.30319" (.NET 4 RTM).

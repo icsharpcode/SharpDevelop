@@ -25,6 +25,7 @@ namespace WixBinding.Tests.PackageFiles
 			WixProject p = WixBindingTestsHelper.CreateEmptyWixProject();
 			p.Name = "MySetup";
 			view = new MockWixPackageFilesView();
+			view.ContextMenuEnabled = true;
 			WixPackageFilesEditor editor = new WixPackageFilesEditor(view, this, this);
 			editor.ShowFiles(p);
 		}
@@ -54,6 +55,12 @@ namespace WixBinding.Tests.PackageFiles
 		
 		public void Write(WixDocument document)
 		{	
+		}
+		
+		[Test]
+		public void ContextMenuDisabledInPackageFilesView()
+		{
+			Assert.IsFalse(view.ContextMenuEnabled);
 		}
 	}
 }

@@ -127,6 +127,51 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 			Assert.AreEqual("ChrW(CByte(65))", converter.CSharpToVB("(char)(byte)65", out errors));
 		}
 		
+		[Test]
+		public void FixItemAccess()
+		{
+			Assert.AreEqual("public void A(System.Collections.Generic.List<string> l)\n" +
+			                "{\n" +
+			                "  l[0].ToString();\n" +
+			                "}",
+			                Normalize(converter.VBToCSharp("Sub A(l As Generic.List(Of String))\n" +
+			                                               " l.Item(0).ToString()\n" +
+			                                               "End Sub",
+			                                               out errors)));
+		}
+		
+		[Test]
+		public void ListAccessWithinForNextLoop()
+		{
+			Assert.AreEqual("public void A(System.Collections.Generic.List<string> l)\n" +
+			                "{\n" +
+			                "  for (int i = 0; i <= l.Count - 1; i++) {\n" +
+			                "    sum += l[i].Length;\n" +
+			                "  }\n" +
+			                "}",
+			                Normalize(converter.VBToCSharp("Sub A(l As Generic.List(Of String))\n" +
+			                                               " For i As Integer = 0 To l.Count - 1\n" +
+			                                               "   sum += l(i).Length\n" +
+			                                               " Next\n" +
+			                                               "End Sub",
+			                                               out errors)));
+		}
+		
+		[Test]
+		public void ListAccessOnField()
+		{
+			Assert.AreEqual("private System.Collections.Generic.List<System.Collections.Generic.List<string>> ParsedText = new System.Collections.Generic.List<System.Collections.Generic.List<string>>();\n" +
+			                "public void A()\n" +
+			                "{\n" +
+			                "  ParsedText[0].ToString();\n" +
+			                "}",
+			                Normalize(converter.VBToCSharp("Private ParsedText As New Generic.List(Of Generic.List(Of String))\n" +
+			                                               "Sub A()\n" +
+			                                               " ParsedText(0).ToString()\n" +
+			                                               "End Sub",
+			                                               out errors)));
+		}
+		
 		string Normalize(string text)
 		{
 			return text.Replace("\t", "  ").Replace("\r", "").Trim();

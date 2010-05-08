@@ -664,6 +664,7 @@
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Web.WebControl.xft" Id="CSharp.Web.WebControl.xft" Name="CSharp.Web.WebControl.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Web.WebForm.xft" Id="CSharp.Web.WebForm.xft" Name="CSharp.Web.WebForm.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Web.WebService.xft" Id="CSharp.Web.WebService.xft" Name="CSharp.Web.WebService.xft" />
+											<File Source="..\..\data\templates\file\CSharp\CSharp.Web.WebHandler.xft" Id="CSharp.Web.WebHandler.xft" Name="CSharp.Web.WebHandler.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.WPFFlowDocument.xft" Id="CSharp.WPFFlowDocument.xft" Name="CSharp.WPFFlowDocument.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.WPFPage.xft" Id="CSharp.WPFPage.xft" Name="CSharp.WPFPage.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.WPFPageFunction.xft" Id="CSharp.WPFPageFunction.xft" Name="CSharp.WPFPageFunction.xft" />
