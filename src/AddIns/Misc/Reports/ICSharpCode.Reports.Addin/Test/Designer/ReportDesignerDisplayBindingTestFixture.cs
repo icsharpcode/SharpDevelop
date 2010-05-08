@@ -30,7 +30,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		{
 			displayBinding = new DerivedReportDesignerDisplayBinding();
 			viewContent = new MockViewContent();
-			viewContent.PrimaryFileName = "test.srd";
+			viewContent.PrimaryFileName = FileName.Create("test.srd");
 //			viewContent.TextEditorControl.Text = "text content";
 //			parseInfo = new ParseInformation();
 //			displayBinding.ParseServiceParseInfoToReturn = parseInfo;

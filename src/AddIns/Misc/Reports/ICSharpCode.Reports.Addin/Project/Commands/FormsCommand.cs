@@ -155,7 +155,7 @@ namespace ICSharpCode.Reports.Addin.Commands
 				try {
 					verb.Invoke();
 				} catch (Exception ex) {
-					MessageService.ShowError(ex);
+					MessageService.ShowException(ex);
 				}
 			}
 		}

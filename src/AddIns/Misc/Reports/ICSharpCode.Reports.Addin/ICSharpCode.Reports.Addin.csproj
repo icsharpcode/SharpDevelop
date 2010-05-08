@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Reports.Addin</RootNamespace>
@@ -16,7 +17,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -25,7 +26,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <StartAction>Program</StartAction>
+    <StartAction>Project</StartAction>
     <StartProgram>..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -72,7 +73,6 @@
     <Compile Include="Project\Designer\RowItemDesigner.cs" />
     <Compile Include="Project\Designer\Ruler.cs" />
     <Compile Include="Project\Designer\SectionDesigner.cs" />
-    <Compile Include="Project\Commands\EditCommands.cs" />
     <Compile Include="Project\Commands\FormsCommand.cs" />
     <Compile Include="Project\Commands\ViewCommands.cs" />
     <Compile Include="Project\Configuration\AssemblyInfo.cs" />
@@ -138,6 +138,16 @@
     <Compile Include="Project\ReportWizard\WizardPanels\LayoutPanelControl.Designer.cs">
       <DependentUpon>LayoutPanelControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\AbstractOptionPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\AbstractWizardPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\CurrentPanelPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\DefaultDialogPanelDescriptor.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\DialogPanelDoozer.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\IDialogPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\IDialogPanelDescriptor.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\IWizardPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\StatusPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\WizardDialog.cs" />
     <Compile Include="Project\SecondaryViews\ReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs" />
     <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
@@ -194,8 +204,12 @@
     <EmbeddedResource Include="Project\ReportWizard\WizardPanels\PullModelPanel.resx">
       <DependentUpon>PullModelPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Project\ReportWizard\WizardPanels\PushModelPanel.resx" />
-    <EmbeddedResource Include="Project\ReportWizard\WizardPanels\ResultPanel.resx" />
+    <EmbeddedResource Include="Project\ReportWizard\WizardPanels\PushModelPanel.resx">
+      <DependentUpon>PushModelPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Project\ReportWizard\WizardPanels\ResultPanel.resx">
+      <DependentUpon>ResultPanel.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Project\Configuration" />
@@ -205,6 +219,7 @@
     <Folder Include="Project\DesignerBinding" />
     <Folder Include="Project\Dialogs" />
     <Folder Include="Project\Globals" />
+    <Folder Include="Project\ReportWizard\WizardPanels\Wizard" />
     <Folder Include="Project\SharpQuery" />
     <Folder Include="Project\ReportExplorer" />
     <Folder Include="Project\ReportWizard" />

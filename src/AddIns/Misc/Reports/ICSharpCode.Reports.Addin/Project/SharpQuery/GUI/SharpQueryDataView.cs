@@ -28,7 +28,7 @@ namespace SharpQuery.Gui.DataView
 		/// The <see cref="System.Windows.Forms.Control"/> representing the view
 		/// </summary>
 		/// 
-		public override Control Control
+		public override object Control
 		{
 			get
 			{
@@ -80,21 +80,12 @@ namespace SharpQuery.Gui.DataView
 //		}
 
 		/// <summary>
-		/// Refreshes the view
-		/// </summary>
-		public override void RedrawContent()
-		{
-			// TODO: Refresh the whole view control here, renew all resource strings whatever
-			//       Note that you do not need to recreate the control.
-		}
-
-		/// <summary>
 		/// Cleans up all used resources
 		/// </summary>
 		public override void Dispose()
 		{
 			// TODO: Clean up resources in this method
-			Control.Dispose();
+			pDataGrid.Dispose();
 		}
 		#endregion
 

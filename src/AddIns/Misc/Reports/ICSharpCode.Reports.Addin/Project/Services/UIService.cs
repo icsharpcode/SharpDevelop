@@ -52,7 +52,7 @@ namespace ICSharpCode.Reports.Addin
 		#region Dialog functions
 		public IWin32Window GetDialogOwnerWindow()
 		{
-			return WorkbenchSingleton.MainForm;
+			return WorkbenchSingleton.MainWin32Window;
 		}
 		
 		public DialogResult ShowDialog(Form form)

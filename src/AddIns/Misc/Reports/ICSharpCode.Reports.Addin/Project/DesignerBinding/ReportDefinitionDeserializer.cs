@@ -79,7 +79,7 @@ namespace ICSharpCode.Reports.Addin
 //					ConvertAbsolut2RelativePath(section,this.reportSettings.FileName);
 					host.Container.Add(section);
 				} catch (Exception e) {
-					MessageService.ShowError(e);
+					MessageService.ShowException(e);
 				}
 			}
 			return model;

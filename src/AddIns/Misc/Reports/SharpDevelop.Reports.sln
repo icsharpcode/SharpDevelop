@@ -60,8 +60,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TextEditor", ".
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
-Project("{00000000-0000-0000-0000-000000000000}") = "Tools", "..\..\..\Tools\Tools.build", "{3DF4060F-5EE0-41CF-8096-F27355FD5511}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reports", "Reports", "{F3DAFD3D-361A-4CCE-BA52-39401D4A78FC}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -121,6 +119,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.Addin", ".
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
+EndProject
+Project("{00000000-0000-0000-0000-000000000000}") = "Tools", "..\..\..\Tools\Tools.build", "{3DF4060F-5EE0-41CF-8096-F27355FD5511}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

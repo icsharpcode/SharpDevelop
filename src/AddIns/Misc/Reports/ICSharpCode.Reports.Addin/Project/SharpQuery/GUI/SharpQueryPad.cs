@@ -27,7 +27,7 @@ namespace SharpQuery.Pads
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the pad
 		/// </summary>
-		public override Control Control
+		public override object Control
 		{
 			get
 			{
@@ -51,16 +51,6 @@ namespace SharpQuery.Pads
 
 		public void SaveSharpQueryView()
 		{
-		}
-
-		/// <summary>
-		/// Refreshes the pad
-		/// </summary>
-		public override void RedrawContent()
-		{
-			//			OnTitleChanged(null);
-			//			OnIconChanged(null);
-			sharpQueryTree.Refresh();
 		}
 
 		/// <summary>

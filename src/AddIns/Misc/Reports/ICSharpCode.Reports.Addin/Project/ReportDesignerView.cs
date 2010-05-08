@@ -608,14 +608,14 @@ namespace ICSharpCode.Reports.Addin
 		
 		public void SelectAll()
 		{
-			MessageService.ShowError(new NotImplementedException());
+			throw new NotImplementedException();
 		}
 		
 		#endregion
 		
 		#region IToolsHost
 		
-		System.Windows.Forms.Control IToolsHost.ToolsControl {
+		object IToolsHost.ToolsContent {
 			get {
 				return ReportingSideTabProvider.ReportingSideBar;
 			}
@@ -704,7 +704,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		#region overrides
 		
-		public override Control Control {
+		public override object Control {
 			get {
 				return panel;
 			}

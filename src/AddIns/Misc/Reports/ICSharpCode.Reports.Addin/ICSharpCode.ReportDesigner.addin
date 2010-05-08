@@ -11,7 +11,9 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "ICSharpCode.Reports.Addin.dll"/>
+		<Import assembly = "ICSharpCode.Reports.Addin.dll">
+			<Doozer name="ReportDialogPanel" class="ICSharpCode.Reports.Addin.ReportWizard.DialogPanelDoozer"/>
+		</Import>
 	</Runtime>
 	
 	<!-- DisplayBinding -->
@@ -68,8 +70,7 @@
 		<MenuItem id = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          icon = "Icons.16x16.PasteIcon"
-		          loadclasslazy = "false"
-		          class = "ICSharpCode.Reports.Addin.Commands.Paste"/>
+		          command = "Paste"/>
 		
 		<MenuItem id = "DesignerVerbsSeparator" type = "Separator"/>
 		
@@ -115,25 +116,21 @@
 		<MenuItem id = "Cut"
 		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
-		          loadclasslazy = "false"
-		          class = "ICSharpCode.Reports.Addin.Commands.Cut"/>
+		          command = "Cut"/>
 			
 		<MenuItem id = "Copy"
 		          label = "${res:XML.MainMenu.EditMenu.Copy}"
 		          icon = "Icons.16x16.CopyIcon"
-		          loadclasslazy = "false"
-		          class = "ICSharpCode.Reports.Addin.Commands.Copy"/>
+		          command = "Copy"/>
 		<MenuItem id = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          icon = "Icons.16x16.PasteIcon"
-		          loadclasslazy = "false"
-		          class = "ICSharpCode.Reports.Addin.Commands.Paste"/>
+		          command = "Paste"/>
 		
 		<MenuItem id = "Delete"
 		          label = "${res:XML.MainMenu.EditMenu.Delete}"
 		          icon = "Icons.16x16.DeleteIcon"
-		          loadclasslazy = "false"
-		          class = "ICSharpCode.Reports.Addin.Commands.Delete"/>
+		          command = "Delete"/>
 			
 		<MenuItem id = "DesignerVerbsSeparator" type = "Separator"/>
 		

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -20,7 +21,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 	public class MockViewContent:IViewContent
 	{
 		
-		string fileName = String.Empty;
+		FileName fileName = null;
 		List<IViewContent> secondaryViewContents = new List<IViewContent>();
 		
 		public MockViewContent()
@@ -32,7 +33,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		public event EventHandler Disposed;		
 		public event EventHandler IsDirtyChanged;
 			
-		public Control Control
+		public object Control
 		{
 			get {return null;}
 		}
@@ -60,12 +61,6 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 		
 		public ICollection<IViewContent> SecondaryViewContents {
 			get { return secondaryViewContents;	}
-		}
-		
-		public object Content {
-			get {
-				throw new NotImplementedException();
-			}
 		}
 		
 		public IWorkbenchWindow WorkbenchWindow {
@@ -156,7 +151,7 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			}
 		}
 		
-		public string PrimaryFileName {
+		public FileName PrimaryFileName {
 			get { return fileName; }
 			set { fileName = value; }
 		}
@@ -224,5 +219,11 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 				IsDirtyChanged(this, e);
 			}
 		}		
+		
+		public object InitiallyFocusedControl {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

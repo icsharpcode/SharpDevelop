@@ -44,7 +44,7 @@ namespace ICSharpCode.Reports.Addin
 			// ToArray to prevent an exception if the collection changes.
 			foreach (Assembly asm in TypeResolutionService.DesignerAssemblies.ToArray()) {
 				if (excludeGlobalTypes) {
-					if (FileUtility.IsBaseDirectory(GacInterop.GacRootPath, asm.Location)) {
+					if (GacInterop.IsWithinGac(asm.Location)) {
 						continue;
 					}
 				}

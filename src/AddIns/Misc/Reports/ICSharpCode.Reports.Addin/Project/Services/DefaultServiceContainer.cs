@@ -41,7 +41,7 @@ namespace ICSharpCode.Reports.Addin
 					try {
 						disposeMe.Dispose();
 					} catch (Exception e) {
-						ICSharpCode.Core.MessageService.ShowError(e, "Exception while disposing " + disposeMe);
+						ICSharpCode.Core.MessageService.ShowException(e, "Exception while disposing " + disposeMe);
 					}
 				}
 			}

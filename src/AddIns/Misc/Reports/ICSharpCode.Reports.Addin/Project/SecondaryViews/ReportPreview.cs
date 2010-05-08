@@ -57,7 +57,7 @@ namespace ICSharpCode.Reports.Addin
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the view
 		/// </summary>
-		public override Control Control {
+		public override object Control {
 			get {
 				if (this.previewControl == null) {
 					previewControl = new PreviewControl();

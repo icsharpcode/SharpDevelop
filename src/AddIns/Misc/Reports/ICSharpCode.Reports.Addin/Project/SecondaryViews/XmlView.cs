@@ -52,7 +52,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		public override Control Control {
+		public override object Control {
 			get {
 				return this.rtb;
 			}
