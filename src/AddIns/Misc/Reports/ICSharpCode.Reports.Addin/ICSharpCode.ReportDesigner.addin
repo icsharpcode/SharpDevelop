@@ -180,11 +180,11 @@
 	<!-- Report wizard -->
 
 	<Path  name = "/ReportGenerator/ReportGeneratorWizard">
-		<DialogPanel id="Base" label = "${res:SharpReport.Wizard.BaseSettings}" class="ICSharpCode.Reports.Addin.ReportWizard.BaseSettingsPanel"/>
-		<DialogPanel id="PushModel" label="${res:SharpReport.Wizard.PushModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PushModelPanel"/>
-		<DialogPanel id="PullModel" label="${res:SharpReport.Wizard.PullModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PullModelPanel"/>
-		<DialogPanel id="QueryResult" label="${res:SharpReport.Wizard.ShowQueryResult}" class ="ICSharpCode.Reports.Addin.ReportWizard.ResultPanel"/>
-		<DialogPanel id="Layout" label="Layout" class ="ICSharpCode.Reports.Addin.ReportWizard.LayoutPanel"/>
+		<ReportDialogPanel id="Base" label = "${res:SharpReport.Wizard.BaseSettings}" class="ICSharpCode.Reports.Addin.ReportWizard.BaseSettingsPanel"/>
+		<ReportDialogPanel id="PushModel" label="${res:SharpReport.Wizard.PushModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PushModelPanel"/>
+		<ReportDialogPanel id="PullModel" label="${res:SharpReport.Wizard.PullModel}" class="ICSharpCode.Reports.Addin.ReportWizard.PullModelPanel"/>
+		<ReportDialogPanel id="QueryResult" label="${res:SharpReport.Wizard.ShowQueryResult}" class ="ICSharpCode.Reports.Addin.ReportWizard.ResultPanel"/>
+		<ReportDialogPanel id="Layout" label="Layout" class ="ICSharpCode.Reports.Addin.ReportWizard.LayoutPanel"/>
 
 	</Path>
 	
