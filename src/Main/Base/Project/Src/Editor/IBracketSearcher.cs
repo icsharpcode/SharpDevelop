@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// Searches for a matching bracket from the given offset to the start of the document.
 		/// </summary>
-		/// <returns>A BracketSearchResult that contains the positions and lengths of the brackets. Return null if there is nothing to highlight.</returns>
+		/// <returns>A BracketSearchResult that contains the positions and lengths of the brackets.</returns>
 		BracketSearchResult SearchBracket(IDocument document, int offset);
 	}
 	

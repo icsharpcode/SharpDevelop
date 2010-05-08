@@ -704,6 +704,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((operatorDeclaration.TypeReference != null));
 			Debug.Assert((operatorDeclaration.Body != null));
 			Debug.Assert((operatorDeclaration.Templates != null));
+			Debug.Assert((operatorDeclaration.ReturnTypeAttributes != null));
 			foreach (AttributeSection o in operatorDeclaration.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
@@ -719,6 +720,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 			operatorDeclaration.TypeReference.AcceptVisitor(this, data);
 			operatorDeclaration.Body.AcceptVisitor(this, data);
 			foreach (TemplateDefinition o in operatorDeclaration.Templates) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			foreach (AttributeSection o in operatorDeclaration.ReturnTypeAttributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
@@ -774,7 +779,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((propertyDeclaration.TypeReference != null));
 			Debug.Assert((propertyDeclaration.GetRegion != null));
 			Debug.Assert((propertyDeclaration.SetRegion != null));
-			Debug.Assert((propertyDeclaration.Initializer != null));
 			foreach (AttributeSection o in propertyDeclaration.Attributes) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
@@ -789,8 +793,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 			}
 			propertyDeclaration.TypeReference.AcceptVisitor(this, data);
 			propertyDeclaration.GetRegion.AcceptVisitor(this, data);
-			propertyDeclaration.SetRegion.AcceptVisitor(this, data);
-			return propertyDeclaration.Initializer.AcceptVisitor(this, data);
+			return propertyDeclaration.SetRegion.AcceptVisitor(this, data);
 		}
 		
 		public virtual object VisitPropertyGetRegion(PropertyGetRegion propertyGetRegion, object data) {

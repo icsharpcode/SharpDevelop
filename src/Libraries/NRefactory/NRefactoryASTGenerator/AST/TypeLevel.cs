@@ -159,6 +159,7 @@ namespace NRefactoryASTGenerator.Ast
 	class OperatorDeclaration : MethodDeclaration
 	{
 		ConversionType conversionType;
+		List<AttributeSection> returnTypeAttributes;
 		OverloadableOperatorType overloadableOperator;
 	}
 	
@@ -184,7 +185,6 @@ namespace NRefactoryASTGenerator.Ast
 		Location          bodyEnd;
 		PropertyGetRegion getRegion;
 		PropertySetRegion setRegion;
-		Expression        initializer;
 		
 		public PropertyDeclaration(Modifiers modifier, List<AttributeSection> attributes,
 		                           string name, List<ParameterDeclarationExpression> parameters)

@@ -5,14 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.NRefactory.Visitors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
 
 namespace ICSharpCode.NRefactory.Parser.VB
 {
@@ -175,10 +173,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		bool IsObjectCreation() {
 			return la.kind == Tokens.As && Peek(1).kind == Tokens.New;
 		}
-		
-		bool IsNewExpression() {
-			return la.kind == Tokens.New;
-		}
 
 		/*
 			True, if "<" is followed by the ident "assembly" or "module"
@@ -262,51 +256,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			int peek = Peek(1).kind;
 			return la.kind == Tokens.Resume && peek == Tokens.Next;
 		}
-		
-		/// <summary>
-		/// Returns True, if ident/literal integer is followed by ":"
-		/// </summary>
+
+		/*
+	True, if ident/literal integer is followed by ":"
+		 */
 		bool IsLabel()
 		{
 			return (la.kind == Tokens.Identifier || la.kind == Tokens.LiteralInteger)
 				&& Peek(1).kind == Tokens.Colon;
-		}
-		
-		/// <summary>
-		/// Returns true if a property declaration is an automatic property.
-		/// </summary>
-		bool IsAutomaticProperty()
-		{
-			lexer.StartPeek();
-			Token tn = la;
-			int braceCount = 0;
-
-			// look for attributes
-			while (tn.kind == Tokens.LessThan) {
-				while (braceCount > 0 || tn.kind != Tokens.GreaterThan) {
-					tn = lexer.Peek();
-					if (tn.kind == Tokens.OpenParenthesis)
-						braceCount++;
-					if (tn.kind == Tokens.CloseParenthesis)
-						braceCount--;
-				}
-				Debug.Assert(tn.kind == Tokens.GreaterThan);
-				tn = lexer.Peek();
-			}
-			
-			// look for modifiers
-			var allowedTokens = new[] {
-				Tokens.Public, Tokens.Protected,
-				Tokens.Friend, Tokens.Private
-			};
-
-			while (allowedTokens.Contains(tn.kind))
-				tn = lexer.Peek();
-			
-			if (tn.Kind != Tokens.Get && tn.Kind != Tokens.Set)
-				return true;
-
-			return false;
 		}
 
 		bool IsNotStatementSeparator()

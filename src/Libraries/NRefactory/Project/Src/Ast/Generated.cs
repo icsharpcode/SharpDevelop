@@ -2991,6 +2991,8 @@ public Location ExtendedEndLocation { get; set; }
 		
 		ConversionType conversionType;
 		
+		List<AttributeSection> returnTypeAttributes;
+		
 		OverloadableOperatorType overloadableOperator;
 		
 		public ConversionType ConversionType {
@@ -2999,6 +3001,15 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				conversionType = value;
+			}
+		}
+		
+		public List<AttributeSection> ReturnTypeAttributes {
+			get {
+				return returnTypeAttributes;
+			}
+			set {
+				returnTypeAttributes = value ?? new List<AttributeSection>();
 			}
 		}
 		
@@ -3012,6 +3023,7 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public OperatorDeclaration() {
+			returnTypeAttributes = new List<AttributeSection>();
 		}
 		
 		public bool IsConversionOperator {
@@ -3025,9 +3037,10 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[OperatorDeclaration ConversionType={0} OverloadableOperator={1} Body={2} Handles" +
-					"Clause={3} Templates={4} IsExtensionMethod={5} InterfaceImplementations={6} Type" +
-					"Reference={7} Name={8} Parameters={9} Attributes={10} Modifier={11}]", ConversionType, OverloadableOperator, Body, GetCollectionString(HandlesClause), GetCollectionString(Templates), IsExtensionMethod, GetCollectionString(InterfaceImplementations), TypeReference, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
+			return string.Format("[OperatorDeclaration ConversionType={0} ReturnTypeAttributes={1} OverloadableOper" +
+					"ator={2} Body={3} HandlesClause={4} Templates={5} IsExtensionMethod={6} Interfac" +
+					"eImplementations={7} TypeReference={8} Name={9} Parameters={10} Attributes={11} " +
+					"Modifier={12}]", ConversionType, GetCollectionString(ReturnTypeAttributes), OverloadableOperator, Body, GetCollectionString(HandlesClause), GetCollectionString(Templates), IsExtensionMethod, GetCollectionString(InterfaceImplementations), TypeReference, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
 		}
 	}
 	
@@ -3286,8 +3299,6 @@ public Location ExtendedEndLocation { get; set; }
 		
 		PropertySetRegion setRegion;
 		
-		Expression initializer;
-		
 		public Location BodyStart {
 			get {
 				return bodyStart;
@@ -3326,16 +3337,6 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public Expression Initializer {
-			get {
-				return initializer;
-			}
-			set {
-				initializer = value ?? Expression.Null;
-				if (!initializer.IsNull) initializer.Parent = this;
-			}
-		}
-		
 		public PropertyDeclaration(Modifiers modifier, List<AttributeSection> attributes, string name, List<ParameterDeclarationExpression> parameters) {
 			Modifier = modifier;
 			Attributes = attributes;
@@ -3345,7 +3346,6 @@ public Location ExtendedEndLocation { get; set; }
 			bodyEnd = Location.Empty;
 			getRegion = PropertyGetRegion.Null;
 			setRegion = PropertySetRegion.Null;
-			initializer = Expression.Null;
 		}
 		
 		public bool HasGetRegion {
@@ -3395,9 +3395,9 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[PropertyDeclaration BodyStart={0} BodyEnd={1} GetRegion={2} SetRegion={3} Initia" +
-					"lizer={4} InterfaceImplementations={5} TypeReference={6} Name={7} Parameters={8}" +
-					" Attributes={9} Modifier={10}]", BodyStart, BodyEnd, GetRegion, SetRegion, Initializer, GetCollectionString(InterfaceImplementations), TypeReference, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
+			return string.Format("[PropertyDeclaration BodyStart={0} BodyEnd={1} GetRegion={2} SetRegion={3} Interf" +
+					"aceImplementations={4} TypeReference={5} Name={6} Parameters={7} Attributes={8} " +
+					"Modifier={9}]", BodyStart, BodyEnd, GetRegion, SetRegion, GetCollectionString(InterfaceImplementations), TypeReference, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
 		}
 	}
 	

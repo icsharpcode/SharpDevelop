@@ -19,9 +19,5 @@ namespace VBNetBinding
 		public override IFormattingStrategy FormattingStrategy {
 			get { return new VBNetFormattingStrategy(); }
 		}
-		
-		public override IBracketSearcher BracketSearcher {
-			get { return new VBNetBracketSearcher(); }
-		}
 	}
 }

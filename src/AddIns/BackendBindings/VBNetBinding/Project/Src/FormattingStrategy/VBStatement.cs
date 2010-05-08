@@ -6,8 +6,6 @@
 // </file>
 
 using System;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.VB;
 
 namespace VBNetBinding
 {
@@ -17,20 +15,18 @@ namespace VBNetBinding
 		public string EndRegex     = "";
 		public string EndStatement = "";
 		
-		public int StatementToken = 0;
 		public int IndentPlus = 0;
 		
 		public VBStatement()
 		{
 		}
 		
-		public VBStatement(string startRegex, string endRegex, string endStatement, int indentPlus, int statementToken)
+		public VBStatement(string startRegex, string endRegex, string endStatement, int indentPlus)
 		{
 			StartRegex = startRegex;
 			EndRegex   = endRegex;
 			EndStatement = endStatement;
 			IndentPlus   = indentPlus;
-			StatementToken = statementToken;
 		}
 	}
 }

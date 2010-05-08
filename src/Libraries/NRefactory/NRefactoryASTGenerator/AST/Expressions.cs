@@ -379,9 +379,4 @@ namespace NRefactoryASTGenerator.Ast
 		QueryExpressionJoinVBClause joinClause;
 		List<ExpressionRangeVariable> intoVariables;
 	}
-	
-	[ImplementNullable]
-	abstract class XmlLiteralExpression : AbstractNode, INullable { }
-	
-	
 }
