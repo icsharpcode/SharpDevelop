@@ -251,8 +251,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				IMethod dummyMethod = new DefaultMethod("dummy", callingClass.ProjectContent.SystemTypes.Void,
 				                                        ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
 				CtrlSpaceResolveHelper.AddContentsFromCalling(list, callingClass, dummyMethod);
+				CtrlSpaceResolveHelper.AddImportedNamespaceContents(list, callingClass.CompilationUnit, callingClass);
 				// search extension methods in all referenced projects, no matter the using section
-				CtrlSpaceResolveHelper.AddReferencedProjectsContents(list, callingClass.CompilationUnit, callingClass);
+				//CtrlSpaceResolveHelper.AddReferencedProjectsContents(list, callingClass.CompilationUnit, callingClass);
 				
 				bool searchExtensionsInClasses = language.SearchExtensionsInClasses;
 				foreach (object o in list) {
