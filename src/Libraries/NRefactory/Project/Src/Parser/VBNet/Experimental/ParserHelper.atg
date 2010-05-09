@@ -259,12 +259,9 @@ ImportsStatement =
 	"Imports" { ANY } StatementTerminator
 .
 
-AttributeBlock =
-	Attribute { Attribute } StatementTerminator
-.
 
-Attribute =
-	[ EOL ] "<" { ANY } ">" [ EOL ]
+AttributeBlock =
+	"<" { ANY } ">" [ EOL ]
 .
 
 NamespaceMemberDeclaration =
@@ -359,7 +356,7 @@ IdentifierForFieldDeclaration =
 AccessModifier =
 	"Public" |
 	"Friend" |
-	"Protected" [ "Friend" ] |
+	"Protected" |
 	"Private"
 .
 
