@@ -41,7 +41,38 @@ namespace VBNetBinding
 					return CodeCompletionKeyPressResult.Completed;
 			} else if (ch == '\n') {
 				TryDeclarationTypeInference(editor, editor.Document.GetLineForOffset(editor.Caret.Offset));
+			} else if (char.IsLetter(ch) && CodeCompletionOptions.CompleteWhenTyping) {
+				if (editor.SelectionLength > 0) {
+					// allow code completion when overwriting an identifier
+					int endOffset = editor.SelectionStart + editor.SelectionLength;
+					// but block code completion when overwriting only part of an identifier
+					if (endOffset < editor.Document.TextLength && char.IsLetterOrDigit(editor.Document.GetCharAt(endOffset)))
+						return CodeCompletionKeyPressResult.None;
+					
+					editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+				}
+				int cursor = editor.Caret.Offset;
+				char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
+				bool afterUnderscore = prevChar == '_';
+				if (afterUnderscore) {
+					cursor--;
+					prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
+				}
+				if (!char.IsLetterOrDigit(prevChar) && prevChar != '.' && !IsInComment(editor)) {
+					VBExpressionFinder ef = new VBExpressionFinder();
+					ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
+					LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
+					if (result.Context != ExpressionContext.IdentifierExpected) {
+						var ctrlSpaceProvider = new NRefactoryCtrlSpaceCompletionItemProvider(LanguageProperties.VBNet, result.Context);
+						ctrlSpaceProvider.ShowTemplates = true;
+						ctrlSpaceProvider.AllowCompleteExistingExpression = afterUnderscore;
+						ctrlSpaceProvider.ShowCompletion(editor);
+						return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
+					}
+				}
+
 			}
+			
 			return base.HandleKeyPress(editor, ch);
 		}
 		

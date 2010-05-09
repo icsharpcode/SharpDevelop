@@ -27,11 +27,21 @@ namespace VBNetBinding
 	/// </summary>
 	public class VBNetFormattingStrategy : DefaultFormattingStrategy
 	{
-		List<VBStatement> statements;
-		IList<string> keywords;
-		VBStatement interfaceStatement;
+		static readonly List<VBStatement> statements;
 		
-		List<int> blockTokens = new List<int>(
+		internal static List<VBStatement> Statements {
+			get { return statements; }
+		}
+		
+		static readonly IList<string> keywords;
+		
+		internal static IList<string> Keywords {
+			get { return keywords; }
+		}
+		
+		static VBStatement interfaceStatement;
+		
+		static List<int> blockTokens = new List<int>(
 			new int[] {
 				Tokens.Class, Tokens.Module, Tokens.Namespace, Tokens.Interface, Tokens.Structure,
 				Tokens.Sub, Tokens.Function, Tokens.Operator,
@@ -42,33 +52,33 @@ namespace VBNetBinding
 		bool doCasing;
 		bool doInsertion;
 		
-		public VBNetFormattingStrategy()
+		static VBNetFormattingStrategy()
 		{
 			statements = new List<VBStatement>();
-			statements.Add(new VBStatement(@"^if.*?(then|\s+_)$", "^end ?if$", "End If", 1));
-			statements.Add(new VBStatement(@"\bclass\s+\w+\s*($|\(\s*Of)", "^end class$", "End Class", 1));
-			statements.Add(new VBStatement(@"\bnamespace\s+\w+(\.\w+)*$", "^end namespace$", "End Namespace", 1));
-			statements.Add(new VBStatement(@"\bmodule\s+\w+$", "^end module$", "End Module", 1));
-			statements.Add(new VBStatement(@"\bstructure\s+\w+\s*($|\(\s*Of)", "^end structure$", "End Structure", 1));
-			statements.Add(new VBStatement(@"^while\s+", "^end while$", "End While", 1));
-			statements.Add(new VBStatement(@"^select case", "^end select$", "End Select", 1));
-			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub\s+\w+", @"^end\s+sub$", "End Sub", 1));
-			statements.Add(new VBStatement(@"(?<!\bmustoverride (readonly |writeonly )?)\bproperty\s+\w+", @"^end\s+property$", "End Property", 1));
-			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bfunction\s+\w+", @"^end\s+function$", "End Function", 1));
-			statements.Add(new VBStatement(@"\boperator(\s*[\+\-\*\/\&\^\>\<\=\\]+\s*|\s+\w+\s*)\(", @"^end\s+operator$", "End Operator", 1));
-			statements.Add(new VBStatement(@"\bfor\s+.*?$", "^next( \\w+)?$", "Next", 1));
-			statements.Add(new VBStatement(@"^synclock\s+.*?$", "^end synclock$", "End SyncLock", 1));
-			statements.Add(new VBStatement(@"^get$", "^end get$", "End Get", 1));
-			statements.Add(new VBStatement(@"^with\s+.*?$", "^end with$", "End With", 1));
-			statements.Add(new VBStatement(@"^set(\s*\(.*?\))?$", "^end set$", "End Set", 1));
-			statements.Add(new VBStatement(@"^try$", "^end try$", "End Try", 1));
-			statements.Add(new VBStatement(@"^do\s+.+?$", "^loop$", "Loop", 1));
-			statements.Add(new VBStatement(@"^do$", "^loop .+?$", "Loop While ", 1));
-			statements.Add(new VBStatement(@"\benum\s+\w+$", "^end enum$", "End Enum", 1));
-			interfaceStatement = new VBStatement(@"\binterface\s+\w+\s*($|\(\s*Of)", "^end interface$", "End Interface", 1);
+			statements.Add(new VBStatement(@"^if.*?(then|\s+_)$", "^end ?if$", "End If", 1, Tokens.If));
+			statements.Add(new VBStatement(@"\bclass\s+\w+\s*($|\(\s*Of)", "^end class$", "End Class", 1, Tokens.Class));
+			statements.Add(new VBStatement(@"\bnamespace\s+\w+(\.\w+)*$", "^end namespace$", "End Namespace", 1, Tokens.Namespace));
+			statements.Add(new VBStatement(@"\bmodule\s+\w+$", "^end module$", "End Module", 1, Tokens.Module));
+			statements.Add(new VBStatement(@"\bstructure\s+\w+\s*($|\(\s*Of)", "^end structure$", "End Structure", 1, Tokens.Structure));
+			statements.Add(new VBStatement(@"^while\s+", "^end while$", "End While", 1, Tokens.While));
+			statements.Add(new VBStatement(@"^select case", "^end select$", "End Select", 1, Tokens.Select));
+			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub\s+\w+", @"^end\s+sub$", "End Sub", 1, Tokens.Sub));
+			statements.Add(new VBStatement(@"(?<!\bmustoverride (readonly |writeonly )?)\bproperty\s+\w+", @"^end\s+property$", "End Property", 1, Tokens.Property));
+			statements.Add(new VBStatement(@"(?<!\b(delegate|mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bfunction\s+\w+", @"^end\s+function$", "End Function", 1, Tokens.Function));
+			statements.Add(new VBStatement(@"\boperator(\s*[\+\-\*\/\&\^\>\<\=\\]+\s*|\s+\w+\s*)\(", @"^end\s+operator$", "End Operator", 1, Tokens.Operator));
+			statements.Add(new VBStatement(@"\bfor\s+.*?$", "^next( \\w+)?$", "Next", 1, Tokens.For));
+			statements.Add(new VBStatement(@"^synclock\s+.*?$", "^end synclock$", "End SyncLock", 1, Tokens.SyncLock));
+			statements.Add(new VBStatement(@"^get$", "^end get$", "End Get", 1, Tokens.Get));
+			statements.Add(new VBStatement(@"^with\s+.*?$", "^end with$", "End With", 1, Tokens.With));
+			statements.Add(new VBStatement(@"^set(\s*\(.*?\))?$", "^end set$", "End Set", 1, Tokens.Set));
+			statements.Add(new VBStatement(@"^try$", "^end try$", "End Try", 1, Tokens.Try));
+			statements.Add(new VBStatement(@"^do\s+.+?$", "^loop$", "Loop", 1, Tokens.Do));
+			statements.Add(new VBStatement(@"^do$", "^loop .+?$", "Loop While ", 1, Tokens.Do));
+			statements.Add(new VBStatement(@"\benum\s+\w+$", "^end enum$", "End Enum", 1, Tokens.Enum));
+			interfaceStatement = new VBStatement(@"\binterface\s+\w+\s*($|\(\s*Of)", "^end interface$", "End Interface", 1, Tokens.Interface);
 			statements.Add(interfaceStatement);
-			statements.Add(new VBStatement(@"\busing\s+", "^end using$", "End Using", 1));
-			statements.Add(new VBStatement(@"^#region\s+", "^#end region$", "#End Region", 0));
+			statements.Add(new VBStatement(@"\busing\s+", "^end using$", "End Using", 1, Tokens.Using));
+			statements.Add(new VBStatement(@"^#region\s+", "^#end region$", "#End Region", 0, -1));
 			
 			keywords = new string[] {
 				"AddHandler", "AddressOf", "Alias", "And",
@@ -139,15 +149,7 @@ namespace VBNetBinding
 			
 			if (ch == '\n' && lineAboveText != null)
 			{
-				string textToReplace = lineAboveText;
-				// remove string content
-				MatchCollection strmatches = Regex.Matches(textToReplace, "\"[^\"]*?\"", RegexOptions.Singleline);
-				foreach (Match match in strmatches)
-				{
-					textToReplace = textToReplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
-				}
-				// remove comments
-				textToReplace = Regex.Replace(textToReplace, "'.*$", "", RegexOptions.Singleline);
+				string textToReplace = TrimLine(lineAboveText);
 				
 				if (doCasing)
 					DoCasingOnLine(lineAbove, textToReplace, editor);
@@ -158,11 +160,11 @@ namespace VBNetBinding
 				if (IsInString(lineAboveText)) {
 					if (IsFinishedString(curLineText)) {
 						editor.Document.Insert(lineAbove.Offset + lineAbove.Length,
-						                         "\" & _");
+						                       "\" & _");
 						editor.Document.Insert(currentLine.Offset, "\"");
 					} else {
 						editor.Document.Insert(lineAbove.Offset + lineAbove.Length,
-						                         "\"");
+						                       "\"");
 					}
 				} else {
 					string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineAbove.Offset);
@@ -203,6 +205,18 @@ namespace VBNetBinding
 					}
 				}
 			}
+		}
+
+		internal static string TrimLine(string lineText)
+		{
+			string textToReplace = lineText;
+			// remove string content
+			MatchCollection strmatches = Regex.Matches(lineText, "\"[^\"]*?\"", RegexOptions.Singleline);
+			foreach (Match match in strmatches) {
+				textToReplace = textToReplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
+			}
+			// remove comments
+			return Regex.Replace(textToReplace, "'.*$", "", RegexOptions.Singleline);
 		}
 
 		void DoInsertionOnLine(string terminator, IDocumentLine currentLine, IDocumentLine lineAbove, string textToReplace, ITextEditor editor, int lineNr)
@@ -355,6 +369,8 @@ namespace VBNetBinding
 				
 				if (currentToken.EndLocation.Line > lineNr)
 					break;
+				
+				prevToken = currentToken;
 			}
 			
 			if (tokens.Count > 0)
@@ -400,7 +416,7 @@ namespace VBNetBinding
 			return !inString;
 		}
 		
-		bool IsDeclaration(int type)
+		internal static bool IsDeclaration(int type)
 		{
 			return (type == Tokens.Class) ||
 				(type == Tokens.Module) ||
@@ -489,7 +505,7 @@ namespace VBNetBinding
 				return false;
 		}
 		
-		bool IsMatchingEnd(Token begin, Token end)
+		internal static bool IsMatchingEnd(Token begin, Token end)
 		{
 			if (begin.Kind == end.Kind)
 				return true;
@@ -648,7 +664,7 @@ namespace VBNetBinding
 			indentation.Push((indentation.PeekOrDefault() ?? string.Empty) + addIndent);
 		}
 		
-		bool IsBlockStart(ILexer lexer, Token current, Token prev)
+		internal static bool IsBlockStart(ILexer lexer, Token current, Token prev)
 		{
 			if (blockTokens.Contains(current.Kind)) {
 				if (current.Kind == Tokens.If) {
@@ -714,7 +730,7 @@ namespace VBNetBinding
 			return IsSpecialCase(current, prev);
 		}
 		
-		bool IsBlockEnd(Token current, Token prev)
+		internal static bool IsBlockEnd(Token current, Token prev)
 		{
 			if (current.Kind == Tokens.Next) {
 				if (prev.Kind == Tokens.Resume)
@@ -736,7 +752,7 @@ namespace VBNetBinding
 			return IsSpecialCase(current, prev);
 		}
 		
-		bool IsSpecialCase(Token current, Token prev)
+		static bool IsSpecialCase(Token current, Token prev)
 		{
 			switch (current.Kind) {
 				case Tokens.Else:
@@ -789,9 +805,9 @@ namespace VBNetBinding
 			}
 		}
 		
-		bool IsStatement(string text)
+		static bool IsStatement(string text)
 		{
-			foreach (VBStatement s in this.statements) {
+			foreach (VBStatement s in statements) {
 				if (Regex.IsMatch(text, s.StartRegex, RegexOptions.IgnoreCase))
 					return true;
 			}
@@ -849,84 +865,5 @@ namespace VBNetBinding
 		{
 			SurroundSelectionWithSingleLineComment(editor, "'");
 		}
-		
-		#region SearchBracket
-		/*
-		public override int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
-		{
-			bool inString  = false;
-			char ch;
-			int brackets = -1;
-			for (int i = offset; i > 0; --i) {
-				ch = document.GetCharAt(i);
-				if (ch == openBracket && !inString) {
-					++brackets;
-					if (brackets == 0) return i;
-				} else if (ch == closingBracket && !inString) {
-					--brackets;
-				} else if (ch == '"') {
-					inString = !inString;
-				} else if (ch == '\n') {
-					int lineStart = ScanLineStart(document, i);
-					if (lineStart >= 0) { // line could have a comment
-						inString = false;
-						for (int j = lineStart; j < i; ++j) {
-							ch = document.GetCharAt(j);
-							if (ch == '"') inString = !inString;
-							if (ch == '\'' && !inString) {
-								// comment found!
-								// Skip searching in the comment:
-								i = j;
-								break;
-							}
-						}
-					}
-					inString = false;
-				}
-			}
-			return -1;
-		}
-		
-		static int ScanLineStart(IDocument document, int offset)
-		{
-			bool hasComment = false;
-			for (int i = offset - 1; i > 0; --i) {
-				char ch = document.GetCharAt(i);
-				if (ch == '\n') {
-					if (!hasComment) return -1;
-					return i + 1;
-				} else if (ch == '\'') {
-					hasComment = true;
-				}
-			}
-			return 0;
-		}
-		
-		public override int SearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
-		{
-			bool inString  = false;
-			bool inComment = false;
-			int  brackets  = 1;
-			for (int i = offset; i < document.TextLength; ++i) {
-				char ch = document.GetCharAt(i);
-				if (ch == '\n') {
-					inString  = false;
-					inComment = false;
-				}
-				if (inComment) continue;
-				if (ch == '"') inString = !inString;
-				if (inString)  continue;
-				if (ch == '\'') {
-					inComment = true;
-				} else if (ch == openBracket) {
-					++brackets;
-				} else if (ch == closingBracket) {
-					--brackets;
-					if (brackets == 0) return i;
-				}
-			}
-			return -1;
-		}*/
-		#endregion
 	}
 }

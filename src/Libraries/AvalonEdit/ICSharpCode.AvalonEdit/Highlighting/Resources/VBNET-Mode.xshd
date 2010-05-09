@@ -3,6 +3,7 @@
 <!-- Syntaxdefinition for VB.NET, v0.1 Rev 1 by Christian Holm -->
 <!-- Updated 2005 by Daniel Grunwald for VB.NET 2.0 -->
 <!-- Converted to AvalonEdit format by Daniel Grunwald in 2010 -->
+<!-- Updated 2010 by Siegfried Oleg Pammer for VB.NET 9 and 10 -->
 <SyntaxDefinition name="VBNET" extensions=".vb" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 	<Color name="Comment" foreground="Green" exampleText="' comment" />
 	<Color name="String" exampleText="text = &quot;Hello, World!&quot;" />
@@ -201,6 +202,17 @@
 			<Word>Next</Word>
 			<Word>Select</Word>
 			<Word>Case</Word>
+			<Word>From</Word>
+			<Word>Aggregate</Word>
+			<Word>Distinct</Word>
+			<Word>Group</Word>
+			<Word>Where</Word>
+			<Word>Skip</Word>
+			<Word>Join</Word>
+			<Word>Into</Word>
+			<Word>Equals</Word>
+			<Word>Take</Word>
+			<Word>Key</Word>
 		</Keywords>
 		<Keywords color="ContextKeywords">
 			<Word>Ansi</Word>

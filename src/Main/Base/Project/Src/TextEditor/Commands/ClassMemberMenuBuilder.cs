@@ -255,27 +255,33 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			bool isAutomatic = false;
 			
 			if (property.CanGet) {
-				int getterStartOffset = editor.Document.PositionToOffset(property.GetterRegion.BeginLine, property.GetterRegion.BeginColumn);
-				int getterEndOffset = editor.Document.PositionToOffset(property.GetterRegion.EndLine, property.GetterRegion.EndColumn);
-				
-				string text = editor.Document.GetText(getterStartOffset, getterEndOffset - getterStartOffset)
-					.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
-				
-				isAutomatic = text == "get;";
+				if (property.GetterRegion.IsEmpty)
+					isAutomatic = true;
+				else {
+					int getterStartOffset = editor.Document.PositionToOffset(property.GetterRegion.BeginLine, property.GetterRegion.BeginColumn);
+					int getterEndOffset = editor.Document.PositionToOffset(property.GetterRegion.EndLine, property.GetterRegion.EndColumn);
+					
+					string text = editor.Document.GetText(getterStartOffset, getterEndOffset - getterStartOffset)
+						.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
+					
+					isAutomatic = text == "get;";
+				}
 			}
 			
 			if (property.CanSet) {
-				int setterStartOffset = editor.Document.PositionToOffset(property.SetterRegion.BeginLine, property.SetterRegion.BeginColumn);
-				int setterEndOffset = editor.Document.PositionToOffset(property.SetterRegion.EndLine, property.SetterRegion.EndColumn);
-				
-				string text = editor.Document.GetText(setterStartOffset, setterEndOffset - setterStartOffset)
-					.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
-				
-				isAutomatic |= text == "set;";
+				if (property.SetterRegion.IsEmpty)
+					isAutomatic |= true;
+				else {
+					int setterStartOffset = editor.Document.PositionToOffset(property.SetterRegion.BeginLine, property.SetterRegion.BeginColumn);
+					int setterEndOffset = editor.Document.PositionToOffset(property.SetterRegion.EndLine, property.SetterRegion.EndColumn);
+					
+					string text = editor.Document.GetText(setterStartOffset, setterEndOffset - setterStartOffset)
+						.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
+					
+					isAutomatic |= text == "set;";
+				}
 			}
 			
-			Console.WriteLine(property.GetterRegion);
-			Console.WriteLine(property.SetterRegion);
 			return isAutomatic;
 		}
 		
@@ -302,7 +308,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					p.SetRegion.Modifier = CodeGenerator.ConvertModifier(member.SetterModifiers, finder);
 				
 				int startOffset = textEditor.Document.PositionToOffset(member.Region.BeginLine, member.Region.BeginColumn);
-				int endOffset = textEditor.Document.PositionToOffset(member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
+				int endOffset = textEditor.Document.PositionToOffset(member.Region.EndLine, member.Region.EndColumn);
+				
+				if (!member.BodyRegion.IsEmpty)
+					endOffset = textEditor.Document.PositionToOffset(member.BodyRegion.EndLine, member.BodyRegion.EndColumn);
 				
 				using (textEditor.Document.OpenUndoGroup()) {
 					textEditor.Document.Remove(startOffset, endOffset - startOffset);
