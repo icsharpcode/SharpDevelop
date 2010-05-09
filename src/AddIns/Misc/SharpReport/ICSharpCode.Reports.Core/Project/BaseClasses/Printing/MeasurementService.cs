@@ -16,20 +16,8 @@ namespace ICSharpCode.Reports.Core
 	/// </summary>
 	
 	
-	public static class MeasurementService
+	internal static class MeasurementService
 	{
-
-//		private Graphics graphics;
-
-//		public MeasurementService (Graphics graphics) 
-//		{
-//			if ( graphics == null) {
-//				throw new ArgumentNullException("graphics");
-//			}
-//			this.graphics = graphics;
-//		}
-		
-		
 		
 		public static  Size MeasureReportItem(Graphics graphics,IReportItem item)
 		{
