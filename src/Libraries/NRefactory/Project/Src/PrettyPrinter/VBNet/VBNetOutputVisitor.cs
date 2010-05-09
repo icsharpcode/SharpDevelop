@@ -2647,7 +2647,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			CollectionInitializerExpression initializer = objectCreateExpression.ObjectInitializer;
 			if (!initializer.IsNull) {
 				outputFormatter.Space();
-				if (initializer.CreateExpressions.Any(ce => ce is NamedArgumentExpression))
+				if (initializer.CreateExpressions.Any(ce => ce is MemberInitializerExpression))
 					outputFormatter.PrintToken(Tokens.With);
 				else
 					outputFormatter.PrintToken(Tokens.From);
@@ -2660,18 +2660,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Comma);
 					outputFormatter.PrintLineContinuation();
 					outputFormatter.Indent();
-					//outputFormatter.PrintText("Key "); TODO "Key" cannot be represented in AST
-					NamedArgumentExpression nae = expr as NamedArgumentExpression;
-					if (nae != null) {
-						outputFormatter.PrintToken(Tokens.Dot);
-						outputFormatter.PrintIdentifier(nae.Name);
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.Assign);
-						outputFormatter.Space();
-						TrackedVisit(nae.Expression, data);
-					} else {
-						TrackedVisit(expr, data);
-					}
+					TrackedVisit(expr, data);
 				}
 				outputFormatter.IndentationLevel--;
 				outputFormatter.PrintLineContinuation();
@@ -2712,6 +2701,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 			this.AppendCommaSeparatedList(arrayInitializerExpression.CreateExpressions);
 			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			return null;
+		}
+		
+		public override object TrackedVisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data)
+		{
+			if (memberInitializerExpression.IsKey) {
+				outputFormatter.PrintIdentifier("Key"); // TODO : replace by token
+				outputFormatter.Space();
+			}
+			outputFormatter.PrintToken(Tokens.Dot);
+			outputFormatter.PrintIdentifier(memberInitializerExpression.Name);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			TrackedVisit(memberInitializerExpression.Expression, data);
 			return null;
 		}
 		

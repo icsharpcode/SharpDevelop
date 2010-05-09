@@ -604,10 +604,9 @@ Private m_Name As String");
 		[Test]
 		public void TestAnonymousType()
 		{
-			// TODO test is strictly incorrect, the converter should add "Key"
 			TestStatement("var x = new { i = 0, abc, abc.Test };",
 			              "Dim x = New With { _\n" +
-			              "  .i = 0, _\n" +
+			              "  Key .i = 0, _\n" +
 			              "  abc, _\n" +
 			              "  abc.Test _\n" +
 			              "}");

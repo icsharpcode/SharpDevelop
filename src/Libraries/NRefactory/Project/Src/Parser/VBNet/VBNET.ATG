@@ -1664,6 +1664,7 @@ SimpleExpr<out Expression pexpr>
 SimpleNonInvocationExpression<out Expression pexpr>
 (.
 	Expression expr;
+	CollectionInitializerExpression cie;
 	TypeReference type = null;
 	string name = String.Empty;
 	pexpr = null;
@@ -1705,6 +1706,7 @@ SimpleNonInvocationExpression<out Expression pexpr>
 			(. type.IsGlobal = true; .)
 			(. pexpr = new TypeReferenceExpression(type); .)
 		|	ObjectCreateExpression<out expr>					(. pexpr = expr; .)
+		|	CollectionInitializer<out cie>					(. pexpr = cie; .)
 		|	/* 11.11 : Casts */
 			(. CastType castType = CastType.Cast; .)
 			( "DirectCast"

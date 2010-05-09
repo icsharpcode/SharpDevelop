@@ -77,9 +77,9 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		
 		Expression CheckPropertyInitializationExpression(Expression e, string name)
 		{
-			Assert.IsInstanceOf(typeof(NamedArgumentExpression), e);
-			Assert.AreEqual(name, ((NamedArgumentExpression)e).Name);
-			return ((NamedArgumentExpression)e).Expression;
+			Assert.IsInstanceOf(typeof(MemberInitializerExpression), e);
+			Assert.AreEqual(name, ((MemberInitializerExpression)e).Name);
+			return ((MemberInitializerExpression)e).Expression;
 		}
 		
 		void CheckPointObjectCreation(ObjectCreateExpression oce)
@@ -202,7 +202,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(2, oce.ObjectInitializer.CreateExpressions.Count);
 			
 			Assert.IsInstanceOf(typeof(PrimitiveExpression), CheckPropertyInitializationExpression(oce.ObjectInitializer.CreateExpressions[0], "Id"));
-			Assert.IsInstanceOf(typeof(NamedArgumentExpression), oce.ObjectInitializer.CreateExpressions[1]);
+			Assert.IsInstanceOf(typeof(MemberInitializerExpression), oce.ObjectInitializer.CreateExpressions[1]);
 		}
 		
 		[Test]
@@ -234,11 +234,11 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("new Contact() With { .FirstName = \"Bill\", .LastName = \"Gates\" }");
 			Assert.AreEqual(2, oce.ObjectInitializer.CreateExpressions.Count);
 			
-			Assert.AreEqual("FirstName", ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[0]).Name);
-			Assert.AreEqual("LastName", ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[1]).Name);
+			Assert.AreEqual("FirstName", ((MemberInitializerExpression)oce.ObjectInitializer.CreateExpressions[0]).Name);
+			Assert.AreEqual("LastName", ((MemberInitializerExpression)oce.ObjectInitializer.CreateExpressions[1]).Name);
 			
-			Assert.IsInstanceOf(typeof(PrimitiveExpression), ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[0]).Expression);
-			Assert.IsInstanceOf(typeof(PrimitiveExpression), ((NamedArgumentExpression)oce.ObjectInitializer.CreateExpressions[1]).Expression);
+			Assert.IsInstanceOf(typeof(PrimitiveExpression), ((MemberInitializerExpression)oce.ObjectInitializer.CreateExpressions[0]).Expression);
+			Assert.IsInstanceOf(typeof(PrimitiveExpression), ((MemberInitializerExpression)oce.ObjectInitializer.CreateExpressions[1]).Expression);
 		}
 		
 		[Test]
