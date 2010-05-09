@@ -625,6 +625,12 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return lockStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		
+		public virtual object VisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data) {
+			Debug.Assert((memberInitializerExpression != null));
+			Debug.Assert((memberInitializerExpression.Expression != null));
+			return memberInitializerExpression.Expression.AcceptVisitor(this, data);
+		}
+		
 		public virtual object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data) {
 			Debug.Assert((memberReferenceExpression != null));
 			Debug.Assert((memberReferenceExpression.TargetObject != null));

@@ -1458,13 +1458,14 @@ ObjectPropertyInitializerOrVariableInitializer<out Expression expr>
 =
 ( IF (IdentAndAsgn())
 	Identifier
-	(. NamedArgumentExpression nae = new NamedArgumentExpression(t.val, null);
-	   nae.StartLocation = t.Location;
+	(. MemberInitializerExpression mie = new MemberInitializerExpression(t.val, null);
+	   mie.StartLocation = t.Location;
+	   mie.IsKey = true;
 	   Expression r = null; .)
 	"=" 
 	( CollectionOrObjectInitializer<out r>
-	| VariableInitializer <out r> )
-	(. nae.Expression = r; nae.EndLocation = t.EndLocation; expr = nae; .)
+	| VariableInitializer<out r> )
+	(. mie.Expression = r; mie.EndLocation = t.EndLocation; expr = mie; .)
 	
 |	VariableInitializer <out expr>
 )

@@ -135,6 +135,8 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitLockStatement(LockStatement lockStatement, object data);
 		
+		object VisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data);
+		
 		object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data);
 		
 		object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data);

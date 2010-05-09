@@ -2647,7 +2647,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			CollectionInitializerExpression initializer = objectCreateExpression.ObjectInitializer;
 			if (!initializer.IsNull) {
 				outputFormatter.Space();
-				outputFormatter.PrintToken(Tokens.With);
+				if (initializer.CreateExpressions.Any(ce => ce is NamedArgumentExpression))
+					outputFormatter.PrintToken(Tokens.With);
+				else
+					outputFormatter.PrintToken(Tokens.From);
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 				outputFormatter.IndentationLevel++;

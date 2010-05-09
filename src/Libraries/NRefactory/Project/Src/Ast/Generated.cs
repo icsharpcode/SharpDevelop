@@ -2689,6 +2689,61 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
+	public class MemberInitializerExpression : Expression {
+		
+		string name;
+		
+		bool isKey;
+		
+		Expression expression;
+		
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value ?? "";
+			}
+		}
+		
+		public bool IsKey {
+			get {
+				return isKey;
+			}
+			set {
+				isKey = value;
+			}
+		}
+		
+		public Expression Expression {
+			get {
+				return expression;
+			}
+			set {
+				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
+			}
+		}
+		
+		public MemberInitializerExpression() {
+			name = "";
+			expression = Expression.Null;
+		}
+		
+		public MemberInitializerExpression(string name, Expression expression) {
+			Name = name;
+			Expression = expression;
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitMemberInitializerExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[MemberInitializerExpression Name={0} IsKey={1} Expression={2}]", Name, IsKey, Expression);
+		}
+	}
+	
 	public abstract class MemberNode : ParametrizedNode {
 		
 		List<InterfaceImplementation> interfaceImplementations;
@@ -5359,43 +5414,6 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		
 		public override string ToString() {
 			return string.Format("[WithStatement Expression={0} Body={1}]", Expression, Body);
-		}
-	}
-	
-	public abstract class XmlLiteralExpression : AbstractNode, INullable {
-		
-		protected XmlLiteralExpression() {
-		}
-		
-		public virtual bool IsNull {
-			get {
-				return false;
-			}
-		}
-		
-		public static XmlLiteralExpression Null {
-			get {
-				return NullXmlLiteralExpression.Instance;
-			}
-		}
-	}
-	
-	internal sealed class NullXmlLiteralExpression : XmlLiteralExpression {
-		
-		internal static NullXmlLiteralExpression Instance = new NullXmlLiteralExpression();
-		
-		public override bool IsNull {
-			get {
-				return true;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return null;
-		}
-		
-		public override string ToString() {
-			return "[NullXmlLiteralExpression]";
 		}
 	}
 	

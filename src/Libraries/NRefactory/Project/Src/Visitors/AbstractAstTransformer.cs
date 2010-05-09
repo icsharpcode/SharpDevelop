@@ -1120,6 +1120,15 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data) {
+			Debug.Assert((memberInitializerExpression != null));
+			Debug.Assert((memberInitializerExpression.Expression != null));
+			nodeStack.Push(memberInitializerExpression.Expression);
+			memberInitializerExpression.Expression.AcceptVisitor(this, data);
+			memberInitializerExpression.Expression = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
 		public virtual object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data) {
 			Debug.Assert((memberReferenceExpression != null));
 			Debug.Assert((memberReferenceExpression.TargetObject != null));

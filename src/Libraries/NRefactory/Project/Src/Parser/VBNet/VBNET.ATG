@@ -367,9 +367,9 @@ NamespaceMemberDecl
 
 /* 4.9.1 */
 TypeParameterList<List<TemplateDefinition> templates>
-(.
+ =(.
 	TemplateDefinition template;
-.) =
+.)
 	[
 		IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
 		"(" "Of" TypeParameter<out template>
@@ -1094,7 +1094,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			TypeName<out type>
 		)
 	]
-	[ "=" VariableInitializer<out initializer> ]
+	[ "=" Expr<out initializer> ]
 	[ ImplementsClause<out implementsClause> ]
 	EndOfStmt
 	(
@@ -1488,7 +1488,7 @@ VariableDeclaratorPartAfterIdentifier<List<VariableDeclaration> fieldDeclaration
 				}
 			}
 		.)
-		[ "=" VariableInitializer<out expr> ]
+		[ "=" Expr<out expr> ]
 	)
 	(.
 		VariableDeclaration varDecl = new VariableDeclaration(name, expr, type);
@@ -1526,29 +1526,20 @@ InitializationRankList<out List<Expression> rank>
 	}
 .
 
-/* 9.6.3 */
-VariableInitializer<out Expression initializerExpression>
-	(.
-		initializerExpression = null;
-	.) =
-	Expr<out initializerExpression>
-	| CollectionInitializer<out initializerExpression>
-	.
-
 /* 9.6.3.4 */
-CollectionInitializer<out Expression outExpr>
+CollectionInitializer<out CollectionInitializerExpression outExpr>
 	(.
 		Expression expr = null;
 		CollectionInitializerExpression initializer = new CollectionInitializerExpression();
 	.) =
 	"{"
 	[
-		VariableInitializer<out expr>
+		Expr<out expr>
 		(.
 			if (expr != null) { initializer.CreateExpressions.Add(expr); }
 		.)
 		{
-			IF (NotFinalComma()) "," VariableInitializer<out expr>
+			IF (NotFinalComma()) "," Expr<out expr>
 			(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
 		}
 	]
@@ -1963,7 +1954,7 @@ ExponentiationExpr<out Expression outExpr>
 ObjectCreateExpression<out Expression oce>
 (.
 	TypeReference type = null;
-	Expression initializer = null;
+	CollectionInitializerExpression initializer = null;
 	List<Expression> arguments = null;
 	ArrayList dimensions = null;
 	oce = null;
@@ -1987,36 +1978,47 @@ ObjectCreateExpression<out Expression oce>
 			if (dimensions == null) dimensions = new ArrayList();
 			dimensions.Insert(0, (arguments == null) ? 0 : Math.Max(arguments.Count - 1, 0));
 			type.RankSpecifier = (int[])dimensions.ToArray(typeof(int));
-			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as CollectionInitializerExpression);
+			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer);
 			ace.Arguments = arguments;
 			oce = ace;
 		}
 	.)
 	
 	[
-		(.
-			NamedArgumentExpression memberInitializer = null;
-		.)
-		"With"
-		(.
-			CollectionInitializerExpression memberInitializers = new CollectionInitializerExpression();
-			memberInitializers.StartLocation = la.Location;
-		.)
-		"{"
-			MemberInitializer<out memberInitializer>
-			(. memberInitializers.CreateExpressions.Add(memberInitializer); .)
-			{ ","
+		(
+			(.
+				MemberInitializerExpression memberInitializer = null;
+			.)
+			"With"
+			(.
+				CollectionInitializerExpression memberInitializers = new CollectionInitializerExpression();
+				memberInitializers.StartLocation = la.Location;
+			.)
+			"{"
 				MemberInitializer<out memberInitializer>
 				(. memberInitializers.CreateExpressions.Add(memberInitializer); .)
-			}
-		"}"
-		(.
-		memberInitializers.EndLocation = t.Location;
-			if(oce is ObjectCreateExpression)
-			{
-				((ObjectCreateExpression)oce).ObjectInitializer = memberInitializers;
-			}
-		.)
+				{ ","
+					MemberInitializer<out memberInitializer>
+					(. memberInitializers.CreateExpressions.Add(memberInitializer); .)
+				}
+			"}"
+			(.
+				memberInitializers.EndLocation = t.Location;
+				if(oce is ObjectCreateExpression)
+				{
+					((ObjectCreateExpression)oce).ObjectInitializer = memberInitializers;
+				}
+			.)
+		)
+	|
+		(
+			"From"
+			CollectionInitializer<out initializer>
+			(.
+				if(oce is ObjectCreateExpression)
+					((ObjectCreateExpression)oce).ObjectInitializer = initializer;
+			.)
+		)
 	]
 .
 
@@ -2362,17 +2364,20 @@ JoinCondition<out QueryExpressionJoinConditionVB condition>
 	.)
 .
 
-MemberInitializer<out NamedArgumentExpression memberInitializer>
+MemberInitializer<out MemberInitializerExpression memberInitializer>
 	(.
-		memberInitializer = new NamedArgumentExpression();
+		memberInitializer = new MemberInitializerExpression();
 		memberInitializer.StartLocation = la.Location;
 		Expression initExpr = null;
+		bool isKey = false;
 		string name = null;
 	.) =
+	/*[ "Key" (. isKey = true; .) ]*/
 	"." IdentifierOrKeyword<out name> "=" Expr<out initExpr>
 	(.
 		memberInitializer.Name = name;
 		memberInitializer.Expression = initExpr;
+		memberInitializer.IsKey = isKey;
 		memberInitializer.EndLocation = t.EndLocation;
 	.)
 .
@@ -3332,7 +3337,7 @@ Qualident<out string qualident>
 /* This production handles pseudo keywords that are needed in the grammar */
 Identifier	=
 	IdentifierForFieldDeclaration
-	| "Custom"
+	| "Custom" 
 .
 
 IdentifierForFieldDeclaration =
