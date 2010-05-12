@@ -93,6 +93,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
+			bool debugItemadded = false;
+			
 			FireSectionRenderEvent (section ,dataRow);
 			
 			PrintHelper.AdjustParent((BaseSection)section,section.Items);
@@ -101,6 +103,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			if (section.DrawBorder == true) {
 				section.Items.Insert(0,CreateDebugItem(section));
+				debugItemadded = true;
 			}
 			
 			if (section.Items.Count > 0) {
@@ -131,6 +134,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 						}
 						
 						list = this.exportItemsConverter.ConvertSimpleItems(offset,section.Items);
+						
+//						if (debugItemadded) {
+//							BaseExportColumn debugColumn = list[0];
+//							debugColumn.StyleDecorator.Location = section.Location;
+//							debugColumn.StyleDecorator.Size = section.Size;
+//						}
 					}
 				}
 			}

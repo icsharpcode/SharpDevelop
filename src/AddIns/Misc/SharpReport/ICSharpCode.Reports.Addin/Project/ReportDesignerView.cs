@@ -287,7 +287,7 @@ namespace ICSharpCode.Reports.Addin
 		private void StartReportExplorer ()
 		{
 			ReportExplorerPad explorerPad = CheckReportExplorer();
-			WorkbenchSingleton.Workbench.ShowPad(WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorerPad)));
+			WorkbenchSingleton.Workbench.GetPad(typeof(ReportExplorerPad)).BringPadToFront();
 			explorerPad.AddContent(this.loader.ReportModel);
 			explorerPad.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(ReportExplorer_PropertyChanged);
 		}
