@@ -66,6 +66,8 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 	
+		public string QueryString {get;set;}
+		
 		public  IDbDataAdapter CreateDataAdapter(IDbCommand command)
 		{
 			DbDataAdapter adapter = providerFactory.CreateDataAdapter();
