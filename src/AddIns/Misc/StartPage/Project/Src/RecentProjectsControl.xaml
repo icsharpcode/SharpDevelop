@@ -8,6 +8,7 @@
 			SelectionMode="Single"
 			core:SortableGridViewColumn.SortMode="Automatic"
 			Margin="0,0,0,20"
+			Visibility="Collapsed"
 			MouseDoubleClick="lastProjectsDoubleClick"
 			KeyDown="lastProjectsKeyDown">
 			<ListView.Resources>
