@@ -144,6 +144,9 @@
     <None Include="Src\Parser\VBNet\Experimental\ParserHelper.atg">
       <Generator>CocoParserGenerator</Generator>
     </None>
+    <None Include="Src\Parser\VBNet\Experimental\PushParser.frame">
+      <DependentUpon>ParserHelper.atg</DependentUpon>
+    </None>
     <None Include="Src\Parser\VBNet\Experimental\Scanner.frame">
       <DependentUpon>ParserHelper.atg</DependentUpon>
     </None>

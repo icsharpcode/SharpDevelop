@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 {
-	partial class Parser
+	public partial class Parser
 	{
 		Stack<Context> stack = new Stack<Context>();
 		

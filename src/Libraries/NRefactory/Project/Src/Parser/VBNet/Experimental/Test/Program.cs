@@ -8,7 +8,8 @@
 using System;
 using System.IO;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Parser.VB;
+using ICSharpCode.NRefactory.Parser;
+using VB = ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
 
 namespace VBParserExperiment
@@ -40,9 +41,13 @@ End Namespace
 		
 		public static void Main(string[] args)
 		{
-			Parser p = new Parser(ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(data)));
-			
-			p.Parse();
+           Parser p = new Parser();
+            ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(data));
+            Token t;
+            do {
+                t = lexer.NextToken();
+                p.InformToken(t);
+            } while (t.Kind != VB.Tokens.EOF);
 			
 			Console.ReadKey(true);
 		}
