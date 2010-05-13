@@ -106,6 +106,7 @@
     <Compile Include="Src\OverrideToStringMethodRefactoring.cs" />
     <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
     <Compile Include="Src\Options.cs" />
+    <Compile Include="Src\PropertyRefactoringMenuBuilder.cs" />
     <Compile Include="Src\ResolveAttribute.cs" />
     <Compile Include="Src\ResolveExtensionMethod.cs" />
     <Compile Include="Src\SwitchBodySnippetElement.cs" />
