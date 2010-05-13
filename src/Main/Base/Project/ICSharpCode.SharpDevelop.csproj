@@ -68,6 +68,9 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Libraries\ICSharpCode.Build.Tasks\Project\KnownFrameworkAssemblies.cs">
+      <Link>Src\Gui\Dialogs\ReferenceDialog\KnownFrameworkAssemblies.cs</Link>
+    </Compile>
     <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\BuildJob.cs">
       <Link>Src\Project\MSBuildEngine\BuildJob.cs</Link>
     </Compile>

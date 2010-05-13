@@ -7,21 +7,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.BuildWorker;
-using ICSharpCode.SharpDevelop.Gui;
-using Microsoft.Build.Construction;
-using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
-using MSBuild = Microsoft.Build.Evaluation;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -114,7 +107,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				throw new ArgumentNullException("additionalTargetFiles");
 			
 			MSBuildEngine engine = new MSBuildEngine(project, options, feedbackSink);
-			engine.additionalTargetFiles = additionalTargetFiles;
+			engine.additionalTargetFiles = additionalTargetFiles.ToList();
+			if (project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010) {
+				engine.additionalTargetFiles.Add(Path.Combine(Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location), "SharpDevelop.TargetingPack.targets"));
+			}
 			engine.serviceContainer = serviceContainer;
 			engine.StartBuild();
 		}
@@ -123,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		readonly int projectMinimumSolutionVersion;
 		ProjectBuildOptions options;
 		IBuildFeedbackSink feedbackSink;
-		IEnumerable<string> additionalTargetFiles;
+		List<string> additionalTargetFiles;
 		ThreadSafeServiceContainer serviceContainer;
 		
 		private MSBuildEngine(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)

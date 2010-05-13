@@ -7,15 +7,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-
+using System.Linq;
+using System.Windows.Shell;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// This class handles the recent open files and the recent open project files of SharpDevelop
-	/// it checks, if the files exists at every creation, and if not it doesn't list them in the 
+	/// it checks, if the files exists at every creation, and if not it doesn't list them in the
 	/// recent files, and they'll not be saved during the next option save.
 	/// </summary>
 	public sealed class RecentOpen
@@ -26,62 +28,35 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		int MAX_LENGTH = 10;
 		
-		List<string> lastfile    = new List<string>();
-		List<string> lastproject = new List<string>();
+		readonly ObservableCollection<string> lastfile    = new ObservableCollection<string>();
+		readonly ObservableCollection<string> lastproject = new ObservableCollection<string>();
 		
-		public event EventHandler RecentFileChanged;
-		public event EventHandler RecentProjectChanged;
-		
-		public List<string> RecentFile {
+		public IList<string> RecentFile {
 			get {
-				System.Diagnostics.Debug.Assert(lastfile != null, "RecentOpen : set string[] LastFile (value == null)");
 				return lastfile;
 			}
 		}
 
-		public List<string> RecentProject {
+		public IList<string> RecentProject {
 			get {
-				System.Diagnostics.Debug.Assert(lastproject != null, "RecentOpen : set string[] LastProject (value == null)");
 				return lastproject;
 			}
 		}
 		
-		void OnRecentFileChange()
-		{
-			if (RecentFileChanged != null) {
-				RecentFileChanged(this, null);
-			}
-		}
-		
-		void OnRecentProjectChange()
-		{
-			if (RecentProjectChanged != null) {
-				RecentProjectChanged(this, null);
-			}
-		}
-
 		public RecentOpen()
 		{
 		}
 		
 		public RecentOpen(Properties p)
 		{
+			// don't check whether files exist because that might be slow (e.g. if file is on network
+			// drive that's unavailable)
 			if (p.Contains("Files")) {
-				string[] files    = p["Files"].Split(',');
-				foreach (string file in files) {
-					if (File.Exists(file)) {
-						lastfile.Add(file);
-					}
-				}
+				lastfile.AddRange(p["Files"].Split(','));
 			}
 			
 			if (p.Contains("Projects")) {
-				string[] projects = p["Projects"].Split(',');
-				foreach (string file in projects) {
-					if (File.Exists(file)) {
-						lastproject.Add(file);
-					}
-				}
+				lastproject.AddRange(p["Projects"].Split(','));
 			}
 		}
 		
@@ -102,22 +77,16 @@ namespace ICSharpCode.SharpDevelop
 			} else {
 				lastfile.Add(name);
 			}
-			
-			OnRecentFileChange();
 		}
 		
 		public void ClearRecentFiles()
 		{
 			lastfile.Clear();
-			
-			OnRecentFileChange();
 		}
 		
 		public void ClearRecentProjects()
 		{
 			lastproject.Clear();
-			
-			OnRecentProjectChange();
 		}
 		
 		public void AddLastProject(string name)
@@ -135,9 +104,9 @@ namespace ICSharpCode.SharpDevelop
 			if (lastproject.Count > 0) {
 				lastproject.Insert(0, name);
 			} else {
-				lastproject.Add(name);			
+				lastproject.Add(name);
 			}
-			OnRecentProjectChange();
+			JumpList.AddToRecentCategory(name);
 		}
 		
 		public static RecentOpen FromXmlElement(Properties properties)
@@ -159,7 +128,6 @@ namespace ICSharpCode.SharpDevelop
 				string file = lastfile[i].ToString();
 				if (e.FileName == file) {
 					lastfile.RemoveAt(i);
-					OnRecentFileChange();
 					break;
 				}
 			}
@@ -172,7 +140,6 @@ namespace ICSharpCode.SharpDevelop
 				if (e.SourceFile == file) {
 					lastfile.RemoveAt(i);
 					lastfile.Insert(i, e.TargetFile);
-					OnRecentFileChange();
 					break;
 				}
 			}
