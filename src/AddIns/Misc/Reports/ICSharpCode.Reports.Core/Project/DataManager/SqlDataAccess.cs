@@ -64,7 +64,13 @@ namespace ICSharpCode.Reports.Core
 				}
 				
 				IDbCommand command = this.connectionObject.Connection.CreateCommand();
-				command.CommandText = reportSettings.CommandText;
+				
+				if (String.IsNullOrEmpty(this.connectionObject.QueryString)) {
+					command.CommandText = reportSettings.CommandText;
+				} else {
+					command.CommandText = this.connectionObject.QueryString;
+				}
+				
 				command.CommandType = reportSettings.CommandType;
 				// We have to check if there are parameters for this Query, if so
 				// add them to the command

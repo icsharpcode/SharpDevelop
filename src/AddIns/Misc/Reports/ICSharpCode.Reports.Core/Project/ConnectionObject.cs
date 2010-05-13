@@ -74,6 +74,8 @@ namespace ICSharpCode.Reports.Core {
 		}
 
 		
+		public string QueryString {get;set;}
+		
 		
 		public IDbConnection Connection {
 			get {
