@@ -40,6 +40,15 @@ namespace NRefactoryASTGenerator.Ast
 		public NamedArgumentExpression(string name, Expression expression) {}
 	}
 	
+	class MemberInitializerExpression : Expression {
+		string     name;
+		bool       isKey;
+		Expression expression;
+		
+		public MemberInitializerExpression() { }
+		public MemberInitializerExpression(string name, Expression expression) {}
+	}
+	
 	[IncludeBoolProperty("IsAnonymousType", "return createType.IsNull || string.IsNullOrEmpty(createType.Type);")]
 	class ObjectCreateExpression : Expression {
 		TypeReference    createType;
@@ -379,4 +388,6 @@ namespace NRefactoryASTGenerator.Ast
 		QueryExpressionJoinVBClause joinClause;
 		List<ExpressionRangeVariable> intoVariables;
 	}
+	
+	
 }

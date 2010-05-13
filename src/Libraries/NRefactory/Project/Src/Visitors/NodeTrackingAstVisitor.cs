@@ -451,6 +451,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data) {
+			this.BeginVisit(memberInitializerExpression);
+			object result = this.TrackedVisitMemberInitializerExpression(memberInitializerExpression, data);
+			this.EndVisit(memberInitializerExpression);
+			return result;
+		}
+		
 		public sealed override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data) {
 			this.BeginVisit(memberReferenceExpression);
 			object result = this.TrackedVisitMemberReferenceExpression(memberReferenceExpression, data);
@@ -1130,6 +1137,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitLockStatement(LockStatement lockStatement, object data) {
 			return base.VisitLockStatement(lockStatement, data);
+		}
+		
+		public virtual object TrackedVisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data) {
+			return base.VisitMemberInitializerExpression(memberInitializerExpression, data);
 		}
 		
 		public virtual object TrackedVisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data) {

@@ -55,6 +55,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Parser\VBNet\Experimental\Parser.cs">
+      <DependentUpon>ParserHelper.atg</DependentUpon>
+    </Compile>
     <None Include="Resources\ICSharpCode.NRefactory.snk" />
     <None Include="Src\Lexer\BuildKeywords.pl" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -84,6 +87,7 @@
     <Compile Include="Src\OperatorPrecedence.cs" />
     <Compile Include="Src\Parser\CSharp\CSharpParser.cs" />
     <Compile Include="Src\Parser\CSharp\Parser.cs" />
+    <Compile Include="Src\Parser\VBNet\Experimental\ParserHelper.cs" />
     <Compile Include="Src\Parser\VBNet\Parser.cs" />
     <Compile Include="Src\Parser\VBNet\VBNetParser.cs" />
     <Compile Include="Src\Parser\AbstractParser.cs" />
@@ -134,6 +138,18 @@
     <Compile Include="Src\Ast\TypeReference.cs" />
     <Compile Include="Src\Parser\VBNet\ParamModifierList.cs" />
     <Compile Include="Src\Visitors\NodeTrackingAstVisitor.cs" />
+    <None Include="Src\Parser\VBNet\Experimental\Parser.frame">
+      <DependentUpon>ParserHelper.atg</DependentUpon>
+    </None>
+    <None Include="Src\Parser\VBNet\Experimental\ParserHelper.atg">
+      <Generator>CocoParserGenerator</Generator>
+    </None>
+    <None Include="Src\Parser\VBNet\Experimental\PushParser.frame">
+      <DependentUpon>ParserHelper.atg</DependentUpon>
+    </None>
+    <None Include="Src\Parser\VBNet\Experimental\Scanner.frame">
+      <DependentUpon>ParserHelper.atg</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />
@@ -147,8 +163,12 @@
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
     <Content Include="Src\Parser\Frames\trace.txt" />
     <Folder Include="Src\Parser\VBNet" />
-    <Content Include="Src\Parser\VBNet\VBNET.ATG" />
+    <Content Include="Src\Parser\VBNet\VBNET.ATG">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Generator>CocoParserGenerator</Generator>
+    </Content>
     <Content Include="Src\Parser\gen.bat" />
+    <Folder Include="Src\Parser\VBNet\Experimental" />
     <Folder Include="Src\PrettyPrinter" />
     <Folder Include="Src\PrettyPrinter\CSharp" />
     <Folder Include="Src\PrettyPrinter\VBNet" />

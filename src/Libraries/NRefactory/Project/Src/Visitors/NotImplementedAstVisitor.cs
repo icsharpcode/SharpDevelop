@@ -258,6 +258,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 			throw new global::System.NotImplementedException("LockStatement");
 		}
 		
+		public virtual object VisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data) {
+			throw new global::System.NotImplementedException("MemberInitializerExpression");
+		}
+		
 		public virtual object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data) {
 			throw new global::System.NotImplementedException("MemberReferenceExpression");
 		}

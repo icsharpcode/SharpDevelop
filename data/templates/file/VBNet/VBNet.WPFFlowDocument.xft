@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<Template author="Siegfried Pammer" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.WinFXFlowDocument.Name}"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "VB"
+		  subcategory = "WPF"
+		  defaultname = "FlowDocument${Number}.xaml"
+		  language    = "XML"/>
+	 
+	<Description>${res:Templates.File.WinFXFlowDocument.Name}</Description>
+	
+	<References>
+		<Reference include="PresentationCore">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference include="PresentationFramework">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference include="WindowsBase">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+	</References>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".vb"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	ColumnWidth="400" FontSize="14" FontFamily="Georgia"
+>
+	<Paragraph>
+		
+	</Paragraph>
+</FlowDocument>]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

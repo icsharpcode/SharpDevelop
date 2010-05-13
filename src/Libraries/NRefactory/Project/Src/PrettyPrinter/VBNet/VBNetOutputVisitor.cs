@@ -568,17 +568,34 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(propertyDeclaration.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			VisitReturnTypeAttributes(propertyDeclaration.Attributes, data);
-			TrackedVisit(propertyDeclaration.TypeReference, data);
+			
+			if (!propertyDeclaration.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				
+				VisitReturnTypeAttributes(propertyDeclaration.Attributes, data);
+				
+				ObjectCreateExpression init = propertyDeclaration.Initializer as ObjectCreateExpression;
+				if (init != null && TypeReference.AreEqualReferences(init.CreateType, propertyDeclaration.TypeReference)) {
+					TrackedVisit(propertyDeclaration.Initializer, data);
+				} else {
+					TrackedVisit(propertyDeclaration.TypeReference, data);
+				}
+			}
 			
 			PrintInterfaceImplementations(propertyDeclaration.InterfaceImplementations);
 			
+			if (!propertyDeclaration.Initializer.IsNull && !(propertyDeclaration.Initializer is ObjectCreateExpression)) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Assign);
+				outputFormatter.Space();
+				TrackedVisit(propertyDeclaration.Initializer, data);
+			}
+			
 			outputFormatter.NewLine();
 			
-			if (!IsAbstract(propertyDeclaration)) {
+			if (!IsAbstract(propertyDeclaration) && (propertyDeclaration.GetRegion.Block != NullBlockStatement.Instance  || propertyDeclaration.SetRegion.Block != NullBlockStatement.Instance)) {
 				outputFormatter.IsInMemberBody = true;
 				++outputFormatter.IndentationLevel;
 				exitTokenStack.Push(Tokens.Property);
@@ -2627,7 +2644,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			CollectionInitializerExpression initializer = objectCreateExpression.ObjectInitializer;
 			if (!initializer.IsNull) {
 				outputFormatter.Space();
-				outputFormatter.PrintToken(Tokens.With);
+				if (initializer.CreateExpressions.Any(ce => ce is MemberInitializerExpression))
+					outputFormatter.PrintToken(Tokens.With);
+				else
+					outputFormatter.PrintToken(Tokens.From);
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 				outputFormatter.IndentationLevel++;
@@ -2637,18 +2657,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Comma);
 					outputFormatter.PrintLineContinuation();
 					outputFormatter.Indent();
-					//outputFormatter.PrintText("Key "); TODO "Key" cannot be represented in AST
-					NamedArgumentExpression nae = expr as NamedArgumentExpression;
-					if (nae != null) {
-						outputFormatter.PrintToken(Tokens.Dot);
-						outputFormatter.PrintIdentifier(nae.Name);
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.Assign);
-						outputFormatter.Space();
-						TrackedVisit(nae.Expression, data);
-					} else {
-						TrackedVisit(expr, data);
-					}
+					TrackedVisit(expr, data);
 				}
 				outputFormatter.IndentationLevel--;
 				outputFormatter.PrintLineContinuation();
@@ -2689,6 +2698,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 			this.AppendCommaSeparatedList(arrayInitializerExpression.CreateExpressions);
 			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			return null;
+		}
+		
+		public override object TrackedVisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data)
+		{
+			if (memberInitializerExpression.IsKey) {
+				outputFormatter.PrintIdentifier("Key"); // TODO : replace by token
+				outputFormatter.Space();
+			}
+			outputFormatter.PrintToken(Tokens.Dot);
+			outputFormatter.PrintIdentifier(memberInitializerExpression.Name);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			TrackedVisit(memberInitializerExpression.Expression, data);
 			return null;
 		}
 		

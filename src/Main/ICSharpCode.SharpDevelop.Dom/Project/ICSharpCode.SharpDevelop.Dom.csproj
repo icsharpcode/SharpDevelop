@@ -144,6 +144,7 @@
     <Compile Include="Src\IComment.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionTypeNameSyntaxError.cs" />
     <Compile Include="Src\SignatureComparer.cs" />
+    <Compile Include="Src\VBNet\VBNetExpressionFinder.cs" />
     <Compile Include="Src\XmlDoc.cs" />
     <Compile Include="Src\Tag.cs" />
     <Compile Include="Src\ResolveResult.cs" />

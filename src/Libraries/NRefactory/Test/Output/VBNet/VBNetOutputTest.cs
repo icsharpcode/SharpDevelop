@@ -287,6 +287,15 @@ End Using");
 		}
 		
 		[Test]
+		public void AutoProperty()
+		{
+			TestTypeMember("Public Property Value()");
+			TestTypeMember("Public Property Value() As Integer");
+			TestTypeMember("Public Property Value() As Integer = 5");
+			TestTypeMember("Public Property Value() As New List()");
+		}
+		
+		[Test]
 		public void AbstractProperty()
 		{
 			TestTypeMember("Public MustOverride Property ExpectsValue() As Boolean");

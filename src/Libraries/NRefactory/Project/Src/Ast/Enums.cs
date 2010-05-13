@@ -20,7 +20,6 @@ namespace ICSharpCode.NRefactory.Ast
 		Internal  = 0x0002,
 		Protected = 0x0004,
 		Public    = 0x0008,
-		Dim	      = 0x0010,	// VB.NET SPECIFIC, for fields/local variables only
 		
 		// Scope
 		Abstract  = 0x0010,  // == 	MustOverride/MustInherit
@@ -44,6 +43,8 @@ namespace ICSharpCode.NRefactory.Ast
 		WithEvents = 0x20000, // VB specific
 		Default    = 0x40000, // VB specific
 		Fixed      = 0x80000, // C# specific (fixed size arrays in unsafe structs)
+		
+		Dim	       = 0x100000,	// VB.NET SPECIFIC, for fields/local variables only
 		
 		/// <summary>Generated code, not part of parsed code</summary>
 		Synthetic  = 0x200000,

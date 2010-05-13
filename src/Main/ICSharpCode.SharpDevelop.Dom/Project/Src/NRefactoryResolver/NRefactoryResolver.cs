@@ -820,13 +820,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			List<IMember> results = new List<IMember>();
 			if (collectionInitializer != null) {
 				ObjectCreateExpression oce = collectionInitializer.Parent as ObjectCreateExpression;
-				NamedArgumentExpression nae = collectionInitializer.Parent as NamedArgumentExpression;
+				MemberInitializerExpression mie = collectionInitializer.Parent as MemberInitializerExpression;
 				if (oce != null && !oce.IsAnonymousType) {
 					IReturnType resolvedType = TypeVisitor.CreateReturnType(oce.CreateType, this);
 					ObjectInitializerCtrlSpaceInternal(results, resolvedType, out isCollectionInitializer);
 				}
-				else if (nae != null) {
-					IMember member = ResolveNamedArgumentExpressionInObjectInitializer(nae);
+				else if (mie != null) {
+					IMember member = ResolveMemberInitializerExpressionInObjectInitializer(mie);
 					if (member != null) {
 						ObjectInitializerCtrlSpaceInternal(results, member.ReturnType, out isCollectionInitializer);
 					}
@@ -835,11 +835,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return results;
 		}
 		
-		IMember ResolveNamedArgumentExpressionInObjectInitializer(NamedArgumentExpression nae)
+		IMember ResolveMemberInitializerExpressionInObjectInitializer(MemberInitializerExpression mie)
 		{
-			CollectionInitializerExpression parentCI = nae.Parent as CollectionInitializerExpression;
+			CollectionInitializerExpression parentCI = mie.Parent as CollectionInitializerExpression;
 			bool tmp;
-			return ObjectInitializerCtrlSpace(parentCI, out tmp).Find(m => IsSameName(m.Name, nae.Name));
+			return ObjectInitializerCtrlSpace(parentCI, out tmp).Find(m => IsSameName(m.Name, mie.Name));
 		}
 		
 		void ObjectInitializerCtrlSpaceInternal(List<IMember> results, IReturnType resolvedType, out bool isCollectionInitializer)
@@ -1122,6 +1122,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
+		static void AddVBNetKeywords(List<ICompletionEntry> ar, BitArray keywords)
+		{
+			for (int i = 0; i < keywords.Length; i++) {
+				if (keywords[i]) {
+					ar.Add(new KeywordEntry(NR.Parser.VB.Tokens.GetTokenString(i)));
+				}
+			}
+		}
+		
 		public List<ICompletionEntry> CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
 			if (!Initialize(parseInfo, caretLine, caretColumn))
@@ -1129,15 +1138,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			List<ICompletionEntry> result = new List<ICompletionEntry>();
 			if (language == NR.SupportedLanguage.VBNet) {
-				foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesVB) {
-					if ("System." + pair.Key != pair.Value) {
-						IClass c = GetPrimitiveClass(pair.Value, pair.Key);
-						if (c != null) result.Add(c);
-					}
+				
+				if (context == ExpressionContext.TypeDeclaration) {
+					AddVBNetKeywords(result, NR.Parser.VB.Tokens.TypeLevel);
+				} else if (context == ExpressionContext.Global) {
+					AddVBNetKeywords(result, NR.Parser.VB.Tokens.GlobalLevel);
+				} else {
+					AddVBNetPrimitiveTypes(result);
+					CtrlSpaceInternal(result, fileContent);
 				}
+				
 				result.Add(new KeywordEntry("Global"));
 				result.Add(new KeywordEntry("New"));
-				CtrlSpaceInternal(result, fileContent);
+				
 			} else {
 				if (context == ExpressionContext.TypeDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.TypeLevel);
@@ -1221,6 +1234,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			return result;
+		}
+
+		void AddVBNetPrimitiveTypes(List<ICompletionEntry> result)
+		{
+			foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesVB) {
+				if ("System." + pair.Key != pair.Value) {
+					IClass c = GetPrimitiveClass(pair.Value, pair.Key);
+					if (c != null)
+						result.Add(c);
+				}
+			}
 		}
 		
 		void AddCSharpPrimitiveTypes(List<ICompletionEntry> result)
@@ -1383,8 +1407,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				ResolveResult rr = ResolveInternal((expr.Parent as AssignmentExpression).Left, ExpressionContext.Default);
 				if (rr != null)
 					return rr.ResolvedType;
-			} else if (expr.Parent is NamedArgumentExpression) {
-				IMember m = ResolveNamedArgumentExpressionInObjectInitializer((NamedArgumentExpression)expr.Parent);
+			} else if (expr.Parent is MemberInitializerExpression) {
+				IMember m = ResolveMemberInitializerExpressionInObjectInitializer((MemberInitializerExpression)expr.Parent);
 				if (m != null)
 					return m.ReturnType;
 			} else if (expr.Parent is CollectionInitializerExpression) {

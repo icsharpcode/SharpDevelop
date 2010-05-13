@@ -259,5 +259,10 @@ namespace NRefactoryToBooConverter
 		{
 			throw new NotImplementedException();
 		}
+		
+		public object VisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

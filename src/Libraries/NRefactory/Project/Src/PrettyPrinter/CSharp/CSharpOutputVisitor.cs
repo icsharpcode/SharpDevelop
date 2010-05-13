@@ -2833,6 +2833,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public override object TrackedVisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data)
+		{
+			outputFormatter.PrintIdentifier(memberInitializerExpression.Name);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			TrackVisit(memberInitializerExpression.Expression, data);
+			return null;
+		}
+		
 		public override object TrackedVisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
 			Expression target = memberReferenceExpression.TargetObject;

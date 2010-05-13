@@ -2689,6 +2689,61 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
+	public class MemberInitializerExpression : Expression {
+		
+		string name;
+		
+		bool isKey;
+		
+		Expression expression;
+		
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value ?? "";
+			}
+		}
+		
+		public bool IsKey {
+			get {
+				return isKey;
+			}
+			set {
+				isKey = value;
+			}
+		}
+		
+		public Expression Expression {
+			get {
+				return expression;
+			}
+			set {
+				expression = value ?? Expression.Null;
+				if (!expression.IsNull) expression.Parent = this;
+			}
+		}
+		
+		public MemberInitializerExpression() {
+			name = "";
+			expression = Expression.Null;
+		}
+		
+		public MemberInitializerExpression(string name, Expression expression) {
+			Name = name;
+			Expression = expression;
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitMemberInitializerExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[MemberInitializerExpression Name={0} IsKey={1} Expression={2}]", Name, IsKey, Expression);
+		}
+	}
+	
 	public abstract class MemberNode : ParametrizedNode {
 		
 		List<InterfaceImplementation> interfaceImplementations;
@@ -2991,8 +3046,6 @@ public Location ExtendedEndLocation { get; set; }
 		
 		ConversionType conversionType;
 		
-		List<AttributeSection> returnTypeAttributes;
-		
 		OverloadableOperatorType overloadableOperator;
 		
 		public ConversionType ConversionType {
@@ -3001,15 +3054,6 @@ public Location ExtendedEndLocation { get; set; }
 			}
 			set {
 				conversionType = value;
-			}
-		}
-		
-		public List<AttributeSection> ReturnTypeAttributes {
-			get {
-				return returnTypeAttributes;
-			}
-			set {
-				returnTypeAttributes = value ?? new List<AttributeSection>();
 			}
 		}
 		
@@ -3023,7 +3067,6 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public OperatorDeclaration() {
-			returnTypeAttributes = new List<AttributeSection>();
 		}
 		
 		public bool IsConversionOperator {
@@ -3037,10 +3080,9 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[OperatorDeclaration ConversionType={0} ReturnTypeAttributes={1} OverloadableOper" +
-					"ator={2} Body={3} HandlesClause={4} Templates={5} IsExtensionMethod={6} Interfac" +
-					"eImplementations={7} TypeReference={8} Name={9} Parameters={10} Attributes={11} " +
-					"Modifier={12}]", ConversionType, GetCollectionString(ReturnTypeAttributes), OverloadableOperator, Body, GetCollectionString(HandlesClause), GetCollectionString(Templates), IsExtensionMethod, GetCollectionString(InterfaceImplementations), TypeReference, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
+			return string.Format("[OperatorDeclaration ConversionType={0} OverloadableOperator={1} Body={2} Handles" +
+					"Clause={3} Templates={4} IsExtensionMethod={5} InterfaceImplementations={6} Type" +
+					"Reference={7} Name={8} Parameters={9} Attributes={10} Modifier={11}]", ConversionType, OverloadableOperator, Body, GetCollectionString(HandlesClause), GetCollectionString(Templates), IsExtensionMethod, GetCollectionString(InterfaceImplementations), TypeReference, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
 		}
 	}
 	
@@ -3299,6 +3341,8 @@ public Location ExtendedEndLocation { get; set; }
 		
 		PropertySetRegion setRegion;
 		
+		Expression initializer;
+		
 		public Location BodyStart {
 			get {
 				return bodyStart;
@@ -3337,6 +3381,16 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
+		public Expression Initializer {
+			get {
+				return initializer;
+			}
+			set {
+				initializer = value ?? Expression.Null;
+				if (!initializer.IsNull) initializer.Parent = this;
+			}
+		}
+		
 		public PropertyDeclaration(Modifiers modifier, List<AttributeSection> attributes, string name, List<ParameterDeclarationExpression> parameters) {
 			Modifier = modifier;
 			Attributes = attributes;
@@ -3346,6 +3400,7 @@ public Location ExtendedEndLocation { get; set; }
 			bodyEnd = Location.Empty;
 			getRegion = PropertyGetRegion.Null;
 			setRegion = PropertySetRegion.Null;
+			initializer = Expression.Null;
 		}
 		
 		public bool HasGetRegion {
@@ -3395,9 +3450,9 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[PropertyDeclaration BodyStart={0} BodyEnd={1} GetRegion={2} SetRegion={3} Interf" +
-					"aceImplementations={4} TypeReference={5} Name={6} Parameters={7} Attributes={8} " +
-					"Modifier={9}]", BodyStart, BodyEnd, GetRegion, SetRegion, GetCollectionString(InterfaceImplementations), TypeReference, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
+			return string.Format("[PropertyDeclaration BodyStart={0} BodyEnd={1} GetRegion={2} SetRegion={3} Initia" +
+					"lizer={4} InterfaceImplementations={5} TypeReference={6} Name={7} Parameters={8}" +
+					" Attributes={9} Modifier={10}]", BodyStart, BodyEnd, GetRegion, SetRegion, Initializer, GetCollectionString(InterfaceImplementations), TypeReference, Name, GetCollectionString(Parameters), GetCollectionString(Attributes), Modifier);
 		}
 	}
 	
@@ -5359,43 +5414,6 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		
 		public override string ToString() {
 			return string.Format("[WithStatement Expression={0} Body={1}]", Expression, Body);
-		}
-	}
-	
-	public abstract class XmlLiteralExpression : AbstractNode, INullable {
-		
-		protected XmlLiteralExpression() {
-		}
-		
-		public virtual bool IsNull {
-			get {
-				return false;
-			}
-		}
-		
-		public static XmlLiteralExpression Null {
-			get {
-				return NullXmlLiteralExpression.Instance;
-			}
-		}
-	}
-	
-	internal sealed class NullXmlLiteralExpression : XmlLiteralExpression {
-		
-		internal static NullXmlLiteralExpression Instance = new NullXmlLiteralExpression();
-		
-		public override bool IsNull {
-			get {
-				return true;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return null;
-		}
-		
-		public override string ToString() {
-			return "[NullXmlLiteralExpression]";
 		}
 	}
 	
