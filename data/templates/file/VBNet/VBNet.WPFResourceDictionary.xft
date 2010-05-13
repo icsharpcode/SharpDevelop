@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<Template author="Mathias Simmack" version="1.0">
+<Template author="Siegfried Pammer" version="1.0">
 	
 	<Config
-		  name        = "${res:Templates.File.WinFXFlowDocument.Name}"
+		  name        = "${res:Templates.File.WinFXResourceDictionary.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
-		  category    = "C#"
 		  subcategory = "WPF"
-		  defaultname = "FlowDocument${Number}.xaml"
+		  category    = "VB"
+		  defaultname = "Dictionary${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>${res:Templates.File.WinFXFlowDocument.Name}</Description>
+	<Description>${res:Templates.File.WinFXResourceDictionary.Name}</Description>
 	
 	<References>
 		<Reference include="PresentationCore">
@@ -29,17 +29,15 @@
 		${FullName}                 -> Full generated path name
 		${FileName}                 -> File name with extension
 		${FileNameWithoutExtension} -> File name without extension
-		${Extension}                -> Extension in the form ".cs"
+		${Extension}                -> Extension in the form ".vb"
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	ColumnWidth="400" FontSize="14" FontFamily="Georgia"
+		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 >
-	<Paragraph>
-		
-	</Paragraph>
-</FlowDocument>]]></File>
+	
+</ResourceDictionary>]]></File>
 	</Files>
 	
 	<AdditionalOptions/>

@@ -9,8 +9,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -270,6 +271,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						throw new InvalidDataException("Reference without 'include' attribute!");
 					ReferenceProjectItem item = new ReferenceProjectItem(null, reference.GetAttribute("include"));
 					item.SetMetadata("HintPath", reference.GetAttribute("hintPath"));
+					var requiredTargetFramework = reference.GetElementsByTagName("RequiredTargetFramework").OfType<XmlElement>().FirstOrDefault();
+					if (requiredTargetFramework != null) {
+						item.SetMetadata("RequiredTargetFramework", requiredTargetFramework.Value);
+					}
 					requiredAssemblyReferences.Add(item);
 				}
 			}

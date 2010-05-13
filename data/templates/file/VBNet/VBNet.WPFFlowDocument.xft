@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<Template author="Mathias Simmack" version="1.0">
+<Template author="Siegfried Pammer" version="1.0">
 	
 	<Config
 		  name        = "${res:Templates.File.WinFXFlowDocument.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
-		  category    = "C#"
+		  category    = "VB"
 		  subcategory = "WPF"
 		  defaultname = "FlowDocument${Number}.xaml"
 		  language    = "XML"/>
@@ -29,7 +29,7 @@
 		${FullName}                 -> Full generated path name
 		${FileName}                 -> File name with extension
 		${FileNameWithoutExtension} -> File name without extension
-		${Extension}                -> Extension in the form ".cs"
+		${Extension}                -> Extension in the form ".vb"
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>

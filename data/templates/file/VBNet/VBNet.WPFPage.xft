@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
-<Template author="Mathias Simmack" version="1.0">
+<Template author="Siegfried Pammer" version="1.0">
 	
 	<Config
 		  name        = "${res:Templates.File.WinFXPage.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
-		  category    = "C#"
+		  category    = "VB"
 		  subcategory = "WPF"
 		  defaultname = "Page${Number}.xaml"
-		  language    = "C#"/>
+		  language    = "VBNET"/>
 	 
 	<Description>${res:Templates.File.WinFXPage.Name}</Description>
 	
@@ -29,7 +29,7 @@
 		${FullName}                 -> Full generated path name
 		${FileName}                 -> File name with extension
 		${FileNameWithoutExtension} -> File name without extension
-		${Extension}                -> Extension in the form ".cs"
+		${Extension}                -> Extension in the form ".vb"
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
@@ -41,30 +41,27 @@
 		
 	</Grid>
 </Page>]]></File>
-		<File name="${FullName}.cs" language="C#" DependentUpon="${FileName}" SubType="Code"><![CDATA[${StandardHeader.C#}
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
+		<File name="${FullName}.vb" language="VBNET" DependentUpon="${FileName}" SubType="Code"><![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.Collections.Generic
+Imports System.Text
+Imports System.Windows
+Imports System.Windows.Controls
+Imports System.Windows.Data
+Imports System.Windows.Documents
+Imports System.Windows.Input
+Imports System.Windows.Media
 
-namespace ${StandardNamespace}
-{
-	/// <summary>
-	/// Interaction logic for ${FileName}
-	/// </summary>
-	public partial class ${ClassName} : Page
-	{
-		public ${ClassName}()
-		{
-			InitializeComponent();
-		}
-	}
-}]]></File>
+Namespace ${StandardNamespace}
+	''' <summary>
+	''' Interaction logic for ${FileName}
+	''' </summary>
+	Public Partial Class ${ClassName} Inherits Page
+		Public Sub New()
+			InitializeComponent()
+		End Sub
+	End Class
+End Namespace]]></File>
 	</Files>
 	
 	<AdditionalOptions/>

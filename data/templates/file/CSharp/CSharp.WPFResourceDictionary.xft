@@ -11,6 +11,18 @@
 	 
 	<Description>${res:Templates.File.WinFXResourceDictionary.Name}</Description>
 	
+	<References>
+		<Reference include="PresentationCore">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference include="PresentationFramework">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference include="WindowsBase">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+	</References>
+	
 	<!-- 
 	Special new file templates:
 		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
