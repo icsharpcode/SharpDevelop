@@ -234,6 +234,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e ) {
 			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,e);
+			/*
 			string sectionName = e.Section.Name;
 			
 			if (sectionName == ReportSectionNames.ReportHeader) {
@@ -259,6 +260,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			else{
 				throw new WrongSectionException(sectionName);
 			}
+			*/
 		}
 		
 		//testcode to handle sectionrenderevent

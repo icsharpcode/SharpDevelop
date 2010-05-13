@@ -97,6 +97,9 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		{
 			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,this.dataNavigator.CurrentRow);
+			
+			PrintHelper.ShowLocations(convertedList);
+			
 			base.SinglePage.Items.AddRange(convertedList);
 			//orginal
 			//base.ConvertSection(base.ReportModel.PageHeader,0);

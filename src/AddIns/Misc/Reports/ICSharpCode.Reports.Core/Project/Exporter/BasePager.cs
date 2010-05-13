@@ -107,13 +107,13 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 				
 				Point offset = new Point(section.Location.X,section.SectionOffset);
 				foreach (IReportItem item in section.Items) {
-
+					
 					ISimpleContainer container = item as ISimpleContainer;
 					if (container != null) {
 
 						ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(offset,container);
-						                                                                               
-						AdjustBackColor (container);
+			          
+			          AdjustBackColor (container);
 						
 						ExporterCollection clist = this.exportItemsConverter.ConvertSimpleItems(offset,container.Items);
 						exportContainer.Items.AddRange(clist);

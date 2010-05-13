@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Core.old_Exporter;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -105,7 +106,6 @@ namespace ICSharpCode.Reports.Core
 		
 		
 		public static bool IsTextOnlyRow (ISimpleContainer item)
-		//public static bool IsTextOnlyRow (BaseRowItem item)
 		{
 			var res =  from r in item.Items where r is BaseDataItem
 				select ((BaseTextItem)r);
@@ -182,6 +182,21 @@ namespace ICSharpCode.Reports.Core
 				} else {
 					Console.WriteLine("{0}",i.ToString());
 				}
+			}
+		}
+		
+		
+		public static void ShowLocations (ExporterCollection items)
+		{
+			Console.WriteLine("");
+			
+			foreach (BaseExportColumn element in items) {
+				ExportContainer cont = element as ExportContainer;
+				if (cont != null) {
+					Console.WriteLine("-------Container ----{0}-----",cont.StyleDecorator.Location);
+					ShowLocations(cont.Items);
+				}
+				System.Console.WriteLine ("{0} - {1}",element.ToString(),element.StyleDecorator.Location.ToString());
 			}
 		}
 		
