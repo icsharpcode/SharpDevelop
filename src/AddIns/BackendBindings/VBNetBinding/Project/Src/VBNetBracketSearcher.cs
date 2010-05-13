@@ -9,12 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.TextEditor.Actions;
 
 namespace VBNetBinding
 {
@@ -184,13 +184,22 @@ namespace VBNetBinding
 			}
 			
 			Token result = null;
+			Token firstModifier = null;
 			
 			while ((currentToken = lexer.NextToken()).Kind != Tokens.EOF) {
 				if (prevToken == null)
 					prevToken = currentToken;
 				
-				if (VBNetFormattingStrategy.IsBlockStart(lexer, currentToken, prevToken))
+//				if (IsModifier(currentToken)) {
+//					if (firstModifier == null)
+//						firstModifier = currentToken;
+//				} else
+//					firstModifier = null;
+				
+				
+				if (VBNetFormattingStrategy.IsBlockStart(lexer, currentToken, prevToken)) {
 					tokens.Push(currentToken);
+				}
 				if (VBNetFormattingStrategy.IsBlockEnd(currentToken, prevToken)) {
 					while (tokens.Count > 0 && !VBNetFormattingStrategy.IsMatchingEnd(tokens.Peek(), currentToken))
 						tokens.Pop();
@@ -207,24 +216,10 @@ namespace VBNetBinding
 			}
 			
 			if (result != null) {
-				
-				IDocumentLine line = document.GetLine(result.Location.Line);
-				string interestingText = VBNetFormattingStrategy.TrimLine(line.Text).Trim(' ', '\t');
-				
-				//LoggingService.Debug("text2: '" + interestingText + "'");
-				
-				Match matchResult = Regex.Match(interestingText, statement.StartRegex, RegexOptions.Singleline | RegexOptions.IgnoreCase);
-				
-				if (matchResult != null) {
-					length = matchResult.Value.TrimEnd(' ', '\t').Length;
-					int diff = line.Length - line.Text.TrimStart(' ', '\t').Length;
-					int start = diff + line.Offset;
-					if (IsDeclaration(result.Kind)) {
-						length += diff + matchResult.Index;
-						return start;
-					}
-					return matchResult.Index + start;
-				}
+				int endOffset = document.PositionToOffset(result.EndLocation.Line, result.EndLocation.Column);
+				int offset = document.PositionToOffset(result.Location.Line, result.Location.Column);
+				length = endOffset - offset;
+				return offset;
 			}
 			
 			length = 0;
