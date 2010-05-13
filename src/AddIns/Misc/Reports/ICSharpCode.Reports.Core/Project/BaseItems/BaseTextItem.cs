@@ -7,7 +7,7 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.old_Exporter;
 
 /// <summary>
 /// This class is the BaseClass  for all TextBased Items 

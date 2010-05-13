@@ -9,7 +9,7 @@
 
 using System;
 
-namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
+namespace ICSharpCode.Reports.Core.old_Exporter.ExportRenderer
 {
 	/// <summary>
 	/// Description of XPSRenderer.

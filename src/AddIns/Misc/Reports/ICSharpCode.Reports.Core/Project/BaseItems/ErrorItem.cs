@@ -9,7 +9,7 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.old_Exporter;
 
 namespace ICSharpCode.Reports.Core
 {

@@ -6,7 +6,7 @@
  * 
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
-using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.old_Exporter;
 using System;
 
 namespace ICSharpCode.Reports.Core

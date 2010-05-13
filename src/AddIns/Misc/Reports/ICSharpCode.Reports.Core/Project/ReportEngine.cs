@@ -13,7 +13,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 
-using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.old_Exporter;
 using ICSharpCode.Reports.Core.Interfaces;
 
 /// <summary>

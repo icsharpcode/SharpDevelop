@@ -11,7 +11,7 @@ using ICSharpCode.Reports.Core.Interfaces;
 using System;
 using System.Drawing;
 
-namespace ICSharpCode.Reports.Core.Exporter
+namespace ICSharpCode.Reports.Core.old_Exporter
 {
 	/// <summary>
 	/// Description of FormPageBuilder.

@@ -10,7 +10,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.old_Exporter;
 
 /// <summary>
 /// Draw a Rectangle, used by DesingerControls and printing stuff

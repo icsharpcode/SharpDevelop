@@ -45,7 +45,7 @@ namespace ICSharpCode.Reports.Core
 		
 		
 		public static void DrawString (Graphics graphics,string text,
-		                               ICSharpCode.Reports.Core.Exporter.TextStyleDecorator decorator)
+		                               ICSharpCode.Reports.Core.old_Exporter.TextStyleDecorator decorator)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");

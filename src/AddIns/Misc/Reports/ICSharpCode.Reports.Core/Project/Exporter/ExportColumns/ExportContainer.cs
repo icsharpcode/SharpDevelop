@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using iTextSharp.text.pdf;
 
-namespace ICSharpCode.Reports.Core.Exporter
+namespace ICSharpCode.Reports.Core.old_Exporter
 {
 	/// <summary>
 	/// Description of ContainerItem.
@@ -44,7 +44,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.Decorate(graphics);
 		}
 
-		public override void DrawItem(PdfWriter pdfWriter, ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
+		public override void DrawItem(PdfWriter pdfWriter, ICSharpCode.Reports.Core.old_Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
 			base.DrawItem(pdfWriter, converter);
 			base.Decorate();

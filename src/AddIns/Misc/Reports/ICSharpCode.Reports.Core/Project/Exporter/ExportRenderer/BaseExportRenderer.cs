@@ -8,7 +8,7 @@
 using System;
 using System.Drawing;
 
-namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
+namespace ICSharpCode.Reports.Core.old_Exporter.ExportRenderer{
 
 	/// <summary>
 	/// Description of BaseExportRenderer.
@@ -31,7 +31,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		protected static void DrawItems (Graphics graphics,ExporterCollection items)
 		{
 			
-			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) {
+			foreach (ICSharpCode.Reports.Core.old_Exporter.BaseExportColumn baseExportColumn in items) {
 				
 				if (baseExportColumn != null) {
 					ExportContainer container = baseExportColumn as ExportContainer;

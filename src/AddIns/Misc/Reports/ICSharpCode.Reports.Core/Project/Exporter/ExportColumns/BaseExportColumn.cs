@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using iTextSharp.text.pdf;
 
-namespace ICSharpCode.Reports.Core.Exporter
+namespace ICSharpCode.Reports.Core.old_Exporter
 {
 	/// <summary>
 	/// Description of BaseLineItem.
@@ -19,7 +19,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private IBaseStyleDecorator styleDecorator;
 		private bool isContainer;
-		private ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter;
+		private ICSharpCode.Reports.Core.old_Exporter.ExportRenderer.PdfUnitConverter converter;
 		private PdfWriter pdfWriter;
 		
 		#region Constructors
@@ -48,7 +48,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		public virtual void DrawItem (PdfWriter pdfWriter,
-		                              ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
+		                              ICSharpCode.Reports.Core.old_Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
 			if (pdfWriter == null) {
 				throw new ArgumentNullException("pdfWriter");
@@ -176,7 +176,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 		}
 		
-		public ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter PdfUnitConverter {
+		public ICSharpCode.Reports.Core.old_Exporter.ExportRenderer.PdfUnitConverter PdfUnitConverter {
 			get { return converter; }
 		}
 		

@@ -9,7 +9,7 @@
 using ICSharpCode.Reports.Core.Interfaces;
 using System;
 using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.old_Exporter;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 using SimpleExpressionEvaluator;
 using SimpleExpressionEvaluator.Evaluation;

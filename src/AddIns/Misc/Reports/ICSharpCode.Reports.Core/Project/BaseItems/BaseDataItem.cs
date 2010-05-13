@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Xml.Serialization;
 
-using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.old_Exporter;
 
 /// <summary>
 /// This Class is used for Databased items

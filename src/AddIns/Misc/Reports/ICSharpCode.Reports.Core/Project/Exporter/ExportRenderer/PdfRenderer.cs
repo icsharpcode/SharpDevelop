@@ -15,7 +15,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.factories;
 
 
-namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
+namespace ICSharpCode.Reports.Core.old_Exporter.ExportRenderer
 {
 	/// <summary>
 	/// Description of Pdf2Renderer.
@@ -107,7 +107,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		
 		private void DrawPage (ExporterCollection items)
 		{
-			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) {
+			foreach (ICSharpCode.Reports.Core.old_Exporter.BaseExportColumn baseExportColumn in items) {
 				if (baseExportColumn != null) {
 
 					IExportContainer container = baseExportColumn as ExportContainer;

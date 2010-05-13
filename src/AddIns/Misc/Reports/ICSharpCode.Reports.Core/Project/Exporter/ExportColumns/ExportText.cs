@@ -10,7 +10,7 @@ using System.Drawing;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
-namespace ICSharpCode.Reports.Core.Exporter {
+namespace ICSharpCode.Reports.Core.old_Exporter {
 	/// <summary>
 	/// Description of LineItem.
 	/// </summary>
@@ -33,7 +33,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 		#region overrides
 		
 		public override void DrawItem(PdfWriter pdfWriter,
-		                              ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
+		                              ICSharpCode.Reports.Core.old_Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
 			if (pdfWriter == null) {
 				throw new ArgumentNullException("pdfWriter");

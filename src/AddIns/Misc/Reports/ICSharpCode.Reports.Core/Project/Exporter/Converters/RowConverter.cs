@@ -12,7 +12,7 @@ using System.Drawing;
 
 using ICSharpCode.Reports.Core.Interfaces;
 
-namespace ICSharpCode.Reports.Core.Exporter
+namespace ICSharpCode.Reports.Core.old_Exporter
 {
 	/// <summary>
 	/// Description of RowConverter.
