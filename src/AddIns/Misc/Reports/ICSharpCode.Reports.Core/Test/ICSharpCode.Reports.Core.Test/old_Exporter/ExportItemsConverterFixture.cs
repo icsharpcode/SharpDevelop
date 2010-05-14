@@ -13,7 +13,7 @@ using ICSharpCode.Reports.Core.old_Exporter;
 using NUnit.Framework;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 
-namespace ICSharpCode.Reports.Core.Test.Exporter
+namespace ICSharpCode.Reports.Core.Test.old_Exporter
 {
 	[TestFixture]
 	public class ExportItemsConverterFixture:ConcernOf<ExportItemsConverter>

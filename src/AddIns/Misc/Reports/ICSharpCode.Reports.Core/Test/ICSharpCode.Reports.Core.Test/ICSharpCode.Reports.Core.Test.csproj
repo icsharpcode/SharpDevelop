@@ -75,7 +75,7 @@
     <Compile Include="DataManager\IListDataManagerFixture.cs" />
     <Compile Include="DataManager\MockDataAccess.cs" />
     <Compile Include="DataManager\TableDataManagerFixture.cs" />
-    <Compile Include="Exporter\ExportItemsConverterFixture.cs" />
+    <Compile Include="old_Exporter\ExportItemsConverterFixture.cs" />
     <Compile Include="Printing\SectionBoundFixture.cs" />
     <Compile Include="Printing\Shapes\BaseLineFixture.cs" />
     <Compile Include="Printing\Shapes\EllipseShapeFixture.cs" />
@@ -119,7 +119,7 @@
     <Folder Include="DataManager" />
     <Folder Include="Collections" />
     <Folder Include="BaseClasses" />
-    <Folder Include="Exporter" />
+    <Folder Include="old_Exporter" />
     <Folder Include="Printing\Shapes" />
     <Folder Include="TestHelpers" />
     <Folder Include="Printing" />
