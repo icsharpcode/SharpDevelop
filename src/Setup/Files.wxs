@@ -153,13 +153,14 @@
 							<Component Id="ICSharpCodeBuildTasksDll" Guid="E94FCC8C-9741-45EF-AFDA-9F9CF02BF3F7" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Build.Tasks.dll" Id="ICSharpCode.Build.Tasks.dll" Name="ICSharpCode.Build.Tasks.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Build.Tasks.dll" AssemblyManifest="ICSharpCode.Build.Tasks.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="BuildTasksTargetFiles" DiskId="1" Guid="51BA4DA3-F0C0-4B4D-B988-5500876AE5C8">
+							<Component Id="BuildTasksTargetFiles" DiskId="1" Guid="55F82461-DEED-43BB-8A79-7243B762EA60">
 								<File Source="..\..\bin\SharpDevelop.Build.Common.targets" Id="SharpDevelop.Build.Common.targets" Name="SharpDevelop.Build.Common.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.CSharp.targets" Id="SharpDevelop.Build.CSharp.targets" Name="SharpDevelop.Build.CSharp.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.MSIL.targets" Id="SharpDevelop.Build.MSIL.targets" Name="SharpDevelop.Build.MSIL.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.VisualBasic.targets" Id="SharpDevelop.Build.VisualBasic.targets" Name="SharpDevelop.Build.VisualBasic.targets" />
 								<File Source="..\..\bin\SharpDevelop.CodeAnalysis.targets" Id="SharpDevelop.CodeAnalysis.targets" Name="SharpDevelop.CodeAnalysis.targets" />
 								<File Source="..\..\bin\SharpDevelop.CheckMSBuild35Features.targets" Id="SharpDevelop.CheckMSBuild35Features.targets" Name="SharpDevelop.CheckMSBuild35Features.targets" />
+								<File Source="..\..\bin\SharpDevelop.TargetingPack.targets" Id="SharpDevelop.TargetingPack.targets" Name="SharpDevelop.TargetingPack.targets" />
 							</Component>
 							<Component Id="ICSharpCodeCoreDll" Guid="DFD67330-0F6D-4069-9B03-90E2BB7B9273" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Core.dll" Id="ICSharpCode.Core.dll" Name="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Core.dll" AssemblyManifest="ICSharpCode.Core.dll" KeyPath="yes" />
