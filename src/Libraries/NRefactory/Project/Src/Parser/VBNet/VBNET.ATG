@@ -322,17 +322,21 @@ ImportClause<out Using u>
 		TypeReference aliasedType = null;
 		u = null;
 	.) =
-	Qualident<out qualident>
-	[ "=" TypeName<out aliasedType> ]
-	(.
-		if (qualident != null && qualident.Length > 0) {
-			if (aliasedType != null) {
-				u = new Using(qualident, aliasedType);
-			} else {
-				u = new Using(qualident);
+	(
+		Qualident<out qualident>
+		[ "=" TypeName<out aliasedType> ]
+		(.
+			if (qualident != null && qualident.Length > 0) {
+				if (aliasedType != null) {
+					u = new Using(qualident, aliasedType);
+				} else {
+					u = new Using(qualident);
+				}
 			}
-		}
-	.)
+		.)
+	) | ( (. string prefix = null; .)
+		"<" Identifier /* TODO this is "xmlns" */ [ ":" Identifier (. prefix = t.val; .)  ] "=" LiteralString /* TODO support single-quote xml strings */ (. u = new Using(t.literalValue as string, prefix); .) ">"
+	)
 	.
 
 /* 6.4.2 */
@@ -1902,7 +1906,7 @@ AdditiveExpr<out Expression outExpr>
 
 ModuloExpr<out Expression outExpr>
 (. Expression expr; .)
-=
+= 
 	IntegerDivisionExpr<out outExpr> { "Mod" IntegerDivisionExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Modulus, expr);  .) }
 .
 

@@ -1665,15 +1665,15 @@ namespace ICSharpCode.NRefactory.Ast {
 			initializer = Expression.Null;
 		}
 		
-		public bool HasAddRegion {
-			get {
-				return !addRegion.IsNull;
-			}
-		}
-		
 		public bool HasRemoveRegion {
 			get {
 				return !removeRegion.IsNull;
+			}
+		}
+		
+		public bool HasAddRegion {
+			get {
+				return !addRegion.IsNull;
 			}
 		}
 		
@@ -3403,15 +3403,15 @@ public Location ExtendedEndLocation { get; set; }
 			initializer = Expression.Null;
 		}
 		
-		public bool HasGetRegion {
-			get {
-				return !getRegion.IsNull;
-			}
-		}
-		
 		public bool HasSetRegion {
 			get {
 				return !setRegion.IsNull;
+			}
+		}
+		
+		public bool HasGetRegion {
+			get {
+				return !getRegion.IsNull;
 			}
 		}
 		
@@ -5195,6 +5195,8 @@ public Location ExtendedEndLocation { get; set; }
 		
 		TypeReference alias;
 		
+		string xmlPrefix;
+		
 		public string Name {
 			get {
 				return name;
@@ -5214,14 +5216,31 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
+		public string XmlPrefix {
+			get {
+				return xmlPrefix;
+			}
+			set {
+				xmlPrefix = value ?? "";
+			}
+		}
+		
 		public Using(string name) {
 			Name = name;
 			alias = TypeReference.Null;
+			xmlPrefix = "";
 		}
 		
 		public Using(string name, TypeReference alias) {
 			Name = name;
 			Alias = alias;
+			xmlPrefix = "";
+		}
+		
+		public Using(string name, string xmlPrefix) {
+			Name = name;
+			XmlPrefix = xmlPrefix;
+			alias = TypeReference.Null;
 		}
 		
 		public bool IsAlias {
@@ -5230,12 +5249,18 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
+		public bool IsXml {
+			get {
+				return xmlPrefix != null;
+			}
+		}
+		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitUsing(this, data);
 		}
 		
 		public override string ToString() {
-			return string.Format("[Using Name={0} Alias={1}]", Name, Alias);
+			return string.Format("[Using Name={0} Alias={1} XmlPrefix={2}]", Name, Alias, XmlPrefix);
 		}
 	}
 	
@@ -5256,9 +5281,11 @@ public Location ExtendedEndLocation { get; set; }
 			Usings = usings;
 		}
 		
-public UsingDeclaration(string @namespace) : this(@namespace, null) {}
+public UsingDeclaration(string @namespace) : this(@namespace, TypeReference.Null) {}
 		
 public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
+		
+public UsingDeclaration(string xmlNamespace, string prefix) { usings = new List<Using>(1); usings.Add(new Using(xmlNamespace, prefix)); }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitUsingDeclaration(this, data);
