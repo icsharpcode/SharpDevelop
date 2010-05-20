@@ -18,8 +18,8 @@ namespace MSHelpSystem.Core
 
 		static Help3Service()
 		{
-			Help3Service.CatalogsUpdated += new EventHandler(Help3HasUpdatedTheCatalogs);
-			Help3Service.CatalogChanged  += new EventHandler(Help3ActiveCatalogIdChanged);
+			Help3Service.CatalogsUpdated      += new EventHandler(Help3HasUpdatedTheCatalogs);
+			Help3Service.CatalogChanged       += new EventHandler(Help3ActiveCatalogIdChanged);
 			Help3Service.ConfigurationUpdated += new EventHandler(Help3ConfigurationUpdated);
 			LoadHelpConfiguration();
 			UpdateCatalogs();
@@ -28,8 +28,8 @@ namespace MSHelpSystem.Core
 		}
 
 		static List<Help3Catalog> catalogs = new List<Help3Catalog>();
-		static Help3Catalog activeCatalog = null;
-		static Help3Configuration config = new Help3Configuration();
+		static Help3Catalog activeCatalog  = null;
+		static Help3Configuration config   = new Help3Configuration();
 
 		#region Read help catalogs
 
@@ -57,10 +57,11 @@ namespace MSHelpSystem.Core
 							);
 						}
 					}
+					LoggingService.Debug(string.Format("Help 3.0: {0} {1} loaded", catalogs.Count, (catalogs.Count == 1)?"catalog":"catalogs"));
 				}
 				catch (Exception ex) {
 					LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
-				}
+				}				
 			}
 			OnCatalogsUpdated(EventArgs.Empty);
 		}
@@ -68,14 +69,17 @@ namespace MSHelpSystem.Core
 		static void Help3HasUpdatedTheCatalogs(object sender, EventArgs e)
 		{
 			if (string.IsNullOrEmpty(config.ActiveCatalogId)) {
-				config.ActiveCatalogId = (catalogs.Count > 0) ? catalogs[0].ProductCode:string.Empty;
+				config.ActiveCatalogId = (catalogs.Count > 0) ? catalogs[0].ToString():string.Empty;
 			}
 			activeCatalog = (string.IsNullOrEmpty(config.ActiveCatalogId)) ? null:FindCatalogByItsString(config.ActiveCatalogId);
 		}
 
 		static void Help3ActiveCatalogIdChanged(object sender, EventArgs e)
 		{
-			activeCatalog   = (catalogs.Count > 0) ? FindCatalogByItsString(config.ActiveCatalogId) : null;
+			if (string.IsNullOrEmpty(config.ActiveCatalogId)) {
+				config.ActiveCatalogId = (catalogs.Count > 0) ? catalogs[0].ToString():string.Empty;
+			}
+			activeCatalog = (string.IsNullOrEmpty(config.ActiveCatalogId)) ? null:FindCatalogByItsString(config.ActiveCatalogId);
 		}
 
 		static void Help3ConfigurationUpdated(object sender, EventArgs e)
@@ -94,10 +98,7 @@ namespace MSHelpSystem.Core
 
 		public static int Count
 		{
-			get
-			{
-				return catalogs.Count;
-			}
+			get { 	return catalogs.Count; }
 		}
 
 		public static ReadOnlyCollection<Help3Catalog> Items
@@ -111,10 +112,8 @@ namespace MSHelpSystem.Core
 
 		public static Help3Catalog FindCatalogByProductCode(string productCode)
 		{
-			foreach (Help3Catalog catalog in catalogs)
-			{
-				if (string.Compare(productCode, catalog.ProductCode, true) == 0)
-				{
+			foreach (Help3Catalog catalog in catalogs) {
+				if (string.Compare(productCode, catalog.ProductCode, true) == 0) {
 					return catalog;
 				}
 			}
@@ -123,10 +122,8 @@ namespace MSHelpSystem.Core
 
 		public static Help3Catalog FindCatalogByDisplayName(string displayName)
 		{
-			foreach (Help3Catalog catalog in catalogs)
-			{
-				if (string.Compare(displayName, catalog.DisplayName, true) == 0)
-				{
+			foreach (Help3Catalog catalog in catalogs) {
+				if (string.Compare(displayName, catalog.DisplayName, true) == 0) {
 					return catalog;
 				}
 			}
@@ -135,10 +132,8 @@ namespace MSHelpSystem.Core
 
 		public static Help3Catalog FindCatalogByItsString(string stringValue)
 		{
-			foreach (Help3Catalog catalog in catalogs)
-			{
-				if (string.Compare(stringValue, catalog.ToString()) == 0)
-				{
+			foreach (Help3Catalog catalog in catalogs) {
+				if (string.Compare(stringValue, catalog.ToString()) == 0) {
 					return catalog;
 				}
 			}
@@ -160,10 +155,7 @@ namespace MSHelpSystem.Core
 		
 		public static Help3Catalog ActiveCatalog
 		{
-			get
-			{
-				return activeCatalog;
-			}
+			get { return activeCatalog; }
 		}
 
 		public static Help3Configuration Config

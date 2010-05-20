@@ -21,7 +21,7 @@ namespace MSHelpSystem
 
 		void LoadCatalogs()
 		{
-			if (Help3Environment.IsLocalHelp) HelpLibraryAgent.Start();
+			HelpLibraryAgent.Start();
 
 			help3Catalogs.Items.Clear();
 			if (Help3Service.Count > 0) {
@@ -32,10 +32,10 @@ namespace MSHelpSystem
 					help3Catalogs.Items.Add(cbi);
 				}
 			}
-			// TODO: localization needed for "Installed help catalogs"
+			// TODO: Needs a localization
 			groupBox1.Header = string.Format("{0} ({1})", "Installed Help catalogs", Help3Service.Count);
 
-			if (help3Catalogs.Items.Count == 0) help3Catalogs.SelectedIndex = 0;
+			if (help3Catalogs.Items.Count == 1) help3Catalogs.SelectedIndex = 0;
 			else {
 				foreach (ComboBoxItem item in help3Catalogs.Items) {
 					if (string.Compare((string)item.Content, Help3Service.ActiveCatalog.ToString(), true) == 0) {
@@ -53,7 +53,8 @@ namespace MSHelpSystem
 			ComboBoxItem selectedItem = (ComboBoxItem)help3Catalogs.SelectedItem;
 			if (selectedItem == null) return;
 			string activeCatalog      = (string)selectedItem.Content;
-			if (!string.IsNullOrEmpty(activeCatalog)) Help3Service.ActiveCatalogId = activeCatalog;
+			if (!string.IsNullOrEmpty(activeCatalog))
+				Help3Service.ActiveCatalogId =activeCatalog;
 		}
 
 		void Help3OfflineModeClicked(object sender, RoutedEventArgs e)

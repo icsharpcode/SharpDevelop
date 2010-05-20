@@ -56,7 +56,7 @@ namespace MSHelpSystem.Core
 			{
 				Process[] agents = Process.GetProcessesByName("HelpLibAgent");
 				int processId = (agents.Length > 0) ? agents[0].Id:0;
-				LoggingService.Debug(string.Format("Help 3.0: Port number is \"{0}\"", processId));
+				LoggingService.Debug(string.Format("Help 3.0: Help library agent uses has the process ID \"{0}\"", processId));
 				return processId;
 			}
 		}
@@ -112,13 +112,12 @@ namespace MSHelpSystem.Core
 		{
 			try {
 				Process[] agents = Process.GetProcessesByName("HelpLibAgent");
-				LoggingService.Debug(string.Format("Help 3.0: {0} {1} of HelpLibraryAgent.exe found", agents.Length, (agents.Length == 1)?"process":"processes"));
 
 				foreach (Process agent in agents) {
 					agent.Kill();
 					if (waitForExit) agent.WaitForExit();
 				}
-				LoggingService.Info("Help 3.0: Help library agent stopped");
+				LoggingService.Debug(string.Format("Help 3.0: {0} {1} of HelpLibraryAgent.exe stopped", agents.Length, (agents.Length == 1)?"process":"processes"));
 			}
 			catch (Exception ex) {
 				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));

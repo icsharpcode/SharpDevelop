@@ -12,7 +12,7 @@
 	</Path>
 
 	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
-		<BrowserSchemeExtension id = "ms-xhelp" class = "MSHelpSystem.BrowserScheme"/>
+		<BrowserSchemeExtension id = "http" class = "MSHelpSystem.BrowserScheme"/>
 	</Path>
 
 	<Path name="/SharpDevelop/Pads/ErrorList/TaskContextMenu">

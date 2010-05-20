@@ -13,7 +13,6 @@ namespace MSHelpSystem
 			if (pane == null) {
 				throw new ArgumentNullException("pane");
 			}
-			LoggingService.Info("Help 3.0: Calling browser (\"GoHome()\")");
 			DisplayHelp.Catalog();
 		}
 
@@ -22,7 +21,6 @@ namespace MSHelpSystem
 			if (pane == null) {
 				throw new ArgumentNullException("pane");
 			}
-			LoggingService.Info("Help 3.0: Calling browser (\"GoSearch()\")");
 			pane.Navigate(new Uri(string.Format(@"http://social.msdn.microsoft.com/Search/{0}", CultureInfo.CurrentCulture.Name.ToLower())));
 		}
 	}

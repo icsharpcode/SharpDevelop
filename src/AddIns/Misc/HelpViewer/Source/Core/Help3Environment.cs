@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.Win32;
 using ICSharpCode.Core;
+using MSHelpSystem.Core.Native;
 using MSHelpSystem.Helper;
 
 namespace MSHelpSystem.Core
@@ -92,6 +93,17 @@ namespace MSHelpSystem.Core
 		public static bool IsLocalHelp
 		{
 			get { 	return HelpClientWatcher.IsLocalHelp; }
+		}
+		
+		public static string FormatMsXHelpToHttp(string helpUrl)
+		{
+			string output = helpUrl;
+			if (output.StartsWith("ms-xhelp://?")) {
+				output = string.Format(
+					@"http://127.0.0.1:{0}/help/{1}-{2}/ms.help?{3}",
+					HelpLibraryAgent.PortNumber, 	NativeMethods.GetSessionId(), HelpLibraryAgent.ProcessId, output.Replace("ms-xhelp://?", ""));
+			}
+			return output;
 		}
 	}
 }

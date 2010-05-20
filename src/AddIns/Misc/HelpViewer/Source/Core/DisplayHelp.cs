@@ -7,7 +7,6 @@ using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using MSHelpSystem.Helper;
-using MSHelpSystem.Core.Native;
 
 namespace MSHelpSystem.Core
 {
@@ -114,20 +113,6 @@ namespace MSHelpSystem.Core
 		}
 
 
-		static string FormatMsXHelpToHttp(string helpUrl)
-		{
-			string output = helpUrl;
-			if (output.StartsWith("ms-xhelp://?")) {
-				output = string.Format(
-					@"http://127.0.0.1:{0}/help/{1}-{2}/ms.help?{3}",
-					HelpLibraryAgent.PortNumber,
-					NativeMethods.GetSessionId(),
-					HelpLibraryAgent.ProcessId,
-					output.Replace("ms-xhelp://?", ""));
-			}
-			return output;
-		}
-
 		static void DisplayLocalHelp(string arguments)
 		{
 			// TODO: set "embedded" to TRUE if we have a TOC control or something similar
@@ -141,7 +126,7 @@ namespace MSHelpSystem.Core
 				HelpLibraryAgent.Start();
 				Thread.Sleep(0x3e8);
 			}
-			string helpUrl = string.Format(@"{0}{1}{2}", FormatMsXHelpToHttp(arguments), ProjectLanguages.FormattedAsHttpParam(), (embedded)?"&embedded=true":string.Empty);			
+			string helpUrl = string.Format(@"{0}{1}{2}", Help3Environment.FormatMsXHelpToHttp(arguments), ProjectLanguages.FormattedAsHttpParam(), (embedded)?"&embedded=true":string.Empty);			
 			BrowserPane browser = ActiveHelp3Browser();
 			if (browser != null) {
 				LoggingService.Info(string.Format("Help 3.0: Navigating to {0}", helpUrl));
