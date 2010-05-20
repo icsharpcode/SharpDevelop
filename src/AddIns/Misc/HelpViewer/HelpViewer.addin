@@ -1,0 +1,29 @@
+﻿<AddIn name        = "Microsoft Help System v1.0"
+       author      = "Mathias Simmack"
+       url         = ""
+       description = "Help Integration for SharpDevelop">
+	
+	<Runtime>
+		<Import assembly = "HelpViewer.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Services/HelpProvider">
+		<Class id = "Help3" class = "MSHelpSystem.MSHelp3Provider"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
+		<BrowserSchemeExtension id = "ms-xhelp" class = "MSHelpSystem.BrowserScheme"/>
+	</Path>
+
+	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<OptionPanel id = "Help3Options" label = "Microsoft Help System v1.0" class = "MSHelpSystem.Help3OptionsPanel" />
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">
+		<MenuItem id          = "Help3DisplayCatalog"
+		          class       = "MSHelpSystem.SharpDevelopMenu.DisplayCatalogCommand"
+		          label       = "Display Help catalog"
+		          shortcut    = "Control|Alt|F1"
+		          insertafter = "Help" />
+	</Path>
+</AddIn>

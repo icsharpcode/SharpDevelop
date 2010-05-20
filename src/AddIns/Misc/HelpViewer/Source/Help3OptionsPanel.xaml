@@ -1,0 +1,19 @@
+﻿<gui:OptionPanel x:Class="MSHelpSystem.Help3OptionsPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+    xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+    xmlns:addin="clr-namespace:MSHelpSystem;assembly=HelpViewer"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+>
+	<StackPanel>
+		<GroupBox Header="Installed Help catalogs" Margin="5" Padding="8" Name="groupBox1">
+			<ComboBox Name="help3Catalogs" SelectionChanged="Help3CatalogsSelectionChanged" />
+		</GroupBox>
+		<GroupBox Header="Help Mode" Margin="5" Padding="8" Name="groupBox2">
+			<StackPanel>
+				<RadioButton Name="offlineMode" IsChecked="True" Content="I want to use local help" Click="Help3OfflineModeClicked" Margin="0,0,0,5"/>
+				<RadioButton Name="onlineMode" Content="I want to use online help" Click="Help3OnlineModeClicked" />
+			</StackPanel>
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel>
