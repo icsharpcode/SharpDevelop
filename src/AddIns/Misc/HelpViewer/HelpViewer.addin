@@ -15,15 +15,19 @@
 		<BrowserSchemeExtension id = "ms-xhelp" class = "MSHelpSystem.BrowserScheme"/>
 	</Path>
 
-	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<OptionPanel id = "Help3Options" label = "Microsoft Help System v1.0" class = "MSHelpSystem.Help3OptionsPanel" />
+	<Path name="/SharpDevelop/Pads/ErrorList/TaskContextMenu">
+		<MenuItem id = "Help3ShowErrorHelp" label = "Show Help" class = "MSHelpSystem.Commands.ShowErrorHelpCommand" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<OptionPanel id = "Help3Options" label = "Microsoft Help Viewer" class = "MSHelpSystem.Help3OptionsPanel" />
 	</Path>
 
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">
-		<MenuItem id          = "Help3DisplayCatalog"
-		          class       = "MSHelpSystem.SharpDevelopMenu.DisplayCatalogCommand"
-		          label       = "Display Help catalog"
-		          shortcut    = "Control|Alt|F1"
-		          insertafter = "Help" />
+		<MenuItem id           = "Help3DisplayCatalog"
+		          class        = "MSHelpSystem.Commands.DisplayCatalogCommand"
+		          label        = "Display Help catalog"
+		          shortcut     = "Control|Alt|F1"
+		          insertbefore = "Separator1" />
 	</Path>
 </AddIn>

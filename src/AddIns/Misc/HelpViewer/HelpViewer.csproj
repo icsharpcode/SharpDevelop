@@ -89,7 +89,7 @@
     <Compile Include="Source\Helper\Help3Configuration.cs" />
     <Compile Include="Source\Helper\HelpClientWatcher.cs" />
     <Compile Include="Source\Helper\ProjectLanguages.cs" />
-    <Compile Include="Source\HelpMenu.cs" />
+    <Compile Include="Source\Commands.cs" />
     <Compile Include="Source\MSHelp3Provider.cs" />
     <Compile Include="Source\Core\NativeMethods.cs" />
   </ItemGroup>
