@@ -37,5 +37,6 @@ namespace SimpleExpressionEvaluator.Utilities
 
             return null;
         }
+    	
     }
 }

@@ -75,7 +75,9 @@
     <Compile Include="DataManager\IListDataManagerFixture.cs" />
     <Compile Include="DataManager\MockDataAccess.cs" />
     <Compile Include="DataManager\TableDataManagerFixture.cs" />
+    <Compile Include="Exporter\Converter\ItemsConverterFixture.cs" />
     <Compile Include="Exporter\DataPageBuilderFixture.cs" />
+    <Compile Include="Exporter\DataListBuilderFixture.cs" />
     <Compile Include="old_Exporter\ExportItemsConverterFixture.cs" />
     <Compile Include="Printing\SectionBoundFixture.cs" />
     <Compile Include="Printing\Shapes\BaseLineFixture.cs" />
@@ -116,6 +118,7 @@
       <Name>ICSharpCode.Reports.Core</Name>
     </ProjectReference>
     <Folder Include="BaseItems" />
+    <Folder Include="Exporter\Converter" />
     <Folder Include="Layout" />
     <Folder Include="DataManager" />
     <Folder Include="Collections" />

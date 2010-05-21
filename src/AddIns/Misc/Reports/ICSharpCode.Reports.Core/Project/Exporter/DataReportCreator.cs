@@ -8,12 +8,10 @@
  */
 
 using System;
-using System.Drawing;
-using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Interfaces;
-using ICSharpCode.Reports.Core.Project.Exporter;
 
-namespace ICSharpCode.Reports.Core.old_Exporter
+
+namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>
 	/// Description of DataReportCreator.
@@ -21,11 +19,11 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 	public class DataReportCreator:AbstractReportCreator
 	{
 		
+		IDataManager dataManager;
 		
 		#region Constructor
 		
-		
-		public static IReportCreator CreateInstance(IReportModel reportModel, IDataManager dataManager,ILayouter layouter)
+		public static AbstractReportCreator CreateInstance(IReportModel reportModel, IDataManager dataManager,ILayouter layouter)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -43,12 +41,17 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		private DataReportCreator (IReportModel reportModel,IDataManager dataManager,ILayouter layouter):base(reportModel) 
 		{
-//			this.dataManager = dataManager;
+			this.dataManager = dataManager;
+			base.AbstractExportListBuilder = new DataExportListBuilder(reportModel,dataManager);
 		}
 		
 		#endregion
 		
-		
+		public override void BuildExportList()
+		{
+			base.AbstractExportListBuilder.WritePages();
+			
+		}
 		
 	}
 }

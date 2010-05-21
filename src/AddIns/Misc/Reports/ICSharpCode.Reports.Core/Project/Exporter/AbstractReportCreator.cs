@@ -7,26 +7,70 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Drawing;
 using ICSharpCode.Reports.Core.Interfaces;
 
-namespace ICSharpCode.Reports.Core.Project.Exporter
+namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>
 	/// Description of BaseReportCreator.
 	/// </summary>
-	public class AbstractReportCreator:IReportCreator
+	public class AbstractReportCreator:IReportCreator_2
 	{
+		
+		
 		public AbstractReportCreator(IReportModel reportModel)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("ReportModel");
 			}
 			
-			ReportModel = reportModel;
+			this.ReportModel = reportModel;
 		}
 		
 		
-		protected IReportModel ReportModel {get; private set;}
+		#region Convertion
+		
+		/*
+		protected virtual void BuildReportHeader ()
+		{
+		}
+		
+		protected virtual void BuildPageHeader ()
+		{
+		}
+		
+		protected virtual void BuildDetailInternal (BaseSection section)
+		{
+		}
+		
+		protected virtual void BuildPageFooter ()
+		{
+		}
+		
+		protected virtual void BuildReportFooter ()
+		{
+		}
+		
+		*/
+		
+		public virtual void BuildExportList ()
+		{
+			this.Pages.Clear();
+			AbstractExportListBuilder.WritePages();
+		}
+		
+		protected virtual void AddPage ()
+		{
+		}
+		
+		#endregion
+		
+	
+		
+		protected IReportModel ReportModel {get;  set;}
+		
+		protected AbstractExportListBuilder AbstractExportListBuilder {get;set;}
 		
 		#region IReportCreator
 		
@@ -34,16 +78,14 @@ namespace ICSharpCode.Reports.Core.Project.Exporter
 		
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		
-		public PagesCollection Pages {
+			
+		public virtual PageDescriptions Pages {
 			get {
-				throw new NotImplementedException();
+				return AbstractExportListBuilder.Pages;
+					
 			}
 		}
-		
-		public void BuildExportList()
-		{
-			throw new NotImplementedException();
-		}
+	
 		
 		#endregion
 	}
