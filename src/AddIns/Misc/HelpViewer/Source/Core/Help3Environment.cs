@@ -95,15 +95,14 @@ namespace MSHelpSystem.Core
 			get { 	return HelpClientWatcher.IsLocalHelp; }
 		}
 		
-		public static string FormatMsXHelpToHttp(string helpUrl)
+		public static string GetHttpFromMsXHelp(string helpUrl)
 		{
-			string output = helpUrl;
-			if (output.StartsWith("ms-xhelp://?")) {
-				output = string.Format(
-					@"http://127.0.0.1:{0}/help/{1}-{2}/ms.help?{3}",
-					HelpLibraryAgent.PortNumber, 	NativeMethods.GetSessionId(), HelpLibraryAgent.ProcessId, output.Replace("ms-xhelp://?", ""));
-			}
-			return output;
+			if (!HelpLibraryAgent.Start()) { return helpUrl; }
+			if (!helpUrl.StartsWith("ms-xhelp://?")) { return helpUrl; }
+			return string.Format(
+				@"http://127.0.0.1:{0}/help/{1}-{2}/ms.help?{3}",
+				HelpLibraryAgent.PortNumber, NativeMethods.GetSessionId(), HelpLibraryAgent.ProcessId, helpUrl.Replace("ms-xhelp://?", "")
+			);
 		}
 	}
 }

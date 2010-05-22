@@ -25,11 +25,12 @@ namespace MSHelpSystem.Core
 				                MessageBoxIcon.Error);
 				return;
 			}
-			Help3Catalog c = Help3Service.ActiveCatalog;
-			if (c == null) {
+			Help3Catalog catalog = Help3Service.ActiveCatalog;
+			if (catalog == null) {
 				throw new ArgumentNullException("c");
 			}
-			string helpCatalogUrl = string.Format(@"ms-xhelp://?method=page&id=-1&product={0}&productVersion={1}&locale={2}", c.ProductCode, c.ProductVersion, c.Locale);
+			string helpCatalogUrl = string.Format(@"ms-xhelp://?method=page&id=-1&product={0}&productVersion={1}&locale={2}",
+			                                      catalog.ProductCode, catalog.ProductVersion, catalog.Locale);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpCatalogUrl));
 			DisplayLocalHelp(helpCatalogUrl);
 		}
@@ -46,11 +47,12 @@ namespace MSHelpSystem.Core
 				                MessageBoxIcon.Error);
 				return;
 			}
-			Help3Catalog c = Help3Service.ActiveCatalog;
-			if (c == null) {
+			Help3Catalog catalog = Help3Service.ActiveCatalog;
+			if (catalog == null) {
 				throw new ArgumentNullException("c");
 			}
-			string helpPageUrl = string.Format(@"ms-xhelp://?method=page&id={3}&product={0}&productVersion={1}&locale={2}", c.ProductCode, c.ProductVersion, c.Locale, pageId);
+			string helpPageUrl = string.Format(@"ms-xhelp://?method=page&id={3}&product={0}&productVersion={1}&locale={2}",
+			                                   catalog.ProductCode, catalog.ProductVersion, catalog.Locale, pageId);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpPageUrl));
 			DisplayLocalHelp(helpPageUrl);
 		}
@@ -64,11 +66,12 @@ namespace MSHelpSystem.Core
 				DisplayHelpOnMSDN(contextual);
 				return;
 			}
-			Help3Catalog c = Help3Service.ActiveCatalog;
-			if (c == null) {
+			Help3Catalog catalog = Help3Service.ActiveCatalog;
+			if (catalog == null) {
 				throw new ArgumentNullException("c");
 			}
-			string helpContextualUrl = string.Format(@"ms-xhelp://?method=f1&query={3}&product={0}&productVersion={1}&locale={2}", c.ProductCode, c.ProductVersion, c.Locale, contextual);
+			string helpContextualUrl = string.Format(@"ms-xhelp://?method=f1&query={3}&product={0}&productVersion={1}&locale={2}",
+			                                         catalog.ProductCode, catalog.ProductVersion, catalog.Locale, contextual);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpContextualUrl));
 			DisplayLocalHelp(helpContextualUrl);
 		}
@@ -82,11 +85,12 @@ namespace MSHelpSystem.Core
 				DisplaySearchOnMSDN(searchWords);
 				return;
 			}
-			Help3Catalog c = Help3Service.ActiveCatalog;
-			if (c == null) {
+			Help3Catalog catalog = Help3Service.ActiveCatalog;
+			if (catalog == null) {
 				throw new ArgumentNullException("c");
 			}
-			string helpSearchUrl = string.Format(@"ms-xhelp://method=search&query={3}&product={0}&productVersion={1}&locale={2}", c.ProductCode, c.ProductVersion, c.Locale, searchWords.Replace(" ", "+"));
+			string helpSearchUrl = string.Format(@"ms-xhelp://method=search&query={3}&product={0}&productVersion={1}&locale={2}",
+			                                     catalog.ProductCode, catalog.ProductVersion, catalog.Locale, searchWords.Replace(" ", "+"));
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpSearchUrl));
 			DisplayLocalHelp(helpSearchUrl);
 		}
@@ -103,11 +107,12 @@ namespace MSHelpSystem.Core
 				                MessageBoxIcon.Error);
 				return;
 			}
-			Help3Catalog c = Help3Service.ActiveCatalog;
-			if (c == null) {
+			Help3Catalog catalog = Help3Service.ActiveCatalog;
+			if (catalog == null) {
 				throw new ArgumentNullException("c");
 			}
-			string helpKeywordsUrl = string.Format(@"ms-xhelp://?method=keywords&query={3}&product={0}&productVersion={1}&locale={2}", c.ProductCode, c.ProductVersion, c.Locale, keywords);
+			string helpKeywordsUrl = string.Format(@"ms-xhelp://?method=keywords&query={3}&product={0}&productVersion={1}&locale={2}",
+			                                       catalog.ProductCode, catalog.ProductVersion, catalog.Locale, keywords);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpKeywordsUrl));
 			DisplayLocalHelp(helpKeywordsUrl);
 		}
@@ -126,11 +131,13 @@ namespace MSHelpSystem.Core
 				HelpLibraryAgent.Start();
 				Thread.Sleep(0x3e8);
 			}
-			string helpUrl = string.Format(@"{0}{1}{2}", Help3Environment.FormatMsXHelpToHttp(arguments), ProjectLanguages.FormattedAsHttpParam(), (embedded)?"&embedded=true":string.Empty);			
+			string helpUrl = string.Format(@"{0}{1}{2}",
+			                               arguments, ProjectLanguages.GetCurrentLanguageAsHttpParam(), (embedded)?"&embedded=true":string.Empty);
+
 			BrowserPane browser = ActiveHelp3Browser();
 			if (browser != null) {
 				LoggingService.Info(string.Format("Help 3.0: Navigating to {0}", helpUrl));
-				browser.Navigate(helpUrl);
+				browser.Navigate(Help3Environment.GetHttpFromMsXHelp(helpUrl));
 				browser.WorkbenchWindow.SelectWindow();
 			}			
 		}

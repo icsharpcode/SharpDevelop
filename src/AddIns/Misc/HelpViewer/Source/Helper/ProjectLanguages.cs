@@ -26,7 +26,7 @@ namespace MSHelpSystem.Helper
 
 		#endregion
 
-		public static string Formatted()
+		public static string GetCurrentLanguage()
 		{
 			string output = string.Empty;
 			if (ProjectService.CurrentProject != null) {
@@ -42,9 +42,9 @@ namespace MSHelpSystem.Helper
 			return output.ToLower();
 		}
 
-		public static string FormattedAsHttpParam()
+		public static string GetCurrentLanguageAsHttpParam()
 		{
-			string devLang = Formatted();
+			string devLang = GetCurrentLanguage();
 			if (string.IsNullOrEmpty(devLang)) return string.Empty;
 			else return string.Format("&category=DevLang%3a{0}", devLang);
 		}

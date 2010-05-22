@@ -81,6 +81,7 @@
     <Compile Include="Source\Core\Help3Catalog.cs" />
     <Compile Include="Source\Core\Help3Environment.cs" />
     <Compile Include="Source\Core\Help3Service.cs" />
+    <None Include="Source\Core\HelpLibraryManager.cs" />
     <Compile Include="Source\Core\HelpLibraryAgent.cs" />
     <Compile Include="Source\Help3OptionsPanel.xaml.cs">
       <DependentUpon>Help3OptionsPanel.xaml</DependentUpon>

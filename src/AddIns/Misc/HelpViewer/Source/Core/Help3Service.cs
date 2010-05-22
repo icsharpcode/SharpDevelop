@@ -23,8 +23,6 @@ namespace MSHelpSystem.Core
 			Help3Service.ConfigurationUpdated += new EventHandler(Help3ConfigurationUpdated);
 			LoadHelpConfiguration();
 			UpdateCatalogs();
-			if (config.OfflineMode) HelpClientWatcher.EnableLocalHelp();
-			else HelpClientWatcher.EnableOnlineHelp();
 		}
 
 		static List<Help3Catalog> catalogs = new List<Help3Catalog>();
