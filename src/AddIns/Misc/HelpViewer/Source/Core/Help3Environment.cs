@@ -7,7 +7,7 @@ using MSHelpSystem.Helper;
 
 namespace MSHelpSystem.Core
 {
-	internal sealed class Help3Environment
+	public sealed class Help3Environment
 	{
 		Help3Environment()
 		{

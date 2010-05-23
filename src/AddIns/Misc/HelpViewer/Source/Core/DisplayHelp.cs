@@ -10,7 +10,7 @@ using MSHelpSystem.Helper;
 
 namespace MSHelpSystem.Core
 {
-	internal sealed class DisplayHelp
+	public sealed class DisplayHelp
 	{
 		DisplayHelp()
 		{
@@ -89,7 +89,7 @@ namespace MSHelpSystem.Core
 			if (catalog == null) {
 				throw new ArgumentNullException("c");
 			}
-			string helpSearchUrl = string.Format(@"ms-xhelp://method=search&query={3}&product={0}&productVersion={1}&locale={2}",
+			string helpSearchUrl = string.Format(@"ms-xhelp://?method=search&query={3}&product={0}&productVersion={1}&locale={2}",
 			                                     catalog.ProductCode, catalog.ProductVersion, catalog.Locale, searchWords.Replace(" ", "+"));
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpSearchUrl));
 			DisplayLocalHelp(helpSearchUrl);
@@ -121,7 +121,7 @@ namespace MSHelpSystem.Core
 		static void DisplayLocalHelp(string arguments)
 		{
 			// TODO: set "embedded" to TRUE if we have a TOC control or something similar
-			DisplayLocalHelp(arguments, false);
+			DisplayLocalHelp(arguments, true);
 		}
 
 		static void DisplayLocalHelp(string arguments, bool embedded)

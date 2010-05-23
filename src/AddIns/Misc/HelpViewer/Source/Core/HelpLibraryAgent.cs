@@ -6,7 +6,7 @@ using ICSharpCode.Core;
 
 namespace MSHelpSystem.Core
 {
-	internal sealed class HelpLibraryAgent
+	public sealed class HelpLibraryAgent
 	{
 		HelpLibraryAgent()
 		{

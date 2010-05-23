@@ -36,13 +36,4 @@ namespace MSHelpSystem.Commands
 			}
 		}
 	}
-
-	public class DisplayCatalogCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			LoggingService.Info("Help 3.0: Calling menu command \"DisplayHelp.Catalog()\"");
-			DisplayHelp.Catalog();
-		}
-	}
 }

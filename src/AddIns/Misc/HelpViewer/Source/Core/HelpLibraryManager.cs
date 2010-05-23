@@ -7,7 +7,7 @@ using ICSharpCode.Core;
 
 namespace MSHelpSystem.Core
 {
-	internal sealed class HelpLibraryManager
+	public sealed class HelpLibraryManager
 	{
 		HelpLibraryManager()
 		{
