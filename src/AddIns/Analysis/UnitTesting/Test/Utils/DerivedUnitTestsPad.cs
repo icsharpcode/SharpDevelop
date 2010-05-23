@@ -29,11 +29,13 @@ namespace UnitTesting.Tests.Utils
 		DummyParserServiceTestTreeView treeView = new DummyParserServiceTestTreeView();
 
 		public DerivedUnitTestsPad(Solution openSolution)
+			: base(new MockTestFrameworksWithNUnitFrameworkSupport())
 		{
 			this.openSolution = openSolution;
 		}
 		
 		public DerivedUnitTestsPad()
+			: this(null)
 		{
 		}
 		
@@ -42,9 +44,7 @@ namespace UnitTesting.Tests.Utils
 		/// derived test tree view.
 		/// </summary>
 		public MockProjectContent ProjectContent {
-			get {
-				return projectContent;
-			}
+			get { return projectContent; }
 			set {
 				projectContent = value;
 				treeView.ProjectContentForProject = projectContent;
@@ -52,15 +52,11 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public bool GetOpenSolutionCalled {
-			get {
-				return getOpenSolutionCalled;
-			}
+			get { return getOpenSolutionCalled; }
 		}
 		
 		public bool IsParserLoadingSolutionCalled {
-			get {
-				return isParserLoadingSolutionCalled;
-			}
+			get { return isParserLoadingSolutionCalled; }
 		}
 		
 		/// <summary>
@@ -69,9 +65,7 @@ namespace UnitTesting.Tests.Utils
 		/// called. This ensures we do not miss this event.
 		/// </summary>
 		public bool LoadSolutionProjectsThreadEndedHandled {
-			get {
-				return loadSolutionProjectsThreadEndedHandled;
-			}
+			get { return loadSolutionProjectsThreadEndedHandled; }
 		}
 		
 		public void CallSolutionLoaded(Solution solution)
@@ -133,7 +127,7 @@ namespace UnitTesting.Tests.Utils
 		/// Returns a dummy tree view where we can mock the
 		/// IProjectContent that will be used by the TestTreeView.
 		/// </summary>
-		protected override TestTreeView CreateTestTreeView()
+		protected override TestTreeView CreateTestTreeView(IRegisteredTestFrameworks testFrameworks)
 		{
 			return treeView;
 		}

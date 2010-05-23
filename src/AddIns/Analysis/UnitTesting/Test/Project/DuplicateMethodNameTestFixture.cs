@@ -23,38 +23,38 @@ namespace UnitTesting.Tests.Project
 	public class DuplicateMethodNameTestFixture
 	{
 		TestClass testClass;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
-		{	
+		{
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			
 			// Add a test class.
 			MockProjectContent projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
-			MockClass c = new MockClass("RootNamespace.MyTestFixture");
+			MockClass c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
 			projectContent.Classes.Add(c);
 			
 			// Add first method.
-			MockMethod method = new MockMethod("MyTest");
+			MockMethod method = new MockMethod(c, "MyTest");
 			method.Attributes.Add(new MockAttribute("Test"));
-			method.DeclaringType = c;
 			c.Methods.Add(method);
 			
 			// Add duplicate method.
 			c.Methods.Add(method);
 			
 			// Add a base class that has duplicate methods.
-			MockClass baseClass = new MockClass("RootNamespace.MyTestFixtureBase");
+			MockClass baseClass = new MockClass(projectContent, "RootNamespace.MyTestFixtureBase");
 			baseClass.Attributes.Add(new MockAttribute("TestFixture"));
-			baseClass.ProjectContent = projectContent;
 			projectContent.Classes.Add(baseClass);
-			c.BaseClass = baseClass;
+			c.AddBaseClass(baseClass);
 			baseClass.Methods.Add(method);
 			baseClass.Methods.Add(method);
 			
 			// Create test class.
-			testClass = new TestClass(c);
+			testClass = new TestClass(c, testFrameworks);
 		}
 		
 		/// <summary>

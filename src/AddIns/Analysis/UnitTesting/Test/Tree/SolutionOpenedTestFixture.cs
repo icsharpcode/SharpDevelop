@@ -27,6 +27,7 @@ namespace UnitTesting.Tests.Tree
 		Solution solution;
 		MSBuildBasedProject project;
 		MockProjectContent projectContent;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -37,6 +38,7 @@ namespace UnitTesting.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
 			projectContent = new MockProjectContent();
 			pad.ProjectContent = projectContent;
 			solution = new Solution();
@@ -166,10 +168,8 @@ namespace UnitTesting.Tests.Tree
 		public void ParserInfoUpdated()
 		{
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(pad.ProjectContent);
-			MockClass mockClass = new MockClass("MyTestFixture");
+			MockClass mockClass = new MockClass(pad.ProjectContent, "MyTestFixture");
 			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
-			mockClass.ProjectContent = pad.ProjectContent;
-			mockClass.SetCompoundClass(mockClass);
 			newUnit.Classes.Add(mockClass);
 
 			ExtTreeNode rootNode = (ExtTreeNode)pad.TestTreeView.Nodes[0];
@@ -211,7 +211,7 @@ namespace UnitTesting.Tests.Tree
 			// Add a new class to a non-empty namespace so it gets
 			// added to a new namespace node.
 			MockClass mockClass = new MockClass("RootNamespace.MyTestFixture");
-			TestClass testClass = new TestClass(mockClass);
+			TestClass testClass = new TestClass(mockClass, testFrameworks);
 			projectNode.TestProject.TestClasses.Add(testClass);
 			
 			Assert.AreEqual(1, projectNode.Nodes.Count,
@@ -240,7 +240,7 @@ namespace UnitTesting.Tests.Tree
 			// Add a new class to a namespace so it gets
 			// added to a new namespace node.
 			MockClass mockClass = new MockClass("RootNamespace.Tests.MyTestFixture");
-			TestClass testClass = new TestClass(mockClass);
+			TestClass testClass = new TestClass(mockClass, testFrameworks);
 			projectNode.TestProject.TestClasses.Add(testClass);
 			
 			// Get the newly added namespace node.
@@ -275,7 +275,7 @@ namespace UnitTesting.Tests.Tree
 			// Add a new class to a non-empty namespace so it gets
 			// added to a new namespace node.
 			MockClass mockClass = new MockClass("RootNamespace.Tests.MyTestFixture");
-			TestClass testClass = new TestClass(mockClass);
+			TestClass testClass = new TestClass(mockClass, testFrameworks);
 			projectNode.TestProject.TestClasses.Add(testClass);
 			
 			// Expand RootNamespace tree node.
@@ -324,7 +324,7 @@ namespace UnitTesting.Tests.Tree
 			// Add a new class to a non-empty namespace so it gets
 			// added to a new namespace node.
 			MockClass mockClass = new MockClass("RootNamespace.Tests.MyTestFixture");
-			TestClass testClass = new TestClass(mockClass);
+			TestClass testClass = new TestClass(mockClass, testFrameworks);
 			projectNode.TestProject.TestClasses.Add(testClass);
 			
 			// Get the root namespace node.

@@ -9,6 +9,8 @@ using System;
 
 namespace ICSharpCode.UnitTesting
 {
+	public delegate void TestFinishedEventHandler(object source, TestFinishedEventArgs e);
+	
 	public class TestFinishedEventArgs : EventArgs
 	{
 		TestResult result;
@@ -19,9 +21,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public TestResult Result {
-			get {
-				return result;
-			}
+			get { return result; }
 		}
 	}
 }

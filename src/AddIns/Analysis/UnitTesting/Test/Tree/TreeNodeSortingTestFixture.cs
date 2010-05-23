@@ -33,6 +33,7 @@ namespace UnitTesting.Tests.Tree
 		TestClassTreeNode testFixtureNode;
 		MockProjectContent projectContent;
 		TestProject testProject;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
@@ -54,13 +55,12 @@ namespace UnitTesting.Tests.Tree
 			
 			// Add two methods to the test class only
 			// one of which has test attributes.
-			MockMethod testMethod = new MockMethod("NameExists");
+			MockMethod testMethod = new MockMethod(testClass.Class, "NameExists");
 			testMethod.Attributes.Add(new MockAttribute("Test"));
-			testMethod.DeclaringType = testClass.Class;
 			testClass.Class.Methods.Add(testMethod);
-					
-			// Init mock project content to be returned.
-			treeView = new DummyParserServiceTestTreeView();
+			
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			treeView = new DummyParserServiceTestTreeView(testFrameworks);
 			treeView.ProjectContentForProject = projectContent;
 			
 			// Load the projects into the test tree view.
@@ -224,9 +224,8 @@ namespace UnitTesting.Tests.Tree
 		public void NewClassMethodAdded()
 		{
 			MockClass c = (MockClass)testFixtureNode.Class;
-			MockMethod method = new MockMethod("Apple");
+			MockMethod method = new MockMethod(c, "Apple");
 			method.Attributes.Add(new MockAttribute("Test"));
-			method.DeclaringType = c;
 			c.SetCompoundClass(c);
 			c.Methods.Add(method);
 			
@@ -247,10 +246,9 @@ namespace UnitTesting.Tests.Tree
 		/// </summary>
 		TestClass CreateTestClass(string name)
 		{
-			MockClass c = new MockClass(name);
+			MockClass c = new MockClass(projectContent, name);
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
-			return new TestClass(c);
+			return new TestClass(c, testFrameworks);
 		}
 	}
 }

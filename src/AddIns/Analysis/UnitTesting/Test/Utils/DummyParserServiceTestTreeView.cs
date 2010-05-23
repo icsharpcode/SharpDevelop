@@ -20,17 +20,23 @@ namespace UnitTesting.Tests.Utils
 	{
 		IProjectContent projectContent;
 		
+		public DummyParserServiceTestTreeView(IRegisteredTestFrameworks testFrameworks)
+			: base(testFrameworks)
+		{
+		}
+		
+		public DummyParserServiceTestTreeView()
+			: this(new MockTestFrameworksWithNUnitFrameworkSupport())
+		{
+		}
+		
 		/// <summary>
 		/// Gets or sets the project content that will be returned from the
 		/// GetProjectContent method.
 		/// </summary>
 		public IProjectContent ProjectContentForProject {
-			get {
-				return projectContent;
-			}
-			set {
-				projectContent = value;
-			}
+			get { return projectContent; }
+			set { projectContent = value; }
 		}
 		
 		public override IProjectContent GetProjectContent(IProject project)

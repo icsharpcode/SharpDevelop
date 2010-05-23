@@ -31,23 +31,18 @@ namespace UnitTesting.Tests.Project
 			
 			// Create new compilation unit with inner class that has its method renamed.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newOuterClass = new MockClass("MyTests.A");
-			newOuterClass.ProjectContent = projectContent;
+			MockClass newOuterClass = new MockClass(projectContent, "MyTests.A");
 			projectContent.Classes.Add(newOuterClass);
-			newOuterClass.SetCompoundClass(newOuterClass);
 			newUnit.Classes.Add(newOuterClass);
 			
 			// Create the inner test class.
-			MockClass newInnerClass = new MockClass("MyTests.A.InnerATest", "MyTests.A+InnerATest");
+			MockClass newInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest", outerClass);
+			newInnerClass.SetDotNetName("MyTests.A+InnerATest");
 			newInnerClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newInnerClass.ProjectContent = projectContent;
-			newInnerClass.DeclaringType = outerClass; // Declaring type is outer class.	
-			newInnerClass.SetCompoundClass(newInnerClass);
 			newOuterClass.InnerClasses.Add(newInnerClass);
 			
-			MockMethod method = new MockMethod("FooBarRenamed");
+			MockMethod method = new MockMethod(newInnerClass, "FooBarRenamed");
 			method.Attributes.Add(new MockAttribute("Test"));
-			method.DeclaringType = newInnerClass;
 			newInnerClass.Methods.Add(method);
 			outerClass.InnerClasses.Add(newInnerClass);
 		

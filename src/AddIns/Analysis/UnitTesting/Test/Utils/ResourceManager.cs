@@ -30,6 +30,7 @@ namespace UnitTesting.Tests.Utils
 				initialized = true;
 				Assembly exe = Assembly.Load("SharpDevelop");
 				ResourceService.RegisterNeutralImages(new System.Resources.ResourceManager("Resources.BitmapResources", exe));
+				ResourceService.RegisterNeutralStrings(new System.Resources.ResourceManager("Resources.StringResources", exe));
 			}
 		}
 	}

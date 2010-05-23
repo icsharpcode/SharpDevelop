@@ -22,7 +22,8 @@ namespace UnitTesting.Tests.Project
 	{
 		TestProject testProject;
 		MockProjectContent projectContent;
-
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
+		
 		[SetUp]
 		public void Init()
 		{
@@ -36,7 +37,8 @@ namespace UnitTesting.Tests.Project
 			projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
 			
-			testProject = new TestProject(project, projectContent);
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testProject = new TestProject(project, projectContent, testFrameworks);
 		}
 		
 		/// <summary>
@@ -45,13 +47,11 @@ namespace UnitTesting.Tests.Project
 		/// </summary>
 		[Test]
 		public void NewClassInParserInfo()
-		{			
+		{
 			// Create new compilation unit with extra class.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newClass = new MockClass("RootNamespace.MyNewTestFixture");
+			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
 			newClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newClass.ProjectContent = projectContent;
-			newClass.SetCompoundClass(newClass);
 			newUnit.Classes.Add(newClass);
 			
 			// Update TestProject's parse info.
@@ -71,20 +71,16 @@ namespace UnitTesting.Tests.Project
 			// Create an old compilation unit with the test class
 			// but without a [TestFixture] attribute.
 			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newClass = new MockClass("RootNamespace.MyNewTestFixture");
-			newClass.ProjectContent = projectContent;
-			newClass.SetCompoundClass(newClass);
+			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
 			oldUnit.Classes.Add(newClass);
-
+			
 			// Create a new compilation unit with the test class
 			// having a [TestFixture] attribute.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			newClass = new MockClass("RootNamespace.MyNewTestFixture");
+			newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
 			newClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newClass.ProjectContent = projectContent;
-			newClass.SetCompoundClass(newClass);
 			newUnit.Classes.Add(newClass);
-
+			
 			// Update TestProject's parse info.
 			testProject.UpdateParseInfo(oldUnit, newUnit);
 			
@@ -106,20 +102,16 @@ namespace UnitTesting.Tests.Project
 			// Create an old compilation unit with the test class
 			// having a [TestFixture] attribute.
 			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newClass = new MockClass("RootNamespace.MyNewTestFixture");
+			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
 			newClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newClass.ProjectContent = projectContent;
-			newClass.SetCompoundClass(newClass);
 			oldUnit.Classes.Add(newClass);
-
+			
 			// Create a new compilation unit with the test class
 			// but without a [TestFixture] attribute.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			newClass = new MockClass("RootNamespace.MyNewTestFixture");
-			newClass.ProjectContent = projectContent;
-			newClass.SetCompoundClass(newClass);
+			newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
 			newUnit.Classes.Add(newClass);
-
+			
 			// Update TestProject's parse info.
 			testProject.UpdateParseInfo(oldUnit, newUnit);
 			
