@@ -1010,13 +1010,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ReadOnlyCollection<IMethodOrProperty> cachedExtensionMethods;
 		IClass cachedExtensionMethods_LastClass; // invalidate cache when callingClass != LastClass
 		
-		public ReadOnlyCollection<IMethodOrProperty> SearchAllExtensionMethods()
+		public ReadOnlyCollection<IMethodOrProperty> SearchAllExtensionMethods(bool searchInAllNamespaces = false)
 		{
 			if (callingClass == null)
 				return EmptyList<IMethodOrProperty>.Instance;
 			if (callingClass != cachedExtensionMethods_LastClass) {
 				cachedExtensionMethods_LastClass = callingClass;
-				cachedExtensionMethods = new ReadOnlyCollection<IMethodOrProperty>(CtrlSpaceResolveHelper.FindAllExtensions(languageProperties, callingClass));
+				cachedExtensionMethods = new ReadOnlyCollection<IMethodOrProperty>(CtrlSpaceResolveHelper.FindAllExtensions(languageProperties, callingClass, searchInAllNamespaces));
 			}
 			return cachedExtensionMethods;
 		}
@@ -1122,7 +1122,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public List<ICompletionEntry> CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
+		/// <summary>
+		/// Returns code completion entries for given context.
+		/// </summary>
+		/// <param name="caretLine"></param>
+		/// <param name="caretColumn"></param>
+		/// <param name="parseInfo"></param>
+		/// <param name="fileContent"></param>
+		/// <param name="context"></param>
+		/// <param name="showEntriesFromAllNamespaces">If true, returns entries from all namespaces, regardless of current imports.</param>
+		/// <returns></returns>
+		public List<ICompletionEntry> CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context, bool showEntriesFromAllNamespaces = false)
 		{
 			if (!Initialize(parseInfo, caretLine, caretColumn))
 				return null;
@@ -1231,7 +1241,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		void CtrlSpaceInternal(List<ICompletionEntry> result, string fileContent)
+		void CtrlSpaceInternal(List<ICompletionEntry> result, string fileContent, bool showEntriesFromAllNamespaces = true)
 		{
 			lookupTableVisitor = new LookupTableVisitor(language);
 			
@@ -1265,11 +1275,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				result.Add(new DefaultField.ParameterField(callingMember.ReturnType, "value", callingMember.Region, callingClass));
 			}
 			
-			// CC contains contents of all imported namespaces
-			//CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);	// FindReferences to AddImportedNamespaceContents results in OutOfMemory
-			
-			// CC contains contents of all referenced assemblies
-			CtrlSpaceResolveHelper.AddReferencedProjectsContents(result, cu, callingClass);
+			if (showEntriesFromAllNamespaces) {
+				// CC contains contents of all referenced assemblies
+				CtrlSpaceResolveHelper.AddReferencedProjectsContents(result, cu, callingClass);
+			} else {
+				// CC contains contents of all imported namespaces
+				CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);
+			}
 		}
 		
 		sealed class CompareLambdaByLocation : IEqualityComparer<LambdaExpression>

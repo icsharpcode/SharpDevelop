@@ -49,6 +49,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	/// </summary>
 	public class CodeCompletionItemProvider : AbstractCompletionItemProvider
 	{
+		/// <summary>
+		/// Gets/Sets whether items from all namespaces should be included in code completion, regardless of imports.
+		/// </summary>
+		public bool ShowItemsFromAllNamespaces { get; set; }
+		
 		/// <inheritdoc/>
 		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
@@ -103,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			if (rr == null)
 				return null;
 			IProjectContent callingContent = rr.CallingClass != null ? rr.CallingClass.ProjectContent : null;
-			List<ICompletionEntry> arr = rr.GetCompletionData(callingContent ?? ParserService.CurrentProjectContent);
+			List<ICompletionEntry> arr = rr.GetCompletionData(callingContent ?? ParserService.CurrentProjectContent, this.ShowItemsFromAllNamespaces);
 			return GenerateCompletionListForCompletionData(arr, context);
 		}
 		
