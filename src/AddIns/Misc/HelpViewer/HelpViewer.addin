@@ -1,7 +1,8 @@
-﻿<AddIn name        = "Microsoft Help System v1.0"
-       author      = "Mathias Simmack"
-       url         = ""
-       description = "Help Integration for SharpDevelop">
+﻿<AddIn name               = "Microsoft Help System v1.0"
+       author             = "Mathias Simmack"
+       url                = ""
+       description        = "Help Integration for SharpDevelop"
+       addInManagerHidden = "preinstalled">
 	
 	<Runtime>
 		<Import assembly = "HelpViewer.dll"/>
