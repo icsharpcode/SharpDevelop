@@ -42,6 +42,11 @@ namespace MSHelpSystem.Core
 		{
 			get { return displayName; }
 		}
+
+		public string ShortName
+		{
+			get { return string.Format(@"{0}/{1}/{2}", productCode, productVersion, productLocale); }
+		}
 	
 		public string CatalogPath
 		{
@@ -56,11 +61,6 @@ namespace MSHelpSystem.Core
 		public string BrandingPackage
 		{
 			get { return brandingPackage; }
-		}
-
-		public override string ToString()
-		{
-			return string.Format(@"{0}/{1}/{2}", productCode, productVersion, productLocale);
 		}
 	}
 }

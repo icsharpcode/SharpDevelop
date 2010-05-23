@@ -56,7 +56,7 @@ namespace MSHelpSystem.Core
 			{
 				Process[] agents = Process.GetProcessesByName("HelpLibAgent");
 				int processId = (agents.Length > 0) ? agents[0].Id:0;
-				LoggingService.Debug(string.Format("Help 3.0: Help library agent uses has the process ID \"{0}\"", processId));
+				LoggingService.Debug(string.Format("Help 3.0: Help library agent has the process ID \"{0}\"", processId));
 				return processId;
 			}
 		}

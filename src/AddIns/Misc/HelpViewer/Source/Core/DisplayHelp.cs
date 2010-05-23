@@ -121,7 +121,7 @@ namespace MSHelpSystem.Core
 		static void DisplayLocalHelp(string arguments)
 		{
 			// TODO: set "embedded" to TRUE if we have a TOC control or something similar
-			DisplayLocalHelp(arguments, true);
+			DisplayLocalHelp(arguments, false);
 		}
 
 		static void DisplayLocalHelp(string arguments, bool embedded)

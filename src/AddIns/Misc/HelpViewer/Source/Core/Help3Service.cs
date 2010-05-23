@@ -67,17 +67,17 @@ namespace MSHelpSystem.Core
 		static void Help3HasUpdatedTheCatalogs(object sender, EventArgs e)
 		{
 			if (string.IsNullOrEmpty(config.ActiveCatalogId)) {
-				config.ActiveCatalogId = (catalogs.Count > 0) ? catalogs[0].ToString():string.Empty;
+				config.ActiveCatalogId = (catalogs.Count > 0) ? catalogs[0].ShortName:string.Empty;
 			}
-			activeCatalog = (string.IsNullOrEmpty(config.ActiveCatalogId)) ? null:FindCatalogByItsString(config.ActiveCatalogId);
+			activeCatalog = (string.IsNullOrEmpty(config.ActiveCatalogId)) ? null:FindCatalogByItsShortName(config.ActiveCatalogId);
 		}
 
 		static void Help3ActiveCatalogIdChanged(object sender, EventArgs e)
 		{
 			if (string.IsNullOrEmpty(config.ActiveCatalogId)) {
-				config.ActiveCatalogId = (catalogs.Count > 0) ? catalogs[0].ToString():string.Empty;
+				config.ActiveCatalogId = (catalogs.Count > 0) ? catalogs[0].ShortName:string.Empty;
 			}
-			activeCatalog = (string.IsNullOrEmpty(config.ActiveCatalogId)) ? null:FindCatalogByItsString(config.ActiveCatalogId);
+			activeCatalog = (string.IsNullOrEmpty(config.ActiveCatalogId)) ? null:FindCatalogByItsShortName(config.ActiveCatalogId);
 		}
 
 		static void Help3ConfigurationUpdated(object sender, EventArgs e)
@@ -111,7 +111,7 @@ namespace MSHelpSystem.Core
 		public static Help3Catalog FindCatalogByProductCode(string productCode)
 		{
 			foreach (Help3Catalog catalog in catalogs) {
-				if (string.Compare(productCode, catalog.ProductCode, true) == 0) {
+				if (productCode.Equals(catalog.ProductCode, StringComparison.InvariantCultureIgnoreCase)) {
 					return catalog;
 				}
 			}
@@ -121,17 +121,17 @@ namespace MSHelpSystem.Core
 		public static Help3Catalog FindCatalogByDisplayName(string displayName)
 		{
 			foreach (Help3Catalog catalog in catalogs) {
-				if (string.Compare(displayName, catalog.DisplayName, true) == 0) {
+				if (displayName.Equals(catalog.DisplayName, StringComparison.InvariantCultureIgnoreCase)) {
 					return catalog;
 				}
 			}
 			return null;
 		}
 
-		public static Help3Catalog FindCatalogByItsString(string stringValue)
+		public static Help3Catalog FindCatalogByItsShortName(string catalogString)
 		{
 			foreach (Help3Catalog catalog in catalogs) {
-				if (string.Compare(stringValue, catalog.ToString()) == 0) {
+				if (catalogString.Equals(catalog.ShortName, StringComparison.InvariantCultureIgnoreCase)) {
 					return catalog;
 				}
 			}

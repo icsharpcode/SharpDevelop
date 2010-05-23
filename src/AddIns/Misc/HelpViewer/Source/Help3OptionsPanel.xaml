@@ -7,12 +7,22 @@
 >
 	<StackPanel>
 		<GroupBox Header="Installed Help catalogs" Margin="5" Padding="8" Name="groupBox1">
-			<ComboBox Name="help3Catalogs" SelectionChanged="Help3CatalogsSelectionChanged" />
+			<ComboBox Name="help3Catalogs"
+			          ItemsSource="{Binding}"
+			          DisplayMemberPath="ShortName"
+			          SelectedValuePath="ShortName"
+			          SelectionChanged="Help3CatalogsSelectionChanged" />
 		</GroupBox>
 		<GroupBox Header="Help Mode" Margin="5" Padding="8" Name="groupBox2">
 			<StackPanel>
-				<RadioButton Name="offlineMode" IsChecked="True" Content="I want to use local help" Click="Help3OfflineModeClicked" Margin="0,0,0,5"/>
-				<RadioButton Name="onlineMode" Content="I want to use online help" Click="Help3OnlineModeClicked" />
+				<RadioButton Name="offlineMode"
+				             IsChecked="True"
+				             Content="I want to use local help"
+				             Click="Help3OfflineModeClicked"
+				             Margin="0,0,0,5"/>
+				<RadioButton Name="onlineMode"
+				             Content="I want to use online help"
+				             Click="Help3OnlineModeClicked" />
 			</StackPanel>
 		</GroupBox>
 	</StackPanel>

@@ -40,7 +40,7 @@ namespace MSHelpSystem.Helper
 
 		public static bool IsLocalHelp
 		{
-			get { return string.Compare("offline", helpMode, true) == 0; }
+			get { return helpMode.Equals("offline", StringComparison.InvariantCultureIgnoreCase); }
 		}
 
 		public static void EnableLocalHelp()

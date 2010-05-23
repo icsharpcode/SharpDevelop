@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -15,46 +17,26 @@ namespace MSHelpSystem
 		public Help3OptionsPanel()
 		{
 			InitializeComponent();
-			LoadCatalogs();
-			onlineMode.IsChecked = !Help3Service.Config.OfflineMode;
+			Load();
 		}
 
-		void LoadCatalogs()
+		void Load()
 		{
 			HelpLibraryAgent.Start();
-
-			help3Catalogs.Items.Clear();
-			if (Help3Service.Count > 0) {
-				foreach (Help3Catalog catalog in Help3Service.Items) {
-					LoggingService.Debug(string.Format("Help 3.0: Found help catalog \"{0}\"", catalog.ToString()));
-					ComboBoxItem cbi = new ComboBoxItem();
-					cbi.Content = catalog.ToString();
-					help3Catalogs.Items.Add(cbi);
-				}
-			}
+			DataContext = Help3Service.Items;
 			// TODO: Needs a localization
 			groupBox1.Header = string.Format("{0} ({1})", "Installed Help catalogs", Help3Service.Count);
-
-			if (help3Catalogs.Items.Count == 1) help3Catalogs.SelectedIndex = 0;
-			else {
-				foreach (ComboBoxItem item in help3Catalogs.Items) {
-					if (string.Compare((string)item.Content, Help3Service.ActiveCatalog.ToString(), true) == 0) {
-						help3Catalogs.SelectedItem = item;
-						break;
-					}
-				}
-				// TODO: There has to be a much more elegant way to select the catalog?!
-			}
-			help3Catalogs.IsEnabled = (help3Catalogs.Items.Count > 1 && Help3Service.Config.OfflineMode);
+			help3Catalogs.SelectedValue = Help3Service.ActiveCatalog.ShortName;
+			help3Catalogs.IsEnabled = (Help3Service.Count > 1 && Help3Service.Config.OfflineMode);
+			onlineMode.IsChecked = !Help3Service.Config.OfflineMode;
 		}
 
 		void Help3CatalogsSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			ComboBoxItem selectedItem = (ComboBoxItem)help3Catalogs.SelectedItem;
-			if (selectedItem == null) return;
-			string activeCatalog      = (string)selectedItem.Content;
-			if (!string.IsNullOrEmpty(activeCatalog))
-				Help3Service.ActiveCatalogId =activeCatalog;
+			string item = (string)help3Catalogs.SelectedValue;
+			if (!string.IsNullOrEmpty(item)) {
+				Help3Service.ActiveCatalogId = item;
+			}
 		}
 
 		void Help3OfflineModeClicked(object sender, RoutedEventArgs e)
