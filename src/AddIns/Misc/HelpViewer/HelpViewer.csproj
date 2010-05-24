@@ -67,7 +67,10 @@
     <Compile Include="Source\BrowserScheme.cs" />
     <Compile Include="Source\Controls\Pads.cs" />
     <Compile Include="Source\Controls\TocEntry.cs" />
-    <Compile Include="Source\Controls\TocPadControl.xaml.cs" />
+    <Compile Include="Source\Controls\TocPadControl.xaml.cs">
+      <DependentUpon>TocPadControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Source\Core\DisplayHelp.cs" />
     <Compile Include="Source\Core\Help3Catalog.cs" />
     <Compile Include="Source\Core\Help3Environment.cs" />
