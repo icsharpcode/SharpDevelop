@@ -65,6 +65,9 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Source\BrowserScheme.cs" />
+    <Compile Include="Source\Controls\Pads.cs" />
+    <Compile Include="Source\Controls\TocEntry.cs" />
+    <Compile Include="Source\Controls\TocPadControl.xaml.cs" />
     <Compile Include="Source\Core\DisplayHelp.cs" />
     <Compile Include="Source\Core\Help3Catalog.cs" />
     <Compile Include="Source\Core\Help3Environment.cs" />
@@ -86,8 +89,10 @@
     <Folder Include="Source" />
     <Folder Include="Source\Core" />
     <Folder Include="Source\Helper" />
+    <Folder Include="Source\Controls" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Source\Controls\TocPadControl.xaml" />
     <Page Include="Source\Help3OptionsPanel.xaml" />
   </ItemGroup>
   <ItemGroup>

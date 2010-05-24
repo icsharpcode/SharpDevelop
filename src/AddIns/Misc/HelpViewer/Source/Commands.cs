@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MSHelpSystem.Core;
+using MSHelpSystem.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -36,4 +37,13 @@ namespace MSHelpSystem.Commands
 			}
 		}
 	}
+	
+	public class DisplayContent : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			PadDescriptor toc = WorkbenchSingleton.Workbench.GetPad(typeof(Help3TocPad));
+			if (toc != null) toc.BringPadToFront();
+		}
+	}	
 }
