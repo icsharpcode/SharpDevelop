@@ -19,9 +19,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class DataReportCreator:AbstractReportCreator
 	{
 		
+		IReportModel reportModel;
 		IDataManager dataManager;
+		ILayouter layouter;
 		
 		#region Constructor
+		
+		
 		
 		public static AbstractReportCreator CreateInstance(IReportModel reportModel, IDataManager dataManager,ILayouter layouter)
 		{
@@ -35,13 +39,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 				throw new ArgumentNullException("layouter");
 			}
 			var instance = new DataReportCreator(reportModel,dataManager,layouter);
+			
 			return instance;
 		}
 		
 		
 		private DataReportCreator (IReportModel reportModel,IDataManager dataManager,ILayouter layouter):base(reportModel) 
 		{
+			this.reportModel = reportModel;
 			this.dataManager = dataManager;
+			this.layouter = layouter;
+			
 			base.AbstractExportListBuilder = new DataExportListBuilder(reportModel,dataManager);
 		}
 		

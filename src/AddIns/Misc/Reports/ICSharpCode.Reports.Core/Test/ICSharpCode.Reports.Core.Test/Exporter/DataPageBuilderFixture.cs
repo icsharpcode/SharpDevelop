@@ -48,10 +48,6 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 		}
 		
 		
-		
-		
-	
-		
 		public override void Setup()
 		{
 			reportModel = ReportModel.Create();

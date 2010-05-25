@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using iTextSharp.text;
 
 namespace ICSharpCode.Reports.Core.Exporter.Converter
 {
@@ -37,15 +38,30 @@ namespace ICSharpCode.Reports.Core.Exporter.Converter
 		}
 		
 		
+		
 		public ReportItemCollection Convert (BaseReportItem parent,IEnumerable<BaseReportItem> itemsSource)
 		{
-			var col =  new ReportItemCollection();
-			foreach (BaseReportItem element in itemsSource) {
-				
-				col.Add(element);
+			var col =  new ReportItemCollection();	
+			foreach (BaseReportItem item in itemsSource) {
+				item.Location = AdjustLocation (parent,item);
+				col.Add(item);
 			}
-			this.locationAfterConvert = new Point(parent.Size.Width,parent.Size.Height);
+			this.locationAfterConvert = AdjustLocationAfterDraw(parent);
 			return col;
+		}
+		
+		
+		
+		
+		private Point AdjustLocation (IReportItem parent , IReportItem item)
+		{
+			return new Point(parent.Location.X + item.Location.X,parent.Location.Y + item.Location.Y);
+		}
+			
+		
+		private Point AdjustLocationAfterDraw (IReportItem parent)
+		{
+			return new Point(parent.Location.X + parent.Size.Width,parent.Location.Y + parent.Size.Height);
 		}
 		
 		

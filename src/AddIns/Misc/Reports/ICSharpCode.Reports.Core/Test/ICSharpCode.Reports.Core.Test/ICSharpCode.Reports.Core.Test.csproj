@@ -75,6 +75,7 @@
     <Compile Include="DataManager\IListDataManagerFixture.cs" />
     <Compile Include="DataManager\MockDataAccess.cs" />
     <Compile Include="DataManager\TableDataManagerFixture.cs" />
+    <Compile Include="Exporter\AbstractExportListBuilder.cs" />
     <Compile Include="Exporter\Converter\ItemsConverterFixture.cs" />
     <Compile Include="Exporter\DataPageBuilderFixture.cs" />
     <Compile Include="Exporter\DataListBuilderFixture.cs" />

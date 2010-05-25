@@ -26,15 +26,51 @@ namespace ICSharpCode.Reports.Core.Test.Exporter.Converter
 			section.Items.Add(CreateSimpeTextItem());
 			Point point = new Point(1,1);
 			ReportItemCollection result = Sut.Convert (section,section.Items);
+			
 			Assert.AreEqual(new Point(section.Size.Width,section.Size.Height),Sut.LocationAfterConvert);
 			Assert.AreEqual(1,result.Count);
 			
+		}
+		
+		[Test]
+		public void Check_Location_Of_ItemInSection ()
+		{
+			BaseSection section = new BaseSection();
+			section.Location = new Point (10,10);
+			
+			var textItem = CreateSimpeTextItem();
+			section.Items.Add(textItem);
+			
+			Point checkPoint = new Point(section.Location.X + textItem.Location.X,section.Location.Y + textItem.Location.Y);
+			
+			ReportItemCollection result = Sut.Convert (section,section.Items);
+			var checkItem = result[0];
+			
+			Assert.AreEqual(checkPoint,checkItem.Location);
+		}
+			
+		
+		[Test]
+		public void Check_LocationAfterConvert ()
+		{
+				BaseSection section = new BaseSection();
+			section.Location = new Point (10,10);
+			
+			var textItem = CreateSimpeTextItem();
+			section.Items.Add(textItem);
+			
+			Point checkPoint = new Point(section.Location.X + section.Size.Width,section.Location.Y + section.Size.Height);
+			
+			ReportItemCollection result = Sut.Convert (section,section.Items);
+			
+			Assert.AreEqual(checkPoint,Sut.LocationAfterConvert);
 		}
 		
 		
 		private BaseReportItem CreateSimpeTextItem ()
 		{
 			BaseTextItem bt = new BaseTextItem();
+			bt.Location = new Point(10,10);
 			bt.Text = "MyText";
 			return bt;
 		}

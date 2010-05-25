@@ -127,10 +127,12 @@
     <Compile Include="Project\Exceptions\UnknownItemException.cs" />
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
+    <Compile Include="Project\Exporter\AbstractExportListBuilder.cs" />
     <Compile Include="Project\Exporter\AbstractReportCreator.cs" />
     <Compile Include="Project\Exporter\Converter\ItemsConverter.cs" />
     <Compile Include="Project\Exporter\DataExportListBuilder.cs" />
     <Compile Include="Project\Exporter\DataReportCreator.cs" />
+    <Compile Include="Project\Exporter\PageCreatedEventArgs.cs" />
     <Compile Include="Project\Exporter\PageDescription.cs" />
     <Compile Include="Project\old_Exporter\BasePager.cs" />
     <Compile Include="Project\old_Exporter\Converters\BaseConverter.cs" />

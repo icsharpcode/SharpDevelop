@@ -29,6 +29,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			this.SectionBounds = sectionBounds; 
 		}
 		
+		
 		public ReportItemCollection Items
 		{
 			get {
@@ -39,14 +40,5 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 		}
 		
-//		public ExporterCollection Items
-//		{
-//			get {
-//				if (this.items == null) {
-//					items = new ExporterCollection();
-//				}
-//				return items;
-//			}
-//		}
 	}
 }

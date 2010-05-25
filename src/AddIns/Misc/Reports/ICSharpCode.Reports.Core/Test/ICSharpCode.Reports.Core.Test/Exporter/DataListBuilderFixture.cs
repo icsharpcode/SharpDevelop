@@ -10,6 +10,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Exporter.Converter;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
@@ -39,6 +40,7 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 			Assert.AreEqual(0,sut.DataManager.GetNavigator.CurrentRow);
 		}
 		
+		#region Render empty ReportModel
 		
 		[Test]
 		public void PagesCollection_Should_Be_Not_Null()
@@ -50,8 +52,9 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 		}
 		
 		
+		
 		[Test]
-		public void Pagenumber_Should_Be_One()
+		public void PageNumber_Should_Be_One()
 		{
 			Sut.WritePages();
 			Assert.AreEqual(1,Sut.Pages.Count);
@@ -59,11 +62,43 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 		}
 		
 		
+		#endregion
+		
+		#region Events
+		
 		[Test]
-		public void LocPos()
+		public void SectionRenderingEvent_Should_Fire()
+		{
+			
+			bool eventFired = false;
+			Sut.SectionRendering += delegate { { eventFired = true;}};
+			Sut.WritePages();
+			Assert.IsTrue(eventFired);
+		}
+		
+		[Test]
+		public void PageCreatedEvent_Should_Fired ()
+		{
+			bool eventFired = false;
+			Sut.PageCreated += delegate { { eventFired = true;}};
+			Sut.WritePages();
+			
+			Assert.IsTrue(eventFired);
+		}
+		
+		
+	
+		#endregion
+		
+		
+		#region Location after rendering
+		
+		[Test]
+		public void Location_After_Render_Empty_Section()
 		{
 			Sut.WritePages();
-			Point retVal = new Point (50,50 + reportModel.ReportHeader.Size.Height);
+			BaseSection section = reportModel.ReportHeader;
+			Point retVal = new Point (section.Location.X + section.Size.Width,section.Location.Y + section.Size.Height);
 			Assert.AreEqual(retVal.Y,Sut.PositionAfterRenderSection.Y);
 		}
 		
@@ -87,15 +122,21 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 				Location = new Point  (5,5)
 			};
 			row.Items.Add(CreateSimpeTextItem());
+			
 			reportModel.ReportHeader.Items.Add(row);
 			Sut.WritePages();
-			Assert.AreEqual(1,Sut.Pages[0].Items.Count);
-			var checkRow = Sut.Pages[0].Items[0];
-			Assert.IsAssignableFrom(typeof(BaseRowItem),checkRow);
 			
-			BaseReportItem checkItem = ((BaseRowItem)checkRow).Items[0];
-			Assert.IsNotNull(checkItem);
+			
+			var item = Sut.Pages[0].Items[0];
+			Assert.IsAssignableFrom(typeof(BaseRowItem),item,"10");
+			Assert.AreEqual(1,((BaseRowItem)item).Items.Count,"20");
+			
+			var textItem = ((BaseRowItem)item).Items[0];
+			Assert.IsAssignableFrom(typeof(BaseTextItem),textItem,"30");
+			
 		}
+		
+		#endregion
 		
 		
 		private BaseReportItem CreateSimpeTextItem ()
@@ -113,9 +154,10 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 			IDataAccessStrategy da = new MockDataAccessStrategy (rs);
 			IDataManager dataManager = ICSharpCode.Reports.Core.DataManager.CreateInstance(rs,da);
 			
-			 reportModel = ReportModel.Create();
+			reportModel = ReportModel.Create();
+			var itemsConverter = new ItemsConverter();
 			
-			Sut = new DataExportListBuilder(reportModel,dataManager);
+			Sut = new DataExportListBuilder(reportModel,dataManager,itemsConverter);
 		}
 		
 	}
