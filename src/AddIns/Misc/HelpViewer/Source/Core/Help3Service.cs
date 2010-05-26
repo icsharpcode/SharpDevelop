@@ -82,13 +82,8 @@ namespace MSHelpSystem.Core
 
 		static void Help3ConfigurationUpdated(object sender, EventArgs e)
 		{
-			if (config.OfflineMode) {
-				HelpClientWatcher.EnableLocalHelp();
-			}
-			else {
-				HelpClientWatcher.EnableOnlineHelp();
-				HelpLibraryAgent.Stop();
-			}
+			if (config.OfflineMode) HelpClientWatcher.EnableLocalHelp();
+			else HelpClientWatcher.EnableOnlineHelp();
 		}
 
 		#endregion

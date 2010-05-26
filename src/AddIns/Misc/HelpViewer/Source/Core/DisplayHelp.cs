@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
@@ -110,11 +111,14 @@ namespace MSHelpSystem.Core
 
 		static void DisplayLocalHelp(string arguments)
 		{
-			DisplayLocalHelp(arguments, true);
+			DisplayLocalHelp(arguments, !Help3Service.Config.ExternalHelp);
 		}
 
 		static void DisplayLocalHelp(string arguments, bool embedded)
 		{
+			if (string.IsNullOrEmpty(arguments)) {
+				throw new ArgumentNullException("arguments");
+			}
 			if (!Help3Environment.IsLocalHelp) { return; 	}
 			if (!HelpLibraryAgent.IsRunning) {
 				HelpLibraryAgent.Start();
@@ -123,6 +127,10 @@ namespace MSHelpSystem.Core
 			string helpUrl = string.Format(@"{0}{1}{2}",
 			                               arguments, ProjectLanguages.GetCurrentLanguageAsHttpParam(), (embedded)?"&embedded=true":string.Empty);
 
+			if (Help3Service.Config.ExternalHelp) {
+				DisplayHelpWithShellExecute(helpUrl);
+				return;
+			}
 			BrowserPane browser = ActiveHelp3Browser();
 			if (browser != null) {
 				LoggingService.Info(string.Format("Help 3.0: Navigating to {0}", helpUrl));
@@ -131,9 +139,35 @@ namespace MSHelpSystem.Core
 			}			
 		}
 
+		static void DisplayHelpWithShellExecute(string arguments)
+		{
+			if (string.IsNullOrEmpty(arguments)) {
+				throw new ArgumentNullException("arguments");
+			}
+			ProcessStartInfo psi = new ProcessStartInfo();
+			psi.FileName = arguments;
+			psi.UseShellExecute = true;
+			psi.WindowStyle = ProcessWindowStyle.Normal;
+			try {
+				Process p = Process.Start(psi);
+				p.WaitForInputIdle();
+			}
+			catch (Exception ex) {
+				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+			}
+		}
+
 		static void DisplayHelpOnMSDN(string keyword)
 		{
+			if (string.IsNullOrEmpty(keyword)) {
+				throw new ArgumentNullException("keyword");
+			}
 			string msdnUrl = string.Format(@"http://msdn.microsoft.com/library/{0}.aspx", keyword);
+
+			if (Help3Service.Config.ExternalHelp) {
+				DisplayHelpWithShellExecute(msdnUrl);
+				return;
+			}
 			BrowserPane browser = ActiveHelp3Browser();
 			if (browser != null) {
 				LoggingService.Info(string.Format("Help 3.0: Navigating to {0}", msdnUrl));
@@ -144,6 +178,9 @@ namespace MSHelpSystem.Core
 
 		static void DisplaySearchOnMSDN(string searchWords)
 		{
+			if (string.IsNullOrEmpty(searchWords)) {
+				throw new ArgumentNullException("searchWords");
+			}
 			string msdnUrl = string.Format(@"http://social.social.msdn.microsoft.com/Search/{0}/?query={1}&ac=3", CultureInfo.CurrentUICulture.ToString(), searchWords.Replace(" ", "+"));
 			BrowserPane browser = ActiveHelp3Browser();
 			if (browser != null) {

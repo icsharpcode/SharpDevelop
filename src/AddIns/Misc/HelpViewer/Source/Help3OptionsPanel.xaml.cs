@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
+using System.Windows.Documents;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -30,6 +30,7 @@ namespace MSHelpSystem
 			help3Catalogs.SelectedValue = Help3Service.ActiveCatalog.ShortName;
 			help3Catalogs.IsEnabled = (Help3Service.Items.Count > 1 && Help3Service.Config.OfflineMode);
 			onlineMode.IsChecked = !Help3Service.Config.OfflineMode;
+			externalHelp.IsChecked = Help3Service.Config.ExternalHelp;
 		}
 
 		void Help3CatalogsSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -52,6 +53,12 @@ namespace MSHelpSystem
 			LoggingService.Info("Help 3.0: Setting help mode to \"online\"");
 			Help3Service.Config.OfflineMode = false;
 			help3Catalogs.IsEnabled = false;
+		}
+
+		void Help3UseExternalHelpClicked(object sender, RoutedEventArgs e)
+		{
+			Help3Service.Config.ExternalHelp = (bool)externalHelp.IsChecked;
+			LoggingService.Info(string.Format("Help 3.0: {0} external help", (Help3Service.Config.ExternalHelp)?"Enabling":"Disabling"));
 		}
 
 		public override bool SaveOptions()

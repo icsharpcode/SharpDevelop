@@ -22,7 +22,11 @@
 				             Margin="0,0,0,5"/>
 				<RadioButton Name="onlineMode"
 				             Content="{core:Localize AddIns.HelpViewer.UseOnlineHelpLabel}"
-				             Click="Help3OnlineModeClicked" />
+				             Click="Help3OnlineModeClicked"
+				             Margin="0,0,0,8" />
+				<CheckBox    Name="externalHelp"
+				             Content="{core:Localize AddIns.HelpViewer.UseExternalHelp}"
+				             Click="Help3UseExternalHelpClicked" />
 			</StackPanel>
 		</GroupBox>
 	</StackPanel>

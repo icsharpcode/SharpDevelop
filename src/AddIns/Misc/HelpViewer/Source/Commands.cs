@@ -42,8 +42,11 @@ namespace MSHelpSystem.Commands
 	{
 		public override void Run()
 		{
-			PadDescriptor toc = WorkbenchSingleton.Workbench.GetPad(typeof(Help3TocPad));
-			if (toc != null) toc.BringPadToFront();
+			if (Help3Service.Config.ExternalHelp) DisplayHelp.Catalog();
+			else {
+				PadDescriptor toc = WorkbenchSingleton.Workbench.GetPad(typeof(Help3TocPad));
+				if (toc != null) toc.BringPadToFront();
+			}
 		}
 	}	
 }

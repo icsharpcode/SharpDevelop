@@ -13,6 +13,7 @@ namespace MSHelpSystem.Helper
 
 		string activeCatalogId = string.Empty;
 		bool offlineMode = true;
+		bool externalHelp = false;
 
 		[XmlElement("activeCatalog")]
 		public string ActiveCatalogId
@@ -26,6 +27,13 @@ namespace MSHelpSystem.Helper
 		{
 			get { return offlineMode; }
 			set { offlineMode = value; }
+		}
+
+		[XmlElement("externalHelp")]
+		public bool ExternalHelp
+		{
+			get { return externalHelp; }
+			set { externalHelp = value; }
 		}
 	}
 }
