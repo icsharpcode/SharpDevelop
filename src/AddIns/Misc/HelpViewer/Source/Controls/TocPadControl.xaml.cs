@@ -31,8 +31,7 @@ namespace MSHelpSystem.Controls
 		void LoadToc()
 		{
 			if (!Help3Environment.IsLocalHelp) DataContext = null;
-			// TODO: Needs a localization
-			else DataContext = new[] { new TocEntry("-1") { Title = "Help Library" } };
+			else DataContext = new[] { new TocEntry("-1") { Title = StringParser.Parse("${res:AddIns.HelpViewer.HelpLibraryRootTitle}") } };
 		}
 
 		void Help3TocItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

@@ -181,10 +181,7 @@ namespace MSHelpSystem.Core
 			ProcessStartInfo psi = new ProcessStartInfo();
 			psi.FileName = Manager;
 			psi.WorkingDirectory = Help3Environment.AppRoot;
-			psi.Arguments = string.Format("/product {0} /version {1} /locale {2}",
-			                              Help3Service.ActiveCatalog.ProductCode,
-			                              Help3Service.ActiveCatalog.ProductVersion,
-			                              Help3Service.ActiveCatalog.Locale);
+			psi.Arguments = Help3Service.ActiveCatalog.AsCmdLineParam;
 			psi.UseShellExecute = true;
 			psi.Verb = "runas";
 			psi.WindowStyle = ProcessWindowStyle.Normal;

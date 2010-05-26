@@ -19,18 +19,16 @@ namespace MSHelpSystem.Core
 		public static void Catalog()
 		{
 			if (!Help3Environment.IsLocalHelp) {
-				MessageBox.Show("You requested an offline feature in the online help mode. You have to change the mode in order to use this feature.",
-				                "Help Viewer",
+				MessageBox.Show(StringParser.Parse("${res:AddIns.HelpViewer.OfflineFeatureRequestMsg}"),
+				                StringParser.Parse("${res:AddIns.HelpViewer.MicrosoftHelpViewerTitle}"),
 				                MessageBoxButtons.OK,
 				                MessageBoxIcon.Error);
 				return;
 			}
-			Help3Catalog catalog = Help3Service.ActiveCatalog;
-			if (catalog == null) {
-				throw new ArgumentNullException("c");
+			if (Help3Service.ActiveCatalog == null) {
+				throw new ArgumentNullException("Help3Service.ActiveCatalog");
 			}
-			string helpCatalogUrl = string.Format(@"ms-xhelp://?method=page&id=-1&product={0}&productVersion={1}&locale={2}",
-			                                      catalog.ProductCode, catalog.ProductVersion, catalog.Locale);
+			string helpCatalogUrl = string.Format(@"ms-xhelp://?method=page&id=-1&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpCatalogUrl));
 			DisplayLocalHelp(helpCatalogUrl);
 		}
@@ -41,18 +39,16 @@ namespace MSHelpSystem.Core
 				throw new ArgumentNullException("pageId");
 			}
 			if (!Help3Environment.IsLocalHelp) {
-				MessageBox.Show("You requested an offline feature in the online help mode. You have to change the mode in order to use this feature.",
-				                "Help Viewer",
+				MessageBox.Show(StringParser.Parse("${res:AddIns.HelpViewer.OfflineFeatureRequestMsg}"),
+				                StringParser.Parse("${res:AddIns.HelpViewer.MicrosoftHelpViewerTitle}"),
 				                MessageBoxButtons.OK,
 				                MessageBoxIcon.Error);
 				return;
 			}
-			Help3Catalog catalog = Help3Service.ActiveCatalog;
-			if (catalog == null) {
-				throw new ArgumentNullException("c");
+			if (Help3Service.ActiveCatalog == null) {
+				throw new ArgumentNullException("Help3Service.ActiveCatalog");
 			}
-			string helpPageUrl = string.Format(@"ms-xhelp://?method=page&id={3}&product={0}&productVersion={1}&locale={2}",
-			                                   catalog.ProductCode, catalog.ProductVersion, catalog.Locale, pageId);
+			string helpPageUrl = string.Format(@"ms-xhelp://?method=page&id={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, pageId);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpPageUrl));
 			DisplayLocalHelp(helpPageUrl);
 		}
@@ -66,12 +62,10 @@ namespace MSHelpSystem.Core
 				DisplayHelpOnMSDN(contextual);
 				return;
 			}
-			Help3Catalog catalog = Help3Service.ActiveCatalog;
-			if (catalog == null) {
-				throw new ArgumentNullException("c");
+			if (Help3Service.ActiveCatalog == null) {
+				throw new ArgumentNullException("Help3Service.ActiveCatalog");
 			}
-			string helpContextualUrl = string.Format(@"ms-xhelp://?method=f1&query={3}&product={0}&productVersion={1}&locale={2}",
-			                                         catalog.ProductCode, catalog.ProductVersion, catalog.Locale, contextual);
+			string helpContextualUrl = string.Format(@"ms-xhelp://?method=f1&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, contextual);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpContextualUrl));
 			DisplayLocalHelp(helpContextualUrl);
 		}
@@ -85,12 +79,10 @@ namespace MSHelpSystem.Core
 				DisplaySearchOnMSDN(searchWords);
 				return;
 			}
-			Help3Catalog catalog = Help3Service.ActiveCatalog;
-			if (catalog == null) {
-				throw new ArgumentNullException("c");
+			if (Help3Service.ActiveCatalog == null) {
+				throw new ArgumentNullException("Help3Service.ActiveCatalog");
 			}
-			string helpSearchUrl = string.Format(@"ms-xhelp://?method=search&query={3}&product={0}&productVersion={1}&locale={2}",
-			                                     catalog.ProductCode, catalog.ProductVersion, catalog.Locale, searchWords.Replace(" ", "+"));
+			string helpSearchUrl = string.Format(@"ms-xhelp://?method=search&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, searchWords.Replace(" ", "+"));
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpSearchUrl));
 			DisplayLocalHelp(helpSearchUrl);
 		}
@@ -101,18 +93,16 @@ namespace MSHelpSystem.Core
 				throw new ArgumentNullException("keywords");
 			}
 			if (!Help3Environment.IsLocalHelp) {
-				MessageBox.Show("You requested an offline feature in the online help mode. You have to change the mode in order to use this feature.",
-				                "Help Viewer",
+				MessageBox.Show(StringParser.Parse("${res:AddIns.HelpViewer.OfflineFeatureRequestMsg}"),
+				                StringParser.Parse("${res:AddIns.HelpViewer.MicrosoftHelpViewerTitle}"),
 				                MessageBoxButtons.OK,
 				                MessageBoxIcon.Error);
 				return;
 			}
-			Help3Catalog catalog = Help3Service.ActiveCatalog;
-			if (catalog == null) {
-				throw new ArgumentNullException("c");
+			if (Help3Service.ActiveCatalog == null) {
+				throw new ArgumentNullException("Help3Service.ActiveCatalog");
 			}
-			string helpKeywordsUrl = string.Format(@"ms-xhelp://?method=keywords&query={3}&product={0}&productVersion={1}&locale={2}",
-			                                       catalog.ProductCode, catalog.ProductVersion, catalog.Locale, keywords);
+			string helpKeywordsUrl = string.Format(@"ms-xhelp://?method=keywords&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, keywords.Replace(" ", "+"));
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpKeywordsUrl));
 			DisplayLocalHelp(helpKeywordsUrl);
 		}

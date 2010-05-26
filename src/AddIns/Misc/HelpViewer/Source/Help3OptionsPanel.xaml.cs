@@ -24,10 +24,11 @@ namespace MSHelpSystem
 		{
 			HelpLibraryAgent.Start();
 			DataContext = Help3Service.Items;
-			// TODO: Needs a localization
-			groupBox1.Header = string.Format("{0} ({1})", "Installed Help catalogs", Help3Service.Count);
+			groupBox1.Header = string.Format("{0} ({1})",
+			                                 StringParser.Parse("${res:AddIns.HelpViewer.InstalledHelpCatalogsLabel}"),
+			                                 Help3Service.Items.Count);
 			help3Catalogs.SelectedValue = Help3Service.ActiveCatalog.ShortName;
-			help3Catalogs.IsEnabled = (Help3Service.Count > 1 && Help3Service.Config.OfflineMode);
+			help3Catalogs.IsEnabled = (Help3Service.Items.Count > 1 && Help3Service.Config.OfflineMode);
 			onlineMode.IsChecked = !Help3Service.Config.OfflineMode;
 		}
 

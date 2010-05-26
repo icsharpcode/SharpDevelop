@@ -94,11 +94,6 @@ namespace MSHelpSystem.Core
 		#endregion
 
 
-		public static int Count
-		{
-			get { 	return catalogs.Count; }
-		}
-
 		public static ReadOnlyCollection<Help3Catalog> Items
 		{
 			get

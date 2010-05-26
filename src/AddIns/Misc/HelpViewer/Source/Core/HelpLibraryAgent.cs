@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using Microsoft.Win32;
 using ICSharpCode.Core;
 
@@ -47,6 +49,28 @@ namespace MSHelpSystem.Core
 					LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
 				}
 				return 47873; // This is the DEFAULT port number!
+			}
+		}
+
+		public static bool PortIsReady
+		{
+			get
+			{
+				try {
+					Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+					socket.Connect(IPAddress.Parse("127.0.0.1"), PortNumber);
+					bool isReady = socket.Connected;
+					socket.Close();
+					return isReady;
+				}
+				catch (SocketException ex) {
+					if (ex.ErrorCode == 10061) {
+						LoggingService.Debug("Help 3.0: Port is available but not ready");
+						return true;
+					}
+					LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+				}
+				return false;
 			}
 		}
 

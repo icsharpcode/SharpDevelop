@@ -27,7 +27,7 @@ namespace MSHelpSystem.Controls
 {
 	class TocEntry : INotifyPropertyChanged
 	{
-		const string url = "ms-xhelp://?method=children&id={3}&format=xml&product={0}&productVersion={1}&locale={2}";
+		const string url = "ms-xhelp://?method=children&id={1}&format=xml&{0}";
 		string id;
 		WebClient client = new WebClient();
 
@@ -57,9 +57,11 @@ namespace MSHelpSystem.Controls
 		{
 			get
 			{
-				Help3Catalog catalog = Help3Service.ActiveCatalog;
-				if (children == null && !client.IsBusy)
-					client.DownloadStringAsync(new Uri(Help3Environment.GetHttpFromMsXHelp(string.Format(url, catalog.ProductCode, catalog.ProductVersion, catalog.Locale, id))));
+				if (Help3Service.ActiveCatalog != null) {
+					if (children == null && !client.IsBusy && HelpLibraryAgent.PortIsReady) {
+						client.DownloadStringAsync(new Uri(Help3Environment.GetHttpFromMsXHelp(string.Format(url, Help3Service.ActiveCatalog.AsMsXHelpParam, id))));
+					}
+				}
 				return children ?? defaultChild;
 			}
 			private set

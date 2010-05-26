@@ -62,5 +62,15 @@ namespace MSHelpSystem.Core
 		{
 			get { return brandingPackage; }
 		}
+
+		public string AsMsXHelpParam
+		{
+			get { return string.Format("product={0}&productVersion={1}&locale={2}", productCode, productVersion, productLocale); }
+		}
+
+		public string AsCmdLineParam
+		{
+			get { return string.Format("/product {0} /version {1} /locale {2}", productCode, productVersion, productLocale); }
+		}
 	}
 }
