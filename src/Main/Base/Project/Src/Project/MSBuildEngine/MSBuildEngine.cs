@@ -177,6 +177,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return projectFileName; }
 		}
 		
+		/// <summary>
+		/// Gets the minimum solution version (VS version) required to open the project.
+		/// </summary>
+		public int ProjectMinimumSolutionVersion {
+			get { return projectMinimumSolutionVersion; }
+		}
+		
 		List<string> interestingTasks = new List<string>();
 		string temporaryFileName;
 		

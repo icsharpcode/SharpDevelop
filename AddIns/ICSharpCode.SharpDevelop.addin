@@ -2149,4 +2149,10 @@
 			                description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName.Description}" />
 		</Condition>
 	</Path>
+	
+	<Path name = "/SharpDevelop/MSBuildEngine/LoggerFilters">
+		<Class
+			id = "TargetingPackWarningWorkaround"
+			class = "ICSharpCode.SharpDevelop.Project.TargetingPackWarningWorkaround"/>
+	</Path>
 </AddIn>
