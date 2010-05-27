@@ -391,10 +391,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAndReplace", "src\Add
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpRefactoring", "src\AddIns\Misc\SharpRefactoring\Project\SharpRefactoring.csproj", "{3CA90546-3B4C-4663-9445-C4E9371750A7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpRefactoring.Tests", "src\AddIns\Misc\SharpRefactoring\Test\SharpRefactoring.Tests.csproj", "{A4AA51DE-A096-47EC-AA5D-D91457834ECF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpViewer", "src\AddIns\Misc\HelpViewer\HelpViewer.csproj", "{80F76D10-0B44-4D55-B4BD-DAEB5464090C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF}"
 	ProjectSection(SolutionItems) = postProject
@@ -420,6 +429,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Language Bindings", "Langua
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSharpBinding", "src\AddIns\BackendBindings\FSharpBinding\FSharpBinding.csproj", "{E954F3CB-A446-492F-A664-2B376EBC86E8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixBinding.Tests", "src\AddIns\BackendBindings\WixBinding\Test\WixBinding.Tests.csproj", "{388E7B64-0393-4EB4-A3E3-5C474F141853}"
 	ProjectSection(ProjectDependencies) = postProject
