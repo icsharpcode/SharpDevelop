@@ -23,7 +23,6 @@ namespace ICSharpCode.Build.Tasks
 		[Output]
 		public ITaskItem[] OutputAssemblies { get; set; }
 		
-		
 		public ITaskItem[] AssemblyFiles { get; set; }
 		
 		[Output]
@@ -52,11 +51,13 @@ namespace ICSharpCode.Build.Tasks
 			
 			// mark mscorlib as copy local=false
 			List<ITaskItem> outputAssemblyFiles = new List<ITaskItem>();
-			foreach (ITaskItem item in this.AssemblyFiles) {
-				if (string.IsNullOrEmpty(item.GetMetadata("Private"))) {
-					if (item.ItemSpec.EndsWith("\\mscorlib.dll", StringComparison.OrdinalIgnoreCase)) {
-						item.SetMetadata("Private", "False");
-						outputAssemblyFiles.Add(item);
+			if (this.AssemblyFiles != null) {
+				foreach (ITaskItem item in this.AssemblyFiles) {
+					if (string.IsNullOrEmpty(item.GetMetadata("Private"))) {
+						if (item.ItemSpec.EndsWith("\\mscorlib.dll", StringComparison.OrdinalIgnoreCase)) {
+							item.SetMetadata("Private", "False");
+							outputAssemblyFiles.Add(item);
+						}
 					}
 				}
 			}
