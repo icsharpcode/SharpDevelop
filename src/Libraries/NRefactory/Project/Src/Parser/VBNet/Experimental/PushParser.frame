@@ -30,15 +30,16 @@ using System.Collections.Generic;
 
 -->namespace
 
-partial class Parser {
+partial class ExpressionFinder {
 -->constants
 	const bool T = true;
 	const bool x = false;
 
 -->declarations
 	readonly Stack<int> stateStack = new Stack<int>();
+	bool nextTokenIsPotentialStartOfXmlMode = false;
 	
-	public Parser()
+	public ExpressionFinder()
 	{
 		stateStack.Push(-1); // required so that we don't crash when leaving the root production
 	}
@@ -55,6 +56,7 @@ partial class Parser {
 
 	public void InformToken(Token t) 
 	{
+		nextTokenIsPotentialStartOfXmlMode = false;
 		-->informToken
 	}
 	

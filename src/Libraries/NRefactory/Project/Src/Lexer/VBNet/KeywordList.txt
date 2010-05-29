@@ -246,9 +246,13 @@ ConcatStringAssign = "&="
 "WriteOnly"
 "Xor"
 
+#XML specific keywords
+
 #Sets
 Null("Nothing")
 BlockSucc("Case", "Catch", "Else", "ElseIf", "End", "Finally", "Loop", "Next")
+GlobalLevel("Namespace", "Module", "Class", "Structure")
+TypeLevel("Sub", "Function", "Property")
 
 # List of keywords that are valid identifiers, must be the same as the "Identifier" production in VBNET.ATG
 IdentifierTokens("Text", "Binary", "Compare", "Assembly", "Ansi", "Auto", "Preserve", "Unicode", "Until", "Off", "Explicit", "Infer", "From", "Join", "Equals", "Distinct", "Where", "Take", "Skip", "Order", "By", "Ascending", "Descending", "Group", "Into", "Aggregate")

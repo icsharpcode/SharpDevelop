@@ -7,21 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 {
-	public partial class Parser
+	public partial class ExpressionFinder
 	{
 		Stack<Context> stack = new Stack<Context>();
+		StringBuilder output = new StringBuilder();
+		bool isExpressionStart = false;
 		
 		void PopContext()
 		{
 			if (stack.Count > 0) {
 				string indent = new string('\t', stack.Count - 1);
 				var item = stack.Pop();
-				Console.WriteLine(indent + "exit " + item);
+				Print(indent + "exit " + item);
 			} else {
-				Console.WriteLine("empty stack");
+				Print("empty stack");
 			}
 		}
 		
@@ -29,7 +32,7 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		{
 			string indent = new string('\t', stack.Count);
 			stack.Push(context);
-			Console.WriteLine(indent + "enter " + context);
+			Print(indent + "enter " + context);
 		}
 		
 		void SetContext(Context context)
@@ -37,12 +40,25 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 			PopContext();
 			PushContext(context);
 		}
+		
+		void Print(string text)
+		{
+			Console.WriteLine(text);
+			output.AppendLine(text);
+		}
+		
+		public string Output {
+			get { return output.ToString(); }
+		}
 	}
 	
 	public enum Context {
 		Global,
 		Type,
 		Member,
-		IdentifierExpected
+		IdentifierExpected,
+		Body,
+		Xml,
+		Debug
 	}
 }

@@ -547,5 +547,11 @@ End Using");
 		{
 			TestTypeMember("Dim WithEvents a As Button");
 		}
+				
+		[Test]
+		public void FriendWithEventsField()
+		{
+			TestTypeMember("Friend WithEvents Button1 As System.Windows.Forms.Button");
+		}
 	}
 }

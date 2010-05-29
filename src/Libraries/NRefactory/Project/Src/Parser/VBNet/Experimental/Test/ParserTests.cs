@@ -7,29 +7,69 @@
 
 
 using System;
+using System.IO;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Parser;
+using VB = ICSharpCode.NRefactory.Parser.VB;
+using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
 using NUnit.Framework;
 
-namespace VBParserExperiment
+namespace VBParserExperiment.Tests
 {
 	[TestFixture]
 	public class ParserTests
 	{
 		[Test]
-		public void TestMethod()
+		public void SimpleGlobal()
 		{
-			// TODO: Add your test.
+			RunTest(
+				@"Option Explicit",
+				@"enter Global
+exit Global
+"
+			);
 		}
 		
-		[TestFixtureSetUp]
-		public void Init()
+		[Test]
+		public void VariableWithXmlLiteral()
 		{
-			// TODO: Add Init code.
+			RunTest(
+				@"Class Test
+	Public Sub New()
+		Dim x = <a>
+	End Sub
+End Class
+",
+				@"enter Global
+	enter Type
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Body
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Xml
+				exit Xml
+			exit Body
+		exit Member
+	exit Type
+exit Global
+"
+			);
 		}
 		
-		[TestFixtureTearDown]
-		public void Dispose()
+		void RunTest(string code, string expectedOutput)
 		{
-			// TODO: Add tear down code.
+			ExpressionFinder p = new ExpressionFinder();
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(code));
+			Token t;
+			
+			do {
+				t = lexer.NextToken();
+				p.InformToken(t);
+			} while (t.Kind != VB.Tokens.EOF);
+			
+			Assert.AreEqual(expectedOutput, p.Output);
 		}
 	}
 }

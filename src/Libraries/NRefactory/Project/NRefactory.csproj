@@ -55,11 +55,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\Parser\VBNet\Experimental\Parser.cs">
-      <DependentUpon>ParserHelper.atg</DependentUpon>
-    </Compile>
+    <Compile Include="Src\Parser\VBNet\Experimental\ExpressionFinder.cs" />
     <None Include="Resources\ICSharpCode.NRefactory.snk" />
-    <None Include="Src\Lexer\BuildKeywords.pl" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AstBuilder\ExpressionBuilder.cs" />
     <Compile Include="Src\AstBuilder\StatementBuilder.cs" />
@@ -87,7 +84,9 @@
     <Compile Include="Src\OperatorPrecedence.cs" />
     <Compile Include="Src\Parser\CSharp\CSharpParser.cs" />
     <Compile Include="Src\Parser\CSharp\Parser.cs" />
-    <Compile Include="Src\Parser\VBNet\Experimental\ParserHelper.cs" />
+    <Compile Include="Src\Parser\VBNet\Experimental\Parser.cs">
+      <DependentUpon>ExpressionFinder.atg</DependentUpon>
+    </Compile>
     <Compile Include="Src\Parser\VBNet\Parser.cs" />
     <Compile Include="Src\Parser\VBNet\VBNetParser.cs" />
     <Compile Include="Src\Parser\AbstractParser.cs" />
@@ -138,17 +137,18 @@
     <Compile Include="Src\Ast\TypeReference.cs" />
     <Compile Include="Src\Parser\VBNet\ParamModifierList.cs" />
     <Compile Include="Src\Visitors\NodeTrackingAstVisitor.cs" />
-    <None Include="Src\Parser\VBNet\Experimental\Parser.frame">
-      <DependentUpon>ParserHelper.atg</DependentUpon>
-    </None>
-    <None Include="Src\Parser\VBNet\Experimental\ParserHelper.atg">
+    <None Include="Src\Parser\Frames\Parser.frame" />
+    <None Include="Src\Parser\VBNet\Experimental\ExpressionFinder.atg">
       <Generator>CocoParserGenerator</Generator>
     </None>
+    <None Include="Src\Parser\VBNet\Experimental\Parser.frame">
+      <DependentUpon>ExpressionFinder.atg</DependentUpon>
+    </None>
     <None Include="Src\Parser\VBNet\Experimental\PushParser.frame">
-      <DependentUpon>ParserHelper.atg</DependentUpon>
+      <DependentUpon>ExpressionFinder.atg</DependentUpon>
     </None>
     <None Include="Src\Parser\VBNet\Experimental\Scanner.frame">
-      <DependentUpon>ParserHelper.atg</DependentUpon>
+      <DependentUpon>ExpressionFinder.atg</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -156,17 +156,19 @@
     <Content Include="Src\Lexer\VBNet\KeywordList.txt" />
     <Folder Include="Src\Parser" />
     <Folder Include="Src\Parser\CSharp" />
-    <Content Include="Src\Parser\CSharp\cs.ATG" />
+    <Content Include="Src\Parser\CSharp\cs.ATG">
+      <Generator>CocoParserGenerator</Generator>
+    </Content>
     <Folder Include="Src\Parser\Frames" />
-    <Content Include="Src\Parser\Frames\Parser.frame" />
     <Content Include="Src\Parser\Frames\Scanner.frame" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
     <Content Include="Src\Parser\Frames\trace.txt" />
     <Folder Include="Src\Parser\VBNet" />
-    <Content Include="Src\Parser\VBNet\VBNET.ATG">
+    <None Include="Src\Parser\VBNet\VBNET.ATG">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Generator>CocoParserGenerator</Generator>
-    </Content>
+      <CustomToolNamespace>ICSharpCode.NRefactory.Parser.VB</CustomToolNamespace>
+    </None>
     <Content Include="Src\Parser\gen.bat" />
     <Folder Include="Src\Parser\VBNet\Experimental" />
     <Folder Include="Src\PrettyPrinter" />
