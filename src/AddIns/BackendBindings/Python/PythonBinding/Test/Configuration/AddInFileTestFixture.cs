@@ -15,7 +15,7 @@ using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Configuration
 {
 	/// <summary>
 	/// Basic PythonBinding.addin file tests.
@@ -50,6 +50,10 @@ namespace PythonBinding.Tests
 		Codon convertCSharpProjectCodon;
 		Codon convertVBNetProjectCodon;
 		Codon formattingStrategyCodon;
+		Runtime sharpdevelopRuntime;
+		Runtime ironpythonModulesRuntime;
+		Runtime unitTestingRuntime;
+		Codon testFrameworkCodon;
 		
 		[TestFixtureSetUp]
 		public void SetupFixture()
@@ -83,13 +87,20 @@ namespace PythonBinding.Tests
 				convertCSharpProjectCodon = GetCodon("/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert", "CSharpProjectToPythonProjectConverter");
 				convertVBNetProjectCodon = GetCodon("/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert", "VBNetProjectToPythonProjectConverter");
 				formattingStrategyCodon = GetCodon("/AddIns/DefaultTextEditor/Formatter/Python", "PythonFormatter");
-					
+				testFrameworkCodon = GetCodon("/SharpDevelop/UnitTesting/TestFrameworks", "pyunit");
+				
 				// Get the PythonBinding runtime.
 				foreach (Runtime runtime in addin.Runtimes) {
 					if (runtime.Assembly == "PythonBinding.dll") {
-						pythonBindingRuntime = runtime;						
+						pythonBindingRuntime = runtime;
 					} else if (runtime.Assembly == "$ICSharpCode.FormsDesigner/FormsDesigner.dll") {
 						formsDesignerRuntime = runtime;
+					} else if (runtime.Assembly == "IronPython.Modules.dll") {
+						ironpythonModulesRuntime = runtime;
+					} else if (runtime.Assembly == ":ICSharpCode.SharpDevelop") {
+						sharpdevelopRuntime = runtime;
+					} else if (runtime.Assembly == "$ICSharpCode.UnitTesting/UnitTesting.dll") {
+						unitTestingRuntime = runtime;
 					}
 				}
 				
@@ -128,9 +139,27 @@ namespace PythonBinding.Tests
 		}
 		
 		[Test]
-		public void RuntimeExists()
+		public void PythonBindingRuntimeExists()
 		{
 			Assert.IsNotNull(pythonBindingRuntime);
+		}
+		
+		[Test]
+		public void ICSharpCodeSharpDevelopRuntimeExists()
+		{
+			Assert.IsNotNull(sharpdevelopRuntime);
+		}
+		
+		[Test]
+		public void IronPythonModulesRuntimeExists()
+		{
+			Assert.IsNotNull(ironpythonModulesRuntime);
+		}
+		
+		[Test]
+		public void UnitTestingRuntimeExists()
+		{
+			Assert.IsNotNull(unitTestingRuntime);
 		}
 		
 		[Test]
@@ -725,22 +754,40 @@ namespace PythonBinding.Tests
 		{
 			Assert.AreEqual(1, pythonWithoutDebuggerRunMenuItemCodon.Conditions.Length);
 		}
-						
+		
 		[Test]
 		public void PythonDebugRunConditionIsSameAsPythonRunCondition()
 		{
 			Assert.AreEqual(pythonWithoutDebuggerRunMenuItemCodon.Conditions[0], pythonRunMenuItemCodon.Conditions[0]);
 		}
-
+		
 		[Test]
 		public void PythonFormatterClass()
 		{
 			Assert.AreEqual("ICSharpCode.PythonBinding.PythonFormattingStrategy", formattingStrategyCodon["class"]);
 		}
 		
+		[Test]
+		public void TestFrameworkCodonExists()
+		{
+			Assert.IsNotNull(testFrameworkCodon);
+		}
+		
+		[Test]
+		public void TestFrameworkClassIsPythonTestFrameworks()
+		{
+			Assert.AreEqual("ICSharpCode.PythonBinding.PythonTestFramework", testFrameworkCodon["class"]);
+		}
+		
+		[Test]
+		public void TestFrameworkSupportedProjectsIsPythonProject()
+		{
+			Assert.AreEqual(".pyproj", testFrameworkCodon["supportedProjects"]);
+		}
+		
 		Codon GetCodon(string name, string extensionPath)
 		{
 			return AddInHelper.GetCodon(addin, name, extensionPath);
-		}		
+		}
 	}
 }

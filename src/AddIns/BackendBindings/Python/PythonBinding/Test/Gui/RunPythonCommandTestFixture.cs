@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Gui
 {
 	/// <summary>
 	/// Tests that the RunPythonCommand class runs the Python console

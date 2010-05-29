@@ -10,7 +10,7 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Utils
 {
 	/// <summary>
 	/// Utility class that reads the PythonBinding.addin file

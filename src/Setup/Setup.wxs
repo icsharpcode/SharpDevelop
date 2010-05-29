@@ -376,9 +376,9 @@
 				<ComponentRef Id="PartCoverFrameworkDll"/>
 				<ComponentRef Id="PartCoverToNCoverXslt"/>
 				
-				<ComponentRef Id="PythonConsoleProjectTemplate"/>	
-				<ComponentRef Id="PythonEmptyClassTemplate"/>	
-				<ComponentRef Id="PythonEmptyFormTemplate"/>	
+				<ComponentRef Id="PythonConsoleProjectTemplate"/>
+				<ComponentRef Id="PythonEmptyClassTemplate"/>
+				<ComponentRef Id="PythonEmptyFormTemplate"/>
 				<ComponentRef Id="PythonEmptyUserControlTemplate"/>	
 				<ComponentRef Id="PythonEmptyFileTemplate"/>	
 				<ComponentRef Id="PythonFormsProjectTemplate"/>	
@@ -398,6 +398,8 @@
 				<ComponentRef Id="PythonBindingLibSitePy"/>
 				<ComponentRef Id="PythonBindingLibFuturePy"/>
 				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>		
+				<ComponentRef Id="PythonBindingSdTestPy"/>
+				<ComponentRef Id="PythonBindingSdTestRunnerPy"/>
 				
 				<ComponentRef Id="IrExe"/>
 				<ComponentRef Id="IrExeConfig"/>

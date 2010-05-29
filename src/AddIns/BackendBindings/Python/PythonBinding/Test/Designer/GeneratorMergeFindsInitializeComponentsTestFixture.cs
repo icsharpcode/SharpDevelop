@@ -20,6 +20,7 @@ using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.Designer
 {
@@ -71,7 +72,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void GetDomRegion()
 		{
-			MockMethod method = new MockMethod();
+			MockMethod method = new MockMethod(MockClass.CreateMockClassWithoutAnyAttributes());
 			DomRegion bodyRegion = new DomRegion(0, 4, 1, 4);
 			method.BodyRegion = bodyRegion;
 			DomRegion expectedRegion = new DomRegion(bodyRegion.BeginLine + 1, 1, bodyRegion.EndLine + 1, 1);

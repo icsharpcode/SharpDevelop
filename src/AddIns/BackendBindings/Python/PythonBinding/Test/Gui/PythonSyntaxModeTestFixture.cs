@@ -16,8 +16,9 @@ using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Gui
 {
 	/// <summary>
 	/// Tests the Python.xshd syntax mode information.

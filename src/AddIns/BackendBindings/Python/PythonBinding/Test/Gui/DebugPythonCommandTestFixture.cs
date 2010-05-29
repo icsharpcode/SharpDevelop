@@ -13,7 +13,7 @@ using ICSharpCode.PythonBinding;
 using PythonBinding.Tests.Utils;
 using NUnit.Framework;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Gui
 {
 	[TestFixture]
 	public class DebugPythonCommandTestFixture
@@ -26,7 +26,7 @@ namespace PythonBinding.Tests
 		{
 			// Create dummy view content with the Python script.
 			MockViewContent viewContent = new MockViewContent();
-			viewContent.PrimaryFileName = new FileName(@"C:\Projects\test.py");
+			viewContent.PrimaryFileName =  new FileName(@"C:\Projects\test.py");
 			MockWorkbenchWindow workbenchWindow = new MockWorkbenchWindow();
 			workbenchWindow.ActiveViewContent = viewContent;
 			MockWorkbench workbench = new MockWorkbench();
@@ -57,7 +57,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void ProcessInfoArgs()
 		{
-			Assert.AreEqual("-D \"C:\\Projects\\test.py\"", debugger.ProcessStartInfo.Arguments);
+			Assert.AreEqual("-X:Debug \"C:\\Projects\\test.py\"", debugger.ProcessStartInfo.Arguments);
 		}
 	}
 }

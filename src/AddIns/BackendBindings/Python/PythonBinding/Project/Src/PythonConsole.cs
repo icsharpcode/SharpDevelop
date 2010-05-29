@@ -50,25 +50,15 @@ namespace ICSharpCode.PythonBinding
 			//textArea.KeyEventHandler -= ProcessKeyPress;
 			//textArea.DoProcessDialogKey -= ProcessDialogKey;
 		}
-				
+		
 		public TextWriter Output {
-			get {
-				Console.WriteLine("PythonConsole.Output get");
-				return null;
-			}
-			set {
-				Console.WriteLine("PythonConsole.Output set");				
-			}
+			get { return null; }
+			set { }
 		}
 		
 		public TextWriter ErrorOutput {
-			get {
-				Console.WriteLine("PythonConsole.ErrorOutput get");
-				return null;
-			}
-			set {
-				Console.WriteLine("PythonConsole.ErrorOutput get");
-			}
+			get { return null; }
+			set { }
 		}
 		
 		/// <summary>
@@ -90,8 +80,6 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public string ReadLine(int autoIndentSize)
 		{
-			Console.WriteLine("PythonConsole.ReadLine(): autoIndentSize: " + autoIndentSize);
-			
 			string indent = String.Empty;
 			if (autoIndentSize > 0) {
 				indent = String.Empty.PadLeft(autoIndentSize);
@@ -100,7 +88,6 @@ namespace ICSharpCode.PythonBinding
 			
 			string line = ReadLineFromTextEditor();
 			if (line != null) {
-				Console.WriteLine("ReadLine: " + indent + line);
 				return indent + line;
 			}
 			return null;
@@ -111,10 +98,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void Write(string text, Style style)
 		{
-			Console.WriteLine("PythonConsole.Write(text, style): " + text);
-
 			textEditor.Write(text);
-
 			if (style == Style.Prompt) {
 				promptLength = text.Length;
 				textEditor.MakeCurrentContentReadOnly();

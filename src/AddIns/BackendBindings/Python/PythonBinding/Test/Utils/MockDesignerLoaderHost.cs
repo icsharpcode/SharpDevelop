@@ -86,7 +86,6 @@ namespace PythonBinding.Tests.Utils
 		
 		public void EndLoad(string baseClassName, bool successful, ICollection errorCollection)
 		{
-			System.Console.WriteLine("DesignerLoaderHost.EndLoad");
 		}
 		
 		public void Reload()
@@ -133,13 +132,11 @@ namespace PythonBinding.Tests.Utils
 		
 		public Type GetType(string typeName)
 		{
-			System.Console.WriteLine("DesignerLoaderHost.GetType: " + typeName);
 			return typeResolutionService.GetType(typeName);
 		}
 		
 		public void AddService(Type serviceType, object serviceInstance)
 		{
-			System.Console.WriteLine("DesignerLoaderHost.AddService: " + serviceType.Name + " IsNull: " + (serviceInstance == null));
 			serviceContainer.AddService(serviceType, serviceInstance);
 		}
 		
@@ -165,7 +162,6 @@ namespace PythonBinding.Tests.Utils
 		
 		public object GetService(Type serviceType)
 		{
-			System.Console.WriteLine("DesignerLoaderHost.GetService: " + serviceType.Name);
 			return serviceContainer.GetService(serviceType);
 		}
 
@@ -203,7 +199,7 @@ namespace PythonBinding.Tests.Utils
 				TransactionOpened(this, e);
 			}
 		}
-
+		
 		protected virtual void OnTransactionOpening(EventArgs e)
 		{
 			if (TransactionOpening != null) {

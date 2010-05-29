@@ -11,19 +11,20 @@ using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.Utils.Tests
 {
 	[TestFixture]
 	public class MockProjectContentTests
 	{
-		MockProjectContent projectContent;
+		PythonBinding.Tests.Utils.MockProjectContent projectContent;
 		List<ICompletionEntry> items;
 		
 		[SetUp]
 		public void Init()
 		{
-			projectContent = new MockProjectContent();
+			projectContent = new PythonBinding.Tests.Utils.MockProjectContent();
 			items = new List<ICompletionEntry>();
 		}
 		

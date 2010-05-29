@@ -19,6 +19,9 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class MockWorkbench : IWorkbench
 	{
+		DummySynchronizeInvoke synchronizeInvoke = new DummySynchronizeInvoke();
+		Form form = new Form();
+		
 		public event EventHandler ActiveWorkbenchWindowChanged { add {} remove {} }
 		public event EventHandler ActiveViewContentChanged { add {} remove {} }
 		public event EventHandler ActiveContentChanged { add {} remove {} }
@@ -26,11 +29,11 @@ namespace PythonBinding.Tests.Utils
 		public event ViewContentEventHandler ViewClosed { add {} remove {} }
 		
 		public IWin32Window MainWin32Window {
-			get { return null; }
+			get { return form; }
 		}
 		
 		public System.ComponentModel.ISynchronizeInvoke SynchronizingObject {
-			get { return null; }
+			get { return synchronizeInvoke; }
 		}
 		
 		public System.Windows.Window MainWindow {
@@ -90,12 +93,8 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public IWorkbenchLayout WorkbenchLayout {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
+			get { return null; }
+			set { }
 		}
 		
 		public bool IsActiveWindow {
@@ -106,7 +105,6 @@ namespace PythonBinding.Tests.Utils
 		
 		public void Initialize()
 		{
-			throw new NotImplementedException();
 		}
 		
 		public void ShowView(IViewContent content)
@@ -156,7 +154,6 @@ namespace PythonBinding.Tests.Utils
 		
 		public void SetMemento(Properties memento)
 		{
-			throw new NotImplementedException();
 		}
 		
 		public bool FullScreen {

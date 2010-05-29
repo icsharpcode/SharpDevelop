@@ -13,13 +13,13 @@ using ICSharpCode.TextEditor.Actions;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests.Indentation
+namespace PythonBinding.Tests
 {
 	/// <summary>
 	/// Tests that the PythonFormattingStrategy indents the new line added after pressing the ':' character.
 	/// </summary>
 	[TestFixture]
-	public class PythonNewMethodIndentationTestFixture
+	public class PythonIndentationTestFixture
 	{
 		TextEditorControl textEditor;
 		PythonFormattingStrategy formattingStrategy;

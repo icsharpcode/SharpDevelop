@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Gui
 {
 	/// <summary>
 	/// Tests the CompilingOptionsPanel.

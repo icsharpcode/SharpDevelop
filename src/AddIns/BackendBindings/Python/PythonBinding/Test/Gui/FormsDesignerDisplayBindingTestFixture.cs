@@ -8,12 +8,13 @@
 using System;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Gui
 {
 	/// <summary>
 	/// Tests the PythonFormsDesignerDisplayBinding.
@@ -23,8 +24,8 @@ namespace PythonBinding.Tests
 	{
 		DerivedPythonFormsDesignerDisplayBinding displayBinding;
 		MockTextEditorViewContent viewContent;
-		ParseInformation parseInfo;
 		bool canAttachToDesignableClass;
+		ParseInformation parseInfo;
 		
 		[SetUp]
 		public void SetUp()
@@ -32,7 +33,7 @@ namespace PythonBinding.Tests
 			displayBinding = new DerivedPythonFormsDesignerDisplayBinding();
 			viewContent = new MockTextEditorViewContent();
 			parseInfo = new ParseInformation(new DefaultCompilationUnit(new DefaultProjectContent()));
-			viewContent.PrimaryFileName = new ICSharpCode.Core.FileName("test.py");
+			viewContent.PrimaryFileName = new FileName("test.py");
 			viewContent.TextEditor.Document.Text = "text content";
 			displayBinding.ParseServiceParseInfoToReturn = parseInfo;
 			displayBinding.IsParseInfoDesignable = true;
@@ -99,7 +100,7 @@ namespace PythonBinding.Tests
 		[Test]
 		public void NonPythonFileNameCannotBeAttachedTo()
 		{
-			viewContent.PrimaryFileName = new ICSharpCode.Core.FileName("test.cs");
+			viewContent.PrimaryFileName = new FileName("test.cs");
 			Assert.IsFalse(displayBinding.CanAttachTo(viewContent));
 		}
 		
