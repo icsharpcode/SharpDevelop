@@ -30,9 +30,7 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Controls:ResizeThumb}">
-					<Rectangle Name="thumbRectangle"
-					           Width="7"
-					           Height="7"
+					<Rectangle Name="thumbRectangle"					           	    
 					           SnapsToDevicePixels="True"
 					           Stroke="Black"
 					           Fill="White"
