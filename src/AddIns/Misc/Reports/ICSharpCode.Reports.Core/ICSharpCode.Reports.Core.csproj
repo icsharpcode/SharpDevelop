@@ -362,7 +362,6 @@
     <Folder Include="Project\Exporter" />
     <Folder Include="Project\Converter" />
     <Folder Include="Project\Exporter\Converter" />
-    <Folder Include="Project\New Folder" />
     <Folder Include="Project\old_Exporter\Converters" />
     <Folder Include="Project\Expressions\SimpleExpressionEvaluator" />
     <Folder Include="Project\Expressions\ReportingLanguage" />
