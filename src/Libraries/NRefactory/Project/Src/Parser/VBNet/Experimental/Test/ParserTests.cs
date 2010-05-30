@@ -58,6 +58,131 @@ exit Global
 			);
 		}
 		
+		[Test]
+		public void MemberWithXmlLiteral()
+		{
+			RunTest(
+				@"Class Test
+	Private xml As XElement = <b>
+	
+	Public Sub New()
+		Dim x = <a>
+	End Sub
+End Class
+",
+				@"enter Global
+	enter Type
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Xml
+			exit Xml
+		exit Member
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Body
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Xml
+				exit Xml
+			exit Body
+		exit Member
+	exit Type
+exit Global
+"
+			);
+		}
+		
+		[Test]
+		public void GlobalAttributeTest()
+		{
+			RunTest(
+				@"<assembly: CLSCompliant(True)>
+Class Test
+	Public Sub New()
+		Dim x = 5
+	End Sub
+End Class
+",
+								@"enter Global
+	enter Attribute
+	exit Attribute
+	enter Type
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Body
+				enter IdentifierExpected
+				exit IdentifierExpected
+			exit Body
+		exit Member
+	exit Type
+exit Global
+"
+			);
+		}
+		
+		[Test]
+		public void ClassAttributeTest()
+		{
+			RunTest(
+				@"<Serializable>
+Class Test
+	Public Sub New()
+		Dim x = 5
+	End Sub
+End Class
+",
+								@"enter Global
+	enter Attribute
+	exit Attribute
+	enter Type
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Body
+				enter IdentifierExpected
+				exit IdentifierExpected
+			exit Body
+		exit Member
+	exit Type
+exit Global
+"
+			);
+		}
+		
+		[Test]
+		public void MethodAttributeTest()
+		{
+			RunTest(
+				@"Class Test
+	<Test>
+	Public Sub New()
+		Dim x = 5
+	End Sub
+End Class
+",
+								@"enter Global
+	enter Type
+		enter Member
+			enter Attribute
+			exit Attribute
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Body
+				enter IdentifierExpected
+				exit IdentifierExpected
+			exit Body
+		exit Member
+	exit Type
+exit Global
+"
+			);
+		}
+		
 		void RunTest(string code, string expectedOutput)
 		{
 			ExpressionFinder p = new ExpressionFinder();

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
@@ -261,11 +262,12 @@ ImportsStatement =
 .
 
 AttributeBlock =
-	"<" { ANY } ">" [ EOL ]
+	"<" (. PushContext(Context.Attribute); .) { ANY } ">" (. PopContext(); .) [ EOL ]
 .
 
 NamespaceMemberDeclaration =
-	NamespaceDeclaration | TypeDeclaration
+	NamespaceDeclaration |
+	TypeDeclaration
 .
 
 NamespaceDeclaration =
@@ -286,18 +288,24 @@ TypeDeclaration =
 
 MemberDeclaration =
 	(. PushContext(Context.Member); .)
+	{ AttributeBlock } { MemberModifier }
 	(
+		MemberVariableOrConstantDeclaration |
 		SubOrFunctionDeclaration
 	)
 	(. PopContext(); .)
 .
 
 SubOrFunctionDeclaration = 
-	{ AttributeBlock } { MemberModifier } ("Sub" | "Function")
+	("Sub" | "Function")
 	(. PushContext(Context.IdentifierExpected); .) ANY (. PopContext(); .)
 	[ "(" [ ParameterList ] ")" ] [ "As" TypeName ]
 	Block
 	"End" ("Sub" | "Function") StatementTerminator
+.
+
+MemberVariableOrConstantDeclaration =
+	[ "Const" ] Identifier [ "As" TypeName ] [ "=" Expression ] StatementTerminator
 .
 
 ParameterList =
@@ -443,7 +451,9 @@ MemberModifier =
 	"NotOverridable" |
 	"Overrides" |
 	"Overloads" |
-	"Partial"
+	"Partial" |
+	"WithEvents" |
+	"Dim"
 .
 
 ParameterModifier =

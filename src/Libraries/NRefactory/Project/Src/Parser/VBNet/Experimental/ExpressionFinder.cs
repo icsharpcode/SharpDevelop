@@ -59,6 +59,7 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		IdentifierExpected,
 		Body,
 		Xml,
+		Attribute,
 		Debug
 	}
 }

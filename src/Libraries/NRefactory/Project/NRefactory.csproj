@@ -140,6 +140,7 @@
     <None Include="Src\Parser\Frames\Parser.frame" />
     <None Include="Src\Parser\VBNet\Experimental\ExpressionFinder.atg">
       <Generator>CocoParserGenerator</Generator>
+      <CustomToolNamespace>ICSharpCode.NRefactory.Parser.VBNet.Experimental</CustomToolNamespace>
     </None>
     <None Include="Src\Parser\VBNet\Experimental\Parser.frame">
       <DependentUpon>ExpressionFinder.atg</DependentUpon>
