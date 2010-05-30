@@ -14,6 +14,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
@@ -42,6 +43,46 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 
+		private void ShowMessage(Exception e)
+		{
+			base.DisplayError(e);
+			IUIService s = (IUIService)host.GetService(typeof(IUIService));
+			if (s != null) {
+				s.ShowError(e);
+			}
+		}
+		
+//		private new void DisplayError(Exception ex)
+//		{
+//			MessageBox.Show(ex.Message + "\n" + ex.StackTrace, "Fehler im Designer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+//		}
+		
+		
+		private void InitializeGUI()
+		{
+			reportSettings = host.Container.Components[1] as ReportSettings;
+			InitializeRootReportModel();
+		}
+		
+		
+		private void InitializeRootReportModel ()
+		{
+			this.rootReportModel = host.Container.Components[0] as RootReportModel;
+			this.rootReportModel.PageMargin = CalculateMargins();
+			this.rootReportModel.Page = new Rectangle(new Point(0,0),this.reportSettings.PageSize);
+			this.rootReportModel.Landscape = this.reportSettings.Landscape;
+			this.rootReportModel.Invalidate();
+		}
+			
+		
+		private Margins CalculateMargins ()
+		{
+			return new Margins(this.reportSettings.LeftMargin,reportSettings.RightMargin,
+			                   reportSettings.TopMargin,reportSettings.BottomMargin);
+		}
+			
+		#region overrides
+		
 		public override void Initialize(IComponent component)
 		{
 			base.Initialize(component);
@@ -125,37 +166,7 @@ namespace ICSharpCode.Reports.Addin
 				"AutoScaleDimensions","DataBindings"};
 			DesignerHelper.Remove(properties,s);
 			base.PostFilterProperties(properties);
-		}
-		
-		
-		private void ShowMessage(Exception e)
-		{
-			base.DisplayError(e);
-			IUIService s = (IUIService)host.GetService(typeof(IUIService));
-			if (s != null) {
-				s.ShowError(e);
-			}
-		}
-		
-//		private new void DisplayError(Exception ex)
-//		{
-//			MessageBox.Show(ex.Message + "\n" + ex.StackTrace, "Fehler im Designer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-//		}
-		
-		
-		private void InitializeGUI()
-		{
-			this.rootReportModel = host.Container.Components[0] as RootReportModel;
-			reportSettings = host.Container.Components[1] as ReportSettings;
-			this.rootReportModel.PageMargin = new System.Drawing.Printing.Margins(this.reportSettings.LeftMargin,reportSettings.RightMargin,
-			                                                                      reportSettings.TopMargin,reportSettings.BottomMargin);
-		
-			this.rootReportModel.Page = new Rectangle(0,0,
-			                                          this.reportSettings.PageSize.Width,
-			                                          this.reportSettings.PageSize.Height);
-			this.rootReportModel.Invalidate();
-		}
-		
+		}	
 		
 		public override bool CanParent(ControlDesigner controlDesigner)
 		{
@@ -168,12 +179,17 @@ namespace ICSharpCode.Reports.Addin
 			return base.CanBeParentedTo(parentDesigner);
 		}
 		
+		#endregion
 		
+		
+		
+		#region Events
 		
 		private void OnSectionSizeChanged (object sender, EventArgs e)
 		{
 			this.RecalculateSections();
 		}
+		
 		
 		private void RecalculateSections()
 		{
@@ -190,7 +206,7 @@ namespace ICSharpCode.Reports.Addin
 			this.Control.Invalidate();
 		}
 		
-		#region Events
+		
 		
 		private void OnLoadComplete(object sender, EventArgs e)
 		{

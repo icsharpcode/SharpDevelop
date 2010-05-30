@@ -26,7 +26,7 @@ using System.Text;
 namespace ICSharpCode.Reports.Core {
 	public sealed class GlobalValues
 	{
-//		private static string reportString = "Report";
+
 		private static string reportExtension = ".srd";
 		private static string xsdExtension = "xsd";
 		private static string reportFileName = "Report1";

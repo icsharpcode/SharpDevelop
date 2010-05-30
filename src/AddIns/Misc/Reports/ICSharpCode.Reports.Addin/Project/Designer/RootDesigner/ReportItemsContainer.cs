@@ -20,8 +20,7 @@ namespace ICSharpCode.Reports.Addin
 	/// </summary>
 	public class RootReportModel:RootDesignedComponent
 	{
-		Margins pageMargin;
-		Rectangle page;
+	
 		bool showDebugFrame;
 		
 		[System.ComponentModel.EditorBrowsableAttribute()]
@@ -50,34 +49,32 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void PrintMargin( Graphics e)
 		{
-			string s = String.Format(System.Globalization.CultureInfo.CurrentCulture,"[Bounds : {0}]",this.pageMargin);
+			string s = String.Format(System.Globalization.CultureInfo.CurrentCulture,
+			                         "[Size : {0}] [Landscape : {1}]  [Bounds : {2}]",
+			                         this.Page,this.Landscape,this.PageMargin);
 			using (Font f = GlobalsDesigner.DesignerFont){
 				SizeF size = e.MeasureString(s,f);
 				e.DrawString(s,f,
 				             new SolidBrush(Color.LightGray),
-				             new Rectangle(this.pageMargin.Left + 100,
-				                           this.pageMargin.Top - (int)f.GetHeight() - 3,
+				             new Rectangle(this.PageMargin.Left + 100,
+				                           this.PageMargin.Top - (int)f.GetHeight() - 3,
 				                           (int)size.Width,
 				                           (int)size.Height));
 				
-				Rectangle rect = new Rectangle(this.pageMargin.Left - 2,this.pageMargin.Top - 2,
-				                            this.page.Width - this.pageMargin.Left - this.pageMargin.Right + 2,
-				                            this.Size.Height - this.pageMargin.Top - this.pageMargin.Bottom + 2);
+				Rectangle rect = new Rectangle(this.PageMargin.Left - 2,this.PageMargin.Top - 2,
+				                            this.Page.Width - this.PageMargin.Left - this.PageMargin.Right + 2,
+				                            this.Size.Height - this.PageMargin.Top - this.PageMargin.Bottom + 2);
 				e.DrawRectangle(new Pen(Color.LightGray,1),rect);
 			}
 		}
 			
 		
-		public Margins PageMargin {
-			get { return pageMargin; }
-			set { pageMargin = value; }
-		}
+		public Margins PageMargin {get;set;}
+			
 		
-		public Rectangle Page {
-			get { return page; }
-			set { page = value; }
-		}
-		
+		public Rectangle Page {get;set;}
+			
+		public bool Landscape {get;set;}
 	}
 	
 		

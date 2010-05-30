@@ -23,23 +23,18 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 {
 	public class ReportStructure : IDisposable
 	{
-		//BaseSettingsPanel
 		
-		private string reportName;
-		private string fileName;
-		private string path;
-		
-		private GlobalEnums.ReportType reportType;
-		private GraphicsUnit graphicsUnit;
+//		private GlobalEnums.ReportType reportType;
+//		private GraphicsUnit graphicsUnit;
 		
 		//Database
-		private GlobalEnums.PushPullModel dataModel;
+//		private GlobalEnums.PushPullModel dataModel;
 
-		private string connectionString;
-		private string sqlString;
-		
-		private CommandType commandType;
-		private SharpQueryProcedure sharpQueryProcedure;
+//		private string connectionString;
+//		private string sqlString;
+//		
+//		private CommandType commandType;
+//		private SharpQueryProcedure sharpQueryProcedure;
 		private ReportItemCollection reportItemCollection;
 		private AvailableFieldsCollection availableFieldsCollection;
 		
@@ -54,117 +49,59 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			ReportModel model = ReportModel.Create();
 			
-			model.ReportSettings.ReportName = this.reportName;
-			model.ReportSettings.FileName = this.path + this.fileName;
+			model.ReportSettings.ReportName = this.ReportName;
+			model.ReportSettings.FileName = this.Path + this.FileName;
 			
-			model.ReportSettings.GraphicsUnit = this.graphicsUnit;
-			model.ReportSettings.ReportType = this.reportType;
+			model.ReportSettings.GraphicsUnit = this.GraphicsUnit;
+			model.ReportSettings.ReportType = this.ReportType;
 
-			model.ReportSettings.ConnectionString = this.connectionString;
-			model.ReportSettings.CommandText = this.sqlString;
-			model.ReportSettings.CommandType = this.commandType;
-			model.ReportSettings.DataModel = this.dataModel;
+			model.ReportSettings.ConnectionString = this.ConnectionString;
+			model.ReportSettings.CommandText = this.SqlString;
+			model.ReportSettings.CommandType = this.CommandType;
+			model.ReportSettings.DataModel = this.DataModel;
+			
+			model.ReportSettings.Landscape = this.Landscape;
+			
+			if (Landscape) {
+				model.ReportSettings.PageSize = new Size(GlobalValues.DefaultPageSize.Height,GlobalValues.DefaultPageSize.Width);
+			} else {
+				model.ReportSettings.PageSize = GlobalValues.DefaultPageSize;
+			}
+			
 			return model;
 		}
 		
 		#region BaseSettingsPanel property's
 		
-		public GraphicsUnit GraphicsUnit {
-			get {
-				return graphicsUnit;
-			}
-			set {
-				graphicsUnit = value;
-			}
-		}
-		public string ReportName {
-			get {
-				return reportName;
-			}
-			set {
-				reportName = value;
-			}
-		}
-		public ICSharpCode.Reports.Core.GlobalEnums.ReportType ReportType {
-			get {
-				return reportType;
-			}
-			set {
-				reportType = value;
-			}
-		}
-		public string FileName {
-			get {
-				return fileName;
-			}
-			set {
-				fileName = value;
-			}
-		}
+		public GraphicsUnit GraphicsUnit {get;set;}
+			
+		public string ReportName {get;set;}
 		
-		public string Path {
-			get {
-				return path;
-			}
-			set {
-				path = value;
-			}
-		}
+	
+		public ICSharpCode.Reports.Core.GlobalEnums.ReportType ReportType {get;set;}
+		
+		public string FileName {get;set;}
+		
+		
+		public string Path {get;set;}
+		
+		public bool Landscape {get;set;}
 		
 		#endregion
 		
 		#region DatabasePanel
 		
-		public string ConnectionString {
-			get {
-				return connectionString;
-			}
-			set {
-				connectionString = value;
-			}
-		}
-		
-		/*
-		public string CatalogName {
-			get {
-				return catalogName;
-		}
-			set {
-				catalogName = value;
-			}
-		}
-		*/
-		
-		public string SqlString {
-			get {
-				return sqlString;
-			}
-			set {
-				sqlString = value;
-			}
-		}
+		public string ConnectionString {get;set;}
 		
 		
-		public CommandType CommandType 
-		{
-			get {
-				return commandType;
-			}
-			set {
-				commandType = value;
-			}
-		}
+		public string SqlString {get;set;}
 		
 		
-		public ICSharpCode.Reports.Core.GlobalEnums.PushPullModel DataModel {
-			get {
-				return dataModel;
-			}
-			set {
-				dataModel = value;
-			}
-		}
+		public CommandType CommandType {get;set;}
+	
 		
+		public ICSharpCode.Reports.Core.GlobalEnums.PushPullModel DataModel {get;set;}
+			
 
 		public ParameterCollection SqlQueryParameters {
 			get {
@@ -178,14 +115,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		/// <summary>
 		/// This Property is only usefull for ResultPanel
 		/// </summary>
-		public SharpQueryProcedure SharpQueryProcedure {
-			get {
-				return sharpQueryProcedure;
-			}
-			set {
-				sharpQueryProcedure = value;
-			}
-		}
+		public SharpQueryProcedure SharpQueryProcedure {get;set;}
 		
 		#endregion
 		
@@ -238,8 +168,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					
 				}
 				
-				if (this.sharpQueryProcedure != null) {
-					this.sharpQueryProcedure = null;
+				if (this.SharpQueryProcedure != null) {
+					this.SharpQueryProcedure = null;
 				}
 				
 			}

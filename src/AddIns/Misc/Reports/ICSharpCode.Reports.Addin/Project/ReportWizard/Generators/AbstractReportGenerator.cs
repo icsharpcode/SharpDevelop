@@ -57,17 +57,20 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		
 		private void AdjustSectionToDefault () {
-		
+			
 			ReportSettings settings = reportModel.ReportSettings;
 			foreach (ICSharpCode.Reports.Core.BaseSection s in reportModel.SectionCollection) {
 				s.Size = new Size(settings.PageSize.Width - settings.LeftMargin - settings.RightMargin,
 			                        GlobalValues.DefaultSectionHeight);
+				Console.WriteLine("AdjustSectionToDefaul Size : {0}",s.Size);
 			}
 		}
 		
 		
 		protected void  WriteToXml ()
 		{
+			Console.WriteLine(" WriteToXml ()");
+			
 			ReportDesignerWriter rpd = new ReportDesignerWriter();
 			StringWriterWithEncoding writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
 			XmlTextWriter xml =XmlHelper.CreatePropperWriter(writer);

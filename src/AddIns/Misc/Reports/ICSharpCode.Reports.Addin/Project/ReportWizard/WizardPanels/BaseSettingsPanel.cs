@@ -6,13 +6,15 @@
 // </file>
 
 using System;
+using System.ComponentModel.Design;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using Org.BouncyCastle.Crypto.Engines;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard{
 	/// <summary>
@@ -37,19 +39,53 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 		private System.Windows.Forms.RadioButton radioFormSheet;
 		
 		private System.Windows.Forms.ErrorProvider errorProvider;
+		
+		private GroupBox groupPageLayout;
+		private RadioButton radioStandardLayout;
+		private RadioButton radioLandscape;
+		
 		ReportStructure generator;
 		Properties customizer;
 	
 		bool initDone;
 	
-		public BaseSettingsPanel(){	
+		public BaseSettingsPanel(){
 			InitializeComponent();
+			AddPageLayout();
 			errorProvider = new ErrorProvider();
 			errorProvider.ContainerControl = this;
 			this.txtFileName.KeyUp += new KeyEventHandler(OnKeyUp);
 			Localize();
 			Init();
 			base.VisibleChanged += new EventHandler (ChangedEvent );
+		}
+		
+		
+		private void AddPageLayout ()
+		{
+			
+			groupPageLayout = new GroupBox();
+			groupPageLayout.Location = new Point (16,110);
+			groupPageLayout.Size = new System.Drawing.Size(360, 48);
+			groupPageLayout.Text = "Page Layout";
+			
+			radioStandardLayout = new RadioButton();
+			radioStandardLayout.Text = "Standard";
+			radioStandardLayout.Location = new Point(24,15);
+			radioStandardLayout.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			radioStandardLayout.CheckedChanged += SetSuccessor;
+			
+			groupPageLayout.Controls.Add(radioStandardLayout);
+			
+			radioLandscape = new RadioButton();
+			radioLandscape.Text = "Landscape";
+			radioLandscape.Location = new Point (150,15);
+			radioLandscape.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			radioLandscape.CheckedChanged += SetSuccessor;
+			
+			groupPageLayout.Controls.Add(radioLandscape);
+			
+			this.groupBox1.Controls.Add(groupPageLayout);
 		}
 		
 		
@@ -108,6 +144,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 			cboGraphicsUnit.SelectedIndex = cboGraphicsUnit.FindString(GraphicsUnit.Millimeter.ToString());
 			
 			this.radioPullModell.Checked = true;
+			this.radioStandardLayout.Checked = true;
+		
 			initDone = true;
 		}
 	
@@ -149,6 +187,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 				base.EnableNext = false;
 				base.IsLastPanel = true;
 			}
+			
+			generator.Landscape = this.radioLandscape.Checked;
 		}
 		
 		
@@ -168,7 +208,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 //					generator.DataModel = GlobalEnums.PushPullModel.FormSheet;
 					base.EnableNext = false;
 					base.IsLastPanel = true;
+				} else if(this.radioStandardLayout.Checked == true) {
+					
+					generator.Landscape = false;
+					
+				} else if(this.radioLandscape.Checked == true) {
+					generator.Landscape = true;
 				}
+					
 				base.EnableFinish = true;
 			}
 		}
@@ -233,7 +280,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(8, 160);
+			this.label4.Location = new System.Drawing.Point(16, 168);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(80, 24);
 			this.label4.TabIndex = 15;
@@ -287,23 +334,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 			// 
 			// cboGraphicsUnit
 			// 
-			this.cboGraphicsUnit.Location = new System.Drawing.Point(112, 160);
+			this.cboGraphicsUnit.Location = new System.Drawing.Point(116, 168);
 			this.cboGraphicsUnit.Name = "cboGraphicsUnit";
-			this.cboGraphicsUnit.Size = new System.Drawing.Size(248, 21);
+			this.cboGraphicsUnit.Size = new System.Drawing.Size(248, 25);
 			this.cboGraphicsUnit.TabIndex = 17;
 			this.cboGraphicsUnit.TextChanged += new System.EventHandler(this.ChangedEvent);
 			this.cboGraphicsUnit.DropDownStyle = ComboBoxStyle.DropDownList;
-			// 
-			// cboReportType
-			// 
-			/*
-			this.cboReportType.Location = new System.Drawing.Point(112, 120);
-			this.cboReportType.Name = "cboReportType";
-			this.cboReportType.Size = new System.Drawing.Size(248, 21);
-			this.cboReportType.TabIndex = 16;
-			this.cboReportType.Visible = false;
-			this.cboReportType.SelectedIndexChanged += new System.EventHandler(this.ChangedEvent);
-*/			
+			
 // 
 			// txtReportName
 			// 
@@ -319,14 +356,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard{
 			this.groupBox1.Controls.Add(this.groupBox2);
 			this.groupBox1.Controls.Add(this.button1);
 			this.groupBox1.Controls.Add(this.cboGraphicsUnit);
-//			this.groupBox1.Controls.Add(this.cboReportType);
+
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.txtPath);
 			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Location = new System.Drawing.Point(8, 160);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(392, 192);
+			this.groupBox1.Size = new System.Drawing.Size(392, 210);
 			this.groupBox1.TabIndex = 10;
 			this.groupBox1.TabStop = false;
 			// 

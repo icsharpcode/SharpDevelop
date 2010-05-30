@@ -36,10 +36,9 @@ namespace ICSharpCode.Reports.Addin
 		private bool hasUnmergedChanges;
 		private bool unloading;
 		
-		string reportFileContent;
+		private string reportFileContent;
 		
-		private Panel panel = new Panel();
-		
+		private Panel panel;
 		private ReportDesignerLoader loader;
 		
 		private IDesignerGenerator generator;
@@ -50,7 +49,7 @@ namespace ICSharpCode.Reports.Addin
 		private XmlView xmlView;
 		private ReportPreview preview;
 		private ReportViewerSecondaryView reportViewer;
-//		private Encoding defaultEncoding = Encoding.UTF8;
+
 		
 		#region Constructor
 		
@@ -69,8 +68,6 @@ namespace ICSharpCode.Reports.Addin
 			this.generator = generator;
 			this.generator.Attach(this);
 			base.TabPageText = ResourceService.GetString("SharpReport.Design");
-			this.panel.Dock = DockStyle.Fill;
-			this.panel.BackColor = System.Drawing.Color.LightBlue;
 			ReportingSideTabProvider.AddViewContent(this);
 		}
 		
@@ -190,30 +187,15 @@ namespace ICSharpCode.Reports.Addin
 			this.unloading = false;
 			
 			if (e.HasSucceeded) {
-				Control c = null;
-				c = this.designSurface.View as Control;
-				c.Parent = this.panel;
-				c.Dock = DockStyle.Fill;
+
+				CreatePanel();
+				SetupDesignSurface();
 				this.IsFormsDesignerVisible = true;
-				// to set ReportFileContent initially, we need to manually call MergeFormChanges.
-				// updates to ReportFileContent will be done using the normal Save support in OpenedFile
-				// (that just doesn't work initially because the file isn't dirty)
 				generator.MergeFormChanges(null);
 				StartReportExplorer ();
-				// Display the designer on the view content
-//				bool savedIsDirty = this.DesignerCodeFile.IsDirty;
-//				Control designView = (Control)this.designSurface.View;
-				
-//				designView.BackColor = Color.White;
-//				designView.RightToLeft = RightToLeft.No;
-				// Make sure auto-scaling is based on the correct font.
-				// This is required on Vista, I don't know why it works correctly in XP
-//				designView.Font = Control.DefaultFont;
-				
-//				this.UserContent = designView;
+
 				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + this.designSurface.ToString());
 				designSurfaceManager.ActiveDesignSurface = this.designSurface;
-//				this.DesignerCodeFile.IsDirty = savedIsDirty;
 				this.UpdatePropertyPad();
 			} else {
 				// This method can not only be called during initialization,
@@ -230,7 +212,22 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
+		private void CreatePanel ()
+		{
+			this.panel = new Panel();
+			this.panel.Dock = DockStyle.Fill;
+			this.panel.BackColor = System.Drawing.Color.LightBlue;
+		}
 		
+		
+		private void SetupDesignSurface()
+		{
+			Control c = null;
+			c = this.designSurface.View as Control;
+			c.Parent = this.panel;
+			c.Dock = DockStyle.Fill;
+		}
+			
 		private void DesingerUnloading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader unloading...");
