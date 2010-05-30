@@ -92,6 +92,7 @@
       <DependentUpon>GridUnitSelector.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\MarginHandle.cs" />
     <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
@@ -117,6 +118,7 @@
     </Compile>
     <Compile Include="Extensions\GridAdornerProvider.cs" />
     <Compile Include="Extensions\GridPlacementSupport.cs" />
+    <Compile Include="Extensions\MarginHandleExtension.cs" />
     <Compile Include="Extensions\SnaplinePlacementBehavior.cs">
       <SubType>Code</SubType>
     </Compile>
