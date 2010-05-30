@@ -17,4 +17,18 @@ namespace MSHelpSystem.Controls
 			get { return toc; }
 		}		
 	}
+
+	public class Help3SearchPad : AbstractPadContent
+	{
+		public Help3SearchPad()
+		{
+		}
+
+		SearchPadControl search = new SearchPadControl();
+
+		public override object Control
+		{
+			get { return search; }
+		}
+	}
 }

@@ -66,6 +66,10 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Source\BrowserScheme.cs" />
     <Compile Include="Source\Controls\Pads.cs" />
+    <Compile Include="Source\Controls\SearchPadControl.xaml.cs">
+      <DependentUpon>SearchPadControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Source\Controls\TocEntry.cs" />
     <Compile Include="Source\Controls\TocPadControl.xaml.cs">
       <DependentUpon>TocPadControl.xaml</DependentUpon>
@@ -95,6 +99,7 @@
     <Folder Include="Source\Controls" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Source\Controls\SearchPadControl.xaml" />
     <Page Include="Source\Controls\TocPadControl.xaml" />
     <Page Include="Source\Help3OptionsPanel.xaml" />
   </ItemGroup>

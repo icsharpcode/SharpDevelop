@@ -48,5 +48,14 @@ namespace MSHelpSystem.Commands
 				if (toc != null) toc.BringPadToFront();
 			}
 		}
-	}	
+	}
+
+	public class DisplaySearch : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(Help3SearchPad));
+			if (search != null) search.BringPadToFront();
+		}
+	}
 }
