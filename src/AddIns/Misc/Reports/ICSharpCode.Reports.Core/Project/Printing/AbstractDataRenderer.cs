@@ -33,6 +33,7 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		#region overrides
+		
 		internal override void ReportBegin(object sender, PrintEventArgs pea)
 		{
 			base.ReportBegin(sender, pea);

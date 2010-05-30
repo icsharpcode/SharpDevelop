@@ -59,7 +59,7 @@ namespace ICSharpCode.Reports.Addin
 			
 			// manipulate reportSettings if Filename differs
 			this.reportSettings = baseItemLoader.Load(rse) as ReportSettings;
-			if (this.reportSettings.FileName != file.FileName) {
+			if (this.reportSettings.FileName.CompareTo(file.FileName) != 0) {
 				System.Diagnostics.Trace.WriteLine("LoadObjectFromXmlDocument - filename changed" );
 				this.reportSettings.FileName = file.FileName;
 			}

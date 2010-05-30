@@ -39,7 +39,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		private delegate void invokeDelegate();
 		private ReportSettings reportSettings;
 		private IDataManager dataManager;
-//		private string pagesCreatedMessage;
+
 		
 		#region Constructor
 		
@@ -80,6 +80,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		#endregion
 
+		
 		public void RunReport (string fileName,ReportParameters parameters)
 		{
 			if (String.IsNullOrEmpty(fileName)) {
@@ -87,18 +88,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
 			this.RunReport(model,parameters);
-		}
-		
-		[Obsolete("Use RunReport (string fileName,ReportParameters parameters)" )]
-		public void SetupAsynchron (string fileName,ReportParameters parameters)
-		{
-			
-			
-			if (String.IsNullOrEmpty(fileName)) {
-				throw new ArgumentNullException("fileName");
-			}
-			ReportModel m = ReportEngine.LoadReportModel(fileName);
-			RunReport(m,parameters);
 		}
 		
 		
@@ -119,28 +108,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			}
 		}
 		
-		[Obsolete("Use RunReport (reportModel,parameters)")]
-		public void SetupAsynchron (ReportModel reportModel,ReportParameters parameters)
-		{
-			
-			RunReport (reportModel,parameters);
-			/*
-			if (reportModel == null) {
-				throw new ArgumentNullException("reportModel");
-			}
-			
-			this.SetupViewer(reportModel);
-			
-			if (reportModel.DataModel == GlobalEnums.PushPullModel.FormSheet) {
-				RunFormSheet(reportModel);
-			} else {
-				ReportEngine.CheckForParameters(reportModel,parameters);
-				this.dataManager = DataManagerFactory.CreateDataManager(reportModel,parameters);
-				RunDataReport (reportModel,dataManager);
-			}
-			 */
-		}
-		
 		
 		public void RunReport (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
 		{
@@ -151,22 +118,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				throw new ArgumentNullException("dataTable");
 			}
 			RunReport (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
-		}
-		
-		
-		[Obsolete("Use RunReport(reportModel,dataTable,parameters)")]
-		public void SetupAsynchron (ReportModel reportModel,DataTable dataTable,ReportParameters parameters)
-		{
-			RunReport(reportModel,dataTable,parameters);
-			/*
-			if (reportModel == null) {
-				throw new ArgumentNullException("reportModel");
-			}
-			if (dataTable == null) {
-				throw new ArgumentNullException("dataTable");
-			}
-			SetupAsynchron (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
-			 */
 		}
 		
 		
@@ -183,14 +134,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.dataManager = dataManager;
 			RunDataReport(reportModel,dataManager);
 		}
-		
-		
-		[Obsolete("Use RunReport(reportModel,dataManager)")]
-		public void SetupAsynchron (ReportModel reportModel,IDataManager dataManager)
-		{
-			RunReport(reportModel,dataManager);
-		}
-		
 		
 		#region Rendering
 		
