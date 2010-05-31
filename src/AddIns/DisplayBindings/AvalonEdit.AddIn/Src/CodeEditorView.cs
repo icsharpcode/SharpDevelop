@@ -72,6 +72,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				HighlightBrackets(null, e);
 			else if (e.PropertyName == "EnableFolding")
 				UpdateParseInformation();
+			else if (e.PropertyName == "HighlightSymbol")
+				this.caretReferencesRenderer.ClearHighlight();
 		}
 		
 		#region CaretPositionChanged - Bracket Highlighting
