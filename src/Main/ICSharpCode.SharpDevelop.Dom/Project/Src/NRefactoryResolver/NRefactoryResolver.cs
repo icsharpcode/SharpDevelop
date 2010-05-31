@@ -1147,21 +1147,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				result.Add(new KeywordEntry("Global"));
 				result.Add(new KeywordEntry("New"));
-				CtrlSpaceInternal(result, fileContent);
+				CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 			} else {
 				if (context == ExpressionContext.TypeDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.TypeLevel);
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.InterfaceDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InterfaceLevel);
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.MethodBody) {
 					result.Add(new KeywordEntry("var"));
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.StatementStart);
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.Global) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.GlobalLevel);
 				} else if (context == ExpressionContext.InterfacePropertyDeclaration) {
@@ -1178,11 +1178,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					result.Add(new KeywordEntry("struct"));
 					result.Add(new KeywordEntry("class"));
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.InheritableType) {
 					result.Add(new KeywordEntry("where")); // the inheritance list can be followed by constraints
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.PropertyDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InPropertyDeclaration);
 				} else if (context == ExpressionContext.EventDeclaration) {
@@ -1199,17 +1199,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						}
 					}
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.ObjectInitializer) {
 					bool isCollectionInitializer;
 					result.AddRange(ObjectInitializerCtrlSpace(fileContent, out isCollectionInitializer));
 					if (isCollectionInitializer) {
 						AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
 						AddCSharpPrimitiveTypes(result);
-						CtrlSpaceInternal(result, fileContent);
+						CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 					}
 				} else if (context == ExpressionContext.Attribute) {
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 					result.Add(new KeywordEntry("assembly"));
 					result.Add(new KeywordEntry("module"));
 					result.Add(new KeywordEntry("field"));
@@ -1223,11 +1223,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionContent);
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else {
 					// e.g. some ExpressionContext.TypeDerivingFrom()
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				}
 			}
 			return result;
@@ -1241,7 +1241,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		void CtrlSpaceInternal(List<ICompletionEntry> result, string fileContent, bool showEntriesFromAllNamespaces = true)
+		void CtrlSpaceInternal(List<ICompletionEntry> result, string fileContent, bool showEntriesFromAllNamespaces)
 		{
 			lookupTableVisitor = new LookupTableVisitor(language);
 			
