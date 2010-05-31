@@ -1,0 +1,18 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ad="clr-namespace:AvalonDock"
+    >
+
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="/AvalonDock;component/Resources/Common.xaml"/>
+		<ResourceDictionary Source="/AvalonDock;component/Resources/DockablePaneStyles.xaml"/>
+		<ResourceDictionary Source="/AvalonDock;component/Resources/DocumentPaneStyles.xaml"/>
+		<ResourceDictionary Source="/AvalonDock;component/Resources/DockingManagerStyles.xaml"/>
+		<ResourceDictionary Source="/AvalonDock;component/Resources/OverlayWindowStyle.xaml"/>
+		<ResourceDictionary Source="/AvalonDock;component/Resources/FloatingWindowStyle.xaml"/>
+		<ResourceDictionary Source="/AvalonDock;component/Resources/NavigatorWindowStyle.xaml"/>
+		<ResourceDictionary Source="/AvalonDock;component/Resources/DocumentNavigatorWindowStyle.xaml"/>
+	</ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

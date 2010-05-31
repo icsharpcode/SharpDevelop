@@ -1,0 +1,131 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ad="clr-namespace:AvalonDock">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/AvalonDock;component/Resources/Brushes.xaml"/>
+        <ResourceDictionary Source="/AvalonDock;component/Resources/Common.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+	<!--DocumentNavigatorWindow-->
+    <Style x:Key="{x:Type ad:DocumentNavigatorWindow}" TargetType="{x:Type ad:DocumentNavigatorWindow}">
+        <Style.Resources>
+            <Style x:Key="listItemStyle" TargetType="ListBoxItem">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="extBorder"  >
+                                <ContentPresenter Margin="0,2,0,2"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" TargetName="extBorder" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="listBoxStyle" TargetType="ListBox">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBox">
+                            <ScrollViewer>
+                                <ItemsPresenter/>
+                            </ScrollViewer>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="listContentTemplate" DataType="{x:Type ad:NavigatorWindowItem}">
+                <StackPanel 
+					Orientation="Vertical" 
+					HorizontalAlignment="Center" 
+					Margin="5"
+                    
+                    >
+
+					<Border x:Name="intBorder" CornerRadius="2" BorderThickness="1" >
+						<Border BorderThickness="1" BorderBrush="DarkGray" Background="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}" HorizontalAlignment="Right" Width="200" Height="200" Margin="5">
+							<Border>
+								<Border.Background>
+									<VisualBrush AlignmentX="Left" AlignmentY="Top" Stretch="Uniform" Visual="{Binding Path=ItemContent.Content, Mode=OneWay}"/>
+								</Border.Background>
+							</Border>
+							<Border.BitmapEffect>
+								<DropShadowBitmapEffect Color="DarkGray" ShadowDepth="4"/>
+							</Border.BitmapEffect>
+						</Border>
+					</Border>
+
+					<TextBlock HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding Path=Title}"/>
+
+                </StackPanel>
+				<DataTemplate.Triggers>
+					<Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="BorderBrush" TargetName="intBorder" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
+                        <Setter Property="Background" TargetName="intBorder" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
+                    </Trigger>
+				</DataTemplate.Triggers>
+				
+            </DataTemplate>
+        </Style.Resources>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ad:DocumentNavigatorWindow}">
+                    <Grid>
+                    <Border 
+                        BorderThickness="1" 
+                        BorderBrush="DarkGray" 
+                        CornerRadius="5" 
+                        Background="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"
+                        >
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+								<TextBlock 
+                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedContent.Title}"
+                                FontSize="20"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Grid.Row="0"
+                                >
+									<TextBlock.BitmapEffect>
+										<OuterGlowBitmapEffect GlowColor="White" GlowSize="10" />
+									</TextBlock.BitmapEffect>
+									
+								</TextBlock>
+                            <ListBox
+								x:Name="PART_ScrollingPanel"
+                                Grid.Row="1"
+                                ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Documents}"
+                                ItemTemplate="{StaticResource listContentTemplate}"
+                                ItemContainerStyle="{StaticResource listItemStyle}"
+                                SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedContent, Mode=TwoWay}"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"
+								ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+								ScrollViewer.IsDeferredScrollingEnabled="True"
+								Style="{StaticResource listBoxStyle}"
+								>
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                            
+                        </Grid>
+                    </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+</ResourceDictionary>

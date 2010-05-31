@@ -26,7 +26,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		WpfWorkbench workbench;
 		DockingManager dockingManager = new DockingManager();
-		DocumentPane documentPane = new DocumentPane();
 		List<IWorkbenchWindow> workbenchWindows = new List<IWorkbenchWindow>();
 		internal bool Busy;
 		
@@ -40,7 +39,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public AvalonDockLayout()
 		{
-			dockingManager.Content = documentPane;
 			dockingManager.PropertyChanged += dockingManager_PropertyChanged;
 			dockingManager.Loaded += dockingManager_Loaded;
 		}
@@ -180,7 +178,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			AvalonPadContent pad;
 			if (pads.TryGetValue(padDescriptor, out pad)) {
-				dockingManager.Show(pad);
+				pad.Show(dockingManager);
 			} else {
 				LoggingService.Debug("Add pad " + padDescriptor.Class + " at " + padDescriptor.DefaultPosition);
 				
@@ -200,13 +198,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			AvalonPadContent p;
 			if (pads.TryGetValue(padDescriptor, out p))
-				dockingManager.Hide(p);
+				p.Hide();
 		}
 		
 		public void UnloadPad(PadDescriptor padDescriptor)
 		{
 			AvalonPadContent p = pads[padDescriptor];
-			dockingManager.Hide(p);
+			p.Hide();
 			DockablePane pane = p.Parent as DockablePane;
 			if (pane != null)
 				pane.Items.Remove(p);
@@ -228,9 +226,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			workbenchWindows.Add(window);
 			window.ViewContents.Add(content);
 			window.ViewContents.AddRange(content.SecondaryViewContents);
-			documentPane.Items.Add(window);
 			if (switchToOpenedView) {
-				dockingManager.Show(window);
+				window.Show(dockingManager);
+				window.Activate();
 			}
 			window.Closed += window_Closed;
 			return window;
@@ -278,21 +276,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void LoadLayout(string fileName, bool hideAllLostPads)
 		{
 			LoggingService.Info("Loading layout file: " + fileName + ", hideAllLostPads=" + hideAllLostPads);
-			DockableContent[] oldContents = dockingManager.DockableContents;
+//			DockableContent[] oldContents = dockingManager.DockableContents;
 			dockingManager.RestoreLayout(fileName);
-			DockableContent[] newContents = dockingManager.DockableContents;
+//			DockableContent[] newContents = dockingManager.DockableContents;
 			// Restoring a AvalonDock layout will remove pads that are not
 			// stored in the layout file.
 			// We'll re-add those lost pads.
-			foreach (DockableContent lostContent in oldContents.Except(newContents)) {
-				AvalonPadContent padContent = lostContent as AvalonPadContent;
-				LoggingService.Debug("Re-add lost pad: " + padContent);
-				if (padContent != null && !hideAllLostPads) {
-					padContent.ShowInDefaultPosition();
-				} else {
-					dockingManager.Hide(lostContent);
-				}
-			}
+//			foreach (DockableContent lostContent in oldContents.Except(newContents)) {
+//				AvalonPadContent padContent = lostContent as AvalonPadContent;
+//				LoggingService.Debug("Re-add lost pad: " + padContent);
+//				if (padContent != null && !hideAllLostPads) {
+//					padContent.ShowInDefaultPosition();
+//				} else {
+//					dockingManager.Hide(lostContent);
+//				}
+//			}
 		}
 		
 		public void StoreConfiguration()
