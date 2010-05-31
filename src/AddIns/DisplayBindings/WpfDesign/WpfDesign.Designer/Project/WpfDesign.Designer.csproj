@@ -99,6 +99,7 @@
     <Compile Include="Controls\ResizeThumb.cs" />
     <Compile Include="CallExtension.cs" />
     <Compile Include="Controls\DragListener.cs" />
+    <Compile Include="Controls\SizeDisplay.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="Controls\ZoomControl.cs" />
     <Compile Include="Converters.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Extensions\GridAdornerProvider.cs" />
     <Compile Include="Extensions\GridPlacementSupport.cs" />
     <Compile Include="Extensions\MarginHandleExtension.cs" />
+    <Compile Include="Extensions\SizeDisplayExtension.cs" />
     <Compile Include="Extensions\SnaplinePlacementBehavior.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -329,16 +329,16 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Controls:MarginHandle}">
-                    <Grid Height="8" Width="{Binding Path=HandleLength, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                    <Grid Height="8" Width="{Binding Path=HandleLength, RelativeSource={RelativeSource Mode=TemplatedParent}}" SnapsToDevicePixels="True">
                         <Grid.ColumnDefinitions>
                              <ColumnDefinition Width="8" />
                              <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Path Name="startArrow"
-						      Fill="#FF333333"
-						      Stretch="Fill"
-						      Stroke="{TemplateBinding Panel.Background}"
-                             StrokeThickness="0.5"
+						      	Fill="#FF333333"
+					    	    Stretch="Fill"
+						        Stroke="{TemplateBinding Panel.Background}"
+                              StrokeThickness="0.5"
 						      Data="M0,0 L0,1 1,0.5 z" Grid.Column="0" />
                     	  <!-- Wrap the handle-line and endArrow in this grid. It's visiblity is subjected to HandleLength  -->	
                         <Grid Height="8" Grid.Column="1" Name="lineArrow">
@@ -349,9 +349,9 @@
                                 <ColumnDefinition Width="8" />
                             </Grid.ColumnDefinitions>
                             <Path Name="line1"
-						      Stretch="Fill"
+				     		  Stretch="Fill"
 						      Stroke="#FF333333"
-                              StrokeThickness="1.5"
+                            StrokeThickness="1.5"
 						      Margin="0 0 0 0"
 						      Data="M0,0 L1,0" Grid.Column="0"/>
                             <TextBlock Grid.Column="1" 
@@ -368,7 +368,7 @@
                             <Path Name="line2"
 						      Stretch="Fill"
 						      Stroke="#FF333333"
-                              StrokeThickness="1.5"
+                            StrokeThickness="1.5"
 						      Margin="0 0 0 0"
 						      Data="M0,0 L1,0" Grid.Column="2"/>
                             <Path Name="arrow2"
@@ -392,7 +392,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Controls:MarginStub}">
-                    <Grid>
+                    <Grid SnapsToDevicePixels="True">
                     <Ellipse
                       Fill="{TemplateBinding Panel.Background}"
                       Height="7"
@@ -400,6 +400,71 @@
                       StrokeThickness="1"
                       Stroke="#FF333333"/>                        
                     </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+<Style TargetType="{x:Type Controls:HeightDisplay}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:HeightDisplay}">
+                    <Grid Height="8" SnapsToDevicePixels="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition MaxWidth="20" MinWidth="5" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Path Grid.Column="0"
+                              Stroke="Red"
+                              StrokeThickness="1"
+                              Data="M0,0 L0,1 M0,0.5 L1,0.5"
+                              Stretch="Fill" />
+                        <TextBlock Text="{Binding Path=Height}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Padding="1,1,1,1"
+                                   FontSize="10"
+                                   Grid.Column="1"/>
+                        <Path Grid.Column="2"
+                              Stroke="Red"
+                              StrokeThickness="1"
+                              Data="M0,0.5 L3,0.5 M3,0 L3,1 "
+                              Stretch="Fill" />
+                        <Grid.LayoutTransform>
+                            <RotateTransform Angle="270"/>
+                        </Grid.LayoutTransform>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="{x:Type Controls:WidthDisplay}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:WidthDisplay}">
+                    <Grid Height="8" SnapsToDevicePixels="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition MaxWidth="20" MinWidth="5" />
+                            <ColumnDefinition Width="4" />
+                        </Grid.ColumnDefinitions>
+                        <Path Grid.Column="0"
+                              Stroke="Red"
+                              StrokeThickness="1"
+                              Data="M0,0 L0,1 M0,0.5 L1,0.5"
+                              Stretch="Fill" />
+                        <TextBlock Text="{Binding Path=Width}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Padding="1,1,1,1"
+                                   FontSize="10"
+                                   Grid.Column="1"/>
+                        <Path Grid.Column="2"
+                              Stroke="Red"
+                              StrokeThickness="1"
+                              Data="M0,0.5 L3,0.5 M3,0 L3,1 "
+                              Stretch="Fill" />
+                      </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
