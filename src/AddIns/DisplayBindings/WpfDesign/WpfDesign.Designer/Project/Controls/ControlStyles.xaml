@@ -1,10 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls">
+	xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
+	xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters">
 	<!--
 		This file contains the default styles used by the Controls in ICSharpCode.WpfDesign.Designer.Controls
 	-->
-	
+    <Converters:LevelConverter x:Key="FormatDoubleConverter" />
 	<Style TargetType="{x:Type Controls:PanelMoveAdorner}">
 		<Setter Property="Template">
 			<Setter.Value>
@@ -340,24 +341,42 @@
                              StrokeThickness="0.5"
 						      Data="M0,0 L0,1 1,0.5 z" Grid.Column="0" />
                     	  <!-- Wrap the handle-line and endArrow in this grid. It's visiblity is subjected to HandleLength  -->	
-                        <Grid Grid.Column="1" Name="lineArrow">
+                        <Grid Height="8" Grid.Column="1" Name="lineArrow">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition MaxWidth="20" MinWidth="10" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="8" />
                             </Grid.ColumnDefinitions>
-                            <Path Name="line"
+                            <Path Name="line1"
 						      Stretch="Fill"
 						      Stroke="#FF333333"
-                             StrokeThickness="1.5"
-						      Grid.Row="2"
+                              StrokeThickness="1.5"
 						      Margin="0 0 0 0"
 						      Data="M0,0 L1,0" Grid.Column="0"/>
-                            <Path Name="endArrow"
+                            <TextBlock Grid.Column="1" 
+								Text="{Binding Path=HandleLength, Mode=OneWay, Converter={x:Static Converters:FormatDoubleConverter.Instance }, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+								FontSize="9" 
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"
+                          	Padding="1,1,1,1">
+                                <TextBlock.LayoutTransform>
+                                    <RotateTransform Angle="{Binding Path=TextTransform, RelativeSource={RelativeSource Mode=TemplatedParent}}" CenterX="0.5" CenterY="0.5">
+                                    </RotateTransform>
+                                </TextBlock.LayoutTransform>
+                            </TextBlock>
+                            <Path Name="line2"
+						      Stretch="Fill"
+						      Stroke="#FF333333"
+                              StrokeThickness="1.5"
+						      Margin="0 0 0 0"
+						      Data="M0,0 L1,0" Grid.Column="2"/>
+                            <Path Name="arrow2"
 						      Fill="#FF333333"
 						      Stretch="Fill"
 						      Stroke="{TemplateBinding Panel.Background}"
                               StrokeThickness="0.5"    
-						      Data="M0,0 L0,1 1,0.5 z" Grid.Column="1" />
+						      Data="M0,0 L0,1 1,0.5 z" Grid.Column="3" />
                         </Grid>
                     	  <!--  Rotate the handle and angle of rotation being set by the Margin type. See enum HandleOrientation  -->
                         <Grid.LayoutTransform>

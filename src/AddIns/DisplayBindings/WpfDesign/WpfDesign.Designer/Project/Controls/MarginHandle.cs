@@ -55,10 +55,24 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
         MarginStub marginStub;
                 
         /// <summary>
-        /// Gets/Sets tha angle by which handle rotates.
+        /// Gets/Sets the angle by which handle rotates.
         /// </summary>
         public double Angle { get; set; }
         
+        /// <summary>
+        /// Gets/Sets the angle by which the Margin display has to be rotated
+        /// </summary>
+        public double TextTransform{
+            get{
+                if((double)orientation==90 || (double)orientation == 180)
+                    return 180;
+                if ((double)orientation == 270)
+                    return 0;
+                return (double)orientation;
+            }
+        	set{ }
+        }
+                
         /// <summary>
         /// Decides the visiblity of handle/stub when <see cref="HandleLength"/> changes
         /// </summary>
@@ -133,7 +147,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
             marginStub.Visibility = handleLength == 0.0 ? Visibility.Visible : Visibility.Hidden;
             this.Visibility = handleLength != 0.0 ? Visibility.Visible : Visibility.Hidden;
             if (this.lineArrow != null){            
-                lineArrow.Visibility = handleLength < 20 ? Visibility.Hidden : Visibility.Visible;
+                lineArrow.Visibility = handleLength < 23 ? Visibility.Hidden : Visibility.Visible;
             }
         }
      
