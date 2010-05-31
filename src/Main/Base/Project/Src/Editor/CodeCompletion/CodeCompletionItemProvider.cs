@@ -11,8 +11,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -286,6 +286,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					addUsing = true;
 				}
 				
+				// Special case for Attributes
+				if (insertedText.EndsWith("Attribute") && IsInAttributeContext(editor, context.StartOffset)) {
+					insertedText = insertedText.RemoveEnd("Attribute");
+				}
+				
 				// Insert the text
 				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
 				context.EndOffset = context.StartOffset + insertedText.Length;
@@ -300,6 +305,20 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
 				context.EndOffset = context.StartOffset + insertedText.Length;
 			}
+		}
+		
+		/// <summary>
+		/// Returns true if the offset where we are inserting is in Attibute context, that is [*expr*
+		/// </summary>
+		bool IsInAttributeContext(ITextEditor editor, int offset)
+		{
+			if (editor == null || editor.Document == null)
+				return false;
+			var expressionFinder = ParserService.GetExpressionFinder(editor.FileName);
+			if (expressionFinder == null)
+				return false;
+			var resolvedExpression = expressionFinder.FindFullExpression(editor.Document.Text, offset);
+			return resolvedExpression.Context == ExpressionContext.Attribute;
 		}
 		
 		#region Description
