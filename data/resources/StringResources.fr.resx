@@ -127,7 +127,7 @@
     <value>Annuler l'installation</value>
   </data>
   <data name="AddInManager.ActionCancelUpdate" xml:space="preserve">
-    <value>Annuler la mise a jour</value>
+    <value>Annuler la mise à jour</value>
   </data>
   <data name="AddInManager.ActionDisable" xml:space="preserve">
     <value>Désactiver</value>
@@ -142,7 +142,7 @@
     <value>Désinstaller</value>
   </data>
   <data name="AddInManager.ActionUpdate" xml:space="preserve">
-    <value>Mettre a jour</value>
+    <value>Mettre à jour</value>
   </data>
   <data name="AddInManager.AddInDependencyFailed" xml:space="preserve">
     <value>Une dépendance de cet AddIn n'a pas été trouvée. Installez la pour activer cet AddIn.</value>
@@ -231,6 +231,39 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
   </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Afficher le diagramme des classes</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Contenus</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Afficher Contenus</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Bibliothèque d'Aide</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Mode d'Aide</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Installer les Catalogues d'Aide</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Visionneuse de l'aide Microsoft</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Vous avez demandé une fonctionnalité su mode hors-ligne depuis le mode en-ligne. Changez de mode pour utiliser cette fonctionnalité.</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Afficher l'Aide</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Utiliser l'aide externe</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Je souhaite utiliser l'aide locale</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Je souhaite utiliser l'aide en ligne</value>
   </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Nombre d'octets par ligne</value>
@@ -884,6 +917,15 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Utiliser la complétion d'extension</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
+    <value>Impossible de sauvegarder sans perte d'informations avec l'encodage ${encoding}</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue" xml:space="preserve">
+    <value>Continuer</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8" xml:space="preserve">
+    <value>Sauvegarder en UTF-8</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
     <value>Le projet est configuré comme dll et aucune commande a exécuter n'a été spécifiée. Vous pouvez spécifier une commande a exécuter dans les options du projet.</value>
@@ -1978,7 +2020,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Le répertoire '{0}'  n'existe pas.</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.LookIn.SelectDirectory" xml:space="preserve">
-    <value>Choisir le répertoire où chercher</value>
+    <value>Choisir le répertoire de recherche</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.LookIn.WholeProject" xml:space="preserve">
     <value>Projet entier</value>
@@ -2011,7 +2053,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Rechercher dans:</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.SearchStrategy.RegexSearch" xml:space="preserve">
-    <value>Expression régulière</value>
+    <value>Expressions rationnelles</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.SearchStrategy.Standard" xml:space="preserve">
     <value>Recherche standard</value>
@@ -2248,7 +2290,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Autres options</value>
   </data>
   <data name="Dialog.Options.IDEOptions.AssemblyScout.PanelName" xml:space="preserve">
-    <value>Assistant Assemblage</value>
+    <value>Explorateur d'Assemblies</value>
   </data>
   <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateMembers" xml:space="preserve">
     <value>Membres privés :</value>
@@ -2418,6 +2460,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>Utiliser un fichier &amp;temporaire pour la sauvegarde</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DefaultFileEncoding" xml:space="preserve">
+    <value>&amp;Encodage par défaut:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
     <value>&amp;Détecter les changements externes des fichiers</value>
   </data>
@@ -2431,7 +2476,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Charger &amp;les préférences utilisateur avec le document</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
+    <value>Apple (CR)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Charger/Sauver</value>
@@ -2440,13 +2485,13 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Enregistrer</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UnixRadioButton" xml:space="preserve">
-    <value>Unix</value>
+    <value>Unix (LF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin" xml:space="preserve">
     <value>Utiliser la corbeille lors de l'effacement des fichiers</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.WindowsRadioButton" xml:space="preserve">
-    <value>Windows</value>
+    <value>Windows (CRLF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.OutputPanel.Format" xml:space="preserve">
     <value>Format</value>
@@ -2734,7 +2779,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Application Windows</value>
   </data>
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
-    <value>Sélectionner le répertoire d'assemblage</value>
+    <value>Sélectionner le répertoire de création de l'assembly.</value>
   </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.BuiltinLabel" xml:space="preserve">
     <value>Intégré :</value>
@@ -3454,6 +3499,9 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditor" xml:space="preserve">
     <value>Editeur de texte</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditorWithEncoding" xml:space="preserve">
+    <value>Editeur de texte (choisir l'encodage)</value>
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser" xml:space="preserve">
     <value>Navigateur embarqué</value>
@@ -4233,7 +4281,7 @@ Toutes les modifications seront perdues.</value>
     <value>Erreur au chargement du concepteur:</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Assembly" xml:space="preserve">
-    <value>Assemblage</value>
+    <value>Assembly</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Location" xml:space="preserve">
     <value>Emplacement</value>
@@ -4272,7 +4320,7 @@ Toutes les modifications seront perdues.</value>
     <value>&amp;Ajouter des composants</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Assembly" xml:space="preserve">
-    <value>Assemblage</value>
+    <value>Assembly</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Categories" xml:space="preserve">
     <value>Catégories</value>
@@ -5964,7 +6012,7 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
     <value>Visibilité publique</value>
   </data>
   <data name="RegExpTk.MainDialog.Regex" xml:space="preserve">
-    <value>Expressions rationelles</value>
+    <value>Expression rationnelle</value>
   </data>
   <data name="RegExpTk.MainDialog.Replace" xml:space="preserve">
     <value>Remplacer</value>
@@ -6018,7 +6066,7 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
     <value>correspondances</value>
   </data>
   <data name="RegExpTk.Messages.RegexMissing" xml:space="preserve">
-    <value>Veuillez entrer une expression régulière</value>
+    <value>Veuillez entrer une expression rationnelle</value>
   </data>
   <data name="RegExpTk.RegExpMenu.DigitCharacter" xml:space="preserve">
     <value>Caractère numérique</value>
@@ -6075,7 +6123,7 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
     <value>Copier le nom de la ressource</value>
   </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.Rename" xml:space="preserve">
-    <value>&amp;Renomer</value>
+    <value>&amp;Renommer</value>
   </data>
   <data name="ResourceEditor.ResourceEdit.ShowAsHexDump" xml:space="preserve">
     <value>Visualiser en Hexadécimal</value>
@@ -6090,7 +6138,7 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
     <value>Tous les fichiers (*.*)</value>
   </data>
   <data name="SharpDevelop.FileFilter.AssemblyFiles" xml:space="preserve">
-    <value>Fichiers d'assemblages (*.exe;*.dll)</value>
+    <value>Fichiers d'Assemblies (*.exe;*.dll)</value>
   </data>
   <data name="SharpDevelop.FileFilter.BinaryFiles" xml:space="preserve">
     <value>Fichiers binaires</value>
@@ -6279,7 +6327,7 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
     <value>&amp;Renommer</value>
   </data>
   <data name="SharpDevelop.Refactoring.RenameFieldAndProperty" xml:space="preserve">
-    <value>SharpDevelop doit-il renomer la propriété '{0}' en '{1}'?</value>
+    <value>SharpDevelop doit-il renommer la propriété '{0}' en '{1}'?</value>
   </data>
   <data name="SharpDevelop.Refactoring.RenameFileTo" xml:space="preserve">
     <value>Renommer le fichier en '${FileName}'</value>
@@ -6539,11 +6587,17 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   <data name="SharpReport.ReportViewer.LastPageMessage" xml:space="preserve">
     <value>Dernière page</value>
   </data>
+  <data name="SharpReport.ReportViewer.NextPage" xml:space="preserve">
+    <value>Suivant</value>
+  </data>
   <data name="SharpReport.ReportViewer.PagesCreatedMessage" xml:space="preserve">
     <value>Pages créées</value>
   </data>
   <data name="SharpReport.ReportViewer.PdfFileMessage" xml:space="preserve">
     <value>Créer un fichier PDF</value>
+  </data>
+  <data name="SharpReport.ReportViewer.PreviousPage" xml:space="preserve">
+    <value>Précédent</value>
   </data>
   <data name="SharpReport.ReportViewer.ZoomMessage" xml:space="preserve">
     <value>Zoomer</value>
@@ -6928,6 +6982,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>Formulaire Web ASP.NET</value>
+  </data>
+  <data name="Templates.File.WebHandler.Name" xml:space="preserve">
+    <value>Gestionnaire ASP.NET</value>
   </data>
   <data name="Templates.File.WebService.Description" xml:space="preserve">
     <value>Brique de composant pour service Web ASMX</value>
@@ -7460,6 +7517,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   <data name="XML.MainMenu.FileMenu.SaveAs" xml:space="preserve">
     <value>Enregistrer &amp;sous</value>
   </data>
+  <data name="XML.MainMenu.FileMenu.SaveWithEncoding" xml:space="preserve">
+    <value>Sauvegarder avec l'&amp;encodage...</value>
+  </data>
   <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
     <value>F&amp;ormat</value>
   </data>
@@ -7723,7 +7783,7 @@ Erreur lors du démarrage:</value>
     <value>Documentation XML rapide</value>
   </data>
   <data name="XML.MainMenu.ToolsMenu.RegularExpressionToolkit" xml:space="preserve">
-    <value>Expressions régulières</value>
+    <value>Boîte à outils Expressions Rationnelles</value>
   </data>
   <data name="XML.MainMenu.ViewMenu" xml:space="preserve">
     <value>&amp;Affichage</value>

@@ -232,6 +232,51 @@ Descargue un complemento de Internet, luego haga clic en 'Instalar Complemento' 
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostrar Diagrama de Clase</value>
   </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Contenidos</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Mostrar Contenidos</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Búsqueda</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Biblioteca de Ayuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Modo de Ayuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Catálogos de Ayuda Instalados</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Visor de Ayuda de Microsoft</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Usted a pedido un característica fuera de línea en la ayuda en modo en línea. Debe cambiar el modo para usar esta característica.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Buscar:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Búsqueda</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Mostrar Ayuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Usar ayuda externa</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Quiero usar ayuda local</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Quiero usar ayuda en línea</value>
+  </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Número de bytes por línea</value>
   </data>
@@ -434,6 +479,9 @@ Es necesario instalar el .NET Framework SDK para obtener el sistema de ayuda.</v
   <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
     <value>Todas las funciones para {0}</value>
   </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>La sesión de análisis de SharpDevelop seleccionada fue creada por una versión más nueva de SharpDevelop y por lo tanto, no puede ser abierta.</value>
+  </data>
   <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
     <value>Sesión de Análisis de SharpDevelop</value>
   </data>
@@ -603,6 +651,15 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extraer método</value>
   </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsBreakError" xml:space="preserve">
+    <value>El código seleccionado contiene una instrucción break sin el bucle que lo rodea. Por favor, cambié la selección!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsContinueError" xml:space="preserve">
+    <value>El código seleccionado contiene una instrucción continue sin el bucle que lo rodea. Por favor, cambié la selección!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsGotoError" xml:space="preserve">
+    <value>El código seleccionado contiene una instrucción goto sin etiqueta. Por favor, cambié la selección!</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod.EnterName" xml:space="preserve">
     <value>Ingrese un nombre para el nuevo método</value>
   </data>
@@ -615,8 +672,41 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>La extracción de métodos en {0} no esta soportada actualmente!</value>
   </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor" xml:space="preserve">
+    <value>Insertar constructor</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddCheckForNullLabel" xml:space="preserve">
+    <value>Agregar verificación de valores null</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddRangeCheckLabel" xml:space="preserve">
+    <value>Agregar verificación de rango</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.Description" xml:space="preserve">
+    <value>Seleccione todos los campos con los cuales quiere crear un constructor:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.VariableLabel" xml:space="preserve">
+    <value>Variable</value>
+  </data>
   <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
     <value>Introducir método {0} en {1}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods" xml:space="preserve">
+    <value>Sobrescribir Equals() y GetHashCode()</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface" xml:space="preserve">
+    <value>Agregar interface {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
+    <value>Agregar sobrecargas de operador</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
+    <value>Rodear con #region</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod" xml:space="preserve">
+    <value>Sobrescribir ToString()</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod.Description" xml:space="preserve">
+    <value>Seleccione los campos que quiere usar en la implementación de ToString():</value>
   </data>
   <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
     <value>Resolver atributo: {0}</value>
@@ -818,6 +908,15 @@ SharpDevelop puede obtener esta información y enviarla automáticamente.</value
   <data name="AddIns.XamlBinding.Options.EventHandlerNamePattern" xml:space="preserve">
     <value>Patrón de nombre de controlador de evento:</value>
   </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingDescription" xml:space="preserve">
+    <value>Seleccione los colores que deben ser usados por el resaltador XAML:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingGroupLabel" xml:space="preserve">
+    <value>Resaltado</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.IgnoredElementColor" xml:space="preserve">
+    <value>Ignorar color de elemento:</value>
+  </data>
   <data name="AddIns.XamlBinding.Options.NamespaceDeclarationColor" xml:space="preserve">
     <value>Color de declaración de espacio de nombre XML:</value>
   </data>
@@ -832,6 +931,15 @@ SharpDevelop puede obtener esta información y enviarla automáticamente.</value
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Usar completado de extensión de marcado</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
+    <value>El archivo no puede ser guardado con la actual codificación ${encoding} sin perder datos.</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue" xml:space="preserve">
+    <value>Continuar</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8" xml:space="preserve">
+    <value>Guardar como UTF-8</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
     <value>El proyecto está configurado como una dll y  no se especificó un comando ejecutable. Puede especificar un comando ejecutable desde las opciones del proyecto.</value>
@@ -2369,6 +2477,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>Usar archivo &amp;temporal para guardar</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DefaultFileEncoding" xml:space="preserve">
+    <value>Codificación pr&amp;edeterminada de archivo:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
     <value>&amp;Detectar cambios externos a archivos</value>
   </data>
@@ -2382,7 +2493,7 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
     <value>Cargar opciones específicas de usuario con e&amp;l documento</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
+    <value>Macintosh (CR)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Cargar/Guardar</value>
@@ -2391,13 +2502,13 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
     <value>Guardar</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UnixRadioButton" xml:space="preserve">
-    <value>Unix</value>
+    <value>Unix (LF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin" xml:space="preserve">
     <value>Utiliza&amp;r la papelera de reciclaje al eliminar archivos</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.WindowsRadioButton" xml:space="preserve">
-    <value>Windows</value>
+    <value>Windows (CRLF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.OutputPanel.Format" xml:space="preserve">
     <value>Formato</value>
@@ -3407,6 +3518,9 @@ También puede escoger almacenar el parámetro de configuración en el archivo .
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditor" xml:space="preserve">
     <value>Editor de Texto</value>
   </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditorWithEncoding" xml:space="preserve">
+    <value>Editor de Texto (elegir codificación)</value>
+  </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser" xml:space="preserve">
     <value>Explorador Web Integrado</value>
   </data>
@@ -3712,6 +3826,45 @@ También puede escoger almacenar el parámetro de configuración en el archivo .
   </data>
   <data name="ICSharpCode.Core.Services.ErrorDialogs.ShowExceptionButton" xml:space="preserve">
     <value>Mostrar Excepción</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions" xml:space="preserve">
+    <value>Opciones adicionales</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker" xml:space="preserve">
+    <value>Vinculaciones</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs" xml:space="preserve">
+    <value>Vincular archivos adicionales</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.AddModule" xml:space="preserve">
+    <value>Vincular módulos .NET especificados</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.GenerateDebugInfo" xml:space="preserve">
+    <value>Generar información de depuración</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.Library" xml:space="preserve">
+    <value>Ubicaciones de bibliotecas de archivos</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.ManagedResourceFile" xml:space="preserve">
+    <value>Incrustar archivo de recursos .NET</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor" xml:space="preserve">
+    <value>Preprocesador</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Definitions" xml:space="preserve">
+    <value>Definir símbolos de preprocesador siguientes</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes" xml:space="preserve">
+    <value>Ubicaciones de archivos de cabezeras</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.UndefineAll" xml:space="preserve">
+    <value>Quitar definición de todos los símbolos de preprocesador definidos</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Undefinitions" xml:space="preserve">
+    <value>Quitar definición de símbolos de preprocesador siguientes</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.SymbolLabel" xml:space="preserve">
+    <value>Símbolo</value>
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation" xml:space="preserve">
     <value>Archivo de Recurso de .NET (binario)</value>
@@ -5373,6 +5526,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Modules.VersionColumn" xml:space="preserve">
     <value>Versión</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
+    <value>Objeto Gráfica</value>
+  </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Ejecutar hasta el cursor</value>
   </data>
@@ -6096,6 +6252,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
     <value>Clases derivadas de ${Name}</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
+    <value>Convertir a propiedad automática</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CreateChangedEvent" xml:space="preserve">
     <value>Crear un evento Changed</value>
   </data>
@@ -6113,6 +6272,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="SharpDevelop.Refactoring.DeclaringType" xml:space="preserve">
     <value>Tipo de declaración</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ExpandAutomaticProperty" xml:space="preserve">
+    <value>Expandir propiedad automática</value>
   </data>
   <data name="SharpDevelop.Refactoring.ExtractInterfaceCommand" xml:space="preserve">
     <value>Extraer Interfase</value>
@@ -6445,11 +6607,17 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   <data name="SharpReport.ReportViewer.LastPageMessage" xml:space="preserve">
     <value>Última Página</value>
   </data>
+  <data name="SharpReport.ReportViewer.NextPage" xml:space="preserve">
+    <value>Siguiente</value>
+  </data>
   <data name="SharpReport.ReportViewer.PagesCreatedMessage" xml:space="preserve">
     <value>Paginas creadas</value>
   </data>
   <data name="SharpReport.ReportViewer.PdfFileMessage" xml:space="preserve">
     <value>Crer Archivo Pdf</value>
+  </data>
+  <data name="SharpReport.ReportViewer.PreviousPage" xml:space="preserve">
+    <value>Anterior</value>
   </data>
   <data name="SharpReport.ReportViewer.ZoomMessage" xml:space="preserve">
     <value>Zoom</value>
@@ -6834,6 +7002,9 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>Formulario Web ASP.NET</value>
+  </data>
+  <data name="Templates.File.WebHandler.Name" xml:space="preserve">
+    <value>Manejador Web ASP.NET</value>
   </data>
   <data name="Templates.File.WebService.Description" xml:space="preserve">
     <value>Componente de tipo marco para un Servicio Web ASMX.</value>
@@ -7366,6 +7537,9 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   <data name="XML.MainMenu.FileMenu.SaveAs" xml:space="preserve">
     <value>Guardar &amp;como...</value>
   </data>
+  <data name="XML.MainMenu.FileMenu.SaveWithEncoding" xml:space="preserve">
+    <value>Guardar con co&amp;dificación...</value>
+  </data>
   <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
     <value>F&amp;ormato</value>
   </data>
@@ -7527,6 +7701,9 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="XML.MainMenu.RunMenu.BuildProject.Description" xml:space="preserve">
     <value>Genera el proyecto abierto.</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.BuildSolution.Description" xml:space="preserve">
+    <value>Genera todos los proyectos en la solución actual.</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.Description" xml:space="preserve">
     <value>Generar proyecto o búfer activo (en caso de  estar abierto un proyecto, lo guarda automáticamente)</value>

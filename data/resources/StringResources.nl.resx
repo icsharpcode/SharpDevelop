@@ -231,6 +231,51 @@
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagram weergeven</value>
   </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Inhoud</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Inhoud weergeven</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Zoeken</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Help Bibliotheek</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Help modus</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Geïnstalleerde Help Catalogi</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Microsoft Help Viewer</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>U vroeg om een offline kenmerk in de online help-modus. U dient de modus te wijzigen om dit kenmerk te kunnen gebruiken.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Zoek nu</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Zoeken naar:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Zoeken</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Help tonen</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Externe help gebruiken</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Ik kies voor gebruik van plaatselijke help</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Ik kies voor gebruik van online help</value>
+  </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Aantal bytes per regel</value>
   </data>
@@ -884,6 +929,15 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Gebruik markup extentie completeren</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
+    <value>Het bestand kan niet zonder gegevens verlies met de momentele encodering ${encoding} worden opgeslagen.</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue" xml:space="preserve">
+    <value>Voortzetten</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8" xml:space="preserve">
+    <value>Opslaan als UTF-8</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
     <value>Het project is geconfigureerd als een DLL en er is geen uitvoeringscommando ingesteld. Je kan een uitvoeringscommando in de project opties instellen.</value>
@@ -2425,6 +2479,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>Gebruik &amp;tijdelijk bestand voor opslaan</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DefaultFileEncoding" xml:space="preserve">
+    <value>Verstek bestands  &amp;encodering:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
     <value>Externe bestandswijzigingen &amp;detecteren</value>
   </data>
@@ -3457,6 +3514,9 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditor" xml:space="preserve">
     <value>Tekst bewerker</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditorWithEncoding" xml:space="preserve">
+    <value>Tekstbewerker (kies encodering)</value>
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser" xml:space="preserve">
     <value>Ingebouwde Web browser</value>
@@ -6540,11 +6600,17 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="SharpReport.ReportViewer.LastPageMessage" xml:space="preserve">
     <value>Laatste pagina</value>
   </data>
+  <data name="SharpReport.ReportViewer.NextPage" xml:space="preserve">
+    <value>Verder</value>
+  </data>
   <data name="SharpReport.ReportViewer.PagesCreatedMessage" xml:space="preserve">
     <value>Pagina's aangemaakt</value>
   </data>
   <data name="SharpReport.ReportViewer.PdfFileMessage" xml:space="preserve">
     <value>Maak Pdf bestand</value>
+  </data>
+  <data name="SharpReport.ReportViewer.PreviousPage" xml:space="preserve">
+    <value>Terug</value>
   </data>
   <data name="SharpReport.ReportViewer.ZoomMessage" xml:space="preserve">
     <value>Zoom</value>
@@ -6930,6 +6996,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET Web Formulier</value>
+  </data>
+  <data name="Templates.File.WebHandler.Name" xml:space="preserve">
+    <value>ASP.NET behandelaar</value>
   </data>
   <data name="Templates.File.WebService.Description" xml:space="preserve">
     <value>Component Frame voor ASMX Web Service.</value>
@@ -7461,6 +7530,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="XML.MainMenu.FileMenu.SaveAs" xml:space="preserve">
     <value>Opslaan als...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.SaveWithEncoding" xml:space="preserve">
+    <value>Opslaan met &amp;encoding...</value>
   </data>
   <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
     <value>&amp;Indeling</value>

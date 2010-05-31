@@ -232,6 +232,51 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Show Class Diagram</value>
   </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Contents</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Display Contents</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Help Library</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Help Mode</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Installed Help Catalogs</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Microsoft Help Viewer</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>You requested an offline feature in the online help mode. You have to change the mode in order to use this feature.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Look for:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Show Help</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Use external help</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>I want to use local help</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>I want to use online help</value>
+  </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Number of bytes per line</value>
   </data>
@@ -2437,6 +2482,9 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>Use &amp;temporary file for saving</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DefaultFileEncoding" xml:space="preserve">
+    <value>Default file &amp;encoding:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
     <value>&amp;Detect external changes to files</value>
   </data>
@@ -2450,7 +2498,7 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>&amp;Load user-specific settings with the document</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
+    <value>Macintosh (CR)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Load/Save</value>
@@ -2459,13 +2507,13 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>Save</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UnixRadioButton" xml:space="preserve">
-    <value>Unix</value>
+    <value>Unix (LF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin" xml:space="preserve">
     <value>Use &amp;recycle bin when deleting files</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.WindowsRadioButton" xml:space="preserve">
-    <value>Windows</value>
+    <value>Windows (CRLF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.OutputPanel.Format" xml:space="preserve">
     <value>Format</value>
@@ -6567,11 +6615,17 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="SharpReport.ReportViewer.LastPageMessage" xml:space="preserve">
     <value>Last Page</value>
   </data>
+  <data name="SharpReport.ReportViewer.NextPage" xml:space="preserve">
+    <value>Next</value>
+  </data>
   <data name="SharpReport.ReportViewer.PagesCreatedMessage" xml:space="preserve">
     <value>Pages created</value>
   </data>
   <data name="SharpReport.ReportViewer.PdfFileMessage" xml:space="preserve">
     <value>Create PdfFile</value>
+  </data>
+  <data name="SharpReport.ReportViewer.PreviousPage" xml:space="preserve">
+    <value>Previous</value>
   </data>
   <data name="SharpReport.ReportViewer.ZoomMessage" xml:space="preserve">
     <value>Zoom</value>
@@ -6956,6 +7010,9 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET Web Form</value>
+  </data>
+  <data name="Templates.File.WebHandler.Name" xml:space="preserve">
+    <value>ASP.NET Web Handler</value>
   </data>
   <data name="Templates.File.WebService.Description" xml:space="preserve">
     <value>Component Frame for ASMX Web Service.</value>

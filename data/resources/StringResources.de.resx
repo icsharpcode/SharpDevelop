@@ -232,6 +232,48 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagramm anzeigen</value>
   </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Inhalt</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Inhalt anzeigen</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Suche</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Hilfebibliothek</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Hilfetyp</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Installierte Hilfekataloge</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Microsoft Help Viewer</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Suchen nach:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Suche</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Hilfe anzeigen</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Externe Hilfe verwenden</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Ich möchte die lokale Hilfe verwenden</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Ich möchte die Online-Hilfe verwenden</value>
+  </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Anzahl Byte pro Zeile</value>
   </data>
@@ -434,6 +476,9 @@ Installieren Sie das .NET Framework SDK.</value>
   <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
     <value>Alle Funktionen für {0}</value>
   </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>Die gewählte SharpDevelop Profiler-Sitzung wurde mit einer neueren Version von SharpDevelop erstellt und kann daher nicht geöffnet werden.</value>
+  </data>
   <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
     <value>SharpDevelop Profiling Sitzung</value>
   </data>
@@ -603,6 +648,15 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Methode extrahieren</value>
   </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsBreakError" xml:space="preserve">
+    <value>Der ausgewählte Code enthält eine break-Anweisung ohne die übergeordnete Schleife. Bitte ändern Sie die Auswahl!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsContinueError" xml:space="preserve">
+    <value>Der ausgewählte Code enthält eine continue-Anweisung ohne die übergeordnete Schleife. Bitte ändern Sie die Auswahl!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsGotoError" xml:space="preserve">
+    <value>Der ausgewählte Code enthält eine goto-Anweisung ohne die Sprungmarke. Bitte ändern Sie die Auswahl!</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod.EnterName" xml:space="preserve">
     <value>Namen für die neue Methode angeben</value>
   </data>
@@ -615,8 +669,41 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>Extrahieren von Methoden in {0} wird derzeit nicht unterstützt.</value>
   </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor" xml:space="preserve">
+    <value>Konstruktor einfügen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddCheckForNullLabel" xml:space="preserve">
+    <value>Auf null prüfen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddRangeCheckLabel" xml:space="preserve">
+    <value>Bereichsprüfung hinzufügen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.Description" xml:space="preserve">
+    <value>Wählen Sie alle Felder mit denen der Konstruktor erstellt werden soll:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.VariableLabel" xml:space="preserve">
+    <value>Variable</value>
+  </data>
   <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
     <value>Methode {0} in {1} erstellen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods" xml:space="preserve">
+    <value>Equals() und GetHashCode() überschreiben</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface" xml:space="preserve">
+    <value>Interface {0} hinzufügen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
+    <value>Operatoren überladen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
+    <value>Mit #region umschließen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod" xml:space="preserve">
+    <value>ToString() überschreiben</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod.Description" xml:space="preserve">
+    <value>Wählen Sie die Felder aus, die Sie in der ToString()-Methode verwenden möchten:</value>
   </data>
   <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
     <value>Attribut auflösen: {0}</value>
@@ -815,6 +902,15 @@ Sie müssen diese Dateien speichern, bevor die Operation ausgeführt werden kann
   <data name="AddIns.XamlBinding.Options.EventHandlerNamePattern" xml:space="preserve">
     <value>Muster für Ereignishandler Namen:</value>
   </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingDescription" xml:space="preserve">
+    <value>Wählen Sie die Farben, die für die intelligente XAML Syntaxhervorhebung verwendet werden sollen:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingGroupLabel" xml:space="preserve">
+    <value>Hervorhebung</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.IgnoredElementColor" xml:space="preserve">
+    <value>Farbe ignorierte Elemente:</value>
+  </data>
   <data name="AddIns.XamlBinding.Options.NamespaceDeclarationColor" xml:space="preserve">
     <value>Farbe XML Namespace Deklaration:</value>
   </data>
@@ -829,6 +925,15 @@ Sie müssen diese Dateien speichern, bevor die Operation ausgeführt werden kann
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Vervollständigung von Markup Erweiterungen aktivieren</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
+    <value>Die Datei kann nicht mit der aktuellen Codierung ${encoding} ohne Datenverlust gespeichert werden.</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue" xml:space="preserve">
+    <value>Fortsetzen</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8" xml:space="preserve">
+    <value>Als UTF-8 speichern</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
     <value>Das Projekt ist als Bibliothek konfiguriert und kein  Ausführungskommando wurde angegeben.
@@ -1996,6 +2101,12 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
     <value>Beschreibung</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupDialog.Text" xml:space="preserve">
+    <value>Bitte geben Sie die Liste der Dateierweiterungen mit Strichpunkten getrennt an. (Beispiel: .h;.c;.cpp)</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
+    <value>&amp;Erweiterungen bearbeiten</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
     <value>&amp;Beschreibung</value>
   </data>
@@ -2359,6 +2470,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>&amp;Immer Kopie erzeugen</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DefaultFileEncoding" xml:space="preserve">
+    <value>Standard Dat&amp;eicodierung:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
     <value>Überwache &amp;Dateien auf externe Änderungen</value>
   </data>
@@ -2500,6 +2614,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox" xml:space="preserve">
     <value>&amp;Tabs durch Leerzeichen ersetzen</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition" xml:space="preserve">
+    <value>Strg+Klick für "Gehe zu Definition" verwenden</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox" xml:space="preserve">
     <value>A&amp;utomatisches Klammereinfügen</value>
   </data>
@@ -2544,6 +2661,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TemplateInsertCheckBox" xml:space="preserve">
     <value>Templates &amp;automatisch einfügen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.UseSmartIndent" xml:space="preserve">
+    <value>Intelligente Einrückung verwenden</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName" xml:space="preserve">
     <value>Code Completion</value>
@@ -3390,6 +3510,9 @@ Bitte einen anderen Dateinamen wählen.</value>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditor" xml:space="preserve">
     <value>Text-Editor</value>
   </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditorWithEncoding" xml:space="preserve">
+    <value>Texteditor (Codierung wählen)</value>
+  </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser" xml:space="preserve">
     <value>Integrierter Web-Browser</value>
   </data>
@@ -3697,6 +3820,39 @@ Wenn NCover installiert ist, geben sie den Pfad der Anwendung in den ${res:ICSha
   </data>
   <data name="ICSharpCode.Core.Services.ErrorDialogs.ShowExceptionButton" xml:space="preserve">
     <value>Ausnahme anzeigen</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions" xml:space="preserve">
+    <value>Zusätzliche Optionen</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs" xml:space="preserve">
+    <value>Zusätzliche Dateien linken</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.AddModule" xml:space="preserve">
+    <value>Angegebene .NET Module linken</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.GenerateDebugInfo" xml:space="preserve">
+    <value>Debug-Info generieren</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.Library" xml:space="preserve">
+    <value>Orte für Bibliotheken</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.ManagedResourceFile" xml:space="preserve">
+    <value>.NET Ressourcendatei einbetten</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor" xml:space="preserve">
+    <value>Präprozessor</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Definitions" xml:space="preserve">
+    <value>Definiere folgende Präprozessor-Symbole</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes" xml:space="preserve">
+    <value>Orte für Header-Dateien</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.UndefineAll" xml:space="preserve">
+    <value>Alle Präprozessor-Symbole entfernen</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Undefinitions" xml:space="preserve">
+    <value>Entferne Definitionen folgender Präprozessor-Symbole</value>
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation" xml:space="preserve">
     <value>.NET Ressourcendatei (binär)</value>
@@ -4445,6 +4601,9 @@ Nur Buchstaben, Ziffern, Leerzeichen, '.' oder '_' sind erlaubt.</value>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.SortDirectionGroupBox.Descending" xml:space="preserve">
     <value>A&amp;bsteigend</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.ToolNotFoundDialog.Title" xml:space="preserve">
+    <value>Externes Werkzeug nicht gefunden</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.DialogTitle" xml:space="preserve">
     <value>Benutzeranmeldung</value>
   </data>
@@ -4508,6 +4667,9 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description" xml:space="preserve">
     <value>Gibt den Namespace an, in dem das Benutzerdefinierte Tool seine Ausgabe platziert</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description" xml:space="preserve">
+    <value>Kompletter Pfad zur Datei.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName" xml:space="preserve">
     <value>Logischer Name</value>
@@ -5357,6 +5519,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Modules.VersionColumn" xml:space="preserve">
     <value>Version</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
+    <value>Objektgraph</value>
+  </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Bis zum Cursor ausführen</value>
   </data>
@@ -5729,6 +5894,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled2" xml:space="preserve">
     <value>Die XML-Dokumentationsdatei existiert nicht, Sie müssen das Projekt kompilieren.</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.GenerateDocumentation.SHFBNotFound" xml:space="preserve">
+    <value>Generieren der Dokumentation aus XML Kommentaren erfordert, dass 'Sandcastle Help File Builder' installiert ist.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.HtmlExport" xml:space="preserve">
     <value>Htmle&amp;xport</value>
   </data>
@@ -6078,6 +6246,9 @@ Bitte einen anderen verwenden.</value>
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
     <value>Klassen, die von ${Name} erben</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
+    <value>In automatische Eigenschaft konvertieren</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CreateChangedEvent" xml:space="preserve">
     <value>Changed-Event erstellen</value>
   </data>
@@ -6095,6 +6266,9 @@ Bitte einen anderen verwenden.</value>
   </data>
   <data name="SharpDevelop.Refactoring.DeclaringType" xml:space="preserve">
     <value>deklarierende Klasse</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ExpandAutomaticProperty" xml:space="preserve">
+    <value>Automatische Eigenschaft erweitern</value>
   </data>
   <data name="SharpDevelop.Refactoring.ExtractInterfaceCommand" xml:space="preserve">
     <value>Schnittstelle extrahieren</value>
@@ -6428,11 +6602,17 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="SharpReport.ReportViewer.LastPageMessage" xml:space="preserve">
     <value>Letzte Seite</value>
   </data>
+  <data name="SharpReport.ReportViewer.NextPage" xml:space="preserve">
+    <value>Weiter</value>
+  </data>
   <data name="SharpReport.ReportViewer.PagesCreatedMessage" xml:space="preserve">
     <value>Seiten erzeugt</value>
   </data>
   <data name="SharpReport.ReportViewer.PdfFileMessage" xml:space="preserve">
     <value>Pdf Datei erzeugen</value>
+  </data>
+  <data name="SharpReport.ReportViewer.PreviousPage" xml:space="preserve">
+    <value>Zurück</value>
   </data>
   <data name="SharpReport.ReportViewer.ZoomMessage" xml:space="preserve">
     <value>Zoom</value>
@@ -7109,6 +7289,12 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
     <value>Konnte .NET Framework-Version für das Programm nicht bestimmen. Stellen Sie sicher, dass das Programm ein e .NET-Anwendung ist.</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
+    <value>Kann nicht an den Prozess anhängen.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
+    <value>Der Prozess kann nicht gestartet werden.</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.Error.Debugging" xml:space="preserve">
     <value>Aktion kann nicht durchgeführt werden, da Prozesse gedebugged werden.</value>
   </data>
@@ -7343,6 +7529,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="XML.MainMenu.FileMenu.SaveAs" xml:space="preserve">
     <value>Speichern &amp;unter...</value>
   </data>
+  <data name="XML.MainMenu.FileMenu.SaveWithEncoding" xml:space="preserve">
+    <value>Mit &amp;Encoding speichern...</value>
+  </data>
   <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
     <value>F&amp;ormat</value>
   </data>
@@ -7504,6 +7693,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="XML.MainMenu.RunMenu.BuildProject.Description" xml:space="preserve">
     <value>Erstellt das aktuelle Projekt.</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.BuildSolution.Description" xml:space="preserve">
+    <value>Erstellt alle Projekte in der aktuellen Solution.</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.Description" xml:space="preserve">
     <value>Speichern und aktuelles Projekt oder Datei (wenn kein Projekt geöffnet) erstellen</value>
