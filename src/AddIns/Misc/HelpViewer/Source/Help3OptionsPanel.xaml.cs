@@ -24,13 +24,16 @@ namespace MSHelpSystem
 		{
 			HelpLibraryAgent.Start();
 			DataContext = Help3Service.Items;
-			groupBox1.Header = string.Format("{0} ({1})",
-			                                 StringParser.Parse("${res:AddIns.HelpViewer.InstalledHelpCatalogsLabel}"),
-			                                 Help3Service.Items.Count);
-			help3Catalogs.SelectedValue = Help3Service.ActiveCatalog.ShortName;
+			if (Help3Service.Items.Count > 0)
+				groupBox1.Header = string.Format("{0} ({1})", StringParser.Parse("${res:AddIns.HelpViewer.InstalledHelpCatalogsLabel}"), Help3Service.Items.Count);
+			if (Help3Service.ActiveCatalog != null)
+				help3Catalogs.SelectedValue = Help3Service.ActiveCatalog.ShortName;
 			help3Catalogs.IsEnabled = (Help3Service.Items.Count > 1 && Help3Service.Config.OfflineMode);
 			onlineMode.IsChecked = !Help3Service.Config.OfflineMode;
 			externalHelp.IsChecked = Help3Service.Config.ExternalHelp;
+			onlineMode.IsEnabled = Help3Environment.IsHelp3ProtocolRegistered;
+			offlineMode.IsEnabled = Help3Environment.IsHelp3ProtocolRegistered;
+			externalHelp.IsEnabled = Help3Environment.IsHelp3ProtocolRegistered;
 		}
 
 		void Help3CatalogsSelectionChanged(object sender, SelectionChangedEventArgs e)
