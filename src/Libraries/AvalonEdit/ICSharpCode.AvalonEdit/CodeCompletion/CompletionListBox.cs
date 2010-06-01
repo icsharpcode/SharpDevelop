@@ -17,7 +17,28 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 	/// </summary>
 	public class CompletionListBox : ListBox
 	{
+		static CompletionListBox()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(CompletionListBox),
+			                                         new FrameworkPropertyMetadata(typeof(CompletionListBox)));
+		}
+		
 		internal ScrollViewer scrollViewer;
+		
+		/// <summary>
+		/// Dependency property for <see cref="EmptyTemplate" />.
+		/// </summary>
+		public static readonly DependencyProperty EmptyTemplateProperty =
+			DependencyProperty.Register("EmptyTemplate", typeof(object), typeof(CompletionListBox),
+			                            new FrameworkPropertyMetadata());
+		/// <summary>
+		/// Content of EmptyTemplate will be shown when CompletionListBox contains no items.
+		/// If EmptyTemplate is null, nothing will be shown.
+		/// </summary>
+		public object EmptyTemplate {
+			get { return (object)GetValue(EmptyTemplateProperty); }
+			set { SetValue(EmptyTemplateProperty, value); }
+		}
 		
 		/// <inheritdoc/>
 		public override void OnApplyTemplate()

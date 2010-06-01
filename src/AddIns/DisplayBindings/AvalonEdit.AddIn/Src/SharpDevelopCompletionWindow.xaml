@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn"
+>
+	<!-- Attempt to set SharpDevelopCompletionWindow.EmptyContent in xaml
+	<Style TargetType="{x:Type local:SharpDevelopCompletionWindow}">
+		<Setter Property="EmptyContent">
+			<Setter.Value>
+				<TextBlock Text="{core:Localize ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText}"
+							FontStyle="Italic" Foreground="Gray"></TextBlock>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	-->
+</ResourceDictionary>

@@ -152,6 +152,7 @@
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\SharpDevelopCompletionWindow.xaml" />
     <Page Include="themes\generic.xaml" />
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>

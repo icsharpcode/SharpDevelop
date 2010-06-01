@@ -11,10 +11,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -84,6 +84,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.CompletionList.SelectedItem = adapter;
 			}
 			this.StartOffset -= itemList.PreselectionLength;
+			this.EmptyContent = StringParser.Parse("${res:ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText}");
 		}
 		
 		protected override void OnSourceInitialized(EventArgs e)

@@ -10,9 +10,9 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 
@@ -40,6 +40,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			// prevent user from resizing window to 0x0
 			this.MinHeight = 15;
 			this.MinWidth = 30;
+			this.EmptyContent = null;
 			
 			toolTip.PlacementTarget = this;
 			toolTip.Placement = PlacementMode.Right;
@@ -48,6 +49,18 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			completionList.InsertionRequested += completionList_InsertionRequested;
 			completionList.SelectionChanged += completionList_SelectionChanged;
 			AttachEvents();
+		}
+		
+		/// <summary>
+		/// Content that will be shown when the CompletionWindow contains no items.
+		/// </summary>
+		public object EmptyContent {
+			get { 
+				return this.completionList.EmptyContent; 
+			}
+			set { 
+				this.completionList.EmptyContent = value; 
+			}
 		}
 		
 		#region ToolTip handling
