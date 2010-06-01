@@ -2201,6 +2201,9 @@ Chcete přidat nový soubor do projektu ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Zobrazit značku EOL</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Zvýrazňovat symboly</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Zvýraznit párovou závorku</value>
   </data>
@@ -3014,6 +3017,9 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   </data>
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Hodnota resource:</value>
+  </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Stisknutí Ctrl+Mezerník zobrazí položky ze všech jmenných prostorů</value>
   </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Interpreter Boo</value>
@@ -5927,6 +5933,9 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
   </data>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Prázdný soubor</value>
+  </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Výjimka</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Okno pro aplikaci Gtk#.</value>

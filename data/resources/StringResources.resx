@@ -2731,6 +2731,9 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Show &amp;end-of-line markers</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Highlight symbols</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Highlight &amp;matching bracket</value>
   </data>
@@ -3637,6 +3640,9 @@ You can also choose to store the setting in the .user-file instead of the projec
   </data>
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Resource value:</value>
+  </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Press Ctrl+Space to show items from all namespaces</value>
   </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Boo Interpreter</value>
@@ -6887,6 +6893,9 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Empty File</value>
+  </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Exception</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>A window for a Gtk# application.</value>
