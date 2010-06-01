@@ -18,7 +18,6 @@ using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
 
 namespace Grunwald.BooBinding.Designer
 {
