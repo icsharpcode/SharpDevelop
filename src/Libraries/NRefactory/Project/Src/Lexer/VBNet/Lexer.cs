@@ -31,7 +31,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (curToken == null) { // first call of NextToken()
 				curToken = Next();
 				specialTracker.InformToken(curToken.kind);
-				ef.InformToken(curToken);
 				//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
 				return curToken;
 			}
@@ -41,7 +40,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (curToken.next == null) {
 				curToken.next = Next();
 				specialTracker.InformToken(curToken.next.kind);
-				ef.InformToken(curToken);
 			}
 			
 			curToken = curToken.next;
@@ -49,10 +47,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (curToken.kind == Tokens.EOF && !(lastToken.kind == Tokens.EOL)) { // be sure that before EOF there is an EOL token
 				curToken = new Token(Tokens.EOL, curToken.col, curToken.line, string.Empty);
 				specialTracker.InformToken(curToken.kind);
-				ef.InformToken(curToken);
 				curToken.next = new Token(Tokens.EOF, curToken.col, curToken.line, string.Empty);
 				specialTracker.InformToken(curToken.next.kind);
-				ef.InformToken(curToken);
 			}
 			//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
 			return curToken;
@@ -62,7 +58,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		bool inXmlMode, expectXmlIdentifier, inXmlTag, inXmlCloseTag;
 		int level = 0;
 		
-		protected override Token Next()
+		Token NextInternal()
 		{
 			if (misreadExclamationMarkAsTypeCharacter) {
 				misreadExclamationMarkAsTypeCharacter = false;
@@ -89,22 +85,28 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						switch (ch) {
 							case '<':
 								if (ReaderPeek() == '/') {
+									ReaderRead();
 									inXmlCloseTag = true;
 									return new Token(Tokens.XmlOpenEndTag, Col - 1, Line);
 								}
 								if (ReaderPeek() == '%') {
 									// TODO : suspend xml mode tracking
+									ReaderRead();
 									return new Token(Tokens.XmlStartInlineVB, Col - 1, Line);
 								}
 								
 								return new Token(Tokens.XmlOpenTag, Col - 1, Line);
 							case '/':
-								if (ReaderPeek() == '>')
+								if (ReaderPeek() == '>') {
+									ReaderRead();
+									level--;
 									return new Token(Tokens.XmlCloseTagEmptyElement, Col - 1, Line);
+								}
 								break;
 							case '%':
 								if (ReaderPeek() == '>') {
 									// TODO : resume xml mode tracking
+									ReaderRead();
 									return new Token(Tokens.XmlEndInlineVB, Col - 1, Line);
 								}
 								break;
@@ -113,7 +115,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 									level--;
 								return new Token(Tokens.XmlCloseTag, Col - 1, Line);
 							case '=':
-								return new Token(Tokens.Equals, Col - 1, Line);
+								return new Token(Tokens.Assign, Col - 1, Line);
 							case '\'':
 							case '"':
 								int x = Col - 1;
@@ -122,6 +124,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								return new Token(Tokens.LiteralString, Col - 1, Line, '"' + s + '"', s, LiteralFormat.StringLiteral);
 							default:
 								// TODO : can be either identifier or xml content
+								if (XmlConvert.IsWhitespaceChar(ch))
+									continue;
 								return new Token(Tokens.Identifier, Col - 1, Line, ReadXmlIdent(ch));
 						}
 					} else {
@@ -303,6 +307,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 		}
 		
+		protected override Token Next()
+		{
+			Token t = NextInternal();
+			ef.InformToken(t);
+			ef.Advance();
+			return t;
+		}
+		
 		string ReadIdent(char ch)
 		{
 			char typeCharacter;
@@ -337,7 +349,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return sb.ToString();
 		}
 		
-		string ReadXmlIndent(char ch)
+		string ReadXmlIdent(char ch)
 		{
 			sb.Length = 0;
 			sb.Append(ch);
@@ -345,8 +357,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			int peek;
 			
 			while ((peek = ReaderPeek()) != -1 && (peek == ':' || XmlConvert.IsNCNameChar((char)peek))) {
-				ReaderRead();
-				sb.Append(ch);
+				sb.Append((char)ReaderRead());
 			}
 			
 			return sb.ToString();
