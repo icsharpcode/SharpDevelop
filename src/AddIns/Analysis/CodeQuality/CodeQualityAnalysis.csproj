@@ -31,7 +31,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-	<OutputPath>..\..\..\..\AddIns\AddIns\Misc\CodeQualityAnalysis\</OutputPath>
+    <OutputPath>..\..\..\..\AddIns\AddIns\Misc\CodeQualityAnalysis\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -93,6 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Src\DependencyGraphCommand.cs" />
     <Compile Include="Src\Field.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />
@@ -160,7 +161,21 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CodeQualityAnalysis.addin" />
+    <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CodeQualityAnalysis.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
