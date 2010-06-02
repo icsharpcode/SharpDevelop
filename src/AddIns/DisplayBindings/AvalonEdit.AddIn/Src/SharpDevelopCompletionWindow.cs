@@ -24,14 +24,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// The code completion window.
 	/// </summary>
-	public class SharpDevelopCompletionWindow : CompletionWindow, ICompletionListWindow
+	public partial class SharpDevelopCompletionWindow : CompletionWindow, ICompletionListWindow
 	{
-		/*static SharpDevelopCompletionWindow()
-		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(SharpDevelopCompletionWindow),
-			                                         new FrameworkPropertyMetadata(typeof(SharpDevelopCompletionWindow)));
-		}*/
-		
 		public ICompletionItem SelectedItem {
 			get {
 				return ((CodeCompletionDataAdapter)this.CompletionList.SelectedItem).Item;
@@ -79,7 +73,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				throw new ArgumentNullException("editor");
 			if (itemList == null)
 				throw new ArgumentNullException("itemList");
-			this.Style = ICSharpCode.Core.Presentation.GlobalStyles.WindowStyle;
+			
+			this.EmptyText = StringParser.Parse("${res:ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText}");
+			
+			InitializeComponent();
 			this.Editor = editor;
 			this.itemList = itemList;
 			ICompletionItem suggestedItem = itemList.SuggestedItem;
@@ -90,6 +87,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.CompletionList.SelectedItem = adapter;
 			}
 			this.StartOffset -= itemList.PreselectionLength;
+		}
+		
+		public static readonly DependencyProperty EmptyTextProperty =
+			DependencyProperty.Register("EmptyText", typeof(string), typeof(SharpDevelopCompletionWindow),
+			                            new FrameworkPropertyMetadata());
+		
+		public string EmptyText {
+			get { return (string)GetValue(EmptyTextProperty); }
+			set { SetValue(EmptyTextProperty, value); }
 		}
 		
 		protected override void OnSourceInitialized(EventArgs e)

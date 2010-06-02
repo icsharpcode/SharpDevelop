@@ -1,7 +1,29 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<cc:CompletionWindow x:Class="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:cc="clr-namespace:ICSharpCode.AvalonEdit.CodeCompletion;assembly=ICSharpCode.AvalonEdit"
 	xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn"
+	Style="{x:Static core:GlobalStyles.WindowStyle}"
 >
-	
-</ResourceDictionary>
+	<Window.Resources>
+		<Style TargetType="cc:CompletionListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+			<Style.Triggers>
+				<DataTrigger
+					Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=HasItems}"
+					Value="False"
+				>
+					<Setter Property="Template">
+						<Setter.Value>
+							<ControlTemplate TargetType="ListBox">
+								<TextBlock Text="{Binding EmptyText, RelativeSource={RelativeSource AncestorType={x:Type local:SharpDevelopCompletionWindow}, AncestorLevel=1}}"
+								           FontStyle="Italic" 
+								           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" 
+								           TextWrapping="WrapWithOverflow"/>
+							</ControlTemplate>
+						</Setter.Value>
+					</Setter>
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+	</Window.Resources>
+</cc:CompletionWindow>

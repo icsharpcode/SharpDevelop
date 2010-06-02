@@ -50,18 +50,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			AttachEvents();
 		}
 		
-		/// <summary>
-		/// Content that will be shown when the CompletionWindow contains no items.
-		/// </summary>
-		public ControlTemplate EmptyTemplate {
-			get { 
-				return this.completionList.EmptyTemplate;
-			}
-			set { 
-				this.completionList.EmptyTemplate = value;
-			}
-		}
-		
 		#region ToolTip handling
 		void toolTip_Closed(object sender, RoutedEventArgs e)
 		{

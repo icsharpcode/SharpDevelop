@@ -4,25 +4,6 @@
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 >
-	<!--  
-	<ResourceDictionary.MergedDictionaries>
-      <ResourceDictionary Source="/ICSharpCode.AvalonEdit.AddIn;component/Src/SharpDevelopCompletionWindow.xaml"/>
-    </ResourceDictionary.MergedDictionaries>
-	-->
-	
-	<!-- 
-	<Style TargetType="{x:Type local:SharpDevelopCompletionWindow}">
-		<Setter Property="EmptyTemplate">
-			<Setter.Value>
-				<ControlTemplate TargetType="{x:Type local:SharpDevelopCompletionWindow}">
-					<TextBlock Text="{core:Localize ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText}"
-							FontStyle="Italic" Foreground="Gray"></TextBlock>
-				</ControlTemplate>
-			</Setter.Value>
-		</Setter>
-	</Style>
-	-->
-	
 	<Style TargetType="{x:Type local:SharpDevelopTextEditor}">
 		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
 		<Setter Property="Template">
@@ -41,7 +22,7 @@
 						Background="{TemplateBinding Background}"
 						Padding="{TemplateBinding Padding}"
 						BorderBrush="{TemplateBinding BorderBrush}"
-						BorderThickness="{TemplateBinding BorderThickness}" 
+						BorderThickness="{TemplateBinding BorderThickness}"
 						TextOptions.TextFormattingMode="{Binding CurrentZoom, ElementName=PART_ScrollViewer, Converter={x:Static local:ZoomLevelToTextFormattingModeConverter.Instance}}" />
 					<ControlTemplate.Triggers>
 						<Trigger Property="WordWrap"

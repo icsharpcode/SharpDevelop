@@ -34,24 +34,12 @@
 		</Setter>
 	</Style>
 	
-	<Style TargetType="cc:CompletionListBox" BasedOn="{StaticResource {x:Type ListBox}}">
-		<Style.Triggers>
-        <DataTrigger 
-            Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=HasItems}" 
-            Value="False"
-            >
-            <Setter Property="Template" Value="{Binding EmptyTemplate}" />
-        </DataTrigger>
-    </Style.Triggers>
-	</Style>
-	
 	<Style TargetType="{x:Type cc:CompletionList}">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type cc:CompletionList}">
-					<cc:CompletionListBox x:Name="PART_ListBox" 
-							ItemContainerStyle="{StaticResource CompletionListBoxItem}" 
-							EmptyTemplate="{TemplateBinding EmptyTemplate}">
+					<cc:CompletionListBox x:Name="PART_ListBox"
+						ItemContainerStyle="{StaticResource CompletionListBoxItem}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">

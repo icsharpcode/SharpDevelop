@@ -32,14 +32,11 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Analysis">
-		<ComplexCondition action="Disable">
-			<And>
-				<Condition name = "ProjectActive" activeproject="*" />
-			</And>
+		<Condition name = "ProjectActive" activeproject="*" action="Disable">
 			<MenuItem id    = "CheckWithFxCop"
 			          label = "Check current project with FxCop"
 			          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"/>
-		</ComplexCondition>
+		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/MSBuildEngine/LoggerFilters">
