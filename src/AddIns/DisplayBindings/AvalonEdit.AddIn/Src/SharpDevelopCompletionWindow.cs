@@ -26,6 +26,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public class SharpDevelopCompletionWindow : CompletionWindow, ICompletionListWindow
 	{
+		/*static SharpDevelopCompletionWindow()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(SharpDevelopCompletionWindow),
+			                                         new FrameworkPropertyMetadata(typeof(SharpDevelopCompletionWindow)));
+		}*/
+		
 		public ICompletionItem SelectedItem {
 			get {
 				return ((CodeCompletionDataAdapter)this.CompletionList.SelectedItem).Item;

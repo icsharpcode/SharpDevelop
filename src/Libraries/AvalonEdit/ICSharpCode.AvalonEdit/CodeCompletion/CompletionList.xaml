@@ -40,13 +40,7 @@
             Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=HasItems}" 
             Value="False"
             >
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type cc:CompletionListBox}">
-                        <ContentPresenter Content="{TemplateBinding EmptyTemplate}"></ContentPresenter>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Template" Value="{Binding EmptyTemplate}" />
         </DataTrigger>
     </Style.Triggers>
 	</Style>
@@ -55,7 +49,9 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type cc:CompletionList}">
-					<cc:CompletionListBox x:Name="PART_ListBox" ItemContainerStyle="{StaticResource CompletionListBoxItem}">
+					<cc:CompletionListBox x:Name="PART_ListBox" 
+							ItemContainerStyle="{StaticResource CompletionListBoxItem}" 
+							EmptyTemplate="{TemplateBinding EmptyTemplate}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
@@ -64,10 +60,6 @@
 								</StackPanel>
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
-						<cc:CompletionListBox.EmptyTemplate>
-							    <!-- EmptyContent provided by user will be displayed in case the list is empty -->
-								<ContentPresenter Content="{TemplateBinding EmptyContent}"></ContentPresenter>
-						</cc:CompletionListBox.EmptyTemplate>
 					</cc:CompletionListBox>
 				</ControlTemplate>
 			</Setter.Value>

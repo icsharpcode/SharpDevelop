@@ -39,19 +39,19 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		/// <summary>
-		/// Dependency property for <see cref="EmptyContent" />.
+		/// Dependency property for <see cref="EmptyTemplate" />.
 		/// </summary>
-		public static readonly DependencyProperty EmptyContentProperty =
-			DependencyProperty.Register("EmptyContent", typeof(object), typeof(CompletionList),
+		public static readonly DependencyProperty EmptyTemplateProperty =
+			DependencyProperty.Register("EmptyTemplate", typeof(ControlTemplate), typeof(CompletionList),
 			                            new FrameworkPropertyMetadata());
 		
 		/// <summary>
 		/// Content of EmptyTemplate will be shown when CompletionList contains no items.
 		/// If EmptyTemplate is null, nothing will be shown.
 		/// </summary>
-		public object EmptyContent {
-			get { return (object)GetValue(EmptyContentProperty); }
-			set { SetValue(EmptyContentProperty, value); }
+		public ControlTemplate EmptyTemplate {
+			get { return (ControlTemplate)GetValue(EmptyTemplateProperty); }
+			set { SetValue(EmptyTemplateProperty, value); }
 		}
 		
 		/// <summary>

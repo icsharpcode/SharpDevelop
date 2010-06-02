@@ -53,12 +53,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// <summary>
 		/// Content that will be shown when the CompletionWindow contains no items.
 		/// </summary>
-		public object EmptyContent {
+		public ControlTemplate EmptyTemplate {
 			get { 
-				return this.completionList.EmptyContent;
+				return this.completionList.EmptyTemplate;
 			}
 			set { 
-				this.completionList.EmptyContent = value;
+				this.completionList.EmptyTemplate = value;
 			}
 		}
 		
