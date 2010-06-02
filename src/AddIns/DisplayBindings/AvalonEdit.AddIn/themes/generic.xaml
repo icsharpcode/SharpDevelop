@@ -3,6 +3,10 @@
 	xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 >
+	<ResourceDictionary.MergedDictionaries>
+      <ResourceDictionary Source="/ICSharpCode.AvalonEdit.AddIn;component/Src/SharpDevelopCompletionWindow.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+	
 	<Style TargetType="{x:Type local:SharpDevelopTextEditor}">
 		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
 		<Setter Property="Template">

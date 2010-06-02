@@ -65,8 +65,8 @@
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 						<cc:CompletionListBox.EmptyTemplate>
-							<!-- This could be a ContentPresenter showing any content, not just TextBlock -->
-							<TextBlock Text="{TemplateBinding EmptyContent}" TextWrapping="Wrap" FontStyle="Italic" Foreground="Gray"></TextBlock>
+							    <!-- EmptyContent provided by user will be displayed in case the list is empty -->
+								<ContentPresenter Content="{TemplateBinding EmptyContent}"></ContentPresenter>
 						</cc:CompletionListBox.EmptyTemplate>
 					</cc:CompletionListBox>
 				</ControlTemplate>

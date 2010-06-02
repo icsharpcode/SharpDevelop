@@ -3,7 +3,6 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn"
 >
-	<!-- Attempt to set SharpDevelopCompletionWindow.EmptyContent in xaml
 	<Style TargetType="{x:Type local:SharpDevelopCompletionWindow}">
 		<Setter Property="EmptyContent">
 			<Setter.Value>
@@ -12,5 +11,4 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
-	-->
 </ResourceDictionary>

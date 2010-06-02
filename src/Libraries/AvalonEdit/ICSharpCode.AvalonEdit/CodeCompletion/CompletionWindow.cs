@@ -40,7 +40,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			// prevent user from resizing window to 0x0
 			this.MinHeight = 15;
 			this.MinWidth = 30;
-			this.EmptyContent = null;
 			
 			toolTip.PlacementTarget = this;
 			toolTip.Placement = PlacementMode.Right;
@@ -56,10 +55,10 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		public object EmptyContent {
 			get { 
-				return this.completionList.EmptyContent; 
+				return this.completionList.EmptyContent;
 			}
 			set { 
-				this.completionList.EmptyContent = value; 
+				this.completionList.EmptyContent = value;
 			}
 		}
 		

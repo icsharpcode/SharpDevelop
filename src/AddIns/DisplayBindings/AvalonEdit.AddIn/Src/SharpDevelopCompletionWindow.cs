@@ -84,7 +84,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.CompletionList.SelectedItem = adapter;
 			}
 			this.StartOffset -= itemList.PreselectionLength;
-			this.EmptyContent = StringParser.Parse("${res:ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText}");
 		}
 		
 		protected override void OnSourceInitialized(EventArgs e)
