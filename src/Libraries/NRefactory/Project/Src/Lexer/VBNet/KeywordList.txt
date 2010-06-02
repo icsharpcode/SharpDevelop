@@ -19,6 +19,13 @@ LiteralDouble
 LiteralSingle
 LiteralDecimal
 LiteralDate
+# XML_TERMINALS
+XmlOpenTag
+XmlCloseTag
+XmlStartInlineVB
+XmlEndInlineVB
+XmlCloseTagEmptyElement
+XmlOpenEndTag
 
 # SPECIAL_CHARACTERS
 Assign = "="
@@ -156,6 +163,7 @@ ConcatStringAssign = "&="
 "IsNot"
 # Note: IsTrue and IsFalse are 'NOT' keywords they're only valid in Operator declarations (like get/set/value are no C# 'keywords')
 "Join"
+"Key"
 "Let"
 "Lib"
 "Like"

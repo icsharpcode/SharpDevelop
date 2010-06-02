@@ -53,9 +53,13 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Parser\VBNet\Experimental\ExpressionFinder.cs" />
+    <Compile Include="Src\Parser\VBNet\Experimental\Parser.cs">
+      <DependentUpon>ExpressionFinder.atg</DependentUpon>
+    </Compile>
     <None Include="Resources\ICSharpCode.NRefactory.snk" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AstBuilder\ExpressionBuilder.cs" />
@@ -84,9 +88,6 @@
     <Compile Include="Src\OperatorPrecedence.cs" />
     <Compile Include="Src\Parser\CSharp\CSharpParser.cs" />
     <Compile Include="Src\Parser\CSharp\Parser.cs" />
-    <Compile Include="Src\Parser\VBNet\Experimental\Parser.cs">
-      <DependentUpon>ExpressionFinder.atg</DependentUpon>
-    </Compile>
     <Compile Include="Src\Parser\VBNet\Parser.cs" />
     <Compile Include="Src\Parser\VBNet\VBNetParser.cs" />
     <Compile Include="Src\Parser\AbstractParser.cs" />
@@ -157,9 +158,7 @@
     <Content Include="Src\Lexer\VBNet\KeywordList.txt" />
     <Folder Include="Src\Parser" />
     <Folder Include="Src\Parser\CSharp" />
-    <Content Include="Src\Parser\CSharp\cs.ATG">
-      <Generator>CocoParserGenerator</Generator>
-    </Content>
+    <Content Include="Src\Parser\CSharp\cs.ATG" />
     <Folder Include="Src\Parser\Frames" />
     <Content Include="Src\Parser\Frames\Scanner.frame" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
@@ -167,7 +166,6 @@
     <Folder Include="Src\Parser\VBNet" />
     <None Include="Src\Parser\VBNet\VBNET.ATG">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Generator>CocoParserGenerator</Generator>
       <CustomToolNamespace>ICSharpCode.NRefactory.Parser.VB</CustomToolNamespace>
     </None>
     <Content Include="Src\Parser\gen.bat" />

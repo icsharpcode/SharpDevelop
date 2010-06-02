@@ -885,6 +885,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
+		public void TestKey()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Key"));
+			Assert.AreEqual(Tokens.Key, lexer.NextToken().Kind);
+		}
+
+		[Test]
 		public void TestLet()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Let"));

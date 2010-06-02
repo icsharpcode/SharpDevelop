@@ -22,6 +22,12 @@ TOKENS
 	LiteralSingle
 	LiteralDecimal
 	LiteralDate
+	XmlOpenTag
+	XmlCloseTag
+	XmlStartInlineVB
+	XmlEndInlineVB
+	XmlCloseTagEmptyElement
+	XmlOpenEndTag
 
 	/* ----- special character ----- */
 	"="
@@ -150,6 +156,7 @@ TOKENS
 	"Is"
 	"IsNot"
 	"Join"
+	"Key"
 	"Let"
 	"Lib"
 	"Like"
@@ -326,22 +333,16 @@ Block =
 .
 
 Expression =
-	(. isExpressionStart = true; .)
+	(. nextTokenIsPotentialStartOfXmlMode = true; .)
 	(
-	Literal (. isExpressionStart = false; .) |
-	( "(" (. isExpressionStart = false; .)  Expression ")" ) |
-	( Identifier (. isExpressionStart = false; .) [ "(" "Of" TypeName { "," TypeName } ")" ] ) |
-	( "AddressOf" (. isExpressionStart = false; .) Expression) |
+	Literal |
+	( "(" Expression ")" ) |
+	( Identifier [ "(" "Of" TypeName { "," TypeName } ")" ] ) |
+	( "AddressOf" Expression) |
 	
 	( "<" (. PushContext(Context.Xml); .) ANY ">" (. PopContext(); .) )
 	)
 .
-
-/*
-XmlLiteralExpression =
-	"<"
-	( "!" | "?" )
-.*/
 
 PrimitiveTypeName = 
 	"Byte" |

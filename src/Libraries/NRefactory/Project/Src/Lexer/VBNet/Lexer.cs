@@ -9,6 +9,8 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Xml;
+using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
 
 namespace ICSharpCode.NRefactory.Parser.VB
 {
@@ -17,8 +19,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		bool lineEnd = true;
 		bool isAtLineBegin = false; // TODO: handle line begin, if neccessarry
 		
+		ExpressionFinder ef;
+		
 		public Lexer(TextReader reader) : base(reader)
 		{
+			ef = new ExpressionFinder();
 		}
 		
 		public override Token NextToken()
@@ -26,6 +31,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (curToken == null) { // first call of NextToken()
 				curToken = Next();
 				specialTracker.InformToken(curToken.kind);
+				ef.InformToken(curToken);
 				//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
 				return curToken;
 			}
@@ -35,6 +41,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (curToken.next == null) {
 				curToken.next = Next();
 				specialTracker.InformToken(curToken.next.kind);
+				ef.InformToken(curToken);
 			}
 			
 			curToken = curToken.next;
@@ -42,14 +49,18 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (curToken.kind == Tokens.EOF && !(lastToken.kind == Tokens.EOL)) { // be sure that before EOF there is an EOL token
 				curToken = new Token(Tokens.EOL, curToken.col, curToken.line, string.Empty);
 				specialTracker.InformToken(curToken.kind);
+				ef.InformToken(curToken);
 				curToken.next = new Token(Tokens.EOF, curToken.col, curToken.line, string.Empty);
 				specialTracker.InformToken(curToken.next.kind);
+				ef.InformToken(curToken);
 			}
 			//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
 			return curToken;
 		}
 		
 		bool misreadExclamationMarkAsTypeCharacter;
+		bool inXmlMode, expectXmlIdentifier, inXmlTag, inXmlCloseTag;
+		int level = 0;
 		
 		protected override Token Next()
 		{
@@ -64,170 +75,229 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					if (nextChar == -1)
 						return new Token(Tokens.EOF, Col, Line, string.Empty);
 					char ch = (char)nextChar;
-					if (Char.IsWhiteSpace(ch)) {
-						if (HandleLineEnd(ch)) {
-							if (lineEnd) {
-								// second line end before getting to a token
-								// -> here was a blank line
-								specialTracker.AddEndOfLine(startLocation);
-							} else {
-								lineEnd = true;
-								return new Token(Tokens.EOL, startLocation, new Location(Col, Line), null, null, LiteralFormat.None);
-							}
-						}
-						continue;
+					if (inXmlMode && level <= 0) {
+//						int peek;
+//						while ((peek = ReaderPeek()) != -1 && XmlConvert.IsWhitespaceChar((char)peek)) ;
+//
+//						inXmlMode = ReaderPeek() == '<' &&
+//							ReaderPeek() == '!' &&
+//							ReaderPeek() == '-' &&
+//							ReaderPeek() == '-';
+						inXmlMode = false;
 					}
-					if (ch == '_') {
-						if (ReaderPeek() == -1) {
-							errors.Error(Line, Col, String.Format("No EOF expected after _"));
-							return new Token(Tokens.EOF, Col, Line, string.Empty);
-						}
-						if (!Char.IsWhiteSpace((char)ReaderPeek())) {
-							int x = Col - 1;
-							int y = Line;
-							string s = ReadIdent('_');
-							lineEnd = false;
-							return new Token(Tokens.Identifier, x, y, s);
-						}
-						ch = (char)ReaderRead();
-						
-						bool oldLineEnd = lineEnd;
-						lineEnd = false;
-						while (Char.IsWhiteSpace(ch)) {
-							if (HandleLineEnd(ch)) {
-								lineEnd = true;
+					if (inXmlMode) {
+						switch (ch) {
+							case '<':
+								if (ReaderPeek() == '/') {
+									inXmlCloseTag = true;
+									return new Token(Tokens.XmlOpenEndTag, Col - 1, Line);
+								}
+								if (ReaderPeek() == '%') {
+									// TODO : suspend xml mode tracking
+									return new Token(Tokens.XmlStartInlineVB, Col - 1, Line);
+								}
+								
+								return new Token(Tokens.XmlOpenTag, Col - 1, Line);
+							case '/':
+								if (ReaderPeek() == '>')
+									return new Token(Tokens.XmlCloseTagEmptyElement, Col - 1, Line);
 								break;
+							case '%':
+								if (ReaderPeek() == '>') {
+									// TODO : resume xml mode tracking
+									return new Token(Tokens.XmlEndInlineVB, Col - 1, Line);
+								}
+								break;
+							case '>':
+								if (inXmlCloseTag)
+									level--;
+								return new Token(Tokens.XmlCloseTag, Col - 1, Line);
+							case '=':
+								return new Token(Tokens.Equals, Col - 1, Line);
+							case '\'':
+							case '"':
+								int x = Col - 1;
+								int y = Line;
+								string s = ReadXmlString(ch);
+								return new Token(Tokens.LiteralString, Col - 1, Line, '"' + s + '"', s, LiteralFormat.StringLiteral);
+							default:
+								// TODO : can be either identifier or xml content
+								return new Token(Tokens.Identifier, Col - 1, Line, ReadXmlIdent(ch));
+						}
+					} else {
+						if (Char.IsWhiteSpace(ch)) {
+							if (HandleLineEnd(ch)) {
+								if (lineEnd) {
+									// second line end before getting to a token
+									// -> here was a blank line
+									specialTracker.AddEndOfLine(startLocation);
+								} else {
+									lineEnd = true;
+									return new Token(Tokens.EOL, startLocation, new Location(Col, Line), null, null, LiteralFormat.None);
+								}
 							}
-							if (ReaderPeek() != -1) {
-								ch = (char)ReaderRead();
-							} else {
+							continue;
+						}
+						if (ch == '_') {
+							if (ReaderPeek() == -1) {
 								errors.Error(Line, Col, String.Format("No EOF expected after _"));
 								return new Token(Tokens.EOF, Col, Line, string.Empty);
 							}
-						}
-						if (!lineEnd) {
-							errors.Error(Line, Col, String.Format("Return expected"));
-						}
-						lineEnd = oldLineEnd;
-						continue;
-					}
-					
-					if (ch == '#') {
-						while (Char.IsWhiteSpace((char)ReaderPeek())) {
-							ReaderRead();
-						}
-						if (Char.IsDigit((char)ReaderPeek())) {
-							int x = Col - 1;
-							int y = Line;
-							string s = ReadDate();
-							DateTime time = new DateTime(1, 1, 1, 0, 0, 0);
-							try {
-								time = DateTime.Parse(s, System.Globalization.CultureInfo.InvariantCulture, DateTimeStyles.NoCurrentDateDefault);
-							} catch (Exception e) {
-								errors.Error(Line, Col, String.Format("Invalid date time {0}", e));
+							if (!Char.IsWhiteSpace((char)ReaderPeek())) {
+								int x = Col - 1;
+								int y = Line;
+								string s = ReadIdent('_');
+								lineEnd = false;
+								return new Token(Tokens.Identifier, x, y, s);
 							}
-							return new Token(Tokens.LiteralDate, x, y, s, time, LiteralFormat.DateTimeLiteral);
-						} else {
-							ReadPreprocessorDirective();
+							ch = (char)ReaderRead();
+							
+							bool oldLineEnd = lineEnd;
+							lineEnd = false;
+							while (Char.IsWhiteSpace(ch)) {
+								if (HandleLineEnd(ch)) {
+									lineEnd = true;
+									break;
+								}
+								if (ReaderPeek() != -1) {
+									ch = (char)ReaderRead();
+								} else {
+									errors.Error(Line, Col, String.Format("No EOF expected after _"));
+									return new Token(Tokens.EOF, Col, Line, string.Empty);
+								}
+							}
+							if (!lineEnd) {
+								errors.Error(Line, Col, String.Format("Return expected"));
+							}
+							lineEnd = oldLineEnd;
 							continue;
 						}
-					}
-					
-					if (ch == '[') { // Identifier
-						lineEnd = false;
-						if (ReaderPeek() == -1) {
-							errors.Error(Line, Col, String.Format("Identifier expected"));
-						}
-						ch = (char)ReaderRead();
-						if (ch == ']' || Char.IsWhiteSpace(ch)) {
-							errors.Error(Line, Col, String.Format("Identifier expected"));
-						}
-						int x = Col - 1;
-						int y = Line;
-						string s = ReadIdent(ch);
-						if (ReaderPeek() == -1) {
-							errors.Error(Line, Col, String.Format("']' expected"));
-						}
-						ch = (char)ReaderRead();
-						if (!(ch == ']')) {
-							errors.Error(Line, Col, String.Format("']' expected"));
-						}
-						return new Token(Tokens.Identifier, x, y, s);
-					}
-					if (Char.IsLetter(ch)) {
-						int x = Col - 1;
-						int y = Line;
-						char typeCharacter;
-						string s = ReadIdent(ch, out typeCharacter);
-						if (typeCharacter == '\0') {
-							int keyWordToken = Keywords.GetToken(s);
-							if (keyWordToken >= 0) {
-								// handle 'REM' comments
-								if (keyWordToken == Tokens.Rem) {
-									ReadComment();
-									if (!lineEnd) {
-										lineEnd = true;
-										return new Token(Tokens.EOL, Col, Line, "\n");
-									}
-									continue;
+						
+						if (ch == '#') {
+							while (Char.IsWhiteSpace((char)ReaderPeek())) {
+								ReaderRead();
+							}
+							if (Char.IsDigit((char)ReaderPeek())) {
+								int x = Col - 1;
+								int y = Line;
+								string s = ReadDate();
+								DateTime time = new DateTime(1, 1, 1, 0, 0, 0);
+								try {
+									time = DateTime.Parse(s, System.Globalization.CultureInfo.InvariantCulture, DateTimeStyles.NoCurrentDateDefault);
+								} catch (Exception e) {
+									errors.Error(Line, Col, String.Format("Invalid date time {0}", e));
 								}
-								
-								lineEnd = false;
-								return new Token(keyWordToken, x, y, s);
+								return new Token(Tokens.LiteralDate, x, y, s, time, LiteralFormat.DateTimeLiteral);
+							} else {
+								ReadPreprocessorDirective();
+								continue;
 							}
 						}
 						
-						lineEnd = false;
-						return new Token(Tokens.Identifier, x, y, s);
-						
-					}
-					if (Char.IsDigit(ch)) {
-						lineEnd = false;
-						return ReadDigit(ch, Col - 1);
-					}
-					if (ch == '&') {
-						lineEnd = false;
-						if (ReaderPeek() == -1) {
+						if (ch == '[') { // Identifier
+							lineEnd = false;
+							if (ReaderPeek() == -1) {
+								errors.Error(Line, Col, String.Format("Identifier expected"));
+							}
+							ch = (char)ReaderRead();
+							if (ch == ']' || Char.IsWhiteSpace(ch)) {
+								errors.Error(Line, Col, String.Format("Identifier expected"));
+							}
+							int x = Col - 1;
+							int y = Line;
+							string s = ReadIdent(ch);
+							if (ReaderPeek() == -1) {
+								errors.Error(Line, Col, String.Format("']' expected"));
+							}
+							ch = (char)ReaderRead();
+							if (!(ch == ']')) {
+								errors.Error(Line, Col, String.Format("']' expected"));
+							}
+							return new Token(Tokens.Identifier, x, y, s);
+						}
+						if (Char.IsLetter(ch)) {
+							int x = Col - 1;
+							int y = Line;
+							char typeCharacter;
+							string s = ReadIdent(ch, out typeCharacter);
+							if (typeCharacter == '\0') {
+								int keyWordToken = Keywords.GetToken(s);
+								if (keyWordToken >= 0) {
+									// handle 'REM' comments
+									if (keyWordToken == Tokens.Rem) {
+										ReadComment();
+										if (!lineEnd) {
+											lineEnd = true;
+											return new Token(Tokens.EOL, Col, Line, "\n");
+										}
+										continue;
+									}
+									
+									lineEnd = false;
+									return new Token(keyWordToken, x, y, s);
+								}
+							}
+							
+							lineEnd = false;
+							return new Token(Tokens.Identifier, x, y, s);
+							
+						}
+						if (Char.IsDigit(ch)) {
+							lineEnd = false;
+							return ReadDigit(ch, Col - 1);
+						}
+						if (ch == '&') {
+							lineEnd = false;
+							if (ReaderPeek() == -1) {
+								return ReadOperator('&');
+							}
+							ch = (char)ReaderPeek();
+							if (Char.ToUpper(ch, CultureInfo.InvariantCulture) == 'H' || Char.ToUpper(ch, CultureInfo.InvariantCulture) == 'O') {
+								return ReadDigit('&', Col - 1);
+							}
 							return ReadOperator('&');
 						}
-						ch = (char)ReaderPeek();
-						if (Char.ToUpper(ch, CultureInfo.InvariantCulture) == 'H' || Char.ToUpper(ch, CultureInfo.InvariantCulture) == 'O') {
-							return ReadDigit('&', Col - 1);
-						}
-						return ReadOperator('&');
-					}
-					if (ch == '\'' || ch == '\u2018' || ch == '\u2019') {
-						int x = Col - 1;
-						int y = Line;
-						ReadComment();
-						if (!lineEnd) {
-							lineEnd = true;
-							return new Token(Tokens.EOL, x, y, "\n");
-						}
-						continue;
-					}
-					if (ch == '"') {
-						lineEnd = false;
-						int x = Col - 1;
-						int y = Line;
-						string s = ReadString();
-						if (ReaderPeek() != -1 && (ReaderPeek() == 'C' || ReaderPeek() == 'c')) {
-							ReaderRead();
-							if (s.Length != 1) {
-								errors.Error(Line, Col, String.Format("Chars can only have Length 1 "));
+						if (ch == '\'' || ch == '\u2018' || ch == '\u2019') {
+							int x = Col - 1;
+							int y = Line;
+							ReadComment();
+							if (!lineEnd) {
+								lineEnd = true;
+								return new Token(Tokens.EOL, x, y, "\n");
 							}
-							if (s.Length == 0) {
-								s = "\0";
-							}
-							return new Token(Tokens.LiteralCharacter, x, y, '"' + s  + "\"C", s[0], LiteralFormat.CharLiteral);
+							continue;
 						}
-						return new Token(Tokens.LiteralString, x, y, '"' + s + '"', s, LiteralFormat.StringLiteral);
+						if (ch == '"') {
+							lineEnd = false;
+							int x = Col - 1;
+							int y = Line;
+							string s = ReadString();
+							if (ReaderPeek() != -1 && (ReaderPeek() == 'C' || ReaderPeek() == 'c')) {
+								ReaderRead();
+								if (s.Length != 1) {
+									errors.Error(Line, Col, String.Format("Chars can only have Length 1 "));
+								}
+								if (s.Length == 0) {
+									s = "\0";
+								}
+								return new Token(Tokens.LiteralCharacter, x, y, '"' + s  + "\"C", s[0], LiteralFormat.CharLiteral);
+							}
+							return new Token(Tokens.LiteralString, x, y, '"' + s + '"', s, LiteralFormat.StringLiteral);
+						}
+						
+						if (ch == '<' && ef.NextTokenIsPotentialStartOfXmlMode) {
+							inXmlMode = inXmlTag = true;
+							level = 1;
+							return new Token(Tokens.XmlOpenTag, Col - 1, Line);
+						}
+						Token token = ReadOperator(ch);
+						if (token != null) {
+							lineEnd = false;
+							return token;
+						}
 					}
-					Token token = ReadOperator(ch);
-					if (token != null) {
-						lineEnd = false;
-						return token;
-					}
+
+
 					errors.Error(Line, Col, String.Format("Unknown char({0}) which can't be read", ch));
 				}
 			}
@@ -264,6 +334,21 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 				}
 			}
+			return sb.ToString();
+		}
+		
+		string ReadXmlIndent(char ch)
+		{
+			sb.Length = 0;
+			sb.Append(ch);
+			
+			int peek;
+			
+			while ((peek = ReaderPeek()) != -1 && (peek == ':' || XmlConvert.IsNCNameChar((char)peek))) {
+				ReaderRead();
+				sb.Append(ch);
+			}
+			
 			return sb.ToString();
 		}
 		
@@ -553,6 +638,32 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			if (ch != '"') {
+				errors.Error(Line, Col, String.Format("End of File reached before String terminated "));
+			}
+			return sb.ToString();
+		}
+		
+		string ReadXmlString(char terminator)
+		{
+			char ch = '\0';
+			sb.Length = 0;
+			int nextChar;
+			while ((nextChar = ReaderRead()) != -1) {
+				ch = (char)nextChar;
+				if (ch == terminator) {
+					if (ReaderPeek() != -1 && ReaderPeek() == terminator) {
+						sb.Append(terminator);
+						ReaderRead();
+					} else {
+						break;
+					}
+				} else if (ch == '\n') {
+					errors.Error(Line, Col, String.Format("No return allowed inside String literal"));
+				} else {
+					sb.Append(ch);
+				}
+			}
+			if (ch != terminator) {
 				errors.Error(Line, Col, String.Format("End of File reached before String terminated "));
 			}
 			return sb.ToString();

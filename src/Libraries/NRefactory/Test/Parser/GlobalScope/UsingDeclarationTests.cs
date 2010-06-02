@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsFalse(ud.Usings[0].IsAlias);
 			Assert.IsTrue(ud.Usings[0].IsXml);
 			
-			Assert.AreEqual("", ud.Usings[0].XmlPrefix);
+			Assert.AreEqual("xmlns", ud.Usings[0].XmlPrefix);
 			Assert.AreEqual("http://icsharpcode.net/sharpdevelop/avalonedit", ud.Usings[0].Name);
 		}
 		
@@ -197,7 +197,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsFalse(ud.Usings[0].IsAlias);
 			Assert.IsTrue(ud.Usings[0].IsXml);
 			
-			Assert.AreEqual("avalonedit", ud.Usings[0].XmlPrefix);
+			Assert.AreEqual("xmlns:avalonedit", ud.Usings[0].XmlPrefix);
 			Assert.AreEqual("http://icsharpcode.net/sharpdevelop/avalonedit", ud.Usings[0].Name);
 		}
 		#endregion

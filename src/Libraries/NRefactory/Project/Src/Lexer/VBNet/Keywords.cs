@@ -97,6 +97,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"IS",
 			"ISNOT",
 			"JOIN",
+			"KEY",
 			"LET",
 			"LIB",
 			"LIKE",

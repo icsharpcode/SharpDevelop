@@ -2704,7 +2704,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data)
 		{
 			if (memberInitializerExpression.IsKey) {
-				outputFormatter.PrintIdentifier("Key"); // TODO : replace by token
+				outputFormatter.PrintToken(Tokens.Key);
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.Dot);
@@ -2821,6 +2821,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.MustInherit);
 				else
 					outputFormatter.PrintToken(Tokens.MustOverride);
+				outputFormatter.Space();
+			}
+			if ((modifier & Modifiers.Dim) == Modifiers.Dim) {
+				outputFormatter.PrintToken(Tokens.Dim);
 				outputFormatter.Space();
 			}
 			if ((modifier & Modifiers.Overloads) == Modifiers.Overloads) {

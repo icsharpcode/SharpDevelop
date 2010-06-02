@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
@@ -15,7 +16,6 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 	{
 		Stack<Context> stack = new Stack<Context>();
 		StringBuilder output = new StringBuilder();
-		bool isExpressionStart = false;
 		
 		void PopContext()
 		{
@@ -50,9 +50,18 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		public string Output {
 			get { return output.ToString(); }
 		}
+		
+		public Context CurrentContext {
+			get { return stack.Any() ? stack.Peek() : Context.Global; }
+		}
+		
+		public bool NextTokenIsPotentialStartOfXmlMode {
+			get { return nextTokenIsPotentialStartOfXmlMode; }
+		}
 	}
 	
-	public enum Context {
+	public enum Context
+	{
 		Global,
 		Type,
 		Member,
