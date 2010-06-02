@@ -123,6 +123,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeAnalysis", "src\AddIns\
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeQualityAnalysis", "src\AddIns\Analysis\CodeQuality\CodeQualityAnalysis.csproj", "{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "src\AddIns\Analysis\UnitTesting\UnitTesting.csproj", "{1F261725-6318-4434-A1B1-6C70CE4CD324}"
 	ProjectSection(ProjectDependencies) = postProject
 		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
@@ -679,6 +684,10 @@ Global
 		{3EAA45A9-735C-4AC7-A799-947B93EA449D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EAA45A9-735C-4AC7-A799-947B93EA449D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EAA45A9-735C-4AC7-A799-947B93EA449D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08CE9972-283B-44F4-82FA-966F7DFA6B7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{08CE9972-283B-44F4-82FA-966F7DFA6B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08CE9972-283B-44F4-82FA-966F7DFA6B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
