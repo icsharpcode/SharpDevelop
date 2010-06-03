@@ -342,7 +342,7 @@ ImportClause<out Using u>
 			}
 		.)
 	) | ( (. string prefix = null; .)
-		"<" Identifier (. prefix = t.val; .) [ ":" Identifier (. prefix += ":" + t.val; .) ] "=" LiteralString /* TODO support single-quote xml strings */ (. u = new Using(t.literalValue as string, prefix); .) ">"
+		XmlOpenTag Identifier (. prefix = t.val; .) "=" LiteralString (. u = new Using(t.literalValue as string, prefix); .) XmlCloseTag
 	)
 	.
 

@@ -1,7 +1,12 @@
--->begin
+/*
+  Parser.frame file for NRefactory.
+ */
 using System;
+using System.Reflection;
 
 -->namespace
+
+-->tokens
 
 partial class Parser : AbstractParser
 {
@@ -11,10 +16,9 @@ partial class Parser : AbstractParser
 	
 -->declarations
 
-	void Get () {
+/*
 -->pragmas
-		lexer.NextToken();
-	}
+*/
 
 -->productions
 	
@@ -23,28 +27,24 @@ partial class Parser : AbstractParser
 -->parseRoot
 	}
 	
+	protected override void SynErr(int line, int col, int errorNumber)
+	{
+		string s;
+		switch (errorNumber) {
+-->errors
+			default: s = "error " + errorNumber; break;
+		}
+		this.Errors.Error(line, col, s);
+	}
+	
 	private bool StartOf(int s)
 	{
 		return set[s, lexer.LookAhead.kind];
 	}
-
-	protected override void SynErr(int line, int col, int errorNumber)
-	{
-		this.Errors.Error(line, col, ErrorDesc(errorNumber));
-	}
-
+	
 	static bool[,] set = {
 -->initialization
 	};
-	
-	string ErrorDesc(int errorNumber)
-	{
-		switch (errorNumber) {
--->errors
-			default: return "error " + errorNumber;
-		}
-	}
-
 } // end Parser
 
 $$$
