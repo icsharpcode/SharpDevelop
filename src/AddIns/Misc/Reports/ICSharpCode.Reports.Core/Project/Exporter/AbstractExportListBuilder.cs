@@ -46,10 +46,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		
-		
-		
-		
-		
 		protected virtual Point BuildReportHeader (Point reportHeaderStart)
 		{
 			System.Console.WriteLine("BuildReportHeader at {0} with {1} items ",reportHeaderStart,ReportModel.ReportHeader.Items.Count);
@@ -105,6 +101,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected virtual void BuildReportFooter ()
 		{
 			System.Diagnostics.Trace.WriteLine("BuildReportFooter ");
+		}
+		
+		
+		protected virtual void FinishRendering ()
+		{
+			
 		}
 		
 		

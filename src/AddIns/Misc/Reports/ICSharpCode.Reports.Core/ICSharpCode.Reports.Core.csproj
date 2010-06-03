@@ -134,6 +134,7 @@
     <Compile Include="Project\Exporter\DataReportCreator.cs" />
     <Compile Include="Project\Exporter\PageCreatedEventArgs.cs" />
     <Compile Include="Project\Exporter\PageDescription.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\old_Exporter\BasePager.cs" />
     <Compile Include="Project\old_Exporter\Converters\BaseConverter.cs" />
     <Compile Include="Project\old_Exporter\Converters\ConverterFactory.cs" />

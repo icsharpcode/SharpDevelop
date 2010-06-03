@@ -10,6 +10,7 @@ using ICSharpCode.Reports.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using Irony.CompilerServices;
+using Org.BouncyCastle.Crypto.Engines;
 using SimpleExpressionEvaluator;
 using SimpleExpressionEvaluator.Compilation;
 using SimpleExpressionEvaluator.Compilation.Functions;
@@ -26,6 +27,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		private ReportingLanguage reportingLanguage;
 		private Compiler compiler;
 		
+		
 		public ReportingLanguageCompiler():base()
 		{
 			this.reportingLanguage = new ReportingLanguage();
@@ -40,13 +42,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				return null;
 			}
 			
-			string delim = "=";
-			string str = expression.Trim();
-			if (String.IsNullOrEmpty(str)) {
-				return null;
-			}
-			
-			string cleaned = str.TrimStart (delim.ToCharArray());
+			string cleaned = CleanupExpressionString(expression);
 			if (!String.IsNullOrEmpty(cleaned)) {
 				ParseTree node = this.compiler.Parse(cleaned);
 				if (node.Root == null) {
@@ -58,7 +54,18 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		}
 		
 		
-		// Don't call base
+		private string CleanupExpressionString(string expression)
+		{
+			string delim = "=";
+			string str = expression.Trim();
+			if (String.IsNullOrEmpty(str)) {
+				return null;
+			}
+			return str.TrimStart (delim.ToCharArray());
+		}
+		
+		
+		// Dron't call base
 		protected override IExpression<T> CompileExpression<T>(ParseTreeNode root)
 		{
 			ParseTreeNode expr = root.ChildNodes[0];
@@ -95,7 +102,14 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				case "ParameterSectionStmt" :
 					return CompileExpressionNode(factory, astNode.ChildNodes[2]);
 				case "FieldsSectionStmt" :
-					return CompileExpressionNode (factory,astNode.ChildNodes[2]);
+					//return CompileExpressionNode (factory,astNode.ChildNodes[2]);
+					object o0 =astNode.ChildNodes[0].Token.Text;
+					object o1 =astNode.ChildNodes[1].Token.Text;
+					object o2 =astNode.ChildNodes[2].Token.Text;
+					IExpression l = CompileExpressionNode(factory, astNode.ChildNodes[2]);
+					return factory.CreateFunction(astNode.ChildNodes[0].Token.Text,
+					                              l);
+					
 				case "ParExpr" :
 					return CompileExpressionNode(factory, astNode.ChildNodes[0]);
 				case "BinExpr":

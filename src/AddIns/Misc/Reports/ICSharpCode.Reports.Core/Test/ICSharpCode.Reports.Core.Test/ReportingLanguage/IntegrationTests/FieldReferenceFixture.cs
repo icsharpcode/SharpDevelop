@@ -24,6 +24,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		private IExpressionEvaluatorFacade evaluator;
 		
 		[Test]
+		[IgnoreAttribute]
 		public void Can_Compile_Simple_FieldReference()
 		{
 			const string expression = "=Fields!Field1";
@@ -32,6 +33,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
+		[IgnoreAttribute]
 		public void Can_Concat_Simple_FieldReference()
 		{
 			const string expression = "=Fields!Field1 + 'SharpDevelopReporting'";

@@ -77,7 +77,7 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 		}
 		
 		[Test]
-		public void PageCreatedEvent_Should_Fired ()
+		public void PageCreatedEvent_Should_Fire ()
 		{
 			bool eventFired = false;
 			Sut.PageCreated += delegate { { eventFired = true;}};
@@ -87,7 +87,16 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 		}
 		
 		
-	
+		[Test]
+		public void Every_Section_Should_Fire_Event()
+		{
+			int noOfEvents = 0;
+			int noOfsections = 5;
+			Sut.SectionRendering += delegate { { noOfEvents ++;}};
+			Sut.WritePages();
+			Assert.AreEqual(noOfsections,noOfEvents);
+		}
+			
 		#endregion
 		
 		

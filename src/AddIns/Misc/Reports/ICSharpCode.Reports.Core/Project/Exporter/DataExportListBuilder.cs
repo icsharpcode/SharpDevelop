@@ -43,16 +43,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			base.PositionAfterRenderSection = this.BuildReportHeader(SinglePage.SectionBounds.ReportHeaderRectangle.Location);
 			
-//			this.BuildPageHeader();
+			this.BuildPageHeader();
 			
-//			BaseSection section = base.ReportModel.DetailSection;
-//
-//			section.SectionOffset = base.SinglePage.SectionBounds.DetailStart.Y;
-//			this.BuildDetail (section,dataNavigator);
+
+			this.BuildDetailInternal (base.ReportModel.DetailSection);
 //			
-//			this.BuildReportFooter(SectionBounds.ReportFooterRectangle);
-//			this.BuildPageFooter();
-//			//this is the last Page
+			this.BuildReportFooter();
+			this.BuildPageFooter();
+			
+
 			base.AddPage(base.SinglePage);
 			//base.FinishRendering(this.dataNavigator);
 		}
@@ -67,10 +66,31 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
+		
 		protected override void BuildPageHeader()
 		{
+			base.FireSectionRenderEvent(ReportModel.PageHeader,0);
 			base.BuildPageHeader();
 		
+		}
+		
+		protected override void BuildDetailInternal(BaseSection section)
+		{
+			base.FireSectionRenderEvent(ReportModel.DetailSection,0);
+			base.BuildDetailInternal(section);
+		} 
+		
+		protected override void BuildPageFooter()
+		{
+			base.FireSectionRenderEvent(ReportModel.ReportFooter,0);
+			base.BuildPageFooter();
+		}
+		
+		
+		protected override void BuildReportFooter()
+		{
+			base.FireSectionRenderEvent(ReportModel.ReportFooter,0);
+			base.BuildReportFooter();
 		}
 		
 		

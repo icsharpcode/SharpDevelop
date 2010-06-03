@@ -8,45 +8,47 @@
  */
 
 using System;
-using NUnit.Framework;
+using ICSharpCode.Reports.Core.Test.TestHelpers;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
-
+using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 {
 	[TestFixture]
-	public class ExpressionEvaluatorFixture
+	public class ExpressionEvaluatorFixture:ConcernOf<ExpressionEvaluatorFacade>
 	{
-		IExpressionEvaluatorFacade facade;
 		
 		[Test]
-		public void CanInitExpressionEvaluatorFassade()
+		public void Can_Init_ExpressionEvaluatorFassade()
 		{
 			IExpressionEvaluatorFacade f = new ExpressionEvaluatorFacade();
 			Assert.IsNotNull (f);
 		}
 		
 		[Test]
-		public void NoEvaluationOfPlainText ()
+		public void Plain_Text_Returns_Unmodified ()
 		{
-			 string jpt = "just plain text";
-			 string retVal = facade.Evaluate(jpt);
-			 Assert.AreEqual(jpt,retVal);
+			 string expression = "just plain text";
+			 string retVal = Sut.Evaluate(expression);
+			 Assert.AreEqual(expression,retVal);
 		}
+		
 		
 		[Test]
-		public void NoEvaluationOfFormulaLikeText ()
+		public void SimpleEvaluation ()
 		{
-			string fakeFormula = "A - B";
-			string retVal = facade.Evaluate(fakeFormula);
-			Assert.AreEqual(retVal,fakeFormula);
+			string expression = "=5 + 2";
+			string result = "7";
+			string retVal = Sut.Evaluate(expression);
+			Assert.AreEqual(result,retVal);
 		}
 		
-		[TestFixtureSetUp]
-		public void Init()
+		
+		public override void Setup()
 		{
-			facade = new ExpressionEvaluatorFacade();
+			Sut = new ExpressionEvaluatorFacade();
 		}
+		
 		
 		[TestFixtureTearDown]
 		public void Dispose()

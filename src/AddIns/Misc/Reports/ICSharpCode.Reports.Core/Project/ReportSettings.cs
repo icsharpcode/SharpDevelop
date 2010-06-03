@@ -91,12 +91,18 @@ namespace ICSharpCode.Reports.Core{
 			this.Padding = new Padding(5);
 			this.DefaultFont = GlobalValues.DefaultFont;
 			this.ReportType = GlobalEnums.ReportType.FormSheet;
+			
 			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
+			
 			this.CommandType =  System.Data.CommandType.Text;
+			this.ConnectionString = String.Empty;
+			this.CommandText = String.Empty;
+			
 			this.TopMargin = GlobalValues.DefaultPageMargin.Left;
 			this.BottomMargin = GlobalValues.DefaultPageMargin.Bottom;
 			this.LeftMargin = GlobalValues.DefaultPageMargin.Left;
 			this.RightMargin = GlobalValues.DefaultPageMargin.Right;
+			
 			this.availableFields = new AvailableFieldsCollection();
 			this.groupingsCollection = new ColumnCollection();
 			this.sortingCollection = new SortColumnCollection();

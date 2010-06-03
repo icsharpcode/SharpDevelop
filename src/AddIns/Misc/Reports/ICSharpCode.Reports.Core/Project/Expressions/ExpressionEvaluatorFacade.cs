@@ -26,6 +26,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		private ExpressionContext context;
 		private ISinglePage singlePage;
 		 
+		
 		public ExpressionEvaluatorFacade()
 		{
 			compiler = new ReportingLanguageCompiler();
@@ -34,30 +35,26 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			context.ResolveMissingFunction += FunctionStore;
 		}
 		
-//		public string Evaluate (string expression)
-//		{
-//			IExpression compiled = compiler.CompileExpression<string>(expression);
-//			this.context.ContextObject = this.SinglePage;
-//			if (compiled != null) {
-//				return (compiled.Evaluate(context)).ToString();
-//			}
-//			return expression;
-//		}
-		
 		
 		public string Evaluate (string expression)
 		{
-			if (!String.IsNullOrEmpty(expression)) {
-				if (expression.StartsWith("=")) {
-					IExpression compiled = compiler.CompileExpression<string>(expression);
-					this.context.ContextObject = this.SinglePage;
-					if (compiled != null) {
-						return (compiled.Evaluate(context)).ToString();
-					}
+			if (CanEvaluate(expression)) {
+				IExpression compiled = compiler.CompileExpression<string>(expression);
+				this.context.ContextObject = this.SinglePage;
+				if (compiled != null) {
+					return (compiled.Evaluate(context)).ToString();
 				}
-				
 			}
 			return expression;
+		}
+		
+		
+		private bool CanEvaluate (string expressionn)
+		{
+			if ((!String.IsNullOrEmpty(expressionn)) && (expressionn.StartsWith("="))) {
+				return true;
+			}
+			return false;
 		}
 		
 		private void FunctionStore (object sender,SimpleExpressionEvaluator.Evaluation.UnknownFunctionEventArgs e)

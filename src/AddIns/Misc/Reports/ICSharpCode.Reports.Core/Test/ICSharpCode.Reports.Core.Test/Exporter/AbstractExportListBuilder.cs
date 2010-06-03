@@ -13,10 +13,12 @@ namespace ICSharpCode.Reports.Core.Test.Exporter
 	/// <summary>
 	/// Description of AbstractExportListBuilder.
 	/// </summary>
+	/*
 	public class AbstractExportListBuilder
 	{
 		public AbstractExportListBuilder()
 		{
 		}
 	}
+	*/
 }

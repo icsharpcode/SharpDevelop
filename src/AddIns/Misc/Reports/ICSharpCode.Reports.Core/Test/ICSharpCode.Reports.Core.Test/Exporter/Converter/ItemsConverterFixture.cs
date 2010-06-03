@@ -33,7 +33,7 @@ namespace ICSharpCode.Reports.Core.Test.Exporter.Converter
 		}
 		
 		[Test]
-		public void Check_Location_Of_ItemInSection ()
+		public void Check_Location_Of_Item_In_Section ()
 		{
 			BaseSection section = new BaseSection();
 			section.Location = new Point (10,10);
@@ -51,7 +51,7 @@ namespace ICSharpCode.Reports.Core.Test.Exporter.Converter
 			
 		
 		[Test]
-		public void Check_LocationAfterConvert ()
+		public void Check_Location_After_Convert ()
 		{
 				BaseSection section = new BaseSection();
 			section.Location = new Point (10,10);
