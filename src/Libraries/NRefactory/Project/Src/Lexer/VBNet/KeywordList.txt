@@ -19,6 +19,7 @@ LiteralDouble
 LiteralSingle
 LiteralDecimal
 LiteralDate
+
 # XML_TERMINALS
 XmlOpenTag
 XmlCloseTag
