@@ -28,6 +28,9 @@ TOKENS
 	XmlEndInlineVB
 	XmlCloseTagEmptyElement
 	XmlOpenEndTag
+	XmlContent
+	XmlComment
+	XmlCData
 
 	/* ----- special character ----- */
 	"="
@@ -63,6 +66,7 @@ TOKENS
 	"<<="
 	">>="
 	"&="
+	":="
 
 	/* ----- keywords ----- */
 	"AddHandler"
@@ -340,7 +344,7 @@ Expression =
 	( Identifier [ "(" "Of" TypeName { "," TypeName } ")" ] ) |
 	( "AddressOf" Expression) |
 	
-	( "<" (. PushContext(Context.Xml); .) ANY ">" (. PopContext(); .) )
+	( XmlOpenTag (. PushContext(Context.Xml); .) ANY ">" (. PopContext(); .) )
 	)
 .
 
@@ -388,7 +392,18 @@ Literal =
 
 Statement =
 	( ( Identifier | LiteralInteger ) ":" ) |
-	( ( "Dim" | "Static" | "Const" ) Identifier [ "?" ] [ ( "(" { "," } ")" ) ] { "," Identifier [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName [ "(" ")" ] ] [ "=" Expression ] )
+	( ( "Dim" | "Static" | "Const" ) Identifier [ "?" ] [ ( "(" { "," } ")" ) ] { "," Identifier [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName [ "(" ")" ] ] [ "=" Expression ] ) |
+	( ( "With" | "SyncLock" ) Expression StatementTerminator Block "End" ( "With" | "SyncLock" ) ) |
+	( ( "AddHandler" | "RemoveHandler" ) Expression "," Expression ) |
+	( "RaiseEvent" IdentifierOrKeyword [ "(" [ ArgumentList ] ")" ] ) |
+	( Expression ( "=" | "^=" | "*=" | "/=" | "\\=" | "+=" | "-=" | "&=" | "<<=" | ">>=" ) [ EOL ] Expression ) |
+	/* ( "Mid" [ "$" ] "(" Expression "," Expression [ "," Expression ] ")" "=" Expression ) | */
+	( [ "Call" ] Expression [ "(" [ ArgumentList ] ")" ] ) |
+	( "If" Expression [ "Then" ] StatementTerminator ( Block | { Statement } )  )
+.
+
+ArgumentList =
+	Expression { "," Expression } [ "," IdentifierOrKeyword ":=" Expression { "," IdentifierOrKeyword ":=" Expression } ]
 .
 
 /* This production handles pseudo keywords that are needed in the grammar */
@@ -421,6 +436,7 @@ IdentifierForFieldDeclaration =
 	| "Infer"
 	| "Into"
 	| "Join"
+	| "Key"
 	| "Off"
 	| "Order"
 	| "Preserve"

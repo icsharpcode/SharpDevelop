@@ -27,6 +27,9 @@ TOKENS
 	XmlEndInlineVB
 	XmlCloseTagEmptyElement
 	XmlOpenEndTag
+	XmlContent
+	XmlComment
+	XmlCData
 
 	/* ----- special character ----- */
 	"="
@@ -62,6 +65,7 @@ TOKENS
 	"<<="
 	">>="
 	"&="
+	":="
 
 	/* ----- keywords ----- */
 	"AddHandler"

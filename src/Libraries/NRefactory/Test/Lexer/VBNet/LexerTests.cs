@@ -248,6 +248,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
+		public void TestColonAssign()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(":="));
+			Assert.AreEqual(Tokens.ColonAssign, lexer.NextToken().Kind);
+		}
+
+		[Test]
 		public void TestAddHandler()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("AddHandler"));

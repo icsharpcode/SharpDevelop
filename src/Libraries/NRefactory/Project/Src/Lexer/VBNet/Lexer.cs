@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 		
 		bool misreadExclamationMarkAsTypeCharacter;
-		bool inXmlMode, expectXmlIdentifier, inXmlTag, inXmlCloseTag;
+		bool inXmlMode, inXmlTag, inXmlCloseTag;
 		int level = 0;
 		
 		Token NextInternal()
@@ -94,11 +94,13 @@ namespace ICSharpCode.NRefactory.Parser.VB
 									ReaderRead();
 									return new Token(Tokens.XmlStartInlineVB, Col - 1, Line);
 								}
-								
+								level++;
+								inXmlTag = true;
 								return new Token(Tokens.XmlOpenTag, Col - 1, Line);
 							case '/':
 								if (ReaderPeek() == '>') {
 									ReaderRead();
+									inXmlTag = false;
 									level--;
 									return new Token(Tokens.XmlCloseTagEmptyElement, Col - 1, Line);
 								}
@@ -113,6 +115,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							case '>':
 								if (inXmlCloseTag)
 									level--;
+								inXmlTag = inXmlCloseTag = false;
 								return new Token(Tokens.XmlCloseTag, Col - 1, Line);
 							case '=':
 								return new Token(Tokens.Assign, Col - 1, Line);
@@ -121,12 +124,16 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								int x = Col - 1;
 								int y = Line;
 								string s = ReadXmlString(ch);
-								return new Token(Tokens.LiteralString, Col - 1, Line, '"' + s + '"', s, LiteralFormat.StringLiteral);
+								return new Token(Tokens.LiteralString, Col - 1, Line, ch + s + ch, s, LiteralFormat.StringLiteral);
 							default:
 								// TODO : can be either identifier or xml content
-								if (XmlConvert.IsWhitespaceChar(ch))
-									continue;
-								return new Token(Tokens.Identifier, Col - 1, Line, ReadXmlIdent(ch));
+								if (inXmlCloseTag || inXmlTag) {
+									if (XmlConvert.IsWhitespaceChar(ch))
+										continue;
+									return new Token(Tokens.Identifier, Col - 1, Line, ReadXmlIdent(ch));
+								} else {
+									return new Token(Tokens.XmlContent, Col - 1, Line, ReadXmlContent(ch));
+								}
 						}
 					} else {
 						if (Char.IsWhiteSpace(ch)) {
@@ -305,6 +312,20 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					errors.Error(Line, Col, String.Format("Unknown char({0}) which can't be read", ch));
 				}
 			}
+		}
+		
+		string ReadXmlContent(char ch)
+		{
+			sb.Length = 0;
+			sb.Append(ch);
+			int nextChar;
+			while ((nextChar = ReaderRead()) != -1) {
+				ch = (char)nextChar;
+				sb.Append(ch);
+				if (ReaderPeek() == '<')
+					break;
+			}
+			return sb.ToString();
 		}
 		
 		protected override Token Next()
@@ -662,12 +683,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			while ((nextChar = ReaderRead()) != -1) {
 				ch = (char)nextChar;
 				if (ch == terminator) {
-					if (ReaderPeek() != -1 && ReaderPeek() == terminator) {
-						sb.Append(terminator);
-						ReaderRead();
-					} else {
-						break;
-					}
+					break;
 				} else if (ch == '\n') {
 					errors.Error(Line, Col, String.Format("No return allowed inside String literal"));
 				} else {

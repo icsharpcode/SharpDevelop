@@ -183,6 +183,36 @@ exit Global
 			);
 		}
 		
+		[Test]
+		public void WithBlockTest()
+		{
+			RunTest(
+				@"Class Test
+	Public Sub New()
+		With x
+			
+		End With
+	End Sub
+End Class
+",
+								@"enter Global
+	enter Type
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Body
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Body
+				exit Body
+			exit Body
+		exit Member
+	exit Type
+exit Global
+"
+			);
+		}
+		
 		void RunTest(string code, string expectedOutput)
 		{
 			ExpressionFinder p = new ExpressionFinder();
