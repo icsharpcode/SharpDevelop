@@ -4,7 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<StackPanel>
 		<TextBlock Text="{core:Localize AddIns.HelpViewer.SearchLookForLabel}" Margin="5,2,5,1" />
-		<TextBox IsEnabled="False" Name="searchWord" Margin="5,1,5,5" Padding="2" SelectionChanged="SearchWordSelectionChanged" PreviewKeyUp="SearchWordPreviewKeyUp" />
-		<Button IsEnabled="False" Name="doSearch" Content="{core:Localize AddIns.HelpViewer.SearchDoSearchButton}" Margin="5" Width="80" Padding="1" HorizontalAlignment="Left" Click="DoSearchClicked" />
+		<ComboBox Name="searchCB" Margin="5,2,5,5" Padding="1" IsEnabled="False" IsEditable="True" PreviewKeyUp="SearchCBPreviewKeyUp" />
+		<Button Name="doSearch" Content="{core:Localize AddIns.HelpViewer.SearchDoSearchButton}" IsEnabled="False" Margin="5,1,5,5" Width="80" Padding="1" HorizontalAlignment="Left" Click="DoSearchClicked" />
 	</StackPanel>
 </UserControl>

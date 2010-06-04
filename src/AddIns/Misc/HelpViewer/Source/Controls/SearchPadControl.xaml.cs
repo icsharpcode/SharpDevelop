@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,27 +17,28 @@ namespace MSHelpSystem.Controls
 		public SearchPadControl()
 		{
 			InitializeComponent();
-			searchWord.IsEnabled = Help3Environment.IsHelp3ProtocolRegistered;
+			searchCB.IsEnabled = Help3Environment.IsHelp3ProtocolRegistered;
+			searchCB.ItemsSource = searchTerms;
 		}
 
-		void SearchWordSelectionChanged(object sender, RoutedEventArgs e)
-		{
-			doSearch.IsEnabled = (Help3Environment.IsHelp3ProtocolRegistered && !string.IsNullOrEmpty(searchWord.Text));
-		}
+		ObservableCollection<string> searchTerms = new ObservableCollection<string>();
 
-		void SearchWordPreviewKeyUp(object sender, KeyEventArgs e)
+		void SearchCBPreviewKeyUp(object sender, KeyEventArgs e)
 		{
+			doSearch.IsEnabled = (Help3Environment.IsHelp3ProtocolRegistered && !string.IsNullOrEmpty(searchCB.Text));
+
 			if (e.Key == Key.Return || e.Key == Key.Enter)
 				DoSearchClicked(null, null);
 		}
-		
+
 		void DoSearchClicked(object sender, RoutedEventArgs e)
 		{
-			string search = (string)searchWord.Text;
-			if (string.IsNullOrEmpty(search)) {
-				throw new ArgumentNullException("search");
+			string term = searchCB.Text;
+			if (string.IsNullOrEmpty(term)) {
+				throw new ArgumentNullException("term");
 			}
-			DisplayHelp.Search(search);
+			if (searchTerms.IndexOf(term) < 0) searchTerms.Add(term);
+			DisplayHelp.Search(term);
 		}
 	}
 }
