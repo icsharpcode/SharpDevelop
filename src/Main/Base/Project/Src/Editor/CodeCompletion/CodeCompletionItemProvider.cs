@@ -282,8 +282,12 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						insertedText = selectedClass.FullyQualifiedName;
 					}
 				} else {
-					// The name is unknown - we add a using
+					// The name is unknown - add a using
 					addUsing = true;
+					if ((this.Entity is IClass) && (context.StartOffset > 0) && (document.GetCharAt(context.StartOffset - 1) == '.')) {
+						// But don't add using if user is typing qualified type name (e.g. System.IO.<expr>)
+						addUsing = false;
+					}
 				}
 				
 				// Special case for Attributes
