@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// <summary>
 		/// Gets/Sets whether items from all namespaces should be included in code completion, regardless of imports.
 		/// </summary>
-		public bool ShowItemsFromAllNamespaces { get; set; }
+		public virtual bool ShowItemsFromAllNamespaces { get; set; }
 		
 		/// <inheritdoc/>
 		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
@@ -114,6 +114,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		protected virtual DefaultCompletionItemList CreateCompletionItemList()
 		{
+			// This is overriden in DotCodeCompletionItemProvider (C# and VB dot completion) 
+			// and NRefactoryCtrlSpaceCompletionItemProvider (C# and VB Ctrl+Space completion)
 			return new DefaultCompletionItemList();
 		}
 		
@@ -184,7 +186,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	
 	public class DotCodeCompletionItemProvider : CodeCompletionItemProvider
 	{
-		
+		protected override DefaultCompletionItemList CreateCompletionItemList()
+		{
+			return new NRefactoryCompletionItemList() { ContainsItemsFromAllNamespaces = this.ShowItemsFromAllNamespaces };
+		}
 	}
 	
 	sealed class KeywordCompletionItem : DefaultCompletionItem
