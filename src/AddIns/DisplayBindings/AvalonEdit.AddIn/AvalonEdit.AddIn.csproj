@@ -146,6 +146,7 @@
     <Compile Include="Src\SharpDevelopCompletionWindow.cs" />
     <Compile Include="Src\SharpDevelopInsightWindow.cs">
     </Compile>
+    <Compile Include="Src\StringToVisibilityConverter.cs" />
     <Compile Include="Src\SyntaxModeDoozer.cs" />
     <Compile Include="Src\TextMarkerService.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />

@@ -6,6 +6,8 @@
 	Style="{x:Static core:GlobalStyles.WindowStyle}"
 >
 	<Window.Resources>
+		<local:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+		
 		<Style TargetType="cc:CompletionListBox" BasedOn="{StaticResource {x:Type ListBox}}">
 			<Style.Triggers>
 				<DataTrigger
@@ -18,7 +20,9 @@
 								<TextBlock Text="{Binding EmptyText, RelativeSource={RelativeSource AncestorType={x:Type local:SharpDevelopCompletionWindow}, AncestorLevel=1}}"
 								           FontStyle="Italic" 
 								           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" 
-								           TextWrapping="WrapWithOverflow"/>
+								           TextWrapping="WrapWithOverflow"
+											Visibility="{Binding EmptyText, RelativeSource={RelativeSource AncestorType={x:Type local:SharpDevelopCompletionWindow}, AncestorLevel=1}, 
+															Converter={StaticResource StringToVisibilityConverter}}" />
 							</ControlTemplate>
 						</Setter.Value>
 					</Setter>
