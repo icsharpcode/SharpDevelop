@@ -92,6 +92,7 @@
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemHandler.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\NRefactoryCompletionItemList.cs" />
     <Compile Include="Src\Editor\IEditorUIService.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionBinding.cs" />

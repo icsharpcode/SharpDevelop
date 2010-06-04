@@ -116,6 +116,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			this.language = language;
 		}
 		
+		protected override DefaultCompletionItemList CreateCompletionItemList()
+		{
+			return new NRefactoryCompletionItemList() { ContainsItemsFromAllNamespaces = this.ShowItemsFromAllNamespaces };
+		}
+		
 		protected override List<ICompletionEntry> CtrlSpace(ITextEditor editor, ExpressionContext context)
 		{
 			var resolver = new Dom.NRefactoryResolver.NRefactoryResolver(language);

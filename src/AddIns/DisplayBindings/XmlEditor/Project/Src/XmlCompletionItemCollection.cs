@@ -38,6 +38,12 @@ namespace ICSharpCode.XmlEditor
 			get { return Count > 0; }
 		}
 		
+		public bool ContainsAllAvailableItems {
+			get {
+				return true;
+			}
+		}
+		
 		public void Sort()
 		{
 			List<XmlCompletionItem> items = base.Items as List<XmlCompletionItem>;

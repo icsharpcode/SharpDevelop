@@ -74,7 +74,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (itemList == null)
 				throw new ArgumentNullException("itemList");
 			
-			this.EmptyText = StringParser.Parse("${res:ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText}");
+			if (!itemList.ContainsAllAvailableItems) {
+				// If more items are available (Ctrl+Space wasn't pressed), show this hint
+				this.EmptyText = StringParser.Parse("${res:ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText}");
+			}
 			
 			InitializeComponent();
 			this.Editor = editor;
@@ -92,7 +95,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public static readonly DependencyProperty EmptyTextProperty =
 			DependencyProperty.Register("EmptyText", typeof(string), typeof(SharpDevelopCompletionWindow),
 			                            new FrameworkPropertyMetadata());
-		
+		/// <summary>
+		/// The text thats is displayed when the <see cref="ItemList" /> is empty.
+		/// </summary>
 		public string EmptyText {
 			get { return (string)GetValue(EmptyTextProperty); }
 			set { SetValue(EmptyTextProperty, value); }

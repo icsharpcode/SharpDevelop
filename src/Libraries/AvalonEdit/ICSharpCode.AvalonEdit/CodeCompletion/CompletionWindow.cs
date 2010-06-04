@@ -27,6 +27,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		ToolTip toolTip = new ToolTip();
 		
 		/// <summary>
+		/// Gets the completion list used in this completion window.
+		/// </summary>
+		public CompletionList CompletionList {
+			get { return completionList; }
+		}
+		
+		/// <summary>
 		/// Creates a new code completion window.
 		/// </summary>
 		public CompletionWindow(TextArea textArea) : base(textArea)
@@ -180,13 +187,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					completionList.SelectItem(document.GetText(this.StartOffset, offset - this.StartOffset));
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Gets the completion list used in this completion window.
-		/// </summary>
-		public CompletionList CompletionList {
-			get { return completionList; }
 		}
 	}
 }
