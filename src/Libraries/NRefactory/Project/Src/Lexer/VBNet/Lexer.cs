@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 		
 		bool misreadExclamationMarkAsTypeCharacter;
-		bool inXmlMode, inXmlTag, inXmlCloseTag;
+		bool inXmlMode, inXmlTag, inXmlCloseTag, wasComment;
 		int level = 0;
 		
 		Token NextInternal()
@@ -71,71 +71,92 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					if (nextChar == -1)
 						return new Token(Tokens.EOF, Col, Line, string.Empty);
 					char ch = (char)nextChar;
-					if (inXmlMode && level <= 0) {
-//						int peek;
-//						while ((peek = ReaderPeek()) != -1 && XmlConvert.IsWhitespaceChar((char)peek)) ;
-//
-//						inXmlMode = ReaderPeek() == '<' &&
-//							ReaderPeek() == '!' &&
-//							ReaderPeek() == '-' &&
-//							ReaderPeek() == '-';
+					#region XML mode
+					if (inXmlMode && level <= 0 && !wasComment) {
+						int peek;
+						while (true) {
+							while ((peek = ReaderPeek()) != -1 && XmlConvert.IsWhitespaceChar((char)peek))
+								ReaderRead();
+
+							if (ReaderPeek() == '<') {
+								ReaderRead();
+								if (ReaderPeek() == '!') {
+									ReaderRead();
+									Token token = ReadXmlCommentOrCData(Col - 1, Line);
+									ReaderRead();
+									return token;
+								}
+							}
+							
+							break;
+						}
 						inXmlMode = false;
 					}
 					if (inXmlMode) {
+						int x = Col - 1;
+						int y = Line;
 						switch (ch) {
 							case '<':
 								if (ReaderPeek() == '/') {
 									ReaderRead();
 									inXmlCloseTag = true;
-									return new Token(Tokens.XmlOpenEndTag, Col - 1, Line);
+									return new Token(Tokens.XmlOpenEndTag, x, y);
 								}
 								if (ReaderPeek() == '%') {
 									// TODO : suspend xml mode tracking
 									ReaderRead();
-									return new Token(Tokens.XmlStartInlineVB, Col - 1, Line);
+									return new Token(Tokens.XmlStartInlineVB, x, y);
+								}
+								if (ReaderPeek() == '!') {
+									ReaderRead();
+									Token token = ReadXmlCommentOrCData(x, y);
+									wasComment = token.Kind == Tokens.XmlComment;
+									ReaderRead();
+									return token;
 								}
 								level++;
 								inXmlTag = true;
-								return new Token(Tokens.XmlOpenTag, Col - 1, Line);
+								return new Token(Tokens.XmlOpenTag, x, y);
 							case '/':
 								if (ReaderPeek() == '>') {
 									ReaderRead();
 									inXmlTag = false;
 									level--;
-									return new Token(Tokens.XmlCloseTagEmptyElement, Col - 1, Line);
+									return new Token(Tokens.XmlCloseTagEmptyElement, x, y);
 								}
 								break;
 							case '%':
 								if (ReaderPeek() == '>') {
 									// TODO : resume xml mode tracking
 									ReaderRead();
-									return new Token(Tokens.XmlEndInlineVB, Col - 1, Line);
+									return new Token(Tokens.XmlEndInlineVB, x, y);
 								}
 								break;
-							case '>':
-								if (inXmlCloseTag)
+								case '>':                   /* workaround for XML Imports */
+								if (inXmlCloseTag || (inXmlTag && ef.CurrentContext == Context.Global))
 									level--;
+								wasComment = false;
 								inXmlTag = inXmlCloseTag = false;
-								return new Token(Tokens.XmlCloseTag, Col - 1, Line);
+								return new Token(Tokens.XmlCloseTag, x, y);
 							case '=':
-								return new Token(Tokens.Assign, Col - 1, Line);
+								return new Token(Tokens.Assign, x, y);
 							case '\'':
 							case '"':
-								int x = Col - 1;
-								int y = Line;
 								string s = ReadXmlString(ch);
-								return new Token(Tokens.LiteralString, Col - 1, Line, ch + s + ch, s, LiteralFormat.StringLiteral);
+								return new Token(Tokens.LiteralString, x, y, ch + s + ch, s, LiteralFormat.StringLiteral);
 							default:
 								// TODO : can be either identifier or xml content
 								if (inXmlCloseTag || inXmlTag) {
 									if (XmlConvert.IsWhitespaceChar(ch))
 										continue;
-									return new Token(Tokens.Identifier, Col - 1, Line, ReadXmlIdent(ch));
+									return new Token(Tokens.Identifier, x, y, ReadXmlIdent(ch));
 								} else {
-									return new Token(Tokens.XmlContent, Col - 1, Line, ReadXmlContent(ch));
+									return new Token(Tokens.XmlContent, x, y, ReadXmlContent(ch));
 								}
 						}
+						#endregion
 					} else {
+						#region Standard Mode
 						if (Char.IsWhiteSpace(ch)) {
 							if (HandleLineEnd(ch)) {
 								if (lineEnd) {
@@ -295,11 +316,32 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							}
 							return new Token(Tokens.LiteralString, x, y, '"' + s + '"', s, LiteralFormat.StringLiteral);
 						}
-						
+						#endregion
 						if (ch == '<' && ef.NextTokenIsPotentialStartOfXmlMode) {
-							inXmlMode = inXmlTag = true;
+							int x = Col - 1;
+							int y = Line;
+							inXmlMode = true;
+							level = 0;
+							if (ReaderPeek() == '/') {
+								ReaderRead();
+								inXmlCloseTag = true;
+								return new Token(Tokens.XmlOpenEndTag, x, y);
+							}
+							if (ReaderPeek() == '%') {
+								// TODO : suspend xml mode tracking
+								ReaderRead();
+								return new Token(Tokens.XmlStartInlineVB, x, y);
+							}
+							if (ReaderPeek() == '!') {
+								ReaderRead();
+								Token t = ReadXmlCommentOrCData(x, y);
+								wasComment = t.Kind == Tokens.XmlComment;
+								ReaderRead();
+								return t;
+							}
+							inXmlTag = true;
 							level = 1;
-							return new Token(Tokens.XmlOpenTag, Col - 1, Line);
+							return new Token(Tokens.XmlOpenTag, x, y);
 						}
 						Token token = ReadOperator(ch);
 						if (token != null) {
@@ -307,11 +349,46 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							return token;
 						}
 					}
-
-
+					
 					errors.Error(Line, Col, String.Format("Unknown char({0}) which can't be read", ch));
 				}
 			}
+		}
+		
+		Token ReadXmlCommentOrCData(int x, int y)
+		{
+			sb.Length = 0;
+			int nextChar = -1;
+			
+			for (int i = 0; i < 7; i++) {
+				nextChar = ReaderRead();
+				if (nextChar > -1)
+					sb.Append((char)nextChar);
+			}
+			
+			if (sb.ToString().StartsWith("--")) {
+				sb.Length = 0;
+				while ((nextChar = ReaderRead()) != -1) {
+					sb.Append((char)nextChar);
+					if (ReaderPeek() == '>' && sb.ToString().EndsWith("--")) {
+						string text = sb.Remove(sb.Length - 2, 2).ToString();
+						return new Token(Tokens.XmlComment, x, y, text);
+					}
+				}
+			}
+			
+			if (sb.ToString().StartsWith("[CDATA[")) {
+				sb.Length = 0;
+				while ((nextChar = ReaderRead()) != -1) {
+					sb.Append((char)nextChar);
+					if (ReaderPeek() == '>' && sb.ToString().EndsWith("]]")) {
+						string text = sb.Remove(sb.Length - 2, 2).ToString();
+						return new Token(Tokens.XmlCData, x, y, text);
+					}
+				}
+			}
+			
+			return null;
 		}
 		
 		string ReadXmlContent(char ch)

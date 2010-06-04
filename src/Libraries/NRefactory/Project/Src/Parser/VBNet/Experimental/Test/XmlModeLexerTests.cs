@@ -290,18 +290,35 @@ namespace VBParserExperiment
 		}
 		
 		[Test]
+		public void SimpleXmlWithComments()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim x = <!-- Test file -->
+			                                                                      <Test>
+			                                                                        <!-- Test data -->
+			                                                                        <Data />
+			                                                                      </Test>
+			                                                                      <!-- eof -->
+			                                                                      <!-- hey, wait! -->")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
+			            Tokens.XmlComment, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            Tokens.XmlContent, Tokens.XmlComment, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement,
+			            Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlComment, Tokens.XmlComment);
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
 		public void SimpleEmptyTag()
 		{
 			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim x = <Test />")));
 			
 			CheckHead(lexer);
 			
-			Assert.AreEqual(Tokens.Dim, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Assign, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTagEmptyElement, lexer.NextToken().Kind);
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement);
 			
 			CheckFoot(lexer);
 		}
@@ -313,39 +330,131 @@ namespace VBParserExperiment
 			
 			CheckHead(lexer);
 			
-			Assert.AreEqual(Tokens.Dim, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Assign, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.XmlOpenTag,
+			            Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlOpenEndTag,
+			            Tokens.Identifier, Tokens.XmlCloseTag);
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void XmlImport()
+		{
+			string code = @"Imports System
+Imports System.Linq
+
+Imports <xmlns='http://icsharpcode.net/sharpdevelop/avalonedit'>
+Imports <xmlns:h='http://www.w3.org/TR/html4/'>
+
+Class TestClass
+	Sub TestSub()
+		Dim xml = <h:table>
+					<h:tr>
+						<h:td>1. Cell</h:td>
+					</h:tr>
+				  </h:table>
+	End Sub
+End Class";
+			
+			ILexer lexer = GenerateLexer(new StringReader(code));
+			
+			CheckTokens(lexer, Tokens.Imports, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Imports, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Imports, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag, Tokens.EOL,
+			            Tokens.Imports, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag, Tokens.EOL,
+			            Tokens.Class, Tokens.Identifier, Tokens.EOL, Tokens.Sub, Tokens.Identifier, Tokens.OpenParenthesis, Tokens.CloseParenthesis, Tokens.EOL,
+			            Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            Tokens.EOL, Tokens.End, Tokens.Sub, Tokens.EOL, Tokens.End, Tokens.Class
+			           );
+		}
+		
+		[Test]
+		public void CDataSection()
+		{
+			string xml = @"Dim xml = <template>
+				<name>test</name>
+				<language>VB</languge>
+				<file language='XAML'>
+					<![CDATA[<Window x:Class='DefaultNamespace.Window1'
+	xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+	Title='DefaultNamespace' Height='300' Width='300'>
+	<Grid>
+		
+	</Grid>
+</Window>]]>
+				</file>
+				<file language='CSharp'>
+				<![CDATA[using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+
+namespace DefaultNamespace
+{
+	/// <summary>
+	/// Interaction logic for Window1.xaml
+	/// </summary>
+	public partial class Window1 : Window
+	{
+		public Window1()
+		{
+			InitializeComponent();
+		}
+	}
+}]]>
+				</file>
+			</template>
+			";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(xml)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign, // 2
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, // 6
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, // 10
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, // 14
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, // 18
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, // 22
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag, // 28
+			            Tokens.XmlContent, Tokens.XmlCData, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, // 34
+			            Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag,
+			            Tokens.XmlContent, Tokens.XmlCData, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag
+			           );
+			
 			
 			CheckFoot(lexer);
 		}
 
 		void CheckFoot(ILexer lexer)
 		{
-			Assert.AreEqual(Tokens.EOL, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.End, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Sub, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.EOL, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.End, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Class, lexer.NextToken().Kind);
+			CheckTokens(lexer, Tokens.EOL, Tokens.End, Tokens.Sub, Tokens.EOL, Tokens.End, Tokens.Class);
 		}
 
 		void CheckHead(ILexer lexer)
 		{
-			Assert.AreEqual(Tokens.Class, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.EOL, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Sub, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.OpenParenthesis, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.CloseParenthesis, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.EOL, lexer.NextToken().Kind);
+			CheckTokens(lexer, Tokens.Class, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Sub, Tokens.Identifier, Tokens.OpenParenthesis,
+			            Tokens.CloseParenthesis, Tokens.EOL);
+		}
+		
+		void CheckTokens(ILexer lexer, params int[] tokens)
+		{
+			for (int i = 0; i < tokens.Length; i++) {
+				int token = tokens[i];
+				int next = lexer.NextToken().Kind;
+				Assert.AreEqual(token, next, "{2} {0} != {1}", Tokens.GetTokenString(token), Tokens.GetTokenString(next), i);
+			}
 		}
 	}
 }
