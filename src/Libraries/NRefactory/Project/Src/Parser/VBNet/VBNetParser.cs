@@ -168,8 +168,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			True, if ident is followed by "=" or by ":" and "="
 		 */
 		bool IsNamedAssign() {
-			if(Peek(1).kind == Tokens.Colon && Peek(2).kind == Tokens.Assign) return true;
-			return false;
+			return Peek(1).kind == Tokens.ColonAssign;
 		}
 
 		bool IsObjectCreation() {

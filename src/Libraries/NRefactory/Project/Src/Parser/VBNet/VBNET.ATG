@@ -358,7 +358,7 @@ NamespaceMemberDecl
 		List<AttributeSection> attributes = new List<AttributeSection>();
 		string qualident;
 	.) =
-	"Namespace"
+	("Namespace"
 	(.
 		Location startPos = t.Location;
 	.)
@@ -375,9 +375,9 @@ NamespaceMemberDecl
 		node.EndLocation = t.Location;
 		compilationUnit.BlockEnd();
 	.)
-	|
+	) | (
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
-	{ TypeModifier<m> } NonModuleDeclaration<m, attributes>
+	{ TypeModifier<m> } NonModuleDeclaration<m, attributes> )
 	.
 
 /* 4.9.1 */
@@ -2446,7 +2446,7 @@ Argument<out Expression argumentexpr>
 		argumentexpr = null;
 		string name;
 	.) =
-	IF(IsNamedAssign()) Identifier (. name = t.val;  .) ":" "=" Expr<out expr>
+	IF(IsNamedAssign()) Identifier (. name = t.val;  .) ":=" Expr<out expr>
 	(.
 		argumentexpr = new NamedArgumentExpression(name, expr);
 	.)
@@ -2631,7 +2631,7 @@ AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> na
 			[
 				IF (IsNamedAssign()) (. nameFound = true; .)
 				IdentifierOrKeyword<out name>
-				[":"] "="
+				( ":=" | "=" )
 			] Expr<out expr>
 				(.
 					if (expr != null) {
@@ -2644,7 +2644,7 @@ AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> na
 					(
 						IF (IsNamedAssign())	(. nameFound = true; .)
 						IdentifierOrKeyword<out name>
-						[ ":" ] "="
+						( ":=" | "=" )
 						| (. if (nameFound) Error("no positional argument after named argument"); .)
 					) Expr<out expr>	(. 	if (expr != null) { if(name == "") positional.Add(expr);
 											else { named.Add(new NamedArgumentExpression(name, expr)); name = ""; }

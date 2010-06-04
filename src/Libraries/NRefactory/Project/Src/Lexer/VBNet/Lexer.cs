@@ -893,6 +893,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					return new Token(Tokens.Power, x, y);
 				case ':':
+					if (ReaderPeek() == '=') {
+						ReaderRead();
+						return new Token(Tokens.ColonAssign, x, y);
+					}
 					return new Token(Tokens.Colon, x, y);
 				case '=':
 					return new Token(Tokens.Assign, x, y);
