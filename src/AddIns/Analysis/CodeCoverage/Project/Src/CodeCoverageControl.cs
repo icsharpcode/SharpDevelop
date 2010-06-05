@@ -5,14 +5,17 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Windows.Forms.Integration;
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -22,7 +25,9 @@ namespace ICSharpCode.CodeCoverage
 		ListView listView;
 		SplitContainer verticalSplitContainer;
 		SplitContainer horizontalSplitContainer;
-		TextEditorControl textEditorControl;
+		ElementHost textEditorHost;
+		TextEditor textEditor;
+		string textEditorFileName;
 		ColumnHeader visitCountColumnHeader;
 		ColumnHeader startLineColumnHeader;
 		ColumnHeader endLineColumnHeader;
@@ -55,9 +60,9 @@ namespace ICSharpCode.CodeCoverage
 			if (listView != null) {
 				listView.Items.Clear();
 			}
-			if (textEditorControl != null) {
-				textEditorControl.FileName = null;
-				textEditorControl.Text = String.Empty;
+			if (textEditor != null) {
+				textEditorFileName = null;
+				textEditor.Text = String.Empty;
 			}
 		}
 		
@@ -150,15 +155,15 @@ namespace ICSharpCode.CodeCoverage
 			// Add text editor
 			if (showSourceCodePanel) {
 				if (showVisitCountPanel) {
-					if (verticalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
-						verticalSplitContainer.Panel2.Controls.Remove(textEditorControl);
+					if (verticalSplitContainer.Panel2.Controls.Contains(textEditorHost)) {
+						verticalSplitContainer.Panel2.Controls.Remove(textEditorHost);
 					}
-					if (!horizontalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
-						horizontalSplitContainer.Panel2.Controls.Add(textEditorControl);
+					if (!horizontalSplitContainer.Panel2.Controls.Contains(textEditorHost)) {
+						horizontalSplitContainer.Panel2.Controls.Add(textEditorHost);
 					}
 				} else {
-					if (!verticalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
-						verticalSplitContainer.Panel2.Controls.Add(textEditorControl);
+					if (!verticalSplitContainer.Panel2.Controls.Contains(textEditorHost)) {
+						verticalSplitContainer.Panel2.Controls.Add(textEditorHost);
 					}
 				}
 			}
@@ -203,7 +208,7 @@ namespace ICSharpCode.CodeCoverage
 			if (listView != null) {
 				UpdateListView(node);
 			} 
-			if (textEditorControl != null) {
+			if (textEditor != null) {
 				UpdateTextEditor(node);
 			}
 		}
@@ -304,13 +309,13 @@ namespace ICSharpCode.CodeCoverage
 		
 		void OpenFile(string fileName, int line, int column)
 		{
-			if (fileName != textEditorControl.FileName) {
-				textEditorControl.LoadFile(fileName, true, true); 
+			if (fileName != textEditorFileName) {
+				textEditor.Load(fileName); 
 			}
-			textEditorControl.ActiveTextAreaControl.ScrollTo(int.MaxValue);
-			textEditorControl.ActiveTextAreaControl.Caret.Line = line - 1;
-			textEditorControl.ActiveTextAreaControl.ScrollToCaret(); 
-			CodeCoverageService.ShowCodeCoverage(new TextEditorAdapter(textEditorControl), fileName);
+			textEditor.ScrollToEnd();
+			textEditor.TextArea.Caret.Line = line - 1;
+			textEditor.ScrollToLine(line - 1); 
+			CodeCoverageService.ShowCodeCoverage(new AvalonEditTextEditorAdapter(textEditor), fileName);
 		}
 		
 		void CreateTreeView()
@@ -467,8 +472,8 @@ namespace ICSharpCode.CodeCoverage
 				horizontalSplitContainer.Panel1.Controls.Remove(listView);
 			}
 			
-			if (textEditorControl != null && horizontalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
-				horizontalSplitContainer.Panel2.Controls.Remove(textEditorControl);
+			if (textEditor != null && horizontalSplitContainer.Panel2.Controls.Contains(textEditorHost)) {
+				horizontalSplitContainer.Panel2.Controls.Remove(textEditorHost);
 			}
 			
 			if (verticalSplitContainer != null && verticalSplitContainer.Panel2.Controls.Contains(horizontalSplitContainer)) {
@@ -481,41 +486,43 @@ namespace ICSharpCode.CodeCoverage
 		
 		void CreateTextEditor()
 		{
-			if (textEditorControl != null) {
+			if (textEditorHost != null) {
 				return;
 			}
 			
-			textEditorControl = new TextEditorControl();
-			textEditorControl.Dock = DockStyle.Fill;
-			textEditorControl.Document.ReadOnly = true;
-			textEditorControl.TextEditorProperties = SharpDevelopTextEditorProperties.Instance;
-			textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
+			textEditor = AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
+			textEditor.IsReadOnly = true;
+			textEditor.MouseDoubleClick += TextEditorDoubleClick;
+			
+			textEditorHost = new ElementHost();
+			textEditorHost.Dock = DockStyle.Fill;
+			textEditorHost.Child = textEditor;
 		}
 		
 		void DisposeTextEditor()
 		{
-			if (textEditorControl == null) {
+			if (textEditorHost == null) {
 				return;
 			}
 			
-			if (verticalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
-				verticalSplitContainer.Panel2.Controls.Remove(textEditorControl);
+			if (verticalSplitContainer.Panel2.Controls.Contains(textEditorHost)) {
+				verticalSplitContainer.Panel2.Controls.Remove(textEditorHost);
 			}
 			
-			if (horizontalSplitContainer != null && horizontalSplitContainer.Panel2.Controls.Contains(textEditorControl)) {
-				horizontalSplitContainer.Panel2.Controls.Remove(textEditorControl);
+			if (horizontalSplitContainer != null && horizontalSplitContainer.Panel2.Controls.Contains(textEditorHost)) {
+				horizontalSplitContainer.Panel2.Controls.Remove(textEditorHost);
 			}
 			
-			textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick -= TextEditorControlDoubleClick;
-			textEditorControl.Dispose();
-			textEditorControl = null;
+			textEditor.MouseDoubleClick -= TextEditorDoubleClick;
+			textEditorHost.Dispose();
+			textEditorHost = null;
 		}
 		
-		void TextEditorControlDoubleClick(object sender, EventArgs e)
+		void TextEditorDoubleClick(object sender, EventArgs e)
 		{
-			string fileName = textEditorControl.FileName;
+			string fileName = textEditorFileName;
 			if (fileName != null) {
-				Caret caret = textEditorControl.ActiveTextAreaControl.Caret;
+				Caret caret = textEditor.TextArea.Caret;
 				FileService.JumpToFilePosition(fileName, caret.Line + 1, caret.Column + 1);
 			}
 		}
