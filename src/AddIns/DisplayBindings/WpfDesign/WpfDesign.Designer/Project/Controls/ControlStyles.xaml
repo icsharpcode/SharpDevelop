@@ -469,5 +469,24 @@
             </Setter.Value>
         </Setter>
     </Style>
-	
+	<Style TargetType="{x:Type Controls:InPlaceEditor}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:InPlaceEditor}">
+                    <TextBox Name="editor"
+                             SnapsToDevicePixels="True"
+                             Padding="{Binding Path=Padding}"    
+                             FontSize="{Binding Path=FontSize}"
+                             FontFamily="{Binding Path=FontFamily}"
+                             FontStyle="{Binding Path=FontStyle}"
+                             FontStretch="{Binding Path=FontStretch}"
+                             FontWeight="{Binding Path=FontWight}"  
+                             Text="{Binding Path=Bind, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True"
+                             MaxHeight="{Binding Path=Height, UpdateSourceTrigger=PropertyChanged}"
+                             MaxWidth="{Binding Path=Width, UpdateSourceTrigger=PropertyChanged}"/>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 </ResourceDictionary>
