@@ -32,20 +32,41 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		}
 		
 		[Test]
-		[IgnoreAttribute]
-		public void Can_Compile_Simple_FieldReference()
+		
+		public void Return_FieldName_If_DataNavigator_Invalid()
 		{
-			const string expression = "=Fields!Field1";
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("Field1"));
+			const string expression = "=Fields!Name";
+			this.singlePage.IDataNavigator.Reset();
+			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("Name"));
 		}
 		
 		
 		[Test]
-		[IgnoreAttribute]
-		public void Can_Compile_Missspelled_Simple_FieldReference()
+		public void Can_Compile_Misspelled_Simple_FieldReference()
 		{
-			const string expression = "=fields!Field1";
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("Field1"));
+			const string expression = "=fields!Name";
+			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("Name"));
+		}
+		
+		
+		[Test]
+		public void Evaluate_If_DataNavigator_Is_Invalid()
+		{
+			const string expression = "=Fields!Name";
+			this.singlePage.IDataNavigator.MoveNext();
+			DataRow row = testTable.Rows[0];
+			string testVal = row["Name"].ToString();
+			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo(testVal));          
+		}
+		
+		
+		
+		[Test]
+		[Ignore]
+		public void Unkown_ColumnName ()
+		{
+			const string expression = "=Fields!Unknown";
+			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo("Name"));
 		}
 		
 		
@@ -54,7 +75,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		public void ExtractFieldbyName ()
 		{
 			const string expression = "=Fields!Name";
-//			Console.WriteLine("{0} - {1}",expression,evaluator.Evaluate(expression));
 			Assert.That(this.evaluator.Evaluate(expression),
 			            Is.EqualTo(this.testTable.Rows.Count.ToString()));
 		}
@@ -69,11 +89,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 			AggregateFuctionHelper ah = new AggregateFuctionHelper();
 			this.testTable = ah.AggregateTable;
 			
-//			foreach (DataRow r in this.testTable.Rows)
-//			{
-////				this.intResult = this.intResult + Convert.ToInt16(r["IntValue"]);
-////				this.doubleResult = this.doubleResult + Convert.ToDouble(r["Amount"]);
-//			}
 			
 			this.dataManager = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.testTable, new ReportSettings());
 			this.singlePage.IDataNavigator = this.dataManager.GetNavigator;

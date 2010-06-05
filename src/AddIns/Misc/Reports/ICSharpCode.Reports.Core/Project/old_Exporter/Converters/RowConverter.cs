@@ -71,9 +71,14 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				base.SaveSize(section.Items[0].Size);
 				
-				base.FillAndLayoutRow(simpleContainer);
+				
+				base.FillRow(simpleContainer);
+				base.LayoutRow(simpleContainer);
+				
 				base.FireSectionRendering(section);
 				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+				
+				EvaluateRow(mylist);
 				
 				section.Items[0].Size = base.RestoreSize;
 				section.SectionOffset += section.Size.Height + 2 * base.SinglePage.SectionBounds.Gap;

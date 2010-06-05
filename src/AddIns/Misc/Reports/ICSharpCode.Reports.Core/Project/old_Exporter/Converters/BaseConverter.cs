@@ -10,6 +10,7 @@ using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.old_Exporter
 {
@@ -28,6 +29,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		private IExportItemsConverter exportItemsConverter;
 		private ILayouter layouter;
 		private Size saveSize;
+	IExpressionEvaluatorFacade evaluator;
 	
 		public event EventHandler <NewPageEventArgs> PageFull;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
@@ -53,9 +55,17 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			this.sectionBounds = this.singlePage.SectionBounds;
 			this.exportItemsConverter = exportItemsConverter;
 			this.layouter = layouter;
+			this.evaluator = SetupEvaluator ();
 		}
 		
-		
+		private IExpressionEvaluatorFacade  SetupEvaluator ()
+		{
+			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
+			evaluatorFacade.SinglePage = this.singlePage;
+			evaluatorFacade.SinglePage.IDataNavigator = this.dataNavigator;
+			return evaluatorFacade;
+		}
+			
 		protected void FirePageFull (ExporterCollection items)
 		{
 			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));
@@ -148,10 +158,30 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-		protected void FillAndLayoutRow (ISimpleContainer row)
+		protected void FillRow (ISimpleContainer row)
 		{
 			DataNavigator.Fill(row.Items);
+		}
+		
+		
+		
+		protected void LayoutRow (ISimpleContainer row)
+		{
+
 			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
+		}
+		
+		
+		protected void EvaluateRow(ExporterCollection row)
+		{
+			foreach (BaseExportColumn element in row) {
+				ExportText textItem = element as ExportText;
+				
+				if (textItem != null) {
+					Console.WriteLine (textItem.Text);
+						textItem.Text = evaluator.Evaluate(textItem.Text);
+				}
+			}
 		}
 		
 		

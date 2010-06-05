@@ -76,7 +76,10 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 							//
 							BaseSection section = this.baseTable.Parent as BaseSection;
 							section.Location = new Point(section.Location.X,section.SectionOffset );
-							base.FillAndLayoutRow(simpleContainer);
+							
+							base.FillRow(simpleContainer);
+							base.LayoutRow(simpleContainer);
+
 							
 							if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y),simpleContainer.Size),base.SectionBounds)) {
 								base.FirePageFull(mylist);
@@ -88,6 +91,9 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 							}
 							
 							currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+							
+							EvaluateRow(mylist);
+							
 							simpleContainer.Size = base.RestoreSize;
 						}
 						while (base.DataNavigator.MoveNext());

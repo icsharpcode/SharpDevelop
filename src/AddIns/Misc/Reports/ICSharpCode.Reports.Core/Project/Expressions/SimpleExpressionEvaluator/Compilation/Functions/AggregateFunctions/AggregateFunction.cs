@@ -1,10 +1,12 @@
-﻿using ICSharpCode.Reports.Core;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using SimpleExpressionEvaluator.Evaluation;
 using System.Globalization;
+
+using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Interfaces;
+using SimpleExpressionEvaluator.Evaluation;
 
 namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
 {
@@ -170,7 +172,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         
         private IDataNavigator NavigatorFromContext (IExpressionContext context)
         {
-        	SinglePage p = context.ContextObject as SinglePage;
+        	ISinglePage p = context.ContextObject as ISinglePage;
         	if (p != null) {
         		return p.IDataNavigator;
         	}

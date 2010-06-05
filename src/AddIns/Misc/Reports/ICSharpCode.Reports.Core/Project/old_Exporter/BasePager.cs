@@ -221,6 +221,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		private void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{
+			
 			foreach (BaseExportColumn be in items) {
 				IExportContainer ec = be as IExportContainer;
 				if (ec != null)
@@ -234,6 +235,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 					et.Text = evaluatorFassade.Evaluate(et.Text);
 				}
 			}
+			
 		}
 		
 		
