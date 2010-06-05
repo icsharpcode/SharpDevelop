@@ -107,6 +107,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 									ReaderRead();
 									return new Token(Tokens.XmlStartInlineVB, x, y);
 								}
+								if (ReaderPeek() == '?') {
+									ReaderRead();
+									return new Token(Tokens.XmlProcessingInstructionStart, x, y);
+								}
 								if (ReaderPeek() == '!') {
 									ReaderRead();
 									Token token = ReadXmlCommentOrCData(x, y);
@@ -132,7 +136,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 									return new Token(Tokens.XmlEndInlineVB, x, y);
 								}
 								break;
-								case '>':                   /* workaround for XML Imports */
+							case '?':
+								if (ReaderPeek() == '>') {
+									ReaderRead();
+									return new Token(Tokens.XmlProcessingInstructionEnd, x, y);
+								}
+								break;
+							case '>':
+														/* workaround for XML Imports */
 								if (inXmlCloseTag || (inXmlTag && ef.CurrentContext == Context.Global))
 									level--;
 								wasComment = false;

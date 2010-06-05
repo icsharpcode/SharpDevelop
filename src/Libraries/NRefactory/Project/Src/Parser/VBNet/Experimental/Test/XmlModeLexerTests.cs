@@ -18,20 +18,7 @@ namespace VBParserExperiment
 	[TestFixture]
 	public class XmlModeLexerTests
 	{
-		ILexer GenerateLexer(StringReader sr)
-		{
-			return ParserFactory.CreateLexer(SupportedLanguage.VBNet, sr);
-		}
-		
-		string TestStatement(string stmt)
-		{
-			return "Class Test\n" +
-				"Sub A()\n" +
-				stmt + "\n" +
-				"End Sub\n" +
-				"End Class";
-		}
-		
+		#region Xml Tests
 		[Test]
 		public void TagWithContent()
 		{
@@ -132,159 +119,62 @@ namespace VBParserExperiment
 			
 			CheckHead(lexer);
 			
-			Assert.AreEqual(Tokens.Dim, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Assign, lexer.NextToken().Kind);
-			
-			#region <menu>
-			// <menu>
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			#region <course>
-			// <course name=\"appetizer\">
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Assign, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.LiteralString, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// <dish>Shrimp Cocktail</dish>
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// <dish>Escargot</dish>
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// </course>
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			#endregion
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			#region <course>
-			// <course name=\"main\">
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Assign, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.LiteralString, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// <dish>Filet Mignon</dish>
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// <dish>Garlic Potatoes</dish>
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// <dish>Broccoli</dish>
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// </course>
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			#endregion
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			#region <course>
-			// <course name=\"dessert\">
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Assign, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.LiteralString, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// <dish>Chocolate Cheesecake</dish>
-			Assert.AreEqual(Tokens.XmlOpenTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// </course>
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			#endregion
-			
-			// whitespaces
-			Assert.AreEqual(Tokens.XmlContent, lexer.NextToken().Kind);
-			
-			// </menu>
-			Assert.AreEqual(Tokens.XmlOpenEndTag, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().Kind);
-			Assert.AreEqual(Tokens.XmlCloseTag, lexer.NextToken().Kind);
-			#endregion
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
+			            // <menu>
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // <course name=\"appetizer\">
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // <dish>Shrimp Cocktail</dish>
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // <dish>Escargot</dish>
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // </course>
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // <course name=\"main\">
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // <dish>Filet Mignon</dish>
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // <dish>Garlic Potatoes</dish>
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // <dish>Broccoli</dish>
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // </course>
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // <course name=\"dessert\">
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // <dish>Chocolate Cheesecake</dish>
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // </course>
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            // whitespaces
+			            Tokens.XmlContent,
+			            // </menu>
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag
+			           );
 			
 			CheckFoot(lexer);
 		}
@@ -435,26 +325,87 @@ namespace DefaultNamespace
 			
 			CheckFoot(lexer);
 		}
-
+		#endregion
+		
+		#region Context Tests
+		[Test]
+		public void MethodInvocation()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("DoSomething(<Test />, True)")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Identifier, Tokens.OpenParenthesis, Tokens.XmlOpenTag,
+			            Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Comma, Tokens.True,
+			            Tokens.CloseParenthesis);
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void AddHandlerStatement()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("AddHandler <Test />, True")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.AddHandler, Tokens.XmlOpenTag,
+			            Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Comma, Tokens.True);
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void RemoveHandlerStatement()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("RemoveHandler <Test />, <Data>5</Data>")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.RemoveHandler, Tokens.XmlOpenTag,
+			            Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Comma,
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag
+			           );
+			
+			CheckFoot(lexer);
+		}
+		#endregion
+		
+		#region Helpers
+		ILexer GenerateLexer(StringReader sr)
+		{
+			return ParserFactory.CreateLexer(SupportedLanguage.VBNet, sr);
+		}
+		
+		string TestStatement(string stmt)
+		{
+			return "Class Test\n" +
+				"Sub A\n" +
+				stmt + "\n" +
+				"End Sub\n" +
+				"End Class";
+		}
+		
 		void CheckFoot(ILexer lexer)
 		{
 			CheckTokens(lexer, Tokens.EOL, Tokens.End, Tokens.Sub, Tokens.EOL, Tokens.End, Tokens.Class);
 		}
-
+		
 		void CheckHead(ILexer lexer)
 		{
 			CheckTokens(lexer, Tokens.Class, Tokens.Identifier, Tokens.EOL,
-			            Tokens.Sub, Tokens.Identifier, Tokens.OpenParenthesis,
-			            Tokens.CloseParenthesis, Tokens.EOL);
+			            Tokens.Sub, Tokens.Identifier, Tokens.EOL);
 		}
 		
 		void CheckTokens(ILexer lexer, params int[] tokens)
 		{
 			for (int i = 0; i < tokens.Length; i++) {
 				int token = tokens[i];
-				int next = lexer.NextToken().Kind;
-				Assert.AreEqual(token, next, "{2} {0} != {1}", Tokens.GetTokenString(token), Tokens.GetTokenString(next), i);
+				Token t = lexer.NextToken();
+				int next = t.Kind;
+				Assert.AreEqual(token, next, "{2} of {3}: {0} != {1}; at {4}", Tokens.GetTokenString(token), Tokens.GetTokenString(next), i + 1, tokens.Length, t.Location);
 			}
 		}
+		#endregion
 	}
 }

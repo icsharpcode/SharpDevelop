@@ -30,7 +30,7 @@ exit Global
 			);
 		}
 		
-		[Test]
+		[Test, Ignore]
 		public void VariableWithXmlLiteral()
 		{
 			RunTest(
@@ -58,7 +58,7 @@ exit Global
 			);
 		}
 		
-		[Test]
+		[Test, Ignore]
 		public void MemberWithXmlLiteral()
 		{
 			RunTest(

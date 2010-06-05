@@ -30,6 +30,8 @@ XmlOpenEndTag
 XmlContent
 XmlComment
 XmlCData
+XmlProcessingInstructionStart
+XmlProcessingInstructionEnd
 
 # SPECIAL_CHARACTERS
 Assign = "="

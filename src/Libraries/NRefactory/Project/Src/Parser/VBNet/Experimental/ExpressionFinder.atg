@@ -31,6 +31,8 @@ TOKENS
 	XmlContent
 	XmlComment
 	XmlCData
+	XmlProcessingInstructionStart
+	XmlProcessingInstructionEnd
 
 	/* ----- special character ----- */
 	"="
@@ -302,7 +304,10 @@ MemberDeclaration =
 	{ AttributeBlock } { MemberModifier }
 	(
 		MemberVariableOrConstantDeclaration |
-		SubOrFunctionDeclaration
+		SubOrFunctionDeclaration |
+		ExternalMemberDeclaration |
+		EventMemberDeclaration |
+		OperatorDeclaration
 	)
 	(. PopContext(); .)
 .
@@ -313,6 +318,31 @@ SubOrFunctionDeclaration =
 	[ "(" [ ParameterList ] ")" ] [ "As" TypeName ]
 	Block
 	"End" ("Sub" | "Function") StatementTerminator
+.
+
+ExternalMemberDeclaration =
+	"Declare" [ "Ansi" | "Unicode" | "Auto" ] ( "Sub" | "Function" ) Identifier
+	"Lib" LiteralString [ "Alias" LiteralString ] [ "(" [ ParameterList ] ")" ] StatementTerminator
+.
+
+EventMemberDeclaration =
+	[ "Custom" ] "Event" Identifier ( "As" TypeName | [ "(" [ ParameterList ] ")" ] )
+	[ "Implements" TypeName "." IdentifierOrKeyword { "," TypeName "." IdentifierOrKeyword } ]
+	StatementTerminator
+	[
+		{
+			{ AttributeBlock } ( "AddHandler" | "RemoveHandler" | "RaiseEvent" ) "(" ParameterList ")" EOL
+			Block
+			"End" ( "AddHandler" | "RemoveHandler" | "RaiseEvent" ) StatementTerminator
+		}
+	"End" "Event" StatementTerminator
+	]
+.
+
+OperatorDeclaration =
+	"Operator" ANY "(" ParameterList ")" [ "As" { AttributeBlock } TypeName ] EOL
+	Block
+	"End" "Operator" StatementTerminator
 .
 
 MemberVariableOrConstantDeclaration =
@@ -344,7 +374,7 @@ Expression =
 	( Identifier [ "(" "Of" TypeName { "," TypeName } ")" ] ) |
 	( "AddressOf" Expression) |
 	
-	( XmlOpenTag (. PushContext(Context.Xml); .) ANY ">" (. PopContext(); .) )
+	( XmlOpenTag (. PushContext(Context.Xml); .) ANY XmlCloseTag (. PopContext(); .) )
 	)
 .
 
@@ -470,6 +500,9 @@ MemberModifier =
 	"Overloads" |
 	"Partial" |
 	"WithEvents" |
+	"MustOverride" |
+	"Widening" |
+	"Narrowing" |
 	"Dim"
 .
 
@@ -479,7 +512,6 @@ ParameterModifier =
     "Optional" |
     "ParamArray"
 .
-
 
 END ExpressionFinder.
 
