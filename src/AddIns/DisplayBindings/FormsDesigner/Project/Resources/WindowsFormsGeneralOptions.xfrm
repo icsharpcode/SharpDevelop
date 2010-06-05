@@ -5,10 +5,10 @@
     <Controls>
       <System.Windows.Forms.GroupBox>
         <Name value="propertyPadOptionsGroupBox" />
-        <Location value="8, 180" />
+        <Location value="8, 206" />
         <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PropertyGridGroupBox}" />
-        <Anchor value="Top, Left, Right" />
         <Size value="373, 56" />
+        <Anchor value="Top, Left, Right" />
         <TabIndex value="1" />
         <Controls>
           <System.Windows.Forms.CheckBox>
@@ -25,10 +25,18 @@
         <Name value="generalOptionsGroupBox" />
         <Location value="8, 8" />
         <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.GeneralOptionsGroupBox}" />
+        <Size value="373, 192" />
         <Anchor value="Top, Left, Right" />
-        <Size value="373, 166" />
         <TabIndex value="0" />
         <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="generateVSStyleHandlersCheckBox" />
+            <Location value="6, 162" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers}" />
+            <TabIndex value="4" />
+            <Size value="367, 24" />
+            <UseVisualStyleBackColor value="True" />
+          </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.CheckBox>
             <Name value="insertTodoCommentCheckBox" />
             <Location value="6, 136" />

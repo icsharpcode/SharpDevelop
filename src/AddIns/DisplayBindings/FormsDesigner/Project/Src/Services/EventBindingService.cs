@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-
+using ICSharpCode.FormsDesigner.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner.Services
@@ -26,7 +26,28 @@ namespace ICSharpCode.FormsDesigner.Services
 
 		protected override string CreateUniqueMethodName(IComponent component, EventDescriptor e)
 		{
-			return String.Format("{0}{1}", Char.ToUpper(component.Site.Name[0]) + component.Site.Name.Substring(1), e.DisplayName);
+			string componentName = GetComponentName(component);
+			return GetEventHandlerName(componentName, e.DisplayName);
+		}
+		
+		string GetComponentName(IComponent component)
+		{
+			string siteName = component.Site.Name;
+			return Char.ToUpper(siteName[0]) + siteName.Substring(1);
+		}
+		
+		string GetEventHandlerName(string componentName, string eventName)
+		{
+			string eventHandlerNameFormat = GetEventHandlerNameFormat();
+			return String.Format(eventHandlerNameFormat, componentName, eventName);
+		}
+		
+		string GetEventHandlerNameFormat()
+		{
+			if (GeneralOptionsPanel.GenerateVisualStudioStyleEventHandlers) {
+				return "{0}_{1}";
+			}
+			return "{0}{1}";
 		}
 
 		// sohuld look around in form class for compatiable methodes
