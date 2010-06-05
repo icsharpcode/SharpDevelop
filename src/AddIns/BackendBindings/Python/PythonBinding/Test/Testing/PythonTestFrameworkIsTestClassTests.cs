@@ -71,5 +71,12 @@ namespace PythonBinding.Tests.Testing
 			
 			Assert.IsTrue(testFramework.IsTestClass(c));
 		}
+		
+		[Test]
+		public void IsTestClassReturnsTrueWhenClassFirstBaseTypeIsUnitTest2TestCase()
+		{
+			MockClass c = MockClass.CreateClassWithBaseType("unittest2.TestCase");
+			Assert.IsTrue(testFramework.IsTestClass(c));
+		}
 	}
 }

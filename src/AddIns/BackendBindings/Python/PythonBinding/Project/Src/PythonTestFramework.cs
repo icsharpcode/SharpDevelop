@@ -36,7 +36,8 @@ namespace ICSharpCode.PythonBinding
 		bool HasTestCaseBaseType(IClass c)
 		{
 			if (c.BaseTypes.Count > 0) {
-				return c.BaseTypes[0].FullyQualifiedName == "unittest.TestCase";
+				string baseTypeName = c.BaseTypes[0].FullyQualifiedName;
+				return (baseTypeName == "unittest.TestCase") ||	(baseTypeName == "unittest2.TestCase");
 			}
 			return false;
 		}
