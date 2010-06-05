@@ -37,7 +37,9 @@ namespace MSHelpSystem.Controls
 			if (string.IsNullOrEmpty(term)) {
 				throw new ArgumentNullException("term");
 			}
-			if (searchTerms.IndexOf(term) < 0) searchTerms.Add(term);
+			searchCB.Text = "";
+			if (searchTerms.IndexOf(term) < 0) searchTerms.Insert(0,term);
+			else searchTerms.Move(searchTerms.IndexOf(term), 0);
 			DisplayHelp.Search(term);
 		}
 	}
