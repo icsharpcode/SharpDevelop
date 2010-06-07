@@ -24,41 +24,11 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         
         public override T Evaluate(IExpressionContext context)
         {
-        	
-        	if (context.ContextObject is SinglePage) {
+        	ISinglePage singlePage = context.ContextObject as ISinglePage;
+        	if (singlePage != null) {
         		return EvaluateSinglePage (context);
         	} else {
-        	
-        	var state = new AggregationState();
-
-            if (Arguments.Count > 0)
-            {
-                object data = Arguments[0] != null ? Arguments[0].Evaluate(context) : null;
-                state.DataSet = data as IEnumerable;
-            }
-
-            if (state.DataSet == null)
-            {
-                if (context.ContextObject is IEnumerable)
-                    state.DataSet = context.ContextObject as IEnumerable;
-                else
-                    return default(T);
-            }
-
-            if (Arguments.Count > 1)
-            {
-                state.ValueExpression = Arguments[1];
-            }
-
-            var args = new object[0];
-            if (Arguments.Count > 2)
-            {
-                args = new object[Arguments.Count - 2];
-                for (int i = 2; i < Arguments.Count; i++)
-                    args[i - 2] = Arguments[i].Evaluate(context);
-            }
-			
-            return EvaluateFunction(context,state,args);
+        		return EvaluateFromContext (context);
         	}
         }
         
@@ -102,23 +72,52 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         }
         
         
+        private T EvaluateFromContext(IExpressionContext context)
+        {
+        	var state = new AggregationState();
+
+            if (Arguments.Count > 0)
+            {
+                object data = Arguments[0] != null ? Arguments[0].Evaluate(context) : null;
+                state.DataSet = data as IEnumerable;
+            }
+
+            if (state.DataSet == null)
+            {
+                if (context.ContextObject is IEnumerable)
+                    state.DataSet = context.ContextObject as IEnumerable;
+                else
+                    return default(T);
+            }
+
+            if (Arguments.Count > 1)
+            {
+                state.ValueExpression = Arguments[1];
+            }
+
+            var args = new object[0];
+            if (Arguments.Count > 2)
+            {
+                args = new object[Arguments.Count - 2];
+                for (int i = 2; i < Arguments.Count; i++)
+                    args[i - 2] = Arguments[i].Evaluate(context);
+            }
+			
+            return EvaluateFunction(context,state,args);
+        }
+        
+        
         private List<object> SetupDataSource (object data,IDataNavigator navigator)
         {
         	navigator.Reset();
         	List<object> list = new List<object>();
         	while ( navigator.MoveNext()) {
         		CurrentItemsCollection row = navigator.GetDataRow();
-				CurrentItem ci = null;	
-        		if (data != null) {
-        			ci = row.Find(data.ToString());
-        		} else {
-					ci = row.Find(row[0].ColumnName);
-        		}
+        		CurrentItem currentItem = ExtractItemFromDataSet (row,data);
         		
-        		// s1 = Convert.ToString(row.Find(data.ToString()).Value.ToString(),CultureInfo.CurrentCulture);
-        		if (ci != null) {
+        		if (currentItem != null) {
         			
-        			object s1 = Convert.ToString(ci.Value.ToString(),CultureInfo.CurrentCulture);
+        			object s1 = Convert.ToString(currentItem.Value.ToString(),CultureInfo.CurrentCulture);
         			
         			if (IsNumeric(s1)) {
         				list.Add(Convert.ToDouble(s1,System.Globalization.CultureInfo.CurrentCulture));
@@ -129,54 +128,30 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         			string str = String.Format ("<{0}> not found in AggregateFunction",data.ToString());
         			throw new FieldNotFoundException(str);
         		}
-        		
-        		//        		s1 = Convert.ToString(ci.Value.ToString(),CultureInfo.CurrentCulture);
-//
-//
-        		//        		if (IsNumeric(s1)) {
-        		//        			list.Add(Convert.ToDouble(s1,System.Globalization.CultureInfo.CurrentCulture));
-        		//        		} else {
-        		//        			list.Add(true);
-        		//        		}
-        		
         	}
         	return list;
         }
         
-        /*
-        private List<object> SetupDataSource (object data,IDataNavigator navigator)
+        
+        
+        private CurrentItem  ExtractItemFromDataSet (CurrentItemsCollection row,object data)
         {
-        	navigator.Reset();
-        	List<object> list = new List<object>();
-        	while ( navigator.MoveNext()) {
-        		DataRow row = navigator.Current as DataRow;
-				//CurrentItemsCollection row = navigator.GetDataRow();
-
-
-        		object s1 = null;
-        		if (data == null) {
-        			s1 = Convert.ToString(row.ItemArray[0],System.Globalization.CultureInfo.InvariantCulture);
-        		} else {
-        			s1 = Convert.ToString(row[data.ToString()].ToString(),CultureInfo.CurrentCulture);
-        		}
-        		
-        		if (IsNumeric(s1)) {
-        			list.Add(Convert.ToDouble(s1,System.Globalization.CultureInfo.CurrentCulture));
-        		} else {
-        			list.Add(true);
-        		}
+        	CurrentItem currentItem = null;
+        	if (data != null)
+        	{
+        		currentItem = row.Find(data.ToString());
+        	} else {
+        		currentItem = row.Find(row[0].ColumnName);
         	}
-        	return list;
+        	return currentItem;
         }
-        */
+        
+        
         
         private IDataNavigator NavigatorFromContext (IExpressionContext context)
         {
         	ISinglePage p = context.ContextObject as ISinglePage;
-        	if (p != null) {
-        		return p.IDataNavigator;
-        	}
-        	return null;
+        	return p.IDataNavigator;
         }
         
         

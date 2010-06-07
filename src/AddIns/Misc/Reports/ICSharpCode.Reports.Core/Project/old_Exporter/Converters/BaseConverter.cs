@@ -91,15 +91,12 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			if (exportLineBuilder != null) {
 
 				ExportContainer lineItem = this.exportItemsConverter.ConvertToContainer(offset,row);
+				
 				BaseReportItem baseReportItem = row as BaseReportItem;
 
 				this.exportItemsConverter.ParentRectangle = new Rectangle(baseReportItem.Location,baseReportItem.Size);
-				if (baseReportItem.BackColor != GlobalValues.DefaultBackColor) {
-					foreach (BaseReportItem i in row.Items) {
-						i.BackColor = baseReportItem.BackColor;
-					}
-				}
-				
+				AdjustBackColor (row,baseReportItem);
+
 				ExporterCollection list = this.exportItemsConverter.ConvertSimpleItems(offset,row.Items);
 					
 				lineItem.Items.AddRange(list);
@@ -111,6 +108,16 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			return null;
 		}
 		
+		
+		private void AdjustBackColor (ISimpleContainer container,BaseReportItem item)
+		{
+			if (item.BackColor != GlobalValues.DefaultBackColor) {
+					foreach (BaseReportItem i in container.Items) {
+						i.BackColor = item.BackColor;
+					}
+				}
+		}
+			
 		
 		#region IBaseConverter
 		
