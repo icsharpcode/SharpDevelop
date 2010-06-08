@@ -2945,9 +2945,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		void OutputAnonymousMethodWithStatementBody(List<ParameterDeclarationExpression> parameters, BlockStatement body)
+		void OutputAnonymousMethodWithStatementBody(List<ParameterDeclarationExpression> parameters, Statement body)
 		{
-			Error("VB does not support anonymous methods/lambda expressions with a statement body", body.StartLocation);
+			//Error("VB does not support anonymous methods/lambda expressions with a statement body", body.StartLocation);
 			
 			outputFormatter.PrintToken(Tokens.Function);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);

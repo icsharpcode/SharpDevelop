@@ -1066,6 +1066,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((lambdaExpression.Parameters != null));
 			Debug.Assert((lambdaExpression.StatementBody != null));
 			Debug.Assert((lambdaExpression.ExpressionBody != null));
+			Debug.Assert((lambdaExpression.ReturnType != null));
 			for (int i = 0; i < lambdaExpression.Parameters.Count; i++) {
 				ParameterDeclarationExpression o = lambdaExpression.Parameters[i];
 				Debug.Assert(o != null);
@@ -1079,10 +1080,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			}
 			nodeStack.Push(lambdaExpression.StatementBody);
 			lambdaExpression.StatementBody.AcceptVisitor(this, data);
-			lambdaExpression.StatementBody = ((BlockStatement)(nodeStack.Pop()));
+			lambdaExpression.StatementBody = ((Statement)(nodeStack.Pop()));
 			nodeStack.Push(lambdaExpression.ExpressionBody);
 			lambdaExpression.ExpressionBody.AcceptVisitor(this, data);
 			lambdaExpression.ExpressionBody = ((Expression)(nodeStack.Pop()));
+			nodeStack.Push(lambdaExpression.ReturnType);
+			lambdaExpression.ReturnType.AcceptVisitor(this, data);
+			lambdaExpression.ReturnType = ((TypeReference)(nodeStack.Pop()));
 			return null;
 		}
 		

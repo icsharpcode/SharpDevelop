@@ -2638,8 +2638,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				TrackVisit(lambdaExpression.ExpressionBody, null);
 			}
-			if (!lambdaExpression.StatementBody.IsNull) {
-				OutputBlockAllowInline(lambdaExpression.StatementBody, this.prettyPrintOptions.MethodBraceStyle, false);
+			if (!lambdaExpression.StatementBody.IsNull && lambdaExpression.StatementBody is BlockStatement) {
+				OutputBlockAllowInline(lambdaExpression.StatementBody as BlockStatement, this.prettyPrintOptions.MethodBraceStyle, false);
 			}
 			return null;
 		}

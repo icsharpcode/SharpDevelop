@@ -184,8 +184,9 @@ namespace NRefactoryASTGenerator.Ast
 	[IncludeMember("public Location ExtendedEndLocation { get; set; }")]
 	class LambdaExpression : Expression {
 		List<ParameterDeclarationExpression> parameters;
-		BlockStatement statementBody;
+		Statement statementBody;
 		Expression expressionBody;
+		TypeReference returnType;
 	}
 	
 	class CheckedExpression : Expression {

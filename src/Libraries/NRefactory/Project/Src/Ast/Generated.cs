@@ -2611,9 +2611,11 @@ namespace ICSharpCode.NRefactory.Ast {
 		
 		List<ParameterDeclarationExpression> parameters;
 		
-		BlockStatement statementBody;
+		Statement statementBody;
 		
 		Expression expressionBody;
+		
+		TypeReference returnType;
 		
 		public List<ParameterDeclarationExpression> Parameters {
 			get {
@@ -2624,12 +2626,12 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public BlockStatement StatementBody {
+		public Statement StatementBody {
 			get {
 				return statementBody;
 			}
 			set {
-				statementBody = value ?? BlockStatement.Null;
+				statementBody = value ?? Statement.Null;
 				if (!statementBody.IsNull) statementBody.Parent = this;
 			}
 		}
@@ -2644,10 +2646,21 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
+		public TypeReference ReturnType {
+			get {
+				return returnType;
+			}
+			set {
+				returnType = value ?? TypeReference.Null;
+				if (!returnType.IsNull) returnType.Parent = this;
+			}
+		}
+		
 		public LambdaExpression() {
 			parameters = new List<ParameterDeclarationExpression>();
-			statementBody = BlockStatement.Null;
+			statementBody = Statement.Null;
 			expressionBody = Expression.Null;
+			returnType = TypeReference.Null;
 		}
 		
 public Location ExtendedEndLocation { get; set; }
@@ -2657,7 +2670,8 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[LambdaExpression Parameters={0} StatementBody={1} ExpressionBody={2}]", GetCollectionString(Parameters), StatementBody, ExpressionBody);
+			return string.Format("[LambdaExpression Parameters={0} StatementBody={1} ExpressionBody={2} ReturnType=" +
+					"{3}]", GetCollectionString(Parameters), StatementBody, ExpressionBody, ReturnType);
 		}
 	}
 	

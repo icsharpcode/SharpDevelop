@@ -19,10 +19,31 @@ namespace ICSharpCode.NRefactory.Parser.VB
 	internal sealed partial class Parser : AbstractParser
 	{
 		Lexer lexer;
+		Stack<INode> blockStack;
 		
 		public Parser(ILexer lexer) : base(lexer)
 		{
 			this.lexer = (Lexer)lexer;
+			this.blockStack = new Stack<INode>();
+		}
+		
+		void BlockStart(INode block)
+		{
+			blockStack.Push(block);
+		}
+		
+		void BlockEnd()
+		{
+			blockStack.Pop();
+		}
+		
+		void AddChild(INode childNode)
+		{
+			if (childNode != null) {
+				INode parent = (INode)blockStack.Peek();
+				parent.Children.Add(childNode);
+				childNode.Parent = parent;
+			}
 		}
 		
 		private StringBuilder qualidentBuilder = new StringBuilder();
@@ -111,13 +132,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		public override List<INode> ParseTypeMembers()
 		{
-			lexer.NextToken();
-			compilationUnit = new CompilationUnit();
-			
+			lexer.NextToken();			
 			TypeDeclaration newType = new TypeDeclaration(Modifiers.None, null);
-			compilationUnit.BlockStart(newType);
+			BlockStart(newType);
 			ClassBody(newType);
-			compilationUnit.BlockEnd();
+			BlockEnd();
 			Expect(Tokens.EOF);
 			newType.AcceptVisitor(new SetParentVisitor(), null);
 			return newType.Children;

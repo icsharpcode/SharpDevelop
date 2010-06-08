@@ -256,7 +256,7 @@ TOKENS
 PRODUCTIONS
 /*------------------------------------------------------------------------*/
 ExpressionFinder =
-	(. PushContext(Context.Global); .)
+	(. PushContext(Context.Global, t); .)
 	{ OptionStatement }
 	{ ImportsStatement }
 	{ AttributeBlock }
@@ -275,7 +275,7 @@ ImportsStatement =
 .
 
 AttributeBlock =
-	"<" (. PushContext(Context.Attribute); .) { ANY } ">" (. PopContext(); .) [ EOL ]
+	"<" (. PushContext(Context.Attribute, t); .) { ANY } ">" (. PopContext(); .) [ EOL ]
 .
 
 NamespaceMemberDeclaration =
@@ -293,14 +293,14 @@ TypeDeclaration =
 	{ AttributeBlock }
 	{ TypeModifier }
 	( "Module" |  "Class" ) { ANY } StatementTerminator
-	(. PushContext(Context.Type); .)
+	(. PushContext(Context.Type, t); .)
 	{ MemberDeclaration }
 	"End" ( "Module" | "Class" ) StatementTerminator
 	(. PopContext(); .)
 .
 
 MemberDeclaration =
-	(. PushContext(Context.Member); .)
+	(. PushContext(Context.Member, t); .)
 	{ AttributeBlock } { MemberModifier }
 	(
 		MemberVariableOrConstantDeclaration |
@@ -314,7 +314,7 @@ MemberDeclaration =
 
 SubOrFunctionDeclaration = 
 	("Sub" | "Function")
-	(. PushContext(Context.IdentifierExpected); .) ANY (. PopContext(); .)
+	(. PushContext(Context.IdentifierExpected, t); .) ANY (. PopContext(); .)
 	[ "(" [ ParameterList ] ")" ] [ "As" TypeName ]
 	Block
 	"End" ("Sub" | "Function") StatementTerminator
@@ -358,7 +358,7 @@ Parameter =
 .
 
 Block =
-	(. PushContext(Context.Body); .)
+	(. PushContext(Context.Body, t); .)
 	StatementTerminator
 	{ StatementTerminator }
 	{ Statement }
@@ -374,7 +374,7 @@ Expression =
 	( Identifier [ "(" "Of" TypeName { "," TypeName } ")" ] ) |
 	( "AddressOf" Expression) |
 	
-	( XmlOpenTag (. PushContext(Context.Xml); .) ANY XmlCloseTag (. PopContext(); .) )
+	( XmlOpenTag (. PushContext(Context.Xml, t); .) ANY XmlCloseTag (. PopContext(); .) )
 	)
 .
 
@@ -438,7 +438,7 @@ ArgumentList =
 
 /* This production handles pseudo keywords that are needed in the grammar */
 Identifier =
-	(. PushContext(Context.IdentifierExpected); .)
+	(. PushContext(Context.IdentifierExpected, t); .)
 	(
 		IdentifierForFieldDeclaration
 	|

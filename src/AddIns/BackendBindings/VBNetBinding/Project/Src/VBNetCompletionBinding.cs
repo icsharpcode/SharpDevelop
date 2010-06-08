@@ -59,7 +59,7 @@ namespace VBNetBinding
 					prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 				}
 				if (!char.IsLetterOrDigit(prevChar) && prevChar != '.' && !IsInComment(editor)) {
-					VBExpressionFinder ef = new VBExpressionFinder();
+					VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
 					ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
 					LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
 					if (result.Context != ExpressionContext.IdentifierExpected) {

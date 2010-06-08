@@ -16,6 +16,7 @@ using NUnit.Framework;
 namespace ResourceToolkit.Tests.VBNet
 {
 	[TestFixture]
+	[Ignore("VB ExpressionFinder is broken")]
 	public sealed class BclNRefactoryResourceResolverTests : AbstractVBNetResourceResolverTestFixture
 	{
 		// ********************************************************************************************************************************

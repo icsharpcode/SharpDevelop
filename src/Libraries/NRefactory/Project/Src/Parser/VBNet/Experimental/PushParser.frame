@@ -54,6 +54,7 @@ partial class ExpressionFinder {
 	public void InformToken(Token t) 
 	{
 		nextTokenIsPotentialStartOfXmlMode = false;
+		ApplyToken(t);
 		-->informToken
 	}
 	

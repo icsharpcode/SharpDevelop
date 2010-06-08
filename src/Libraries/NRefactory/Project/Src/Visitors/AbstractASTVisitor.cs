@@ -597,12 +597,14 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((lambdaExpression.Parameters != null));
 			Debug.Assert((lambdaExpression.StatementBody != null));
 			Debug.Assert((lambdaExpression.ExpressionBody != null));
+			Debug.Assert((lambdaExpression.ReturnType != null));
 			foreach (ParameterDeclarationExpression o in lambdaExpression.Parameters) {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
 			lambdaExpression.StatementBody.AcceptVisitor(this, data);
-			return lambdaExpression.ExpressionBody.AcceptVisitor(this, data);
+			lambdaExpression.ExpressionBody.AcceptVisitor(this, data);
+			return lambdaExpression.ReturnType.AcceptVisitor(this, data);
 		}
 		
 		public virtual object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data) {

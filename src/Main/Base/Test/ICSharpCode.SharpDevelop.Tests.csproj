@@ -101,7 +101,6 @@
     <Compile Include="Utils\MockTextMarkerService.cs" />
     <Compile Include="Utils\Tests\MockAssemblyTests.cs" />
     <Compile Include="VBExpressionFinderTests.cs" />
-    <Compile Include="VBNetExpressionFinderTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
     <Compile Include="WebReferences\WebReferenceProjectItemsTest.cs" />

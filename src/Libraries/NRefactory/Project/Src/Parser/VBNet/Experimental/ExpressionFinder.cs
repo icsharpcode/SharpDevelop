@@ -9,12 +9,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ICSharpCode.NRefactory.Parser.VB;
 
 namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 {
 	public partial class ExpressionFinder
 	{
-		Stack<Context> stack = new Stack<Context>();
+		Stack<Block> stack = new Stack<Block>();
 		StringBuilder output = new StringBuilder();
 		
 		void PopContext()
@@ -22,28 +23,59 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 			if (stack.Count > 0) {
 				string indent = new string('\t', stack.Count - 1);
 				var item = stack.Pop();
-				Print(indent + "exit " + item);
+				Print(indent + "exit " + item.context);
 			} else {
 				Print("empty stack");
 			}
 		}
 		
-		void PushContext(Context context)
+		void PushContext(Context context, Token token)
 		{
 			string indent = new string('\t', stack.Count);
-			stack.Push(context);
+			Location l = token == null ? Location.Empty : token.EndLocation;
+			
+			stack.Push(new Block() { context = context, lastExpressionStart = l });
 			Print(indent + "enter " + context);
 		}
 		
-		void SetContext(Context context)
+		void SetContext(Context context, Token token)
 		{
 			PopContext();
-			PushContext(context);
+			PushContext(context, token);
+		}
+		
+		void ApplyToken(Token token)
+		{
+			if (stack.Count == 0 || token == null)
+				return;
+			
+			Block current = stack.Peek();
+//			
+//			switch (token.kind) {
+//				case Tokens.EOL:
+//				case Tokens.Colon:
+//					current.lastExpressionStart = token.EndLocation;
+//					break;
+//				default:
+//					if (Tokens.IdentifierTokens[token.Kind]) {
+//						if (lastToken != Tokens.Dot) {
+//							if (Tokens.IdentifierTokens[lastToken]) {
+//								current.context = Context.Default;
+//							}
+//							current.lastExpressionStart = token.Location;
+//						}
+//					} else if (Tokens.SimpleTypeName[token.Kind] || Tokens.ExpressionStart[token.Kind] || token.Kind == Tokens.Literal) {
+//						current.lastExpressionStart = token.Location;
+//					} else {
+//						current.lastExpressionStart = Location.Empty;
+//						current.context = Context.Default;
+//					}
+//			}
 		}
 		
 		void Print(string text)
 		{
-			Console.WriteLine(text);
+			//Console.WriteLine(text);
 			output.AppendLine(text);
 		}
 		
@@ -51,8 +83,8 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 			get { return output.ToString(); }
 		}
 		
-		public Context CurrentContext {
-			get { return stack.Any() ? stack.Peek() : Context.Global; }
+		public Block CurrentBlock {
+			get { return stack.Any() ? stack.Peek() : Block.Default; }
 		}
 		
 		public bool NextTokenIsPotentialStartOfXmlMode {
@@ -69,6 +101,18 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		Body,
 		Xml,
 		Attribute,
-		Debug
+		Debug,
+		Default
+	}
+	
+	public class Block
+	{
+		public static readonly Block Default = new Block() {
+			context = Context.Global,
+			lastExpressionStart = Location.Empty
+		};
+		
+		public Context context;
+		public Location lastExpressionStart;
 	}
 }

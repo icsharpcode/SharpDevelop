@@ -144,7 +144,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								break;
 							case '>':
 														/* workaround for XML Imports */
-								if (inXmlCloseTag || (inXmlTag && ef.CurrentContext == Context.Global))
+								if (inXmlCloseTag || (inXmlTag && ef.CurrentBlock.context == Context.Global))
 									level--;
 								wasComment = false;
 								inXmlTag = inXmlCloseTag = false;

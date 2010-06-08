@@ -41,13 +41,14 @@ int currentState = 1;
 	public void InformToken(Token t) 
 	{
 		nextTokenIsPotentialStartOfXmlMode = false;
+		ApplyToken(t);
 		switchlbl: switch (currentState) {
 			case 0: {
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
 			case 1: { // start of ExpressionFinder
-				PushContext(Context.Global);
+				PushContext(Context.Global, t);
 				goto case 3;
 			}
 			case 2: {
@@ -188,7 +189,7 @@ int currentState = 1;
 				break;
 			}
 			case 25: {
-				PushContext(Context.Attribute);
+				PushContext(Context.Attribute, t);
 				goto case 27;
 			}
 			case 26: {
@@ -374,7 +375,7 @@ int currentState = 1;
 				goto case 13; // StatementTerminator
 			}
 			case 56: {
-				PushContext(Context.Type);
+				PushContext(Context.Type, t);
 				goto case 58;
 			}
 			case 57: {
@@ -434,7 +435,7 @@ int currentState = 1;
 				goto switchlbl;
 			}
 			case 66: { // start of MemberDeclaration
-				PushContext(Context.Member);
+				PushContext(Context.Member, t);
 				goto case 68;
 			}
 			case 67: {
@@ -557,7 +558,7 @@ int currentState = 1;
 				}
 			}
 			case 86: {
-				PushContext(Context.IdentifierExpected);
+				PushContext(Context.IdentifierExpected, t);
 				goto case 87;
 			}
 			case 87: {
@@ -1354,7 +1355,7 @@ int currentState = 1;
 				}
 			}
 			case 218: { // start of Block
-				PushContext(Context.Body);
+				PushContext(Context.Body, t);
 				goto case 219;
 			}
 			case 219: {
@@ -1526,7 +1527,7 @@ int currentState = 1;
 				break;
 			}
 			case 248: {
-				PushContext(Context.Xml);
+				PushContext(Context.Xml, t);
 				goto case 249;
 			}
 			case 249: {
@@ -2971,7 +2972,7 @@ int currentState = 1;
 				}
 			}
 			case 466: { // start of Identifier
-				PushContext(Context.IdentifierExpected);
+				PushContext(Context.IdentifierExpected, t);
 				goto case 469;
 			}
 			case 467: {

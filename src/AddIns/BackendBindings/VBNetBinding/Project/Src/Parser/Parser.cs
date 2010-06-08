@@ -37,7 +37,7 @@ namespace VBNetBinding.Parser
 		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
-			return new VBExpressionFinder();
+			return new VBNetExpressionFinder(ParserService.GetParseInformation(fileName));
 		}
 		
 		public bool CanParse(string fileName)
