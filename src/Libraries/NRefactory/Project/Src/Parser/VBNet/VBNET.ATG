@@ -2793,8 +2793,6 @@ FormalParameter<out ParameterDeclarationExpression p>
 					type.RankSpecifier = (int[])arrayModifiers.ToArray(typeof(int));
 				}
 			}
-		} else {
-			type = new TypeReference("System.Object", arrayModifiers == null ? null : (int[])arrayModifiers.ToArray(typeof(int)));
 		}
 	.)
 	[ "=" Expr<out expr> ]

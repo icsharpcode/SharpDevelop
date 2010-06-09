@@ -553,5 +553,42 @@ End Using");
 		{
 			TestTypeMember("Friend WithEvents Button1 As System.Windows.Forms.Button");
 		}
+		
+		[Test]
+		public void SimpleFunctionLambda()
+		{
+			TestExpression("Function(x) x * x");
+		}
+		
+		[Test]
+		public void SimpleFunctionLambdaWithType()
+		{
+			TestExpression("Function(x As Integer) x * x");
+		}
+		
+		[Test]
+		public void SimpleSubLambdaWithType()
+		{
+			TestExpression("Sub(x As Integer) Console.WriteLine(x)");
+		}
+		
+		[Test]
+		public void BlockSubLambdaWithType()
+		{
+			TestExpression("Sub(x As Integer)\n" +
+			               "	Console.WriteLine(x)\n" +
+			               "End Sub");
+		}
+		
+		[Test]
+		public void BlockFunctionLambdaWithType()
+		{
+			TestExpression("Function(x As Integer) As Integer\n" +
+			               "	If x < 2 Then\n" +
+			               "		Return x\n" +
+			               "	End If\n" +
+			               "	Return x * x\n" +
+			               "End Function");
+		}
 	}
 }

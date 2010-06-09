@@ -2932,22 +2932,51 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
-			if (!lambdaExpression.ExpressionBody.IsNull) {
+			bool isSub = !lambdaExpression.ReturnType.IsNull &&
+				lambdaExpression.ReturnType.Type == "System.Void" && lambdaExpression.ReturnType.IsKeyword;
+			
+			if (isSub)
+				outputFormatter.PrintToken(Tokens.Sub);
+			else
 				outputFormatter.PrintToken(Tokens.Function);
-				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				AppendCommaSeparatedList(lambdaExpression.Parameters);
-				outputFormatter.PrintToken(Tokens.CloseParenthesis);
-				outputFormatter.Space();
+			
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			AppendCommaSeparatedList(lambdaExpression.Parameters);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			
+			outputFormatter.Space();
+			
+			if (!lambdaExpression.ExpressionBody.IsNull) {
 				return lambdaExpression.ExpressionBody.AcceptVisitor(this, data);
 			} else {
-				OutputAnonymousMethodWithStatementBody(lambdaExpression.Parameters, lambdaExpression.StatementBody);
+				if (!isSub && !lambdaExpression.ReturnType.IsNull) {
+					outputFormatter.PrintToken(Tokens.As);
+					outputFormatter.Space();
+					TrackedVisit(lambdaExpression.ReturnType, data);
+				}
+				
+				if (lambdaExpression.StatementBody is BlockStatement)
+					outputFormatter.NewLine();
+				
+				TrackedVisit(lambdaExpression.StatementBody, data);
+				
+				if (lambdaExpression.StatementBody is BlockStatement) {
+					outputFormatter.NewLine();
+					outputFormatter.PrintToken(Tokens.End);
+					outputFormatter.Space();
+					if (isSub)
+						outputFormatter.PrintToken(Tokens.Sub);
+					else
+						outputFormatter.PrintToken(Tokens.Function);
+				}
+				
 				return null;
 			}
 		}
 		
 		void OutputAnonymousMethodWithStatementBody(List<ParameterDeclarationExpression> parameters, Statement body)
 		{
-			//Error("VB does not support anonymous methods/lambda expressions with a statement body", body.StartLocation);
+			Error("VB does not support anonymous methods/lambda expressions with a statement body", body.StartLocation);
 			
 			outputFormatter.PrintToken(Tokens.Function);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
