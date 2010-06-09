@@ -53,12 +53,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		}
 		
 		public override void OnApplyTemplate()
-        {
+    	{
             base.OnApplyTemplate();
             editor = new TextBox();
             editor = Template.FindName("editor", this) as TextBox; // Gets the TextBox-editor from the Template 
             Debug.Assert(editor != null);
-        }
+   		}
 		
 		/// <summary>
 		/// Binds the Text Property of the element extended with <see cref="Bind"/>.
@@ -90,25 +90,27 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		}
 		
 		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
-       {
+       	{
            base.OnGotKeyboardFocus(e);
            changeGroup = designItem.OpenGroup("Change Text");
            editor.Focus();
-       }
+       	}
 		
 		protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
-       {
+       	{
            if (changeGroup != null)
                changeGroup.Abort();
+           if (textBlock != null)
+                textBlock.Visibility = Visibility.Visible;
            base.OnLostKeyboardFocus(e);
-       }
+      	}
 		
 		/// <summary>
 		/// Change is committed if the user releases the Escape Key.
 		/// </summary>
 		/// <param name="e"></param>
 		protected override void OnKeyUp(KeyEventArgs e)
-       {
+       	{
            base.OnKeyUp(e);
            if (e.Key == Key.Escape) {
 	           	// Commit the changes to the DOM
@@ -126,6 +128,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
                this.Visibility = Visibility.Hidden;
                textBlock.Visibility = Visibility.Visible;
            }
-       }		
+       	}		
 	}
 }
