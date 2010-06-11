@@ -841,6 +841,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (MSBuild.BuildItem item in project.GetEvaluatedItemsByName("AvailableItemName")) {
 					availableFileItemTypes.Add(new ItemType(item.Include));
 				}
+				// HACK: MSBuild doesn't provide us with these because we don't specify BuildingInsideVisualStudio.
+				// This is not a problem for SD 4.0 as we're back to using BuildingInsideVisualStudio there (so don't merge this!).
+				availableFileItemTypes.Add(ItemType.ApplicationDefinition);
+				availableFileItemTypes.Add(ItemType.Page);
+				availableFileItemTypes.Add(ItemType.Resource);
+				availableFileItemTypes.Add(new ItemType("SplashScreen"));
+				
 				this.availableFileItemTypes = availableFileItemTypes.AsReadOnly();
 				
 				foreach (MSBuild.BuildItem item in project.EvaluatedItems) {
