@@ -180,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return projectMinimumSolutionVersion; }
 		}
 		
-		List<string> interestingTasks = new List<string>();
+		HashSet<string> interestingTasks = new HashSet<string>();
 		string temporaryFileName;
 		
 		/// <summary>

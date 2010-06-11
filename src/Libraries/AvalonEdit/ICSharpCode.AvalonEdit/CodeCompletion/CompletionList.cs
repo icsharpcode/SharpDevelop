@@ -353,7 +353,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			return -1;
 		}
 		
-		bool CamelCaseMatch(string text, string query)
+		static bool CamelCaseMatch(string text, string query)
 		{
 			int i = 0;
 			foreach (char upper in text.Where(c => char.IsUpper(c))) {
