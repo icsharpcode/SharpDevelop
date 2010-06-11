@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public event EventHandler ActiveWorkbenchWindowChanged;
 		
-		public IWorkbenchWindow ActiveWorkbenchWindow { 
+		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
 				return dockingManager.ActiveDocument as IWorkbenchWindow;
 			}
@@ -191,7 +191,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ActivatePad(PadDescriptor padDescriptor)
 		{
-			ShowPad(padDescriptor);
+			AvalonPadContent p;
+			if (pads.TryGetValue(padDescriptor, out p)) {
+				if (!p.IsVisible)
+					p.Show();
+				p.Activate();
+			} else {
+				ShowPad(padDescriptor);
+			}
 		}
 		
 		public void HidePad(PadDescriptor padDescriptor)
