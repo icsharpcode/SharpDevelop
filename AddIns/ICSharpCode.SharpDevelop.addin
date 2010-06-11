@@ -1252,36 +1252,35 @@
 		</MenuItem> <!-- END File menu -->
 		
 		<MenuItem id = "Edit" label = "${res:XML.MainMenu.EditMenu}" type="Menu">
+			<!-- Do not specify shortcuts for built-in commands, those are bound automatically by WPF.
+			     The shortcuts work correctly in WinForms pads (e.g. label edit in tree view in WinForms project pad)
+			     only if they are not explicitly specified in the menu.
+			-->
 			<MenuItem id = "Undo"
 			          label = "${res:XML.MainMenu.EditMenu.Undo}"
 			          icon = "Icons.16x16.UndoIcon"
 			          type = "Item"
-			          shortcut = "Control|Z"
 			          command = "Undo"/>
 			<MenuItem id = "Redo"
 			          label = "${res:XML.MainMenu.EditMenu.Redo}"
 			          icon = "Icons.16x16.RedoIcon"
 			          type = "Item"
-			          shortcut = "Control|Y"
 			          command = "Redo"/>
 			<MenuItem id = "Separator1" type = "Separator"  />
 			<MenuItem id = "Cut"
 			          label = "${res:XML.MainMenu.EditMenu.Cut}"
 			          icon = "Icons.16x16.CutIcon"
 			          type = "Item"
-			          shortcut = "Control|X"
 			          command = "Cut"/>
 			<MenuItem id = "Copy"
 			          label = "${res:XML.MainMenu.EditMenu.Copy}"
 			          icon = "Icons.16x16.CopyIcon"
 			          type = "Item"
-			          shortcut = "Control|C"
 			          command = "Copy"/>
 			<MenuItem id = "Paste"
 			          label = "${res:XML.MainMenu.EditMenu.Paste}"
 			          icon = "Icons.16x16.PasteIcon"
 			          type = "Item"
-			          shortcut = "Control|V"
 			          command = "Paste"/>
 			<MenuItem id = "Delete"
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
@@ -1312,7 +1311,6 @@
 			<MenuItem id = "SelectAll"
 			          label = "${res:XML.MainMenu.EditMenu.SelectAll}"
 			          type = "Item"
-			          shortcut = "Control|A"
 			          command = "SelectAll"/>
 			<MenuItem id = "Separator4" type = "Separator"  />
 			<ComplexCondition action="Disable">
