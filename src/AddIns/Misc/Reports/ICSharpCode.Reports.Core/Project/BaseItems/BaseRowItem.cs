@@ -46,14 +46,6 @@ namespace ICSharpCode.Reports.Core{
 			style.ForeColor = this.ForeColor;
 			style.FrameColor = this.FrameColor;
 			
-			/*
-			if (this.Parent != null) {
-				Rectangle rect = base.DrawingRectangle;
-				style.Location = new Point(rect.Left,this.Location.Y);
-			} else {
-				style.Location = this.Location;
-			}
-			*/
 			style.Location = this.Location;
 			style.Size = this.Size;
 			style.DrawBorder = this.DrawBorder;
@@ -77,31 +69,13 @@ namespace ICSharpCode.Reports.Core{
 				base.FillBackground(rpea.PrintPageEventArgs.Graphics);       
 			}
 			 
-			
 			Border b = new Border(new BaseLine (this.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
 			
 			base.DrawFrame (rpea.PrintPageEventArgs.Graphics,b);
 			
-			this.Location = new Point(base.DrawingRectangle.Left,this.Location.Y);
-			
-			if ((this.items != null) && (this.items.Count > 0)) {
-				foreach (BaseReportItem childItem in this.items) {
-					childItem.Parent = this;
-					
-					Point saveloc = new Point (childItem.Location.X,childItem.Location.Y);
-					
-					childItem.Location = new Point(childItem.Location.X,
-					                               base.DrawingRectangle.Top + childItem.Location.Y);
-					
-					
-					if (this.BackColor != GlobalValues.DefaultBackColor) {
-							childItem.BackColor = this.BackColor;
-					}
-					childItem.Render (rpea);
-					childItem.Location = saveloc;
-				}
-			}
+
 			this.Location = point;
+			
 			base.NotifyAfterPrint (rpea.LocationAfterDraw);
 		}
 		

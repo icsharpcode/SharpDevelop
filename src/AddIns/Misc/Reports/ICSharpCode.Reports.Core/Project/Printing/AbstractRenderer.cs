@@ -35,7 +35,7 @@ namespace ICSharpCode.Reports.Core
 		
 		private int currentPageNumber;		
 		
-		private IExpressionEvaluatorFacade expressionFassade;
+		//private IExpressionEvaluatorFacade expressionFassade;
 		private ILayouter layout;
 		private IReportModel reportModel;
 		
@@ -88,7 +88,8 @@ namespace ICSharpCode.Reports.Core
 			this.reportDocument.RenderDetails += new EventHandler<ReportPageEventArgs> (PrintDetail);
 			this.reportDocument.RenderPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageEnd);
 			this.reportDocument.RenderReportEnd += new EventHandler<ReportPageEventArgs> (PrintReportFooter);
-			this.expressionFassade = new ExpressionEvaluatorFacade();
+			
+			this.Evaluator = PrintHelper.SetupEvaluator();
 		}
 		
 		
@@ -212,7 +213,7 @@ namespace ICSharpCode.Reports.Core
 			
 			if (this.CurrentSection.Visible){
 				this.CurrentSection.Render (rpea);
-				expressionFassade.SinglePage = this.reportDocument.SinglePage;
+				Evaluator.SinglePage = this.reportDocument.SinglePage;
 				
 				if (this.CurrentSection.Items.Count > 0) {
 
@@ -238,7 +239,7 @@ namespace ICSharpCode.Reports.Core
 					BaseTextItem bti = item as BaseTextItem;
 					
 					if (bti != null) {
-						bti.Text = expressionFassade.Evaluate(bti.Text);
+						bti.Text = Evaluator.Evaluate(bti.Text);
 					}
 					item.Render(rpea);
 					drawPoint = new Point(this.CurrentSection.Location.X,
@@ -321,7 +322,7 @@ namespace ICSharpCode.Reports.Core
 		protected SectionBounds SectionBounds { get {return this.SinglePage.SectionBounds;}}
 		
 		
-		protected IExpressionEvaluatorFacade ExpressionFassade {get { return expressionFassade; }}
+		protected IExpressionEvaluatorFacade Evaluator {get;set;}
 	
 	
 		protected ILayouter Layout {get {return this.layout;}}

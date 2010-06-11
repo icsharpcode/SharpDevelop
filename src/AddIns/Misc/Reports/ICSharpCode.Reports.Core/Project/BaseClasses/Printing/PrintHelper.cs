@@ -14,6 +14,7 @@ using System.Linq;
 
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -126,7 +127,28 @@ namespace ICSharpCode.Reports.Core
 			return false;
 		}
 		
+		
+		public static IExpressionEvaluatorFacade  SetupEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
+		{
+			if (singlePage == null) {
 			
+				throw new ArgumentNullException("singlePage");
+			}
+			if (dataNavigator == null) {
+				throw new ArgumentNullException("dataNavigator");
+			}
+			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
+			evaluatorFacade.SinglePage = singlePage;
+			evaluatorFacade.SinglePage.IDataNavigator = dataNavigator;
+			return evaluatorFacade;
+		}
+		
+		public static IExpressionEvaluatorFacade  SetupEvaluator ()
+		{
+			return new ExpressionEvaluatorFacade();
+		}
+		
+		
 		#region Debug Code
 		
 		///<summary>

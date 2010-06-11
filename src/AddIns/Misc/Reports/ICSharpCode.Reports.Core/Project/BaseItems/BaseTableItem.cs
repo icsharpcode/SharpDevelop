@@ -172,6 +172,8 @@ namespace ICSharpCode.Reports.Core {
 			}
 			this.startSection = section;
 		}
+		
+		
 		public void RenderTable (BaseReportItem parent,SectionBounds sectionBounds,ReportPageEventArgs rpea,ILayouter layouter)
 		{
 			

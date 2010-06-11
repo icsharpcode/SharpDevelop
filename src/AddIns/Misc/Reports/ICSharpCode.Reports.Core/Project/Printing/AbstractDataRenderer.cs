@@ -61,15 +61,16 @@ namespace ICSharpCode.Reports.Core
 			base.CurrentRow = this.dataNavigator.CurrentRow;
 			ISimpleContainer container = null;
 			bool hasContainer = false;
+			
 			foreach (BaseReportItem item in this.CurrentSection.Items) {
-				container = item as ISimpleContainer;
+				 container = item as ISimpleContainer;
 				if (container != null) {
 					hasContainer = true;
 					break;
 				}
 			}
 			if (hasContainer) {
-				return DoContainerControl(this.CurrentSection,container,rpea);
+				return RenderSimpleContainer(this.CurrentSection,container,rpea);
 				
 			} else {
 				return base.RenderSection(rpea);
@@ -78,9 +79,11 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		private  Point DoContainerControl (BaseSection section,
-		                                   ISimpleContainer container,
-		                                   ReportPageEventArgs rpea)
+		
+		
+		private  Point RenderSimpleContainer (BaseSection section,
+		                                      ISimpleContainer container,
+		                                      ReportPageEventArgs rpea)
 		{
 			Point drawPoint	= Point.Empty;
 			if (section.Visible){
@@ -88,18 +91,32 @@ namespace ICSharpCode.Reports.Core
 				//Always set section.size to it's original value
 				
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
+				
 				Size containerSize = new Size (section.Items[0].Size.Width,section.Items[0].Size.Height);
-				ISimpleContainer row =(ISimpleContainer) section.Items[0];
-				PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
+							
+				PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,container);
+				
 				section.Render (rpea);
 				
 				
 				foreach (BaseReportItem item in section.Items) {
-					if (item.Parent == null) {
-						item.Parent = section;
-					}
+					
+					item.Parent = section;
+					
 					item.SectionOffset = section.SectionOffset;
+					
+					Point saveLocation = item.Location;
+					
 					item.Render(rpea);
+					
+					item.Location = saveLocation;
+					
+					ISimpleContainer cont = item as ISimpleContainer;
+
+					RenderChilds (this.CurrentSection,cont,rpea);
+					
+					item.Location = saveLocation;
+					
 					drawPoint = new Point(item.Location.X,
 					                      section.SectionOffset + section.Size.Height);
 					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
@@ -115,6 +132,49 @@ namespace ICSharpCode.Reports.Core
 			
 			return drawPoint;
 		}
+		
+		
+		
+		void RenderChilds (BaseReportItem parent,ISimpleContainer simpleContainer,ReportPageEventArgs rpea)
+		{
+			
+			if (simpleContainer != null) {
+				
+				BaseReportItem item = simpleContainer as BaseReportItem;
+				
+				if ((simpleContainer.Items != null) && (simpleContainer.Items.Count > 0)) {
+					
+					foreach (BaseReportItem child in simpleContainer.Items) {
+						child.Parent = item;
+						
+						Point saveLocation = new Point (child.Location.X,child.Location.Y);
+						
+						
+						child.Location = new Point(parent.Location.X + simpleContainer.Location.X + child.Location.X,
+						                              item.SectionOffset + item.Location.Y + child.Location.Y);
+						
+						
+						if (item.BackColor != GlobalValues.DefaultBackColor) {
+							child.BackColor = item.BackColor;
+						}
+						
+						BaseTextItem textItem = child as BaseTextItem;
+						
+						if (textItem != null) {
+							string str = textItem.Text;
+							textItem.Text = Evaluator.Evaluate(textItem.Text);
+							textItem.Render(rpea);
+							textItem.Text = str;
+						} else {
+							child.Render (rpea);
+						}
+						child.Location = saveLocation;
+					}
+				}
+
+			}
+		}
+		
 		
 		#region Properties
 		

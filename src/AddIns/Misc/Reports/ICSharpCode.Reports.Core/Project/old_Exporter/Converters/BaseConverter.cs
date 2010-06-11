@@ -29,7 +29,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		private IExportItemsConverter exportItemsConverter;
 		private ILayouter layouter;
 		private Size saveSize;
-	IExpressionEvaluatorFacade evaluator;
+		private IExpressionEvaluatorFacade evaluator;
 	
 		public event EventHandler <NewPageEventArgs> PageFull;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
@@ -55,17 +55,10 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			this.sectionBounds = this.singlePage.SectionBounds;
 			this.exportItemsConverter = exportItemsConverter;
 			this.layouter = layouter;
-			this.evaluator = SetupEvaluator ();
+			this.evaluator = PrintHelper.SetupEvaluator(this.singlePage,this.dataNavigator);
 		}
 		
-		private IExpressionEvaluatorFacade  SetupEvaluator ()
-		{
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
-			evaluatorFacade.SinglePage = this.singlePage;
-			evaluatorFacade.SinglePage.IDataNavigator = this.dataNavigator;
-			return evaluatorFacade;
-		}
-			
+		
 		protected void FirePageFull (ExporterCollection items)
 		{
 			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));

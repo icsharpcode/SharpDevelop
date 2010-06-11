@@ -156,14 +156,17 @@ namespace ICSharpCode.Reports.Core {
 			if (tableContainer != null) {
 				tableContainer.DataNavigator = nav;
 				tableContainer.Parent = base.CurrentSection;
-				tableContainer.ExpressionEvaluatorFacade = base.ExpressionFassade;
+				tableContainer.ExpressionEvaluatorFacade = base.Evaluator;
 				if (rpea.SinglePage.PageNumber == 1) {
 					tableContainer.StartLayoutAt(base.Sections[2]);
 				} else {
 					tableContainer.StartLayoutAt(base.Sections[0]);
 				}
 				
+//				base.RenderTable(base.CurrentSection,this.SectionBounds,rpea,this.Layout);
+				
 				tableContainer.RenderTable(base.CurrentSection,this.SectionBounds,rpea,this.Layout);
+			
 				this.ReportDocument.DetailsDone = true;
 			}
 			
@@ -175,9 +178,9 @@ namespace ICSharpCode.Reports.Core {
 				}
 				
 				do {
-					ISimpleContainer i = base.CurrentSection.Items[0] as ISimpleContainer;
-					if (i != null) {
-						nav.Fill (i.Items);
+					ISimpleContainer simpleContainer = base.CurrentSection.Items[0] as ISimpleContainer;
+					if (simpleContainer != null) {
+						nav.Fill (simpleContainer.Items);
 					} else {
 						nav.Fill (base.CurrentSection.Items);
 					}
