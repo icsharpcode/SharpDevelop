@@ -77,6 +77,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the MSBuild.Construction project file.
 		/// You must lock on the project's SyncRoot before accessing the MSBuild project file!
 		/// </summary>
+		[Browsable(false)]
 		public ProjectRootElement MSBuildProjectFile {
 			get {
 				if (projectFile == null)
@@ -89,6 +90,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the MSBuild.Construction project file.
 		/// You must lock on the project's SyncRoot before accessing the MSBuild project file!
 		/// </summary>
+		[Browsable(false)]
 		public ProjectRootElement MSBuildUserProjectFile {
 			get {
 				if (projectFile == null)
