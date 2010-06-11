@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void AddBinding<T>(ICommand command, Action<T> execute, Predicate<T> canExecute) where T : class
 		{
-			ExecutedRoutedEventHandler onExected = (sender, e) => {
+			ExecutedRoutedEventHandler onExecuted = (sender, e) => {
 				if (e.Command == command) {
 					var cbh = GetInterface<T>();
 					if (cbh != null) {
@@ -62,8 +62,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			};
+			//this.CommandBindings.Add(new CommandBinding(command, onExecuted, onCanExecute));
+			// Don't use this.CommandBindings because CommandBindings with built-in shortcuts would handle the key press
+			// before WinForms gets to see it. Using the events ensures that the command gets executed only when the user
+			// clicks on the menu/toolbar item. (this fixes SD2-1671)
 			CommandManager.AddCanExecuteHandler(this, onCanExecute);
-			CommandManager.AddExecutedHandler(this, onExected);
+			CommandManager.AddExecutedHandler(this, onExecuted);
 		}
 		#endregion
 		
