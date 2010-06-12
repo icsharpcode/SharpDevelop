@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Build.Construction;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using System.Diagnostics;
+using Microsoft.Build.Construction;
+using Microsoft.Build.Exceptions;
 
 namespace ICSharpCode.CppBinding.Project
 {
@@ -16,10 +17,15 @@ namespace ICSharpCode.CppBinding.Project
 		public CppProject(ProjectCreateInformation info)
 			: base(info)
 		{
-			AddImport(DefaultPropsFile, null);
-			AddImport(PropsFile, null);
-			AddImport(DefaultTargetsFile, null);
-			AddProjectConfigurationsItemGroup();
+			try {
+				AddImport(DefaultPropsFile, null);
+				AddImport(PropsFile, null);
+				AddImport(DefaultTargetsFile, null);
+				AddProjectConfigurationsItemGroup();
+				base.ReevaluateIfNecessary(); // provoke exception if import is invalid
+			} catch (InvalidProjectFileException ex) {
+				throw new ProjectLoadException("Please ensure that the Windows SDK is installed on your computer.\n\n" + ex.Message, ex);
+			}
 		}
 
 		public CppProject(ProjectLoadInformation info)
@@ -60,7 +66,7 @@ namespace ICSharpCode.CppBinding.Project
 				string outputPath = GetEvaluatedProperty("OutDir") ?? "";
 				if (!Path.IsPathRooted(outputPath))
 					return FileUtility.NormalizePath(Path.Combine(Path.Combine(Path.Combine(Directory, ".."), outputPath),
-																AssemblyName + GetExtension(OutputType)));
+					                                              AssemblyName + GetExtension(OutputType)));
 				else
 				{
 					// this will be valid if there is an explicit OutDir property in vcxproj file.
@@ -83,11 +89,11 @@ namespace ICSharpCode.CppBinding.Project
 			string extension = Path.GetExtension(fileName).ToLower();
 			switch (extension)
 			{
-				case ".cpp": return ItemType.ClCompile;
-				case ".c": return ItemType.ClCompile;
-				case ".hpp": return ItemType.ClInclude;
-				case ".h": return ItemType.ClInclude;
-				case ".rc": return new ItemType(RESOURCE_COMPILE);
+					case ".cpp": return ItemType.ClCompile;
+					case ".c": return ItemType.ClCompile;
+					case ".hpp": return ItemType.ClInclude;
+					case ".h": return ItemType.ClInclude;
+					case ".rc": return new ItemType(RESOURCE_COMPILE);
 			}
 			return base.GetDefaultItemType(fileName);
 		}
@@ -162,7 +168,7 @@ namespace ICSharpCode.CppBinding.Project
 			return result;
 		}
 		
-		public IList<string> GetProjectUndefines(string fileName) 
+		public IList<string> GetProjectUndefines(string fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
