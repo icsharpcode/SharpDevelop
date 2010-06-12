@@ -47,7 +47,7 @@
 			"Installed OR" this would not be allowed.
 		-->
 		<!--
-			Check for .NET 4.0 beta 2 
+			Check for .NET 4.0 RTM Full
 		-->
 		<Property Id="NETFRAMEWORK40FULL" Secure="yes">
 			<RegistrySearch Id="NetFramework40Full" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Install" Type="raw" />
@@ -58,6 +58,12 @@
 		<!-- we could check NETFRAMEWORK40FULLVERSION optionally if we want to force the user to install a specific version -->
 		<Condition Message="This setup requires the .NET 4.0 Full Framework to be installed.">
 			Installed OR NETFRAMEWORK40FULL
+		</Condition>
+		
+		<!-- Unfortunately we also require .NET 3.5 SP1 at the moment -->
+		<PropertyRef Id="NETFRAMEWORK35_SP_LEVEL" />
+		<Condition Message="This setup requires the .NET Framework 3.5 SP1 to be installed (Yes, you need both .NET 4.0 and 3.5 SP1. Sorry.)">
+			Installed OR NETFRAMEWORK35_SP_LEVEL = "#1"
 		</Condition>
 		
 		<!--
