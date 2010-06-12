@@ -212,8 +212,8 @@
 										<File Source="..\..\bin\Tools\Wix\candle.exe" Name="candle.exe" Id="candle.exe" Assembly=".net" AssemblyApplication="candle.exe" AssemblyManifest="candle.exe" KeyPath="yes" />
 										<File Source="..\..\bin\Tools\Wix\candle.exe.config" Id="candle.exe.config" Name="candle.exe.config" />
 									</Component>
-									<Component Id="WixLicenseFiles" Guid="D9768816-869F-4C01-A808-05A9CCCFDFFC" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\CPL.txt" Name="CPL.txt" Id="CPL.txt" />
+									<Component Id="WixLicenseFiles" Guid="48DABE56-3E5A-41C3-8451-236C9E9EF3C3" DiskId="1">
+										<File Source="..\..\bin\Tools\Wix\CPL.TXT" Name="CPL.TXT" Id="CPL.TXT" />
 									</Component>
 									<Component Id="DarkExe" Guid="45BAAB13-6E19-42DA-80BE-8C44EAD8A24E" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\dark.exe" Name="dark.exe" Id="dark.exe" Assembly=".net" AssemblyApplication="dark.exe" AssemblyManifest="dark.exe" KeyPath="yes" />
@@ -653,10 +653,11 @@
 							<Directory Id="TemplatesFolder" Name="templates">
 								<Directory Id="FileTemplatesFolder" Name="file">
 									<Directory Id="CSharpFileTemplatesFolder" Name="CSharp">
-										<Component Guid="3B4FEE71-8C15-4430-B5ED-FD010280C35C" Id="CSharpFileTemplates" DiskId="1">
+										<Component Guid="6F4016F3-AAE0-465F-893B-AE694EA309C2" Id="CSharpFileTemplates" DiskId="1">
 											<File Source="..\..\data\templates\file\CSharp\FileCategorySortOrder.xml" Id="CSharpFileCategorySortOrder.xml" Name="FileCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Empty.xft" Id="CSharp.Empty.xft" Name="CSharp.Empty.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.EmptyClass.xft" Id="CSharp.EmptyClass.xft" Name="CSharp.EmptyClass.xft" />
+											<File Source="..\..\data\templates\file\CSharp\CSharp.Exception.xft" Id="CSharp.Exception.xft" Name="CSharp.Exception.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Forms.Form.xft" Id="CSharp.Forms.Form.xft" Name="CSharp.Forms.Form.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Forms.UserControl.xft" Id="CSharp.Forms.UserControl.xft" Name="CSharp.Forms.UserControl.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Interface.xft" Id="CSharp.Interface.xft" Name="CSharp.Interface.xft" />
