@@ -229,7 +229,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		IClass GetCurrentClass(Task item)
 		{
-			ParseInformation parseInfo = ParserService.GetParseInformation(item.FileName);
+			// Tasks are created by parsing, so the parse information for item.FileName should already be present.
+			// If they aren't, that's because the file might have been deleted/renamed in the meantime.
+			// We use GetExistingParseInformation to avoid trying to parse a file that might have been deleted/renamed.
+			ParseInformation parseInfo = ParserService.GetExistingParseInformation(item.FileName);
 			if (parseInfo != null) {
 				IClass c = parseInfo.CompilationUnit.GetInnermostClass(item.Line, item.Column);
 				if (c != null) return c;

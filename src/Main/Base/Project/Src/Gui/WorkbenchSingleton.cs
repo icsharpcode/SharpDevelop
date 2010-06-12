@@ -67,6 +67,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			StatusBarService.Initialize();
 			DomHostCallback.Register(); // must be called after StatusBarService.Initialize()
 			ParserService.InitializeParserService();
+			TaskService.Initialize();
 			Bookmarks.BookmarkManager.Initialize();
 			Project.CustomToolsService.Initialize();
 			Project.BuildModifiedProjectsOnlyService.Initialize();
