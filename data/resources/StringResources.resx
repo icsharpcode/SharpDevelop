@@ -4406,6 +4406,9 @@ has been changed externally do you want to reload it?</value>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName" xml:space="preserve">
     <value>General</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers" xml:space="preserve">
+    <value>Generate Visual Studio Style Event Handlers</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
     <value>Grid Properties</value>
   </data>

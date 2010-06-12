@@ -2728,6 +2728,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>&amp;EOL markeringen weergeven</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Markeer symbolen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>&amp;Markeren passend haakje</value>
   </data>
@@ -3632,6 +3635,9 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Hulpbron waarde:</value>
   </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Drk Ctrl+spatie in om items van alle naamruimten weer te geven,</value>
+  </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Boo interpreteren</value>
   </data>
@@ -4386,6 +4392,9 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName" xml:space="preserve">
     <value>Algemeen</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers" xml:space="preserve">
+    <value>Genereer Visual Studio stijl event handlers</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
     <value>Raster eigenschappen</value>
@@ -6873,6 +6882,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Leeg bestand</value>
+  </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Uitzondering</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Venster voor een Gtk# toepassing.</value>

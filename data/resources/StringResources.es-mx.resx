@@ -2729,6 +2729,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Mostrar marcas de &amp;párrafo</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Resaltar símbolos</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Resaltar &amp;corchetes</value>
   </data>
@@ -3634,6 +3637,9 @@ También puede elegir guardar la opción en el archivo .user en lugar de en el a
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Valor de recurso:</value>
   </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Presione Ctrl+Space para mostrar ítems de todos los espacios de nombre</value>
+  </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Interprete Boo</value>
   </data>
@@ -4388,6 +4394,9 @@ ha sido cambiado de manera externa, ¿desea recargarlo?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName" xml:space="preserve">
     <value>General</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers" xml:space="preserve">
+    <value>Generar Controladores de Eventos de Estilos de Visual Studio</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
     <value>Propiedades de cuadricula</value>
@@ -6875,6 +6884,9 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   </data>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Archivo Vacío</value>
+  </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Excepción</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Una ventana para una aplicación Gtk#.</value>

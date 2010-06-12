@@ -238,6 +238,9 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
   <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
     <value>Afficher Contenus</value>
   </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
   <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
     <value>Bibliothèque d'Aide</value>
   </data>
@@ -252,6 +255,15 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
   </data>
   <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
     <value>Vous avez demandé une fonctionnalité su mode hors-ligne depuis le mode en-ligne. Changez de mode pour utiliser cette fonctionnalité.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Chercher:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Rechercher</value>
   </data>
   <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
     <value>Afficher l'Aide</value>
@@ -2709,6 +2721,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Affich&amp;er les marqueurs de fin de ligne</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Surligner symboles</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Accolades en surbrillance</value>
   </data>
@@ -3617,6 +3632,9 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Valeur de la ressource:</value>
   </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Ctrl+Espace affiche les éléments pour tous les espaces de noms</value>
+  </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Interpréteur Boo</value>
   </data>
@@ -4372,6 +4390,9 @@ Toutes les modifications seront perdues.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName" xml:space="preserve">
     <value>Général</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers" xml:space="preserve">
+    <value>Générer des gestionnaires d'évènement à la Visual Studio</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
     <value>Propriétés de la grille</value>
@@ -6859,6 +6880,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Fichier vide</value>
+  </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Exception</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Une fenêtre pour application GTK#.</value>
