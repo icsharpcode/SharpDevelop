@@ -377,6 +377,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override void OnPropertyChanged(ProjectPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
+			if (e.PropertyName == "TargetFrameworkVersion")
+				CreateItemsListFromMSBuild();
 			if (!isLoading) {
 				if (reparseReferencesSensitiveProperties.Contains(e.PropertyName)) {
 					ParserService.Reparse(this, true, false);
