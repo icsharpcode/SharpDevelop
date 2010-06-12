@@ -307,6 +307,7 @@ MemberDeclaration =
 		SubOrFunctionDeclaration |
 		ExternalMemberDeclaration |
 		EventMemberDeclaration |
+		CustomEventMemberDeclaration |
 		OperatorDeclaration
 	)
 	(. PopContext(); .)
@@ -326,17 +327,20 @@ ExternalMemberDeclaration =
 .
 
 EventMemberDeclaration =
-	[ "Custom" ] "Event" Identifier ( "As" TypeName | [ "(" [ ParameterList ] ")" ] )
-	[ "Implements" TypeName "." IdentifierOrKeyword { "," TypeName "." IdentifierOrKeyword } ]
+	"Event" Identifier ( "As" TypeName | [ "(" [ ParameterList ] ")" ] )
+	[ "Implements" TypeName /*"." IdentifierOrKeyword*/ { "," TypeName /*"." IdentifierOrKeyword*/ } ]
+	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammer we just leave that out */
 	StatementTerminator
-	[
-		{
-			{ AttributeBlock } ( "AddHandler" | "RemoveHandler" | "RaiseEvent" ) "(" ParameterList ")" EOL
-			Block
-			"End" ( "AddHandler" | "RemoveHandler" | "RaiseEvent" ) StatementTerminator
-		}
+.
+
+CustomEventMemberDeclaration =
+	"Custom" EventMemberDeclaration
+	{
+		{ AttributeBlock } ( "AddHandler" | "RemoveHandler" | "RaiseEvent" ) "(" ParameterList ")" EOL
+		Block
+		"End" ( "AddHandler" | "RemoveHandler" | "RaiseEvent" ) StatementTerminator
+	}
 	"End" "Event" StatementTerminator
-	]
 .
 
 OperatorDeclaration =
@@ -346,7 +350,7 @@ OperatorDeclaration =
 .
 
 MemberVariableOrConstantDeclaration =
-	[ "Const" ] Identifier [ "As" TypeName ] [ "=" Expression ] StatementTerminator
+	[ "Const" ] IdentifierForFieldDeclaration [ "As" TypeName ] [ "=" Expression ] StatementTerminator
 .
 
 ParameterList =
@@ -360,8 +364,7 @@ Parameter =
 Block =
 	(. PushContext(Context.Body, t); .)
 	StatementTerminator
-	{ StatementTerminator }
-	{ Statement { StatementTerminator } }
+	{ [ Statement] StatementTerminator }
 	(. PopContext(); .)
 .
 
@@ -429,7 +432,7 @@ Statement =
 .
 
 VariableDeclarationStatement =
-	( "Dim" | "Static" | "Const" ) Identifier [ "?" ] [ ( "(" { "," } ")" ) ] { "," Identifier [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName [ "(" ")" ] ] [ "=" Expression ]
+	( "Dim" | "Static" | "Const" ) Identifier [ "?" ] [ ( "(" { "," } ")" ) ] { "," Identifier [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName ] [ "=" Expression ]
 .
 
 WithOrLockStatement =
@@ -445,7 +448,7 @@ RaiseEventStatement =
 .
 
 InvocationStatement =
-	[ "Call" ] Expression [ "(" [ ArgumentList ] ")" ] [ ( "=" | "^=" | "*=" | "/=" | "\\=" | "+=" | "-=" | "&=" | ">=" ) Expression ]
+	[ "Call" ] Expression [ ( "=" | "^=" | "*=" | "/=" | "\\=" | "+=" | "-=" | "&=" | ">=" ) Expression ]
 .
 
 ArgumentList =

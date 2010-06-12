@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\..\..\..\..\..\..\..\bin\Tools\NUnit\nunit.framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
