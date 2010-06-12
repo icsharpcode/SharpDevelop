@@ -75,17 +75,17 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					if (inXmlMode && level <= 0 && !wasComment) {
 						int peek;
 						while (true) {
-							while ((peek = ReaderPeek()) != -1 && XmlConvert.IsWhitespaceChar((char)peek))
-								ReaderRead();
+							int step = 0;
+							while ((peek = ReaderPeek(step)) != -1 && XmlConvert.IsWhitespaceChar((char)peek))
+								step++;
 
-							if (ReaderPeek() == '<') {
+							if (ReaderPeek(step) == '<' && ReaderPeek(step + 1) == '!') {
+								for (int i = 0; i < step + 2; i++)
+									ReaderRead();
+								
+								Token token = ReadXmlCommentOrCData(Col - 1, Line);
 								ReaderRead();
-								if (ReaderPeek() == '!') {
-									ReaderRead();
-									Token token = ReadXmlCommentOrCData(Col - 1, Line);
-									ReaderRead();
-									return token;
-								}
+								return token;
 							}
 							
 							break;
@@ -143,7 +143,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								}
 								break;
 							case '>':
-														/* workaround for XML Imports */
+								/* workaround for XML Imports */
 								if (inXmlCloseTag || (inXmlTag && ef.CurrentBlock.context == Context.Global))
 									level--;
 								wasComment = false;
@@ -405,14 +405,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		string ReadXmlContent(char ch)
 		{
 			sb.Length = 0;
-			sb.Append(ch);
-			int nextChar;
-			while ((nextChar = ReaderRead()) != -1) {
-				ch = (char)nextChar;
+			while (true) {
 				sb.Append(ch);
-				if (ReaderPeek() == '<')
+				int next = ReaderPeek();
+				
+				if (next == -1 || next == '<')
 					break;
+				ch = (char)ReaderRead();
 			}
+			
 			return sb.ToString();
 		}
 		

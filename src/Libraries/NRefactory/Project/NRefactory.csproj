@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Parser\VBNet\Experimental\ExpressionFinder.cs" />
+    <Compile Include="Src\Parser\VBNet\Experimental\LATextReader.cs" />
     <Compile Include="Src\Parser\VBNet\Experimental\Parser.cs">
       <DependentUpon>ExpressionFinder.atg</DependentUpon>
     </Compile>

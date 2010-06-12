@@ -356,15 +356,30 @@ namespace DefaultNamespace
 		}
 		
 		[Test]
+		public void AddHandlerStatement2()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("AddHandler <x />, <y />")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.AddHandler, Tokens.XmlOpenTag,
+			            Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Comma, Tokens.XmlOpenTag,
+			            Tokens.Identifier, Tokens.XmlCloseTagEmptyElement);
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
 		public void RemoveHandlerStatement()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("RemoveHandler <Test />, <Data>5</Data>")));
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("RemoveHandler <x />, <Data>5</Data>")));
 			
 			CheckHead(lexer);
 			
 			CheckTokens(lexer, Tokens.RemoveHandler, Tokens.XmlOpenTag,
 			            Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Comma,
-			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent,
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag
 			           );
 			
 			CheckFoot(lexer);

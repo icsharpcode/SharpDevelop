@@ -361,8 +361,7 @@ Block =
 	(. PushContext(Context.Body, t); .)
 	StatementTerminator
 	{ StatementTerminator }
-	{ Statement }
-	{ StatementTerminator }
+	{ Statement { StatementTerminator } }
 	(. PopContext(); .)
 .
 
@@ -421,19 +420,36 @@ Literal =
 .
 
 Statement =
-	( ( Identifier | LiteralInteger ) ":" ) |
-	( ( "Dim" | "Static" | "Const" ) Identifier [ "?" ] [ ( "(" { "," } ")" ) ] { "," Identifier [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName [ "(" ")" ] ] [ "=" Expression ] ) |
-	( ( "With" | "SyncLock" ) Expression StatementTerminator Block "End" ( "With" | "SyncLock" ) ) |
-	( ( "AddHandler" | "RemoveHandler" ) Expression "," Expression ) |
-	( "RaiseEvent" IdentifierOrKeyword [ "(" [ ArgumentList ] ")" ] ) |
-	( Expression ( "=" | "^=" | "*=" | "/=" | "\\=" | "+=" | "-=" | "&=" | "<<=" | ">>=" ) [ EOL ] Expression ) |
-	/* ( "Mid" [ "$" ] "(" Expression "," Expression [ "," Expression ] ")" "=" Expression ) | */
-	( [ "Call" ] Expression [ "(" [ ArgumentList ] ")" ] ) |
-	( "If" Expression [ "Then" ] StatementTerminator ( Block | { Statement } )  )
+	VariableDeclarationStatement
+	| WithOrLockStatement
+	| AddOrRemoveHandlerStatement
+	| RaiseEventStatement
+	| InvocationStatement
+	/*| "If" Expression [ "Then" ] StatementTerminator ( Block | { Statement } ) */
+.
+
+VariableDeclarationStatement =
+	( "Dim" | "Static" | "Const" ) Identifier [ "?" ] [ ( "(" { "," } ")" ) ] { "," Identifier [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName [ "(" ")" ] ] [ "=" Expression ]
+.
+
+WithOrLockStatement =
+	( "With" | "SyncLock" ) Expression StatementTerminator Block "End" ( "With" | "SyncLock" )
+.
+
+AddOrRemoveHandlerStatement =
+	( "AddHandler" | "RemoveHandler" ) Expression "," Expression
+.
+
+RaiseEventStatement =
+	"RaiseEvent" IdentifierOrKeyword [ "(" [ ArgumentList ] ")" ]
+.
+
+InvocationStatement =
+	[ "Call" ] Expression [ "(" [ ArgumentList ] ")" ] [ ( "=" | "^=" | "*=" | "/=" | "\\=" | "+=" | "-=" | "&=" | ">=" ) Expression ]
 .
 
 ArgumentList =
-	Expression { "," Expression } [ "," IdentifierOrKeyword ":=" Expression { "," IdentifierOrKeyword ":=" Expression } ]
+	Expression { "," Expression [ ":=" Expression ] }
 .
 
 /* This production handles pseudo keywords that are needed in the grammar */

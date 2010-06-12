@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
+
 namespace ICSharpCode.NRefactory.Parser
 {
 	/// <summary>
@@ -19,7 +21,7 @@ namespace ICSharpCode.NRefactory.Parser
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1708:IdentifiersShouldDifferByMoreThanCase")]
 	internal abstract class AbstractLexer : ILexer
 	{
-		TextReader reader;
+		LATextReader reader;
 		int col  = 1;
 		int line = 1;
 		
@@ -89,9 +91,15 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			return val;
 		}
+		
 		protected int ReaderPeek()
 		{
 			return reader.Peek();
+		}
+		
+		protected int ReaderPeek(int step)
+		{
+			return reader.Peek(step);
 		}
 		
 		public void SetInitialLocation(Location location)
@@ -167,7 +175,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// </summary>
 		protected AbstractLexer(TextReader reader)
 		{
-			this.reader = reader;
+			this.reader = new LATextReader(reader);
 		}
 		
 		#region System.IDisposable interface implementation
