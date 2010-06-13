@@ -246,8 +246,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public const int WithEvents           = 232;
 		public const int WriteOnly            = 233;
 		public const int Xor                  = 234;
+		public const int GetXmlNamespace      = 235;
 
-		public const int MaxToken = 235;
+		public const int MaxToken = 236;
 		static BitArray NewSet(params int[] values)
 		{
 			BitArray bitArray = new BitArray(MaxToken);
@@ -504,6 +505,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"WithEvents",
 			"WriteOnly",
 			"Xor",
+			"GetXmlNamespace",
 		};
 		public static string GetTokenString(int token)
 		{

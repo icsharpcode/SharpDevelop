@@ -325,6 +325,34 @@ namespace DefaultNamespace
 			
 			CheckFoot(lexer);
 		}
+		
+		[Test]
+		public void GetXmlNamespace()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = GetXmlNamespace(x)")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
+			            Tokens.GetXmlNamespace, Tokens.OpenParenthesis, Tokens.Identifier, Tokens.CloseParenthesis);
+			
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void GetXmlNamespace2()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = GetXmlNamespace(db-name)")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
+			            Tokens.GetXmlNamespace, Tokens.OpenParenthesis, Tokens.Identifier, Tokens.CloseParenthesis);
+			
+			
+			CheckFoot(lexer);
+		}
 		#endregion
 		
 		#region Context Tests

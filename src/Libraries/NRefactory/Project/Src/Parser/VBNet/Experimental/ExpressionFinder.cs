@@ -92,6 +92,11 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		public bool NextTokenIsPotentialStartOfXmlMode {
 			get { return nextTokenIsPotentialStartOfXmlMode; }
 		}
+		
+		public bool ReadXmlIdentifier {
+			get { return readXmlIdentifier; }
+			set { readXmlIdentifier = value; }
+		}
 	}
 	
 	public enum Context

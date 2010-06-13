@@ -35,6 +35,7 @@ partial class ExpressionFinder {
 -->declarations
 	readonly Stack<int> stateStack = new Stack<int>();
 	bool nextTokenIsPotentialStartOfXmlMode = false;
+	bool readXmlIdentifier = false;
 	
 	public ExpressionFinder()
 	{

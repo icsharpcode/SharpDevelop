@@ -185,7 +185,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"WITH",
 			"WITHEVENTS",
 			"WRITEONLY",
-			"XOR"
+			"XOR",
+			"GETXMLNAMESPACE"
 		};
 		
 		static LookupTable keywords = new LookupTable(false);

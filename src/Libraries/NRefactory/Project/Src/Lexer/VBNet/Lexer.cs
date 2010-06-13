@@ -435,6 +435,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		{
 			typeCharacter = '\0';
 			
+			if (ef.ReadXmlIdentifier) {
+				ef.ReadXmlIdentifier = false;
+				return ReadXmlIdent(ch);
+			}
+			
 			sb.Length = 0;
 			sb.Append(ch);
 			int peek;

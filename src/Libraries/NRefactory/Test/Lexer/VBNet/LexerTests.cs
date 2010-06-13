@@ -1506,5 +1506,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			ILexer lexer = GenerateLexer(new StringReader("Xor"));
 			Assert.AreEqual(Tokens.Xor, lexer.NextToken().Kind);
 		}
+
+		[Test]
+		public void TestGetXmlNamespace()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("GetXmlNamespace"));
+			Assert.AreEqual(Tokens.GetXmlNamespace, lexer.NextToken().Kind);
+		}
 	}
 }

@@ -262,6 +262,7 @@ ColonAssign = ":="
 "Xor"
 
 #XML specific keywords
+"GetXmlNamespace"
 
 #Sets
 Null("Nothing")
