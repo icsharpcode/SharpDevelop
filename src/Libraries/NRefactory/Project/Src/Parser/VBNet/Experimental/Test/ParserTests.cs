@@ -30,13 +30,13 @@ exit Global
 			);
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void VariableWithXmlLiteral()
 		{
 			RunTest(
 				@"Class Test
 	Public Sub New()
-		Dim x = <a>
+		Dim x = <a />
 	End Sub
 End Class
 ",
@@ -58,23 +58,21 @@ exit Global
 			);
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void MemberWithXmlLiteral()
 		{
 			RunTest(
 				@"Class Test
-	Private xml As XElement = <b>
+	Private xml As XElement = <b />
 	
 	Public Sub New()
-		Dim x = <a>
+		Dim x = <a />
 	End Sub
 End Class
 ",
 				@"enter Global
 	enter Type
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
 			enter IdentifierExpected
 			exit IdentifierExpected
 			enter Xml

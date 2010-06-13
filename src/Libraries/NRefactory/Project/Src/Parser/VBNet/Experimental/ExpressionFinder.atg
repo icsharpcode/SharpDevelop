@@ -368,16 +368,32 @@ Block =
 	(. PopContext(); .)
 .
 
-Expression =
-	(. nextTokenIsPotentialStartOfXmlMode = true; .)
-	(
-	Literal |
-	( "(" Expression ")" ) |
-	( Identifier [ "(" "Of" TypeName { "," TypeName } ")" ] ) |
-	( "AddressOf" Expression) |
-	
-	( XmlOpenTag (. PushContext(Context.Xml, t); .) ANY XmlCloseTag (. PopContext(); .) )
-	)
+Expression = SimpleExpressionWithSuffix. /* TODO: operators */
+
+SimpleExpressionWithSuffix = SimpleExpression { ExpressionSuffix } .
+
+SimpleExpression =
+    (. nextTokenIsPotentialStartOfXmlMode = true; .)
+    (    Literal
+    |    ( "(" Expression ")" )
+    |    Identifier
+    |    XmlLiteral
+    )
+.
+
+ExpressionSuffix =
+    "(" (. nextTokenIsPotentialStartOfXmlMode = true; .) ( "Of" TypeName { "," TypeName } ")" | ArgumentList ")" )
+|    "." IdentifierOrKeyword
+.
+
+XmlLiteral =
+    (. PushContext(Context.Xml, t); .)
+    { XmlComment } XmlElement { XmlComment }
+    (. PopContext(); .)
+.
+
+XmlElement =
+	XmlOpenTag { ANY } ( XmlCloseTagEmptyElement | XmlCloseTag { ANY | XmlElement } XmlOpenEndTag { ANY } XmlCloseTag )
 .
 
 PrimitiveTypeName = 
@@ -448,10 +464,12 @@ RaiseEventStatement =
 .
 
 InvocationStatement =
+	(. Console.WriteLine("InvocationStatement"); .)
 	[ "Call" ] Expression [ ( "=" | "^=" | "*=" | "/=" | "\\=" | "+=" | "-=" | "&=" | ">=" ) Expression ]
 .
 
 ArgumentList =
+	(. Console.WriteLine("ArgumentList"); .)
 	Expression { "," Expression [ ":=" Expression ] }
 .
 
@@ -532,5 +550,4 @@ ParameterModifier =
     "ParamArray"
 .
 
-END ExpressionFinder.
-
+END ExpressionFinder .

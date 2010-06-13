@@ -25,8 +25,9 @@ End Class
 		
 		public static void Main(string[] args)
 		{
-			ExpressionFinder p = new ExpressionFinder();
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(data));
+			ExpressionFinder p = new ExpressionFinder();
+			
 			Token t;
 			do {
 				t = lexer.NextToken();
