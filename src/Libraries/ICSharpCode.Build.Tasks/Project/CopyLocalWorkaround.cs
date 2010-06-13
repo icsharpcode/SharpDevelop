@@ -30,28 +30,30 @@ namespace ICSharpCode.Build.Tasks
 		
 		public override bool Execute()
 		{
-			// mark known assemblies as copy local=false
-			List<ITaskItem> outputAssemblies = new List<ITaskItem>();
-			foreach (ITaskItem item in this.Assemblies) {
-				if (string.IsNullOrEmpty(item.GetMetadata("Private"))) {
-					string assemblyName = item.ItemSpec;
-					foreach (string knownAssembly in KnownFrameworkAssemblies.FullAssemblyNames) {
-						if (knownAssembly.StartsWith(assemblyName, StringComparison.OrdinalIgnoreCase)) {
-							if (assemblyName.IndexOf(',') >= 0 || knownAssembly.IndexOf(',') == assemblyName.Length) {
-								// either matching full name, or matching short name
-								item.SetMetadata("Private", "False");
-								outputAssemblies.Add(item);
-								break;
+			if (this.Assemblies != null) {
+				// mark known assemblies as copy local=false
+				List<ITaskItem> outputAssemblies = new List<ITaskItem>();
+				foreach (ITaskItem item in this.Assemblies) {
+					if (string.IsNullOrEmpty(item.GetMetadata("Private"))) {
+						string assemblyName = item.ItemSpec;
+						foreach (string knownAssembly in KnownFrameworkAssemblies.FullAssemblyNames) {
+							if (knownAssembly.StartsWith(assemblyName, StringComparison.OrdinalIgnoreCase)) {
+								if (assemblyName.IndexOf(',') >= 0 || knownAssembly.IndexOf(',') == assemblyName.Length) {
+									// either matching full name, or matching short name
+									item.SetMetadata("Private", "False");
+									outputAssemblies.Add(item);
+									break;
+								}
 							}
 						}
 					}
 				}
+				this.OutputAssemblies = outputAssemblies.ToArray();
 			}
-			this.OutputAssemblies = outputAssemblies.ToArray();
 			
-			// mark mscorlib as copy local=false
-			List<ITaskItem> outputAssemblyFiles = new List<ITaskItem>();
 			if (this.AssemblyFiles != null) {
+				// mark mscorlib as copy local=false
+				List<ITaskItem> outputAssemblyFiles = new List<ITaskItem>();
 				foreach (ITaskItem item in this.AssemblyFiles) {
 					if (string.IsNullOrEmpty(item.GetMetadata("Private"))) {
 						if (item.ItemSpec.EndsWith("\\mscorlib.dll", StringComparison.OrdinalIgnoreCase)) {
@@ -60,8 +62,8 @@ namespace ICSharpCode.Build.Tasks
 						}
 					}
 				}
+				this.OutputAssemblyFiles = outputAssemblyFiles.ToArray();
 			}
-			this.OutputAssemblyFiles = outputAssemblyFiles.ToArray();
 			return true;
 		}
 	}

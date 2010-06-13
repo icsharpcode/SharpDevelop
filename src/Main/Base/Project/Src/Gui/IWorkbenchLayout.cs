@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void UnloadPad(PadDescriptor padDescriptor);
 		
 		/// <summary>
-		/// returns true, if padContent is visible;
+		/// Returns true, if the pad header is visible (the pad content doesn't need to be visible).
 		/// </summary>
 		bool IsVisible(PadDescriptor padDescriptor);
 		
