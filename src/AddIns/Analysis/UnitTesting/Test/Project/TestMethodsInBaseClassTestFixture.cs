@@ -39,37 +39,34 @@ namespace UnitTesting.Tests.Project
 	{
 		TestClass testClass;
 		MockClass c;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void SetUp()
-		{			
+		{
 			MockProjectContent projectContent = new MockProjectContent();
-			projectContent.Language = LanguageProperties.None;
 			
 			// Create the base test class.
-			MockClass baseClass = new MockClass("RootNamespace.TestFixtureBase");
+			MockClass baseClass = new MockClass(projectContent, "RootNamespace.TestFixtureBase");
 			baseClass.Attributes.Add(new MockAttribute("TestFixture"));
-			baseClass.ProjectContent = projectContent;
-			MockMethod baseMethod = new MockMethod("BaseMethod");
+			MockMethod baseMethod = new MockMethod(baseClass, "BaseMethod");
 			baseMethod.Attributes.Add(new MockAttribute("Test"));
-			baseMethod.DeclaringType = baseClass;
 			baseClass.Methods.Add(baseMethod);
 			
 			// Create the derived test class.
-			c = new MockClass("RootNamespace.MyTestFixture");
+			c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
-			MockMethod method = new MockMethod("DerivedMethod");
-			method.DeclaringType = c;
+			MockMethod method = new MockMethod(c, "DerivedMethod");
 			method.Attributes.Add(new MockAttribute("Test"));
 			c.Methods.Add(method);
 			projectContent.Classes.Add(c);
 
 			// Set derived class's base class.
-			c.BaseClass = baseClass;
+			c.AddBaseClass(baseClass);
 			
 			// Create TestClass.
-			testClass = new TestClass(c);
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testClass = new TestClass(c, testFrameworks);
 		}
 		
 		[Test]
@@ -110,7 +107,7 @@ namespace UnitTesting.Tests.Project
 			testClasses.Add(testClass);
 
 			TestResult testResult = new TestResult("RootNamespace.MyTestFixture.TestFixtureBase.BaseMethod");
-			testResult.IsFailure = true;
+			testResult.ResultType = TestResultType.Failure;
 			testClasses.UpdateTestResult(testResult);
 			
 			Assert.AreEqual(TestResultType.Failure, testClass.Result);
@@ -123,7 +120,7 @@ namespace UnitTesting.Tests.Project
 			testClasses.Add(testClass);
 
 			TestResult testResult = new TestResult("RootNamespace.MyTestFixture.BaseMethod");
-			testResult.IsFailure = true;
+			testResult.ResultType = TestResultType.Failure;
 			testClasses.UpdateTestResult(testResult);
 			
 			Assert.AreEqual(TestResultType.Failure, testClass.Result);

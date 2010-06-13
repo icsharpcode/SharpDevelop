@@ -25,6 +25,7 @@ namespace ICSharpCode.UsageDataCollector
 	public sealed class AnalyticsMonitor : IAnalyticsMonitor
 	{
 		const string UploadUrl = "http://usagedatacollector.sharpdevelop.net/upload/UploadUsageData.svc";
+		const string ProductName = "sharpdevelop";
 		public static readonly Uri PrivacyStatementUrl = new Uri("http://www.icsharpcode.net/OpenSource/SD/UsageDataCollector/");
 		
 		public static readonly AnalyticsMonitor Instance = new AnalyticsMonitor();
@@ -110,7 +111,7 @@ namespace ICSharpCode.UsageDataCollector
 				}
 			}
 			if (sessionOpened) {
-				UsageDataUploader uploader = new UsageDataUploader(dbFileName);
+				UsageDataUploader uploader = new UsageDataUploader(dbFileName, ProductName);
 				uploader.EnvironmentDataForDummySession = appEnvironmentProperties;
 				ThreadPool.QueueUserWorkItem(delegate { uploader.StartUpload(UploadUrl); });
 			}
@@ -131,6 +132,11 @@ namespace ICSharpCode.UsageDataCollector
 			if (!string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {
 				properties.Add(new UsageDataEnvironmentProperty { Name = "architecture", Value = PROCESSOR_ARCHITECTURE });
 			}
+			#pragma warning disable 0162
+			if (RevisionClass.BranchName != null) {
+				properties.Add(new UsageDataEnvironmentProperty { Name = "branch", Value = RevisionClass.BranchName });
+			}
+			#pragma warning restore 0162
 			#if DEBUG
 			properties.Add(new UsageDataEnvironmentProperty { Name = "debug", Value = "true" });
 			#endif
@@ -148,7 +154,7 @@ namespace ICSharpCode.UsageDataCollector
 				if (session != null)
 					session.Flush();
 			}
-			UsageDataUploader uploader = new UsageDataUploader(dbFileName);
+			UsageDataUploader uploader = new UsageDataUploader(dbFileName, ProductName);
 			return uploader.GetTextForStoredData();
 		}
 		

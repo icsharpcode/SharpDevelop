@@ -34,9 +34,9 @@ namespace ICSharpCode.CodeCoverage
 			runner.OutputLineReceived += OutputLineReceived;
 		}
 		
-		protected override void RunTests(UnitTestApplicationStartHelper helper)
+		protected override void RunTests(NUnitConsoleApplication app)
 		{
-			SetPartCoverRunnerProperties(helper);
+			SetPartCoverRunnerProperties(app);
 			RunPartCover();
 		}
 		
@@ -62,7 +62,7 @@ namespace ICSharpCode.CodeCoverage
 		protected override void OnAfterRunTests()
 		{
 			if (!TaskService.HasCriticalErrors(false)) {
-				ShowPad(WorkbenchSingleton.Workbench.GetPad(typeof(CodeCoveragePad)));
+				ShowPad(Context.Workbench.GetPad(typeof(CodeCoveragePad)));
 			}
 		}
 		
@@ -78,10 +78,10 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		void SetPartCoverRunnerProperties(UnitTestApplicationStartHelper helper)
+		void SetPartCoverRunnerProperties(NUnitConsoleApplication app)
 		{
-			string partCoverOutputDirectory = GetPartCoverOutputDirectory(helper.Project);
-			PartCoverSettings settings = GetPartCoverSettings(helper.Project);
+			string partCoverOutputDirectory = GetPartCoverOutputDirectory(app.Project);
+			PartCoverSettings settings = GetPartCoverSettings(app.Project);
 			
 			// By default get the code coverage for everything if
 			// no include or exclude regular expressions have been
@@ -94,9 +94,9 @@ namespace ICSharpCode.CodeCoverage
 			}
 			
 			runner.PartCoverFileName = GetPartCoverFileName();
-			runner.Target = helper.UnitTestApplication;
-			runner.TargetArguments = helper.GetArguments();
-			runner.TargetWorkingDirectory = Path.GetDirectoryName(helper.Assemblies[0]);
+			runner.Target = app.FileName;
+			runner.TargetArguments = app.GetArguments();
+			runner.TargetWorkingDirectory = Path.GetDirectoryName(app.Assemblies[0]);
 			runner.Output = Path.Combine(partCoverOutputDirectory, "Coverage.Xml");
 			AddStringsToCollection(settings.Include, runner.Include);
 			AddStringsToCollection(settings.Exclude, runner.Exclude);
@@ -128,7 +128,7 @@ namespace ICSharpCode.CodeCoverage
 		void PartCoverExited(object sender, PartCoverExitEventArgs e)
 		{
 			DisplayCoverageResults(runner.Output);
-			WorkbenchSingleton.SafeThreadAsyncCall(TestsFinished);
+			WorkbenchSingleton.SafeThreadAsyncCall(TestRunCompleted);
 		}
 		
 		void OutputLineReceived(object sender, LineReceivedEventArgs e)

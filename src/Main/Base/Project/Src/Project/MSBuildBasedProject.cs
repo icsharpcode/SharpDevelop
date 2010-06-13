@@ -77,6 +77,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the MSBuild.Construction project file.
 		/// You must lock on the project's SyncRoot before accessing the MSBuild project file!
 		/// </summary>
+		[Browsable(false)]
 		public ProjectRootElement MSBuildProjectFile {
 			get {
 				if (projectFile == null)
@@ -89,6 +90,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the MSBuild.Construction project file.
 		/// You must lock on the project's SyncRoot before accessing the MSBuild project file!
 		/// </summary>
+		[Browsable(false)]
 		public ProjectRootElement MSBuildUserProjectFile {
 			get {
 				if (projectFile == null)
@@ -1076,9 +1078,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			return result;
 		}
 		
-		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
-			MSBuildEngine.StartBuild(this, buildServices, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
+			MSBuildEngine.StartBuild(this, options, feedbackSink, MSBuildEngine.AdditionalTargetFiles);
 		}
 		
 		public override ProjectBuildOptions CreateProjectBuildOptions(BuildOptions options, bool isRootBuildable)

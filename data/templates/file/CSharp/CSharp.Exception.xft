@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<Template author="Martin Konicek" version="1.0.0">
+	
+	<Config
+		  name        = "${res:Templates.File.Exception.Name}"
+		  icon        = "C#.File.NewClass"
+		  category    = "C#"
+		  defaultname = "Exception.cs"
+		  language    = "C#"/>
+	 
+	<Description>${res:Templates.File.Exception.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<!--<Properties>
+		<Property
+			name          = "IsSealed"
+			localizedName = "${res:Templates.File.Properties.IsSealed}"
+			type          = "System.Boolean"
+			defaultValue  = "False"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.IsSealed.Description}"
+		/>
+	</Properties>-->
+	
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+using System;
+using System.Runtime.Serialization;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Desctiption of ${ClassName}.
+	/// </summary>
+	public class ${ClassName} : Exception, ISerializable
+	{
+		public ${ClassName}()
+		{
+		}
+
+	 	public ${ClassName}(string message) : base(message)
+		{
+		}
+
+		public ${ClassName}(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+
+		// This constructor is needed for serialization.
+		protected ${ClassName}(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+		}
+	}
+}]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

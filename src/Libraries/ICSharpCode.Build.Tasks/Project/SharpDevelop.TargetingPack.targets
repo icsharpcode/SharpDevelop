@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<UsingTask TaskName="ICSharpCode.Build.Tasks.CopyLocalWorkaround" AssemblyFile="$(SharpDevelopBinPath)\ICSharpCode.Build.Tasks.dll"/>
+	
+	<!--
+		This file detects when the .NET 4 targeting pack is missing and corrects the "Copy Local" flag.
+		This file uses MSBuild 4.0 features, so don't include it in older projects. When compiling inside SharpDevelop,
+		this file is automatically included if the project uses MSBuild 4.0 and targets .NET 4.0.
+	-->
+	<Target Name="SDTargetingPack" BeforeTargets="ResolveAssemblyReferences">
+		<CopyLocalWorkaround
+			Assemblies="@(Reference)"
+			AssemblyFiles="@(_ExplicitReference)">
+			<Output TaskParameter="OutputAssemblies" ItemName="Reference" />
+			<Output TaskParameter="OutputAssemblyFiles" ItemName="_ExplicitReference"/>
+		</CopyLocalWorkaround>
+	</Target>
+</Project>

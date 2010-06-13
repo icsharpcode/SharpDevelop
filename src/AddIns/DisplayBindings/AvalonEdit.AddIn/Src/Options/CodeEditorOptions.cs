@@ -135,6 +135,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool highlightSymbol = true;
+		
+		[DefaultValue(true)]
+		public bool HighlightSymbol {
+			get { return highlightSymbol; }
+			set {
+				if (highlightSymbol != value) {
+					highlightSymbol = value;
+					OnPropertyChanged("HighlightSymbol");
+				}
+			}
+		}
+		
 		bool useSmartIndentation = true;
 		
 		[DefaultValue(true)]

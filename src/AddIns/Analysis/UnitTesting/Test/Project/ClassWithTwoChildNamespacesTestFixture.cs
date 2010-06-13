@@ -16,14 +16,16 @@ namespace UnitTesting.Tests.Project
 	public class ClassWithTwoChildNamespacesTestsFixture
 	{
 		TestClass c;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
 		{
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
 			MockClass mockClass = new MockClass("UnitTesting.Tests.MyTestFixture");
-			c = new TestClass(mockClass);
+			c = new TestClass(mockClass, testFrameworks);
 		}
-
+		
 		[Test]
 		public void FullNamespace()
 		{

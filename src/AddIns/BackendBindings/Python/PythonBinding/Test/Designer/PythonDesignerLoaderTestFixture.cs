@@ -68,9 +68,7 @@ namespace PythonBinding.Tests.Designer
 			
 			serializationManager = new DesignerSerializationManager(mockDesignerLoaderHost);
 			
-			System.Console.WriteLine("Before BeginLoad");
 			loader.BeginLoad(mockDesignerLoaderHost);
-			System.Console.WriteLine("After BeginLoad");
 			rootComponent = mockDesignerLoaderHost.RootComponent;
 			
 			designedForm = new Form();

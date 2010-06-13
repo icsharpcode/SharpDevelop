@@ -79,17 +79,16 @@ namespace CSharpBinding
 				return base.GetDefaultItemType(fileName);
 		}
 		
-		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			if (this.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
 				MSBuildEngine.StartBuild(this,
-				                         buildServices,
 				                         options,
 				                         feedbackSink,
 				                         MSBuildEngine.AdditionalTargetFiles.Concat(
 				                         	new [] { Path.Combine(MSBuildEngine.SharpDevelopBinPath, "SharpDevelop.CheckMSBuild35Features.targets") }));
 			} else {
-				base.StartBuild(buildServices, options, feedbackSink);
+				base.StartBuild(options, feedbackSink);
 			}
 		}
 		

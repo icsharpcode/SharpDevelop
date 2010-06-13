@@ -180,7 +180,13 @@ namespace ICSharpCode.Svn
 				throw new ObjectDisposedException("SvnClientWrapper");
 		}
 		
-		void BeforeOperation(string operationName)
+		void BeforeWriteOperation(string operationName)
+		{
+			BeforeReadOperation(operationName);
+			ClearStatusCache();
+		}
+		
+		void BeforeReadOperation(string operationName)
 		{
 			// before any subversion operation, ensure the object is not disposed
 			// and register authorization if necessary
@@ -198,42 +204,51 @@ namespace ICSharpCode.Svn
 				OperationFinished(this, EventArgs.Empty);
 		}
 		
+		// We cache SingleStatus results because WPF asks our Condition several times
+		// per menu entry; and it would be extremely slow to hit the hard disk every time (SD2-1672)
+		Dictionary<string, Status> statusCache = new Dictionary<string, Status>(StringComparer.OrdinalIgnoreCase);
+		
 		public void ClearStatusCache()
 		{
 			CheckNotDisposed();
+			statusCache.Clear();
 		}
 		
 		public Status SingleStatus(string filename)
 		{
+			filename = FileUtility.NormalizePath(filename);
+			Status result = null;
+			if (statusCache.TryGetValue(filename, out result)) {
+				Debug("SVN: SingleStatus(" + filename + ") = cached " + result.TextStatus);
+				return result;
+			}
 			Debug("SVN: SingleStatus(" + filename + ")");
-			BeforeOperation("stat");
+			BeforeReadOperation("stat");
 			try {
-				filename = FileUtility.NormalizePath(filename);
 				SvnStatusArgs args = new SvnStatusArgs {
 					Revision = SvnRevision.Working,
 					RetrieveAllEntries = true,
 					RetrieveIgnoredEntries = true,
 					Depth = SvnDepth.Empty
 				};
-				Status result = null;
 				client.Status(
 					filename, args,
 					delegate (object sender, SvnStatusEventArgs e) {
 						Debug("SVN: SingleStatus.callback(" + e.FullPath + "," + e.LocalContentStatus + ")");
-						System.Diagnostics.Debug.Assert(filename.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase));
+						System.Diagnostics.Debug.Assert(filename.ToString().Equals(e.FullPath, StringComparison.OrdinalIgnoreCase));
 						result = new Status {
 							Copied = e.LocalCopied,
 							TextStatus = ToStatusKind(e.LocalContentStatus)
 						};
 					}
 				);
-				if (result != null) {
-					return result;
-				} else {
-					return new Status {
+				if (result == null) {
+					result = new Status {
 						TextStatus = StatusKind.None
 					};
 				}
+				statusCache.Add(filename, result);
+				return result;
 			} catch (SvnException ex) {
 				throw new SvnClientException(ex);
 			} finally {
@@ -252,7 +267,7 @@ namespace ICSharpCode.Svn
 		public void Add(string filename, Recurse recurse)
 		{
 			Debug("SVN: Add(" + filename + ", " + recurse + ")");
-			BeforeOperation("add");
+			BeforeWriteOperation("add");
 			try {
 				client.Add(filename, ConvertDepth(recurse));
 			} catch (SvnException ex) {
@@ -265,7 +280,7 @@ namespace ICSharpCode.Svn
 		public string GetPropertyValue(string fileName, string propertyName)
 		{
 			Debug("SVN: GetPropertyValue(" + fileName + ", " + propertyName + ")");
-			BeforeOperation("propget");
+			BeforeReadOperation("propget");
 			try {
 				string propertyValue;
 				if (client.GetProperty(fileName, propertyName, out propertyValue))
@@ -282,7 +297,7 @@ namespace ICSharpCode.Svn
 		public void SetPropertyValue(string fileName, string propertyName, string newPropertyValue)
 		{
 			Debug("SVN: SetPropertyValue(" + fileName + ", " + propertyName + ", " + newPropertyValue + ")");
-			BeforeOperation("propset");
+			BeforeWriteOperation("propset");
 			try {
 				if (newPropertyValue != null)
 					client.SetProperty(fileName, propertyName, newPropertyValue);
@@ -298,7 +313,7 @@ namespace ICSharpCode.Svn
 		public void Delete(string[] files, bool force)
 		{
 			Debug("SVN: Delete(" + string.Join(",", files) + ", " + force + ")");
-			BeforeOperation("delete");
+			BeforeWriteOperation("delete");
 			try {
 				client.Delete(
 					files,
@@ -315,7 +330,7 @@ namespace ICSharpCode.Svn
 		public void Revert(string[] files, Recurse recurse)
 		{
 			Debug("SVN: Revert(" + string.Join(",", files) + ", " + recurse + ")");
-			BeforeOperation("revert");
+			BeforeWriteOperation("revert");
 			try {
 				client.Revert(
 					files,
@@ -332,7 +347,7 @@ namespace ICSharpCode.Svn
 		public void Move(string from, string to, bool force)
 		{
 			Debug("SVN: Move(" + from + ", " + to + ", " + force + ")");
-			BeforeOperation("move");
+			BeforeWriteOperation("move");
 			try {
 				client.Move(
 					from, to,
@@ -349,7 +364,7 @@ namespace ICSharpCode.Svn
 		public void Copy(string from, string to)
 		{
 			Debug("SVN: Copy(" + from + ", " + to);
-			BeforeOperation("copy");
+			BeforeWriteOperation("copy");
 			try {
 				client.Copy(from, to);
 			} catch (SvnException ex) {
@@ -385,7 +400,7 @@ namespace ICSharpCode.Svn
 		{
 			Debug("SVN: Log({" + string.Join(",", paths) + "}, " + start + ", " + end +
 			      ", " + limit + ", " + discoverChangePaths + ", " + strictNodeHistory + ")");
-			BeforeOperation("log");
+			BeforeReadOperation("log");
 			try {
 				client.Log(
 					paths,

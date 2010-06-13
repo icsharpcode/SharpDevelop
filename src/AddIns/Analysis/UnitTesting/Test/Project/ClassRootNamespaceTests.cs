@@ -18,12 +18,19 @@ namespace UnitTesting.Tests.Project
 	[TestFixture]
 	public class ClassRootNamespaceTests
 	{
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
+		
+		[SetUp]
+		public void Init()
+		{
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+		}
+		
 		[Test]
 		public void OneParentNamespace()
 		{
 			MockClass mockClass = new MockClass("TestRootNamespace.MyFixture");
-			mockClass.Namespace = "TestRootNamespace";
-			TestClass testClass = new TestClass(mockClass);
+			TestClass testClass = new TestClass(mockClass, testFrameworks);
 			Assert.AreEqual("TestRootNamespace", testClass.RootNamespace);
 		}
 		
@@ -31,8 +38,7 @@ namespace UnitTesting.Tests.Project
 		public void TwoParentNamespaces()
 		{
 			MockClass mockClass = new MockClass("TestRootNamespace.Tests.MyFixture");
-			mockClass.Namespace = "TestRootNamespace.Tests";
-			TestClass testClass = new TestClass(mockClass);
+			TestClass testClass = new TestClass(mockClass, testFrameworks);
 			Assert.AreEqual("TestRootNamespace", testClass.RootNamespace);
 		}
 		
@@ -40,8 +46,7 @@ namespace UnitTesting.Tests.Project
 		public void NoNamespace()
 		{
 			MockClass mockClass = new MockClass("MyFixture");
-			mockClass.Namespace = String.Empty;
-			TestClass testClass = new TestClass(mockClass);
+			TestClass testClass = new TestClass(mockClass, testFrameworks);
 			Assert.AreEqual(String.Empty, testClass.RootNamespace);
 		}
 	}

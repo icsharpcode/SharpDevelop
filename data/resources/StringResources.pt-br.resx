@@ -228,6 +228,60 @@
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato de arquivo desconhecido.</value>
   </data>
+  <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
+    <value>Mostrar Diagrama de Classes</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Conteudo</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Mostra Conteudo</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Biblioteca de ajuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Modo Ajuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Catalogos de Ajuda instalados</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Visualizador de Ajuda da Microsoft</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Você solicitou um recurso desconectado, no modo de ajuda conectado. Você tem que mudar o modo para utilizar esta funcionalidade.</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Mostra Ajuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Usa ajuda externa</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Eu desejo usar ajuda local</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Eu quero usar ajuda online</value>
+  </data>
+  <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
+    <value>Numbero de bytes por linha</value>
+  </data>
+  <data name="AddIns.HexEditor.Display" xml:space="preserve">
+    <value>Visualizar</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
+    <value>Elementos</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
+    <value>Dado</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Offset" xml:space="preserve">
+    <value>Compensar</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
+    <value>Sistema de numeração</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Redimensionar para ajustar a largura atual.</value>
   </data>
@@ -403,11 +457,221 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Use o idioma corrente para o Projeto</value>
   </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Resultado</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Nós fundidos</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Todas as funções para {0}</value>
+  </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>A sessão do perfil do SharpDevelop selecionada foi criado por uma versão mais recente do SharpDevelop e, portanto, não pode ser aberta.</value>
+  </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>Perfil da sessão do SharpDevelop</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Este projeto não pode ser iniciado porque o arquivo executável não foi encontrado, certifique-se de que o projeto e todas as suas dependencias estão construídos corretamente!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Nenhum projeto inicializavel foi encontrado. Abortando...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject" xml:space="preserve">
+    <value>Este projeto não pode ser iniciado. Deseja configurar, na Solução, o projeto a ser iniciado?</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>Preparando para analises...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>Não foi possível registrar o Profiler no Registro COM. Não é possível iniciar perfil</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.UnregisterFailed" xml:space="preserve">
+    <value>Não foi possível cancelar o profiler do registro COM!</value>
+  </data>
+  <data name="AddIns.Profiler.MessageViewCategory" xml:space="preserve">
+    <value>Perfil</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.CombineRecursiveCalls" xml:space="preserve">
+    <value>Combinar chamadas recursivas.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.DoNotProfileNetInternals" xml:space="preserve">
+    <value>Não crie perfil para chamadas .Net internas.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDC" xml:space="preserve">
+    <value>Coletar dados apenas ao final da sessão.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup" xml:space="preserve">
+    <value>Iniciar a coleta de dados imediatamente após o inicio da sessão.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.Header" xml:space="preserve">
+    <value>Coleção de Dados</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
+    <value>Tamanho do arquivo temporario de armazenamento:</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
+    <value>Geral</value>
+  </data>
+  <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
+    <value>Perfil</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileCurrentProject" xml:space="preserve">
+    <value>Perfil do projeto atual</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable" xml:space="preserve">
+    <value>Selecionar executavel para o perfil</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable.ErrorMessage" xml:space="preserve">
+    <value>Dado invalido. Por favor, tente novamente!</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.CmdLineArgsText" xml:space="preserve">
+    <value>Argumentos da linha de comando:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.DescriptionText" xml:space="preserve">
+    <value>Selecionar o caminho do executavel que voce quer para o perfil. Opcionalmente, voce pode especificar o diretorio de trabalho e os argumentos da linha de comando.</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.ExePathText" xml:space="preserve">
+    <value>Caminho do executavel:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.StartText" xml:space="preserve">
+    <value>Iniciar o perfil</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.Title" xml:space="preserve">
+    <value>Perfil do executavel</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.WorkingDirText" xml:space="preserve">
+    <value>Diretorio de trabalho:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.CollectData" xml:space="preserve">
+    <value>Coletar dados</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Shutdown" xml:space="preserve">
+    <value>Terminar</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Title" xml:space="preserve">
+    <value>Janela de controle do perfil</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallCountColumnText" xml:space="preserve">
+    <value>Contagem de chamadas</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallsText" xml:space="preserve">
+    <value>Chamadas:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ClearQueryHistoryText" xml:space="preserve">
+    <value>Limpa historico de consulta</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData" xml:space="preserve">
+    <value>Copia dado selecionado</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopyStacktrace" xml:space="preserve">
+    <value>Copiar rastreamento de pilha</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.FindCallsOfSelected" xml:space="preserve">
+    <value>Achar chamadas das funções selecionadas</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition" xml:space="preserve">
+    <value>Ir para definição</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.SetAsRoot" xml:space="preserve">
+    <value>Definir como raiz/Unir</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions" xml:space="preserve">
+    <value>Mostrar funções</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
+    <value>Ciclos de CPU:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExecuteQueryText" xml:space="preserve">
+    <value>Executar consulta</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExpandHotPathSubtreeText" xml:space="preserve">
+    <value>Expandir caminho escolhido</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.OverviewTabText" xml:space="preserve">
+    <value>Visão global</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.QueryHistoryText" xml:space="preserve">
+    <value>Historico de Consulta</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.SearchLabelText" xml:space="preserve">
+    <value>Pesquisar:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ShowQueryBarText" xml:space="preserve">
+    <value>Mostrar barra de consulta</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimePercentageOfParentColumnText" xml:space="preserve">
+    <value>% do pai</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentColumnText" xml:space="preserve">
+    <value>Tempo gasto</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentPerCallColumnText" xml:space="preserve">
+    <value>Tempo gasto/chamada</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfColumnText" xml:space="preserve">
+    <value>Tempo gasto (proprio)</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfPerCallColumnText" xml:space="preserve">
+    <value>Tempo gasto (proprio)/chamada</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeText" xml:space="preserve">
+    <value>Tempo:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Title" xml:space="preserve">
+    <value>Analisador de Perfis de Sessão</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Top20TabText" xml:space="preserve">
+    <value>Os 20 mais</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.WaitBarText" xml:space="preserve">
+    <value>Atualizando a tela, aguarde...</value>
+  </data>
+  <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
+    <value>Executar com perfil</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extrair método.</value>
   </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsBreakError" xml:space="preserve">
+    <value>O código selecionado contém uma declaração de parar sem fechar o ciclo. Por favor, altere a seleção!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsContinueError" xml:space="preserve">
+    <value>O código selecionado contém uma declaração de continuar sem fechar o ciclo. Por favor, altere a seleção!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsGotoError" xml:space="preserve">
+    <value>O código selecionado contém uma instrução de ir para mas sem rótulo. Por favor, altere a seleção!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.EnterName" xml:space="preserve">
+    <value>Entrar com o nome para o novo metodo</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.InvalidSelection" xml:space="preserve">
+    <value>Seleção invalida! Favor selecionar uma faixa valida.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ParseErrors" xml:space="preserve">
+    <value>Ocorreram erros durante a análise! Não é possível extrair um novo método.</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>Atualmente não é suportado extrair métodos em {0}!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor" xml:space="preserve">
+    <value>Inserir construtor</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddCheckForNullLabel" xml:space="preserve">
+    <value>Adicionar validação para nulo</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddRangeCheckLabel" xml:space="preserve">
+    <value>Adicionar validação para faixa</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.Description" xml:space="preserve">
+    <value>Selecionar todos os campos que voce deseja criar com o construtor:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.VariableLabel" xml:space="preserve">
+    <value>Variavel</value>
   </data>
   <data name="AddIns.Subversion.AddToIgnoreList" xml:space="preserve">
     <value>Adicionar a lista ignore.</value>
@@ -441,6 +705,9 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   </data>
   <data name="AddIns.Subversion.History" xml:space="preserve">
     <value>Historico</value>
+  </data>
+  <data name="AddIns.Subversion.Lock" xml:space="preserve">
+    <value>Obter trava</value>
   </data>
   <data name="AddIns.Subversion.MarkConflictsAsResolved" xml:space="preserve">
     <value>Marcar conflitos como resolvidos</value>
@@ -1659,6 +1926,12 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   </data>
   <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
     <value>Descrição</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupDialog.Text" xml:space="preserve">
+    <value>Por favor, entre com a lista de extensões de arquivos separadas por ponto-evírgula. (Exemplo:. H;. C;. Cpp</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
+    <value>&amp;Editar extensões</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
     <value>&amp;Descrição</value>
@@ -4019,17 +4292,38 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone" xml:space="preserve">
     <value>Substituído com Sucesso.</value>
   </data>
+  <data name="ICSharpCode.UnitTesting.AllTestsTreeNode.Text" xml:space="preserve">
+    <value>Todos os testes</value>
+  </data>
   <data name="ICSharpCode.UnitTesting.CodeCoverage" xml:space="preserve">
     <value>Cobertura de Código</value>
   </data>
+  <data name="ICSharpCode.UnitTesting.RunAllWithCoverage" xml:space="preserve">
+    <value>Executar todos os testes com cobertura de código</value>
+  </data>
   <data name="ICSharpCode.UnitTesting.RunInTestPad" xml:space="preserve">
     <value>Executa na mesa de teste unitário</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.RunProjectTests" xml:space="preserve">
+    <value>Executar os testes no projeto corrente.</value>
   </data>
   <data name="ICSharpCode.UnitTesting.RunWithCoverage" xml:space="preserve">
     <value>Executar com cobertura de código</value>
   </data>
   <data name="ICSharpCode.UnitTesting.RunWithDebugger" xml:space="preserve">
     <value>Executar com depurador</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.AddWixExtensionToProject.WixExtensionFileFilterName" xml:space="preserve">
+    <value>Arquivos com extensão WiX</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.CompilerParametersPanel.SuppressIces" xml:space="preserve">
+    <value>Suprimir ICEs:</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.CompilerParametersPanel.WixTargetsPathLabel" xml:space="preserve">
+    <value>Caminho para arquivos WiX:</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.CompilerParametersPanel.WixTasksPathLabel" xml:space="preserve">
+    <value>Caminho para tarefas WiX:</value>
   </data>
   <data name="ICSharpCode.WixBinding.LibraryParametersPanel" xml:space="preserve">
     <value>Biblioteca</value>
@@ -4040,11 +4334,17 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="ICSharpCode.WixBinding.PackageFilesView.Title" xml:space="preserve">
     <value>Arquivos de Instalação</value>
   </data>
+  <data name="ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixExtension" xml:space="preserve">
+    <value>Adicionar extensão WiX</value>
+  </data>
   <data name="ICSharpCode.WixBinding.SetupDialogListPad.Title" xml:space="preserve">
     <value>Diálogos de Instalação</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixDialogDesigner.NoDialogSelectedInDocumentMessage" xml:space="preserve">
     <value>Nenhum diálogo de instalação selecionado no documento Wix. Por favor mova o cursor dentro de um elemento de diálogo ou use as janelas de Diálogos de Instalação para abrir um diálogo.</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixExtensionsFolderNode.Text" xml:space="preserve">
+    <value>Extensões WiX</value>
   </data>
   <data name="ICSharpCode.XmlEditor.AssignXSLT" xml:space="preserve">
     <value>&amp;Assinala XSLT...</value>
@@ -4253,6 +4553,9 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>Voce não pode mudar para uma função sem simbolos.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
+    <value>[Métodos externos]</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.FunctionSwitch" xml:space="preserve">
     <value>Mudar função</value>
   </data>
@@ -4267,6 +4570,9 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Mostrar métodos externos</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols" xml:space="preserve">
+    <value>Na {0} em {1}: linha {2}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Message" xml:space="preserve">
     <value>Excessão {0} foi disparada no depurador:</value>
@@ -5456,6 +5762,12 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="Templates.File.Categories.WindowsApplications" xml:space="preserve">
     <value>Aplicações Windows</value>
   </data>
+  <data name="Templates.File.ConfigurationElementCollection.Description" xml:space="preserve">
+    <value>Classes que herdam ConfigurationElementCollection.</value>
+  </data>
+  <data name="Templates.File.ConfigurationElementCollection.Name" xml:space="preserve">
+    <value>Coleção de Elementos de Configuração</value>
+  </data>
   <data name="Templates.File.EmptyClass.Description" xml:space="preserve">
     <value>Declaração de uma classe vazia.</value>
   </data>
@@ -5807,6 +6119,9 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="XML.MainMenu.DebugMenu" xml:space="preserve">
     <value>&amp;Depurar</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.Attach" xml:space="preserve">
+    <value>Anexar ao processo...</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.Break" xml:space="preserve">
     <value>&amp;Breque</value>
   </data>
@@ -5818,6 +6133,18 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Continue.Description" xml:space="preserve">
     <value>Continuar a execução do processo.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
+    <value>Não é possível obter a versão do .NET Framework do programa. Verifique se o programa é um assembly gerenciado.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
+    <value>Não pode anexar ao processo.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
+    <value>Não pode iniciar o processo.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.Net10NotSupported" xml:space="preserve">
+    <value>Não é suportado depurar programas do .Net Framework 1.0.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Executar &amp;sem depuração</value>
@@ -5917,6 +6244,12 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Paste" xml:space="preserve">
     <value>Co&amp;lar</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Paste.AsComment" xml:space="preserve">
+    <value>Colar como comentário</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Paste.AsString" xml:space="preserve">
+    <value>Colar como string</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Paste.Description" xml:space="preserve">
     <value>Colar texto da Área de Transferência</value>

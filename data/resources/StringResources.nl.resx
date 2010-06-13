@@ -231,6 +231,51 @@
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagram weergeven</value>
   </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Inhoud</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Inhoud weergeven</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Zoeken</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Help Bibliotheek</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Help modus</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Geïnstalleerde Help Catalogi</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Microsoft Help Viewer</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>U vroeg om een offline kenmerk in de online help-modus. U dient de modus te wijzigen om dit kenmerk te kunnen gebruiken.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Zoek nu</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Zoeken naar:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Zoeken</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Help tonen</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Externe help gebruiken</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Ik kies voor gebruik van plaatselijke help</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Ik kies voor gebruik van online help</value>
+  </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Aantal bytes per regel</value>
   </data>
@@ -2683,6 +2728,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>&amp;EOL markeringen weergeven</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Markeer symbolen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>&amp;Markeren passend haakje</value>
   </data>
@@ -3587,6 +3635,9 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Hulpbron waarde:</value>
   </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Drk Ctrl+spatie in om items van alle naamruimten weer te geven,</value>
+  </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Boo interpreteren</value>
   </data>
@@ -4341,6 +4392,9 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName" xml:space="preserve">
     <value>Algemeen</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers" xml:space="preserve">
+    <value>Genereer Visual Studio stijl event handlers</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
     <value>Raster eigenschappen</value>
@@ -6828,6 +6882,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Leeg bestand</value>
+  </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Uitzondering</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Venster voor een Gtk# toepassing.</value>

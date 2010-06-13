@@ -9,12 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 using AvalonDock;
@@ -40,19 +38,36 @@ namespace ICSharpCode.SharpDevelop.Gui
 			viewContents = new ViewContentCollection(this);
 			
 			ResourceService.LanguageChanged += OnTabPageTextChanged;
-			OnTitleNameChanged(this, EventArgs.Empty);
 		}
 		
 		protected override void FocusContent()
 		{
+			if (!(IsActiveContent && !IsKeyboardFocusWithin))
+				return;
 			IInputElement activeChild = CustomFocusManager.GetFocusedChild(this);
 			if (activeChild == null && ActiveViewContent != null) {
 				activeChild = ActiveViewContent.InitiallyFocusedControl as IInputElement;
 			}
+			AvalonWorkbenchWindow.SetFocus(this, activeChild);
+		}
+		
+		internal static void SetFocus(ManagedContent m, IInputElement activeChild)
+		{
 			if (activeChild != null) {
-				LoggingService.Debug("Will move focus to: " + activeChild);
-				Dispatcher.BeginInvoke(DispatcherPriority.Background,
-				                       new Action(delegate { Keyboard.Focus(activeChild); }));
+				LoggingService.Debug(m.Title + " - Will move focus to: " + activeChild);
+				m.Dispatcher.BeginInvoke(
+					DispatcherPriority.Background,
+					new Action(
+						delegate {
+							// ensure that condition for FocusContent() is still fulfilled
+							// (necessary to avoid focus switching loops when changing layouts)
+							if (!(m.IsActiveContent && !m.IsKeyboardFocusWithin)) {
+								LoggingService.Debug(m.Title + " - not moving focus");
+								return;
+							}
+							LoggingService.Debug(m.Title + " - moving focus to: " + activeChild);
+							Keyboard.Focus(activeChild);
+						}));
 			}
 		}
 		
@@ -232,7 +247,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SelectWindow()
 		{
-			this.SetAsActive();
+			Activate();//this.SetAsActive();
 		}
 		
 		public override void OnApplyTemplate()
@@ -312,9 +327,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				if (this.IsDirty) {
 					newTitle += "*";
-				} else if (content.IsReadOnly) {
-					newTitle += "+";
 				}
+				
+				IsLocked = content.IsReadOnly;
 				
 				if (newTitle != Title) {
 					Title = newTitle;
@@ -423,18 +438,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public event EventHandler TitleChanged;
-		
-		BitmapSource icon;
-		
-		BitmapSource IWorkbenchWindow.Icon {
-			get { return icon; }
-			set {
-				if (icon != value) {
-					icon = value;
-					base.Icon = new Image { Source = value };
-				}
-			}
-		}
 		
 		public override string ToString()
 		{

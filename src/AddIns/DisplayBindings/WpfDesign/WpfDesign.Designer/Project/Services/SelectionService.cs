@@ -87,7 +87,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					// changes the primary selection was changed to an already-selected item,
 					// then we keep the current selection.
 					// otherwise, we replace it
-					if (components.Count == 1 && IsComponentSelected(newPrimarySelection)) {
+                    if (components.Count == 1 && IsComponentSelected(newPrimarySelection) && prevSelectedItems.Length == 1){
 						// keep selectionType = 0 -> don't change the selection
 					} else {
 						selectionType = SelectionTypes.Replace;

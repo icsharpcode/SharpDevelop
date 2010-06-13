@@ -35,7 +35,6 @@ namespace PythonBinding.Tests.Utils
 
 		protected override void OnEndLoad(bool successful, ICollection errors)
 		{
-			System.Console.WriteLine("DesignerLoader.OnEndLoad: successful: " + successful);
 			if (errors != null) {
 				foreach (object o in errors) {
 					Exception ex = o as Exception;
@@ -49,22 +48,17 @@ namespace PythonBinding.Tests.Utils
 		
 		protected override void OnBeginLoad()
 		{
-			System.Console.WriteLine("DesignerLoader.OnBeginLoad");
 			base.OnBeginLoad();
 		}
 		
 		protected override void Initialize()
 		{
-			System.Console.WriteLine("DesignerLoader.Initialize");
 			base.Initialize();
 		}
 		
 		protected override void PerformLoad(IDesignerSerializationManager manager)
 		{
-			System.Console.WriteLine("DesignerLoader.PerformLoad Before");
 			base.PerformLoad(manager);
-			System.Console.WriteLine("DesignerLoader.PerformLoad After");
 		}
-
 	}
 }

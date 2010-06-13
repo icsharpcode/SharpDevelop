@@ -21,7 +21,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// <summary>
 	/// Provides <see cref="ObjectValue"/>s for debugee objects implementing IEnumerable.
 	/// </summary>
-	public class EnumerableValuesProvider : GridValuesProvider
+	/*public class EnumerableValuesProvider : GridValuesProvider
 	{
 		public EnumerableValuesProvider(Expression targetObject, DebugType iEnumerableType, DebugType itemType)
 			:base(targetObject, iEnumerableType, itemType)
@@ -50,5 +50,5 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				yield return ObjectValue.Create(currentValue, index++, this.memberFromNameMap);
 			}
 		}
-	}
+	}*/
 }

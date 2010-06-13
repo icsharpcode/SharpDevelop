@@ -133,6 +133,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				codeEditor.PrimaryTextEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				
+				if (!file.IsUntitled) {
+					codeEditor.PrimaryTextEditor.IsReadOnly = (File.GetAttributes(file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+				}
+				
 				codeEditor.Load(stream);
 				// we set the file name after loading because this will place the fold markers etc.
 				codeEditor.FileName = FileName.Create(file.FileName);
@@ -175,6 +179,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			NavigationService.Log(this.BuildNavPoint());
 			StatusBarService.SetCaretPosition(this.Column, this.Line, this.Column);
+		}
+		
+		public override bool IsReadOnly {
+			get { return codeEditor.PrimaryTextEditor.IsReadOnly; }
 		}
 		
 		#region Bookmark Handling

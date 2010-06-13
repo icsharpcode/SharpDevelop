@@ -33,6 +33,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void RunBuildJob(BuildJob job, IMSBuildChainedLoggerFilter loggerChain, Action<bool> reportWhenDone, CancellationToken cancellationToken)
 		{
+			if (job == null)
+				throw new ArgumentNullException("job");
+			if (loggerChain == null)
+				throw new ArgumentNullException("loggerChain");
 			BuildWorker worker = GetFreeWorker();
 			worker.RunJob(job, loggerChain, reportWhenDone, cancellationToken);
 		}
@@ -76,6 +80,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void RunJob(BuildJob job, IMSBuildChainedLoggerFilter loggerChain, Action<bool> reportWhenDone, CancellationToken cancellationToken)
 			{
+				Debug.Assert(loggerChain != null);
 				this.loggerChain = loggerChain;
 				this.reportWhenDone = reportWhenDone;
 				try {
@@ -119,9 +124,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			void BuildDone(bool success)
 			{
 				lock (this) {
+					cancellationRegistration.Dispose();
 					if (reportWhenDone == null)
 						return;
-					cancellationRegistration.Dispose();
 					reportWhenDone(success);
 					reportWhenDone = null;
 				}

@@ -74,11 +74,15 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
+    <Compile Include="Src\CreateTextWriterInfo.cs" />
+    <Compile Include="Src\IPythonFileService.cs" />
     <Compile Include="Src\IPythonResolver.cs" />
     <Compile Include="Src\MemberName.cs" />
     <Compile Include="Src\PythonBuiltInModuleMemberName.cs" />
     <Compile Include="Src\PythonClassResolver.cs" />
+    <Compile Include="Src\PythonConsoleApplication.cs" />
     <Compile Include="Src\PythonDotNetMethodResolver.cs" />
+    <Compile Include="Src\PythonFileService.cs" />
     <Compile Include="Src\PythonFromImport.cs" />
     <Compile Include="Src\PythonImport.cs" />
     <Compile Include="Src\PythonMethodGroupResolveResult.cs" />
@@ -89,11 +93,18 @@
     <Compile Include="Src\PythonNameCreationService.cs" />
     <Compile Include="Src\PythonNamespaceResolver.cs" />
     <Compile Include="Src\PythonResolverContext.cs" />
+    <Compile Include="Src\PythonStandardLibraryPath.cs" />
     <Compile Include="Src\PythonStandardModuleMethodResolver.cs" />
     <Compile Include="Src\PythonStandardModuleMethodResolveResult.cs" />
     <Compile Include="Src\PythonStandardModuleResolver.cs" />
     <Compile Include="Src\PythonStandardModuleResolveResult.cs" />
     <Compile Include="Src\PythonStandardModuleType.cs" />
+    <Compile Include="Src\PythonTestDebugger.cs" />
+    <Compile Include="Src\PythonTestFramework.cs" />
+    <Compile Include="Src\PythonTestResult.cs" />
+    <Compile Include="Src\PythonTestRunner.cs" />
+    <Compile Include="Src\PythonTestRunnerApplication.cs" />
+    <Compile Include="Src\PythonTestRunnerResponseFile.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
@@ -178,9 +189,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Resources\Python.xshd" />
+    <None Include="TestRunner\sdtest.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestRunner\sdtestrunner.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Lib" />
+    <Folder Include="TestRunner" />
     <Folder Include="Templates" />
     <Folder Include="Resources" />
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
@@ -206,6 +224,11 @@
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">

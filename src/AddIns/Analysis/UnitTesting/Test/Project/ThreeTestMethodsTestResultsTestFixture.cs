@@ -31,17 +31,18 @@ namespace UnitTesting.Tests.Project
 			testMethods = new TestMethodCollection();
 			
 			// TestMethod1.
-			MockMethod mockMethod = new MockMethod("TestMethod1");
+			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
+			MockMethod mockMethod = new MockMethod(c, "TestMethod1");
 			testMethod1 = new TestMethod(mockMethod);
 			testMethods.Add(testMethod1);
 			
 			// TestMethod2.
-			mockMethod = new MockMethod("TestMethod2");
+			mockMethod = new MockMethod(c, "TestMethod2");
 			testMethod2 = new TestMethod(mockMethod);
 			testMethods.Add(testMethod2);
 		
 			// TestMethod3.
-			mockMethod = new MockMethod("TestMethod3");
+			mockMethod = new MockMethod(c, "TestMethod3");
 			testMethod3 = new TestMethod(mockMethod);
 			testMethods.Add(testMethod3);
 			
@@ -157,7 +158,8 @@ namespace UnitTesting.Tests.Project
 		{
 			AllTestMethodsPass();
 			
-			MockMethod mockMethod = new MockMethod("TestMethod4");
+			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
+			MockMethod mockMethod = new MockMethod(c, "TestMethod4");
 			TestMethod testMethod4 = new TestMethod(mockMethod);
 			testMethod4.Result = TestResultType.Failure;
 			testMethods.Add(testMethod4);

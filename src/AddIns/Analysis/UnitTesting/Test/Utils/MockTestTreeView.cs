@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using System;
 
-namespace UnitTesting.Tests
+namespace UnitTesting.Tests.Utils
 {
 	public class MockTestTreeView : ITestTreeView
 	{
@@ -19,44 +19,24 @@ namespace UnitTesting.Tests
 		IProject selectedProject;
 		string selectedNamespace;
 		
-		public MockTestTreeView()
-		{
-		}
-		
 		public IMember SelectedMethod {
-			get {
-				return selectedMethod;
-			}
-			set {
-				selectedMethod = value;
-			}
+			get { return selectedMethod; }
+			set { selectedMethod = value; }
 		}
 		
 		public IClass SelectedClass {
-			get {
-				return selectedClass;
-			}
-			set {
-				selectedClass = value;
-			}
+			get { return selectedClass; }
+			set { selectedClass = value; }
 		}
 		
 		public IProject SelectedProject {
-			get {
-				return selectedProject;
-			}
-			set {
-				selectedProject = value;
-			}
+			get { return selectedProject; }
+			set { selectedProject = value; }
 		}
 		
 		public string SelectedNamespace {
-			get {
-				return selectedNamespace;
-			}
-			set {
-				selectedNamespace = value;
-			}
+			get { return selectedNamespace; }
+			set { selectedNamespace = value; }
 		}
 	}
 }

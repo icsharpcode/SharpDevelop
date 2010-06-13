@@ -18,7 +18,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
 {
-	public class UnitTestsPad : AbstractPadContent
+	public class UnitTestsPad : AbstractPadContent, IUnitTestsPad
 	{
 		TestTreeView treeView;
 		bool disposed;
@@ -28,11 +28,16 @@ namespace ICSharpCode.UnitTesting
 		static UnitTestsPad instance;
 		
 		public UnitTestsPad()
+			: this(TestService.RegisteredTestFrameworks)
+		{
+		}
+		
+		public UnitTestsPad(IRegisteredTestFrameworks testFrameworks)
 		{
 			instance = this;
 			
 			panel = new Panel();
-			treeView = CreateTestTreeView();
+			treeView = CreateTestTreeView(testFrameworks);
 			treeView.Dock = DockStyle.Fill;
 			treeView.DoubleClick += TestTreeViewDoubleClick;
 			treeView.KeyPress += TestTreeViewKeyPress;
@@ -49,7 +54,6 @@ namespace ICSharpCode.UnitTesting
 			OnAddedLoadSolutionProjectsThreadEndedHandler();
 
 			// Display currently open solution.
-
 			if (!IsParserLoadingSolution) {
 				Solution openSolution = GetOpenSolution();
 				if (openSolution != null) {
@@ -68,15 +72,11 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public static UnitTestsPad Instance {
-			get {
-				return instance;
-			}
+			get { return instance; }
 		}
 		
 		public override object Control {
-			get {
-				return panel;
-			}
+			get { return panel; }
 		}
 		
 		public override void Dispose()
@@ -97,9 +97,22 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public TestTreeView TestTreeView {
-			get {
-				return treeView;
-			}
+			get { return treeView; }
+		}
+		
+		public void ResetTestResults()
+		{
+			treeView.ResetTestResults();
+		}
+		
+		public IProject[] GetProjects()
+		{
+			return treeView.GetProjects();
+		}
+		
+		public TestProject GetTestProject(IProject project)
+		{
+			return treeView.GetTestProject(project);
 		}
 		
 		/// <summary>
@@ -137,15 +150,7 @@ namespace ICSharpCode.UnitTesting
 		
 		protected void SolutionFolderRemoved(ISolutionFolder solutionFolder)
 		{
-			IProject project = solutionFolder as IProject;
-			if (project != null) {
-				treeView.RemoveProject(project);
-			}
-			
-			if (solutionFolder is ISolutionFolderContainer) {
-				// recurse into child folders that were also removed
-				((ISolutionFolderContainer)solutionFolder).Folders.ForEach(SolutionFolderRemoved);
-			}
+			treeView.RemoveSolutionFolder(solutionFolder);
 		}
 		
 		/// <summary>
@@ -164,23 +169,12 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		protected void ProjectItemRemoved(ProjectItem projectItem)
 		{
-			if (IsTestFrameworkReferenceProjectItem(projectItem)) {
-				if (!TestProject.IsTestProject(projectItem.Project)) {
-					treeView.RemoveProject(projectItem.Project);
-				}
-			}
+			treeView.ProjectItemRemoved(projectItem);
 		}
 		
-		/// <summary>
-		/// Adds the test project to the test tree view if it has
-		/// a reference to a unit testing framework and is not
-		/// already in the test tree.
-		/// </summary>
 		protected void ProjectItemAdded(ProjectItem projectItem)
 		{
-			if (IsTestFrameworkReferenceProjectItem(projectItem)) {
-				treeView.AddProject(projectItem.Project);
-			}
+			treeView.ProjectItemAdded(projectItem);
 		}
 		
 		/// <summary>
@@ -213,9 +207,9 @@ namespace ICSharpCode.UnitTesting
 		/// Virtual method so we can override this method and return
 		/// a dummy TestTreeView when testing.
 		/// </summary>
-		protected virtual TestTreeView CreateTestTreeView()
+		protected virtual TestTreeView CreateTestTreeView(IRegisteredTestFrameworks testFrameworks)
 		{
-			return new TestTreeView();
+			return new TestTreeView(testFrameworks);
 		}
 		
 		/// <summary>
@@ -231,9 +225,7 @@ namespace ICSharpCode.UnitTesting
 		/// solution.
 		/// </summary>
 		protected virtual bool IsParserLoadingSolution {
-			get {
-				return ParserService.LoadSolutionProjectsThreadRunning;
-			}
+			get { return ParserService.LoadSolutionProjectsThreadRunning; }
 		}
 		
 		/// <summary>
@@ -318,15 +310,6 @@ namespace ICSharpCode.UnitTesting
 		{
 			command.Owner = treeView;
 			command.Run();
-		}
-		
-		bool IsTestFrameworkReferenceProjectItem(ProjectItem projectItem)
-		{
-			ReferenceProjectItem referenceProjectItem = projectItem as ReferenceProjectItem;
-			if (referenceProjectItem != null) {
-				return TestProject.IsTestFrameworkReference(referenceProjectItem);
-			}
-			return false;
 		}
 		
 		void ProjectItemAdded(object source, ProjectItemEventArgs e)

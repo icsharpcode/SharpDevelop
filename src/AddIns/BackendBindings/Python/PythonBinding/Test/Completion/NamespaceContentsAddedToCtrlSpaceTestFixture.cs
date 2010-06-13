@@ -12,6 +12,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests;
 using PythonBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.Resolver
 {
@@ -25,14 +26,14 @@ namespace PythonBinding.Tests.Resolver
 	{
 		List<ICompletionEntry> results;
 		PythonResolver resolver;
-		MockProjectContent mockProjectContent;
+		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
 		MockClass myTestClass;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			mockProjectContent = new MockProjectContent();
+			mockProjectContent = new PythonBinding.Tests.Utils.MockProjectContent();
 			mockProjectContent.NamespacesToAdd.Add("Test");
 			myTestClass = new MockClass(mockProjectContent, "MyTestClass");
 			List<ICompletionEntry> namespaceItems = new List<ICompletionEntry>();

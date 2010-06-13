@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Threading;
 
@@ -103,12 +104,21 @@ namespace ICSharpCode.SharpDevelop
 		
 		public object Invoke(Delegate method, object[] args)
 		{
-			if (args.Length == 0)
-				return dispatcher.Invoke(DispatcherPriority.Normal, method);
-			else if (args.Length == 1)
-				return dispatcher.Invoke(DispatcherPriority.Normal, method, args[0]);
-			else
-				return dispatcher.Invoke(DispatcherPriority.Normal, method, args[0], args.Splice(1));
+			object result = null;
+			Exception exception = null;
+			dispatcher.Invoke(
+				DispatcherPriority.Normal,
+				(Action)delegate {
+					try {
+						result = method.DynamicInvoke(args);
+					} catch (TargetInvocationException ex) {
+						exception = ex.InnerException;
+					}
+				});
+			// if an exception occurred, re-throw it on the calling thread
+			if (exception != null)
+				throw new TargetInvocationException(exception);
+			return result;
 		}
 	}
 }

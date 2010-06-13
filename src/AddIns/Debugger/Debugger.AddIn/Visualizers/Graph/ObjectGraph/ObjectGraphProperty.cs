@@ -64,7 +64,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			
 			this.IsAtomic = debuggerVal.Type.IsAtomic();
 			this.IsNull = debuggerVal.IsNull;
-			// null and complex properties evaluate to empty string
+			// null and complex properties will show empty string
 			this.Value = debuggerVal.IsNull || (!this.IsAtomic) ? string.Empty : debuggerVal.InvokeToString();
 			this.evaluateCalled = true;
 		}

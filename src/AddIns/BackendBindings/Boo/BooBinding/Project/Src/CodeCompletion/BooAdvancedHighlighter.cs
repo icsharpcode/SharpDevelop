@@ -14,8 +14,6 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {

@@ -193,24 +193,40 @@ namespace UpdateAssemblyInfo
 		}
 		static void RetrieveRevisionNumber()
 		{
-			
-			string oldWorkingDir = Environment.CurrentDirectory;
-			try {
-				// Change working dir so that the subversion libraries can be found
-				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, subversionLibraryDir);
-				
-				using (SvnClient client = new SvnClient()) {
-					client.Info(
-						oldWorkingDir,
-						(sender, info) => {
-							revisionNumber = info.Revision.ToString(CultureInfo.InvariantCulture);
-						});
+			if (Directory.Exists(".svn")) {
+				string oldWorkingDir = Environment.CurrentDirectory;
+				try {
+					// Change working dir so that the subversion libraries can be found
+					Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, subversionLibraryDir);
+					
+					using (SvnClient client = new SvnClient()) {
+						client.Info(
+							oldWorkingDir,
+							(sender, info) => {
+								revisionNumber = info.Revision.ToString(CultureInfo.InvariantCulture);
+							});
+					}
+				} catch (Exception e) {
+					Console.WriteLine("Reading revision number with SharpSvn failed: " + e.ToString());
+				} finally {
+					Environment.CurrentDirectory = oldWorkingDir;
 				}
-			} catch (Exception e) {
-				Console.WriteLine("Reading revision number with SharpSvn failed: " + e.ToString());
-			} finally {
-				Environment.CurrentDirectory = oldWorkingDir;
 			}
+			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
+				if (Directory.Exists("..\\.git")) {
+					ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git log HEAD~20..HEAD --no-color");
+					info.RedirectStandardOutput = true;
+					info.UseShellExecute = false;
+					using (Process p = Process.Start(info)) {
+						string output = p.StandardOutput.ReadToEnd();
+						var m = Regex.Match(output, @"git-svn-id:.*@(\d+) [0-9a-f]{8}-");
+						if (m.Success) {
+							revisionNumber = m.Groups[1].Value;
+						}
+					}
+				}
+			}
+			
 			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
 				revisionNumber = ReadRevisionFromFile();
 			}

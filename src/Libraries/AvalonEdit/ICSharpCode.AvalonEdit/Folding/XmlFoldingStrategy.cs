@@ -78,8 +78,11 @@ namespace ICSharpCode.AvalonEdit.Folding
 				}
 				firstErrorOffset = -1;
 			} catch (XmlException ex) {
-				// ignore errors
-				firstErrorOffset = document.GetOffset(ex.LineNumber, ex.LinePosition);
+				// ignore errors at invalid positions (prevent ArgumentOutOfRangeException)
+				if (ex.LineNumber >= 1 && ex.LineNumber <= document.LineCount)
+					firstErrorOffset = document.GetOffset(ex.LineNumber, ex.LinePosition);
+				else
+					firstErrorOffset = 0;
 			}
 			foldMarkers.Sort((a,b) => a.StartOffset.CompareTo(b.StartOffset));
 			return foldMarkers;

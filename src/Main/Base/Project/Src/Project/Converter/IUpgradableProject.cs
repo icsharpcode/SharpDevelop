@@ -85,5 +85,10 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		{
 			return MSBuildVersion.GetHashCode();
 		}
+		
+		public override string ToString()
+		{
+			return DisplayName;
+		}
 	}
 }

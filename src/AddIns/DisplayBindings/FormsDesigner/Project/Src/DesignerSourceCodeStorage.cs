@@ -199,8 +199,10 @@ namespace ICSharpCode.FormsDesigner
 			{
 				if (this.doNotLoad)
 					return;
-				this.encoding = ParserService.DefaultFileEncoding;
-				this.Document.Text = ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(stream, ref this.encoding);
+				using (StreamReader r = ICSharpCode.AvalonEdit.Utils.FileReader.OpenStream(stream, ParserService.DefaultFileEncoding)) {
+					this.Document.Text = r.ReadToEnd();
+					this.encoding = r.CurrentEncoding;
+				}
 			}
 			
 			public void SaveTo(Stream stream)

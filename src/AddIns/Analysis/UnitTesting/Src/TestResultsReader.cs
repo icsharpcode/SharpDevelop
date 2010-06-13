@@ -147,12 +147,12 @@ namespace ICSharpCode.UnitTesting
 		void UpdateTestSuccess()
 		{
 			string value = valueBuilder.ToString();
-			if (value =="Success") {
-				result.IsSuccess = true;
+			if (value == "Success") {
+				result.ResultType = TestResultType.Success;
 			} else if (value == "Failure") {
-				result.IsFailure = true;
+				result.ResultType = TestResultType.Failure;
 			} else {
-				result.IsIgnored = true;
+				result.ResultType = TestResultType.Ignored;
 			}
 		}
 	}

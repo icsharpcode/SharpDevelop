@@ -127,7 +127,7 @@
     <value>Annuler l'installation</value>
   </data>
   <data name="AddInManager.ActionCancelUpdate" xml:space="preserve">
-    <value>Annuler la mise a jour</value>
+    <value>Annuler la mise à jour</value>
   </data>
   <data name="AddInManager.ActionDisable" xml:space="preserve">
     <value>Désactiver</value>
@@ -142,7 +142,7 @@
     <value>Désinstaller</value>
   </data>
   <data name="AddInManager.ActionUpdate" xml:space="preserve">
-    <value>Mettre a jour</value>
+    <value>Mettre à jour</value>
   </data>
   <data name="AddInManager.AddInDependencyFailed" xml:space="preserve">
     <value>Une dépendance de cet AddIn n'a pas été trouvée. Installez la pour activer cet AddIn.</value>
@@ -231,6 +231,51 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
   </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Afficher le diagramme des classes</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Contenus</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Afficher Contenus</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Bibliothèque d'Aide</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Mode d'Aide</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Installer les Catalogues d'Aide</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Visionneuse de l'aide Microsoft</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Vous avez demandé une fonctionnalité su mode hors-ligne depuis le mode en-ligne. Changez de mode pour utiliser cette fonctionnalité.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Chercher:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Afficher l'Aide</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Utiliser l'aide externe</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Je souhaite utiliser l'aide locale</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Je souhaite utiliser l'aide en ligne</value>
   </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Nombre d'octets par ligne</value>
@@ -1987,7 +2032,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Le répertoire '{0}'  n'existe pas.</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.LookIn.SelectDirectory" xml:space="preserve">
-    <value>Choisir le répertoire où chercher</value>
+    <value>Choisir le répertoire de recherche</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.LookIn.WholeProject" xml:space="preserve">
     <value>Projet entier</value>
@@ -2020,7 +2065,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Rechercher dans:</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.SearchStrategy.RegexSearch" xml:space="preserve">
-    <value>Expression régulière</value>
+    <value>Expressions rationnelles</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.SearchStrategy.Standard" xml:space="preserve">
     <value>Recherche standard</value>
@@ -2257,7 +2302,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Autres options</value>
   </data>
   <data name="Dialog.Options.IDEOptions.AssemblyScout.PanelName" xml:space="preserve">
-    <value>Assistant Assemblage</value>
+    <value>Explorateur d'Assemblies</value>
   </data>
   <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateMembers" xml:space="preserve">
     <value>Membres privés :</value>
@@ -2676,6 +2721,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Affich&amp;er les marqueurs de fin de ligne</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Surligner symboles</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Accolades en surbrillance</value>
   </data>
@@ -2746,7 +2794,7 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
     <value>Application Windows</value>
   </data>
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
-    <value>Sélectionner le répertoire d'assemblage</value>
+    <value>Sélectionner le répertoire de création de l'assembly.</value>
   </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.BuiltinLabel" xml:space="preserve">
     <value>Intégré :</value>
@@ -3584,6 +3632,9 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Valeur de la ressource:</value>
   </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Ctrl+Espace affiche les éléments pour tous les espaces de noms</value>
+  </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Interpréteur Boo</value>
   </data>
@@ -4248,7 +4299,7 @@ Toutes les modifications seront perdues.</value>
     <value>Erreur au chargement du concepteur:</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Assembly" xml:space="preserve">
-    <value>Assemblage</value>
+    <value>Assembly</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Location" xml:space="preserve">
     <value>Emplacement</value>
@@ -4287,7 +4338,7 @@ Toutes les modifications seront perdues.</value>
     <value>&amp;Ajouter des composants</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Assembly" xml:space="preserve">
-    <value>Assemblage</value>
+    <value>Assembly</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Categories" xml:space="preserve">
     <value>Catégories</value>
@@ -4339,6 +4390,9 @@ Toutes les modifications seront perdues.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName" xml:space="preserve">
     <value>Général</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers" xml:space="preserve">
+    <value>Générer des gestionnaires d'évènement à la Visual Studio</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
     <value>Propriétés de la grille</value>
@@ -5979,7 +6033,7 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
     <value>Visibilité publique</value>
   </data>
   <data name="RegExpTk.MainDialog.Regex" xml:space="preserve">
-    <value>Expressions rationelles</value>
+    <value>Expression rationnelle</value>
   </data>
   <data name="RegExpTk.MainDialog.Replace" xml:space="preserve">
     <value>Remplacer</value>
@@ -6033,7 +6087,7 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
     <value>correspondances</value>
   </data>
   <data name="RegExpTk.Messages.RegexMissing" xml:space="preserve">
-    <value>Veuillez entrer une expression régulière</value>
+    <value>Veuillez entrer une expression rationnelle</value>
   </data>
   <data name="RegExpTk.RegExpMenu.DigitCharacter" xml:space="preserve">
     <value>Caractère numérique</value>
@@ -6105,7 +6159,7 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
     <value>Tous les fichiers (*.*)</value>
   </data>
   <data name="SharpDevelop.FileFilter.AssemblyFiles" xml:space="preserve">
-    <value>Fichiers d'assemblages (*.exe;*.dll)</value>
+    <value>Fichiers d'Assemblies (*.exe;*.dll)</value>
   </data>
   <data name="SharpDevelop.FileFilter.BinaryFiles" xml:space="preserve">
     <value>Fichiers binaires</value>
@@ -6826,6 +6880,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Fichier vide</value>
+  </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Exception</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Une fenêtre pour application GTK#.</value>
@@ -7750,7 +7807,7 @@ Erreur lors du démarrage:</value>
     <value>Documentation XML rapide</value>
   </data>
   <data name="XML.MainMenu.ToolsMenu.RegularExpressionToolkit" xml:space="preserve">
-    <value>Expressions régulières</value>
+    <value>Boîte à outils Expressions Rationnelles</value>
   </data>
   <data name="XML.MainMenu.ViewMenu" xml:space="preserve">
     <value>&amp;Affichage</value>

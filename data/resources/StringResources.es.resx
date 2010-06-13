@@ -232,6 +232,51 @@ Descargue un complemento de Internet, luego haga clic en 'Instalar Complemento' 
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostrar Diagrama de Clase</value>
   </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Contenidos</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Mostrar Contenidos</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Búsqueda</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Biblioteca de Ayuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Modo de Ayuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Catálogos de Ayuda Instalados</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Visor de Ayuda de Microsoft</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Usted a pedido un característica fuera de línea en la ayuda en modo en línea. Debe cambiar el modo para usar esta característica.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Buscar:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Búsqueda</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Mostrar Ayuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Usar ayuda externa</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Quiero usar ayuda local</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Quiero usar ayuda en línea</value>
+  </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Número de bytes por línea</value>
   </data>
@@ -2448,7 +2493,7 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
     <value>Cargar opciones específicas de usuario con e&amp;l documento</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
+    <value>Macintosh (CR)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Cargar/Guardar</value>
@@ -2457,13 +2502,13 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
     <value>Guardar</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UnixRadioButton" xml:space="preserve">
-    <value>Unix</value>
+    <value>Unix (LF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin" xml:space="preserve">
     <value>Utiliza&amp;r la papelera de reciclaje al eliminar archivos</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.WindowsRadioButton" xml:space="preserve">
-    <value>Windows</value>
+    <value>Windows (CRLF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.OutputPanel.Format" xml:space="preserve">
     <value>Formato</value>
@@ -2680,6 +2725,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Mostrar marcas de &amp;párrafo</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Resaltar símbolos</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Resaltar &amp;corchetes</value>
@@ -3590,6 +3638,9 @@ También puede escoger almacenar el parámetro de configuración en el archivo .
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Valor de recurso:</value>
   </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Presione Ctrl+Space para mostrar ítems de todos los espacios de nombre</value>
+  </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Interprete Boo</value>
   </data>
@@ -4345,6 +4396,9 @@ ha sido modificado externamente, ¿desea volver a cargarlo?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName" xml:space="preserve">
     <value>General</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers" xml:space="preserve">
+    <value>Generar Controladores de Eventos de Estilos de Visual Studio</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
     <value>Propiedades de la rejilla</value>
@@ -6834,6 +6888,9 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Archivo en Blanco</value>
+  </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Excepción</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Crea una ventana para una aplicación Gtk#.</value>

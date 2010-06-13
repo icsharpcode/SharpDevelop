@@ -490,7 +490,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
-		public virtual void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public virtual void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			feedbackSink.ReportError(new BuildError { ErrorText = "Building project " + Name + " is not supported.", IsWarning = true });
 			// we don't know how to build anything, report that we're done.

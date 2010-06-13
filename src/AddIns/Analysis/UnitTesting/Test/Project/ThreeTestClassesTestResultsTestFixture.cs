@@ -23,26 +23,29 @@ namespace UnitTesting.Tests.Project
 		TestClass testClass3;
 		TestClassCollection testClasses;
 		bool testClassesResultChanged;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
 		{
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			
 			testClassesResultChanged = false;
 			testClasses = new TestClassCollection();
 			
 			// TestClass1.
 			MockClass mockClass = new MockClass("TestClass1");
-			testClass1 = new TestClass(mockClass);
+			testClass1 = new TestClass(mockClass, testFrameworks);
 			testClasses.Add(testClass1);
 			
 			// TestClass2.
 			mockClass = new MockClass("TestClass2");
-			testClass2 = new TestClass(mockClass);
+			testClass2 = new TestClass(mockClass, testFrameworks);
 			testClasses.Add(testClass2);
 		
 			// TestClass3.
 			mockClass = new MockClass("TestClass3");
-			testClass3 = new TestClass(mockClass);
+			testClass3 = new TestClass(mockClass, testFrameworks);
 			testClasses.Add(testClass3);
 			
 			testClasses.ResultChanged += TestClassesResultChanged;
@@ -149,7 +152,7 @@ namespace UnitTesting.Tests.Project
 			AllTestClassesPass();
 			
 			MockClass mockClass = new MockClass("TestClass4");
-			TestClass testClass4 = new TestClass(mockClass);
+			TestClass testClass4 = new TestClass(mockClass, testFrameworks);
 			testClass4.Result = TestResultType.Failure;
 			testClasses.Add(testClass4);
 

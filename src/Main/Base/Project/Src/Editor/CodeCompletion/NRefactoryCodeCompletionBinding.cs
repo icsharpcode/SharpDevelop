@@ -64,6 +64,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		{
 			NRefactoryCtrlSpaceCompletionItemProvider provider = new NRefactoryCtrlSpaceCompletionItemProvider(languageProperties);
 			provider.AllowCompleteExistingExpression = true;
+			// on Ctrl+Space, include items (e.g. types / extension methods) from all namespaces, regardless of imports
+			provider.ShowItemsFromAllNamespaces = true;
 			provider.ShowCompletion(editor);
 			return true;
 		}

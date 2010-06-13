@@ -263,12 +263,15 @@ namespace ICSharpCode.XamlBinding
 				return emptyList;
 			
 			if (lastElement.LocalName.EndsWith(".", StringComparison.OrdinalIgnoreCase) || context.PressedKey == '.') {
+				if (rt == null)
+					return list;
+				
 				string key = string.IsNullOrEmpty(lastElement.Prefix) ? "" : lastElement.Prefix + ":";
-
+				
 				if (context.ParentElement.LocalName.StartsWith(lastElement.LocalName.TrimEnd('.'), StringComparison.OrdinalIgnoreCase)) {
 					AddAttributes(rt, list, includeEvents);
 					AddAttachedProperties(rt.GetUnderlyingClass(), list, key, lastElement.Name.Trim('.'));
-				} else if (rt != null && rt.GetUnderlyingClass() != null)
+				} else
 					AddAttachedProperties(rt.GetUnderlyingClass(), list, key, lastElement.Name.Trim('.'));
 			} else {
 				if (rt == null) {
@@ -1283,6 +1286,9 @@ namespace ICSharpCode.XamlBinding
 		
 		public static void AddAttachedProperties(IClass c, List<ICompletionItem> result, string key, string prefix)
 		{
+			if (c == null)
+				return;
+			
 			var attachedProperties = c.Fields.Where(f => f.IsAttached(true, false));
 			
 			int prefixLength = (prefix.Length > 0) ? prefix.Length + 1 : 0;

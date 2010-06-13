@@ -13,24 +13,24 @@ using ICSharpCode.SharpDevelop.Dom;
 namespace ICSharpCode.UnitTesting
 {
 	/// <summary>
-	/// Represents a class that can be tested. In order for a 
-	/// class to be considered to be testable it needs to have the
-	/// [TestFixture] attribute.
+	/// Represents a class that can be tested.
 	/// </summary>
 	public class TestClass
 	{
 		IClass c;
 		TestMethodCollection testMethods;
 		TestResultType testResultType;
+		IRegisteredTestFrameworks testFrameworks;
 		
 		/// <summary>
 		/// Raised when the test class result is changed.
 		/// </summary>
 		public event EventHandler ResultChanged;
 		
-		public TestClass(IClass c)
+		public TestClass(IClass c, IRegisteredTestFrameworks testFrameworks)
 		{
 			this.c = c;
+			this.testFrameworks = testFrameworks;
 		}
 		
 		/// <summary>
@@ -38,42 +38,6 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public IClass Class {
 			get { return c; }
-		}
-		
-		/// <summary>
-		/// Determines whether the class is a test fixture. A class
-		/// is considered to be a test class if it contains certain
-		/// test attributes.
-		/// </summary>
-		public static bool IsTestClass(IClass c)
-		{
-			StringComparer nameComparer = GetNameComparer(c);
-			if (nameComparer != null) {
-				TestAttributeName testAttributeName = new TestAttributeName("TestFixture", nameComparer);
-				foreach (IAttribute attribute in c.Attributes) {
-					if (testAttributeName.IsEqual(attribute.AttributeType.FullyQualifiedName)) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		
-		/// <summary>
-		/// Returns the name comparer for the specified class.
-		/// </summary>
-		public static StringComparer GetNameComparer(IClass c)
-		{
-			if (c != null) {
-				IProjectContent projectContent = c.ProjectContent;
-				if (projectContent != null) {
-					LanguageProperties language = projectContent.Language;
-					if (language != null) {
-						return language.NameComparer;
-					}
-				}
-			}
-			return null;
 		}
 		
 		/// <summary>
@@ -311,11 +275,11 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the test methods for the specified class.
 		/// </summary>
-		static TestMethodCollection GetTestMethods(IClass c)
+		TestMethodCollection GetTestMethods(IClass c)
 		{
 			TestMethodCollection testMethods = new TestMethodCollection();
 			foreach (IMethod method in c.Methods) {
-				if (TestMethod.IsTestMethod(method)) {
+				if (IsTestMethod(method)) {
 					if (!testMethods.Contains(method.Name)) {
 						testMethods.Add(new TestMethod(method));
 					}
@@ -326,7 +290,7 @@ namespace ICSharpCode.UnitTesting
 			IClass declaringType = c;
 			while (c.BaseClass != null) {
 				foreach (IMethod method in c.BaseClass.Methods) {
-					if (TestMethod.IsTestMethod(method)) {
+					if (IsTestMethod(method)) {
 						BaseTestMethod baseTestMethod = new BaseTestMethod(declaringType, method);
 						TestMethod testMethod = new TestMethod(c.BaseClass.Name, baseTestMethod);
 						if (method.IsVirtual) {
@@ -343,6 +307,11 @@ namespace ICSharpCode.UnitTesting
 				c = c.BaseClass;
 			}
 			return testMethods;
+		}
+		
+		bool IsTestMethod(IMember method)
+		{
+			return testFrameworks.IsTestMethod(method);
 		}
 		
 		/// <summary>

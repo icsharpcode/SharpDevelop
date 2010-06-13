@@ -1,0 +1,54 @@
+﻿<AddIn name               = "Microsoft Help System v1.0"
+       author             = "Mathias Simmack"
+       url                = ""
+       description        = "Help Integration for SharpDevelop"
+       addInManagerHidden = "preinstalled">
+	
+	<Runtime>
+		<Import assembly = "HelpViewer.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Services/HelpProvider">
+		<Class id = "Help3" class = "MSHelpSystem.MSHelp3Provider"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
+		<BrowserSchemeExtension id = "http" class = "MSHelpSystem.BrowserScheme"/>
+	</Path>
+
+	<Path name="/SharpDevelop/Pads/ErrorList/TaskContextMenu">
+		<MenuItem id = "Help3ShowErrorHelp" label = "${res:AddIns.HelpViewer.ShowErrorHelpTitle}" class = "MSHelpSystem.Commands.ShowErrorHelpCommand" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<OptionPanel id = "Help3Options" label = "${res:AddIns.HelpViewer.MicrosoftHelpViewerTitle}" class = "MSHelpSystem.Help3OptionsPanel" />
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "Help3TocPad"
+		     category = "Help3"
+		     title    = "${res:AddIns.HelpViewer.ContentsPadTitle}"
+		     icon     = "HtmlHelp2.16x16.Toc"
+		     class    = "MSHelpSystem.Controls.Help3TocPad"
+		     defaultPosition = "Right, Hidden" />
+		<Pad id       = "Help3TocPad"
+		     category = "Help3"
+		     title    = "${res:AddIns.HelpViewer.SearchPadTitle}"
+		     icon     = "HtmlHelp2.16x16.Search"
+		     class    = "MSHelpSystem.Controls.Help3SearchPad"
+		     defaultPosition = "Right, Hidden" />	
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">
+		<MenuItem id           = "Help3DisplayContentCommand"
+		          class        = "MSHelpSystem.Commands.DisplayContent"
+		          label        = "${res:AddIns.HelpViewer.DisplayContentsCommand}"
+		          shortcut     = "Control|Alt|F1"
+		          insertbefore = "Separator1" />
+		<MenuItem id           = "Help3DisplaySearchCommand"
+		          class        = "MSHelpSystem.Commands.DisplaySearch"
+		          label        = "${res:AddIns.HelpViewer.DisplaySearchCommand}"
+		          shortcut     = ""
+		          insertbefore = "Separator1" />	
+	</Path>
+</AddIn>

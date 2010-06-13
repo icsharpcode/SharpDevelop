@@ -4,12 +4,13 @@
                     xmlns:dmDesigner="http://icsharpcode.net/data/edmdesigner/designer"
                     xmlns:userControls="clr-namespace:ICSharpCode.Data.EDMDesigner.Core.UI.UserControls">
     
+    <DataTemplate x:Key="CSDLViewEntityTypeDataTemplate" DataType="{x:Type dmCSDL:EntityType}">
+        <userControls:CSDLTypeItem Text="{Binding Name}" UIType="{Binding Mode=OneTime}" />
+    </DataTemplate>
+    
     <HierarchicalDataTemplate x:Key="CSDLViewTreeViewDataTemplate"  DataType="{x:Type dmDesigner:CSDLView}" ItemsSource="{Binding EntityTypes}" 
         ItemTemplate="{StaticResource CSDLViewEntityTypeDataTemplate}">
         <TextBlock Text="{Binding EDMView.EDM.CSDLContainer.Name}" />
     </HierarchicalDataTemplate>
     
-    <DataTemplate x:Key="CSDLViewEntityTypeDataTemplate" DataType="{x:Type dmCSDL:EntityType}">
-        <userControls:CSDLTypeItem Text="{Binding Name}" UIType="{Binding Mode=OneTime}" />
-    </DataTemplate>
 </ResourceDictionary>

@@ -39,6 +39,22 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		/// <summary>
+		/// Dependency property for <see cref="EmptyTemplate" />.
+		/// </summary>
+		public static readonly DependencyProperty EmptyTemplateProperty =
+			DependencyProperty.Register("EmptyTemplate", typeof(ControlTemplate), typeof(CompletionList),
+			                            new FrameworkPropertyMetadata());
+		
+		/// <summary>
+		/// Content of EmptyTemplate will be shown when CompletionList contains no items.
+		/// If EmptyTemplate is null, nothing will be shown.
+		/// </summary>
+		public ControlTemplate EmptyTemplate {
+			get { return (ControlTemplate)GetValue(EmptyTemplateProperty); }
+			set { SetValue(EmptyTemplateProperty, value); }
+		}
+		
+		/// <summary>
 		/// Is raised when the completion list indicates that the user has chosen
 		/// an entry to be completed.
 		/// </summary>
@@ -337,7 +353,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			return -1;
 		}
 		
-		bool CamelCaseMatch(string text, string query)
+		static bool CamelCaseMatch(string text, string query)
 		{
 			int i = 0;
 			foreach (char upper in text.Where(c => char.IsUpper(c))) {

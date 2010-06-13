@@ -68,7 +68,6 @@
     <Compile Include="ListViewSortingTestFixture.cs" />
     <Compile Include="ModuleVisitedSequencePointsTestFixture.cs" />
     <Compile Include="AddCodeCoverageMarkersTestFixture.cs" />
-    <Compile Include="MockDocument.cs" />
     <Compile Include="PartCoverCommandLineTests.cs" />
     <Compile Include="PartCoverExitEventArgsTestFixture.cs" />
     <Compile Include="PartCoverSettingsMissingRulePrefixTestFixture.cs" />
@@ -111,10 +110,6 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\CodeCoverage.csproj">
       <Project>{08CE9972-283B-44F4-82FA-966F7DFA6B7A}</Project>

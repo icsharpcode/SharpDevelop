@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Threading;
 
+using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -26,6 +27,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		DispatcherTimer delayTimer;
 		const int delayMilliseconds = 800;
+		/// <summary>
+		/// Delays the Resolve check so that it does not get called too often when user holds an arrow.
+		/// </summary>
 		DispatcherTimer delayMoveTimer;
 		const int delayMoveMilliseconds = 100;
 		
@@ -50,11 +54,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.delayMoveTimer.Tick += TimerMoveTick;
 			this.editorView.TextArea.Caret.PositionChanged += CaretPositionChanged;
 		}
+		
+		public void ClearHighlight()
+		{
+			this.highlightRenderer.ClearHighlight();
+		}
 
 		void TimerTick(object sender, EventArgs e)
 		{
+			if (!CodeEditorOptions.Instance.HighlightSymbol)
+				return;
+			
 			this.delayTimer.Stop();
-			LoggingService.Info("tick");
 			// almost the same as DebuggerService.HandleToolTipRequest
 			var referencesToBeHighlighted = GetReferencesInCurrentFile(this.lastResolveResult);
 			this.highlightRenderer.SetHighlight(referencesToBeHighlighted);
@@ -62,7 +73,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void TimerMoveTick(object sender, EventArgs e)
 		{
-			LoggingService.Debug("move");
+			if (!CodeEditorOptions.Instance.HighlightSymbol)
+				return;
+			
 			this.delayMoveTimer.Stop();
 			this.delayTimer.Stop();
 			var resolveResult = GetExpressionUnderCaret();
@@ -120,6 +133,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		bool SameResolveResult(ResolveResult resolveResult, ResolveResult resolveResult2)
 		{
+			/*if (resolveResult == null && resolveResult2 == null)
+				return true;
+			if (resolveResult == null && resolveResult2 != null)
+				return false;
+			if (resolveResult != null && resolveResult2 == null)
+				return false;*/
+			// TODO determine if 2 ResolveResults refer to the same symbol
 			return false;
 		}
 	}

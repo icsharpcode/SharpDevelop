@@ -31,7 +31,7 @@ namespace Debugger.AddIn.Visualizers
 		public static ReadOnlyCollection<IVisualizerDescriptor> GetAllDescriptors()
 		{
 			if (allDescriptors == null) {
-				allDescriptors = new List<IVisualizerDescriptor>(CreateAllDescriptors()).AsReadOnly();
+				allDescriptors = CreateAllDescriptors().ToList().AsReadOnly();
 			}
 			return allDescriptors;
 		}

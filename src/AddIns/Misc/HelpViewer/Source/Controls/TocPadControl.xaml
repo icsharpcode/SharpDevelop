@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="MSHelpSystem.Controls.TocPadControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid>
+		<TreeView
+			Name="tocTreeView"
+			SelectedValuePath="Id"
+			SelectedItemChanged="Help3TocItemChanged"
+			ItemsSource="{Binding}"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			Margin="0">
+			<TreeView.ItemTemplate>
+				<HierarchicalDataTemplate
+					ItemsSource="{Binding Children}">
+					<TextBlock
+						Text="{Binding Title}" />
+				</HierarchicalDataTemplate>
+			</TreeView.ItemTemplate>
+		</TreeView>
+	</Grid>
+</UserControl>

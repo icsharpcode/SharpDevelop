@@ -232,6 +232,48 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagramm anzeigen</value>
   </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Inhalt</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Inhalt anzeigen</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Suche</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Hilfebibliothek</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Hilfetyp</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Installierte Hilfekataloge</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Microsoft Help Viewer</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Suchen</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Suchen nach:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Suche</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Hilfe anzeigen</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Externe Hilfe verwenden</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Ich möchte die lokale Hilfe verwenden</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Ich möchte die Online-Hilfe verwenden</value>
+  </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Anzahl Byte pro Zeile</value>
   </data>

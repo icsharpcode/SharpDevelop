@@ -27,33 +27,59 @@ namespace ICSharpCode.UnitTesting
 	
 	public class AddNUnitReferenceCommand : AbstractMenuCommand
 	{
+		public void Run(IProject project)
+		{
+			if (project != null) {
+				ReferenceProjectItem nunitRef = new ReferenceProjectItem(project, "nunit.framework");
+				ProjectService.AddProjectItem(project, nunitRef);
+				project.Save();
+			}
+		}
+		
 		public override void Run()
 		{
-			if (ProjectService.CurrentProject != null) {
-				ProjectService.AddProjectItem(ProjectService.CurrentProject, new ReferenceProjectItem(ProjectService.CurrentProject, "nunit.framework"));
-				ProjectService.CurrentProject.Save();
-			}
+			Run(ProjectService.CurrentProject);
 		}
 	}
 	
 	public class GotoDefinitionCommand : AbstractMenuCommand
 	{
+		IUnitTestFileService fileService;
+		
+		public GotoDefinitionCommand()
+			: this(new UnitTestFileService())
+		{
+		}
+		
+		public GotoDefinitionCommand(IUnitTestFileService fileService)
+		{
+			this.fileService = fileService;
+		}
+		
 		public override void Run()
 		{
 			ITestTreeView treeView = Owner as ITestTreeView;
 			if (treeView != null) {
-				IMember member = treeView.SelectedMethod;
+				IMember member = GetMember(treeView);
 				IClass c = treeView.SelectedClass;
 				if (member != null) {
-					BaseTestMethod baseTestMethod = member as BaseTestMethod;
-					if (baseTestMethod != null) {
-						member = baseTestMethod.Method;
-					}
 					GotoMember(member);
 				} else if (c != null) {
 					GotoClass(c);
 				}
 			}
+		}
+		
+		IMember GetMember(ITestTreeView treeView)
+		{
+			IMember member = treeView.SelectedMethod;
+			if (member != null) {
+				BaseTestMethod baseTestMethod = member as BaseTestMethod;
+				if (baseTestMethod != null) {
+					return baseTestMethod.Method;
+				}
+			}
+			return member;
 		}
 		
 		void GotoMember(IMember member)
@@ -71,9 +97,9 @@ namespace ICSharpCode.UnitTesting
 		void GotoFilePosition(FilePosition filePosition)
 		{
 			if (filePosition.Position.IsEmpty) {
-				FileService.OpenFile(filePosition.FileName);
+				fileService.OpenFile(filePosition.FileName);
 			} else {
-				FileService.JumpToFilePosition(filePosition.FileName, filePosition.Line, filePosition.Column);
+				fileService.JumpToFilePosition(filePosition.FileName, filePosition.Line - 1, filePosition.Column - 1);
 			}
 		}
 	}

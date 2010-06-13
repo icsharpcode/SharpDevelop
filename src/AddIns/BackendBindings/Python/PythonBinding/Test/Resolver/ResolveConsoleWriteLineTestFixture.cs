@@ -12,6 +12,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests;
 using PythonBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.Resolver
 {

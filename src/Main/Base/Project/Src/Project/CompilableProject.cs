@@ -377,6 +377,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override void OnPropertyChanged(ProjectPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
+			if (e.PropertyName == "TargetFrameworkVersion")
+				CreateItemsListFromMSBuild();
 			if (!isLoading) {
 				if (reparseReferencesSensitiveProperties.Contains(e.PropertyName)) {
 					ParserService.Reparse(this, true, false);
@@ -466,6 +468,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		
 		#region IUpgradableProject
+		[Browsable(false)]
 		public virtual bool UpgradeDesired {
 			get {
 				return MinimumSolutionVersion < Solution.SolutionVersionVS2010;

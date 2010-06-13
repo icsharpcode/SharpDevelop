@@ -257,7 +257,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Resolves expression at given position. 
+		/// Resolves expression at given position.
 		/// That is, finds ExpressionResult at that position and
 		/// calls the overload Resolve(ExpressionResult,...).
 		/// </summary>
@@ -450,6 +450,11 @@ namespace ICSharpCode.SharpDevelop
 					// ensure we never go backwards in time (we need to repeat this check after we've reacquired the lock)
 					if (fileContentVersion != null && this.bufferVersion != null && this.bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
 						if (this.bufferVersion.CompareAge(fileContentVersion) >= 0) {
+							if (parentProjectContent != null && parentProjectContent != parseInfo.CompilationUnit.ProjectContent) {
+								ICompilationUnit oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == parentProjectContent);
+								if (oldUnit != null)
+									return new ParseInformation(oldUnit);
+							}
 							return this.parseInfo;
 						}
 					}
@@ -476,7 +481,6 @@ namespace ICSharpCode.SharpDevelop
 					this.bufferVersion = fileContentVersion;
 					this.oldUnits = newUnits;
 					this.parseInfo = newParseInfo;
-					TaskService.UpdateCommentTags(fileName, resultUnit.TagComments);
 					return newParseInfo;
 				}
 			}
@@ -788,6 +792,7 @@ namespace ICSharpCode.SharpDevelop
 			// To ensure events are raised in the same order, we always invoke on the main thread.
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
+					LoggingService.Debug("ParseInformationUpdated " + e.FileName + " new!=null:" + (e.NewCompilationUnit!=null));
 					ParseInformationUpdated(null, e);
 				});
 		}

@@ -127,10 +127,10 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 					if (gridItem.Services.Selection.IsComponentSelected(rowItem)) {
 						drawingContext.DrawRectangle(selBrush, null, selRect);
 					}
-					drawingContext.PushTransform(new RotateTransform(-270));
-					drawingContext.PushTransform(new TranslateTransform(0, -10));
-					drawingContext.DrawText(text, new Point(row.Offset + row.ActualHeight / 2, 0));
-					drawingContext.Pop();
+					drawingContext.PushTransform(new RotateTransform(-90));
+					//drawingContext.PushTransform(new TranslateTransform(0, -10));
+					drawingContext.DrawText(text, new Point((row.Offset + row.ActualHeight / 2)*-1, 0));
+					//drawingContext.Pop();
 					drawingContext.Pop();
 				}
 			}
@@ -285,7 +285,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						newRowDefinition.Properties[RowDefinition.HeightProperty].SetValue(newLength2);
 						
 						FixIndicesAfterSplit(i, Grid.RowProperty, Grid.RowSpanProperty);
+						grid.UpdateLayout();
 						changeGroup.Commit();
+						
 						gridItem.Services.Selection.SetSelectedComponents(new DesignItem[] { newRowDefinition }, SelectionTypes.Auto);
 						break;
 					}
@@ -340,6 +342,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						columnCollection.CollectionElements[i].Properties[ColumnDefinition.WidthProperty].SetValue(newLength1);
 						newColumnDefinition.Properties[ColumnDefinition.WidthProperty].SetValue(newLength2);
 						FixIndicesAfterSplit(i, Grid.ColumnProperty, Grid.ColumnSpanProperty);
+						grid.UpdateLayout();
 						changeGroup.Commit();
 						gridItem.Services.Selection.SetSelectedComponents(new DesignItem[] { newColumnDefinition }, SelectionTypes.Auto);
 						break;

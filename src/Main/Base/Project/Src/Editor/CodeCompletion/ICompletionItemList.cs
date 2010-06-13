@@ -35,6 +35,13 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		CompletionItemListKeyResult ProcessInput(char key);
 		
 		/// <summary>
+		/// True if this list contains all items that were available.
+		/// False if this list could contain even more items 
+		/// (e.g. by including items from all referenced projects, regardless of imports).
+		/// </summary>
+		bool ContainsAllAvailableItems { get; }
+		
+		/// <summary>
 		/// Performs code completion for the selected item.
 		/// </summary>
 		void Complete(CompletionContext context, ICompletionItem item);
@@ -66,6 +73,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public List<ICompletionItem> Items {
 			get { return items; }
+		}
+		
+		/// <inheritdoc />
+		public virtual bool ContainsAllAvailableItems {
+			get { return true; }
 		}
 		
 		/// <summary>

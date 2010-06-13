@@ -11,10 +11,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// The code completion window.
 	/// </summary>
-	public class SharpDevelopCompletionWindow : CompletionWindow, ICompletionListWindow
+	public partial class SharpDevelopCompletionWindow : CompletionWindow, ICompletionListWindow
 	{
 		public ICompletionItem SelectedItem {
 			get {
@@ -73,7 +73,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				throw new ArgumentNullException("editor");
 			if (itemList == null)
 				throw new ArgumentNullException("itemList");
-			this.Style = ICSharpCode.Core.Presentation.GlobalStyles.WindowStyle;
+			
+			if (!itemList.ContainsAllAvailableItems) {
+				// If more items are available (Ctrl+Space wasn't pressed), show this hint
+				this.EmptyText = StringParser.Parse("${res:ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText}");
+			}
+			
+			InitializeComponent();
 			this.Editor = editor;
 			this.itemList = itemList;
 			ICompletionItem suggestedItem = itemList.SuggestedItem;
@@ -84,6 +90,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.CompletionList.SelectedItem = adapter;
 			}
 			this.StartOffset -= itemList.PreselectionLength;
+		}
+		
+		public static readonly DependencyProperty EmptyTextProperty =
+			DependencyProperty.Register("EmptyText", typeof(string), typeof(SharpDevelopCompletionWindow),
+			                            new FrameworkPropertyMetadata());
+		/// <summary>
+		/// The text thats is displayed when the <see cref="ItemList" /> is empty.
+		/// </summary>
+		public string EmptyText {
+			get { return (string)GetValue(EmptyTextProperty); }
+			set { SetValue(EmptyTextProperty, value); }
 		}
 		
 		protected override void OnSourceInitialized(EventArgs e)
