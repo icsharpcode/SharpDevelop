@@ -27,19 +27,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// The line column.
 		/// </summary>
-		int column ;
+		int column;
 		
 		
 		/// <summary>
 		/// Gets or sets the filename. 
 		/// </summary>
 		public string FileName {
-			get	{
-				return fileName;
-			}
-			set	{
-				fileName = value;
-			}
+			get	{ return fileName; }
+			set	{ fileName = value; }
 		}
 		
 		/// <summary>
@@ -47,12 +43,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// The value '0' means that no line information is available.
 		/// </summary>
 		public int Line {
-			get	{
-				return line;
-			}
-			set	{
-				line = value;
-			}
+			get	{ return line; }
+			set	{ line = value; }
 		}	
 		
 		/// <summary>
@@ -60,12 +52,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// The value '0' means that no column information is available.
 		/// </summary>
 		public int Column {
-			get	{
-				return column;
-			}
-			set	{
-				column = value;
-			}
+			get	{ return column; }
+			set	{ column = value; }
 		}			
 		/// <summary>
 		/// Creates a new instance of the <see cref="FileLineReference"/> class.

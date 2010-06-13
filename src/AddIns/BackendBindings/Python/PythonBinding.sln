@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.5293
+# SharpDevelop 4.0.0.5840
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonBinding", "PythonBinding\Project\PythonBinding.csproj", "{8D732610-8FC6-43BA-94C9-7126FD7FE361}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonBinding.Tests", "PythonBinding\Test\PythonBinding.Tests.csproj", "{23B517C9-1ECC-4419-A13F-0B7136D085CB}"
@@ -29,6 +29,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Widgets", "..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj", "{8035765F-D51F-4A0C-A746-2FD100E19419}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonEdit.AddIn", "..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj", "{0162E499-42D0-409B-AA25-EED21F75336B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "..\..\Analysis\UnitTesting\UnitTesting.csproj", "{1F261725-6318-4434-A1B1-6C70CE4CD324}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting.Tests", "..\..\Analysis\UnitTesting\Test\UnitTesting.Tests.csproj", "{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,5 +98,13 @@ Global
 		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

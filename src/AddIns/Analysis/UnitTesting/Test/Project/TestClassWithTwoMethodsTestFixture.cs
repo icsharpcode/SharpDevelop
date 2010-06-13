@@ -23,6 +23,7 @@ namespace UnitTesting.Tests.Project
 		TestMethod testMethod1;
 		TestMethod testMethod2;
 		MockClass mockClass;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
@@ -36,24 +37,21 @@ namespace UnitTesting.Tests.Project
 			MockProjectContent projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
 			
-			mockClass = new MockClass("RootNamespace.Tests.MyTestFixture");
-			mockClass.Namespace = "RootNamespace.Tests";
-			mockClass.ProjectContent = projectContent;
+			mockClass = new MockClass(projectContent, "RootNamespace.Tests.MyTestFixture");
 			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
 			projectContent.Classes.Add(mockClass);
 			
 			// Add a method to the test class
-			MockMethod mockMethod = new MockMethod("TestMethod1");
-			mockMethod.DeclaringType = mockClass;
+			MockMethod mockMethod = new MockMethod(mockClass, "TestMethod1");
 			mockMethod.Attributes.Add(new MockAttribute("Test"));
 			mockClass.Methods.Add(mockMethod);
 			
-			mockMethod = new MockMethod("TestMethod2");
-			mockMethod.DeclaringType = mockClass;
+			mockMethod = new MockMethod(mockClass, "TestMethod2");
 			mockMethod.Attributes.Add(new MockAttribute("Test"));
 			mockClass.Methods.Add(mockMethod);
 			
-			testProject = new TestProject(project, projectContent);
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testProject = new TestProject(project, projectContent, testFrameworks);
 			testClass = testProject.TestClasses[0];
 			testMethod1 = testClass.TestMethods[0];
 			testMethod2 = testClass.TestMethods[1];
@@ -69,7 +67,7 @@ namespace UnitTesting.Tests.Project
 		public void TestMethod1Failed()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod1");
-			result.IsFailure = true;
+			result.ResultType = TestResultType.Failure;
 			
 			testProject.UpdateTestResult(result);
 			
@@ -80,7 +78,7 @@ namespace UnitTesting.Tests.Project
 		public void TestMethod1Ignored()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod1");
-			result.IsIgnored = true;
+			result.ResultType = TestResultType.Ignored;
 			
 			testProject.UpdateTestResult(result);
 			
@@ -99,7 +97,7 @@ namespace UnitTesting.Tests.Project
 		public void TestMethod1Passes()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod1");
-			result.IsSuccess = true;
+			result.ResultType = TestResultType.Success;
 			
 			testProject.UpdateTestResult(result);
 			
@@ -118,7 +116,7 @@ namespace UnitTesting.Tests.Project
 		public void TestMethod2Passes()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod2");
-			result.IsSuccess = true;
+			result.ResultType = TestResultType.Success;
 			
 			testProject.UpdateTestResult(result);
 			
@@ -192,10 +190,8 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TestMethodShouldBeUpdatedInClass()
 		{
-			MockMethod mockMethod = new MockMethod("TestMethod1");
-			mockMethod.DeclaringType = mockClass;
+			MockMethod mockMethod = new MockMethod(mockClass, "TestMethod1");
 			mockMethod.Attributes.Add(new MockAttribute("Test"));
-			mockClass.SetCompoundClass(mockClass);
 			
 			// Remove the existing TestMethod1 in the class.
 			mockClass.Methods.RemoveAt(0);

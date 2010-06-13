@@ -13,7 +13,7 @@ using System.Linq;
 namespace Debugger.AddIn.Visualizers.Graph
 {
 	/// <summary>
-	/// Description of NodeControlCache.
+	/// Store to reuse <see cref="NodeControl" />s so that they don't have to be created for every drawing.
 	/// </summary>
 	public class NodeControlCache
 	{

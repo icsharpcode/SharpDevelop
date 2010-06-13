@@ -100,7 +100,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// Any modifications inside the rope will also cause the content to be initialized.
 		/// However, insertions at the beginning and the end, as well as inserting this rope into another or
 		/// using the <see cref="Concat(Rope{T},Rope{T})"/> method, allows constructions of larger ropes where parts are
-		/// lazyly loaded.
+		/// lazily loaded.
 		/// However, even methods like Concat may sometimes cause the initializer function to be called, e.g. when
 		/// two short ropes are concatenated.
 		/// </remarks>
@@ -451,7 +451,8 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </remarks>
 		public T this[int index] {
 			get {
-				if (index < 0 || index >= this.Length) {
+				// use unsigned integers - this way negative values for index overflow and can be tested for with the same check
+				if (unchecked((uint)index >= (uint)this.Length)) {
 					throw new ArgumentOutOfRangeException("index", index, "0 <= index < " + this.Length.ToString(CultureInfo.InvariantCulture));
 				}
 				RopeCacheEntry entry = FindNodeUsingCache(index).Peek();

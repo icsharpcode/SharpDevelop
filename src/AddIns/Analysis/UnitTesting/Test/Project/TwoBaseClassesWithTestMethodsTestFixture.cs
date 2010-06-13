@@ -26,41 +26,38 @@ namespace UnitTesting.Tests.Project
 	{
 		TestClass testClass;
 		MockClass c;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void SetUp()
-		{			
+		{
 			MockProjectContent projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
-
+			
 			// Create the top base test class.
-			MockClass baseBaseClass = new MockClass("ICSharpCode.SharpDevelop.Tests.BaseBaseTestFixture");
-			baseBaseClass.ProjectContent = projectContent;
-			MockMethod baseMethod = new MockMethod("BaseBaseTest");
+			MockClass baseBaseClass = new MockClass(projectContent, "ICSharpCode.SharpDevelop.Tests.BaseBaseTestFixture");
+			MockMethod baseMethod = new MockMethod(baseBaseClass, "BaseBaseTest");
 			baseMethod.Attributes.Add(new MockAttribute("Test"));
-			baseMethod.DeclaringType = baseBaseClass;
 			baseBaseClass.Methods.Add(baseMethod);
 			
 			// Create the next level test class.
-			MockClass baseClass = new MockClass("ICSharpCode.SharpDevelop.Tests.BaseTestFixture");
-			baseClass.ProjectContent = projectContent;
-			baseMethod = new MockMethod("BaseTest");
+			MockClass baseClass = new MockClass(projectContent, "ICSharpCode.SharpDevelop.Tests.BaseTestFixture");
+			baseMethod = new MockMethod(baseClass, "BaseTest");
 			baseMethod.Attributes.Add(new MockAttribute("Test"));
-			baseMethod.DeclaringType = baseClass;
 			baseClass.Methods.Add(baseMethod);
-
+			
 			// Create the derived test class.
-			c = new MockClass("ICSharpCode.SharpDevelop.Tests.MainTestFixture");
+			c = new MockClass(projectContent, "ICSharpCode.SharpDevelop.Tests.MainTestFixture");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
 			projectContent.Classes.Add(c);
 
 			// Set the base class for each class in the hierarchy.
-			c.BaseClass = baseClass;
-			baseClass.BaseClass = baseBaseClass;
+			c.AddBaseClass(baseClass);
+			baseClass.AddBaseClass(baseBaseClass);
 			
 			// Create TestClass.
-			testClass = new TestClass(c);
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testClass = new TestClass(c, testFrameworks);
 		}
 
 		[Test]
@@ -95,7 +92,7 @@ namespace UnitTesting.Tests.Project
 			testClasses.Add(testClass);
 
 			TestResult testResult = new TestResult("ICSharpCode.SharpDevelop.Tests.MainTestFixture.BaseBaseTest");
-			testResult.IsFailure = true;
+			testResult.ResultType = TestResultType.Failure;
 			testClasses.UpdateTestResult(testResult);
 			
 			Assert.AreEqual(TestResultType.Failure, testClass.Result);

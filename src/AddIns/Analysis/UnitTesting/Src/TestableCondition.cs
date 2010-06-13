@@ -19,6 +19,18 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class TestableCondition : IConditionEvaluator
 	{
+		IRegisteredTestFrameworks testFrameworks;
+		
+		public TestableCondition(IRegisteredTestFrameworks testFrameworks)
+		{
+			this.testFrameworks = testFrameworks;
+		}
+		
+		public TestableCondition()
+			: this(TestService.RegisteredTestFrameworks)
+		{
+		}
+		
 		public static IMember GetMember(object caller)
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
@@ -61,9 +73,22 @@ namespace ICSharpCode.UnitTesting
 			if (testTreeView != null) {
 				return testTreeView.SelectedProject;
 			}
+			IClass c = GetClassFromMemberOrCaller(caller);
+			return GetProject(c);
+		}
+		
+		static IClass GetClassFromMemberOrCaller(object caller)
+		{
 			IMember m = GetMember(caller);
-			IClass c = (m != null) ? m.DeclaringType : GetClass(caller);
-			if (c != null && c.ProjectContent != null) {
+			if (m != null) {
+				return m.DeclaringType;
+			}
+			return GetClass(caller);
+		}
+		
+		static IProject GetProject(IClass c)
+		{
+			if (c != null) {
 				return (IProject)c.ProjectContent.Project;
 			}
 			return null;
@@ -85,13 +110,18 @@ namespace ICSharpCode.UnitTesting
 		{
 			IMember m = GetMember(caller);
 			if (m != null) {
-				return TestMethod.IsTestMethod(m);
+				return testFrameworks.IsTestMethod(m);
 			}
 			IClass c = GetClass(caller);
-			if (c == null || c.ProjectContent == null || c.ProjectContent.Project == null) {
-				return false;
+			if (ClassHasProject(c)) {
+				return testFrameworks.IsTestClass(c);
 			}
-			return TestClass.IsTestClass(c);
+			return false;
+		}
+		
+		static bool ClassHasProject(IClass c)
+		{
+			return (c != null) && (c.ProjectContent.Project != null);
 		}
 	}
 }

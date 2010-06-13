@@ -38,8 +38,18 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		Window parentWindow;
 		TextDocument document;
-		int startOffset;
-		int endOffset;
+		
+		/// <summary>
+		/// Gets/Sets the start of the text range in which the completion window stays open.
+		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
+		/// </summary>
+		public int StartOffset { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the end of the text range in which the completion window stays open.
+		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
+		/// </summary>
+		public int EndOffset { get; set; }
 		
 		/// <summary>
 		/// Creates a new CompletionWindowBase.
@@ -53,7 +63,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.Owner = parentWindow;
 			this.AddHandler(MouseUpEvent, new MouseButtonEventHandler(OnMouseUp), true);
 			
-			startOffset = endOffset = this.TextArea.Caret.Offset;
+			StartOffset = EndOffset = this.TextArea.Caret.Offset;
 			
 			AttachEvents();
 		}
@@ -313,24 +323,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		}
 		
 		/// <summary>
-		/// Gets/Sets the start of the text range in which the completion window stays open.
-		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
-		/// </summary>
-		public int StartOffset {
-			get { return startOffset; }
-			set { startOffset = value; }
-		}
-		
-		/// <summary>
-		/// Gets/Sets the end of the text range in which the completion window stays open.
-		/// This text portion is used to determine the text used to select an entry in the completion list by typing.
-		/// </summary>
-		public int EndOffset {
-			get { return endOffset; }
-			set { endOffset = value; }
-		}
-		
-		/// <summary>
 		/// Gets/sets whether the completion window should expect text insertion at the start offset,
 		/// which not go into the completion region, but before it.
 		/// </summary>
@@ -344,13 +336,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				Close(); // removal immediately in front of completion segment: close the window
 				// this is necessary when pressing backspace after dot-completion
 			}
-			if (e.Offset == startOffset && e.RemovalLength == 0 && ExpectInsertionBeforeStart) {
-				startOffset = e.GetNewOffset(startOffset, AnchorMovementType.AfterInsertion);
+			if (e.Offset == StartOffset && e.RemovalLength == 0 && ExpectInsertionBeforeStart) {
+				StartOffset = e.GetNewOffset(StartOffset, AnchorMovementType.AfterInsertion);
 				this.ExpectInsertionBeforeStart = false;
 			} else {
-				startOffset = e.GetNewOffset(startOffset, AnchorMovementType.BeforeInsertion);
+				StartOffset = e.GetNewOffset(StartOffset, AnchorMovementType.BeforeInsertion);
 			}
-			endOffset = e.GetNewOffset(endOffset, AnchorMovementType.AfterInsertion);
+			EndOffset = e.GetNewOffset(EndOffset, AnchorMovementType.AfterInsertion);
 		}
 	}
 }

@@ -8,12 +8,12 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Completion
 {
 	/// <summary>
 	/// Tests the code completion after an "import" statement.
@@ -48,7 +48,7 @@ namespace PythonBinding.Tests
 			Assert.IsFalse(codeCompletionBinding.HandleKeyword(textEditor, "Unknown"));
 		}
 		
-		[Test]
+	[Test]
 		public void HandlesUppercaseImportKeyword()
 		{
 			Assert.IsTrue(codeCompletionBinding.HandleKeyword(textEditor, "IMPORT"));

@@ -28,6 +28,7 @@ namespace UnitTesting.Tests.Project
 		TestProject testProject;
 		IProject project;
 		MockProjectContent projectContent;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
@@ -41,42 +42,35 @@ namespace UnitTesting.Tests.Project
 			
 			// Add a test class.
 			projectContent = new MockProjectContent();
-			projectContent.Language = LanguageProperties.None;
-			MockClass c = new MockClass("RootNamespace.MyTestFixture");
+			MockClass c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
-			c.SetCompoundClass(c);
-			MockMethod test1Method = new MockMethod("Test1");
-			test1Method .DeclaringType = c;
-			test1Method .Attributes.Add(new MockAttribute("Test"));
+			MockMethod test1Method = new MockMethod(c, "Test1");
+			test1Method.Attributes.Add(new MockAttribute("Test"));
 			c.Methods.Add(test1Method);
 			
 			// Test 2 method is from a duplicate test class.
-			MockMethod test2Method = new MockMethod("Test2"); 
-			test2Method.DeclaringType = c;
+			MockMethod test2Method = new MockMethod(c, "Test2"); 
 			test2Method.Attributes.Add(new MockAttribute("Test"));
 			c.Methods.Add(test2Method);			
 			projectContent.Classes.Add(c);
-						
-			testProject = new TestProject(project, projectContent);
+			
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testProject = new TestProject(project, projectContent, testFrameworks);
 			
 			// Make sure test methods are created, otherwise
 			// the Test2 method will never be looked at due to lazy evaluation
-			// of test method.s
+			// of test method.
 			int count = testProject.TestClasses[0].TestMethods.Count;
 			
 			// Change the name of the second test class.
 			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
 			oldUnit.Classes.Add(c);
 			c.Methods.Remove(test2Method); // Remove duplicate test class method.
-
 			
 			// Create new compilation unit with inner class that has its method renamed.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newTestClass = new MockClass("RootNamespace.MyNewTestFixture");
-			newTestClass.ProjectContent = projectContent;
+			MockClass newTestClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
 			newTestClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newTestClass.SetCompoundClass(newTestClass);
 			projectContent.Classes.Add(newTestClass);
 			newTestClass.Methods.Add(test2Method);
 			newUnit.Classes.Add(newTestClass);
@@ -104,7 +98,7 @@ namespace UnitTesting.Tests.Project
 		
 		/// <summary>
 		/// This test ensures that the existing class in the project content is used to update
-		/// the test methods. So the any methods from the duplicate test class are removed.
+		/// the test methods. So any methods from the duplicate test class are removed.
 		/// </summary>
 		[Test]
 		public void OldTestClassHasOneMethod()

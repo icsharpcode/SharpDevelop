@@ -93,12 +93,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuildLoggerFilters = AddInTree.BuildItems<IMSBuildLoggerFilter>(LoggerFiltersPath, null, false);
 		}
 		
-		public static void StartBuild(IProject project, ThreadSafeServiceContainer serviceContainer, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
+		public static void StartBuild(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IEnumerable<string> additionalTargetFiles)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
-			if (serviceContainer == null)
-				throw new ArgumentNullException("serviceContainer");
 			if (options == null)
 				throw new ArgumentNullException("options");
 			if (feedbackSink == null)
@@ -111,7 +109,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (project.MinimumSolutionVersion >= Solution.SolutionVersionVS2010) {
 				engine.additionalTargetFiles.Add(Path.Combine(Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location), "SharpDevelop.TargetingPack.targets"));
 			}
-			engine.serviceContainer = serviceContainer;
 			engine.StartBuild();
 		}
 		
@@ -120,7 +117,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		ProjectBuildOptions options;
 		IBuildFeedbackSink feedbackSink;
 		List<string> additionalTargetFiles;
-		ThreadSafeServiceContainer serviceContainer;
 		
 		private MSBuildEngine(IProject project, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
@@ -177,7 +173,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			get { return projectFileName; }
 		}
 		
-		List<string> interestingTasks = new List<string>();
+		/// <summary>
+		/// Gets the minimum solution version (VS version) required to open the project.
+		/// </summary>
+		public int ProjectMinimumSolutionVersion {
+			get { return projectMinimumSolutionVersion; }
+		}
+		
+		HashSet<string> interestingTasks = new HashSet<string>();
 		string temporaryFileName;
 		
 		/// <summary>

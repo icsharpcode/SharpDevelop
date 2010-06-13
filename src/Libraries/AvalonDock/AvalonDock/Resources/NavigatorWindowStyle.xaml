@@ -1,0 +1,232 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ad="clr-namespace:AvalonDock"
+    xmlns:adRes="clr-namespace:AvalonDock.Properties;assembly=AvalonDock"
+    >
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/AvalonDock;component/Resources/Brushes.xaml"/>
+        <ResourceDictionary Source="/AvalonDock;component/Resources/Common.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <SolidColorBrush x:Key="NavigatorWindowBackground" Color="White"/>
+
+    <SolidColorBrush x:Key="NavigatorWindowBorderBrush" Color="#8591A2"/>
+    <LinearGradientBrush x:Key="NavigatorWindowContentsBackground" EndPoint="0.5,1" StartPoint="0.5,0">
+        <GradientStop Color="#CED4DB" Offset="0"/>
+        <GradientStop Color="#D7DEE6" Offset="0.044"/>
+        <GradientStop Color="#C8D5E8" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="NavigatorWindowSelectedContentBackground" EndPoint="0.5,1" StartPoint="0.5,0">
+        <GradientStop Color="#E2EDFA" Offset="0"/>
+        <GradientStop Color="#D5E6F9" Offset="0.5"/>
+        <GradientStop Color="#C5DDFA" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="NavigatorWindowSelectedContentBorderBrush" Color="#80A9DB"/>
+    <SolidColorBrush x:Key="NavigatorWindowSelectedContentInternalBorderBrush" Color="#EBF3FB"/>
+
+    <DataTemplate x:Key="NavigatorWindowContentsListItemTemplate" DataType="{x:Type ad:NavigatorWindowItem}">
+        <Border Background="Transparent" Cursor="Hand" Padding="0,2,0,2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!--<Image Source="{Binding Icon, Converter={x:Static ad:Converters.ObjectToImageConverter}}" Width="16" UseLayoutRounding="True"/>-->
+                <Image Source="{Binding Icon}" UseLayoutRounding="True" Width="16"/>
+                <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" Margin="4,0,0,0" TextWrapping="NoWrap" Grid.Column="1"/>
+            </Grid>
+        </Border>            
+    </DataTemplate>
+
+    <DataTemplate x:Key="NavigatorWindowDocumentsListItemTemplate" DataType="{x:Type ad:NavigatorWindowDocumentItem}">
+        <Border Background="Transparent" Cursor="Hand" Padding="0,2,0,2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!--<Image Source="{Binding Icon, Converter={x:Static ad:Converters.ObjectToImageConverter}}" Width="16" UseLayoutRounding="True"/>-->
+                <Image Source="{Binding Icon}" UseLayoutRounding="True" Width="16"/>
+                <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" Margin="4,0,0,0" TextWrapping="NoWrap" Grid.Column="1"/>
+            </Grid>
+        </Border>
+    </DataTemplate>
+    
+
+    <Style x:Key="NavigatorWindowContentsListItemContainerStyle" TargetType="ListBoxItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Grid>
+                        <Border 
+				            x:Name="intMouseOverBorder" 
+                            Grid.ColumnSpan="2" 
+				            CornerRadius="2" 
+				            BorderThickness="1"
+				            BorderBrush="{StaticResource NavigatorWindowSelectedContentBorderBrush}"
+				            Visibility="Collapsed">
+                            <Border 
+                                x:Name="intSelectedItemBorder"
+                                Opacity="0.5"
+                                BorderThickness="1"
+					            BorderBrush="{StaticResource NavigatorWindowSelectedContentInternalBorderBrush}"
+					            CornerRadius="1"
+					            Background="{StaticResource NavigatorWindowSelectedContentBackground}"
+					        />
+                        </Border>
+                        <ContentPresenter/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Visibility" Value="Visible" TargetName="intMouseOverBorder"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="NavigatorWindowDocumentsListItemContainerStyle" TargetType="ListBoxItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Grid>
+                        <Border 
+				            x:Name="intMouseOverBorder" 
+                            Grid.ColumnSpan="2" 
+				            CornerRadius="2" 
+				            BorderThickness="1"
+				            BorderBrush="{StaticResource NavigatorWindowSelectedContentBorderBrush}"
+				            Visibility="Collapsed">
+                            <Border 
+                                x:Name="intSelectedItemBorder"
+                                Opacity="0.5"
+                                BorderThickness="1"
+					            BorderBrush="{StaticResource NavigatorWindowSelectedContentInternalBorderBrush}"
+					            CornerRadius="1"
+					            Background="{StaticResource NavigatorWindowSelectedContentBackground}"
+					        />
+                        </Border>
+                        <ContentPresenter/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Visibility" Value="Visible" TargetName="intMouseOverBorder"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Visibility" Value="Visible" TargetName="intMouseOverBorder"/>
+                            <Setter Property="Opacity" Value="1.0" TargetName="intSelectedItemBorder"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="NavigatorWindowContentsListStyle"	 TargetType="ListBox">
+        <Setter Property="ItemTemplate" Value="{StaticResource NavigatorWindowContentsListItemTemplate}"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource NavigatorWindowContentsListItemContainerStyle}"/>
+        <Setter Property="Background" Value="{x:Null}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+    </Style>
+
+    <Style x:Key="NavigatorWindowDocumentsListStyle" TargetType="ListBox">
+        <Setter Property="ItemTemplate" Value="{StaticResource NavigatorWindowDocumentsListItemTemplate}"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource NavigatorWindowDocumentsListItemContainerStyle}"/>
+        <Setter Property="Background" Value="{x:Null}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True" ItemWidth="180" Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="{x:Type ad:NavigatorWindow}"  TargetType="{x:Type ad:NavigatorWindow}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ad:NavigatorWindow}">
+                    <Border Width="574" Height="437" Background="{StaticResource NavigatorWindowBackground}" BorderBrush="{StaticResource NavigatorWindowBorderBrush}" BorderThickness="1" CornerRadius="3">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15"/>
+                        </Border.Effect>
+                        <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="54"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="42"/>
+                                </Grid.RowDefinitions>
+                                <Border>
+                                    <Grid Margin="5">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Image UseLayoutRounding="True" Source="{Binding Path=SelectedItem.Icon, ElementName=activeFileList}" Width="16"/>
+                                            <TextBlock x:Name="titleSelectedDocument" Grid.Column="1" Text="{Binding Path=SelectedItem.Title, ElementName=activeFileList}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Margin="4,0,0,0" TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                    <TextBlock Grid.Row="1" Text="{Binding Path=SelectedItem.ContentTypeDescription, ElementName=activeFileList}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </Border>
+                                <Border Grid.Row="1" Background="{StaticResource NavigatorWindowContentsBackground}">
+
+                                    <Grid Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="20"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                        <TextBlock Text="{x:Static adRes:Resources.NavigatorWindow_ActiveToolWindows}" FontWeight="Bold"/>
+                                            <ListBox 
+								                Grid.Row="1" 
+								                Margin="0,0,10,0" 
+								                ItemsSource="{TemplateBinding DockableContents}" 
+								                Style="{StaticResource NavigatorWindowContentsListStyle}">
+                                            </ListBox>
+                                        </Grid>
+                                        <Grid Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="20"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                        <TextBlock Text="{x:Static adRes:Resources.NavigatorWindow_ActiveFiles}" FontWeight="Bold"/>
+                                            <ListBox 
+								                Grid.Row="1" 
+                                                x:Name="activeFileList"
+								                Margin="0,0,10,0" 
+								                ItemsSource="{TemplateBinding Documents}"
+								                Style="{StaticResource NavigatorWindowDocumentsListStyle}">
+                                            </ListBox>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="2" Margin="5">
+                                <TextBlock Text="{Binding Path=SelectedItem.ItemContent.InfoTip, ElementName=activeFileList}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                </ControlTemplate>
+                
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+</ResourceDictionary>

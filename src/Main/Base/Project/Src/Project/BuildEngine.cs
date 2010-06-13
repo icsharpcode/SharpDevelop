@@ -272,7 +272,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void DoStartBuild(object state)
 			{
-				project.StartBuild(engine.serviceContainer, options, this);
+				project.StartBuild(options, this);
 			}
 			
 			public void ReportError(BuildError error)
@@ -315,7 +315,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		BuildNode rootNode;
 		readonly IBuildable rootProject;
 		readonly BuildResults results = new BuildResults();
-		readonly ThreadSafeServiceContainer serviceContainer = new ThreadSafeServiceContainer();
 		DateTime buildStart;
 		
 		readonly List<BuildNode> projectsCurrentlyBuilding = new List<BuildNode>();
@@ -538,7 +537,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		void ReportDone()
 		{
-			serviceContainer.Dispose();
 			if (combinedBuildFeedbackSink != null) {
 				if (combinedBuildFeedbackSink is MessageViewSink) {
 					// Special case GUI-builds so that they have more information available:

@@ -51,7 +51,6 @@ namespace PythonBinding.Tests.Converter
 		{
 			NRefactoryToPythonConverter converter = new NRefactoryToPythonConverter(SupportedLanguage.CSharp);
 			string code = converter.Convert(csharp);
-			System.Console.WriteLine(code);
 			string expectedCode = "class Foo(object):\r\n" +
 									"\tdef GetCount(self):\r\n" +
 									"\t\tcount = 0\r\n" +
@@ -60,7 +59,7 @@ namespace PythonBinding.Tests.Converter
 									"\t\t\tcount += 1\r\n" +
 									"\t\t\ti = i + 1\r\n" +
 									"\t\treturn count";
-		
+			
 			Assert.AreEqual(expectedCode, code);
 		}
 	}

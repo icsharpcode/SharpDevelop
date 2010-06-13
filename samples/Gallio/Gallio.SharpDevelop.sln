@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.5840
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gallio.SharpDevelop", "Gallio.SharpDevelop\Gallio.SharpDevelop.csproj", "{88D3DC5E-8A91-4DCE-A785-CC37DE0AA0EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gallio.SharpDevelop.Tests", "Gallio.SharpDevelop.Tests\Gallio.SharpDevelop.Tests.csproj", "{3F6C539D-DB38-41B4-A5B3-B9A52AE607CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gallio.Extension", "Gallio.Extension\Gallio.Extension.csproj", "{98030C86-7B0F-4813-AC4D-9FFCF00CF81F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88D3DC5E-8A91-4DCE-A785-CC37DE0AA0EC}.Debug|x86.Build.0 = Debug|x86
+		{88D3DC5E-8A91-4DCE-A785-CC37DE0AA0EC}.Debug|x86.ActiveCfg = Debug|x86
+		{88D3DC5E-8A91-4DCE-A785-CC37DE0AA0EC}.Release|x86.Build.0 = Release|x86
+		{88D3DC5E-8A91-4DCE-A785-CC37DE0AA0EC}.Release|x86.ActiveCfg = Release|x86
+		{3F6C539D-DB38-41B4-A5B3-B9A52AE607CD}.Debug|x86.Build.0 = Debug|x86
+		{3F6C539D-DB38-41B4-A5B3-B9A52AE607CD}.Debug|x86.ActiveCfg = Debug|x86
+		{3F6C539D-DB38-41B4-A5B3-B9A52AE607CD}.Release|x86.Build.0 = Release|x86
+		{3F6C539D-DB38-41B4-A5B3-B9A52AE607CD}.Release|x86.ActiveCfg = Release|x86
+		{98030C86-7B0F-4813-AC4D-9FFCF00CF81F}.Debug|x86.Build.0 = Debug|x86
+		{98030C86-7B0F-4813-AC4D-9FFCF00CF81F}.Debug|x86.ActiveCfg = Debug|x86
+		{98030C86-7B0F-4813-AC4D-9FFCF00CF81F}.Release|x86.Build.0 = Release|x86
+		{98030C86-7B0F-4813-AC4D-9FFCF00CF81F}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+EndGlobal

@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			// BUG: if pad window is undocked and floats standalone, IsVisible == false (so pad won't refresh)
 			// REQUEST: need to refresh when pad becomes visible -> VisibleChanged event?
-			if (!this.IsVisible)
+			if (!objectGraphControl.IsVisible)
 			{
 				return;
 			}

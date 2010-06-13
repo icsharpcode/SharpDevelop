@@ -17,6 +17,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.Converter
 {
@@ -31,7 +32,7 @@ namespace PythonBinding.Tests.Converter
 		MSBuildBasedProject sourceProject;
 		PythonProject targetProject;
 		MockTextEditorProperties mockTextEditorProperties;
-		MockProjectContent mockProjectContent;
+		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
 		
 		string startupObject = "RootNamespace.Main";
 		
@@ -64,7 +65,7 @@ namespace PythonBinding.Tests.Converter
 			// Set up IProjectContent so the ConvertProjectToPythonProjectCommand can
 			// locate the startup object and determine it's filename.
 			
-			mockProjectContent = new MockProjectContent();
+			mockProjectContent = new PythonBinding.Tests.Utils.MockProjectContent();
 			MockClass mainClass = new MockClass(mockProjectContent, startupObject);
 			mainClass.CompilationUnit.FileName = @"d:\projects\test\src\Main2.cs";
 			mockProjectContent.ClassToReturnFromGetClass = mainClass;

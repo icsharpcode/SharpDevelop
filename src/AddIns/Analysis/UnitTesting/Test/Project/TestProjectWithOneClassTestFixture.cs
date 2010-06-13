@@ -28,6 +28,7 @@ namespace UnitTesting.Tests.Project
 		MockProjectContent projectContent;
 		List<TestClass> classesAdded;
 		List<TestClass> classesRemoved;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
@@ -46,21 +47,20 @@ namespace UnitTesting.Tests.Project
 			// Add a test class with a TestFixture attributes.
 			projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
-			MockClass c = new MockClass("RootNamespace.MyTestFixture");
+			MockClass c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
 			c.SetCompoundClass(c);
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
 			projectContent.Classes.Add(c);
 			
 			// Add a second class that has no test fixture attribute.
-			MockClass nonTestClass = new MockClass();
-			nonTestClass.ProjectContent = projectContent;
+			MockClass nonTestClass = new MockClass(projectContent);
 			projectContent.Classes.Add(nonTestClass);
 			
-			testProject = new TestProject(project, projectContent);
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testProject = new TestProject(project, projectContent, testFrameworks);
 			testProject.TestClasses.TestClassAdded += TestClassAdded;
 			testProject.TestClasses.TestClassRemoved += TestClassRemoved;
-
+			
 			testClass = testProject.TestClasses[0];
 		}
 		
@@ -141,9 +141,8 @@ namespace UnitTesting.Tests.Project
 			// Create new compilation unit with extra class.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
 			newUnit.Classes.Add(testClass.Class);
-			MockClass newClass = new MockClass("RootNamespace.MyNewTestFixture");
+			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
 			newClass.Attributes.Add(new MockAttribute("TestFixture"));
-			newClass.ProjectContent = projectContent;
 			newClass.SetCompoundClass(newClass);
 			newUnit.Classes.Add(newClass);
 			
@@ -173,9 +172,8 @@ namespace UnitTesting.Tests.Project
 			// already exists in the project.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
 			newUnit.Classes.Add(testClass.Class);
-			MockClass c = new MockClass("RootNamespace.MyTestFixture");
+			MockClass c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
 			c.SetCompoundClass(c);
 			newUnit.Classes.Add(c);
 			
@@ -202,8 +200,7 @@ namespace UnitTesting.Tests.Project
 			// Create new compilation unit with extra class.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
 			newUnit.Classes.Add(testClass.Class);
-			MockClass newClass = new MockClass("RootNamespace.MyNewTestFixture");
-			newClass.ProjectContent = projectContent;
+			MockClass newClass = new MockClass(projectContent, "RootNamespace.MyNewTestFixture");
 			newClass.SetCompoundClass(newClass);
 			newUnit.Classes.Add(newClass);
 			
@@ -270,13 +267,11 @@ namespace UnitTesting.Tests.Project
 			// Create new compilation unit.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
 			newUnit.Classes.Add(testClass.Class);
-
+			
 			// Add a new method to a new compound class.
-			MockClass compoundClass = new MockClass("RootNamespace.MyTestFixture");
-			compoundClass.ProjectContent = projectContent;
+			MockClass compoundClass = new MockClass(projectContent, "RootNamespace.MyTestFixture");
 			compoundClass.Attributes.Add(new MockAttribute("TestFixture"));
-			MockMethod method = new MockMethod("NewMethod");
-			method.DeclaringType = testClass.Class;
+			MockMethod method = new MockMethod(testClass.Class, "NewMethod");
 			method.Attributes.Add(new MockAttribute("Test"));
 			compoundClass.Methods.Add(method);
 			MockClass mockClass = (MockClass)testClass.Class;

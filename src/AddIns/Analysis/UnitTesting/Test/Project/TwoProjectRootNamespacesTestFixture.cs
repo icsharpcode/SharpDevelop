@@ -19,7 +19,8 @@ namespace UnitTesting.Tests.Project
 	{
 		TestProject testProject;
 		MockProjectContent projectContent;
-
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
+		
 		[SetUp]
 		public void Init()
 		{
@@ -33,18 +34,17 @@ namespace UnitTesting.Tests.Project
 			// Add a test class with a TestFixture attributes.
 			projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
-			MockClass c = new MockClass("RootNamespace1.MyTestFixture1");
+			MockClass c = new MockClass(projectContent, "RootNamespace1.MyTestFixture1");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
 			projectContent.Classes.Add(c);
 			
 			// Add a second class with a different root namespace.
-			c = new MockClass("RootNamespace2.MyTestFixture2");
+			c = new MockClass(projectContent, "RootNamespace2.MyTestFixture2");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
 			projectContent.Classes.Add(c);
-
-			testProject = new TestProject(project, projectContent);
+			
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testProject = new TestProject(project, projectContent, testFrameworks);
 		}
 		
 		[Test]
@@ -123,13 +123,12 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void DuplicateClassName()
 		{
-			MockClass c = new MockClass("RootNamespace1.MyTestFixture2");
+			MockClass c = new MockClass(projectContent, "RootNamespace1.MyTestFixture2");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
 			
-			TestClass testClass = new TestClass(c);
+			TestClass testClass = new TestClass(c, testFrameworks);
 			testProject.TestClasses.Add(testClass);
-		
+			
 			testClass.Result = TestResultType.Failure;
 			TestClass testClass2 = testProject.TestClasses["RootNamespace2.MyTestFixture2"];
 			testClass2.Result = TestResultType.Failure;

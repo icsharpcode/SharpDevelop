@@ -353,6 +353,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		/// <summary>
+		/// Returns the caret rectangle. The coordinate system is in device-independent pixels from the top of the document.
+		/// </summary>
+		public Rect CalculateCaretRectangle()
+		{
+			if (textView != null && textView.Document != null) {
+				VisualLine visualLine = textView.GetOrConstructVisualLine(textView.Document.GetLineByNumber(position.Line));
+				return CalcCaretRectangle(visualLine);
+			} else {
+				return Rect.Empty;
+			}
+		}
+		
+		/// <summary>
 		/// Minimum distance of the caret to the view border.
 		/// </summary>
 		internal const double MinimumDistanceToViewBorder = 30;
@@ -367,9 +380,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		internal void BringCaretToView(double border)
 		{
-			if (textView != null && textView.Document != null) {
-				VisualLine visualLine = textView.GetOrConstructVisualLine(textView.Document.GetLineByNumber(position.Line));
-				Rect caretRectangle = CalcCaretRectangle(visualLine);
+			Rect caretRectangle = CalculateCaretRectangle();
+			if (!caretRectangle.IsEmpty) {
 				caretRectangle.Inflate(border, border);
 				textView.MakeVisible(caretRectangle);
 			}

@@ -51,19 +51,21 @@ namespace ICSharpCode.SharpDevelop
 		{
 			// don't check whether files exist because that might be slow (e.g. if file is on network
 			// drive that's unavailable)
-			if (p.Contains("Files")) {
-				lastfile.AddRange(p["Files"].Split(','));
+			
+			// if one of these entries is a string, then it's from a previous SharpDevelop version - don't try loading it
+			if (p.Contains("Files") && !(p.Get("Files") is string)) {
+				lastfile.AddRange(p.Get("Files", new string[0]));
 			}
 			
-			if (p.Contains("Projects")) {
-				lastproject.AddRange(p["Projects"].Split(','));
+			if (p.Contains("Projects") && !(p.Get("Files") is string)) {
+				lastproject.AddRange(p.Get("Projects", new string[0]));
 			}
 		}
 		
 		public void AddLastFile(string name)
 		{
 			for (int i = 0; i < lastfile.Count; ++i) {
-				if (lastfile[i].ToString().Equals(name, StringComparison.OrdinalIgnoreCase)) {
+				if (lastfile[i].Equals(name, StringComparison.OrdinalIgnoreCase)) {
 					lastfile.RemoveAt(i);
 				}
 			}
@@ -72,11 +74,7 @@ namespace ICSharpCode.SharpDevelop
 				lastfile.RemoveAt(lastfile.Count - 1);
 			}
 			
-			if (lastfile.Count > 0) {
-				lastfile.Insert(0, name);
-			} else {
-				lastfile.Add(name);
-			}
+			lastfile.Insert(0, name);
 		}
 		
 		public void ClearRecentFiles()
@@ -101,11 +99,7 @@ namespace ICSharpCode.SharpDevelop
 				lastproject.RemoveAt(lastproject.Count - 1);
 			}
 			
-			if (lastproject.Count > 0) {
-				lastproject.Insert(0, name);
-			} else {
-				lastproject.Add(name);
-			}
+			lastproject.Insert(0, name);
 			JumpList.AddToRecentCategory(name);
 		}
 		
@@ -117,8 +111,8 @@ namespace ICSharpCode.SharpDevelop
 		public Properties ToProperties()
 		{
 			Properties p = new Properties();
-			p["Files"]    = String.Join(",", lastfile.ToArray());
-			p["Projects"] = String.Join(",", lastproject.ToArray());
+			p.Set("Files", lastfile.ToArray());
+			p.Set("Projects", lastproject.ToArray());
 			return p;
 		}
 		

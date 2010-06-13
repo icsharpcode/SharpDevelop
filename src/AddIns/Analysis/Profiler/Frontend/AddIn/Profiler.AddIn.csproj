@@ -89,6 +89,7 @@
     </Compile>
     <Compile Include="Src\OptionPanels\OptionWrapper.cs" />
     <Compile Include="Src\ProfilerRunner.cs" />
+    <Compile Include="Src\ProfilerTestRunner.cs" />
     <Compile Include="Src\SharpDevelopTranslation.cs" />
     <Compile Include="Src\Views\ComparisonView.xaml.cs">
       <DependentUpon>ComparisonView.xaml</DependentUpon>

@@ -24,6 +24,7 @@ namespace UnitTesting.Tests.Project
 		TestMethod testMethod;
 		bool resultChangedCalled;
 		MockProjectContent projectContent;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
@@ -34,23 +35,21 @@ namespace UnitTesting.Tests.Project
 			ReferenceProjectItem nunitFrameworkReferenceItem = new ReferenceProjectItem(project);
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
-
+			
 			projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
 			
-			MockClass mockClass = new MockClass("RootNamespace.Tests.MyTestFixture");
-			mockClass.Namespace = "RootNamespace.Tests";
-			mockClass.ProjectContent = projectContent;
+			MockClass mockClass = new MockClass(projectContent, "RootNamespace.Tests.MyTestFixture");
 			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
 			projectContent.Classes.Add(mockClass);
 			
 			// Add a method to the test class
-			MockMethod mockMethod = new MockMethod("TestMethod");
-			mockMethod.DeclaringType = mockClass;
+			MockMethod mockMethod = new MockMethod(mockClass, "TestMethod");
 			mockMethod.Attributes.Add(new MockAttribute("Test"));
 			mockClass.Methods.Add(mockMethod);
 			
-			testProject = new TestProject(project, projectContent);
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testProject = new TestProject(project, projectContent, testFrameworks);
 			testClass = testProject.TestClasses[0];
 			testMethod = testClass.TestMethods[0];
 		}
@@ -71,7 +70,7 @@ namespace UnitTesting.Tests.Project
 		public void TestFailed()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod");
-			result.IsFailure = true;
+			result.ResultType = TestResultType.Failure;
 			
 			testProject.UpdateTestResult(result);
 			
@@ -89,7 +88,7 @@ namespace UnitTesting.Tests.Project
 		public void TestClassIgnored()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod");
-			result.IsIgnored = true;
+			result.ResultType = TestResultType.Ignored;
 			
 			testProject.UpdateTestResult(result);
 			
@@ -102,7 +101,7 @@ namespace UnitTesting.Tests.Project
 			try {
 				testMethod.ResultChanged += ResultChanged;
 				TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod");
-				result.IsFailure = true;
+				result.ResultType = TestResultType.Failure;
 				testProject.UpdateTestResult(result);
 			} finally {
 				testMethod.ResultChanged -= ResultChanged;
@@ -117,7 +116,7 @@ namespace UnitTesting.Tests.Project
 			try {
 				testClass.ResultChanged += ResultChanged;
 				TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.TestMethod");
-				result.IsFailure = true;
+				result.ResultType = TestResultType.Failure;
 				testProject.UpdateTestResult(result);
 			} finally {
 				testClass.ResultChanged -= ResultChanged;
@@ -130,7 +129,7 @@ namespace UnitTesting.Tests.Project
 		public void UpdateProjectWithTestResultHavingClassNameOnly()
 		{
 			TestResult result = new TestResult("ClassNameOnly");
-			result.IsFailure = true;
+			result.ResultType = TestResultType.Failure;
 			
 			testProject.UpdateTestResult(result);
 		}
@@ -139,7 +138,7 @@ namespace UnitTesting.Tests.Project
 		public void UpdateProjectWithTestResultWithUnknownClassName()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.UnknownClassName.TestMethod");
-			result.IsFailure = true;
+			result.ResultType = TestResultType.Failure;
 			
 			testProject.UpdateTestResult(result);
 		}
@@ -148,7 +147,7 @@ namespace UnitTesting.Tests.Project
 		public void UpdateProjectWithTestResultWithUnknownMethodName()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.UnknownMethodName");
-			result.IsFailure = true;
+			result.ResultType = TestResultType.Failure;
 			
 			testProject.UpdateTestResult(result);
 		}
@@ -190,10 +189,9 @@ namespace UnitTesting.Tests.Project
 			// Create new compilation unit.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
 			newUnit.Classes.Add(testClass.Class);
-
+			
 			// Add a new method to a new compound class.
-			MockClass compoundClass = new MockClass("RootNamespace.MyTestFixture");
-			compoundClass.ProjectContent = projectContent;
+			MockClass compoundClass = new MockClass(projectContent, "RootNamespace.MyTestFixture");
 			compoundClass.Attributes.Add(new MockAttribute("TestFixture"));
 			MockClass mockClass = (MockClass)testClass.Class;
 			mockClass.SetCompoundClass(compoundClass);

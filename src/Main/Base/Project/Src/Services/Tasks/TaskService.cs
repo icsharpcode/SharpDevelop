@@ -79,9 +79,26 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		static TaskService()
+		internal static void Initialize()
 		{
-			ProjectService.SolutionClosed += new EventHandler(ProjectServiceSolutionClosed);
+			// avoid trouble with double initialization
+			ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
+			ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
+			ProjectService.SolutionClosed -= ProjectServiceSolutionClosed;
+			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
+		}
+		
+		static void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
+		{
+			if (e.NewParseInformation == ParserService.GetExistingParseInformation(e.FileName)) {
+				// Call UpdateCommentTags only for the main parse information (if a file is in multiple projects),
+				// and only if the results haven't already been replaced with a more recent ParseInformation.
+				if (e.NewCompilationUnit != null) {
+					UpdateCommentTags(e.FileName, e.NewCompilationUnit.TagComments);
+				} else {
+					UpdateCommentTags(e.FileName, new List<TagComment>());
+				}
+			}
 		}
 		
 		static void ProjectServiceSolutionClosed(object sender, EventArgs e)
@@ -132,15 +149,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static void UpdateCommentTags(string fileName, IList<TagComment> tagComments)
-		{
-			if (fileName == null || tagComments == null) {
-				return;
-			}
-			WorkbenchSingleton.SafeThreadAsyncCall(UpdateCommentTagsInvoked, FileName.Create(fileName), tagComments);
-		}
-		
-		static void UpdateCommentTagsInvoked(FileName fileName, IList<TagComment> tagComments)
+		static void UpdateCommentTags(FileName fileName, IList<TagComment> tagComments)
 		{
 			List<Task> newTasks = new List<Task>();
 			foreach (TagComment tag in tagComments) {

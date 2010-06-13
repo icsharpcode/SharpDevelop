@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -40,6 +41,7 @@ namespace ICSharpCode.UnitTesting
 		string message = String.Empty;
 		string stackTrace = String.Empty;
 		TestResultType resultType = TestResultType.None;
+		FilePosition stackTraceFilePosition = FilePosition.Empty;
 		
 		public TestResult(string name)
 		{
@@ -47,60 +49,48 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public string Name {
-			get {
-				return name;
-			}
+			get { return name; }
 		}
 		
 		public bool IsSuccess {
-			get {
-				return resultType == TestResultType.Success;
-			}
-			set {
-				resultType = TestResultType.Success;
-			}
+			get { return resultType == TestResultType.Success; }
 		}
 		
 		public bool IsFailure {
-			get {
-				return resultType == TestResultType.Failure;
-			}
-			set {
-				resultType = TestResultType.Failure;
-			}
+			get { return resultType == TestResultType.Failure; }
 		}
 		
 		public bool IsIgnored {
-			get {
-				return resultType == TestResultType.Ignored;
-			}
-			set {
-				resultType = TestResultType.Ignored;
-			}
+			get { return resultType == TestResultType.Ignored; }
 		}
 		
 		public TestResultType ResultType {
-			get {
-				return resultType;
-			}
+			get { return resultType; }
+			set { resultType = value; }
 		}
 		
 		public string Message {
-			get {
-				return message;
-			}
-			set {
-				message = value;
-			}
+			get { return message; }
+			set { message = value; }
 		}
 		
 		public string StackTrace {
-			get {
-				return stackTrace;
-			}
+			get { return stackTrace; }
 			set {
-				stackTrace = value;
+				if (stackTrace != value) {
+					stackTrace = value;
+					OnStackTraceChanged();
+				}
 			}
+		}
+		
+		protected virtual void OnStackTraceChanged()
+		{
+		}
+		
+		public FilePosition StackTraceFilePosition {
+			get { return stackTraceFilePosition; }
+			set { stackTraceFilePosition = value; }
 		}
 	}
 }

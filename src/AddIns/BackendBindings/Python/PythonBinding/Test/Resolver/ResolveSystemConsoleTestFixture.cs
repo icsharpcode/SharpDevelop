@@ -12,6 +12,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests;
 using PythonBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.Resolver
 {
@@ -23,7 +24,7 @@ namespace PythonBinding.Tests.Resolver
 	public class ResolveSystemConsoleTestFixture
 	{
 		PythonResolver resolver;
-		MockProjectContent mockProjectContent;
+		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
 		ResolveResult resolveResult;
 		MockClass testClass;
 		ICompilationUnit compilationUnit;
@@ -34,7 +35,7 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			mockProjectContent = new MockProjectContent();
+			mockProjectContent = new PythonBinding.Tests.Utils.MockProjectContent();
 			
 			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
 			mockProjectContent.ClassToReturnFromGetClass = systemConsoleClass;
@@ -106,7 +107,7 @@ namespace PythonBinding.Tests.Resolver
 		protected virtual ICompilationUnit CreateCompilationUnit(IProjectContent projectContent)
 		{
 			ICompilationUnit compilationUnit = new DefaultCompilationUnit(projectContent);
-			testClass = new MockClass(compilationUnit, "Test");
+			testClass = new MockClass(projectContent, "Test");
 			compilationUnit.Classes.Add(testClass);
 			return compilationUnit;
 		}

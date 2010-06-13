@@ -35,6 +35,8 @@ namespace ICSharpCode.UsageDataCollector
 		SQLiteConnection connection;
 		long sessionID;
 		Timer timer;
+		DateTime startTime;
+		Stopwatch stopwatch;
 		
 		/// <summary>
 		/// Opens/Creates the database and starts writing a new session to it.
@@ -172,10 +174,13 @@ namespace ICSharpCode.UsageDataCollector
 		
 		void StartSession()
 		{
+			startTime = DateTime.UtcNow;
+			stopwatch = Stopwatch.StartNew();
 			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
 				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-					cmd.CommandText = "INSERT INTO Sessions (startTime) VALUES (datetime('now'));" +
+					cmd.CommandText = "INSERT INTO Sessions (startTime) VALUES (?);" +
 						"SELECT last_insert_rowid();";
+					cmd.Parameters.Add(new SQLiteParameter { Value = TimeToString(startTime) });
 					sessionID = (long)cmd.ExecuteScalar();
 				}
 				AddEnvironmentData(GetDefaultEnvironmentData());
@@ -183,12 +188,18 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
+		DateTime GetNow()
+		{
+			return startTime + stopwatch.Elapsed;
+		}
+		
 		void EndSession()
 		{
 			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
 				FlushOutstandingChanges();
 				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
-					cmd.CommandText = "UPDATE Sessions SET endTime = datetime('now') WHERE id = ?;";
+					cmd.CommandText = "UPDATE Sessions SET endTime = ? WHERE id = ?;";
+					cmd.Parameters.Add(new SQLiteParameter { Value = TimeToString(GetNow()) });
 					cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
 					cmd.ExecuteNonQuery();
 				}
@@ -239,7 +250,7 @@ namespace ICSharpCode.UsageDataCollector
 			lock (lockObj) {
 				if (isDisposed)
 					throw new ObjectDisposedException(GetType().Name);
-				FeatureUse featureUse = new FeatureUse(this);
+				FeatureUse featureUse = new FeatureUse(this, GetNow());
 				featureUse.name = featureName;
 				featureUse.activation = activationMethod;
 				delayedStart.Enqueue(featureUse);
@@ -252,9 +263,14 @@ namespace ICSharpCode.UsageDataCollector
 			lock (lockObj) {
 				if (isDisposed)
 					return;
-				featureUse.endTime = DateTime.UtcNow;
+				featureUse.endTime = GetNow();
 				delayedEnd.Enqueue(featureUse);
 			}
+		}
+		
+		static string TimeToString(DateTime time)
+		{
+			return time.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
 		}
 		
 		void FlushOutstandingChanges()
@@ -275,7 +291,7 @@ namespace ICSharpCode.UsageDataCollector
 						cmd.Parameters.Add(activationMethod = new SQLiteParameter());
 						while (delayedStart.Count > 0) {
 							FeatureUse use = delayedStart.Dequeue();
-							time.Value = use.startTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
+							time.Value = TimeToString(use.startTime);
 							feature.Value = use.name;
 							activationMethod.Value = use.activation;
 							
@@ -291,7 +307,7 @@ namespace ICSharpCode.UsageDataCollector
 						cmd.Parameters.Add(id = new SQLiteParameter());
 						while (delayedEnd.Count > 0) {
 							FeatureUse use = delayedEnd.Dequeue();
-							endTime.Value = use.endTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
+							endTime.Value = TimeToString(use.endTime);
 							id.Value = use.rowId;
 							cmd.ExecuteNonQuery();
 						}
@@ -424,8 +440,9 @@ namespace ICSharpCode.UsageDataCollector
 				// first, insert the exception (it's most important to have)
 				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
 					cmd.CommandText = "INSERT INTO Exceptions (session, time, type, stackTrace)" +
-						" VALUES (?, datetime('now'), ?, ?);";
+						" VALUES (?, ?, ?, ?);";
 					cmd.Parameters.Add(new SQLiteParameter { Value = sessionID });
+					cmd.Parameters.Add(new SQLiteParameter { Value = TimeToString(GetNow()) });
 					cmd.Parameters.Add(new SQLiteParameter { Value = exceptionType });
 					cmd.Parameters.Add(new SQLiteParameter { Value = stacktrace });
 					cmd.ExecuteNonQuery();
@@ -458,14 +475,15 @@ namespace ICSharpCode.UsageDataCollector
 	/// </summary>
 	public sealed class FeatureUse
 	{
-		internal readonly DateTime startTime = DateTime.UtcNow;
+		internal readonly DateTime startTime;
 		internal DateTime endTime;
 		internal string name, activation;
 		internal long rowId;
-		UsageDataSessionWriter writer;
+		readonly UsageDataSessionWriter writer;
 		
-		internal FeatureUse(UsageDataSessionWriter writer)
+		internal FeatureUse(UsageDataSessionWriter writer, DateTime startTime)
 		{
+			this.startTime = startTime;
 			this.writer = writer;
 		}
 		

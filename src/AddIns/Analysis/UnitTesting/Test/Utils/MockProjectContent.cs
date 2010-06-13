@@ -5,16 +5,18 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Dom;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace UnitTesting.Tests.Utils
 {
 	public class MockProjectContent : IProjectContent
 	{
-		LanguageProperties language;
+		LanguageProperties language = LanguageProperties.CSharp;
 		List<IClass> classes = new List<IClass>();
 		object project;
 		
@@ -31,9 +33,7 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public ICollection<IClass> Classes {
-			get {
-				return classes;
-			}
+			get { return classes; }
 		}
 		
 		public ICollection<string> NamespaceNames {
@@ -49,12 +49,8 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public LanguageProperties Language {
-			get {
-				return language;
-			}
-			set {
-				language = value;
-			}
+			get { return language; }
+			set { language = value; }
 		}
 		
 		public IUsing DefaultImports {
@@ -64,18 +60,16 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public object Project {
-			get {
-				return project;
-			}
-			set {
-				project = value;
-			}
+			get { return project; }
+			set { project = value; }
+		}
+		
+		public IProject ProjectAsIProject {
+			get { return project as IProject; }
 		}
 		
 		public SystemTypes SystemTypes {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return new SystemTypes(this); }
 		}
 		
 		public string GetXmlDocumentation(string memberTag)
@@ -105,7 +99,9 @@ namespace UnitTesting.Tests.Utils
 		
 		public IClass GetClass(string typeName, int typeParameterCount)
 		{
-			throw new NotImplementedException();
+			MockClass c = new MockClass(this);
+			c.FullyQualifiedName = typeName;
+			return c;
 		}
 		
 		public bool NamespaceExists(string name)
@@ -182,17 +178,15 @@ namespace UnitTesting.Tests.Utils
 		}
 		
 		public string AssemblyName {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return String.Empty; }
 		}
 		
-		public List<ICompletionEntry> GetAllContents()
+		public void AddAllContents(List<ICompletionEntry> list, LanguageProperties language, bool lookInReferences)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public void AddAllContents(List<ICompletionEntry> list, LanguageProperties language, bool lookInReferences)
+		public List<ICompletionEntry> GetAllContents()
 		{
 			throw new NotImplementedException();
 		}

@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Threading;
 
 using AvalonDock;
-using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -38,22 +37,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.SetValueToExtension(TitleProperty, new StringParseExtension(descriptor.Title));
 			placeholder = new TextBlock { Text = this.Title };
 			this.Content = placeholder;
-			this.Icon = PresentationResourceService.GetImage(descriptor.Icon);
+			this.Icon = PresentationResourceService.GetBitmapSource(descriptor.Icon);
 			
 			placeholder.IsVisibleChanged += AvalonPadContent_IsVisibleChanged;
 		}
 		
 		protected override void FocusContent()
 		{
+			if (!(IsActiveContent && !IsKeyboardFocusWithin))
+				return;
 			IInputElement activeChild = CustomFocusManager.GetFocusedChild(this);
 			if (activeChild == null && padInstance != null) {
 				activeChild = padInstance.InitiallyFocusedControl as IInputElement;
 			}
-			if (activeChild != null) {
-				LoggingService.Debug("Will move focus to: " + activeChild);
-				Dispatcher.BeginInvoke(DispatcherPriority.Background,
-				                       new Action(delegate { Keyboard.Focus(activeChild); }));
-			}
+			AvalonWorkbenchWindow.SetFocus(this, activeChild);
 		}
 		
 		public void ShowInDefaultPosition()
@@ -68,9 +65,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			else
 				style = AnchorStyle.Right;
 			
-			layout.DockingManager.Show(this, DockableContentState.Docked, style);
+			this.Show(layout.DockingManager, style);
 			if ((descriptor.DefaultPosition & DefaultPadPositions.Hidden) != 0)
-				layout.DockingManager.Hide(this);
+				Hide();
 		}
 		
 		void AvalonPadContent_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

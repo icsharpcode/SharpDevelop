@@ -180,9 +180,6 @@ namespace ICSharpCode.SharpDevelop
 		{
 			CreatePad();
 			if (padContent == null) return;
-			if (!WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible(this)) {
-				WorkbenchSingleton.Workbench.WorkbenchLayout.ShowPad(this);
-			}
 			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this);
 		}
 		

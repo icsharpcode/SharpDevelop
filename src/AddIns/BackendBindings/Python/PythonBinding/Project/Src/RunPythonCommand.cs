@@ -23,7 +23,7 @@ namespace ICSharpCode.PythonBinding
 		IDebugger debugger;
 		AddInOptions options;
 		IWorkbench workbench;
-		bool debug;
+		PythonConsoleApplication ipy;
 		
 		public RunPythonCommand()
 			: this(WorkbenchSingleton.Workbench, new AddInOptions(), DebuggerService.CurrentDebugger)
@@ -35,40 +35,28 @@ namespace ICSharpCode.PythonBinding
 			this.workbench = workbench;
 			this.debugger = debugger;
 			this.options = options;
+			ipy = new PythonConsoleApplication(options);
 		}
 		
 		public bool Debug {
-			get { return debug; }
-			set { debug = value; }
+			get { return ipy.Debug; }
+			set { ipy.Debug = value; }
 		}
 		
 		public override void Run()
 		{
-			if (debug) {
-				debugger.Start(CreateProcessStartInfo());
-			} else {
-				debugger.StartWithoutDebugging(CreateProcessStartInfo());
-			}
-		}
-		
-		ProcessStartInfo CreateProcessStartInfo()
-		{
-			ProcessStartInfo info = new ProcessStartInfo();
-			info.FileName = options.PythonFileName;
-			info.Arguments = GetArguments();
-				
-			return info;
-		}
-		
-		string GetArguments()
-		{
-			// Get the python script filename.
-			string pythonScriptFileName = "\"" + workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName + "\"";
-			
+			ProcessStartInfo processStartInfo = GetProcessStartInfo();
 			if (Debug) {
-				return "-D " + pythonScriptFileName;
+				debugger.Start(processStartInfo);
+			} else {
+				debugger.StartWithoutDebugging(processStartInfo);
 			}
-			return pythonScriptFileName;
+		}
+		
+		ProcessStartInfo GetProcessStartInfo()
+		{
+			ipy.PythonScriptFileName = workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName;
+			return ipy.GetProcessStartInfo();
 		}
 	}
 }

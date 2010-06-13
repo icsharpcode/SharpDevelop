@@ -23,51 +23,17 @@ namespace ICSharpCode.UnitTesting
 		IProjectContent projectContent;
 		TestClassCollection testClasses;
 		List<string> rootNamespaces;
+		IRegisteredTestFrameworks testFrameworks;
 		
-		public TestProject(IProject project, IProjectContent projectContent)
+		public TestProject(IProject project, IProjectContent projectContent, IRegisteredTestFrameworks testFrameworks)
 		{
 			this.project = project;
 			this.projectContent = projectContent;
+			this.testFrameworks = testFrameworks;
 		}
 		
-		/// <summary>
-		/// Returns the underlying project.
-		/// </summary>
 		public IProject Project {
 			get { return project; }
-		}
-		
-		/// <summary>
-		/// Determines whether the project is a test project. A project
-		/// is considered to be a test project if it contains a reference
-		/// to the NUnit.Framework assembly.
-		/// </summary>
-		public static bool IsTestProject(IProject project)
-		{
-			if (project != null) {
-				foreach (ProjectItem projectItem in project.Items) {
-					ReferenceProjectItem referenceProjectItem = projectItem as ReferenceProjectItem;
-					if (referenceProjectItem != null) {
-						if (IsTestFrameworkReference(referenceProjectItem)) {
-							return true;
-						}
-					}
-				}
-			}
-			return false;
-		}
-		
-		/// <summary>
-		/// Determines whether the specified reference is a reference to
-		/// a test framework. Currently only references to the
-		/// NUnit.Framework return true.
-		/// </summary>
-		public static bool IsTestFrameworkReference(ReferenceProjectItem referenceProjectItem)
-		{
-			if (referenceProjectItem != null) {
-				return string.Equals(referenceProjectItem.ShortName, "NUnit.Framework", StringComparison.OrdinalIgnoreCase);
-			}
-			return false;
 		}
 		
 		/// <summary>
@@ -209,10 +175,15 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		void AddNewTestClass(IClass c)
 		{
-			if (TestClass.IsTestClass(c)) {
-				TestClass testClass = new TestClass(c);
+			if (IsTestClass(c)) {
+				TestClass testClass = CreateTestClass(c);
 				TestClasses.Add(testClass);
 			}
+		}
+		
+		TestClass CreateTestClass(IClass c)
+		{
+			return new TestClass(c, testFrameworks);
 		}
 		
 		/// <summary>
@@ -222,7 +193,7 @@ namespace ICSharpCode.UnitTesting
 		void UpdateTestClass(IClass c)
 		{
 			if (TestClasses.Contains(c.DotNetName)) {
-				if (TestClass.IsTestClass(c)) {
+				if (IsTestClass(c)) {
 					TestClass testClass = TestClasses[c.DotNetName];
 					testClass.UpdateClass(c);
 				} else {
@@ -236,26 +207,31 @@ namespace ICSharpCode.UnitTesting
 				// check if the class is actually a test class since
 				// AddNewTestClass does this anyway.
 				AddNewTestClass(c);
-			}			
+			}
 		}
 		
 		void GetTestClasses()
 		{
 			testClasses = new TestClassCollection();
 			foreach (IClass c in projectContent.Classes) {
-				if (TestClass.IsTestClass(c)) {
+				if (IsTestClass(c)) {
 					if (!testClasses.Contains(c.FullyQualifiedName)) {
-						testClasses.Add(new TestClass(c));
+						testClasses.Add(CreateTestClass(c));
 					}
 				}
 				foreach (IClass innerClass in c.InnerClasses) {
-					if (TestClass.IsTestClass(innerClass)) {
+					if (IsTestClass(innerClass)) {
 						if (!testClasses.Contains(innerClass.DotNetName)) {
-							testClasses.Add(new TestClass(innerClass));
+							testClasses.Add(CreateTestClass(innerClass));
 						}
 					}
 				}
 			}
+		}
+		
+		bool IsTestClass(IClass c)
+		{
+			return testFrameworks.IsTestClass(c);
 		}
 		
 		void GetRootNamespaces()
@@ -263,11 +239,11 @@ namespace ICSharpCode.UnitTesting
 			rootNamespaces = new List<string>();
 			foreach (TestClass c in TestClasses) {
 				string rootNamespace = c.RootNamespace;
-				if (rootNamespace.Length > 0 && !rootNamespaces.Contains(rootNamespace)) {
+				if ((rootNamespace.Length > 0) && !rootNamespaces.Contains(rootNamespace)) {
 					rootNamespaces.Add(rootNamespace);
 				}
 			}
-		}	
+		}
 		
 		/// <summary>
 		/// Gets an existing test class with the same name in the project. This
@@ -277,7 +253,7 @@ namespace ICSharpCode.UnitTesting
 		IClass GetExistingTestClassInProject(IClass c)
 		{
 			foreach (IClass existingClass in projectContent.Classes) {
-				if (TestClass.IsTestClass(existingClass)) {
+				if (IsTestClass(existingClass)) {
 					if (existingClass.DotNetName == c.DotNetName) {
 						return existingClass;
 					}

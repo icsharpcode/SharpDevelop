@@ -11,8 +11,7 @@ using ICSharpCode.SharpDevelop.Dom;
 namespace ICSharpCode.UnitTesting
 {
 	/// <summary>
-	/// Represents a method that has the [Test] attribute and
-	/// can be tested. 
+	/// Represents a method that can be tested. 
 	/// </summary>
 	public class TestMethod
 	{
@@ -56,9 +55,7 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the underlying IMethod for this TestMethod.
 		/// </summary>
 		public IMethod Method {
-			get {
-				return method;
-			}
+			get { return method; }
 		}
 		
 		/// <summary>
@@ -74,9 +71,7 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the test result for this method.
 		/// </summary>
 		public TestResultType Result {
-			get {
-				return testResultType;
-			}
+			get { return testResultType; }
 			set {
 				TestResultType previousTestResultType = testResultType;
 				testResultType = value;
@@ -96,33 +91,6 @@ namespace ICSharpCode.UnitTesting
 				}
 				return method.Name;
 			}
-		}
-		
-		/// <summary>
-		/// Determines whether the method is a test method. A method
-		/// is considered to be a test method if it contains certain
-		/// test attributes. If the method has parameters it cannot
-		/// be a test method.
-		/// </summary>
-		public static bool IsTestMethod(IMember member)
-		{
-			if (member == null) {
-				return false;
-			}
-			
-			StringComparer nameComparer = TestClass.GetNameComparer(member.DeclaringType);
-			if (nameComparer != null) {
-				TestAttributeName testAttribute = new TestAttributeName("Test", nameComparer);
-				foreach (IAttribute attribute in member.Attributes) {
-					if (testAttribute.IsEqual(attribute.AttributeType.FullyQualifiedName)) {
-						IMethod method = (IMethod)member;
-						if (method.Parameters.Count == 0) {
-							return true;
-						}
-					}
-				}
-			}
-			return false;
 		}
 		
 		/// <summary>

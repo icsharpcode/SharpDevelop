@@ -27,17 +27,12 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		ExpressionContext overrideContext;
 		
-		bool allowCompleteExistingExpression;
-		
 		/// <summary>
 		/// Gets/Sets whether completing an old expression is allowed.
 		/// You have to set this property to true to let the provider run FindExpression, when
 		/// set to false it will use ExpressionContext.Default (unless the constructor with "overrideContext" was used).
 		/// </summary>
-		public bool AllowCompleteExistingExpression {
-			get { return allowCompleteExistingExpression; }
-			set { allowCompleteExistingExpression = value; }
-		}
+		public bool AllowCompleteExistingExpression { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets whether code templates should be included in code completion.
@@ -67,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		ICompletionItemList GenerateCompletionListCore(ITextEditor editor)
 		{
 			preselectionLength = 0;
-			if (!allowCompleteExistingExpression) {
+			if (!AllowCompleteExistingExpression) {
 				ExpressionContext context = overrideContext ?? ExpressionContext.Default;
 				var ctrlSpace = CtrlSpace(editor, context);
 				return GenerateCompletionListForCompletionData(ctrlSpace, context);
@@ -121,6 +116,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			this.language = language;
 		}
 		
+		protected override DefaultCompletionItemList CreateCompletionItemList()
+		{
+			return new NRefactoryCompletionItemList() { ContainsItemsFromAllNamespaces = this.ShowItemsFromAllNamespaces };
+		}
+		
 		protected override List<ICompletionEntry> CtrlSpace(ITextEditor editor, ExpressionContext context)
 		{
 			var resolver = new Dom.NRefactoryResolver.NRefactoryResolver(language);
@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				editor.Caret.Line, editor.Caret.Column,
 				ParserService.GetParseInformation(editor.FileName),
 				editor.Document.Text,
-				context);
+				context, this.ShowItemsFromAllNamespaces);
 		}
 	}
 }

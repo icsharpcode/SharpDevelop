@@ -39,7 +39,7 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public System.Windows.Media.Imaging.BitmapSource Icon {
+		public System.Windows.Media.ImageSource Icon {
 			get {
 				throw new NotImplementedException();
 			}

@@ -109,7 +109,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				this.graphDrawer.ClearCanvas();
 				return;
 			}
-			if (debuggerService.IsProcessRunning)		// TODO "Process not paused" exception still occurs
+			if (debuggerService.IsProcessRunning)		// "Process not paused" exception still occurs
 			{
 				showErrorMessage("Cannot inspect when the process is running.");
 				return;

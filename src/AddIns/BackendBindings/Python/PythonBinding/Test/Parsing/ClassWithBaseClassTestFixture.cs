@@ -52,6 +52,5 @@ namespace PythonBinding.Tests.Parsing
 			}
 			Assert.IsNotNull(matchedBaseType);
 		}
-		
 	}
 }

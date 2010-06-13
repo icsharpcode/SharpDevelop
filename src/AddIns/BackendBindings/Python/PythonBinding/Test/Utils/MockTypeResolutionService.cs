@@ -43,7 +43,6 @@ namespace PythonBinding.Tests.Utils
 		
 		public Type GetType(string name)
 		{
-			System.Console.WriteLine("TypeResolutionService.GetType: " + name);
 			lastTypeNameResolved = name;
 			if (name == "Form") {
 				return typeof(Form);

@@ -14,7 +14,6 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.TextEditor.Actions;
 
 namespace VBNetBinding
 {

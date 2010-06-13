@@ -1,0 +1,28 @@
+﻿<AddIn name="Unit Testing Addin"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	description="Runs unit tests with Gallio inside SharpDevelop"
+	addInManagerHidden="preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.Gallio"/>
+		<Dependency addin="SharpDevelop"/>
+		<Dependency addin="ICSharpCode.UnitTesting"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="Gallio.SharpDevelop.dll"/>
+		<Import assembly="$ICSharpCode.UnitTesting/UnitTesting.dll"/>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/UnitTesting/GallioEchoApplication">
+		<String id="GallioEchoApplication" text="D:\projects\dotnet\mirador\SharpDevelop\samples\Gallio\Gallio\bin\Gallio.Echo.exe"/>
+	</Path>
+
+	<Path name="/SharpDevelop/UnitTesting/TestFrameworks">
+		<TestFramework id="gallio"
+			class="Gallio.SharpDevelop.GallioTestFramework"
+			supportedProjects=".csproj;.vbproj"
+			insertbefore="nunit" />
+	</Path>
+</AddIn>

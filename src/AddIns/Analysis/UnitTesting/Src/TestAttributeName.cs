@@ -6,10 +6,11 @@
 // </file>
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.UnitTesting
 {
-	public class TestAttributeName
+	public class NUnitTestAttributeName
 	{
 		string name = String.Empty;
 		string qualifiedName = String.Empty;
@@ -17,13 +18,13 @@ namespace ICSharpCode.UnitTesting
 		StringComparer nameComparer;
 		
 		/// <summary>
-		/// Creates a new instance of the Test Attribute class.
+		/// Creates a new instance of the NUnit Test Attribute class.
 		/// </summary>
 		/// <param name="name">The name of the attribute (e.g. Test) not
 		/// the full name of the attribute (e.g. TestAttribute).</param>
 		/// <param name="nameComparer">The string comparer to use
 		/// when comparing attribute names.</param>
-		public TestAttributeName(string name, StringComparer nameComparer)
+		public NUnitTestAttributeName(string name, StringComparer nameComparer)
 		{
 			this.name = name;
 			this.nameComparer = nameComparer;
@@ -43,6 +44,11 @@ namespace ICSharpCode.UnitTesting
 				return true;
 			}
 			return false;
+		}
+		
+		public bool IsEqual(IAttribute attribute)
+		{
+			return IsEqual(attribute.AttributeType.FullyQualifiedName);
 		}
 	}
 }
