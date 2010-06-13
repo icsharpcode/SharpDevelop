@@ -7,7 +7,9 @@
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
 using System;
+using System.Collections;
 using System.Data;
+
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 
@@ -45,7 +47,24 @@ namespace ICSharpCode.Reports.Core
 			return dataManager;
 		}	
 		
+		
 		public static IDataManager CreateDataManager (IReportModel reportModel,DataTable dataTable)
+		{
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
+			if (dataTable == null) {
+				throw new ArgumentNullException("dataTable");
+			}
+			IDataManager dataManager = DataManager.CreateInstance(dataTable,reportModel.ReportSettings);
+			if (dataManager == null) {
+				throw new MissingDataManagerException();
+			}
+			return dataManager;
+		}
+		
+		
+		public static IDataManager CreateDataManager (IReportModel reportModel,IList dataTable)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");

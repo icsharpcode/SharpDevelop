@@ -32,8 +32,6 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 			Variable v = Arguments[0] as Variable;
 			if (p.IDataNavigator.CurrentRow > -1) {
 				AvailableFieldsCollection avc = p.IDataNavigator.AvailableFields;
-				
-				AbstractColumn item = avc.Find(v.VariableName.ToString());
 				CurrentItemsCollection cic = p.IDataNavigator.GetDataRow();
 				CurrentItem c = cic.Find(v.VariableName);
 				return c.Value.ToString();
@@ -45,12 +43,9 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 		
 		
 		protected override void AggregateValue(object value, AggregationState aggregationState, params object[] args)
-        {
-//            var sum = aggregationState.GetValue<string>("value");
-//            var nextVal = TypeNormalizer.EnsureType<string>(value);
-//
-//            aggregationState["value"] = sum + nextVal;
-        }
+       {
+
+       }
 
         protected override string ExtractAggregateValue(AggregationState aggregationState)
         {

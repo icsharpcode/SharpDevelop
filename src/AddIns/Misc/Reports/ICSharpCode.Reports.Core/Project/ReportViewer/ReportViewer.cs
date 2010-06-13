@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.ComponentModel;
+using System.Collections;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -14,9 +14,9 @@ using System.Drawing.Text;
 using System.Globalization;
 using System.Windows.Forms;
 
+using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.old_Exporter;
 using ICSharpCode.Reports.Core.old_Exporter.ExportRenderer;
-using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core.ReportViewer
 {
@@ -113,7 +113,25 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			if (dataTable == null) {
 				throw new ArgumentNullException("dataTable");
 			}
-			RunReport (reportModel,DataManagerFactory.CreateDataManager(reportModel,dataTable));
+			ReportEngine.CheckForParameters(reportModel,parameters);
+			IDataManager dataManager = DataManagerFactory.CreateDataManager(reportModel,dataTable);
+			
+			RunReport (reportModel,dataManager);
+		}
+		
+		
+		public void RunReport (ReportModel reportModel,IList dataSource,ReportParameters parameters)
+		{
+			if (reportModel == null) {
+				throw new ArgumentNullException("reportModel");
+			}
+			if (dataSource == null) {
+				throw new ArgumentNullException("dataTable");
+			}
+			ReportEngine.CheckForParameters(reportModel,parameters);
+			IDataManager dataManager = DataManagerFactory.CreateDataManager(reportModel,dataSource);
+			
+			RunReport (reportModel,dataManager);
 		}
 		
 		
@@ -130,6 +148,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			this.dataManager = dataManager;
 			RunDataReport(reportModel,dataManager);
 		}
+		
 		
 		#region Rendering
 		
@@ -297,7 +316,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		{
 			if (this.comboZoom.SelectedItem.ToString().IndexOf("%") > 0) {
 				string s1 = this.comboZoom.SelectedItem.ToString().Substring(0,this.comboZoom.SelectedItem.ToString().IndexOf("%"));
-				this.zoom = (float)Convert.ToDecimal(s1) / 100;
+				this.zoom = (float)Convert.ToDecimal(s1,CultureInfo.InvariantCulture) / 100;
 			} else {
 				string sel = this.comboZoom.SelectedItem.ToString();
 				switch (sel) {

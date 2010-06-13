@@ -24,7 +24,7 @@ namespace ICSharpCode.Reports.Core
 				if (!String.IsNullOrEmpty(commandText)) {
 					commandText = commandText.ToUpper(CultureInfo.CurrentCulture);
 
-					if (!commandText.StartsWith("SELECT")) {
+					if (!commandText.StartsWith("SELECT",StringComparison.Ordinal)) {
 						throw new IllegalQueryException();
 					}
 				}

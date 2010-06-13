@@ -114,8 +114,7 @@ namespace ICSharpCode.Reports.Core
 					str = dec.ToString (format,CultureInfo.CurrentCulture);
 					
 				} catch (System.FormatException e) {
-						string s = String.Format("\tDecimalValue < {0} > {1}",toFormat,e.Message);
-						System.Console.WriteLine("\t{0}",s);
+						string s = String.Format(CultureInfo.InvariantCulture,"\tDecimalValue < {0} > {1}",toFormat,e.Message);
 				}
 				return str;
 			} else {

@@ -49,7 +49,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		}
 		
 		
-		private bool CanEvaluate (string expressionn)
+		private static bool CanEvaluate (string expressionn)
 		{
 			if ((!String.IsNullOrEmpty(expressionn)) && (expressionn.StartsWith("="))) {
 				return true;

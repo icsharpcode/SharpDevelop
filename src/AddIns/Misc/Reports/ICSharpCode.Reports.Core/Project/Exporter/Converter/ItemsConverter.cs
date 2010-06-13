@@ -53,13 +53,13 @@ namespace ICSharpCode.Reports.Core.Exporter.Converter
 		
 		
 		
-		private Point AdjustLocation (IReportItem parent , IReportItem item)
+		private static Point AdjustLocation (IReportItem parent , IReportItem item)
 		{
 			return new Point(parent.Location.X + item.Location.X,parent.Location.Y + item.Location.Y);
 		}
 			
 		
-		private Point AdjustLocationAfterDraw (IReportItem parent)
+		private static Point AdjustLocationAfterDraw (IReportItem parent)
 		{
 			return new Point(parent.Location.X + parent.Size.Width,parent.Location.Y + parent.Size.Height);
 		}

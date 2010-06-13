@@ -102,7 +102,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-		private void AdjustBackColor (ISimpleContainer container,BaseReportItem item)
+		private static void AdjustBackColor (ISimpleContainer container,BaseReportItem item)
 		{
 			if (item.BackColor != GlobalValues.DefaultBackColor) {
 					foreach (BaseReportItem i in container.Items) {

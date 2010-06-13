@@ -260,7 +260,7 @@ namespace ICSharpCode.Reports.Core {
 					if (p != null) {
 						baseDataItem.DBValue = p.GetValue(this.Current).ToString();
 					} else {
-						baseDataItem.DBValue = string.Format("<{0}> missing!", baseDataItem.ColumnName);
+						baseDataItem.DBValue = string.Format(CultureInfo.InvariantCulture,"<{0}> missing!", baseDataItem.ColumnName);
 					}
 					return;
 				}

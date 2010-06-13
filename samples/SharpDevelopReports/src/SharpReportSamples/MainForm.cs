@@ -7,15 +7,13 @@
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
+using ICSharpCode.Reports.Core.old_Exporter.ExportRenderer;
 
 namespace SharpReportSamples
 {
@@ -98,11 +96,18 @@ namespace SharpReportSamples
 			string s = Path.GetFileNameWithoutExtension(reportName);
 			if (s == "ContributorsList" ) {
 				this.RunContributors(reportName);
-			} else if (s == "NoConnectionReport") {
+			}
+			else if (s == "ContributorsListWithParameters"){
+				//this.V1_RunContributorsWithParameters(reportName);
+//				this.V2_RunContributorsWithParameters(string fileName)
+				this.V3_RunContributorsWithParameters(reportName);
+			}
+			         
+			else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
 			} else if (s =="EventLog")
-			this.RunEventLogger(reportName);
-//			this.RunEventLogger_Pdf(reportName);
+				this.RunEventLogger(reportName);
+			
 			else {
 				
 				ReportParameters parameters =  ReportEngine.LoadParameters(reportName);
@@ -170,6 +175,77 @@ namespace SharpReportSamples
 				this.previewControl1.RunReport(model,dataManager);
 			};
 			this.previewControl1.RunReport(model,dataManager);
+		}
+		
+		
+		private void V1_RunContributorsWithParameters(string fileName)
+		{
+			ReportModel model = ReportEngine.LoadReportModel(fileName);
+			
+			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
+			
+			BasicParameter p1 = parameters.SqlParameters[0];
+			p1.ParameterValue ="Value of Parameter";
+			
+			
+			List<Contributor> list = ContributorsReportData.CreateContributorsList();
+
+			
+			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+			{
+				this.previewControl1.RunReport(model,list,parameters);
+			};
+			this.previewControl1.RunReport(model,list,parameters);
+		}
+		
+		
+		// Can use this version for Parameters as well
+		
+		private void V2_RunContributorsWithParameters(string fileName)
+		{
+			var model = ReportEngine.LoadReportModel(fileName);
+			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
+			
+			BasicParameter p1 = parameters.SqlParameters[0];
+			p1.ParameterValue ="Value of Parameter";
+			
+			
+			List<Contributor> list = ContributorsReportData.CreateContributorsList();
+			IDataManager dataManager = DataManager.CreateInstance(list,model.ReportSettings);
+			
+			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
+			{
+				this.previewControl1.RunReport(model,dataManager);
+			};
+			this.previewControl1.RunReport(model,dataManager);
+		}
+		
+		
+		private void V3_RunContributorsWithParameters(string fileName)
+		{
+			var model = ReportEngine.LoadReportModel(fileName);
+			ReportParameters parameters =  ReportEngine.LoadParameters(fileName);
+			
+			BasicParameter p1 = parameters.SqlParameters[0];
+			p1.ParameterValue ="Value of Parameter";
+			
+			
+			List<Contributor> list = ContributorsReportData.CreateContributorsList();
+//			IDataManager dataManager = DataManager.CreateInstance(list,model.ReportSettings);
+			
+		
+			//IReportCreator creator = ReportEngine.CreatePageBuilder(model,eventLogger.EventLog,null);
+			
+			IReportCreator creator = ReportEngine.CreatePageBuilder(model,list,parameters);
+			
+			creator.SectionRendering += PushPrinting;
+			creator.BuildExportList();
+			using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(creator,SelectFilename(),true))
+			{
+				pdfRenderer.Start();
+				pdfRenderer.RenderOutput();
+				pdfRenderer.End();
+			}
 		}
 		
 		
