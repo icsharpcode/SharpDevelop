@@ -28,13 +28,19 @@ namespace ICSharpCode.UsageDataCollector
 	public class UsageDataUploader
 	{
 		string databaseFileName;
+		string productName;
 		
 		/// <summary>
 		/// Creates a new UsageDataUploader.
 		/// </summary>
-		public UsageDataUploader(string databaseFileName)
+		public UsageDataUploader(string databaseFileName, string productName)
 		{
+			if (databaseFileName == null)
+				throw new ArgumentNullException("databaseFileName");
+			if (productName == null)
+				throw new ArgumentNullException("productName");
 			this.databaseFileName = databaseFileName;
+			this.productName = productName;
 		}
 		
 		/// <summary>
@@ -140,7 +146,7 @@ namespace ICSharpCode.UsageDataCollector
 				
 				UdcProxy.UDCUploadServiceClient client = new UdcProxy.UDCUploadServiceClient(binding, endpoint);
 				try {
-					client.BeginUploadUsageData("sharpdevelop", new MemoryStream(data),
+					client.BeginUploadUsageData(productName, new MemoryStream(data),
 					                            ar => UsageDataUploaded(ar, client, commaSeparatedSessionIDList), null);
 				} catch (CommunicationException) {
 					// ignore error (maybe currently not connected to network)

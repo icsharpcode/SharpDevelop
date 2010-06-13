@@ -10,9 +10,9 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 
@@ -25,6 +25,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 	{
 		readonly CompletionList completionList = new CompletionList();
 		ToolTip toolTip = new ToolTip();
+		
+		/// <summary>
+		/// Gets the completion list used in this completion window.
+		/// </summary>
+		public CompletionList CompletionList {
+			get { return completionList; }
+		}
 		
 		/// <summary>
 		/// Creates a new code completion window.
@@ -180,13 +187,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					completionList.SelectItem(document.GetText(this.StartOffset, offset - this.StartOffset));
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Gets the completion list used in this completion window.
-		/// </summary>
-		public CompletionList CompletionList {
-			get { return completionList; }
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace ICSharpCode.UnitTesting
 	/// Watches for new test results as they occur. Test results
 	/// are written to a file and read in by this class.
 	/// </summary>
-	public class TestResultsMonitor : IDisposable
+	public class TestResultsMonitor : ITestResultsMonitor
 	{
 		FileInfo fileInfo;
 		TestResultsReader testResultsReader;
@@ -24,8 +24,6 @@ namespace ICSharpCode.UnitTesting
 		long filePosition;
 		const int BytesBufferLength = 1024;
 		byte[] bytes = new byte[BytesBufferLength];
-		
-		public delegate void TestFinishedEventHandler(object source, TestFinishedEventArgs e);
 		
 		/// <summary>
 		/// Raised when a single test has been completed.
@@ -39,6 +37,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public TestResultsMonitor()
+			: this(Path.GetTempFileName())
 		{
 			ResetFilePosition();
 		}
@@ -47,12 +46,8 @@ namespace ICSharpCode.UnitTesting
 		/// Gets or sets the test results filename.
 		/// </summary>
 		public string FileName {
-			get {
-				return fileInfo.FullName;
-			}
-			set {
-				fileInfo = new FileInfo(value);
-			}
+			get { return fileInfo.FullName; }
+			set { fileInfo = new FileInfo(value); }
 		}
 		
 		/// <summary>
@@ -80,7 +75,7 @@ namespace ICSharpCode.UnitTesting
 		/// Stops monitoring.
 		/// </summary>
 		public void Stop()
-		{
+		{		
 			if (fileSystemWatcher != null) {
 				fileSystemWatcher.Dispose();
 				fileSystemWatcher = null;
@@ -108,6 +103,10 @@ namespace ICSharpCode.UnitTesting
 		public void Dispose()
 		{
 			Stop();
+			
+			try {
+				File.Delete(FileName);
+			} catch { }
 		}
 		
 		void FileCreated(object source, FileSystemEventArgs e)
@@ -124,7 +123,7 @@ namespace ICSharpCode.UnitTesting
 		
 		void OnTestResultsReceived(TestResult[] results)
 		{
-			if (results.Length > 0 && TestFinished != null) {
+			if ((results.Length > 0) && (TestFinished != null)) {
 				foreach (TestResult result in results) {
 					TestFinished(this, new TestFinishedEventArgs(result));
 				}
@@ -150,7 +149,7 @@ namespace ICSharpCode.UnitTesting
 								filePosition += bytesRead;
 								text.Append(UTF8Encoding.UTF8.GetString(bytes, 0, bytesRead));
 							}
-						} while (bytesRead > 0 && filePosition < fs.Length);
+						} while ((bytesRead > 0) && (filePosition < fs.Length));
 					}
 				}
 			} catch (FileNotFoundException) {

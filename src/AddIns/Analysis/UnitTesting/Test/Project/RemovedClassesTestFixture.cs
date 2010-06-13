@@ -29,7 +29,7 @@ namespace UnitTesting.Tests.Project
 			myClass = new MockClass("MyTests.MyClass");
 			innerClass = new MockClass("MyTests.MyClass.InnerClass", "MyTests.MyClass+InnerClass");
 			myClass.InnerClasses.Add(innerClass);
-
+			
 			anotherClass = new MockClass("MyTests.AnotherClass");
 			
 			List<IClass> classes = new List<IClass>();
@@ -42,7 +42,7 @@ namespace UnitTesting.Tests.Project
 		
 		[Test]
 		public void InnerClassesIncludedInMissingClasses()
-		{			
+		{
 			List<IClass> expectedClasses = new List<IClass>();
 			expectedClasses.Add(myClass);
 			expectedClasses.Add(innerClass);
@@ -50,7 +50,7 @@ namespace UnitTesting.Tests.Project
 			
 			AssertContains(expectedClasses, removedClasses.GetMissingClasses());
 		}
-
+		
 		/// <summary>
 		/// Should remove inner class too.
 		/// </summary>
@@ -64,7 +64,7 @@ namespace UnitTesting.Tests.Project
 			
 			AssertContains(expectedClasses, removedClasses.GetMissingClasses());
 		}
-
+		
 		[Test]
 		public void RemoveInnerClass()
 		{
@@ -97,7 +97,7 @@ namespace UnitTesting.Tests.Project
 				Assert.IsTrue(actualClasses.Contains(c), "Class missing: " + c.FullyQualifiedName + " Actual:\r\n" + GetClassNames(actualClasses));
 			}
 			Assert.AreEqual(expectedClasses.Count, actualClasses.Count, "Actual:\r\n" + GetClassNames(actualClasses));
-		}		
+		}
 		
 		string GetClassNames(IList<IClass> classes)
 		{

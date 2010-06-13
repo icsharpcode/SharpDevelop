@@ -14,8 +14,6 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class SplashScreenForm : Form
 	{
-		public const string VersionText = "Mirador (4.0) build " + RevisionClass.Revision;
-		
 		static SplashScreenForm splashScreen;
 		static List<string> requestedFileList = new List<string>();
 		static List<string> parameterList = new List<string>();
@@ -32,20 +30,23 @@ namespace ICSharpCode.SharpDevelop
 		
 		public SplashScreenForm()
 		{
+			const string versionText = "SharpDevelop"
+				+ (RevisionClass.BranchName != null ? "-" + RevisionClass.BranchName : "")
+				+ " " + RevisionClass.FullVersion
+				#if DEBUG
+				+ " (debug)"
+				#endif
+				;
+			
 			FormBorderStyle = FormBorderStyle.None;
 			StartPosition   = FormStartPosition.CenterScreen;
 			ShowInTaskbar   = false;
-			#if DEBUG
-			string versionText = VersionText + " (debug)";
-			#else
-			string versionText = VersionText;
-			#endif
 			// Stream must be kept open for the lifetime of the bitmap
 			bitmap = new Bitmap(typeof(SplashScreenForm).Assembly.GetManifestResourceStream("Resources.SplashScreen.jpg"));
 			this.ClientSize = bitmap.Size;
 			using (Font font = new Font("Sans Serif", 4)) {
 				using (Graphics g = Graphics.FromImage(bitmap)) {
-					g.DrawString(versionText, font, Brushes.Black, 100, 142);
+					g.DrawString(versionText, font, Brushes.Black, 166 - 3 * versionText.Length, 142);
 				}
 			}
 			BackgroundImage = bitmap;

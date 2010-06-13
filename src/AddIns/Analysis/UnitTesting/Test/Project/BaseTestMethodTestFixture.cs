@@ -31,7 +31,7 @@ namespace UnitTesting.Tests.Project
 		public void SetUpFixture()
 		{
 			mockClass = new MockClass("Tests.MyTestFixture");
-			mockMethod = new MockMethod("MyMethod");
+			mockMethod = new MockMethod(mockClass, "MyMethod");
 			
 			mockMethodRegion = new DomRegion(0, 0, 0, 10);
 			mockMethod.Region = mockMethodRegion;

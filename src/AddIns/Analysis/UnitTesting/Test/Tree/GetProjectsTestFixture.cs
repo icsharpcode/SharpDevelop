@@ -26,6 +26,7 @@ namespace UnitTesting.Tests.Tree
 		MSBuildBasedProject project2;
 		IProject[] projects;
 		DummyParserServiceTestTreeView treeView;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
@@ -46,7 +47,8 @@ namespace UnitTesting.Tests.Tree
 			MockProjectContent projectContent = new MockProjectContent();
 			projectContent.Project = project1;
 			
-			treeView = new DummyParserServiceTestTreeView();
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			treeView = new DummyParserServiceTestTreeView(testFrameworks);
 			treeView.ProjectContentForProject = projectContent;
 			treeView.AddSolution(solution);
 			projects = treeView.GetProjects();
@@ -102,7 +104,7 @@ namespace UnitTesting.Tests.Tree
 			foreach (IProject project in projects) {
 				TestProject testProject = treeView.GetTestProject(project);
 				MockClass mockClass = new MockClass("MyTestFixture");
-				TestClass testClass = new TestClass(mockClass);
+				TestClass testClass = new TestClass(mockClass, testFrameworks);
 				testClass.Result = TestResultType.Failure;
 				testProject.TestClasses.Add(testClass);
 				Assert.AreEqual(testProject.TestClasses.Result, TestResultType.Failure);

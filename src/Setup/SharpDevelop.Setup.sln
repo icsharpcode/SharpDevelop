@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.1.0.1668
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.5860
 Project("{CFEE4113-1246-4D54-95CB-156813CB8593}") = "SharpDevelop.Setup", "SharpDevelop.Setup.wixproj", "{FFC0F136-2F91-4F2E-8D8B-DD435F01A7E6}"
 EndProject
 Global

@@ -23,6 +23,7 @@ namespace UnitTesting.Tests.Project
 		protected TestProject testProject;
 		protected MockProjectContent projectContent;
 		protected MockClass outerClass;
+		protected MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		protected void InitBase()
 		{			
@@ -30,38 +31,31 @@ namespace UnitTesting.Tests.Project
 			projectContent.Language = LanguageProperties.None;
 			
 			// Create the base test class.
-			outerClass = new MockClass("MyTests.A");
-			outerClass.ProjectContent = projectContent;
+			outerClass = new MockClass(projectContent, "MyTests.A");
 			projectContent.Classes.Add(outerClass);
 			
 			// Create the inner test class.
 			// Note the use of the DotNetName "MyTests.A+InnerTest".
-			innerClass = new MockClass("MyTests.A.InnerATest", "MyTests.A+InnerATest");
+			innerClass = new MockClass(projectContent, "MyTests.A.InnerATest", "MyTests.A+InnerATest", outerClass);
 			innerClass.Attributes.Add(new MockAttribute("TestFixture"));
-			innerClass.ProjectContent = projectContent;
-			innerClass.DeclaringType = outerClass; // Declaring type is outer class.	
 
-			MockMethod method = new MockMethod("FooBar");
+			MockMethod method = new MockMethod(innerClass, "FooBar");
 			method.Attributes.Add(new MockAttribute("Test"));
-			method.DeclaringType = innerClass;
 			innerClass.Methods.Add(method);
 			outerClass.InnerClasses.Add(innerClass);
 			
 			// Add another inner class that is not a test class.
-			MockClass nonTestInnerClass = new MockClass("MyTests.A.InnerBClass");
-			nonTestInnerClass.ProjectContent = projectContent;
-			nonTestInnerClass.DeclaringType = outerClass; // Declaring type is outer class.	
+			MockClass nonTestInnerClass = new MockClass(projectContent, "MyTests.A.InnerBClass", outerClass);
 			outerClass.InnerClasses.Add(nonTestInnerClass);
 
 			// Add another inner class with the same name as the InnerATest.
 			// This makes sure duplicate classes are not added.
-			MockClass duplicateInnerClass = new MockClass("MyTests.A.InnerATest", "MyTests.A+InnerATest");
+			MockClass duplicateInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest", "MyTests.A+InnerATest", outerClass);
 			duplicateInnerClass.Attributes.Add(new MockAttribute("TestFixture"));
-			duplicateInnerClass.ProjectContent = projectContent;
-			duplicateInnerClass.DeclaringType = outerClass; // Declaring type is outer class.
 			outerClass.InnerClasses.Add(duplicateInnerClass);
 			
-			testProject = new TestProject(null, projectContent);
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testProject = new TestProject(null, projectContent, testFrameworks);
 			if (testProject.TestClasses.Count > 0) {
 				testClass = testProject.TestClasses[0];
 			}

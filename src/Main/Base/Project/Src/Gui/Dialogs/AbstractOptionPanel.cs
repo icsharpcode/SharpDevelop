@@ -29,12 +29,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public virtual object Owner { get; set; }
 		
-		IList<OptionBinding> bindings = new List<OptionBinding>();
+		readonly List<OptionBinding> bindings = new List<OptionBinding>();
 		
-		public IList<OptionBinding> Bindings {
-			get {
-				return bindings;
-			}
+		void IOptionBindingContainer.AddBinding(OptionBinding binding)
+		{
+			this.bindings.Add(binding);
 		}
 		
 		public virtual object Control {
@@ -49,17 +48,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public virtual bool SaveOptions()
 		{
-			foreach (OptionBinding b in Bindings) {
+			foreach (OptionBinding b in bindings) {
 				if (!b.Save())
 					return false;
 			}
 			
 			return true;
-		}
-		
-		public void AddBinding(OptionBinding binding)
-		{
-			this.bindings.Add(binding);
 		}
 	}
 }

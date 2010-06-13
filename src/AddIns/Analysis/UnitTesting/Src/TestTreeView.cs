@@ -37,9 +37,11 @@ namespace ICSharpCode.UnitTesting
 		/// only one test project then no such node will be added.
 		/// </summary>
 		AllTestsTreeNode allTestsNode;
+		IRegisteredTestFrameworks testFrameworks;
 		
-		public TestTreeView()
+		public TestTreeView(IRegisteredTestFrameworks testFrameworks)
 		{
+			this.testFrameworks = testFrameworks;
 			ImageList = TestTreeViewImageList.ImageList;
 			CanClearSelection = false;
 		}
@@ -50,7 +52,7 @@ namespace ICSharpCode.UnitTesting
 		public Enum InternalState {
 			get {
 				TestTreeNode selectedNode = SelectedNode as TestTreeNode;
-				if (selectedNode is TestClassTreeNode || selectedNode is TestMethodTreeNode) {
+				if ((selectedNode is TestClassTreeNode) || (selectedNode is TestMethodTreeNode)) {
 					return TestTreeViewState.SourceCodeItemSelected;
 				}
 				return TestTreeViewState.None;
@@ -81,7 +83,7 @@ namespace ICSharpCode.UnitTesting
 		
 		/// <summary>
 		/// Adds the project to the test tree view if the project
-		/// has a reference to a supported test framework.
+		/// is a test project.
 		/// </summary>
 		/// <remarks>
 		/// If the project is already in the tree then it will 
@@ -90,24 +92,58 @@ namespace ICSharpCode.UnitTesting
 		/// </remarks>
 		public void AddProject(IProject project)
 		{
-			if (TestProject.IsTestProject(project)) {
+			if (IsTestProject(project)) {
 				if (GetProjectTreeNode(project) == null) {
-					// Add a new tree node.
-					IProjectContent projectContent = GetProjectContent(project);
-					if (projectContent != null) {
-						TestProject testProject = new TestProject(project, projectContent);
-						TestProjectTreeNode node = new TestProjectTreeNode(testProject);
-						
-						if (Nodes.Count == 0) {
-							node.AddTo(this);
-						} else {
-							AllTestsTreeNode allTestsNode = GetAllTestsNode();
-							allTestsNode.AddProjectNode(node);
-						}
-						
-						// Sort the nodes.
-						SortNodes(Nodes, true);
-					}
+					AddProjectTreeNode(project);
+				}
+			}
+		}
+			
+		bool IsTestProject(IProject project)
+		{
+			return testFrameworks.IsTestProject(project);
+		}
+		
+		void AddProjectTreeNode(IProject project)
+		{
+			TestProjectTreeNode node = CreateProjectTreeNode(project);
+			if (node != null) {
+				AddProjectTreeNodeToTree(node);
+				SortNodes(Nodes, true);
+			}
+		}
+		
+		TestProjectTreeNode CreateProjectTreeNode(IProject project)
+		{
+			IProjectContent projectContent = GetProjectContent(project);
+			if (projectContent != null) {
+				TestProject testProject = new TestProject(project, projectContent, testFrameworks);
+				return new TestProjectTreeNode(testProject);
+			}
+			return null;
+		}
+		
+		void AddProjectTreeNodeToTree(TestProjectTreeNode node)
+		{
+			if (Nodes.Count == 0) {
+				node.AddTo(this);
+			} else {
+				AllTestsTreeNode allTestsNode = GetAllTestsNode();
+				allTestsNode.AddProjectNode(node);
+			}
+		}
+		
+		public void RemoveSolutionFolder(ISolutionFolder solutionFolder)
+		{
+			IProject project = solutionFolder as IProject;
+			if (project != null) {
+				RemoveProject(project);
+			}
+			
+			ISolutionFolderContainer solutionFolderContainer = solutionFolder as ISolutionFolderContainer;
+			if (solutionFolderContainer != null) {
+				foreach (ISolutionFolder subSolutionFolder in solutionFolderContainer.Folders) {
+					RemoveSolutionFolder(subSolutionFolder);
 				}
 			}
 		}
@@ -119,11 +155,15 @@ namespace ICSharpCode.UnitTesting
 		{
 			TestProjectTreeNode projectNode = GetProjectTreeNode(project);
 			RemoveProjectNode(projectNode);
-			
-			// Remove the All Tests node if it exists and there
-			// is only one project tree node left.
-			if (allTestsNode != null && GetProjectNodes().Count == 1) {
-				RemoveAllTestsNode();
+			RemoveAllTestsNodeIfOnlyOneProjectLeft();
+		}
+		
+		void RemoveAllTestsNodeIfOnlyOneProjectLeft()
+		{
+			if (allTestsNode != null) {
+				if (GetProjectNodes().Count == 1) {
+					RemoveAllTestsNode();
+				}
 			}
 		}
 		
@@ -133,8 +173,6 @@ namespace ICSharpCode.UnitTesting
 		public IProject[] GetProjects()
 		{
 			List<IProject> projects = new List<IProject>();
-			
-			// Get the project information.
 			foreach (TestProjectTreeNode projectNode in GetProjectNodes()) {
 				projects.Add(projectNode.Project);
 			}
@@ -172,12 +210,8 @@ namespace ICSharpCode.UnitTesting
 		public IClass SelectedClass {
 			get {
 				TestClassTreeNode classNode = SelectedNode as TestClassTreeNode;
-				
 				if (classNode == null) {
-					TestMethodTreeNode methodNode = SelectedNode as TestMethodTreeNode;
-					if (methodNode != null) {
-						classNode = methodNode.Parent as TestClassTreeNode;
-					}
+					classNode = GetClassNodeFromSelectedMethodNode();
 				}
 				
 				if (classNode != null) {
@@ -185,6 +219,15 @@ namespace ICSharpCode.UnitTesting
 				}
 				return null;
 			}
+		}
+		
+		TestClassTreeNode GetClassNodeFromSelectedMethodNode()
+		{
+			TestMethodTreeNode methodNode = SelectedNode as TestMethodTreeNode;
+			if (methodNode != null) {
+				return methodNode.Parent as TestClassTreeNode;
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -259,25 +302,6 @@ namespace ICSharpCode.UnitTesting
 		public virtual IProjectContent GetProjectContent(IProject project)
 		{
 			return ParserService.GetProjectContent(project);
-		}
-		
-		/// <summary>
-		/// Adds or removes a project from the test tree view based on 
-		/// whether a reference to a testing framework has been added or
-		/// removed.
-		/// </summary>
-		public void ProjectReferencesChanged(IProject project)
-		{
-			TestProjectTreeNode projectNode = GetProjectTreeNode(project);
-			if (TestProject.IsTestProject(project)) {
-				if (projectNode == null) {
-					TestProject testProject = new TestProject(project, GetProjectContent(project));
-					projectNode = new TestProjectTreeNode(testProject);
-					projectNode.AddTo(this);
-				}
-			} else {
-				RemoveProjectNode(projectNode);
-			}
 		}
 		
 		/// <summary>
@@ -375,7 +399,6 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		void RemoveAllTestsNode()
 		{
-			// Remove the all tests node.
 			allTestsNode.Remove();
 			
 			// Copy project nodes to the root.
@@ -383,7 +406,6 @@ namespace ICSharpCode.UnitTesting
 				Nodes.Add(node);
 			}
 			
-			// Dispose the all tests node.
 			AllTestsNodeDisposed(null, null);
 		}
 		
@@ -396,6 +418,22 @@ namespace ICSharpCode.UnitTesting
 		{
 			allTestsNode.Disposed -= AllTestsNodeDisposed;
 			allTestsNode = null;
+		}
+		
+		/// <summary>
+		/// Adds the test project to the test tree view if it is now recognised as a 
+		/// test project and is not already in the test tree.
+		/// </summary>
+		public void ProjectItemAdded(ProjectItem projectItem)
+		{
+			AddProject(projectItem.Project);
+		}
+		
+		public void ProjectItemRemoved(ProjectItem projectItem)
+		{
+			if (!testFrameworks.IsTestProject(projectItem.Project)) {
+				RemoveProject(projectItem.Project);
+			}
 		}
 	}
 }

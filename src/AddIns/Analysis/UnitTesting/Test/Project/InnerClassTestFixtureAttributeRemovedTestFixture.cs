@@ -29,17 +29,12 @@ namespace UnitTesting.Tests.Project
 			
 			// Create new compilation unit with inner class that no longer has the TestFixture attribute.
 			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newOuterClass = new MockClass("MyTests.A");
-			newOuterClass.ProjectContent = projectContent;
+			MockClass newOuterClass = new MockClass(projectContent, "MyTests.A");
 			projectContent.Classes.Add(newOuterClass);
-			newOuterClass.SetCompoundClass(newOuterClass);
 			newUnit.Classes.Add(newOuterClass);
 			
 			// Create the inner test class.
-			MockClass newInnerClass = new MockClass("MyTests.A.InnerATest", "MyTests.A+InnerATest");
-			newInnerClass.ProjectContent = projectContent;
-			newInnerClass.DeclaringType = outerClass; // Declaring type is outer class.	
-			newInnerClass.SetCompoundClass(newInnerClass);
+			MockClass newInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest", "MyTests.A+InnerATest", outerClass);
 			newOuterClass.InnerClasses.Add(newInnerClass);
 		
 			// Update TestProject's parse info.

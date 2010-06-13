@@ -142,14 +142,6 @@ namespace ICSharpCode.AvalonEdit.Document
 			return rope[offset];
 		}
 		
-//		/// <summary>
-//		/// Like GetCharAt, but without any safety checks.
-//		/// </summary>
-//		internal char FastGetCharAt(int offset)
-//		{
-//			return textBuffer.GetCharAt(offset);
-//		}
-		
 		WeakReference cachedText;
 		
 		/// <summary>

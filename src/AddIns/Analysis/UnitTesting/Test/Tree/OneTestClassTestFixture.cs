@@ -41,6 +41,7 @@ namespace UnitTesting.Tests.Tree
 		TreeNodeCollection testFixtureChildNodes;
 		ExtTreeNode testNode;
 		ReferenceProjectItem nunitFrameworkReferenceItem;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void SetUp()
@@ -60,27 +61,23 @@ namespace UnitTesting.Tests.Tree
 			// Add a test class with a TestFixture attributes.
 			projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
-			testClass = new MockClass("RootNamespace.Tests.MyTestFixture");
-			testClass.Namespace = "RootNamespace.Tests";
+			testClass = new MockClass(projectContent, "RootNamespace.Tests.MyTestFixture");
 			testClass.Attributes.Add(new MockAttribute("TestFixture"));
-			testClass.ProjectContent = projectContent;
 			projectContent.Classes.Add(testClass);
 			
 			// Add two methods to the test class only
 			// one of which has test attributes.
-			testMethod = new MockMethod("NameExists");
+			testMethod = new MockMethod(testClass, "NameExists");
 			testMethod.Attributes.Add(new MockAttribute("Test"));
-			testMethod.DeclaringType = testClass;
 			testClass.Methods.Add(testMethod);
-			testClass.Methods.Add(new MockMethod());
-					
+			testClass.Methods.Add(new MockMethod(testClass));
+			
 			// Add a second class that has no test fixture attribute.
-			MockClass nonTestClass = new MockClass();
-			nonTestClass.ProjectContent = projectContent;
+			MockClass nonTestClass = new MockClass(projectContent);
 			projectContent.Classes.Add(nonTestClass);
 			
-			// Init mock project content to be returned.
-			dummyTreeView = new DummyParserServiceTestTreeView();
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			dummyTreeView = new DummyParserServiceTestTreeView(testFrameworks);
 			dummyTreeView.ProjectContentForProject = projectContent;
 			
 			// Load the projects into the test tree view.
@@ -99,12 +96,12 @@ namespace UnitTesting.Tests.Tree
 			rootNamespaceNode.Expanding();
 			rootNamespaceChildNodes = rootNamespaceNode.Nodes;
 			testsNamespaceNode = (ExtTreeNode)rootNamespaceNode.Nodes[0];
-		
+			
 			// Expand the tests namespace node.
 			testsNamespaceNode.Expanding();
 			testsNamespaceChildNodes = testsNamespaceNode.Nodes;
 			testFixtureNode = (ExtTreeNode)testsNamespaceNode.Nodes[0];
-		
+			
 			// Expand the test node.
 			testFixtureNode.Expanding();
 			testFixtureChildNodes = testFixtureNode.Nodes;
@@ -316,7 +313,7 @@ namespace UnitTesting.Tests.Tree
 		public void TestMethodFails()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.NameExists");
-			result.IsFailure = true;
+			result.ResultType = TestResultType.Failure;
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
 			projectNode.TestProject.UpdateTestResult(result);
 			
@@ -331,7 +328,7 @@ namespace UnitTesting.Tests.Tree
 		public void TestMethodPasses()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.NameExists");
-			result.IsSuccess = true;
+			result.ResultType = TestResultType.Success;
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
 			projectNode.TestProject.UpdateTestResult(result);
 			
@@ -345,7 +342,7 @@ namespace UnitTesting.Tests.Tree
 		public void TestMethodIgnored()
 		{
 			TestResult result = new TestResult("RootNamespace.Tests.MyTestFixture.NameExists");
-			result.IsIgnored = true;
+			result.ResultType = TestResultType.Ignored;
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
 			projectNode.TestProject.UpdateTestResult(result);
 			
@@ -379,8 +376,7 @@ namespace UnitTesting.Tests.Tree
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
 			TestClass testClass = projectNode.TestProject.TestClasses["RootNamespace.Tests.MyTestFixture"];		
 			
-			MockMethod method = new MockMethod("NewMethod");
-			method.DeclaringType = testClass.Class;
+			MockMethod method = new MockMethod(testClass.Class, "NewMethod");
 			method.Attributes.Add(new MockAttribute("Test"));
 			testClass.TestMethods.Add(new TestMethod(method));
 			
@@ -391,7 +387,7 @@ namespace UnitTesting.Tests.Tree
 					break;
 				}
 			}
-
+			
 			Assert.AreEqual(2, testFixtureNode.Nodes.Count);
 			Assert.IsNotNull(newMethodNode);
 			Assert.IsInstanceOf(typeof(TestMethodTreeNode), newMethodNode);
@@ -469,7 +465,7 @@ namespace UnitTesting.Tests.Tree
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
 			ProjectService.RemoveProjectItem(projectNode.TestProject.Project, nunitFrameworkReferenceItem);
 			
-			treeView.ProjectReferencesChanged(projectNode.TestProject.Project);
+			treeView.ProjectItemRemoved(nunitFrameworkReferenceItem);
 			
 			Assert.AreEqual(0, treeView.Nodes.Count);
 		}
@@ -478,7 +474,12 @@ namespace UnitTesting.Tests.Tree
 		public void UnknownProjectHasReferenceRemoved()
 		{
 			IProject project = new MockCSharpProject();
-			treeView.ProjectReferencesChanged(project);
+			ReferenceProjectItem refItem = new ReferenceProjectItem(project);
+			refItem.Include = "System";
+			
+			ProjectService.AddProjectItem(project, refItem);
+			
+			treeView.ProjectItemRemoved(refItem);
 			
 			Assert.AreEqual(1, treeView.Nodes.Count);
 		}
@@ -492,17 +493,18 @@ namespace UnitTesting.Tests.Tree
 			nunitFrameworkReferenceItem.Include = "NUnit.Framework";
 			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
 			
-			treeView.ProjectReferencesChanged(project);
+			treeView.ProjectItemAdded(nunitFrameworkReferenceItem);
 			
+			ExtTreeNode allProjectsNode = treeView.Nodes[0] as ExtTreeNode;
 			ExtTreeNode newProjectNode = null;
-			foreach (ExtTreeNode node in treeView.Nodes) {
+			foreach (ExtTreeNode node in allProjectsNode.Nodes) {
 				if (node.Text == "NewProject") {
 					newProjectNode = node;
 					break;
 				}
 			}
 			
-			Assert.AreEqual(2, treeView.Nodes.Count);
+			Assert.AreEqual(1, treeView.Nodes.Count);
 			Assert.IsNotNull(newProjectNode);
 		}
 		
@@ -548,7 +550,7 @@ namespace UnitTesting.Tests.Tree
 			testsNamespaceNode.Remove();
 			
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
-
+			
 			// Make sure the tests namespace node child nodes are 
 			// unaffected when the test class is removed.
 			Assert.AreEqual(1, testsNamespaceNode.Nodes.Count);
@@ -568,7 +570,7 @@ namespace UnitTesting.Tests.Tree
 			testsNamespaceNode.Remove();
 			
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
-
+			
 			// Make sure the tests namespace node image index is  
 			// unaffected when the test class test result is changed.
 			Assert.AreEqual(TestTreeViewImageListIndex.TestNotRun, (TestTreeViewImageListIndex)testsNamespaceNode.ImageIndex);

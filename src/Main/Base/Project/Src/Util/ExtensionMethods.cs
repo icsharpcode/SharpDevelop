@@ -17,7 +17,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Documents;
 using System.Windows.Forms;
-
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
 using WinForms = System.Windows.Forms;
@@ -319,6 +318,36 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
+		/// <summary>
+		/// Removes <param name="stringToRemove" /> from the start of this string.
+		/// Throws ArgumentException if this string does not start with <param name="stringToRemove" />.
+		/// </summary>
+		public static string RemoveStart(this string s, string stringToRemove)
+		{
+			if (s == null)
+				return null;
+			if (string.IsNullOrEmpty(stringToRemove))
+				return s;
+			if (!s.StartsWith(stringToRemove))
+				throw new ArgumentException(string.Format("{0} does not start with {1}", s, stringToRemove));
+			return s.Substring(stringToRemove.Length);
+		}
+		
+		/// <summary>
+		/// Removes <param name="stringToRemove" /> from the end of this string.
+		/// Throws ArgumentException if this string does not end with <param name="stringToRemove" />.
+		/// </summary>
+		public static string RemoveEnd(this string s, string stringToRemove)
+		{
+			if (s == null)
+				return null;
+			if (string.IsNullOrEmpty(stringToRemove))
+				return s;
+			if (!s.EndsWith(stringToRemove))
+				throw new ArgumentException(string.Format("{0} does not end with {1}", s, stringToRemove));
+			return s.Substring(0, s.Length - stringToRemove.Length);
+		}
+		
 		public static string Replace(this string original, string pattern, string replacement, StringComparison comparisonType)
 		{
 			if (original == null)
@@ -406,12 +435,13 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Returns the index of the first element for which constraint returns true.
-		/// If none of the items in the list fits the constraint -1 is returned.
+		/// Returns the index of the first element for which <paramref name="predicate"/> returns true.
+		/// If none of the items in the list fits the <paramref name="predicate"/>, -1 is returned.
 		/// </summary>
-		public static int FindIndex<T>(this IList<T> list, Func<T, bool> constraint) {
+		public static int FindIndex<T>(this IList<T> list, Func<T, bool> predicate)
+		{
 			for (int i = 0; i < list.Count; i++) {
-				if (constraint(list[i]))
+				if (predicate(list[i]))
 					return i;
 			}
 			

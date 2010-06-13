@@ -25,6 +25,7 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 			((CheckBox)ControlDictionary["inPlaceEditCheckBox"]).Checked             = PropertyService.Get("FormsDesigner.DesignerOptions.EnableInSituEditing", true);
 			((CheckBox)ControlDictionary["useSmartTagsCheckBox"]).Checked            = UseSmartTags;
 			((CheckBox)ControlDictionary["insertTodoCommentCheckBox"]).Checked       = InsertTodoComment;
+			((CheckBox)ControlDictionary["generateVSStyleHandlersCheckBox"]).Checked = GenerateVisualStudioStyleEventHandlers;
 		}
 		
 		public static bool UseSmartTags {
@@ -54,6 +55,15 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 			}
 		}
 		
+		public static bool GenerateVisualStudioStyleEventHandlers {
+			get {
+				return PropertyService.Get("FormsDesigner.DesignerOptions.GenerateVisualStudioStyleEventHandlers", false);
+			}
+			set {
+				PropertyService.Set("FormsDesigner.DesignerOptions.GenerateVisualStudioStyleEventHandlers", value);
+			}
+		}
+		
 		public override bool StorePanelContents()
 		{
 			PropertyService.Set("FormsDesigner.DesignerOptions.PropertyGridSortAlphabetical", ((CheckBox)ControlDictionary["sortAlphabeticalCheckBox"]).Checked);
@@ -62,6 +72,7 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 			PropertyService.Set("FormsDesigner.DesignerOptions.EnableInSituEditing", ((CheckBox)ControlDictionary["inPlaceEditCheckBox"]).Checked);
 			UseSmartTags = ((CheckBox)ControlDictionary["useSmartTagsCheckBox"]).Checked;
 			InsertTodoComment = ((CheckBox)ControlDictionary["insertTodoCommentCheckBox"]).Checked;
+			GenerateVisualStudioStyleEventHandlers = ((CheckBox)ControlDictionary["generateVSStyleHandlersCheckBox"]).Checked;
 			
 			return true;
 		}

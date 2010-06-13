@@ -1010,13 +1010,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ReadOnlyCollection<IMethodOrProperty> cachedExtensionMethods;
 		IClass cachedExtensionMethods_LastClass; // invalidate cache when callingClass != LastClass
 		
-		public ReadOnlyCollection<IMethodOrProperty> SearchAllExtensionMethods()
+		public ReadOnlyCollection<IMethodOrProperty> SearchAllExtensionMethods(bool searchInAllNamespaces = false)
 		{
 			if (callingClass == null)
 				return EmptyList<IMethodOrProperty>.Instance;
 			if (callingClass != cachedExtensionMethods_LastClass) {
 				cachedExtensionMethods_LastClass = callingClass;
-				cachedExtensionMethods = new ReadOnlyCollection<IMethodOrProperty>(CtrlSpaceResolveHelper.FindAllExtensions(languageProperties, callingClass));
+				cachedExtensionMethods = new ReadOnlyCollection<IMethodOrProperty>(CtrlSpaceResolveHelper.FindAllExtensions(languageProperties, callingClass, searchInAllNamespaces));
 			}
 			return cachedExtensionMethods;
 		}
@@ -1122,7 +1122,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public List<ICompletionEntry> CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
+		/// <summary>
+		/// Returns code completion entries for given context.
+		/// </summary>
+		/// <param name="caretLine"></param>
+		/// <param name="caretColumn"></param>
+		/// <param name="parseInfo"></param>
+		/// <param name="fileContent"></param>
+		/// <param name="context"></param>
+		/// <param name="showEntriesFromAllNamespaces">If true, returns entries from all namespaces, regardless of current imports.</param>
+		/// <returns></returns>
+		public List<ICompletionEntry> CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context, bool showEntriesFromAllNamespaces = false)
 		{
 			if (!Initialize(parseInfo, caretLine, caretColumn))
 				return null;
@@ -1137,21 +1147,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				result.Add(new KeywordEntry("Global"));
 				result.Add(new KeywordEntry("New"));
-				CtrlSpaceInternal(result, fileContent);
+				CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 			} else {
 				if (context == ExpressionContext.TypeDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.TypeLevel);
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.InterfaceDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InterfaceLevel);
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.MethodBody) {
 					result.Add(new KeywordEntry("var"));
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.StatementStart);
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.Global) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.GlobalLevel);
 				} else if (context == ExpressionContext.InterfacePropertyDeclaration) {
@@ -1168,11 +1178,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					result.Add(new KeywordEntry("struct"));
 					result.Add(new KeywordEntry("class"));
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.InheritableType) {
 					result.Add(new KeywordEntry("where")); // the inheritance list can be followed by constraints
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.PropertyDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InPropertyDeclaration);
 				} else if (context == ExpressionContext.EventDeclaration) {
@@ -1189,17 +1199,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						}
 					}
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.ObjectInitializer) {
 					bool isCollectionInitializer;
 					result.AddRange(ObjectInitializerCtrlSpace(fileContent, out isCollectionInitializer));
 					if (isCollectionInitializer) {
 						AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
 						AddCSharpPrimitiveTypes(result);
-						CtrlSpaceInternal(result, fileContent);
+						CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 					}
 				} else if (context == ExpressionContext.Attribute) {
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 					result.Add(new KeywordEntry("assembly"));
 					result.Add(new KeywordEntry("module"));
 					result.Add(new KeywordEntry("field"));
@@ -1213,11 +1223,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionStart);
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.ExpressionContent);
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else {
 					// e.g. some ExpressionContext.TypeDerivingFrom()
 					AddCSharpPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent);
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				}
 			}
 			return result;
@@ -1231,7 +1241,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		void CtrlSpaceInternal(List<ICompletionEntry> result, string fileContent)
+		void CtrlSpaceInternal(List<ICompletionEntry> result, string fileContent, bool showEntriesFromAllNamespaces)
 		{
 			lookupTableVisitor = new LookupTableVisitor(language);
 			
@@ -1265,11 +1275,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				result.Add(new DefaultField.ParameterField(callingMember.ReturnType, "value", callingMember.Region, callingClass));
 			}
 			
-			// CC contains contents of all imported namespaces
-			//CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);	// FindReferences to AddImportedNamespaceContents results in OutOfMemory
-			
-			// CC contains contents of all referenced assemblies
-			CtrlSpaceResolveHelper.AddReferencedProjectsContents(result, cu, callingClass);
+			if (showEntriesFromAllNamespaces) {
+				// CC contains contents of all referenced assemblies
+				CtrlSpaceResolveHelper.AddReferencedProjectsContents(result, cu, callingClass);
+			} else {
+				// CC contains contents of all imported namespaces
+				CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);
+			}
 		}
 		
 		sealed class CompareLambdaByLocation : IEqualityComparer<LambdaExpression>

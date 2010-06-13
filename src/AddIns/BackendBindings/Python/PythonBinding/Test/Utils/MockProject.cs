@@ -292,7 +292,7 @@ namespace PythonBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public void StartBuild(ThreadSafeServiceContainer serviceContainer, ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
+		public void StartBuild(ProjectBuildOptions buildOptions, IBuildFeedbackSink feedbackSink)
 		{
 			throw new NotImplementedException();
 		}

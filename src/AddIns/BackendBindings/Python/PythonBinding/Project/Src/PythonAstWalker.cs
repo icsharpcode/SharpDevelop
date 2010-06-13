@@ -23,18 +23,30 @@ namespace ICSharpCode.PythonBinding
 	public class PythonAstWalker : PythonWalker
 	{
 		DefaultCompilationUnit compilationUnit;
-		DefaultClass currentClass;
-		DefaultClass globalClass;
-		string currentNamespace;
+		IClass currentClass;
+		IClass globalClass;
 		
 		/// <summary>
 		/// All classes in a file take the namespace of the filename. 
 		/// </summary>
 		public PythonAstWalker(IProjectContent projectContent, string fileName)
 		{
+			CreateCompilationUnit(projectContent, fileName);
+		}
+		
+		void CreateCompilationUnit(IProjectContent projectContent, string fileName)
+		{
 			compilationUnit = new DefaultCompilationUnit(projectContent);
 			compilationUnit.FileName = fileName;
-			currentNamespace = Path.GetFileNameWithoutExtension(fileName);
+			
+			CreateUsingScopeForCompilationUnit(fileName);
+		}
+		
+		void CreateUsingScopeForCompilationUnit(string fileName)
+		{
+			DefaultUsingScope usingScope = new DefaultUsingScope();
+			usingScope.NamespaceName = Path.GetFileNameWithoutExtension(fileName);
+			compilationUnit.UsingScope = usingScope;
 		}
 		
 		/// <summary>
@@ -62,7 +74,7 @@ namespace ICSharpCode.PythonBinding
 			c.Region = GetRegion(node);
 			c.BodyRegion = GetBodyRegion(node.Body, node.Header);
 			AddBaseTypes(c, node.Bases);
-
+			
 			// Save the class.
 			compilationUnit.Classes.Add(c);
 			
@@ -80,7 +92,7 @@ namespace ICSharpCode.PythonBinding
 		public override bool Walk(FunctionDefinition node)
 		{
 			if (node.Body == null) {
-				return true;
+				return false;
 			}
 			
 			bool ignoreFirstMethodParameter = true;
@@ -91,7 +103,7 @@ namespace ICSharpCode.PythonBinding
 				c = globalClass;
 				ignoreFirstMethodParameter = false;
 			}
-
+			
 			// Create method.
 			string methodName = node.Name;
 			DomRegion bodyRegion = GetBodyRegion(node.Body, node.Header);
@@ -107,7 +119,7 @@ namespace ICSharpCode.PythonBinding
 				method.Parameters.Add(parameter);
 			}
 			c.Methods.Add(method);
-			return true;
+			return false;
 		}
 		
 		/// <summary>
@@ -120,7 +132,7 @@ namespace ICSharpCode.PythonBinding
 			compilationUnit.UsingScope.Usings.Add(import);
 			return false;
 		}
-				
+		
 		public override bool Walk(FromImportStatement node)
 		{
 			PythonFromImport import = new PythonFromImport(compilationUnit.ProjectContent, node);
@@ -185,7 +197,12 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		void AddBaseType(IClass c, string name)
 		{
-			c.BaseTypes.Add(new SearchClassReturnType(c.ProjectContent, c, 0, 0, name, 0));
+			c.BaseTypes.Add(CreateSearchClassReturnType(c, name));
+		}
+		
+		SearchClassReturnType CreateSearchClassReturnType(IClass c, string name)
+		{
+			return new SearchClassReturnType(c.ProjectContent, c, 0, 0, name, 0);
 		}
 		
 		/// <summary>
@@ -215,7 +232,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		string GetFullyQualifiedClassName(ClassDefinition classDef)
 		{
-			return String.Concat(currentNamespace, ".", classDef.Name);
+			return String.Concat(compilationUnit.UsingScope.NamespaceName, ".", classDef.Name);
 		}
 		
 		/// <summary>
@@ -224,7 +241,7 @@ namespace ICSharpCode.PythonBinding
 		void CreateGlobalClass()
 		{
 			if (globalClass == null) {
-				globalClass = new DefaultClass(compilationUnit, currentNamespace);
+				globalClass = new DefaultClass(compilationUnit, compilationUnit.UsingScope.NamespaceName);
 				compilationUnit.Classes.Add(globalClass);
 			}
 		}

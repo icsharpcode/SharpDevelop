@@ -79,9 +79,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 			}
 			lineLength[i] = length;
-			BooCompiler compiler = new BooCompiler();
-			compiler.Parameters.Input.Add(new StringInput(fileName, fileContent));
-			ICompilationUnit cu = Parse(projectContent, fileName, lineLength, compiler);
+			ICompilationUnit cu;
+			lock (typeof(BooCompiler)) {
+				BooCompiler compiler = new BooCompiler();
+				compiler.Parameters.Input.Add(new StringInput(fileName, fileContent));
+				cu = Parse(projectContent, fileName, lineLength, compiler);
+			}
 			AddCommentsAndRegions(cu, fileContent, fileName);
 			return cu;
 		}

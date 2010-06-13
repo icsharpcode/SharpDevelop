@@ -78,6 +78,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return this.Clone();
 		}
 		
+		bool showAllNamespacesContentsInCC = false;
+		/// <summary>
+		/// Gets code completion data for this ResolveResult.
+		/// </summary>
+		/// <param name="projectContent"></param>
+		/// <param name="showItemsFromAllNamespaces">If true, items (e.g. extension methods) from all namespaces are returned, regardless current imports. Default is false.</param>
+		/// <returns></returns>
+		public List<ICompletionEntry> GetCompletionData(IProjectContent projectContent, bool showItemsFromAllNamespaces)
+		{
+			// Little hack - store value in a property to pass it to GetCompletionData(LanguageProperties language, bool showStatic)
+			// Otherwise we would have to add it as a parameter to GetCompletionData(IProjectContent projectContent),
+			// which would change signature in classes overriding this method as well.
+			this.showAllNamespacesContentsInCC = showItemsFromAllNamespaces;
+			var result = GetCompletionData(projectContent);
+			this.showAllNamespacesContentsInCC = false;
+			return result;
+		}
+		
 		public virtual List<ICompletionEntry> GetCompletionData(IProjectContent projectContent)
 		{
 			return GetCompletionData(projectContent.Language, false);
@@ -94,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			if (!showStatic && callingClass != null) {
-				AddExtensions(language, res.Add, callingClass, resolvedType);
+				AddExtensions(language, res.Add, callingClass, resolvedType, this.showAllNamespacesContentsInCC);
 			}
 			
 			return res;
@@ -103,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>
 		/// Adds extension methods to <paramref name="res"/>.
 		/// </summary>
-		public static void AddExtensions(LanguageProperties language, Action<IMethodOrProperty> methodFound, IClass callingClass, IReturnType resolvedType)
+		public static void AddExtensions(LanguageProperties language, Action<IMethodOrProperty> methodFound, IClass callingClass, IReturnType resolvedType, bool searchInAllNamespaces = false)
 		{
 			if (language == null)
 				throw new ArgumentNullException("language");
@@ -117,7 +135,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// convert resolvedType into direct type to speed up the IsApplicable lookups
 			resolvedType = resolvedType.GetDirectReturnType();
 			
-			foreach (IMethodOrProperty mp in CtrlSpaceResolveHelper.FindAllExtensions(language, callingClass)) {
+			foreach (IMethodOrProperty mp in CtrlSpaceResolveHelper.FindAllExtensions(language, callingClass, searchInAllNamespaces)) {
 				TryAddExtension(language, methodFound, mp, resolvedType);
 			}
 		}

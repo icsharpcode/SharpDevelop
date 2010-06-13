@@ -34,6 +34,7 @@ namespace UnitTesting.Tests.Tree
 		ExtTreeNode testFixtureNode;
 		TreeNodeCollection rootChildNodes;
 		MockProjectContent projectContent;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void SetUp()
@@ -51,13 +52,12 @@ namespace UnitTesting.Tests.Tree
 			// Add a test class with a TestFixture attributes.
 			projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
-			testClass = new MockClass("MyTestFixture");
+			testClass = new MockClass(projectContent, "MyTestFixture");
 			testClass.Attributes.Add(new MockAttribute("TestFixture"));
-			testClass.ProjectContent = projectContent;
 			projectContent.Classes.Add(testClass);
-						
-			// Init mock project content to be returned.
-			dummyTreeView = new DummyParserServiceTestTreeView();
+			
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			dummyTreeView = new DummyParserServiceTestTreeView(testFrameworks);
 			dummyTreeView.ProjectContentForProject = projectContent;
 			
 			// Load the projects into the test tree view.
@@ -126,13 +126,12 @@ namespace UnitTesting.Tests.Tree
 		
 		[Test]
 		public void AddNewClass()
-		{			
+		{
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
 			
-			MockClass mockClass = new MockClass("MyNewTestFixture");
+			MockClass mockClass = new MockClass(projectContent, "MyNewTestFixture");
 			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
-			mockClass.ProjectContent = projectContent;
-			TestClass newTestClass = new TestClass(mockClass);
+			TestClass newTestClass = new TestClass(mockClass, testFrameworks);
 			projectNode.TestProject.TestClasses.Add(newTestClass);
 			
 			ExtTreeNode newTestClassNode = null;
@@ -197,7 +196,8 @@ namespace UnitTesting.Tests.Tree
 			// and make sure the disposed class node does
 			// not add a new child node.
 			Assert.AreEqual(0, testClassNode.Nodes.Count);
-			MockMethod mockMethod = new MockMethod("Method");
+			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
+			MockMethod mockMethod = new MockMethod(c, "Method");
 			TestMethod testMethod = new TestMethod(mockMethod);
 			testClass.TestMethods.Add(testMethod);
 			
@@ -295,8 +295,8 @@ namespace UnitTesting.Tests.Tree
 			// Make sure the project node child nodes are  
 			// unaffected when the test class is removed.
 			Assert.AreEqual(1, projectNode.Nodes.Count);
-			MockClass mockClass = new MockClass("MyNewTestClass");
-			TestClass testClass = new TestClass(mockClass);
+			MockClass mockClass = new MockClass(projectContent, "MyNewTestClass");
+			TestClass testClass = new TestClass(mockClass, testFrameworks);
 			projectNode.TestProject.TestClasses.Add(testClass);
 			Assert.AreEqual(1, projectNode.Nodes.Count);
 		}

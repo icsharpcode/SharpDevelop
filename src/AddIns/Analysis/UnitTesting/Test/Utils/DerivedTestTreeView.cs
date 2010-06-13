@@ -17,6 +17,11 @@ namespace UnitTesting.Tests.Utils
 	/// </summary>
 	public class DerivedTestTreeView : TestTreeView
 	{
+		public DerivedTestTreeView()
+			: base(new MockTestFrameworksWithNUnitFrameworkSupport())
+		{
+		}
+		
 		/// <summary>
 		/// Calls the base class's OnBeforeSelect method.
 		/// </summary>

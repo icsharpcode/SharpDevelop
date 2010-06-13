@@ -42,15 +42,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return WorkbenchSingleton.Workbench.GetPad(GetType());
 			}
 		}
-		
-		protected bool IsVisible {
-			get {
-				PadDescriptor d = this.PadDescriptor;
-				if (d != null)
-					return WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible(d);
-				else
-					return false;
-			}
-		}
 	}
 }

@@ -1,0 +1,43 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using System.Collections.Generic;
+using ICSharpCode.UnitTesting;
+
+namespace UnitTesting.Tests.Utils
+{
+	public class MockTestFrameworkFactory : ITestFrameworkFactory
+	{
+		Dictionary<string, ITestFramework> frameworks = new Dictionary<string, ITestFramework>();
+		List<string> classNames = new List<string>();
+		
+		public MockTestFrameworkFactory()
+		{
+		}
+		
+		public void Add(string className, ITestFramework framework)
+		{
+			frameworks.Add(className, framework);
+		}
+		
+		public ITestFramework Create(string className)
+		{
+			classNames.Add(className);
+			
+			ITestFramework framework;
+			if (frameworks.TryGetValue(className, out framework)) {
+				return framework;
+			}
+			return null;
+		}
+		
+		public List<string> ClassNamesPassedToCreateMethod {
+			get { return classNames; }
+		}
+	}
+}

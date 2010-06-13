@@ -33,12 +33,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <inheritdoc/>
 		public new void SetLocalizedTitle(string text)
 		{
-			base.SetLocalizedTitle("${res:StartPage.StartPageContentName}");
+			base.SetLocalizedTitle(text);
 		}
 		
 		public new string TitleName {
 			get { return base.TitleName; }
-			set { base.TitleName = value; }
+			set { base.TitleName = value; } // make setter public
 		}
 	}
 }

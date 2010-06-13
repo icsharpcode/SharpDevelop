@@ -81,6 +81,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				if (nextFilter == null)
 					throw new ArgumentNullException("nextFilter");
+				// ensure the engine gets notified about start/end of this task
+				engine.InterestingTasks.Add(taskname);
 				// Create a Filter that tracks whether the task is active.
 				// If active, forward to 'baseFilter', otherwise forward to 'nextFilter'.
 				return new TaskBoundLoggerFilter(this, engine, nextFilter);

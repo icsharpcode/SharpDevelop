@@ -28,11 +28,13 @@ namespace UnitTesting.Tests.Tree
 		TestProject firstTestProject;
 		TestProject secondTestProject;
 		Solution solution;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void SetUp()
 		{
-			treeView = new DummyParserServiceTestTreeView();
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			treeView = new DummyParserServiceTestTreeView(testFrameworks);
 			
 			// Create a solution with two test projects.
 			solution = new Solution();
@@ -115,7 +117,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void ProjectIgnoredTestResult()
 		{
-			TestClass c = new TestClass(new MockClass("Tests.TestFixture"));
+			TestClass c = new TestClass(new MockClass("Tests.TestFixture"), testFrameworks);
 			firstTestProject.TestClasses.Add(c);
 			c.Result = TestResultType.Ignored;
 			
@@ -137,7 +139,7 @@ namespace UnitTesting.Tests.Tree
 			ProjectService.AddProjectItem(project, nunitFrameworkReferenceItem);
 			
 			// Add the project into a dummy project node.
-			TestProject testProject = new TestProject(project, new MockProjectContent());
+			TestProject testProject = new TestProject(project, new MockProjectContent(), testFrameworks);
 			DerivedTestProjectTreeNode projectNode = new DerivedTestProjectTreeNode(testProject);
 			allTestsTreeNode.AddProjectNode(projectNode);
 			
@@ -154,7 +156,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void ProjectFailedTestResult()
 		{
-			TestClass c = new TestClass(new MockClass("Tests.TestFixture"));
+			TestClass c = new TestClass(new MockClass("Tests.TestFixture"), testFrameworks);
 			firstTestProject.TestClasses.Add(c);
 			c.Result = TestResultType.Failure;
 			
@@ -164,7 +166,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void ProjectPassedTestResult()
 		{
-			TestClass c = new TestClass(new MockClass("Tests.TestFixture"));
+			TestClass c = new TestClass(new MockClass("Tests.TestFixture"), testFrameworks);
 			firstTestProject.TestClasses.Add(c);
 			c.Result = TestResultType.Success;
 			
@@ -187,11 +189,11 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void AllTestProjectsPassed()
 		{
-			TestClass c = new TestClass(new MockClass("Tests.TestFixture"));
+			TestClass c = new TestClass(new MockClass("Tests.TestFixture"), testFrameworks);
 			firstTestProject.TestClasses.Add(c);
 			c.Result = TestResultType.Success;
 			
-			c = new TestClass(new MockClass("Tests.TestFixture"));
+			c = new TestClass(new MockClass("Tests.TestFixture"), testFrameworks);
 			secondTestProject.TestClasses.Add(c);
 			c.Result = TestResultType.Success;
 			

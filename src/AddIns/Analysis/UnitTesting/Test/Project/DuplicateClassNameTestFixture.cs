@@ -26,6 +26,7 @@ namespace UnitTesting.Tests.Project
 		TestProject testProject;
 		IProject project;
 		MockProjectContent projectContent;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void Init()
@@ -40,18 +41,17 @@ namespace UnitTesting.Tests.Project
 			// Add a test class.
 			projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
-			MockClass c = new MockClass("RootNamespace.MyTestFixture");
+			MockClass c = new MockClass(projectContent, "RootNamespace.MyTestFixture");
 			c.Attributes.Add(new MockAttribute("TestFixture"));
-			c.ProjectContent = projectContent;
 			projectContent.Classes.Add(c);
 			
 			// Add a second class with the same name.
-			MockClass secondTestClass = new MockClass("RootNamespace.MyTestFixture");
-			secondTestClass.ProjectContent = projectContent;
+			MockClass secondTestClass = new MockClass(projectContent, "RootNamespace.MyTestFixture");
 			secondTestClass.Attributes.Add(new MockAttribute("TestFixture"));
 			projectContent.Classes.Add(secondTestClass);
 			
-			testProject = new TestProject(project, projectContent);
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			testProject = new TestProject(project, projectContent, testFrameworks);
 		}
 		
 		/// <summary>

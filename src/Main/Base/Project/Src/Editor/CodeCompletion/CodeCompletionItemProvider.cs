@@ -11,8 +11,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -49,6 +49,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	/// </summary>
 	public class CodeCompletionItemProvider : AbstractCompletionItemProvider
 	{
+		/// <summary>
+		/// Gets/Sets whether items from all namespaces should be included in code completion, regardless of imports.
+		/// </summary>
+		public virtual bool ShowItemsFromAllNamespaces { get; set; }
+		
 		/// <inheritdoc/>
 		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)
 		{
@@ -103,12 +108,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			if (rr == null)
 				return null;
 			IProjectContent callingContent = rr.CallingClass != null ? rr.CallingClass.ProjectContent : null;
-			List<ICompletionEntry> arr = rr.GetCompletionData(callingContent ?? ParserService.CurrentProjectContent);
+			List<ICompletionEntry> arr = rr.GetCompletionData(callingContent ?? ParserService.CurrentProjectContent, this.ShowItemsFromAllNamespaces);
 			return GenerateCompletionListForCompletionData(arr, context);
 		}
 		
 		protected virtual DefaultCompletionItemList CreateCompletionItemList()
 		{
+			// This is overriden in DotCodeCompletionItemProvider (C# and VB dot completion) 
+			// and NRefactoryCtrlSpaceCompletionItemProvider (C# and VB Ctrl+Space completion)
 			return new DefaultCompletionItemList();
 		}
 		
@@ -179,7 +186,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	
 	public class DotCodeCompletionItemProvider : CodeCompletionItemProvider
 	{
-		
+		protected override DefaultCompletionItemList CreateCompletionItemList()
+		{
+			return new NRefactoryCompletionItemList() { ContainsItemsFromAllNamespaces = this.ShowItemsFromAllNamespaces };
+		}
 	}
 	
 	sealed class KeywordCompletionItem : DefaultCompletionItem
@@ -277,8 +287,17 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						insertedText = selectedClass.FullyQualifiedName;
 					}
 				} else {
-					// The name is unknown - we add a using
+					// The name is unknown - add a using
 					addUsing = true;
+					if ((this.Entity is IClass) && (context.StartOffset > 0) && (document.GetCharAt(context.StartOffset - 1) == '.')) {
+						// But don't add using if user is typing qualified type name (e.g. System.IO.<expr>)
+						addUsing = false;
+					}
+				}
+				
+				// Special case for Attributes
+				if (insertedText.EndsWith("Attribute") && IsInAttributeContext(editor, context.StartOffset)) {
+					insertedText = insertedText.RemoveEnd("Attribute");
 				}
 				
 				// Insert the text
@@ -295,6 +314,20 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
 				context.EndOffset = context.StartOffset + insertedText.Length;
 			}
+		}
+		
+		/// <summary>
+		/// Returns true if the offset where we are inserting is in Attibute context, that is [*expr*
+		/// </summary>
+		bool IsInAttributeContext(ITextEditor editor, int offset)
+		{
+			if (editor == null || editor.Document == null)
+				return false;
+			var expressionFinder = ParserService.GetExpressionFinder(editor.FileName);
+			if (expressionFinder == null)
+				return false;
+			var resolvedExpression = expressionFinder.FindFullExpression(editor.Document.Text, offset);
+			return resolvedExpression.Context == ExpressionContext.Attribute;
 		}
 		
 		#region Description

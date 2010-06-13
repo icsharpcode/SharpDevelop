@@ -94,7 +94,7 @@ namespace ICSharpCode.SharpDevelop
 			info.pFrom = fileName + "\0"; // pFrom is double-null-terminated
 			int result = SHFileOperation(ref info);
 			if (result != 0)
-				throw new IOException("Could not delete file " + fileName + ". Error " + result);
+				throw new IOException("Could not delete file " + fileName + ". Error " + result, result);
 		}
 		#endregion
 		

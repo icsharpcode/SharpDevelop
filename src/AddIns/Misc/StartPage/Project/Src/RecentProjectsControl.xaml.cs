@@ -56,6 +56,7 @@ namespace ICSharpCode.StartPage
 		{
 			List<RecentOpenItem> items = new List<RecentOpenItem>();
 			foreach (string path in (string[])state) {
+				Core.LoggingService.Debug("RecentProjectsControl: Looking up path '" + path + "'");
 				FileInfo file = new FileInfo(path);
 				if (file.Exists) {
 					items.Add(

@@ -1,0 +1,33 @@
+﻿<gui:OptionPanel x:Class="MSHelpSystem.Help3OptionsPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+    xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+    xmlns:addin="clr-namespace:MSHelpSystem;assembly=HelpViewer"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+>
+	<StackPanel>
+		<GroupBox Header="{core:Localize AddIns.HelpViewer.InstalledHelpCatalogsLabel}" Margin="5" Padding="8" Name="groupBox1">
+			<ComboBox Name="help3Catalogs"
+			          ItemsSource="{Binding}"
+			          DisplayMemberPath="ShortName"
+			          SelectedValuePath="ShortName"
+			          SelectionChanged="Help3CatalogsSelectionChanged" />
+		</GroupBox>
+		<GroupBox Header="{core:Localize AddIns.HelpViewer.HelpModeLabel}" Margin="5" Padding="8" Name="groupBox2">
+			<StackPanel>
+				<RadioButton Name="offlineMode"
+				             IsChecked="True"
+				             Content="{core:Localize AddIns.HelpViewer.UseOfflineHelpLabel}"
+				             Click="Help3OfflineModeClicked"
+				             Margin="0,0,0,5"/>
+				<RadioButton Name="onlineMode"
+				             Content="{core:Localize AddIns.HelpViewer.UseOnlineHelpLabel}"
+				             Click="Help3OnlineModeClicked"
+				             Margin="0,0,0,8" />
+				<CheckBox    Name="externalHelp"
+				             Content="{core:Localize AddIns.HelpViewer.UseExternalHelp}"
+				             Click="Help3UseExternalHelpClicked" />
+			</StackPanel>
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel>

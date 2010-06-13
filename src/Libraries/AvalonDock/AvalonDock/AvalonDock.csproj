@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{87E61430-4243-45F2-B74E-0A4C096CEBF3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AvalonDock</RootNamespace>
+    <AssemblyName>AvalonDock</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>AvalonDock.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AvalonDockWindow.cs" />
+    <Compile Include="FloatingDocumentPane.cs" />
+    <Compile Include="DockableFloatingWindowCommands.cs" />
+    <Compile Include="LogicalTreeAdapter.cs" />
+    <Compile Include="ManagedContentCollection.cs" />
+    <Compile Include="DockableContentCommands.cs" />
+    <Compile Include="DockablePaneCommands.cs" />
+    <Compile Include="DocumentContentCommands.cs" />
+    <Compile Include="DocumentPaneCommands.cs" />
+    <Compile Include="GreyableImage.cs" />
+    <Compile Include="InteropHelper.cs" />
+    <Compile Include="ManagedContentCommands.cs" />
+    <Compile Include="PaneCommands.cs" />
+    <Compile Include="RequestDocumentCloseEventArgs.cs" />
+    <Compile Include="ResizingPanel.cs" />
+    <Compile Include="Resizer.cs" />
+    <Compile Include="RoutedEventHandler.cs" />
+    <Compile Include="RoutedEventHelper.cs" />
+    <Compile Include="WindowInteropWrapper.cs" />
+    <Page Include="Resources\Brushes.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Common.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\DockablePaneStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\DockingManagerStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\DocumentNavigatorWindowStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\DocumentPaneStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\FloatingWindowStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\ManagedContentStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\NavigatorWindowStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\OverlayWindowStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\aero.normalcolor.brushes.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\aero.normalcolor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\classic.brushes.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\classic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="AlignedImage.cs" />
+    <Compile Include="AvalonDockBrushes.cs" />
+    <Compile Include="ThemeFactory.cs" />
+    <Compile Include="ContextMenuElement.cs" />
+    <Compile Include="Converters.cs" />
+    <Page Include="Themes\luna.normalcolor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DeserializationCallbackEventArgs.cs" />
+    <Compile Include="DockableContent.cs" />
+    <Compile Include="DockableFloatingWindow.cs" />
+    <Compile Include="DockablePane.cs" />
+    <Compile Include="DockablePaneAnchorTab.cs" />
+    <Compile Include="DockablePaneAnchorTabGroup.cs" />
+    <Compile Include="DockableTabPanel.cs" />
+    <Compile Include="DockingManager.cs" />
+    <Compile Include="DocumentContent.cs" />
+    <Compile Include="DocumentFloatingWindow.cs" />
+    <Compile Include="DocumentNavigatorWindow.cs" />
+    <Compile Include="DocumentPane.cs" />
+    <Compile Include="DocumentPaneResizingPanel.cs" />
+    <Compile Include="DocumentTabPanel.cs" />
+    <Compile Include="DragPaneServices.cs" />
+    <Compile Include="FloatingDockablePane.cs" />
+    <Compile Include="FloatingWindow.cs" />
+    <Compile Include="FlyoutDockablePane.cs" />
+    <Compile Include="FlyoutPaneWindow.cs" />
+    <Compile Include="HelperFunc.cs" />
+    <Compile Include="IDockableControl.cs" />
+    <Compile Include="IDropSurface.cs" />
+    <Compile Include="ManagedContent.cs" />
+    <Compile Include="NavigatorWindow.cs" />
+    <Compile Include="OverlayWindow.cs" />
+    <Compile Include="OverlayWindowAnchorButton.cs" />
+    <Compile Include="Pane.cs" />
+    <Compile Include="PaneTabPanel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="AvalonDock.snk" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\DockBottom.PNG" />
+    <Resource Include="Resources\Images\DockLeft.PNG" />
+    <Resource Include="Resources\Images\DockPane.PNG" />
+    <Resource Include="Resources\Images\DockRight.PNG" />
+    <Resource Include="Resources\Images\DockTop.PNG" />
+    <Resource Include="Resources\Images\HTabGroup.png" />
+    <Resource Include="Resources\Images\Locked.png" />
+    <Resource Include="Resources\Images\PinAutoHide.png" />
+    <Resource Include="Resources\Images\PinClose.png" />
+    <Resource Include="Resources\Images\PinDocMenu.png" />
+    <Resource Include="Resources\Images\PinMenu.png" />
+    <Resource Include="Resources\Images\VTabGroup.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\Aero\AeroDockBottom.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockBottomHover.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockLeft.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockLeftHover.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockPane.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockPaneBottom.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockPaneInto.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockPaneLeft.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockPaneRight.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockPaneTop.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockRight.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockRightHover.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockTop.png" />
+    <Resource Include="Resources\Images\Aero\AeroDockTopHover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Classic\PinAutoHide.png" />
+    <Resource Include="Resources\Images\Classic\PinAutoHideSelected.png" />
+    <Resource Include="Resources\Images\Classic\PinClose.png" />
+    <Resource Include="Resources\Images\Classic\PinCloseSelected.png" />
+    <Resource Include="Resources\Images\Classic\PinMenu.png" />
+    <Resource Include="Resources\Images\Classic\PinMenuSelected.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -34,7 +34,7 @@ namespace UnitTesting.Tests.Tree
 				treeView.ContextMenuStrip = menuStrip;
 				
 				// Add a root node to the tree.
-				TestProject project = new TestProject(new MockCSharpProject(), new MockProjectContent());
+				TestProject project = new TestProject(new MockCSharpProject(), new MockProjectContent(), new MockTestFrameworksWithNUnitFrameworkSupport());
 				TestProjectTreeNode node = new TestProjectTreeNode(project);
 				node.AddTo(treeView);
 				

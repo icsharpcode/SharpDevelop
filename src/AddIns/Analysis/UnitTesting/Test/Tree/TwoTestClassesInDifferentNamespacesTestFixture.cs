@@ -36,11 +36,11 @@ namespace UnitTesting.Tests.Tree
 		ExtTreeNode projectNamespaceNode;
 		TestProject testProject;
 		MockProjectContent projectContent;
+		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
 		[SetUp]
 		public void SetUp()
 		{
-			// Create solution.
 			solution = new Solution();
 			
 			// Create a project to display in the test tree view.
@@ -52,18 +52,16 @@ namespace UnitTesting.Tests.Tree
 			// Add a test class with a TestFixture attributes.
 			projectContent = new MockProjectContent();
 			projectContent.Language = LanguageProperties.None;
-			testClass1 = new MockClass("Project.Tests.MyTestFixture");
+			testClass1 = new MockClass(projectContent, "Project.Tests.MyTestFixture");
 			testClass1.Attributes.Add(new MockAttribute("TestFixture"));
-			testClass1.ProjectContent = projectContent;
 			projectContent.Classes.Add(testClass1);
 			
-			testClass2 = new MockClass("Project.MyTestFixture");
+			testClass2 = new MockClass(projectContent, "Project.MyTestFixture");
 			testClass2.Attributes.Add(new MockAttribute("TestFixture"));
-			testClass2.ProjectContent = projectContent;
 			projectContent.Classes.Add(testClass2);
 						
-			// Init mock project content to be returned.
-			dummyTreeView = new DummyParserServiceTestTreeView();
+			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
+			dummyTreeView = new DummyParserServiceTestTreeView(testFrameworks);
 			dummyTreeView.ProjectContentForProject = projectContent;
 			
 			// Load the projects into the test tree view.
@@ -128,7 +126,7 @@ namespace UnitTesting.Tests.Tree
 			
 			TestClass testClass2 = testProject.TestClasses["Project.MyTestFixture"];
 			testClass2.Result = TestResultType.Success;
-
+			
 			ExpandRootNode();
 			Assert.AreEqual(TestTreeViewImageListIndex.TestFailed, (TestTreeViewImageListIndex)projectNamespaceNode.ImageIndex);
 		}
@@ -139,10 +137,9 @@ namespace UnitTesting.Tests.Tree
 			ExtTreeNode projectNamespaceNode = ExpandProjectNamespaceNode();
 			ExtTreeNode testsNamespaceNode = ExpandTestsNamespaceNode();
 			
-			MockClass mockClass = new MockClass("Project.Tests.MyNewTestFixture");
+			MockClass mockClass = new MockClass(projectContent, "Project.Tests.MyNewTestFixture");
 			mockClass.Attributes.Add(new MockAttribute("TestFixture"));
-			mockClass.ProjectContent = projectContent;
-			TestClass newTestClass = new TestClass(mockClass);
+			TestClass newTestClass = new TestClass(mockClass, testFrameworks);
 			testProject.TestClasses.Add(newTestClass);
 			
 			ExtTreeNode newTestClassNode = null;
@@ -153,7 +150,7 @@ namespace UnitTesting.Tests.Tree
 				}
 			}
 			newTestClass.Result = TestResultType.Failure;
-					
+			
 			// New test class node should be added to the test namespace node.
 			Assert.AreEqual(2, testsNamespaceNode.Nodes.Count);
 			Assert.IsNotNull(newTestClassNode);
@@ -177,7 +174,7 @@ namespace UnitTesting.Tests.Tree
 			
 			ExtTreeNode projectNamespaceNode = ExpandProjectNamespaceNode();
 			ExtTreeNode testsNamespaceNode = ExpandTestsNamespaceNode();
-
+			
 			// Reset the new TestClass result after it was modified
 			// in the AddNewClass call.
 			TestClass newTestClass = testProject.TestClasses["Project.Tests.MyNewTestFixture"];
@@ -195,14 +192,14 @@ namespace UnitTesting.Tests.Tree
 				}
 			}
 			testClass.Result = TestResultType.Failure;
-		
+			
 			Assert.AreEqual(1, testsNamespaceNode.Nodes.Count);
 			Assert.IsNull(testClassNode);
 			
 			// Make sure the namespace node image index is NOT affected by the
 			// test class just removed.
 			Assert.AreEqual(TestTreeViewImageListIndex.TestNotRun, (TestTreeViewImageListIndex)testsNamespaceNode.SelectedImageIndex);
-		
+			
 			// Check that the test class does not affect the project namespace node
 			// image index either.
 			Assert.AreEqual(TestTreeViewImageListIndex.TestNotRun, (TestTreeViewImageListIndex)projectNamespaceNode.ImageIndex);
@@ -230,7 +227,7 @@ namespace UnitTesting.Tests.Tree
 				}
 			}
 			Assert.IsNull(testClassNode);
-
+			
 			// Project namespace node should only have one child node.
 			Assert.AreEqual(1, projectNamespaceNode.Nodes.Count);
 			Assert.AreEqual("MyTestFixture", projectNamespaceNode.Nodes[0].Text);

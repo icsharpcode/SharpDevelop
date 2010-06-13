@@ -9,8 +9,8 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
-
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ctl.IsReadOnly = true;
 			ctl.MouseDoubleClick += OnDoubleClick;
 			ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
-			//this.IsVisibleChanged += delegate { UpdateTick(null); };
+			ctl.IsVisibleChanged += delegate { UpdateTick(null); };
 		}
 		
 		/// <summary>
@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateTick(ParserUpdateStepEventArgs e)
 		{
-			if (!this.IsVisible) return;
+			if (!ctl.IsVisible) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
 			
 			ResolveResult res = ResolveAtCaret(e);
@@ -131,9 +131,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			oldPosition = pos;
 			if (pos.FileName != currentFileName)
 				LoadFile(pos.FileName);
-			ctl.ScrollToEnd(); // scroll completely down
-			ctl.TextArea.Caret.Line = pos.Line;
-			ctl.TextArea.Caret.BringCaretToView(); // scroll up to search position
+			ctl.TextArea.Caret.Location = new ICSharpCode.AvalonEdit.Document.TextLocation(pos.Line, pos.Column);
+			Rect r = ctl.TextArea.Caret.CalculateCaretRectangle();
+			if (!r.IsEmpty) {
+				ctl.ScrollToVerticalOffset(r.Top - 4);
+			}
 		}
 		
 		/// <summary>
@@ -151,12 +153,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			// Load the text into the definition view's text editor.
 			if (openTextEditor != null) {
-//				AvalonEdit.TextEditor aeEditor = openTextEditor.GetService(
 				ctl.Text = openTextEditor.Document.Text;
-				currentFileName = fileName;
 			} else {
 				ctl.Load(fileName);
 			}
+			currentFileName = fileName;
 			ctl.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}
 	}

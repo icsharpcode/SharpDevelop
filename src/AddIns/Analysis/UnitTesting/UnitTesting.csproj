@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.UnitTesting</RootNamespace>
@@ -56,6 +57,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\UnitTestAddInTree.cs" />
+    <Compile Include="Src\UnitTestBuildOptions.cs" />
+    <Compile Include="Src\UnitTestBuildProjectFactory.cs" />
+    <Compile Include="Src\UnitTestDebuggerService.cs" />
+    <Compile Include="Src\UnitTestFileService.cs" />
+    <Compile Include="Src\UnitTestMessageService.cs" />
+    <Compile Include="Src\UnitTestProcessRunner.cs" />
+    <Compile Include="Src\UnitTestSaveAllFilesCommand.cs" />
+    <Compile Include="Src\UnitTestTaskService.cs" />
+    <Compile Include="Src\UnitTestWorkbench.cs" />
     <None Include="PostBuildEvent.proj" />
     <EmbeddedResource Include="Resources\UnitTestingOptionsPanel.xfrm" />
     <None Include="UnitTesting.addin">
@@ -63,13 +74,52 @@
     </None>
     <Compile Include="Src\AllTestsTreeNode.cs" />
     <Compile Include="Src\BaseTestMethod.cs" />
+    <Compile Include="Src\BuildProjectBeforeTestRun.cs" />
+    <Compile Include="Src\EmptyUnitTestsPad.cs" />
+    <Compile Include="Src\IAddInTree.cs" />
+    <Compile Include="Src\IBuildOptions.cs" />
+    <Compile Include="Src\IBuildProjectFactory.cs" />
+    <Compile Include="Src\IRegisteredTestFrameworks.cs" />
+    <Compile Include="Src\IRunTestCommandContext.cs" />
+    <Compile Include="Src\ITestFrameworkFactory.cs" />
+    <Compile Include="Src\ITestResultsMonitor.cs" />
+    <Compile Include="Src\ITestRunner.cs" />
+    <Compile Include="Src\IUnitTestDebuggerService.cs" />
+    <Compile Include="Src\IUnitTestFileService.cs" />
+    <Compile Include="Src\IUnitTestMessageService.cs" />
+    <Compile Include="Src\IUnitTestProcessRunner.cs" />
+    <Compile Include="Src\IUnitTestSaveAllFilesCommand.cs" />
+    <Compile Include="Src\IUnitTestsPad.cs" />
+    <Compile Include="Src\IUnitTestTaskService.cs" />
+    <Compile Include="Src\IUnitTestWorkbench.cs" />
+    <Compile Include="Src\MessageReceivedEventArgs.cs" />
+    <Compile Include="Src\NUnitTestDebugger.cs" />
+    <Compile Include="Src\NUnitTestFramework.cs" />
+    <Compile Include="Src\NUnitTestResult.cs" />
+    <Compile Include="Src\NUnitTestRunner.cs" />
+    <Compile Include="Src\RegisteredTestFrameworks.cs" />
     <Compile Include="Src\RemovedClasses.cs" />
+    <Compile Include="Src\RunAllTestsInPadCommand.cs" />
+    <Compile Include="Src\RunProjectTestsInPadCommand.cs" />
+    <Compile Include="Src\RunTestCommandContext.cs" />
+    <Compile Include="Src\RunTestInPadCommand.cs" />
+    <Compile Include="Src\RunTestWithDebuggerCommand.cs" />
+    <Compile Include="Src\SelectedTests.cs" />
+    <Compile Include="Src\TestDebuggerBase.cs" />
+    <Compile Include="Src\TestFramework.cs" />
+    <Compile Include="Src\TestFrameworkDescriptor.cs" />
+    <Compile Include="Src\TestFrameworkDoozer.cs" />
+    <Compile Include="Src\TestFrameworkFactory.cs" />
+    <Compile Include="Src\TestProcessRunnerBase.cs" />
+    <Compile Include="Src\TestResultTask.cs" />
+    <Compile Include="Src\TestRunnerBase.cs" />
+    <Compile Include="Src\TestService.cs" />
     <Compile Include="Src\UnitTestCommands.cs" />
     <Compile Include="Src\TestableCondition.cs" />
     <Compile Include="Src\RunningTestsCondition.cs" />
     <Compile Include="Src\TestTreeView.cs" />
-    <Compile Include="Src\UnitTestApplicationStartHelper.cs" />
-    <Compile Include="Src\RunTestCommands.cs" />
+    <Compile Include="Src\NUnitConsoleCommandLine.cs" />
+    <Compile Include="Src\AbstractRunTestCommands.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
@@ -115,11 +165,6 @@
     <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Configuration" />
