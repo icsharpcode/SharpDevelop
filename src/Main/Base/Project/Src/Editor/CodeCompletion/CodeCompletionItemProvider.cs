@@ -267,15 +267,19 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				// Class or Extension method is being inserted
 				var editor = context.Editor;
 				var document = context.Editor.Document;
+				// Resolve should:
+				//  return AmbiguousResolveResult or something like that when we resolve a name that exists in more imported namespaces
+				//   - so that we would know that we always want to insert fully qualified name
 				var nameResult = ResolveAtCurrentOffset(selectedClass.Name, context);
 				
 				bool addUsing = false;
 				
 				if (this.Entity is IClass) {
 					if (!IsUserTypingFullyQualifiedName(context)) {
+						nameResult = ResolveAtCurrentOffset(insertedText, context);
 						addUsing = (!IsKnownName(nameResult));
 						
-						if (IsKnownName(nameResult) && (!nameResult.IsReferenceTo(selectedClass))) {
+						if (IsKnownName(nameResult) && (!IsReferenceTo(nameResult, selectedClass))) {
 							// Selected name is known but resolves to something else than the user wants to insert
 							// (i.e. some other class with the same name closer to current context according to language rules)
 							// - the only solution is to insert user's choice fully qualified
@@ -301,6 +305,17 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				// Something else than a class or Extension method is being inserted - just insert text
 				InsertText(context, insertedText);
 			}
+		}
+		
+		bool IsReferenceTo(ResolveResult nameResult, IClass selectedClass)
+		{
+			// CC list contains RenamedClass instances which are kind of hacky:
+			// their name is e.g. "List<string>" or "int[]", but they do not have any generic arguments,
+			// so IsReferenceTo fails bc it compares generic argument count.
+			// This compares just name and ignores generic arguments.
+			return nameResult.IsReferenceTo(selectedClass) ||
+				(nameResult.ResolvedType.IsConstructedReturnType &&
+				 nameResult.ResolvedType.FullyQualifiedName == selectedClass.FullyQualifiedName);
 		}
 		
 		void InsertText(CompletionContext context, string insertedText)
