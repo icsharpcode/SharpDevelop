@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		protected virtual DefaultCompletionItemList CreateCompletionItemList()
 		{
-			// This is overriden in DotCodeCompletionItemProvider (C# and VB dot completion) 
+			// This is overriden in DotCodeCompletionItemProvider (C# and VB dot completion)
 			// and NRefactoryCtrlSpaceCompletionItemProvider (C# and VB Ctrl+Space completion)
 			return new DefaultCompletionItemList();
 		}
@@ -255,65 +255,89 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			CodeCompletionDataUsageCache.IncrementUsage(entity.DotNetName);
 		}
 		
+		#region Complete
+		
 		public virtual void Complete(CompletionContext context)
 		{
 			MarkAsUsed();
 			
 			string insertedText = this.Text;
-			var selectedClass = this.Entity as IClass;
-			if (selectedClass == null) {
-				// Is extension method being inserted?
-				var method = this.Entity as IMethod;
-				if (method != null && method.IsExtensionMethod)
-					selectedClass = method.DeclaringType;
-			}
+			IClass selectedClass = GetClassOrExtensionMethodClass(this.Entity);
 			if (selectedClass != null) {
-				// Class or Extension method is being inserted - include its namespace in the using section if needed
+				// Class or Extension method is being inserted
 				var editor = context.Editor;
 				var document = context.Editor.Document;
+				var nameResult = ResolveAtCurrentOffset(selectedClass.Name, context);
 				
-				var position = document.OffsetToPosition(context.StartOffset);
-				var nameResult = ParserService.Resolve(new ExpressionResult(selectedClass.Name), position.Line, position.Column, editor.FileName, document.Text);
-				var fullNameResult = ParserService.Resolve(new ExpressionResult(selectedClass.FullyQualifiedName), position.Line, position.Column, editor.FileName, document.Text);
-
 				bool addUsing = false;
-				if (nameResult != null && nameResult.IsValid) {
-					if (nameResult.IsReferenceTo(selectedClass)) {
-						// Selected name is known in the current context - do nothing
-					} else {
-						// Selected name is known in the current context but resolves to something else than the user wants to insert
-						// (i.e. some other class with the same name closer to current context according to language rules)
-						// - the only solution is to insert user's choice fully qualified
-						insertedText = selectedClass.FullyQualifiedName;
+				
+				if (this.Entity is IClass) {
+					if (!IsUserTypingFullyQualifiedName(context)) {
+						addUsing = (!IsKnownName(nameResult));
+						
+						if (IsKnownName(nameResult) && (!nameResult.IsReferenceTo(selectedClass))) {
+							// Selected name is known but resolves to something else than the user wants to insert
+							// (i.e. some other class with the same name closer to current context according to language rules)
+							// - the only solution is to insert user's choice fully qualified
+							insertedText = selectedClass.FullyQualifiedName;
+						}
 					}
-				} else {
-					// The name is unknown - add a using
-					addUsing = true;
-					if ((this.Entity is IClass) && (context.StartOffset > 0) && (document.GetCharAt(context.StartOffset - 1) == '.')) {
-						// But don't add using if user is typing qualified type name (e.g. System.IO.<expr>)
-						addUsing = false;
+					// Special case for Attributes
+					if (insertedText.EndsWith("Attribute") && IsInAttributeContext(editor, context.StartOffset)) {
+						insertedText = insertedText.RemoveEnd("Attribute");
 					}
+				} else if (this.Entity is IMethod) {
+					addUsing = !IsKnownName(nameResult);
 				}
 				
-				// Special case for Attributes
-				if (insertedText.EndsWith("Attribute") && IsInAttributeContext(editor, context.StartOffset)) {
-					insertedText = insertedText.RemoveEnd("Attribute");
-				}
-				
-				// Insert the text
-				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
-				context.EndOffset = context.StartOffset + insertedText.Length;
+				InsertText(context, insertedText);
 				
 				if (addUsing && nameResult != null && nameResult.CallingClass != null) {
 					var cu = nameResult.CallingClass.CompilationUnit;
 					NamespaceRefactoringService.AddUsingDeclaration(cu, document, selectedClass.Namespace, false);
-					ParserService.BeginParse(context.Editor.FileName, context.Editor.Document);
+					ParserService.BeginParse(editor.FileName, document);
 				}
 			} else {
-				// Something else than a class or Extension method is being inserted - just insert
-				context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
-				context.EndOffset = context.StartOffset + insertedText.Length;
+				// Something else than a class or Extension method is being inserted - just insert text
+				InsertText(context, insertedText);
 			}
+		}
+		
+		void InsertText(CompletionContext context, string insertedText)
+		{
+			context.Editor.Document.Replace(context.StartOffset, context.Length, insertedText);
+			context.EndOffset = context.StartOffset + insertedText.Length;
+		}
+		
+		IClass GetClassOrExtensionMethodClass(IEntity selectedEntity)
+		{
+			var selectedClass = selectedEntity as IClass;
+			if (selectedClass == null) {
+				var method = selectedEntity as IMethod;
+				if (method != null && method.IsExtensionMethod)
+					selectedClass = method.DeclaringType;
+			}
+			return selectedClass;
+		}
+		
+		bool IsKnownName(ResolveResult nameResult)
+		{
+			return (nameResult != null) && nameResult.IsValid;
+		}
+		
+		/// <summary>
+		/// Returns true if user is typing "Namespace.(*expr*)"
+		/// </summary>
+		bool IsUserTypingFullyQualifiedName(CompletionContext context)
+		{
+			return (context.StartOffset > 0) && (context.Editor.Document.GetCharAt(context.StartOffset - 1) == '.');
+		}
+		
+		ResolveResult ResolveAtCurrentOffset(string className, CompletionContext context)
+		{
+			var document = context.Editor.Document;
+			var position = document.OffsetToPosition(context.StartOffset);
+			return ParserService.Resolve(new ExpressionResult(className), position.Line, position.Column, context.Editor.FileName, document.Text);
 		}
 		
 		/// <summary>
@@ -329,6 +353,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			var resolvedExpression = expressionFinder.FindFullExpression(editor.Document.Text, offset);
 			return resolvedExpression.Context == ExpressionContext.Attribute;
 		}
+		
+		#endregion
 		
 		#region Description
 		string description;
