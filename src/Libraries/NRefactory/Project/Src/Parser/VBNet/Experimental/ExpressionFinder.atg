@@ -370,9 +370,12 @@ Block =
 .
 
 Expression =
-	SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
-	/* TODO: operators */
-	
+	(. nextTokenIsPotentialStartOfXmlMode = true; .)
+	(
+		SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
+		/* TODO: operators */
+		| NewExpression
+	)
 .
 
 BinaryOperator =
@@ -380,14 +383,20 @@ BinaryOperator =
 	| "=" | "<>" | "<" | ">" | "<=" | ">=" 
 	| "Like" | "&" | "And" | "AndAlso" | "Or" | "OrElse"
 	| "Xor" | "<<" | ">>" | "Is" | "IsNot"
-	| "^=" | "*=" | "/=" | "\\=" | "+=" | "-=" | "&="
+	| "^=" | "*=" | "/=" | "\\=" | "+=" | "-=" | "&=" | "To" | ":="
 .
 
 UnaryOperator =
 	"+" | "-" | "Not" | "AddressOf"
 .
 
-SimpleExpressionWithSuffix = (. nextTokenIsPotentialStartOfXmlMode = true; .) { UnaryOperator } SimpleExpression { ExpressionSuffix } .
+SimpleExpressionWithSuffix =
+	(. nextTokenIsPotentialStartOfXmlMode = true; .)
+	{ UnaryOperator }
+	(
+	   SimpleExpression { ExpressionSuffix }
+	| "TypeOf" SimpleExpressionWithSuffix "Is" TypeName
+	).
 
 SimpleExpression =
     (. nextTokenIsPotentialStartOfXmlMode = true; .)
@@ -397,9 +406,20 @@ SimpleExpression =
     |    ( "." | "!" ) IdentifierOrKeyword
     |    "GetType" "(" TypeName ")"
     |    "GetXmlNamespace" "(" (. readXmlIdentifier = true; .) Identifier ")"
-    |    "TypeOf" SimpleExpressionWithSuffix "Is" TypeName
     |    XmlLiteral
     )
+.
+
+NewExpression =
+	"New" [ TypeName [ "From" CollectionInitializer ] ] [ "With" ObjectInitializer ]
+.
+
+ObjectInitializer =
+	"{" [ "Key" ] "." IdentifierOrKeyword "=" Expression { "," [ "Key" ] "." IdentifierOrKeyword "=" Expression } "}"
+.
+
+CollectionInitializer =
+	"{" ( Expression | CollectionInitializer ) { "," ( Expression | CollectionInitializer ) } "}"
 .
 
 ExpressionSuffix =
@@ -438,7 +458,7 @@ PrimitiveTypeName =
 	
 TypeName = ( "Global" | Identifier | PrimitiveTypeName ) { TypeSuffix } { "." IdentifierOrKeyword { TypeSuffix } } .
 
-TypeSuffix = "(" ( "Of" [ TypeName ] { "," [ TypeName ] } | { "," /*[ EOL ]*/ } ) ")" .
+TypeSuffix = "(" ( "Of" [ TypeName ] { "," [ TypeName ] } | [ ArgumentList ] ) ")" .
 
 IdentifierOrKeyword = ANY .
 
@@ -489,7 +509,7 @@ InvocationStatement =
 .
 
 ArgumentList =
-	Expression { "," Expression [ ":=" Expression ] }
+	Expression { "," Expression }
 .
 
 /* This production handles pseudo keywords that are needed in the grammar */
