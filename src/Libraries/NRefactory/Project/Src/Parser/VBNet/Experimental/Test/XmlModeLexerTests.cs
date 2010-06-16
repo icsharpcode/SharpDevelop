@@ -353,6 +353,35 @@ namespace DefaultNamespace
 			
 			CheckFoot(lexer);
 		}
+		
+		[Test, Ignore]
+		public void IfExpressionTest()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = If(a <> 2, 4, 8)")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
+			            Tokens.If, Tokens.OpenParenthesis, Tokens.Identifier, Tokens.NotEqual, Tokens.LiteralInteger,
+			            Tokens.Comma, Tokens.LiteralInteger, Tokens.Comma, Tokens.LiteralInteger, Tokens.CloseParenthesis);
+			
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test, Ignore]
+		public void IfStatementTest()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("If a <> 2 Then Return")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.If, Tokens.Identifier, Tokens.NotEqual, Tokens.LiteralInteger,
+			            Tokens.Then, Tokens.Return);
+			
+			
+			CheckFoot(lexer);
+		}
 		#endregion
 		
 		#region Context Tests

@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		
 		void ApplyToken(Token token)
 		{
-			Console.WriteLine(token);
+			//Console.WriteLine(token);
 			
 			if (stack.Count == 0 || token == null)
 				return;

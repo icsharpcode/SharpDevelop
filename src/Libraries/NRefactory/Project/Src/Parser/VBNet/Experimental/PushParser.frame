@@ -61,7 +61,7 @@ partial class ExpressionFinder {
 	
 	public void Advance()
 	{
-		Console.WriteLine("Advance");
+		//Console.WriteLine("Advance");
 		InformToken(null);
 	}
 	

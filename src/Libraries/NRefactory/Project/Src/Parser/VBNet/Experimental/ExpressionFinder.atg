@@ -374,7 +374,7 @@ Expression =
 	(
 		SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
 		| NewExpression
-		| ConditionalExpression
+		//| ConditionalExpression
 	)
 .
 
@@ -454,9 +454,10 @@ SimpleCastExpression =
 	"(" Expression ")"
 .
 
+/*
 ConditionalExpression =
 	"If" "(" Expression "," Expression [ "," Expression ] ")"
-.
+.*/
 
 XmlLiteral =
     (. PushContext(Context.Xml, t); .)
@@ -516,7 +517,6 @@ Statement =
 	| AddOrRemoveHandlerStatement
 	| RaiseEventStatement
 	| InvocationStatement
-	/*| "If" Expression [ "Then" ] StatementTerminator ( Block | { Statement } ) */
 .
 
 VariableDeclarationStatement =
