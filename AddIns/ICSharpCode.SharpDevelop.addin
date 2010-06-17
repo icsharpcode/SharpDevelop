@@ -72,7 +72,6 @@
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ProjectScoutLabel}"
 		     icon     = "PadIcons.ProjectBrowser"
-		     shortcut = "Control|Alt|L"
 		     class    = "ICSharpCode.SharpDevelop.Project.ProjectBrowserPad"
 		     defaultPosition = "Left" />
 		
@@ -80,7 +79,6 @@
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
 		     icon     = "PadIcons.ClassBrowser"
-		     shortcut = "Control|Shift|C"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserPad"
 		     defaultPosition = "Right" />
 		
@@ -88,7 +86,6 @@
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ToolbarLabel}"
 		     icon     = "PadIcons.Toolbar"
-		     shortcut = "Control|Alt|X"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ToolsPad"
 		     defaultPosition = "Left" />
 		
@@ -102,7 +99,6 @@
 		<Pad id       = "ErrorList"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.ErrorList}"
-		     shortcut = "Control|Alt|K"
 		     icon     = "PadIcons.ErrorList"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ErrorListPad"
 		     defaultPosition = "Bottom" />
@@ -118,7 +114,6 @@
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.OutputWindow}"
 		     icon     = "PadIcons.Output"
-		     shortcut = "Control|Alt|O"
 		     class    = "ICSharpCode.SharpDevelop.Gui.CompilerMessageView"
 		     defaultPosition = "Bottom" />
 		
@@ -134,7 +129,6 @@
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.FileScoutLabel}"
 		     icon     = "PadIcons.FileBrowser"
-		     shortcut = "Control|Alt|F"
 		     class    = "ICSharpCode.SharpDevelop.Gui.FileScout"
 		     defaultPosition = "Left, Hidden" />
 		
@@ -1486,7 +1480,6 @@
 					<MenuItem id       = "Break"
 					          label    = "${res:XML.MainMenu.DebugMenu.Break}"
 					          icon     = "Icons.16x16.Debug.Break"
-					          shortcut = "Control|Alt|B"
 					          class    = "ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand"/>
 				</Condition>
 				<Condition name="IsProcessRunning" isprocessrunning = "False" isdebugging = "True" action = "Disable">

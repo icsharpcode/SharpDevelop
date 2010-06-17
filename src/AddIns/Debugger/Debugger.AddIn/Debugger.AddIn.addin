@@ -72,7 +72,6 @@
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Breakpoints}"
 		     icon     = "PadIcons.BreakPoints"
-		     shortcut = "Control|Alt|P"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
@@ -80,7 +79,6 @@
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.CallStack}"
 		     icon     = "PadIcons.CallStack"
-		     shortcut = "Control|Alt|C"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.CallStackPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
@@ -88,7 +86,6 @@
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Modules}"
 		     icon     = "PadIcons.LoadedModules"
-		     shortcut = "Control|Alt|U"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
@@ -96,7 +93,6 @@
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Threads}"
 		     icon     = "PadIcons.Threads"
-		     shortcut = "Control|Alt|H"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
@@ -104,7 +100,6 @@
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.LocalVariables}"
 		     icon     = "PadIcons.LocalVariables"
-		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
@@ -112,7 +107,6 @@
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Console}"
 		     icon     = "PadIcons.Output"
-		     shortcut = "Control|Alt|N"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ConsolePad"
 		     defaultPosition = "Bottom, Hidden" />
 		
@@ -120,18 +114,15 @@
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Watch}"
 		     icon     = "PadIcons.LocalVariables"
-		     shortcut = "Control|Alt|W"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.WatchPad"
 		     defaultPosition = "Bottom, Hidden" />
-	  <!-- Hidden until DebuggerPad.IsVisible bug is fixed
+		
 		<Pad id    = "ObjectGraphPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.ObjectGraph}"
 		     icon     = "PadIcons.LocalVariables"
-		     shortcut = "Control|Alt|O"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ObjectGraphPad"
 		     defaultPosition = "Bottom, Hidden" />
-      -->
 	</Path>
 	
 	<Path name ="/SharpDevelop/Pads/WatchPad/ContextMenu">
