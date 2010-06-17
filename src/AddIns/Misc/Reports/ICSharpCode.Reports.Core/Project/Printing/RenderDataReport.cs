@@ -163,10 +163,12 @@ namespace ICSharpCode.Reports.Core {
 					tableContainer.StartLayoutAt(base.Sections[0]);
 				}
 				
-//				base.RenderTable(base.CurrentSection,this.SectionBounds,rpea,this.Layout);
 				
-				tableContainer.RenderTable(base.CurrentSection,this.SectionBounds,rpea,this.Layout);
+				tableContainer.RenderTable(this.CurrentSection,this.SectionBounds,rpea,this.Layout);
 			
+				base.RenderTable (base.CurrentSection,tableContainer,rpea);
+			
+				
 				this.ReportDocument.DetailsDone = true;
 			}
 			

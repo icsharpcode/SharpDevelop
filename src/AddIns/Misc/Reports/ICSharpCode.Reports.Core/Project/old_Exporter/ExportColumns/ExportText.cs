@@ -32,6 +32,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter {
 		
 		#region overrides
 		
+		
 		public override void DrawItem(PdfWriter pdfWriter,
 		                              ICSharpCode.Reports.Core.old_Exporter.ExportRenderer.PdfUnitConverter converter)
 		{

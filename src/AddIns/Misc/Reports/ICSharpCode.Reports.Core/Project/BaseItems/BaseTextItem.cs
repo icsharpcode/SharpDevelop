@@ -111,6 +111,8 @@ namespace ICSharpCode.Reports.Core
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
+			
+			
 			TextDrawer.DrawString(rpea.PrintPageEventArgs.Graphics,
 			                      toPrint,this.Font,
 			                      new SolidBrush(this.ForeColor),
@@ -118,6 +120,9 @@ namespace ICSharpCode.Reports.Core
 			                      this.stringTrimming,this.contentAlignment);
 			
 			
+			
+			//TextDrawer.DrawString(rpea.PrintPageEventArgs.Graphics,toPrint,CreateItemStyle());
+			                      
 			rpea.LocationAfterDraw = new Point (this.Location.X + this.Size.Width,
 			                                    this.Location.Y + this.Size.Height);
 		}

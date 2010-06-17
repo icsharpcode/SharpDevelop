@@ -84,7 +84,7 @@ namespace ICSharpCode.Reports.Core {
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
-//
+
 			Point saveLocation = this.Location;
 			Point currentPosition = new Point(this.startSection.Location.X,this.startSection.Location.Y);
 			Point tableStart = currentPosition;
@@ -172,6 +172,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 			this.startSection = section;
 		}
+		
 		
 		
 		public void RenderTable (BaseReportItem parent,SectionBounds sectionBounds,ReportPageEventArgs rpea,ILayouter layouter)

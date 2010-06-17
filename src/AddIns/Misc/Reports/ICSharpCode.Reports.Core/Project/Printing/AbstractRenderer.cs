@@ -230,6 +230,11 @@ namespace ICSharpCode.Reports.Core
 //					PrintHelper.DebugRectangle(rpea.PrintPageEventArgs.Graphics,Pens.Blue,new Rectangle(CurrentSection.Location,CurrentSection.Size));
 				}
 				
+				
+				RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,new Point(this.CurrentSection.Location.X,
+				                                                                               this.CurrentSection.SectionOffset),rpea);
+				
+				/*
 				foreach (BaseReportItem item in this.CurrentSection.Items) {
 					if (item.Parent == null) {
 						item.Parent = this.CurrentSection;
@@ -249,6 +254,8 @@ namespace ICSharpCode.Reports.Core
 					
 				}
 				
+				*/
+				
 				if ((this.CurrentSection.CanGrow == false)&& (this.CurrentSection.CanShrink == false)) {
 					return new Point(this.CurrentSection.Location.X,
 					                 this.CurrentSection.Size.Height);
@@ -256,6 +263,42 @@ namespace ICSharpCode.Reports.Core
 				return drawPoint;
 			}
 			return drawPoint;
+		}
+		
+		
+		
+		protected void RenderPlainCollection (BaseReportItem parent,ReportItemCollection items, Point offset,ReportPageEventArgs rpea)
+		{
+			
+			if (items.Count > 0) {
+				
+				foreach (BaseReportItem child in items) {
+					child.Parent = parent;
+					
+					Point saveLocation = new Point (child.Location.X,child.Location.Y);
+					
+					
+					child.Location = new Point(offset.X + child.Location.X,
+					                           offset.Y + child.Location.Y);
+					
+					
+					if (parent.BackColor != GlobalValues.DefaultBackColor) {
+						child.BackColor = parent.BackColor;
+					}
+					
+					BaseTextItem textItem = child as BaseTextItem;
+					
+					if (textItem != null) {
+						string str = textItem.Text;
+						textItem.Text = Evaluator.Evaluate(textItem.Text);
+						textItem.Render(rpea);
+						textItem.Text = str;
+					} else {
+						child.Render (rpea);
+					}
+					child.Location = saveLocation;
+				}
+			}
 		}
 		
 		
