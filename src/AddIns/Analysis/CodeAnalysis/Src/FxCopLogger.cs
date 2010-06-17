@@ -55,15 +55,18 @@ namespace ICSharpCode.CodeAnalysis
 				if (project != null) {
 					IProjectContent pc = ParserService.GetProjectContent(project);
 					if (pc != null) {
-						if (error.FileName != null && error.FileName.StartsWith("positionof#")) {
-							string memberName = error.FileName.Substring(11);
-							FilePosition pos = GetPosition(pc, memberName);
-							if (pos.IsEmpty == false && pos.CompilationUnit != null) {
-								error.FileName = pos.FileName ?? "";
-								error.Line = pos.Line;
-								error.Column = pos.Column;
-							} else {
-								error.FileName = null;
+						if (error.FileName != null) {
+							int pos = error.FileName.IndexOf("positionof#", StringComparison.Ordinal);
+							if (pos >= 0) {
+								string memberName = error.FileName.Substring(pos+11);
+								FilePosition filePos = GetPosition(pc, memberName);
+								if (filePos.IsEmpty == false && filePos.CompilationUnit != null) {
+									error.FileName = filePos.FileName ?? "";
+									error.Line = filePos.Line;
+									error.Column = filePos.Column;
+								} else {
+									error.FileName = null;
+								}
 							}
 						}
 						
