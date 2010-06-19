@@ -517,6 +517,9 @@ Statement =
 	| RaiseEventStatement
 	| IfStatement
 	| SelectStatement
+	| WhileStatement
+	| DoLoopStatement
+	| ForStatement
 	| InvocationStatement
 .
 
@@ -572,6 +575,45 @@ SelectStatement =
 
 ComparisonOperator =
 	"=" | "<>" | "<" | ">" | ">=" | "<="
+.
+
+WhileStatement =
+	"While" Expression StatementTerminatorAndBlock "End" "While"
+.
+
+DoLoopStatement =
+	"Do" ( DoTopLoopStatement | DoBottomLoopStatement )
+.
+
+DoTopLoopStatement =
+	( "While" | "Until" ) Expression
+	StatementTerminatorAndBlock
+	"Loop"
+.
+
+DoBottomLoopStatement =
+	StatementTerminatorAndBlock
+	"Loop" [ ( "While" | "Until" ) Expression ]
+.
+
+ForStatement =
+	"For" ( ForLoopStatement | ForEachLoopStatement )
+.
+
+ForLoopStatement =
+	ForLoopVariable "=" Expression /* "To" is binary operator */ [ "Step" Expression ]
+	StatementTerminatorAndBlock
+	"Next" [ Expression { "," Expression } ]
+.
+
+ForEachLoopStatement =
+	"Each" ForLoopVariable "In" Expression
+	StatementTerminatorAndBlock
+	"Next" [ Expression { "," Expression } ]
+.
+
+ForLoopVariable =
+	SimpleExpression [ "?" ] { ExpressionSuffix }
 .
 
 InvocationStatement =
