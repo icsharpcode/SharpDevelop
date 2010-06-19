@@ -516,6 +516,7 @@ Statement =
 	| AddOrRemoveHandlerStatement
 	| RaiseEventStatement
 	| IfStatement
+	| SelectStatement
 	| InvocationStatement
 .
 
@@ -554,6 +555,15 @@ MultilineIfRest =
         StatementTerminatorAndBlock
     }
     "End" "If"
+.
+
+SelectStatement =
+	"Select" [ "Case" ] Expression StatementTerminator
+	{
+		"Case" ( "Else" | [ "Is" ] Expression { "," [ "Is" ] Expression } )
+		StatementTerminatorAndBlock
+	}
+	"End" "Select"
 .
 
 InvocationStatement =
