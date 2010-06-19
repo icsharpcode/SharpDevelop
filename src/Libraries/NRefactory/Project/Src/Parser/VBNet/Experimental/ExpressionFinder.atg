@@ -372,7 +372,7 @@ StatementTerminatorAndBlock =
 Expression =
 	(. nextTokenIsPotentialStartOfXmlMode = true; .)
 	(
-		SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
+	SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
 		| ConditionalExpression
 	)
 .
@@ -542,7 +542,7 @@ RaiseEventStatement =
 IfStatement =
     "If" Expression
     (    "Then"
-        ( Statement { ":" Statement } [ "Else" Statement { ":" Statement } ] EOL
+        ( Statement { ":" [Statement] } [ "Else" [Statement] { ":" [Statement] } ] EOL
         | MultilineIfRemainder
         )
     |    MultilineIfRemainder
@@ -621,7 +621,8 @@ InvocationStatement =
 .
 
 ArgumentList =
-	Expression { "," Expression }
+   Expression { "," [ Expression ] }
+|   "," [ Expression ]  { "," [ Expression ] }
 .
 
 /* This production handles pseudo keywords that are needed in the grammar */
