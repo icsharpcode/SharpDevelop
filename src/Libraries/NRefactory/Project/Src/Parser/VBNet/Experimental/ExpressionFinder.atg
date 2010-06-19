@@ -540,13 +540,13 @@ IfStatement =
     "If" Expression
     (    "Then"
         ( Statement { ":" Statement } [ "Else" Statement { ":" Statement } ] EOL
-        | MultilineIfRest
+        | MultilineIfRemainder
         )
-    |    MultilineIfRest
+    |    MultilineIfRemainder
     )
 .
 
-MultilineIfRest =
+MultilineIfRemainder =
     StatementTerminatorAndBlock
     {
         ("Else" [ "If" Expression [ "Then" ] ]
@@ -560,10 +560,18 @@ MultilineIfRest =
 SelectStatement =
 	"Select" [ "Case" ] Expression StatementTerminator
 	{
-		"Case" ( "Else" | [ "Is" ] Expression { "," [ "Is" ] Expression } )
+		"Case" (
+			"Else" |
+			( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression )
+				{ "," ( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression ) }
+		)
 		StatementTerminatorAndBlock
 	}
 	"End" "Select"
+.
+
+ComparisonOperator =
+	"=" | "<>" | "<" | ">" | ">=" | "<="
 .
 
 InvocationStatement =
