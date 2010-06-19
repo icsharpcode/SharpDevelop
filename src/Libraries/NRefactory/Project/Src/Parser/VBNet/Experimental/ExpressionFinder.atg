@@ -318,7 +318,7 @@ SubOrFunctionDeclaration =
 	("Sub" | "Function")
 	(. PushContext(Context.IdentifierExpected, t); .) ANY (. PopContext(); .)
 	[ "(" [ ParameterList ] ")" ] [ "As" TypeName ]
-	Block
+	StatementTerminatorAndBlock
 	"End" ("Sub" | "Function") StatementTerminator
 .
 
@@ -337,16 +337,16 @@ EventMemberDeclaration =
 CustomEventMemberDeclaration =
 	"Custom" EventMemberDeclaration
 	{
-		{ AttributeBlock } ( "AddHandler" | "RemoveHandler" | "RaiseEvent" ) "(" ParameterList ")" EOL
-		Block
+		{ AttributeBlock } ( "AddHandler" | "RemoveHandler" | "RaiseEvent" ) "(" ParameterList ")"
+		StatementTerminatorAndBlock
 		"End" ( "AddHandler" | "RemoveHandler" | "RaiseEvent" ) StatementTerminator
 	}
 	"End" "Event" StatementTerminator
 .
 
 OperatorDeclaration =
-	"Operator" ANY "(" ParameterList ")" [ "As" { AttributeBlock } TypeName ] EOL
-	Block
+	"Operator" ANY "(" ParameterList ")" [ "As" { AttributeBlock } TypeName ]
+	StatementTerminatorAndBlock
 	"End" "Operator" StatementTerminator
 .
 
@@ -362,7 +362,7 @@ Parameter =
 	{ AttributeBlock } { ParameterModifier } Identifier [ "As" TypeName ] [ "=" Expression ] 
 .
 
-Block =
+StatementTerminatorAndBlock =
 	(. PushContext(Context.Body, t); .)
 	StatementTerminator
 	{ [ Statement] StatementTerminator }
@@ -373,8 +373,7 @@ Expression =
 	(. nextTokenIsPotentialStartOfXmlMode = true; .)
 	(
 		SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
-		| NewExpression
-		//| ConditionalExpression
+		| ConditionalExpression
 	)
 .
 
@@ -396,7 +395,7 @@ SimpleExpressionWithSuffix =
 	(
 	   SimpleExpression { ExpressionSuffix }
 	| "TypeOf" SimpleExpressionWithSuffix "Is" TypeName
-	| CastExpression
+	| NewExpression
 	).
 
 SimpleExpression =
@@ -408,6 +407,7 @@ SimpleExpression =
     |    "GetType" "(" TypeName ")"
     |    "GetXmlNamespace" "(" (. readXmlIdentifier = true; .) Identifier ")"
     |    XmlLiteral
+    |    CastExpression
     )
 .
 
@@ -454,10 +454,9 @@ SimpleCastExpression =
 	"(" Expression ")"
 .
 
-/*
 ConditionalExpression =
 	"If" "(" Expression "," Expression [ "," Expression ] ")"
-.*/
+.
 
 XmlLiteral =
     (. PushContext(Context.Xml, t); .)
@@ -516,6 +515,7 @@ Statement =
 	| WithOrLockStatement
 	| AddOrRemoveHandlerStatement
 	| RaiseEventStatement
+	| IfStatement
 	| InvocationStatement
 .
 
@@ -524,7 +524,7 @@ VariableDeclarationStatement =
 .
 
 WithOrLockStatement =
-	( "With" | "SyncLock" ) Expression StatementTerminator Block "End" ( "With" | "SyncLock" )
+	( "With" | "SyncLock" ) Expression StatementTerminatorAndBlock "End" ( "With" | "SyncLock" )
 .
 
 AddOrRemoveHandlerStatement =
@@ -533,6 +533,27 @@ AddOrRemoveHandlerStatement =
 
 RaiseEventStatement =
 	"RaiseEvent" IdentifierOrKeyword [ "(" [ ArgumentList ] ")" ]
+.
+
+IfStatement =
+    "If" Expression
+    (    "Then"
+        ( Statement { ":" Statement } [ "Else" Statement { ":" Statement } ] EOL
+        | MultilineIfRest
+        )
+    |    MultilineIfRest
+    )
+.
+
+MultilineIfRest =
+    StatementTerminatorAndBlock
+    {
+        ("Else" [ "If" Expression [ "Then" ] ]
+        | "ElseIf" Expression [ "Then" ]
+        )
+        StatementTerminatorAndBlock
+    }
+    "End" "If"
 .
 
 InvocationStatement =
