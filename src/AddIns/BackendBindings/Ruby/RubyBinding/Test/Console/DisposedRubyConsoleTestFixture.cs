@@ -8,6 +8,7 @@
 using System;
 using ICSharpCode.RubyBinding;
 using NUnit.Framework;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
 {
@@ -20,14 +21,14 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void RubyConsoleImplementsIDisposable()
 		{
-			RubyConsole console = new RubyConsole(new MockTextEditor(), null);
+			RubyConsole console = new RubyConsole(new MockConsoleTextEditor(), null);
 			Assert.IsNotNull(console as IDisposable);
 		}
 		
 		[Test]
 		public void ReadLineReturnsNullWhenConsoleDisposed()
 		{
-			RubyConsole console = new RubyConsole(new MockTextEditor(), null);
+			RubyConsole console = new RubyConsole(new MockConsoleTextEditor(), null);
 			console.Dispose();
 			Assert.IsNull(console.ReadLine(0));
 		}

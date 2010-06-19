@@ -11,6 +11,7 @@ using System.Text;
 
 using ICSharpCode.RubyBinding;
 using NUnit.Framework;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
 {
@@ -18,12 +19,12 @@ namespace RubyBinding.Tests.Console
 	public class RubyOutputStreamTestFixture
 	{
 		RubyOutputStream stream;
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			stream = new RubyOutputStream(textEditor);
 		}
 		

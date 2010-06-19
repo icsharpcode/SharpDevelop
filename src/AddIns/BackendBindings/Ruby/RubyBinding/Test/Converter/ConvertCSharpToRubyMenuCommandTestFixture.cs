@@ -45,11 +45,12 @@ namespace RubyBinding.Tests.Converter
 			window.ActiveViewContent = mockViewContent;
 			workbench.ActiveWorkbenchWindow = window;
 			
-			MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
-			textEditorProperties.IndentationSize = 4;
-			textEditorProperties.ConvertTabsToSpaces = true;
+			MockTextEditorOptions options = new MockTextEditorOptions();
+			options.IndentationSize = 4;
+			options.ConvertTabsToSpaces = true;
+			mockViewContent.TextEditorOptions = options;
 			
-			Run(workbench, textEditorProperties);
+			Run(workbench);
 		}
 		
 		[Test]

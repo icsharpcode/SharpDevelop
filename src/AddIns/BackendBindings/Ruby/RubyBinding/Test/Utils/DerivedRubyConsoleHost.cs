@@ -8,23 +8,22 @@
 using System;
 using System.IO;
 
-using ICSharpCode.TextEditor;
 using ICSharpCode.RubyBinding;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
 
 namespace RubyBinding.Tests.Console
-{
+{	
 	public class DerivedRubyConsoleHost : RubyConsoleHost
 	{
 		RubyOutputStream outputStream;
 		
-		public DerivedRubyConsoleHost(ITextEditor textEditor) : base(textEditor)
+		public DerivedRubyConsoleHost(IConsoleTextEditor textEditor) : base(textEditor)
 		{
 		}
 		
-		public Type GetProvider() 
+		public Type GetProvider()
 		{
 			return base.Provider;
 		}

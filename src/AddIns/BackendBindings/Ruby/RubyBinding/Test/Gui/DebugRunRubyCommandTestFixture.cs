@@ -6,24 +6,20 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.RubyBinding;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
-using NUnit.Framework;
 using RubyBinding.Tests.Utils;
+using NUnit.Framework;
 
-namespace RubyBinding.Tests
+namespace RubyBinding.Tests.Gui
 {
-	/// <summary>
-	/// Tests that the RunRubyCommand class runs the Ruby console
-	/// passing the filename of the Ruby script active in SharpDevelop.
-	/// </summary>
 	[TestFixture]
-	public class RunRubyCommandTestFixture
+	public class DebugRubyCommandTestFixture
 	{
 		MockDebugger debugger;
-		RunRubyCommand command;
+		RunDebugRubyCommand command;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -42,20 +38,14 @@ namespace RubyBinding.Tests
 			options.RubyFileName = @"C:\IronRuby\ir.exe";
 		
 			debugger = new MockDebugger();
-			command = new RunRubyCommand(workbench, options, debugger);
+			command = new RunDebugRubyCommand(workbench, options, debugger);
 			command.Run();
 		}
-		
+				
 		[Test]
-		public void RunRubyCommandIsAbstractCommand()
+		public void DebuggerStartMethodCalled()
 		{
-			Assert.IsNotNull(command as AbstractCommand);
-		}
-		
-		[Test]
-		public void DebuggerStartWithoutDebuggingMethodCalled()
-		{
-			Assert.IsTrue(debugger.StartWithoutDebuggingMethodCalled);
+			Assert.IsTrue(debugger.StartMethodCalled);
 		}
 		
 		[Test]
@@ -64,19 +54,10 @@ namespace RubyBinding.Tests
 			Assert.AreEqual(@"C:\IronRuby\ir.exe", debugger.ProcessStartInfo.FileName);
 		}
 		
-		/// <summary>
-		/// The -1.9 parameter is used to enable Ruby 1.9 mode otherwise UTF8 files cannot be processed.
-		/// </summary>
 		[Test]
 		public void ProcessInfoArgs()
 		{
-			Assert.AreEqual("-1.9 test.rb", debugger.ProcessStartInfo.Arguments);
-		}
-		
-		[Test]
-		public void WorkingDirectory()
-		{
-			Assert.AreEqual(@"C:\Projects", debugger.ProcessStartInfo.WorkingDirectory);
+			Assert.AreEqual("-D -1.9 test.rb", debugger.ProcessStartInfo.Arguments);
 		}
 	}
 }

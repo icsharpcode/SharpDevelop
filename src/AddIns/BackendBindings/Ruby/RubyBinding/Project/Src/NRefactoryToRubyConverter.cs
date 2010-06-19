@@ -16,7 +16,6 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using Dom = ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.RubyBinding
 {
@@ -95,17 +94,6 @@ namespace ICSharpCode.RubyBinding
 				return (extension == ".cs") || (extension == ".vb");
 			}
 			return false;
-		}
-		
-		/// <summary>
-		/// Gets the indentation string to use in the text editor based on the text editor properties.
-		/// </summary>
-		public static string GetIndentString(ITextEditorProperties textEditorProperties)
-		{
-			if (textEditorProperties.ConvertTabsToSpaces) {
-				return new String(' ', textEditorProperties.IndentationSize);
-			}
-			return "\t";
 		}
 		
 		/// <summary>

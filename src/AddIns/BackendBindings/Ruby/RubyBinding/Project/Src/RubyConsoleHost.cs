@@ -19,10 +19,10 @@ namespace ICSharpCode.RubyBinding
 	public class RubyConsoleHost : ConsoleHost, IDisposable
 	{
 		Thread thread;
-		ITextEditor textEditor;
+		IConsoleTextEditor textEditor;
 		RubyConsole rubyConsole;
 
-		public RubyConsoleHost(ITextEditor textEditor)
+		public RubyConsoleHost(IConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 		}

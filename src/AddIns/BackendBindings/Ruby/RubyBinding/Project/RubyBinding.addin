@@ -23,10 +23,6 @@
 		            resource="ICSharpCode.RubyBinding.Resources.Ruby.xshd"/>
 	</Path>
 	
-	<!--<Path name="/AddIns/DefaultTextEditor/Formatter/Ruby">
-		<Class id="RubyFormatter" class="ICSharpCode.RubyBinding.RubyFormattingStrategy"/>
-	</Path>-->
-	
 	<!-- Add the "Ruby" entry to the Open File Dialog -->
 	<Path name="/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id="Ruby"
@@ -95,6 +91,12 @@
 		                 supportedextensions=".rb"
 		                 projectfileextension=".rbproj"
 		                 class="ICSharpCode.RubyBinding.RubyProjectBinding" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id="Ruby"
+			class="ICSharpCode.RubyBinding.RubyLanguageBinding"
+			extensions=".rb" />
 	</Path>
 	
 	<!-- The Ruby code completion binding -->

@@ -7,11 +7,11 @@
 
 using System;
 using System.Threading;
-using System.Windows.Forms;
+using System.Windows.Input;
 
 using ICSharpCode.RubyBinding;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
 {
@@ -21,19 +21,19 @@ namespace RubyBinding.Tests.Console
 	[TestFixture]
 	public class RubyConsoleReadTestFixture
 	{
-		RubyConsole RubyConsole;
+		RubyConsole rubyConsole;
 		int initialAutoIndentSize = 4;
 		string readLine;
 		int autoIndentSize;
-		MockTextEditor mockTextEditor;
+		MockConsoleTextEditor mockTextEditor;
 		bool raiseKeyPressEvent;
 		bool raiseDialogKeyPressEvent;
 		
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			mockTextEditor = new MockTextEditor();
-			RubyConsole = new RubyConsole(mockTextEditor, null);
+			mockTextEditor = new MockConsoleTextEditor();
+			rubyConsole = new RubyConsole(mockTextEditor, null);
 
 			autoIndentSize = initialAutoIndentSize;
 			Thread thread = new Thread(ReadLineFromConsoleOnDifferentThread);
@@ -42,13 +42,13 @@ namespace RubyBinding.Tests.Console
 			int sleepInterval = 10;
 			int maxWait = 2000;
 			int currentWait = 0;
-			while (mockTextEditor.Text.Length < autoIndentSize && currentWait < maxWait) {
+			while ((mockTextEditor.Text.Length < autoIndentSize) && (currentWait < maxWait)) {
 				Thread.Sleep(sleepInterval);
 				currentWait += sleepInterval;
 			}
 			
-			raiseKeyPressEvent = mockTextEditor.RaiseKeyPressEvent('a');
-			raiseDialogKeyPressEvent = mockTextEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			raiseKeyPressEvent = mockTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			raiseDialogKeyPressEvent = mockTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			
 			currentWait = 0;
 			while ((mockTextEditor.Text.Length < autoIndentSize + 2) && (currentWait < maxWait)) {
@@ -61,20 +61,20 @@ namespace RubyBinding.Tests.Console
 		[TestFixtureTearDown]
 		public void TearDown()
 		{
-			RubyConsole.Dispose();
+			rubyConsole.Dispose();
 		}
 
 		[Test]
 		public void ReadLineFromConsole()
 		{
-			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "a";
+			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "A";
 			Assert.AreEqual(expectedString, readLine);
 		}
 		
 		[Test]
 		public void ReadLineWithNonZeroAutoIndentSizeWritesSpacesToTextEditor()
 		{
-			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "a\r\n";
+			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "A\r\n";
 			Assert.AreEqual(expectedString, mockTextEditor.Text);
 		}
 		
@@ -87,22 +87,16 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void NoTextWrittenWhenAutoIndentSizeIsZero()
 		{
-			MockTextEditor textEditor = new MockTextEditor();
+			MockConsoleTextEditor textEditor = new MockConsoleTextEditor();
 			RubyConsole console = new RubyConsole(textEditor, null);
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			
 			textEditor.IsWriteCalled = false;
 			console.ReadLine(0);
 			Assert.IsFalse(textEditor.IsWriteCalled);
 		}
-
-		[Test]
-		public void TextEditorIndentStyleSetToNone()
-		{
-			Assert.AreEqual(IndentStyle.None, mockTextEditor.IndentStyle);
-		}
-
+		
 		/// <summary>
 		/// Should return false for any character that should be handled by the text editor itself.s
 		/// </summary>
@@ -124,7 +118,7 @@ namespace RubyBinding.Tests.Console
 		void ReadLineFromConsoleOnDifferentThread()
 		{
 			System.Console.WriteLine("Reading on different thread");
-			readLine = RubyConsole.ReadLine(autoIndentSize);
+			readLine = rubyConsole.ReadLine(autoIndentSize);
 			System.Console.WriteLine("Finished reading on different thread");
 		}
 	}

@@ -6,12 +6,14 @@
 // </file>
 
 using System;
+using System.Windows.Input;
 
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
 using ICSharpCode.RubyBinding;
 using NUnit.Framework;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
 {
@@ -21,29 +23,29 @@ namespace RubyBinding.Tests.Console
 	[TestFixture]
 	public class RubyConsoleCurrentLineTestFixture
 	{
-		RubyConsole RubyConsole;
-		MockTextEditor textEditor;
+		RubyConsole rubyConsole;
+		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockTextEditor();
-			RubyConsole = new RubyConsole(textEditor, null);
-			RubyConsole.Write(prompt, Style.Prompt);
+			textEditor = new MockConsoleTextEditor();
+			rubyConsole = new RubyConsole(textEditor, null);
+			rubyConsole.Write(prompt, Style.Prompt);
 		}
 		
 		[Test]
 		public void CurrentLineIsEmpty()
 		{
-			Assert.AreEqual(String.Empty, RubyConsole.GetCurrentLine());
+			Assert.AreEqual(String.Empty, rubyConsole.GetCurrentLine());
 		}
 		
 		[Test]
 		public void SingleCharacterAddedToTextEditor()
 		{
-			textEditor.RaiseKeyPressEvent('a');
-			Assert.AreEqual("a", RubyConsole.GetCurrentLine());
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			Assert.AreEqual("A", rubyConsole.GetCurrentLine());
 		}
 	}
 }

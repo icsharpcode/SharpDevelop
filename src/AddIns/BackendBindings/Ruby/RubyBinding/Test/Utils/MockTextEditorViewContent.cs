@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit	;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.TextEditor;
 
 namespace RubyBinding.Tests.Utils
 {
@@ -24,16 +25,14 @@ namespace RubyBinding.Tests.Utils
 		
 		public MockTextEditorViewContent()
 		{
-			textEditor = new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditTextEditorAdapter(
-				new ICSharpCode.AvalonEdit.TextEditor()
-			);
+			textEditor = new AvalonEditTextEditorAdapter(new TextEditor());
 		}
 		
-		public ICSharpCode.SharpDevelop.Editor.ITextEditor TextEditor {
+		public ITextEditor TextEditor {
 			get { return textEditor; }
 		}
 		
-		public ICSharpCode.SharpDevelop.Editor.IDocument GetDocumentForFile(OpenedFile file)
+		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			throw new NotImplementedException();
 		}

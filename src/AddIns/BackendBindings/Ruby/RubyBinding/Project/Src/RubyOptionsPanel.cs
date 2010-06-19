@@ -19,14 +19,14 @@ namespace ICSharpCode.RubyBinding
 	/// </summary>
 	public class RubyOptionsPanel : XmlFormsOptionPanel
 	{
-		AddInOptions options;
+		RubyAddInOptions options;
 		TextBox rubyFileNameTextBox;
 		
-		public RubyOptionsPanel() : this(new AddInOptions())
+		public RubyOptionsPanel() : this(new RubyAddInOptions())
 		{
 		}
 		
-		public RubyOptionsPanel(AddInOptions options)
+		public RubyOptionsPanel(RubyAddInOptions options)
 		{
 			this.options = options;
 		}

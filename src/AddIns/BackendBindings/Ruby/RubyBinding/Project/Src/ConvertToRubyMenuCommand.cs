@@ -7,13 +7,14 @@
 
 using System;
 using System.IO;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.RubyBinding
 {
@@ -22,25 +23,36 @@ namespace ICSharpCode.RubyBinding
 	/// </summary>
 	public class ConvertToRubyMenuCommand : AbstractMenuCommand
 	{
+		RubyTextEditorViewContent view;
+		
 		public override void Run()
 		{
-			Run(WorkbenchSingleton.Workbench, SharpDevelopTextEditorProperties.Instance);
+			Run(WorkbenchSingleton.Workbench);
 		}
 		
-		protected void Run(IWorkbench workbench, ITextEditorProperties textEditorProperties)
+		protected void Run(IWorkbench workbench)
 		{
-			// Get the code to convert.
-			IViewContent viewContent = workbench.ActiveWorkbenchWindow.ActiveViewContent;
-			IEditable editable = viewContent as IEditable;
-			
-			// Generate the ruby code.
-			ParseInformation parseInfo = GetParseInformation(viewContent.PrimaryFileName);
-			NRefactoryToRubyConverter converter = NRefactoryToRubyConverter.Create(viewContent.PrimaryFileName, parseInfo);
-			converter.IndentString = NRefactoryToRubyConverter.GetIndentString(textEditorProperties);
-			string pythonCode = converter.Convert(editable.Text);
-			
-			// Show the python code in a new window.
-			NewFile("Generated.rb", "Ruby", pythonCode);
+			view = new RubyTextEditorViewContent(workbench);
+			string code = GenerateRubyCode();
+			ShowRubyCodeInNewWindow(code);
+		}
+		
+		string GenerateRubyCode()
+		{
+			ParseInformation parseInfo = GetParseInformation(view.PrimaryFileName);
+			NRefactoryToRubyConverter converter = NRefactoryToRubyConverter.Create(view.PrimaryFileName, parseInfo);
+			converter.IndentString = view.TextEditorOptions.IndentationString;
+			return converter.Convert(view.EditableView.Text);
+		}
+		
+		void ShowRubyCodeInNewWindow(string code)
+		{
+			NewFile("Generated.rb", "Ruby", code);
+		}
+		
+		protected virtual ParseInformation GetParseInformation(string fileName)
+		{
+			return ParserService.GetParseInformation(fileName);
 		}
 		
 		/// <summary>
@@ -49,11 +61,6 @@ namespace ICSharpCode.RubyBinding
 		protected virtual void NewFile(string defaultName, string language, string content)
 		{
 			FileService.NewFile(defaultName, content);
-		}
-		
-		protected virtual ParseInformation GetParseInformation(string fileName)
-		{
-			return ParserService.GetParseInformation(fileName);
 		}
 	}
 }

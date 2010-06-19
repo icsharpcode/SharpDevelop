@@ -42,11 +42,11 @@ namespace ICSharpCode.RubyBinding
 	public class RubyDesignerGenerator : IRubyDesignerGenerator
 	{
 		FormsDesignerViewContent viewContent;
-		ICSharpCode.TextEditor.Document.ITextEditorProperties textEditorProperties;
+		ITextEditorOptions textEditorOptions;
 		
-		public RubyDesignerGenerator(ICSharpCode.TextEditor.Document.ITextEditorProperties textEditorProperties)
+		public RubyDesignerGenerator(ITextEditorOptions textEditorOptions)
 		{
-			this.textEditorProperties = textEditorProperties;
+			this.textEditorOptions = textEditorOptions;
 		}
 		
 		/// <summary>
@@ -86,7 +86,7 @@ namespace ICSharpCode.RubyBinding
 		public void MergeRootComponentChanges(IDesignerHost host, IDesignerSerializationManager serializationManager)
 		{
 			ParseInformation parseInfo = ParseFile();
-			Merge(host, ViewContent.DesignerCodeFileDocument, parseInfo.CompilationUnit, textEditorProperties, serializationManager);
+			Merge(host, ViewContent.DesignerCodeFileDocument, parseInfo.CompilationUnit, textEditorOptions, serializationManager);
 		}
 		
 		/// <summary>
@@ -95,17 +95,17 @@ namespace ICSharpCode.RubyBinding
 		/// <param name="component">The designer host.</param>
 		/// <param name="document">The document that the generated code will be merged into.</param>
 		/// <param name="parseInfo">The current compilation unit for the <paramref name="document"/>.</param>
-		public static void Merge(IDesignerHost host, IDocument document, ICompilationUnit compilationUnit, ICSharpCode.TextEditor.Document.ITextEditorProperties textEditorProperties, IDesignerSerializationManager serializationManager)
+		public static void Merge(IDesignerHost host, IDocument document, ICompilationUnit compilationUnit, ITextEditorOptions textEditorOptions, IDesignerSerializationManager serializationManager)
 		{
 			// Get the document's initialize components method.
 			IMethod method = GetInitializeComponents(compilationUnit);
 			
 			// Generate the Ruby source code.
-			RubyCodeDomSerializer serializer = new RubyCodeDomSerializer(NRefactoryToRubyConverter.GetIndentString(textEditorProperties));
+			RubyCodeDomSerializer serializer = new RubyCodeDomSerializer(textEditorOptions.IndentationString);
 			int indent = method.Region.BeginColumn;
-			if (textEditorProperties.ConvertTabsToSpaces) {
-				indent = (indent / textEditorProperties.IndentationSize);
-				if (textEditorProperties.IndentationSize > 1) {
+			if (textEditorOptions.ConvertTabsToSpaces) {
+				indent = (indent / textEditorOptions.IndentationSize);
+				if (textEditorOptions.IndentationSize > 1) {
 					indent += 1;
 				}
 			}
@@ -134,7 +134,7 @@ namespace ICSharpCode.RubyBinding
 				// Insert the event handler at the end of the class with an extra 
 				// new line before it.
 				IDocument doc = viewContent.DesignerCodeFileDocument;
-				string eventHandler = CreateEventHandler(eventMethodName, body, NRefactoryToRubyConverter.GetIndentString(textEditorProperties));
+				string eventHandler = CreateEventHandler(eventMethodName, body, textEditorOptions.IndentationString);
 				
 				IDocumentLine classEndLine = GetClassEndLine(doc);
 				InsertEventHandlerBeforeLine(doc, eventHandler, classEndLine);
@@ -251,7 +251,7 @@ namespace ICSharpCode.RubyBinding
 			eventHandler.Append("(sender, e)");
 			eventHandler.AppendLine();
 			eventHandler.Append(indentation);
-			eventHandler.Append(NRefactoryToRubyConverter.GetIndentString(textEditorProperties));
+			eventHandler.Append(textEditorOptions.IndentationString);
 			eventHandler.Append(body);
 			eventHandler.AppendLine();
 			eventHandler.Append(indentation);

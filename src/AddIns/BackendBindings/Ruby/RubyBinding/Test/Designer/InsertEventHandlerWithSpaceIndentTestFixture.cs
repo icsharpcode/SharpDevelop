@@ -23,8 +23,8 @@ namespace RubyBinding.Tests.Designer
 	{
 		public override void AfterSetUpFixture()
 		{
-			textEditorProperties.ConvertTabsToSpaces = true;
-			textEditorProperties.IndentationSize = 4;
+			textEditorOptions.ConvertTabsToSpaces = true;
+			textEditorOptions.IndentationSize = 4;
 			MockEventDescriptor mockEventDescriptor = new MockEventDescriptor("Click");
 			insertedEventHandler = generator.InsertComponentEvent(null, mockEventDescriptor, "button1_click", String.Empty, out file, out position);
 		}

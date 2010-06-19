@@ -7,14 +7,15 @@
 
 using System;
 
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.RubyBinding;
-using ICSharpCode.TextEditor;
 using IronRuby.Hosting;
 using IronRuby.Runtime;
 using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
 {
@@ -25,24 +26,21 @@ namespace RubyBinding.Tests.Console
 	public class RubyConsoleHostTests
 	{
 		DerivedRubyConsoleHost host;
-		TextEditorControl textEditorControl;
-		TextEditor textEditor;
+		TextEditor textEditorControl;
+		RubyConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			textEditorControl = new TextEditorControl();
-			textEditor = new TextEditor(textEditorControl);
+			textEditorControl = new TextEditor();
+			textEditor = new RubyConsoleTextEditor(textEditorControl);
 			host = new DerivedRubyConsoleHost(textEditor);
-			
-			//ScriptRuntime runtime = IronRuby.Hosting.Ruby.CreateRuntime();
 		}
 		
 		[TestFixtureTearDown]
 		public void TearDown()
 		{
 			host.Dispose();
-			textEditorControl.Dispose();
 		}
 		
 		[Test]
@@ -91,7 +89,7 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void HostDisposesRubyConsole()
 		{
-			DerivedRubyConsoleHost host = new DerivedRubyConsoleHost(new MockTextEditor());
+			DerivedRubyConsoleHost host = new DerivedRubyConsoleHost(new MockConsoleTextEditor());
 			RubyConsole console = host.CallCreateConsole(null, null, null) as RubyConsole;
 			host.Dispose();
 
@@ -104,13 +102,14 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void DisposingRubyConsoleHostWithoutCreatingRubyConsole()
 		{
-			RubyConsoleHost host = new RubyConsoleHost(new MockTextEditor());
+			RubyConsoleHost host = new RubyConsoleHost(new MockConsoleTextEditor());
 			host.Dispose();
 		}
 		
 		[Test]
 		public void DefaultOutputStreamReplacedByCustomStreamClass()
 		{
+			host.CallCreateConsole(null, null, null);
 			Assert.IsNotNull(host.OutputStream);
 		}
 		
@@ -118,6 +117,6 @@ namespace RubyBinding.Tests.Console
 		public void ProviderIsRubyContext()
 		{
 			Assert.AreEqual(typeof(RubyContext), host.GetProvider());
-		}		
+		}
 	}
 }

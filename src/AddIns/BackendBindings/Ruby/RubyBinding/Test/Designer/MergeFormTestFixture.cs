@@ -14,11 +14,12 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
+using AvalonEdit = ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
@@ -31,7 +32,7 @@ namespace RubyBinding.Tests.Designer
 	[TestFixture]
 	public class MergeFormTestFixture
 	{
-		IDocument document;
+		TextDocument document;
 		MockResourceService resourceService;
 		MockResourceWriter resourceWriter;
 		
@@ -42,26 +43,25 @@ namespace RubyBinding.Tests.Designer
 			resourceService = new MockResourceService();
 			resourceService.SetResourceWriter(resourceWriter);
 			
-			using (TextEditorControl textEditor = new TextEditorControl()) {
-				document = textEditor.Document;
-				textEditor.Text = GetTextEditorCode();
+			AvalonEdit.TextEditor textEditor = new AvalonEdit.TextEditor();
+			document = textEditor.Document;
+			textEditor.Text = GetTextEditorCode();
 
-				RubyParser parser = new RubyParser();
-				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.rb", document.TextContent);
+			RubyParser parser = new RubyParser();
+			ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.rb", document.Text);
 
-				using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
-					IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
-					Form form = (Form)host.RootComponent;
-					form.ClientSize = new Size(499, 309);
+			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
+				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+				Form form = (Form)host.RootComponent;
+				form.ClientSize = new Size(499, 309);
 
-					PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
-					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
-					namePropertyDescriptor.SetValue(form, "MainForm");
-					
-					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
-					using (serializationManager.CreateSession()) {
-						RubyDesignerGenerator.Merge(host, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties(), serializationManager);
-					}
+				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
+				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+				namePropertyDescriptor.SetValue(form, "MainForm");
+				
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {
+					RubyDesignerGenerator.Merge(host, new AvalonEditDocumentAdapter(document, null), compilationUnit, new MockTextEditorOptions(), serializationManager);
 				}
 			}
 		}
@@ -70,7 +70,7 @@ namespace RubyBinding.Tests.Designer
 		public void MergedDocumentText()
 		{
 			string expectedText = GetTextEditorCode().Replace(GetTextEditorInitializeComponentMethod(), GetGeneratedInitializeComponentMethod());
-			Assert.AreEqual(expectedText, document.TextContent);
+			Assert.AreEqual(expectedText, document.Text);
 		}
 
 		string GetGeneratedCode()

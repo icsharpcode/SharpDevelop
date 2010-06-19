@@ -14,11 +14,13 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
+using AvalonEdit = ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Refactoring;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
@@ -30,31 +32,31 @@ namespace RubyBinding.Tests.Designer
 	[TestFixture]
 	public class NoNewLineAfterInitializeComponentMethodTestFixture
 	{
-		IDocument document;
+		TextDocument document;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			using (TextEditorControl textEditor = new TextEditorControl()) {
-				document = textEditor.Document;
-				textEditor.Text = GetTextEditorCode();
+			AvalonEdit.TextEditor textEditor = new AvalonEdit.TextEditor();
+			document = textEditor.Document;
+			textEditor.Text = GetTextEditorCode();
 
-				RubyParser parser = new RubyParser();
-				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.TextContent);
+			RubyParser parser = new RubyParser();
+			ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.Text);
 
-				using (DesignSurface designSurface = new DesignSurface(typeof(UserControl))) {
-					IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
-					UserControl userControl = (UserControl)host.RootComponent;			
-					userControl.ClientSize = new Size(489, 389);
-					
-					PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(userControl);
-					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
-					namePropertyDescriptor.SetValue(userControl, "userControl1");
-					
-					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
-					using (serializationManager.CreateSession()) {
-						RubyDesignerGenerator.Merge(host, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties(), serializationManager);
-					}
+			using (DesignSurface designSurface = new DesignSurface(typeof(UserControl))) {
+				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+				UserControl userControl = (UserControl)host.RootComponent;			
+				userControl.ClientSize = new Size(489, 389);
+				
+				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(userControl);
+				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+				namePropertyDescriptor.SetValue(userControl, "userControl1");
+				
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {
+					AvalonEditDocumentAdapter docAdapter = new AvalonEditDocumentAdapter(document, null);
+					RubyDesignerGenerator.Merge(host, docAdapter, compilationUnit, new MockTextEditorOptions(), serializationManager);
 				}
 			}
 		}
@@ -81,7 +83,7 @@ namespace RubyBinding.Tests.Designer
 				"\tend\r\n" +
 				"end";
 			
-			Assert.AreEqual(expectedCode, document.TextContent);
+			Assert.AreEqual(expectedCode, document.Text);
 		}
 		
 		/// <summary>

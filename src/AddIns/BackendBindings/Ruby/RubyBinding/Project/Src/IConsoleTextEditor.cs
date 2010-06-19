@@ -6,11 +6,6 @@
 // </file>
 
 using System;
-using System.Drawing;
-
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.RubyBinding
 {
@@ -19,40 +14,21 @@ namespace ICSharpCode.RubyBinding
 	/// all the methods will be called on another thread not the main UI thread and will therefore need to
 	/// be invoked.
 	/// </summary>
-	public interface ITextEditor
+	public interface IConsoleTextEditor
 	{
 		/// <summary>
 		/// Fired when a key is pressed but before any text has been added to the text editor.
 		/// </summary>
 		/// <remarks>
-		/// The KeyPress handler should return true if the text editor should not process the key and not
-		/// insert any text.
+		/// The handler should set the ConsoleTextEditorKeyEventArgs.Handled to true if the text editor should not 
+		/// process the key and not insert any text.
 		/// </remarks>
-		event KeyEventHandler KeyPress;
-		
-		/// <summary>
-		/// Fired when dialog key is pressed but before any text has been added to the text editor.
-		/// </summary>
-		/// <remarks>
-		/// The DialogKeyPress handler should return true if the text editor should not process the
-		/// dialog key.
-		/// </remarks>
-		event DialogKeyProcessor DialogKeyPress;
-		
-		/// <summary>
-		/// Gets or sets the indentation style.
-		/// </summary>
-		IndentStyle IndentStyle {get; set;}
+		event ConsoleTextEditorKeyEventHandler PreviewKeyDown;
 		
 		/// <summary>
 		/// Inserts text at the current cursor location.
 		/// </summary>
 		void Write(string text);
-		
-		/// <summary>
-		/// Inserts text at the current cursor location with the specified colour.
-		/// </summary>
-		void Write(string text, Color backgroundColor);
 		
 		/// <summary>
 		/// Replaces the text at the specified index on the current line with the specified text.
@@ -92,7 +68,7 @@ namespace ICSharpCode.RubyBinding
 		/// <summary>
 		/// Shows the code completion window.
 		/// </summary>
-		void ShowCompletionWindow(ICompletionDataProvider completionDataProvider);
+		void ShowCompletionWindow(RubyConsoleCompletionDataProvider completionDataProvider);
 	
 		/// <summary>
 		/// Indicates whether the completion window is currently being displayed.

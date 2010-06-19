@@ -15,7 +15,6 @@ using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using RubyBinding.Tests;
 

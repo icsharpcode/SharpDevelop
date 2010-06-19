@@ -15,7 +15,6 @@ using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using RubyBinding.Tests;
 
@@ -56,11 +55,6 @@ namespace RubyBinding.Tests.Parsing
 				
 				// Get folds.
 				ParserFoldingStrategy foldingStrategy = new ParserFoldingStrategy(textArea);
-			
-				DocumentFactory docFactory = new DocumentFactory();
-				IDocument doc = docFactory.CreateDocument();
-				doc.TextContent = ruby;
-				
 				ParseInformation parseInfo = new ParseInformation(compilationUnit);
 				foldingStrategy.UpdateFoldings(parseInfo);
 				List<FoldingSection> folds = new List<FoldingSection>(foldingStrategy.FoldingManager.AllFoldings);
@@ -73,7 +67,7 @@ namespace RubyBinding.Tests.Parsing
 				}
 			}
 		}
-				
+		
 		[Test]
 		public void ClassBodyRegion()
 		{

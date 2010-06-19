@@ -14,9 +14,9 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.RubyBinding
 {
@@ -25,17 +25,6 @@ namespace ICSharpCode.RubyBinding
 	/// </summary>
 	public class ConvertProjectToRubyProjectCommand : LanguageConverter
 	{
-		ITextEditorProperties textEditorProperties;
-		
-		public ConvertProjectToRubyProjectCommand(ITextEditorProperties textEditorProperties)
-		{
-			this.textEditorProperties = textEditorProperties;
-		}
-		
-		public ConvertProjectToRubyProjectCommand() : this(SharpDevelopTextEditorProperties.Instance)
-		{
-		}
-		
 		public override string TargetLanguageName {
 			get { return RubyProjectBinding.LanguageName; }
 		}
@@ -57,7 +46,7 @@ namespace ICSharpCode.RubyBinding
 			ParseInformation parseInfo = GetParseInfo(sourceItem.FileName);
 			NRefactoryToRubyConverter converter = NRefactoryToRubyConverter.Create(sourceItem.Include, parseInfo);
 			if (converter != null) {
-				targetItem.Include = ChangeExtension(sourceItem.Include);
+				targetItem.Include = ChangeFileExtensionToRubyFileExtension(sourceItem.Include);
 
 				string code = GetParseableFileContent(sourceItem.FileName);
 				string rubyCode = converter.Convert(code);
@@ -68,8 +57,7 @@ namespace ICSharpCode.RubyBinding
 					// Add code to call main method at the end of the file.
 					rubyCode += "\r\n\r\n" + converter.GenerateMainMethodCall(converter.EntryPointMethods[0]);
 				}
-
-				SaveFile(targetItem.FileName, rubyCode, textEditorProperties.Encoding);
+				SaveFile(targetItem.FileName, rubyCode, GetDefaultFileEncoding());
 			} else {
 				LanguageConverterConvertFile(sourceItem, targetItem);
 			}
@@ -122,10 +110,15 @@ namespace ICSharpCode.RubyBinding
 			return ParserService.GetParseInformation(fileName);
 		}
 		
+		protected virtual Encoding GetDefaultFileEncoding()
+		{
+			return FileService.DefaultFileEncoding.GetEncoding();
+		}
+		
 		/// <summary>
 		/// Changes the extension to ".rb"
 		/// </summary>
-		static string ChangeExtension(string fileName)
+		static string ChangeFileExtensionToRubyFileExtension(string fileName)
 		{
 			return Path.ChangeExtension(fileName, ".rb");	
 		}

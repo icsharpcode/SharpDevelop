@@ -7,20 +7,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using System.Windows.Input;
 using System.Text;
 
 using ICSharpCode.RubyBinding;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
-using ICSharpCode.TextEditor.Document;
 
-namespace RubyBinding.Tests.Console
+namespace RubyBinding.Tests.Utils
 {
-	public class MockTextEditor : ITextEditor
+	public class MockConsoleTextEditor : IConsoleTextEditor
 	{
-		IndentStyle indentStyle = IndentStyle.Auto;
 		StringBuilder previousLines = new StringBuilder();
 		StringBuilder lineBuilder = new StringBuilder();
 		bool writeCalled;
@@ -29,35 +25,22 @@ namespace RubyBinding.Tests.Console
 		int selectionLength;
 		int line;
 		int totalLines = 1;
-		List<Color> textColors = new List<Color>();
 		bool showCompletionWindowCalled;
 		bool completionWindowDisplayed;
 		bool makeReadOnlyCalled;
-		ICompletionDataProvider	completionProvider;
+		RubyConsoleCompletionDataProvider completionProvider;
 		
-		public MockTextEditor()
+		public MockConsoleTextEditor()
 		{
 		}
 		
-		public event ICSharpCode.TextEditor.KeyEventHandler KeyPress;
-		public event DialogKeyProcessor DialogKeyPress;
-		
-		public IndentStyle IndentStyle {
-			get { return indentStyle; }
-			set { indentStyle = value; }
-		}
+		public event ConsoleTextEditorKeyEventHandler PreviewKeyDown;
 		
 		public void Write(string text)
 		{
 			writeCalled = true;
 			lineBuilder.Append(text);
 			column += text.Length;
-		}
-		
-		public void Write(string text, Color backgroundColor)
-		{
-			textColors.Add(backgroundColor);
-			Write(text);
 		}
 		
 		public bool IsWriteCalled {
@@ -76,7 +59,7 @@ namespace RubyBinding.Tests.Console
 		/// <summary>
 		/// Returns the code completion data provider passed to the ShowCompletionWindow method.
 		/// </summary>
-		public ICompletionDataProvider CompletionDataProvider {
+		public RubyConsoleCompletionDataProvider CompletionDataProvider {
 			get { return completionProvider; }
 		}
 
@@ -99,76 +82,75 @@ namespace RubyBinding.Tests.Console
 			}
 		}
 		
-		public bool RaiseKeyPressEvent(char ch)
+		public bool RaisePreviewKeyDownEvent(Key key)
 		{
-			bool keyHandled = KeyPress(ch);
-			if (!keyHandled) {
+			MockConsoleTextEditorKeyEventArgs e = new MockConsoleTextEditorKeyEventArgs(key);
+			OnPreviewKeyDown(e);
+			if (!e.Handled) {
+				KeyConverter converter = new KeyConverter();
+				string text = converter.ConvertToString(key);
 				if (IsCursorAtEnd) {
-					lineBuilder.Append(ch);
+					lineBuilder.Append(text);
 				} else {
-					lineBuilder.Insert(column, ch);
+					lineBuilder.Insert(column, text);
 				}
 				column++;
 				selectionStart = column;
 			}
-			return keyHandled;
+			return e.Handled;
 		}
 		
-		/// <summary>
-		/// Calls RaiseKeyPressEvent for each character in the string.
-		/// </summary>
-		public void RaiseKeyPressEvents(string text)
+		void OnPreviewKeyDown(MockConsoleTextEditorKeyEventArgs e)
 		{
-			foreach (char ch in text) {
-				RaiseKeyPressEvent(ch);
+			if (PreviewKeyDown != null) {
+				PreviewKeyDown(this, e);
 			}
 		}
-
-		public bool RaiseDialogKeyPressEvent(Keys keyData)
+		
+		public bool RaisePreviewKeyDownEventForDialogKey(Key key)
 		{
-			bool keyHandled = DialogKeyPress(keyData);
-			if (!keyHandled) {
-				switch (keyData) {
-					case Keys.Enter: {
-						if (!KeyPress('\n')) {
-							if (IsCursorAtEnd) {
-								lineBuilder.Append(Environment.NewLine);
-								previousLines.Append(lineBuilder.ToString());
-								lineBuilder = new StringBuilder();
-								column = 0;
-								selectionStart = column;
-							} else {
-								int length = lineBuilder.Length;
-								string currentLine = lineBuilder.ToString();
-								previousLines.Append(currentLine.Substring(0, column) + Environment.NewLine);
-								lineBuilder = new StringBuilder();
-								lineBuilder.Append(currentLine.Substring(column));
-								column = length - column;
-								selectionStart = column;
-							}
-							totalLines++;
-							line++;
+			MockConsoleTextEditorKeyEventArgs e = new MockConsoleTextEditorKeyEventArgs(key);
+			OnPreviewKeyDown(e);
+			if (!e.Handled) {
+				switch (key) {
+					case Key.Enter: {
+						if (IsCursorAtEnd) {
+							lineBuilder.Append(Environment.NewLine);
+							previousLines.Append(lineBuilder.ToString());
+							lineBuilder = new StringBuilder();
+							column = 0;
+							selectionStart = column;
+						} else {
+							int length = lineBuilder.Length;
+							string currentLine = lineBuilder.ToString();
+							previousLines.Append(currentLine.Substring(0, column) + Environment.NewLine);
+							lineBuilder = new StringBuilder();
+							lineBuilder.Append(currentLine.Substring(column));
+							column = length - column;
+							selectionStart = column;
 						}
+						totalLines++;
+						line++;
 					}
 					break;
-					case Keys.Back: {
+					case Key.Back: {
 						OnBackspaceKeyPressed();
 					}
 					break;
-					case Keys.Left: {
+					case Key.Left: {
 						column--;
 						selectionStart = column;
 					}
 					break;
-					case Keys.Right: {
+					case Key.Right: {
 						column++;
 						selectionStart = column;
 					}
 					break;
 				}
 			}
-			return keyHandled;
-		}		
+			return e.Handled;
+		}
 		
 		public int Column {
 			get { return column; }
@@ -208,7 +190,7 @@ namespace RubyBinding.Tests.Console
 			lineBuilder.Insert(index, text);
 		}
 		
-		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider)
+		public void ShowCompletionWindow(RubyConsoleCompletionDataProvider completionDataProvider)
 		{
 			showCompletionWindowCalled = true;
 			completionWindowDisplayed = true;
@@ -223,10 +205,6 @@ namespace RubyBinding.Tests.Console
 		public void MakeCurrentContentReadOnly()
 		{
 			makeReadOnlyCalled = true;
-		}		
-		
-		public List<Color> WrittenTextColors {
-			get { return textColors; }
 		}
 		
 		bool IsCursorAtEnd {

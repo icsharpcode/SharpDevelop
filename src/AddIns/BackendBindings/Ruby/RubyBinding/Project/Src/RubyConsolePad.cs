@@ -6,37 +6,36 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
+using AvalonEdit = ICSharpCode.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.RubyBinding
 {
 	public class RubyConsolePad : AbstractPadContent
 	{
-		TextEditor textEditor;
-		TextEditorControl textEditorControl;
+		RubyConsoleTextEditor consoleTextEditor;
+		AvalonEdit.TextEditor textEditor;
 		RubyConsoleHost host;
 		
 		public RubyConsolePad()
 		{
-			textEditorControl = new TextEditorControl();
-			textEditorControl.CreateControl();
-			textEditor = new TextEditor(textEditorControl);
-			host = new RubyConsoleHost(textEditor);
-			host.Run();			
+			textEditor = new AvalonEdit.TextEditor();
+			consoleTextEditor = new RubyConsoleTextEditor(textEditor);
+			host = new RubyConsoleHost(consoleTextEditor);
+			host.Run();	
 		}
 		
 		public override object Control {
-			get { return textEditorControl; }
+			get { return textEditor; }
 		}		
 		
 		public override void Dispose()
 		{
 			host.Dispose();
-			textEditorControl.Dispose();
+		}
+		
+		public override object InitiallyFocusedControl {
+			get { return textEditor; }
 		}
 	}
 }

@@ -7,11 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Windows.Input;
 using System.Threading;
 using Microsoft.Scripting.Hosting.Shell;
 using ICSharpCode.RubyBinding;
 using NUnit.Framework;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
 {
@@ -21,7 +22,7 @@ namespace RubyBinding.Tests.Console
 	[TestFixture]
 	public class RubyConsoleCodeCompletionTestFixture
 	{
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		RubyConsole console;
 		string prompt = ">>> ";
 		bool showCompletionWindowCalledBeforeDotTypedIn;
@@ -29,13 +30,13 @@ namespace RubyBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			console = new RubyConsole(textEditor, null);
 			console.WriteLine(prompt, Style.Prompt);
 									
-			textEditor.RaiseKeyPressEvents("a");
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
 			showCompletionWindowCalledBeforeDotTypedIn = textEditor.IsShowCompletionWindowCalled;
-			textEditor.RaiseKeyPressEvent('.');		
+			textEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);		
 		}
 		
 		[Test]

@@ -13,9 +13,9 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RubyOutputStream : Stream
 	{
-		ITextEditor textEditor;
+		IConsoleTextEditor textEditor;
 		
-		public RubyOutputStream(ITextEditor textEditor)
+		public RubyOutputStream(IConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 		}
@@ -66,6 +66,6 @@ namespace ICSharpCode.RubyBinding
 		{
 			string text = UTF8Encoding.UTF8.GetString(buffer, offset, count);
 			textEditor.Write(text);
-		}		
+		}
 	}
 }

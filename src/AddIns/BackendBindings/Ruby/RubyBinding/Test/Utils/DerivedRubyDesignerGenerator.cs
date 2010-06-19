@@ -16,8 +16,7 @@ using ICSharpCode.FormsDesigner;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace RubyBinding.Tests.Utils
 {
@@ -31,12 +30,12 @@ namespace RubyBinding.Tests.Utils
 		string textContentPassedToParseFile;
 		ParseInformation parseInfoToReturnFromParseFile;
 
-		public DerivedRubyDesignerGenerator() : this(new MockTextEditorProperties())
+		public DerivedRubyDesignerGenerator() : this(new MockTextEditorOptions())
 		{
 		}
 		
-		public DerivedRubyDesignerGenerator(ITextEditorProperties textEditorProperties) 
-			: base(textEditorProperties)
+		public DerivedRubyDesignerGenerator(ITextEditorOptions textEditorOptions) 
+			: base(textEditorOptions)
 		{
 		}
 								

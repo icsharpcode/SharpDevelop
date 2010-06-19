@@ -360,5 +360,15 @@ namespace RubyBinding.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
+		
+		public List<ICompletionEntry> GetAllContents()
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void AddAllContents(List<ICompletionEntry> list, LanguageProperties language, bool lookInReferences)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

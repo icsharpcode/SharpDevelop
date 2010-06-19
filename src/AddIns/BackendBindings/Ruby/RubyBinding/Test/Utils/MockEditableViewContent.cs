@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace RubyBinding.Tests.Utils
@@ -14,8 +16,9 @@ namespace RubyBinding.Tests.Utils
 	/// <summary>
 	/// Mock implementation of the IEditable and IViewContent.
 	/// </summary>
-	public class MockEditableViewContent : MockViewContent, IEditable
+	public class MockEditableViewContent : MockViewContent, IEditable, ITextEditorProvider
 	{
+		MockTextEditor textEditor = new MockTextEditor();
 		string text = String.Empty;
 		
 		public MockEditableViewContent()
@@ -30,6 +33,20 @@ namespace RubyBinding.Tests.Utils
 		public ITextBuffer CreateSnapshot()
 		{
 			return new StringTextBuffer(text);
+		}
+		
+		public ITextEditorOptions TextEditorOptions {
+			get { return textEditor.Options; }
+			set { textEditor.Options = value; }
+		}
+		
+		public ITextEditor TextEditor {
+			get { return textEditor; }
+		}
+		
+		public IDocument GetDocumentForFile(OpenedFile file)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

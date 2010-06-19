@@ -6,17 +6,16 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
+using System.Windows.Input;
 
 using ICSharpCode.RubyBinding;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using IronRuby.Hosting;
 using IronRuby.Runtime;
-using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using NUnit.Framework;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
 {
@@ -26,38 +25,38 @@ namespace RubyBinding.Tests.Console
 	[TestFixture]
 	public class RubyConsoleUnreadLinesTestFixture
 	{
-		RubyConsole RubyConsole;
-		MockTextEditor textEditor;
+		RubyConsole rubyConsole;
+		MockConsoleTextEditor textEditor;
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockTextEditor();
-			RubyConsole = new RubyConsole(textEditor, null);
+			textEditor = new MockConsoleTextEditor();
+			rubyConsole = new RubyConsole(textEditor, null);
 		}
 		
 		[Test]
 		public void NoUnreadLinesAtStart()
 		{
-			Assert.AreEqual(0, RubyConsole.GetUnreadLines().Length);
+			Assert.AreEqual(0, rubyConsole.GetUnreadLines().Length);
 		}
 	
 		[Test]
 		public void HasUnreadLines()
 		{
-			Assert.IsFalse(RubyConsole.IsLineAvailable);
+			Assert.IsFalse(rubyConsole.IsLineAvailable);
 		}
 		
 		[Test]
 		public void AddOneLine()
 		{
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			textEditor.RaisePreviewKeyDownEvent(System.Windows.Input.Key.A);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(System.Windows.Input.Key.Enter);
 			
-			string[] expectedLines = new string[] {"a"};
+			string[] expectedLines = new string[] {"A"};
 			
-			Assert.AreEqual(expectedLines, RubyConsole.GetUnreadLines());
-			Assert.IsTrue(RubyConsole.IsLineAvailable);
+			Assert.AreEqual(expectedLines, rubyConsole.GetUnreadLines());
+			Assert.IsTrue(rubyConsole.IsLineAvailable);
 		}
 	}
 }

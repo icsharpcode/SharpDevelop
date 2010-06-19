@@ -10,6 +10,7 @@ using System.Drawing;
 using ICSharpCode.RubyBinding;
 using Microsoft.Scripting.Hosting.Shell;
 using NUnit.Framework;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
 {
@@ -19,43 +20,43 @@ namespace RubyBinding.Tests.Console
 	[TestFixture]
 	public class RubyConsoleWriteTestFixture
 	{
-		RubyConsole RubyConsole;
-		MockTextEditor mockTextEditor;
+		RubyConsole rubyConsole;
+		MockConsoleTextEditor mockTextEditor;
 		
 		[SetUp]
 		public void Init()
 		{
-			mockTextEditor = new MockTextEditor();
+			mockTextEditor = new MockConsoleTextEditor();
 			mockTextEditor.Text = String.Empty;			
-			RubyConsole = new RubyConsole(mockTextEditor, null);
+			rubyConsole = new RubyConsole(mockTextEditor, null);
 		}
 		
 		[Test]
 		public void WriteLine()
 		{
-			RubyConsole.WriteLine();
+			rubyConsole.WriteLine();
 			Assert.AreEqual(Environment.NewLine, mockTextEditor.Text);
 		}
 		
 		[Test]
 		public void WriteLineWithText()
 		{
-			RubyConsole.WriteLine("test", Style.Out);
+			rubyConsole.WriteLine("test", Style.Out);
 			Assert.AreEqual("test" + Environment.NewLine, mockTextEditor.Text);
 		}	
 		
 		[Test]
 		public void TwoWrites()
 		{
-			RubyConsole.Write("a", Style.Out);
-			RubyConsole.Write("b", Style.Out);
+			rubyConsole.Write("a", Style.Out);
+			rubyConsole.Write("b", Style.Out);
 			Assert.AreEqual("ab", mockTextEditor.Text);
 		}
 		
 		[Test]
 		public void DoesNotHasLinesWaitingToBeRead()
 		{
-			Assert.IsFalse(RubyConsole.IsLineAvailable);
+			Assert.IsFalse(rubyConsole.IsLineAvailable);
 		}
 	}
 }

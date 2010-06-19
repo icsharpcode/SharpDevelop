@@ -56,25 +56,40 @@
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CommandLineHistory.cs" />
+    <Compile Include="Src\ConsoleTextEditorKeyEventArgs.cs" />
+    <Compile Include="Src\ControlDispatcher.cs" />
+    <Compile Include="Src\IControlDispatcher.cs" />
+    <Compile Include="Src\RubyConsoleCompletionData.cs" />
     <Compile Include="Src\ConvertProjectToRubyProjectCommand.cs" />
     <Compile Include="Src\ConvertToRubyMenuCommand.cs" />
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
-    <Compile Include="Src\ITextEditor.cs" />
+    <Compile Include="Src\IConsoleTextEditor.cs" />
     <Compile Include="Src\NRefactoryToRubyConverter.cs" />
     <Compile Include="Src\RubyAddInOptions.cs" />
     <Compile Include="Src\RubyAstWalker.cs" />
@@ -88,6 +103,7 @@
     <Compile Include="Src\RubyConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\RubyConsoleHost.cs" />
     <Compile Include="Src\RubyConsolePad.cs" />
+    <Compile Include="Src\RubyConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\RubyConstructorInfo.cs" />
     <Compile Include="Src\RubyControlFieldExpression.cs" />
     <Compile Include="Src\RubyDesignerGenerator.cs" />
@@ -95,6 +111,7 @@
     <Compile Include="Src\RubyDesignerLoaderProvider.cs" />
     <Compile Include="Src\RubyFormattingStrategy.cs" />
     <Compile Include="Src\RubyFormsDesignerDisplayBinding.cs" />
+    <Compile Include="Src\RubyLanguageBinding.cs" />
     <Compile Include="Src\RubyProjectBinding.cs" />
     <Compile Include="Src\RubyLanguageProperties.cs" />
     <Compile Include="Src\RubyNameCreationService.cs" />
@@ -103,9 +120,10 @@
     <Compile Include="Src\RubyParser.cs" />
     <Compile Include="Src\RubyProject.cs" />
     <Compile Include="Src\RubyPropertyValueAssignment.cs" />
+    <Compile Include="Src\RubyTextEditorViewContent.cs" />
     <Compile Include="Src\RunDebugRubyCommand.cs" />
     <Compile Include="Src\RunRubyCommand.cs" />
-    <Compile Include="Src\TextEditor.cs" />
+    <Compile Include="Src\RubyConsoleTextEditor.cs" />
     <EmbeddedResource Include="Resources\Ruby.xshd" />
     <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
     <None Include="..\..\IronRuby\bin\ir.exe.config">
@@ -141,9 +159,9 @@
     <Folder Include="Resources" />
     <Folder Include="Src" />
     <Folder Include="Templates" />
-    <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
+    <ProjectReference Include="..\..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

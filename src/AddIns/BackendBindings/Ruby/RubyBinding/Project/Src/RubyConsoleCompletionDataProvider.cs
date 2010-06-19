@@ -7,32 +7,31 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.RubyBinding
 {
 	/// <summary>
 	/// Provides code completion for the Ruby Console window.
 	/// </summary>
-	public class RubyConsoleCompletionDataProvider : AbstractCompletionDataProvider
+	public class RubyConsoleCompletionDataProvider
 	{
 		IMemberProvider memberProvider;
 		
 		public RubyConsoleCompletionDataProvider(IMemberProvider memberProvider)
 		{
 			this.memberProvider = memberProvider;
-			DefaultIndex = 0;
+			//DefaultIndex = 0;
 		}
-				
-		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		
+		public ICompletionData[] GenerateCompletionData(IConsoleTextEditor textEditor)
 		{
-			return GenerateCompletionData(GetLineText(textArea));
+			string line = textEditor.GetLine(textEditor.TotalLines - 1);
+			return GenerateCompletionData(line);
 		}
 		
 		/// <summary>
@@ -42,13 +41,13 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		public ICompletionData[] GenerateCompletionData(string line)
 		{
-			List<DefaultCompletionData> items = new List<DefaultCompletionData>();
+			List<RubyConsoleCompletionData> items = new List<RubyConsoleCompletionData>();
 
 			string name = GetName(line);
 			if (!String.IsNullOrEmpty(name)) {
 				try {
 					foreach (string member in memberProvider.GetMemberNames(name)) {
-						items.Add(new DefaultCompletionData(member, String.Empty, ClassBrowserIconService.Method.ImageIndex));
+						items.Add(new RubyConsoleCompletionData(member));
 					}
 				} catch { 
 					// Do nothing.
@@ -61,15 +60,6 @@ namespace ICSharpCode.RubyBinding
 		{
 			int startIndex = text.LastIndexOf(' ');
 			return text.Substring(startIndex + 1);
-		}
-		
-		/// <summary>
-		/// Gets the line of text up to the cursor position.
-		/// </summary>
-		string GetLineText(TextArea textArea)
-		{
-			LineSegment lineSegment = textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
-			return textArea.Document.GetText(lineSegment);
 		}
 	}
 }

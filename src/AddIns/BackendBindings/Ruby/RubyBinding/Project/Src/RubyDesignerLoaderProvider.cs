@@ -8,8 +8,6 @@
 using System;
 using System.ComponentModel.Design.Serialization;
 using ICSharpCode.FormsDesigner;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.RubyBinding
 {

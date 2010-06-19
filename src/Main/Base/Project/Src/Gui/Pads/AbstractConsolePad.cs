@@ -318,7 +318,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	class BeginReadOnlySectionProvider : IReadOnlySectionProvider
+	public class BeginReadOnlySectionProvider : IReadOnlySectionProvider
 	{
 		public int EndOffset { get; set; }
 		

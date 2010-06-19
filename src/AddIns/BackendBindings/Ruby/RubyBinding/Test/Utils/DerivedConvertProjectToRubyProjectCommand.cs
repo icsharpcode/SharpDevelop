@@ -8,11 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ICSharpCode.RubyBinding;
 using ICSharpCode.Core;
+using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor.Document;
 
 namespace RubyBinding.Tests.Utils
 {
@@ -39,11 +39,7 @@ namespace RubyBinding.Tests.Utils
 		IProjectContent projectContent;
 		ParseInformation parseInfo;
 		List<string> filesPassedToGetParseInfo = new List<string>();
-		
-		public DerivedConvertProjectToRubyProjectCommand(ITextEditorProperties textEditorProperties) 
-			: base(textEditorProperties)
-		{
-		}
+		Encoding fileServiceDefaultEncoding = Encoding.ASCII;
 					
 		public List<SourceAndTargetFile> SourceAndTargetFilesPassedToBaseClass {
 			get { return sourceAndTargetFilesPassedToBaseClass; }
@@ -67,6 +63,11 @@ namespace RubyBinding.Tests.Utils
 		public ParseInformation ParseInfo {
 			get { return parseInfo; }
 			set { parseInfo = value; }
+		}
+		
+		public Encoding FileServiceDefaultEncoding {
+			get { return fileServiceDefaultEncoding; }
+			set { fileServiceDefaultEncoding = value; }
 		}
 		
 		public List<string> FilesPassedToGetParseInfo {
@@ -122,6 +123,11 @@ namespace RubyBinding.Tests.Utils
 		protected override IProjectContent GetProjectContent(IProject project)
 		{
 			return projectContent;
+		}
+		
+		protected override Encoding GetDefaultFileEncoding()
+		{
+			return fileServiceDefaultEncoding;
 		}
 	}
 }

@@ -9,9 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Windows.Forms;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using System.Windows.Input;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
 
@@ -24,20 +23,18 @@ namespace ICSharpCode.RubyBinding
 		ManualResetEvent disposedEvent = new ManualResetEvent(false);
 		WaitHandle[] waitHandles;
 		int promptLength;
-		ITextEditor textEditor;
+		IConsoleTextEditor textEditor;
 		List<string> previousLines = new List<string>();
 		CommandLineHistory commandLineHistory = new CommandLineHistory();
 		CommandLine commandLine;
 
-		public RubyConsole(ITextEditor textEditor, CommandLine commandLine)
+		public RubyConsole(IConsoleTextEditor textEditor, CommandLine commandLine)
 		{
 			waitHandles = new WaitHandle[] {lineReceivedEvent, disposedEvent};
 			
 			this.commandLine = commandLine;
 			this.textEditor = textEditor;
-			textEditor.KeyPress += ProcessKeyPress;
-			textEditor.DialogKeyPress += ProcessDialogKeyPress;
-			textEditor.IndentStyle = IndentStyle.None;
+			textEditor.PreviewKeyDown += ProcessPreviewKeyDown;
 		}
 		
 		public void Dispose()
@@ -109,7 +106,7 @@ namespace ICSharpCode.RubyBinding
 		public bool IsLineAvailable {
 			get { 
 				lock (previousLines) {
-					return previousLines.Count > 0;
+					return (previousLines.Count > 0);
 				}
 			}
 		}
@@ -139,55 +136,50 @@ namespace ICSharpCode.RubyBinding
 		/// <summary>
 		/// Processes characters entered into the text editor by the user.
 		/// </summary>
-		bool ProcessKeyPress(char ch)
+		void ProcessPreviewKeyDown(object source, ConsoleTextEditorKeyEventArgs e)
 		{
-			if (IsInReadOnlyRegion) {
-				return true;
-			}
-			
-			if (ch == '\n') {
-				OnEnterKeyPressed();
-			}
-			
-			if (ch == '.') {
-				ShowCompletionWindow();
-			}
-			return false;
+			Key keyPressed = e.Key;
+			e.Handled = HandleKeyDown(keyPressed);
 		}
 		
-		/// <summary>
-		/// Process dialog keys such as the enter key when typed into the editor by the user.
-		/// </summary>
-		bool ProcessDialogKeyPress(Keys keyData)
-		{
+		bool HandleKeyDown(Key keyPressed)
+		{	
 			if (textEditor.IsCompletionWindowDisplayed) {
 				return false;
 			}
 			
 			if (IsInReadOnlyRegion) {
-				switch (keyData) {
-					case Keys.Left:
-					case Keys.Right:
-					case Keys.Up:
-					case Keys.Down:
+				switch (keyPressed) {
+					case Key.Left:
+					case Key.Right:
+					case Key.Up:
+					case Key.Down:
 						return false;
 					default:
 						return true;
 				}
 			}
 		
-			switch (keyData) {
-				case Keys.Back:
+			switch (keyPressed) {
+				case Key.Back:
 					return !CanBackspace;
-				case Keys.Home:
+				case Key.Home:
 					MoveToHomePosition();
 					return true;
-				case Keys.Down:
+				case Key.Down:
 					MoveToNextCommandLine();
 					return true;
-				case Keys.Up:
+				case Key.Up:
 					MoveToPreviousCommandLine();
 					return true;
+			}
+			
+			if (keyPressed == Key.Return) {
+				OnEnterKeyPressed();
+			}
+			
+			if (keyPressed == Key.OemPeriod) {
+				ShowCompletionWindow();
 			}
 			return false;
 		}
@@ -242,14 +234,14 @@ namespace ICSharpCode.RubyBinding
 		/// Only the last line in the text editor is not read only.
 		/// </summary>
 		bool IsCurrentLineReadOnly {
-			get { return textEditor.Line < textEditor.TotalLines - 1; }
+			get { return textEditor.Line < (textEditor.TotalLines - 1); }
 		}
 		
 		/// <summary>
 		/// Determines whether the current cursor position is in a prompt.
 		/// </summary>
 		bool IsInPrompt {
-			get { return textEditor.Column - promptLength < 0; }
+			get { return (textEditor.Column - promptLength) < 0; }
 		}
 		
 		/// <summary>
@@ -259,7 +251,7 @@ namespace ICSharpCode.RubyBinding
 			get {
 				int cursorIndex = textEditor.Column - promptLength;
 				int selectionStartIndex = textEditor.SelectionStart - promptLength;
-				return cursorIndex > 0 && selectionStartIndex > 0;
+				return (cursorIndex > 0) && (selectionStartIndex > 0);
 			}
 		}
 		
@@ -307,6 +299,6 @@ namespace ICSharpCode.RubyBinding
 		{
 			RubyConsoleCompletionDataProvider completionProvider = new RubyConsoleCompletionDataProvider(this);
 			textEditor.ShowCompletionWindow(completionProvider);
-		}		
+		}
 	}
 }

@@ -13,8 +13,6 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.RubyBinding
 {
@@ -49,10 +47,11 @@ namespace ICSharpCode.RubyBinding
 
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			return CreateSecondaryViewContent(viewContent, SharpDevelopTextEditorProperties.Instance);
+			RubyTextEditorViewContent textEditorView = new RubyTextEditorViewContent(viewContent);
+			return CreateSecondaryViewContent(viewContent, textEditorView.TextEditorOptions);
 		}
 		
-		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent, ITextEditorProperties textEditorProperties)
+		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent, ITextEditorOptions textEditorOptions)
 		{
 			foreach (IViewContent existingView in viewContent.SecondaryViewContents) {
 				if (existingView.GetType() == typeof(FormsDesignerViewContent)) {
@@ -61,7 +60,7 @@ namespace ICSharpCode.RubyBinding
 			}
 			
 			IDesignerLoaderProvider loader = new RubyDesignerLoaderProvider();
-			IDesignerGenerator generator = new RubyDesignerGenerator(textEditorProperties);
+			IDesignerGenerator generator = new RubyDesignerGenerator(textEditorOptions);
 			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
 		}
 		

@@ -7,18 +7,17 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.TextEditor.Document;
+using System.Text;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.RubyBinding
 {
 	public class RubyFormattingStrategy : DefaultFormattingStrategy
 	{
-		TextArea textArea;
-		int line;
-		IDocument document;
-		string previousLineText;
+		ITextEditor textEditor;
+		IDocumentLine currentLine;
+		IDocumentLine previousLine;
+		string previousLineTextTrimmed;
 		List<string> decreaseLineIndentStatements = new List<string>();
 		List<string> decreaseLineIndentStartsWithStatements = new List<string>();
 
@@ -85,32 +84,32 @@ namespace ICSharpCode.RubyBinding
 		{
 			increaseLineIndentContainsStatements.Add(" case ");
 		}
-
-		protected override int SmartIndentLine(TextArea textArea, int line)
+		
+		public override void IndentLine(ITextEditor editor, IDocumentLine line)
 		{
-			this.textArea = textArea;
-			this.line = line;
-			this.document = textArea.Document;
+			this.textEditor = editor;
+			this.currentLine = line;
 			
 			GetPreviousLineText();
 			
 			if (ShouldDecreaseLineIndent()) {
-				return DecreaseLineIndent();
+				DecreaseLineIndent();
 			} else if (ShouldIncreaseLineIndent()) {
-				return IncreaseLineIndent();
+				IncreaseLineIndent();
+			} else {
+				base.IndentLine(editor, line);
 			}
-			return base.SmartIndentLine(textArea, line);
 		}
 		
 		void GetPreviousLineText()
 		{
-			LineSegment previousLine = document.GetLineSegment(line - 1);
-			this.previousLineText = document.GetText(previousLine).Trim();
+			previousLine = textEditor.Document.GetLine(currentLine.LineNumber - 1);
+			previousLineTextTrimmed = previousLine.Text.Trim();
 		}
 		
 		bool ShouldIncreaseLineIndent()
 		{
-			if (increaseLineIndentStatements.Contains(previousLineText)) {
+			if (increaseLineIndentStatements.Contains(previousLineTextTrimmed)) {
 				return true;
 			}
 			if (PreviousLineStartsWith(increaseLineIndentStartsWithStatements)) {
@@ -124,7 +123,7 @@ namespace ICSharpCode.RubyBinding
 		
 		bool ShouldDecreaseLineIndent()
 		{
-			if (decreaseLineIndentStatements.Contains(previousLineText)) {
+			if (decreaseLineIndentStatements.Contains(previousLineTextTrimmed)) {
 				return true;
 			}
 			return PreviousLineStartsWith(decreaseLineIndentStartsWithStatements);
@@ -133,7 +132,7 @@ namespace ICSharpCode.RubyBinding
 		bool PreviousLineStartsWith(List<string> items)
 		{
 			foreach (string item in items) {
-				if (previousLineText.StartsWith(item)) {
+				if (previousLineTextTrimmed.StartsWith(item)) {
 					return true;
 				}
 			}
@@ -143,7 +142,7 @@ namespace ICSharpCode.RubyBinding
 		bool PreviousLineEndsWith(List<string> items)
 		{
 			foreach (string item in items) {
-				if (previousLineText.EndsWith(item)) {
+				if (previousLineTextTrimmed.EndsWith(item)) {
 					return true;
 				}
 			}
@@ -153,31 +152,42 @@ namespace ICSharpCode.RubyBinding
 		bool PreviousLineContains(List<string> items)
 		{
 			foreach (string item in items) {
-				if (previousLineText.Contains(item)) {
+				if (previousLineTextTrimmed.Contains(item)) {
 					return true;
 				}
 			}
 			return false;
 		}
 		
-		int IncreaseLineIndent()
+		void IncreaseLineIndent()
 		{
-			return ModifyLineIndent(true);
+			ModifyLineIndent(true);
 		}
 		
-		int DecreaseLineIndent()
+		void DecreaseLineIndent()
 		{
-			return ModifyLineIndent(false);
+			ModifyLineIndent(false);
 		}
 		
-		int ModifyLineIndent(bool increaseIndent)
+		void ModifyLineIndent(bool increaseIndent)
 		{
-			LineSegment currentLine = document.GetLineSegment(line);
-			string indentation = GetIndentation(textArea, line - 1);
-			indentation = GetNewLineIndentation(indentation, Tab.GetIndentationString(document), increaseIndent);
-			string newIndentedText = indentation + document.GetText(currentLine);
-			SmartReplaceLine(document, currentLine, newIndentedText);
-			return indentation.Length;
+			string indentation = GetPreviousLineIndentation();
+			indentation = GetNewLineIndentation(indentation, textEditor.Options.IndentationString, increaseIndent);
+			string newIndentedText = indentation + currentLine.Text;
+			textEditor.Document.Replace(currentLine.Offset, currentLine.Length, newIndentedText);
+		}
+		
+		string GetPreviousLineIndentation()
+		{
+			StringBuilder whitespace = new StringBuilder();			
+			foreach (char ch in previousLine.Text) {
+				if (Char.IsWhiteSpace(ch)) {
+					whitespace.Append(ch);
+				} else {
+					break;
+				}
+			}
+			return whitespace.ToString();
 		}
 		
 		string GetNewLineIndentation(string previousLineIndentation, string singleIndent, bool increaseIndent)

@@ -70,15 +70,16 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddInOptionsTestFixture.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Configuration\RubyAddInOptionsTestFixture.cs" />
     <Compile Include="Console\CodeCompletionTests.cs" />
     <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\ConsoleTextEditorThreadSafetyTestFixture.cs" />
     <Compile Include="Console\DisposedRubyConsoleTestFixture.cs" />
     <Compile Include="Console\EmptyCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\InsertConsoleCompletionDataTestFixture.cs" />
     <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
     <Compile Include="Console\MockMemberProvider.cs" />
-    <Compile Include="Console\MockTextEditor.cs" />
     <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\RubyConsoleCodeCompletionTestFixture.cs" />
     <Compile Include="Console\RubyConsoleCommandLineHistoryTestFixture.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="Console\RubyConsoleUnreadLinesTestFixture.cs" />
     <Compile Include="Console\RubyConsoleWriteTestFixture.cs" />
     <Compile Include="Console\RubyOutputStreamTestFixture.cs" />
-    <Compile Include="Console\TextEditorTestFixture.cs" />
+    <Compile Include="Console\ConsoleTextEditorTestFixture.cs" />
     <Compile Include="Console\TwoRubyConsoleLinesWaitingTestFixture.cs" />
     <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />
@@ -169,7 +170,6 @@
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
     <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
-    <Compile Include="DebugRunRubyCommandTestFixture.cs" />
     <Compile Include="Designer\AppendNullPropertyValueTestFixture.cs" />
     <Compile Include="Designer\CallBeginInitOnLoadTestFixture.cs" />
     <Compile Include="Designer\ConvertCustomClassUsingTypeConverterTestFixture.cs" />
@@ -295,7 +295,10 @@
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
     <Compile Include="Designer\TextEditorIndentPassedToGeneratorTestFixture.cs" />
     <Compile Include="Designer\UnknownTypeTestFixture.cs" />
-    <Compile Include="ProjectBindingTestFixture.cs" />
+    <Compile Include="Gui\DebugRunRubyCommandTestFixture.cs" />
+    <Compile Include="Gui\RubyIndentationTests.cs" />
+    <Compile Include="Gui\RubyOptionsPanelTestFixture.cs" />
+    <Compile Include="Gui\RunRubyCommandTestFixture.cs" />
     <Compile Include="Parsing\ParseClassWithBaseClassTestFixture.cs" />
     <Compile Include="Parsing\ParseMethodWithOptionalParametersTestFixture.cs" />
     <Compile Include="Parsing\ParseMethodWithParametersTestFixture.cs" />
@@ -309,14 +312,11 @@
     <Compile Include="Parsing\ParseRequireFollowedByCommentTestFixture.cs" />
     <Compile Include="Parsing\ParseRequireTestFixture.cs" />
     <Compile Include="Parsing\ParseSingleClassTestFixture.cs" />
-    <Compile Include="RubyAddInOptionsTestFixture.cs" />
-    <Compile Include="CreateNewRubyProjectTestFixture.cs" />
     <Compile Include="Parsing\RubyParserTestFixture.cs" />
-    <Compile Include="RubyBindingAddInFile.cs" />
-    <Compile Include="RubyIndentationTests.cs" />
-    <Compile Include="RubyLanguagePropertiesTests.cs" />
-    <Compile Include="RubyOptionsPanelTestFixture.cs" />
-    <Compile Include="RunRubyCommandTestFixture.cs" />
+    <Compile Include="RubyLanguage\CreateNewRubyProjectTestFixture.cs" />
+    <Compile Include="RubyLanguage\ProjectBindingTestFixture.cs" />
+    <Compile Include="RubyLanguage\RubyLanguageBindingTestFixture.cs" />
+    <Compile Include="RubyLanguage\RubyLanguagePropertiesTests.cs" />
     <Compile Include="Utils\AddedComponent.cs" />
     <Compile Include="Utils\AddInHelper.cs" />
     <Compile Include="Utils\BarItemCollection.cs" />
@@ -324,7 +324,6 @@
     <Compile Include="Utils\CreatedComponent.cs" />
     <Compile Include="Utils\CreatedInstance.cs" />
     <Compile Include="Utils\CustomUserControl.cs" />
-    <Compile Include="Utils\DerivedAddInOptions.cs" />
     <Compile Include="Utils\DerivedConvertProjectToRubyProjectCommand.cs" />
     <Compile Include="Utils\DerivedFormDesignerViewContent.cs" />
     <Compile Include="Utils\DerivedRubyAddInOptions.cs" />
@@ -336,6 +335,8 @@
     <Compile Include="Utils\DoublePropertyUserControl.cs" />
     <Compile Include="Utils\FooItemCollection.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />
+    <Compile Include="Utils\MockConsoleTextEditorKeyEventArgs.cs" />
+    <Compile Include="Utils\MockControlDispatcher.cs" />
     <Compile Include="Utils\MockDebugger.cs" />
     <Compile Include="Utils\MockDesignerGenerator.cs" />
     <Compile Include="Utils\MockDesignerLoaderHost.cs" />
@@ -343,8 +344,10 @@
     <Compile Include="Utils\MockEventBindingService.cs" />
     <Compile Include="Utils\MockEventDescriptor.cs" />
     <Compile Include="Utils\MockExtenderProviderService.cs" />
+    <Compile Include="Utils\MockKeyboardDevice.cs" />
     <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
+    <Compile Include="Utils\MockPresentationSource.cs" />
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockPropertyDescriptor.cs" />
@@ -352,7 +355,9 @@
     <Compile Include="Utils\MockResourceService.cs" />
     <Compile Include="Utils\MockResourceWriter.cs" />
     <Compile Include="Utils\MockSite.cs" />
-    <Compile Include="Utils\MockTextEditorProperties.cs" />
+    <Compile Include="Utils\MockConsoleTextEditor.cs" />
+    <Compile Include="Utils\MockTextEditor.cs" />
+    <Compile Include="Utils\MockTextEditorOptions.cs" />
     <Compile Include="Utils\MockTextEditorViewContent.cs" />
     <Compile Include="Utils\MockTypeResolutionService.cs" />
     <Compile Include="Utils\MockViewContent.cs" />
@@ -360,8 +365,12 @@
     <Compile Include="Utils\MockWorkbenchWindow.cs" />
     <Compile Include="Utils\MSBuildEngineHelper.cs" />
     <Compile Include="Utils\NullPropertyUserControl.cs" />
+    <Compile Include="Utils\RubyBindingAddInFile.cs" />
     <Compile Include="Utils\RubyParserHelper.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <Compile Include="Utils\Tests\MockControlDispatcherTestFixture.cs" />
+    <Compile Include="Utils\Tests\MockConsoleTextEditorTestFixture.cs" />
+    <Compile Include="Utils\Tests\MockEditableViewContentTestFixture.cs" />
     <EmbeddedResource Include="..\Project\RubyBinding.addin">
       <Link>RubyBinding.addin</Link>
     </EmbeddedResource>
@@ -370,13 +379,10 @@
     <EmbeddedResource Include="Strings.resx" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Utils\Tests" />
     <ProjectReference Include="..\..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
@@ -413,6 +419,9 @@
     <Folder Include="Converter" />
     <Folder Include="Console" />
     <Folder Include="Designer" />
+    <Folder Include="Configuration" />
+    <Folder Include="Gui" />
+    <Folder Include="RubyLanguage" />
     <Folder Include="Utils" />
     <Folder Include="Parsing" />
   </ItemGroup>

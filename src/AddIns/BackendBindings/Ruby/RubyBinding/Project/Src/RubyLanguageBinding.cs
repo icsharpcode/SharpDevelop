@@ -6,31 +6,20 @@
 // </file>
 
 using System;
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyLanguageBinding : ILanguageBinding
+	public class RubyLanguageBinding : DefaultLanguageBinding
 	{
-		public const string LanguageName = "Ruby";
-		
-		public RubyLanguageBinding()
-		{
+		public override IFormattingStrategy FormattingStrategy {
+			get { return new RubyFormattingStrategy(); }
 		}
 		
-		public string Language {
-			get { return LanguageName; }
+		public override LanguageProperties Properties {
+			get { return RubyLanguageProperties.Default; }
 		}
-		
-		public IProject LoadProject(IMSBuildEngineProvider engineProvider, string fileName, string projectName)
-		{
-			return new RubyProject(engineProvider, fileName, projectName);
-		}
-		
-		public IProject CreateProject(ProjectCreateInformation info)
-		{
-			return new RubyProject(info);
-		}		
 	}
 }

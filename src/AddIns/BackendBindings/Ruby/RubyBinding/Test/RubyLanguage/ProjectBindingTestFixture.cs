@@ -11,7 +11,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using NUnit.Framework;
 
-namespace RubyBinding.Tests
+namespace RubyBinding.Tests.RubyLanguage
 {
 	/// <summary>
 	/// Tests the RubyProjectBinding class.

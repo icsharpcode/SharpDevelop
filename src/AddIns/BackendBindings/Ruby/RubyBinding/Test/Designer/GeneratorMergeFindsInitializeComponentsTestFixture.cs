@@ -38,7 +38,6 @@ namespace RubyBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
 			generator = new DerivedRubyDesignerGenerator();
 			mockViewContent = new MockTextEditorViewContent();
 			viewContent = new FormsDesignerViewContent(mockViewContent, new MockOpenedFile("Test.rb"));

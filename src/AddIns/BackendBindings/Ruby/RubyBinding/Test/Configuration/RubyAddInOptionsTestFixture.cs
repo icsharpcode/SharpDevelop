@@ -12,7 +12,7 @@ using ICSharpCode.RubyBinding;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
-namespace RubyBinding.Tests
+namespace RubyBinding.Tests.Configuration
 {
 	/// <summary>
 	/// Tests the AddInOptions class.

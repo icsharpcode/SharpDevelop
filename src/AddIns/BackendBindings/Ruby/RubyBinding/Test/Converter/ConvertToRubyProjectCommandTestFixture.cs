@@ -30,15 +30,15 @@ namespace RubyBinding.Tests.Converter
 		RubyProject targetProject;
 		FileProjectItem textFileSource;
 		FileProjectItem textFileTarget;
-		MockTextEditorProperties mockTextEditorProperties;
 		ParseInformation parseInfo;
 		
-		string sourceCode = "class Foo\r\n" +
-							"{\r\n" +
-							"    static void Main()\r\n" +
-							"    {\r\n" +
-							"    }\r\n" +
-							"}";
+		string sourceCode =
+			"class Foo\r\n" +
+			"{\r\n" +
+			"    static void Main()\r\n" +
+			"    {\r\n" +
+			"    }\r\n" +
+			"}";
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
@@ -52,11 +52,10 @@ namespace RubyBinding.Tests.Converter
 			}
 			ProjectBindingService.SetBindings(bindings);
 			
-			mockTextEditorProperties = new MockTextEditorProperties();
-			convertProjectCommand = new DerivedConvertProjectToRubyProjectCommand(mockTextEditorProperties);
+			convertProjectCommand = new DerivedConvertProjectToRubyProjectCommand();
 			parseInfo = new ParseInformation(new DefaultCompilationUnit(new DefaultProjectContent()));
 			convertProjectCommand.ParseInfo = parseInfo;
-			mockTextEditorProperties.Encoding = Encoding.Unicode;
+			convertProjectCommand.FileServiceDefaultEncoding = Encoding.Unicode;
 			
 			sourceProject = new MockProject();
 			sourceProject.Directory = @"d:\projects\test";
@@ -111,7 +110,7 @@ namespace RubyBinding.Tests.Converter
 				converter.GenerateMainMethodCall(converter.EntryPointMethods[0]);
 			
 			List<ConvertedFile> expectedSavedFiles = new List<ConvertedFile>();
-			expectedSavedFiles.Add(new ConvertedFile(target.FileName, expectedCode, mockTextEditorProperties.Encoding));
+			expectedSavedFiles.Add(new ConvertedFile(target.FileName, expectedCode, Encoding.Unicode));
 			Assert.AreEqual(expectedSavedFiles, convertProjectCommand.SavedFiles);
 		}
 		

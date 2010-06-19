@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 using NUnit.Framework;
 
-namespace RubyBinding.Tests
+namespace RubyBinding.Tests.RubyLanguage
 {
 	/// <summary>
 	/// Tests the initial properties set in a newly created RubyProject.

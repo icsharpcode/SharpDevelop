@@ -12,8 +12,6 @@ using System.Collections;
 using System.IO;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 

@@ -60,11 +60,11 @@ namespace RubyBinding.Tests.Designer
 					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 					namePropertyDescriptor.SetValue(form, "MainForm");
 					
-					MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
-					textEditorProperties.ConvertTabsToSpaces = true;
-					textEditorProperties.IndentationSize = 1;
+					MockTextEditorOptions textEditorOptions = new MockTextEditorOptions();
+					textEditorOptions.ConvertTabsToSpaces = true;
+					textEditorOptions.IndentationSize = 1;
  	
-					DerivedRubyDesignerGenerator generator = new DerivedRubyDesignerGenerator(textEditorProperties);
+					DerivedRubyDesignerGenerator generator = new DerivedRubyDesignerGenerator(textEditorOptions);
 					generator.ParseInfoToReturnFromParseFileMethod = parseInfo;
 					generator.Attach(viewContent);
 					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);

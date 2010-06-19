@@ -26,13 +26,13 @@ namespace RubyBinding.Tests.Designer
 		protected DerivedFormDesignerViewContent viewContent;
 		protected string fileName = @"C:\Projects\Ruby\mainform.rb";
 		protected DerivedRubyDesignerGenerator generator;
-		protected MockTextEditorProperties textEditorProperties;
+		protected MockTextEditorOptions textEditorOptions;
 
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			textEditorProperties = new MockTextEditorProperties();
-			generator = new DerivedRubyDesignerGenerator(textEditorProperties);
+			textEditorOptions = new MockTextEditorOptions();
+			generator = new DerivedRubyDesignerGenerator(textEditorOptions);
 			mockViewContent = new MockTextEditorViewContent();
 			viewContent = new DerivedFormDesignerViewContent(mockViewContent, new MockOpenedFile(fileName));
 			generator.Attach(viewContent);

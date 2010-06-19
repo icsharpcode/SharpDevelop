@@ -7,7 +7,6 @@
 
 using System;
 using ICSharpCode.RubyBinding;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 
 namespace RubyBinding.Tests.Designer

@@ -7,17 +7,16 @@
 
 using System;
 using System.Threading;
-using System.Windows.Forms;
+using Input = System.Windows.Input;
 
 using ICSharpCode.RubyBinding;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using IronRuby.Hosting;
 using IronRuby.Runtime;
 using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
 {
@@ -30,7 +29,7 @@ namespace RubyBinding.Tests.Console
 	{
 		string line1;
 		string line2;
-		RubyConsole RubyConsole;
+		RubyConsole rubyConsole;
 		bool lineAvailableBeforeFirstEnterKey;
 		bool lineAvailableAfterFirstEnterKey;
 		bool lineAvailableAtEnd;
@@ -38,20 +37,20 @@ namespace RubyBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MockTextEditor textEditor = new MockTextEditor();
-			using (RubyConsole = new RubyConsole(textEditor, null)) {
+			MockConsoleTextEditor textEditor = new MockConsoleTextEditor();
+			using (rubyConsole = new RubyConsole(textEditor, null)) {
 
-				textEditor.RaiseKeyPressEvent('a');
-				textEditor.RaiseKeyPressEvent('=');
-				textEditor.RaiseKeyPressEvent('1');
-				lineAvailableBeforeFirstEnterKey = RubyConsole.IsLineAvailable;
-				textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
-				lineAvailableAfterFirstEnterKey = RubyConsole.IsLineAvailable;
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.A);
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.B);
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.C);
+				lineAvailableBeforeFirstEnterKey = rubyConsole.IsLineAvailable;
+				textEditor.RaisePreviewKeyDownEventForDialogKey(Input.Key.Enter);
+				lineAvailableAfterFirstEnterKey = rubyConsole.IsLineAvailable;
 				
-				textEditor.RaiseKeyPressEvent('b');
-				textEditor.RaiseKeyPressEvent('=');
-				textEditor.RaiseKeyPressEvent('2');
-				textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.D);
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.E);
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.F);
+				textEditor.RaisePreviewKeyDownEventForDialogKey(Input.Key.Enter);
 
 				Thread t = new Thread(ReadLinesOnSeparateThread);
 				t.Start();
@@ -65,20 +64,20 @@ namespace RubyBinding.Tests.Console
 					currentWait += sleepInterval;
 				}
 				
-				lineAvailableAtEnd = RubyConsole.IsLineAvailable;
+				lineAvailableAtEnd = rubyConsole.IsLineAvailable;
 			}
 		}
 		
 		[Test]
 		public void FirstLineRead()
 		{
-			Assert.AreEqual("a=1", line1);
+			Assert.AreEqual("ABC", line1);
 		}
 		
 		[Test]
 		public void SecondLineRead()
 		{
-			Assert.AreEqual("b=2", line2);
+			Assert.AreEqual("DEF", line2);
 		}
 		
 		[Test]
@@ -101,8 +100,8 @@ namespace RubyBinding.Tests.Console
 		
 		void ReadLinesOnSeparateThread()
 		{
-			line1 = RubyConsole.ReadLine(0);
-			line2 = RubyConsole.ReadLine(0);
+			line1 = rubyConsole.ReadLine(0);
+			line2 = rubyConsole.ReadLine(0);
 		}
 	}
 }

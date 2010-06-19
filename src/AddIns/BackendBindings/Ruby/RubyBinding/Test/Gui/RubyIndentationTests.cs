@@ -6,14 +6,15 @@
 // </file>
 
 using System;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.RubyBinding;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Actions;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
-namespace RubyBinding.Tests
+namespace RubyBinding.Tests.Gui
 {
 	/// <summary>
 	/// Tests that the RubyFormattingStrategy indents the new line added after method and class definitions.
@@ -21,24 +22,21 @@ namespace RubyBinding.Tests
 	[TestFixture]
 	public class RubyNewMethodIndentationTestFixture
 	{
-		TextEditorControl textEditor;
+		TextEditor textEditor;
 		RubyFormattingStrategy formattingStrategy;
+		AvalonEditTextEditorAdapter textEditorAdapter;
 		
 		[SetUp]
 		public void Init()
 		{
-			MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
-			textEditorProperties.IndentStyle = IndentStyle.Smart;
-			textEditorProperties.TabIndent = 4;
-			textEditor = new TextEditorControl();
-			textEditor.TextEditorProperties = textEditorProperties;
+			MockTextEditorOptions textEditorOptions = new MockTextEditorOptions();
+			textEditorOptions.IndentationSize = 4;
+			textEditor = new TextEditor();
+			textEditor.Options = textEditorOptions;
+			
+			textEditorAdapter = new AvalonEditTextEditorAdapter(textEditor);
+			
 			formattingStrategy = new RubyFormattingStrategy();
-		}
-		
-		[TearDown]
-		public void TearDown()
-		{
-			textEditor.Dispose();
 		}
 		
 		[Test]
@@ -47,13 +45,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"def newMethod\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"def newMethod\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -62,13 +62,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"def newMethod()\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"def newMethod()\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -77,13 +79,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"class MyClass\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"class MyClass\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -92,13 +96,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"\tprint 'abc'\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"\tprint 'abc'\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -109,7 +115,9 @@ namespace RubyBinding.Tests
 				"\treturn 0\r\n" +
 				"";
 			
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 2);
+			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"def method1\r\n" +
 				"\treturn 0\r\n" +
@@ -125,7 +133,10 @@ namespace RubyBinding.Tests
 				"def method1\r\n" +
 				"\treturn\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 2);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"def method1\r\n" +
 				"\treturn\r\n" +
@@ -139,7 +150,10 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"return\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"return\r\n" +
 				"";
@@ -153,7 +167,10 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"\treturnValue\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"\treturnValue\r\n" +
 				"\t";
@@ -168,7 +185,10 @@ namespace RubyBinding.Tests
 				"def method1\r\n" +
 				"\traise 'a'\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 2);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"def method1\r\n" +
 				"\traise 'a'\r\n" +
@@ -184,7 +204,10 @@ namespace RubyBinding.Tests
 				"def method1\r\n" +
 				"\traise\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 2);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"def method1\r\n" +
 				"\traise\r\n" +
@@ -200,7 +223,10 @@ namespace RubyBinding.Tests
 				"def method1\r\n" +
 				"\traiseThis\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 2);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"def method1\r\n" +
 				"\traiseThis\r\n" +
@@ -216,7 +242,10 @@ namespace RubyBinding.Tests
 				"def method1\r\n" +
 				"\tbreak\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 2);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"def method1\r\n" +
 				"\tbreak\r\n" +
@@ -232,7 +261,10 @@ namespace RubyBinding.Tests
 				"def method1\r\n" +
 				"\tbreakThis\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 2);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"def method1\r\n" +
 				"\tbreakThis\r\n" +
@@ -247,13 +279,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"if i > 0 then\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"if i > 0 then\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -262,13 +296,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"if i > 0\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+
 			string expectedText =
 				"if i > 0\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -277,13 +313,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"else\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"else\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -292,13 +330,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"elsif i > 0\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"elsif i > 0\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -307,13 +347,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"loop do\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"loop do\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -322,13 +364,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"unless i > 0\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"unless i > 0\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -337,13 +381,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"until i > 0\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"until i > 0\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -352,13 +398,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"for i in 1..5\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"for i in 1..5\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -367,13 +415,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"expr do\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"expr do\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -382,13 +432,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"expr {\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"expr {\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -397,13 +449,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"begin\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"begin\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -412,13 +466,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"rescue Exception => ex\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"rescue Exception => ex\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -427,13 +483,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"rescue\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"rescue\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -442,13 +500,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"ensure\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"ensure\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -457,13 +517,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"module Foo\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"module Foo\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -473,14 +535,16 @@ namespace RubyBinding.Tests
 				"case num\r\n" +
 				"\twhen 0\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 2);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"case num\r\n" +
 				"\twhen 0\r\n" +
 				"\t\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(2, indentResult);
 		}
 		
 		[Test]
@@ -489,13 +553,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"case num\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"case num\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 		
 		[Test]
@@ -504,13 +570,15 @@ namespace RubyBinding.Tests
 			textEditor.Text =
 				"value = case num\r\n" +
 				"";
-			int indentResult = formattingStrategy.IndentLine(textEditor.ActiveTextAreaControl.TextArea, 1);
+			
+			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
+			formattingStrategy.IndentLine(textEditorAdapter, line);
+			
 			string expectedText =
 				"value = case num\r\n" +
 				"\t";
 			
 			Assert.AreEqual(expectedText, textEditor.Text);
-			Assert.AreEqual(1, indentResult);
 		}
 	}
 }

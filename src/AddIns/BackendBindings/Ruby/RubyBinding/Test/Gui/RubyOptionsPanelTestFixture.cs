@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using NUnit.Framework;
 
-namespace RubyBinding.Tests
+namespace RubyBinding.Tests.Gui
 {
 	/// <summary>
 	/// Tests the RubyOptionsPanel.
@@ -24,14 +24,14 @@ namespace RubyBinding.Tests
 	{
 		RubyOptionsPanel optionsPanel;
 		Properties properties;
-		AddInOptions options;
+		RubyAddInOptions options;
 		TextBox fileNameTextBox;
 		
 		[SetUp]
 		public void SetUp()
 		{
 			properties = new Properties();
-			options = new AddInOptions(properties);
+			options = new RubyAddInOptions(properties);
 			options.RubyFileName = @"C:\Ruby\ir.exe";
 			optionsPanel = new RubyOptionsPanel(options);
 			optionsPanel.LoadPanelContents();

@@ -10,7 +10,7 @@ using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 
-namespace RubyBinding.Tests
+namespace RubyBinding.Tests.RubyLanguage
 {
 	[TestFixture]
 	public class RubyLanguagePropertiesTests

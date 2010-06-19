@@ -115,7 +115,7 @@ namespace RubyBinding.Tests
 		public void CreatesRubyFormsDesigner()
 		{
 			MockTextEditorViewContent view = new MockTextEditorViewContent();
-			IViewContent[] views = displayBinding.CreateSecondaryViewContent(view, new MockTextEditorProperties());
+			IViewContent[] views = displayBinding.CreateSecondaryViewContent(view, new MockTextEditorOptions());
 			Assert.AreEqual(1, views.Length);
 			Assert.IsTrue(views[0] is FormsDesignerViewContent);
 			views[0].Dispose();
@@ -128,7 +128,7 @@ namespace RubyBinding.Tests
 			IViewContent[] views = null;
 			using (FormsDesignerViewContent formsDesigner = new FormsDesignerViewContent(view, new MockOpenedFile("test.rb"))) {
 				view.SecondaryViewContents.Add(formsDesigner);
-				views = displayBinding.CreateSecondaryViewContent(view, new MockTextEditorProperties());
+				views = displayBinding.CreateSecondaryViewContent(view, new MockTextEditorOptions());
 			}
 			Assert.AreEqual(0, views.Length);
 		}

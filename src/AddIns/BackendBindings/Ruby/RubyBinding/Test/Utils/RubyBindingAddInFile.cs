@@ -10,7 +10,7 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
-namespace RubyBinding.Tests
+namespace RubyBinding.Tests.Utils
 {
 	/// <summary>
 	/// Utility class that reads the RubyBinding.addin file
