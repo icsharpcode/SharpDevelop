@@ -373,6 +373,8 @@ Expression =
 	(
 	SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
 		| ConditionalExpression
+		| LambdaExpression
+//		| QueryExpression
 	)
 .
 
@@ -453,6 +455,21 @@ SimpleCastExpression =
 
 ConditionalExpression =
 	"If" "(" Expression "," Expression [ "," Expression ] ")"
+.
+
+LambdaExpression =
+	SubLambdaExpression |
+	FunctionLambdaExpression
+.
+
+SubLambdaExpression =
+	"Sub" [ "(" [ ParameterList ] ")" ]
+	( Statement | StatementTerminatorAndBlock "End" "Sub" )
+.
+
+FunctionLambdaExpression =
+	"Function" [ "(" [ ParameterList ] ")" ]
+	( Expression | [ "As" TypeName ] StatementTerminatorAndBlock "End" "Function" )
 .
 
 /* semantic action in front of = will be inserted on all paths that possibly lead to XmlLiteral */
