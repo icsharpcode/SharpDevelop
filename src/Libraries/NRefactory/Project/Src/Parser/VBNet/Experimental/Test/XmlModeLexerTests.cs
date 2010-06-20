@@ -712,6 +712,26 @@ Return <Test />";
 			
 			CheckFoot(lexer);
 		}
+		
+		[Test]
+		public void ArrayHandlingStatements()
+		{
+			string statement = @"Erase <Test />
+Erase <Test />, <Test />
+ReDim Preserve <Test />";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Erase, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Erase, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Comma,
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.ReDim, Tokens.Preserve, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement
+			           );
+			
+			CheckFoot(lexer);
+		}
 		#endregion
 		
 		#region Helpers

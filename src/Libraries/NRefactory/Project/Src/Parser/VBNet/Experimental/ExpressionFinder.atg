@@ -524,6 +524,8 @@ Statement =
 	| ThrowStatement
 	| TryStatement
 	| BranchStatement
+	| ReDimStatement
+	| EraseStatement
 	| InvocationStatement
 .
 
@@ -652,6 +654,14 @@ BranchStatement =
 	| "Stop"
   /*| "End" HACK End-Statements are not passed to EF-Parser from Lexer */
 	| "Return" (. nextTokenIsPotentialStartOfXmlMode = true; .) [ Expression ]
+.
+
+ReDimStatement =
+	"ReDim" [ "Preserve" ] Expression
+.
+
+EraseStatement =
+	"Erase" Expression { "," Expression }
 .
 
 InvocationStatement =
