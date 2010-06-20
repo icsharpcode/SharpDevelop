@@ -520,6 +520,7 @@ Statement =
 	| WhileStatement
 	| DoLoopStatement
 	| ForStatement
+	| ErrorHandlingStatement
 	| InvocationStatement
 .
 
@@ -597,23 +598,28 @@ DoBottomLoopStatement =
 .
 
 ForStatement =
-	"For" ( ForLoopStatement | ForEachLoopStatement )
+	"For" (. nextTokenIsPotentialStartOfXmlMode = true; .) ( ForLoopStatement | ForEachLoopStatement )
 .
 
 ForLoopStatement =
 	ForLoopVariable "=" Expression /* "To" is binary operator */ [ "Step" Expression ]
 	StatementTerminatorAndBlock
-	"Next" [ Expression { "," Expression } ]
+	"Next" (. nextTokenIsPotentialStartOfXmlMode = true; .) [ Expression { "," Expression } ]
 .
 
 ForEachLoopStatement =
 	"Each" ForLoopVariable "In" Expression
 	StatementTerminatorAndBlock
-	"Next" [ Expression { "," Expression } ]
+	"Next" (. nextTokenIsPotentialStartOfXmlMode = true; .) [ Expression { "," Expression } ]
 .
 
 ForLoopVariable =
 	SimpleExpression [ "?" ] { ExpressionSuffix }
+.
+
+ErrorHandlingStatement =
+	[ "On" ] "Error" (. nextTokenIsPotentialStartOfXmlMode = true; .) ( Expression | "GoTo" ( LiteralInteger | Identifier ) | "Resume" "Next" )
+	| "Resume" ( "Next" | LiteralInteger | Identifier )
 .
 
 InvocationStatement =

@@ -440,6 +440,62 @@ namespace DefaultNamespace
 			
 			CheckFoot(lexer);
 		}
+		
+		[Test]
+		public void ErrorHandlingStatement()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("On Error Resume Next\n" +
+			                                                            "On Error GoTo -1\n" +
+			                                                            "On Error GoTo 0\n" +
+			                                                            "On Error GoTo Test\n" +
+			                                                            "Error 5\n" +
+			                                                            "Error <Test />\n" +
+			                                                            "Resume Next\n" +
+			                                                            "Resume Label\n" +
+			                                                            "Resume 4")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.On, Tokens.Error, Tokens.Resume, Tokens.Next, Tokens.EOL,
+			            Tokens.On, Tokens.Error, Tokens.GoTo, Tokens.Minus, Tokens.LiteralInteger, Tokens.EOL,
+			            Tokens.On, Tokens.Error, Tokens.GoTo, Tokens.LiteralInteger, Tokens.EOL,
+			            Tokens.On, Tokens.Error, Tokens.GoTo, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Error, Tokens.LiteralInteger, Tokens.EOL,
+			            Tokens.Error, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Resume, Tokens.Next, Tokens.EOL,
+			            Tokens.Resume, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Resume, Tokens.LiteralInteger
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void ForLoopStatement()
+		{
+			string statement = @"For <Test /> = <Test /> To <Test /> Step <Test />
+Next <Test />, <Test />
+
+For Each <Test /> In <Test />
+Next <Test />";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.For, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement,
+			            Tokens.Assign, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement,
+			            Tokens.To, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement,
+			            Tokens.Step, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Next, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Comma,
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.For, Tokens.Each, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement,
+			            Tokens.In, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Next, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement
+			           );
+			
+			CheckFoot(lexer);
+		}
 		#endregion
 		
 		#region Helpers
