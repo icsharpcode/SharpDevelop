@@ -496,6 +496,173 @@ Next <Test />";
 			
 			CheckFoot(lexer);
 		}
+		
+		[Test]
+		public void WhileLoopStatement()
+		{
+			string statement = @"While <Test />
+End While";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.While, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.End, Tokens.While
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void WhileLoopStatement2()
+		{
+			string statement = @"Do While <Test />
+Loop";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Do, Tokens.While, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Loop
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void WhileLoopStatement3()
+		{
+			string statement = @"Do
+Loop While <Test />";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Do, Tokens.EOL,
+			            Tokens.Loop, Tokens.While, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void UntilLoopStatement()
+		{
+			string statement = @"Do Until <Test />
+Loop";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Do, Tokens.Until, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Loop
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void UntilLoopStatement2()
+		{
+			string statement = @"Do
+Loop Until <Test />";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Do, Tokens.EOL,
+			            Tokens.Loop, Tokens.Until, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void IfStatementLarge()
+		{
+			string statement = @"If <Test /> Then
+Else If <Test /> Then
+ElseIf <Test></Test> Then
+Else
+End If";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.If, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Then, Tokens.EOL,
+			            Tokens.Else, Tokens.If, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Then, Tokens.EOL,
+			            Tokens.ElseIf, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.Then, Tokens.EOL,
+			            Tokens.Else, Tokens.EOL,
+			            Tokens.End, Tokens.If
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void SelectStatement()
+		{
+			string statement = @"Select Case <Test />
+	Case <Test />, <Test />
+	Case Else
+End Select";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Select, Tokens.Case, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Case, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Comma,
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Case, Tokens.Else, Tokens.EOL,
+			            Tokens.End, Tokens.Select
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void TryStatement()
+		{
+			string statement = @"Try
+	Catch x
+	Catch y As Exception
+	Catch When <Test />
+	Finally
+End Try";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Try, Tokens.EOL,
+			            Tokens.Catch, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Catch, Tokens.Identifier, Tokens.As, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Catch, Tokens.When, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Finally, Tokens.EOL,
+			            Tokens.End, Tokens.Try
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void ThrowStatement()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Throw <Test />")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Throw, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement);
+			
+			CheckFoot(lexer);
+		}
 		#endregion
 		
 		#region Helpers

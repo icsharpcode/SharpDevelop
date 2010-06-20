@@ -521,6 +521,8 @@ Statement =
 	| DoLoopStatement
 	| ForStatement
 	| ErrorHandlingStatement
+	| ThrowStatement
+	| TryStatement
 	| InvocationStatement
 .
 
@@ -564,10 +566,10 @@ MultilineIfRemainder =
 SelectStatement =
 	"Select" [ "Case" ] Expression StatementTerminator
 	{
-		"Case" (
+		"Case" (. nextTokenIsPotentialStartOfXmlMode = true; .) (
 			"Else" |
 			( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression )
-				{ "," ( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression ) }
+				{ "," (. nextTokenIsPotentialStartOfXmlMode = true; .) ( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression ) }
 		)
 		StatementTerminatorAndBlock
 	}
@@ -620,6 +622,26 @@ ForLoopVariable =
 ErrorHandlingStatement =
 	[ "On" ] "Error" (. nextTokenIsPotentialStartOfXmlMode = true; .) ( Expression | "GoTo" ( LiteralInteger | Identifier ) | "Resume" "Next" )
 	| "Resume" ( "Next" | LiteralInteger | Identifier )
+.
+
+ThrowStatement =
+	"Throw" (. nextTokenIsPotentialStartOfXmlMode = true; .) [ Expression ]
+.
+
+TryStatement =
+	"Try"
+	StatementTerminatorAndBlock
+	{
+		"Catch"
+		[ Identifier [ "As" TypeName ] ]
+		[ "When" Expression ]
+		StatementTerminatorAndBlock
+	}
+	[
+		"Finally"
+		StatementTerminatorAndBlock
+	]
+	"End" "Try"
 .
 
 InvocationStatement =

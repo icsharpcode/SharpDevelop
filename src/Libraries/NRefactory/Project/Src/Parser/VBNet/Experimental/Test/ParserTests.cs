@@ -14,7 +14,7 @@ using VB = ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
 using NUnit.Framework;
 
-namespace VBParserExperiment.Tests
+namespace VBParserExperiment
 {
 	[TestFixture]
 	public class ParserTests
