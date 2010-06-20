@@ -526,6 +526,7 @@ Statement =
 	| BranchStatement
 	| ReDimStatement
 	| EraseStatement
+	| UsingStatement
 	| InvocationStatement
 .
 
@@ -662,6 +663,12 @@ ReDimStatement =
 
 EraseStatement =
 	"Erase" Expression { "," Expression }
+.
+
+UsingStatement =
+	"Using" Expression
+	StatementTerminatorAndBlock
+	"End" "Using"
 .
 
 InvocationStatement =

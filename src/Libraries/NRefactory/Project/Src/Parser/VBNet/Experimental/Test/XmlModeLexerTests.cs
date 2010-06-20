@@ -732,6 +732,23 @@ ReDim Preserve <Test />";
 			
 			CheckFoot(lexer);
 		}
+		
+		[Test]
+		public void UsingStatement()
+		{
+			string statement = @"Using <Test />
+End Using";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Using, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.End, Tokens.Using
+			           );
+			
+			CheckFoot(lexer);
+		}
 		#endregion
 		
 		#region Helpers
