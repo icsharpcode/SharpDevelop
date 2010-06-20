@@ -370,7 +370,6 @@ StatementTerminatorAndBlock =
 .
 
 Expression =
-	(. nextTokenIsPotentialStartOfXmlMode = true; .)
 	(
 	SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
 		| ConditionalExpression
@@ -390,7 +389,6 @@ UnaryOperator =
 .
 
 SimpleExpressionWithSuffix =
-	(. nextTokenIsPotentialStartOfXmlMode = true; .)
 	{ UnaryOperator }
 	(
 	   SimpleExpression { ExpressionSuffix }
@@ -399,7 +397,6 @@ SimpleExpressionWithSuffix =
 	).
 
 SimpleExpression =
-    (. nextTokenIsPotentialStartOfXmlMode = true; .)
     (    Literal
     |    ( "(" Expression ")" )
     |    Identifier
@@ -424,7 +421,7 @@ CollectionInitializer =
 .
 
 ExpressionSuffix =
-    "(" (. nextTokenIsPotentialStartOfXmlMode = true; .) ( "Of" TypeName { "," TypeName } ")" | ArgumentList ")" )
+    "(" ( "Of" TypeName { "," TypeName } ")" | ArgumentList ")" )
 |    ( "." | "!" ) IdentifierOrKeyword
 .
 
@@ -458,7 +455,10 @@ ConditionalExpression =
 	"If" "(" Expression "," Expression [ "," Expression ] ")"
 .
 
-XmlLiteral =
+/* semantic action in front of = will be inserted on all paths that possibly lead to XmlLiteral */
+XmlLiteral
+    (. nextTokenIsPotentialStartOfXmlMode = true; .)
+=
     (. PushContext(Context.Xml, t); .)
     { XmlComment } XmlElement { XmlComment }
     (. PopContext(); .)
@@ -569,10 +569,10 @@ MultilineIfRemainder =
 SelectStatement =
 	"Select" [ "Case" ] Expression StatementTerminator
 	{
-		"Case" (. nextTokenIsPotentialStartOfXmlMode = true; .) (
+		"Case" (
 			"Else" |
 			( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression )
-				{ "," (. nextTokenIsPotentialStartOfXmlMode = true; .) ( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression ) }
+				{ "," ( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression ) }
 		)
 		StatementTerminatorAndBlock
 	}
@@ -603,19 +603,19 @@ DoBottomLoopStatement =
 .
 
 ForStatement =
-	"For" (. nextTokenIsPotentialStartOfXmlMode = true; .) ( ForLoopStatement | ForEachLoopStatement )
+	"For" ( ForLoopStatement | ForEachLoopStatement )
 .
 
 ForLoopStatement =
 	ForLoopVariable "=" Expression /* "To" is binary operator */ [ "Step" Expression ]
 	StatementTerminatorAndBlock
-	"Next" (. nextTokenIsPotentialStartOfXmlMode = true; .) [ Expression { "," Expression } ]
+	"Next" [ Expression { "," Expression } ]
 .
 
 ForEachLoopStatement =
 	"Each" ForLoopVariable "In" Expression
 	StatementTerminatorAndBlock
-	"Next" (. nextTokenIsPotentialStartOfXmlMode = true; .) [ Expression { "," Expression } ]
+	"Next" [ Expression { "," Expression } ]
 .
 
 ForLoopVariable =
@@ -623,12 +623,12 @@ ForLoopVariable =
 .
 
 ErrorHandlingStatement =
-	[ "On" ] "Error" (. nextTokenIsPotentialStartOfXmlMode = true; .) ( Expression | "GoTo" ( LiteralInteger | Identifier ) | "Resume" "Next" )
+	[ "On" ] "Error" ( Expression | "GoTo" ( LiteralInteger | Identifier ) | "Resume" "Next" )
 	| "Resume" ( "Next" | LiteralInteger | Identifier )
 .
 
 ThrowStatement =
-	"Throw" (. nextTokenIsPotentialStartOfXmlMode = true; .) [ Expression ]
+	"Throw" [ Expression ]
 .
 
 TryStatement =
@@ -653,7 +653,7 @@ BranchStatement =
 	| "Continue" ( "Do" | "For" | "While" )
 	| "Stop"
   /*| "End" HACK End-Statements are not passed to EF-Parser from Lexer */
-	| "Return" (. nextTokenIsPotentialStartOfXmlMode = true; .) [ Expression ]
+	| "Return" [ Expression ]
 .
 
 ReDimStatement =
