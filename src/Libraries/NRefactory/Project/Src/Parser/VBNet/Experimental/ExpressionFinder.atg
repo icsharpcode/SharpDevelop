@@ -523,6 +523,7 @@ Statement =
 	| ErrorHandlingStatement
 	| ThrowStatement
 	| TryStatement
+	| BranchStatement
 	| InvocationStatement
 .
 
@@ -642,6 +643,15 @@ TryStatement =
 		StatementTerminatorAndBlock
 	]
 	"End" "Try"
+.
+
+BranchStatement =
+	"GoTo" ( Identifier | LiteralInteger )
+	| "Exit" ( "Do" | "For" | "While" | "Select" | "Sub" | "Function" | "Property" | "Try" )
+	| "Continue" ( "Do" | "For" | "While" )
+	| "Stop"
+  /*| "End" HACK End-Statements are not passed to EF-Parser from Lexer */
+	| "Return" (. nextTokenIsPotentialStartOfXmlMode = true; .) [ Expression ]
 .
 
 InvocationStatement =

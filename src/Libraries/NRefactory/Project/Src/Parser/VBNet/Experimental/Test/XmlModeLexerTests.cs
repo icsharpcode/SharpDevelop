@@ -663,6 +663,55 @@ End Try";
 			
 			CheckFoot(lexer);
 		}
+		
+		[Test]
+		public void BranchStatements()
+		{
+			string statement = @"GoTo 5
+GoTo LabelName
+Exit Do
+Exit For
+Exit While
+Exit Select
+Exit Sub
+Exit Function
+Exit Property
+Exit Try
+Continue Do
+Continue For
+Continue While
+Stop
+End
+Return
+Return 5
+Return <Test />";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.GoTo, Tokens.LiteralInteger, Tokens.EOL,
+			            Tokens.GoTo, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Exit, Tokens.Do, Tokens.EOL,
+			            Tokens.Exit, Tokens.For, Tokens.EOL,
+			            Tokens.Exit, Tokens.While, Tokens.EOL,
+			            Tokens.Exit, Tokens.Select, Tokens.EOL,
+			            Tokens.Exit, Tokens.Sub, Tokens.EOL,
+			            Tokens.Exit, Tokens.Function, Tokens.EOL,
+			            Tokens.Exit, Tokens.Property, Tokens.EOL,
+			            Tokens.Exit, Tokens.Try, Tokens.EOL,
+			            Tokens.Continue, Tokens.Do, Tokens.EOL,
+			            Tokens.Continue, Tokens.For, Tokens.EOL,
+			            Tokens.Continue, Tokens.While, Tokens.EOL,
+			            Tokens.Stop, Tokens.EOL,
+			            Tokens.End, Tokens.EOL,
+			            Tokens.Return, Tokens.EOL,
+			            Tokens.Return, Tokens.LiteralInteger, Tokens.EOL,
+			            Tokens.Return, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement
+			           );
+			
+			CheckFoot(lexer);
+		}
 		#endregion
 		
 		#region Helpers

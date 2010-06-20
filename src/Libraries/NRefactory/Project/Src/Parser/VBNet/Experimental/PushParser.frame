@@ -51,8 +51,27 @@ partial class ExpressionFinder {
 	void Error(Token t) 
 	{
 	}
-
+	
+	Token consumedEndToken;
+	
 	public void InformToken(Token t) 
+	{
+		if (consumedEndToken != null) {
+			if (t.kind == Tokens.EOL || t.kind == Tokens.Colon) {
+				consumedEndToken = null;
+				return; // ignore End statement
+			}
+			InformTokenInternal(consumedEndToken);
+			consumedEndToken = null;
+		}
+		if (t.kind == Tokens.End) {
+			consumedEndToken = t;
+		} else {
+			InformTokenInternal(t);
+		}
+	}
+
+	void InformTokenInternal(Token t) 
 	{
 		nextTokenIsPotentialStartOfXmlMode = false;
 		ApplyToken(t);
@@ -62,7 +81,7 @@ partial class ExpressionFinder {
 	public void Advance()
 	{
 		Console.WriteLine("Advance");
-		InformToken(null);
+		InformTokenInternal(null);
 	}
 	
 	static readonly bool[,] set = {
