@@ -10,6 +10,9 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Xml.Serialization;
 
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.old_Exporter;
+
 /// <summary>
 /// This Class is the BaseClass for <see cref="BaseTextItem"></see>
 /// and <see cref="BaseGraphicItem"></see>
@@ -34,6 +37,7 @@ namespace ICSharpCode.Reports.Core {
 			this.Font = GlobalValues.DefaultFont;
 			this.Visible = true;
 		}
+		
 		
 		#region EventHandling
 		
@@ -63,11 +67,32 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
-		protected void FillBackground (Graphics  graphics) {
-			backgroundShape.FillShape(graphics,
-			                new SolidFillPattern(this.BackColor),
-			                this.DrawingRectangle);
+		protected BaseStyleDecorator BaseStyleDecorator
+		{
+			get {
+				return this.GetBaseStyleDecorator();
+			}
 		}
+		
+		
+		private BaseStyleDecorator GetBaseStyleDecorator()
+		{
+			BaseStyleDecorator bsd = new BaseStyleDecorator();
+			bsd.DrawBorder = this.DrawBorder;
+			bsd.BackColor = this.BackColor;
+			bsd.ForeColor = this.ForeColor;
+			bsd.FrameColor = this.FrameColor;
+			bsd.Location = this.Location;
+			bsd.Size = this.Size;
+			return bsd;
+		}
+		
+		protected void FillBackground (Graphics  graphics)
+		{
+			StandardPrinter.FillBackground(graphics,this.BaseStyleDecorator,this.DrawingRectangle);
+		}
+		
+		
 		
 		protected void DrawFrame (Graphics graphics,Border border) {
 			if (this.DrawBorder == true) {
@@ -90,8 +115,6 @@ namespace ICSharpCode.Reports.Core {
 					                     this.Location.Y + this.SectionOffset,
 					                     this.Size.Width,this.Size.Height);
 				}
-				
-				
 			}
 		}
 		

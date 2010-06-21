@@ -80,6 +80,7 @@
     <Compile Include="Project\BaseClasses\Printing\MeasurementService.cs" />
     <Compile Include="Project\BaseClasses\Printing\PrintHelper.cs" />
     <Compile Include="Project\BaseClasses\Printing\StandardFormatter.cs" />
+    <Compile Include="Project\BaseClasses\Printing\StandardPrinter.cs" />
     <Compile Include="Project\BaseClasses\Printing\TextDrawer.cs" />
     <Compile Include="Project\BaseClasses\SinglePage.cs" />
     <Compile Include="Project\BaseClasses\SectionBounds.cs" />

@@ -8,6 +8,7 @@
 using System;
 using System.Drawing;
 using iTextSharp.text.pdf;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 
 namespace ICSharpCode.Reports.Core.old_Exporter
 {
@@ -76,7 +77,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			}
 			RectangleShape shape = new RectangleShape();
 			this.FillShape(graphics,shape);
-			this.DrawFrame(graphics);
+			StandardPrinter.DrawBorder(graphics,this.StyleDecorator as BaseStyleDecorator,this.StyleDecorator.DisplayRectangle);
 		}
 		
 		
@@ -100,6 +101,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		/// </summary>
 		/// <param name="graphics">a valid graphics object</param>
 		/// <param name="shape">the shape to fill</param>
+		/// 
 		protected virtual void FillShape (Graphics graphics,BaseShape shape)
 		{
 			if (graphics == null) {
@@ -135,13 +137,6 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-		private  void DrawFrame (Graphics graphics)
-		{
-			if (this.styleDecorator.DrawBorder) {
-				Border b = this.CreateDefaultBorder();
-				b.DrawBorder(graphics,this.styleDecorator.DisplayRectangle);
-			}
-		}
 		
 		
 		private  void DrawFrame ()

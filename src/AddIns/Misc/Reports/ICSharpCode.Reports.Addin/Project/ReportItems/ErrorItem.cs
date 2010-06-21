@@ -42,7 +42,7 @@ namespace ICSharpCode.Reports.Addin
 			
 			string s = String.Format(System.Globalization.CultureInfo.CurrentCulture,
 			                         "Error : <{0}> is missing or obsolete",base.Text);
-			ICSharpCode.Reports.Core.TextDrawer.DrawString(graphics,s,this.Font,
+			ICSharpCode.Reports.Core.BaseClasses.Printing.TextDrawer.DrawString(graphics,s,this.Font,
 			                                               new SolidBrush(Color.Red),
 			                                               this.ClientRectangle,
 			                                               base.StringTrimming,base.ContentAlignment);

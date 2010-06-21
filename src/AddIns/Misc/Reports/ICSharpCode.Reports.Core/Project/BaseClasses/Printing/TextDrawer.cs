@@ -17,7 +17,7 @@ using System.Drawing.Text;
 /// 	created on - 12.10.2005 10:54:08
 /// </remarks>
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 {
 	public sealed class TextDrawer 
 	{

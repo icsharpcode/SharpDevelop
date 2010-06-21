@@ -209,7 +209,7 @@ namespace ICSharpCode.Reports.Core
 	
 		protected virtual Point RenderSection (ReportPageEventArgs rpea)
 		{
-			Point drawPoint	= Point.Empty;
+			Point currentPosition	= Point.Empty;
 			
 			if (this.CurrentSection.Visible){
 				this.CurrentSection.Render (rpea);
@@ -231,43 +231,23 @@ namespace ICSharpCode.Reports.Core
 				}
 				
 				
-				RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,new Point(this.CurrentSection.Location.X,
+				currentPosition = RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,new Point(this.CurrentSection.Location.X,
 				                                                                               this.CurrentSection.SectionOffset),rpea);
 				
-				/*
-				foreach (BaseReportItem item in this.CurrentSection.Items) {
-					if (item.Parent == null) {
-						item.Parent = this.CurrentSection;
-					}
-					
-					item.SectionOffset = this.CurrentSection.SectionOffset;
-					BaseTextItem bti = item as BaseTextItem;
-					
-					if (bti != null) {
-						bti.Text = Evaluator.Evaluate(bti.Text);
-					}
-					item.Render(rpea);
-					drawPoint = new Point(this.CurrentSection.Location.X,
-					                      this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height);
-					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,
-					                                    this.CurrentSection.SectionOffset + this.CurrentSection.Size.Height);
-					
-				}
-				
-				*/
 				
 				if ((this.CurrentSection.CanGrow == false)&& (this.CurrentSection.CanShrink == false)) {
-					return new Point(this.CurrentSection.Location.X,
-					                 this.CurrentSection.Size.Height);
+//					return new Point(this.CurrentSection.Location.X,
+//					                 this.CurrentSection.Size.Height);
+					return currentPosition;
 				}
-				return drawPoint;
+				return currentPosition;
 			}
-			return drawPoint;
+			return currentPosition;
 		}
 		
 		
 		
-		protected void RenderPlainCollection (BaseReportItem parent,ReportItemCollection items, Point offset,ReportPageEventArgs rpea)
+		protected Point RenderPlainCollection (BaseReportItem parent,ReportItemCollection items, Point offset,ReportPageEventArgs rpea)
 		{
 			
 			if (items.Count > 0) {
@@ -298,6 +278,9 @@ namespace ICSharpCode.Reports.Core
 					}
 					child.Location = saveLocation;
 				}
+				return rpea.LocationAfterDraw;
+			} else {
+				return offset;
 			}
 		}
 		

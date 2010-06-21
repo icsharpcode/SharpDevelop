@@ -16,10 +16,6 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 	public class BaseStyleDecorator : IBaseStyleDecorator
 	{
 
-		private bool drawBorder;
-		private Color backColor;
-		private Color foreColor;
-		private Color frameColor;
 		private Point location;
 		private Size size;
 
@@ -29,59 +25,40 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 
 		public BaseStyleDecorator(Color backColor, Color foreColor)
 		{
-			this.backColor = backColor;
-			this.foreColor = foreColor;
+			this.BackColor = backColor;
+			this.ForeColor = foreColor;
 		}
 
 		
-		public bool DrawBorder {
-			get { return drawBorder; }
-			set { drawBorder = value; }
-		}
+		public bool DrawBorder {get;set;}
 
+		public Color BackColor {get;set;}
+		
+		public Color FrameColor {get;set;}
 
-		public Color BackColor {
-			get { return backColor; }
-			set { backColor = value; }
-		}
-
-
+		public Color ForeColor {get;set;}
+		
+		public Point Location {get;set;}
+			
+		public Size Size {get;set;}
+		
+		
 		public iTextSharp.text.BaseColor PdfBackColor {
-			get {return ConvertToPdfBaseColor(this.backColor);}
-		}
-
-
-		public Color ForeColor {
-			get { return foreColor; }
-			set { foreColor = value; }
+			get {return ConvertToPdfBaseColor(this.BackColor);}
 		}
 
 
 		public iTextSharp.text.BaseColor PdfForeColor {
-			get {return ConvertToPdfBaseColor(this.foreColor);}
+			get {return ConvertToPdfBaseColor(this.ForeColor);}
 		}
 
 		
-		public Color FrameColor {
-			get { return frameColor; }
-			set { frameColor = value; }
-		}
-		
-
 		public iTextSharp.text.BaseColor PdfFrameColor {
-			get {return ConvertToPdfBaseColor(frameColor);}
+			get {return ConvertToPdfBaseColor(FrameColor);}
 		}
 		
-		public Point Location {
-			get { return location; }
-			set { location = value; }
-		}
-
-		public Size Size {
-			get { return size; }
-			set { size = value; }
-		}
-
+	
+			
 
 		public Rectangle DisplayRectangle {
 			get { return new Rectangle(this.location.X, this.location.Y, this.size.Width, this.size.Height); }

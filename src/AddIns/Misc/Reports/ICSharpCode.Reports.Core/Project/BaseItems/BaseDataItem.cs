@@ -26,20 +26,17 @@ namespace ICSharpCode.Reports.Core {
 		private string columnName;
 		private string baseTableName;
 		private string dbValue;
-//		private string dataType;
 		private string nullValue;
 		
 		#region Constructor
 		
 		public BaseDataItem():base() 
 		{
-//			this.dataType = "System.String";
 		}
 		
 		public BaseDataItem(string columnName):base()
 		{
 			this.columnName = columnName;
-//			basataType = "System.String";
 		}
 		
 		#endregion

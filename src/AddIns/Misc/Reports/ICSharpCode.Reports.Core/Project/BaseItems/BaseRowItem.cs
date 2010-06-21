@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 
 using ICSharpCode.Reports.Core.old_Exporter;
 using ICSharpCode.Reports.Core.Interfaces;
@@ -66,16 +67,11 @@ namespace ICSharpCode.Reports.Core{
 			base.Render(rpea);
 			
 			if (this.BackColor != GlobalValues.DefaultBackColor) {
-				base.FillBackground(rpea.PrintPageEventArgs.Graphics);       
+				StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator,this.DrawingRectangle);
 			}
 			 
-			Border b = new Border(new BaseLine (this.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-			
-			base.DrawFrame (rpea.PrintPageEventArgs.Graphics,b);
-			
-
+			StandardPrinter.DrawBorder(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator,this.DrawingRectangle);
 			this.Location = point;
-			
 			base.NotifyAfterPrint (rpea.LocationAfterDraw);
 		}
 		

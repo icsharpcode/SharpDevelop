@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.old_Exporter;
 
 /// <summary>
@@ -53,6 +54,7 @@ namespace ICSharpCode.Reports.Core
 			TextStyleDecorator style = new TextStyleDecorator();
 			
 			style.BackColor = this.BackColor;
+			style.FrameColor = this.FrameColor;
 			style.ForeColor = this.ForeColor;
 			
 			style.Font = this.Font;
@@ -80,10 +82,9 @@ namespace ICSharpCode.Reports.Core
 			}
 			
 			base.Render(rpea);
-			base.FillBackground(rpea.PrintPageEventArgs.Graphics);
-			//Border b = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-			Border b = new Border(new BaseLine (this.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-			base.DrawFrame(rpea.PrintPageEventArgs.Graphics,b);
+		
+			StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator,this.DrawingRectangle);
+			StandardPrinter.DrawBorder(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator,base.DrawingRectangle);
 			
 			string formated = StandardFormatter.FormatOutput(this.text,this.FormatString,this.DataType,String.Empty);
 			

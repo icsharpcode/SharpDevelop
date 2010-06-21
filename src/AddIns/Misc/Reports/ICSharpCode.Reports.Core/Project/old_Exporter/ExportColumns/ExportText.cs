@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
@@ -20,9 +21,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter {
 		
 		#region Constructors
 		
-//		public ExportText():base()
-//		{
-//		}
+
 		
 		public ExportText (BaseStyleDecorator itemStyle,bool isContainer):base(itemStyle,isContainer)
 		{

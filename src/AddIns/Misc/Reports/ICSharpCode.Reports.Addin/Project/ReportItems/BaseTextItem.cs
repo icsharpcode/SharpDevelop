@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Drawing;
 
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 
 namespace ICSharpCode.Reports.Addin
 {
