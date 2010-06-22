@@ -100,7 +100,7 @@ namespace ICSharpCode.Reports.Addin
 		private void LoadDesigner(Stream stream)
 		{
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
-			
+			CreatePanel();
 			defaultServiceContainer = new DefaultServiceContainer();
 			
 			defaultServiceContainer.AddService(typeof(System.Windows.Forms.Design.IUIService),
@@ -188,7 +188,7 @@ namespace ICSharpCode.Reports.Addin
 			
 			if (e.HasSucceeded) {
 
-				CreatePanel();
+//				CreatePanel();
 				SetupDesignSurface();
 				this.IsFormsDesignerVisible = true;
 				generator.MergeFormChanges(null);

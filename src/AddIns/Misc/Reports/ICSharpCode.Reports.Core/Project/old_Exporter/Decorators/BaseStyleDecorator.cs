@@ -58,10 +58,10 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 	
-			
-
 		public Rectangle DisplayRectangle {
-			get { return new Rectangle(this.location.X, this.location.Y, this.size.Width, this.size.Height); }
+			get {
+				return new Rectangle(Location,Size); 
+			}
 		}
 		
 		private static iTextSharp.text.BaseColor ConvertToPdfBaseColor (Color color)

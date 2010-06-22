@@ -80,7 +80,7 @@ namespace ICSharpCode.Reports.Core
 				if (row != null)
 				{
 					PrintHelper.AdjustParent(tableContainer as BaseReportItem,tableContainer.Items);
-//					row.Parent = tableContainer as BaseReportItem;
+
 					
 					if (PrintHelper.IsTextOnlyRow(row) )
 					{
